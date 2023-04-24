@@ -1,0 +1,26 @@
+# ninja log v5
+14	65	7039146652662715	CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/Core.cpp.obj	e9af9a215f556efb
+20	990	7039146661811040	libs/glfw/src/CMakeFiles/glfw.dir/init.c.obj	a6e5d1d681a45a89
+3	268	7040557602835700	NativeCoreTest.exe	2ff808675085ef2f
+35	1077	7039146662771916	libs/glfw/src/CMakeFiles/glfw.dir/window.c.obj	f4326087e5e7a194
+17	994	7039146661861086	libs/glfw/src/CMakeFiles/glfw.dir/context.c.obj	5e45b6195187619a
+27	958	7039146661590842	libs/glfw/src/CMakeFiles/glfw.dir/vulkan.c.obj	75a8838e2b3cfe03
+65	985	7039146661841066	libs/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj	ab0cbbed05d2403b
+4110	4911	7039089445363988	libs/date/libdate.a	77671714568c2049
+985	1738	7039146669387937	libs/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj	43c28fe7b08562b3
+31	999	7039146661881105	libs/glfw/src/CMakeFiles/glfw.dir/monitor.c.obj	23195b23f77451e0
+24	1095	7039146662952078	libs/glfw/src/CMakeFiles/glfw.dir/input.c.obj	ce10d20492cb6feb
+976	1759	7039146669608132	libs/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj	b22acf593ca7625c
+958	1793	7039146669948438	libs/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj	d9afaa0943a9e486
+3	604	7039149121568196	CMakeFiles/NativeCoreTest.dir/Sources/Core/Logging/Log.cpp.obj	9da6211807e3c8c
+6	1440	7039146666415235	CMakeFiles/NativeCoreTest.dir/Sources/Core/Memory/Utils.cpp.obj	77ec7f7527513167
+44	975	7039146661750986	libs/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj	5c90eb6a7a4d705d
+990	1753	7039146669548082	libs/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj	63a13f82b0a8a14b
+50	1028	7039146662121323	libs/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj	5c38508cfaca0106
+994	1810	7039146670128612	libs/glfw/src/CMakeFiles/glfw.dir/egl_context.c.obj	d7a68f36b670cb07
+39	1147	7039146663472554	libs/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj	2003ee73333a7c18
+1811	1874	7039146670769202	libs/glfw/src/libglfw3.a	58c6e934eee0e5f2
+3	616	7040557517562893	CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/CoreTest.cpp.obj	6f057aa26bf8cb6
+999	2379	7039146675793759	libs/graphics/ogl/v46/CMakeFiles/gl46.dir/src/glad.c.obj	dd345bbed413be23
+2379	2426	7039146676294220	libs/graphics/ogl/v46/libgl46.a	25f8a05085d9fd1e
+7	4110	7039089437269247	libs/date/CMakeFiles/date.dir/tz.cpp.obj	75ddf719c2f23b5c

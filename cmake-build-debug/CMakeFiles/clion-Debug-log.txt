@@ -1,0 +1,38 @@
+D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=D:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe -G Ninja -S D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -B D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug
+-- The C compiler identification is GNU 11.2.0
+-- The CXX compiler identification is GNU 11.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: D:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/mingw/bin/gcc.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: D:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/mingw/bin/g++.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore
+-- Found JNI: C:/Program Files/Java/jdk-17/include  found components: AWT JVM 
+-- Found Java: C:/Program Files/Java/jdk-17/bin/java.exe (found version "17.0.6") 
+-- JNI_INCLUDE_DIRS=C:/Program Files/Java/jdk-17/include;C:/Program Files/Java/jdk-17/include/win32;C:/Program Files/Java/jdk-17/include
+-- JNI_LIBRARIES=C:/Program Files/Java/jdk-17/lib/jawt.lib;C:/Program Files/Java/jdk-17/lib/jvm.lib
+-- dfsdf
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Looking for dinput.h
+-- Looking for dinput.h - found
+-- Looking for xinput.h
+-- Looking for xinput.h - found
+-- Performing Test _GLFW_HAS_DEP
+-- Performing Test _GLFW_HAS_DEP - Success
+-- Performing Test _GLFW_HAS_ASLR
+-- Performing Test _GLFW_HAS_ASLR - Success
+-- Performing Test _GLFW_HAS_64ASLR
+-- Performing Test _GLFW_HAS_64ASLR - Success
+-- Using Win32 for window creation
+-- D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug
+-- D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Logging/Log.cppD:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Main/Core.cppD:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Main/CoreTest.cppD:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Main/Windows.cppD:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Memory/Utils.cpp
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug
