@@ -532,11 +532,11 @@ BOOL _glfwIsWindowsVersionOrGreaterWin32(WORD major, WORD minor, WORD sp)
     cond = VerSetConditionMask(cond, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
     // HACK: Use RtlVerifyVersionInfo instead of VerifyVersionInfoW as the
     //       latter lies unless the user knew to embed a non-default manifest
-    //       announcing support for Windows 10 via supportedOS GUID
+    //       announcing support for Window 10 via supportedOS GUID
     return RtlVerifyVersionInfo(&osvi, mask, cond) == 0;
 }
 
-// Checks whether we are on at least the specified build of Windows 10
+// Checks whether we are on at least the specified build of Window 10
 //
 BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build)
 {
@@ -547,7 +547,7 @@ BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build)
     cond = VerSetConditionMask(cond, VER_BUILDNUMBER, VER_GREATER_EQUAL);
     // HACK: Use RtlVerifyVersionInfo instead of VerifyVersionInfoW as the
     //       latter lies unless the user knew to embed a non-default manifest
-    //       announcing support for Windows 10 via supportedOS GUID
+    //       announcing support for Window 10 via supportedOS GUID
     return RtlVerifyVersionInfo(&osvi, mask, cond) == 0;
 }
 

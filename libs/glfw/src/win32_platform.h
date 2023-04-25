@@ -43,12 +43,12 @@
 // but windows.h assumes no one will define APIENTRY before it does
 #undef APIENTRY
 
-// GLFW on Windows is Unicode only and does not work in MBCS mode
+// GLFW on Window is Unicode only and does not work in MBCS mode
 #ifndef UNICODE
  #define UNICODE
 #endif
 
-// GLFW requires Windows XP or later
+// GLFW requires Window XP or later
 #if WINVER < 0x0501
  #undef WINVER
  #define WINVER 0x0501
@@ -126,7 +126,7 @@ typedef struct
 #ifndef MSGFLT_ALLOW
  #define MSGFLT_ALLOW 1
 #endif
-#endif /*Windows 7*/
+#endif /*Window 7*/
 
 #if WINVER < 0x0600
 #define DWM_BB_ENABLE 0x00000001
@@ -140,7 +140,7 @@ typedef struct
 } DWM_BLURBEHIND;
 #else
  #include <dwmapi.h>
-#endif /*Windows Vista*/
+#endif /*Window Vista*/
 
 #ifndef DPI_ENUMS_DECLARED
 typedef enum

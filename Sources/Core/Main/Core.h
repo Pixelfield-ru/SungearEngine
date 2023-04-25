@@ -7,16 +7,27 @@
 #ifndef NATIVECORE_CORE_H
 #define NATIVECORE_CORE_H
 
-//#date "CoreTest.cpp"
-//#date "GLFW/glfw3.h"
-
-
 namespace Core::Main
 {
     class Core
     {
     private:
+        inline static Window window{};
+        inline static Graphics::API::IRenderer* renderer;
+    public:
+        Core() = delete;
 
+        static void start();
+
+        static inline Window& get_window() noexcept
+        {
+            return window;
+        }
+
+        static inline Graphics::API::IRenderer& get_renderer() noexcept
+        {
+            return *renderer;
+        }
     };
 }
 

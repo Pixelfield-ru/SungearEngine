@@ -2,10 +2,13 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "NativeCoreTest.exe"
+			"path" : "libNativeCore.dll"
 		},
 		{
-			"path" : "NativeCoreTest.pdb"
+			"path" : "libNativeCore.dll.a"
+		},
+		{
+			"path" : "libNativeCore.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -13,7 +16,7 @@
 	{
 		"commands" : 
 		[
-			"add_executable",
+			"add_library",
 			"target_link_libraries",
 			"include_directories"
 		],
@@ -29,19 +32,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 45,
+				"line" : 40,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 46,
+				"line" : 41,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 48,
+				"line" : 43,
 				"parent" : 0
 			},
 			{
@@ -53,7 +56,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 47,
+				"line" : 42,
 				"parent" : 0
 			}
 		]
@@ -68,6 +71,12 @@
 				},
 				{
 					"fragment" : "-std=gnu++23"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"define" : "NativeCore_EXPORTS"
 				}
 			],
 			"includes" : 
@@ -109,7 +118,10 @@
 				1,
 				2,
 				3,
-				4
+				4,
+				5,
+				6,
+				7
 			]
 		}
 	],
@@ -124,17 +136,13 @@
 			"id" : "gl46::@d681a5e3ca568302ceb9"
 		}
 	],
-	"id" : "NativeCoreTest::@6890427a1f51a3e7e1df",
+	"id" : "NativeCore::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-g",
-				"role" : "flags"
-			},
-			{
-				"fragment" : "",
+				"fragment" : "-static-libgcc -static-libstdc++ -static",
 				"role" : "flags"
 			},
 			{
@@ -154,8 +162,8 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "NativeCoreTest",
-	"nameOnDisk" : "NativeCoreTest.exe",
+	"name" : "NativeCore",
+	"nameOnDisk" : "libNativeCore.dll",
 	"paths" : 
 	{
 		"build" : ".",
@@ -171,7 +179,10 @@
 				1,
 				2,
 				3,
-				4
+				4,
+				5,
+				6,
+				7
 			]
 		}
 	],
@@ -180,7 +191,25 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
+			"path" : "Sources/Core/Graphics/API/OpenGL/GLFrameBuffer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "Sources/Core/Graphics/API/OpenGL/GLRenderer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
 			"path" : "Sources/Core/Logging/Log.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "Sources/Core/Main/Callbacks.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -198,7 +227,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "Sources/Core/Main/Windows.cpp",
+			"path" : "Sources/Core/Main/Window.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -208,5 +237,5 @@
 			"sourceGroupIndex" : 0
 		}
 	],
-	"type" : "EXECUTABLE"
+	"type" : "SHARED_LIBRARY"
 }

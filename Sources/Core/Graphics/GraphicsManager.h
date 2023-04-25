@@ -7,15 +7,11 @@
 #ifndef NATIVECORE_GRAPHICSMANAGER_H
 #define NATIVECORE_GRAPHICSMANAGER_H
 
-//#date "../Logging/Log.h"
-
 namespace Core::Graphics::GraphicsManager
 {
     void init()
     {
-        //Core::Logging::init();
-        //c_printf(Logging::SG_INFO, "");
-        //Core::Logging::c_printf(Logging::SG_INFO, "");
+
     }
 }
 

@@ -2,69 +2,39 @@
 // Created by stuka on 18.04.2023.
 //
 
-#include "CoreTest.h"
-//#date <GLFW/glfw3.h>
 #include <iostream>
-#include "../Graphics/GraphicsManager.h"
-#include "../Graphics/Api/Base.h"
-#include "../Logging/Log.h"
 
-GLFWwindow* wnd = nullptr;
+#include "../Graphics/API/OpenGL/GLRenderer.h"
+#include "Core.h"
 
-void print_glfw_errors(int errc, const char* err)
+void sg_wnd_close_fun(GLFWwindow* wnd)
 {
-    std::cerr << "GLFW error: " << err << std::endl;
+    std::cout << "closed =)" << std::endl;
 }
 
-class Test
+void sg_core_init_fun()
 {
-public:
-    int t0 = 5;
-    int t1 = 6;
-    int t2 = 7;
-};
+    std::cout << "core initialized =)" << std::endl;
+}
+
+void sg_frame_post_render_fun()
+{
+    std::cout << "rendering =)" << std::endl;
+}
+
+void sg_wnd_iconify_fun(GLFWwindow* wnd, int iconified)
+{
+    std::cout << "window iconified =)" << std::endl;
+}
 
 int main()
 {
-    std::cout << "Hello test!" << std::endl;
+    sg_set_window_close_callback(sg_wnd_close_fun);
+    sg_set_core_init_callback(sg_core_init_fun);
+    //sg_set_frame_post_render_callback(sg_frame_post_render_fun);
+    sg_set_window_iconify_callback(sg_wnd_iconify_fun);
 
-    Core::Logging::init();
-    // TODO: just test to delete! -----------------------------
-
-    glfwSetErrorCallback(print_glfw_errors);
-    if(!glfwInit())
-    {
-        print_glfw_errors(0, "Error initializing GLFW!");
-    }
-
-    glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-
-    wnd = glfwCreateWindow(500, 500, "telezhechka", NULL, NULL);
-
-    glfwMakeContextCurrent(wnd);
-
-    glfwSwapInterval(0);
-
-    // сделать окно видимым
-    glfwShowWindow(wnd);
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-
-    while(true)
-    {
-        glBegin(GL_TRIANGLES);
-
-        glVertex2f(0, 0);
-        glVertex2f(0, 0.5);
-        glVertex2f(0.5, 0);
-
-        glEnd();
-
-        glfwSwapBuffers(wnd);
-        glfwPollEvents();
-    }
-
-    // ---------------------------------------------------
+    Core::Main::Core::start();
 
     return 0;
 }

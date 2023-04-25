@@ -1,5 +1,5 @@
 //
-// Created by stuka on 21.04.2023.
+// Created by stuka on 24.04.2023.
 //
 
 #pragma once
@@ -9,48 +9,20 @@
 
 #include <iostream>
 
-namespace Core::Graphics::API::Base
+#include "../../Main/Window.h"
+
+namespace Core::Graphics::API
 {
-    class IFrameBuffer;
-    class IIndexBuffer;
-    class ITexture2D;
-    class IVertexArray;
-    class IVertexBuffer;
-    class IRenderer;
-
-    class IFrameBuffer
-    {
-
-    };
-
-    class IIndexBuffer
-    {
-
-    };
-
-    class ITexture2D
-    {
-
-    };
-
-    class IVertexArray
-    {
-
-    };
-
-    class IVertexBuffer
-    {
-
-    };
-
     class IRenderer
     {
     public:
-        virtual std::uint32_t get_version() = 0;
+        virtual void print_info() noexcept { }
 
-        virtual void init() = 0;
+        virtual void init(const Main::Window& wnd) { }
 
-        virtual void check_for_errors() = 0;
+        virtual void start_loop() { }
+
+        virtual void check_for_errors() noexcept { }
 
         /*
         virtual IIndexBuffer* create_texture2d() = 0;
