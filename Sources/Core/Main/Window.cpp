@@ -8,7 +8,7 @@
 
 void Core::Main::Window::create()
 {
-    glfwSetErrorCallback(error_callback);
+    glfwSetErrorCallback(errorCallback);
 
     if(!glfwInit()) { }
 
@@ -19,22 +19,24 @@ void Core::Main::Window::create()
 
     if(wnd == nullptr)
     {
-        Logging::c_printf(Logging::SG_INFO, "Failed to initialize GLFW Window!");
+        Logging::consolePrintf(Logging::SG_INFO, "Failed to initialize GLFW Window!");
     }
 
-    glfwSetWindowCloseCallback(wnd, window_close_callback);
-    glfwSetWindowIconifyCallback(wnd, window_iconify_callback);
+    glfwSetWindowCloseCallback(wnd, windowCloseCallback);
+    glfwSetWindowIconifyCallback(wnd, windowIconifyCallback);
+    glfwSetKeyCallback(wnd, keyCallback);
 
     glfwMakeContextCurrent(wnd);
 
-    glfwSetWindowPos(wnd, this->wnd_config.position_x, this->wnd_config.position_y);
-
-    glfwSwapInterval(this->wnd_config.swap_interval);
+    glfwSetWindowPos(wnd, this->wnd_config.positionX, this->wnd_config.positionY);
+    glfwSetWindowSizeLimits(wnd, this->wnd_config.sizeMinLimitX, this->wnd_config.sizeMinLimitY, this->wnd_config.sizeMaxLimitX, this->wnd_config.sizeMaxLimitY);
+    glfwSwapInterval(this->wnd_config.swapInterval);
+    glfwSetInputMode(wnd, GLFW_STICKY_KEYS, this->wnd_config.enableStickyKeys);
 
     glfwShowWindow(wnd);
 }
 
-void Core::Main::Window::proceed_frame()
+void Core::Main::Window::proceedFrame()
 {
     glfwSwapBuffers(wnd);
     glfwPollEvents();

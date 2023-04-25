@@ -11,7 +11,7 @@ void Core::Main::Core::start()
     renderer = new Graphics::API::OpenGL::GLRenderer;
     renderer->init(window);
 
-    sg_call_core_init_callback();
+    sgCallCoreInitCallback();
 
-    renderer->start_loop();
+    renderer->startLoop();
 }

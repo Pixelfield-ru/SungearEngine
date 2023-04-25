@@ -12,9 +12,9 @@
 
 namespace Core::Memory::Utils
 {
-    void get_byte_process_mem_usage(size_t &pagefile_usage, size_t &working_set_size);
-    void get_kilobyte_process_mem_usage(size_t &pagefile_usage, size_t &working_set_size);
-    void get_megabyte_process_mem_usage(size_t &pagefile_usage, size_t &working_set_size);
+    void getByteProcessMemUsage(size_t &pagefile_usage, size_t &working_set_size);
+    void getKilobyteProcessMemUsage(size_t &pagefile_usage, size_t &working_set_size);
+    void getMegabyteProcessMemUsage(size_t &pagefile_usage, size_t &working_set_size);
 }
 
 

@@ -28,9 +28,9 @@ namespace Core::Logging
 
     void init();
 
-    void c_printf(const MessageType& message_type, const char* text, ...);
+    void consolePrintf(const MessageType&, const char* text, ...);
 
-    std::string message_type_to_string(const MessageType& messageType, const bool& add_color);
+    std::string messageTypeToString(const MessageType&, const bool& addColor);
 }
 
 

@@ -12,9 +12,9 @@
 
 #include "../Memory/Resource.h"
 #include "../Logging/Log.h"
-#include <GLFW/glfw3.h>
 
 #include "Callbacks.h"
+//#include "../Input/Keyboard.h"
 
 namespace Core::Main
 {
@@ -23,18 +23,20 @@ namespace Core::Main
         int size_x = 500;
         int size_y = 250;
 
-        int size_min_limit_x = 0;
-        int size_min_limit_y = 0;
+        int sizeMinLimitX = -1;
+        int sizeMinLimitY = -1;
 
-        int size_max_limit_x = 0;
-        int size_max_limit_y = 0;
+        int sizeMaxLimitX = -1;
+        int sizeMaxLimitY = -1;
 
-        int position_x = 100;
-        int position_y = 100;
+        int positionX = 100;
+        int positionY = 100;
 
         std::string name = "Powered by Core";
 
-        bool swap_interval = true;
+        bool swapInterval = true;
+
+        bool enableStickyKeys = true;
 
         explicit WindowConfig() noexcept = default;
     };
@@ -46,23 +48,28 @@ namespace Core::Main
 
         WindowConfig wnd_config;
 
-        static void window_close_callback(GLFWwindow* window)
+        static void windowCloseCallback(GLFWwindow* window)
         {
-            sg_call_window_close_callback(window);
+            sgCallWindowCloseCallback(window);
 
-            Logging::c_printf(Logging::MessageType::SG_INFO, "GLFW window closed.");
+            Logging::consolePrintf(Logging::MessageType::SG_INFO, "GLFW window closed.");
         }
 
-        static void window_iconify_callback(GLFWwindow* window, int iconified)
+        static void windowIconifyCallback(GLFWwindow* window, int iconified)
         {
-            sg_call_window_iconify_callback(window, iconified);
+            sgCallWindowIconifyCallback(window, iconified);
 
-            Logging::c_printf(Logging::MessageType::SG_INFO, "GLFW window iconified.");
+            Logging::consolePrintf(Logging::MessageType::SG_INFO, "GLFW window iconified.");
         }
 
-        static void error_callback(int err_code, const char* err_msg)
+        static void keyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
         {
-            Logging::c_printf(Logging::SG_ERROR, "GLFW error (code %i): %s", err_code, err_msg);
+            sgCallWindowKeyCallback(wnd, key, scanCode, action, mods);
+        }
+
+        static void errorCallback(int err_code, const char* err_msg)
+        {
+            Logging::consolePrintf(Logging::SG_ERROR, "GLFW error (code %i): %s", err_code, err_msg);
         }
 
     public:
@@ -70,61 +77,79 @@ namespace Core::Main
 
         Window(const Window& other) noexcept : wnd_config(other.wnd_config) { }
 
-        Window(const WindowConfig& other_window_config) noexcept : wnd_config(other_window_config) { }
+        Window(const WindowConfig& otherWindowConfig) noexcept : wnd_config(otherWindowConfig) { }
 
         ~Window() noexcept { glfwDestroyWindow(wnd); }
 
         void create();
 
-        void proceed_frame();
+        void proceedFrame();
 
-        void set_size(const int& sz_x, const int& sz_y) noexcept
+        void setSize(const int& sizeX, const int& sizeY) noexcept
         {
-            wnd_config.size_x = sz_x;
-            wnd_config.size_y = sz_y;
+            wnd_config.size_x = sizeX;
+            wnd_config.size_y = sizeY;
 
-            glfwSetWindowSize(wnd, sz_x, sz_y);
+            glfwSetWindowSize(wnd, sizeX, sizeY);
         }
 
-        void set_position(const int& pos_x, const int& pos_y) noexcept
+        void setPosition(const int& posX, const int& posY) noexcept
         {
-            wnd_config.position_x = pos_x;
-            wnd_config.position_y = pos_y;
+            wnd_config.positionX = posX;
+            wnd_config.positionY = posY;
 
-            glfwSetWindowSize(wnd, pos_x, pos_y);
+            glfwSetWindowSize(wnd, posX, posY);
         }
 
-        void set_swap_interval(const bool& swap_interval) noexcept
+        void setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept
         {
-            wnd_config.swap_interval = swap_interval;
+            wnd_config.sizeMinLimitX = sizeMinLimitX;
+            wnd_config.sizeMinLimitY = sizeMinLimitY;
 
-            glfwSwapInterval(swap_interval);
+            wnd_config.sizeMaxLimitX = sizeMaxLimitX;
+            wnd_config.sizeMaxLimitY = sizeMaxLimitY;
+
+            glfwSetWindowSizeLimits(wnd, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
         }
 
-        void set_size_limits(const int& size_min_limit_x, const int& size_min_limit_y, const int& size_max_limit_x, const int& size_max_limit_y)
+        void setSwapInterval(const bool& swapInterval) noexcept
         {
-            wnd_config.size_min_limit_x = size_min_limit_x;
-            wnd_config.size_min_limit_y = size_min_limit_y;
+            wnd_config.swapInterval = swapInterval;
 
-            wnd_config.size_max_limit_x = size_max_limit_x;
-            wnd_config.size_max_limit_y = size_max_limit_y;
-
-            glfwSetWindowSizeLimits(wnd, size_min_limit_x, size_min_limit_y, size_max_limit_x, size_max_limit_y);
+            glfwSwapInterval(swapInterval);
         }
 
-        inline void set_config(const WindowConfig& other) noexcept
+        void setEnableStickyKeys(const bool& enableStickyKeys) noexcept
+        {
+            wnd_config.enableStickyKeys = enableStickyKeys;
+
+            glfwSetInputMode(wnd, GLFW_STICKY_KEYS, enableStickyKeys);
+        }
+
+        inline void setConfig(const WindowConfig& other) noexcept
         {
             wnd_config = other;
         }
 
-        inline bool should_close() noexcept
+        inline bool shouldClose() noexcept
         {
             return glfwWindowShouldClose(wnd);
         }
 
-        inline void set_should_close(bool should_close) noexcept
+        inline void setShouldClose(bool shouldClose) noexcept
         {
-            glfwSetWindowShouldClose(wnd, should_close);
+            glfwSetWindowShouldClose(wnd, shouldClose);
+        }
+
+        static inline void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
+        {
+            GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+            glfwGetMonitorPhysicalSize(primaryMonitor, &sizeX, &sizeY);
+        }
+
+        inline GLFWwindow* getHandler() noexcept
+        {
+            return wnd;
         }
     };
 }

@@ -14,16 +14,16 @@
 
 void Core::Logging::init()
 {
-    c_printf(MessageType::SG_ERROR, "Log init: this is error message!");
-    c_printf(MessageType::SG_WARNING, "Log init: this is warning message!");
-    c_printf(MessageType::SG_SUCCESS, "Log init: this is success message!");
-    c_printf(MessageType::SG_INFO, "Log init: this is info message!");
+    consolePrintf(MessageType::SG_ERROR, "Log init: this is error message!");
+    consolePrintf(MessageType::SG_WARNING, "Log init: this is warning message!");
+    consolePrintf(MessageType::SG_SUCCESS, "Log init: this is success message!");
+    consolePrintf(MessageType::SG_INFO, "Log init: this is info message!");
 }
 
 // TODO: исправить вывод
-void Core::Logging::c_printf(const MessageType& message_type, const char* text, ...)
+void Core::Logging::consolePrintf(const MessageType& messageType, const char* text, ...)
 {
-    std::string msg_str = std::string { text };
+    std::string msgStr = std::string {text };
 
     char buf[64];
 
@@ -32,23 +32,24 @@ void Core::Logging::c_printf(const MessageType& message_type, const char* text, 
 
     std::strftime(buf, sizeof(buf), "%Y/%m/%d %H:%M:%S", std::localtime(&time));
 
-    std::string final_string = std::string(buf) + " (len: " + std::to_string(msg_str.length()) + ") | [" + message_type_to_string(message_type, true) + ANSI_COLOR_RESET + "]: " + text + "\n";
+    std::string finalString = std::string(buf) + " (len: " + std::to_string(msgStr.length()) + ") | [" +
+            messageTypeToString(messageType, true) + ANSI_COLOR_RESET + "]: " + text + "\n";
 
-    va_list args_ptr;
-    va_start(args_ptr, text);
-    vprintf(final_string.c_str(),args_ptr);
-    va_end(args_ptr);
+    va_list argsPtr;
+    va_start(argsPtr, text);
+    vprintf(finalString.c_str(), argsPtr);
+    va_end(argsPtr);
 }
 
-std::string Core::Logging::message_type_to_string(const MessageType& messageType, const bool& add_color)
+std::string Core::Logging::messageTypeToString(const MessageType& messageType, const bool& addColor)
 {
     std::string ret;
     switch(messageType)
     {
-        case MessageType::SG_ERROR: return add_color ? (ret + ANSI_COLOR_RED + "SG_ERROR") : "SG_ERROR";
-        case MessageType::SG_WARNING: return add_color ? (ret + ANSI_COLOR_YELLOW + "SG_WARNING") : "SG_WARNING";
-        case MessageType::SG_SUCCESS: return add_color ? (ret + ANSI_COLOR_GREEN + "SG_SUCCESS") : "SG_SUCCESS";
-        case MessageType::SG_INFO: return add_color ? (ret + ANSI_COLOR_MAGENTA + "SG_INFO") : "SG_INFO";
+        case MessageType::SG_ERROR: return addColor ? (ret + ANSI_COLOR_RED + "SG_ERROR") : "SG_ERROR";
+        case MessageType::SG_WARNING: return addColor ? (ret + ANSI_COLOR_YELLOW + "SG_WARNING") : "SG_WARNING";
+        case MessageType::SG_SUCCESS: return addColor ? (ret + ANSI_COLOR_GREEN + "SG_SUCCESS") : "SG_SUCCESS";
+        case MessageType::SG_INFO: return addColor ? (ret + ANSI_COLOR_MAGENTA + "SG_INFO") : "SG_INFO";
         default: return "MT_UNKNOWN_TYPE";
     }
 }

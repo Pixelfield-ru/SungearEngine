@@ -16,13 +16,13 @@ namespace Core::Graphics::API
     class IRenderer
     {
     public:
-        virtual void print_info() noexcept { }
+        virtual void printInfo() noexcept { }
 
-        virtual void init(const Main::Window& wnd) { }
+        virtual void init(const Main::Window&) { }
 
-        virtual void start_loop() { }
+        virtual void startLoop() { }
 
-        virtual void check_for_errors() noexcept { }
+        virtual void checkForErrors() noexcept { }
 
         /*
         virtual IIndexBuffer* create_texture2d() = 0;

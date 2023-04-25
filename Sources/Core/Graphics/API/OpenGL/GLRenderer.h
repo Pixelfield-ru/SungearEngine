@@ -19,13 +19,13 @@ namespace Core::Graphics::API::OpenGL
     class GLRenderer : public IRenderer
     {
     public:
-        void init(const Main::Window& wnd) noexcept override;
+        void init(const Main::Window&) noexcept override;
 
-        void check_for_errors() noexcept override;
+        void checkForErrors() noexcept override;
 
-        void print_info() noexcept override;
+        void printInfo() noexcept override;
 
-        void start_loop() override;
+        void startLoop() override;
     };
 }
 

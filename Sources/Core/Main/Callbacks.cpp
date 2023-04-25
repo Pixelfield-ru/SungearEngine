@@ -2,64 +2,78 @@
 
 struct SGCallbacks
 {
-    SGCoreInitCallback core_init;
-    SGWindowCloseCallback window_close;
-    SGWindowIconifyCallback window_iconify;
-    SGFramePostRenderCallback frame_render;
+    SGCoreInitCallback coreInit;
+    SGWindowCloseCallback windowClose;
+    SGWindowIconifyCallback windowIconify;
+    SGWindowKeyCallback keyCallback;
+    SGFramePostRenderCallback frameRender;
 };
 
-inline SGCallbacks sg_callbacks;
+inline SGCallbacks sgCallbacks;
 
-void sg_set_core_init_callback(const SGCoreInitCallback& callback) noexcept
+void sgSetCoreInitCallback(const SGCoreInitCallback& callback) noexcept
 {
-    sg_callbacks.core_init = callback;
+    sgCallbacks.coreInit = callback;
 }
 
-void sg_set_window_close_callback(const SGWindowCloseCallback& callback) noexcept
+void sgSetWindowCloseCallback(const SGWindowCloseCallback& callback) noexcept
 {
-    sg_callbacks.window_close = callback;
+    sgCallbacks.windowClose = callback;
 }
 
-void sg_set_window_iconify_callback(const SGWindowIconifyCallback& callback) noexcept
+void sgSetWindowIconifyCallback(const SGWindowIconifyCallback& callback) noexcept
 {
-    sg_callbacks.window_iconify = callback;
+    sgCallbacks.windowIconify = callback;
 }
 
-void sg_set_frame_post_render_callback(const SGFramePostRenderCallback& callback) noexcept
+void sgSetWindowKeyCallback(const SGWindowKeyCallback& callback) noexcept
 {
-    sg_callbacks.frame_render = callback;
+    sgCallbacks.keyCallback = callback;
+}
+
+void sgSetFramePostRenderCallback(const SGFramePostRenderCallback& callback) noexcept
+{
+    sgCallbacks.frameRender = callback;
 }
 
 // ---------------------------------------
 
-void sg_call_core_init_callback()
+void sgCallCoreInitCallback()
 {
-    if(sg_callbacks.core_init)
+    if(sgCallbacks.coreInit)
     {
-        sg_callbacks.core_init();
+        sgCallbacks.coreInit();
     }
 }
 
-void sg_call_window_close_callback(GLFWwindow* wnd)
+void sgCallWindowCloseCallback(GLFWwindow* wnd)
 {
-    if(sg_callbacks.window_close)
+    if(sgCallbacks.windowClose)
     {
-        sg_callbacks.window_close(wnd);
+        sgCallbacks.windowClose(wnd);
     }
 }
 
-void sg_call_window_iconify_callback(GLFWwindow* wnd, int iconified)
+void sgCallWindowIconifyCallback(GLFWwindow* wnd, int iconified)
 {
-    if(sg_callbacks.window_iconify)
+    if(sgCallbacks.windowIconify)
     {
-        sg_callbacks.window_iconify(wnd, iconified);
+        sgCallbacks.windowIconify(wnd, iconified);
     }
 }
 
-void sg_call_frame_post_render_callback()
+void sgCallWindowKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
 {
-    if(sg_callbacks.frame_render)
+    if(sgCallbacks.keyCallback)
     {
-        sg_callbacks.frame_render();
+        sgCallbacks.keyCallback(wnd, key, scanCode, action, mods);
+    }
+}
+
+void sgCallFramePostRenderCallback()
+{
+    if(sgCallbacks.frameRender)
+    {
+        sgCallbacks.frameRender();
     }
 }

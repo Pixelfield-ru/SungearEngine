@@ -1275,7 +1275,7 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow* window, int width, int height);
  *
  *  @param[in] window The window that the user attempted to close.
  *
- *  @sa @ref window_close
+ *  @sa @ref windowClose
  *  @sa @ref glfwSetWindowCloseCallback
  *
  *  @since Added in version 2.5.
@@ -1338,7 +1338,7 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow* window, int focused);
  *  @param[in] iconified `GLFW_TRUE` if the window was iconified, or
  *  `GLFW_FALSE` if it was restored.
  *
- *  @sa @ref window_iconify
+ *  @sa @ref windowIconify
  *  @sa @ref glfwSetWindowIconifyCallback
  *
  *  @since Added in version 3.0.
@@ -2731,7 +2731,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @sa @ref window_close
+ *  @sa @ref windowClose
  *
  *  @since Added in version 3.0.
  *
@@ -2753,7 +2753,7 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @sa @ref window_close
+ *  @sa @ref windowClose
  *
  *  @since Added in version 3.0.
  *
@@ -3229,7 +3229,7 @@ GLFWAPI void glfwSetWindowOpacity(GLFWwindow* window, float opacity);
  *
  *  @thread_safety This function must only be called from the main thread.
  *
- *  @sa @ref window_iconify
+ *  @sa @ref windowIconify
  *  @sa @ref glfwRestoreWindow
  *  @sa @ref glfwMaximizeWindow
  *
@@ -3256,7 +3256,7 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *
  *  @thread_safety This function must only be called from the main thread.
  *
- *  @sa @ref window_iconify
+ *  @sa @ref windowIconify
  *  @sa @ref glfwIconifyWindow
  *  @sa @ref glfwMaximizeWindow
  *
@@ -3282,7 +3282,7 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow* window);
  *  @par Thread Safety
  *  This function may only be called from the main thread.
  *
- *  @sa @ref window_iconify
+ *  @sa @ref windowIconify
  *  @sa @ref glfwIconifyWindow
  *  @sa @ref glfwRestoreWindow
  *
@@ -3709,7 +3709,7 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *
  *  @thread_safety This function must only be called from the main thread.
  *
- *  @sa @ref window_close
+ *  @sa @ref windowClose
  *
  *  @since Added in version 2.5.
  *  @glfw3 Added window handle parameter and return value.
@@ -3814,7 +3814,7 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwi
  *
  *  @thread_safety This function must only be called from the main thread.
  *
- *  @sa @ref window_iconify
+ *  @sa @ref windowIconify
  *
  *  @since Added in version 3.0.
  *

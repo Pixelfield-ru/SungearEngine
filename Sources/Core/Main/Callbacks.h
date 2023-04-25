@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef NATIVECORE_CALLBACKS_H
 #define NATIVECORE_CALLBACKS_H
 
@@ -8,16 +6,19 @@
 typedef void(*SGCoreInitCallback)();
 typedef void(*SGWindowCloseCallback)(GLFWwindow*);
 typedef void(*SGWindowIconifyCallback)(GLFWwindow*, int);
+typedef void(*SGWindowKeyCallback)(GLFWwindow*, int, int, int, int);
 typedef void(*SGFramePostRenderCallback)();
 
-void sg_set_core_init_callback(const SGCoreInitCallback&) noexcept;
-void sg_set_window_close_callback(const SGWindowCloseCallback&) noexcept;
-void sg_set_window_iconify_callback(const SGWindowIconifyCallback&) noexcept;
-void sg_set_frame_post_render_callback(const SGFramePostRenderCallback&) noexcept;
+void sgSetCoreInitCallback(const SGCoreInitCallback&) noexcept;
+void sgSetWindowCloseCallback(const SGWindowCloseCallback&) noexcept;
+void sgSetWindowIconifyCallback(const SGWindowIconifyCallback&) noexcept;
+void sgSetWindowKeyCallback(const SGWindowKeyCallback&) noexcept;
+void sgSetFramePostRenderCallback(const SGFramePostRenderCallback&) noexcept;
 
-void sg_call_core_init_callback();
-void sg_call_window_close_callback(GLFWwindow*);
-void sg_call_window_iconify_callback(GLFWwindow*, int);
-void sg_call_frame_post_render_callback();
+void sgCallCoreInitCallback();
+void sgCallWindowCloseCallback(GLFWwindow*);
+void sgCallWindowIconifyCallback(GLFWwindow*, int iconified);
+void sgCallWindowKeyCallback(GLFWwindow*, int key, int scanCode, int action, int mods);
+void sgCallFramePostRenderCallback();
 
 #endif //NATIVECORE_CALLBACKS_H

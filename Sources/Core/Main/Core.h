@@ -19,12 +19,12 @@ namespace Core::Main
 
         static void start();
 
-        static inline Window& get_window() noexcept
+        static inline Window& getWindow() noexcept
         {
             return window;
         }
 
-        static inline Graphics::API::IRenderer& get_renderer() noexcept
+        static inline Graphics::API::IRenderer& getRenderer() noexcept
         {
             return *renderer;
         }

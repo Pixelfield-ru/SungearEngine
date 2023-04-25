@@ -6,33 +6,45 @@
 
 #include "../Graphics/API/OpenGL/GLRenderer.h"
 #include "Core.h"
+#include "../Input/Keyboard.h"
 
-void sg_wnd_close_fun(GLFWwindow* wnd)
+void sgWndCloseFun(GLFWwindow* wnd)
 {
     std::cout << "closed =)" << std::endl;
 }
 
-void sg_core_init_fun()
+void sgCoreInitFun()
 {
     std::cout << "core initialized =)" << std::endl;
 }
 
-void sg_frame_post_render_fun()
+void sgFramePostRenderFun()
 {
     std::cout << "rendering =)" << std::endl;
 }
 
-void sg_wnd_iconify_fun(GLFWwindow* wnd, int iconified)
+void sgWndIconifyFun(GLFWwindow* wnd, int iconified)
 {
     std::cout << "window iconified =)" << std::endl;
 }
 
+void sgWndKeyFun(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
+{
+    Core::Logging::consolePrintf(Core::Logging::MessageType::SG_INFO, "key callback =): %i, %i, %i, %i", key, scanCode, action, mods);
+
+    if(Keyboard::keyDown(KEY_LEFT))
+    {
+        Core::Logging::consolePrintf(Core::Logging::MessageType::SG_INFO, "left key down!");
+    }
+}
+
 int main()
 {
-    sg_set_window_close_callback(sg_wnd_close_fun);
-    sg_set_core_init_callback(sg_core_init_fun);
-    //sg_set_frame_post_render_callback(sg_frame_post_render_fun);
-    sg_set_window_iconify_callback(sg_wnd_iconify_fun);
+    sgSetCoreInitCallback(sgCoreInitFun);
+    sgSetWindowCloseCallback(sgWndCloseFun);
+    sgSetWindowKeyCallback(sgWndKeyFun);
+    //sgSetFramePostRenderCallback(sgFramePostRenderFun);
+    sgSetWindowIconifyCallback(sgWndIconifyFun);
 
     Core::Main::Core::start();
 

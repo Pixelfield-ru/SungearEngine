@@ -18,7 +18,7 @@ namespace Core::Memory
     private:
         ResourceT resource{};
 
-        void free_resource() noexcept;
+        void freeResource() noexcept;
 
     public:
         Resource() noexcept = default;
@@ -37,14 +37,14 @@ namespace Core::Memory
 
         ~Resource()
         {
-            free_resource();
+            freeResource();
         }
 
         Resource& operator=(Resource&& other) noexcept
         {
             assert(this != std::addressof(other));
 
-            free_resource();
+            freeResource();
             resource = other.resource;
             other.resource = {};
             return *this;
