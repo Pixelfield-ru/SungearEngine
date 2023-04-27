@@ -5,6 +5,8 @@
 #ifndef NATIVECORE_KEYBOARD_H
 #define NATIVECORE_KEYBOARD_H
 
+#define GLFW_INCLUDE_NONE
+
 #include <GLFW/glfw3.h>
 
 #define KEY_SPACE GLFW_KEY_SPACE
@@ -131,50 +133,35 @@
 
 
 #include <iostream>
+#include <vector>
+#include <list>
+#include <memory>
+#include <algorithm>
 
-struct Key
-{
-    int lastAction = 0;
-    int action = 0;
-};
+#include "InputListener.h"
+#include "../Main/Callbacks.h"
 
 class Keyboard
 {
 private:
-     static inline Key keys[1024] = {};
-     static inline GLFWwindow* currentWindow;
+     static inline std::list<std::shared_ptr<InputListener>> inputListeners;
 
 public:
     Keyboard() = delete;
 
-    static inline void keyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods) noexcept
+    static void keyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods) noexcept
     {
-        currentWindow = wnd;
+        std::for_each(inputListeners.begin(), inputListeners.end(), [&key, &action](const std::shared_ptr<InputListener>& inputListener)
+        {
+            inputListener->notifyKeyboard(key, action);
+        });
 
-        int lastAction = keys[key].action;
-        keys[key].action = action;
-        keys[key].lastAction = lastAction;
+        sgCallWindowKeyCallback(wnd, key, scanCode, action, mods);
     }
 
-    static inline bool keyDown(const int& keyID) noexcept
+    static inline void addInputListener(InputListener* inputListener) noexcept
     {
-        return currentWindow != nullptr && keyID < 1024 && glfwGetKey(currentWindow, keyID) == GLFW_PRESS;
-    }
-
-    static inline bool keyPressed(const int& keyID) noexcept
-    {
-        bool pressed = keys[keyID].action == GLFW_PRESS && keys[keyID].lastAction != GLFW_PRESS;
-        keys[keyID].lastAction = keys[keyID].action;
-
-        return keyID < 1024 && pressed;
-    }
-
-    static inline bool keyReleased(const int& keyID) noexcept
-    {
-        bool released = keys[keyID].action == GLFW_RELEASE && keys[keyID].lastAction != GLFW_RELEASE;
-        keys[keyID].lastAction = keys[keyID].action;
-
-        return keyID < 1024 && released;
+        inputListeners.push_back(static_cast<std::shared_ptr<InputListener>>(inputListener));
     }
 };
 

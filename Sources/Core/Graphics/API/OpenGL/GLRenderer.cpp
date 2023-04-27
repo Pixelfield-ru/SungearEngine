@@ -52,6 +52,8 @@ void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
     // далее кринж
     float posx {}, posy {};
 
+    InputListener inputListener = InputListener();
+
     while(!Core::Main::Core::getWindow().shouldClose())
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -67,19 +69,19 @@ void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
 
         glEnd();
 
-        if(Keyboard::keyDown(KEY_W))
+        if(inputListener.keyboardKeyDown(KEY_W))
         {
             posy += 0.01f;
         }
-        if(Keyboard::keyDown(KEY_S))
+        if(inputListener.keyboardKeyDown(KEY_S))
         {
             posy -= 0.01f;
         }
-        if(Keyboard::keyDown(KEY_D))
+        if(inputListener.keyboardKeyDown(KEY_D))
         {
             posx += 0.01f;
         }
-        if(Keyboard::keyDown(KEY_A))
+        if(inputListener.keyboardKeyDown(KEY_A))
         {
             posx -= 0.01f;
         }

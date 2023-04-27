@@ -62,16 +62,9 @@ namespace Core::Main
             Logging::consolePrintf(Logging::MessageType::SG_INFO, "GLFW window iconified.");
         }
 
-        static void keyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
+        static void errorCallback(int errCode, const char* err_msg)
         {
-            Keyboard::keyCallback(wnd, key, scanCode, action, mods);
-
-            sgCallWindowKeyCallback(wnd, key, scanCode, action, mods);
-        }
-
-        static void errorCallback(int err_code, const char* err_msg)
-        {
-            Logging::consolePrintf(Logging::SG_ERROR, "GLFW error (code %i): %s", err_code, err_msg);
+            Logging::consolePrintf(Logging::SG_ERROR, "GLFW error (code %i): %s", errCode, err_msg);
         }
 
     public:

@@ -18,7 +18,7 @@ void Core::Main::Window::create()
 
     glfwSetWindowCloseCallback(wnd, windowCloseCallback);
     glfwSetWindowIconifyCallback(wnd, windowIconifyCallback);
-    glfwSetKeyCallback(wnd, keyCallback);
+    glfwSetKeyCallback(wnd, Keyboard::keyCallback);
 
     glfwMakeContextCurrent(wnd);
 
