@@ -1,7 +1,3 @@
-//
-// Created by stuka on 18.04.2023.
-//
-
 #include <iostream>
 
 #include "../Graphics/API/OpenGL/GLRenderer.h"
@@ -30,12 +26,7 @@ void sgWndIconifyFun(GLFWwindow* wnd, int iconified)
 
 void sgWndKeyFun(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
 {
-    Core::Logging::consolePrintf(Core::Logging::MessageType::SG_INFO, "key callback =): %i, %i, %i, %i", key, scanCode, action, mods);
-
-    if(Keyboard::keyDown(KEY_LEFT))
-    {
-        Core::Logging::consolePrintf(Core::Logging::MessageType::SG_INFO, "left key down!");
-    }
+    //Core::Logging::consolePrintf(Core::Logging::MessageType::SG_INFO, "key callback =): %i, %i, %i, %i", key, scanCode, action, mods);
 }
 
 int main()

@@ -49,15 +49,40 @@ void Core::Graphics::API::OpenGL::GLRenderer::printInfo() noexcept
 
 void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
 {
+    // далее кринж
+    float posx {}, posy {};
+
     while(!Core::Main::Core::getWindow().shouldClose())
     {
+        glClear(GL_COLOR_BUFFER_BIT);
+        int viewportWidth, viewportHeight;
+        Core::Main::Core::getWindow().getSize(viewportWidth, viewportHeight);
+        glViewport(0, 0, viewportWidth, viewportHeight);
+
         glBegin(GL_TRIANGLES);
 
-        glVertex2f(0, 0);
-        glVertex2f(0, 0.5);
-        glVertex2f(0.5, 0);
+        glVertex2f(0 + posx, 0 + posy);
+        glVertex2f(0 + posx, 0.5f + posy);
+        glVertex2f(0.5f + posx, 0 + posy);
 
         glEnd();
+
+        if(Keyboard::keyDown(KEY_W))
+        {
+            posy += 0.01f;
+        }
+        if(Keyboard::keyDown(KEY_S))
+        {
+            posy -= 0.01f;
+        }
+        if(Keyboard::keyDown(KEY_D))
+        {
+            posx += 0.01f;
+        }
+        if(Keyboard::keyDown(KEY_A))
+        {
+            posx -= 0.01f;
+        }
 
         sgCallFramePostRenderCallback();
 

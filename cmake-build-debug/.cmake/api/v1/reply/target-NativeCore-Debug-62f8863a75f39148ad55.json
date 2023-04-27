@@ -121,19 +121,20 @@
 				4,
 				5,
 				6,
-				7
+				7,
+				8
 			]
 		}
 	],
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 2,
-			"id" : "glfw::@9d94ad66e13f8aab41f7"
-		},
-		{
 			"backtrace" : 3,
 			"id" : "gl46::@d681a5e3ca568302ceb9"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "glfw::@9d94ad66e13f8aab41f7"
 		}
 	],
 	"id" : "NativeCore::@6890427a1f51a3e7e1df",
@@ -182,7 +183,8 @@
 				4,
 				5,
 				6,
-				7
+				7,
+				8
 			]
 		}
 	],
@@ -198,6 +200,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "Sources/Core/Graphics/API/OpenGL/GLRenderer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "Sources/Core/Input/Keyboard.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

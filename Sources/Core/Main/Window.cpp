@@ -1,9 +1,3 @@
-//
-// Created by stuka on 24.04.2023.
-//
-
-//#include "Core.h"
-
 #include "Window.h"
 
 void Core::Main::Window::create()

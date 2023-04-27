@@ -10,11 +10,11 @@
 #include <iostream>
 #include <utility>
 
+#include "../Input/Keyboard.h"
 #include "../Memory/Resource.h"
 #include "../Logging/Log.h"
 
 #include "Callbacks.h"
-//#include "../Input/Keyboard.h"
 
 namespace Core::Main
 {
@@ -36,7 +36,7 @@ namespace Core::Main
 
         bool swapInterval = true;
 
-        bool enableStickyKeys = true;
+        bool enableStickyKeys = false;
 
         explicit WindowConfig() noexcept = default;
     };
@@ -64,6 +64,8 @@ namespace Core::Main
 
         static void keyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
         {
+            Keyboard::keyCallback(wnd, key, scanCode, action, mods);
+
             sgCallWindowKeyCallback(wnd, key, scanCode, action, mods);
         }
 
@@ -77,7 +79,7 @@ namespace Core::Main
 
         Window(const Window& other) noexcept : wnd_config(other.wnd_config) { }
 
-        Window(const WindowConfig& otherWindowConfig) noexcept : wnd_config(otherWindowConfig) { }
+        Window(WindowConfig otherWindowConfig) noexcept : wnd_config(std::move(otherWindowConfig)) { }
 
         ~Window() noexcept { glfwDestroyWindow(wnd); }
 
@@ -141,15 +143,30 @@ namespace Core::Main
             glfwSetWindowShouldClose(wnd, shouldClose);
         }
 
-        static inline void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
+        inline void makeCurrent() noexcept
         {
-            GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
-            glfwGetMonitorPhysicalSize(primaryMonitor, &sizeX, &sizeY);
+            glfwMakeContextCurrent(wnd);
         }
 
         inline GLFWwindow* getHandler() noexcept
         {
             return wnd;
+        }
+
+        inline WindowConfig getConfig() noexcept
+        {
+            return wnd_config;
+        }
+
+        inline void getSize(int& sizeX, int& sizeY) noexcept
+        {
+            glfwGetWindowSize(wnd, &sizeX, &sizeY);
+        }
+
+        static inline void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
+        {
+            GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+            glfwGetMonitorPhysicalSize(primaryMonitor, &sizeX, &sizeY);
         }
     };
 }
