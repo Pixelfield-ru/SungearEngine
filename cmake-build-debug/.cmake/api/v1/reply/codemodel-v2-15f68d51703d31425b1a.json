@@ -131,14 +131,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "NativeCore::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-NativeCore-Debug-78a776db44602efd8d88.json",
+					"jsonFile" : "target-NativeCore-Debug-16c10bf3e03240c20173.json",
 					"name" : "NativeCore",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "NativeCoreTest::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-NativeCoreTest-Debug-735b0df5ca3f2862f434.json",
+					"jsonFile" : "target-NativeCoreTest-Debug-00bea8c583874fb54874.json",
 					"name" : "NativeCoreTest",
 					"projectIndex" : 0
 				},

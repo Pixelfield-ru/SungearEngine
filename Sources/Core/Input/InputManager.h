@@ -2,6 +2,8 @@
 // Created by stuka on 26.04.2023.
 //
 
+#pragma once
+
 #ifndef NATIVECORE_INPUTMANAGER_H
 #define NATIVECORE_INPUTMANAGER_H
 
@@ -161,9 +163,9 @@
 #include <memory>
 #include <algorithm>
 
-#include "InputListener.h"
 #include "../Main/Callbacks.h"
 #include <thread>
+#include "InputListener.h"
 
 class InputManager
 {
@@ -172,35 +174,15 @@ private:
     static inline std::mutex keysMutex;
 
 public:
-    static const InputListener mainInputListener;
-
     InputManager() = delete;
 
-    static void keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods) noexcept
-    {
-        std::for_each(inputListeners.begin(), inputListeners.end(), [&wnd, &key, &action](const std::shared_ptr<InputListener>& inputListener)
-        {
-            inputListener->notifyKeyboard(wnd, key, action);
-        });
+    static void keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods);
 
-        sgCallWindowKeyCallback(wnd, key, scanCode, action, mods);
-    }
+    static void mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode, int action);
 
-    static void mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode, int action) noexcept
-    {
-        std::for_each(inputListeners.begin(), inputListeners.end(), [&wnd, &button, &action](const std::shared_ptr<InputListener>& inputListener)
-        {
-            inputListener->notifyMouse(wnd, button, action);
-        });
-
-        sgCallWindowMouseButtonCallback(wnd, button, scanCode, action);
-    }
-
-    static inline void addInputListener(InputListener* inputListener) noexcept
-    {
-        std::lock_guard<std::mutex> guard(keysMutex);
-        inputListeners.push_back(static_cast<std::shared_ptr<InputListener>>(inputListener));
-    }
+    static void addInputListener(InputListener* inputListener) noexcept;
 };
+
+const static inline std::shared_ptr<InputListener> mainInputListener = std::make_shared<InputListener>();
 
 #endif //NATIVECORE_INPUTMANAGER_H

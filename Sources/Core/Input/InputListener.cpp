@@ -1,5 +1,4 @@
 #include "InputListener.h"
-
 #include "InputManager.h"
 
 InputListener::InputListener() noexcept
@@ -58,3 +57,4 @@ bool InputListener::mouseButtonReleased(const int& button) noexcept
 
     return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && windowHandler && lastAction == GLFW_PRESS && mouseButtons[button] == GLFW_RELEASE;
 }
+
