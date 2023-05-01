@@ -43,7 +43,7 @@
 #include <limits.h>
 
 // For Visual Studio 6 in C++ mode and for many Visual Studio versions when
-// compiling for ARM we should wrap <wchar.h> date with 'extern "C++" {}'
+// compiling for ARM we should wrap <wchar.h> include with 'extern "C++" {}'
 // or compiler give many errors like this:
 //   error C2733: second C linkage of overloaded function 'wmemchr' not allowed
 #ifdef __cplusplus

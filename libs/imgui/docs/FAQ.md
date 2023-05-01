@@ -138,7 +138,7 @@ void MyLowLevelMouseButtonHandler(int button, bool down)
 
 ### Q: How can I enable keyboard or gamepad controls?
 - The gamepad/keyboard navigation is fairly functional and keeps being improved. The initial focus was to support game controllers, but keyboard is becoming increasingly and decently usable. Gamepad support is particularly useful to use Dear ImGui on a game console (e.g. PS4, Switch, XB1) without a mouse connected!
-- Keyboard: set `io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard` to enable.
+- InputManager: set `io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard` to enable.
 - Gamepad: set `io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad` to enable (with a supporting backend).
 - See [Control Sheets for Gamepads](http://www.dearimgui.com/controls_sheets) (reference PNG/PSD for PS4, XB1, Switch gamepads).
 - See `USING GAMEPAD/KEYBOARD NAVIGATION CONTROLS` section of [imgui.cpp](https://github.com/ocornut/imgui/blob/master/imgui.cpp) for more details.

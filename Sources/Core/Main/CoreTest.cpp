@@ -2,7 +2,7 @@
 
 #include "../Graphics/API/OpenGL/GLRenderer.h"
 #include "Core.h"
-#include "../Input/Keyboard.h"
+#include "../Input/InputManager.h"
 
 void sgWndCloseFun(GLFWwindow* wnd)
 {

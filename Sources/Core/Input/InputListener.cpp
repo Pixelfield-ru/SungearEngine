@@ -1,40 +1,60 @@
 #include "InputListener.h"
 
-#include "Keyboard.h"
+#include "InputManager.h"
 
 InputListener::InputListener() noexcept
 {
-    Keyboard::addInputListener(this);
+    InputManager::addInputListener(this);
 }
 
-void InputListener::notifyKeyboard(const int& keyID, const int& keyAction) noexcept
+void InputListener::notifyKeyboard(GLFWwindow* wnd, const int& key, const int& action) noexcept
 {
-    int lastAction = keyboardKeys[keyID].currentAction;
-    keyboardKeys[keyID].currentAction = keyAction;
-    keyboardKeys[keyID].lastAction = lastAction;
+    windowHandler = wnd;
 }
 
-void InputListener::notifyMouse(const int& buttonID, const int& buttonState) noexcept
+void InputListener::notifyMouse(GLFWwindow* wnd, const int& button, const int& action) noexcept
 {
-    //mouseButtonID = buttonID;
-    //mouseButtonState = buttonState;
+    windowHandler = wnd;
 }
 
-bool InputListener::keyboardKeyDown(const int& keyID) noexcept
+bool InputListener::keyboardKeyDown(const int& key) noexcept
 {
-    return keyID > 0 && keyID < 1024 && (keyboardKeys[keyID].currentAction == GLFW_PRESS || keyboardKeys[keyID].currentAction == GLFW_REPEAT);
+    return key >= KEY_FIRST && key <= KEY_LAST && windowHandler && glfwGetKey(windowHandler, key) == GLFW_PRESS;
 }
 
-bool InputListener::keyboardKeyPress(const int& keyID) noexcept
+bool InputListener::keyboardKeyPressed(const int& key) noexcept
 {
-    bool pressed = keyboardKeys[keyID].currentAction == GLFW_PRESS && keyboardKeys[keyID].lastAction != GLFW_PRESS;
-    keyboardKeys[keyID].lastAction = keyboardKeys[keyID].currentAction;
-    return keyID > 0 && keyID < 1024 && pressed;
+    int lastAction = keyboardKeys[key];
+    keyboardKeys[key] = keyboardKeyDown(key);
+
+    return key >= KEY_FIRST && key <= KEY_LAST && windowHandler && lastAction == GLFW_RELEASE && keyboardKeys[key] == GLFW_PRESS;
 }
 
-bool InputListener::keyboardKeyRelease(const int& keyID) noexcept
+bool InputListener::keyboardKeyReleased(const int& key) noexcept
 {
-    bool released = keyboardKeys[keyID].currentAction == GLFW_RELEASE && keyboardKeys[keyID].lastAction != GLFW_RELEASE;
-    keyboardKeys[keyID].lastAction = keyboardKeys[keyID].currentAction;
-    return keyID > 0 && keyID < 1024 && released;
+    int lastAction = keyboardKeys[key];
+    keyboardKeys[key] = keyboardKeyDown(key);
+
+    return key >= KEY_FIRST && key <= KEY_LAST && windowHandler && lastAction == GLFW_PRESS && keyboardKeys[key] == GLFW_RELEASE;
+}
+
+bool InputListener::mouseButtonDown(const int& button) noexcept
+{
+    return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && windowHandler && glfwGetMouseButton(windowHandler, button) == GLFW_PRESS;
+}
+
+bool InputListener::mouseButtonPressed(const int& button) noexcept
+{
+    int lastAction = mouseButtons[button];
+    mouseButtons[button] = mouseButtonDown(button);
+
+    return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && windowHandler && lastAction == GLFW_RELEASE && mouseButtons[button] == GLFW_PRESS;
+}
+
+bool InputListener::mouseButtonReleased(const int& button) noexcept
+{
+    int lastAction = mouseButtons[button];
+    mouseButtons[button] = mouseButtonDown(button);
+
+    return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && windowHandler && lastAction == GLFW_PRESS && mouseButtons[button] == GLFW_RELEASE;
 }

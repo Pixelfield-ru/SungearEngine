@@ -783,7 +783,7 @@ Other Changes:
 - Tables: Fixed positioning of Sort icon on right-most column with some settings (not resizable + no borders). (#4918).
 - Nav: Fixed gamepad navigation in wrapping popups not wrapping all the way. (#4365)
 - Sliders, Drags: Fixed text input of values with a leading sign, common when using a format enforcing sign. (#4917)
-- Demo: draw a section of keyboard in "Inputs > Keyboard, Gamepad & Navigation state" to visualize keys. [@thedmd]
+- Demo: draw a section of keyboard in "Inputs > InputManager, Gamepad & Navigation state" to visualize keys. [@thedmd]
 - Platform IME: changed io.ImeSetInputScreenPosFn() to io.SetPlatformImeDataFn() API,
   now taking a ImGuiPlatformImeData structure which we can more easily extend in the future.
 - Platform IME: moved io.ImeWindowHandle to GetMainViewport()->PlatformHandleRaw.
@@ -923,7 +923,7 @@ Other Changes:
 - Backends: SDL_Renderer: Added support for large meshes (64k+ vertices) with 16-bit indices,
   enabling 'ImGuiBackendFlags_RendererHasVtxOffset' in the backend. (#3926) [@rokups]
 - Backends: SDL_Renderer: Fix for SDL 2.0.19+ RenderGeometryRaw() API signature change. (#4819) [@sridenour]
-- Backends: OSX: Generally fix keyboard support. Keyboard arrays indexed using kVK_* codes, e.g.
+- Backends: OSX: Generally fix keyboard support. InputManager arrays indexed using kVK_* codes, e.g.
   ImGui::IsKeyPressed(kVK_Space). Don't set mouse cursor shape unconditionally. Handle two fingers scroll
   cancel event. (#4759, #4253, #1873) [@stuartcarnie]
 - Backends: OSX: Add Game Controller support (need linking GameController framework) (#4759) [@stuartcarnie]
@@ -2027,7 +2027,7 @@ Breaking Changes:
 
 Other Changes:
 
-- InputText, Nav: Fixed Home/End key broken when activating Keyboard Navigation. (#787)
+- InputText, Nav: Fixed Home/End key broken when activating InputManager Navigation. (#787)
 - InputText: Filter out ASCII 127 (DEL) emitted by low-level OSX layer, as we are using the Key value. (#2578)
 - Layout: Fixed a couple of subtle bounding box vertical positioning issues relating to the handling of text
   baseline alignment. The issue would generally manifest when laying out multiple items on a same line,
@@ -2513,7 +2513,7 @@ Other Changes:
 - Added IsItemActivated() as an extension to the IsItemDeactivated/IsItemDeactivatedAfterEdit functions
   which are useful to implement variety of undo patterns. (#820, #956, #1875)
 - InputText: Fixed a bug where ESCAPE would not restore the initial value in all situations. (#2321) [@relick]
-- InputText: Fixed a bug where ESCAPE would be first captured by the Keyboard Navigation code. (#2321, #787)
+- InputText: Fixed a bug where ESCAPE would be first captured by the InputManager Navigation code. (#2321, #787)
 - InputText: Fixed redo buffer exhaustion handling (rare) which could corrupt the undo character buffer. (#2333)
   The way the redo/undo buffers work would have made it generally unnoticeable to the user.
 - Fixed range-version of PushID() and GetID() not honoring the ### operator to restart from the seed value.
@@ -3051,7 +3051,7 @@ Other Changes:
   - Backend: Set io.BackendFlags |= ImGuiBackendFlags_HasGamepad + fill the io.NavInputs[] fields before calling NewFrame(). Read imgui.cpp for more details.
   - See https://github.com/ocornut/imgui/issues/1599 for recommended gamepad mapping or download PNG/PSD at http://goo.gl/9LgVZW
   - See 'enum ImGuiNavInput_' in imgui.h for a description of inputs. Read imgui.cpp for more details.
-- To use Keyboard Navigation:
+- To use InputManager Navigation:
   - Set io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard to enable. NewFrame() will automatically fill io.NavInputs[] based on your io.KeysDown[] + io.KeyMap[] arrays.
   - Basic controls: arrows to navigate, Alt to enter menus, Space to activate item, Enter to edit text, Escape to cancel/close, Ctrl-Tab to focus windows, etc.
   - When keyboard navigation is active (io.NavActive + ImGuiConfigFlags_NavEnableKeyboard), the io.WantCaptureKeyboard flag will be set.
@@ -3398,7 +3398,7 @@ Other Changes:
 - Various tweaks, fixes and documentation changes.
 
 Beta Navigation Branch:
-(Lots of work has been done toward merging the Beta Gamepad/Keyboard Navigation branch (#787) in master.)
+(Lots of work has been done toward merging the Beta Gamepad/InputManager Navigation branch (#787) in master.)
 (Please note that this branch is always kept up to date with master. If you are using the navigation branch, some of the changes include:)
 - Nav: Added `#define IMGUI_HAS_NAV` in imgui.h to ease sharing code between both branches. (#787)
 - Nav: MainMenuBar now releases focus when user gets out of the menu layer. (#787)

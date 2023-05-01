@@ -2,7 +2,7 @@
 # Once done, this will define
 #
 #   EPOLLSHIM_FOUND - System has EpollShim
-#   EPOLLSHIM_INCLUDE_DIRS - The EpollShim date directories
+#   EPOLLSHIM_INCLUDE_DIRS - The EpollShim include directories
 #   EPOLLSHIM_LIBRARIES - The libraries needed to use EpollShim
 
 find_path(EPOLLSHIM_INCLUDE_DIRS NAMES sys/epoll.h sys/timerfd.h HINTS /usr/local/include/libepoll-shim)

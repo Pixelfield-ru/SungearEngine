@@ -2,7 +2,7 @@
 # Once done, this will define
 #
 #   XKBCOMMON_FOUND - System has XKBCommon
-#   XKBCOMMON_INCLUDE_DIRS - The XKBCommon date directories
+#   XKBCOMMON_INCLUDE_DIRS - The XKBCommon include directories
 #   XKBCOMMON_LIBRARIES - The libraries needed to use XKBCommon
 #   XKBCOMMON_DEFINITIONS - Compiler switches required for using XKBCommon
 

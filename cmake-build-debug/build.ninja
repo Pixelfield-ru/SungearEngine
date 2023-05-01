@@ -251,7 +251,7 @@ build NativeCoreTest.exe: CXX_EXECUTABLE_LINKER__NativeCoreTest_Debug CMakeFiles
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -262,7 +262,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -BD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -BD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -280,7 +280,7 @@ build list_install_components: phony
 # Utility command for install
 
 build CMakeFiles/install.util: CUSTOM_COMMAND all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -292,7 +292,7 @@ build install: phony CMakeFiles/install.util
 # Utility command for install/local
 
 build CMakeFiles/install/local.util: CUSTOM_COMMAND all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -304,7 +304,7 @@ build install/local: phony CMakeFiles/install/local.util
 # Utility command for install/strip
 
 build CMakeFiles/install/strip.util: CUSTOM_COMMAND all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -327,7 +327,7 @@ build libs/glfw/uninstall: phony libs/glfw/CMakeFiles/uninstall
 # Utility command for edit_cache
 
 build libs/glfw/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -338,7 +338,7 @@ build libs/glfw/edit_cache: phony libs/glfw/CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build libs/glfw/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -BD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -BD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -356,7 +356,7 @@ build libs/glfw/list_install_components: phony
 # Utility command for install
 
 build libs/glfw/CMakeFiles/install.util: CUSTOM_COMMAND libs/glfw/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -368,7 +368,7 @@ build libs/glfw/install: phony libs/glfw/CMakeFiles/install.util
 # Utility command for install/local
 
 build libs/glfw/CMakeFiles/install/local.util: CUSTOM_COMMAND libs/glfw/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -380,7 +380,7 @@ build libs/glfw/install/local: phony libs/glfw/CMakeFiles/install/local.util
 # Utility command for install/strip
 
 build libs/glfw/CMakeFiles/install/strip.util: CUSTOM_COMMAND libs/glfw/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -392,18 +392,12 @@ build libs/glfw/install/strip: phony libs/glfw/CMakeFiles/install/strip.util
 # Custom command for libs\glfw\CMakeFiles\uninstall
 
 build libs/glfw/CMakeFiles/uninstall | ${cmake_ninja_workdir}libs/glfw/CMakeFiles/uninstall: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -P D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/cmake_uninstall.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -P D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/cmake_uninstall.cmake"
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
 # D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMakeLists.txt
 # =============================================================================
-
-
-#############################################
-# Utility command for update_mappings
-
-build libs/glfw/src/update_mappings: phony libs/glfw/src/CMakeFiles/update_mappings
 
 # =============================================================================
 # Object build statements for STATIC_LIBRARY target glfw
@@ -415,121 +409,169 @@ build libs/glfw/src/update_mappings: phony libs/glfw/src/CMakeFiles/update_mappi
 build cmake_object_order_depends_target_glfw: phony || libs/glfw/src/CMakeFiles/glfw.dir
 
 build libs/glfw/src/CMakeFiles/glfw.dir/context.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/context.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
   DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\context.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
 
 build libs/glfw/src/CMakeFiles/glfw.dir/init.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/init.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
   DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\init.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
 
 build libs/glfw/src/CMakeFiles/glfw.dir/input.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/input.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
   DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\input.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
 
 build libs/glfw/src/CMakeFiles/glfw.dir/monitor.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/monitor.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
   DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\monitor.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/platform.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/platform.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\platform.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
 
 build libs/glfw/src/CMakeFiles/glfw.dir/vulkan.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/vulkan.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
   DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\vulkan.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
 
 build libs/glfw/src/CMakeFiles/glfw.dir/window.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/window.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
   DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\window.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
-  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
-  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-
-build libs/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_init.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
-  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_init.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
-  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
-  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-
-build libs/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_joystick.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
-  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_joystick.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
-  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
-  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-
-build libs/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_monitor.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
-  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_monitor.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
-  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
-  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-
-build libs/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_time.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
-  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_time.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
-  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
-  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-
-build libs/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_thread.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
-  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_thread.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
-  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
-  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-
-build libs/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_window.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
-  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_window.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
-  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
-  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
-
-build libs/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/wgl_context.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
-  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\wgl_context.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
 
 build libs/glfw/src/CMakeFiles/glfw.dir/egl_context.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/egl_context.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
   DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\egl_context.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
 
 build libs/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/osmesa_context.c || cmake_object_order_depends_target_glfw
-  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
   DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\osmesa_context.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -Wall -std=gnu99 -Wdeclaration-after-statement
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/null_init.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/null_init.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\null_init.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/null_monitor.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/null_monitor.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\null_monitor.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/null_window.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/null_window.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\null_window.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/null_joystick.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/null_joystick.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\null_joystick.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/win32_module.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_module.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_module.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_time.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_time.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_thread.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_thread.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_init.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_init.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_joystick.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_joystick.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_monitor.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_monitor.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/win32_window.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\win32_window.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
+  OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+  OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
+
+build libs/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj: C_COMPILER__glfw_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/wgl_context.c || cmake_object_order_depends_target_glfw
+  DEFINES = -DUNICODE -DWINVER=0x0501 -D_GLFW_WIN32 -D_UNICODE
+  DEP_FILE = libs\glfw\src\CMakeFiles\glfw.dir\wgl_context.c.obj.d
+  FLAGS = -g -fdiagnostics-color=always -Wall -std=c99 -Wdeclaration-after-statement
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/src
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   OBJECT_FILE_DIR = libs\glfw\src\CMakeFiles\glfw.dir
@@ -542,7 +584,7 @@ build libs/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj: C_COMPILER__glfw_D
 #############################################
 # Link the static library libs\glfw\src\libglfw3.a
 
-build libs/glfw/src/libglfw3.a: C_STATIC_LIBRARY_LINKER__glfw_Debug libs/glfw/src/CMakeFiles/glfw.dir/context.c.obj libs/glfw/src/CMakeFiles/glfw.dir/init.c.obj libs/glfw/src/CMakeFiles/glfw.dir/input.c.obj libs/glfw/src/CMakeFiles/glfw.dir/monitor.c.obj libs/glfw/src/CMakeFiles/glfw.dir/vulkan.c.obj libs/glfw/src/CMakeFiles/glfw.dir/window.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj libs/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj libs/glfw/src/CMakeFiles/glfw.dir/egl_context.c.obj libs/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj
+build libs/glfw/src/libglfw3.a: C_STATIC_LIBRARY_LINKER__glfw_Debug libs/glfw/src/CMakeFiles/glfw.dir/context.c.obj libs/glfw/src/CMakeFiles/glfw.dir/init.c.obj libs/glfw/src/CMakeFiles/glfw.dir/input.c.obj libs/glfw/src/CMakeFiles/glfw.dir/monitor.c.obj libs/glfw/src/CMakeFiles/glfw.dir/platform.c.obj libs/glfw/src/CMakeFiles/glfw.dir/vulkan.c.obj libs/glfw/src/CMakeFiles/glfw.dir/window.c.obj libs/glfw/src/CMakeFiles/glfw.dir/egl_context.c.obj libs/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj libs/glfw/src/CMakeFiles/glfw.dir/null_init.c.obj libs/glfw/src/CMakeFiles/glfw.dir/null_monitor.c.obj libs/glfw/src/CMakeFiles/glfw.dir/null_window.c.obj libs/glfw/src/CMakeFiles/glfw.dir/null_joystick.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_module.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj libs/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj libs/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = libs\glfw\src\CMakeFiles\glfw.dir
   POST_BUILD = cd .
@@ -552,10 +594,16 @@ build libs/glfw/src/libglfw3.a: C_STATIC_LIBRARY_LINKER__glfw_Debug libs/glfw/sr
 
 
 #############################################
+# Utility command for update_mappings
+
+build libs/glfw/src/update_mappings: phony libs/glfw/src/CMakeFiles/update_mappings
+
+
+#############################################
 # Utility command for edit_cache
 
 build libs/glfw/src/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -566,7 +614,7 @@ build libs/glfw/src/edit_cache: phony libs/glfw/src/CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build libs/glfw/src/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -BD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -BD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -584,7 +632,7 @@ build libs/glfw/src/list_install_components: phony
 # Utility command for install
 
 build libs/glfw/src/CMakeFiles/install.util: CUSTOM_COMMAND libs/glfw/src/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -596,7 +644,7 @@ build libs/glfw/src/install: phony libs/glfw/src/CMakeFiles/install.util
 # Utility command for install/local
 
 build libs/glfw/src/CMakeFiles/install/local.util: CUSTOM_COMMAND libs/glfw/src/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -608,7 +656,7 @@ build libs/glfw/src/install/local: phony libs/glfw/src/CMakeFiles/install/local.
 # Utility command for install/strip
 
 build libs/glfw/src/CMakeFiles/install/strip.util: CUSTOM_COMMAND libs/glfw/src/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -620,7 +668,7 @@ build libs/glfw/src/install/strip: phony libs/glfw/src/CMakeFiles/install/strip.
 # Custom command for libs\glfw\src\CMakeFiles\update_mappings
 
 build libs/glfw/src/CMakeFiles/update_mappings | ${cmake_ninja_workdir}libs/glfw/src/CMakeFiles/update_mappings: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -P D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\libs\glfw\src && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -P D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h"
   DESC = Updating gamepad mappings from upstream repository
 
 # =============================================================================
@@ -665,7 +713,7 @@ build libs/graphics/ogl/v46/libgl46.a: C_STATIC_LIBRARY_LINKER__gl46_Debug libs/
 # Utility command for edit_cache
 
 build libs/graphics/ogl/v46/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -676,7 +724,7 @@ build libs/graphics/ogl/v46/edit_cache: phony libs/graphics/ogl/v46/CMakeFiles/e
 # Utility command for rebuild_cache
 
 build libs/graphics/ogl/v46/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -BD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore -BD:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -694,7 +742,7 @@ build libs/graphics/ogl/v46/list_install_components: phony
 # Utility command for install
 
 build libs/graphics/ogl/v46/CMakeFiles/install.util: CUSTOM_COMMAND libs/graphics/ogl/v46/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -706,7 +754,7 @@ build libs/graphics/ogl/v46/install: phony libs/graphics/ogl/v46/CMakeFiles/inst
 # Utility command for install/local
 
 build libs/graphics/ogl/v46/CMakeFiles/install/local.util: CUSTOM_COMMAND libs/graphics/ogl/v46/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -718,7 +766,7 @@ build libs/graphics/ogl/v46/install/local: phony libs/graphics/ogl/v46/CMakeFile
 # Utility command for install/strip
 
 build libs/graphics/ogl/v46/CMakeFiles/install/strip.util: CUSTOM_COMMAND libs/graphics/ogl/v46/all
-  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8109.222\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D D:\Pixelfield\NativeSungearEngine\NativeCore\SGNativeCore\cmake-build-debug\libs\graphics\ogl\v46 && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -782,14 +830,14 @@ build libs/graphics/ogl/v46/all: phony libs/graphics/ogl/v46/libgl46.a
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | CMakeCache.txt CMakeFiles/3.25.2/CMakeCCompiler.cmake CMakeFiles/3.25.2/CMakeCXXCompiler.cmake CMakeFiles/3.25.2/CMakeRCCompiler.cmake CMakeFiles/3.25.2/CMakeSystem.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/cmake_uninstall.cmake.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/glfw3.pc.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/glfw3Config.cmake.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/glfw_config.h.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm/cmake/glm/glmConfig-version.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm/cmake/glm/glmConfig.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46/CMakeLists.txt D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/BasicConfigVersion-SameMajorVersion.cmake.in D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCXXInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCommonLanguageInclude.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeDependentOption.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeFindJavaCommon.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeGenericSystem.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeInitializeConfigs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeLanguageInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakePackageConfigHelpers.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakePushCheckState.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeRCInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeSystemSpecificInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeSystemSpecificInitialize.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckCCompilerFlag.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckCSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckIncludeFile.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckLibraryExists.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/CMakeCommonCompilerMacros.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU-C.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU-CXX.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindJNI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindJava.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindPackageHandleStandardArgs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindPackageMessage.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindThreads.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/GNUInstallDirs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Internal/CheckCompilerFlag.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Internal/CheckFlagCommonConfig.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Internal/CheckSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-C-ABI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-C.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-CXX-ABI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-CXX.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-windres.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/WindowsPaths.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/UseJava.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/WriteBasicConfigVersionFile.cmake
+build build.ninja: RERUN_CMAKE | CMakeCache.txt CMakeFiles/3.25.2/CMakeCCompiler.cmake CMakeFiles/3.25.2/CMakeCXXCompiler.cmake CMakeFiles/3.25.2/CMakeRCCompiler.cmake CMakeFiles/3.25.2/CMakeSystem.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMake/cmake_uninstall.cmake.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMake/glfw3.pc.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMake/glfw3Config.cmake.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm/cmake/glm/glmConfig-version.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm/cmake/glm/glmConfig.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46/CMakeLists.txt D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/BasicConfigVersion-SameMajorVersion.cmake.in D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCXXInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCommonLanguageInclude.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeDependentOption.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeFindJavaCommon.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeGenericSystem.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeInitializeConfigs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeLanguageInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakePackageConfigHelpers.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakePushCheckState.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeRCInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeSystemSpecificInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeSystemSpecificInitialize.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckCSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckIncludeFile.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckLibraryExists.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/CMakeCommonCompilerMacros.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU-C.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU-CXX.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindJNI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindJava.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindPackageHandleStandardArgs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindPackageMessage.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindThreads.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/GNUInstallDirs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Internal/CheckSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-C-ABI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-C.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-CXX-ABI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-CXX.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-windres.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/WindowsPaths.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/UseJava.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/WriteBasicConfigVersionFile.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build CMakeCache.txt CMakeFiles/3.25.2/CMakeCCompiler.cmake CMakeFiles/3.25.2/CMakeCXXCompiler.cmake CMakeFiles/3.25.2/CMakeRCCompiler.cmake CMakeFiles/3.25.2/CMakeSystem.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/cmake_uninstall.cmake.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/glfw3.pc.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/glfw3Config.cmake.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/glfw_config.h.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm/cmake/glm/glmConfig-version.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm/cmake/glm/glmConfig.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46/CMakeLists.txt D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/BasicConfigVersion-SameMajorVersion.cmake.in D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCXXInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCommonLanguageInclude.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeDependentOption.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeFindJavaCommon.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeGenericSystem.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeInitializeConfigs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeLanguageInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakePackageConfigHelpers.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakePushCheckState.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeRCInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeSystemSpecificInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeSystemSpecificInitialize.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckCCompilerFlag.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckCSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckIncludeFile.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckLibraryExists.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/CMakeCommonCompilerMacros.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU-C.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU-CXX.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindJNI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindJava.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindPackageHandleStandardArgs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindPackageMessage.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/FindThreads.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/GNUInstallDirs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Internal/CheckCompilerFlag.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Internal/CheckFlagCommonConfig.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Internal/CheckSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-C-ABI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-C.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-CXX-ABI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-CXX.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-windres.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/WindowsPaths.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/UseJava.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8109.222/bin/cmake/win/x64/share/cmake-3.25/Modules/WriteBasicConfigVersionFile.cmake: phony
+build CMakeCache.txt CMakeFiles/3.25.2/CMakeCCompiler.cmake CMakeFiles/3.25.2/CMakeCXXCompiler.cmake CMakeFiles/3.25.2/CMakeRCCompiler.cmake CMakeFiles/3.25.2/CMakeSystem.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMake/cmake_uninstall.cmake.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMake/glfw3.pc.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/CMake/glfw3Config.cmake.in D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/src/CMakeLists.txt D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm/cmake/glm/glmConfig-version.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm/cmake/glm/glmConfig.cmake D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46/CMakeLists.txt D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/BasicConfigVersion-SameMajorVersion.cmake.in D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCXXInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeCommonLanguageInclude.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeDependentOption.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeFindJavaCommon.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeGenericSystem.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeInitializeConfigs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeLanguageInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakePackageConfigHelpers.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakePushCheckState.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeRCInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeSystemSpecificInformation.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeSystemSpecificInitialize.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckCSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckIncludeFile.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckLibraryExists.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/CheckSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/CMakeCommonCompilerMacros.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU-C.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU-CXX.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Compiler/GNU.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindJNI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindJava.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindPackageHandleStandardArgs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindPackageMessage.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/FindThreads.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/GNUInstallDirs.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Internal/CheckSourceCompiles.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-C-ABI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-C.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-CXX-ABI.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU-CXX.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-GNU.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows-windres.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/Windows.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/Platform/WindowsPaths.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/UseJava.cmake D$:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/cmake/win/x64/share/cmake-3.25/Modules/WriteBasicConfigVersionFile.cmake: phony
 
 
 #############################################

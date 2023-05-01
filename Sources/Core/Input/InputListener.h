@@ -7,27 +7,34 @@
 #ifndef NATIVECORE_INPUTLISTENER_H
 #define NATIVECORE_INPUTLISTENER_H
 
-struct SGKey
-{
-    int lastAction = 0;
-    int currentAction = 0;
-};
+#include <atomic>
+#include <GLFW/glfw3.h>
 
 class InputListener
 {
 private:
-    SGKey keyboardKeys[1024] = {};
+    bool keyboardKeys[1024] = {};
+    bool mouseButtons[1024] = {};
+
+    GLFWwindow* windowHandler;
+    std::mutex inputMutex;
 
 public:
     InputListener() noexcept;
 
-    void notifyKeyboard(const int&, const int&) noexcept;
-    void notifyMouse(const int&, const int&) noexcept;
+    void notifyKeyboard(GLFWwindow*, const int&, const int&) noexcept;
+    void notifyMouse(GLFWwindow*, const int&, const int&) noexcept;
 
     bool keyboardKeyDown(const int&) noexcept;
-    bool keyboardKeyPress(const int&) noexcept;
-    bool keyboardKeyRelease(const int&) noexcept;
+    bool keyboardKeyPressed(const int&) noexcept;
+    bool keyboardKeyReleased(const int&) noexcept;
+
+    bool mouseButtonDown(const int&) noexcept;
+    bool mouseButtonPressed(const int&) noexcept;
+    bool mouseButtonReleased(const int&) noexcept;
 };
+
+
 
 
 #endif //NATIVECORE_INPUTLISTENER_H

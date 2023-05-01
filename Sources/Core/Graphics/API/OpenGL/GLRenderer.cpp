@@ -1,4 +1,8 @@
 #include "GLRenderer.h"
+#include <thread>
+#include <limits>
+
+#define SIGN_F(num, denum) ((exp(num) - exp (denum)) > max_exp) &&  (mantissa(num) >= mantissa(denum))
 
 void Core::Graphics::API::OpenGL::GLRenderer::init(const Main::Window& wnd) noexcept
 {
@@ -47,12 +51,65 @@ void Core::Graphics::API::OpenGL::GLRenderer::printInfo() noexcept
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
 }
 
+
+double posx {}, posy {};
+
+void ch()
+{
+    InputListener inputListener;
+
+    while(!Core::Main::Core::getWindow().shouldClose())
+    {
+        if(inputListener.keyboardKeyDown(KEY_W) && inputListener.keyboardKeyDown(KEY_A) && inputListener.keyboardKeyDown(KEY_S) &&
+                inputListener.keyboardKeyReleased(KEY_D))
+        {
+            std::cout << "triple combination 2" << std::endl;
+        }
+    }
+}
+
+void ch2()
+{
+    InputListener inputListener;
+
+    while(!Core::Main::Core::getWindow().shouldClose())
+    {
+        if(inputListener.keyboardKeyDown(KEY_W) && inputListener.keyboardKeyDown(KEY_A) && inputListener.keyboardKeyDown(KEY_S) &&
+                inputListener.keyboardKeyReleased(KEY_D))
+        {
+            std::cout << "triple combination" << std::endl;
+        }
+    }
+}
+
+void ch3()
+{
+    InputListener inputListener;
+
+    while(!Core::Main::Core::getWindow().shouldClose())
+    {
+        if(inputListener.keyboardKeyDown(KEY_W) && inputListener.keyboardKeyDown(KEY_A) && inputListener.keyboardKeyDown(KEY_S) &&
+                inputListener.keyboardKeyReleased(KEY_D))
+        {
+            std::cout << "triple combination 3" << std::endl;
+        }
+
+        if(inputListener.mouseButtonDown(MOUSE_BUTTON_LEFT) && inputListener.mouseButtonReleased(MOUSE_BUTTON_RIGHT))
+        {
+            std::cout << "left" << std::endl;
+        }
+    }
+}
+
 void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
 {
     // далее кринж
-    float posx {}, posy {};
 
-    InputListener inputListener = InputListener();
+    //InputListener inputListener = InputListener();
+
+    std::thread inputCheck2(ch2);
+    std::thread inputCheck3(ch3);
+    std::thread inputCheck(ch);
 
     while(!Core::Main::Core::getWindow().shouldClose())
     {
@@ -69,25 +126,31 @@ void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
 
         glEnd();
 
-        if(inputListener.keyboardKeyDown(KEY_W))
+        /*
+        if(mainInputListener.keyboardKeyDown(KEY_W))
         {
             posy += 0.01f;
         }
-        if(inputListener.keyboardKeyDown(KEY_S))
+        if(mainInputListener.keyboardKeyDown(KEY_S))
         {
             posy -= 0.01f;
         }
-        if(inputListener.keyboardKeyDown(KEY_D))
+        if(mainInputListener.keyboardKeyDown(KEY_D))
         {
             posx += 0.01f;
         }
-        if(inputListener.keyboardKeyDown(KEY_A))
+        if(mainInputListener.keyboardKeyDown(KEY_A))
         {
             posx -= 0.01f;
         }
 
+         */
         sgCallFramePostRenderCallback();
 
         Core::Main::Core::getWindow().proceedFrame();
     }
+
+    inputCheck.join();
+    inputCheck2.join();
+    inputCheck3.join();
 }

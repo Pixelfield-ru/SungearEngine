@@ -6,6 +6,7 @@ struct SGCallbacks
     SGWindowCloseCallback windowClose;
     SGWindowIconifyCallback windowIconify;
     SGWindowKeyCallback keyCallback;
+    SGWindowMouseButtonCallback mouseButtonCallback;
     SGFramePostRenderCallback frameRender;
 };
 
@@ -29,6 +30,11 @@ void sgSetWindowIconifyCallback(const SGWindowIconifyCallback& callback) noexcep
 void sgSetWindowKeyCallback(const SGWindowKeyCallback& callback) noexcept
 {
     sgCallbacks.keyCallback = callback;
+}
+
+void sgSetWindowMouseButtonCallback(const SGWindowMouseButtonCallback& callback) noexcept
+{
+    sgCallbacks.mouseButtonCallback = callback;
 }
 
 void sgSetFramePostRenderCallback(const SGFramePostRenderCallback& callback) noexcept
@@ -67,6 +73,14 @@ void sgCallWindowKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action,
     if(sgCallbacks.keyCallback)
     {
         sgCallbacks.keyCallback(wnd, key, scanCode, action, mods);
+    }
+}
+
+void sgCallWindowMouseButtonCallback(GLFWwindow* wnd, int key, int scanCode, int action)
+{
+    if(sgCallbacks.mouseButtonCallback)
+    {
+        sgCallbacks.mouseButtonCallback(wnd, key, scanCode, action);
     }
 }
 

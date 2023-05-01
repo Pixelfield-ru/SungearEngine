@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 X11 - www.glfw.org
+// GLFW 3.4 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
@@ -29,6 +29,7 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_X11) || defined(_GLFW_WAYLAND)
 
 /*
  * Marcus: This code was originally written by Markus G. Kuhn.
@@ -939,4 +940,6 @@ uint32_t _glfwKeySym2Unicode(unsigned int keysym)
     // No matching Unicode value found
     return GLFW_INVALID_CODEPOINT;
 }
+
+#endif // _GLFW_WAYLAND or _GLFW_X11
 

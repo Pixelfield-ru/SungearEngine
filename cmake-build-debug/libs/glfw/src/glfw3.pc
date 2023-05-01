@@ -5,7 +5,7 @@ libdir=C:/Program Files (x86)/NativeCore/lib
 
 Name: GLFW
 Description: A multi-platform library for OpenGL, window and input
-Version: 3.3.8
+Version: 3.4.0
 URL: https://www.glfw.org/
 Requires.private: 
 Libs: -L${libdir} -lglfw3

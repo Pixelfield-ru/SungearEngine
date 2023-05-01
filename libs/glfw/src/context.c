@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
@@ -48,16 +48,6 @@
 //
 GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
 {
-    if (ctxconfig->share)
-    {
-        if (ctxconfig->client == GLFW_NO_API ||
-            ctxconfig->share->context.client == GLFW_NO_API)
-        {
-            _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
-            return GLFW_FALSE;
-        }
-    }
-
     if (ctxconfig->source != GLFW_NATIVE_CONTEXT_API &&
         ctxconfig->source != GLFW_EGL_CONTEXT_API &&
         ctxconfig->source != GLFW_OSMESA_CONTEXT_API)
@@ -76,6 +66,23 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
                         "Invalid client API 0x%08X",
                         ctxconfig->client);
         return GLFW_FALSE;
+    }
+
+    if (ctxconfig->share)
+    {
+        if (ctxconfig->client == GLFW_NO_API ||
+            ctxconfig->share->context.client == GLFW_NO_API)
+        {
+            _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+            return GLFW_FALSE;
+        }
+
+        if (ctxconfig->source != ctxconfig->share->context.source)
+        {
+            _glfwInputError(GLFW_INVALID_ENUM,
+                            "Context creation APIs do not match between contexts");
+            return GLFW_FALSE;
+        }
     }
 
     if (ctxconfig->client == GLFW_OPENGL_API)

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <utility>
 
-#include "../Input/Keyboard.h"
+#include "../Input/InputManager.h"
 #include "../Memory/Resource.h"
 #include "../Logging/Log.h"
 
@@ -44,7 +44,7 @@ namespace Core::Main
     class Window
     {
     private:
-        GLFWwindow* wnd;
+        GLFWwindow* handler;
 
         WindowConfig wnd_config;
 
@@ -74,7 +74,7 @@ namespace Core::Main
 
         Window(WindowConfig otherWindowConfig) noexcept : wnd_config(std::move(otherWindowConfig)) { }
 
-        ~Window() noexcept { glfwDestroyWindow(wnd); }
+        ~Window() noexcept { glfwDestroyWindow(handler); }
 
         void create();
 
@@ -85,7 +85,7 @@ namespace Core::Main
             wnd_config.size_x = sizeX;
             wnd_config.size_y = sizeY;
 
-            glfwSetWindowSize(wnd, sizeX, sizeY);
+            glfwSetWindowSize(handler, sizeX, sizeY);
         }
 
         void setPosition(const int& posX, const int& posY) noexcept
@@ -93,7 +93,7 @@ namespace Core::Main
             wnd_config.positionX = posX;
             wnd_config.positionY = posY;
 
-            glfwSetWindowSize(wnd, posX, posY);
+            glfwSetWindowSize(handler, posX, posY);
         }
 
         void setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept
@@ -104,7 +104,7 @@ namespace Core::Main
             wnd_config.sizeMaxLimitX = sizeMaxLimitX;
             wnd_config.sizeMaxLimitY = sizeMaxLimitY;
 
-            glfwSetWindowSizeLimits(wnd, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
+            glfwSetWindowSizeLimits(handler, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
         }
 
         void setSwapInterval(const bool& swapInterval) noexcept
@@ -118,7 +118,7 @@ namespace Core::Main
         {
             wnd_config.enableStickyKeys = enableStickyKeys;
 
-            glfwSetInputMode(wnd, GLFW_STICKY_KEYS, enableStickyKeys);
+            glfwSetInputMode(handler, GLFW_STICKY_KEYS, enableStickyKeys);
         }
 
         inline void setConfig(const WindowConfig& other) noexcept
@@ -128,23 +128,25 @@ namespace Core::Main
 
         inline bool shouldClose() noexcept
         {
-            return glfwWindowShouldClose(wnd);
+            return glfwWindowShouldClose(handler);
         }
 
         inline void setShouldClose(bool shouldClose) noexcept
         {
-            glfwSetWindowShouldClose(wnd, shouldClose);
+            glfwSetWindowShouldClose(handler, shouldClose);
         }
 
         inline void makeCurrent() noexcept
         {
-            glfwMakeContextCurrent(wnd);
+            glfwMakeContextCurrent(handler);
         }
 
+        /*
         inline GLFWwindow* getHandler() noexcept
         {
-            return wnd;
+            return handler;
         }
+         */
 
         inline WindowConfig getConfig() noexcept
         {
@@ -153,7 +155,7 @@ namespace Core::Main
 
         inline void getSize(int& sizeX, int& sizeY) noexcept
         {
-            glfwGetWindowSize(wnd, &sizeX, &sizeY);
+            glfwGetWindowSize(handler, &sizeX, &sizeY);
         }
 
         static inline void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
