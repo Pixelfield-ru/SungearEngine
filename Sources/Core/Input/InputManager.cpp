@@ -6,20 +6,20 @@
 
 void InputManager::keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
 {
-    std::for_each(inputListeners.begin(), inputListeners.end(), [&wnd, &key, &action](const std::shared_ptr<InputListener>& inputListener)
+    for(const auto& inputListener : inputListeners)
     {
         inputListener->notifyKeyboard(wnd, key, action);
-    });
+    }
 
     sgCallWindowKeyCallback(wnd, key, scanCode, action, mods);
 }
 
 void InputManager::mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode, int action)
 {
-    std::for_each(inputListeners.begin(), inputListeners.end(), [&wnd, &button, &action](const std::shared_ptr<InputListener>& inputListener)
+    for(const auto& inputListener : inputListeners)
     {
         inputListener->notifyMouse(wnd, button, action);
-    });
+    }
 
     sgCallWindowMouseButtonCallback(wnd, button, scanCode, action);
 }

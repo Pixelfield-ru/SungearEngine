@@ -29,6 +29,12 @@ namespace Core::ECS::Transformations
         glm::vec3 position;
         glm::vec3 rotation;
         glm::vec3 scale;
+
+        glm::mat4 translationMatrix;
+        glm::mat4 rotationMatrix;
+        glm::mat4 scaleMatrix;
+
+        glm::mat4 modelMatrix;
     };
 }
 

@@ -1,8 +1,7 @@
 #include "GLRenderer.h"
+#include "../../../Observer/IObserver.h"
+#include "../../../Utils/Timer.h"
 #include <thread>
-#include <limits>
-
-#define SIGN_F(num, denum) ((exp(num) - exp (denum)) > max_exp) &&  (mantissa(num) >= mantissa(denum))
 
 void Core::Graphics::API::OpenGL::GLRenderer::init(const Main::Window& wnd) noexcept
 {
@@ -25,6 +24,7 @@ void Core::Graphics::API::OpenGL::GLRenderer::checkForErrors() noexcept
     int errCode = glGetError();
 
     std::string errStr;
+    unsigned char d;
 
     switch(errCode)
     {

@@ -18,7 +18,11 @@ namespace Core::ECS
     private:
         std::list<std::unique_ptr<IComponent>> components;
 
+    public:
+        void addComponent(const IComponent* component) noexcept
+        {
 
+        }
     };
 }
 

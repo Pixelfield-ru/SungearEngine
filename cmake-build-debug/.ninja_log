@@ -66,3 +66,7 @@
 12	1119	7046847842180250	CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/CoreTest.cpp.obj	28d1c8c7c8e8d7e9
 3	1126	7046847842250313	CMakeFiles/NativeCoreTest.dir/Sources/Core/Graphics/API/OpenGL/GLRenderer.cpp.obj	d6a354499ecf5a26
 1126	1326	7046847844214869	NativeCoreTest.exe	a5c2ef1939f6ec90
+4	1026	7047586926894156	CMakeFiles/NativeCoreTest.dir/Sources/Core/Input/InputManager.cpp.obj	221664ee0397eb50
+1026	1390	7047586930506216	NativeCoreTest.exe	a5c2ef1939f6ec90
+4	1097	7047746989984479	CMakeFiles/NativeCoreTest.dir/Sources/Core/Graphics/API/OpenGL/GLRenderer.cpp.obj	d6a354499ecf5a26
+1097	1432	7047746993307647	NativeCoreTest.exe	a5c2ef1939f6ec90
