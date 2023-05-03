@@ -8,10 +8,10 @@
 
 Core::Graphics::API::OpenGL::GLFrameBuffer::GLFrameBuffer() noexcept
 {
-    glGenFramebuffers(1, &handler);
+    glGenFramebuffers(1, &m_handler);
 }
 
 Core::Graphics::API::OpenGL::GLFrameBuffer::~GLFrameBuffer() noexcept
 {
-    glDeleteFramebuffers(1, &handler);
+    glDeleteFramebuffers(1, &m_handler);
 }

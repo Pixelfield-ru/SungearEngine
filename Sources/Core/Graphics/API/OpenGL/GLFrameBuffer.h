@@ -12,7 +12,7 @@ namespace Core::Graphics::API::OpenGL
     class GLFrameBuffer : public IFrameBuffer
     {
     private:
-        GLuint handler;
+        GLuint m_handler;
 
     public:
         GLFrameBuffer() noexcept;

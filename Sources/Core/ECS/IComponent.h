@@ -15,10 +15,10 @@ namespace Core::ECS
 {
     class IComponent
     {
-        friend class Core::ECS::Entity;
+        friend class Entity;
 
     private:
-        std::shared_ptr<Core::ECS::Entity> entity;
+        //std::shared_ptr<Entity> entity;
     };
 }
 

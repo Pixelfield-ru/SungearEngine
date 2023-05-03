@@ -19,22 +19,22 @@ namespace Core::ECS::Transformations
         friend class TransformationsSystem;
 
     private:
-        glm::vec3 lastPosition;
-        glm::vec3 lastRotation;
-        glm::vec3 lastScale;
+        glm::vec3 m_lastPosition;
+        glm::vec3 m_lastRotation;
+        glm::vec3 m_lastScale;
 
-        glm::vec3 lastCenter;
+        glm::vec3 m_lastCenter;
 
     public:
-        glm::vec3 position;
-        glm::vec3 rotation;
-        glm::vec3 scale;
+        glm::vec3 m_position;
+        glm::vec3 m_rotation;
+        glm::vec3 m_scale;
 
-        glm::mat4 translationMatrix;
-        glm::mat4 rotationMatrix;
-        glm::mat4 scaleMatrix;
+        glm::mat4 m_translationMatrix;
+        glm::mat4 m_rotationMatrix;
+        glm::mat4 m_scaleMatrix;
 
-        glm::mat4 modelMatrix;
+        glm::mat4 m_modelMatrix;
     };
 }
 

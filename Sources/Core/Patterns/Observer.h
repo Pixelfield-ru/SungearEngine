@@ -12,10 +12,16 @@
 #include <memory>
 #include <algorithm>
 
-#include "IObserver.h"
-
 namespace Core::Observer
 {
+    class IObservable;
+
+    class IObserver
+    {
+    public:
+        virtual void notify(IObservable*) { };
+    };
+
     class IObservable
     {
     protected:
@@ -24,17 +30,14 @@ namespace Core::Observer
     public:
         virtual void notifyObservers() { };
 
-        virtual void addObserver(IObserver* observer)
+        void addObserver(const std::shared_ptr<IObserver>& observer)
         {
-            observers.push_back(std::shared_ptr<IObserver>(observer));
+            observers.push_back(observer);
         }
-        // TODO: потом сделать
-        /*
-        virtual void removeObserver(IObserver* observer)
+        void removeObserver(const std::shared_ptr<IObserver>& observer)
         {
-
+            observers.remove(observer);
         }
-         */
     };
 }
 

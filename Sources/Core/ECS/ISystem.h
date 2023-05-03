@@ -14,7 +14,7 @@ namespace Core::ECS
     class ISystem
     {
     public:
-        bool active = true;
+        bool m_active = true;
 
         virtual void update(const Core::ECS::Entity& entity) = 0;
 

@@ -1,5 +1,4 @@
 #include "GLRenderer.h"
-#include "../../../Observer/IObserver.h"
 #include "../../../Utils/Timer.h"
 #include <thread>
 
@@ -56,8 +55,14 @@ void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
     // далее кринж
     double posx {}, posy {};
 
+    Core::Utils::Timer timer { false, 5.0L };
+    timer.addObserver(std::make_shared<Utils::TimerUpdateObserver>());
+    timer.addObserver(std::make_shared<Utils::TimerDeltaUpdateObserver>());
+
     while(!Core::Main::Core::getWindow().shouldClose())
     {
+        timer.startFrame();
+
         glClear(GL_COLOR_BUFFER_BIT);
         int viewportWidth, viewportHeight;
         Core::Main::Core::getWindow().getSize(viewportWidth, viewportHeight);
@@ -88,7 +93,12 @@ void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
             posx -= 0.01f;
         }
 
+
+        std::cout << "glfw time: " <<  glfwGetTime() << std::endl;
+
         sgCallFramePostRenderCallback();
+
+        timer.endFrame();
 
         Core::Main::Core::getWindow().proceedFrame();
     }

@@ -20,23 +20,23 @@ namespace Core::Main
 {
     struct WindowConfig
     {
-        int size_x = 500;
-        int size_y = 250;
+        int m_sizeX = 500;
+        int m_sizeY = 250;
 
-        int sizeMinLimitX = -1;
-        int sizeMinLimitY = -1;
+        int m_sizeMinLimitX = -1;
+        int m_sizeMinLimitY = -1;
 
-        int sizeMaxLimitX = -1;
-        int sizeMaxLimitY = -1;
+        int m_sizeMaxLimitX = -1;
+        int m_sizeMaxLimitY = -1;
 
-        int positionX = 100;
-        int positionY = 100;
+        int m_positionX = 100;
+        int m_positionY = 100;
 
-        std::string name = "Powered by Core";
+        std::string m_name = "Powered by Core";
 
-        bool swapInterval = true;
+        bool m_swapInterval = true;
 
-        bool enableStickyKeys = false;
+        bool m_enableStickyKeys = false;
 
         explicit WindowConfig() noexcept = default;
     };
@@ -44,9 +44,9 @@ namespace Core::Main
     class Window
     {
     private:
-        GLFWwindow* handler;
+        GLFWwindow* m_handler;
 
-        WindowConfig wndConfig;
+        WindowConfig m_config;
 
         static void windowCloseCallback(GLFWwindow* window);
 
@@ -57,11 +57,11 @@ namespace Core::Main
     public:
         Window() noexcept = default;
 
-        Window(const Window& other) noexcept : wndConfig(other.wndConfig) { }
+        Window(const Window& other) noexcept : m_config(other.m_config) { }
 
-        Window(WindowConfig otherWindowConfig) noexcept : wndConfig(std::move(otherWindowConfig)) { }
+        explicit Window(WindowConfig otherConfig) noexcept : m_config(std::move(otherConfig)) { }
 
-        ~Window() noexcept { glfwDestroyWindow(handler); }
+        ~Window() noexcept { glfwDestroyWindow(m_handler); }
 
         void create();
 
@@ -79,32 +79,32 @@ namespace Core::Main
 
         inline void setConfig(const WindowConfig& other) noexcept
         {
-            wndConfig = other;
+            m_config = other;
         }
 
         inline bool shouldClose() noexcept
         {
-            return glfwWindowShouldClose(handler);
+            return glfwWindowShouldClose(m_handler);
         }
 
         inline void setShouldClose(bool shouldClose) noexcept
         {
-            glfwSetWindowShouldClose(handler, shouldClose);
+            glfwSetWindowShouldClose(m_handler, shouldClose);
         }
 
         inline void makeCurrent() noexcept
         {
-            glfwMakeContextCurrent(handler);
+            glfwMakeContextCurrent(m_handler);
         }
 
         inline const WindowConfig& getConfig() noexcept
         {
-            return wndConfig;
+            return m_config;
         }
 
         inline void getSize(int& sizeX, int& sizeY) noexcept
         {
-            glfwGetWindowSize(handler, &sizeX, &sizeY);
+            glfwGetWindowSize(m_handler, &sizeX, &sizeY);
         }
 
         static inline void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept;

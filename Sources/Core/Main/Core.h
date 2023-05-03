@@ -7,13 +7,15 @@
 #ifndef NATIVECORE_CORE_H
 #define NATIVECORE_CORE_H
 
+#include "../Graphics/API/IRenderer.h"
+
 namespace Core::Main
 {
     class Core
     {
     private:
-        inline static Window window{};
-        inline static Graphics::API::IRenderer* renderer;
+        static inline Window m_window{};
+        static inline Graphics::API::IRenderer* m_renderer;
     public:
         Core() = delete;
 

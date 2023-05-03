@@ -14,76 +14,77 @@ void Core::Main::Window::create()
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-    handler = glfwCreateWindow(this->wndConfig.size_x, this->wndConfig.size_y, this->wndConfig.name.c_str(), nullptr, nullptr);
+    m_handler = glfwCreateWindow(this->m_config.m_sizeX, this->m_config.m_sizeY, this->m_config.m_name.c_str(), nullptr, nullptr);
 
-    if(!handler)
+    if(!m_handler)
     {
         Logging::consolePrintf(Logging::SG_INFO, "Failed to initialize GLFW Window!");
     }
 
-    glfwSetWindowCloseCallback(handler, windowCloseCallback);
-    glfwSetWindowIconifyCallback(handler, windowIconifyCallback);
-    glfwSetKeyCallback(handler, InputManager::keyboardKeyCallback);
-    glfwSetMouseButtonCallback(handler, InputManager::mouseButtonCallback);
+    glfwSetWindowCloseCallback(m_handler, windowCloseCallback);
+    glfwSetWindowIconifyCallback(m_handler, windowIconifyCallback);
+    glfwSetKeyCallback(m_handler, InputManager::keyboardKeyCallback);
+    glfwSetMouseButtonCallback(m_handler, InputManager::mouseButtonCallback);
 
-    glfwMakeContextCurrent(handler);
+    glfwMakeContextCurrent(m_handler);
 
-    glfwSetWindowPos(handler, this->wndConfig.positionX, this->wndConfig.positionY);
-    glfwSetWindowSizeLimits(handler, this->wndConfig.sizeMinLimitX, this->wndConfig.sizeMinLimitY, this->wndConfig.sizeMaxLimitX, this->wndConfig.sizeMaxLimitY);
-    glfwSwapInterval(this->wndConfig.swapInterval);
-    glfwSetWindowUserPointer(handler, this);
+    glfwSetWindowPos(m_handler, this->m_config.m_positionX, this->m_config.m_positionY);
+    glfwSetWindowSizeLimits(m_handler, this->m_config.m_sizeMinLimitX, this->m_config.m_sizeMinLimitY, this->m_config.m_sizeMaxLimitX, this->m_config.m_sizeMaxLimitY);
+    glfwSetWindowUserPointer(m_handler, this);
 
-    glfwShowWindow(handler);
+    glfwShowWindow(m_handler);
 
-    glfwSetInputMode(handler, GLFW_STICKY_KEYS, this->wndConfig.enableStickyKeys);
-    glfwSetInputMode(handler, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+    glfwSwapInterval(this->m_config.m_swapInterval);
+
+    glfwSetInputMode(m_handler, GLFW_STICKY_KEYS, this->m_config.m_enableStickyKeys);
+    glfwSetInputMode(m_handler, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
 }
 
 void Core::Main::Window::proceedFrame()
 {
-    glfwSwapBuffers(handler);
+    glfwSwapBuffers(m_handler);
     glfwPollEvents();
 }
 
 void Core::Main::Window::setSize(const int& sizeX, const int& sizeY) noexcept
 {
-    wndConfig.size_x = sizeX;
-    wndConfig.size_y = sizeY;
+    m_config.m_sizeX = sizeX;
+    m_config.m_sizeY = sizeY;
 
-    glfwSetWindowSize(handler, sizeX, sizeY);
+    glfwSetWindowSize(m_handler, sizeX, sizeY);
 }
 
 void Core::Main::Window::setPosition(const int& posX, const int& posY) noexcept
 {
-    wndConfig.positionX = posX;
-    wndConfig.positionY = posY;
+    m_config.m_positionX = posX;
+    m_config.m_positionY = posY;
 
-    glfwSetWindowSize(handler, posX, posY);
+    glfwSetWindowSize(m_handler, posX, posY);
 }
 
 void Core::Main::Window::setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept
 {
-    wndConfig.sizeMinLimitX = sizeMinLimitX;
-    wndConfig.sizeMinLimitY = sizeMinLimitY;
+    m_config.m_sizeMinLimitX = sizeMinLimitX;
+    m_config.m_sizeMinLimitY = sizeMinLimitY;
 
-    wndConfig.sizeMaxLimitX = sizeMaxLimitX;
-    wndConfig.sizeMaxLimitY = sizeMaxLimitY;
+    m_config.m_sizeMaxLimitX = sizeMaxLimitX;
+    m_config.m_sizeMaxLimitY = sizeMaxLimitY;
 
-    glfwSetWindowSizeLimits(handler, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
+    glfwSetWindowSizeLimits(m_handler, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
 }
 
 void Core::Main::Window::setSwapInterval(const bool& swapInterval) noexcept
 {
-    wndConfig.swapInterval = swapInterval;
+    m_config.m_swapInterval = swapInterval;
 
     glfwSwapInterval(swapInterval);
 }
 
 void Core::Main::Window::setEnableStickyKeys(const bool& enableStickyKeys) noexcept
 {
-    wndConfig.enableStickyKeys = enableStickyKeys;
+    m_config.m_enableStickyKeys = enableStickyKeys;
 
-    glfwSetInputMode(handler, GLFW_STICKY_KEYS, enableStickyKeys);
+    glfwSetInputMode(m_handler, GLFW_STICKY_KEYS, enableStickyKeys);
 }
 
 inline void Core::Main::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept

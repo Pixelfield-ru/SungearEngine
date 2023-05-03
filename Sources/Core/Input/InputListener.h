@@ -13,11 +13,11 @@
 class InputListener
 {
 private:
-    bool keyboardKeys[GLFW_KEY_LAST] = {};
-    bool mouseButtons[GLFW_MOUSE_BUTTON_LAST] = {};
+    bool m_keyboardKeys[GLFW_KEY_LAST] = {};
+    bool m_mouseButtons[GLFW_MOUSE_BUTTON_LAST] = {};
 
-    GLFWwindow* windowHandler;
-    std::mutex inputMutex;
+    GLFWwindow* m_focusedWindowHandler = nullptr;
+    //std::mutex m_inputMutex;
 
 public:
     InputListener() noexcept;

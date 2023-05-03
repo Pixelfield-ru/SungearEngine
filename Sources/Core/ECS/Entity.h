@@ -16,7 +16,7 @@ namespace Core::ECS
     class Entity
     {
     private:
-        std::list<std::unique_ptr<IComponent>> components;
+        std::list<std::unique_ptr<IComponent>> m_components;
 
     public:
         void addComponent(const IComponent* component) noexcept

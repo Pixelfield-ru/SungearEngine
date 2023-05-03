@@ -170,8 +170,8 @@
 class InputManager
 {
 private:
-    static inline std::list<std::shared_ptr<InputListener>> inputListeners;
-    static inline std::mutex keysMutex;
+    static inline std::list<std::shared_ptr<InputListener>> m_inputListeners;
+    static inline std::mutex m_keysMutex;
 
 public:
     InputManager() = delete;
@@ -180,7 +180,7 @@ public:
 
     static void mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode, int action);
 
-    static void addInputListener(InputListener* inputListener) noexcept;
+    static void addInputListener(const std::shared_ptr<InputListener>& inputListener) noexcept;
 };
 
 const static inline std::shared_ptr<InputListener> mainInputListener = std::make_shared<InputListener>();

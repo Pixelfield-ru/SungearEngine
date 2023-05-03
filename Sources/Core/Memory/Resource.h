@@ -24,7 +24,7 @@ namespace Core::Memory
         Resource() noexcept = default;
 
         // copy
-        explicit Resource(ResourceT res) noexcept : resource { res } { }
+        explicit Resource(const ResourceT& res) noexcept : resource { res } { }
 
         Resource(const Resource&) = delete;
         Resource& operator=(const Resource&) = delete;

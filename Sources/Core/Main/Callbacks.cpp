@@ -2,92 +2,92 @@
 
 struct SGCallbacks
 {
-    SGCoreInitCallback coreInit;
-    SGWindowCloseCallback windowClose;
-    SGWindowIconifyCallback windowIconify;
-    SGWindowKeyCallback keyCallback;
-    SGWindowMouseButtonCallback mouseButtonCallback;
-    SGFramePostRenderCallback frameRender;
+    SGCoreInitCallback c_coreInit;
+    SGWindowCloseCallback c_windowClose;
+    SGWindowIconifyCallback c_windowIconify;
+    SGWindowKeyCallback c_keyCallback;
+    SGWindowMouseButtonCallback c_mouseButtonCallback;
+    SGFramePostRenderCallback c_frameRender;
 };
 
 inline SGCallbacks sgCallbacks;
 
 void sgSetCoreInitCallback(const SGCoreInitCallback& callback) noexcept
 {
-    sgCallbacks.coreInit = callback;
+    sgCallbacks.c_coreInit = callback;
 }
 
 void sgSetWindowCloseCallback(const SGWindowCloseCallback& callback) noexcept
 {
-    sgCallbacks.windowClose = callback;
+    sgCallbacks.c_windowClose = callback;
 }
 
 void sgSetWindowIconifyCallback(const SGWindowIconifyCallback& callback) noexcept
 {
-    sgCallbacks.windowIconify = callback;
+    sgCallbacks.c_windowIconify = callback;
 }
 
 void sgSetWindowKeyCallback(const SGWindowKeyCallback& callback) noexcept
 {
-    sgCallbacks.keyCallback = callback;
+    sgCallbacks.c_keyCallback = callback;
 }
 
 void sgSetWindowMouseButtonCallback(const SGWindowMouseButtonCallback& callback) noexcept
 {
-    sgCallbacks.mouseButtonCallback = callback;
+    sgCallbacks.c_mouseButtonCallback = callback;
 }
 
 void sgSetFramePostRenderCallback(const SGFramePostRenderCallback& callback) noexcept
 {
-    sgCallbacks.frameRender = callback;
+    sgCallbacks.c_frameRender = callback;
 }
 
 // ---------------------------------------
 
 void sgCallCoreInitCallback()
 {
-    if(sgCallbacks.coreInit)
+    if(sgCallbacks.c_coreInit)
     {
-        sgCallbacks.coreInit();
+        sgCallbacks.c_coreInit();
     }
 }
 
 void sgCallWindowCloseCallback(GLFWwindow* wnd)
 {
-    if(sgCallbacks.windowClose)
+    if(sgCallbacks.c_windowClose)
     {
-        sgCallbacks.windowClose(wnd);
+        sgCallbacks.c_windowClose(wnd);
     }
 }
 
 void sgCallWindowIconifyCallback(GLFWwindow* wnd, int iconified)
 {
-    if(sgCallbacks.windowIconify)
+    if(sgCallbacks.c_windowIconify)
     {
-        sgCallbacks.windowIconify(wnd, iconified);
+        sgCallbacks.c_windowIconify(wnd, iconified);
     }
 }
 
 void sgCallWindowKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
 {
-    if(sgCallbacks.keyCallback)
+    if(sgCallbacks.c_keyCallback)
     {
-        sgCallbacks.keyCallback(wnd, key, scanCode, action, mods);
+        sgCallbacks.c_keyCallback(wnd, key, scanCode, action, mods);
     }
 }
 
 void sgCallWindowMouseButtonCallback(GLFWwindow* wnd, int key, int scanCode, int action)
 {
-    if(sgCallbacks.mouseButtonCallback)
+    if(sgCallbacks.c_mouseButtonCallback)
     {
-        sgCallbacks.mouseButtonCallback(wnd, key, scanCode, action);
+        sgCallbacks.c_mouseButtonCallback(wnd, key, scanCode, action);
     }
 }
 
 void sgCallFramePostRenderCallback()
 {
-    if(sgCallbacks.frameRender)
+    if(sgCallbacks.c_frameRender)
     {
-        sgCallbacks.frameRender();
+        sgCallbacks.c_frameRender();
     }
 }
