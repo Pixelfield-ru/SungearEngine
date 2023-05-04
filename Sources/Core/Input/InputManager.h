@@ -174,7 +174,11 @@ private:
     static inline std::mutex m_keysMutex;
 
 public:
+    const static inline std::shared_ptr<InputListener> mainInputListener = std::make_shared<InputListener>();
+
     InputManager() = delete;
+
+    static void init() noexcept;
 
     static void keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods);
 
@@ -183,6 +187,6 @@ public:
     static void addInputListener(const std::shared_ptr<InputListener>& inputListener) noexcept;
 };
 
-const static inline std::shared_ptr<InputListener> mainInputListener = std::make_shared<InputListener>();
+//const static inline std::shared_ptr<InputListener> mainInputListener = std::make_shared<InputListener>();
 
 #endif //NATIVECORE_INPUTMANAGER_H

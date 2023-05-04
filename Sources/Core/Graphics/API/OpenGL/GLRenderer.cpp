@@ -55,13 +55,15 @@ void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
     // далее кринж
     double posx {}, posy {};
 
-    Core::Utils::Timer timer { false, 5.0L };
-    timer.addObserver(std::make_shared<Utils::TimerUpdateObserver>());
-    timer.addObserver(std::make_shared<Utils::TimerDeltaUpdateObserver>());
+    //Core::Utils::Timer timer { false, 5.0L };
+    //timer.addObserver(std::make_shared<Utils::TimerUpdateObserver>());
+    //timer.addObserver(std::make_shared<Utils::TimerDeltaUpdateObserver>());
+
+    InputManager::init();
 
     while(!Core::Main::Core::getWindow().shouldClose())
     {
-        timer.startFrame();
+        //timer.startFrame();
 
         glClear(GL_COLOR_BUFFER_BIT);
         int viewportWidth, viewportHeight;
@@ -76,29 +78,29 @@ void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
 
         glEnd();
 
-        if(mainInputListener->keyboardKeyDown(KEY_W))
+        if(InputManager::mainInputListener->keyboardKeyDown(KEY_W))
         {
             posy += 0.01f;
         }
-        if(mainInputListener->keyboardKeyDown(KEY_S))
+        if(InputManager::mainInputListener->keyboardKeyDown(KEY_S))
         {
             posy -= 0.01f;
         }
-        if(mainInputListener->keyboardKeyDown(KEY_D))
+        if(InputManager::mainInputListener->keyboardKeyDown(KEY_D))
         {
             posx += 0.01f;
         }
-        if(mainInputListener->keyboardKeyDown(KEY_A))
+        if(InputManager::mainInputListener->keyboardKeyDown(KEY_A))
         {
             posx -= 0.01f;
         }
 
 
-        std::cout << "glfw time: " <<  glfwGetTime() << std::endl;
+        //std::cout << "glfw time: " <<  glfwGetTime() << std::endl;
 
         sgCallFramePostRenderCallback();
 
-        timer.endFrame();
+        //timer.endFrame();
 
         Core::Main::Core::getWindow().proceedFrame();
     }

@@ -4,6 +4,11 @@
 
 #include "InputManager.h"
 
+void InputManager::init() noexcept
+{
+    addInputListener(mainInputListener);
+}
+
 void InputManager::keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
 {
     for(const auto& inputListener : m_inputListeners)
