@@ -3,13 +3,13 @@
 
 InputListener::InputListener() noexcept
 {
-    //InputManager::addInputListener(std::make_shared<InputListener>(*this));
+    //InputManager::addInputListener(std::shared_ptr<InputListener>(this));
 }
 
 void InputListener::notifyKeyboard(GLFWwindow* wnd, const int& key, const int& action) noexcept
 {
     m_focusedWindowHandler = wnd;
-    std::cout << m_focusedWindowHandler << std::endl;
+    //std::cout << m_focusedWindowHandler << std::endl;
 }
 
 void InputListener::notifyMouse(GLFWwindow* wnd, const int& button, const int& action) noexcept

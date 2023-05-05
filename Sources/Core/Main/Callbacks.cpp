@@ -7,7 +7,7 @@ struct SGCallbacks
     SGWindowIconifyCallback c_windowIconify;
     SGWindowKeyCallback c_keyCallback;
     SGWindowMouseButtonCallback c_mouseButtonCallback;
-    SGFramePostRenderCallback c_frameRender;
+    SGUpdateCallback c_framePostRender;
 };
 
 inline SGCallbacks sgCallbacks;
@@ -37,9 +37,9 @@ void sgSetWindowMouseButtonCallback(const SGWindowMouseButtonCallback& callback)
     sgCallbacks.c_mouseButtonCallback = callback;
 }
 
-void sgSetFramePostRenderCallback(const SGFramePostRenderCallback& callback) noexcept
+void sgSetFramePostRenderCallback(const SGUpdateCallback& callback) noexcept
 {
-    sgCallbacks.c_frameRender = callback;
+    sgCallbacks.c_framePostRender = callback;
 }
 
 // ---------------------------------------
@@ -86,8 +86,8 @@ void sgCallWindowMouseButtonCallback(GLFWwindow* wnd, int key, int scanCode, int
 
 void sgCallFramePostRenderCallback()
 {
-    if(sgCallbacks.c_frameRender)
+    if(sgCallbacks.c_framePostRender)
     {
-        sgCallbacks.c_frameRender();
+        sgCallbacks.c_framePostRender();
     }
 }

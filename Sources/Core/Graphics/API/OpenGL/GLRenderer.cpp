@@ -50,20 +50,46 @@ void Core::Graphics::API::OpenGL::GLRenderer::printInfo() noexcept
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
 }
 
+long double posx {}, posy {};
+long double speed = 10000.0;
+
+// TODO: УБРАТЬ
+void Core::Graphics::API::OpenGL::GLRenderer::testDeltaUpdate(const long double& deltaTime)
+{
+    if(InputManager::mainInputListener->keyboardKeyDown(KEY_W))
+    {
+        posy += speed * deltaTime;
+    }
+    if(InputManager::mainInputListener->keyboardKeyDown(KEY_S))
+    {
+        posy -= speed * deltaTime;
+    }
+    if(InputManager::mainInputListener->keyboardKeyDown(KEY_D))
+    {
+        posx += speed * deltaTime;
+    }
+    if(InputManager::mainInputListener->keyboardKeyDown(KEY_A))
+    {
+        posx -= speed * deltaTime;
+    }
+}
+
 void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
 {
     // далее кринж
-    double posx {}, posy {};
-
-    //Core::Utils::Timer timer { false, 5.0L };
-    //timer.addObserver(std::make_shared<Utils::TimerUpdateObserver>());
-    //timer.addObserver(std::make_shared<Utils::TimerDeltaUpdateObserver>());
 
     InputManager::init();
 
+    std::shared_ptr<Utils::TimerCallback> testTimerCallback = std::make_shared<Utils::TimerCallback>();
+    testTimerCallback->setDeltaUpdateFunction([rendererPtr = this](const long double& deltaTime) { rendererPtr->testDeltaUpdate(deltaTime); });
+
+    Utils::Timer testTimer(true);
+
+    testTimer.addCallback(testTimerCallback);
+
     while(!Core::Main::Core::getWindow().shouldClose())
     {
-        //timer.startFrame();
+        testTimer.startFrame();
 
         glClear(GL_COLOR_BUFFER_BIT);
         int viewportWidth, viewportHeight;
@@ -78,29 +104,12 @@ void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
 
         glEnd();
 
-        if(InputManager::mainInputListener->keyboardKeyDown(KEY_W))
-        {
-            posy += 0.01f;
-        }
-        if(InputManager::mainInputListener->keyboardKeyDown(KEY_S))
-        {
-            posy -= 0.01f;
-        }
-        if(InputManager::mainInputListener->keyboardKeyDown(KEY_D))
-        {
-            posx += 0.01f;
-        }
-        if(InputManager::mainInputListener->keyboardKeyDown(KEY_A))
-        {
-            posx -= 0.01f;
-        }
-
 
         //std::cout << "glfw time: " <<  glfwGetTime() << std::endl;
 
         sgCallFramePostRenderCallback();
 
-        //timer.endFrame();
+        testTimer.endFrame();
 
         Core::Main::Core::getWindow().proceedFrame();
     }

@@ -153,17 +153,9 @@ build CMakeFiles/NativeCore.dir/Sources/Core/Utils/Timer.cpp.obj: CXX_COMPILER__
   OBJECT_DIR = CMakeFiles\NativeCore.dir
   OBJECT_FILE_DIR = CMakeFiles\NativeCore.dir\Sources\Core\Utils
 
-build CMakeFiles/NativeCore.dir/Sources/Core/Utils/TimerDeltaUpdateObserver.cpp.obj: CXX_COMPILER__NativeCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Utils/TimerDeltaUpdateObserver.cpp || cmake_object_order_depends_target_NativeCore
+build CMakeFiles/NativeCore.dir/Sources/Core/Utils/TimerCallback.cpp.obj: CXX_COMPILER__NativeCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Utils/TimerCallback.cpp || cmake_object_order_depends_target_NativeCore
   DEFINES = -DNativeCore_EXPORTS
-  DEP_FILE = CMakeFiles\NativeCore.dir\Sources\Core\Utils\TimerDeltaUpdateObserver.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always -std=gnu++23
-  INCLUDES = -I"C:/Program Files/Java/jdk-17/include" -I"C:/Program Files/Java/jdk-17/include/win32" -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46/include -isystem D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm
-  OBJECT_DIR = CMakeFiles\NativeCore.dir
-  OBJECT_FILE_DIR = CMakeFiles\NativeCore.dir\Sources\Core\Utils
-
-build CMakeFiles/NativeCore.dir/Sources/Core/Utils/TimerUpdateObserver.cpp.obj: CXX_COMPILER__NativeCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Utils/TimerUpdateObserver.cpp || cmake_object_order_depends_target_NativeCore
-  DEFINES = -DNativeCore_EXPORTS
-  DEP_FILE = CMakeFiles\NativeCore.dir\Sources\Core\Utils\TimerUpdateObserver.cpp.obj.d
+  DEP_FILE = CMakeFiles\NativeCore.dir\Sources\Core\Utils\TimerCallback.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -I"C:/Program Files/Java/jdk-17/include" -I"C:/Program Files/Java/jdk-17/include/win32" -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46/include -isystem D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm
   OBJECT_DIR = CMakeFiles\NativeCore.dir
@@ -177,7 +169,7 @@ build CMakeFiles/NativeCore.dir/Sources/Core/Utils/TimerUpdateObserver.cpp.obj: 
 #############################################
 # Link the shared library libNativeCore.dll
 
-build libNativeCore.dll libNativeCore.dll.a: CXX_SHARED_LIBRARY_LINKER__NativeCore_Debug CMakeFiles/NativeCore.dir/Sources/Core/ECS/Entity.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/ECS/Transformations/TransformationsSystem.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Graphics/API/OpenGL/GLFrameBuffer.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Graphics/API/OpenGL/GLRenderer.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Input/InputListener.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Input/InputManager.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Logging/Log.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Main/Callbacks.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Main/Core.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Main/CoreTest.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Main/Window.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Memory/Utils.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Utils/Timer.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Utils/TimerDeltaUpdateObserver.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Utils/TimerUpdateObserver.cpp.obj | libs/glfw/src/libglfw3.a libs/graphics/ogl/v46/libgl46.a || libs/glfw/src/libglfw3.a libs/graphics/ogl/v46/libgl46.a
+build libNativeCore.dll libNativeCore.dll.a: CXX_SHARED_LIBRARY_LINKER__NativeCore_Debug CMakeFiles/NativeCore.dir/Sources/Core/ECS/Entity.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/ECS/Transformations/TransformationsSystem.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Graphics/API/OpenGL/GLFrameBuffer.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Graphics/API/OpenGL/GLRenderer.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Input/InputListener.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Input/InputManager.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Logging/Log.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Main/Callbacks.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Main/Core.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Main/CoreTest.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Main/Window.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Memory/Utils.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Utils/Timer.cpp.obj CMakeFiles/NativeCore.dir/Sources/Core/Utils/TimerCallback.cpp.obj | libs/glfw/src/libglfw3.a libs/graphics/ogl/v46/libgl46.a || libs/glfw/src/libglfw3.a libs/graphics/ogl/v46/libgl46.a
   LANGUAGE_COMPILE_FLAGS = -g
   LINK_FLAGS = -static-libgcc -static-libstdc++ -static
   LINK_LIBRARIES = libs/glfw/src/libglfw3.a  libs/graphics/ogl/v46/libgl46.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
@@ -289,15 +281,8 @@ build CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/Timer.cpp.obj: CXX_COMPIL
   OBJECT_DIR = CMakeFiles\NativeCoreTest.dir
   OBJECT_FILE_DIR = CMakeFiles\NativeCoreTest.dir\Sources\Core\Utils
 
-build CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/TimerDeltaUpdateObserver.cpp.obj: CXX_COMPILER__NativeCoreTest_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Utils/TimerDeltaUpdateObserver.cpp || cmake_object_order_depends_target_NativeCoreTest
-  DEP_FILE = CMakeFiles\NativeCoreTest.dir\Sources\Core\Utils\TimerDeltaUpdateObserver.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always -std=gnu++23
-  INCLUDES = -I"C:/Program Files/Java/jdk-17/include" -I"C:/Program Files/Java/jdk-17/include/win32" -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46/include -isystem D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm
-  OBJECT_DIR = CMakeFiles\NativeCoreTest.dir
-  OBJECT_FILE_DIR = CMakeFiles\NativeCoreTest.dir\Sources\Core\Utils
-
-build CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/TimerUpdateObserver.cpp.obj: CXX_COMPILER__NativeCoreTest_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Utils/TimerUpdateObserver.cpp || cmake_object_order_depends_target_NativeCoreTest
-  DEP_FILE = CMakeFiles\NativeCoreTest.dir\Sources\Core\Utils\TimerUpdateObserver.cpp.obj.d
+build CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/TimerCallback.cpp.obj: CXX_COMPILER__NativeCoreTest_Debug D$:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/Sources/Core/Utils/TimerCallback.cpp || cmake_object_order_depends_target_NativeCoreTest
+  DEP_FILE = CMakeFiles\NativeCoreTest.dir\Sources\Core\Utils\TimerCallback.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -I"C:/Program Files/Java/jdk-17/include" -I"C:/Program Files/Java/jdk-17/include/win32" -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glfw/include -ID:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46/include -isystem D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/glm
   OBJECT_DIR = CMakeFiles\NativeCoreTest.dir
@@ -311,7 +296,7 @@ build CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/TimerUpdateObserver.cpp.o
 #############################################
 # Link the executable NativeCoreTest.exe
 
-build NativeCoreTest.exe: CXX_EXECUTABLE_LINKER__NativeCoreTest_Debug CMakeFiles/NativeCoreTest.dir/Sources/Core/ECS/Entity.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/ECS/Transformations/TransformationsSystem.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Graphics/API/OpenGL/GLFrameBuffer.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Graphics/API/OpenGL/GLRenderer.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Input/InputListener.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Input/InputManager.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Logging/Log.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/Callbacks.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/Core.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/CoreTest.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/Window.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Memory/Utils.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/Timer.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/TimerDeltaUpdateObserver.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/TimerUpdateObserver.cpp.obj | libs/glfw/src/libglfw3.a libs/graphics/ogl/v46/libgl46.a || libs/glfw/src/libglfw3.a libs/graphics/ogl/v46/libgl46.a
+build NativeCoreTest.exe: CXX_EXECUTABLE_LINKER__NativeCoreTest_Debug CMakeFiles/NativeCoreTest.dir/Sources/Core/ECS/Entity.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/ECS/Transformations/TransformationsSystem.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Graphics/API/OpenGL/GLFrameBuffer.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Graphics/API/OpenGL/GLRenderer.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Input/InputListener.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Input/InputManager.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Logging/Log.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/Callbacks.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/Core.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/CoreTest.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Main/Window.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Memory/Utils.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/Timer.cpp.obj CMakeFiles/NativeCoreTest.dir/Sources/Core/Utils/TimerCallback.cpp.obj | libs/glfw/src/libglfw3.a libs/graphics/ogl/v46/libgl46.a || libs/glfw/src/libglfw3.a libs/graphics/ogl/v46/libgl46.a
   FLAGS = -g
   LINK_LIBRARIES = libs/glfw/src/libglfw3.a  libs/graphics/ogl/v46/libgl46.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\NativeCoreTest.dir

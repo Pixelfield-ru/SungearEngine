@@ -5,17 +5,10 @@
 #include <chrono>
 #include <GLFW/glfw3.h>
 
+//#include "../Main/Window.h"
+//#include "../Main/Core.h"
 #include "Timer.h"
-#include "../Main/Window.h"
-#include "../Main/Core.h"
-
-void Core::Utils::Timer::notifyObservers()
-{
-    for(const std::shared_ptr<Observer::IObserver>& observer : observers)
-    {
-        observer->notify(this);
-    }
-}
+#include "TimerCallback.h"
 
 void Core::Utils::Timer::startFrame() noexcept
 {
@@ -34,27 +27,58 @@ void Core::Utils::Timer::endFrame()
 {
     if(!m_active) return;
 
+    for(const std::shared_ptr<TimerCallback>& callback : callbacks)
+    {
+        callback->callUpdateFunction();
+    }
+
     long double last = m_current;
     m_current = glfwGetTime();
 
     m_deltaTime = m_current - last;
+
+    for(const std::shared_ptr<TimerCallback>& callback : callbacks)
+    {
+        callback->callDeltaUpdateFunction(m_deltaTime);
+    }
 
     //m_progress += m_deltaTime * 29.5;
     m_progress = m_current - m_startTime;
 
     if(m_progress > m_destination)
     {
-        std::cout << "destination reached!" << std::endl;
+        if(!m_cyclic)
+        {
+            std::cout << "destination reached!" << std::endl;
+
+            for(const std::shared_ptr<TimerCallback>& callback : callbacks)
+            {
+                callback->callDestinationReachedFunction();
+            }
+        }
 
         m_active = m_cyclic;
 
-        Core::Main::Core::getWindow().setShouldClose(true);
+        //Core::Main::Core::getWindow().setShouldClose(true);
     }
-
-    std::cout << m_progress << std::endl;
 }
 
 void Core::Utils::Timer::firstTimeStart()
 {
     m_startTime = glfwGetTime();
+
+    for(const std::shared_ptr<TimerCallback>& callback : callbacks)
+    {
+        callback->callStartFunction();
+    }
+}
+
+void Core::Utils::Timer::addCallback(const std::shared_ptr<TimerCallback>& callback)
+{
+   callbacks.push_back(callback);
+}
+
+void Core::Utils::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
+{
+    callbacks.remove(callback);
 }

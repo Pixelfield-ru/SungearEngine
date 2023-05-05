@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Core.h"
 #include "../Graphics/API/OpenGL/GLRenderer.h"
+#include "../Utils/TimerCallback.h"
 
 void Core::Main::Core::start()
 {

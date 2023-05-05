@@ -180,11 +180,12 @@ public:
 
     static void init() noexcept;
 
-    static void keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods);
+    static void keyboardKeyCallback(GLFWwindow*, int, int, int, int);
 
-    static void mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode, int action);
+    static void mouseButtonCallback(GLFWwindow*, int, int, int);
 
-    static void addInputListener(const std::shared_ptr<InputListener>& inputListener) noexcept;
+    static void addInputListener(const std::shared_ptr<InputListener>&) noexcept;
+    static void removeInputListener(const std::shared_ptr<InputListener>&) noexcept;
 };
 
 //const static inline std::shared_ptr<InputListener> mainInputListener = std::make_shared<InputListener>();

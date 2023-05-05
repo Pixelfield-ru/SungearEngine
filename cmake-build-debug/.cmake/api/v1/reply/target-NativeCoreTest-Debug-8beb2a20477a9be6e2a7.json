@@ -118,20 +118,19 @@
 				10,
 				11,
 				12,
-				13,
-				14
+				13
 			]
 		}
 	],
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 3,
-			"id" : "gl46::@d681a5e3ca568302ceb9"
-		},
-		{
 			"backtrace" : 2,
 			"id" : "glfw::@9d94ad66e13f8aab41f7"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "gl46::@d681a5e3ca568302ceb9"
 		}
 	],
 	"id" : "NativeCoreTest::@6890427a1f51a3e7e1df",
@@ -190,8 +189,7 @@
 				10,
 				11,
 				12,
-				13,
-				14
+				13
 			]
 		}
 	],
@@ -278,13 +276,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "Sources/Core/Utils/TimerDeltaUpdateObserver.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "Sources/Core/Utils/TimerUpdateObserver.cpp",
+			"path" : "Sources/Core/Utils/TimerCallback.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

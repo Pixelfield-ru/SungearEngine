@@ -8,6 +8,7 @@
 #define NATIVECORE_CORE_H
 
 #include "../Graphics/API/IRenderer.h"
+#include "../Utils/Timer.h"
 
 namespace Core::Main
 {
@@ -16,6 +17,8 @@ namespace Core::Main
     private:
         static inline Window m_window{};
         static inline Graphics::API::IRenderer* m_renderer;
+
+        static inline Utils::Timer globalTimer { true };
     public:
         Core() = delete;
 

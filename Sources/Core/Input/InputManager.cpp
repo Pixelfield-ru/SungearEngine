@@ -34,3 +34,9 @@ void InputManager::addInputListener(const std::shared_ptr<InputListener>& inputL
     const std::lock_guard<std::mutex> guard(m_keysMutex);
     m_inputListeners.push_back(inputListener);
 }
+
+void InputManager::removeInputListener(const std::shared_ptr<InputListener>& inputListener) noexcept
+{
+    const std::lock_guard<std::mutex> guard(m_keysMutex);
+    m_inputListeners.remove(inputListener);
+}
