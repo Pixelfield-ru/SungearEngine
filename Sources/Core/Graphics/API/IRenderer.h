@@ -20,7 +20,7 @@ namespace Core::Graphics::API
 
         virtual void init(const Main::Window&) { }
 
-        virtual void startLoop() { }
+        virtual void renderFrame() { }
 
         virtual void checkForErrors() noexcept { }
 

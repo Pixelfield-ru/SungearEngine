@@ -47,6 +47,11 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/graphics/ogl/v46/cmake_install.cmake")
 endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/assimp/cmake_install.cmake")
+endif()
+
 if(CMAKE_INSTALL_COMPONENT)
   set(CMAKE_INSTALL_MANIFEST "install_manifest_${CMAKE_INSTALL_COMPONENT}.txt")
 else()

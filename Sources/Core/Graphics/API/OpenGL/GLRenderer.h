@@ -25,9 +25,7 @@ namespace Core::Graphics::API::OpenGL
 
         void printInfo() noexcept override;
 
-        void testDeltaUpdate(const long double&);
-
-        void startLoop() override;
+        void renderFrame() override;
     };
 }
 

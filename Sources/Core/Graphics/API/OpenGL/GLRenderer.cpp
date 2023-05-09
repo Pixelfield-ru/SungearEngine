@@ -23,7 +23,6 @@ void Core::Graphics::API::OpenGL::GLRenderer::checkForErrors() noexcept
     int errCode = glGetError();
 
     std::string errStr;
-    unsigned char d;
 
     switch(errCode)
     {
@@ -41,76 +40,28 @@ void Core::Graphics::API::OpenGL::GLRenderer::checkForErrors() noexcept
     Core::Logging::consolePrintf(Core::Logging::MessageType::SG_ERROR, "OpenGL error (code: %i): %s", errCode,
                                  errStr.c_str());
 }
-
+//oiop
 void Core::Graphics::API::OpenGL::GLRenderer::printInfo() noexcept
 {
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GLRenderer info:");
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "OpenGL version: %s", glGetString(GL_VERSION));
+    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "OpenGL version is %s", glGetString(GL_VERSION));
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
 }
 
-long double posx {}, posy {};
-long double speed = 10000.0;
-
-// TODO: УБРАТЬ
-void Core::Graphics::API::OpenGL::GLRenderer::testDeltaUpdate(const long double& deltaTime)
+void Core::Graphics::API::OpenGL::GLRenderer::renderFrame()
 {
-    if(InputManager::mainInputListener->keyboardKeyDown(KEY_W))
-    {
-        posy += speed * deltaTime;
-    }
-    if(InputManager::mainInputListener->keyboardKeyDown(KEY_S))
-    {
-        posy -= speed * deltaTime;
-    }
-    if(InputManager::mainInputListener->keyboardKeyDown(KEY_D))
-    {
-        posx += speed * deltaTime;
-    }
-    if(InputManager::mainInputListener->keyboardKeyDown(KEY_A))
-    {
-        posx -= speed * deltaTime;
-    }
-}
+    // TODO: for test. delete.
+    glClear(GL_COLOR_BUFFER_BIT);
+    int viewportWidth, viewportHeight;
+    Core::Main::Core::getWindow().getSize(viewportWidth, viewportHeight);
+    glViewport(0, 0, viewportWidth, viewportHeight);
 
-void Core::Graphics::API::OpenGL::GLRenderer::startLoop()
-{
-    // далее кринж
+    glBegin(GL_TRIANGLES);
 
-    InputManager::init();
+    glVertex2f(0, 0);
+    glVertex2f(0, 0.5f);
+    glVertex2f(0.5f, 0);
 
-    std::shared_ptr<Utils::TimerCallback> testTimerCallback = std::make_shared<Utils::TimerCallback>();
-    testTimerCallback->setDeltaUpdateFunction([rendererPtr = this](const long double& deltaTime) { rendererPtr->testDeltaUpdate(deltaTime); });
-
-    Utils::Timer testTimer(true);
-
-    testTimer.addCallback(testTimerCallback);
-
-    while(!Core::Main::Core::getWindow().shouldClose())
-    {
-        testTimer.startFrame();
-
-        glClear(GL_COLOR_BUFFER_BIT);
-        int viewportWidth, viewportHeight;
-        Core::Main::Core::getWindow().getSize(viewportWidth, viewportHeight);
-        glViewport(0, 0, viewportWidth, viewportHeight);
-
-        glBegin(GL_TRIANGLES);
-
-        glVertex2f(0 + posx, 0 + posy);
-        glVertex2f(0 + posx, 0.5f + posy);
-        glVertex2f(0.5f + posx, 0 + posy);
-
-        glEnd();
-
-
-        //std::cout << "glfw time: " <<  glfwGetTime() << std::endl;
-
-        sgCallFramePostRenderCallback();
-
-        testTimer.endFrame();
-
-        Core::Main::Core::getWindow().proceedFrame();
-    }
+    glEnd();
 }

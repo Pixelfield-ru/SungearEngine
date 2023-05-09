@@ -14,8 +14,123 @@
 # EXTERNAL cache entries
 ########################
 
-//Build shared libraries
-BUILD_SHARED_LIBS:BOOL=OFF
+//Android JNI IOSystem support is active
+ASSIMP_ANDROID_JNIIOSYSTEM:BOOL=OFF
+
+//Path for library output files
+ASSIMP_ARCHIVE_OUTPUT_DIRECTORY:STRING=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/assimp/lib
+
+//Enable AddressSanitizer.
+ASSIMP_ASAN:BOOL=OFF
+
+//Path the tool executables are installed to.
+ASSIMP_BIN_INSTALL_DIR:STRING=bin
+
+//default value of all ASSIMP_BUILD_XXX_EXPORTER values
+ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT:BOOL=ON
+
+//default value of all ASSIMP_BUILD_XXX_IMPORTER values
+ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT:BOOL=ON
+
+//describe the current architecture.
+ASSIMP_BUILD_ARCHITECTURE:STRING=
+
+//If the supplementary tools for Assimp are built in addition to
+// the library.
+ASSIMP_BUILD_ASSIMP_TOOLS:BOOL=OFF
+
+//describe the current compiler.
+ASSIMP_BUILD_COMPILER:STRING=
+
+//Build documentation using Doxygen.
+ASSIMP_BUILD_DOCS:BOOL=OFF
+
+//If the Draco libraries are to be built. Primarily for glTF
+ASSIMP_BUILD_DRACO:BOOL=OFF
+
+//Build package as Mac OS X Framework bundle.
+ASSIMP_BUILD_FRAMEWORK:BOOL=OFF
+
+//Build the C4D importer, which relies on the non-free Cineware
+// SDK.
+ASSIMP_BUILD_NONFREE_C4D_IMPORTER:BOOL=OFF
+
+//If the official samples are built as well (needs Glut).
+ASSIMP_BUILD_SAMPLES:BOOL=OFF
+
+//If the test suite for Assimp is built in addition to the library.
+ASSIMP_BUILD_TESTS:BOOL=ON
+
+//Build your own zlib
+ASSIMP_BUILD_ZLIB:BOOL=OFF
+
+//Enable this to measure test coverage.
+ASSIMP_COVERALLS:BOOL=OFF
+
+//Set to ON to enable double precision processing
+ASSIMP_DOUBLE_PRECISION:BOOL=OFF
+
+//adds the target headercheck which compiles every header file,
+// default disabled because it adds many targets
+ASSIMP_HEADERCHECK:BOOL=OFF
+
+//Enable Hunter package manager support
+ASSIMP_HUNTER_ENABLED:BOOL=OFF
+
+//Don't call git to get the hash.
+ASSIMP_IGNORE_GIT_HASH:BOOL=OFF
+
+//Path the header files are installed to.
+ASSIMP_INCLUDE_INSTALL_DIR:STRING=include
+
+//Inject debug postfix in .a/.so/.dll lib names
+ASSIMP_INJECT_DEBUG_POSTFIX:BOOL=ON
+
+//Disable this if you want to use assimp as a submodule.
+ASSIMP_INSTALL:BOOL=ON
+
+//Path for library output files
+ASSIMP_LIBRARY_OUTPUT_DIRECTORY:STRING=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/assimp/bin
+
+//Suffix to append to library names
+ASSIMP_LIBRARY_SUFFIX:STRING=
+
+//Path the built library files are installed to.
+ASSIMP_LIB_INSTALL_DIR:STRING=lib
+
+//Disable Assimp's export functionality.
+ASSIMP_NO_EXPORT:BOOL=OFF
+
+//Set to ON to generate CPack configuration files and packaging
+// targets
+ASSIMP_OPT_BUILD_PACKAGES:BOOL=OFF
+
+//the package-specific version used for uploading the sources
+ASSIMP_PACKAGE_VERSION:STRING=0
+
+//Suppress rapidjson warning on MSVC (NOTE: breaks android build)
+ASSIMP_RAPIDJSON_NO_MEMBER_ITERATOR:BOOL=ON
+
+//Path for runtime output files
+ASSIMP_RUNTIME_OUTPUT_DIRECTORY:STRING=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/assimp/bin
+
+//Enable Undefined Behavior sanitizer.
+ASSIMP_UBSAN:BOOL=OFF
+
+//Treat all warnings as errors.
+ASSIMP_WARNINGS_AS_ERRORS:BOOL=ON
+
+//Value Computed by CMake
+Assimp_BINARY_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/assimp
+
+//Value Computed by CMake
+Assimp_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+Assimp_SOURCE_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/assimp
+
+//Build package with shared libraries.
+BUILD_SHARED_LIBS:BOOL=ON
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=D:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/mingw/bin/addr2line.exe
@@ -87,6 +202,9 @@ CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //Libraries linked by default with all C applications.
 CMAKE_C_STANDARD_LIBRARIES:STRING=-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+
+//Debug Postfix for lib, samples and tools
+CMAKE_DEBUG_POSTFIX:STRING=d
 
 //Path to a program.
 CMAKE_DLLTOOL:FILEPATH=D:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/mingw/bin/dlltool.exe
@@ -211,16 +329,16 @@ CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 CMAKE_PROJECT_NAME:STATIC=NativeCore
 
 //Value Computed by CMake
-CMAKE_PROJECT_VERSION:STATIC=3.3.8
+CMAKE_PROJECT_VERSION:STATIC=3.4.0
 
 //Value Computed by CMake
 CMAKE_PROJECT_VERSION_MAJOR:STATIC=3
 
 //Value Computed by CMake
-CMAKE_PROJECT_VERSION_MINOR:STATIC=3
+CMAKE_PROJECT_VERSION_MINOR:STATIC=4
 
 //Value Computed by CMake
-CMAKE_PROJECT_VERSION_PATCH:STATIC=8
+CMAKE_PROJECT_VERSION_PATCH:STATIC=0
 
 //Value Computed by CMake
 CMAKE_PROJECT_VERSION_TWEAK:STATIC=
@@ -320,9 +438,6 @@ GLFW_BUILD_TESTS:BOOL=OFF
 //Build support for Win32
 GLFW_BUILD_WIN32:BOOL=ON
 
-//Include internals in documentation
-GLFW_DOCUMENT_INTERNALS:BOOL=OFF
-
 //Generate installation target
 GLFW_INSTALL:BOOL=ON
 
@@ -338,9 +453,6 @@ GLFW_SOURCE_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore
 
 //Force use of high-performance GPU on hybrid systems
 GLFW_USE_HYBRID_HPG:BOOL=OFF
-
-//Use the Vulkan loader statically linked into application
-GLFW_VULKAN_STATIC:BOOL=OFF
 
 //Java AWT Native Interface include directory
 JAVA_AWT_INCLUDE_PATH:PATH=C:/Program Files/Java/jdk-17/include
@@ -378,9 +490,8 @@ Java_JAVAH_EXECUTABLE:FILEPATH=Java_JAVAH_EXECUTABLE-NOTFOUND
 //Path to a program.
 Java_JAVA_EXECUTABLE:FILEPATH=C:/Program Files/Java/jdk-17/bin/java.exe
 
-//Takes an empty string or 64. Directory where lib will be installed:
-// lib or lib64
-LIB_SUFFIX:STRING=
+//the suffix for the assimp MinGW shared library
+LIBRARY_SUFFIX:STRING=-5
 
 //Value Computed by CMake
 NativeCore_BINARY_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug
@@ -391,11 +502,23 @@ NativeCore_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 NativeCore_SOURCE_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore
 
+//Arguments to supply to pkg-config
+PKG_CONFIG_ARGN:STRING=
+
+//pkg-config executable
+PKG_CONFIG_EXECUTABLE:FILEPATH=PKG_CONFIG_EXECUTABLE-NOTFOUND
+
 //Path to a file.
-VULKAN_INCLUDE_DIR:PATH=VULKAN_INCLUDE_DIR-NOTFOUND
+ZLIB_INCLUDE_DIR:PATH=ZLIB_INCLUDE_DIR-NOTFOUND
 
 //Path to a library.
-VULKAN_LIBRARY:FILEPATH=VULKAN_LIBRARY-NOTFOUND
+ZLIB_LIBRARY_DBG:FILEPATH=ZLIB_LIBRARY_DBG-NOTFOUND
+
+//Path to a library.
+ZLIB_LIBRARY_REL:FILEPATH=ZLIB_LIBRARY_REL-NOTFOUND
+
+//Dependencies for the target
+assimp_LIB_DEPENDS:STATIC=general;zlibstatic;
 
 //Value Computed by CMake
 gl46_BINARY_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/graphics/ogl/v46
@@ -406,11 +529,28 @@ gl46_IS_TOP_LEVEL:STATIC=OFF
 //Value Computed by CMake
 gl46_SOURCE_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/graphics/ogl/v46
 
+//Value Computed by CMake
+zlib_BINARY_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/assimp/contrib/zlib
+
+//Value Computed by CMake
+zlib_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+zlib_SOURCE_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/libs/assimp/contrib/zlib
+
 
 ########################
 # INTERNAL cache entries
 ########################
 
+//Enable building amd64 assembly implementation
+AMD64:INTERNAL=FALSE
+//Enable building i686 assembly implementation
+ASM686:INTERNAL=FALSE
+//ADVANCED property for variable: ASSIMP_BUILD_ARCHITECTURE
+ASSIMP_BUILD_ARCHITECTURE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ASSIMP_BUILD_COMPILER
+ASSIMP_BUILD_COMPILER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_ADDR2LINE
 CMAKE_ADDR2LINE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_AR
@@ -543,7 +683,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=9
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -609,6 +749,16 @@ FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 GLFW_PKG_CONFIG_LIBS_PRIVATE:INTERNAL= -lgdi32
 //GLFW pkg-config Requires.private
 GLFW_PKG_CONFIG_REQUIRES_PRIVATE:INTERNAL=
+//Have function fseeko
+HAVE_FSEEKO:INTERNAL=1
+//Result of TRY_COMPILE
+HAVE_OFF64_T:INTERNAL=TRUE
+//Have include stddef.h
+HAVE_STDDEF_H:INTERNAL=1
+//Have include stdint.h
+HAVE_STDINT_H:INTERNAL=1
+//Have include sys/types.h
+HAVE_SYS_TYPES_H:INTERNAL=1
 //ADVANCED property for variable: JAVA_AWT_INCLUDE_PATH
 JAVA_AWT_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: JAVA_AWT_LIBRARY
@@ -635,12 +785,24 @@ Java_JAVADOC_EXECUTABLE-ADVANCED:INTERNAL=1
 Java_JAVAH_EXECUTABLE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Java_JAVA_EXECUTABLE
 Java_JAVA_EXECUTABLE-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: VULKAN_INCLUDE_DIR
-VULKAN_INCLUDE_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: VULKAN_LIBRARY
-VULKAN_LIBRARY-ADVANCED:INTERNAL=1
+//CHECK_TYPE_SIZE: sizeof(off64_t)
+OFF64_T:INTERNAL=8
+//ADVANCED property for variable: PKG_CONFIG_ARGN
+PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
+PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
 //Have include xinput.h
 XINPUT_H_FOUND:INTERNAL=1
+//ADVANCED property for variable: ZLIB_INCLUDE_DIR
+ZLIB_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ZLIB_LIBRARY_DBG
+ZLIB_LIBRARY_DBG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ZLIB_LIBRARY_REL
+ZLIB_LIBRARY_REL-ADVANCED:INTERNAL=1
+//x
+ZLIB_PREFIX_PATH_INT_CHECK:INTERNAL=
+//Have include unistd.h
+Z_HAVE_UNISTD_H:INTERNAL=1
 //linker supports push/pop state
 _CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED:INTERNAL=TRUE
 //Test _GLFW_HAS_64ASLR

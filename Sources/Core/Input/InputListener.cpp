@@ -9,7 +9,6 @@ InputListener::InputListener() noexcept
 void InputListener::notifyKeyboard(GLFWwindow* wnd, const int& key, const int& action) noexcept
 {
     m_focusedWindowHandler = wnd;
-    //std::cout << m_focusedWindowHandler << std::endl;
 }
 
 void InputListener::notifyMouse(GLFWwindow* wnd, const int& button, const int& action) noexcept

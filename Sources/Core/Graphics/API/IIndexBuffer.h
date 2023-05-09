@@ -11,7 +11,7 @@
 
 namespace Core::Graphics::API
 {
-    class ITexture2D
+    class IIndexBuffer
     {
     public:
     };

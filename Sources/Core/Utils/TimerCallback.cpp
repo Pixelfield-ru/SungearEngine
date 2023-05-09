@@ -28,7 +28,7 @@ void Core::Utils::TimerCallback::setDestinationReachedFunction(const std::functi
 
 void Core::Utils::TimerCallback::callStartFunction()
 {
-    if(updateFunction)
+    if(startFunction)
     {
         startFunction();
     }

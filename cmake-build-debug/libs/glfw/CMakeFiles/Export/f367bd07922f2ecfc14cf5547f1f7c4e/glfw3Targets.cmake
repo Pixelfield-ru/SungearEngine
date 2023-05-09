@@ -56,11 +56,11 @@ if(_IMPORT_PREFIX STREQUAL "/")
 endif()
 
 # Create imported target glfw
-add_library(glfw STATIC IMPORTED)
+add_library(glfw SHARED IMPORTED)
 
 set_target_properties(glfw PROPERTIES
+  INTERFACE_COMPILE_DEFINITIONS "GLFW_DLL"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Threads::Threads>"
 )
 
 # Load information for each installed configuration.

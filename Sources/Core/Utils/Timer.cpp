@@ -5,8 +5,6 @@
 #include <chrono>
 #include <GLFW/glfw3.h>
 
-//#include "../Main/Window.h"
-//#include "../Main/Core.h"
 #include "Timer.h"
 #include "TimerCallback.h"
 
@@ -42,25 +40,28 @@ void Core::Utils::Timer::endFrame()
         callback->callDeltaUpdateFunction(m_deltaTime);
     }
 
-    //m_progress += m_deltaTime * 29.5;
     m_progress = m_current - m_startTime;
+
+    m_framesPerDestination++;
 
     if(m_progress > m_destination)
     {
-        if(!m_cyclic)
+        for(const std::shared_ptr<TimerCallback>& callback : callbacks)
         {
-            std::cout << "destination reached!" << std::endl;
-
-            for(const std::shared_ptr<TimerCallback>& callback : callbacks)
-            {
-                callback->callDestinationReachedFunction();
-            }
+            callback->callDestinationReachedFunction();
         }
 
-        m_active = m_cyclic;
+        reset();
 
-        //Core::Main::Core::getWindow().setShouldClose(true);
+        m_active = m_cyclic;
     }
+}
+
+void Core::Utils::Timer::reset() noexcept
+{
+    m_progress = 0;
+    m_startTime = glfwGetTime();
+    m_framesPerDestination = 0;
 }
 
 void Core::Utils::Timer::firstTimeStart()
@@ -75,10 +76,15 @@ void Core::Utils::Timer::firstTimeStart()
 
 void Core::Utils::Timer::addCallback(const std::shared_ptr<TimerCallback>& callback)
 {
-   callbacks.push_back(callback);
+    callbacks.push_back(callback);
 }
 
 void Core::Utils::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
 {
     callbacks.remove(callback);
+}
+
+const uint16_t& Core::Utils::Timer::getFramesPerDestination() const noexcept
+{
+    return m_framesPerDestination;
 }

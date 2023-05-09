@@ -18,11 +18,15 @@ namespace Core::Main
         static inline Window m_window{};
         static inline Graphics::API::IRenderer* m_renderer;
 
-        static inline Utils::Timer globalTimer { true };
+        static inline Utils::Timer m_globalTimer { true, 1.0 };
     public:
         Core() = delete;
 
         static void start();
+
+        static void update();
+
+        static void deltaUpdate(const long double&);
 
         static Window& getWindow() noexcept;
 

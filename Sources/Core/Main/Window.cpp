@@ -9,12 +9,15 @@ void Core::Main::Window::create()
         Logging::consolePrintf(Logging::SG_INFO, "Failed to initialize GLFW!");
     }
 
+    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
+    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GLFW info:");
     Logging::consolePrintf(Logging::SG_INFO, "GLFW version is %i.%i.%i", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_REVISION);
+    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
 
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-    m_handler = glfwCreateWindow(this->m_config.m_sizeX, this->m_config.m_sizeY, this->m_config.m_name.c_str(), nullptr, nullptr);
+    m_handler = glfwCreateWindow(this->m_config.m_sizeX, this->m_config.m_sizeY, this->m_config.m_title.c_str(), nullptr, nullptr);
 
     if(!m_handler)
     {
@@ -45,6 +48,13 @@ void Core::Main::Window::proceedFrame()
     glfwSwapBuffers(m_handler);
     glfwPollEvents();
 }
+
+void Core::Main::Window::makeCurrent() noexcept
+{
+    glfwMakeContextCurrent(m_handler);
+}
+
+#pragma region Setters
 
 void Core::Main::Window::setSize(const int& sizeX, const int& sizeY) noexcept
 {
@@ -87,11 +97,49 @@ void Core::Main::Window::setEnableStickyKeys(const bool& enableStickyKeys) noexc
     glfwSetInputMode(m_handler, GLFW_STICKY_KEYS, enableStickyKeys);
 }
 
-inline void Core::Main::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
+void Core::Main::Window::setConfig(const WindowConfig& other) noexcept
+{
+    m_config = other;
+}
+
+void Core::Main::Window::setShouldClose(const bool& shouldClose) noexcept
+{
+    glfwSetWindowShouldClose(m_handler, shouldClose);
+}
+
+void Core::Main::Window::setTitle(const std::string& title) noexcept
+{
+    m_config.m_title = title;
+
+    glfwSetWindowTitle(m_handler, title.c_str());
+}
+
+#pragma endregion
+
+#pragma region Getters
+
+void Core::Main::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
 {
     GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
     glfwGetMonitorPhysicalSize(primaryMonitor, &sizeX, &sizeY);
 }
+
+bool Core::Main::Window::shouldClose() noexcept
+{
+    return glfwWindowShouldClose(m_handler);
+}
+
+const Core::Main::WindowConfig& Core::Main::Window::getConfig() noexcept
+{
+    return m_config;
+}
+
+void Core::Main::Window::getSize(int& sizeX, int& sizeY) noexcept
+{
+    glfwGetWindowSize(m_handler, &sizeX, &sizeY);
+}
+
+#pragma endregion
 
 void Core::Main::Window::windowCloseCallback(GLFWwindow* window)
 {

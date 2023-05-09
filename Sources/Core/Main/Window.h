@@ -32,7 +32,7 @@ namespace Core::Main
         int m_positionX = 100;
         int m_positionY = 100;
 
-        std::string m_name = "Powered by Core";
+        std::string m_title = "Powered by Core";
 
         bool m_swapInterval = true;
 
@@ -67,47 +67,39 @@ namespace Core::Main
 
         void proceedFrame();
 
+        void makeCurrent() noexcept;
+
+        #pragma region Setters
+
         void setSize(const int& sizeX, const int& sizeY) noexcept;
 
         void setPosition(const int& posX, const int& posY) noexcept;
 
         void setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept;
 
-        void setSwapInterval(const bool& swapInterval) noexcept;
+        void setSwapInterval(const bool&) noexcept;
 
-        void setEnableStickyKeys(const bool& enableStickyKeys) noexcept;
+        void setEnableStickyKeys(const bool&) noexcept;
 
-        inline void setConfig(const WindowConfig& other) noexcept
-        {
-            m_config = other;
-        }
+        void setConfig(const WindowConfig&) noexcept;
 
-        inline bool shouldClose() noexcept
-        {
-            return glfwWindowShouldClose(m_handler);
-        }
+        void setShouldClose(const bool&) noexcept;
 
-        inline void setShouldClose(bool shouldClose) noexcept
-        {
-            glfwSetWindowShouldClose(m_handler, shouldClose);
-        }
+        void setTitle(const std::string&) noexcept;
 
-        inline void makeCurrent() noexcept
-        {
-            glfwMakeContextCurrent(m_handler);
-        }
+        #pragma endregion
 
-        inline const WindowConfig& getConfig() noexcept
-        {
-            return m_config;
-        }
+        #pragma region Getters
 
-        inline void getSize(int& sizeX, int& sizeY) noexcept
-        {
-            glfwGetWindowSize(m_handler, &sizeX, &sizeY);
-        }
+        bool shouldClose() noexcept;
 
-        static inline void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept;
+        const WindowConfig& getConfig() noexcept;
+
+        void getSize(int& sizeX, int& sizeY) noexcept;
+
+        static void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept;
+
+        #pragma endregion
     };
 }
 

@@ -1,2 +1,7 @@
 cmake-build-debug
 release-test
+libs/assimp/test
+libs/doxygen
+libs/glfw/tests
+libs/glfw/docs
+libs/imgui/docs

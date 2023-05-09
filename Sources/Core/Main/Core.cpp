@@ -1,7 +1,7 @@
 #include "Window.h"
 #include "Core.h"
 #include "../Graphics/API/OpenGL/GLRenderer.h"
-#include "../Utils/TimerCallback.h"
+#include "../Memory/AssetManager.h"
 
 void Core::Main::Core::start()
 {
@@ -12,7 +12,47 @@ void Core::Main::Core::start()
 
     sgCallCoreInitCallback();
 
-    m_renderer->startLoop();
+    std::shared_ptr<Utils::TimerCallback> globalTimerCallback = std::make_shared<Utils::TimerCallback>();
+
+    globalTimerCallback->setDeltaUpdateFunction([](const long double& deltaTime) { deltaUpdate(deltaTime); });
+    globalTimerCallback->setDestinationReachedFunction([]() {
+        m_window.setTitle("Sungear Engine. FPS: " + std::to_string(m_globalTimer.getFramesPerDestination()));
+    });
+
+    m_globalTimer.addCallback(globalTimerCallback);
+
+    // core components init -------------
+    InputManager::init();
+    Memory::AssetManager::init();
+
+    // найс это работает. TODO: убрать! просто ради теста
+    std::shared_ptr<Memory::Assets::FileAsset> s = Memory::AssetManager::loadAsset<Memory::Assets::FileAsset>("../core_resources/shaders/mesh/default_shader.glsl");
+
+    std::cout << s->getData() << std::endl;
+    // ----------------------------------
+
+    update();
+}
+
+void Core::Main::Core::update()
+{
+    while(!m_window.shouldClose())
+    {
+        m_globalTimer.startFrame();
+
+        m_renderer->renderFrame();
+
+        sgCallFramePostRenderCallback();
+
+        m_globalTimer.endFrame();
+
+        m_window.proceedFrame();
+    }
+}
+
+void Core::Main::Core::deltaUpdate(const long double& deltaTime)
+{
+    //std::cout << deltaTime << std::endl;
 }
 
 Core::Main::Window& Core::Main::Core::getWindow() noexcept
