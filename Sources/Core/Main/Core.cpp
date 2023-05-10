@@ -60,7 +60,7 @@ Core::Main::Window& Core::Main::Core::getWindow() noexcept
     return m_window;
 }
 
-Core::Graphics::API::IRenderer& Core::Main::Core::getRenderer() noexcept
+const Core::Graphics::API::IRenderer& Core::Main::Core::getRenderer() noexcept
 {
     return *m_renderer;
 }

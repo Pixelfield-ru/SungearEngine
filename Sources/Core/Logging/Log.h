@@ -8,7 +8,7 @@
 #define NATIVECORE_LOG_H
 
 #include <iostream>
-
+#include <source_location>
 //#date "Log.cpp"
 
 namespace Core::Logging
@@ -28,6 +28,7 @@ namespace Core::Logging
 
     void init();
 
+    // TODO: подумать над указанием кастомной source location. пока хз куда такой аргумент впихнуть.
     void consolePrintf(const MessageType&, const char* text, ...);
 
     std::string messageTypeToString(const MessageType&, const bool& addColor);

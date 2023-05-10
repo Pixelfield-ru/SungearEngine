@@ -8,6 +8,7 @@
 #define NATIVECORE_SHADERASSET_H
 
 #include "IAsset.h"
+#include "../../Utils/FileUtils.h"
 
 namespace Core::Memory::Assets
 {

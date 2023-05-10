@@ -14,6 +14,7 @@
 #include "Assets/IAsset.h"
 #include "Assets/FileAsset.h"
 #include "../Exceptions/SGNotImplementedException.h"
+#include "../Logging/Log.h"
 
 namespace Core::Memory
 {
@@ -50,7 +51,7 @@ namespace Core::Memory
             }
             else
             {
-                throw Core::Exceptions::SGNotImplementedException("LOAD_ASSET: loading of this type of asset is not implemented.");
+                Core::Logging::consolePrintf(Logging::MessageType::SG_ERROR, "Loading of this type of asset is not implemented.");
             }
         }
     };

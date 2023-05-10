@@ -32,8 +32,20 @@ void Core::Logging::consolePrintf(const MessageType& messageType, const char* te
 
     std::strftime(buf, sizeof(buf), "%Y/%m/%d %H:%M:%S", std::localtime(&time));
 
-    std::string finalString = std::string(buf) + " (len: " + std::to_string(msgStr.length()) + ") | [" +
-            messageTypeToString(messageType, true) + ANSI_COLOR_RESET + "]: " + text + "\n";
+    std::string errorAdditionalInfo;
+
+    std::source_location location = std::source_location::current();
+
+    if(messageType == MessageType::SG_ERROR)
+    {
+        errorAdditionalInfo = std::string(ANSI_COLOR_RED) + "\tFile: " + std::string(location.file_name()) + "\n"
+                              "\tFunction: " + std::string(location.function_name()) + "\n" +
+                              "\tLine: " + std::to_string(location.line()) + "\n" +
+                              "\tColumn: " + std::to_string(location.column()) + "\n";
+    }
+
+    std::string finalString = ANSI_COLOR_RESET + std::string(buf) + " (len: " + std::to_string(msgStr.length()) + ") | [" +
+            messageTypeToString(messageType, true) + ANSI_COLOR_RESET + "]: " + text + "\n" + errorAdditionalInfo;
 
     va_list argsPtr;
     va_start(argsPtr, text);
