@@ -18,8 +18,6 @@
  endif ()
  # -------------------------------
 
- set(BUILD_CORE OFF)
-
  set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
  set(CMAKE_BUILD_TYPE "Debug")
 
