@@ -1,10 +1,10 @@
 Performing C SOURCE FILE Test JNI_INCLUDE_PATH2_OPTIONAL failed with the following output:
-Change Dir: D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-qehqco
+Change Dir: D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-a2j2cw
 
-Run Build Command(s):D:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/ninja/win/x64/ninja.exe cmTC_fb517 && [1/2] Building C object CMakeFiles/cmTC_fb517.dir/src.c.obj
-FAILED: CMakeFiles/cmTC_fb517.dir/src.c.obj 
-D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\gcc.exe -DJNI_INCLUDE_PATH2_OPTIONAL -I"C:/Program Files/Java/jdk-17/include"  -o CMakeFiles/cmTC_fb517.dir/src.c.obj -c D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-qehqco/src.c
-In file included from D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-qehqco/src.c:2:
+Run Build Command(s):D:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/ninja/win/x64/ninja.exe cmTC_b8925 && [1/2] Building C object CMakeFiles/cmTC_b8925.dir/src.c.obj
+FAILED: CMakeFiles/cmTC_b8925.dir/src.c.obj 
+D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\gcc.exe -DJNI_INCLUDE_PATH2_OPTIONAL -I"C:/Program Files/Java/jdk-17/include"  -o CMakeFiles/cmTC_b8925.dir/src.c.obj -c D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-a2j2cw/src.c
+In file included from D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-a2j2cw/src.c:2:
 C:/Program Files/Java/jdk-17/include/jni.h:45:10: fatal error: jni_md.h: No such file or directory
    45 | #include "jni_md.h"
       |          ^~~~~~~~~~

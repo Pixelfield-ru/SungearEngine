@@ -1,8 +1,8 @@
-# Install script for directory: D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore
+# Install script for directory: D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/NativeCore")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/SungearEngine")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -39,17 +39,17 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/glfw/cmake_install.cmake")
+  include("D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/SGResources/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/graphics/ogl/v46/cmake_install.cmake")
+  include("D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/Externals/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/libs/assimp/cmake_install.cmake")
+  include("D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/Sources/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -60,5 +60,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "D:/Pixelfield/NativeSungearEngine/NativeCore/SGNativeCore/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

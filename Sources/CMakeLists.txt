@@ -1,0 +1,2 @@
+add_subdirectory(SGCore)
+add_subdirectory(SGEditor)

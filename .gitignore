@@ -1,7 +1,21 @@
 cmake-build-debug
 release-test
-libs/assimp/test
-libs/doxygen
-libs/glfw/tests
-libs/glfw/docs
-libs/imgui/docs
+
+# EXTERNALS -------------
+Externals/Assimp/doc
+Externals/Assimp/test
+Externals/doxygen
+Externals/GLFW/tests
+Externals/GLFW/docs
+Externals/imgui/docs
+# -----------------------
+
+# SOURCES ---------------
+Sources/cmake-build-debug
+Sources/SGCore/cmake-build-debug
+Sources/SGEditor/cmake-build-debug
+# -----------------------
+
+# RESOURCES -------------
+SGResources/cmake-build-debug
+# -----------------------
