@@ -25,7 +25,7 @@ rule CUSTOM_COMMAND
 rule C_COMPILER__zlibstatic_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\gcc.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\gcc.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building C object $out
 
 
@@ -33,7 +33,7 @@ rule C_COMPILER__zlibstatic_Debug
 # Rule for linking C static library.
 
 rule C_STATIC_LIBRARY_LINKER__zlibstatic_Debug
-  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -E rm -f $TARGET_FILE && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\ar.exe qc $TARGET_FILE $LINK_FLAGS $in && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\ranlib.exe $TARGET_FILE && $POST_BUILD"
+  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\cmake\win\x64\bin\cmake.exe -E rm -f $TARGET_FILE && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\ar.exe qc $TARGET_FILE $LINK_FLAGS $in && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\ranlib.exe $TARGET_FILE && $POST_BUILD"
   description = Linking C static library $TARGET_FILE
   restat = $RESTAT
 
@@ -44,7 +44,7 @@ rule C_STATIC_LIBRARY_LINKER__zlibstatic_Debug
 rule C_COMPILER__assimp_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\gcc.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\gcc.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building C object $out
 
 
@@ -54,7 +54,7 @@ rule C_COMPILER__assimp_Debug
 rule CXX_COMPILER__assimp_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building CXX object $out
 
 
@@ -64,7 +64,7 @@ rule CXX_COMPILER__assimp_Debug
 rule RC_COMPILER__assimp_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\windres.exe -O coff $DEFINES $INCLUDES $FLAGS $in $out
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\windres.exe -O coff $DEFINES $INCLUDES $FLAGS $in $out
   description = Building RC object $out
 
 
@@ -72,7 +72,7 @@ rule RC_COMPILER__assimp_Debug
 # Rule for linking CXX shared library.
 
 rule CXX_SHARED_LIBRARY_LINKER__assimp_Debug
-  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\g++.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,5,--minor-image-version,2 @$RSP_FILE  && $POST_BUILD"
+  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\g++.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,5,--minor-image-version,2 @$RSP_FILE  && $POST_BUILD"
   description = Linking CXX shared library $TARGET_FILE
   rspfile = $RSP_FILE
   rspfile_content = $in $LINK_PATH $LINK_LIBRARIES
@@ -85,7 +85,7 @@ rule CXX_SHARED_LIBRARY_LINKER__assimp_Debug
 rule C_COMPILER__glfw_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\gcc.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\gcc.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building C object $out
 
 
@@ -95,7 +95,7 @@ rule C_COMPILER__glfw_Debug
 rule RC_COMPILER__glfw_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\windres.exe -O coff $DEFINES $INCLUDES $FLAGS $in $out
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\windres.exe -O coff $DEFINES $INCLUDES $FLAGS $in $out
   description = Building RC object $out
 
 
@@ -103,7 +103,7 @@ rule RC_COMPILER__glfw_Debug
 # Rule for linking C shared library.
 
 rule C_SHARED_LIBRARY_LINKER__glfw_Debug
-  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\gcc.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,3,--minor-image-version,4 $in $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
+  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\gcc.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,3,--minor-image-version,4 $in $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking C shared library $TARGET_FILE
   restat = $RESTAT
 
@@ -114,7 +114,7 @@ rule C_SHARED_LIBRARY_LINKER__glfw_Debug
 rule C_COMPILER__gl46_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\gcc.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\gcc.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building C object $out
 
 
@@ -122,7 +122,7 @@ rule C_COMPILER__gl46_Debug
 # Rule for linking C static library.
 
 rule C_STATIC_LIBRARY_LINKER__gl46_Debug
-  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe -E rm -f $TARGET_FILE && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\ar.exe qc $TARGET_FILE $LINK_FLAGS $in && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\ranlib.exe $TARGET_FILE && $POST_BUILD"
+  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\cmake\win\x64\bin\cmake.exe -E rm -f $TARGET_FILE && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\ar.exe qc $TARGET_FILE $LINK_FLAGS $in && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\ranlib.exe $TARGET_FILE && $POST_BUILD"
   description = Linking C static library $TARGET_FILE
   restat = $RESTAT
 
@@ -133,7 +133,7 @@ rule C_STATIC_LIBRARY_LINKER__gl46_Debug
 rule CXX_COMPILER__glm_shared_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building CXX object $out
 
 
@@ -141,7 +141,7 @@ rule CXX_COMPILER__glm_shared_Debug
 # Rule for linking CXX shared library.
 
 rule CXX_SHARED_LIBRARY_LINKER__glm_shared_Debug
-  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\g++.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $in $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
+  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\g++.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $in $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX shared library $TARGET_FILE
   restat = $RESTAT
 
@@ -152,7 +152,7 @@ rule CXX_SHARED_LIBRARY_LINKER__glm_shared_Debug
 rule CXX_COMPILER__SGCore_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building CXX object $out
 
 
@@ -160,7 +160,7 @@ rule CXX_COMPILER__SGCore_Debug
 # Rule for linking CXX shared library.
 
 rule CXX_SHARED_LIBRARY_LINKER__SGCore_Debug
-  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\g++.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $in $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
+  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\g++.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $in $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX shared library $TARGET_FILE
   restat = $RESTAT
 
@@ -171,7 +171,7 @@ rule CXX_SHARED_LIBRARY_LINKER__SGCore_Debug
 rule CXX_COMPILER__SGEditor_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building CXX object $out
 
 
@@ -179,7 +179,7 @@ rule CXX_COMPILER__SGEditor_Debug
 # Rule for linking CXX executable.
 
 rule CXX_EXECUTABLE_LINKER__SGEditor_Debug
-  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\mingw\bin\g++.exe $FLAGS $LINK_FLAGS $in -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
+  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\g++.exe $FLAGS $LINK_FLAGS $in -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
 
@@ -188,7 +188,7 @@ rule CXX_EXECUTABLE_LINKER__SGEditor_Debug
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeCore\NativeSungearEngine -BD:\Pixelfield\NativeSungearEngine\NativeCore\NativeSungearEngine\cmake-build-debug
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\cmake\win\x64\bin\cmake.exe --regenerate-during-build -SD:\Pixelfield\NativeSungearEngine\NativeSungearEngine -BD:\Pixelfield\NativeSungearEngine\NativeSungearEngine\cmake-build-debug
   description = Re-running CMake...
   generator = 1
 
@@ -197,7 +197,7 @@ rule RERUN_CMAKE
 # Rule for cleaning all built files.
 
 rule CLEAN
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\ninja\win\x64\ninja.exe $FILE_ARG -t clean $TARGETS
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\ninja\win\x64\ninja.exe $FILE_ARG -t clean $TARGETS
   description = Cleaning all built files...
 
 
@@ -205,6 +205,6 @@ rule CLEAN
 # Rule for printing all primary targets available.
 
 rule HELP
-  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.8770.66\bin\ninja\win\x64\ninja.exe -t targets
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\ninja\win\x64\ninja.exe -t targets
   description = All primary targets available:
 

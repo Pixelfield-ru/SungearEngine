@@ -10,8 +10,8 @@ set(CMAKE_BUILD_TYPE "Debug")
 
 include_directories(${JNI_INCLUDE_DIRS} ${_classDir} ${_stubDir})
 
-add_subdirectory(SGResources)
 add_subdirectory(Externals)
 add_subdirectory(Sources)
+add_subdirectory(Resources)
 
-message(${CMAKE_CURRENT_BINARY_DIR})
+message(CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR})

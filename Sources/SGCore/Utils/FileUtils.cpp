@@ -33,7 +33,7 @@ std::string Core::Utils::FileUtils::readFile(const std::string_view& path)
     }
     catch(const std::ios_base::failure& e)
     {
-        Logging::consolePrintf(Logging::MessageType::SG_ERROR, "FILE_ASSET_LOAD: error: " + std::string(e.what()));
+        Logging::consolePrintf(Logging::MessageType::SG_ERROR, "FILE_ASSET_LOAD: error: " + std::string(e.what()) + ". Path: " + path.data());
     }
 
     return "";

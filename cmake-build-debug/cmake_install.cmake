@@ -1,4 +1,4 @@
-# Install script for directory: D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine
+# Install script for directory: D:/Pixelfield/NativeSungearEngine/NativeSungearEngine
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,22 +34,22 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "D:/Programming/JetBrains/apps/CLion/ch-0/231.8770.66/bin/mingw/bin/objdump.exe")
+  set(CMAKE_OBJDUMP "D:/Programming/JetBrains/apps/CLion/ch-0/231.9011.31/bin/mingw/bin/objdump.exe")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/SGResources/cmake_install.cmake")
+  include("D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/Externals/cmake_install.cmake")
+  include("D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Sources/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/Sources/cmake_install.cmake")
+  include("D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Resources/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -60,5 +60,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "D:/Pixelfield/NativeSungearEngine/NativeCore/NativeSungearEngine/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

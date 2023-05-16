@@ -31,7 +31,7 @@ void Core::Main::Core::start()
     Memory::AssetManager::init();
 
     // найс это работает. TODO: убрать! просто ради теста
-    std::shared_ptr<Memory::Assets::FileAsset> s = Memory::AssetManager::loadAsset<Memory::Assets::FileAsset>("Resources/shaders/mesh/default_shader.glsl");
+    std::shared_ptr<Memory::Assets::FileAsset> s = Memory::AssetManager::loadAsset<Memory::Assets::FileAsset>("../SGResources/shaders/mesh/default_shader.glsl");
 
     std::cout << s->getData() << std::endl;
     // ----------------------------------
