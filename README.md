@@ -1,2 +1,2 @@
-# SGNativeCore
- Native Sungear Engine Core
+# SGNative
+ Native SungearEngine
