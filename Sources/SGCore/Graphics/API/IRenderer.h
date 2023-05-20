@@ -22,7 +22,7 @@ namespace Core::Graphics::API
 
         virtual void renderFrame() { }
 
-        virtual void checkForErrors() noexcept { }
+        virtual void checkForErrors(std::source_location) noexcept { }
 
         /*
         virtual IIndexBuffer* create_texture2d() = 0;

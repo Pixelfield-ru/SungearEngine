@@ -9,6 +9,7 @@
 
 #include <exception>
 #include <utility>
+#include <string>
 
 namespace Core::Exceptions
 {

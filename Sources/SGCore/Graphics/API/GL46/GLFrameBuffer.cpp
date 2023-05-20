@@ -6,12 +6,12 @@
 #include "../IFrameBuffer.h"
 #include "GLFrameBuffer.h"
 
-Core::Graphics::API::OpenGL::GLFrameBuffer::GLFrameBuffer() noexcept
+Core::Graphics::API::GL46::GLFrameBuffer::GLFrameBuffer() noexcept
 {
     glGenFramebuffers(1, &m_handler);
 }
 
-Core::Graphics::API::OpenGL::GLFrameBuffer::~GLFrameBuffer() noexcept
+Core::Graphics::API::GL46::GLFrameBuffer::~GLFrameBuffer() noexcept
 {
     glDeleteFramebuffers(1, &m_handler);
 }

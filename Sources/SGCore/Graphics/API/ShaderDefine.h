@@ -8,6 +8,7 @@
 #define NATIVECORE_SHADERDEFINE_H
 
 #include <string>
+#include <utility>
 
 namespace Core::Graphics::API
 {
@@ -17,7 +18,9 @@ namespace Core::Graphics::API
         std::string m_expression;
 
         ShaderDefine() = default;
-        ShaderDefine(const std::string& name, const std::string& expression) : m_name(name), m_expression(expression) { }
+        ShaderDefine(std::string name, std::string expression) : m_name(std::move(name)), m_expression(std::move(expression)) { }
+
+        [[nodiscard]] std::string toString() const noexcept;
 
         bool operator ==(const ShaderDefine& other) const noexcept;
     };

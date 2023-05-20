@@ -8,3 +8,8 @@ bool Core::Graphics::API::ShaderDefine::operator==(const Core::Graphics::API::Sh
 {
     return this->m_name == other.m_name;
 }
+
+std::string Core::Graphics::API::ShaderDefine::toString() const noexcept
+{
+    return "#define " + m_name + " " + m_expression;
+}

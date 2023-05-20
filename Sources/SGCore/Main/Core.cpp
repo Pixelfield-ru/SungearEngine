@@ -2,7 +2,7 @@
 
 #include "Window.h"
 #include "Core.h"
-#include "SGCore/Graphics/API/OpenGL/GLRenderer.h"
+#include "SGCore/Graphics/API/GL46/GLRenderer.h"
 #include "SGCore/Memory/AssetManager.h"
 
 void Core::Main::Core::start()
@@ -12,10 +12,8 @@ void Core::Main::Core::start()
 
     m_window.create();
 
-    m_renderer = new Graphics::API::OpenGL::GLRenderer;
+    m_renderer = Graphics::API::GL46::GLRenderer::getInstance();
     m_renderer->init(m_window);
-
-    sgCallCoreInitCallback();
 
     std::shared_ptr<Utils::TimerCallback> globalTimerCallback = std::make_shared<Utils::TimerCallback>();
 
@@ -29,12 +27,11 @@ void Core::Main::Core::start()
     // core components init -------------
     InputManager::init();
     Memory::AssetManager::init();
-
-    // найс это работает. TODO: убрать! просто ради теста
-    std::shared_ptr<Memory::Assets::FileAsset> s = Memory::AssetManager::loadAsset<Memory::Assets::FileAsset>("../SGResources/shaders/mesh/default_shader.glsl");
-
-    std::cout << s->getData() << std::endl;
     // ----------------------------------
+
+    Graphics::API::GL46::GLRenderer::getInstance()->checkForErrors();
+
+    sgCallCoreInitCallback();
 
     update();
 }

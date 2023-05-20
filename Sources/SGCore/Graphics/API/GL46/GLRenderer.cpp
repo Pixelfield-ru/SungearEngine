@@ -1,7 +1,15 @@
 #include "GLRenderer.h"
 #include <thread>
 
-void Core::Graphics::API::OpenGL::GLRenderer::init(const Main::Window& wnd) noexcept
+const std::shared_ptr<Core::Graphics::API::GL46::GLRenderer>& Core::Graphics::API::GL46::GLRenderer::getInstance() noexcept
+{
+    static auto* s_nakedInstancePointer = new GLRenderer();
+    static std::shared_ptr<GLRenderer> s_instancePointer(s_nakedInstancePointer);
+
+    return s_instancePointer;
+}
+
+void Core::Graphics::API::GL46::GLRenderer::init(const Main::Window& wnd) noexcept
 {
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GLRenderer initializing...");
@@ -19,7 +27,7 @@ void Core::Graphics::API::OpenGL::GLRenderer::init(const Main::Window& wnd) noex
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
 }
 
-void Core::Graphics::API::OpenGL::GLRenderer::checkForErrors() noexcept
+void Core::Graphics::API::GL46::GLRenderer::checkForErrors(std::source_location location) noexcept
 {
     int errCode = glGetError();
 
@@ -38,17 +46,21 @@ void Core::Graphics::API::OpenGL::GLRenderer::checkForErrors() noexcept
         default: errStr = "Unknown error"; break;
     };
 
-    Core::Logging::consolePrintf(Core::Logging::MessageType::SG_ERROR, "OpenGL error (code: " +  std::to_string(errCode) + "): " +
-                                 errStr);
+    if(errCode != 0)
+    {
+        Core::Logging::consolePrintf(Core::Logging::MessageType::SG_ERROR,
+                                     "OpenGL error (code: " + std::to_string(errCode) + "): " + errStr, location
+        );
+    }
 }
 //oiop
-void Core::Graphics::API::OpenGL::GLRenderer::printInfo() noexcept
+void Core::Graphics::API::GL46::GLRenderer::printInfo() noexcept
 {
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GLRenderer info:");
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
 }
 
-void Core::Graphics::API::OpenGL::GLRenderer::renderFrame()
+void Core::Graphics::API::GL46::GLRenderer::renderFrame()
 {
     // TODO: for test. delete.
     glClear(GL_COLOR_BUFFER_BIT);

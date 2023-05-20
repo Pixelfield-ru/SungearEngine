@@ -13,18 +13,30 @@
 #include "SGCore/Logging/Log.h"
 #include "SGCore/Main/Core.h"
 
-namespace Core::Graphics::API::OpenGL
+namespace Core::Graphics::API::GL46
 {
     class GLRenderer : public IRenderer
     {
+    private:
+        GLRenderer() noexcept = default;
+
+        //GLRenderer() noexcept = default;
+
+        static inline std::shared_ptr<GLRenderer> m_instance;
+
     public:
+        GLRenderer(const GLRenderer&) = delete;
+        GLRenderer(GLRenderer&&) = delete;
+
         void init(const Main::Window&) noexcept override;
 
-        void checkForErrors() noexcept override;
+        void checkForErrors(std::source_location location = std::source_location::current()) noexcept override;
 
         void printInfo() noexcept override;
 
         void renderFrame() override;
+
+        static const std::shared_ptr<GLRenderer>& getInstance() noexcept;
     };
 }
 

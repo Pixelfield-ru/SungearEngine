@@ -7,7 +7,7 @@
 #ifndef NATIVECORE_GLFRAMEBUFFER_H
 #define NATIVECORE_GLFRAMEBUFFER_H
 
-namespace Core::Graphics::API::OpenGL
+namespace Core::Graphics::API::GL46
 {
     class GLFrameBuffer : public IFrameBuffer
     {

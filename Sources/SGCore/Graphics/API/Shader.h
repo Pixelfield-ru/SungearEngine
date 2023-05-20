@@ -15,19 +15,30 @@ namespace Core::Graphics::API
 {
     class Shader
     {
-    private:
+    protected:
         std::list<ShaderDefine> m_defines;
+        std::string_view m_path;
 
     public:
+        //Shader(const Shader&) = delete;
+        //Shader(Shader&&) noexcept = default;
+
         ~Shader();
 
-        virtual void bind() noexcept { }
+        virtual void destroy() = 0;
 
-        virtual void compile(const Memory::Assets::FileAsset*) { }
+        virtual void bind() = 0;
+
+        // shaderVirtualPath must be specified without extension
+        virtual void compile(const std::string_view& shaderVirtualPath, const std::string& code) = 0;
 
         void addShaderDefine(ShaderDefine& shaderDefine);
         void removeShaderDefine(ShaderDefine& shaderDefine);
         void removeShaderDefine(const std::string& shaderDefineName);
+
+        #pragma region Operators
+        //Shader& operator=(Shader&&) noexcept;
+        #pragma endregion
     };
     //class IUniformType
 }
