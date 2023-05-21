@@ -1,4 +1,4 @@
-#ifdef VERTEX
+#ifdef VERTEX_SHADER
     // id аттрибута = 0. позиции вершин. входной параметр
     layout (location = 0) in vec3 positionAttribute;
     // id аттрибута = 2. текстурная координата вершины. входной параметр
@@ -17,7 +17,7 @@
     }
 #endif
 
-#ifdef FRAGMENT
+#ifdef FRAGMENT_SHADER
     out vec4 fragColor;
 
     uniform sampler2D tex;

@@ -1,33 +1,37 @@
-#include "GLRenderer.h"
+#include "GL46Renderer.h"
+
 #include <thread>
 
-const std::shared_ptr<Core::Graphics::API::GL46::GLRenderer>& Core::Graphics::API::GL46::GLRenderer::getInstance() noexcept
+#include "GL46Shader.h"
+#include "GL46IndexBuffer.h"
+
+const std::shared_ptr<Core::Graphics::API::GL::GL46::GL46Renderer>& Core::Graphics::API::GL::GL46::GL46Renderer::getInstance() noexcept
 {
-    static auto* s_nakedInstancePointer = new GLRenderer();
-    static std::shared_ptr<GLRenderer> s_instancePointer(s_nakedInstancePointer);
+    static auto* s_nakedInstancePointer = new GL46Renderer();
+    static std::shared_ptr<GL46Renderer> s_instancePointer(s_nakedInstancePointer);
 
     return s_instancePointer;
 }
 
-void Core::Graphics::API::GL46::GLRenderer::init(const Main::Window& wnd) noexcept
+void Core::Graphics::API::GL::GL46::GL46Renderer::init(const Main::Window& wnd) noexcept
 {
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GLRenderer initializing...");
+    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GL46Renderer initializing...");
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        Core::Logging::consolePrintf(Core::Logging::SG_INFO, "Failed to initialize GLRenderer!");
+        Core::Logging::consolePrintf(Core::Logging::SG_INFO, "Failed to initialize GL46Renderer!");
     }
     else
     {
-        Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GLRenderer initialized!");
+        Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GL46Renderer initialized!");
     }
 
     printInfo();
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
 }
 
-void Core::Graphics::API::GL46::GLRenderer::checkForErrors(std::source_location location) noexcept
+void Core::Graphics::API::GL::GL46::GL46Renderer::checkForErrors(std::source_location location) noexcept
 {
     int errCode = glGetError();
 
@@ -53,14 +57,14 @@ void Core::Graphics::API::GL46::GLRenderer::checkForErrors(std::source_location 
         );
     }
 }
-//oiop
-void Core::Graphics::API::GL46::GLRenderer::printInfo() noexcept
+
+void Core::Graphics::API::GL::GL46::GL46Renderer::printInfo() noexcept
 {
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GLRenderer info:");
+    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GL46Renderer info:");
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
 }
 
-void Core::Graphics::API::GL46::GLRenderer::renderFrame()
+void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame()
 {
     // TODO: for test. delete.
     glClear(GL_COLOR_BUFFER_BIT);
@@ -75,4 +79,14 @@ void Core::Graphics::API::GL46::GLRenderer::renderFrame()
     glVertex2f(0.5f, 0);
 
     glEnd();
+}
+
+Core::Graphics::API::Shader* Core::Graphics::API::GL::GL46::GL46Renderer::createShader()
+{
+    return new GL46Shader;
+}
+
+Core::Graphics::API::IIndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
+{
+    return new GL46IndexBuffer;
 }

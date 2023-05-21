@@ -2,25 +2,28 @@
 // Created by stuka on 13.05.2023.
 //
 
-#include "GLShader.h"
+#include "GL46Shader.h"
 
 #include <vector>
+#include <sstream>
 
 #include "SGCore/Logging/Log.h"
-#include "GLRenderer.h"
+#include "GL46Renderer.h"
 
 /*
-Core::Graphics::API::GL46::GLShader::GLShader(Core::Graphics::API::GL46::GLShader&& other) noexcept
+Core::Graphics::API::GL46::GL46Shader::GL46Shader(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
 {
    *this = std::move(other);
 }
  */
-Core::Graphics::API::GL46::GLShader::~GLShader() noexcept
+Core::Graphics::API::GL::GL46::GL46Shader::~GL46Shader() noexcept
 {
     destroy();
+    //this->~Shader();
 }
 
-GLuint Core::Graphics::API::GL46::GLShader::createShaderPart(const GLenum& type, const std::string_view& shaderVirtualPath, const std::string& finalShaderCode) noexcept
+// TODO: watch SGP1
+GLuint Core::Graphics::API::GL::GL46::GL46Shader::createShaderPart(const GLenum& type, const std::string_view& shaderVirtualPath, const std::string& finalShaderCode) noexcept
 {
     std::string additionalShaderInfo =
             R"(
@@ -92,17 +95,22 @@ GLuint Core::Graphics::API::GL46::GLShader::createShaderPart(const GLenum& type,
         return -1;
     }
 
-    // TODO:: исправить GL_INVALID_VALUE. Есть вероятность, что после OpenGL 4.5 glNamedStringARB не работает
+    // TODO:: glNamedStringARB не работает
     std::string finalVirtualPath = shaderVirtualPath.data() + shaderVirtualIncludeType;
-    glNamedStringARB(GL_SHADER_INCLUDE_ARB, (GLint) finalVirtualPath.size(), (const GLchar*) finalVirtualPath.c_str(), (GLint) codeToCompile.size(), (const GLchar*) codeToCompile.c_str());
 
-    GLRenderer::getInstance()->checkForErrors();
+    //glNamedStringARB(GL_SHADER_INCLUDE_ARB, (GLint) finalVirtualPath.size(), (const GLchar*) finalVirtualPath.c_str(), (GLint) codeToCompile.size(), (const GLchar*) codeToCompile.c_str());
+
+    GL46Renderer::getInstance()->checkForErrors();
 
     return shaderPartHandler;
 }
 
-void Core::Graphics::API::GL46::GLShader::compile(const std::string_view& shaderVirtualPath, const std::string& code) noexcept
+// TODO: watch SGP1
+// destroys shaders and shader program in gpu side and compiles new shaders and shader program
+void Core::Graphics::API::GL::GL46::GL46Shader::compile(const std::string_view& shaderVirtualPath, const std::string& code) noexcept
 {
+    destroy();
+
     m_path = shaderVirtualPath;
 
     std::string definesCode;
@@ -114,21 +122,44 @@ void Core::Graphics::API::GL46::GLShader::compile(const std::string_view& shader
 
     const std::string finalCode = definesCode + code;
 
-    m_shaderPartsHandlers[0] = createShaderPart(GL_FRAGMENT_SHADER, shaderVirtualPath, finalCode);
-    m_shaderPartsHandlers[1] = createShaderPart(GL_VERTEX_SHADER, shaderVirtualPath, finalCode);
+    // parsing shaders types defines ----------------
+    std::istringstream codeStream(finalCode);
 
-    // TODO:: SGP0
-    //m_shaderPartsHandlers[2] = createShaderPart(GL_GEOMETRY_SHADER, shaderVirtualPath, finalCode);
-    //m_shaderPartsHandlers[3] = createShaderPart(GL_COMPUTE_SHADER, shaderVirtualPath, finalCode);
-    //m_shaderPartsHandlers[4] = createShaderPart(GL_TESS_CONTROL_SHADER, shaderVirtualPath, finalCode);
-    //m_shaderPartsHandlers[5] = createShaderPart(GL_TESS_EVALUATION_SHADER, shaderVirtualPath, finalCode);
+    std::string line;
+
+    while(std::getline(codeStream, line))
+    {
+        if(line.starts_with("#ifdef VERTEX_SHADER"))
+        {
+            m_shaderPartsHandlers.push_back(createShaderPart(GL_VERTEX_SHADER, shaderVirtualPath, finalCode));
+        }
+        else if(line.starts_with("#ifdef FRAGMENT_SHADER"))
+        {
+            m_shaderPartsHandlers.push_back(createShaderPart(GL_FRAGMENT_SHADER, shaderVirtualPath, finalCode));
+        }
+        else if(line.starts_with("#ifdef GEOMETRY_SHADER"))
+        {
+            m_shaderPartsHandlers.push_back(createShaderPart(GL_GEOMETRY_SHADER, shaderVirtualPath, finalCode));
+        }
+        else if(line.starts_with("#ifdef COMPUTE_SHADER"))
+        {
+            m_shaderPartsHandlers.push_back(createShaderPart(GL_COMPUTE_SHADER, shaderVirtualPath, finalCode));
+        }
+        else if(line.starts_with("#ifdef TESS_CONTROL_SHADER"))
+        {
+            m_shaderPartsHandlers.push_back(createShaderPart(GL_TESS_CONTROL_SHADER, shaderVirtualPath, finalCode));
+        }
+        else if(line.starts_with("#ifdef TESS_EVALUATION_SHADER"))
+        {
+            m_shaderPartsHandlers.push_back(createShaderPart(GL_TESS_EVALUATION_SHADER, shaderVirtualPath, finalCode));
+        }
+    }
+    // -----------------------------------------------
 
     // gl side -------------------------------------------
     m_programHandler = glCreateProgram();
 
-    //GLRenderer::getInstance()->checkForErrors();
-
-    for(const std::uint32_t shaderPartHandler : m_shaderPartsHandlers)
+    for(const GLuint shaderPartHandler : m_shaderPartsHandlers)
     {
         glAttachShader(m_programHandler, shaderPartHandler);
     }
@@ -150,21 +181,24 @@ void Core::Graphics::API::GL46::GLShader::compile(const std::string_view& shader
         Logging::consolePrintf(Logging::MessageType::SG_ERROR, std::string(infoLog));
     }
 
-    for(const std::uint32_t shaderHandler : m_shaderPartsHandlers)
+    for(const GLuint shaderHandler : m_shaderPartsHandlers)
     {
         glDetachShader(m_programHandler, shaderHandler);
     }
 }
 
-void Core::Graphics::API::GL46::GLShader::bind() noexcept
+void Core::Graphics::API::GL::GL46::GL46Shader::bind() noexcept
 {
     glUseProgram(m_programHandler);
 }
 
-void Core::Graphics::API::GL46::GLShader::destroy() noexcept
+// TODO: watch SGP1
+void Core::Graphics::API::GL::GL46::GL46Shader::destroy() noexcept
 {
-    for(const std::uint32_t shaderPartHandler : m_shaderPartsHandlers)
+    for(const GLuint shaderPartHandler : m_shaderPartsHandlers)
     {
+        //if(!glIsShader(shaderPartHandler)) continue;
+
         GLint shaderType = 0;
         glGetShaderiv(shaderPartHandler, GL_SHADER_TYPE, &shaderType);
 
@@ -199,7 +233,7 @@ void Core::Graphics::API::GL46::GLShader::destroy() noexcept
 
         std::string shaderPartVirtualPath = m_path.data() + shaderPartVirtualIncludeType;
 
-        glDeleteNamedStringARB((GLint) shaderPartVirtualPath.size(), (const GLchar*) shaderPartVirtualPath.c_str());
+        //glDeleteNamedStringARB((GLint) shaderPartVirtualPath.size(), (const GLchar*) shaderPartVirtualPath.c_str());
 
         glDeleteShader(shaderPartHandler);
     }
@@ -207,13 +241,15 @@ void Core::Graphics::API::GL46::GLShader::destroy() noexcept
     glDeleteProgram(m_programHandler);
 
     // TODO:: SGP0
-    GLRenderer::getInstance()->checkForErrors();
+    GL46Renderer::getInstance()->checkForErrors();
+
+    m_shaderPartsHandlers.clear();
 
     std::cout << "shader destroyed" << std::endl;
 }
 
 /*
-Core::Graphics::API::GL46::GLShader& Core::Graphics::API::GL46::GLShader::operator=(Core::Graphics::API::GL46::GLShader&& other) noexcept
+Core::Graphics::API::GL46::GL46Shader& Core::Graphics::API::GL46::GL46Shader::operator=(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
 {
     this->m_programHandler = other.m_programHandler;
     other.m_programHandler = 0;

@@ -30,7 +30,7 @@ namespace Core::Main
 
         static Window& getWindow() noexcept;
 
-        static const Graphics::API::IRenderer& getRenderer() noexcept;
+        static Graphics::API::IRenderer& getRenderer() noexcept;
     };
 }
 

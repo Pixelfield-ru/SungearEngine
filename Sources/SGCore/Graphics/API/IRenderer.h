@@ -10,19 +10,24 @@
 #include <iostream>
 
 #include "SGCore/Main/Window.h"
+#include "Shader.h"
+#include "IIndexBuffer.h"
 
 namespace Core::Graphics::API
 {
     class IRenderer
     {
     public:
-        virtual void printInfo() noexcept { }
-
         virtual void init(const Main::Window&) { }
 
         virtual void renderFrame() { }
 
+        virtual void printInfo() noexcept { }
+
         virtual void checkForErrors(std::source_location) noexcept { }
+
+        [[nodiscard]] virtual Shader* createShader() = 0;
+        [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
 
         /*
         virtual IIndexBuffer* create_texture2d() = 0;

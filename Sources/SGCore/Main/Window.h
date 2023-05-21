@@ -38,6 +38,13 @@ namespace Core::Main
 
         bool m_enableStickyKeys = false;
 
+        // on window create settings ------------------------------
+        // window will be centralized on the monitor
+        bool m_centralizeWindow = true;
+
+        bool m_useHalfMonitor = true;
+        // --------------------------------------------------------
+
         explicit WindowConfig() noexcept = default;
     };
 

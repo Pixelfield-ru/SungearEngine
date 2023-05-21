@@ -23,7 +23,7 @@ namespace Core::Graphics::API
         //Shader(const Shader&) = delete;
         //Shader(Shader&&) noexcept = default;
 
-        ~Shader();
+        virtual ~Shader();
 
         virtual void destroy() = 0;
 

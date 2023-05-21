@@ -2,7 +2,7 @@
 
 #include "Window.h"
 #include "Core.h"
-#include "SGCore/Graphics/API/GL46/GLRenderer.h"
+#include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
 #include "SGCore/Memory/AssetManager.h"
 
 void Core::Main::Core::start()
@@ -12,7 +12,7 @@ void Core::Main::Core::start()
 
     m_window.create();
 
-    m_renderer = Graphics::API::GL46::GLRenderer::getInstance();
+    m_renderer = Graphics::API::GL::GL46::GL46Renderer::getInstance();
     m_renderer->init(m_window);
 
     std::shared_ptr<Utils::TimerCallback> globalTimerCallback = std::make_shared<Utils::TimerCallback>();
@@ -29,7 +29,7 @@ void Core::Main::Core::start()
     Memory::AssetManager::init();
     // ----------------------------------
 
-    Graphics::API::GL46::GLRenderer::getInstance()->checkForErrors();
+    Graphics::API::GL::GL46::GL46Renderer::getInstance()->checkForErrors();
 
     sgCallCoreInitCallback();
 
@@ -62,7 +62,7 @@ Core::Main::Window& Core::Main::Core::getWindow() noexcept
     return m_window;
 }
 
-const Core::Graphics::API::IRenderer& Core::Main::Core::getRenderer() noexcept
+Core::Graphics::API::IRenderer& Core::Main::Core::getRenderer() noexcept
 {
     return *m_renderer;
 }

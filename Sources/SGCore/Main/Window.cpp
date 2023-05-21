@@ -43,6 +43,24 @@ void Core::Main::Window::create()
 
     glfwSetInputMode(m_handler, GLFW_STICKY_KEYS, this->m_config.m_enableStickyKeys);
     glfwSetInputMode(m_handler, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+
+    // ------------- post create
+    const GLFWvidmode* primaryVideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+    if(m_config.m_useHalfMonitor)
+    {
+        setSize(primaryVideoMode->width / 2, primaryVideoMode->height / 2);
+    }
+
+    if(m_config.m_centralizeWindow)
+    {
+        int wndSizeX = 0;
+        int wndSizeY = 0;
+
+        getSize(wndSizeX, wndSizeY);
+        setPosition((primaryVideoMode->width - wndSizeX) / 2, (primaryVideoMode->height - wndSizeY) / 2);
+    }
+    // -------------------------
 }
 
 void Core::Main::Window::proceedFrame()
@@ -71,7 +89,7 @@ void Core::Main::Window::setPosition(const int& posX, const int& posY) noexcept
     m_config.m_positionX = posX;
     m_config.m_positionY = posY;
 
-    glfwSetWindowSize(m_handler, posX, posY);
+    glfwSetWindowPos(m_handler, posX, posY);
 }
 
 void Core::Main::Window::setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept
