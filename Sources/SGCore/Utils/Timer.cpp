@@ -25,7 +25,7 @@ void Core::Utils::Timer::endFrame()
 {
     if(!m_active) return;
 
-    for(const std::shared_ptr<TimerCallback>& callback : callbacks)
+    for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
     {
         callback->callUpdateFunction();
     }
@@ -35,7 +35,7 @@ void Core::Utils::Timer::endFrame()
 
     m_deltaTime = m_current - last;
 
-    for(const std::shared_ptr<TimerCallback>& callback : callbacks)
+    for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
     {
         callback->callDeltaUpdateFunction(m_deltaTime);
     }
@@ -46,7 +46,7 @@ void Core::Utils::Timer::endFrame()
 
     if(m_progress > m_destination)
     {
-        for(const std::shared_ptr<TimerCallback>& callback : callbacks)
+        for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
         {
             callback->callDestinationReachedFunction();
         }
@@ -68,20 +68,20 @@ void Core::Utils::Timer::firstTimeStart()
 {
     m_startTime = glfwGetTime();
 
-    for(const std::shared_ptr<TimerCallback>& callback : callbacks)
+    for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
     {
         callback->callStartFunction();
     }
 }
 
-void Core::Utils::Timer::addCallback(const std::shared_ptr<TimerCallback>& callback)
+void Core::Utils::Timer::addCallback(std::shared_ptr<TimerCallback> callback)
 {
-    callbacks.push_back(callback);
+    m_callbacks.push_back(std::move(callback));
 }
 
 void Core::Utils::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
 {
-    callbacks.remove(callback);
+    m_callbacks.remove(callback);
 }
 
 const uint16_t& Core::Utils::Timer::getFramesPerDestination() const noexcept

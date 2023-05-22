@@ -10,16 +10,16 @@
 #include <utility>
 
 #include "SGCore/Graphics/API/IVertexAttribute.h"
+//#include "GLVertexBufferLayout.h"
 
 namespace Core::Graphics::API::GL
 {
     class GLVertexAttribute : public IVertexAttribute
     {
-    public:
-        GLVertexAttribute(int ID, std::string name, int dataType, bool normalized) : IVertexAttribute(ID, std::move(name), dataType, normalized) { }
+        friend class GLVertexBufferLayout;
 
-        int getAttributeSize() noexcept override;
-        int getAttributeSizeInBytes() noexcept override;
+    public:
+        GLVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) : IVertexAttribute(ID, std::move(name), dataType, normalized) { }
     };
 }
 

@@ -184,7 +184,7 @@ public:
 
     static void mouseButtonCallback(GLFWwindow*, int, int, int);
 
-    static void addInputListener(const std::shared_ptr<InputListener>&) noexcept;
+    static void addInputListener(std::shared_ptr<InputListener>) noexcept;
     static void removeInputListener(const std::shared_ptr<InputListener>&) noexcept;
 };
 

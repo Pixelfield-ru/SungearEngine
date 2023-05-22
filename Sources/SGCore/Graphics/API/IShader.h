@@ -13,17 +13,17 @@
 
 namespace Core::Graphics::API
 {
-    class Shader
+    class IShader
     {
     protected:
         std::list<ShaderDefine> m_defines;
         std::string_view m_path;
 
     public:
-        //Shader(const Shader&) = delete;
-        //Shader(Shader&&) noexcept = default;
+        //IShader(const IShader&) = delete;
+        //IShader(IShader&&) noexcept = default;
 
-        virtual ~Shader();
+        virtual ~IShader();
 
         virtual void destroy() = 0;
 
@@ -37,7 +37,7 @@ namespace Core::Graphics::API
         void removeShaderDefine(const std::string& shaderDefineName);
 
         #pragma region Operators
-        //Shader& operator=(Shader&&) noexcept;
+        //IShader& operator=(IShader&&) noexcept;
         #pragma endregion
     };
     //class IUniformType

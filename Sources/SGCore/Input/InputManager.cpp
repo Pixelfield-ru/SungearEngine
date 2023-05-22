@@ -29,10 +29,10 @@ void InputManager::mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode
     sgCallWindowMouseButtonCallback(wnd, button, scanCode, action);
 }
 
-void InputManager::addInputListener(const std::shared_ptr<InputListener>& inputListener) noexcept
+void InputManager::addInputListener(std::shared_ptr<InputListener> inputListener) noexcept
 {
     const std::lock_guard<std::mutex> guard(m_keysMutex);
-    m_inputListeners.push_back(inputListener);
+    m_inputListeners.push_back(std::move(inputListener));
 }
 
 void InputManager::removeInputListener(const std::shared_ptr<InputListener>& inputListener) noexcept

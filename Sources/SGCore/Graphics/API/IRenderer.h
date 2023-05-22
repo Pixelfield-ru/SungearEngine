@@ -10,8 +10,10 @@
 #include <iostream>
 
 #include "SGCore/Main/Window.h"
-#include "Shader.h"
+
+#include "IShader.h"
 #include "IIndexBuffer.h"
+#include "IVertexBufferLayout.h"
 
 namespace Core::Graphics::API
 {
@@ -26,8 +28,9 @@ namespace Core::Graphics::API
 
         virtual void checkForErrors(std::source_location) noexcept { }
 
-        [[nodiscard]] virtual Shader* createShader() = 0;
+        [[nodiscard]] virtual IShader* createShader() = 0;
         [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
+        [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
 
         /*
         virtual IIndexBuffer* create_texture2d() = 0;

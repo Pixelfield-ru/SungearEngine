@@ -2,9 +2,6 @@
 
 #include <thread>
 
-#include "GL46Shader.h"
-#include "GL46IndexBuffer.h"
-
 const std::shared_ptr<Core::Graphics::API::GL::GL46::GL46Renderer>& Core::Graphics::API::GL::GL46::GL46Renderer::getInstance() noexcept
 {
     static auto* s_nakedInstancePointer = new GL46Renderer();
@@ -81,12 +78,17 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame()
     glEnd();
 }
 
-Core::Graphics::API::Shader* Core::Graphics::API::GL::GL46::GL46Renderer::createShader()
+Core::Graphics::API::GL::GL46::GL46Shader* Core::Graphics::API::GL::GL46::GL46Renderer::createShader()
 {
     return new GL46Shader;
 }
 
-Core::Graphics::API::IIndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
+Core::Graphics::API::GL::GL46::GL46IndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
 {
     return new GL46IndexBuffer;
+}
+
+Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexBufferLayout()
+{
+    return new GLVertexBufferLayout;
 }

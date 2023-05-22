@@ -28,7 +28,7 @@ namespace Core::Utils
 
         uint16_t m_framesPerDestination = 0;
 
-        std::list<std::shared_ptr<TimerCallback>> callbacks;
+        std::list<std::shared_ptr<TimerCallback>> m_callbacks;
     public:
         bool m_active = true;
         bool m_cyclic = false;
@@ -49,7 +49,7 @@ namespace Core::Utils
 
         void firstTimeStart();
 
-        void addCallback(const std::shared_ptr<TimerCallback>& callback);
+        void addCallback(std::shared_ptr<TimerCallback> callback);
         void removeCallback(const std::shared_ptr<TimerCallback>& callback);
 
         const uint16_t& getFramesPerDestination() const noexcept;

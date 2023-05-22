@@ -10,11 +10,11 @@
 #include "OpenGL/include/glad/glad.h"
 #include <vector>
 
-#include "SGCore/Graphics/API/Shader.h"
+#include "SGCore/Graphics/API/IShader.h"
 
 namespace Core::Graphics::API::GL::GL46
 {
-    class GL46Shader : public Shader
+    class GL46Shader : public IShader
     {
     private:
         GLuint m_programHandler = 0;

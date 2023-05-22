@@ -19,7 +19,7 @@ Core::Graphics::API::GL46::GL46Shader::GL46Shader(Core::Graphics::API::GL46::GL4
 Core::Graphics::API::GL::GL46::GL46Shader::~GL46Shader() noexcept
 {
     destroy();
-    //this->~Shader();
+    //this->IShaderr();
 }
 
 // TODO: watch SGP1

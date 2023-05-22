@@ -4,6 +4,7 @@
 
 #include "GLVertexAttribute.h"
 
+/*
 int Core::Graphics::API::GL::GLVertexAttribute::getAttributeSize() noexcept
 {
     return 0;
@@ -13,3 +14,4 @@ int Core::Graphics::API::GL::GLVertexAttribute::getAttributeSizeInBytes() noexce
 {
     return 0;
 }
+ */
