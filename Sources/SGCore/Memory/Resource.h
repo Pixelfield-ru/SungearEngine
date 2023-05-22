@@ -2,6 +2,8 @@
 // Created by stuka on 24.04.2023.
 //
 
+//#define SUNGEAR_DEBUG
+
 #pragma once
 
 #ifndef NATIVECORE_RESOURCE_H

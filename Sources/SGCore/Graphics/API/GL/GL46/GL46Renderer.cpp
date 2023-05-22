@@ -83,9 +83,14 @@ Core::Graphics::API::GL::GL46::GL46Shader* Core::Graphics::API::GL::GL46::GL46Re
     return new GL46Shader;
 }
 
-Core::Graphics::API::GL::GL46::GL46IndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
+Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
 {
-    return new GL46IndexBuffer;
+    return new GLIndexBuffer;
+}
+
+Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexBuffer()
+{
+    return new GLVertexBuffer;
 }
 
 Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexBufferLayout()

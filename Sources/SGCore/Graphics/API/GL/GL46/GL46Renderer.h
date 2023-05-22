@@ -13,7 +13,8 @@
 #include "SGCore/Main/Core.h"
 
 #include "GL46Shader.h"
-#include "GL46IndexBuffer.h"
+#include "../GLIndexBuffer.h"
+#include "../GLVertexBuffer.h"
 #include "../GLVertexBufferLayout.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
@@ -42,7 +43,8 @@ namespace Core::Graphics::API::GL::GL46
         void checkForErrors(std::source_location location = std::source_location::current()) noexcept override;
 
         [[nodiscard]] GL46Shader* createShader() override;
-        [[nodiscard]] GL46IndexBuffer* createIndexBuffer() override;
+        [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
+        [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;
         [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() override;
 
         static const std::shared_ptr<GL46Renderer>& getInstance() noexcept;

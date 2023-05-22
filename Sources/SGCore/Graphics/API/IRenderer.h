@@ -13,6 +13,7 @@
 
 #include "IShader.h"
 #include "IIndexBuffer.h"
+#include "IVertexBuffer.h"
 #include "IVertexBufferLayout.h"
 
 namespace Core::Graphics::API
@@ -30,6 +31,7 @@ namespace Core::Graphics::API
 
         [[nodiscard]] virtual IShader* createShader() = 0;
         [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
+        [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
         [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
 
         /*

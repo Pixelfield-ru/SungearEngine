@@ -100,7 +100,9 @@ GLuint Core::Graphics::API::GL::GL46::GL46Shader::createShaderPart(const GLenum&
 
     //glNamedStringARB(GL_SHADER_INCLUDE_ARB, (GLint) finalVirtualPath.size(), (const GLchar*) finalVirtualPath.c_str(), (GLint) codeToCompile.size(), (const GLchar*) codeToCompile.c_str());
 
+    #ifdef SUNGEAR_DEBUG
     GL46Renderer::getInstance()->checkForErrors();
+    #endif
 
     return shaderPartHandler;
 }
@@ -241,7 +243,9 @@ void Core::Graphics::API::GL::GL46::GL46Shader::destroy() noexcept
     glDeleteProgram(m_programHandler);
 
     // TODO:: SGP0
+    #ifdef SUNGEAR_DEBUG
     GL46Renderer::getInstance()->checkForErrors();
+    #endif
 
     m_shaderPartsHandlers.clear();
 
