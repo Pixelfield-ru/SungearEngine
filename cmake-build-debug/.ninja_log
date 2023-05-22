@@ -387,3 +387,10 @@
 1088	1789	7064999504644831	Sources/SGCore/SGCored.dll	dc305cb25d9d7c93
 1088	1789	7064999504644831	Sources/SGCore/libSGCored.dll.a	dc305cb25d9d7c93
 1789	2405	7064999506126175	Sources/SGEditor/SGEditor.exe	4001e57e08e73284
+18	42	0	Resources/CMakeFiles/SGResourcesCopy	9f8c7c2299a48152
+18	42	0	D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Resources/CMakeFiles/SGResourcesCopy	9f8c7c2299a48152
+15	1115	7065000518806291	Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLIndexBuffer.cpp.obj	bac6df52969238d1
+12	1116	7065000518816301	Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexBuffer.cpp.obj	14e7a3c642646e59
+1116	1818	7065000525780080	Sources/SGCore/SGCored.dll	dc305cb25d9d7c93
+1116	1818	7065000525780080	Sources/SGCore/libSGCored.dll.a	dc305cb25d9d7c93
+1818	2357	7065000527261425	Sources/SGEditor/SGEditor.exe	4001e57e08e73284

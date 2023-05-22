@@ -7,9 +7,9 @@
 
 void init()
 {
-    /** УТЕЧЕК ПАМЯТИ ЗДЕСЬ НЕТ */
-    // TODO: сделать мега абстрактный VertexBuffer. ну там немного осталось, самое сложно (VertexBufferLayout я сделал)
+    // TODO: ПОСЛЕНИЙ РЫВОК: ДОБАВИТЬ АБСТРАКТНЫЙ VAO
 
+    /** УТЕЧЕК ПАМЯТИ ЗДЕСЬ НЕТ */
     // найс это работает. TODO: убрать! просто ради теста ---------------------
     std::shared_ptr<Core::Memory::Assets::FileAsset> s = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>("../SGResources/shaders/mesh/default_shader.glsl");
 

@@ -31,10 +31,7 @@ void Core::Graphics::API::GL::GLIndexBuffer::destroy() noexcept
     std::cout << "index buffer destroyed" << std::endl;
     #endif
 
-    if(glIsBuffer(m_handler))
-    {
-        glDeleteBuffers(1, &m_handler);
-    }
+    glDeleteBuffers(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();
