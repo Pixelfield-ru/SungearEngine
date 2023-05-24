@@ -10,7 +10,7 @@ struct SGCallbacks
     SGUpdateCallback c_framePostRender;
 };
 
-inline SGCallbacks sgCallbacks;
+SGCallbacks sgCallbacks;
 
 void sgSetCoreInitCallback(const SGCoreInitCallback& callback) noexcept
 {

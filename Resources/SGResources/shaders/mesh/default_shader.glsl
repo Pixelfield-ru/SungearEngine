@@ -2,7 +2,7 @@
     // id аттрибута = 0. позиции вершин. входной параметр
     layout (location = 0) in vec3 positionAttribute;
     // id аттрибута = 2. текстурная координата вершины. входной параметр
-    layout (location = 1) in vec3 textureCoordsAttribute;
+    layout (location = 1) in vec2 textureCoordsAttribute;
     layout (location = 2) in vec3 normalPositionAttribute;
 
     uniform mat4 mvpMatrix;
@@ -11,9 +11,9 @@
 
     void main()
     {
-        vs_textureCoords = textureCoordsAttribute;
+        //vs_textureCoords = textureCoordsAttribute;
 
-        gl_Position = mvpMatrix * vec4(positionAttribute, 1.0);
+        gl_Position = vec4(positionAttribute, 1.0);
     }
 #endif
 
@@ -34,6 +34,6 @@
                 vec4 textureColor = texture(tex, vec2(vs_textureCoords.x, vs_textureCoords.y));
         #endif
 
-        fragColor = color * textureColor;
+        fragColor = vec4(1.0);
     }
 #endif

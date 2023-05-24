@@ -15,10 +15,10 @@ namespace Core::Graphics::API::GL
     class GLVertexBufferLayout : public IVertexBufferLayout
     {
     private:
-        int m_stride = 0;
+        std::uint32_t m_stride = 0;
 
     public:
-        void prepare() noexcept override;
+        GLVertexBufferLayout* prepare() noexcept override;
 
         std::uint16_t getVertexAttributeSizeInLayout(const SGGDataType&) noexcept;
         std::uint16_t getVertexAttributeSizeInBytes(const SGGDataType&) noexcept;

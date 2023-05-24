@@ -8,7 +8,7 @@
 
 #include "GL46/GL46Renderer.h"
 
-void Core::Graphics::API::GL::GLVertexBufferLayout::prepare() noexcept
+Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertexBufferLayout::prepare() noexcept
 {
     std::uint32_t offset = 0;
     m_stride = 0;
@@ -20,6 +20,8 @@ void Core::Graphics::API::GL::GLVertexBufferLayout::prepare() noexcept
         offset += attribute->m_size;
         m_stride += attribute->m_size;
     }
+
+    return this;
 }
 
 std::uint16_t Core::Graphics::API::GL::GLVertexBufferLayout::getVertexAttributeSizeInLayout
@@ -145,11 +147,13 @@ Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertex
             getVertexAttributeSizeInLayout(attribute->m_dataType),
             getVertexAttributeAPIDataType(attribute->m_dataType),
             attribute->m_normalized,
-            m_stride,
+            (GLsizei) m_stride,
             (GLvoid*) attribute->m_offset
             );
 
-    //GL46::GL46Renderer::getInstance()->checkForErrors();
+    #ifdef SUNGEAR_DEBUG
+    GL46::GL46Renderer::getInstance()->checkForErrors();
+    #endif
 
     return this;
 }

@@ -22,14 +22,18 @@ namespace Core::Graphics::API
     public:
         virtual ~IVertexBufferLayout() = default;
 
-        virtual void prepare() = 0;
+        // prepare vertex buffer layout before enable attributes
+        virtual IVertexBufferLayout* prepare() = 0;
 
+        // create new vertex attribute
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType) = 0;
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) = 0;
 
+        // enable attributes (GRAPHICS API SIDE)
         virtual IVertexBufferLayout* enableAttribute(const std::shared_ptr<IVertexAttribute>&) = 0;
         virtual IVertexBufferLayout* enableAttributes() = 0;
 
+        // put attribute
         virtual IVertexBufferLayout* addAttribute(std::shared_ptr<IVertexAttribute>) noexcept;
         virtual void removeAttribute(const std::shared_ptr<IVertexAttribute>&) noexcept;
     };

@@ -23,7 +23,6 @@ namespace Core::Graphics::API
         virtual ~IVertexBuffer() = default;
 
         virtual IVertexBuffer* create() = 0;
-
         virtual void destroy() = 0;
 
         virtual IVertexBuffer* putData(std::vector<float> data) = 0;

@@ -12,9 +12,10 @@
 #include "SGCore/Main/Window.h"
 
 #include "IShader.h"
-#include "IIndexBuffer.h"
+#include "IVertexArray.h"
 #include "IVertexBuffer.h"
 #include "IVertexBufferLayout.h"
+#include "IIndexBuffer.h"
 
 namespace Core::Graphics::API
 {
@@ -25,14 +26,17 @@ namespace Core::Graphics::API
 
         virtual void renderFrame() { }
 
+        virtual void renderMesh(IShader*, IVertexArray*) { }
+
         virtual void printInfo() noexcept { }
 
         virtual void checkForErrors(std::source_location) noexcept { }
 
         [[nodiscard]] virtual IShader* createShader() = 0;
-        [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
+        [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;
         [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
+        [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
 
         /*
         virtual IIndexBuffer* create_texture2d() = 0;

@@ -63,19 +63,17 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::printInfo() noexcept
 
 void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame()
 {
-    // TODO: for test. delete.
-    glClear(GL_COLOR_BUFFER_BIT);
-    int viewportWidth, viewportHeight;
-    Core::Main::Core::getWindow().getSize(viewportWidth, viewportHeight);
-    glViewport(0, 0, viewportWidth, viewportHeight);
 
-    glBegin(GL_TRIANGLES);
+}
 
-    glVertex2f(0, 0);
-    glVertex2f(0, 0.5f);
-    glVertex2f(0.5f, 0);
+// TODO: just test. delete
+void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(Core::Graphics::API::IShader* shader,
+                                                             Core::Graphics::API::IVertexArray* vertexArray)
+{
+    shader->bind();
+    vertexArray->bind();
 
-    glEnd();
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 }
 
 Core::Graphics::API::GL::GL46::GL46Shader* Core::Graphics::API::GL::GL46::GL46Renderer::createShader()
@@ -83,9 +81,9 @@ Core::Graphics::API::GL::GL46::GL46Shader* Core::Graphics::API::GL::GL46::GL46Re
     return new GL46Shader;
 }
 
-Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
+Core::Graphics::API::GL::GLVertexArray* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexArray()
 {
-    return new GLIndexBuffer;
+    return new GLVertexArray;
 }
 
 Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexBuffer()
@@ -96,4 +94,9 @@ Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GL46::GL46Rend
 Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexBufferLayout()
 {
     return new GLVertexBufferLayout;
+}
+
+Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
+{
+    return new GLIndexBuffer;
 }

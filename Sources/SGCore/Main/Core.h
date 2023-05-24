@@ -21,6 +21,7 @@ namespace Core::Main
         static inline std::shared_ptr<Graphics::API::IRenderer> m_renderer;
 
         static inline Utils::Timer m_globalTimer { true, 1.0 };
+
     public:
         Core() = delete;
 

@@ -27,10 +27,6 @@ Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::
 
 void Core::Graphics::API::GL::GLIndexBuffer::destroy() noexcept
 {
-    #ifdef SUNGEAR_DEBUG
-    std::cout << "index buffer destroyed" << std::endl;
-    #endif
-
     glDeleteBuffers(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG

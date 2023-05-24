@@ -16,15 +16,15 @@ Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer
 
     glGenBuffers(1, &m_handler);
 
+    #ifdef SUNGEAR_DEBUG
+    GL46::GL46Renderer::getInstance()->checkForErrors();
+    #endif
+
     return this;
 }
 
 void Core::Graphics::API::GL::GLVertexBuffer::destroy() noexcept
 {
-    #ifdef SUNGEAR_DEBUG
-    std::cout << "vertex buffer destroyed" << std::endl;
-    #endif
-
     glDeleteBuffers(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG
@@ -37,7 +37,7 @@ Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer
 {
     m_data = std::move(data);
 
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)), (const void*) &m_data[0],
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)), &m_data[0],
                  castSGGBufferUsageToOGL(m_usage));
 
     #ifdef SUNGEAR_DEBUG

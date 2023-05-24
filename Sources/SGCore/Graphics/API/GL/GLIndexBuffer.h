@@ -15,7 +15,7 @@ namespace Core::Graphics::API::GL
     class GLIndexBuffer : public IIndexBuffer
     {
     private:
-        GLuint m_handler = -1;
+        GLuint m_handler = 0;
         std::vector<int> m_data;
 
     public:

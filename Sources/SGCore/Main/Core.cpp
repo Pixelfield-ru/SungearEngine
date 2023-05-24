@@ -45,6 +45,7 @@ void Core::Main::Core::update()
         m_renderer->renderFrame();
 
         sgCallFramePostRenderCallback();
+        //sgCallFramePostRenderCallback();
 
         m_globalTimer.endFrame();
 
