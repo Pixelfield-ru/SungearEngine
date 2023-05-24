@@ -16,7 +16,7 @@ namespace Core::Graphics::API
     class IIndexBuffer
     {
     protected:
-        SGGBufferUsage m_usage = SGGBufferUsage::SGG_BUFFER_USAGE_STATIC;
+        SGGBufferUsage m_usage = SGGBufferUsage::SGG_STATIC;
 
     public:
         virtual ~IIndexBuffer() = default;

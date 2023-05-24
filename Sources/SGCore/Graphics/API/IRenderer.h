@@ -17,14 +17,17 @@
 #include "IVertexBufferLayout.h"
 #include "IIndexBuffer.h"
 
+#include <glm/glm.hpp>
+#include <glm/common.hpp>
+
 namespace Core::Graphics::API
 {
     class IRenderer
     {
     public:
-        virtual void init(const Main::Window&) { }
+        virtual void init() { }
 
-        virtual void renderFrame() { }
+        virtual void renderFrame(const glm::ivec2& windowSize) { }
 
         virtual void renderMesh(IShader*, IVertexArray*) { }
 

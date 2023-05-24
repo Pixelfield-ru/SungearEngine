@@ -27,7 +27,7 @@ namespace Core::Graphics::API
         // ID in shader
         std::uint16_t m_ID = 0;
         std::string m_name;
-        SGGDataType m_dataType = SGGDataType::SGG_DATA_TYPE_NONE;
+        SGGDataType m_dataType = SGGDataType::SGG_NONE;
 
         IVertexAttribute() = delete;
 

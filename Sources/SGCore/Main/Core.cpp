@@ -13,7 +13,7 @@ void Core::Main::Core::start()
     m_window.create();
 
     m_renderer = Graphics::API::GL::GL46::GL46Renderer::getInstance();
-    m_renderer->init(m_window);
+    m_renderer->init();
 
     std::shared_ptr<Utils::TimerCallback> globalTimerCallback = std::make_shared<Utils::TimerCallback>();
 
@@ -42,7 +42,9 @@ void Core::Main::Core::update()
     {
         m_globalTimer.startFrame();
 
-        m_renderer->renderFrame();
+        glm::ivec2 windowSize;
+        m_window.getSize(windowSize.x, windowSize.y);
+        m_renderer->renderFrame(windowSize);
 
         sgCallFramePostRenderCallback();
         //sgCallFramePostRenderCallback();

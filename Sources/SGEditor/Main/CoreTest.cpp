@@ -36,18 +36,18 @@ void init()
     // vertices pos --------------------------------------
     testVerticesPositionsBuffer = std::shared_ptr<Core::Graphics::API::IVertexBuffer>(Core::Main::Core::getRenderer().createVertexBuffer());
     testVerticesPositionsBuffer
-            ->setUsage(SGGBufferUsage::SGG_BUFFER_USAGE_DYNAMIC)
+            ->setUsage(SGGBufferUsage::SGG_DYNAMIC)
             ->create()
             ->bind()
             ->putData({ // три вершины
-                              -0.5, 0.0, 0.0,
+                              -1, 0.0, 0.0,
                               0.0, 1.0, 0.0,
-                              0.5, 0.0, 0.0
+                              1, 0.0, 0.0
                       });
 
     testVerticesPositionsBufferLayout = std::shared_ptr<Core::Graphics::API::IVertexBufferLayout>(Core::Main::Core::getRenderer().createVertexBufferLayout());
     testVerticesPositionsBufferLayout
-            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testVerticesPositionsBufferLayout->createVertexAttribute(0, "positionAttribute", SGGDataType::SGG_DATA_TYPE_FLOAT3)))
+            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testVerticesPositionsBufferLayout->createVertexAttribute(0, "positionAttribute", SGGDataType::SGG_FLOAT3)))
             ->prepare()
             ->enableAttributes();
     // ----------------------------------------------------
@@ -55,7 +55,7 @@ void init()
     // vertices uv --------------------------------------
     testUVBuffer = std::shared_ptr<Core::Graphics::API::IVertexBuffer>(Core::Main::Core::getRenderer().createVertexBuffer());
     testUVBuffer
-            ->setUsage(SGGBufferUsage::SGG_BUFFER_USAGE_DYNAMIC)
+            ->setUsage(SGGBufferUsage::SGG_DYNAMIC)
             ->create()
             ->bind()
             ->putData({
@@ -66,7 +66,7 @@ void init()
 
     testUVBufferLayout = std::shared_ptr<Core::Graphics::API::IVertexBufferLayout>(Core::Main::Core::getRenderer().createVertexBufferLayout());
     testUVBufferLayout
-            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testUVBufferLayout->createVertexAttribute(1, "textureCoordsAttribute", SGGDataType::SGG_DATA_TYPE_FLOAT2)))
+            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testUVBufferLayout->createVertexAttribute(1, "textureCoordsAttribute", SGGDataType::SGG_FLOAT2)))
             ->prepare()
             ->enableAttributes();
     // --------------------------------------------------
@@ -74,7 +74,7 @@ void init()
     // vertices normals --------------------------------------
     testNormalsBuffer = std::shared_ptr<Core::Graphics::API::IVertexBuffer>(Core::Main::Core::getRenderer().createVertexBuffer());
     testNormalsBuffer
-            ->setUsage(SGGBufferUsage::SGG_BUFFER_USAGE_DYNAMIC)
+            ->setUsage(SGGBufferUsage::SGG_DYNAMIC)
             ->create()
             ->bind()
             ->putData({
@@ -85,13 +85,13 @@ void init()
 
     testNormalsBufferLayout = std::shared_ptr<Core::Graphics::API::IVertexBufferLayout>(Core::Main::Core::getRenderer().createVertexBufferLayout());
     testNormalsBufferLayout
-            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testNormalsBufferLayout->createVertexAttribute(2, "normalPositionAttribute", SGGDataType::SGG_DATA_TYPE_FLOAT3)))
+            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testNormalsBufferLayout->createVertexAttribute(2, "normalPositionAttribute", SGGDataType::SGG_FLOAT3)))
             ->prepare()
             ->enableAttributes();
     // ------------------------------------------------------
 
     testIndexBuffer = std::shared_ptr<Core::Graphics::API::IIndexBuffer>(Core::Main::Core::getRenderer().createIndexBuffer());
-    testIndexBuffer->setUsage(SGGBufferUsage::SGG_BUFFER_USAGE_DYNAMIC)->create()->bind()->putData({ 0, 1, 2 });
+    testIndexBuffer->setUsage(SGGBufferUsage::SGG_DYNAMIC)->create()->bind()->putData({ 0, 1, 2 });
 }
 
 void framePostRender()

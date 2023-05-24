@@ -16,7 +16,6 @@ namespace Core::Memory::Assets
     {
     private:
         std::string m_data;
-        long m_lastModified = -1;
 
     public:
         void load(const std::string_view& path) override;

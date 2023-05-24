@@ -35,9 +35,9 @@ namespace Core::Graphics::API::GL::GL46
         GL46Renderer(const GL46Renderer&) = delete;
         GL46Renderer(GL46Renderer&&) = delete;
 
-        void init(const Main::Window&) noexcept override;
+        void init() noexcept override;
 
-        void renderFrame() override;
+        void renderFrame(const glm::ivec2& windowSize) override;
 
         void renderMesh(IShader*, IVertexArray*) override;
 

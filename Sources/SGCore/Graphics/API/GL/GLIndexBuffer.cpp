@@ -78,8 +78,8 @@ GLenum Core::Graphics::API::GL::GLIndexBuffer::castSGGBufferUsageToOGL(const SGG
 
     switch(sggBufferUsage)
     {
-        case SGG_BUFFER_USAGE_DYNAMIC: usage = GL_DYNAMIC_DRAW; break;
-        case SGG_BUFFER_USAGE_STATIC: usage = GL_STATIC_DRAW; break;
+        case SGG_DYNAMIC: usage = GL_DYNAMIC_DRAW; break;
+        case SGG_STATIC: usage = GL_STATIC_DRAW; break;
     }
 
     return usage;

@@ -4,13 +4,13 @@
 
 const std::shared_ptr<Core::Graphics::API::GL::GL46::GL46Renderer>& Core::Graphics::API::GL::GL46::GL46Renderer::getInstance() noexcept
 {
-    static auto* s_nakedInstancePointer = new GL46Renderer();
+    static auto* s_nakedInstancePointer = new GL46Renderer;
     static std::shared_ptr<GL46Renderer> s_instancePointer(s_nakedInstancePointer);
 
     return s_instancePointer;
 }
 
-void Core::Graphics::API::GL::GL46::GL46Renderer::init(const Main::Window& wnd) noexcept
+void Core::Graphics::API::GL::GL46::GL46Renderer::init() noexcept
 {
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GL46Renderer initializing...");
@@ -61,9 +61,9 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::printInfo() noexcept
     Core::Logging::consolePrintf(Core::Logging::SG_INFO, "OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
 }
 
-void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame()
+void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& windowSize)
 {
-
+    glViewport(0, 0, windowSize.x, windowSize.y);
 }
 
 // TODO: just test. delete
