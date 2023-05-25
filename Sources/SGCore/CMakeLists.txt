@@ -16,6 +16,7 @@
          ${CMAKE_SOURCE_DIR}/Externals/Assimp/include
          ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
          ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
+         ${CMAKE_SOURCE_DIR}/Externals/stb
          )
 
  target_link_libraries(${PROJECT_NAME}
