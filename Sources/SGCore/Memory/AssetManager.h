@@ -13,6 +13,7 @@
 
 #include "Assets/IAsset.h"
 #include "Assets/FileAsset.h"
+#include "Assets/Texture2DAsset.h"
 #include "SGCore/Logging/Log.h"
 
 namespace Core::Memory
@@ -33,25 +34,18 @@ namespace Core::Memory
         {
             auto foundAssetPair = m_assets.find(path);
 
-            if(std::is_same_v<AssetT, Memory::Assets::FileAsset>)
+            if(foundAssetPair != m_assets.end())
             {
-                if(foundAssetPair != m_assets.end())
-                {
-                    return std::static_pointer_cast<AssetT>(foundAssetPair->second);
-                }
-
-                std::shared_ptr<Assets::FileAsset> newFileAsset = std::make_shared<Assets::FileAsset>();
-
-                newFileAsset->load(path);
-
-                m_assets.emplace(path, newFileAsset);
-
-                return std::static_pointer_cast<AssetT>(newFileAsset);
+                return std::static_pointer_cast<AssetT>(foundAssetPair->second);
             }
-            else
-            {
-                Core::Logging::consolePrintf(Logging::MessageType::SG_ERROR, "Loading of this type of asset is not implemented.");
-            }
+
+            std::shared_ptr<Assets::IAsset> newAsset = std::make_shared<AssetT>();
+
+            newAsset->load(path);
+
+            m_assets.emplace(path, newAsset);
+
+            return std::static_pointer_cast<AssetT>(newAsset);
         }
     };
 }

@@ -1,4 +1,4 @@
-#define SUNGEAR_DEBUG
+//#define SUNGEAR_DEBUG
 
 #include "CoreTest.h"
 
@@ -101,6 +101,12 @@ void framePostRender()
 
 int main()
 {
+    int a = 5;
+    int* b = &a;
+    int* c = b;
+
+    std::cout << "b: " << b << ", c: " << c << std::endl;
+
     sgSetCoreInitCallback(init);
     sgSetFramePostRenderCallback(framePostRender);
 

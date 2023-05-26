@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.25)
 project(SungearEngine)
 
+add_definitions(-DSUNGEAR_DEBUG)
+
 set(CMAKE_CXX_STANDARD 23)
 
 set(BUILD_SHARED_LIBS ON)
