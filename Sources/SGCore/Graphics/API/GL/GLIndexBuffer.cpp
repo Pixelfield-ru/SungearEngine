@@ -2,10 +2,11 @@
 // Created by stuka on 21.05.2023.
 //
 
-#include "GLIndexBuffer.h"
-#include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
-
 #include <iostream>
+
+#include "GLIndexBuffer.h"
+#include "GLGraphicsTypesCaster.h"
+#include "GL46/GL46Renderer.h"
 
 Core::Graphics::API::GL::GLIndexBuffer::~GLIndexBuffer() noexcept
 {
@@ -39,7 +40,7 @@ Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::
     m_data = std::move(data);
 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)), (const void*) &m_data[0],
-                 castSGGBufferUsageToOGL(m_usage));
+                 GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
 
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();
@@ -71,20 +72,6 @@ Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::
 
     return this;
 }
-
-GLenum Core::Graphics::API::GL::GLIndexBuffer::castSGGBufferUsageToOGL(const SGGBufferUsage& sggBufferUsage) noexcept
-{
-    GLenum usage = GL_STATIC_DRAW;
-
-    switch(sggBufferUsage)
-    {
-        case SGG_DYNAMIC: usage = GL_DYNAMIC_DRAW; break;
-        case SGG_STATIC: usage = GL_STATIC_DRAW; break;
-    }
-
-    return usage;
-}
-
 
 Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::setUsage(SGGBufferUsage usage) noexcept
 {

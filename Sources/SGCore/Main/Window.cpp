@@ -6,15 +6,15 @@ void Core::Main::Window::create()
 
     if(!glfwInit())
     {
-        Logging::consolePrintf(Logging::SG_INFO, "Failed to initialize GLFW!");
+        SGC_ERROR("Failed to initialize GLFW!");
     }
 
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GLFW info:");
-    Logging::consolePrintf(Logging::SG_INFO, "GLFW version is " + std::to_string(GLFW_VERSION_MAJOR) + "." +
-    std::to_string(GLFW_VERSION_MINOR) + "." +
-    std::to_string(GLFW_VERSION_REVISION));
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
+    SGC_INFO("-----------------------------------");
+    SGC_INFO("GLFW info:");
+    SGC_INFO("GLFW version is " + std::to_string(GLFW_VERSION_MAJOR) + "." +
+             std::to_string(GLFW_VERSION_MINOR) + "." +
+             std::to_string(GLFW_VERSION_REVISION));
+    SGC_INFO("-----------------------------------");
 
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -23,7 +23,7 @@ void Core::Main::Window::create()
 
     if(!m_handler)
     {
-        Logging::consolePrintf(Logging::SG_INFO, "Failed to initialize GLFW Window!");
+        SGC_ERROR("Failed to initialize GLFW Window!");
     }
 
     glfwSetWindowCloseCallback(m_handler, windowCloseCallback);
@@ -165,17 +165,17 @@ void Core::Main::Window::windowCloseCallback(GLFWwindow* window)
 {
     sgCallWindowCloseCallback(window);
 
-    Logging::consolePrintf(Logging::MessageType::SG_INFO, "GLFW window closed.");
+    SGC_INFO("GLFW window closed.");
 }
 
 void Core::Main::Window::windowIconifyCallback(GLFWwindow* window, int iconified)
 {
     sgCallWindowIconifyCallback(window, iconified);
 
-    Logging::consolePrintf(Logging::MessageType::SG_INFO, "GLFW window iconified.");
+    SGC_INFO("GLFW window iconified.");
 }
 
 void Core::Main::Window::errorCallback(int errCode, const char* err_msg)
 {
-    Logging::consolePrintf(Logging::SG_ERROR, "GLFW error (code " + std::to_string(errCode) + "): " + err_msg);
+    SGC_ERROR("GLFW error (code " + std::to_string(errCode) + "): " + err_msg);
 }

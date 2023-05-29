@@ -10,6 +10,12 @@ void Core::Main::Core::start()
     system("chcp 65001");
     setlocale(1251, "ru");
 
+    // core components init -------------
+    InputManager::init();
+    Memory::AssetManager::init();
+    Logging::init();
+    // ----------------------------------
+
     m_window.create();
 
     m_renderer = Graphics::API::GL::GL46::GL46Renderer::getInstance();
@@ -23,11 +29,6 @@ void Core::Main::Core::start()
     });
 
     m_globalTimer.addCallback(globalTimerCallback);
-
-    // core components init -------------
-    InputManager::init();
-    Memory::AssetManager::init();
-    // ----------------------------------
 
     Graphics::API::GL::GL46::GL46Renderer::getInstance()->checkForErrors();
 

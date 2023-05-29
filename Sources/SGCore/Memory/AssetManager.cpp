@@ -9,14 +9,14 @@
 
 void Core::Memory::AssetManager::init()
 {
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
+    SGC_INFO("-----------------------------------");
 
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "Assimp info:");
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "Assimp version is " +
-    std::to_string(aiGetVersionMajor()) + "." +
-    std::to_string(aiGetVersionMinor()) + "." +
-    std::to_string(aiGetVersionPatch()) + "." +
-    std::to_string(aiGetVersionRevision()));
+    SGC_INFO("Assimp info:");
+    SGC_INFO("Assimp version is " +
+             std::to_string(aiGetVersionMajor()) + "." +
+             std::to_string(aiGetVersionMinor()) + "." +
+             std::to_string(aiGetVersionPatch()) + "." +
+             std::to_string(aiGetVersionRevision()));
 
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
+    SGC_INFO("-----------------------------------");
 }

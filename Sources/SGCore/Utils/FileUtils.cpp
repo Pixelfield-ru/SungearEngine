@@ -33,8 +33,23 @@ std::string Core::Utils::FileUtils::readFile(const std::string_view& path)
     }
     catch(const std::ios_base::failure& e)
     {
-        Logging::consolePrintf(Logging::MessageType::SG_ERROR, "FILE_ASSET_LOAD: error: " + std::string(e.what()) + ". Path: " + path.data());
+        SGC_ERROR("Read file error: " + std::string(e.what()) + ". Path: " + path.data());
     }
 
     return "";
+}
+
+void Core::Utils::FileUtils::writeToFile(const std::string_view& path, std::string& text, const bool& append)
+{
+    try
+    {
+        std::ofstream fileStream;
+        fileStream.open(path.data(),  append ? std::ios::app : std::ios::trunc);
+
+        fileStream << text;
+    }
+    catch(const std::ios_base::failure& e)
+    {
+        SGC_ERROR("Write to file error: " + std::string(e.what()) + ". Path: " + path.data());
+    }
 }

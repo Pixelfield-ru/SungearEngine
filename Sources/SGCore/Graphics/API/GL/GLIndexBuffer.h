@@ -6,7 +6,7 @@
 #ifndef SUNGEARENGINE_GLINDEXBUFFER_H
 #define SUNGEARENGINE_GLINDEXBUFFER_H
 
-#include "SGCore/Graphics/API/IIndexBuffer.h"
+#include "../IIndexBuffer.h"
 
 #include "OpenGL/include/glad/glad.h"
 
@@ -28,8 +28,6 @@ namespace Core::Graphics::API::GL
         GLIndexBuffer* putData(std::vector<int> data) noexcept override;
         GLIndexBuffer* subData(std::vector<int> data, const int& offset) noexcept override;
         GLIndexBuffer* bind() noexcept override;
-
-        GLenum castSGGBufferUsageToOGL(const SGGBufferUsage&) noexcept;
 
         GLIndexBuffer* setUsage(SGGBufferUsage) noexcept override;
     };

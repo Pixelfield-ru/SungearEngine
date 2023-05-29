@@ -22,7 +22,7 @@ namespace Core::Graphics::API::GL::GL46
         // vertex, fragment, geometry, compute, tesselation control and tesselation evaluation shaders
         std::vector<GLuint> m_shaderPartsHandlers;
 
-        GLuint createShaderPart(const GLenum&, const std::string_view&, const std::string&) noexcept;
+        GLuint createShaderPart(const GLenum&, const std::string&) noexcept;
 
     public:
         // move
@@ -30,7 +30,7 @@ namespace Core::Graphics::API::GL::GL46
 
         ~GL46Shader() noexcept override;
 
-        void compile(const std::string_view&, const std::string&) noexcept override;
+        void compile(Memory::Assets::FileAsset*) noexcept override;
 
         void bind() noexcept override;
 

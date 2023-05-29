@@ -41,7 +41,7 @@ namespace Core::Memory
 
             std::shared_ptr<Assets::IAsset> newAsset = std::make_shared<AssetT>();
 
-            newAsset->load(path);
+            newAsset = newAsset->load(path);
 
             m_assets.emplace(path, newAsset);
 

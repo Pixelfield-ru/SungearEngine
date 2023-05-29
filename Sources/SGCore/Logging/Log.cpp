@@ -3,6 +3,8 @@
 #include <chrono>
 #include <ctime>
 #include <cstdarg>
+#include <filesystem>
+#include "SGCore/Utils/FileUtils.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -14,14 +16,18 @@
 
 void Core::Logging::init()
 {
-    consolePrintf(MessageType::SG_ERROR, "Log init: this is error message!");
-    consolePrintf(MessageType::SG_WARNING, "Log init: this is warning message!");
-    consolePrintf(MessageType::SG_SUCCESS, "Log init: this is success message!");
-    consolePrintf(MessageType::SG_INFO, "Log init: this is info message!");
+    SGC_ERROR("Log init: this is error message!");
+    SGC_WARNING("Log init: this is warning message!");
+    SGC_SUCCESS("Log init: this is success message!");
+    SGC_INFO("Log init: this is info message!");
+
+    std::filesystem::remove(SG_GL_SUPPORTING_EXTENSIONS_FILE);
+    std::filesystem::remove(SG_LOG_CURRENT_SESSION_FILE);
 }
 
 // TODO: исправить вывод
-void Core::Logging::consolePrintf(const MessageType& messageType, const std::string& text, std::source_location location)
+void Core::Logging::printf(const MessageType& messageType, const std::string& text,
+                           const WriteType& writeType, const std::string_view& filePath, std::source_location location)
 {
     std::string msgStr = std::string {text};
 
@@ -47,7 +53,14 @@ void Core::Logging::consolePrintf(const MessageType& messageType, const std::str
             ANSI_COLOR_RESET + std::string(buf) + " (len: " + std::to_string(msgStr.length()) + ") | [" +
             messageTypeToString(messageType, true) + ANSI_COLOR_RESET + "]: " + text + "\n" + errorAdditionalInfo + ANSI_COLOR_RESET;
 
-    std::cout << finalString;
+    if(writeType == SG_FILE || writeType == SG_CONSOLE_FILE)
+    {
+        Core::Utils::FileUtils::writeToFile(filePath, finalString, true);
+    }
+    if(writeType == SG_CONSOLE || writeType == SG_CONSOLE_FILE)
+    {
+        std::cout << finalString;
+    }
 }
 
 std::string Core::Logging::messageTypeToString(const MessageType& messageType, const bool& addColor)

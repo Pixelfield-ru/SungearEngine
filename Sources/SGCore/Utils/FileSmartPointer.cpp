@@ -14,7 +14,7 @@ Core::Utils::FileSmartPointer::FileSmartPointer(std::string path, std::string mo
 
     if(!m_filePtr)
     {
-        Core::Logging::consolePrintf(Logging::MessageType::SG_ERROR, "Failed to open file. (path: " + m_path + ", mode: " + m_mode + ").");
+        SGC_ERROR("Failed to open file. (path: " + m_path + ", mode: " + m_mode + ").");
     }
 }
 
@@ -22,7 +22,7 @@ Core::Utils::FileSmartPointer::~FileSmartPointer()
 {
     if(fclose(m_filePtr) == -1)
     {
-        Core::Logging::consolePrintf(Logging::MessageType::SG_ERROR, "Failed to open file. (path: " + m_path + ", mode: " + m_mode + ").");
+        SGC_ERROR("Failed to close file. (path: " + m_path + ", mode: " + m_mode + ").");
     }
 }
 

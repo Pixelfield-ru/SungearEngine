@@ -15,6 +15,7 @@ namespace Core::Utils
     {
     public:
         static std::string readFile(const std::string_view&);
+        static void writeToFile(const std::string_view&, std::string&, const bool&);
     };
 }
 

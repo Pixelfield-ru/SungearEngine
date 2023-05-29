@@ -7,10 +7,11 @@
 #ifndef NATIVECORE_TIMER_H
 #define NATIVECORE_TIMER_H
 
-#include "TimerCallback.h"
 #include <iostream>
 #include <memory>
 #include <list>
+
+#include "TimerCallback.h"
 
 namespace Core::Utils
 {
@@ -52,7 +53,7 @@ namespace Core::Utils
         void addCallback(std::shared_ptr<TimerCallback> callback);
         void removeCallback(const std::shared_ptr<TimerCallback>& callback);
 
-        const uint16_t& getFramesPerDestination() const noexcept;
+        const std::uint16_t& getFramesPerDestination() const noexcept;
     };
 }
 

@@ -9,23 +9,29 @@
 
 #include <iostream>
 #include "GraphicsDataTypes.h"
+#include "SGCore/Memory/Assets/IAsset.h"
+#include "SGCore/Memory/Assets/IAssetObserver.h"
+#include "SGCore/Memory/Assets/Texture2DAsset.h"
+
+namespace Core::Memory::Assets
+{
+    class Texture2DAsset;
+}
 
 namespace Core::Graphics::API
 {
-    class ITexture2D
+    class ITexture2D : public Memory::Assets::IAssetObserver
     {
-    private:
-        SGGInternalFormat m_internalFormat = SGGInternalFormat::SGG_RGB8;
-        SGGFormat m_format = SGGFormat::SGG_RGB;
+    protected:
+        std::weak_ptr<Memory::Assets::Texture2DAsset> m_texture2DAsset;
 
     public:
-        virtual void create(SGGInternalFormat, SGGFormat) = 0;
+        virtual ~ITexture2D() = default;
+
+        virtual void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) = 0;
         virtual void destroy() = 0;
 
-        virtual void onAssetFileModified() = 0;
-        virtual void onAssetFilePathChanged() = 0;
-        virtual void onAssetFileDeleted() = 0;
-        virtual void onAssetFileRestored() = 0;
+        virtual void bind() = 0;
     };
 }
 

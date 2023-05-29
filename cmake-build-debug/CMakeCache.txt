@@ -532,6 +532,15 @@ SGResources_IS_TOP_LEVEL:STATIC=OFF
 SGResources_SOURCE_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Resources
 
 //Value Computed by CMake
+STBImage_BINARY_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/stb
+
+//Value Computed by CMake
+STBImage_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+STBImage_SOURCE_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb
+
+//Value Computed by CMake
 SungearEngine_BINARY_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug
 
 //Value Computed by CMake

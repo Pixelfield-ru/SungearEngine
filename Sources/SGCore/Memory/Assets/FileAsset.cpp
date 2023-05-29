@@ -7,12 +7,14 @@
 #include "FileAsset.h"
 #include "SGCore/Logging/Log.h"
 
-void Core::Memory::Assets::FileAsset::load(const std::string_view& path)
+std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::FileAsset::load(const std::string_view& path)
 {
     this->m_data = Core::Utils::FileUtils::readFile(path);
+
+    return shared_from_this();
 }
 
-const std::string& Core::Memory::Assets::FileAsset::getData() noexcept
+std::string Core::Memory::Assets::FileAsset::getData() const noexcept
 {
     return m_data;
 }

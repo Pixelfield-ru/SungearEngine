@@ -4,6 +4,12 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
+# -------------------------------
+
+#add_definitions(-DSTB_IMAGE_IMPLEMENTATION)
+
+# -------------------------------
+
 # use jni -----------------------
 # future java bindings
 find_package(JNI REQUIRED)
@@ -21,4 +27,5 @@ add_subdirectory(Assimp Assimp)
 add_subdirectory(GLFW GLFW)
 add_subdirectory(OpenGL OpenGL)
 add_subdirectory(GLM glm)
+#add_subdirectory(STB stb)
 # -------------------------------

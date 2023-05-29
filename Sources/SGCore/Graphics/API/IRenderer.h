@@ -8,6 +8,8 @@
 #define NATIVECORE_IRENDERER_H
 
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/common.hpp>
 
 #include "SGCore/Main/Window.h"
 
@@ -16,9 +18,7 @@
 #include "IVertexBuffer.h"
 #include "IVertexBufferLayout.h"
 #include "IIndexBuffer.h"
-
-#include <glm/glm.hpp>
-#include <glm/common.hpp>
+#include "ITexture2D.h"
 
 namespace Core::Graphics::API
 {
@@ -29,7 +29,7 @@ namespace Core::Graphics::API
 
         virtual void renderFrame(const glm::ivec2& windowSize) { }
 
-        virtual void renderMesh(IShader*, IVertexArray*) { }
+        virtual void renderMesh(ITexture2D*, IShader*, IVertexArray*) { }
 
         virtual void printInfo() noexcept { }
 
@@ -40,6 +40,7 @@ namespace Core::Graphics::API
         [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;
         [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
         [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
+        [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
 
         /*
         virtual IIndexBuffer* create_texture2d() = 0;

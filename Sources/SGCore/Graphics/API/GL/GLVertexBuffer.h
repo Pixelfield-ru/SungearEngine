@@ -30,8 +30,6 @@ namespace Core::Graphics::API::GL
         GLVertexBuffer* subData(std::vector<float> data, const int& offset) noexcept override;
         GLVertexBuffer* bind() noexcept override;
 
-        GLenum castSGGBufferUsageToOGL(const SGGBufferUsage&) noexcept;
-
         GLVertexBuffer* setUsage(SGGBufferUsage) noexcept override;
     };
 }

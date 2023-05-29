@@ -25,7 +25,7 @@ enum SGGDataType
     SGG_MAT3,
     SGG_MAT4,
 
-    SGG_BOOL,
+    SGG_BOOL
 };
 
 enum SGGBufferUsage

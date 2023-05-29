@@ -12,15 +12,15 @@
 
 namespace Core::Memory::Assets
 {
-    class FileAsset : public IAsset
+    class FileAsset : public IAsset, public std::enable_shared_from_this<FileAsset>
     {
     private:
         std::string m_data;
 
     public:
-        void load(const std::string_view& path) override;
+        [[nodiscard]] std::shared_ptr<IAsset> load(const std::string_view& path) override;
 
-        const std::string& getData() noexcept;
+        [[nodiscard]] std::string getData() const noexcept;
     };
 }
 

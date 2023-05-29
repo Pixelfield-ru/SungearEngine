@@ -51,7 +51,7 @@ namespace Core::Main
     class Window
     {
     private:
-        GLFWwindow* m_handler;
+        GLFWwindow* m_handler = nullptr;
 
         WindowConfig m_config;
 

@@ -1,12 +1,11 @@
 //
 // Created by stuka on 22.05.2023.
 //
-
-#include "GLVertexBufferLayout.h"
-
 #include <glad/glad.h>
 
+#include "GLVertexBufferLayout.h"
 #include "GL46/GL46Renderer.h"
+#include "GLGraphicsTypesCaster.h"
 
 Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertexBufferLayout::prepare() noexcept
 {
@@ -86,37 +85,6 @@ std::uint16_t Core::Graphics::API::GL::GLVertexBufferLayout::getVertexAttributeS
     return size;
 }
 
-std::uint16_t Core::Graphics::API::GL::GLVertexBufferLayout::getVertexAttributeAPIDataType
-(const SGGDataType& dataType) noexcept
-{
-    int apiDataType;
-
-    switch(dataType)
-    {
-        case SGG_NONE: apiDataType = GL_NONE; break;
-
-        case SGG_INT: apiDataType = GL_INT; break;
-        case SGG_INT2: apiDataType = GL_INT; break;
-        case SGG_INT3: apiDataType = GL_INT; break;
-        case SGG_INT4: apiDataType = GL_INT; break;
-
-        case SGG_FLOAT: apiDataType = GL_FLOAT; break;
-        case SGG_FLOAT2: apiDataType = GL_FLOAT; break;
-        case SGG_FLOAT3: apiDataType = GL_FLOAT; break;
-        case SGG_FLOAT4: apiDataType = GL_FLOAT; break;
-
-        case SGG_MAT2: apiDataType = GL_FLOAT; break;
-        case SGG_MAT3: apiDataType = GL_FLOAT; break;
-        case SGG_MAT4: apiDataType = GL_FLOAT; break;
-
-        case SGG_BOOL: apiDataType = GL_BOOL; break;
-
-        default: apiDataType = GL_NONE; break;
-    }
-
-    return apiDataType;
-}
-
 Core::Graphics::API::GL::GLVertexAttribute* Core::Graphics::API::GL::GLVertexBufferLayout::createVertexAttribute
 (std::uint16_t ID, std::string name, SGGDataType dataType) noexcept
 {
@@ -145,7 +113,7 @@ Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertex
     glVertexAttribPointer(
             attribute->m_ID,
             getVertexAttributeSizeInLayout(attribute->m_dataType),
-            getVertexAttributeAPIDataType(attribute->m_dataType),
+            GLGraphicsTypesCaster::sggDataTypeToGL(attribute->m_dataType),
             attribute->m_normalized,
             (GLsizei) m_stride,
             (GLvoid*) attribute->m_offset

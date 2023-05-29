@@ -4,7 +4,7 @@
 
 #include "ModelAsset.h"
 
-void Core::Memory::Assets::ModelAsset::load(const std::string_view&)
+std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::load(const std::string_view&)
 {
-
+    return shared_from_this();
 }

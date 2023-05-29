@@ -9,32 +9,32 @@
 #include <list>
 
 #include "ShaderDefine.h"
-#include "../../Memory/Assets/FileAsset.h"
+#include "SGCore/Memory/Assets/FileAsset.h"
+#include "SGCore/Memory/Assets/IAssetObserver.h"
 
 namespace Core::Graphics::API
 {
-    class IShader
+    class IShader : public Memory::Assets::IAssetObserver
     {
     protected:
         std::list<ShaderDefine> m_defines;
-        std::string_view m_path;
+        Memory::Assets::FileAsset* m_fileAsset = nullptr;
 
     public:
-        //IShader(const IShader&) = delete;
-        //IShader(IShader&&) noexcept = default;
-
         virtual ~IShader();
 
         virtual void destroy() = 0;
 
         virtual void bind() = 0;
 
-        // shaderVirtualPath must be specified without extension
-        virtual void compile(const std::string_view& shaderVirtualPath, const std::string& code) = 0;
+        virtual void compile(Memory::Assets::FileAsset* asset) = 0;
 
-        void addShaderDefine(ShaderDefine& shaderDefine);
-        void removeShaderDefine(ShaderDefine& shaderDefine);
+        void addShaderDefine(const ShaderDefine& shaderDefine);
+        void removeShaderDefine(const ShaderDefine& shaderDefine);
         void removeShaderDefine(const std::string& shaderDefineName);
+
+        void onAssetModified() override;
+        void onAssetPathChanged() override;
 
         #pragma region Operators
         //IShader& operator=(IShader&&) noexcept;

@@ -3159,7 +3159,7 @@ build Sources/install/strip: phony Sources/CMakeFiles/install/strip.util
 build cmake_object_order_depends_target_SGCore: phony || cmake_object_order_depends_target_assimp cmake_object_order_depends_target_gl46 cmake_object_order_depends_target_glfw cmake_object_order_depends_target_zlibstatic
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/ECS/Entity.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/ECS/Entity.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\ECS\Entity.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3167,7 +3167,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/ECS/Entity.cpp.obj: CXX_COMPILER__SGC
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\ECS
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/ECS/Transformations/TransformationsSystem.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/ECS/Transformations/TransformationsSystem.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\ECS\Transformations\TransformationsSystem.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3175,7 +3175,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/ECS/Transformations/TransformationsSy
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\ECS\Transformations
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46FrameBuffer.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GL46/GL46FrameBuffer.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GL46\GL46FrameBuffer.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3183,7 +3183,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46FrameBuffer.
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GL46
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Renderer.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GL46/GL46Renderer.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GL46\GL46Renderer.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3191,15 +3191,31 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Renderer.cpp
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GL46
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Shader.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GL46/GL46Shader.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GL46\GL46Shader.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
   OBJECT_DIR = Sources\SGCore\CMakeFiles\SGCore.dir
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GL46
 
+build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Texture2D.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GL46/GL46Texture2D.cpp || cmake_object_order_depends_target_SGCore
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
+  DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GL46\GL46Texture2D.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always -std=gnu++23
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
+  OBJECT_DIR = Sources\SGCore\CMakeFiles\SGCore.dir
+  OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GL46
+
+build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLGraphicsTypesCaster.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GLGraphicsTypesCaster.cpp || cmake_object_order_depends_target_SGCore
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
+  DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GLGraphicsTypesCaster.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always -std=gnu++23
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
+  OBJECT_DIR = Sources\SGCore\CMakeFiles\SGCore.dir
+  OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL
+
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLIndexBuffer.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GLIndexBuffer.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GLIndexBuffer.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3207,7 +3223,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLIndexBuffer.cpp.obj
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexArray.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GLVertexArray.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GLVertexArray.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3215,7 +3231,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexArray.cpp.obj
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexAttribute.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GLVertexAttribute.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GLVertexAttribute.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3223,7 +3239,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexAttribute.cpp
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexBuffer.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GLVertexBuffer.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GLVertexBuffer.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3231,23 +3247,15 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexBuffer.cpp.ob
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexBufferLayout.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/GL/GLVertexBufferLayout.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL\GLVertexBufferLayout.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
   OBJECT_DIR = Sources\SGCore\CMakeFiles\SGCore.dir
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\GL
 
-build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IMesh.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/IMesh.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
-  DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\IMesh.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always -std=gnu++23
-  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
-  OBJECT_DIR = Sources\SGCore\CMakeFiles\SGCore.dir
-  OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API
-
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IShader.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/IShader.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\IShader.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3255,7 +3263,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IShader.cpp.obj: CXX_COM
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IVertexAttribute.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/IVertexAttribute.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\IVertexAttribute.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3263,7 +3271,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IVertexAttribute.cpp.obj
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IVertexBufferLayout.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/IVertexBufferLayout.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\IVertexBufferLayout.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3271,15 +3279,23 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IVertexBufferLayout.cpp.
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/ShaderDefine.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/API/ShaderDefine.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API\ShaderDefine.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
   OBJECT_DIR = Sources\SGCore\CMakeFiles\SGCore.dir
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\API
 
+build Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/IMesh.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Graphics/IMesh.cpp || cmake_object_order_depends_target_SGCore
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
+  DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics\IMesh.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always -std=gnu++23
+  INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
+  OBJECT_DIR = Sources\SGCore\CMakeFiles\SGCore.dir
+  OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Graphics
+
 build Sources/SGCore/CMakeFiles/SGCore.dir/Input/InputListener.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Input/InputListener.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Input\InputListener.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3287,7 +3303,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Input/InputListener.cpp.obj: CXX_COMP
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Input
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Input/InputManager.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Input/InputManager.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Input\InputManager.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3295,7 +3311,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Input/InputManager.cpp.obj: CXX_COMPI
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Input
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Logging/Log.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Logging/Log.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Logging\Log.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3303,7 +3319,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Logging/Log.cpp.obj: CXX_COMPILER__SG
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Logging
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Main/Callbacks.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Main/Callbacks.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Main\Callbacks.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3311,7 +3327,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Main/Callbacks.cpp.obj: CXX_COMPILER_
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Main
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Main/Core.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Main/Core.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Main\Core.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3319,7 +3335,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Main/Core.cpp.obj: CXX_COMPILER__SGCo
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Main
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Main/Window.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Main/Window.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Main\Window.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3327,7 +3343,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Main/Window.cpp.obj: CXX_COMPILER__SG
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Main
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/AssetManager.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Memory/AssetManager.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\AssetManager.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3335,7 +3351,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/AssetManager.cpp.obj: CXX_COMP
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Memory
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/FileAsset.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Memory/Assets/FileAsset.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Assets\FileAsset.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3343,7 +3359,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/FileAsset.cpp.obj: CXX_
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Assets
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/IAsset.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Memory/Assets/IAsset.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Assets\IAsset.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3351,7 +3367,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/IAsset.cpp.obj: CXX_COM
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Assets
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/ModelAsset.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Memory/Assets/ModelAsset.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Assets\ModelAsset.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3359,7 +3375,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/ModelAsset.cpp.obj: CXX
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Assets
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/Texture2DAsset.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Memory/Assets/Texture2DAsset.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Assets\Texture2DAsset.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3367,7 +3383,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/Texture2DAsset.cpp.obj:
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Assets
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Utils.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Memory/Utils.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Memory\Utils.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3375,7 +3391,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Utils.cpp.obj: CXX_COMPILER__S
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Memory
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Utils/FileSmartPointer.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Utils/FileSmartPointer.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Utils\FileSmartPointer.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3383,7 +3399,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Utils/FileSmartPointer.cpp.obj: CXX_C
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Utils
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Utils/FileUtils.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Utils/FileUtils.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Utils\FileUtils.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3391,7 +3407,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Utils/FileUtils.cpp.obj: CXX_COMPILER
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Utils
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Utils/Timer.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Utils/Timer.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Utils\Timer.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3399,7 +3415,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Utils/Timer.cpp.obj: CXX_COMPILER__SG
   OBJECT_FILE_DIR = Sources\SGCore\CMakeFiles\SGCore.dir\Utils
 
 build Sources/SGCore/CMakeFiles/SGCore.dir/Utils/TimerCallback.cpp.obj: CXX_COMPILER__SGCore_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGCore/Utils/TimerCallback.cpp || cmake_object_order_depends_target_SGCore
-  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSGCore_EXPORTS -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGCore\CMakeFiles\SGCore.dir\Utils\TimerCallback.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include
@@ -3414,7 +3430,7 @@ build Sources/SGCore/CMakeFiles/SGCore.dir/Utils/TimerCallback.cpp.obj: CXX_COMP
 #############################################
 # Link the shared library Sources\SGCore\SGCored.dll
 
-build Sources/SGCore/SGCored.dll Sources/SGCore/libSGCored.dll.a: CXX_SHARED_LIBRARY_LINKER__SGCore_Debug Sources/SGCore/CMakeFiles/SGCore.dir/ECS/Entity.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/ECS/Transformations/TransformationsSystem.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46FrameBuffer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Renderer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Shader.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLIndexBuffer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexArray.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexAttribute.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexBuffer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexBufferLayout.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IMesh.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IShader.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IVertexAttribute.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IVertexBufferLayout.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/ShaderDefine.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Input/InputListener.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Input/InputManager.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Logging/Log.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Main/Callbacks.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Main/Core.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Main/Window.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/AssetManager.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/FileAsset.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/IAsset.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/ModelAsset.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/Texture2DAsset.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Utils.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Utils/FileSmartPointer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Utils/FileUtils.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Utils/Timer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Utils/TimerCallback.cpp.obj | Externals/GLFW/src/libglfw3ddll.a Externals/OpenGL/libgl46d.a Externals/Assimp/lib/libassimpd.dll.a Externals/Assimp/contrib/zlib/libzlibstaticd.a || Externals/Assimp/bin/libassimp-5d.dll Externals/Assimp/contrib/zlib/libzlibstaticd.a Externals/GLFW/src/glfw3d.dll Externals/OpenGL/libgl46d.a
+build Sources/SGCore/SGCored.dll Sources/SGCore/libSGCored.dll.a: CXX_SHARED_LIBRARY_LINKER__SGCore_Debug Sources/SGCore/CMakeFiles/SGCore.dir/ECS/Entity.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/ECS/Transformations/TransformationsSystem.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46FrameBuffer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Renderer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Shader.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46Texture2D.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLGraphicsTypesCaster.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLIndexBuffer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexArray.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexAttribute.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexBuffer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GLVertexBufferLayout.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IShader.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IVertexAttribute.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IVertexBufferLayout.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/ShaderDefine.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/IMesh.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Input/InputListener.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Input/InputManager.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Logging/Log.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Main/Callbacks.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Main/Core.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Main/Window.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/AssetManager.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/FileAsset.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/IAsset.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/ModelAsset.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/Texture2DAsset.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Utils.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Utils/FileSmartPointer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Utils/FileUtils.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Utils/Timer.cpp.obj Sources/SGCore/CMakeFiles/SGCore.dir/Utils/TimerCallback.cpp.obj | Externals/GLFW/src/libglfw3ddll.a Externals/OpenGL/libgl46d.a Externals/Assimp/lib/libassimpd.dll.a Externals/Assimp/contrib/zlib/libzlibstaticd.a || Externals/Assimp/bin/libassimp-5d.dll Externals/Assimp/contrib/zlib/libzlibstaticd.a Externals/GLFW/src/glfw3d.dll Externals/OpenGL/libgl46d.a
   LANGUAGE_COMPILE_FLAGS = -g
   LINK_FLAGS = -static-libgcc -static-libstdc++ -static
   LINK_LIBRARIES = Externals/GLFW/src/libglfw3ddll.a  Externals/OpenGL/libgl46d.a  Externals/Assimp/lib/libassimpd.dll.a  Externals/Assimp/contrib/zlib/libzlibstaticd.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
@@ -3506,7 +3522,7 @@ build Sources/SGCore/install/strip: phony Sources/SGCore/CMakeFiles/install/stri
 build cmake_object_order_depends_target_SGEditor: phony || Resources/SGResourcesCopy cmake_object_order_depends_target_SGCore cmake_object_order_depends_target_assimp cmake_object_order_depends_target_gl46 cmake_object_order_depends_target_glfw cmake_object_order_depends_target_zlibstatic
 
 build Sources/SGEditor/CMakeFiles/SGEditor.dir/Main/CoreTest.cpp.obj: CXX_COMPILER__SGEditor_Debug D$:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGEditor/Main/CoreTest.cpp || cmake_object_order_depends_target_SGEditor
-  DEFINES = -DGLFW_DLL -DSUNGEAR_DEBUG
+  DEFINES = -DGLFW_DLL -DSTB_IMAGE_IMPLEMENTATION -DSUNGEAR_DEBUG
   DEP_FILE = Sources\SGEditor\CMakeFiles\SGEditor.dir\Main\CoreTest.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always -std=gnu++23
   INCLUDES = -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/OpenGL/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLFW/include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/stb -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/GLM/glm/.. -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Assimp/code/../include -ID:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Externals/Assimp/code/../include

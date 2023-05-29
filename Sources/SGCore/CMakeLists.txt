@@ -10,6 +10,7 @@
 
  message(${CMAKE_SOURCE_DIR}/Sources)
 
+ #add_definitions(-DSTB_IMAGE_IMPLEMENTATION)
  target_include_directories(${PROJECT_NAME} PRIVATE
          ${CMAKE_SOURCE_DIR}/Sources
          ${CMAKE_SOURCE_DIR}/Externals

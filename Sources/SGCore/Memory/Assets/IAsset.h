@@ -11,40 +11,32 @@
 #include <memory>
 #include <list>
 #include <functional>
+#include "IAssetObserver.h"
 
 namespace Core::Memory::Assets
 {
+    class IAssetObserver;
+
     class IAsset
     {
     private:
         long m_lastModified = -1;
-
-        std::list<std::shared_ptr<std::function<void(IAsset&)>>> m_onModified;
-        // includes name changed
-        std::list<std::shared_ptr<std::function<void(IAsset&)>>> m_onPathChanged;
-        std::list<std::shared_ptr<std::function<void(IAsset&)>>> m_onDeleted;
-        std::list<std::shared_ptr<std::function<void(IAsset&)>>> m_onRestored;
+        std::string_view m_path;
+        std::list<IAssetObserver*> m_observers;
 
     public:
-        virtual void load(const std::string_view& path) { };
+        [[nodiscard]] virtual std::shared_ptr<IAsset> load(const std::string_view& path) = 0;
+
+        void addObserver(IAssetObserver*) noexcept;
+        void removeObserver(IAssetObserver*) noexcept;
+
+        void onModified();
+        void onPathChanged();
+        void onDeleted();
+        void onRestored();
 
         long getLastModified() noexcept;
-
-        void addOnModifiedCallback(const std::shared_ptr<std::function<void(IAsset&)>>&) noexcept;
-        void removeOnModifiedCallback(const std::shared_ptr<std::function<void(IAsset&)>>&) noexcept;
-        void onModified();
-
-        void addOnPathChangedCallback(const std::shared_ptr<std::function<void(IAsset&)>>&) noexcept;
-        void removeOnPathChangedCallback(const std::shared_ptr<std::function<void(IAsset&)>>&) noexcept;
-        void onPathChanged();
-
-        void addOnDeletedCallback(const std::shared_ptr<std::function<void(IAsset&)>>&) noexcept;
-        void removeOnDeletedCallback(const std::shared_ptr<std::function<void(IAsset&)>>&) noexcept;
-        void onDeleted();
-
-        void addOnRestoredCallback(const std::shared_ptr<std::function<void(IAsset&)>>&) noexcept;
-        void removeOnRestoredCallback(const std::shared_ptr<std::function<void(IAsset&)>>&) noexcept;
-        void onRestored();
+        [[nodiscard]] std::string_view getPath() const noexcept;
     };
 }
 

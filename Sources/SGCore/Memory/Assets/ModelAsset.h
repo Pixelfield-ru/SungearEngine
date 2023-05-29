@@ -14,7 +14,7 @@
 
 namespace Core::Memory::Assets
 {
-    class ModelAsset : public IAsset
+    class ModelAsset : public IAsset, public std::enable_shared_from_this<ModelAsset>
     {
     private:
         std::shared_ptr<Graphics::API::IVertexArray> m_vertexArray;
@@ -26,7 +26,7 @@ namespace Core::Memory::Assets
         std::shared_ptr<Graphics::API::IIndexBuffer> m_indexBuffer;
 
     public:
-        void load(const std::string_view&) override;
+        std::shared_ptr<IAsset> load(const std::string_view&) override;
     };
 }
 

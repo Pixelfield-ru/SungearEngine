@@ -9,86 +9,49 @@ long Core::Memory::Assets::IAsset::getLastModified() noexcept
     return m_lastModified;
 }
 
-void Core::Memory::Assets::IAsset::addOnModifiedCallback(const std::shared_ptr<std::function<void(IAsset&)>>& callback) noexcept
-{
-    m_onModified.push_back(callback);
-}
-
-void Core::Memory::Assets::IAsset::removeOnModifiedCallback(const std::shared_ptr<std::function<void(IAsset&)>>& callback) noexcept
-{
-    m_onModified.remove(callback);
-}
-
-void Core::Memory::Assets::IAsset::addOnPathChangedCallback(const std::shared_ptr<std::function<void(IAsset&)>>& callback) noexcept
-{
-    m_onPathChanged.push_back(callback);
-}
-
-void Core::Memory::Assets::IAsset::removeOnPathChangedCallback(const std::shared_ptr<std::function<void(IAsset&)>>& callback) noexcept
-{
-    m_onPathChanged.remove(callback);
-}
-
-void Core::Memory::Assets::IAsset::addOnDeletedCallback(const std::shared_ptr<std::function<void(IAsset&)>>& callback) noexcept
-{
-    m_onDeleted.push_back(callback);
-}
-
-void Core::Memory::Assets::IAsset::removeOnDeletedCallback(const std::shared_ptr<std::function<void(IAsset&)>>& callback) noexcept
-{
-    m_onDeleted.remove(callback);
-}
-
-void Core::Memory::Assets::IAsset::addOnRestoredCallback(const std::shared_ptr<std::function<void(IAsset&)>>& callback) noexcept
-{
-    m_onRestored.push_back(callback);
-}
-
-void Core::Memory::Assets::IAsset::removeOnRestoredCallback(const std::shared_ptr<std::function<void(IAsset&)>>& callback) noexcept
-{
-    m_onRestored.remove(callback);
-}
-
 void Core::Memory::Assets::IAsset::onModified()
 {
-    for(const auto& callback : m_onModified)
+    for(const auto& observer : m_observers)
     {
-        if(*callback)
-        {
-            (*callback)(*this);
-        }
+        observer->onAssetModified();
     }
 }
 
 void Core::Memory::Assets::IAsset::onPathChanged()
 {
-    for(const auto& callback : m_onPathChanged)
+    for(const auto& observer : m_observers)
     {
-        if(*callback)
-        {
-            (*callback)(*this);
-        }
+        observer->onAssetPathChanged();
     }
 }
 
 void Core::Memory::Assets::IAsset::onDeleted()
 {
-    for(const auto& callback : m_onDeleted)
+    for(const auto& observer : m_observers)
     {
-        if(*callback)
-        {
-            (*callback)(*this);
-        }
+        observer->onAssetDeleted();
     }
 }
 
 void Core::Memory::Assets::IAsset::onRestored()
 {
-    for(const auto& callback : m_onRestored)
+    for(const auto& observer : m_observers)
     {
-        if(*callback)
-        {
-            (*callback)(*this);
-        }
+        observer->onAssetRestored();
     }
+}
+
+void Core::Memory::Assets::IAsset::addObserver(IAssetObserver* observer) noexcept
+{
+    m_observers.push_back(observer);
+}
+
+void Core::Memory::Assets::IAsset::removeObserver(IAssetObserver* observer) noexcept
+{
+    m_observers.remove(observer);
+}
+
+std::string_view Core::Memory::Assets::IAsset::getPath() const noexcept
+{
+    return m_path;
 }

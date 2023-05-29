@@ -12,20 +12,20 @@ const std::shared_ptr<Core::Graphics::API::GL::GL46::GL46Renderer>& Core::Graphi
 
 void Core::Graphics::API::GL::GL46::GL46Renderer::init() noexcept
 {
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GL46Renderer initializing...");
+    SGC_INFO("-----------------------------------");
+    SGC_INFO("GL46Renderer initializing...");
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        Core::Logging::consolePrintf(Core::Logging::SG_INFO, "Failed to initialize GL46Renderer!");
+        SGC_ERROR("Failed to initialize GL46Renderer!");
     }
     else
     {
-        Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GL46Renderer initialized!");
+        SGC_INFO("GL46Renderer initialized!");
     }
 
     printInfo();
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "-----------------------------------");
+    SGC_INFO("-----------------------------------");
 }
 
 void Core::Graphics::API::GL::GL46::GL46Renderer::checkForErrors(std::source_location location) noexcept
@@ -49,16 +49,23 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::checkForErrors(std::source_loc
 
     if(errCode != 0)
     {
-        Core::Logging::consolePrintf(Core::Logging::MessageType::SG_ERROR,
-                                     "OpenGL error (code: " + std::to_string(errCode) + "): " + errStr, location
-        );
+        SGC_ERROR_SL("OpenGL error (code: " + std::to_string(errCode) + "): " + errStr, location);
     }
 }
 
 void Core::Graphics::API::GL::GL46::GL46Renderer::printInfo() noexcept
 {
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "GL46Renderer info:");
-    Core::Logging::consolePrintf(Core::Logging::SG_INFO, "OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+    SGC_INFO("GL46Renderer info:");
+    SGC_INFO("OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+    SGF_INFO("Supporting extensions: ", SG_GL_SUPPORTING_EXTENSIONS_FILE);
+
+    GLint extensionsNum = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
+
+    for(int i = 0; i < extensionsNum; i++)
+    {
+        SGF_INFO(std::string(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i))), SG_GL_SUPPORTING_EXTENSIONS_FILE);
+    }
 }
 
 void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& windowSize)
@@ -67,13 +74,15 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
 }
 
 // TODO: just test. delete
-void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(Core::Graphics::API::IShader* shader,
-                                                             Core::Graphics::API::IVertexArray* vertexArray)
+void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(ITexture2D* texture2D,
+                                                             IShader* shader,
+                                                             IVertexArray* vertexArray)
 {
+    texture2D->bind();
     shader->bind();
     vertexArray->bind();
 
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }
 
 Core::Graphics::API::GL::GL46::GL46Shader* Core::Graphics::API::GL::GL46::GL46Renderer::createShader()
@@ -99,4 +108,9 @@ Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GL46::GL
 Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
 {
     return new GLIndexBuffer;
+}
+
+Core::Graphics::API::GL::GL46::GL46Texture2D* Core::Graphics::API::GL::GL46::GL46Renderer::createTexture2D()
+{
+    return new GL46Texture2D;
 }
