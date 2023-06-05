@@ -13,7 +13,7 @@ Core::Graphics::API::GL::GLIndexBuffer::~GLIndexBuffer() noexcept
     destroy();
 }
 
-Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::create() noexcept
+std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::create() noexcept
 {
     destroy();
 
@@ -23,7 +23,7 @@ Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
 void Core::Graphics::API::GL::GLIndexBuffer::destroy() noexcept
@@ -35,7 +35,7 @@ void Core::Graphics::API::GL::GLIndexBuffer::destroy() noexcept
     #endif
 }
 
-Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::putData(std::vector<int> data) noexcept
+std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::putData(std::vector<int> data) noexcept
 {
     m_data = std::move(data);
 
@@ -46,10 +46,10 @@ Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
-Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::subData
+std::shared_ptr<Core::Graphics::API::IIndexBuffer>Core::Graphics::API::GL::GLIndexBuffer::subData
         (std::vector<int> data, const int& offset) noexcept
 {
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)),
@@ -59,10 +59,10 @@ Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
-Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::bind() noexcept
+std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_handler);
 
@@ -70,12 +70,12 @@ Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
-Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GLIndexBuffer::setUsage(SGGBufferUsage usage) noexcept
+std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::setUsage(SGGBufferUsage usage) noexcept
 {
     m_usage = usage;
 
-    return this;
+    return shared_from_this();
 }

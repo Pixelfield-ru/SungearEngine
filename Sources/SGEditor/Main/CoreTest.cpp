@@ -26,6 +26,15 @@ std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> testNormalsBufferLayou
 
 std::shared_ptr<Core::Graphics::API::IIndexBuffer> testIndexBuffer;
 
+class Test
+{
+public:
+    Test(int a, int b)
+    {
+        std::cout << "sdfdf" << std::endl;
+    }
+};
+
 void init()
 {
     // найс это работает. TODO: убрать! просто ради теста ---------------------
@@ -33,7 +42,7 @@ void init()
     texture2DAsset = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>("../SGResources/textures/horek.png");
 
     testShader = std::shared_ptr<Core::Graphics::API::IShader>(Core::Main::Core::getRenderer().createShader());
-    testShader->compile(shaderAsset.get());
+    testShader->compile(shaderAsset);
     testShader->addShaderDefine(Core::Graphics::API::ShaderDefine("FLIP_TEXTURES_Y", "1"));
 
     testVertexArray = std::shared_ptr<Core::Graphics::API::IVertexArray>(Core::Main::Core::getRenderer().createVertexArray());

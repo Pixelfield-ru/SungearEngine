@@ -109,17 +109,27 @@ GLuint Core::Graphics::API::GL::GL46::GL46Shader::createShaderPart(const GLenum&
 
 // TODO: watch SGP1
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
-void Core::Graphics::API::GL::GL46::GL46Shader::compile(Memory::Assets::FileAsset* asset) noexcept
+void Core::Graphics::API::GL::GL46::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAsset> asset) noexcept
 {
     destroy();
 
-    if(m_fileAsset)
+    std::shared_ptr<Memory::Assets::FileAsset> fileAssetShared = m_fileAsset.lock();
+
+    if(fileAssetShared)
     {
-        m_fileAsset->removeObserver(this);
+        fileAssetShared->removeObserver(this);
     }
+
     m_fileAsset = asset;
 
-    m_fileAsset->addObserver(this);
+    fileAssetShared = m_fileAsset.lock();
+
+    if(!fileAssetShared)
+    {
+        SGCF_ERROR("Error compiling shader. Invalid file asset passed.", SG_LOG_CURRENT_SESSION_FILE);
+    }
+
+    fileAssetShared->addObserver(this);
 
     std::string definesCode;
 
@@ -128,7 +138,7 @@ void Core::Graphics::API::GL::GL46::GL46Shader::compile(Memory::Assets::FileAsse
         definesCode += shaderDefine.toString() + "\n";
     }
 
-    const std::string finalCode = definesCode + asset->getData();
+    const std::string finalCode = definesCode + fileAssetShared->getData();
 
     // parsing shaders types defines ----------------
     std::istringstream codeStream(finalCode);
@@ -259,6 +269,11 @@ void Core::Graphics::API::GL::GL46::GL46Shader::destroy() noexcept
     m_shaderPartsHandlers.clear();
 
     std::cout << "shader destroyed" << std::endl;
+}
+
+std::int32_t Core::Graphics::API::GL::GL46::GL46Shader::getShaderUniformLocation(const std::string& uniformName) noexcept
+{
+    return glGetUniformLocation(m_programHandler, uniformName.data());
 }
 
 /*

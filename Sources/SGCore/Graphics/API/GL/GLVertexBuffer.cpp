@@ -11,7 +11,7 @@ Core::Graphics::API::GL::GLVertexBuffer::~GLVertexBuffer() noexcept
     destroy();
 }
 
-Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer::create() noexcept
+std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLVertexBuffer::create() noexcept
 {
     destroy();
 
@@ -21,7 +21,7 @@ Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
 void Core::Graphics::API::GL::GLVertexBuffer::destroy() noexcept
@@ -33,7 +33,7 @@ void Core::Graphics::API::GL::GLVertexBuffer::destroy() noexcept
     #endif
 }
 
-Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer::putData
+std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLVertexBuffer::putData
 (std::vector<float> data) noexcept
 {
     m_data = std::move(data);
@@ -45,10 +45,10 @@ Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
-Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer::subData
+std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLVertexBuffer::subData
 (std::vector<float> data, const int& offset) noexcept
 {
     glBufferSubData(GL_ARRAY_BUFFER, offset, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)),
@@ -58,10 +58,10 @@ Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
-Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer::bind() noexcept
+std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLVertexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_handler);
 
@@ -69,12 +69,12 @@ Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
-Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GLVertexBuffer::setUsage(SGGBufferUsage usage) noexcept
+std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLVertexBuffer::setUsage(SGGBufferUsage usage) noexcept
 {
     m_usage = usage;
 
-    return this;
+    return shared_from_this();
 }

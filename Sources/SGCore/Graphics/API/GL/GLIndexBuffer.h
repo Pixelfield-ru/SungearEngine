@@ -7,8 +7,9 @@
 #define SUNGEARENGINE_GLINDEXBUFFER_H
 
 #include "../IIndexBuffer.h"
+#include "memory"
 
-#include "OpenGL/include/glad/glad.h"
+#include <glad/glad.h>
 
 namespace Core::Graphics::API::GL
 {
@@ -21,15 +22,15 @@ namespace Core::Graphics::API::GL
     public:
         ~GLIndexBuffer() noexcept override;
 
-        GLIndexBuffer* create() noexcept override;
+        std::shared_ptr<IIndexBuffer> create() noexcept override;
 
         void destroy() noexcept override;
 
-        GLIndexBuffer* putData(std::vector<int> data) noexcept override;
-        GLIndexBuffer* subData(std::vector<int> data, const int& offset) noexcept override;
-        GLIndexBuffer* bind() noexcept override;
+        std::shared_ptr<IIndexBuffer> putData(std::vector<int> data) noexcept override;
+        std::shared_ptr<IIndexBuffer> subData(std::vector<int> data, const int& offset) noexcept override;
+        std::shared_ptr<IIndexBuffer> bind() noexcept override;
 
-        GLIndexBuffer* setUsage(SGGBufferUsage) noexcept override;
+        std::shared_ptr<IIndexBuffer> setUsage(SGGBufferUsage) noexcept override;
     };
 }
 

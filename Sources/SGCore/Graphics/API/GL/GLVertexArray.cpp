@@ -11,7 +11,7 @@ Core::Graphics::API::GL::GLVertexArray::~GLVertexArray() noexcept
     destroy();
 }
 
-Core::Graphics::API::GL::GLVertexArray* Core::Graphics::API::GL::GLVertexArray::create() noexcept
+std::shared_ptr<Core::Graphics::API::IVertexArray> Core::Graphics::API::GL::GLVertexArray::create() noexcept
 {
     destroy();
 
@@ -21,7 +21,7 @@ Core::Graphics::API::GL::GLVertexArray* Core::Graphics::API::GL::GLVertexArray::
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
 void Core::Graphics::API::GL::GLVertexArray::destroy() noexcept
@@ -33,9 +33,9 @@ void Core::Graphics::API::GL::GLVertexArray::destroy() noexcept
     #endif
 }
 
-Core::Graphics::API::GL::GLVertexArray* Core::Graphics::API::GL::GLVertexArray::bind() noexcept
+std::shared_ptr<Core::Graphics::API::IVertexArray> Core::Graphics::API::GL::GLVertexArray::bind() noexcept
 {
     glBindVertexArray(m_handler);
 
-    return this;
+    return shared_from_this();
 }

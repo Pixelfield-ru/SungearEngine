@@ -22,15 +22,15 @@ namespace Core::Graphics::API::GL
     public:
         ~GLVertexBuffer() noexcept override;
 
-        GLVertexBuffer* create() noexcept override;
+        std::shared_ptr<IVertexBuffer> create() noexcept override;
 
         void destroy() noexcept override;
 
-        GLVertexBuffer* putData(std::vector<float> data) noexcept override;
-        GLVertexBuffer* subData(std::vector<float> data, const int& offset) noexcept override;
-        GLVertexBuffer* bind() noexcept override;
+        std::shared_ptr<IVertexBuffer> putData(std::vector<float> data) noexcept override;
+        std::shared_ptr<IVertexBuffer> subData(std::vector<float> data, const int& offset) noexcept override;
+        std::shared_ptr<IVertexBuffer> bind() noexcept override;
 
-        GLVertexBuffer* setUsage(SGGBufferUsage) noexcept override;
+        std::shared_ptr<IVertexBuffer> setUsage(SGGBufferUsage) noexcept override;
     };
 }
 

@@ -21,10 +21,10 @@ namespace Core::Graphics::API::GL
     public:
         ~GLVertexArray() noexcept override;
 
-        GLVertexArray* create() noexcept override;
+        std::shared_ptr<IVertexArray> create() noexcept override;
         void destroy() noexcept override;
 
-        GLVertexArray* bind() noexcept override;
+        std::shared_ptr<IVertexArray> bind() noexcept override;
     };
 }
 

@@ -18,7 +18,7 @@ namespace Core::Graphics::API::GL
         std::uint32_t m_stride = 0;
 
     public:
-        GLVertexBufferLayout* prepare() noexcept override;
+        std::shared_ptr<IVertexBufferLayout> prepare() noexcept override;
 
         std::uint16_t getVertexAttributeSizeInLayout(const SGGDataType&) noexcept;
         std::uint16_t getVertexAttributeSizeInBytes(const SGGDataType&) noexcept;
@@ -26,10 +26,10 @@ namespace Core::Graphics::API::GL
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType) noexcept override;
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) noexcept override;
 
-        GLVertexBufferLayout* enableAttribute(const std::shared_ptr<IVertexAttribute>&) noexcept override;
-        GLVertexBufferLayout* enableAttributes() noexcept override;
+        std::shared_ptr<IVertexBufferLayout> enableAttribute(const std::shared_ptr<IVertexAttribute>&) noexcept override;
+        std::shared_ptr<IVertexBufferLayout> enableAttributes() noexcept override;
 
-        GLVertexBufferLayout* addAttribute(std::shared_ptr<IVertexAttribute> attribute) noexcept override;
+        std::shared_ptr<IVertexBufferLayout> addAttribute(std::shared_ptr<IVertexAttribute> attribute) noexcept override;
     };
 }
 

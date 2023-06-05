@@ -7,17 +7,19 @@
 #ifndef NATIVECORE_IVERTEXARRAY_H
 #define NATIVECORE_IVERTEXARRAY_H
 
+#include <memory>
+
 namespace Core::Graphics::API
 {
-    class IVertexArray
+    class IVertexArray : public std::enable_shared_from_this<IVertexArray>
     {
     public:
         virtual ~IVertexArray() = default;
 
-        virtual IVertexArray* create() = 0;
+        virtual std::shared_ptr<IVertexArray> create() = 0;
         virtual void destroy() = 0;
 
-        virtual IVertexArray* bind() = 0;
+        virtual std::shared_ptr<IVertexArray>  bind() = 0;
     };
 }
 

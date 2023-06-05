@@ -31,10 +31,10 @@ void Core::Graphics::API::IShader::removeShaderDefine(const std::string& shaderD
 
 void Core::Graphics::API::IShader::onAssetModified()
 {
-    compile(m_fileAsset);
+    compile(m_fileAsset.lock());
 }
 
 void Core::Graphics::API::IShader::onAssetPathChanged()
 {
-    compile(m_fileAsset);
+    compile(m_fileAsset.lock());
 }

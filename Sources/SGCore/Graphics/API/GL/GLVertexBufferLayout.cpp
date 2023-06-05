@@ -7,7 +7,7 @@
 #include "GL46/GL46Renderer.h"
 #include "GLGraphicsTypesCaster.h"
 
-Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertexBufferLayout::prepare() noexcept
+std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::GL::GLVertexBufferLayout::prepare() noexcept
 {
     std::uint32_t offset = 0;
     m_stride = 0;
@@ -20,7 +20,7 @@ Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertex
         m_stride += attribute->m_size;
     }
 
-    return this;
+    return shared_from_this();
 }
 
 std::uint16_t Core::Graphics::API::GL::GLVertexBufferLayout::getVertexAttributeSizeInLayout
@@ -97,16 +97,16 @@ Core::Graphics::API::GL::GLVertexAttribute* Core::Graphics::API::GL::GLVertexBuf
     return new GLVertexAttribute(ID, std::move(name), dataType, normalized);
 }
 
-Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertexBufferLayout::addAttribute
+std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::GL::GLVertexBufferLayout::addAttribute
 (std::shared_ptr<IVertexAttribute> attribute) noexcept
 {
     attribute->m_size = getVertexAttributeSizeInBytes(attribute->m_dataType);
     m_attributes.push_back(std::move(attribute));
 
-    return this;
+    return shared_from_this();
 }
 
-Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertexBufferLayout::enableAttribute
+std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::GL::GLVertexBufferLayout::enableAttribute
 (const std::shared_ptr<IVertexAttribute>& attribute) noexcept
 {
     glEnableVertexAttribArray(attribute->m_ID);
@@ -123,15 +123,15 @@ Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertex
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
-    return this;
+    return shared_from_this();
 }
 
-Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GLVertexBufferLayout::enableAttributes() noexcept
+std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::GL::GLVertexBufferLayout::enableAttributes() noexcept
 {
     for(const std::shared_ptr<IVertexAttribute>& attribute : m_attributes)
     {
         enableAttribute(attribute);
     }
 
-    return this;
+    return shared_from_this();
 }

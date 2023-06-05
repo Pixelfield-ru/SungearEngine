@@ -30,11 +30,13 @@ namespace Core::Graphics::API::GL::GL46
 
         ~GL46Shader() noexcept override;
 
-        void compile(Memory::Assets::FileAsset*) noexcept override;
+        void compile(std::shared_ptr<Memory::Assets::FileAsset>) noexcept override;
 
         void bind() noexcept override;
 
         void destroy() noexcept override;
+
+        std::int32_t getShaderUniformLocation(const std::string& uniformName) noexcept override;
 
         // move
         //Core::Graphics::API::GL46::GL46Shader& operator=(GL46Shader&&) noexcept;
