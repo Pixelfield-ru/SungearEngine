@@ -18,7 +18,7 @@ namespace Core::Graphics::API
     class IVertexBuffer : public std::enable_shared_from_this<IVertexBuffer>
     {
     protected:
-        SGGBufferUsage m_usage = SGGBufferUsage::SGG_STATIC;
+        SGGUsage m_usage = SGGUsage::SGG_STATIC;
 
     public:
         virtual ~IVertexBuffer() = default;
@@ -34,7 +34,7 @@ namespace Core::Graphics::API
         virtual std::shared_ptr<IVertexBuffer> subData(std::vector<float> data, const int& offset) = 0;
         virtual std::shared_ptr<IVertexBuffer> bind() = 0;
 
-        virtual std::shared_ptr<IVertexBuffer> setUsage(SGGBufferUsage) = 0;
+        virtual std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) = 0;
     };
 }
 

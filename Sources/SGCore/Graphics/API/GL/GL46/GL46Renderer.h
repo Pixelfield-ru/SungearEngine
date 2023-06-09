@@ -18,6 +18,7 @@
 #include "../GLVertexBufferLayout.h"
 #include "../GLIndexBuffer.h"
 #include "GL46Texture2D.h"
+#include "GL46UniformBuffer.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
 
@@ -40,7 +41,7 @@ namespace Core::Graphics::API::GL::GL46
 
         void renderFrame(const glm::ivec2& windowSize) override;
 
-        void renderMesh(ITexture2D*, IShader*, IVertexArray*) override;
+        void renderMesh(const std::shared_ptr<ITexture2D>&, const std::shared_ptr<IShader>&, const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<IVertexArray>&) override;
 
         void printInfo() noexcept override;
 
@@ -52,6 +53,7 @@ namespace Core::Graphics::API::GL::GL46
         [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() override;
         [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] GL46Texture2D* createTexture2D() override;
+        [[nodiscard]] IUniformBuffer* createUniformBuffer() override;
 
         static const std::shared_ptr<GL46Renderer>& getInstance() noexcept;
     };

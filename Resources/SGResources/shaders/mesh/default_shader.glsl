@@ -34,6 +34,6 @@
                 vec4 textureColor = texture(tex, vec2(vs_textureCoords.x, vs_textureCoords.y));
         #endif
 
-        fragColor = textureColor * vec4(1.0);
+        fragColor = color * textureColor * vec4(1.0);
     }
 #endif

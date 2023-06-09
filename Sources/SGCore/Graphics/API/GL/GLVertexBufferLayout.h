@@ -21,7 +21,6 @@ namespace Core::Graphics::API::GL
         std::shared_ptr<IVertexBufferLayout> prepare() noexcept override;
 
         std::uint16_t getVertexAttributeSizeInLayout(const SGGDataType&) noexcept;
-        std::uint16_t getVertexAttributeSizeInBytes(const SGGDataType&) noexcept;
 
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType) noexcept override;
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) noexcept override;

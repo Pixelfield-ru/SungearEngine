@@ -29,7 +29,7 @@ namespace Core::Graphics::API
 
         virtual void compile(std::shared_ptr<Memory::Assets::FileAsset> asset) = 0;
 
-        virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
+        [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
 
         void addShaderDefine(const ShaderDefine& shaderDefine);
         void removeShaderDefine(const ShaderDefine& shaderDefine);

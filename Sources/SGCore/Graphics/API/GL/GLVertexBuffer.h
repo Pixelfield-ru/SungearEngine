@@ -30,7 +30,7 @@ namespace Core::Graphics::API::GL
         std::shared_ptr<IVertexBuffer> subData(std::vector<float> data, const int& offset) noexcept override;
         std::shared_ptr<IVertexBuffer> bind() noexcept override;
 
-        std::shared_ptr<IVertexBuffer> setUsage(SGGBufferUsage) noexcept override;
+        std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) noexcept override;
     };
 }
 

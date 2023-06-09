@@ -7,6 +7,8 @@
 #ifndef SUNGEARENGINE_GRAPHICSDATATYPES_H
 #define SUNGEARENGINE_GRAPHICSDATATYPES_H
 
+#include <iostream>
+
 enum SGGDataType
 {
     SGG_NONE,
@@ -25,10 +27,16 @@ enum SGGDataType
     SGG_MAT3,
     SGG_MAT4,
 
-    SGG_BOOL
+    SGG_BOOL,
+
+    // struct marking
+    SGG_STRUCT_BEGIN,
+    SGG_STRUCT_END
 };
 
-enum SGGBufferUsage
+std::uint16_t getSGGDataTypeSizeInBytes(const SGGDataType& dataType) noexcept;
+
+enum SGGUsage
 {
     SGG_DYNAMIC,
     SGG_STATIC

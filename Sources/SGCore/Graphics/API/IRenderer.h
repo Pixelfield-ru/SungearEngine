@@ -19,6 +19,7 @@
 #include "IVertexBufferLayout.h"
 #include "IIndexBuffer.h"
 #include "ITexture2D.h"
+#include "IUniformBuffer.h"
 
 namespace Core::Graphics::API
 {
@@ -29,7 +30,7 @@ namespace Core::Graphics::API
 
         virtual void renderFrame(const glm::ivec2& windowSize) { }
 
-        virtual void renderMesh(ITexture2D*, IShader*, IVertexArray*) { }
+        virtual void renderMesh(const std::shared_ptr<ITexture2D>&, const std::shared_ptr<IShader>&, const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<IVertexArray>&) { }
 
         virtual void printInfo() noexcept { }
 
@@ -41,6 +42,7 @@ namespace Core::Graphics::API
         [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
         [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
         [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
+        [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
 
         /*
         virtual IIndexBuffer* create_texture2d() = 0;

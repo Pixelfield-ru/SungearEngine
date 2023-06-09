@@ -74,12 +74,15 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
 }
 
 // TODO: just test. delete
-void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(ITexture2D* texture2D,
-                                                             IShader* shader,
-                                                             IVertexArray* vertexArray)
+void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(
+        const std::shared_ptr<ITexture2D>& texture2D,
+        const std::shared_ptr<IShader>& shader,
+        const std::shared_ptr<IUniformBuffer>& uniformBuffer,
+        const std::shared_ptr<IVertexArray>& vertexArray)
 {
     texture2D->bind();
     shader->bind();
+    uniformBuffer->bind();
     vertexArray->bind();
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -113,4 +116,9 @@ Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GL46::GL46Rende
 Core::Graphics::API::GL::GL46::GL46Texture2D* Core::Graphics::API::GL::GL46::GL46Renderer::createTexture2D()
 {
     return new GL46Texture2D;
+}
+
+Core::Graphics::API::IUniformBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createUniformBuffer()
+{
+    return new GL46UniformBuffer;
 }

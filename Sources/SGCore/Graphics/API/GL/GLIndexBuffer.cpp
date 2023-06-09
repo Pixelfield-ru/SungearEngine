@@ -49,7 +49,7 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer>Core::Graphics::API::GL::GLIndexBuffer::subData
+std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::subData
         (std::vector<int> data, const int& offset) noexcept
 {
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)),
@@ -73,7 +73,7 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::setUsage(SGGBufferUsage usage) noexcept
+std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::setUsage(SGGUsage usage) noexcept
 {
     m_usage = usage;
 

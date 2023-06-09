@@ -145,7 +145,7 @@ GLenum GLGraphicsTypesCaster::sggFormatToGL(const SGGFormat& sggFormat) noexcept
     return glFormat;
 }
 
-GLenum GLGraphicsTypesCaster::sggBufferUsageToGL(const SGGBufferUsage& sggBufferUsage) noexcept
+GLenum GLGraphicsTypesCaster::sggBufferUsageToGL(const SGGUsage& sggBufferUsage) noexcept
 {
     GLenum usage = GL_STATIC_DRAW;
 

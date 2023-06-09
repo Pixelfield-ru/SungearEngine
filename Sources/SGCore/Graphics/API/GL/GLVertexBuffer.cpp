@@ -72,7 +72,7 @@ std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLV
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLVertexBuffer::setUsage(SGGBufferUsage usage) noexcept
+std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLVertexBuffer::setUsage(SGGUsage usage) noexcept
 {
     m_usage = usage;
 

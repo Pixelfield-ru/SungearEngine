@@ -5,6 +5,8 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Graphics/API/ShaderDefine.h"
+#include "SGCore/Graphics/API/IUniformBuffer.h"
+#include "SGCore/Graphics/API/IShaderUniform.h"
 #include "stb_image.h"
 
 #include <glad/glad.h>
@@ -26,14 +28,7 @@ std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> testNormalsBufferLayou
 
 std::shared_ptr<Core::Graphics::API::IIndexBuffer> testIndexBuffer;
 
-class Test
-{
-public:
-    Test(int a, int b)
-    {
-        std::cout << "sdfdf" << std::endl;
-    }
-};
+std::shared_ptr<Core::Graphics::API::IUniformBuffer> testUniformBuffer;
 
 void init()
 {
@@ -51,7 +46,7 @@ void init()
     // vertices pos --------------------------------------
     testVerticesPositionsBuffer = std::shared_ptr<Core::Graphics::API::IVertexBuffer>(Core::Main::Core::getRenderer().createVertexBuffer());
     testVerticesPositionsBuffer
-            ->setUsage(SGGBufferUsage::SGG_DYNAMIC)
+            ->setUsage(SGGUsage::SGG_DYNAMIC)
             ->create()
             ->bind()
             ->putData({ // три вершины
@@ -82,15 +77,25 @@ void init()
             ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testVerticesBufferLayout->createVertexAttribute(2, "normalPositionAttribute", SGGDataType::SGG_FLOAT3)))
             ->prepare()
             ->enableAttributes();
-    // ----------------------------------------------------
 
     testIndexBuffer = std::shared_ptr<Core::Graphics::API::IIndexBuffer>(Core::Main::Core::getRenderer().createIndexBuffer());
-    testIndexBuffer->setUsage(SGGBufferUsage::SGG_DYNAMIC)->create()->bind()->putData({ 0, 1, 2, 3, 2, 0 });
+    testIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData({0, 1, 2, 3, 2, 0 });
+
+    testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
+    testUniformBuffer->putUniforms({
+        Core::Graphics::API::IShaderUniform("color", SGGDataType::SGG_FLOAT4),
+        Core::Graphics::API::IShaderUniform("tex", SGGDataType::SGG_INT)
+    });
+    testUniformBuffer->putData<float>({ 0.9f, 0.1f, 0.1f, 1.0f });
+    testUniformBuffer->putData<int>({ 0 });
+
+    testUniformBuffer->updateLocations(*testShader);
+    // ----------------------------------------------------
 }
 
 void framePostRender()
 {
-    Core::Main::Core::getRenderer().renderMesh(texture2DAsset->getTexture2D().get(), testShader.get(), testVertexArray.get());
+    Core::Main::Core::getRenderer().renderMesh(texture2DAsset->getTexture2D(), testShader, testUniformBuffer, testVertexArray);
 }
 
 int main()

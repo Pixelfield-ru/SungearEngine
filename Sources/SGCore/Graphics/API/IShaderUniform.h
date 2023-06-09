@@ -4,31 +4,40 @@
 #define SUNGEARENGINE_ISHADERUNIFORM_H
 
 #include <memory>
+#include "GraphicsDataTypes.h"
 
 #include "IShader.h"
 
 namespace Core::Graphics::API
 {
-    class IShaderUniform
+    struct IShaderUniform
     {
-    protected:
         std::string m_name;
         std::int32_t m_location = -1;
-        std::shared_ptr<void> m_data;
 
-    public:
-        IShaderUniform(std::string name, std::int32_t location, std::shared_ptr<void> data) :
-        m_name(std::move(name)), m_location(location), m_data(std::move(data))
+        SGGUsage m_usage = SGGUsage::SGG_DYNAMIC;
+        SGGDataType m_dataType = SGGDataType::SGG_INT;
+
+        IShaderUniform(std::string name, std::int32_t location, SGGUsage usage, SGGDataType dataType)
         {
-
+            m_name = std::move(name);
+            m_location = location;
+            m_usage = usage;
+            m_dataType = dataType;
         }
 
-        IShaderUniform(std::string name, std::shared_ptr<void> data) : m_name(std::move(name)), m_data(std::move(data))
+        IShaderUniform(std::string name, SGGUsage usage, SGGDataType dataType)
         {
-
+            m_name = std::move(name);
+            m_usage = usage;
+            m_dataType = dataType;
         }
 
-        virtual void updateLocation(const std::shared_ptr<IShader>& fromShader) = 0;
+        IShaderUniform(std::string name, SGGDataType dataType)
+        {
+            m_name = std::move(name);
+            m_dataType = dataType;
+        }
     };
 }
 

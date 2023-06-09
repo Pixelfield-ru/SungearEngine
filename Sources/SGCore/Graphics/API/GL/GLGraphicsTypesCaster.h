@@ -16,7 +16,7 @@ class GLGraphicsTypesCaster
 public:
     static GLint sggInternalFormatToGL(const SGGInternalFormat&) noexcept;
     static GLenum sggFormatToGL(const SGGFormat&) noexcept;
-    static GLenum sggBufferUsageToGL(const SGGBufferUsage&) noexcept;
+    static GLenum sggBufferUsageToGL(const SGGUsage&) noexcept;
     static std::uint16_t sggDataTypeToGL(const SGGDataType&) noexcept;
 };
 

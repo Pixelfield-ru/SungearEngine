@@ -36,7 +36,7 @@ namespace Core::Graphics::API::GL::GL46
 
         void destroy() noexcept override;
 
-        std::int32_t getShaderUniformLocation(const std::string& uniformName) noexcept override;
+        std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept override;
 
         // move
         //Core::Graphics::API::GL46::GL46Shader& operator=(GL46Shader&&) noexcept;

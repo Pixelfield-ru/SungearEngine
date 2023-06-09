@@ -208,9 +208,6 @@ void Core::Graphics::API::GL::GL46::GL46Shader::compile(std::shared_ptr<Memory::
 void Core::Graphics::API::GL::GL46::GL46Shader::bind() noexcept
 {
     glUseProgram(m_programHandler);
-
-    int texLoc = glGetUniformLocation(m_programHandler, "tex");
-    glUniform1i(texLoc, 0);
 }
 
 // TODO: watch SGP1
@@ -271,11 +268,10 @@ void Core::Graphics::API::GL::GL46::GL46Shader::destroy() noexcept
     std::cout << "shader destroyed" << std::endl;
 }
 
-std::int32_t Core::Graphics::API::GL::GL46::GL46Shader::getShaderUniformLocation(const std::string& uniformName) noexcept
+std::int32_t Core::Graphics::API::GL::GL46::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
 {
     return glGetUniformLocation(m_programHandler, uniformName.data());
 }
-
 /*
 Core::Graphics::API::GL46::GL46Shader& Core::Graphics::API::GL46::GL46Shader::operator=(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
 {

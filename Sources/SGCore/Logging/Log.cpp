@@ -23,6 +23,8 @@ void Core::Logging::init()
 
     std::filesystem::remove(SG_GL_SUPPORTING_EXTENSIONS_FILE);
     std::filesystem::remove(SG_LOG_CURRENT_SESSION_FILE);
+
+    SGF_INFO("Log init", SG_LOG_CURRENT_SESSION_FILE);
 }
 
 // TODO: исправить вывод
