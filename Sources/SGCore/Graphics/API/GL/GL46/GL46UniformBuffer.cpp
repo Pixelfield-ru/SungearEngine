@@ -22,29 +22,89 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
             case SGG_NONE: break;
 
             case SGG_INT: glUniform1i(uniformsIter->m_location, *reinterpret_cast<int*>(dataIterator.current)); break;
-            case SGG_INT2: break;
-            case SGG_INT3: break;
-            case SGG_INT4: break;
-
-            case SGG_FLOAT: break;
-            case SGG_FLOAT2: break;
-            case SGG_FLOAT3: break;
-            case SGG_FLOAT4:
+            case SGG_INT2:
             {
-                float f0 = *reinterpret_cast<float*>(dataIterator.current);
-                float f1 = *(reinterpret_cast<float*>(dataIterator.current) + 1);
-                float f2 = *(reinterpret_cast<float*>(dataIterator.current) + 2);
-                float f3 = *(reinterpret_cast<float*>(dataIterator.current) + 3);
+                int s0 = *reinterpret_cast<int*>(dataIterator.current);
+                int s1 = *(reinterpret_cast<int*>(dataIterator.current) + 1);
 
-                glUniform4f(uniformsIter->m_location, f0, f1, f2, f3);
+                glUniform2i(uniformsIter->m_location, s0, s1);
+
+                break;
+            }
+            case SGG_INT3:
+            {
+                int s0 = *reinterpret_cast<int*>(dataIterator.current);
+                int s1 = *(reinterpret_cast<int*>(dataIterator.current) + 1);
+                int s2 = *(reinterpret_cast<int*>(dataIterator.current) + 1);
+
+                glUniform3i(uniformsIter->m_location, s0, s1, s2);
+
+                break;
+            }
+            case SGG_INT4:
+            {
+                int s0 = *reinterpret_cast<int*>(dataIterator.current);
+                int s1 = *(reinterpret_cast<int*>(dataIterator.current) + 1);
+                int s2 = *(reinterpret_cast<int*>(dataIterator.current) + 1);
+                int s3 = *(reinterpret_cast<int*>(dataIterator.current) + 1);
+
+                glUniform4i(uniformsIter->m_location, s0, s1, s2, s3);
 
                 break;
             }
 
-            case SGG_MAT2: break;
-            case SGG_MAT3: break;
-            case SGG_MAT4: break;
+            case SGG_FLOAT: glUniform1f(uniformsIter->m_location, *reinterpret_cast<float*>(dataIterator.current)); break;
+            case SGG_FLOAT2:
+            {
+                float s0 = *reinterpret_cast<float*>(dataIterator.current);
+                float s1 = *(reinterpret_cast<float*>(dataIterator.current) + 1);
 
+                glUniform2f(uniformsIter->m_location, s0, s1);
+
+                break;
+            }
+            case SGG_FLOAT3:
+            {
+                float s0 = *reinterpret_cast<float*>(dataIterator.current);
+                float s1 = *(reinterpret_cast<float*>(dataIterator.current) + 1);
+                float s2 = *(reinterpret_cast<float*>(dataIterator.current) + 1);
+
+                glUniform3f(uniformsIter->m_location, s0, s1, s2);
+
+                break;
+            }
+            case SGG_FLOAT4:
+            {
+                float s0 = *reinterpret_cast<float*>(dataIterator.current);
+                float s1 = *(reinterpret_cast<float*>(dataIterator.current) + 1);
+                float s2 = *(reinterpret_cast<float*>(dataIterator.current) + 2);
+                float s3 = *(reinterpret_cast<float*>(dataIterator.current) + 3);
+
+                glUniform4f(uniformsIter->m_location, s0, s1, s2, s3);
+
+                break;
+            }
+
+            case SGG_MAT2:
+            {
+                glUniformMatrix2fv(uniformsIter->m_location, 1, false, reinterpret_cast<float*>(dataIterator.current));
+
+                break;
+            }
+            case SGG_MAT3:
+            {
+                glUniformMatrix3fv(uniformsIter->m_location, 1, false, reinterpret_cast<float*>(dataIterator.current));
+
+                break;
+            }
+            case SGG_MAT4:
+            {
+                glUniformMatrix4fv(uniformsIter->m_location, 1, false, reinterpret_cast<float*>(dataIterator.current));
+
+                break;
+            }
+
+            // TODO: impl
             case SGG_BOOL: break;
 
             case SGG_STRUCT_BEGIN: break;

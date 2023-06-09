@@ -4,7 +4,7 @@
 
 Core::Graphics::API::IUniformBuffer::~IUniformBuffer()
 {
-    delete[] m_buffer;
+    delete m_buffer;
 }
 
 Core::Graphics::API::IUniformBuffer::IUniformBuffer(std::list<IShaderUniform> uniforms)

@@ -84,9 +84,11 @@ void init()
     testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
     testUniformBuffer->putUniforms({
         Core::Graphics::API::IShaderUniform("color", SGGDataType::SGG_FLOAT4),
+        Core::Graphics::API::IShaderUniform("testIVec3", SGGDataType::SGG_INT3),
         Core::Graphics::API::IShaderUniform("tex", SGGDataType::SGG_INT)
     });
     testUniformBuffer->putData<float>({ 0.9f, 0.1f, 0.1f, 1.0f });
+    testUniformBuffer->putData<int>({ 1, 0, 1 });
     testUniformBuffer->putData<int>({ 0 });
 
     testUniformBuffer->updateLocations(*testShader);
