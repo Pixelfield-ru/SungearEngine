@@ -23,6 +23,7 @@
     uniform sampler2D tex;
 
     uniform vec4 color;
+    uniform vec4 color0;
 
     in vec2 vs_textureCoords;
 
@@ -34,6 +35,6 @@
                 vec4 textureColor = texture(tex, vec2(vs_textureCoords.x, vs_textureCoords.y));
         #endif
 
-        fragColor = color * textureColor * vec4(1.0);
+        fragColor = (color + color0) * textureColor * vec4(1.0);
     }
 #endif

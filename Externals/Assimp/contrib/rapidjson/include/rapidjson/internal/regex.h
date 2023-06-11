@@ -502,7 +502,7 @@ private:
                 if (step == 2) { // Add trailing '-'
                     SizeType r = NewRange('-');
                     RAPIDJSON_ASSERT(current != kRegexInvalidRange);
-                    GetRange(current).next = r;
+                    GetRange(current).m_next = r;
                 }
                 if (negate)
                     GetRange(start).start |= kRangeNegationFlag;
@@ -533,7 +533,7 @@ private:
                     {
                         SizeType r = NewRange(codepoint);
                         if (current != kRegexInvalidRange)
-                            GetRange(current).next = r;
+                            GetRange(current).m_next = r;
                         if (start == kRegexInvalidRange)
                             start = r;
                         current = r;

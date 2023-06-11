@@ -48,7 +48,6 @@ void Core::Main::Core::update()
         m_renderer->renderFrame(windowSize);
 
         sgCallFramePostRenderCallback();
-        //sgCallFramePostRenderCallback();
 
         m_globalTimer.endFrame();
 

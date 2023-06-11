@@ -34,7 +34,7 @@ namespace Core::Main
 
         std::string m_title = "Powered by Core";
 
-        bool m_swapInterval = true;
+        bool m_swapInterval = false;
 
         bool m_enableStickyKeys = false;
 

@@ -49,13 +49,14 @@ void init()
             ->setUsage(SGGUsage::SGG_DYNAMIC)
             ->create()
             ->bind()
-            ->putData({ // три вершины
-                // ПЕРВАЯ - ПОЗИЦИЯ ВЕРШИНЫ
-                // ВТОРАЯ - ТЕКСТУРНАЯ КООРДИНАТА
-                // ну и третье - нормали
+            ->putData({ // позиция
                               0, 0.0, 0.0,
+                              // uv
                               0.0, 0.0, 0,
+                              // нормаль
                               0.5, 0.1, 0,
+
+                              // и т.д.
 
                               0.0, 1.0, 0.0,
                               0, 1, 0,
@@ -84,12 +85,13 @@ void init()
     testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
     testUniformBuffer->putUniforms({
         Core::Graphics::API::IShaderUniform("color", SGGDataType::SGG_FLOAT4),
-        Core::Graphics::API::IShaderUniform("testIVec3", SGGDataType::SGG_INT3),
-        Core::Graphics::API::IShaderUniform("tex", SGGDataType::SGG_INT)
+        Core::Graphics::API::IShaderUniform("tex", SGGDataType::SGG_INT),
     });
-    testUniformBuffer->putData<float>({ 0.9f, 0.1f, 0.1f, 1.0f });
-    testUniformBuffer->putData<int>({ 1, 0, 1 });
+    testUniformBuffer->putData<float>({ 1.0f, 0.0f, 0.0f, 1.0f });
     testUniformBuffer->putData<int>({ 0 });
+
+    testUniformBuffer->putUniforms({Core::Graphics::API::IShaderUniform("color0", SGGDataType::SGG_FLOAT4)});
+    testUniformBuffer->putData<float>({ 0.0f, 1.0f, 0.0f, 1.0f });
 
     testUniformBuffer->updateLocations(*testShader);
     // ----------------------------------------------------
