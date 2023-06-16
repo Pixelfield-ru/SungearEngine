@@ -18,10 +18,11 @@ namespace Core::Graphics::API
     {
     protected:
         std::list<ShaderDefine> m_defines;
+
         std::weak_ptr<Memory::Assets::FileAsset> m_fileAsset;
 
     public:
-        virtual ~IShader();
+        virtual ~IShader() = default;
 
         virtual void destroy() = 0;
 
@@ -31,7 +32,7 @@ namespace Core::Graphics::API
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
 
-        void addShaderDefine(const ShaderDefine& shaderDefine);
+        void addShaderDefines(const std::initializer_list<ShaderDefine>& shaderDefines);
         void removeShaderDefine(const ShaderDefine& shaderDefine);
         void removeShaderDefine(const std::string& shaderDefineName);
 

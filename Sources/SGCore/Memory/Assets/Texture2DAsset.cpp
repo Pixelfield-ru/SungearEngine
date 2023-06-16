@@ -33,7 +33,7 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
     m_texture2D->create(sharedPtr);
 
     SGC_INFO("Loaded texture. Width: " + std::to_string(m_width) + ", height: " + std::to_string(m_height)
-             + ", byte size: " + std::to_string(m_width * m_height) + ", channels: " + std::to_string(m_channelsInFile));
+             + ", byte size: " + std::to_string(m_width * m_height) + ", channels: " + std::to_string(m_channelsInFile) + ", path: " + path.data());
 
     return sharedPtr;
 }

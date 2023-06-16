@@ -20,8 +20,7 @@ namespace Core::Graphics
     {
     protected:
         std::shared_ptr<API::IVertexArray> m_vertexArray;
-        std::list<std::shared_ptr<API::IVertexBuffer>> m_vertexBuffers;
-        std::shared_ptr<API::IIndexBuffer> m_indexBuffer;
+
     };
 }
 

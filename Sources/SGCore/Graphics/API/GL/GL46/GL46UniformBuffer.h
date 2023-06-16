@@ -9,10 +9,15 @@ namespace Core::Graphics::API::GL::GL46
 {
     class GL46UniformBuffer : public IUniformBuffer
     {
+    private:
+        std::uint32_t m_handler = 0;
+
     public:
         std::shared_ptr<IUniformBuffer> create() noexcept final;
 
         std::shared_ptr<IUniformBuffer> bind() noexcept final;
+
+        std::shared_ptr<IUniformBuffer> prepare() noexcept final;
 
         std::shared_ptr<IUniformBuffer> updateLocations(const IShader& fromShader) noexcept final;
 

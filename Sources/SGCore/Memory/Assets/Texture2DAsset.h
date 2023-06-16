@@ -30,6 +30,8 @@ namespace Core::Memory::Assets
         std::shared_ptr<std::uint8_t[]> m_textureData;
 
     public:
+        //Texture2DAsset() = default;
+
         [[nodiscard]] std::shared_ptr<IAsset> load(const std::string_view& path) override;
 
         std::shared_ptr<Graphics::API::ITexture2D> getTexture2D() noexcept;

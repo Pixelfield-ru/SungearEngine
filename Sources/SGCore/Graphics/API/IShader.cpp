@@ -4,16 +4,15 @@
 
 #include "IShader.h"
 
-Core::Graphics::API::IShader::~IShader()
+void Core::Graphics::API::IShader::addShaderDefines(const std::initializer_list<ShaderDefine>& shaderDefines)
 {
-    m_defines.clear();
-}
+    for(auto& shaderDefine : shaderDefines)
+    {
+        if(std::find(m_defines.begin(), m_defines.end(), shaderDefine) != m_defines.end()) return;
 
-void Core::Graphics::API::IShader::addShaderDefine(const Core::Graphics::API::ShaderDefine& shaderDefine)
-{
-    if(std::find(m_defines.begin(), m_defines.end(), shaderDefine) != m_defines.end()) return;
+        m_defines.push_back(shaderDefine);
+    }
 
-    m_defines.push_back(shaderDefine);
     onAssetModified();
 }
 

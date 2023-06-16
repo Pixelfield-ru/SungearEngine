@@ -1,6 +1,3 @@
-//
-// Created by stuka on 21.05.2023.
-//
 #pragma once
 
 #ifndef SUNGEARENGINE_GLINDEXBUFFER_H

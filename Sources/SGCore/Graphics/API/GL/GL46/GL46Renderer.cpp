@@ -75,13 +75,11 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
 
 // TODO: just test. delete
 void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(
-        const std::shared_ptr<ITexture2D>& texture2D,
-        const std::shared_ptr<IShader>& shader,
+        const std::shared_ptr<Memory::Assets::Material>& material,
         const std::shared_ptr<IUniformBuffer>& uniformBuffer,
         const std::shared_ptr<IVertexArray>& vertexArray)
 {
-    texture2D->bind();
-    shader->bind();
+    material->bind();
     uniformBuffer->bind();
     vertexArray->bind();
 

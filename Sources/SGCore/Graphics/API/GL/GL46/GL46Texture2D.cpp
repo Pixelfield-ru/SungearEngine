@@ -11,6 +11,8 @@
 Core::Graphics::API::GL::GL46::GL46Texture2D::~GL46Texture2D() noexcept
 {
     SGC_INFO("texture destroyed");
+
+    destroy();
 }
 
 // migrate to gl46
@@ -32,6 +34,8 @@ void Core::Graphics::API::GL::GL46::GL46Texture2D::create(std::weak_ptr<Memory::
     m_glFormat = GLGraphicsTypesCaster::sggFormatToGL(originalSharedPtr->getFormat());
 
     glCreateTextures(GL_TEXTURE_2D, 1, &m_handler);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     glTextureParameteri(m_handler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_handler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -70,7 +74,7 @@ void Core::Graphics::API::GL::GL46::GL46Texture2D::destroy() noexcept
 
 void Core::Graphics::API::GL::GL46::GL46Texture2D::bind() noexcept
 {
-    glBindTextureUnit(0, m_handler);
+    glBindTextureUnit(m_unit, m_handler);
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, m_handler);
 }
@@ -93,4 +97,13 @@ void Core::Graphics::API::GL::GL46::GL46Texture2D::onAssetDeleted() noexcept
 void Core::Graphics::API::GL::GL46::GL46Texture2D::onAssetRestored() noexcept
 {
 
+}
+
+std::shared_ptr<Core::Graphics::API::ITexture2D> Core::Graphics::API::GL::GL46::GL46Texture2D::operator=
+        (const std::shared_ptr<ITexture2D>& other)
+{
+    create(other->getAsset());
+    //m_unit = other->getUnit();
+
+    return shared_from_this();
 }

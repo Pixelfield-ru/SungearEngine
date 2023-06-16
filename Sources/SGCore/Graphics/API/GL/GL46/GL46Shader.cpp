@@ -1,7 +1,3 @@
-//
-// Created by stuka on 13.05.2023.
-//
-
 #include "GL46Shader.h"
 
 #include <vector>
@@ -10,12 +6,6 @@
 #include "SGCore/Logging/Log.h"
 #include "GL46Renderer.h"
 
-/*
-Core::Graphics::API::GL46::GL46Shader::GL46Shader(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
-{
-   *this = std::move(other);
-}
- */
 Core::Graphics::API::GL::GL46::GL46Shader::~GL46Shader() noexcept
 {
     destroy();

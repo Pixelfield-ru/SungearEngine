@@ -85,6 +85,12 @@ namespace Core::Graphics::API
 
         virtual std::shared_ptr<IUniformBuffer> bind() = 0;
 
+        /**
+         * Must be called after puData
+         * @return this
+         */
+        virtual std::shared_ptr<IUniformBuffer> prepare() = 0;
+
         virtual std::shared_ptr<IUniformBuffer> updateLocations(const IShader& fromShader) = 0;
 
         virtual void destroy() = 0;

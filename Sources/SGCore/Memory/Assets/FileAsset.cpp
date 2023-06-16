@@ -1,7 +1,3 @@
-//
-// Created by stuka on 09.05.2023.
-//
-
 #include <fstream>
 
 #include "FileAsset.h"

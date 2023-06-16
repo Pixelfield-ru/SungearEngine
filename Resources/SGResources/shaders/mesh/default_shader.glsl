@@ -1,40 +1,75 @@
 #ifdef VERTEX_SHADER
-    // id аттрибута = 0. позиции вершин. входной параметр
-    layout (location = 0) in vec3 positionAttribute;
-    // id аттрибута = 2. текстурная координата вершины. входной параметр
-    layout (location = 1) in vec3 textureCoordsAttribute;
-    layout (location = 2) in vec3 normalPositionAttribute;
+    layout (location = 0) in vec3 positionsAttribute;
+    layout (location = 1) in vec3 UVAttribute;
+    layout (location = 2) in vec3 normalsAttribute;
 
     uniform mat4 mvpMatrix;
 
-    out vec2 vs_textureCoords;
+    out VSOut
+    {
+        vec2 UV;
+    } vsOut;
 
     void main()
     {
-        vs_textureCoords = textureCoordsAttribute.xy;
+        vsOut.UV = UVAttribute.xy;
 
-        gl_Position = vec4(positionAttribute, 1.0);
+        gl_Position = vec4(positionsAttribute, 1.0);
     }
 #endif
 
 #ifdef FRAGMENT_SHADER
     out vec4 fragColor;
 
-    uniform sampler2D tex;
+    layout (binding = 0) uniform sampler2D material_baseColor;
+    layout (binding = 1) uniform sampler2D material_specularColor;
+    layout (binding = 2) uniform sampler2D material_roughness;
+    layout (binding = 3) uniform sampler2D material_normalMap;
+    layout (binding = 4) uniform sampler2D material_parallaxMap;
+    layout (binding = 5) uniform sampler2D material_occlusion;
+    layout (binding = 6) uniform sampler2D material_emissive;
 
-    uniform vec4 color;
-    uniform vec4 color0;
+    layout(std140, binding = 0) uniform SomeU
+    {
+        vec4 mega_color;
+        vec4 mega_color2;
+    };
 
-    in vec2 vs_textureCoords;
+    in VSOut
+    {
+        vec2 UV;
+    } vsIn;
 
     void main()
     {
-        #if defined(FLIP_TEXTURES_Y) && FLIP_TEXTURES_Y == 1
-                vec4 textureColor = texture(tex, vec2(vs_textureCoords.x, 1.0 - vs_textureCoords.y));
-        #else
-                vec4 textureColor = texture(tex, vec2(vs_textureCoords.x, vs_textureCoords.y));
+        vec4 colorFromBase = vec4(1);
+        vec4 colorFromSpecular = vec4(1);
+        vec4 colorFromRoughness = vec4(1);
+
+        #ifdef material_baseColor_DEFINED
+            #ifdef FLIP_TEXTURES_Y
+                colorFromBase = texture(material_baseColor, vec2(vsIn.UV.x, 1.0 - vsIn.UV.y));
+            #else
+                colorFromBase = texture(material_baseColor, vec2(vsIn.UV.x, vsIn.UV.y));
+            #endif
         #endif
 
-        fragColor = (color + color0) * textureColor * vec4(1.0);
+        #ifdef material_specularColor_DEFINED
+            #ifdef FLIP_TEXTURES_Y
+                colorFromSpecular = texture(material_specularColor, vec2(vsIn.UV.x, 1.0 - vsIn.UV.y));
+            #else
+                colorFromSpecular = texture(material_specularColor, vec2(vsIn.UV.x, vsIn.UV.y));
+            #endif
+        #endif
+
+        #ifdef material_roughness_DEFINED
+            #ifdef FLIP_TEXTURES_Y
+                colorFromRoughness = texture(material_roughness, vec2(vsIn.UV.x, 1.0 - vsIn.UV.y));
+            #else
+                colorFromRoughness = texture(material_roughness, vec2(vsIn.UV.x, vsIn.UV.y));
+            #endif
+        #endif
+
+        fragColor = (colorFromBase * 0.25 + colorFromSpecular * 0.55 + colorFromRoughness * 0.2) * vec4(1);
     }
 #endif

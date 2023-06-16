@@ -32,6 +32,8 @@ namespace Core::Graphics::API::GL::GL46
         void onAssetRestored() noexcept override;
 
         void bind() noexcept override;
+
+        std::shared_ptr<ITexture2D> operator=(const std::shared_ptr<ITexture2D>& other) final;
     };
 }
 

@@ -7,11 +7,17 @@
 
 std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL46::GL46UniformBuffer::create() noexcept
 {
+    glGenBuffers(1, &m_handler);
+    //glBindBuffer(GL_UNIFORM, m_handler);
+
     return shared_from_this();
 }
 
 std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL46::GL46UniformBuffer::bind() noexcept
 {
+
+
+    /*
     // TODO: opengl 3.1 code. must be updated to 4.6
     for(auto [uniformsIter, dataIterator] = std::tuple {m_uniforms.begin(), m_bufferLayout.begin() };
     uniformsIter != m_uniforms.end() && dataIterator != m_bufferLayout.end();
@@ -112,6 +118,20 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
 
             default: break;
         }
+    }
+     */
+
+    return shared_from_this();
+}
+
+std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL46::GL46UniformBuffer::prepare() noexcept
+{
+    glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
+    glBufferData(GL_UNIFORM_BUFFER, (GLsizeiptr) m_bufferSize, nullptr, GL_STATIC_DRAW);
+
+    for(auto& uniform : m_uniforms)
+    {
+        // TODO: доделать обновление информаций о юниформах на гпу
     }
 
     return shared_from_this();
