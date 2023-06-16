@@ -81,12 +81,11 @@ namespace Core::Graphics::API
             return shared_from_this();
         }
 
-        virtual std::shared_ptr<IUniformBuffer> create() = 0;
-
         virtual std::shared_ptr<IUniformBuffer> bind() = 0;
 
         /**
          * Must be called after puData
+         * Will reallocate buffer to resize. Be careful
          * @return this
          */
         virtual std::shared_ptr<IUniformBuffer> prepare() = 0;

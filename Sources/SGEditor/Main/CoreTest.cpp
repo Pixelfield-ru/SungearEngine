@@ -80,11 +80,14 @@ void init()
     testIndexBuffer = std::shared_ptr<Core::Graphics::API::IIndexBuffer>(Core::Main::Core::getRenderer().createIndexBuffer());
     testIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData({0, 1, 2, 3, 2, 0 });
 
+    // UNIFORM BUFFERS ARE WORKING NOW
     testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
     testUniformBuffer->putUniforms({
-        Core::Graphics::API::IShaderUniform("defaultMaterial.baseColor", SGGDataType::SGG_INT)
+        Core::Graphics::API::IShaderUniform("mega_color", SGGDataType::SGG_FLOAT3),
+        Core::Graphics::API::IShaderUniform("mega_color2", SGGDataType::SGG_FLOAT4)
     });
-    testUniformBuffer->putData<int>({ 0 });
+    testUniformBuffer->putData<float>({ 1, 1, 0.1 });
+    testUniformBuffer->putData<float>({ 0.5, 1, 1, 0 });
 
     testUniformBuffer->prepare();
 

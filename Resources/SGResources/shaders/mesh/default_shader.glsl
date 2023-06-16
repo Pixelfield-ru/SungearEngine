@@ -31,7 +31,9 @@
 
     layout(std140, binding = 0) uniform SomeU
     {
-        vec4 mega_color;
+        // base: 16     aligned: 0
+        vec3 mega_color;
+        // base: 16     aligned: 16
         vec4 mega_color2;
     };
 
@@ -70,6 +72,6 @@
             #endif
         #endif
 
-        fragColor = (colorFromBase * 0.25 + colorFromSpecular * 0.55 + colorFromRoughness * 0.2) * vec4(1);
+        fragColor = vec4(mega_color, 1.0) * mega_color2 * (colorFromBase * 0.25 + colorFromSpecular * 0.55 + colorFromRoughness * 0.2) * vec4(1);
     }
 #endif

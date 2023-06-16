@@ -10,8 +10,6 @@
 
 Core::Graphics::API::GL::GL46::GL46Texture2D::~GL46Texture2D() noexcept
 {
-    SGC_INFO("texture destroyed");
-
     destroy();
 }
 
@@ -62,7 +60,6 @@ void Core::Graphics::API::GL::GL46::GL46Texture2D::create(std::weak_ptr<Memory::
                         reinterpret_cast<const void*>(originalSharedPtr->getData().get()));
 
     #ifdef SUNGEAR_DEBUG
-    SGC_INFO("normik create texture");
     GL46Renderer::getInstance()->checkForErrors();
     #endif
 }

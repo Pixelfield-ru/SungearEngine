@@ -13,8 +13,6 @@ namespace Core::Graphics::API::GL::GL46
         std::uint32_t m_handler = 0;
 
     public:
-        std::shared_ptr<IUniformBuffer> create() noexcept final;
-
         std::shared_ptr<IUniformBuffer> bind() noexcept final;
 
         std::shared_ptr<IUniformBuffer> prepare() noexcept final;

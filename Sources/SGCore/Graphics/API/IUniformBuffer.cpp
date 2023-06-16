@@ -22,7 +22,7 @@ void Core::Graphics::API::IUniformBuffer::putUniforms
     // first iteration - finding total size of buffer
     for(auto& uniform: m_uniforms)
     {
-        m_bufferSize += getSGGDataTypeSizeInBytes(uniform.m_dataType);
+        m_bufferSize += getSGGDataTypeAlignedSizeInBytes(uniform.m_dataType);
     }
 
     //TODO: (possible) to add more memory allocation so as not to allocate frequently. allow only when there is not enough space
@@ -37,7 +37,7 @@ void Core::Graphics::API::IUniformBuffer::putUniforms
         for(auto& uniform : m_uniforms)
         {
             m_bufferLayout.push_back(curPtr);
-            curPtr += getSGGDataTypeSizeInBytes(uniform.m_dataType);
+            curPtr += getSGGDataTypeAlignedSizeInBytes(uniform.m_dataType);
         }
 
         m_currentLayoutPosition = m_bufferLayout.begin();
@@ -58,7 +58,7 @@ void Core::Graphics::API::IUniformBuffer::putUniforms
         for(auto & m_uniform : m_uniforms)
         {
             m_bufferLayout.push_back(curPtr);
-            curPtr += getSGGDataTypeSizeInBytes(m_uniform.m_dataType);
+            curPtr += getSGGDataTypeAlignedSizeInBytes(m_uniform.m_dataType);
         }
 
         // setting layout position to new buffer layout begin

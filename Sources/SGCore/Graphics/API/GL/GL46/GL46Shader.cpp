@@ -9,7 +9,6 @@
 Core::Graphics::API::GL::GL46::GL46Shader::~GL46Shader() noexcept
 {
     destroy();
-    //this->IShaderr();
 }
 
 // TODO: watch SGP1
@@ -254,8 +253,6 @@ void Core::Graphics::API::GL::GL46::GL46Shader::destroy() noexcept
     #endif
 
     m_shaderPartsHandlers.clear();
-
-    std::cout << "shader destroyed" << std::endl;
 }
 
 std::int32_t Core::Graphics::API::GL::GL46::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
