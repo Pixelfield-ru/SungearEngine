@@ -10,6 +10,7 @@
 #include <forward_list>
 
 #include "IShaderUniform.h"
+#include "SGCore/Logging/Log.h"
 
 namespace Core::Graphics::API
 {
@@ -29,6 +30,8 @@ namespace Core::Graphics::API
 
         // uniforms are just description of data
         std::list<IShaderUniform> m_uniforms;
+
+        virtual void subDataOnGAPISide(const std::int64_t& offset, const int& size) = 0;
     public:
         IUniformBuffer() = default;
 
@@ -39,26 +42,23 @@ namespace Core::Graphics::API
         void putUniforms(const std::list<IShaderUniform>& uniforms) noexcept;
 
         /**
-         * This method puts ONE uniform`s scalars to buffer.
+         * This method puts ONE uniform`s scalars to buffer\n
          * You need to put data strictly in accordance with UNIFORMS TYPES YOU PASSED TO
-         * putUniforms (or constructor) (except SGG_STRUCT_START and SGG_STRUCT_END)
+         * putUniforms (or constructor) (except SGG_STRUCT_START and SGG_STRUCT_END).\n
+         * You can put zero scalars (just { }). This will give extra speed.\n
+         * \n
+         * For example: you can put data with more than zero scalars for constant uniforms or for uniforms with a long update time interval.
+         * And for dynamically changing uniforms, you can put zero scalars.\n
+         * \n
+         * After put data you need to call prepare method and then you can use this buffer.\n
+         * \n
+         * This method recommended to use this method only after calling putUniforms.\n
+         * This method is faster than subData, but you cannot use putData instead of subData.\n
+         * \n
+         * Notice, that your data is copying to buffer.\n
          *
-         * Notice, that your data is copying to buffer
-         *
-         * Example:
-         *
-         * uniformBuffer->putUniforms({
-         *          Core::Graphics::API::IShaderUniform("color", SGGDataType::SGG_FLOAT4),
-         *          Core::Graphics::API::IShaderUniform("tex", SGGDataType::SGG_INT)
-         *          });
-         *
-         * // for uniform "color"
-         * uniformBuffer->putData<float>({ 0.5, 0.1, 0.5, 1.0});
-         * // for uniform "tex"
-         * uniformBuffer->putData<int>({ 0 });
-         *
-         * @tparam Scalar Scalars type
-         * @param scalars Uniform scalars
+         * @tparam Scalar - Scalars type
+         * @param scalars - Uniform scalars
          * @return This (shared_ptr)
          */
         template<typename Scalar>
@@ -67,16 +67,84 @@ namespace Core::Graphics::API
         {
             // local position between two uniforms to put current uniform`s scalar
             char* localPositionPtr = *m_currentLayoutPosition;
+
             for(auto& scalar : scalars)
             {
                 // copying scalar to current position (localPtr)
                 memcpy(localPositionPtr, &scalar, sizeof(scalar));
                 localPositionPtr += sizeof(scalar);
             }
+
             // increment iterator
             m_currentLayoutPosition++;
             // increment number of filled uniforms
             m_filledUniformsNum++;
+
+            return shared_from_this();
+        }
+
+        /**
+         * Allows you to update data for a uniform with the name uniformName.\n
+         * Sets a new set of scalar values for the uniform if the uniform was found in the buffer.\n
+         * \n
+         * Notice, that your data is copying to buffer.\n
+         * Notice, that you do not need to call prepare after subData.\n
+         *
+         * @tparam Scalar - Scalars type
+         * @param uniformName - Name of the uniform to update values for
+         * @param scalars - Values
+         * @return This (shared_ptr)
+         */
+        template<typename Scalar>
+        requires(std::is_scalar_v<Scalar>)
+        std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const std::initializer_list<Scalar>& scalars)
+        {
+            // bool to mark whether a uniform has been found
+            bool uniformFound = false;
+            // pointer to uniform in buffer
+            char* uniformPtr = m_buffer;
+
+            // aligned byte size of found uniform
+            int uniformAlignedByteSize = 0;
+
+            for(auto& uniform : m_uniforms)
+            {
+                // when the uniform was found
+                if(uniform.m_name == uniformName)
+                {
+                    uniformAlignedByteSize = getSGGDataTypeAlignedSizeInBytes(uniform.m_dataType);
+                    uniformFound = true;
+
+                    break;
+                }
+                else
+                {
+                    // adding offset until we reach the uniform
+                    uniformPtr += getSGGDataTypeAlignedSizeInBytes(uniform.m_dataType);
+                }
+            }
+
+            // if not found then error
+            if(!uniformFound)
+            {
+                SGCF_ERROR("Unable to subData for uniform \"" + uniformName + "\" in the uniform buffer. Uniform with that name was not found.", SG_LOG_CURRENT_SESSION_FILE);
+
+                return shared_from_this();
+            }
+
+            // uniform-local pointer to put scalars
+            char* uniformScalarPtr = uniformPtr;
+
+            for(auto& scalar : scalars)
+            {
+                // copying scalar to current position (uniformScalarPtr)
+                memcpy(uniformScalarPtr, &scalar, sizeof(scalar));
+                // offset
+                uniformScalarPtr += sizeof(scalar);
+            }
+
+            // updating data on graphics api side
+            subDataOnGAPISide(uniformPtr - m_buffer, uniformAlignedByteSize);
 
             return shared_from_this();
         }

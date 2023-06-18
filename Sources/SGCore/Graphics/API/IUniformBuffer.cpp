@@ -70,23 +70,3 @@ void Core::Graphics::API::IUniformBuffer::putUniforms
 
     SGCF_INFO("uniforms buffer size: " + std::to_string(m_bufferSize), SG_LOG_CURRENT_SESSION_FILE);
 }
-
-/*
-Core::Graphics::API::UniformsDataIterator Core::Graphics::API::UniformsDataIterator::operator++(int) noexcept
-{
-    m_current = m_next;
-    m_next = m_current->m_next;
-    m_previous = m_current->m_previous;
-
-    return *m_current;
-}
-
-Core::Graphics::API::UniformsDataIterator Core::Graphics::API::UniformsDataIterator::operator--(int) noexcept
-{
-    m_current = m_previous;
-    m_next = m_current->m_next;
-    m_previous = m_current->m_previous;
-
-    return *m_current;
-}
- */

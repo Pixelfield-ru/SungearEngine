@@ -3,8 +3,6 @@
     layout (location = 1) in vec3 UVAttribute;
     layout (location = 2) in vec3 normalsAttribute;
 
-    uniform mat4 mvpMatrix;
-
     out VSOut
     {
         vec2 UV;
@@ -29,18 +27,18 @@
     layout (binding = 5) uniform sampler2D material_occlusion;
     layout (binding = 6) uniform sampler2D material_emissive;
 
-    layout(std140, binding = 0) uniform SomeU
-    {
-        // base: 16     aligned: 0
-        vec3 mega_color;
-        // base: 16     aligned: 16
-        vec4 mega_color2;
-    };
-
     in VSOut
     {
         vec2 UV;
     } vsIn;
+
+    layout(std140, binding = 0) uniform SomeU
+    {
+        mat4 cameraProjectionMatrix;
+        mat4 cameraViewMatrix;
+        mat4 objectModelMatrix;
+        vec4 testColor;
+    };
 
     void main()
     {
@@ -72,6 +70,6 @@
             #endif
         #endif
 
-        fragColor = vec4(mega_color, 1.0) * mega_color2 * (colorFromBase * 0.25 + colorFromSpecular * 0.55 + colorFromRoughness * 0.2) * vec4(1);
+        fragColor = testColor * (colorFromBase * 0.25 + colorFromSpecular * 0.55 + colorFromRoughness * 0.2) * vec4(1);
     }
 #endif

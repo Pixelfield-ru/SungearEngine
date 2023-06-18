@@ -114,6 +114,12 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
     return shared_from_this();
 }
 
+void Core::Graphics::API::GL::GL46::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept
+{
+    glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, size, m_buffer + offset);
+}
+
 std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL46::GL46UniformBuffer::prepare() noexcept
 {
     destroy();

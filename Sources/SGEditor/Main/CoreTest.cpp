@@ -80,16 +80,23 @@ void init()
     testIndexBuffer = std::shared_ptr<Core::Graphics::API::IIndexBuffer>(Core::Main::Core::getRenderer().createIndexBuffer());
     testIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData({0, 1, 2, 3, 2, 0 });
 
-    // UNIFORM BUFFERS ARE WORKING NOW
+    // UNIFORM BUFFERS ARE WORKING NOW. SUBDATA WORKING TOO!!
     testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
     testUniformBuffer->putUniforms({
-        Core::Graphics::API::IShaderUniform("mega_color", SGGDataType::SGG_FLOAT3),
-        Core::Graphics::API::IShaderUniform("mega_color2", SGGDataType::SGG_FLOAT4)
+        Core::Graphics::API::IShaderUniform("cameraProjectionMatrix", SGGDataType::SGG_MAT4),
+        Core::Graphics::API::IShaderUniform("cameraViewMatrix", SGGDataType::SGG_MAT4),
+        Core::Graphics::API::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4),
+        Core::Graphics::API::IShaderUniform("testColor", SGGDataType::SGG_FLOAT4)
     });
-    testUniformBuffer->putData<float>({ 1, 1, 0.1 });
-    testUniformBuffer->putData<float>({ 0.5, 1, 1, 0 });
+    testUniformBuffer->putData<float>({ });
+    testUniformBuffer->putData<float>({ });
+    testUniformBuffer->putData<float>({ });
+
+    testUniformBuffer->putData<float>({ 1, 0, 0, 1 });
 
     testUniformBuffer->prepare();
+
+    testUniformBuffer->subData<float>("testColor", { 0, 1, 0, 1 });
 
     testMaterial = std::make_shared<Core::Memory::Assets::Material>();
     testMaterial->createAsPBR();

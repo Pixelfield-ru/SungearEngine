@@ -12,6 +12,7 @@ namespace Core::Graphics::API::GL::GL46
     private:
         std::uint32_t m_handler = 0;
 
+        void subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept final;
     public:
         std::shared_ptr<IUniformBuffer> bind() noexcept final;
 
