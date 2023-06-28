@@ -16,6 +16,7 @@
 #include "SGCore/Main/Callbacks.h"
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtx/quaternion.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 
 std::shared_ptr<Core::Memory::Assets::Texture2DAsset> texture2DAsset;
 
@@ -60,22 +61,22 @@ void init()
             ->putData({ // позиция
                               -0.5, -0.5, 0.0,
                               // uv
-                              0.0, 0.0, 0,
+                              1, 1, 0,
                               // нормаль
                               0.5, 0.1, 0,
 
                               // и т.д.
 
                               -0.5, 0.5, 0.0,
-                              0, 1, 0,
+                              1, 0, 0,
                               0.1, 0.4, 0,
 
                               0.5, 0.5, 0.0,
-                              1, 1, 0,
+                              0, 0, 0,
                               0.1, 0, 0.5,
 
                               0.5, -0.5, 0.0,
-                              1, 0, 0,
+                              0, 1, 0,
                               1, 1, 1
                       });
 
@@ -136,53 +137,78 @@ void init()
     // ----------------------------------------------------
 }
 
-float rotationCoeff = 0.25f;
+// -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
+float rotationCoeff = 0.075f;
 
-float speed = 0.25f;
+float cameraMovementSpeed = 0.05f;
 
-float cameraRotationX = 0;
-float cameraRotationY = 0;
+glm::vec3 cameraRotation;
 
-float cameraPositionX = 0;
-float cameraPositionZ = 0;
+glm::vec3 forward(0.0f, 0.0f, 1.0f);
+glm::vec3 left(-1.0f, 0.0f, 0.0f);
+glm::vec3 cameraPosition;
 
 void framePostRender()
 {
-    cameraRotationX += (float) -InputManager::getMainInputListener()->getMouseDeltaX() * rotationCoeff;
-    cameraRotationY += (float) InputManager::getMainInputListener()->getMouseDeltaY() * rotationCoeff;
+    cameraRotation.x += (float) -InputManager::getMainInputListener()->getCursorPositionDeltaY() * rotationCoeff;
+    cameraRotation.y += (float) -InputManager::getMainInputListener()->getCursorPositionDeltaX() * rotationCoeff;
 
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_R))
     {
-        cameraRotationX = cameraRotationY = cameraPositionX = cameraPositionZ = 0.0f;
+        cameraRotation.x = cameraRotation.y = cameraRotation.z = cameraPosition.x = cameraPosition.y = cameraPosition.z = 0.0f;
     }
 
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
     {
-        cameraPositionZ += speed;
+        glm::vec3 rotatedForward = forward;
+        rotatedForward = glm::rotate(rotatedForward, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
+        rotatedForward = glm::rotate(rotatedForward, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
+
+        cameraPosition += rotatedForward * cameraMovementSpeed;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
     {
-        cameraPositionZ -= speed;
+        glm::vec3 rotatedForward = forward;
+        rotatedForward = glm::rotate(rotatedForward, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
+        rotatedForward = glm::rotate(rotatedForward, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
+
+        cameraPosition -= rotatedForward * cameraMovementSpeed;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
     {
-        cameraPositionX += speed;
+        glm::vec3 rotatedLeft = left;
+        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
+        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
+
+        cameraPosition += rotatedLeft * cameraMovementSpeed;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
     {
-        cameraPositionX -= speed;
+        glm::vec3 rotatedLeft = left;
+        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
+        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
+
+        cameraPosition -= rotatedLeft * cameraMovementSpeed;
     }
 
-    cameraViewMatrix = glm::yawPitchRoll(glm::radians(cameraRotationX),
-                                         glm::radians(cameraRotationY),
-                                         0.0f);
-    cameraViewMatrix = glm::translate(cameraViewMatrix, glm::vec3(cameraPositionX, 0, cameraPositionZ));
+    if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))
+    {
+        Core::Main::Core::getWindow().setHideAndCentralizeCursor(!Core::Main::Core::getWindow().isHideAndCentralizeCursor());
+    }
+
+    glm::quat rotationQuat = glm::angleAxis(glm::radians(cameraRotation.x), glm::vec3(1, 0, 0));
+    rotationQuat *= glm::angleAxis(glm::radians(cameraRotation.y), glm::vec3(0, 1, 0));
+
+    cameraViewMatrix = glm::toMat4(rotationQuat);
+    cameraViewMatrix = glm::translate(cameraViewMatrix, cameraPosition);
 
     testUniformBuffer->subData("cameraViewMatrix", glm::value_ptr(cameraViewMatrix), 16);
     testUniformBuffer->subData("objectModelMatrix", glm::value_ptr(modelMatrix), 16);
 
     Core::Main::Core::getRenderer().renderMesh(testMaterial, testUniformBuffer, testVertexArray);
 }
+
+// --------------------------------------------
 
 int main()
 {

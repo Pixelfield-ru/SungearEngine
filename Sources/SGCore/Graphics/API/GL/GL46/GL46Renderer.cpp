@@ -86,7 +86,7 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(
     uniformBuffer->bind();
     vertexArray->bind();
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, vertexArray->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
 Core::Graphics::API::GL::GL46::GL46Shader* Core::Graphics::API::GL::GL46::GL46Renderer::createShader()

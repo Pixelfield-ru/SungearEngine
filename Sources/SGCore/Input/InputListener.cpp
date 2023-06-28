@@ -1,5 +1,6 @@
 #include "InputListener.h"
 #include "InputManager.h"
+#include "SGCore/Main/Core.h"
 
 InputListener::InputListener() noexcept
 {
@@ -10,13 +11,13 @@ void InputListener::startFrame() noexcept
 {
     if(!m_focusedWindowHandler) return;
 
-    m_mouseLastX = m_mouseX;
-    m_mouseLastY = m_mouseY;
+    m_cursorPositionLastX = m_cursorPositionX;
+    m_cursorPositionLastY = m_cursorPositionY;
 
-    glfwGetCursorPos(m_focusedWindowHandler, &m_mouseX, &m_mouseY);
+    updateCursorPosition();
 
-    m_mouseDeltaX = m_mouseX - m_mouseLastX;
-    m_mouseDeltaY = m_mouseY - m_mouseLastY;
+    m_cursorPositionDeltaX = m_cursorPositionX - m_cursorPositionLastX;
+    m_cursorPositionDeltaY = m_cursorPositionY - m_cursorPositionLastY;
 }
 
 void InputListener::notifyKeyboard(GLFWwindow* wnd, const int& key, const int& action) noexcept
@@ -72,33 +73,40 @@ bool InputListener::mouseButtonReleased(const int& button) noexcept
     return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && m_focusedWindowHandler && lastAction == GLFW_PRESS && m_mouseButtons[button] == GLFW_RELEASE;
 }
 
-double InputListener::getMouseLastX() const noexcept
+double InputListener::getCursorPositionLastX() const noexcept
 {
-    return m_mouseLastX;
+    return m_cursorPositionLastX;
 }
 
-double InputListener::getMouseLastY() const noexcept
+double InputListener::getCursorPositionLastY() const noexcept
 {
-    return m_mouseLastY;
+    return m_cursorPositionLastY;
 }
 
-double InputListener::getMouseX() const noexcept
+double InputListener::getCursorPositionX() const noexcept
 {
-    return m_mouseX;
+    return m_cursorPositionX;
 }
 
-double InputListener::getMouseY() const noexcept
+double InputListener::getCursorPositionY() const noexcept
 {
-    return m_mouseY;
+    return m_cursorPositionY;
 }
 
-double InputListener::getMouseDeltaX() const noexcept
+double InputListener::getCursorPositionDeltaX() const noexcept
 {
-    return m_mouseDeltaX;
+    return m_cursorPositionDeltaX;
 }
 
-double InputListener::getMouseDeltaY() const noexcept
+double InputListener::getCursorPositionDeltaY() const noexcept
 {
-    return m_mouseDeltaY;
+    return m_cursorPositionDeltaY;
+}
+
+void InputListener::updateCursorPosition() noexcept
+{
+    if(!m_focusedWindowHandler) return;
+
+    glfwGetCursorPos(m_focusedWindowHandler, &m_cursorPositionX, &m_cursorPositionY);
 }
 

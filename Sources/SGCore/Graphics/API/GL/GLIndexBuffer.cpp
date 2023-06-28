@@ -42,6 +42,11 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)), (const void*) &m_data[0],
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
 
+    if(Core::Main::Core::getRenderer().m_currentBoundVertexArray)
+    {
+        Core::Main::Core::getRenderer().m_currentBoundVertexArray->m_indicesCount = m_data.size();
+    }
+
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
@@ -65,6 +70,8 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
 std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_handler);
+
+    Core::Main::Core::getRenderer().m_currentBoundIndexBuffer = this;
 
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();

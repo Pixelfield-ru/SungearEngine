@@ -37,5 +37,7 @@ std::shared_ptr<Core::Graphics::API::IVertexArray> Core::Graphics::API::GL::GLVe
 {
     glBindVertexArray(m_handler);
 
+    Core::Main::Core::getRenderer().m_currentBoundVertexArray = this;
+
     return shared_from_this();
 }

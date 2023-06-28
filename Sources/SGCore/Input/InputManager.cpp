@@ -16,6 +16,20 @@ void InputManager::startFrame() noexcept
     {
         inputListener->startFrame();
     }
+
+    if(Core::Main::Core::getWindow().isHideAndCentralizeCursor())
+    {
+        int windowSizeX;
+        int windowSizeY;
+
+        Core::Main::Core::getWindow().getSize(windowSizeX, windowSizeY);
+        Core::Main::Core::getWindow().setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
+
+        for(const auto& inputListener : m_inputListeners)
+        {
+            inputListener->updateCursorPosition();
+        }
+    }
 }
 
 void InputManager::keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)

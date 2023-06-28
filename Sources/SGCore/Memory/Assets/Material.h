@@ -24,9 +24,7 @@ namespace Core::Memory::Assets
     class Material : public std::enable_shared_from_this<Material>, public IAsset
     {
     private:
-        // why the fuck std unordered map is so shit
-        // i`ve done just unordered_map, but with ability to take last element
-        std::list<std::tuple<std::string, std::shared_ptr<Graphics::API::ITexture2D>>> m_textures;
+        std::map<std::string, std::shared_ptr<Graphics::API::ITexture2D>> m_textures;
         std::shared_ptr<Graphics::API::IShader> m_shader;
 
     public:

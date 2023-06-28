@@ -17,17 +17,16 @@ private:
     bool m_keyboardKeys[GLFW_KEY_LAST];
     bool m_mouseButtons[GLFW_MOUSE_BUTTON_LAST];
 
-    double m_mouseLastX = 0;
-    double m_mouseLastY = 0;
+    double m_cursorPositionLastX = 0;
+    double m_cursorPositionLastY = 0;
 
-    double m_mouseX = 0;
-    double m_mouseY = 0;
+    double m_cursorPositionX = 0;
+    double m_cursorPositionY = 0;
 
-    double m_mouseDeltaX = 0;
-    double m_mouseDeltaY = 0;
+    double m_cursorPositionDeltaX = 0;
+    double m_cursorPositionDeltaY = 0;
 
     GLFWwindow* m_focusedWindowHandler = nullptr;
-    //std::mutex m_inputMutex;
 
 public:
     InputListener() noexcept;
@@ -45,14 +44,16 @@ public:
     bool mouseButtonPressed(const int&) noexcept;
     bool mouseButtonReleased(const int&) noexcept;
 
-    double getMouseLastX() const noexcept;
-    double getMouseLastY() const noexcept;
+    double getCursorPositionLastX() const noexcept;
+    double getCursorPositionLastY() const noexcept;
 
-    double getMouseX() const noexcept;
-    double getMouseY() const noexcept;
+    double getCursorPositionX() const noexcept;
+    double getCursorPositionY() const noexcept;
 
-    double getMouseDeltaX() const noexcept;
-    double getMouseDeltaY() const noexcept;
+    double getCursorPositionDeltaX() const noexcept;
+    double getCursorPositionDeltaY() const noexcept;
+
+    void updateCursorPosition() noexcept;
 };
 
 

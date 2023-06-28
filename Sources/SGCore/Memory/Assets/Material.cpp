@@ -29,9 +29,7 @@ std::shared_ptr<Core::Memory::Assets::Material> Core::Memory::Assets::Material::
     m_shader->bind();
     for(auto& textureTuple : m_textures)
     {
-        std::shared_ptr<Graphics::API::ITexture2D> texture2D = std::get<1>(textureTuple);
-
-        texture2D->bind();
+        textureTuple.second->bind();
     }
 
     return shared_from_this();
@@ -46,9 +44,9 @@ std::shared_ptr<Core::Memory::Assets::Material> Core::Memory::Assets::Material::
         (const std::string& name, const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset) noexcept
 {
     // if this texture not exists
-    if(getTexture2D(name) == nullptr)
+    if(m_textures.find(name) == m_textures.end())
     {
-        m_textures.emplace_back( name, texture2DAsset->getTexture2D() );
+        m_textures[name] = texture2DAsset->getTexture2D();
         m_shader->addShaderDefines({Graphics::API::ShaderDefine(name + "_DEFINED", "")});
     }
 
@@ -59,19 +57,28 @@ std::shared_ptr<Core::Memory::Assets::Material> Core::Memory::Assets::Material::
 (const std::string& name, const std::string& path) noexcept
 {
     // if this texture not exists
-    if(getTexture2D(name) == nullptr)
+    if(m_textures.find(name) == m_textures.end())
     {
         std::shared_ptr<Graphics::API::ITexture2D> foundTex(Core::Main::Core::getRenderer().createTexture2D());
         *foundTex = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(path)->getTexture2D();
 
+        // current max found unit
+        int maxUnit = 0;
         if(!m_textures.empty())
         {
-            auto lastTuple = *std::prev(m_textures.end());
+            for(auto& texPair : m_textures)
+            {
+                auto& texture = texPair.second;
+                if(texture->getUnit() > maxUnit)
+                {
+                    maxUnit = texture->getUnit();
+                }
+            }
 
-            foundTex->setUnit(std::get<1>(lastTuple)->getUnit() + 1);
+            foundTex->setUnit(maxUnit + 1);
         }
 
-        m_textures.emplace_back(name, foundTex);
+        m_textures[name] = foundTex;
         m_shader->addShaderDefines({ Graphics::API::ShaderDefine(name + "_DEFINED", "") });
     }
 
@@ -80,18 +87,12 @@ std::shared_ptr<Core::Memory::Assets::Material> Core::Memory::Assets::Material::
 
 std::shared_ptr<Core::Graphics::API::ITexture2D> Core::Memory::Assets::Material::getTexture2D(const std::string& name) noexcept
 {
-    for(auto& textureTuple : m_textures)
-    {
-        if(std::get<0>(textureTuple) == name) return std::get<1>(textureTuple);
-    }
-
-    return nullptr;
+    return m_textures[name];
 }
 
 std::shared_ptr<Core::Memory::Assets::Material> Core::Memory::Assets::Material::setTexture2D
 (const std::string_view& name, const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset) noexcept
 {
-    //getTexture2D(name.data()) = texture2DAsset->getTexture2D();
     *getTexture2D(name.data()) = texture2DAsset->getTexture2D();
 
     return shared_from_this();

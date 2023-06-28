@@ -14,6 +14,8 @@ namespace Core::Graphics::API
     class IVertexArray : public std::enable_shared_from_this<IVertexArray>
     {
     public:
+        std::uint64_t m_indicesCount = 0;
+
         virtual ~IVertexArray() = default;
 
         virtual std::shared_ptr<IVertexArray> create() = 0;
