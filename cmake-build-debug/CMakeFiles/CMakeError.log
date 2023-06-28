@@ -1,10 +1,10 @@
 Performing C SOURCE FILE Test JNI_INCLUDE_PATH2_OPTIONAL failed with the following output:
-Change Dir: D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nes4rs
+Change Dir: D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-ex87uc
 
-Run Build Command(s):D:/Programming/JetBrains/apps/CLion/ch-0/231.9011.31/bin/ninja/win/x64/ninja.exe cmTC_fbd0b && [1/2] Building C object CMakeFiles/cmTC_fbd0b.dir/src.c.obj
-FAILED: CMakeFiles/cmTC_fbd0b.dir/src.c.obj 
-D:\Programming\JetBrains\apps\CLion\ch-0\231.9011.31\bin\mingw\bin\gcc.exe -DJNI_INCLUDE_PATH2_OPTIONAL -I"C:/Program Files/Java/jdk-17/include" -fdiagnostics-color=always -o CMakeFiles/cmTC_fbd0b.dir/src.c.obj -c D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nes4rs/src.c
-In file included from D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nes4rs/src.c:2:
+Run Build Command(s):D:/Programming/JetBrains/apps/CLion/ch-0/231.9161.40/bin/ninja/win/x64/ninja.exe cmTC_f7aa0 && [1/2] Building C object CMakeFiles/cmTC_f7aa0.dir/src.c.obj
+FAILED: CMakeFiles/cmTC_f7aa0.dir/src.c.obj 
+D:\Programming\JetBrains\apps\CLion\ch-0\231.9161.40\bin\mingw\bin\gcc.exe -DJNI_INCLUDE_PATH2_OPTIONAL -I"C:/Program Files/Java/jdk-17/include" -fdiagnostics-color=always -o CMakeFiles/cmTC_f7aa0.dir/src.c.obj -c D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-ex87uc/src.c
+In file included from D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-ex87uc/src.c:2:
 C:/Program Files/Java/jdk-17/include/jni.h:45:10: fatal error: jni_md.h: No such file or directory
    45 | #include "jni_md.h"
       |          ^~~~~~~~~~

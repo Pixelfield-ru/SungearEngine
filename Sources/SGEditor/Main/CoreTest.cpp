@@ -8,9 +8,14 @@
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Graphics/API/IShaderUniform.h"
 #include "SGCore/Memory/Assets/Material.h"
-#include "stb_image.h"
 
-#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "SGCore/Main/Callbacks.h"
+#include "glm/gtx/euler_angles.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 std::shared_ptr<Core::Memory::Assets::Texture2DAsset> texture2DAsset;
 
@@ -33,6 +38,11 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> testUniformBuffer;
 
 std::shared_ptr<Core::Memory::Assets::Material> testMaterial;
 
+glm::mat4 cameraProjectionMatrix;
+glm::mat4 cameraViewMatrix = glm::mat4(1.0f);
+glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+
 void init()
 {
     // найс это работает. TODO: убрать! просто ради теста ---------------------
@@ -48,7 +58,7 @@ void init()
             ->create()
             ->bind()
             ->putData({ // позиция
-                              0, 0.0, 0.0,
+                              -0.5, -0.5, 0.0,
                               // uv
                               0.0, 0.0, 0,
                               // нормаль
@@ -56,15 +66,15 @@ void init()
 
                               // и т.д.
 
-                              0.0, 1.0, 0.0,
+                              -0.5, 0.5, 0.0,
                               0, 1, 0,
                               0.1, 0.4, 0,
 
-                              1, 1.0, 0.0,
+                              0.5, 0.5, 0.0,
                               1, 1, 0,
                               0.1, 0, 0.5,
 
-                              1, 0.0, 0.0,
+                              0.5, -0.5, 0.0,
                               1, 0, 0,
                               1, 1, 1
                       });
@@ -79,6 +89,22 @@ void init()
 
     testIndexBuffer = std::shared_ptr<Core::Graphics::API::IIndexBuffer>(Core::Main::Core::getRenderer().createIndexBuffer());
     testIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData({0, 1, 2, 3, 2, 0 });
+
+    int windowWidth;
+    int windowHeight;
+
+    Core::Main::Core::getWindow().getSize(windowWidth, windowHeight);
+
+    // matrices init
+    cameraProjectionMatrix = glm::perspective<float>(75.0f, (float) windowWidth / (float) windowHeight, 1, 200);
+
+    cameraViewMatrix = glm::scale(cameraViewMatrix, glm::vec3(1, 1, 1));
+    //glm::rotate(cameraViewMatrix, glm::radians(0.0f), glm::vec3(0, 0, 0));
+    cameraViewMatrix = glm::translate(cameraViewMatrix, glm::vec3(0, 0, 0));
+
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -10));
+    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0, 0, 0));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1));
 
     // UNIFORM BUFFERS ARE WORKING NOW. SUBDATA WORKING TOO!!
     testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
@@ -97,6 +123,7 @@ void init()
     testUniformBuffer->prepare();
 
     testUniformBuffer->subData<float>("testColor", { 0, 1, 0, 1 });
+    testUniformBuffer->subData("cameraProjectionMatrix", glm::value_ptr(cameraProjectionMatrix), 16);
 
     testMaterial = std::make_shared<Core::Memory::Assets::Material>();
     testMaterial->createAsPBR();
@@ -109,8 +136,51 @@ void init()
     // ----------------------------------------------------
 }
 
+float rotationCoeff = 0.25f;
+
+float speed = 0.25f;
+
+float cameraRotationX = 0;
+float cameraRotationY = 0;
+
+float cameraPositionX = 0;
+float cameraPositionZ = 0;
+
 void framePostRender()
 {
+    cameraRotationX += (float) -InputManager::getMainInputListener()->getMouseDeltaX() * rotationCoeff;
+    cameraRotationY += (float) InputManager::getMainInputListener()->getMouseDeltaY() * rotationCoeff;
+
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_R))
+    {
+        cameraRotationX = cameraRotationY = cameraPositionX = cameraPositionZ = 0.0f;
+    }
+
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
+    {
+        cameraPositionZ += speed;
+    }
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
+    {
+        cameraPositionZ -= speed;
+    }
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
+    {
+        cameraPositionX += speed;
+    }
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
+    {
+        cameraPositionX -= speed;
+    }
+
+    cameraViewMatrix = glm::yawPitchRoll(glm::radians(cameraRotationX),
+                                         glm::radians(cameraRotationY),
+                                         0.0f);
+    cameraViewMatrix = glm::translate(cameraViewMatrix, glm::vec3(cameraPositionX, 0, cameraPositionZ));
+
+    testUniformBuffer->subData("cameraViewMatrix", glm::value_ptr(cameraViewMatrix), 16);
+    testUniformBuffer->subData("objectModelMatrix", glm::value_ptr(modelMatrix), 16);
+
     Core::Main::Core::getRenderer().renderMesh(testMaterial, testUniformBuffer, testVertexArray);
 }
 

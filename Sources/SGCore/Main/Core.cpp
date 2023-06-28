@@ -41,6 +41,8 @@ void Core::Main::Core::update()
 {
     while(!m_window.shouldClose())
     {
+        InputManager::startFrame();
+
         m_globalTimer.startFrame();
 
         glm::ivec2 windowSize;

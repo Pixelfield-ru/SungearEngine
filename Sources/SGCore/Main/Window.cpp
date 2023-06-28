@@ -30,6 +30,7 @@ void Core::Main::Window::create()
     glfwSetWindowIconifyCallback(m_handler, windowIconifyCallback);
     glfwSetKeyCallback(m_handler, InputManager::keyboardKeyCallback);
     glfwSetMouseButtonCallback(m_handler, InputManager::mouseButtonCallback);
+    glfwSetCursorPosCallback(m_handler, InputManager::cursorPositionCallback);
 
     glfwMakeContextCurrent(m_handler);
 
@@ -132,6 +133,12 @@ void Core::Main::Window::setTitle(const std::string& title) noexcept
     m_config.m_title = title;
 
     glfwSetWindowTitle(m_handler, title.c_str());
+}
+
+
+void Core::Main::Window::setCursorPosition(const double& x, const double& y) noexcept
+{
+    glfwSetCursorPos(m_handler, x, y);
 }
 
 #pragma endregion

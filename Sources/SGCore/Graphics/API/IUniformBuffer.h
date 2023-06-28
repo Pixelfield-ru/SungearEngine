@@ -40,7 +40,6 @@ namespace Core::Graphics::API
         virtual ~IUniformBuffer();
 
         void putUniforms(const std::list<IShaderUniform>& uniforms) noexcept;
-
         /**
          * This method puts ONE uniform`s scalars to buffer\n
          * You need to put data strictly in accordance with UNIFORMS TYPES YOU PASSED TO
@@ -84,20 +83,21 @@ namespace Core::Graphics::API
         }
 
         /**
-         * Allows you to update data for a uniform with the name uniformName.\n
-         * Sets a new set of scalar values for the uniform if the uniform was found in the buffer.\n
+         * Method that allows you change some uniform`s data.\n
+         * This method is slower than the putData method, but through putData you cannot substitute data of any uniform.\n
          * \n
          * Notice, that your data is copying to buffer.\n
          * Notice, that you do not need to call prepare after subData.\n
          *
          * @tparam Scalar - Scalars type
-         * @param uniformName - Name of the uniform to update values for
-         * @param scalars - Values
+         * @param uniformName - The name of the uniform whose values need to be replaced
+         * @param scalars - Values (buffer)
+         * @param scalarsNum - Number of values in the buffer
          * @return This (shared_ptr)
          */
         template<typename Scalar>
         requires(std::is_scalar_v<Scalar>)
-        std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const std::initializer_list<Scalar>& scalars)
+        std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
         {
             // bool to mark whether a uniform has been found
             bool uniformFound = false;
@@ -135,18 +135,33 @@ namespace Core::Graphics::API
             // uniform-local pointer to put scalars
             char* uniformScalarPtr = uniformPtr;
 
-            for(auto& scalar : scalars)
+            for(int i = 0; i < scalarsNum; i++)
             {
                 // copying scalar to current position (uniformScalarPtr)
-                memcpy(uniformScalarPtr, &scalar, sizeof(scalar));
+                memcpy(uniformScalarPtr, &scalars[i], sizeof(scalars[i]));
                 // offset
-                uniformScalarPtr += sizeof(scalar);
+                uniformScalarPtr += sizeof(scalars[i]);
             }
 
             // updating data on graphics api side
             subDataOnGAPISide(uniformPtr - m_buffer, uniformAlignedByteSize);
 
             return shared_from_this();
+        }
+
+        /**
+         * @see std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
+         *
+         * @tparam Scalar - Scalars type
+         * @param uniformName - The name of the uniform whose values need to be replaced
+         * @param scalars - Values
+         * @return This (shared_ptr)
+         */
+        template<typename Scalar>
+        requires(std::is_scalar_v<Scalar>)
+        std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const std::initializer_list<Scalar>& scalars)
+        {
+            return subData(uniformName, data(scalars), scalars.size());
         }
 
         virtual std::shared_ptr<IUniformBuffer> bind() = 0;

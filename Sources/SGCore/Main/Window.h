@@ -34,7 +34,7 @@ namespace Core::Main
 
         std::string m_title = "Powered by Core";
 
-        bool m_swapInterval = false;
+        bool m_swapInterval = true;
 
         bool m_enableStickyKeys = false;
 
@@ -43,6 +43,8 @@ namespace Core::Main
         bool m_centralizeWindow = true;
 
         bool m_useHalfMonitor = true;
+
+        bool m_hideAndCentralizeCursor = true;
         // --------------------------------------------------------
 
         explicit WindowConfig() noexcept = default;
@@ -97,6 +99,8 @@ namespace Core::Main
         void setShouldClose(const bool&) noexcept;
 
         void setTitle(const std::string&) noexcept;
+
+        void setCursorPosition(const double&, const double&) noexcept;
 
         #pragma endregion
 

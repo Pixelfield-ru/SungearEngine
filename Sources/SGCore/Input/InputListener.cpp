@@ -3,7 +3,20 @@
 
 InputListener::InputListener() noexcept
 {
-    //InputManager::addInputListener(std::shared_ptr<InputListener>(this));
+    // TODO: AUTO ADD TO MANAGER
+}
+
+void InputListener::startFrame() noexcept
+{
+    if(!m_focusedWindowHandler) return;
+
+    m_mouseLastX = m_mouseX;
+    m_mouseLastY = m_mouseY;
+
+    glfwGetCursorPos(m_focusedWindowHandler, &m_mouseX, &m_mouseY);
+
+    m_mouseDeltaX = m_mouseX - m_mouseLastX;
+    m_mouseDeltaY = m_mouseY - m_mouseLastY;
 }
 
 void InputListener::notifyKeyboard(GLFWwindow* wnd, const int& key, const int& action) noexcept
@@ -39,6 +52,7 @@ bool InputListener::keyboardKeyReleased(const int& key) noexcept
 
 bool InputListener::mouseButtonDown(const int& button) noexcept
 {
+    //std::cout <<  m_focusedWindowHandler << std::endl;
     return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && m_focusedWindowHandler && glfwGetMouseButton(m_focusedWindowHandler, button) == GLFW_PRESS;
 }
 
@@ -56,5 +70,35 @@ bool InputListener::mouseButtonReleased(const int& button) noexcept
     m_mouseButtons[button] = mouseButtonDown(button);
 
     return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && m_focusedWindowHandler && lastAction == GLFW_PRESS && m_mouseButtons[button] == GLFW_RELEASE;
+}
+
+double InputListener::getMouseLastX() const noexcept
+{
+    return m_mouseLastX;
+}
+
+double InputListener::getMouseLastY() const noexcept
+{
+    return m_mouseLastY;
+}
+
+double InputListener::getMouseX() const noexcept
+{
+    return m_mouseX;
+}
+
+double InputListener::getMouseY() const noexcept
+{
+    return m_mouseY;
+}
+
+double InputListener::getMouseDeltaX() const noexcept
+{
+    return m_mouseDeltaX;
+}
+
+double InputListener::getMouseDeltaY() const noexcept
+{
+    return m_mouseDeltaY;
 }
 

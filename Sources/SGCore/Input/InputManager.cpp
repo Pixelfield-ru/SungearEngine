@@ -3,10 +3,19 @@
 //
 
 #include "InputManager.h"
+#include "SGCore/Main/Core.h"
 
 void InputManager::init() noexcept
 {
     addInputListener(mainInputListener);
+}
+
+void InputManager::startFrame() noexcept
+{
+    for(const auto& inputListener : m_inputListeners)
+    {
+        inputListener->startFrame();
+    }
 }
 
 void InputManager::keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
@@ -39,4 +48,21 @@ void InputManager::removeInputListener(const std::shared_ptr<InputListener>& inp
 {
     const std::lock_guard<std::mutex> guard(m_keysMutex);
     m_inputListeners.remove(inputListener);
+}
+
+std::shared_ptr<InputListener> InputManager::getMainInputListener() noexcept
+{
+    return mainInputListener;
+}
+
+void InputManager::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    /*if(Core::Main::Core::getWindow().getConfig().m_hideAndCentralizeCursor)
+    {
+        int windowSizeX;
+        int windowSizeY;
+
+        Core::Main::Core::getWindow().getSize(windowSizeX, windowSizeY);
+        Core::Main::Core::getWindow().setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
+    }*/
 }

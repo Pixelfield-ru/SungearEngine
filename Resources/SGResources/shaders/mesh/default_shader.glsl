@@ -8,11 +8,19 @@
         vec2 UV;
     } vsOut;
 
+    layout(std140, binding = 0) uniform SomeU
+    {
+        mat4 cameraProjectionMatrix;
+        mat4 cameraViewMatrix;
+        mat4 objectModelMatrix;
+        vec4 testColor;
+    };
+
     void main()
     {
         vsOut.UV = UVAttribute.xy;
 
-        gl_Position = vec4(positionsAttribute, 1.0);
+        gl_Position = cameraProjectionMatrix * cameraViewMatrix * objectModelMatrix * vec4(positionsAttribute.xy, positionsAttribute.z, 1.0);
     }
 #endif
 
@@ -31,14 +39,6 @@
     {
         vec2 UV;
     } vsIn;
-
-    layout(std140, binding = 0) uniform SomeU
-    {
-        mat4 cameraProjectionMatrix;
-        mat4 cameraViewMatrix;
-        mat4 objectModelMatrix;
-        vec4 testColor;
-    };
 
     void main()
     {
@@ -70,6 +70,6 @@
             #endif
         #endif
 
-        fragColor = testColor * (colorFromBase * 0.25 + colorFromSpecular * 0.55 + colorFromRoughness * 0.2) * vec4(1);
+        fragColor = (colorFromBase * 0.25 + colorFromSpecular * 0.55 + colorFromRoughness * 0.2) * vec4(1);
     }
 #endif
