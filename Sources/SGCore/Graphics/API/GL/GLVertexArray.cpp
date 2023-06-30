@@ -26,7 +26,11 @@ std::shared_ptr<Core::Graphics::API::IVertexArray> Core::Graphics::API::GL::GLVe
 
 void Core::Graphics::API::GL::GLVertexArray::destroy() noexcept
 {
-    glDeleteVertexArrays(1, &m_handler);
+    if(glIsBuffer(m_handler))
+    {
+        glDeleteVertexArrays(1, &m_handler);
+        std::cout << "deleted buf" << std::endl;
+    }
 
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();

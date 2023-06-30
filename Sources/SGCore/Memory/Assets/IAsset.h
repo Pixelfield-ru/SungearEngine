@@ -19,7 +19,7 @@ namespace Core::Memory::Assets
 
     class IAsset
     {
-    private:
+    protected:
         long m_lastModified = -1;
         std::string_view m_path;
         std::list<IAssetObserver*> m_observers;

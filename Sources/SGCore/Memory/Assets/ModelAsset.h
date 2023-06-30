@@ -8,25 +8,28 @@
 #define NATIVECORE_MODELASSET_H
 
 #include "IAsset.h"
-#include "SGCore/Graphics/API/IVertexArray.h"
-#include "SGCore/Graphics/API/IVertexBuffer.h"
-#include "SGCore/Graphics/API/IIndexBuffer.h"
+
+#include "SGCore/Graphics/IMesh.h"
+
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
 
 namespace Core::Memory::Assets
 {
     class ModelAsset : public IAsset, public std::enable_shared_from_this<ModelAsset>
     {
     private:
-        std::shared_ptr<Graphics::API::IVertexArray> m_vertexArray;
-
-        std::shared_ptr<Graphics::API::IVertexBuffer> m_vPositionsBuffer;
-        std::shared_ptr<Graphics::API::IVertexBuffer> m_uvBuffer;
-        std::shared_ptr<Graphics::API::IVertexBuffer> m_normalsBuffer;
-
-        std::shared_ptr<Graphics::API::IIndexBuffer> m_indexBuffer;
+        // local import flags
+        // TODO: maybe reimport after change flags
+        int m_importerFlags = 0;
 
     public:
+        std::vector<std::shared_ptr<Graphics::IMesh>> m_meshes;
+
         std::shared_ptr<IAsset> load(const std::string_view&) override;
+
+        void processNode(const aiNode*, const aiScene*);
+        std::shared_ptr<Graphics::IMesh> processMesh(const aiMesh*, const aiScene*);
     };
 }
 

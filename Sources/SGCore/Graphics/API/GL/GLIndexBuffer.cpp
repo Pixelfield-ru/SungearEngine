@@ -35,7 +35,7 @@ void Core::Graphics::API::GL::GLIndexBuffer::destroy() noexcept
     #endif
 }
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::putData(std::vector<int> data) noexcept
+std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::putData(std::vector<std::uint32_t> data) noexcept
 {
     m_data = std::move(data);
 
@@ -55,7 +55,7 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
 }
 
 std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::subData
-        (std::vector<int> data, const int& offset) noexcept
+        (std::vector<std::uint32_t> data, const int& offset) noexcept
 {
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)),
                     (const void*) &m_data[0]);

@@ -26,8 +26,8 @@ namespace Core::Graphics::API
 
         virtual void destroy() = 0;
 
-        virtual std::shared_ptr<IIndexBuffer> putData(std::vector<int> data) = 0;
-        virtual std::shared_ptr<IIndexBuffer> subData(std::vector<int> data, const int& offset) = 0;
+        virtual std::shared_ptr<IIndexBuffer> putData(std::vector<std::uint32_t> data) = 0;
+        virtual std::shared_ptr<IIndexBuffer> subData(std::vector<std::uint32_t> data, const int& offset) = 0;
         virtual std::shared_ptr<IIndexBuffer> bind() = 0;
 
         virtual std::shared_ptr<IIndexBuffer> setUsage(SGGUsage) = 0;

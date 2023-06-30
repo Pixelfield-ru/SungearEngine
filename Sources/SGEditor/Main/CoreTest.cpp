@@ -8,6 +8,7 @@
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Graphics/API/IShaderUniform.h"
 #include "SGCore/Memory/Assets/Material.h"
+#include "SGCore/Memory/Assets/ModelAsset.h"
 
 #include <glm/glm.hpp>
 #include "glm/ext/matrix_clip_space.hpp"
@@ -21,6 +22,8 @@
 std::shared_ptr<Core::Memory::Assets::Texture2DAsset> texture2DAsset;
 
 std::shared_ptr<Core::Graphics::API::IShader> testShader;
+
+std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
 
 std::shared_ptr<Core::Graphics::API::IVertexArray> testVertexArray;
 
@@ -135,6 +138,8 @@ void init()
 
     //testUniformBuffer->updateLocations(*testShader);
     // ----------------------------------------------------
+
+    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/plane.obj");
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -205,7 +210,7 @@ void framePostRender()
     testUniformBuffer->subData("cameraViewMatrix", glm::value_ptr(cameraViewMatrix), 16);
     testUniformBuffer->subData("objectModelMatrix", glm::value_ptr(modelMatrix), 16);
 
-    Core::Main::Core::getRenderer().renderMesh(testMaterial, testUniformBuffer, testVertexArray);
+    Core::Main::Core::getRenderer().renderMesh(testMaterial, testUniformBuffer, testModel);
 }
 
 // --------------------------------------------

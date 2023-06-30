@@ -41,7 +41,7 @@ namespace Core::Graphics::API::GL::GL46
 
         void renderFrame(const glm::ivec2& windowSize) override;
 
-        void renderMesh(const std::shared_ptr<Memory::Assets::Material>&, const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<IVertexArray>&) override;
+        void renderMesh(const std::shared_ptr<Memory::Assets::Material>&, const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<Memory::Assets::ModelAsset>&) override;
 
         void printInfo() noexcept override;
 
@@ -54,6 +54,8 @@ namespace Core::Graphics::API::GL::GL46
         [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] GL46Texture2D* createTexture2D() override;
         [[nodiscard]] IUniformBuffer* createUniformBuffer() override;
+
+        [[nodiscard]] IMesh* createMesh() override;
 
         static const std::shared_ptr<GL46Renderer>& getInstance() noexcept;
     };

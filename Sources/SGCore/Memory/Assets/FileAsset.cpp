@@ -5,7 +5,8 @@
 
 std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::FileAsset::load(const std::string_view& path)
 {
-    this->m_data = Core::Utils::FileUtils::readFile(path);
+    m_data = Core::Utils::FileUtils::readFile(path);
+    m_path = path;
 
     return shared_from_this();
 }

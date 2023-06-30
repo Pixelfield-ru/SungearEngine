@@ -14,6 +14,8 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
 {
     int channelsDesired = 0;
 
+    m_path = path;
+
     m_textureData = std::shared_ptr<std::uint8_t[]>(stbi_load(path.data(), &m_width, &m_height, &m_channelsInFile, channelsDesired));
 
     m_texture2D = std::shared_ptr<Graphics::API::ITexture2D>(Core::Main::Core::getRenderer().createTexture2D());

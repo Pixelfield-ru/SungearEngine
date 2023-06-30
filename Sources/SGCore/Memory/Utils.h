@@ -7,6 +7,8 @@
 #ifndef NATIVECORE_UTILS_H
 #define NATIVECORE_UTILS_H
 
+#define SG_DELETE(p) { delete p; p = nullptr; }
+
 #include <windows.h>
 #include <psapi.h>
 

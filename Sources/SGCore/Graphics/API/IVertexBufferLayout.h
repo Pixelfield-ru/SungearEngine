@@ -25,6 +25,8 @@ namespace Core::Graphics::API
         // prepare vertex buffer layout before enable attributes
         virtual std::shared_ptr<IVertexBufferLayout> prepare() = 0;
 
+        virtual std::shared_ptr<IVertexBufferLayout> reset() = 0;
+
         // create new vertex attribute
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType) = 0;
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) = 0;

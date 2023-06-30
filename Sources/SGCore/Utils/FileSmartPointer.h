@@ -19,7 +19,7 @@ namespace Core::Utils
         std::string m_mode;
 
     public:
-        explicit FileSmartPointer(std::string, std::string);
+        FileSmartPointer(std::string, std::string);
         ~FileSmartPointer();
 
         FILE* get() noexcept;

@@ -1,10 +1,11 @@
 #include "IUniformBuffer.h"
 
 #include "SGCore/Logging/Log.h"
+#include "SGCore/Memory/Utils.h"
 
 Core::Graphics::API::IUniformBuffer::~IUniformBuffer()
 {
-    delete m_buffer;
+    SG_DELETE(m_buffer);
 }
 
 Core::Graphics::API::IUniformBuffer::IUniformBuffer(const std::list<IShaderUniform>& uniforms)

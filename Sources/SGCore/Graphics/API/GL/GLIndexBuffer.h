@@ -14,7 +14,7 @@ namespace Core::Graphics::API::GL
     {
     private:
         GLuint m_handler = 0;
-        std::vector<int> m_data;
+        std::vector<std::uint32_t> m_data;
 
     public:
         ~GLIndexBuffer() noexcept override;
@@ -23,8 +23,8 @@ namespace Core::Graphics::API::GL
 
         void destroy() noexcept override;
 
-        std::shared_ptr<IIndexBuffer> putData(std::vector<int> data) noexcept override;
-        std::shared_ptr<IIndexBuffer> subData(std::vector<int> data, const int& offset) noexcept override;
+        std::shared_ptr<IIndexBuffer> putData(std::vector<std::uint32_t> data) noexcept override;
+        std::shared_ptr<IIndexBuffer> subData(std::vector<std::uint32_t> data, const int& offset) noexcept override;
         std::shared_ptr<IIndexBuffer> bind() noexcept override;
 
         std::shared_ptr<IIndexBuffer> setUsage(SGGUsage) noexcept override;

@@ -20,7 +20,10 @@
 #include "IIndexBuffer.h"
 #include "ITexture2D.h"
 #include "IUniformBuffer.h"
+
 #include "SGCore/Memory/Assets/Material.h"
+#include "SGCore/Graphics/IMesh.h"
+#include "SGCore/Memory/Assets/ModelAsset.h"
 
 namespace Core::Graphics::API
 {
@@ -35,7 +38,7 @@ namespace Core::Graphics::API
 
         virtual void renderFrame(const glm::ivec2& windowSize) { }
 
-        virtual void renderMesh(const std::shared_ptr<Memory::Assets::Material>&, const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<IVertexArray>&) { }
+        virtual void renderMesh(const std::shared_ptr<Memory::Assets::Material>&, const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<Memory::Assets::ModelAsset>&) { }
 
         virtual void printInfo() noexcept { }
 
@@ -48,6 +51,8 @@ namespace Core::Graphics::API
         [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
         [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
         [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
+
+        [[nodiscard]] virtual IMesh* createMesh() = 0;
     };
 }
 

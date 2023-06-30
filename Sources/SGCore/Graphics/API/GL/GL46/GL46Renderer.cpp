@@ -80,13 +80,17 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
 void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(
         const std::shared_ptr<Memory::Assets::Material>& material,
         const std::shared_ptr<IUniformBuffer>& uniformBuffer,
-        const std::shared_ptr<IVertexArray>& vertexArray)
+        const std::shared_ptr<Memory::Assets::ModelAsset>& model)
 {
     material->bind();
     uniformBuffer->bind();
-    vertexArray->bind();
 
-    glDrawElements(GL_TRIANGLES, vertexArray->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+    for(auto& mesh : model->m_meshes)
+    {
+        mesh->getVertexArray()->bind();
+
+        glDrawElements(GL_TRIANGLES, mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+    }
 }
 
 Core::Graphics::API::GL::GL46::GL46Shader* Core::Graphics::API::GL::GL46::GL46Renderer::createShader()
@@ -122,4 +126,9 @@ Core::Graphics::API::GL::GL46::GL46Texture2D* Core::Graphics::API::GL::GL46::GL4
 Core::Graphics::API::IUniformBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createUniformBuffer()
 {
     return new GL46UniformBuffer;
+}
+
+Core::Graphics::IMesh* Core::Graphics::API::GL::GL46::GL46Renderer::createMesh()
+{
+    return new IMesh;
 }

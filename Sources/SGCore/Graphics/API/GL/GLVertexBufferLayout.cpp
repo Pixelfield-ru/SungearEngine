@@ -104,3 +104,11 @@ std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::G
 
     return shared_from_this();
 }
+
+std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::GL::GLVertexBufferLayout::reset() noexcept
+{
+    m_stride = 0;
+    m_attributes.clear();
+
+    return shared_from_this();
+}

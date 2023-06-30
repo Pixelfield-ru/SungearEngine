@@ -26,7 +26,12 @@ std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLV
 
 void Core::Graphics::API::GL::GLVertexBuffer::destroy() noexcept
 {
-    glDeleteBuffers(1, &m_handler);
+    if(glIsBuffer(m_handler))
+    {
+        glDeleteBuffers(1, &m_handler);
+        std::cout << "deleted buf" << std::endl;
+    }
+    //glDeleteBuffers(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();
@@ -38,8 +43,8 @@ std::shared_ptr<Core::Graphics::API::IVertexBuffer> Core::Graphics::API::GL::GLV
 {
     m_data = std::move(data);
 
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)), &m_data[0],
-                 GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
+    /*glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)), &m_data[0],
+                 GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));*/
 
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();
