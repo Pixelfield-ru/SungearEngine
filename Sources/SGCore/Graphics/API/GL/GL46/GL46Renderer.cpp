@@ -1,4 +1,5 @@
 #include "GL46Renderer.h"
+#include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
 
 #include <thread>
 
@@ -26,6 +27,8 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::init() noexcept
 
     printInfo();
     SGC_INFO("-----------------------------------");
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Core::Graphics::API::GL::GL46::GL46Renderer::checkForErrors(std::source_location location) noexcept
@@ -73,7 +76,6 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
     glViewport(0, 0, windowSize.x, windowSize.y);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glClearColor(0, 0, 0, 1);
 }
 
 // TODO: just test. delete
@@ -130,5 +132,5 @@ Core::Graphics::API::IUniformBuffer* Core::Graphics::API::GL::GL46::GL46Renderer
 
 Core::Graphics::IMesh* Core::Graphics::API::GL::GL46::GL46Renderer::createMesh()
 {
-    return new IMesh;
+    return new GL3::GL3Mesh;
 }

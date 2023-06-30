@@ -52,7 +52,7 @@ void init()
     // найс это работает. TODO: убрать! просто ради теста ---------------------
     std::shared_ptr<Core::Memory::Assets::FileAsset> shaderAsset = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>("../SGResources/shaders/mesh/default_shader.glsl");
 
-    testVertexArray = std::shared_ptr<Core::Graphics::API::IVertexArray>(Core::Main::Core::getRenderer().createVertexArray());
+    /*testVertexArray = std::shared_ptr<Core::Graphics::API::IVertexArray>(Core::Main::Core::getRenderer().createVertexArray());
     testVertexArray->create()->bind();
 
     // vertices pos --------------------------------------
@@ -92,7 +92,7 @@ void init()
             ->enableAttributes();
 
     testIndexBuffer = std::shared_ptr<Core::Graphics::API::IIndexBuffer>(Core::Main::Core::getRenderer().createIndexBuffer());
-    testIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData({0, 1, 2, 3, 2, 0 });
+    testIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData({0, 1, 2, 3, 2, 0 });*/
 
     int windowWidth;
     int windowHeight;
@@ -100,7 +100,7 @@ void init()
     Core::Main::Core::getWindow().getSize(windowWidth, windowHeight);
 
     // matrices init
-    cameraProjectionMatrix = glm::perspective<float>(75.0f, (float) windowWidth / (float) windowHeight, 1, 200);
+    cameraProjectionMatrix = glm::perspective<float>(-75.0f, (float) windowWidth / (float) windowHeight, 1, 200);
 
     cameraViewMatrix = glm::scale(cameraViewMatrix, glm::vec3(1, 1, 1));
     //glm::rotate(cameraViewMatrix, glm::radians(0.0f), glm::vec3(0, 0, 0));
@@ -139,7 +139,7 @@ void init()
     //testUniformBuffer->updateLocations(*testShader);
     // ----------------------------------------------------
 
-    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/plane.obj");
+    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/gaz-66.obj");
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -155,8 +155,8 @@ glm::vec3 cameraPosition;
 
 void framePostRender()
 {
-    cameraRotation.x += (float) -InputManager::getMainInputListener()->getCursorPositionDeltaY() * rotationCoeff;
-    cameraRotation.y += (float) -InputManager::getMainInputListener()->getCursorPositionDeltaX() * rotationCoeff;
+    cameraRotation.x += (float) InputManager::getMainInputListener()->getCursorPositionDeltaY() * rotationCoeff;
+    cameraRotation.y += (float) InputManager::getMainInputListener()->getCursorPositionDeltaX() * rotationCoeff;
 
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_R))
     {
@@ -185,7 +185,7 @@ void framePostRender()
         rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
         rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
 
-        cameraPosition += rotatedLeft * cameraMovementSpeed;
+        cameraPosition -= rotatedLeft * cameraMovementSpeed;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
     {
@@ -193,7 +193,7 @@ void framePostRender()
         rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
         rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
 
-        cameraPosition -= rotatedLeft * cameraMovementSpeed;
+        cameraPosition += rotatedLeft * cameraMovementSpeed;
     }
 
     if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))

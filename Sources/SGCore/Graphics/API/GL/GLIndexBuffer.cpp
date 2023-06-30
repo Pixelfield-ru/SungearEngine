@@ -39,7 +39,7 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
 {
     m_data = std::move(data);
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)), (const void*) &m_data[0],
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(m_data[0])), &m_data[0],
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
 
     if(Core::Main::Core::getRenderer().m_currentBoundVertexArray)
@@ -57,8 +57,10 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
 std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::subData
         (std::vector<std::uint32_t> data, const int& offset) noexcept
 {
+    // TODO: make sub data in m_data
+
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, (GLsizeiptr) (m_data.size() * sizeof(GLsizeiptr)),
-                    (const void*) &m_data[0]);
+                    &m_data[0]);
 
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();

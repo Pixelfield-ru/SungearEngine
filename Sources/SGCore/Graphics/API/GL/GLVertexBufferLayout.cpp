@@ -88,6 +88,8 @@ std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::G
             (GLvoid*) attribute->m_offset
             );
 
+    //glDisableVertexAttribArray(attribute->m_ID);
+
     #ifdef SUNGEAR_DEBUG
     GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
@@ -97,7 +99,7 @@ std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::G
 
 std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> Core::Graphics::API::GL::GLVertexBufferLayout::enableAttributes() noexcept
 {
-    for(const std::shared_ptr<IVertexAttribute>& attribute : m_attributes)
+    for(auto& attribute : m_attributes)
     {
         enableAttribute(attribute);
     }

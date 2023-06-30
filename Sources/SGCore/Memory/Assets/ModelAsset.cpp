@@ -24,7 +24,11 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::
         return shared_from_this();
     }
 
+    m_name = scene->mRootNode->mName.data;
+
     processNode(scene->mRootNode, scene);
+
+    SGC_SUCCESS("Loaded model '" + m_name + "'. Meshes count: " + std::to_string(m_meshes.size()));
 
     return shared_from_this();
 }
@@ -48,6 +52,8 @@ void Core::Memory::Assets::ModelAsset::processNode(const aiNode* aiNode, const a
 std::shared_ptr<Core::Graphics::IMesh> Core::Memory::Assets::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
     std::shared_ptr<Graphics::IMesh> sgMesh(Core::Main::Core::getRenderer().createMesh());
+
+    sgMesh->m_name = aiMesh->mName.data;
 
     for(unsigned i = 0; i < aiMesh->mNumVertices; i++)
     {
@@ -75,22 +81,19 @@ std::shared_ptr<Core::Graphics::IMesh> Core::Memory::Assets::ModelAsset::process
         }
     }
 
-    std::cout << "VERTICES COUNT: " << sgMesh->m_positions.size() << std::endl;
-
     for(unsigned i = 0; i < aiMesh->mNumFaces; i++)
     {
         const aiFace& face = aiMesh->mFaces[i];
         for(unsigned j = 0; j < face.mNumIndices; j++)
         {
-            // TODO: fix SIGSEGV
             sgMesh->m_indices.push_back(face.mIndices[j]);
-            //std::cout << sgMesh->m_indices.size() << std::endl;
         }
     }
-    std::cout << "INDICES COUNT: " << sgMesh->m_indices.size() << std::endl;
 
     // TODO: make materials, texture process
     sgMesh->prepare();
+
+    SGC_SUCCESS("Loaded mesh '" + sgMesh->m_name + "'. Vertices count: " + std::to_string(sgMesh->m_positions.size()) + ", indices count: " + std::to_string(sgMesh->m_indices.size()));
 
     return sgMesh;
 }

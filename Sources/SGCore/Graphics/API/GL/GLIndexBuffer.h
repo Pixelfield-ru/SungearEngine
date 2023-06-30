@@ -14,7 +14,7 @@ namespace Core::Graphics::API::GL
     {
     private:
         GLuint m_handler = 0;
-        std::vector<std::uint32_t> m_data;
+        std::vector<std::uint32_t> m_data = std::vector<std::uint32_t>();
 
     public:
         ~GLIndexBuffer() noexcept override;

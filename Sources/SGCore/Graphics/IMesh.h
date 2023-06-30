@@ -14,15 +14,15 @@
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 #include "SGCore/Graphics/API/IIndexBuffer.h"
 
+#include "SGCore/Memory/Assets/Material.h"
+
 namespace Core::Graphics
 {
     // TODO: make abstract with its own implementation for each GAPI
     // TODO: make render method and material in mesh
     class IMesh
     {
-    private:
-        std::string m_name;
-
+    protected:
         std::shared_ptr<API::IVertexArray> m_vertexArray;
 
         std::shared_ptr<API::IVertexBuffer> m_positionsBuffer;
@@ -31,7 +31,11 @@ namespace Core::Graphics
 
         std::shared_ptr<API::IIndexBuffer> m_indicesBuffer;
 
+        std::shared_ptr<Memory::Assets::Material> m_material;
+
     public:
+        std::string m_name;
+
         // indices array
         std::vector<std::uint32_t> m_indices;
 
@@ -45,7 +49,7 @@ namespace Core::Graphics
         std::vector<float> m_normals;
 
         // ----------------
-        virtual void prepare();
+        virtual void prepare() = 0;
 
         void setVertexPosition(const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept;
         void getVertexPosition(const std::uint64_t& vertexIdx, float& outX, float& outY, float& outZ) noexcept;

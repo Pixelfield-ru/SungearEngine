@@ -25,7 +25,7 @@ namespace Core::Graphics::API
         // is attribute normalized
         bool m_normalized = false;
         // ID in shader
-        std::uint16_t m_ID = 0;
+        std::uint32_t m_ID = 0;
         std::string m_name;
         SGGDataType m_dataType = SGGDataType::SGG_NONE;
 

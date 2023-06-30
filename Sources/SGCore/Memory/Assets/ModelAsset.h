@@ -23,6 +23,9 @@ namespace Core::Memory::Assets
         // TODO: maybe reimport after change flags
         int m_importerFlags = 0;
 
+        // model name
+        std::string m_name;
+
     public:
         std::vector<std::shared_ptr<Graphics::IMesh>> m_meshes;
 
