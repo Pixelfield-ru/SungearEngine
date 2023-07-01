@@ -107,9 +107,9 @@ void init()
 
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -10));
     //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.005, 0.005, 0.005));
-    //modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1));
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1, 0, 0));
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1));
+    //modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1, 0, 0));
+    //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1, 0.1, 0.1));
 
     // UNIFORM BUFFERS ARE WORKING NOW. SUBDATA WORKING TOO!!
     testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
@@ -140,7 +140,7 @@ void init()
     //testUniformBuffer->updateLocations(*testShader);
     // ----------------------------------------------------
 
-    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/lenin/scene.gltf");
+    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------

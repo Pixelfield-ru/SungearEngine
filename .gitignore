@@ -18,4 +18,12 @@ Sources/SGEditor/cmake-build-debug
 
 # RESOURCES -------------
 SGResources/cmake-build-debug
+Resources/SGResources/models/test/sponza
+Resources/SGResources/models/test/sponza_new
+Resources/SGResources/models/test/gaz-66.mtl
+Resources/SGResources/models/test/gaz-66.obj
+Resources/SGResources/models/test/plane.obj
+Resources/SGResources/models/test/T34.obj
+Resources/SGResources/models/test/T_34_85.obj
+Resources/SGResources/models/test/Tiger1.obj
 # -----------------------

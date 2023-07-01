@@ -91,7 +91,7 @@ std::shared_ptr<Core::Graphics::IMesh> Core::Memory::Assets::ModelAsset::process
     }
 
     // if has material
-    if(aiMesh->mMaterialIndex >= 0)
+    /*if(aiMesh->mMaterialIndex >= 0)
     {
         // get current mesh material
         auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
@@ -104,7 +104,7 @@ std::shared_ptr<Core::Graphics::IMesh> Core::Memory::Assets::ModelAsset::process
         sgMesh->m_material->m_name = aiMat->GetName().data;
 
         SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
-    }
+    }*/
 
     // TODO: make materials, texture process
     sgMesh->prepare();
