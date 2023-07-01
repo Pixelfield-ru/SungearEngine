@@ -29,6 +29,12 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::init() noexcept
     SGC_INFO("-----------------------------------");
 
     glEnable(GL_DEPTH_TEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
+    /*glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);*/
 }
 
 void Core::Graphics::API::GL::GL46::GL46Renderer::checkForErrors(std::source_location location) noexcept
@@ -80,15 +86,14 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
 
 // TODO: just test. delete
 void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(
-        const std::shared_ptr<Memory::Assets::Material>& material,
         const std::shared_ptr<IUniformBuffer>& uniformBuffer,
         const std::shared_ptr<Memory::Assets::ModelAsset>& model)
 {
-    material->bind();
     uniformBuffer->bind();
 
     for(auto& mesh : model->m_meshes)
     {
+        mesh->m_material->bind();
         mesh->getVertexArray()->bind();
 
         glDrawElements(GL_TRIANGLES, mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);

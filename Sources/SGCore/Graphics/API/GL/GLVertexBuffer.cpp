@@ -31,7 +31,7 @@ void Core::Graphics::API::GL::GLVertexBuffer::destroy() noexcept
     std::cout << "vbo destroyed" << std::endl;
 
     #ifdef SUNGEAR_DEBUG
-    GL46::GL46Renderer::getInstance()->checkForErrors();
+    //GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 }
 

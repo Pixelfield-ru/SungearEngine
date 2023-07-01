@@ -7,7 +7,7 @@ Core::Memory::Assets::Material::Material() noexcept
     m_shader = std::shared_ptr<Core::Graphics::API::IShader>(Core::Main::Core::getRenderer().createShader());
     m_shader->compile(Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>("../SGResources/shaders/mesh/default_shader.glsl"));
     m_shader->addShaderDefines({
-        Core::Graphics::API::ShaderDefine("FLIP_TEXTURES_Y", "")
+        //Core::Graphics::API::ShaderDefine("FLIP_TEXTURES_Y", "")
     });
 }
 
@@ -35,7 +35,7 @@ std::shared_ptr<Core::Memory::Assets::Material> Core::Memory::Assets::Material::
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Material::load(const std::string_view& path)
+std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Material::load(const std::string& path)
 {
     return shared_from_this();
 }

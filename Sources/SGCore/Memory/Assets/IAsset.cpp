@@ -51,7 +51,7 @@ void Core::Memory::Assets::IAsset::removeObserver(IAssetObserver* observer) noex
     m_observers.remove(observer);
 }
 
-std::string_view Core::Memory::Assets::IAsset::getPath() const noexcept
+std::filesystem::path Core::Memory::Assets::IAsset::getPath() const noexcept
 {
     return m_path;
 }

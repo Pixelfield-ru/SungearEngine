@@ -9,6 +9,8 @@
 
 void Core::Graphics::API::GL::GL3::GL3Mesh::prepare()
 {
+    //m_material = std::make_shared<Memory::Assets::Material>();
+
     m_vertexArray = std::shared_ptr<API::IVertexArray>(Core::Main::Core::getRenderer().createVertexArray());
     m_vertexArray->create()->bind();
 

@@ -40,7 +40,7 @@ namespace Core::Graphics::API
         virtual ~IUniformBuffer();
 
         void putUniforms(const std::list<IShaderUniform>& uniforms) noexcept;
-        /**
+         /**
          * This method puts ONE uniform`s scalars to buffer\n
          * You need to put data strictly in accordance with UNIFORMS TYPES YOU PASSED TO
          * putUniforms (or constructor) (except SGG_STRUCT_START and SGG_STRUCT_END).\n

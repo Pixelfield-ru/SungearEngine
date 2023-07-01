@@ -31,8 +31,6 @@ namespace Core::Graphics
 
         std::shared_ptr<API::IIndexBuffer> m_indicesBuffer;
 
-        std::shared_ptr<Memory::Assets::Material> m_material;
-
     public:
         std::string m_name;
 
@@ -47,6 +45,8 @@ namespace Core::Graphics
 
         // normals array
         std::vector<float> m_normals;
+
+        std::shared_ptr<Memory::Assets::Material> m_material = std::make_shared<Memory::Assets::Material>();
 
         // ----------------
         virtual void prepare() = 0;

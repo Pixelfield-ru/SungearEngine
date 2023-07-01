@@ -18,7 +18,7 @@ namespace Core::Memory::Assets
         std::string m_data;
 
     public:
-        [[nodiscard]] std::shared_ptr<IAsset> load(const std::string_view& path) override;
+        [[nodiscard]] std::shared_ptr<IAsset> load(const std::string& path) override;
 
         [[nodiscard]] std::string getData() const noexcept;
     };

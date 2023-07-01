@@ -100,15 +100,16 @@ void init()
     Core::Main::Core::getWindow().getSize(windowWidth, windowHeight);
 
     // matrices init
-    cameraProjectionMatrix = glm::perspective<float>(-75.0f, (float) windowWidth / (float) windowHeight, 1, 200);
+    cameraProjectionMatrix = glm::perspective<float>(glm::radians(75.0f), (float) windowWidth / (float) windowHeight, 0.1,  1000);
 
     cameraViewMatrix = glm::scale(cameraViewMatrix, glm::vec3(1, 1, 1));
-    //glm::rotate(cameraViewMatrix, glm::radians(0.0f), glm::vec3(0, 0, 0));
     cameraViewMatrix = glm::translate(cameraViewMatrix, glm::vec3(0, 0, 0));
 
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -10));
-    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0, 0, 0));
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1));
+    //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.005, 0.005, 0.005));
+    //modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1, 0, 0));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1, 0.1, 0.1));
 
     // UNIFORM BUFFERS ARE WORKING NOW. SUBDATA WORKING TOO!!
     testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
@@ -139,7 +140,7 @@ void init()
     //testUniformBuffer->updateLocations(*testShader);
     // ----------------------------------------------------
 
-    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/gaz-66.obj");
+    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/lenin/scene.gltf");
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -210,7 +211,7 @@ void framePostRender()
     testUniformBuffer->subData("cameraViewMatrix", glm::value_ptr(cameraViewMatrix), 16);
     testUniformBuffer->subData("objectModelMatrix", glm::value_ptr(modelMatrix), 16);
 
-    Core::Main::Core::getRenderer().renderMesh(testMaterial, testUniformBuffer, testModel);
+    Core::Main::Core::getRenderer().renderMesh(testUniformBuffer, testModel);
 }
 
 // --------------------------------------------

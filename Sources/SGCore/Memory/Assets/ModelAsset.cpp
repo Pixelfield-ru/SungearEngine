@@ -7,7 +7,7 @@
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Main/Core.h"
 
-std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::load(const std::string_view& path)
+std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::load(const std::string& path)
 {
     m_path = path;
 
@@ -16,7 +16,7 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::
     Assimp::Importer importer;
 
     // TODO: maybe shared_ptr
-    const aiScene* scene(importer.ReadFile(m_path.data(), m_importerFlags));
+    const aiScene* scene(importer.ReadFile(m_path.string(), m_importerFlags));
 
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -90,10 +90,45 @@ std::shared_ptr<Core::Graphics::IMesh> Core::Memory::Assets::ModelAsset::process
         }
     }
 
+    // if has material
+    if(aiMesh->mMaterialIndex >= 0)
+    {
+        // get current mesh material
+        auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
+
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE, SGMAT_BASE_COLOR);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SPECULAR, SGMAT_SPECULAR_COLOR);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DISPLACEMENT, SGMAT_NORMAL_MAP);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_HEIGHT, SGMAT_PARALLAX_MAP);
+
+        sgMesh->m_material->m_name = aiMat->GetName().data;
+
+        SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
+    }
+
     // TODO: make materials, texture process
     sgMesh->prepare();
 
     SGC_SUCCESS("Loaded mesh '" + sgMesh->m_name + "'. Vertices count: " + std::to_string(sgMesh->m_positions.size()) + ", indices count: " + std::to_string(sgMesh->m_indices.size()));
 
     return sgMesh;
+}
+
+void Core::Memory::Assets::ModelAsset::loadTextures
+(aiMaterial* aiMat, std::shared_ptr<Material>& sgMaterial, const aiTextureType& aiTexType, const std::string& typeName)
+{
+    for(unsigned i = 0; i < aiMat->GetTextureCount(aiTexType); i++)
+    {
+        std::cout << "dfsdf" << std::endl;
+        aiString texturePath;
+        aiMat->GetTexture(aiTexType, i, &texturePath);
+
+        const std::string finalTypeName = typeName + std::to_string(i);
+        // final path is model directory file + separator + relative texture path
+        const std::string finalPath = m_path.parent_path().string() + "/" + texturePath.data;
+
+        sgMaterial->findAndAddTexture2D(finalTypeName, finalPath);
+
+        SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Type name: '" + finalTypeName + ", path: " + std::string(finalPath));
+    }
 }

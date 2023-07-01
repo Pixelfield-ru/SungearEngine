@@ -11,6 +11,8 @@
 #include <memory>
 #include <list>
 #include <functional>
+#include <filesystem>
+
 #include "IAssetObserver.h"
 
 namespace Core::Memory::Assets
@@ -21,11 +23,11 @@ namespace Core::Memory::Assets
     {
     protected:
         long m_lastModified = -1;
-        std::string_view m_path;
+        std::filesystem::path m_path;
         std::list<IAssetObserver*> m_observers;
 
     public:
-        [[nodiscard]] virtual std::shared_ptr<IAsset> load(const std::string_view& path) = 0;
+        [[nodiscard]] virtual std::shared_ptr<IAsset> load(const std::string& path) = 0;
 
         void addObserver(IAssetObserver*) noexcept;
         void removeObserver(IAssetObserver*) noexcept;
@@ -36,7 +38,7 @@ namespace Core::Memory::Assets
         void onRestored();
 
         long getLastModified() noexcept;
-        [[nodiscard]] std::string_view getPath() const noexcept;
+        [[nodiscard]] std::filesystem::path getPath() const noexcept;
     };
 }
 

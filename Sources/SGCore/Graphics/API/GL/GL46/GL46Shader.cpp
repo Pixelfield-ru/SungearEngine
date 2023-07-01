@@ -249,7 +249,7 @@ void Core::Graphics::API::GL::GL46::GL46Shader::destroy() noexcept
 
     // TODO:: SGP0
     #ifdef SUNGEAR_DEBUG
-    GL46Renderer::getInstance()->checkForErrors();
+    //GL46Renderer::getInstance()->checkForErrors();
     #endif
 
     m_shaderPartsHandlers.clear();

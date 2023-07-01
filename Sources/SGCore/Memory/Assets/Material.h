@@ -28,6 +28,8 @@ namespace Core::Memory::Assets
         std::shared_ptr<Graphics::API::IShader> m_shader;
 
     public:
+        std::string m_name;
+
         Material() noexcept;
 
         #pragma region Materials
@@ -39,7 +41,7 @@ namespace Core::Memory::Assets
         std::shared_ptr<Material> bind() noexcept;
 
         // TODO: impl
-        std::shared_ptr<IAsset> load(const std::string_view& path) final;
+        std::shared_ptr<IAsset> load(const std::string& path) final;
 
         /**
         * Adds texture2D. Method is copying texture.

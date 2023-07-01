@@ -31,7 +31,7 @@ void Core::Graphics::API::GL::GLIndexBuffer::destroy() noexcept
     glDeleteBuffers(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG
-    GL46::GL46Renderer::getInstance()->checkForErrors();
+    //GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 }
 

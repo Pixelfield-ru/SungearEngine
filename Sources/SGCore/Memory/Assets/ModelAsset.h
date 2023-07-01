@@ -29,10 +29,11 @@ namespace Core::Memory::Assets
     public:
         std::vector<std::shared_ptr<Graphics::IMesh>> m_meshes;
 
-        std::shared_ptr<IAsset> load(const std::string_view&) override;
+        std::shared_ptr<IAsset> load(const std::string&) override;
 
         void processNode(const aiNode*, const aiScene*);
         std::shared_ptr<Graphics::IMesh> processMesh(const aiMesh*, const aiScene*);
+        void loadTextures(aiMaterial* aiMat, std::shared_ptr<Material>& sgMaterial, const aiTextureType& aiTexType, const std::string& typeName);
     };
 }
 

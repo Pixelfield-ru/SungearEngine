@@ -38,7 +38,7 @@ namespace Core::Graphics::API
 
         virtual void renderFrame(const glm::ivec2& windowSize) { }
 
-        virtual void renderMesh(const std::shared_ptr<Memory::Assets::Material>&, const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<Memory::Assets::ModelAsset>&) { }
+        virtual void renderMesh(const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<Memory::Assets::ModelAsset>&) { }
 
         virtual void printInfo() noexcept { }
 

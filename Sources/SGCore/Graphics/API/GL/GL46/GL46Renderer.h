@@ -41,7 +41,7 @@ namespace Core::Graphics::API::GL::GL46
 
         void renderFrame(const glm::ivec2& windowSize) override;
 
-        void renderMesh(const std::shared_ptr<Memory::Assets::Material>&, const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<Memory::Assets::ModelAsset>&) override;
+        void renderMesh(const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<Memory::Assets::ModelAsset>&) override;
 
         void printInfo() noexcept override;
 

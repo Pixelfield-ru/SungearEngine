@@ -33,7 +33,7 @@ void Core::Graphics::API::GL::GLVertexArray::destroy() noexcept
     }
 
     #ifdef SUNGEAR_DEBUG
-    GL46::GL46Renderer::getInstance()->checkForErrors();
+    //GL46::GL46Renderer::getInstance()->checkForErrors();
     #endif
 }
 

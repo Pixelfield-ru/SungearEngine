@@ -1,0 +1,11 @@
+Model Information:
+* title:	Tartu Lenin statue (bronze, 1952). Low-poly, PBR
+* source:	https://sketchfab.com/3d-models/tartu-lenin-statue-bronze-1952-low-poly-pbr-28167dd6b19441a3a7edfaba74e6b493
+* author:	Sergey Shavin (https://sketchfab.com/ssh-72)
+
+Model License:
+* license type:	CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+* requirements:	Author must be credited. Modified versions must have the same license. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Tartu Lenin statue (bronze, 1952). Low-poly, PBR" (https://sketchfab.com/3d-models/tartu-lenin-statue-bronze-1952-low-poly-pbr-28167dd6b19441a3a7edfaba74e6b493) by Sergey Shavin (https://sketchfab.com/ssh-72) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)

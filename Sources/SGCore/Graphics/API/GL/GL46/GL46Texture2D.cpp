@@ -35,8 +35,8 @@ void Core::Graphics::API::GL::GL46::GL46Texture2D::create(std::weak_ptr<Memory::
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glTextureParameteri(m_handler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTextureParameteri(m_handler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(m_handler, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTextureParameteri(m_handler, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
