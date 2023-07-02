@@ -66,3 +66,10 @@ std::shared_ptr<Core::Graphics::API::IVertexArray> Core::Graphics::IMesh::getVer
 {
     return m_vertexArray;
 }
+
+void Core::Graphics::IMesh::migrateAndSetNewMaterial
+(const std::shared_ptr<Memory::Assets::IMaterial>& newMaterial) noexcept
+{
+    *newMaterial = *m_material;
+    m_material = newMaterial;
+}

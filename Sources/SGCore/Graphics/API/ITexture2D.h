@@ -41,7 +41,7 @@ namespace Core::Graphics::API
 
         #pragma region Operators
 
-        virtual std::shared_ptr<ITexture2D> operator=(const std::shared_ptr<ITexture2D>& other) = 0;
+        virtual ITexture2D& operator=(const std::shared_ptr<ITexture2D>& other) = 0;
         //virtual operator=(std::shared_ptr<ITexture2D> other);
 
         #pragma endregion

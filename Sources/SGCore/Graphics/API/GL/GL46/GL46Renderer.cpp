@@ -85,7 +85,7 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
     glViewport(0, 0, windowSize.x, windowSize.y);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(1, 0, 0, 1);
+    glClearColor(1, 1, 1, 1);
 }
 
 // TODO: just test. delete

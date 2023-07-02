@@ -52,48 +52,6 @@ void init()
     // найс это работает. TODO: убрать! просто ради теста ---------------------
     std::shared_ptr<Core::Memory::Assets::FileAsset> shaderAsset = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>("../SGResources/shaders/mesh/default_shader.glsl");
 
-    /*testVertexArray = std::shared_ptr<Core::Graphics::API::IVertexArray>(Core::Main::Core::getRenderer().createVertexArray());
-    testVertexArray->create()->bind();
-
-    // vertices pos --------------------------------------
-    testVerticesPositionsBuffer = std::shared_ptr<Core::Graphics::API::IVertexBuffer>(Core::Main::Core::getRenderer().createVertexBuffer());
-    testVerticesPositionsBuffer
-            ->setUsage(SGGUsage::SGG_DYNAMIC)
-            ->create()
-            ->bind()
-            ->putData({ // позиция
-                              -0.5, -0.5, 0.0,
-                              // uv
-                              1, 1, 0,
-                              // нормаль
-                              0.5, 0.1, 0,
-
-                              // и т.д.
-
-                              -0.5, 0.5, 0.0,
-                              1, 0, 0,
-                              0.1, 0.4, 0,
-
-                              0.5, 0.5, 0.0,
-                              0, 0, 0,
-                              0.1, 0, 0.5,
-
-                              0.5, -0.5, 0.0,
-                              0, 1, 0,
-                              1, 1, 1
-                      });
-
-    testVerticesBufferLayout = std::shared_ptr<Core::Graphics::API::IVertexBufferLayout>(Core::Main::Core::getRenderer().createVertexBufferLayout());
-    testVerticesBufferLayout
-            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testVerticesBufferLayout->createVertexAttribute(0, "positionsAttribute", SGGDataType::SGG_FLOAT3)))
-            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testVerticesBufferLayout->createVertexAttribute(1, "UVAttribute", SGGDataType::SGG_FLOAT3)))
-            ->addAttribute(std::shared_ptr<Core::Graphics::API::IVertexAttribute>(testVerticesBufferLayout->createVertexAttribute(2, "normalsAttribute", SGGDataType::SGG_FLOAT3)))
-            ->prepare()
-            ->enableAttributes();
-
-    testIndexBuffer = std::shared_ptr<Core::Graphics::API::IIndexBuffer>(Core::Main::Core::getRenderer().createIndexBuffer());
-    testIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData({0, 1, 2, 3, 2, 0 });*/
-
     int windowWidth;
     int windowHeight;
 
@@ -107,9 +65,9 @@ void init()
 
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -10));
     //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.005, 0.005, 0.005));
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(3, 3, 3));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(2, 2, 2));
     //modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1, 0, 0));
-    //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+    //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.02, 0.02, 0.02));
 
     // UNIFORM BUFFERS ARE WORKING NOW. SUBDATA WORKING TOO!!
     testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
@@ -130,20 +88,16 @@ void init()
     testUniformBuffer->subData<float>("testColor", { 0, 1, 0, 1 });
     testUniformBuffer->subData("cameraProjectionMatrix", glm::value_ptr(cameraProjectionMatrix), 16);
 
-    /*testMaterial = std::make_shared<Core::Memory::Assets::IMaterial>();
-    testMaterial->createAsPBR();
-
-    testMaterial->findAndSetTexture2D(SGMAT_BASE_COLOR, "../SGResources/textures/horek.png");
-    testMaterial->findAndSetTexture2D(SGMAT_SPECULAR_COLOR, "../SGResources/textures/x.png");
-    testMaterial->findAndSetTexture2D(SGMAT_ROUGHNESS, "../SGResources/textures/hedgehog.png");*/
-
-    //testUniformBuffer->updateLocations(*testShader);
     // ----------------------------------------------------
 
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza/sponza.obj");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf");
     testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/btr_80a2016/scene.gltf");
+    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj");
+    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/lenin/scene.gltf");
+    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/ak74m/scene.gltf");
+    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -215,6 +169,8 @@ void framePostRender()
     testUniformBuffer->subData("objectModelMatrix", glm::value_ptr(modelMatrix), 16);
 
     Core::Main::Core::getRenderer().renderMesh(testUniformBuffer, testModel);
+
+    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.5f), glm::vec3(0, 1, 0));
 }
 
 // --------------------------------------------

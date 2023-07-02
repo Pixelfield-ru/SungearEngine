@@ -33,7 +33,7 @@ namespace Core::Graphics::API::GL::GL46
 
         void bind(const std::uint8_t& textureUnit) noexcept override;
 
-        std::shared_ptr<ITexture2D> operator=(const std::shared_ptr<ITexture2D>& other) final;
+        GL46Texture2D& operator=(const std::shared_ptr<ITexture2D>& other) final;
     };
 }
 

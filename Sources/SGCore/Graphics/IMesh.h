@@ -63,6 +63,13 @@ namespace Core::Graphics
         void setIndex(const std::uint64_t& faceIdx, const std::uint64_t& indexIdx, const std::uint64_t& value) noexcept;
         void getFaceIndices(const std::uint64_t& faceIdx, std::uint64_t& outIdx0, std::uint64_t& outIdx1, std::uint64_t& outIdx2) noexcept;
 
+        /**
+         * Moves all textures of the current material to the new material and sets the new material as the current one.
+         * @see Core::Memory::Assets::IMaterial::operator=
+         * @param[in] newMaterial The material to which the textures will be moved and which will be set as the current one.
+         */
+        void migrateAndSetNewMaterial(const std::shared_ptr<Memory::Assets::IMaterial>& newMaterial) noexcept;
+
         std::shared_ptr<API::IVertexArray> getVertexArray() noexcept;
     };
 }

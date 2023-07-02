@@ -32,7 +32,7 @@ namespace Core::Graphics::API
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
 
-        void addShaderDefines(const std::initializer_list<ShaderDefine>& shaderDefines);
+        void addShaderDefines(const std::vector<ShaderDefine>& shaderDefines);
         void removeShaderDefine(const ShaderDefine& shaderDefine);
         void removeShaderDefine(const std::string& shaderDefineName);
 

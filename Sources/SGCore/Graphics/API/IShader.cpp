@@ -4,7 +4,7 @@
 
 #include "IShader.h"
 
-void Core::Graphics::API::IShader::addShaderDefines(const std::initializer_list<ShaderDefine>& shaderDefines)
+void Core::Graphics::API::IShader::addShaderDefines(const std::vector<ShaderDefine>& shaderDefines)
 {
     for(auto& shaderDefine : shaderDefines)
     {
@@ -13,19 +13,21 @@ void Core::Graphics::API::IShader::addShaderDefines(const std::initializer_list<
         m_defines.push_back(shaderDefine);
     }
 
-    onAssetModified();
+    if(m_assetModifiedChecking) onAssetModified();
 }
 
 void Core::Graphics::API::IShader::removeShaderDefine(const Core::Graphics::API::ShaderDefine& shaderDefine)
 {
     m_defines.remove(shaderDefine);
-    onAssetModified();
+
+    if(m_assetModifiedChecking) onAssetModified();
 }
 
 void Core::Graphics::API::IShader::removeShaderDefine(const std::string& shaderDefineName)
 {
     m_defines.remove(ShaderDefine(shaderDefineName, ""));
-    onAssetModified();
+
+    if(m_assetModifiedChecking) onAssetModified();
 }
 
 void Core::Graphics::API::IShader::onAssetModified()

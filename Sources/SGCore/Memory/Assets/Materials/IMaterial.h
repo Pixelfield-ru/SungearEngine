@@ -28,32 +28,27 @@ namespace Core::Memory::Assets
         //              second: std::shared_ptr<Texture2DAsset> - texture 2d asset
         std::map<SGMaterialTextureType, std::tuple<std::uint8_t, std::uint8_t, std::map<std::string, std::pair<std::uint8_t, std::shared_ptr<Texture2DAsset>>>>> m_textures;
 
-        std::shared_ptr<Graphics::API::IShader> m_shader;
+        // Textures that could not be added to the material. This collection is used to migrate textures to another material
+        std::map<SGMaterialTextureType, std::list<std::shared_ptr<Texture2DAsset>>> m_notUsedTextures;
 
     public:
         std::string m_name;
 
-        //virtual IMaterial() noexcept;
-
-        #pragma region Materials
-
-        //void createAsPBR() noexcept;
-
-        #pragma endregion
+        std::shared_ptr<Graphics::API::IShader> m_shader;
 
         std::shared_ptr<IMaterial> bind();
 
         // TODO: impl
-        std::shared_ptr<IAsset> load(const std::string& path) override = 0;
+        std::shared_ptr<IAsset> load(const std::string& path) override;
 
         /**
-        * Adds texture2D. Method is copying texture.
+        * Adds texture2D. Method is not copying texture.
         * @param type - Material type of texture
         * @param texture2DAsset - Texture asset
         * @return this
         */
-        virtual std::shared_ptr<IMaterial> addTexture2D(const SGMaterialTextureType& type,
-                                                const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset) = 0;
+        std::shared_ptr<IMaterial> addTexture2D(const SGMaterialTextureType& type,
+                                                const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset);
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.
@@ -61,27 +56,35 @@ namespace Core::Memory::Assets
         * @param texture2DAsset - Texture asset
         * @return this
         */
-        virtual std::shared_ptr<IMaterial> findAndAddTexture2D(const SGMaterialTextureType& type, const std::string& path) = 0;
+        std::shared_ptr<IMaterial> findAndAddTexture2D(const SGMaterialTextureType& type, const std::string& path);
 
         /**
          * Sets texture2D by name. Method is copying texture.
          * @param type - Material type of texture
-         * @param path - The path to the texture to be replaced
-         * @param texture2DAsset - Texture asset
+         * @param oldTextureAssetPath - The path to the texture to be replaced
+         * @param texture2DAsset - Texture asset that will replace the old texture
          *
-         * @return this
+         * @return this (shared_ptr)
          */
-        virtual std::shared_ptr<IMaterial> setTexture2D(const SGMaterialTextureType& type, const std::string_view& path,
-                                                const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset) = 0;
+        std::shared_ptr<IMaterial> setTexture2D(const SGMaterialTextureType& type, const std::string_view& oldTextureAssetPath,
+                                                const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset);
         /**
          * Sets texture2D by name. Method is copying texture. This method is looking for texture asset by path.
          * @param type - Material type of texture
-         * @param path - Path to texture asset
-         * @return
+         * @param oldTextureAssetPath - The path to the texture to be replaced
+         * @param newTextureAssetPath - The path to the new texture
+         *
+         * @return this (shared_ptr)
          */
-        virtual std::shared_ptr<IMaterial> findAndSetTexture2D(const SGMaterialTextureType& type, const std::string& path) = 0;
+        std::shared_ptr<IMaterial> findAndSetTexture2D(const SGMaterialTextureType& type, const std::string& oldTextureAssetPath, const std::string& newTextureAssetPath);
 
-        //std::shared_ptr<Texture2DAsset> getTexture2D(const std::string& name) noexcept;
+        /**
+         * Copies all texture assets (textures data is not copied) to another material.\n
+         * Also tries to do the same with unused textures of this material.
+         * @param other - Copied material
+         * @return Modified this material
+         */
+        IMaterial& operator=(const IMaterial& other) noexcept;
     };
 }
 

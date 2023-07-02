@@ -96,11 +96,10 @@ void Core::Graphics::API::GL::GL46::GL46Texture2D::onAssetRestored() noexcept
 
 }
 
-std::shared_ptr<Core::Graphics::API::ITexture2D> Core::Graphics::API::GL::GL46::GL46Texture2D::operator=
+Core::Graphics::API::GL::GL46::GL46Texture2D& Core::Graphics::API::GL::GL46::GL46Texture2D::operator=
         (const std::shared_ptr<ITexture2D>& other)
 {
     create(other->getAsset());
-    //m_unit = other->getUnit();
 
-    return shared_from_this();
+    return *this;
 }

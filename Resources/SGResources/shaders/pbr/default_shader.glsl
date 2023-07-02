@@ -21,7 +21,7 @@
     };
 
     // final yet
-    vec3 lightPos = vec3(0, 10, 20);
+    vec3 lightPos = vec3(0, 25, 15);
 
     void main()
     {
@@ -31,7 +31,7 @@
         vsOut.fragPos = vec3(objectModelMatrix * vec4(positionsAttribute, 1.0));
 
         vec3 lightDir = normalize(lightPos - vsOut.fragPos);
-        vsOut.diffPower = max(dot(normalize(vsOut.normal), lightDir), 0.0);
+        vsOut.diffPower = max(dot(normalize(vsOut.normal), lightDir), 0.0) * 5.5;
 
         gl_Position = cameraProjectionMatrix * cameraViewMatrix * objectModelMatrix * vec4(positionsAttribute.xy, positionsAttribute.z, 1.0);
     }
@@ -75,6 +75,7 @@
     void main()
     {
         vec4 colorFromBase = vec4(1);
+        vec4 colorFromDiffuse = vec4(1);
         vec4 colorFromMetalness = vec4(1);
         vec4 colorFromRoughness = vec4(1);
         vec3 colorFromNormalMap = vec3(1);
@@ -89,9 +90,17 @@
 
         #ifdef sgmat_baseColor8_DEFINED
             #ifdef FLIP_TEXTURES_Y
-                colorFromBase = texture(sgmat_baseColor8, vec2(colorFromMetalness.x, 1.0 - colorFromMetalness.y));
+                colorFromBase = texture(sgmat_baseColor8, vec2(vsIn.UV.x, 1.0 - vsIn.UV.y));
             #else
-                colorFromBase = texture(sgmat_baseColor8, vec2(colorFromMetalness.x, colorFromMetalness.y));
+                colorFromBase = texture(sgmat_baseColor8, vec2(vsIn.UV.x, vsIn.UV.y));
+            #endif
+        #endif
+
+        #ifdef sgmat_diffuse4_DEFINED
+            #ifdef FLIP_TEXTURES_Y
+                colorFromDiffuse = texture(sgmat_diffuse4 , vec2(vsIn.UV.x, 1.0 - vsIn.UV.y));
+            #else
+                colorFromDiffuse = texture(sgmat_diffuse4, vec2(vsIn.UV.x, vsIn.UV.y));
             #endif
         #endif
 
@@ -103,6 +112,6 @@
             #endif
         #endif
 
-        fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb, colorFromBase.a);
+        fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb * colorFromDiffuse.rgb, colorFromDiffuse.a);
     }
 #endif
