@@ -33,7 +33,7 @@ namespace Core::Memory::Assets
 
         void processNode(const aiNode*, const aiScene*);
         std::shared_ptr<Graphics::IMesh> processMesh(const aiMesh*, const aiScene*);
-        void loadTextures(aiMaterial* aiMat, std::shared_ptr<Material>& sgMaterial, const aiTextureType& aiTexType, const std::string& typeName);
+        void loadTextures(aiMaterial* aiMat, std::shared_ptr<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGMaterialTextureType& sgMaterialTextureType);
     };
 }
 

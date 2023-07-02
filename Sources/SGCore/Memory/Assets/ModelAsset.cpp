@@ -91,20 +91,36 @@ std::shared_ptr<Core::Graphics::IMesh> Core::Memory::Assets::ModelAsset::process
     }
 
     // if has material
-    /*if(aiMesh->mMaterialIndex >= 0)
+    if(aiMesh->mMaterialIndex >= 0)
     {
         // get current mesh material
         auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
 
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE, SGMAT_BASE_COLOR);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SPECULAR, SGMAT_SPECULAR_COLOR);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DISPLACEMENT, SGMAT_NORMAL_MAP);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_HEIGHT, SGMAT_PARALLAX_MAP);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_EMISSIVE, SGMaterialTextureType::SGTP_EMISSIVE);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_AMBIENT_OCCLUSION, SGMaterialTextureType::SGTP_AMBIENT_OCCLUSION);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_AMBIENT, SGMaterialTextureType::SGTP_AMBIENT);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE_ROUGHNESS, SGMaterialTextureType::SGTP_DIFFUSE_ROUGHNESS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE, SGMaterialTextureType::SGTP_DIFFUSE);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DISPLACEMENT, SGMaterialTextureType::SGTP_DISPLACEMENT);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_HEIGHT, SGMaterialTextureType::SGTP_HEIGHT);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_NORMALS, SGMaterialTextureType::SGTP_METALNESS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_BASE_COLOR, SGMaterialTextureType::SGTP_BASE_COLOR);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_CLEARCOAT, SGMaterialTextureType::SGTP_CLEARCOAT);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_EMISSION_COLOR, SGMaterialTextureType::SGTP_EMISSION_COLOR);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_LIGHTMAP, SGMaterialTextureType::SGTP_LIGHTMAP);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_METALNESS, SGMaterialTextureType::SGTP_METALNESS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_NORMAL_CAMERA, SGMaterialTextureType::SGTP_NORMAL_CAMERA);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_OPACITY, SGMaterialTextureType::SGTP_OPACITY);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_REFLECTION, SGMaterialTextureType::SGTP_REFLECTION);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SHEEN, SGMaterialTextureType::SGTP_SHEEN);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SHININESS, SGMaterialTextureType::SGTP_SHININESS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SPECULAR, SGMaterialTextureType::SGTP_SPECULAR);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_TRANSMISSION, SGMaterialTextureType::SGTP_TRANSMISSION);
 
         sgMesh->m_material->m_name = aiMat->GetName().data;
 
         SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
-    }*/
+    }
 
     // TODO: make materials, texture process
     sgMesh->prepare();
@@ -115,20 +131,20 @@ std::shared_ptr<Core::Graphics::IMesh> Core::Memory::Assets::ModelAsset::process
 }
 
 void Core::Memory::Assets::ModelAsset::loadTextures
-(aiMaterial* aiMat, std::shared_ptr<Material>& sgMaterial, const aiTextureType& aiTexType, const std::string& typeName)
+(aiMaterial* aiMat, std::shared_ptr<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGMaterialTextureType& sgMaterialTextureType)
 {
     for(unsigned i = 0; i < aiMat->GetTextureCount(aiTexType); i++)
     {
-        std::cout << "dfsdf" << std::endl;
         aiString texturePath;
         aiMat->GetTexture(aiTexType, i, &texturePath);
 
-        const std::string finalTypeName = typeName + std::to_string(i);
+        //const std::string finalTypeName = typeName + std::to_string(i);
         // final path is model directory file + separator + relative texture path
         const std::string finalPath = m_path.parent_path().string() + "/" + texturePath.data;
 
-        sgMaterial->findAndAddTexture2D(finalTypeName, finalPath);
+        sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 
-        SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Type name: '" + finalTypeName + ", path: " + std::string(finalPath));
+        SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Raw type name: '" +
+                            sgMaterialTextureTypeToString(sgMaterialTextureType) + ", path: " + std::string(finalPath));
     }
 }

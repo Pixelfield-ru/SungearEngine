@@ -21,7 +21,7 @@
 #include "ITexture2D.h"
 #include "IUniformBuffer.h"
 
-#include "SGCore/Memory/Assets/Material.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/IMesh.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
 

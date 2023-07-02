@@ -7,7 +7,7 @@
 #include "SGCore/Graphics/API/ShaderDefine.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Graphics/API/IShaderUniform.h"
-#include "SGCore/Memory/Assets/Material.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
 
 #include <glm/glm.hpp>
@@ -40,7 +40,7 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> testIndexBuffer;
 
 std::shared_ptr<Core::Graphics::API::IUniformBuffer> testUniformBuffer;
 
-std::shared_ptr<Core::Memory::Assets::Material> testMaterial;
+std::shared_ptr<Core::Memory::Assets::IMaterial> testMaterial;
 
 glm::mat4 cameraProjectionMatrix;
 glm::mat4 cameraViewMatrix = glm::mat4(1.0f);
@@ -107,7 +107,7 @@ void init()
 
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -10));
     //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.005, 0.005, 0.005));
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(3, 3, 3));
     //modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1, 0, 0));
     //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1, 0.1, 0.1));
 
@@ -130,17 +130,20 @@ void init()
     testUniformBuffer->subData<float>("testColor", { 0, 1, 0, 1 });
     testUniformBuffer->subData("cameraProjectionMatrix", glm::value_ptr(cameraProjectionMatrix), 16);
 
-    testMaterial = std::make_shared<Core::Memory::Assets::Material>();
+    /*testMaterial = std::make_shared<Core::Memory::Assets::IMaterial>();
     testMaterial->createAsPBR();
 
     testMaterial->findAndSetTexture2D(SGMAT_BASE_COLOR, "../SGResources/textures/horek.png");
     testMaterial->findAndSetTexture2D(SGMAT_SPECULAR_COLOR, "../SGResources/textures/x.png");
-    testMaterial->findAndSetTexture2D(SGMAT_ROUGHNESS, "../SGResources/textures/hedgehog.png");
+    testMaterial->findAndSetTexture2D(SGMAT_ROUGHNESS, "../SGResources/textures/hedgehog.png");*/
 
     //testUniformBuffer->updateLocations(*testShader);
     // ----------------------------------------------------
 
-    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
+    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
+    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza/sponza.obj");
+    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf");
+    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/btr_80a2016/scene.gltf");
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------

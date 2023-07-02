@@ -69,9 +69,9 @@ void Core::Graphics::API::GL::GL46::GL46Texture2D::destroy() noexcept
     glDeleteTextures(1, &m_handler);
 }
 
-void Core::Graphics::API::GL::GL46::GL46Texture2D::bind() noexcept
+void Core::Graphics::API::GL::GL46::GL46Texture2D::bind(const std::uint8_t& textureUnit) noexcept
 {
-    glBindTextureUnit(m_unit, m_handler);
+    glBindTextureUnit(textureUnit, m_handler);
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, m_handler);
 }

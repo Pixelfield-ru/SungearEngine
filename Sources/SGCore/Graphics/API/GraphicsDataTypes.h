@@ -34,6 +34,59 @@ enum SGGDataType
     SGG_STRUCT_END
 };
 
+enum SGMaterialTextureType
+{
+    SGTP_EMISSIVE,
+    SGTP_AMBIENT_OCCLUSION,
+    SGTP_AMBIENT,
+    SGTP_DIFFUSE_ROUGHNESS,
+    SGTP_DIFFUSE,
+    SGTP_DISPLACEMENT,
+    SGTP_HEIGHT,
+    SGTP_NORMALS,
+    SGTP_BASE_COLOR,
+    SGTP_CLEARCOAT,
+    SGTP_EMISSION_COLOR,
+    SGTP_LIGHTMAP,
+    SGTP_METALNESS,
+    SGTP_NORMAL_CAMERA,
+    SGTP_OPACITY,
+    SGTP_REFLECTION,
+    SGTP_SHEEN,
+    SGTP_SHININESS,
+    SGTP_SPECULAR,
+    SGTP_TRANSMISSION
+};
+
+static std::string sgMaterialTextureTypeToString(const SGMaterialTextureType& sgMaterialTextureType)
+{
+    switch(sgMaterialTextureType)
+    {
+        case SGTP_EMISSIVE: return "sgmat_emissive";
+        case SGTP_AMBIENT_OCCLUSION: return "sgmat_ambientOcclusion";
+        case SGTP_AMBIENT: return "sgmat_ambient";
+        case SGTP_DIFFUSE_ROUGHNESS: return "sgmat_diffuseRoughness";
+        case SGTP_DIFFUSE: return "sgmat_diffuse";
+        case SGTP_DISPLACEMENT: return "sgmat_displacement";
+        case SGTP_HEIGHT: return "sgmat_height";
+        case SGTP_NORMALS: return "sgmat_normals";
+        case SGTP_BASE_COLOR: return "sgmat_baseColor";
+        case SGTP_CLEARCOAT: return "sgmat_clearcoat";
+        case SGTP_EMISSION_COLOR: return "sgmat_emissionColor";
+        case SGTP_LIGHTMAP: return "sgmat_lightmap";
+        case SGTP_METALNESS: return "sgmat_metalness";
+        case SGTP_NORMAL_CAMERA: return "sgmat_normalCamera";
+        case SGTP_OPACITY: return "sgmat_opacity";
+        case SGTP_REFLECTION: return "sgmat_relfection";
+        case SGTP_SHEEN: return "sgmat_sheen";
+        case SGTP_SHININESS: return "sgmat_shininess";
+        case SGTP_SPECULAR: return "sgmat_specular";
+        case SGTP_TRANSMISSION: return "sgmat_transmission";
+    }
+
+    return "";
+}
+
 static std::uint16_t getSGGDataTypeSizeInBytes(const SGGDataType& dataType) noexcept
 {
     int size;

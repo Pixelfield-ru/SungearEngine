@@ -14,7 +14,7 @@
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 #include "SGCore/Graphics/API/IIndexBuffer.h"
 
-#include "SGCore/Memory/Assets/Material.h"
+#include "SGCore/Memory/Assets/Materials/PBRMaterial.h"
 
 namespace Core::Graphics
 {
@@ -46,7 +46,7 @@ namespace Core::Graphics
         // normals array
         std::vector<float> m_normals;
 
-        std::shared_ptr<Memory::Assets::Material> m_material = std::make_shared<Memory::Assets::Material>();
+        std::shared_ptr<Memory::Assets::IMaterial> m_material = std::make_shared<Memory::Assets::PBRMaterial>();
 
         // ----------------
         virtual void prepare() = 0;

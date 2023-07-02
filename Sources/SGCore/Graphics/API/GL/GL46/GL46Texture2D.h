@@ -31,7 +31,7 @@ namespace Core::Graphics::API::GL::GL46
         void onAssetDeleted() noexcept override;
         void onAssetRestored() noexcept override;
 
-        void bind() noexcept override;
+        void bind(const std::uint8_t& textureUnit) noexcept override;
 
         std::shared_ptr<ITexture2D> operator=(const std::shared_ptr<ITexture2D>& other) final;
     };

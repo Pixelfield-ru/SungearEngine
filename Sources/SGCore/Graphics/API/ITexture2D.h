@@ -24,7 +24,6 @@ namespace Core::Graphics::API
     {
     protected:
         std::weak_ptr<Memory::Assets::Texture2DAsset> m_texture2DAsset;
-        std::uint8_t m_unit = 0;
 
     public:
         virtual ~ITexture2D() = default;
@@ -32,12 +31,9 @@ namespace Core::Graphics::API
         virtual void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) = 0;
         virtual void destroy() = 0;
 
-        virtual void bind() = 0;
+        virtual void bind(const std::uint8_t& textureUnit) = 0;
 
         #pragma region Getters and setters
-
-        virtual std::shared_ptr<ITexture2D> setUnit(const std::uint8_t& unit);
-        virtual std::uint8_t getUnit() noexcept;
 
         std::weak_ptr<Memory::Assets::Texture2DAsset> getAsset() noexcept;
 

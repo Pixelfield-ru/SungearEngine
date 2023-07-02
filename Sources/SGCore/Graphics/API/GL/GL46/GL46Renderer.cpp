@@ -29,8 +29,11 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::init() noexcept
     SGC_INFO("-----------------------------------");
 
     glEnable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
+    /*glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);*/
+
+    glEnable (GL_ALPHA_TEST);
+    glAlphaFunc (GL_GREATER, 0.2);
 
     /*glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -82,6 +85,7 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
     glViewport(0, 0, windowSize.x, windowSize.y);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(1, 0, 0, 1);
 }
 
 // TODO: just test. delete

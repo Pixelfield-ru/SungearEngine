@@ -20,6 +20,11 @@ Sources/SGEditor/cmake-build-debug
 SGResources/cmake-build-debug
 Resources/SGResources/models/test/sponza
 Resources/SGResources/models/test/sponza_new
+Resources/SGResources/models/test/trees
+Resources/SGResources/models/test/btr_80
+Resources/SGResources/models/test/stalker
+Resources/SGResources/models/test/btr_80a2016
+
 Resources/SGResources/models/test/gaz-66.mtl
 Resources/SGResources/models/test/gaz-66.obj
 Resources/SGResources/models/test/plane.obj
