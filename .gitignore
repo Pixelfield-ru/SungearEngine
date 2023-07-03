@@ -13,6 +13,7 @@ Externals/imgui/docs
 # SOURCES ---------------
 Sources/cmake-build-debug
 Sources/SGCore/cmake-build-debug
+Sources/SGConsole/cmake-build-debug
 Sources/SGEditor/cmake-build-debug
 # -----------------------
 
