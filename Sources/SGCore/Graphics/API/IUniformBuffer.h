@@ -31,6 +31,9 @@ namespace Core::Graphics::API
         // uniforms are just description of data
         std::list<IShaderUniform> m_uniforms;
 
+        // location in shader
+        std::uint16_t m_layoutLocation = 0;
+
         virtual void subDataOnGAPISide(const std::int64_t& offset, const int& size) = 0;
     public:
         IUniformBuffer() = default;
@@ -40,6 +43,7 @@ namespace Core::Graphics::API
         virtual ~IUniformBuffer();
 
         void putUniforms(const std::list<IShaderUniform>& uniforms) noexcept;
+
          /**
          * This method puts ONE uniform`s scalars to buffer\n
          * You need to put data strictly in accordance with UNIFORMS TYPES YOU PASSED TO
@@ -93,7 +97,7 @@ namespace Core::Graphics::API
          * @param uniformName - The name of the uniform whose values need to be replaced
          * @param scalars - Values (buffer)
          * @param scalarsNum - Number of values in the buffer
-         * @return This (shared_ptr)
+         * @return This
          */
         template<typename Scalar>
         requires(std::is_scalar_v<Scalar>)
@@ -150,12 +154,12 @@ namespace Core::Graphics::API
         }
 
         /**
-         * @see std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
+         * @see subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
          *
          * @tparam Scalar - Scalars type
          * @param uniformName - The name of the uniform whose values need to be replaced
          * @param scalars - Values
-         * @return This (shared_ptr)
+         * @return This
          */
         template<typename Scalar>
         requires(std::is_scalar_v<Scalar>)
@@ -169,12 +173,25 @@ namespace Core::Graphics::API
         /**
          * Must be called after puData
          * Will reallocate buffer to resize. Be careful
-         * @return this
+         * @return This
          */
         virtual std::shared_ptr<IUniformBuffer> prepare() = 0;
 
+        /**
+         * Updates the locations of all uniforms of the shader
+         * @param fromShader - The shader from which all locations will be updated
+         * @return This
+         */
         virtual std::shared_ptr<IUniformBuffer> updateLocations(const IShader& fromShader) = 0;
 
+        std::uint16_t getLayoutLocation() const noexcept;
+        virtual void setLayoutLocation(const std::uint16_t& location) noexcept = 0;
+
+        bool isBindPerUniform() const noexcept;
+
+        /**
+         * Destroys GPU object
+         */
         virtual void destroy() = 0;
     };
 }

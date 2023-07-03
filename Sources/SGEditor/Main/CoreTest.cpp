@@ -9,6 +9,7 @@
 #include "SGCore/Graphics/API/IShaderUniform.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
+#include "SGConsole/Console.h"
 
 #include <glm/glm.hpp>
 #include "glm/ext/matrix_clip_space.hpp"
@@ -49,6 +50,8 @@ glm::mat4 modelMatrix = glm::mat4(1.0f);
 
 void init()
 {
+    SGConsole::Console::init();
+
     // найс это работает. TODO: убрать! просто ради теста ---------------------
     std::shared_ptr<Core::Memory::Assets::FileAsset> shaderAsset = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>("../SGResources/shaders/mesh/default_shader.glsl");
 
@@ -98,6 +101,8 @@ void init()
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/lenin/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/ak74m/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
+
+    //testUniformBuffer->updateLocations(*testModel->m_meshes.begin()->get()->m_material->m_shader);
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------

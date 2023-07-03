@@ -505,6 +505,15 @@ PKG_CONFIG_ARGN:STRING=
 PKG_CONFIG_EXECUTABLE:FILEPATH=PKG_CONFIG_EXECUTABLE-NOTFOUND
 
 //Value Computed by CMake
+SGConsole_BINARY_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Sources/SGConsole
+
+//Value Computed by CMake
+SGConsole_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+SGConsole_SOURCE_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Sources/SGConsole
+
+//Value Computed by CMake
 SGCore_BINARY_DIR:STATIC=D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Sources/SGCore
 
 //Value Computed by CMake
@@ -724,7 +733,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=14
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=15
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

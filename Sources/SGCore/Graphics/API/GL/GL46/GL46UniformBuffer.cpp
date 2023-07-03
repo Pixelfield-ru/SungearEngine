@@ -8,16 +8,20 @@
 std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL46::GL46UniformBuffer::bind() noexcept
 {
     /*
-    // TODO: opengl 3.1 code. must be updated to 4.6
-    for(auto [uniformsIter, dataIterator] = std::tuple {m_uniforms.begin(), m_bufferLayout.begin() };
-    uniformsIter != m_uniforms.end() && dataIterator != m_bufferLayout.end();
-    uniformsIter++, dataIterator++)
+    // iterating on data and on uniforms to avoid mistakes of going abroad
+    for(auto [uniformsIter, dataIterator] = std::tuple {m_uniforms.begin(), m_bufferLayout.begin()};
+        uniformsIter != m_uniforms.end() && dataIterator != m_bufferLayout.end(); uniformsIter++, dataIterator++)
     {
         switch(uniformsIter->m_dataType)
         {
             case SGG_NONE: break;
 
-            case SGG_INT: glUniform1i(uniformsIter->m_location, *reinterpret_cast<int*>(*dataIterator)); break;
+            case SGG_INT:
+            {
+                glUniform1i(uniformsIter->m_location, *reinterpret_cast<int*>(*dataIterator));
+
+                break;
+            }
             case SGG_INT2:
             {
                 int s0 = *reinterpret_cast<int*>(*dataIterator);
@@ -49,7 +53,12 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
                 break;
             }
 
-            case SGG_FLOAT: glUniform1f(uniformsIter->m_location, *reinterpret_cast<float*>(*dataIterator)); break;
+            case SGG_FLOAT:
+            {
+                glUniform1f(uniformsIter->m_location, *reinterpret_cast<float*>(*dataIterator));
+
+                break;
+            }
             case SGG_FLOAT2:
             {
                 float s0 = *reinterpret_cast<float*>(*dataIterator);
@@ -100,7 +109,7 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
                 break;
             }
 
-            // TODO: impl
+                // TODO: impl
             case SGG_BOOL: break;
 
             case SGG_STRUCT_BEGIN: break;
@@ -114,7 +123,8 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
     return shared_from_this();
 }
 
-void Core::Graphics::API::GL::GL46::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept
+void Core::Graphics::API::GL::GL46::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
+                                                                         const int& size) noexcept
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, m_buffer + offset);
@@ -127,7 +137,7 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
     glGenBuffers(1, &m_handler);
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
     glBufferData(GL_UNIFORM_BUFFER, (GLsizeiptr) m_bufferSize, m_buffer, GL_STATIC_DRAW);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_handler);
+    glBindBufferBase(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler);
 
     return shared_from_this();
 }
@@ -146,4 +156,9 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
 void Core::Graphics::API::GL::GL46::GL46UniformBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);
+}
+
+void Core::Graphics::API::GL::GL46::GL46UniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
+{
+    glBindBufferBase(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler);
 }

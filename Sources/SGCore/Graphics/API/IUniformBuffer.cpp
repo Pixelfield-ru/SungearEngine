@@ -71,3 +71,8 @@ void Core::Graphics::API::IUniformBuffer::putUniforms
 
     SGCF_INFO("uniforms buffer size: " + std::to_string(m_bufferSize), SG_LOG_CURRENT_SESSION_FILE);
 }
+
+std::uint16_t Core::Graphics::API::IUniformBuffer::getLayoutLocation() const noexcept
+{
+    return m_layoutLocation;
+}

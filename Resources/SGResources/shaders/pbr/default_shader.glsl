@@ -20,6 +20,11 @@
         vec4 testColor;
     };
 
+//    uniform mat4 cameraProjectionMatrix;
+//    uniform mat4 cameraViewMatrix;
+//    uniform mat4 objectModelMatrix;
+//    uniform vec4 testColor;
+
     // final yet
     vec3 lightPos = vec3(0, 25, 15);
 
