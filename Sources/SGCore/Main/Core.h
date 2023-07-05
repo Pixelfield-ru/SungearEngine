@@ -16,7 +16,7 @@ namespace Core::Main
     {
     private:
         static inline Window m_window {};
-        static inline std::shared_ptr<Graphics::API::IRenderer> m_renderer;
+        static inline std::shared_ptr<Graphics::IRenderer> m_renderer;
 
         static inline Utils::Timer m_globalTimer { true, 1.0 };
 
@@ -31,7 +31,7 @@ namespace Core::Main
 
         static Window& getWindow() noexcept;
 
-        static Graphics::API::IRenderer& getRenderer() noexcept;
+        static Graphics::IRenderer& getRenderer() noexcept;
     };
 }
 

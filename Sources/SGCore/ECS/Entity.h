@@ -8,20 +8,46 @@
 #include <iostream>
 #include <list>
 #include <memory>
+#include <set>
+#include <string>
 
 #include "IComponent.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace Core::ECS
 {
+    class IComponent;
+
     class Entity
     {
     private:
-        std::list<std::unique_ptr<IComponent>> m_components;
+        std::list<std::shared_ptr<IComponent>> m_components;
 
     public:
-        void addComponent(const IComponent* component) noexcept
-        {
+        std::string m_name;
 
+        std::set<std::shared_ptr<Entity>> m_children;
+
+        void addComponent(const std::shared_ptr<IComponent>&) noexcept;
+
+        /**
+         * Finds the first component of type ComponentT.
+         * @tparam ComponentT - The type of component to find.
+         * @return Found component
+         */
+        template<typename ComponentT>
+        requires(std::is_base_of_v<IComponent, ComponentT>)
+        std::shared_ptr<ComponentT> getComponent()
+        {
+            for(auto& component : m_components)
+            {
+                if(SG_INSTANCEOF(component.get(), ComponentT))
+                {
+                    return std::static_pointer_cast<ComponentT>(component);
+                }
+            }
+
+            return nullptr;
         }
     };
 }

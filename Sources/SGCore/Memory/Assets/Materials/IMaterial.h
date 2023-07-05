@@ -34,7 +34,7 @@ namespace Core::Memory::Assets
     public:
         std::string m_name;
 
-        std::shared_ptr<Graphics::API::IShader> m_shader;
+        std::shared_ptr<Graphics::IShader> m_shader;
 
         std::shared_ptr<IMaterial> bind();
 

@@ -18,7 +18,7 @@ namespace Core::Memory::Assets
     class Texture2DAsset;
 }
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     class ITexture2D : public Memory::Assets::IAssetObserver, public std::enable_shared_from_this<ITexture2D>
     {

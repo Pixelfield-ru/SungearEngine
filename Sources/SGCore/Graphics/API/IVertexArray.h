@@ -9,7 +9,7 @@
 
 #include <memory>
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     class IVertexArray : public std::enable_shared_from_this<IVertexArray>
     {

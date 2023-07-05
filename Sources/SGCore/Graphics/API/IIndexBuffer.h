@@ -12,7 +12,7 @@
 
 #include "GraphicsDataTypes.h"
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     class IIndexBuffer : public std::enable_shared_from_this<IIndexBuffer>
     {

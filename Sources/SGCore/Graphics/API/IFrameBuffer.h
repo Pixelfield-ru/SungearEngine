@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     class IFrameBuffer
     {

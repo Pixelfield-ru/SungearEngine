@@ -64,10 +64,11 @@ namespace Core::Main
          */
         std::string m_title = "Powered by Core";
 
+        // TODO: fix delta time
         /**
          * Window will use vertical synchronization
          */
-        bool m_swapInterval = true;
+        bool m_swapInterval = false;
 
         bool m_enableStickyKeys = false;
 
@@ -120,7 +121,8 @@ namespace Core::Main
 
         void create();
 
-        void proceedFrame();
+        void swapBuffers();
+        void pollEvents();
 
         void makeCurrent() noexcept;
 

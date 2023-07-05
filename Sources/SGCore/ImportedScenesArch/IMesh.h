@@ -16,22 +16,24 @@
 
 #include "SGCore/Memory/Assets/Materials/PBRMaterial.h"
 
-namespace Core::Graphics
+namespace Core::ImportedScene
 {
     // TODO: make abstract with its own implementation for each GAPI
     // TODO: make render method and material in mesh
     class IMesh
     {
     protected:
-        std::shared_ptr<API::IVertexArray> m_vertexArray;
+        std::shared_ptr<Graphics::IVertexArray> m_vertexArray;
 
-        std::shared_ptr<API::IVertexBuffer> m_positionsBuffer;
-        std::shared_ptr<API::IVertexBuffer> m_uvBuffer;
-        std::shared_ptr<API::IVertexBuffer> m_normalsBuffer;
+        std::shared_ptr<Graphics::IVertexBuffer> m_positionsBuffer;
+        std::shared_ptr<Graphics::IVertexBuffer> m_uvBuffer;
+        std::shared_ptr<Graphics::IVertexBuffer> m_normalsBuffer;
 
-        std::shared_ptr<API::IIndexBuffer> m_indicesBuffer;
+        std::shared_ptr<Graphics::IIndexBuffer> m_indicesBuffer;
 
     public:
+        virtual ~IMesh() = default;
+
         std::string m_name;
 
         // indices array
@@ -70,7 +72,7 @@ namespace Core::Graphics
          */
         void migrateAndSetNewMaterial(const std::shared_ptr<Memory::Assets::IMaterial>& newMaterial) noexcept;
 
-        std::shared_ptr<API::IVertexArray> getVertexArray() noexcept;
+        std::shared_ptr<Graphics::IVertexArray> getVertexArray() noexcept;
     };
 }
 

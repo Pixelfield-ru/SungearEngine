@@ -12,18 +12,16 @@
         vec3 fragPos;
     } vsOut;
 
-    layout(std140, binding = 0) uniform Matrices
+    layout(std140, binding = 0) uniform ObjectMatrices
+    {
+        mat4 objectModelMatrix;
+    };
+
+    layout(std140, binding = 1) uniform CameraMatrices
     {
         mat4 cameraProjectionMatrix;
         mat4 cameraViewMatrix;
-        mat4 objectModelMatrix;
-        vec4 testColor;
     };
-
-//    uniform mat4 cameraProjectionMatrix;
-//    uniform mat4 cameraViewMatrix;
-//    uniform mat4 objectModelMatrix;
-//    uniform vec4 testColor;
 
     // final yet
     vec3 lightPos = vec3(0, 25, 15);

@@ -6,25 +6,25 @@
 
 #include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
 
-Core::Graphics::API::GL::GLVertexArray::~GLVertexArray() noexcept
+Core::Graphics::GL::GLVertexArray::~GLVertexArray() noexcept
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::API::IVertexArray> Core::Graphics::API::GL::GLVertexArray::create() noexcept
+std::shared_ptr<Core::Graphics::IVertexArray> Core::Graphics::GL::GLVertexArray::create() noexcept
 {
     destroy();
 
     glGenVertexArrays(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG
-    GL46::GL46Renderer::getInstance()->checkForErrors();
+    GL::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-void Core::Graphics::API::GL::GLVertexArray::destroy() noexcept
+void Core::Graphics::GL::GLVertexArray::destroy() noexcept
 {
     if(glIsBuffer(m_handler))
     {
@@ -37,7 +37,7 @@ void Core::Graphics::API::GL::GLVertexArray::destroy() noexcept
     #endif
 }
 
-std::shared_ptr<Core::Graphics::API::IVertexArray> Core::Graphics::API::GL::GLVertexArray::bind() noexcept
+std::shared_ptr<Core::Graphics::IVertexArray> Core::Graphics::GL::GLVertexArray::bind() noexcept
 {
     glBindVertexArray(m_handler);
 

@@ -12,7 +12,7 @@
 #include "IShaderUniform.h"
 #include "SGCore/Logging/Log.h"
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     class IUniformBuffer : public std::enable_shared_from_this<IUniformBuffer>
     {
@@ -185,6 +185,10 @@ namespace Core::Graphics::API
         virtual std::shared_ptr<IUniformBuffer> updateLocations(const IShader& fromShader) = 0;
 
         std::uint16_t getLayoutLocation() const noexcept;
+        /**
+         * SET LOCATION ONLY BEFORE FIRST PREPARE
+         * @param location
+         */
         virtual void setLayoutLocation(const std::uint16_t& location) noexcept = 0;
 
         bool isBindPerUniform() const noexcept;

@@ -3,17 +3,17 @@
 #include "SGCore/Logging/Log.h"
 #include "SGCore/Memory/Utils.h"
 
-Core::Graphics::API::IUniformBuffer::~IUniformBuffer()
+Core::Graphics::IUniformBuffer::~IUniformBuffer()
 {
     SG_DELETE(m_buffer);
 }
 
-Core::Graphics::API::IUniformBuffer::IUniformBuffer(const std::list<IShaderUniform>& uniforms)
+Core::Graphics::IUniformBuffer::IUniformBuffer(const std::list<IShaderUniform>& uniforms)
 {
     putUniforms(uniforms);
 }
 
-void Core::Graphics::API::IUniformBuffer::putUniforms
+void Core::Graphics::IUniformBuffer::putUniforms
 (const std::list<IShaderUniform>& uniforms) noexcept
 {
     m_uniforms.insert(m_uniforms.end(), uniforms.begin(), uniforms.end());
@@ -72,7 +72,7 @@ void Core::Graphics::API::IUniformBuffer::putUniforms
     SGCF_INFO("uniforms buffer size: " + std::to_string(m_bufferSize), SG_LOG_CURRENT_SESSION_FILE);
 }
 
-std::uint16_t Core::Graphics::API::IUniformBuffer::getLayoutLocation() const noexcept
+std::uint16_t Core::Graphics::IUniformBuffer::getLayoutLocation() const noexcept
 {
     return m_layoutLocation;
 }

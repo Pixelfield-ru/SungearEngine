@@ -9,7 +9,10 @@
 #include "SGCore/Graphics/API/IShaderUniform.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
-#include "SGConsole/Console.h"
+
+#include "SGConsole/API/Console.h"
+
+#include "SGCore/ECS/Transformations/TransformationsSystem.h"
 
 #include <glm/glm.hpp>
 #include "glm/ext/matrix_clip_space.hpp"
@@ -19,80 +22,59 @@
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtx/quaternion.hpp"
 #include "glm/gtx/rotate_vector.hpp"
-
-std::shared_ptr<Core::Memory::Assets::Texture2DAsset> texture2DAsset;
-
-std::shared_ptr<Core::Graphics::API::IShader> testShader;
+#include "SGCore/ECS/Scene.h"
+#include "SGCore/ECS/ECSWorld.h"
 
 std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
 
-std::shared_ptr<Core::Graphics::API::IVertexArray> testVertexArray;
+std::shared_ptr<Core::ECS::Entity> testCameraEntity;
+std::shared_ptr<Core::ECS::Scene> testScene;
 
-std::shared_ptr<Core::Graphics::API::IVertexBuffer> testVerticesPositionsBuffer;
-std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> testVerticesBufferLayout;
+// TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
-std::shared_ptr<Core::Graphics::API::IVertexBuffer> testUVBuffer;
-std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> testUVBufferLayout;
+// example how to convert imported scene to Sungear ECS scene
+void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode)
+{
+    std::shared_ptr<Core::ECS::Entity> nodeEntity = std::make_shared<Core::ECS::Entity>();
+    nodeEntity->m_name = sgNode->m_name;
 
-std::shared_ptr<Core::Graphics::API::IVertexBuffer> testNormalsBuffer;
-std::shared_ptr<Core::Graphics::API::IVertexBufferLayout> testNormalsBufferLayout;
+    testScene->m_entities.push_back(nodeEntity);
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer> testIndexBuffer;
+    for(auto& mesh : sgNode->m_meshes)
+    {
+        std::shared_ptr<Core::ECS::TransformComponent> transformComponent = std::make_shared<Core::ECS::TransformComponent>();
+        // hardcoded transformations =)
+        transformComponent->m_position = glm::vec3(0, 0, -10);
+        //transformComponent->m_scale = glm::vec3(0.1, 0.1, 0.1);
+        transformComponent->m_scale = glm::vec3(2, 2, 2);
 
-std::shared_ptr<Core::Graphics::API::IUniformBuffer> testUniformBuffer;
+        std::shared_ptr<Core::ECS::MeshComponent> meshComponent = std::make_shared<Core::ECS::MeshComponent>();
+        meshComponent->m_mesh = mesh;
 
-std::shared_ptr<Core::Memory::Assets::IMaterial> testMaterial;
+        std::shared_ptr<Core::ECS::Entity> meshedEntity = std::make_shared<Core::ECS::Entity>();
+        meshedEntity->addComponent(transformComponent);
+        meshedEntity->addComponent(meshComponent);
 
-glm::mat4 cameraProjectionMatrix;
-glm::mat4 cameraViewMatrix = glm::mat4(1.0f);
-glm::mat4 modelMatrix = glm::mat4(1.0f);
+        testScene->m_entities.push_back(meshedEntity);
+    }
 
+    for(auto& node : sgNode->m_children)
+    {
+        processLoadedNode(node);
+    }
+}
 
 void init()
 {
-    SGConsole::Console::init();
+    testCameraEntity = std::make_shared<Core::ECS::Entity>();
+    testCameraEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
+    testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
 
     // найс это работает. TODO: убрать! просто ради теста ---------------------
-    std::shared_ptr<Core::Memory::Assets::FileAsset> shaderAsset = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>("../SGResources/shaders/mesh/default_shader.glsl");
-
     int windowWidth;
     int windowHeight;
 
     Core::Main::Core::getWindow().getSize(windowWidth, windowHeight);
-
-    // matrices init
-    cameraProjectionMatrix = glm::perspective<float>(glm::radians(75.0f), (float) windowWidth / (float) windowHeight, 0.1,  1000);
-
-    cameraViewMatrix = glm::scale(cameraViewMatrix, glm::vec3(1, 1, 1));
-    cameraViewMatrix = glm::translate(cameraViewMatrix, glm::vec3(0, 0, 0));
-
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -10));
-    //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.005, 0.005, 0.005));
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(2, 2, 2));
-    //modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1, 0, 0));
-    //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.02, 0.02, 0.02));
-
-    // UNIFORM BUFFERS ARE WORKING NOW. SUBDATA WORKING TOO!!
-    testUniformBuffer = std::shared_ptr<Core::Graphics::API::IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
-    testUniformBuffer->putUniforms({
-        Core::Graphics::API::IShaderUniform("cameraProjectionMatrix", SGGDataType::SGG_MAT4),
-        Core::Graphics::API::IShaderUniform("cameraViewMatrix", SGGDataType::SGG_MAT4),
-        Core::Graphics::API::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4),
-        Core::Graphics::API::IShaderUniform("testColor", SGGDataType::SGG_FLOAT4)
-    });
-    testUniformBuffer->putData<float>({ });
-    testUniformBuffer->putData<float>({ });
-    testUniformBuffer->putData<float>({ });
-
-    testUniformBuffer->putData<float>({ 1, 0, 0, 1 });
-
-    testUniformBuffer->prepare();
-
-    testUniformBuffer->subData<float>("testColor", { 0, 1, 0, 1 });
-    testUniformBuffer->subData("cameraProjectionMatrix", glm::value_ptr(cameraProjectionMatrix), 16);
-
-    // ----------------------------------------------------
-
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza/sponza.obj");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf");
@@ -102,90 +84,43 @@ void init()
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/ak74m/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
 
-    //testUniformBuffer->updateLocations(*testModel->m_meshes.begin()->get()->m_material->m_shader);
+    testScene = std::make_shared<Core::ECS::Scene>();
+    Core::ECS::Scene::setCurrentScene(testScene);
+
+    for(auto& node : testModel->m_nodes)
+    {
+        processLoadedNode(node);
+    }
+
+    testScene->m_entities.push_back(testCameraEntity);
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
-float rotationCoeff = 0.075f;
 
-float cameraMovementSpeed = 0.05f;
-
-glm::vec3 cameraRotation;
-
-glm::vec3 forward(0.0f, 0.0f, 1.0f);
-glm::vec3 left(-1.0f, 0.0f, 0.0f);
-glm::vec3 cameraPosition;
 
 void framePostRender()
 {
-    cameraRotation.x += (float) InputManager::getMainInputListener()->getCursorPositionDeltaY() * rotationCoeff;
-    cameraRotation.y += (float) InputManager::getMainInputListener()->getCursorPositionDeltaX() * rotationCoeff;
-
-    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_R))
-    {
-        cameraRotation.x = cameraRotation.y = cameraRotation.z = cameraPosition.x = cameraPosition.y = cameraPosition.z = 0.0f;
-    }
-
-    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
-    {
-        glm::vec3 rotatedForward = forward;
-        rotatedForward = glm::rotate(rotatedForward, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
-        rotatedForward = glm::rotate(rotatedForward, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
-
-        cameraPosition += rotatedForward * cameraMovementSpeed;
-    }
-    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
-    {
-        glm::vec3 rotatedForward = forward;
-        rotatedForward = glm::rotate(rotatedForward, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
-        rotatedForward = glm::rotate(rotatedForward, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
-
-        cameraPosition -= rotatedForward * cameraMovementSpeed;
-    }
-    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
-    {
-        glm::vec3 rotatedLeft = left;
-        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
-        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
-
-        cameraPosition -= rotatedLeft * cameraMovementSpeed;
-    }
-    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
-    {
-        glm::vec3 rotatedLeft = left;
-        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.x), glm::vec3(1, 0, 0));
-        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-cameraRotation.y), glm::vec3(0, 1, 0));
-
-        cameraPosition += rotatedLeft * cameraMovementSpeed;
-    }
-
-    if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))
-    {
-        Core::Main::Core::getWindow().setHideAndCentralizeCursor(!Core::Main::Core::getWindow().isHideAndCentralizeCursor());
-    }
-
-    glm::quat rotationQuat = glm::angleAxis(glm::radians(cameraRotation.x), glm::vec3(1, 0, 0));
-    rotationQuat *= glm::angleAxis(glm::radians(cameraRotation.y), glm::vec3(0, 1, 0));
-
-    cameraViewMatrix = glm::toMat4(rotationQuat);
-    cameraViewMatrix = glm::translate(cameraViewMatrix, cameraPosition);
-
-    testUniformBuffer->subData("cameraViewMatrix", glm::value_ptr(cameraViewMatrix), 16);
-    testUniformBuffer->subData("objectModelMatrix", glm::value_ptr(modelMatrix), 16);
-
-    Core::Main::Core::getRenderer().renderMesh(testUniformBuffer, testModel);
-
-    //modelMatrix = glm::rotate(modelMatrix, glm::radians(0.5f), glm::vec3(0, 1, 0));
+    Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
 }
 
 // --------------------------------------------
 
+void deltaUpdate(const double& deltaTime)
+{
+    Core::ECS::ECSWorld::deltaUpdate(Core::ECS::Scene::getCurrentScene(), deltaTime);
+}
+
 int main()
 {
+    SGConsole::Console::start();
+
     sgSetCoreInitCallback(init);
     sgSetFramePostRenderCallback(framePostRender);
+    sgSetDeltaUpdateCallback(deltaUpdate);
 
     Core::Main::Core::start();
+
+    SGConsole::Console::stop();
 
     return 0;
 }

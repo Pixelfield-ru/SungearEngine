@@ -22,24 +22,41 @@
 #include "IUniformBuffer.h"
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/Graphics/IMesh.h"
+#include "SGCore/ImportedScenesArch/IMesh.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
+#include "SGCore/ECS/Transformations/TransformComponent.h"
+#include "SGCore/ECS/Rendering/CameraComponent.h"
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     class IRenderer
     {
     public:
         // check usages in IVertexArray implementations and IIndexBuffer implementations
+        // TODO: IN MY OPINION, UB IS HERE
         IIndexBuffer* m_currentBoundIndexBuffer = nullptr;
         IVertexArray* m_currentBoundVertexArray = nullptr;
 
         virtual void init() { }
 
+        /**
+         *
+         * @param windowSize
+         */
         virtual void renderFrame(const glm::ivec2& windowSize) { }
 
-        virtual void renderMesh(const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<Memory::Assets::ModelAsset>&) { }
+        /**
+         * Renders the model using matrices from objectMatricesBuffer.
+         *
+         */
+        virtual void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+                                const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
 
+        /**
+         * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
+         */
         virtual void printInfo() noexcept { }
 
         virtual void checkForErrors(std::source_location) noexcept { }
@@ -52,7 +69,7 @@ namespace Core::Graphics::API
         [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
         [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
 
-        [[nodiscard]] virtual IMesh* createMesh() = 0;
+        [[nodiscard]] virtual ImportedScene::IMesh* createMesh() = 0;
     };
 }
 

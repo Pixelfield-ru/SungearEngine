@@ -12,7 +12,7 @@
 #include "SGCore/Memory/Assets/FileAsset.h"
 #include "SGCore/Memory/Assets/IAssetObserver.h"
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     class IShader : public Memory::Assets::IAssetObserver
     {

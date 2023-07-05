@@ -12,7 +12,7 @@
 
 #include "SGCore/Graphics/API/IShader.h"
 
-namespace Core::Graphics::API::GL::GL46
+namespace Core::Graphics::GL
 {
     class GL46Shader : public IShader
     {

@@ -8,6 +8,7 @@ struct SGCallbacks
     SGWindowKeyCallback c_keyCallback;
     SGWindowMouseButtonCallback c_mouseButtonCallback;
     SGUpdateCallback c_framePostRender;
+    SGDeltaUpdateCallback c_deltaUpdate;
 };
 
 SGCallbacks sgCallbacks;
@@ -40,6 +41,11 @@ void sgSetWindowMouseButtonCallback(const SGWindowMouseButtonCallback& callback)
 void sgSetFramePostRenderCallback(const SGUpdateCallback& callback) noexcept
 {
     sgCallbacks.c_framePostRender = callback;
+}
+
+void sgSetDeltaUpdateCallback(const SGDeltaUpdateCallback& callback) noexcept
+{
+    sgCallbacks.c_deltaUpdate = callback;
 }
 
 // ---------------------------------------
@@ -89,5 +95,13 @@ void sgCallFramePostRenderCallback()
     if(sgCallbacks.c_framePostRender)
     {
         sgCallbacks.c_framePostRender();
+    }
+}
+
+void sgCallDeltaUpdateCallback(const double& deltaTime)
+{
+    if(sgCallbacks.c_deltaUpdate)
+    {
+        sgCallbacks.c_deltaUpdate(deltaTime);
     }
 }

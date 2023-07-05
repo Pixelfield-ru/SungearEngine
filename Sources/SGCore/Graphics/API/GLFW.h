@@ -9,7 +9,7 @@
 
 #define GLFW_INCLUDE_NONE
 
-namespace Core::Graphics::API::GLFW
+namespace Core::Graphics::GLFW
 {
 
 }

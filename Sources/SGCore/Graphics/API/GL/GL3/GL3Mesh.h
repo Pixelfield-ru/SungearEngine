@@ -3,13 +3,16 @@
 #ifndef SUNGEARENGINE_GL3MESH_H
 #define SUNGEARENGINE_GL3MESH_H
 
-#include "SGCore/Graphics/IMesh.h"
+#include "SGCore/ImportedScenesArch/IMesh.h"
 
-namespace Core::Graphics::API::GL::GL3
+namespace Core::Graphics::GL
 {
-    class GL3Mesh : public IMesh
+    class GL3Mesh : public ImportedScene::IMesh
     {
     public:
+        /**
+         * Prepares a mesh. Creates VAO, VBO (for UV, vertex positions, normals), IBO.
+         */
         void prepare() final;
     };
 }

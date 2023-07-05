@@ -168,7 +168,7 @@ rule CXX_SHARED_LIBRARY_LINKER__SGCore_Debug
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__SGConsole_Debug
+rule CXX_COMPILER__SGConsoleAPI_Debug
   depfile = $DEP_FILE
   deps = gcc
   command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9161.40\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -178,9 +178,28 @@ rule CXX_COMPILER__SGConsole_Debug
 #############################################
 # Rule for linking CXX shared library.
 
-rule CXX_SHARED_LIBRARY_LINKER__SGConsole_Debug
+rule CXX_SHARED_LIBRARY_LINKER__SGConsoleAPI_Debug
   command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9161.40\bin\mingw\bin\g++.exe $LANGUAGE_COMPILE_FLAGS $ARCH_FLAGS $LINK_FLAGS -shared -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $in $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX shared library $TARGET_FILE
+  restat = $RESTAT
+
+
+#############################################
+# Rule for compiling CXX files.
+
+rule CXX_COMPILER__SGConsoleApp_Debug
+  depfile = $DEP_FILE
+  deps = gcc
+  command = D:\Programming\JetBrains\apps\CLion\ch-0\231.9161.40\bin\mingw\bin\g++.exe $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building CXX object $out
+
+
+#############################################
+# Rule for linking CXX executable.
+
+rule CXX_EXECUTABLE_LINKER__SGConsoleApp_Debug
+  command = cmd.exe /C "$PRE_LINK && D:\Programming\JetBrains\apps\CLion\ch-0\231.9161.40\bin\mingw\bin\g++.exe $FLAGS $LINK_FLAGS $in -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
+  description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
 
 

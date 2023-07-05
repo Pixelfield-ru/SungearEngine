@@ -12,7 +12,7 @@
 #include "GraphicsDataTypes.h"
 //#include "IVertexBufferLayout.h"
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     // each BufferLayout must have its own set of IVertexAttribute. watch buffer layout
     class IVertexAttribute

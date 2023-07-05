@@ -13,12 +13,16 @@
 
 namespace Core::ECS
 {
+    class Entity;
+
     class IComponent
     {
-        friend class Entity;
-
     private:
-        //std::shared_ptr<Entity> entity;
+        // just for polymorphism
+        virtual void init() = 0;
+
+    protected:
+        std::shared_ptr<Entity> entity;
     };
 }
 

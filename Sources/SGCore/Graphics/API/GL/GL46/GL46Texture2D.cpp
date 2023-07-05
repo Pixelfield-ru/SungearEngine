@@ -8,13 +8,13 @@
 
 #include "SGCore/Logging/Log.h"
 
-Core::Graphics::API::GL::GL46::GL46Texture2D::~GL46Texture2D() noexcept
+Core::Graphics::GL::GL46Texture2D::~GL46Texture2D() noexcept
 {
     destroy();
 }
 
 // migrate to gl46
-void Core::Graphics::API::GL::GL46::GL46Texture2D::create(std::weak_ptr<Memory::Assets::Texture2DAsset> asset) noexcept
+void Core::Graphics::GL::GL46Texture2D::create(std::weak_ptr<Memory::Assets::Texture2DAsset> asset) noexcept
 {
     std::shared_ptr<Core::Memory::Assets::Texture2DAsset> originalSharedPtr = m_texture2DAsset.lock();
     if(originalSharedPtr && m_texture2DAsset.expired())
@@ -64,39 +64,39 @@ void Core::Graphics::API::GL::GL46::GL46Texture2D::create(std::weak_ptr<Memory::
     #endif
 }
 
-void Core::Graphics::API::GL::GL46::GL46Texture2D::destroy() noexcept
+void Core::Graphics::GL::GL46Texture2D::destroy() noexcept
 {
     glDeleteTextures(1, &m_handler);
 }
 
-void Core::Graphics::API::GL::GL46::GL46Texture2D::bind(const std::uint8_t& textureUnit) noexcept
+void Core::Graphics::GL::GL46Texture2D::bind(const std::uint8_t& textureUnit) noexcept
 {
     glBindTextureUnit(textureUnit, m_handler);
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, m_handler);
 }
 
-void Core::Graphics::API::GL::GL46::GL46Texture2D::onAssetModified() noexcept
+void Core::Graphics::GL::GL46Texture2D::onAssetModified() noexcept
 {
 
 }
 
-void Core::Graphics::API::GL::GL46::GL46Texture2D::onAssetPathChanged() noexcept
+void Core::Graphics::GL::GL46Texture2D::onAssetPathChanged() noexcept
 {
 
 }
 
-void Core::Graphics::API::GL::GL46::GL46Texture2D::onAssetDeleted() noexcept
+void Core::Graphics::GL::GL46Texture2D::onAssetDeleted() noexcept
 {
 
 }
 
-void Core::Graphics::API::GL::GL46::GL46Texture2D::onAssetRestored() noexcept
+void Core::Graphics::GL::GL46Texture2D::onAssetRestored() noexcept
 {
 
 }
 
-Core::Graphics::API::GL::GL46::GL46Texture2D& Core::Graphics::API::GL::GL46::GL46Texture2D::operator=
+Core::Graphics::GL::GL46Texture2D& Core::Graphics::GL::GL46Texture2D::operator=
         (const std::shared_ptr<ITexture2D>& other)
 {
     create(other->getAsset());

@@ -8,7 +8,7 @@
 #include "Timer.h"
 #include "TimerCallback.h"
 
-void Core::Utils::Timer::startFrame() noexcept
+void Core::Utils::Timer::startFrame()
 {
     if(!m_active) return;
 
@@ -18,33 +18,49 @@ void Core::Utils::Timer::startFrame() noexcept
         m_firstTime = false;
     }
 
-    m_current = glfwGetTime();
-}
-
-void Core::Utils::Timer::endFrame()
-{
-    if(!m_active) return;
-
-    for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
-    {
-        callback->callUpdateFunction();
-    }
-
-    long double last = m_current;
+    double last = m_current;
     m_current = glfwGetTime();
 
-    m_deltaTime = m_current - last;
+    m_rawDeltaTime = m_current - last;
+    m_fixedDeltaTime += m_current - last;
+    m_elapsedTimeForUpdate += m_current - last;
 
-    for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
+    // if time to update
+    if(m_elapsedTimeForUpdate > 1.0 / m_targetFrameRate)
     {
-        callback->callDeltaUpdateFunction(m_deltaTime);
+        for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
+        {
+            callback->callUpdateFunction();
+        }
+
+        m_framesPerTarget++;
+
+        m_elapsedTimeForUpdate = 0.0f;
     }
 
-    m_progress = m_current - m_startTime;
+    if(m_useFixedDeltaTime)
+    {
+        // fixing delta update
+        while(m_fixedDeltaTime > m_fixedDeltaTimeValue)
+        {
+            for(const std::shared_ptr<TimerCallback>& callback: m_callbacks)
+            {
+                callback->callDeltaUpdateFunction(m_fixedDeltaTime);
+            }
+            m_fixedDeltaTime -= m_fixedDeltaTimeValue;
+        }
+    }
+    else // if delta time is not fixed
+    {
+        for(const std::shared_ptr<TimerCallback>& callback: m_callbacks)
+        {
+            callback->callDeltaUpdateFunction(m_rawDeltaTime);
+        }
+    }
 
-    m_framesPerDestination++;
+    m_elapsedTime = m_current - m_startTime;
 
-    if(m_progress > m_destination)
+    if(m_elapsedTime > m_target)
     {
         for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
         {
@@ -59,9 +75,9 @@ void Core::Utils::Timer::endFrame()
 
 void Core::Utils::Timer::reset() noexcept
 {
-    m_progress = 0;
+    m_elapsedTime = 0;
     m_startTime = glfwGetTime();
-    m_framesPerDestination = 0;
+    m_framesPerTarget = 0;
 }
 
 void Core::Utils::Timer::firstTimeStart()
@@ -84,7 +100,7 @@ void Core::Utils::Timer::removeCallback(const std::shared_ptr<TimerCallback>& ca
     m_callbacks.remove(callback);
 }
 
-const uint16_t& Core::Utils::Timer::getFramesPerDestination() const noexcept
+uint16_t Core::Utils::Timer::getFramesPerDestination() const noexcept
 {
-    return m_framesPerDestination;
+    return m_framesPerTarget;
 }

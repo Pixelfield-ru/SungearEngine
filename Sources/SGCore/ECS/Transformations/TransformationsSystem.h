@@ -7,16 +7,17 @@
 #ifndef NATIVECORE_TRANSFORMATIONSSYSTEM_H
 #define NATIVECORE_TRANSFORMATIONSSYSTEM_H
 
-#include "../ISystem.h"
+#include "SGCore/ECS/ISystem.h"
+#include "SGCore/ECS/Transformations/TransformComponent.h"
 
-namespace Core::ECS::Transformations
+namespace Core::ECS
 {
-    class TransformationsSystem : ISystem
+    class TransformationsSystem : public ISystem
     {
     public:
-        void update(const Core::ECS::Entity&) override;
+        void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
 
-        void deltaUpdate(const Core::ECS::Entity&, const float&) override;
+        void deltaUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity, const double& deltaTime) final;
     };
 }
 

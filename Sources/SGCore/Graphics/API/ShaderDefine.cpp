@@ -4,12 +4,12 @@
 
 #include "ShaderDefine.h"
 
-bool Core::Graphics::API::ShaderDefine::operator==(const Core::Graphics::API::ShaderDefine& other) const noexcept
+bool Core::Graphics::ShaderDefine::operator==(const Core::Graphics::ShaderDefine& other) const noexcept
 {
     return this->m_name == other.m_name;
 }
 
-std::string Core::Graphics::API::ShaderDefine::toString() const noexcept
+std::string Core::Graphics::ShaderDefine::toString() const noexcept
 {
     return "#define " + m_name + " " + m_expression;
 }

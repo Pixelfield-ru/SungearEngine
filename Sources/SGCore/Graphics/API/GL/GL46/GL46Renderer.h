@@ -13,20 +13,26 @@
 #include "SGCore/Main/Core.h"
 
 #include "GL46Shader.h"
-#include "../GLVertexArray.h"
-#include "../GLVertexBuffer.h"
-#include "../GLVertexBufferLayout.h"
-#include "../GLIndexBuffer.h"
+#include "SGCore/Graphics/API/GL/GLVertexArray.h"
+#include "SGCore/Graphics/API/GL/GLVertexBuffer.h"
+#include "SGCore/Graphics/API/GL/GLVertexBufferLayout.h"
+#include "SGCore/Graphics/API/GL/GLIndexBuffer.h"
 #include "GL46Texture2D.h"
 #include "GL46UniformBuffer.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/ImportedScenesArch/IMesh.h"
 
-namespace Core::Graphics::API::GL::GL46
+namespace Core::Graphics::GL
 {
     class GL46Renderer : public IRenderer
     {
     private:
+        // Buffer for storing matrices of the currently rendered model.
+        std::shared_ptr<IUniformBuffer> m_modelMatricesBuffer;
+        // Buffer for storing matrices of the currently main camera.
+        std::shared_ptr<IUniformBuffer> m_cameraMatricesBuffer;
+
         GL46Renderer() noexcept = default;
 
         //GL46Renderer() noexcept = default;
@@ -41,12 +47,22 @@ namespace Core::Graphics::API::GL::GL46
 
         void renderFrame(const glm::ivec2& windowSize) override;
 
-        void renderMesh(const std::shared_ptr<IUniformBuffer>&, const std::shared_ptr<Memory::Assets::ModelAsset>&) override;
+        void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+                        const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                        const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
 
         void printInfo() noexcept override;
 
+        /**
+         * Checks for errors in GAPI.
+         * @param location - Where the function is called from.
+         */
         void checkForErrors(std::source_location location = std::source_location::current()) noexcept override;
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] GL46Shader* createShader() override;
         [[nodiscard]] GLVertexArray* createVertexArray() override;
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;
@@ -55,7 +71,7 @@ namespace Core::Graphics::API::GL::GL46
         [[nodiscard]] GL46Texture2D* createTexture2D() override;
         [[nodiscard]] IUniformBuffer* createUniformBuffer() override;
 
-        [[nodiscard]] IMesh* createMesh() override;
+        [[nodiscard]] ImportedScene::IMesh* createMesh() override;
 
         static const std::shared_ptr<GL46Renderer>& getInstance() noexcept;
     };

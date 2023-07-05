@@ -6,13 +6,13 @@
 #include "SGCore/Logging/Log.h"
 #include "GL46Renderer.h"
 
-Core::Graphics::API::GL::GL46::GL46Shader::~GL46Shader() noexcept
+Core::Graphics::GL::GL46Shader::~GL46Shader() noexcept
 {
     destroy();
 }
 
 // TODO: watch SGP1
-GLuint Core::Graphics::API::GL::GL46::GL46Shader::createShaderPart(const GLenum& type, const std::string& finalShaderCode) noexcept
+GLuint Core::Graphics::GL::GL46Shader::createShaderPart(const GLenum& type, const std::string& finalShaderCode) noexcept
 {
     std::string additionalShaderInfo =
             R"(
@@ -98,7 +98,7 @@ GLuint Core::Graphics::API::GL::GL46::GL46Shader::createShaderPart(const GLenum&
 
 // TODO: watch SGP1
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
-void Core::Graphics::API::GL::GL46::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAsset> asset) noexcept
+void Core::Graphics::GL::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAsset> asset) noexcept
 {
     destroy();
 
@@ -194,13 +194,13 @@ void Core::Graphics::API::GL::GL46::GL46Shader::compile(std::shared_ptr<Memory::
     }
 }
 
-void Core::Graphics::API::GL::GL46::GL46Shader::bind() noexcept
+void Core::Graphics::GL::GL46Shader::bind() noexcept
 {
     glUseProgram(m_programHandler);
 }
 
 // TODO: watch SGP1
-void Core::Graphics::API::GL::GL46::GL46Shader::destroy() noexcept
+void Core::Graphics::GL::GL46Shader::destroy() noexcept
 {
     for(const GLuint shaderPartHandler : m_shaderPartsHandlers)
     {
@@ -255,7 +255,7 @@ void Core::Graphics::API::GL::GL46::GL46Shader::destroy() noexcept
     m_shaderPartsHandlers.clear();
 }
 
-std::int32_t Core::Graphics::API::GL::GL46::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
+std::int32_t Core::Graphics::GL::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
 {
     return glGetUniformLocation(m_programHandler, uniformName.data());
 }

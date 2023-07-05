@@ -4,7 +4,7 @@
 // TODO: make check for current used GAPI
 Core::Memory::Assets::PBRMaterial::PBRMaterial()
 {
-    m_shader = std::shared_ptr<Core::Graphics::API::IShader>(Core::Main::Core::getRenderer().createShader());
+    m_shader = std::shared_ptr<Core::Graphics::IShader>(Core::Main::Core::getRenderer().createShader());
     m_shader->compile(Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>("../SGResources/shaders/pbr/default_shader.glsl"));
     m_shader->addShaderDefines({
                                        //Core::Graphics::API::ShaderDefine("FLIP_TEXTURES_Y", "")

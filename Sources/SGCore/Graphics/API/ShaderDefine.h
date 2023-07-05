@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     struct ShaderDefine
     {

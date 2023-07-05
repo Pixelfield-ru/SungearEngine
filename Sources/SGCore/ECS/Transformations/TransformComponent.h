@@ -9,32 +9,33 @@
 
 #include <glm/glm.hpp>
 
-#include "../IComponent.h"
-#include "TransformationsSystem.h"
+#include "SGCore/ECS/IComponent.h"
 
-namespace Core::ECS::Transformations
+namespace Core::ECS
 {
-    class TransformComponent : IComponent
+    class TransformComponent : public IComponent
     {
         friend class TransformationsSystem;
 
     private:
+        void init() noexcept final { }
+
         glm::vec3 m_lastPosition;
         glm::vec3 m_lastRotation;
-        glm::vec3 m_lastScale;
+        glm::vec3 m_lastScale = glm::vec3(0);
 
         glm::vec3 m_lastCenter;
 
     public:
         glm::vec3 m_position;
         glm::vec3 m_rotation;
-        glm::vec3 m_scale;
+        glm::vec3 m_scale = glm::vec3(1);
 
-        glm::mat4 m_translationMatrix;
-        glm::mat4 m_rotationMatrix;
-        glm::mat4 m_scaleMatrix;
+        glm::mat4 m_translationMatrix = glm::mat4(1);
+        glm::mat4 m_rotationMatrix = glm::mat4(1);
+        glm::mat4 m_scaleMatrix = glm::mat4(1);
 
-        glm::mat4 m_modelMatrix;
+        glm::mat4 m_modelMatrix = glm::mat4(1);
     };
 }
 

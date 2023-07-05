@@ -11,7 +11,7 @@
 
 #include <glad/glad.h>
 
-namespace Core::Graphics::API::GL
+namespace Core::Graphics::GL
 {
     class GLVertexArray : public IVertexArray
     {

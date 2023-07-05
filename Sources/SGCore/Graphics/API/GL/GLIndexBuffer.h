@@ -8,7 +8,7 @@
 
 #include <glad/glad.h>
 
-namespace Core::Graphics::API::GL
+namespace Core::Graphics::GL
 {
     class GLIndexBuffer : public IIndexBuffer
     {
@@ -21,7 +21,7 @@ namespace Core::Graphics::API::GL
 
         std::shared_ptr<IIndexBuffer> create() noexcept override;
 
-        void destroy() noexcept override;
+        void destroy() noexcept final;
 
         std::shared_ptr<IIndexBuffer> putData(std::vector<std::uint32_t> data) noexcept override;
         std::shared_ptr<IIndexBuffer> subData(std::vector<std::uint32_t> data, const int& offset) noexcept override;

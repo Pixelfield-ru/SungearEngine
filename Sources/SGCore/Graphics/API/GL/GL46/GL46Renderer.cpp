@@ -1,9 +1,10 @@
 #include "GL46Renderer.h"
 #include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
+#include "glm/gtc/type_ptr.hpp"
 
 #include <thread>
 
-const std::shared_ptr<Core::Graphics::API::GL::GL46::GL46Renderer>& Core::Graphics::API::GL::GL46::GL46Renderer::getInstance() noexcept
+const std::shared_ptr<Core::Graphics::GL::GL46Renderer>& Core::Graphics::GL::GL46Renderer::getInstance() noexcept
 {
     static auto* s_nakedInstancePointer = new GL46Renderer;
     static std::shared_ptr<GL46Renderer> s_instancePointer(s_nakedInstancePointer);
@@ -11,7 +12,7 @@ const std::shared_ptr<Core::Graphics::API::GL::GL46::GL46Renderer>& Core::Graphi
     return s_instancePointer;
 }
 
-void Core::Graphics::API::GL::GL46::GL46Renderer::init() noexcept
+void Core::Graphics::GL::GL46Renderer::init() noexcept
 {
     SGC_INFO("-----------------------------------");
     SGC_INFO("GL46Renderer initializing...");
@@ -28,6 +29,8 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::init() noexcept
     printInfo();
     SGC_INFO("-----------------------------------");
 
+    // -------------------------------------
+
     glEnable(GL_DEPTH_TEST);
     /*glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);*/
@@ -38,9 +41,27 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::init() noexcept
     /*glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);*/
+
+    // -------------------------------------
+
+    m_modelMatricesBuffer = std::shared_ptr<IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
+    m_modelMatricesBuffer->putUniforms({Core::Graphics::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4)});
+    m_modelMatricesBuffer->putData<float>({ });
+    m_modelMatricesBuffer->setLayoutLocation(0);
+    m_modelMatricesBuffer->prepare();
+
+    m_cameraMatricesBuffer = std::shared_ptr<IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
+    m_cameraMatricesBuffer->putUniforms({
+                                                Core::Graphics::IShaderUniform("cameraProjectionMatrix", SGGDataType::SGG_MAT4),
+                                                Core::Graphics::IShaderUniform("cameraViewMatrix", SGGDataType::SGG_MAT4)
+                                        });
+    m_cameraMatricesBuffer->putData<float>({ });
+    m_cameraMatricesBuffer->putData<float>({ });
+    m_cameraMatricesBuffer->setLayoutLocation(1);
+    m_cameraMatricesBuffer->prepare();
 }
 
-void Core::Graphics::API::GL::GL46::GL46Renderer::checkForErrors(std::source_location location) noexcept
+void Core::Graphics::GL::GL46Renderer::checkForErrors(std::source_location location) noexcept
 {
     int errCode = glGetError();
 
@@ -65,7 +86,7 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::checkForErrors(std::source_loc
     }
 }
 
-void Core::Graphics::API::GL::GL46::GL46Renderer::printInfo() noexcept
+void Core::Graphics::GL::GL46Renderer::printInfo() noexcept
 {
     SGC_INFO("GL46Renderer info:");
     SGC_INFO("OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
@@ -80,7 +101,7 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::printInfo() noexcept
     }
 }
 
-void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& windowSize)
+void Core::Graphics::GL::GL46Renderer::renderFrame(const glm::ivec2& windowSize)
 {
     glViewport(0, 0, windowSize.x, windowSize.y);
 
@@ -89,57 +110,65 @@ void Core::Graphics::API::GL::GL46::GL46Renderer::renderFrame(const glm::ivec2& 
 }
 
 // TODO: just test. delete
-void Core::Graphics::API::GL::GL46::GL46Renderer::renderMesh(
-        const std::shared_ptr<IUniformBuffer>& uniformBuffer,
-        const std::shared_ptr<Memory::Assets::ModelAsset>& model)
+void Core::Graphics::GL::GL46Renderer::renderMesh(
+        const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+        const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+        const std::shared_ptr<ECS::MeshComponent>& meshComponent)
 {
-    uniformBuffer->bind();
+    if(!meshComponent->m_mesh) return;
 
-    for(auto& mesh : model->m_meshes)
-    {
-        mesh->m_material->bind();
-        mesh->getVertexArray()->bind();
+    m_modelMatricesBuffer->bind();
+    m_cameraMatricesBuffer->bind();
 
-        glDrawElements(GL_TRIANGLES, mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
-    }
+    m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
+
+    m_cameraMatricesBuffer->subData("cameraViewMatrix", glm::value_ptr(cameraComponent->m_viewMatrix), 16);
+    m_cameraMatricesBuffer->subData("cameraProjectionMatrix", glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
+
+    meshComponent->m_mesh->m_material->bind();
+    meshComponent->m_mesh->getVertexArray()->bind();
+
+    glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+
+    //std::cout << "rendered object with mesh " <<  meshComponent->m_mesh->m_name << std::endl;
 }
 
-Core::Graphics::API::GL::GL46::GL46Shader* Core::Graphics::API::GL::GL46::GL46Renderer::createShader()
+Core::Graphics::GL::GL46Shader* Core::Graphics::GL::GL46Renderer::createShader()
 {
     return new GL46Shader;
 }
 
-Core::Graphics::API::GL::GLVertexArray* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexArray()
+Core::Graphics::GL::GLVertexArray* Core::Graphics::GL::GL46Renderer::createVertexArray()
 {
     return new GLVertexArray;
 }
 
-Core::Graphics::API::GL::GLVertexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexBuffer()
+Core::Graphics::GL::GLVertexBuffer* Core::Graphics::GL::GL46Renderer::createVertexBuffer()
 {
     return new GLVertexBuffer;
 }
 
-Core::Graphics::API::GL::GLVertexBufferLayout* Core::Graphics::API::GL::GL46::GL46Renderer::createVertexBufferLayout()
+Core::Graphics::GL::GLVertexBufferLayout* Core::Graphics::GL::GL46Renderer::createVertexBufferLayout()
 {
     return new GLVertexBufferLayout;
 }
 
-Core::Graphics::API::GL::GLIndexBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createIndexBuffer()
+Core::Graphics::GL::GLIndexBuffer* Core::Graphics::GL::GL46Renderer::createIndexBuffer()
 {
     return new GLIndexBuffer;
 }
 
-Core::Graphics::API::GL::GL46::GL46Texture2D* Core::Graphics::API::GL::GL46::GL46Renderer::createTexture2D()
+Core::Graphics::GL::GL46Texture2D* Core::Graphics::GL::GL46Renderer::createTexture2D()
 {
     return new GL46Texture2D;
 }
 
-Core::Graphics::API::IUniformBuffer* Core::Graphics::API::GL::GL46::GL46Renderer::createUniformBuffer()
+Core::Graphics::IUniformBuffer* Core::Graphics::GL::GL46Renderer::createUniformBuffer()
 {
     return new GL46UniformBuffer;
 }
 
-Core::Graphics::IMesh* Core::Graphics::API::GL::GL46::GL46Renderer::createMesh()
+Core::ImportedScene::IMesh* Core::Graphics::GL::GL46Renderer::createMesh()
 {
-    return new GL3::GL3Mesh;
+    return new GL3Mesh;
 }

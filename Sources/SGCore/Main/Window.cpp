@@ -64,12 +64,6 @@ void Core::Main::Window::create()
     // -------------------------
 }
 
-void Core::Main::Window::proceedFrame()
-{
-    glfwSwapBuffers(m_handler);
-    glfwPollEvents();
-}
-
 void Core::Main::Window::makeCurrent() noexcept
 {
     glfwMakeContextCurrent(m_handler);
@@ -196,4 +190,14 @@ void Core::Main::Window::windowIconifyCallback(GLFWwindow* window, int iconified
 void Core::Main::Window::errorCallback(int errCode, const char* err_msg)
 {
     SGC_ERROR("GLFW error (code " + std::to_string(errCode) + "): " + err_msg);
+}
+
+void Core::Main::Window::swapBuffers()
+{
+    glfwSwapBuffers(m_handler);
+}
+
+void Core::Main::Window::pollEvents()
+{
+    glfwPollEvents();
 }

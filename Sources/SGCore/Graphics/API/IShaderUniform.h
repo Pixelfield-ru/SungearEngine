@@ -8,7 +8,7 @@
 
 #include "IShader.h"
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     struct IShaderUniform
     {

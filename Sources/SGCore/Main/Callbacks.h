@@ -14,7 +14,7 @@ typedef void(*SGWindowMouseButtonCallback)(GLFWwindow*, int, int, int);
 // -------------------------------------------------------------------------
 // update callbacks ---------------------------------------------------------
 typedef void(*SGUpdateCallback)();
-typedef void(*SGDeltaUpdateCallback)(const long double&);
+typedef void(*SGDeltaUpdateCallback)(const double&);
 // --------------------------------------------------------------------------
 
 // glfw standard callbacks -------------------------------------------------
@@ -25,6 +25,7 @@ void sgSetWindowKeyCallback(const SGWindowKeyCallback&) noexcept;
 void sgSetWindowMouseButtonCallback(const SGWindowMouseButtonCallback&) noexcept;
 
 void sgSetFramePostRenderCallback(const SGUpdateCallback&) noexcept;
+void sgSetDeltaUpdateCallback(const SGDeltaUpdateCallback&) noexcept;
 
 void sgCallCoreInitCallback();
 void sgCallWindowCloseCallback(GLFWwindow*);
@@ -33,5 +34,6 @@ void sgCallWindowKeyCallback(GLFWwindow*, int, int, int, int);
 void sgCallWindowMouseButtonCallback(GLFWwindow*, int, int, int);
 
 void sgCallFramePostRenderCallback();
+void sgCallDeltaUpdateCallback(const double& deltaTime);
 
 #endif //NATIVECORE_CALLBACKS_H

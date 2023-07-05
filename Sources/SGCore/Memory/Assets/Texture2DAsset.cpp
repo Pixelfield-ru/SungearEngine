@@ -28,7 +28,7 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
 
     m_textureData = std::shared_ptr<std::uint8_t[]>(stbi_load(m_path.string().data(), &m_width, &m_height, &m_channelsInFile, channelsDesired));
 
-    m_texture2D = std::shared_ptr<Graphics::API::ITexture2D>(Core::Main::Core::getRenderer().createTexture2D());
+    m_texture2D = std::shared_ptr<Graphics::ITexture2D>(Core::Main::Core::getRenderer().createTexture2D());
 
 
    /* try
@@ -47,7 +47,6 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
     }
     else if(m_channelsInFile == 3)
     {
-        m_internalFormat = SGGInternalFormat::SGG_RGB8;
         m_format = SGGFormat::SGG_RGB;
     }
     SGC_INFO("Loaded texture. Width: " + std::to_string(m_width) + ", height: " + std::to_string(m_height)
@@ -58,7 +57,7 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
     return sharedPtr;
 }
 
-std::shared_ptr<Core::Graphics::API::ITexture2D> Core::Memory::Assets::Texture2DAsset::getTexture2D() noexcept
+std::shared_ptr<Core::Graphics::ITexture2D> Core::Memory::Assets::Texture2DAsset::getTexture2D() noexcept
 {
     return m_texture2D;
 }

@@ -8,25 +8,25 @@
 #include "GLGraphicsTypesCaster.h"
 #include "GL46/GL46Renderer.h"
 
-Core::Graphics::API::GL::GLIndexBuffer::~GLIndexBuffer() noexcept
+Core::Graphics::GL::GLIndexBuffer::~GLIndexBuffer() noexcept
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::create() noexcept
+std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::GL::GLIndexBuffer::create() noexcept
 {
     destroy();
 
     glGenBuffers(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG
-    GL46::GL46Renderer::getInstance()->checkForErrors();
+    GL::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-void Core::Graphics::API::GL::GLIndexBuffer::destroy() noexcept
+void Core::Graphics::GL::GLIndexBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);
 
@@ -35,7 +35,7 @@ void Core::Graphics::API::GL::GLIndexBuffer::destroy() noexcept
     #endif
 }
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::putData(std::vector<std::uint32_t> data) noexcept
+std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::GL::GLIndexBuffer::putData(std::vector<std::uint32_t> data) noexcept
 {
     m_data = std::move(data);
 
@@ -48,13 +48,13 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
     }
 
     #ifdef SUNGEAR_DEBUG
-    GL46::GL46Renderer::getInstance()->checkForErrors();
+    GL::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::subData
+std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::GL::GLIndexBuffer::subData
         (std::vector<std::uint32_t> data, const int& offset) noexcept
 {
     // TODO: make sub data in m_data
@@ -63,26 +63,26 @@ std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIn
                     &m_data[0]);
 
     #ifdef SUNGEAR_DEBUG
-    GL46::GL46Renderer::getInstance()->checkForErrors();
+    GL::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::bind() noexcept
+std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::GL::GLIndexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_handler);
 
     Core::Main::Core::getRenderer().m_currentBoundIndexBuffer = this;
 
     #ifdef SUNGEAR_DEBUG
-    GL46::GL46Renderer::getInstance()->checkForErrors();
+    GL::GL46Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::API::IIndexBuffer> Core::Graphics::API::GL::GLIndexBuffer::setUsage(SGGUsage usage) noexcept
+std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::GL::GLIndexBuffer::setUsage(SGGUsage usage) noexcept
 {
     m_usage = usage;
 

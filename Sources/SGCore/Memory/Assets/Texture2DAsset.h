@@ -10,7 +10,7 @@
 #include "IAsset.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
-namespace Core::Graphics::API
+namespace Core::Graphics
 {
     class ITexture2D;
 }
@@ -26,7 +26,7 @@ namespace Core::Memory::Assets
         int m_height = 0;
         int m_channelsInFile = 0;
 
-        std::shared_ptr<Graphics::API::ITexture2D> m_texture2D;
+        std::shared_ptr<Graphics::ITexture2D> m_texture2D;
         std::shared_ptr<std::uint8_t[]> m_textureData;
 
     public:
@@ -34,7 +34,7 @@ namespace Core::Memory::Assets
 
         [[nodiscard]] std::shared_ptr<IAsset> load(const std::string& path) override;
 
-        std::shared_ptr<Graphics::API::ITexture2D> getTexture2D() noexcept;
+        std::shared_ptr<Graphics::ITexture2D> getTexture2D() noexcept;
 
         #pragma region Getters
         SGGInternalFormat getInternalFormat() noexcept;

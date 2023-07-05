@@ -16,42 +16,47 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::
     Assimp::Importer importer;
 
     // TODO: maybe shared_ptr
-    const aiScene* scene(importer.ReadFile(m_path.string(), m_importerFlags));
+    const aiScene* aiImportedScene(importer.ReadFile(m_path.string(), m_importerFlags));
 
-    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    if(!aiImportedScene || aiImportedScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiImportedScene->mRootNode)
     {
         SGC_ERROR("Assimp error (while importing scene): " + std::string(importer.GetErrorString()));
         return shared_from_this();
     }
 
-    m_name = scene->mRootNode->mName.data;
+    m_name = aiImportedScene->mName.data;
 
-    processNode(scene->mRootNode, scene);
+    m_nodes.push_back(processNode(aiImportedScene->mRootNode, aiImportedScene));
 
-    SGC_SUCCESS("Loaded model '" + m_name + "'. Meshes count: " + std::to_string(m_meshes.size()));
+    SGC_SUCCESS("Loaded model '" + m_name + "'. Nodes count: " + std::to_string(m_nodes.size()));
 
     return shared_from_this();
 }
 
-void Core::Memory::Assets::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
+std::shared_ptr<Core::ImportedScene::Node> Core::Memory::Assets::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
 {
+    std::shared_ptr<ImportedScene::Node> sgNode = std::make_shared<ImportedScene::Node>();
+    sgNode->m_name = aiNode->mName.data;
+
     // process all meshes in node
     for(unsigned int i = 0; i < aiNode->mNumMeshes; i++)
     {
         aiMesh *mesh = aiScene->mMeshes[aiNode->mMeshes[i]];
-        m_meshes.push_back(processMesh(mesh, aiScene));
+        sgNode->m_meshes.push_back(processMesh(mesh, aiScene));
     }
 
     // and go to the next node
     for(unsigned int i = 0; i < aiNode->mNumChildren; i++)
     {
-        processNode(aiNode->mChildren[i], aiScene);
+        sgNode->m_children.push_back(processNode(aiNode->mChildren[i], aiScene));
     }
+
+    return sgNode;
 }
 
-std::shared_ptr<Core::Graphics::IMesh> Core::Memory::Assets::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
+std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
-    std::shared_ptr<Graphics::IMesh> sgMesh(Core::Main::Core::getRenderer().createMesh());
+    std::shared_ptr<ImportedScene::IMesh> sgMesh(Core::Main::Core::getRenderer().createMesh());
 
     sgMesh->m_name = aiMesh->mName.data;
 

@@ -4,7 +4,7 @@
 
 #include "IShader.h"
 
-void Core::Graphics::API::IShader::addShaderDefines(const std::vector<ShaderDefine>& shaderDefines)
+void Core::Graphics::IShader::addShaderDefines(const std::vector<ShaderDefine>& shaderDefines)
 {
     for(auto& shaderDefine : shaderDefines)
     {
@@ -16,26 +16,26 @@ void Core::Graphics::API::IShader::addShaderDefines(const std::vector<ShaderDefi
     if(m_assetModifiedChecking) onAssetModified();
 }
 
-void Core::Graphics::API::IShader::removeShaderDefine(const Core::Graphics::API::ShaderDefine& shaderDefine)
+void Core::Graphics::IShader::removeShaderDefine(const Core::Graphics::ShaderDefine& shaderDefine)
 {
     m_defines.remove(shaderDefine);
 
     if(m_assetModifiedChecking) onAssetModified();
 }
 
-void Core::Graphics::API::IShader::removeShaderDefine(const std::string& shaderDefineName)
+void Core::Graphics::IShader::removeShaderDefine(const std::string& shaderDefineName)
 {
     m_defines.remove(ShaderDefine(shaderDefineName, ""));
 
     if(m_assetModifiedChecking) onAssetModified();
 }
 
-void Core::Graphics::API::IShader::onAssetModified()
+void Core::Graphics::IShader::onAssetModified()
 {
     compile(m_fileAsset.lock());
 }
 
-void Core::Graphics::API::IShader::onAssetPathChanged()
+void Core::Graphics::IShader::onAssetPathChanged()
 {
     compile(m_fileAsset.lock());
 }

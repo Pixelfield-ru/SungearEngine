@@ -20,9 +20,18 @@
          ${CMAKE_SOURCE_DIR}/Externals/stb
          )
 
+ # TODO: make for linux and mac
  target_link_libraries(${PROJECT_NAME}
          glfw
          glm::glm
          gl46
          assimp
+         wsock32
+         ws2_32
+         )
+
+ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+         COMMAND ${CMAKE_COMMAND} -E copy
+         $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}d.dll
+         $<TARGET_FILE_DIR:SGEditor>
          )

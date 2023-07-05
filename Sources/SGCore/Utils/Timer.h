@@ -18,33 +18,48 @@ namespace Core::Utils
     class Timer
     {
     private:
-        long double m_current = 0L;
-        long double m_startTime = 0L;
+        double m_current = 0;
+        double m_startTime = 0;
 
-        long double m_progress = 0L;
+        double m_elapsedTime = 0;
 
-        long double m_deltaTime = 0L;
+        double m_rawDeltaTime = 0;
+
+        // fixed delta time for update functions
+        double m_elapsedTimeForUpdate = 0;
+        // fixed delta time for delta update functions
+        double m_fixedDeltaTime = 0;
 
         bool m_firstTime = true;
 
-        uint16_t m_framesPerDestination = 0;
+        uint16_t m_framesPerTarget = 0;
 
         std::list<std::shared_ptr<TimerCallback>> m_callbacks;
     public:
         bool m_active = true;
         bool m_cyclic = false;
 
-        long double m_destination = 0L;
+        double m_target = 0;
+
+        // 7 ms
+        double m_fixedDeltaTimeValue = 7.0 / 1000.0;
+
+        double m_targetFrameRate = 120.0;
+
+        // if true:
+        // 1) determinism. No matter your FPS, the physics will always run with the same exact steps
+        // 2) robustness. Event if you have a long disk access, or some streaming delays, or anything that makes a frame longer, your objects won't jump into outer space.
+        // 3) online-play readiness. When we will do online multi-player, we'll have to pick an approach.
+        // For many techniques like input-passing, the small steps will be significantly easier to make online.
+        bool m_useFixedDeltaTime = true;
 
         // ------------------------------------
 
         Timer() noexcept = default;
         explicit Timer(const bool& cyclic) noexcept : m_cyclic(cyclic) { }
-        Timer(const bool& cyclic, const long double& destination) noexcept : m_cyclic(cyclic), m_destination(destination) { }
+        Timer(const bool& cyclic, const double& destination) noexcept : m_cyclic(cyclic), m_target(destination) { }
 
-        void startFrame() noexcept;
-
-        void endFrame();
+        void startFrame();
 
         void reset() noexcept;
 
@@ -53,7 +68,7 @@ namespace Core::Utils
         void addCallback(std::shared_ptr<TimerCallback> callback);
         void removeCallback(const std::shared_ptr<TimerCallback>& callback);
 
-        const std::uint16_t& getFramesPerDestination() const noexcept;
+        [[nodiscard]] std::uint16_t getFramesPerDestination() const noexcept;
     };
 }
 

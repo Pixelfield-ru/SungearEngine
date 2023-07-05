@@ -5,7 +5,7 @@
 #include "GL46UniformBuffer.h"
 #include <glad/glad.h>
 
-std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL46::GL46UniformBuffer::bind() noexcept
+std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL::GL46UniformBuffer::bind() noexcept
 {
     /*
     // iterating on data and on uniforms to avoid mistakes of going abroad
@@ -123,14 +123,14 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
     return shared_from_this();
 }
 
-void Core::Graphics::API::GL::GL46::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
+void Core::Graphics::GL::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
                                                                          const int& size) noexcept
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, m_buffer + offset);
 }
 
-std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL46::GL46UniformBuffer::prepare() noexcept
+std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL::GL46UniformBuffer::prepare() noexcept
 {
     destroy();
 
@@ -142,8 +142,8 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL46::GL46UniformBuffer::updateLocations(
-        const Core::Graphics::API::IShader& fromShader) noexcept
+std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL::GL46UniformBuffer::updateLocations(
+        const Core::Graphics::IShader& fromShader) noexcept
 {
     for(auto& uniform : m_uniforms)
     {
@@ -153,12 +153,12 @@ std::shared_ptr<Core::Graphics::API::IUniformBuffer> Core::Graphics::API::GL::GL
     return shared_from_this();
 }
 
-void Core::Graphics::API::GL::GL46::GL46UniformBuffer::destroy() noexcept
+void Core::Graphics::GL::GL46UniformBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);
 }
 
-void Core::Graphics::API::GL::GL46::GL46UniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
+void Core::Graphics::GL::GL46UniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
 {
-    glBindBufferBase(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler);
+    m_layoutLocation = location;
 }

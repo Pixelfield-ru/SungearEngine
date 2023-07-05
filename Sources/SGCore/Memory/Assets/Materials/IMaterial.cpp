@@ -79,7 +79,7 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
             std::string finalName = sgMaterialTextureTypeToString(type)  + std::to_string(maxUnit) + "_DEFINED";
             SGC_SUCCESS("Final define for material texture: " + finalName);
 
-            m_shader->addShaderDefines({Graphics::API::ShaderDefine(finalName, "")});
+            m_shader->addShaderDefines({Graphics::ShaderDefine(finalName, "")});
         }
         else // there is no free texture units for texture
         {

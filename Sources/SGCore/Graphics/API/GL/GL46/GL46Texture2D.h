@@ -10,7 +10,7 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include <glad/glad.h>
 
-namespace Core::Graphics::API::GL::GL46
+namespace Core::Graphics::GL
 {
     class GL46Texture2D : public ITexture2D
     {
