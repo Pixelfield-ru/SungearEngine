@@ -15,6 +15,8 @@
 #include "VkUniformBuffer.h"
 #include "VkMesh.h"
 
+#include <vulkan/vulkan.h>
+
 namespace Core::Graphics
 {
     class VkRenderer : public IRenderer
@@ -22,6 +24,11 @@ namespace Core::Graphics
     private:
         VkRenderer() noexcept = default;
 
+        VkInstance m_vkInstance = nullptr;
+        VkApplicationInfo m_applicationInfo { };
+        VkInstanceCreateInfo m_instanceCreateInfo { };
+
+        // singleton instance
         static inline std::shared_ptr<VkRenderer> m_instance;
 
     public:

@@ -425,3 +425,11 @@
 16	23837	0	Resources/CMakeFiles/SGResourcesCopy	90c03939ac0ccebe
 16	23837	0	D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Resources/CMakeFiles/SGResourcesCopy	90c03939ac0ccebe
 23837	24636	7103924199427083	Sources/SGEditor/SGEditor.exe	afa59b4ffb107a12
+38	1899	7104763885964878	Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/Vulkan/VkUniformBuffer.cpp.obj	5ae894c0b0db0e6d
+15	1900	7104763885964878	Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/GL/GL46/GL46UniformBuffer.cpp.obj	9be96280ae34793d
+42	2468	7104763891650052	Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/Vulkan/VkRenderer.cpp.obj	54e0e238e9067ae5
+48	2657	7104763893531766	Sources/SGCore/CMakeFiles/SGCore.dir/Memory/Assets/ModelAsset.cpp.obj	b29638f1ca9886f2
+44	3052	7104763897485372	Sources/SGCore/CMakeFiles/SGCore.dir/Main/CoreMain.cpp.obj	2bbbc4a040f3a4e
+35	3666	7104763903630963	Sources/SGCore/CMakeFiles/SGCore.dir/Graphics/API/IUniformBuffer.cpp.obj	283cddc3ec9ea3d
+51	25918	0	Resources/CMakeFiles/SGResourcesCopy	90c03939ac0ccebe
+51	25918	0	D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/cmake-build-debug/Resources/CMakeFiles/SGResourcesCopy	90c03939ac0ccebe

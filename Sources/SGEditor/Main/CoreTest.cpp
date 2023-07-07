@@ -1,5 +1,7 @@
 //#define SUNGEAR_DEBUG
 
+#include <cstdlib>
+
 #include "CoreTest.h"
 
 #include "SGCore/Memory/AssetManager.h"
@@ -18,10 +20,12 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "SGCore/Main/Callbacks.h"
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtx/quaternion.hpp"
 #include "glm/gtx/rotate_vector.hpp"
+
+#include "SGCore/Main/Callbacks.h"
+
 #include "SGCore/ECS/Scene.h"
 #include "SGCore/ECS/ECSWorld.h"
 
@@ -123,5 +127,5 @@ int main()
 
     SGConsole::Console::stop();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
