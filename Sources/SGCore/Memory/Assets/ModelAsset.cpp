@@ -5,7 +5,7 @@
 #include "ModelAsset.h"
 
 #include "SGCore/Main/CoreSettings.h"
-#include "SGCore/Main/Core.h"
+#include "SGCore/Main/CoreMain.h"
 
 std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::load(const std::string& path)
 {
@@ -56,7 +56,7 @@ std::shared_ptr<Core::ImportedScene::Node> Core::Memory::Assets::ModelAsset::pro
 
 std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
-    std::shared_ptr<ImportedScene::IMesh> sgMesh(Core::Main::Core::getRenderer().createMesh());
+    std::shared_ptr<ImportedScene::IMesh> sgMesh(Core::Main::CoreMain::getRenderer().createMesh());
 
     sgMesh->m_name = aiMesh->mName.data;
 

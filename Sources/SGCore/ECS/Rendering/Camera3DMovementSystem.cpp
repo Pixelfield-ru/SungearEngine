@@ -10,7 +10,7 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/ext/quaternion_trigonometric.hpp"
 #include "glm/gtx/quaternion.hpp"
-#include "SGCore/Main/Core.h"
+#include "SGCore/Main/CoreMain.h"
 
 void Core::ECS::Camera3DMovementSystem::update
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
@@ -71,7 +71,7 @@ void Core::ECS::Camera3DMovementSystem::deltaUpdate
 
     if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))
     {
-        Core::Main::Core::getWindow().setHideAndCentralizeCursor(!Core::Main::Core::getWindow().isHideAndCentralizeCursor());
+        Core::Main::CoreMain::getWindow().setHideAndCentralizeCursor(!Core::Main::CoreMain::getWindow().isHideAndCentralizeCursor());
     }
 
     glm::quat rotationQuat = glm::angleAxis(glm::radians(transformComponent->m_rotation.x), glm::vec3(1, 0, 0));

@@ -8,6 +8,8 @@
 #include "GLGraphicsTypesCaster.h"
 #include "GL46/GL46Renderer.h"
 
+#include "SGCore/Main/CoreMain.h"
+
 Core::Graphics::GL::GLIndexBuffer::~GLIndexBuffer() noexcept
 {
     destroy();
@@ -42,9 +44,9 @@ std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::GL::GLIndexBuffer:
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(m_data[0])), &m_data[0],
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
 
-    if(Core::Main::Core::getRenderer().m_currentBoundVertexArray)
+    if(Core::Main::CoreMain::getRenderer().m_currentBoundVertexArray)
     {
-        Core::Main::Core::getRenderer().m_currentBoundVertexArray->m_indicesCount = m_data.size();
+        Core::Main::CoreMain::getRenderer().m_currentBoundVertexArray->m_indicesCount = m_data.size();
     }
 
     #ifdef SUNGEAR_DEBUG
@@ -73,7 +75,7 @@ std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::GL::GLIndexBuffer:
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_handler);
 
-    Core::Main::Core::getRenderer().m_currentBoundIndexBuffer = this;
+    Core::Main::CoreMain::getRenderer().m_currentBoundIndexBuffer = this;
 
     #ifdef SUNGEAR_DEBUG
     GL::GL46Renderer::getInstance()->checkForErrors();

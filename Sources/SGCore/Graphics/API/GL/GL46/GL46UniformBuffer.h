@@ -14,6 +14,8 @@ namespace Core::Graphics::GL
 
         void subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept final;
     public:
+        ~GL46UniformBuffer() override;
+
         std::shared_ptr<IUniformBuffer> bind() noexcept final;
 
         std::shared_ptr<IUniformBuffer> prepare() noexcept final;

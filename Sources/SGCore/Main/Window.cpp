@@ -1,6 +1,7 @@
 #include "Window.h"
+#include "CoreMain.h"
 
-void Core::Main::Window::create()
+void Core::Main::Window::create(const std::shared_ptr<Graphics::IRenderer>& renderer)
 {
     glfwSetErrorCallback(errorCallback);
 
@@ -19,6 +20,14 @@ void Core::Main::Window::create()
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
+    // OpenGL is the default API for GLFW, so it's not here
+    switch(renderer->getAPIType())
+    {
+        case Graphics::VULKAN: glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); break;
+        case Graphics::DIRECTX:break;
+        case Graphics::METAL:break;
+    }
+
     m_handler = glfwCreateWindow(this->m_config->m_sizeX, this->m_config->m_sizeY, this->m_config->m_title.c_str(), nullptr, nullptr);
 
     if(!m_handler)
@@ -32,7 +41,7 @@ void Core::Main::Window::create()
     glfwSetMouseButtonCallback(m_handler, InputManager::mouseButtonCallback);
     glfwSetCursorPosCallback(m_handler, InputManager::cursorPositionCallback);
 
-    glfwMakeContextCurrent(m_handler);
+    makeCurrent();
 
     glfwSetWindowPos(m_handler, this->m_config->m_positionX, this->m_config->m_positionY);
     glfwSetWindowSizeLimits(m_handler, this->m_config->m_sizeMinLimitX, this->m_config->m_sizeMinLimitY, this->m_config->m_sizeMaxLimitX, this->m_config->m_sizeMaxLimitY);
@@ -40,7 +49,7 @@ void Core::Main::Window::create()
 
     glfwShowWindow(m_handler);
 
-    glfwSwapInterval(this->m_config->m_swapInterval);
+    setSwapInterval(this->m_config->m_swapInterval);
 
     glfwSetInputMode(m_handler, GLFW_STICKY_KEYS, this->m_config->m_enableStickyKeys);
     glfwSetInputMode(m_handler, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
@@ -66,7 +75,11 @@ void Core::Main::Window::create()
 
 void Core::Main::Window::makeCurrent() noexcept
 {
-    glfwMakeContextCurrent(m_handler);
+    Graphics::APIType apiType = CoreMain::getRenderer().getAPIType();
+    if(apiType == Graphics::OPENGL || apiType == Graphics::APIType::OPENGLES)
+    {
+        glfwMakeContextCurrent(m_handler);
+    }
 }
 
 #pragma region Setters
@@ -109,7 +122,11 @@ void Core::Main::Window::setSwapInterval(const bool& swapInterval) noexcept
 {
     m_config->m_swapInterval = swapInterval;
 
-    glfwSwapInterval(swapInterval);
+    Graphics::APIType apiType = CoreMain::getRenderer().getAPIType();
+    if(apiType == Graphics::OPENGL || apiType == Graphics::APIType::OPENGLES)
+    {
+        glfwSwapInterval(swapInterval);
+    }
 }
 
 void Core::Main::Window::setEnableStickyKeys(const bool& enableStickyKeys) noexcept

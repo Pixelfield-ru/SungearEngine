@@ -25,21 +25,15 @@ namespace Core::Graphics::GL
         GLuint createShaderPart(const GLenum&, const std::string&) noexcept;
 
     public:
-        // move
-        //GL46Shader(GL46Shader&&) noexcept;
-
         ~GL46Shader() noexcept override;
 
         void compile(std::shared_ptr<Memory::Assets::FileAsset>) noexcept override;
 
         void bind() noexcept override;
 
-        void destroy() noexcept override;
+        void destroy() noexcept final;
 
         std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept override;
-
-        // move
-        //Core::Graphics::API::GL46::GL46Shader& operator=(GL46Shader&&) noexcept;
     };
 }
 

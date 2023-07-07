@@ -10,7 +10,6 @@
 #include "OpenGL/include/glad/glad.h"
 
 #include "SGCore/Logging/Log.h"
-#include "SGCore/Main/Core.h"
 
 #include "GL46Shader.h"
 #include "SGCore/Graphics/API/GL/GLVertexArray.h"
@@ -22,6 +21,12 @@
 
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/ImportedScenesArch/IMesh.h"
+#include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
+
+namespace Core::Main
+{
+    class CoreMain;
+}
 
 namespace Core::Graphics::GL
 {
@@ -29,9 +34,9 @@ namespace Core::Graphics::GL
     {
     private:
         // Buffer for storing matrices of the currently rendered model.
-        std::shared_ptr<IUniformBuffer> m_modelMatricesBuffer;
+        std::shared_ptr<GL46UniformBuffer> m_modelMatricesBuffer;
         // Buffer for storing matrices of the currently main camera.
-        std::shared_ptr<IUniformBuffer> m_cameraMatricesBuffer;
+        std::shared_ptr<GL46UniformBuffer> m_cameraMatricesBuffer;
 
         GL46Renderer() noexcept = default;
 
@@ -45,6 +50,8 @@ namespace Core::Graphics::GL
 
         void init() noexcept override;
 
+        bool confirmSupport() noexcept final;
+
         void renderFrame(const glm::ivec2& windowSize) override;
 
         void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
@@ -57,21 +64,18 @@ namespace Core::Graphics::GL
          * Checks for errors in GAPI.
          * @param location - Where the function is called from.
          */
-        void checkForErrors(std::source_location location = std::source_location::current()) noexcept override;
+        void checkForErrors(const std::source_location& location = std::source_location::current()) noexcept override;
 
-        /**
-         *
-         * @return
-         */
+        // TODO: create docs
         [[nodiscard]] GL46Shader* createShader() override;
         [[nodiscard]] GLVertexArray* createVertexArray() override;
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;
         [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() override;
         [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] GL46Texture2D* createTexture2D() override;
-        [[nodiscard]] IUniformBuffer* createUniformBuffer() override;
+        [[nodiscard]] GL46UniformBuffer* createUniformBuffer() override;
 
-        [[nodiscard]] ImportedScene::IMesh* createMesh() override;
+        [[nodiscard]] GL3Mesh* createMesh() override;
 
         static const std::shared_ptr<GL46Renderer>& getInstance() noexcept;
     };

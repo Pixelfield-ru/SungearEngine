@@ -3,7 +3,7 @@
 //
 
 #include "CameraRenderingSystem.h"
-#include "SGCore/Main/Core.h"
+#include "SGCore/Main/CoreMain.h"
 
 void Core::ECS::CameraRenderingSystem::update
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
@@ -19,7 +19,7 @@ void Core::ECS::CameraRenderingSystem::update
 
         if(!transformComponent || !meshComponent) continue;
 
-        Core::Main::Core::getRenderer().renderMesh(cameraComponent, transformComponent, meshComponent);
+        Core::Main::CoreMain::getRenderer().renderMesh(cameraComponent, transformComponent, meshComponent);
     }
 }
 

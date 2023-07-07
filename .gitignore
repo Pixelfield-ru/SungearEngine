@@ -8,6 +8,8 @@ Externals/doxygen
 Externals/GLFW/tests
 Externals/GLFW/docs
 Externals/imgui/docs
+Externals/Vulkan/Bin
+Externals/Vulkan/Bin32
 # -----------------------
 
 # SOURCES ---------------

@@ -1,35 +1,34 @@
 #include "GL46Renderer.h"
-#include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
+
+#include "SGCore/Main/CoreMain.h"
+
 #include "glm/gtc/type_ptr.hpp"
 
 #include <thread>
 
-const std::shared_ptr<Core::Graphics::GL::GL46Renderer>& Core::Graphics::GL::GL46Renderer::getInstance() noexcept
-{
-    static auto* s_nakedInstancePointer = new GL46Renderer;
-    static std::shared_ptr<GL46Renderer> s_instancePointer(s_nakedInstancePointer);
-
-    return s_instancePointer;
-}
-
 void Core::Graphics::GL::GL46Renderer::init() noexcept
 {
-    SGC_INFO("-----------------------------------");
-    SGC_INFO("GL46Renderer initializing...");
+    SGCF_INFO("-----------------------------------", SG_LOG_CURRENT_SESSION_FILE);
+    SGCF_INFO("GLRenderer initializing...", SG_LOG_CURRENT_SESSION_FILE);
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        SGC_ERROR("Failed to initialize GL46Renderer!");
+        SGCF_ERROR("Failed to initialize GLRenderer.", SG_LOG_CURRENT_SESSION_FILE);
     }
     else
     {
-        SGC_INFO("GL46Renderer initialized!");
+        SGCF_INFO("GLRenderer initialized!", SG_LOG_CURRENT_SESSION_FILE);
     }
 
     printInfo();
-    SGC_INFO("-----------------------------------");
+    SGCF_INFO("-----------------------------------", SG_LOG_CURRENT_SESSION_FILE);
 
     // -------------------------------------
+
+    if(!confirmSupport())
+    {
+        Core::Main::CoreMain::getWindow().setShouldClose(true);
+    }
 
     glEnable(GL_DEPTH_TEST);
     /*glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -44,13 +43,13 @@ void Core::Graphics::GL::GL46Renderer::init() noexcept
 
     // -------------------------------------
 
-    m_modelMatricesBuffer = std::shared_ptr<IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
+    m_modelMatricesBuffer = std::shared_ptr<GL46UniformBuffer>(createUniformBuffer());
     m_modelMatricesBuffer->putUniforms({Core::Graphics::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4)});
     m_modelMatricesBuffer->putData<float>({ });
     m_modelMatricesBuffer->setLayoutLocation(0);
     m_modelMatricesBuffer->prepare();
 
-    m_cameraMatricesBuffer = std::shared_ptr<IUniformBuffer>(Core::Main::Core::getRenderer().createUniformBuffer());
+    m_cameraMatricesBuffer = std::shared_ptr<GL46UniformBuffer>(createUniformBuffer());
     m_cameraMatricesBuffer->putUniforms({
                                                 Core::Graphics::IShaderUniform("cameraProjectionMatrix", SGGDataType::SGG_MAT4),
                                                 Core::Graphics::IShaderUniform("cameraViewMatrix", SGGDataType::SGG_MAT4)
@@ -61,7 +60,20 @@ void Core::Graphics::GL::GL46Renderer::init() noexcept
     m_cameraMatricesBuffer->prepare();
 }
 
-void Core::Graphics::GL::GL46Renderer::checkForErrors(std::source_location location) noexcept
+bool Core::Graphics::GL::GL46Renderer::confirmSupport() noexcept
+{
+    std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    if(!glVersion.starts_with("4.6"))
+    {
+        SGCF_ERROR("OpengGL 4.6 is not supported!", SG_LOG_CURRENT_SESSION_FILE);
+
+        return false;
+    }
+
+    return true;
+}
+
+void Core::Graphics::GL::GL46Renderer::checkForErrors(const std::source_location& location) noexcept
 {
     int errCode = glGetError();
 
@@ -88,8 +100,8 @@ void Core::Graphics::GL::GL46Renderer::checkForErrors(std::source_location locat
 
 void Core::Graphics::GL::GL46Renderer::printInfo() noexcept
 {
-    SGC_INFO("GL46Renderer info:");
-    SGC_INFO("OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+    SGCF_INFO("GLRenderer info:", SG_LOG_CURRENT_SESSION_FILE);
+    SGCF_INFO("OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))), SG_LOG_CURRENT_SESSION_FILE);
     SGF_INFO("Supporting extensions: ", SG_GL_SUPPORTING_EXTENSIONS_FILE);
 
     GLint extensionsNum = 0;
@@ -163,12 +175,20 @@ Core::Graphics::GL::GL46Texture2D* Core::Graphics::GL::GL46Renderer::createTextu
     return new GL46Texture2D;
 }
 
-Core::Graphics::IUniformBuffer* Core::Graphics::GL::GL46Renderer::createUniformBuffer()
+Core::Graphics::GL::GL46UniformBuffer* Core::Graphics::GL::GL46Renderer::createUniformBuffer()
 {
     return new GL46UniformBuffer;
 }
 
-Core::ImportedScene::IMesh* Core::Graphics::GL::GL46Renderer::createMesh()
+Core::Graphics::GL::GL3Mesh* Core::Graphics::GL::GL46Renderer::createMesh()
 {
     return new GL3Mesh;
+}
+
+const std::shared_ptr<Core::Graphics::GL::GL46Renderer>& Core::Graphics::GL::GL46Renderer::getInstance() noexcept
+{
+    static std::shared_ptr<GL46Renderer> s_instancePointer(new GL46Renderer);
+    s_instancePointer->m_apiType = APIType::OPENGL;
+
+    return s_instancePointer;
 }

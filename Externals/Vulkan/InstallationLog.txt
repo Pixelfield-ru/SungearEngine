@@ -1,0 +1,480 @@
+************************************* Invoked: Чт июл 6 15:58:22 2023
+[0] Arguments: C:\Users\stuka\Downloads\VulkanSDK-1.3.250.1-Installer.exe
+[3] Operations sanity check succeeded.
+[3] Language: ru-RU
+[352] Loaded control script ":/metadata/installer-config/installscript_qs.qs"
+[352] Using control script: ":/metadata/installer-config/installscript_qs.qs"
+[3099] Подготовка к загрузке метаданных...
+[3737] Получение метаданных из внешнего хранилища...
+[3886] Извлечение метаданных...
+[816235] Installation space required: "2.72 ГБ" Temporary space required: "508.00 МБ" Local repository size: "0.00 байт(ов)"
+[816236] Tmp is on a different volume than the installation directory. Tmp volume mount point: "C:\\" Free space available: "125.58 ГБ" Install volume mount point: "D:\\" Free space available: "218.71 ГБ"
+[820597] backup  operation: Mkdir
+[820597] 	- arguments: D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Vulkan
+[820597] Done
+[820597] perform  operation: Mkdir
+[820597] 	- arguments: D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/Vulkan
+[820597] Done
+[820598] Подготовка к установке...
+[820598] Install size: 7 components
+[820598] Загрузка пакетов...
+[820598] Загрузка архива «1.3.250.1core32.7z.sha1» для компонента «SDK 32-bit Core Components».
+[821234] Загрузка архива «1.3.250.1core32.7z» для компонента «SDK 32-bit Core Components».
+[828545] Загрузка архива «1.3.250.1debug.7z.sha1» для компонента «Shader Toolchain Debug Symbols - 64-bit».
+[829134] Загрузка архива «1.3.250.1debug.7z» для компонента «Shader Toolchain Debug Symbols - 64-bit».
+[840961] Загрузка архива «1.3.250.1debug32.7z.sha1» для компонента «Shader Toolchain Debug Symbols - 32-bit».
+[841568] Загрузка архива «1.3.250.1debug32.7z» для компонента «Shader Toolchain Debug Symbols - 32-bit».
+[851133] Загрузка архива «1.3.250.1Volk.7z.sha1» для компонента «Volk header, source, and library.».
+[851741] Загрузка архива «1.3.250.1Volk.7z» для компонента «Volk header, source, and library.».
+[851879] Загрузка архива «1.3.250.1VMA.7z.sha1» для компонента «Vulkan Memory Allocator header.».
+[852156] Загрузка архива «1.3.250.1VMA.7z» для компонента «Vulkan Memory Allocator header.».
+[852291] Установка компонента The Vulkan SDK
+[852293] backup com.lunarg.vulkan operation: License
+[852293] 	- arguments:
+[852293] Done
+[852293] perform com.lunarg.vulkan operation: License
+[852293] 	- arguments:
+[852293] Done
+[852294] Установка компонента The Vulkan SDK Core (Always Installed)
+[852294] backup com.lunarg.vulkan.core operation: Extract
+[852294] 	- arguments: installer://com.lunarg.vulkan.core/1.3.250.1core.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[852294] Done
+[852294] perform com.lunarg.vulkan.core operation: Extract
+[852294] 	- arguments: installer://com.lunarg.vulkan.core/1.3.250.1core.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[856318] Done
+[856318] Starting elevated process "C:\\Users\\stuka\\Downloads\\VulkanSDK-1.3.250.1-Installer.exe" with arguments " --start-server PRODUCTION,{c17f61a6-d243-4629-8f44-ba8ad363422e},{207719dc-65ce-4718-a686-6315f10f47df}"
+[860295] Finished starting elevated process.
+[860338] "Execute" as admin: true
+[860338] backup com.lunarg.vulkan.core operation: Execute
+[860339] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan, SHORTCUTS, Vulkan SDK 1.3.250.1, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, REMOVESHORTCUTS, Vulkan SDK 1.3.250.1
+[860339] Done
+[860339] perform com.lunarg.vulkan.core operation: Execute
+[860339] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan, SHORTCUTS, Vulkan SDK 1.3.250.1, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, REMOVESHORTCUTS, Vulkan SDK 1.3.250.1
+[860340] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan SHORTCUTS Vulkan SDK 1.3.250.1
+[860428] Done
+[860428] "Execute" as admin: true
+[860428] backup com.lunarg.vulkan.core operation: Execute
+[860428] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_api_dump.json
+[860428] Done
+[860428] perform com.lunarg.vulkan.core operation: Execute
+[860428] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_api_dump.json
+[860429] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_api_dump.json
+[860440] Done
+[860440] "Execute" as admin: true
+[860440] backup com.lunarg.vulkan.core operation: Execute
+[860441] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_api_dump.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_api_dump.json
+[860441] Done
+[860441] perform com.lunarg.vulkan.core operation: Execute
+[860441] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_api_dump.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_api_dump.json
+[860442] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "ADDEXPLICIT D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin\\VkLayer_api_dump.json
+[860452] Done
+[860452] "Execute" as admin: true
+[860452] backup com.lunarg.vulkan.core operation: Execute
+[860453] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_gfxreconstruct.json
+[860453] Done
+[860453] perform com.lunarg.vulkan.core operation: Execute
+[860453] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_gfxreconstruct.json
+[860453] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_gfxreconstruct.json
+[860463] Done
+[860464] "Execute" as admin: true
+[860464] backup com.lunarg.vulkan.core operation: Execute
+[860464] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_gfxreconstruct.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_gfxreconstruct.json
+[860464] Done
+[860464] perform com.lunarg.vulkan.core operation: Execute
+[860465] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_gfxreconstruct.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_gfxreconstruct.json
+[860465] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "ADDEXPLICIT D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin\\VkLayer_gfxreconstruct.json
+[860475] Done
+[860475] "Execute" as admin: true
+[860475] backup com.lunarg.vulkan.core operation: Execute
+[860475] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_khronos_synchronization2.json
+[860475] Done
+[860475] perform com.lunarg.vulkan.core operation: Execute
+[860476] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_khronos_synchronization2.json
+[860476] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_khronos_synchronization2.json
+[860486] Done
+[860486] "Execute" as admin: true
+[860486] backup com.lunarg.vulkan.core operation: Execute
+[860487] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_synchronization2.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_synchronization2.json
+[860487] Done
+[860487] perform com.lunarg.vulkan.core operation: Execute
+[860487] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_synchronization2.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_synchronization2.json
+[860488] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "ADDEXPLICIT D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin\\VkLayer_khronos_synchronization2.json
+[860497] Done
+[860498] "Execute" as admin: true
+[860498] backup com.lunarg.vulkan.core operation: Execute
+[860498] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_khronos_validation.json
+[860498] Done
+[860498] perform com.lunarg.vulkan.core operation: Execute
+[860498] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_khronos_validation.json
+[860499] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_khronos_validation.json
+[860508] Done
+[860509] "Execute" as admin: true
+[860509] backup com.lunarg.vulkan.core operation: Execute
+[860509] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_validation.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_validation.json
+[860509] Done
+[860509] perform com.lunarg.vulkan.core operation: Execute
+[860510] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_validation.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_validation.json
+[860510] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "ADDEXPLICIT D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin\\VkLayer_khronos_validation.json
+[860520] Done
+[860520] "Execute" as admin: true
+[860520] backup com.lunarg.vulkan.core operation: Execute
+[860520] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_monitor.json
+[860520] Done
+[860520] perform com.lunarg.vulkan.core operation: Execute
+[860521] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_monitor.json
+[860521] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_monitor.json
+[860531] Done
+[860531] "Execute" as admin: true
+[860531] backup com.lunarg.vulkan.core operation: Execute
+[860532] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_monitor.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_monitor.json
+[860532] Done
+[860532] perform com.lunarg.vulkan.core operation: Execute
+[860532] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_monitor.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_monitor.json
+[860533] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "ADDEXPLICIT D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin\\VkLayer_monitor.json
+[860542] Done
+[860543] "Execute" as admin: true
+[860543] backup com.lunarg.vulkan.core operation: Execute
+[860543] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_screenshot.json
+[860543] Done
+[860543] perform com.lunarg.vulkan.core operation: Execute
+[860543] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_screenshot.json
+[860544] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_screenshot.json
+[860553] Done
+[860553] "Execute" as admin: true
+[860554] backup com.lunarg.vulkan.core operation: Execute
+[860554] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_screenshot.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_screenshot.json
+[860554] Done
+[860554] perform com.lunarg.vulkan.core operation: Execute
+[860554] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_screenshot.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_screenshot.json
+[860555] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "ADDEXPLICIT D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin\\VkLayer_screenshot.json
+[860565] Done
+[860565] "Execute" as admin: true
+[860565] backup com.lunarg.vulkan.core operation: Execute
+[860565] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_khronos_profiles.json
+[860565] Done
+[860565] perform com.lunarg.vulkan.core operation: Execute
+[860565] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_khronos_profiles.json
+[860566] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_khronos_profiles.json
+[860575] Done
+[860576] "Execute" as admin: true
+[860576] backup com.lunarg.vulkan.core operation: Execute
+[860576] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_profiles.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_profiles.json
+[860576] Done
+[860576] perform com.lunarg.vulkan.core operation: Execute
+[860577] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_profiles.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_profiles.json
+[860577] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "ADDEXPLICIT D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin\\VkLayer_khronos_profiles.json
+[860587] Done
+[860587] "Execute" as admin: true
+[860587] backup com.lunarg.vulkan.core operation: Execute
+[860587] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_khronos_shader_object.json
+[860587] Done
+[860587] perform com.lunarg.vulkan.core operation: Execute
+[860587] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_khronos_shader_object.json
+[860588] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_khronos_shader_object.json
+[860598] Done
+[860598] "Execute" as admin: true
+[860598] backup com.lunarg.vulkan.core operation: Execute
+[860598] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_shader_object.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_shader_object.json
+[860598] Done
+[860598] perform com.lunarg.vulkan.core operation: Execute
+[860599] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, ADDEXPLICIT, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_shader_object.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, DELKEYVALUE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin\VkLayer_khronos_shader_object.json
+[860599] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "ADDEXPLICIT D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin\\VkLayer_khronos_shader_object.json
+[860609] Done
+[860609] "Execute" as admin: true
+[860609] backup com.lunarg.vulkan.core operation: Execute
+[860609] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_device_simulation.json
+[860609] Done
+[860609] perform com.lunarg.vulkan.core operation: Execute
+[860610] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, CLEANEXPLICIT, VkLayer_device_simulation.json
+[860610] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "CLEANEXPLICIT VkLayer_device_simulation.json
+[860620] Done
+[860620] "Execute" as admin: true
+[860620] backup com.lunarg.vulkan.core operation: Execute
+[860621] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin, NOP, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin, REMOVE
+[860621] Done
+[860621] perform com.lunarg.vulkan.core operation: Execute
+[860622] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin, NOP, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin, REMOVE
+[860622] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin NOP
+[860632] Done
+[860632] "Execute" as admin: true
+[860632] backup com.lunarg.vulkan.core operation: Execute
+[860633] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin, ADD
+[860633] Done
+[860633] perform com.lunarg.vulkan.core operation: Execute
+[860633] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin, ADD
+[860634] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper.exe" started, arguments: "D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin ADD
+[860690] Done
+[860691] backup com.lunarg.vulkan.core operation: License
+[860691] 	- arguments:
+[860691] Done
+[860691] perform com.lunarg.vulkan.core operation: License
+[860691] 	- arguments:
+[860692] Done
+[860692] Установка компонента SDK 32-bit Core Components
+[860692] backup com.lunarg.vulkan.32bit operation: Extract
+[860692] 	- arguments: installer://com.lunarg.vulkan.32bit/1.3.250.1core32.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[860692] Done
+[860692] perform com.lunarg.vulkan.32bit operation: Extract
+[860692] 	- arguments: installer://com.lunarg.vulkan.32bit/1.3.250.1core32.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[862653] Done
+[862653] "Execute" as admin: true
+[862653] backup com.lunarg.vulkan.32bit operation: Execute
+[862654] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan, SHORTCUTS32, Vulkan SDK 1.3.250.1, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, REMOVESHORTCUTS32, Vulkan SDK 1.3.250.1
+[862654] Done
+[862654] perform com.lunarg.vulkan.32bit operation: Execute
+[862654] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan, SHORTCUTS32, Vulkan SDK 1.3.250.1, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, REMOVESHORTCUTS32, Vulkan SDK 1.3.250.1
+[862655] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan SHORTCUTS32 Vulkan SDK 1.3.250.1
+[862671] Done
+[862671] "Execute" as admin: true
+[862671] backup com.lunarg.vulkan.32bit operation: Execute
+[862672] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_api_dump.json
+[862672] Done
+[862672] perform com.lunarg.vulkan.32bit operation: Execute
+[862672] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_api_dump.json
+[862672] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "CLEANEXPLICIT32 VkLayer_api_dump.json
+[862684] Done
+[862684] "Execute" as admin: true
+[862684] backup com.lunarg.vulkan.32bit operation: Execute
+[862685] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_api_dump.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_api_dump.json
+[862685] Done
+[862685] perform com.lunarg.vulkan.32bit operation: Execute
+[862685] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_api_dump.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_api_dump.json
+[862686] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "ADDEXPLICIT32 D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin32\\VkLayer_api_dump.json
+[862697] Done
+[862697] "Execute" as admin: true
+[862697] backup com.lunarg.vulkan.32bit operation: Execute
+[862697] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_gfxreconstruct.json
+[862697] Done
+[862697] perform com.lunarg.vulkan.32bit operation: Execute
+[862698] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_gfxreconstruct.json
+[862698] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "CLEANEXPLICIT32 VkLayer_gfxreconstruct.json
+[862709] Done
+[862710] "Execute" as admin: true
+[862710] backup com.lunarg.vulkan.32bit operation: Execute
+[862710] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_gfxreconstruct.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_gfxreconstruct.json
+[862710] Done
+[862710] perform com.lunarg.vulkan.32bit operation: Execute
+[862710] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_gfxreconstruct.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_gfxreconstruct.json
+[862711] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "ADDEXPLICIT32 D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin32\\VkLayer_gfxreconstruct.json
+[862722] Done
+[862722] "Execute" as admin: true
+[862722] backup com.lunarg.vulkan.32bit operation: Execute
+[862722] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_khronos_synchronization2.json
+[862723] Done
+[862723] perform com.lunarg.vulkan.32bit operation: Execute
+[862723] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_khronos_synchronization2.json
+[862723] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "CLEANEXPLICIT32 VkLayer_khronos_synchronization2.json
+[862734] Done
+[862735] "Execute" as admin: true
+[862735] backup com.lunarg.vulkan.32bit operation: Execute
+[862735] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_synchronization2.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_synchronization2.json
+[862735] Done
+[862735] perform com.lunarg.vulkan.32bit operation: Execute
+[862735] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_synchronization2.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_synchronization2.json
+[862736] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "ADDEXPLICIT32 D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin32\\VkLayer_khronos_synchronization2.json
+[862747] Done
+[862747] "Execute" as admin: true
+[862747] backup com.lunarg.vulkan.32bit operation: Execute
+[862748] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_khronos_validation.json
+[862748] Done
+[862748] perform com.lunarg.vulkan.32bit operation: Execute
+[862748] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_khronos_validation.json
+[862748] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "CLEANEXPLICIT32 VkLayer_khronos_validation.json
+[862759] Done
+[862760] "Execute" as admin: true
+[862760] backup com.lunarg.vulkan.32bit operation: Execute
+[862760] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_validation.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_validation.json
+[862760] Done
+[862760] perform com.lunarg.vulkan.32bit operation: Execute
+[862761] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_validation.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_validation.json
+[862761] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "ADDEXPLICIT32 D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin32\\VkLayer_khronos_validation.json
+[862772] Done
+[862772] "Execute" as admin: true
+[862772] backup com.lunarg.vulkan.32bit operation: Execute
+[862772] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_monitor.json
+[862772] Done
+[862773] perform com.lunarg.vulkan.32bit operation: Execute
+[862773] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_monitor.json
+[862773] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "CLEANEXPLICIT32 VkLayer_monitor.json
+[862785] Done
+[862785] "Execute" as admin: true
+[862785] backup com.lunarg.vulkan.32bit operation: Execute
+[862785] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_monitor.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_monitor.json
+[862785] Done
+[862785] perform com.lunarg.vulkan.32bit operation: Execute
+[862786] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_monitor.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_monitor.json
+[862786] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "ADDEXPLICIT32 D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin32\\VkLayer_monitor.json
+[862798] Done
+[862798] "Execute" as admin: true
+[862798] backup com.lunarg.vulkan.32bit operation: Execute
+[862798] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_screenshot.json
+[862798] Done
+[862798] perform com.lunarg.vulkan.32bit operation: Execute
+[862798] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_screenshot.json
+[862799] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "CLEANEXPLICIT32 VkLayer_screenshot.json
+[862810] Done
+[862810] "Execute" as admin: true
+[862810] backup com.lunarg.vulkan.32bit operation: Execute
+[862810] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_screenshot.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_screenshot.json
+[862810] Done
+[862810] perform com.lunarg.vulkan.32bit operation: Execute
+[862811] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_screenshot.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_screenshot.json
+[862811] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "ADDEXPLICIT32 D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin32\\VkLayer_screenshot.json
+[862822] Done
+[862822] "Execute" as admin: true
+[862822] backup com.lunarg.vulkan.32bit operation: Execute
+[862823] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_khronos_shader_object.json
+[862823] Done
+[862823] perform com.lunarg.vulkan.32bit operation: Execute
+[862823] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_khronos_shader_object.json
+[862823] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "CLEANEXPLICIT32 VkLayer_khronos_shader_object.json
+[862834] Done
+[862835] "Execute" as admin: true
+[862835] backup com.lunarg.vulkan.32bit operation: Execute
+[862835] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_shader_object.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_shader_object.json
+[862835] Done
+[862835] perform com.lunarg.vulkan.32bit operation: Execute
+[862835] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, ADDEXPLICIT32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_shader_object.json, UNDOEXECUTE, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, DELKEYVALUE32, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Bin32\VkLayer_khronos_shader_object.json
+[862836] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "ADDEXPLICIT32 D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Bin32\\VkLayer_khronos_shader_object.json
+[862847] Done
+[862847] "Execute" as admin: true
+[862847] backup com.lunarg.vulkan.32bit operation: Execute
+[862848] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_device_simulation.json
+[862848] Done
+[862848] perform com.lunarg.vulkan.32bit operation: Execute
+[862848] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\Helpers\install_helper32.exe, CLEANEXPLICIT32, VkLayer_device_simulation.json
+[862848] D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan\\Helpers\\install_helper32.exe" started, arguments: "CLEANEXPLICIT32 VkLayer_device_simulation.json
+[862859] Done
+[862860] backup com.lunarg.vulkan.32bit operation: License
+[862860] 	- arguments:
+[862860] Done
+[862860] perform com.lunarg.vulkan.32bit operation: License
+[862860] 	- arguments:
+[862860] Done
+[862861] Установка компонента Shader Toolchain Debug Symbols - 64-bit
+[862861] backup com.lunarg.vulkan.debug operation: Extract
+[862861] 	- arguments: installer://com.lunarg.vulkan.debug/1.3.250.1debug.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[862861] Done
+[862861] perform com.lunarg.vulkan.debug operation: Extract
+[862861] 	- arguments: installer://com.lunarg.vulkan.debug/1.3.250.1debug.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[867411] Done
+[867411] backup com.lunarg.vulkan.debug operation: License
+[867411] 	- arguments:
+[867411] Done
+[867411] perform com.lunarg.vulkan.debug operation: License
+[867411] 	- arguments:
+[867411] Done
+[867412] Установка компонента Shader Toolchain Debug Symbols - 32-bit
+[867412] backup com.lunarg.vulkan.debug32 operation: Extract
+[867412] 	- arguments: installer://com.lunarg.vulkan.debug32/1.3.250.1debug32.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[867412] Done
+[867412] perform com.lunarg.vulkan.debug32 operation: Extract
+[867412] 	- arguments: installer://com.lunarg.vulkan.debug32/1.3.250.1debug32.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[870652] Done
+[870652] backup com.lunarg.vulkan.debug32 operation: License
+[870652] 	- arguments:
+[870652] Done
+[870652] perform com.lunarg.vulkan.debug32 operation: License
+[870652] 	- arguments:
+[870653] Done
+[870653] Установка компонента Volk header, source, and library.
+[870653] backup com.lunarg.vulkan.volk operation: Extract
+[870653] 	- arguments: installer://com.lunarg.vulkan.volk/1.3.250.1Volk.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[870653] Done
+[870653] perform com.lunarg.vulkan.volk operation: Extract
+[870653] 	- arguments: installer://com.lunarg.vulkan.volk/1.3.250.1Volk.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[870661] Done
+[870661] backup com.lunarg.vulkan.volk operation: License
+[870661] 	- arguments:
+[870661] Done
+[870661] perform com.lunarg.vulkan.volk operation: License
+[870661] 	- arguments:
+[870662] Done
+[870663] Установка компонента Vulkan Memory Allocator header.
+[870663] backup com.lunarg.vulkan.vma operation: Extract
+[870663] 	- arguments: installer://com.lunarg.vulkan.vma/1.3.250.1VMA.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[870663] Done
+[870663] perform com.lunarg.vulkan.vma operation: Extract
+[870663] 	- arguments: installer://com.lunarg.vulkan.vma/1.3.250.1VMA.7z, D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan
+[870670] Done
+[870670] backup com.lunarg.vulkan.vma operation: License
+[870670] 	- arguments:
+[870670] Done
+[870671] perform com.lunarg.vulkan.vma operation: License
+[870671] 	- arguments:
+[870671] Done
+[870674] Writing maintenance tool: "D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan/maintenancetool.exe.new"
+[870674] Запись Maintenance Tool.
+[870720] Wrote permissions for maintenance tool.
+[870778] Maintenance tool restart: false.
+[870779] Установка завершена!
+[870780] Component name: com.lunarg.vulkan.core
+[870780] Component name: com.lunarg.vulkan.32bit
+[870780] Component name: com.lunarg.vulkan.debug
+[870780] Component name: com.lunarg.vulkan.debug32
+[870780] Component name: com.lunarg.vulkan.glm
+[870780] Component name: com.lunarg.vulkan.sdl2
+[870780] Component name: com.lunarg.vulkan.volk
+[870780] Component name: com.lunarg.vulkan.vma
+[870808] perform  operation: Delete
+[870808] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan/Helpers/VC_redist.x86.exe
+[870808] Done
+[870809] Warning: QString::arg: Argument missing: Run the Vulkan Configurator and Hardware Capabilities Viewer, Vulkan SDK 1.3.250.1
+[870810] Component name: com.lunarg.vulkan.core
+[870810] perform  operation: Execute
+[870810] 	- arguments: reg, ADD, HKEY_LOCAL_MACHINE\SOFTWARE\LunarG\VulkanSDK, /v, com.lunarg.vulkan.core, /t, REG_DWORD, /d, 1, /f
+[870810] reg" started, arguments: "ADD HKEY_LOCAL_MACHINE\\SOFTWARE\\LunarG\\VulkanSDK /v com.lunarg.vulkan.core /t REG_DWORD /d 1 /f
+[870821] Done
+[870821] Is Installed
+[870821] Component name: com.lunarg.vulkan.32bit
+[870821] perform  operation: Execute
+[870821] 	- arguments: reg, ADD, HKEY_LOCAL_MACHINE\SOFTWARE\LunarG\VulkanSDK, /v, com.lunarg.vulkan.32bit, /t, REG_DWORD, /d, 1, /f
+[870822] reg" started, arguments: "ADD HKEY_LOCAL_MACHINE\\SOFTWARE\\LunarG\\VulkanSDK /v com.lunarg.vulkan.32bit /t REG_DWORD /d 1 /f
+[870830] Done
+[870830] Is Installed
+[870830] Component name: com.lunarg.vulkan.debug
+[870830] perform  operation: Execute
+[870830] 	- arguments: reg, ADD, HKEY_LOCAL_MACHINE\SOFTWARE\LunarG\VulkanSDK, /v, com.lunarg.vulkan.debug, /t, REG_DWORD, /d, 1, /f
+[870831] reg" started, arguments: "ADD HKEY_LOCAL_MACHINE\\SOFTWARE\\LunarG\\VulkanSDK /v com.lunarg.vulkan.debug /t REG_DWORD /d 1 /f
+[870839] Done
+[870839] Is Installed
+[870839] Component name: com.lunarg.vulkan.debug32
+[870839] perform  operation: Execute
+[870839] 	- arguments: reg, ADD, HKEY_LOCAL_MACHINE\SOFTWARE\LunarG\VulkanSDK, /v, com.lunarg.vulkan.debug32, /t, REG_DWORD, /d, 1, /f
+[870840] reg" started, arguments: "ADD HKEY_LOCAL_MACHINE\\SOFTWARE\\LunarG\\VulkanSDK /v com.lunarg.vulkan.debug32 /t REG_DWORD /d 1 /f
+[870848] Done
+[870849] Is Installed
+[870849] Component name: com.lunarg.vulkan.glm
+[870849] perform  operation: Execute
+[870849] 	- arguments: reg, ADD, HKEY_LOCAL_MACHINE\SOFTWARE\LunarG\VulkanSDK, /v, com.lunarg.vulkan.glm, /t, REG_DWORD, /d, 0, /f
+[870849] reg" started, arguments: "ADD HKEY_LOCAL_MACHINE\\SOFTWARE\\LunarG\\VulkanSDK /v com.lunarg.vulkan.glm /t REG_DWORD /d 0 /f
+[870858] Done
+[870858] Was not installed
+[870858] Component name: com.lunarg.vulkan.sdl2
+[870858] perform  operation: Execute
+[870858] 	- arguments: reg, ADD, HKEY_LOCAL_MACHINE\SOFTWARE\LunarG\VulkanSDK, /v, com.lunarg.vulkan.sdl2, /t, REG_DWORD, /d, 0, /f
+[870858] reg" started, arguments: "ADD HKEY_LOCAL_MACHINE\\SOFTWARE\\LunarG\\VulkanSDK /v com.lunarg.vulkan.sdl2 /t REG_DWORD /d 0 /f
+[870867] Done
+[870867] Was not installed
+[870867] Component name: com.lunarg.vulkan.volk
+[870867] perform  operation: Execute
+[870867] 	- arguments: reg, ADD, HKEY_LOCAL_MACHINE\SOFTWARE\LunarG\VulkanSDK, /v, com.lunarg.vulkan.volk, /t, REG_DWORD, /d, 1, /f
+[870868] reg" started, arguments: "ADD HKEY_LOCAL_MACHINE\\SOFTWARE\\LunarG\\VulkanSDK /v com.lunarg.vulkan.volk /t REG_DWORD /d 1 /f
+[870876] Done
+[870876] Is Installed
+[870876] Component name: com.lunarg.vulkan.vma
+[870876] perform  operation: Execute
+[870876] 	- arguments: reg, ADD, HKEY_LOCAL_MACHINE\SOFTWARE\LunarG\VulkanSDK, /v, com.lunarg.vulkan.vma, /t, REG_DWORD, /d, 1, /f
+[870876] reg" started, arguments: "ADD HKEY_LOCAL_MACHINE\\SOFTWARE\\LunarG\\VulkanSDK /v com.lunarg.vulkan.vma /t REG_DWORD /d 1 /f
+[870884] Done
+[870885] Is Installed
+[870910] perform  operation: Delete
+[870910] 	- arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan/Helpers/VC_redist.x64.exe
+[870911] Done
+[928290] starting "D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan/Helpers/launch_helper.exe" ("D:\\Pixelfield\\NativeSungearEngine\\NativeSungearEngine\\Externals\\Vulkan")
+************************************* Invoked: Чт июл 6 16:18:21 2023
+[0] Arguments: D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\Externals\Vulkan\maintenancetool.exe
+[6] Operations sanity check succeeded.
+[6] Language: ru-RU
+[243] Loaded control script ":/metadata/installer-config/installscript_qs.qs"
+[243] Using control script: ":/metadata/installer-config/installscript_qs.qs"

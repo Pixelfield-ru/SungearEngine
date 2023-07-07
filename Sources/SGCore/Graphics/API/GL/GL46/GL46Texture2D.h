@@ -24,7 +24,7 @@ namespace Core::Graphics::GL
         ~GL46Texture2D() noexcept override;
 
         void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) noexcept override;
-        void destroy() noexcept override;
+        void destroy() noexcept final;
 
         void onAssetModified() noexcept override;
         void onAssetPathChanged() noexcept override;

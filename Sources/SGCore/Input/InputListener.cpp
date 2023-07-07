@@ -1,6 +1,6 @@
 #include "InputListener.h"
 #include "InputManager.h"
-#include "SGCore/Main/Core.h"
+#include "SGCore/Main/CoreMain.h"
 
 InputListener::InputListener() noexcept
 {

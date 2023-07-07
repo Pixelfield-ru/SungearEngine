@@ -18,6 +18,7 @@
          ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
          ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
          ${CMAKE_SOURCE_DIR}/Externals/stb
+         ${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
          )
 
  # TODO: make for linux and mac

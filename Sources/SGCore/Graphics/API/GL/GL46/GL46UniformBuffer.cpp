@@ -5,6 +5,11 @@
 #include "GL46UniformBuffer.h"
 #include <glad/glad.h>
 
+Core::Graphics::GL::GL46UniformBuffer::~GL46UniformBuffer()
+{
+    destroy();
+}
+
 std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL::GL46UniformBuffer::bind() noexcept
 {
     /*

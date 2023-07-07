@@ -5,6 +5,7 @@
 #include "GLVertexArray.h"
 
 #include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
+#include "SGCore/Main/CoreMain.h"
 
 Core::Graphics::GL::GLVertexArray::~GLVertexArray() noexcept
 {
@@ -41,7 +42,7 @@ std::shared_ptr<Core::Graphics::IVertexArray> Core::Graphics::GL::GLVertexArray:
 {
     glBindVertexArray(m_handler);
 
-    Core::Main::Core::getRenderer().m_currentBoundVertexArray = this;
+    Core::Main::CoreMain::getRenderer().m_currentBoundVertexArray = this;
 
     return shared_from_this();
 }

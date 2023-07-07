@@ -9,7 +9,7 @@
 #include <filesystem>
 
 #include "Texture2DAsset.h"
-#include "SGCore/Main/Core.h"
+#include "SGCore/Main/CoreMain.h"
 
 std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAsset::load(const std::string& path)
 {
@@ -28,7 +28,7 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
 
     m_textureData = std::shared_ptr<std::uint8_t[]>(stbi_load(m_path.string().data(), &m_width, &m_height, &m_channelsInFile, channelsDesired));
 
-    m_texture2D = std::shared_ptr<Graphics::ITexture2D>(Core::Main::Core::getRenderer().createTexture2D());
+    m_texture2D = std::shared_ptr<Graphics::ITexture2D>(Core::Main::CoreMain::getRenderer().createTexture2D());
 
 
    /* try

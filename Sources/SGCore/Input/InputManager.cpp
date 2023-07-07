@@ -3,7 +3,7 @@
 //
 
 #include "InputManager.h"
-#include "SGCore/Main/Core.h"
+#include "SGCore/Main/CoreMain.h"
 
 void InputManager::init() noexcept
 {
@@ -17,13 +17,13 @@ void InputManager::startFrame() noexcept
         inputListener->startFrame();
     }
 
-    if(Core::Main::Core::getWindow().isHideAndCentralizeCursor())
+    if(Core::Main::CoreMain::getWindow().isHideAndCentralizeCursor())
     {
         int windowSizeX;
         int windowSizeY;
 
-        Core::Main::Core::getWindow().getSize(windowSizeX, windowSizeY);
-        Core::Main::Core::getWindow().setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
+        Core::Main::CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
+        Core::Main::CoreMain::getWindow().setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
 
         for(const auto& inputListener : m_inputListeners)
         {

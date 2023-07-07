@@ -11,8 +11,6 @@
 #include <glm/glm.hpp>
 #include <glm/common.hpp>
 
-#include "SGCore/Main/Window.h"
-
 #include "IShader.h"
 #include "IVertexArray.h"
 #include "IVertexBuffer.h"
@@ -27,11 +25,15 @@
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "SGCore/ECS/Rendering/CameraComponent.h"
+#include "APIType.h"
 
 namespace Core::Graphics
 {
     class IRenderer
     {
+    protected:
+        APIType m_apiType = APIType::UNKNOWN;
+
     public:
         // check usages in IVertexArray implementations and IIndexBuffer implementations
         // TODO: IN MY OPINION, UB IS HERE
@@ -39,6 +41,11 @@ namespace Core::Graphics
         IVertexArray* m_currentBoundVertexArray = nullptr;
 
         virtual void init() { }
+
+        /**
+         * Confirmation of GAPI support by the user's graphics card
+         */
+        virtual bool confirmSupport() noexcept { }
 
         /**
          *
@@ -59,7 +66,7 @@ namespace Core::Graphics
          */
         virtual void printInfo() noexcept { }
 
-        virtual void checkForErrors(std::source_location) noexcept { }
+        virtual void checkForErrors(const std::source_location& = std::source_location::current()) noexcept { }
 
         [[nodiscard]] virtual IShader* createShader() = 0;
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
@@ -70,6 +77,8 @@ namespace Core::Graphics
         [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
 
         [[nodiscard]] virtual ImportedScene::IMesh* createMesh() = 0;
+
+        [[nodiscard]] APIType getAPIType() const noexcept;
     };
 }
 

@@ -36,23 +36,24 @@ std::shared_ptr<Core::ECS::Scene> testScene;
 void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode)
 {
     std::shared_ptr<Core::ECS::Entity> nodeEntity = std::make_shared<Core::ECS::Entity>();
+    nodeEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
     nodeEntity->m_name = sgNode->m_name;
 
     testScene->m_entities.push_back(nodeEntity);
 
     for(auto& mesh : sgNode->m_meshes)
     {
-        std::shared_ptr<Core::ECS::TransformComponent> transformComponent = std::make_shared<Core::ECS::TransformComponent>();
+        std::shared_ptr<Core::ECS::TransformComponent> meshedEntityTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
         // hardcoded transformations =)
-        transformComponent->m_position = glm::vec3(0, 0, -10);
+        meshedEntityTransformComponent->m_position = glm::vec3(0, 0, -10);
         //transformComponent->m_scale = glm::vec3(0.1, 0.1, 0.1);
-        transformComponent->m_scale = glm::vec3(2, 2, 2);
+        meshedEntityTransformComponent->m_scale = glm::vec3(2, 2, 2);
 
         std::shared_ptr<Core::ECS::MeshComponent> meshComponent = std::make_shared<Core::ECS::MeshComponent>();
         meshComponent->m_mesh = mesh;
 
         std::shared_ptr<Core::ECS::Entity> meshedEntity = std::make_shared<Core::ECS::Entity>();
-        meshedEntity->addComponent(transformComponent);
+        meshedEntity->addComponent(meshedEntityTransformComponent);
         meshedEntity->addComponent(meshComponent);
 
         testScene->m_entities.push_back(meshedEntity);
@@ -74,7 +75,7 @@ void init()
     int windowWidth;
     int windowHeight;
 
-    Core::Main::Core::getWindow().getSize(windowWidth, windowHeight);
+    Core::Main::CoreMain::getWindow().getSize(windowWidth, windowHeight);
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza/sponza.obj");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf");
@@ -118,7 +119,7 @@ int main()
     sgSetFramePostRenderCallback(framePostRender);
     sgSetDeltaUpdateCallback(deltaUpdate);
 
-    Core::Main::Core::start();
+    Core::Main::CoreMain::start();
 
     SGConsole::Console::stop();
 

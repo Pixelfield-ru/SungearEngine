@@ -1,6 +1,6 @@
 #include "IMaterial.h"
 
-#include "SGCore/Main/Core.h"
+#include "SGCore/Main/CoreMain.h"
 
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind()
 {
