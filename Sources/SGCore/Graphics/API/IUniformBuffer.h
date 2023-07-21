@@ -11,9 +11,12 @@
 
 #include "IShaderUniform.h"
 #include "SGCore/Logging/Log.h"
+#include "IShader.h"
 
 namespace Core::Graphics
 {
+    class IShader;
+
     class IUniformBuffer : public std::enable_shared_from_this<IUniformBuffer>
     {
     protected:
@@ -36,6 +39,9 @@ namespace Core::Graphics
 
         virtual void subDataOnGAPISide(const std::int64_t& offset, const int& size) = 0;
     public:
+        // name of block in shader
+        std::string m_blockName;
+
         IUniformBuffer() = default;
 
         explicit IUniformBuffer(const std::list<IShaderUniform>& uniforms);

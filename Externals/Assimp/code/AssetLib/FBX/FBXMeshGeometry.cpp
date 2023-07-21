@@ -93,6 +93,12 @@ MeshGeometry::MeshGeometry(uint64_t id, const Element& element, const std::strin
         DOMError("failed to read Geometry object (class: Mesh), no data scope found");
     }
 
+#ifdef __GNUC__
+    #if __GNUC__ >= 13
+        #pragma GCC diagnostic ignored "-Wdangling-reference"
+    #endif
+#endif
+
     // must have Mesh elements:
     const Element& Vertices = GetRequiredElement(*sc,"Vertices",&element);
     const Element& PolygonVertexIndex = GetRequiredElement(*sc,"PolygonVertexIndex",&element);

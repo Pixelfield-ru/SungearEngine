@@ -692,6 +692,10 @@ typedef unsigned char validate_uint32[sizeof(stbi__uint32)==4 ? 1 : -1];
 #define STBI_SSE2
 #include <emmintrin.h>
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
+
 #ifdef _MSC_VER
 
 #if _MSC_VER >= 1400  // not VC6

@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_SERVER_H
 
 #include <string>
+#include <cstdint>
 
 #include "ConnectionType.h"
 

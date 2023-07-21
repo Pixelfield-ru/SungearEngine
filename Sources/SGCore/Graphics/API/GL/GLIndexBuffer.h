@@ -8,7 +8,7 @@
 
 #include <glad/glad.h>
 
-namespace Core::Graphics::GL
+namespace Core::Graphics
 {
     class GLIndexBuffer : public IIndexBuffer
     {

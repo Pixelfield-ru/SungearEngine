@@ -56,6 +56,12 @@ namespace FBX {
 
 using namespace Util;
 
+#ifdef __GNUC__
+    #if __GNUC__ >= 13
+        #pragma GCC diagnostic ignored "-Wdangling-reference"
+    #endif
+#endif
+
 // ------------------------------------------------------------------------------------------------
 AnimationCurve::AnimationCurve(uint64_t id, const Element &element, const std::string &name, const Document & /*doc*/) :
         Object(id, element, name) {

@@ -27,6 +27,8 @@ namespace Core::Memory::Assets
         std::list<IAssetObserver*> m_observers;
 
     public:
+        std::string m_name;
+
         [[nodiscard]] virtual std::shared_ptr<IAsset> load(const std::string& path) = 0;
 
         void addObserver(IAssetObserver*) noexcept;

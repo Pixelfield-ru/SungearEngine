@@ -7,7 +7,7 @@
 #ifndef SUNGEARENGINE_GL46FRAMEBUFFER_H
 #define SUNGEARENGINE_GL46FRAMEBUFFER_H
 
-namespace Core::Graphics::GL
+namespace Core::Graphics
 {
     class GL46FrameBuffer : public IFrameBuffer
     {

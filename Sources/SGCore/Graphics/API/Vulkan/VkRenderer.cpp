@@ -30,10 +30,10 @@ void Core::Graphics::VkRenderer::init() noexcept
 
     m_instanceCreateInfo.enabledLayerCount = 0;
 
-    if(vkCreateInstance(&m_instanceCreateInfo, nullptr, &m_vkInstance) != VK_SUCCESS)
+    /*if(vkCreateInstance(&m_instanceCreateInfo, nullptr, &m_vkInstance) != VK_SUCCESS)
     {
         SGCF_ERROR("Can not initialize Vulkan renderer.", SG_LOG_CURRENT_SESSION_FILE);
-    }
+    }*/
 }
 
 bool Core::Graphics::VkRenderer::confirmSupport() noexcept
@@ -101,6 +101,12 @@ Core::Graphics::VkUniformBuffer* Core::Graphics::VkRenderer::createUniformBuffer
 Core::Graphics::VkMesh* Core::Graphics::VkRenderer::createMesh()
 {
     return new VkMesh;
+}
+
+// TODO: impl
+Core::Memory::Assets::IMaterial *Core::Graphics::VkRenderer::createMaterial()
+{
+    return nullptr;
 }
 
 const std::shared_ptr<Core::Graphics::VkRenderer>& Core::Graphics::VkRenderer::getInstance() noexcept

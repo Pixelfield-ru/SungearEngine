@@ -1,4 +1,4 @@
-# Find Vulkan
+Find Vulkan
 #
 # VULKAN_INCLUDE_DIR
 # VULKAN_LIBRARY

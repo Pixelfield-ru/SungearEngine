@@ -4,10 +4,10 @@
 #include <glad/glad.h>
 
 #include "GLVertexBufferLayout.h"
-#include "GL46/GL46Renderer.h"
+#include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "GLGraphicsTypesCaster.h"
 
-std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVertexBufferLayout::prepare() noexcept
+std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GLVertexBufferLayout::prepare() noexcept
 {
     std::uint32_t offset = 0;
     m_stride = 0;
@@ -23,7 +23,7 @@ std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVerte
     return shared_from_this();
 }
 
-std::uint16_t Core::Graphics::GL::GLVertexBufferLayout::getVertexAttributeSizeInLayout
+std::uint16_t Core::Graphics::GLVertexBufferLayout::getVertexAttributeSizeInLayout
 (const SGGDataType& dataType) noexcept
 {
     int size;
@@ -54,19 +54,19 @@ std::uint16_t Core::Graphics::GL::GLVertexBufferLayout::getVertexAttributeSizeIn
     return size;
 }
 
-Core::Graphics::GL::GLVertexAttribute* Core::Graphics::GL::GLVertexBufferLayout::createVertexAttribute
+Core::Graphics::GLVertexAttribute* Core::Graphics::GLVertexBufferLayout::createVertexAttribute
 (std::uint16_t ID, std::string name, SGGDataType dataType) noexcept
 {
     return new GLVertexAttribute(ID, std::move(name), dataType, false);
 }
 
-Core::Graphics::GL::GLVertexAttribute* Core::Graphics::GL::GLVertexBufferLayout::createVertexAttribute
+Core::Graphics::GLVertexAttribute* Core::Graphics::GLVertexBufferLayout::createVertexAttribute
 (std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) noexcept
 {
     return new GLVertexAttribute(ID, std::move(name), dataType, normalized);
 }
 
-std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVertexBufferLayout::addAttribute
+std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GLVertexBufferLayout::addAttribute
 (std::shared_ptr<IVertexAttribute> attribute) noexcept
 {
     attribute->m_size = getSGGDataTypeSizeInBytes(attribute->m_dataType);
@@ -75,7 +75,7 @@ std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVerte
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVertexBufferLayout::enableAttribute
+std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GLVertexBufferLayout::enableAttribute
 (const std::shared_ptr<IVertexAttribute>& attribute) noexcept
 {
     glEnableVertexAttribArray(attribute->m_ID);
@@ -91,13 +91,13 @@ std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVerte
     //glDisableVertexAttribArray(attribute->m_ID);
 
     #ifdef SUNGEAR_DEBUG
-    GL::GL46Renderer::getInstance()->checkForErrors();
+    GL4Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVertexBufferLayout::enableAttributes() noexcept
+std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GLVertexBufferLayout::enableAttributes() noexcept
 {
     for(auto& attribute : m_attributes)
     {
@@ -107,7 +107,7 @@ std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVerte
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GL::GLVertexBufferLayout::reset() noexcept
+std::shared_ptr<Core::Graphics::IVertexBufferLayout> Core::Graphics::GLVertexBufferLayout::reset() noexcept
 {
     m_stride = 0;
     m_attributes.clear();

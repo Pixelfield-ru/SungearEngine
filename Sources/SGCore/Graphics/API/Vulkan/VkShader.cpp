@@ -19,6 +19,11 @@ void Core::Graphics::VkShader::bind() noexcept
 
 }
 
+void Core::Graphics::VkShader::useUniformBuffer(const std::shared_ptr<IUniformBuffer> &)
+{
+
+}
+
 void Core::Graphics::VkShader::destroy() noexcept
 {
 
@@ -27,4 +32,9 @@ void Core::Graphics::VkShader::destroy() noexcept
 std::int32_t Core::Graphics::VkShader::getShaderUniformLocation(const std::string& uniformName) const noexcept
 {
     return 0;
+}
+
+void Core::Graphics::VkShader::useMaterialTexture(const Memory::Assets::MaterialTexture&)
+{
+
 }

@@ -648,6 +648,12 @@ void ParseVectorDataArray(std::vector<aiVector3D>& out, const Element& el)
     // crash since assimp handles this case properly.
     out.reserve(dim);
 
+#ifdef __GNUC__
+    #if __GNUC__ >= 13
+        #pragma GCC diagnostic ignored "-Wdangling-reference"
+    #endif
+#endif
+
     const Scope& scope = GetRequiredScope(el);
     const Element& a = GetRequiredElement(scope,"a",&el);
 

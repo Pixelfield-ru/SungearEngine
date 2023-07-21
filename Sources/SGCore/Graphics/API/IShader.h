@@ -11,9 +11,19 @@
 #include "ShaderDefine.h"
 #include "SGCore/Memory/Assets/FileAsset.h"
 #include "SGCore/Memory/Assets/IAssetObserver.h"
+#include "IUniformBuffer.h"
+#include "ITexture2D.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
+
+namespace Core::Memory::Assets
+{
+    class MaterialTexture;
+}
 
 namespace Core::Graphics
 {
+    class IUniformBuffer;
+
     class IShader : public Memory::Assets::IAssetObserver
     {
     protected:
@@ -22,11 +32,15 @@ namespace Core::Graphics
         std::weak_ptr<Memory::Assets::FileAsset> m_fileAsset;
 
     public:
+        std::string m_version;
+
         virtual ~IShader() = default;
 
         virtual void destroy() = 0;
 
         virtual void bind() = 0;
+
+        virtual void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) = 0;
 
         virtual void compile(std::shared_ptr<Memory::Assets::FileAsset> asset) = 0;
 
@@ -38,6 +52,12 @@ namespace Core::Graphics
 
         void onAssetModified() override;
         void onAssetPathChanged() override;
+
+        #pragma region Uniforms use
+
+        virtual void useMaterialTexture(const Memory::Assets::MaterialTexture&) = 0;
+
+        #pragma endregion
 
         #pragma region Operators
         //IShader& operator=(IShader&&) noexcept;

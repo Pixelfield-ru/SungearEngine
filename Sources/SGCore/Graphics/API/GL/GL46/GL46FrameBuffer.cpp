@@ -6,12 +6,12 @@
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "GL46FrameBuffer.h"
 
-Core::Graphics::GL::GL46FrameBuffer::GL46FrameBuffer() noexcept
+Core::Graphics::GL46FrameBuffer::GL46FrameBuffer() noexcept
 {
     glGenFramebuffers(1, &m_handler);
 }
 
-Core::Graphics::GL::GL46FrameBuffer::~GL46FrameBuffer() noexcept
+Core::Graphics::GL46FrameBuffer::~GL46FrameBuffer() noexcept
 {
     glDeleteFramebuffers(1, &m_handler);
 }

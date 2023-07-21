@@ -4,15 +4,15 @@
 
 #pragma once
 
-#ifndef SUNGEARENGINE_GL46TEXTURE2D_H
-#define SUNGEARENGINE_GL46TEXTURE2D_H
+#ifndef SUNGEARENGINE_GL4TEXTURE2D_H
+#define SUNGEARENGINE_GL4TEXTURE2D_H
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include <glad/glad.h>
 
 namespace Core::Graphics
 {
-    class GL46Texture2D : public ITexture2D
+    class GL4Texture2D : public ITexture2D
     {
     private:
         GLuint m_handler = 0;
@@ -21,7 +21,7 @@ namespace Core::Graphics
         GLenum m_glFormat = GL_RGB;
 
     public:
-        ~GL46Texture2D() noexcept override;
+        ~GL4Texture2D() noexcept override;
 
         void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) noexcept override;
         void destroy() noexcept final;
@@ -33,8 +33,8 @@ namespace Core::Graphics
 
         void bind(const std::uint8_t& textureUnit) noexcept override;
 
-        GL46Texture2D& operator=(const std::shared_ptr<ITexture2D>& other) final;
+        GL4Texture2D& operator=(const std::shared_ptr<ITexture2D>& other) final;
     };
 }
 
-#endif //SUNGEARENGINE_GL46TEXTURE2D_H
+#endif //SUNGEARENGINE_GL4TEXTURE2D_H

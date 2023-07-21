@@ -4,36 +4,36 @@
 
 #include "GLVertexBuffer.h"
 #include "GLGraphicsTypesCaster.h"
-#include "GL46/GL46Renderer.h"
+#include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 
-Core::Graphics::GL::GLVertexBuffer::~GLVertexBuffer() noexcept
+Core::Graphics::GLVertexBuffer::~GLVertexBuffer() noexcept
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GL::GLVertexBuffer::create() noexcept
+std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::create() noexcept
 {
     destroy();
 
     glGenBuffers(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG
-    GL::GL46Renderer::getInstance()->checkForErrors();
+    GL4Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-void Core::Graphics::GL::GLVertexBuffer::destroy() noexcept
+void Core::Graphics::GLVertexBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);
 
     #ifdef SUNGEAR_DEBUG
-    //GL46::GL46Renderer::getInstance()->checkForErrors();
+    //GL46::GL4Renderer::getInstance()->checkForErrors();
     #endif
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GL::GLVertexBuffer::putData
+std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::putData
 (std::vector<float> data) noexcept
 {
     m_data = std::move(data);
@@ -42,37 +42,37 @@ std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GL::GLVertexBuffe
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
 
     #ifdef SUNGEAR_DEBUG
-    GL::GL46Renderer::getInstance()->checkForErrors();
+    GL4Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GL::GLVertexBuffer::subData
+std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::subData
 (std::vector<float> data, const int& offset) noexcept
 {
     glBufferSubData(GL_ARRAY_BUFFER, offset, (GLsizeiptr) (m_data.size() * sizeof(m_data[0])),
                     &m_data[0]);
 
     #ifdef SUNGEAR_DEBUG
-    GL::GL46Renderer::getInstance()->checkForErrors();
+    GL4Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GL::GLVertexBuffer::bind() noexcept
+std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_handler);
 
     #ifdef SUNGEAR_DEBUG
-    GL::GL46Renderer::getInstance()->checkForErrors();
+    GL4Renderer::getInstance()->checkForErrors();
     #endif
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GL::GLVertexBuffer::setUsage(SGGUsage usage) noexcept
+std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::setUsage(SGGUsage usage) noexcept
 {
     m_usage = usage;
 

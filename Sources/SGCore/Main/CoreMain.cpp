@@ -1,6 +1,8 @@
 #include <locale>
 
+#include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
+
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
 #include "SGCore/ECS/ECSWorld.h"
@@ -20,7 +22,7 @@ void Core::Main::CoreMain::start()
     ECS::ECSWorld::init();
     // ----------------------------------
 
-    m_renderer = Graphics::GL::GL46Renderer::getInstance();
+    m_renderer = Graphics::GL4Renderer::getInstance();
     //m_renderer = Graphics::VkRenderer::getInstance();
 
     m_window.create(m_renderer);
@@ -44,7 +46,7 @@ void Core::Main::CoreMain::start()
 
     m_globalTimer.addCallback(globalTimerCallback);
 
-    Graphics::GL::GL46Renderer::getInstance()->checkForErrors();
+    //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
 
     sgCallCoreInitCallback();
 

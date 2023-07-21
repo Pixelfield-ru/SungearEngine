@@ -2,15 +2,15 @@
 // Created by stuka on 08.06.2023.
 //
 
-#include "GL46UniformBuffer.h"
+#include "GL4UniformBuffer.h"
 #include <glad/glad.h>
 
-Core::Graphics::GL46UniformBuffer::~GL46UniformBuffer()
+Core::Graphics::GL4UniformBuffer::~GL4UniformBuffer()
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffer::bind() noexcept
+std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL4UniformBuffer::bind() noexcept
 {
     /*
     // iterating on data and on uniforms to avoid mistakes of going abroad
@@ -125,17 +125,20 @@ std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffe
     }
      */
 
+    //auto lights_index = glGetUniformBlockIndex(shaderA.ID, "Lights");
+    //glUniformBlockBinding(shaderA.ID, lights_index, 2);
+
     return shared_from_this();
 }
 
-void Core::Graphics::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
+void Core::Graphics::GL4UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
                                                                          const int& size) noexcept
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, m_buffer + offset);
 }
 
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffer::prepare() noexcept
+std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL4UniformBuffer::prepare() noexcept
 {
     destroy();
 
@@ -147,7 +150,7 @@ std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffe
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffer::updateLocations(
+std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL4UniformBuffer::updateLocations(
         const Core::Graphics::IShader& fromShader) noexcept
 {
     for(auto& uniform : m_uniforms)
@@ -158,12 +161,12 @@ std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffe
     return shared_from_this();
 }
 
-void Core::Graphics::GL46UniformBuffer::destroy() noexcept
+void Core::Graphics::GL4UniformBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);
 }
 
-void Core::Graphics::GL46UniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
+void Core::Graphics::GL4UniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
 {
     m_layoutLocation = location;
 }

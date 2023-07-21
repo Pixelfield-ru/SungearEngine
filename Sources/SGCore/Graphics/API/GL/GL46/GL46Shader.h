@@ -7,12 +7,12 @@
 #ifndef SUNGEARENGINE_GL46SHADER_H
 #define SUNGEARENGINE_GL46SHADER_H
 
-#include "OpenGL/include/glad/glad.h"
+#include <glad/glad.h>
 #include <vector>
 
 #include "SGCore/Graphics/API/IShader.h"
 
-namespace Core::Graphics::GL
+namespace Core::Graphics
 {
     class GL46Shader : public IShader
     {
@@ -31,9 +31,13 @@ namespace Core::Graphics::GL
 
         void bind() noexcept override;
 
+        void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) override;
+
         void destroy() noexcept final;
 
         std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept override;
+
+        void useMaterialTexture(const Memory::Assets::MaterialTexture&) final;
     };
 }
 

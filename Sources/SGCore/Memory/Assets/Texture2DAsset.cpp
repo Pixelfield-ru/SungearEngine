@@ -17,28 +17,9 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
 
     m_path = path;
 
-    /*if(!std::filesystem::exists(m_path))
-    {
-        // trying to append SGResoucres path
-        if(std::filesystem::exists("../SGResources/" + m_path))
-        {
-            m_path = "../SGResources/" + m_path;
-        }
-    }*/
-
     m_textureData = std::shared_ptr<std::uint8_t[]>(stbi_load(m_path.string().data(), &m_width, &m_height, &m_channelsInFile, channelsDesired));
 
     m_texture2D = std::shared_ptr<Graphics::ITexture2D>(Core::Main::CoreMain::getRenderer().createTexture2D());
-
-
-   /* try
-    {
-        SGC_ERROR("STBI error: " + std::string(stbi_failure_reason()));
-    }
-    catch(const std::exception& e)
-    {
-        SGC_ERROR(e.what());
-    }*/
 
     if(m_channelsInFile == 4)
     {
@@ -49,10 +30,13 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
     {
         m_format = SGGFormat::SGG_RGB;
     }
-    SGC_INFO("Loaded texture. Width: " + std::to_string(m_width) + ", height: " + std::to_string(m_height)
-             + ", byte size: " + std::to_string(m_width * m_height) + ", channels: " + std::to_string(m_channelsInFile) + ", path: " + m_path.string());
+
     std::shared_ptr<Texture2DAsset> sharedPtr = shared_from_this();
     m_texture2D->create(sharedPtr);
+
+    SGC_INFO("Loaded texture. Width: " + std::to_string(m_width) + ", height: " + std::to_string(m_height)
+             + ", byte size: " + std::to_string(m_width * m_height) + ", channels: " +
+             std::to_string(m_channelsInFile) + ", path: " + m_path.string());
 
     return sharedPtr;
 }

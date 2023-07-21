@@ -78,6 +78,12 @@ Cluster::Cluster(uint64_t id, const Element& element, const Document& doc, const
     const Element* const Indexes = sc["Indexes"];
     const Element* const Weights = sc["Weights"];
 
+#ifdef __GNUC__
+    #if __GNUC__ >= 13
+      #pragma GCC diagnostic ignored "-Wdangling-reference"
+    #endif
+#endif
+
     const Element& Transform = GetRequiredElement(sc,"Transform",&element);
     const Element& TransformLink = GetRequiredElement(sc,"TransformLink",&element);
 

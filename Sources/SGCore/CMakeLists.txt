@@ -4,32 +4,39 @@
 
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
 
- message(STATUS ${SGCORE_SOURCES})
-
- add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
-
- message(${CMAKE_SOURCE_DIR}/Sources)
+ add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES} Patterns/Singleton.h)
 
  #add_definitions(-DSTB_IMAGE_IMPLEMENTATION)
  target_include_directories(${PROJECT_NAME} PRIVATE
-         ${CMAKE_SOURCE_DIR}/Sources
          ${CMAKE_SOURCE_DIR}/Externals
          ${CMAKE_SOURCE_DIR}/Externals/Assimp/include
          ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
          ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
          ${CMAKE_SOURCE_DIR}/Externals/stb
-         ${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
+         ${Vulkan_INCLUDE_DIR}
+         ${CMAKE_SOURCE_DIR}/Sources
+         #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
+         #"C:/VulkanSDK/1.3.250.1/Include"
          )
 
- # TODO: make for linux and mac
+ # TODO: make for linux and mЫac
  target_link_libraries(${PROJECT_NAME}
          glfw
          glm::glm
          gl46
+         ${Vulkan_LIBRARIES}
          assimp
          wsock32
          ws2_32
          )
+
+#[[ target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Externals/Vulkan/Lib)
+
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME} vulkan-1)
+else()
+  target_link_libraries(${PROJECT_NAME} vulkan)
+endif()]]
 
  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
          COMMAND ${CMAKE_COMMAND} -E copy

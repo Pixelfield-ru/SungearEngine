@@ -113,7 +113,7 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
         loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE, SGMaterialTextureType::SGTP_DIFFUSE);
         loadTextures(aiMat, sgMesh->m_material, aiTextureType_DISPLACEMENT, SGMaterialTextureType::SGTP_DISPLACEMENT);
         loadTextures(aiMat, sgMesh->m_material, aiTextureType_HEIGHT, SGMaterialTextureType::SGTP_HEIGHT);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_NORMALS, SGMaterialTextureType::SGTP_METALNESS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_NORMALS, SGMaterialTextureType::SGTP_NORMALS);
         loadTextures(aiMat, sgMesh->m_material, aiTextureType_BASE_COLOR, SGMaterialTextureType::SGTP_BASE_COLOR);
         loadTextures(aiMat, sgMesh->m_material, aiTextureType_CLEARCOAT, SGMaterialTextureType::SGTP_CLEARCOAT);
         loadTextures(aiMat, sgMesh->m_material, aiTextureType_EMISSION_COLOR, SGMaterialTextureType::SGTP_EMISSION_COLOR);
@@ -155,6 +155,6 @@ void Core::Memory::Assets::ModelAsset::loadTextures
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 
         SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Raw type name: '" +
-                            sgMaterialTextureTypeToString(sgMaterialTextureType) + ", path: " + std::string(finalPath));
+                            sgMaterialTextureTypeToString(sgMaterialTextureType) + "', path: " + std::string(finalPath));
     }
 }

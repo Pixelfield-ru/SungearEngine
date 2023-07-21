@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef NATIVECORE_CORE_H
-#define NATIVECORE_CORE_H
+#ifndef NATIVECORE_COREMAIN_H
+#define NATIVECORE_COREMAIN_H
 
 #include "SGCore/Logging/Log.h"
 #include "Window.h"
@@ -37,5 +37,4 @@ namespace Core::Main
     };
 }
 
-
-#endif //NATIVECORE_CORE_H
+#endif //NATIVECORE_COREMAIN_H

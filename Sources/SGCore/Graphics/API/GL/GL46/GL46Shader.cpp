@@ -4,22 +4,18 @@
 #include <sstream>
 
 #include "SGCore/Logging/Log.h"
-#include "GL46Renderer.h"
+#include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 
-Core::Graphics::GL::GL46Shader::~GL46Shader() noexcept
+Core::Graphics::GL46Shader::~GL46Shader() noexcept
 {
     destroy();
 }
 
 // TODO: watch SGP1
-GLuint Core::Graphics::GL::GL46Shader::createShaderPart(const GLenum& type, const std::string& finalShaderCode) noexcept
+GLuint Core::Graphics::GL46Shader::createShaderPart(const GLenum& type, const std::string& finalShaderCode) noexcept
 {
     std::string additionalShaderInfo =
-            R"(
-            #version 460
-            #extension GL_ARB_shading_language_include : require
-
-            )";
+            "#version " + m_version + "\n";
     std::string shaderVirtualIncludeType;
 
     if(type == GL_VERTEX_SHADER)
@@ -79,7 +75,8 @@ GLuint Core::Graphics::GL::GL46Shader::createShaderPart(const GLenum& type, cons
 
         glDeleteShader(shaderPartHandler);
 
-        SGC_ERROR(std::string(infoLog));
+        SGC_ERROR("Error in shader by path: " + m_fileAsset.lock()->getPath().string() + "\n" +
+        std::string(infoLog.data()));
 
         return -1;
     }
@@ -90,7 +87,7 @@ GLuint Core::Graphics::GL::GL46Shader::createShaderPart(const GLenum& type, cons
     //glNamedStringARB(GL_SHADER_INCLUDE_ARB, (GLint) finalVirtualPath.size(), (const GLchar*) finalVirtualPath.c_str(), (GLint) codeToCompile.size(), (const GLchar*) codeToCompile.c_str());
 
     #ifdef SUNGEAR_DEBUG
-    GL46Renderer::getInstance()->checkForErrors();
+    GL4Renderer::getInstance()->checkForErrors();
     #endif
 
     return shaderPartHandler;
@@ -98,7 +95,7 @@ GLuint Core::Graphics::GL::GL46Shader::createShaderPart(const GLenum& type, cons
 
 // TODO: watch SGP1
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
-void Core::Graphics::GL::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAsset> asset) noexcept
+void Core::Graphics::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAsset> asset) noexcept
 {
     destroy();
 
@@ -185,7 +182,7 @@ void Core::Graphics::GL::GL46Shader::compile(std::shared_ptr<Memory::Assets::Fil
 
         destroy();
 
-        SGC_ERROR(std::string(infoLog));
+        SGC_ERROR(std::string(infoLog.data()));
     }
 
     for(const GLuint shaderHandler : m_shaderPartsHandlers)
@@ -194,13 +191,20 @@ void Core::Graphics::GL::GL46Shader::compile(std::shared_ptr<Memory::Assets::Fil
     }
 }
 
-void Core::Graphics::GL::GL46Shader::bind() noexcept
+void Core::Graphics::GL46Shader::bind() noexcept
 {
     glUseProgram(m_programHandler);
 }
 
+void Core::Graphics::GL46Shader::useUniformBuffer(const std::shared_ptr<IUniformBuffer>& uniformBuffer)
+{
+    auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandler, uniformBuffer->m_blockName.c_str());
+    glUniformBlockBinding(m_programHandler, uniformBufferIdx,
+                          uniformBuffer->getLayoutLocation());
+}
+
 // TODO: watch SGP1
-void Core::Graphics::GL::GL46Shader::destroy() noexcept
+void Core::Graphics::GL46Shader::destroy() noexcept
 {
     for(const GLuint shaderPartHandler : m_shaderPartsHandlers)
     {
@@ -249,16 +253,24 @@ void Core::Graphics::GL::GL46Shader::destroy() noexcept
 
     // TODO:: SGP0
     #ifdef SUNGEAR_DEBUG
-    //GL46Renderer::getInstance()->checkForErrors();
+    //GL4Renderer::getInstance()->checkForErrors();
     #endif
 
     m_shaderPartsHandlers.clear();
 }
 
-std::int32_t Core::Graphics::GL::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
+std::int32_t Core::Graphics::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
 {
     return glGetUniformLocation(m_programHandler, uniformName.data());
 }
+
+void Core::Graphics::GL46Shader::useMaterialTexture(const Memory::Assets::MaterialTexture& materialTexture)
+{
+    int texLoc = glGetUniformLocation(m_programHandler,
+                                      materialTexture.m_nameInShader.c_str());
+    glUniform1i(texLoc, materialTexture.m_textureUnit);
+}
+
 /*
 Core::Graphics::API::GL46::GL46Shader& Core::Graphics::API::GL46::GL46Shader::operator=(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
 {

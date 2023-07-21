@@ -5,11 +5,14 @@
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind()
 {
     m_shader->bind();
-    for(auto& types : m_textures)
+    for(const auto& block : m_blocks)
     {
-        for(auto& textures : get<2>(types.second))
+        for(const auto& typedTexture : block.second.m_textures)
         {
-            textures.second.second->getTexture2D()->bind(textures.second.first);
+            const auto& texture = typedTexture.second.m_textureAsset->getTexture2D();
+            const auto& textureUnit = typedTexture.second.m_textureUnit;
+            texture->bind(textureUnit);
+            m_shader->useMaterialTexture(typedTexture.second);
         }
     }
 
@@ -21,65 +24,71 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::IMaterial::l
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Memory::Assets::IMaterial>
+std::shared_ptr<Core::Memory::Assets::Texture2DAsset>
 Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGMaterialTextureType& type, const std::string& path)
 {
-    auto& texturesWithType = m_textures[type];
+    auto& texturesWithType = m_blocks[type];
 
-    auto& unpackedTexturesWithType = get<2>(texturesWithType);
+    auto& typedTextures = texturesWithType.m_textures;
 
-    if(unpackedTexturesWithType.find(path) == unpackedTexturesWithType.end())
+    if(typedTextures.find(path) == typedTextures.end())
     {
         auto foundTex = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(path);
 
         addTexture2D(type, foundTex);
+
+        return foundTex;
     }
 
-    return shared_from_this();
+    return nullptr;
 }
 
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::addTexture2D(const SGMaterialTextureType& type,
                                                                          const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset)
 {
-    auto& texturesWithType = m_textures[type];
+    auto& texturesWithType = m_blocks[type];
 
-    auto& unpackedMaximumTextures = get<0>(texturesWithType);
-    auto& unpackedTextureUnitOffset = get<1>(texturesWithType);
-    auto& unpackedTexturesWithType = get<2>(texturesWithType);
+    auto& maximumTextures = texturesWithType.m_maximumTextures;
+    auto& texturesUnitOffset = texturesWithType.m_texturesUnitOffset;
+    auto& typedTextures = texturesWithType.m_textures;
 
     // path to texture
     auto texturePath = texture2DAsset->getPath().string();
 
     // if this texture not exists
-    if(unpackedTexturesWithType.find(texturePath) == unpackedTexturesWithType.end())
+    if(typedTextures.find(texturePath) == typedTextures.end())
     {
         // current max found unit
-        int maxUnit = unpackedTextureUnitOffset;
-        if(!unpackedTexturesWithType.empty())
+        m_maxUnit = texturesUnitOffset;
+        if(!typedTextures.empty())
         {
             // finding current maximum texture unit
-            for(auto& texPair : unpackedTexturesWithType)
+            for(auto& texPair : typedTextures)
             {
-                if(texPair.second.first > maxUnit)
+                if(texPair.second.m_textureUnit > m_maxUnit)
                 {
-                    maxUnit = texPair.second.first;
+                    m_maxUnit = texPair.second.m_textureUnit;
                 }
             }
 
-            maxUnit += 1;
+            m_maxUnit += 1;
 
         }
         // if there is free space for another texture of this type
-        if(maxUnit < maxUnit + unpackedMaximumTextures)
+        if(m_maxUnit < m_maxUnit + maximumTextures)
         {
             // this is texture unit to bind for this texture
-            unpackedTexturesWithType[texturePath].first = maxUnit;
-            unpackedTexturesWithType[texturePath].second = texture2DAsset;
+            typedTextures[texturePath].m_textureUnit = m_maxUnit;
+            typedTextures[texturePath].m_textureAsset = texture2DAsset;
 
-            std::string finalName = sgMaterialTextureTypeToString(type)  + std::to_string(maxUnit) + "_DEFINED";
-            SGC_SUCCESS("Final define for material texture: " + finalName);
+            std::string finalName = sgMaterialTextureTypeToString(type)  + std::to_string(m_maxUnit);
+            std::string finalDefine = finalName +  + "_DEFINED";
+            SGC_SUCCESS("Final define for material texture: " + finalDefine);
 
-            m_shader->addShaderDefines({Graphics::ShaderDefine(finalName, "")});
+            typedTextures[texturePath].m_nameInShader = finalName;
+            //texture2DAsset->m_name = finalName;
+
+            m_shader->addShaderDefines({Graphics::ShaderDefine(finalDefine, "")});
         }
         else // there is no free texture units for texture
         {
@@ -100,7 +109,7 @@ Core::Memory::Assets::IMaterial::setTexture2D(const SGMaterialTextureType& type,
 {
     if(oldTextureAssetPath != texture2DAsset->getPath())
     {
-        get<2>(m_textures[type])[oldTextureAssetPath.data()].second = texture2DAsset;
+        m_blocks[type].m_textures[oldTextureAssetPath.data()].m_textureAsset = texture2DAsset;
     }
 
     return shared_from_this();
@@ -124,11 +133,11 @@ Core::Memory::Assets::IMaterial::operator=(const Core::Memory::Assets::IMaterial
     assert(this != std::addressof(other));
 
     // adding all used textures
-    for(auto& texturesTypes : other.m_textures)
+    for(auto& texturesTypes : other.m_blocks)
     {
-        for(auto& texture : get<2>(texturesTypes.second))
+        for(auto& texture : texturesTypes.second.m_textures)
         {
-            addTexture2D(texturesTypes.first, texture.second.second);
+            addTexture2D(texturesTypes.first, texture.second.m_textureAsset);
         }
     }
 

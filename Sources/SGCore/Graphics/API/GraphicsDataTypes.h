@@ -8,6 +8,7 @@
 #define SUNGEARENGINE_GRAPHICSDATATYPES_H
 
 #include <iostream>
+#include <cstdint>
 
 enum SGGDataType
 {

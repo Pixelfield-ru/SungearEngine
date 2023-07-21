@@ -7,7 +7,7 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IVertexBufferLayout.h"
 
-void Core::Graphics::GL::GL3Mesh::prepare()
+void Core::Graphics::GL3Mesh::prepare()
 {
     m_vertexArray = std::shared_ptr<IVertexArray>(Core::Main::CoreMain::getRenderer().createVertexArray());
     m_vertexArray->create()->bind();

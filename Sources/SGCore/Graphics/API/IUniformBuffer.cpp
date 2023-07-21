@@ -76,3 +76,8 @@ std::uint16_t Core::Graphics::IUniformBuffer::getLayoutLocation() const noexcept
 {
     return m_layoutLocation;
 }
+
+bool Core::Graphics::IUniformBuffer::isBindPerUniform() const noexcept
+{
+    return false;
+}

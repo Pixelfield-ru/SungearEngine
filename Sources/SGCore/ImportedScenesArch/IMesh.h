@@ -14,7 +14,7 @@
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 #include "SGCore/Graphics/API/IIndexBuffer.h"
 
-#include "SGCore/Memory/Assets/Materials/PBRMaterial.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 namespace Core::ImportedScene
 {
@@ -32,6 +32,7 @@ namespace Core::ImportedScene
         std::shared_ptr<Graphics::IIndexBuffer> m_indicesBuffer;
 
     public:
+        IMesh() noexcept;
         virtual ~IMesh() = default;
 
         std::string m_name;
@@ -48,7 +49,7 @@ namespace Core::ImportedScene
         // normals array
         std::vector<float> m_normals;
 
-        std::shared_ptr<Memory::Assets::IMaterial> m_material = std::make_shared<Memory::Assets::PBRMaterial>();
+        std::shared_ptr<Memory::Assets::IMaterial> m_material;
 
         // ----------------
         virtual void prepare() = 0;

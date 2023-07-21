@@ -7,8 +7,6 @@
  #add_library(${PROJECT_NAME} SHARED ${SGCONSOLE_SOURCES})
  add_executable(${PROJECT_NAME} ${SGCONSOLEAPP_SOURCES})
 
- message(${SGCONSOLEAPP_SOURCES})
-
  #add_definitions(-DSTB_IMAGE_IMPLEMENTATION)
  target_include_directories(${PROJECT_NAME} PRIVATE
          ${CMAKE_SOURCE_DIR}/Sources

@@ -8,6 +8,7 @@
 #define NATIVECORE_IVERTEXARRAY_H
 
 #include <memory>
+#include <cstdint>
 
 namespace Core::Graphics
 {

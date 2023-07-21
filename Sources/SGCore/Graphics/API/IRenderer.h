@@ -36,7 +36,7 @@ namespace Core::Graphics
 
     public:
         // check usages in IVertexArray implementations and IIndexBuffer implementations
-        // TODO: IN MY OPINION, UB IS HERE
+        // TODO: UB IS HERE
         IIndexBuffer* m_currentBoundIndexBuffer = nullptr;
         IVertexArray* m_currentBoundVertexArray = nullptr;
 
@@ -77,6 +77,8 @@ namespace Core::Graphics
         [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
 
         [[nodiscard]] virtual ImportedScene::IMesh* createMesh() = 0;
+
+        [[nodiscard]] virtual Memory::Assets::IMaterial* createMaterial() = 0;
 
         [[nodiscard]] APIType getAPIType() const noexcept;
     };

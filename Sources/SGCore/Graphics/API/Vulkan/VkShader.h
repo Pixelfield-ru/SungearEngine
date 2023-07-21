@@ -19,9 +19,13 @@ namespace Core::Graphics
 
         void bind() noexcept final;
 
+        void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) override;
+
         void destroy() noexcept final;
 
         std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept final;
+
+        void useMaterialTexture(const Memory::Assets::MaterialTexture&) final;
     };
 }
 

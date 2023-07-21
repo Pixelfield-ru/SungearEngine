@@ -4,8 +4,6 @@ file(GLOB_RECURSE SGEDITOR_SOURCES ../SGEditor/*.cpp ../SGEditor/*.h)
 
 add_executable(${PROJECT_NAME} ${SGEDITOR_SOURCES})
 
-message(${CMAKE_SOURCE_DIR}/Sources)
-
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/Sources
         ${CMAKE_SOURCE_DIR}/Externals

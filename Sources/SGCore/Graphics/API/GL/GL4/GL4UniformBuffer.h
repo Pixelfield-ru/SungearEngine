@@ -1,20 +1,20 @@
 #pragma once
 
-#ifndef SUNGEARENGINE_GL46UNIFORMBUFFER_H
-#define SUNGEARENGINE_GL46UNIFORMBUFFER_H
+#ifndef SUNGEARENGINE_GL4UNIFORMBUFFER_H
+#define SUNGEARENGINE_GL4UNIFORMBUFFER_H
 
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 
 namespace Core::Graphics
 {
-    class GL46UniformBuffer : public IUniformBuffer
+    class GL4UniformBuffer : public IUniformBuffer
     {
     private:
         std::uint32_t m_handler = 0;
 
         void subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept final;
     public:
-        ~GL46UniformBuffer() override;
+        ~GL4UniformBuffer() override;
 
         std::shared_ptr<IUniformBuffer> bind() noexcept final;
 
@@ -28,4 +28,4 @@ namespace Core::Graphics
     };
 }
 
-#endif //SUNGEARENGINE_GL46UNIFORMBUFFER_H
+#endif //SUNGEARENGINE_GL4UNIFORMBUFFER_H

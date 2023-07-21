@@ -3,8 +3,8 @@
 #ifndef SUNGEARENGINE_MESHCOMPONENT_H
 #define SUNGEARENGINE_MESHCOMPONENT_H
 
-#include "SGCore/ECS/IComponent.h"
 #include "SGCore/ImportedScenesArch/IMesh.h"
+#include "SGCore/ECS/IComponent.h"
 
 namespace Core::ECS
 {

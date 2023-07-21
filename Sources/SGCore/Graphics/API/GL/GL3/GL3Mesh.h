@@ -5,7 +5,7 @@
 
 #include "SGCore/ImportedScenesArch/IMesh.h"
 
-namespace Core::Graphics::GL
+namespace Core::Graphics
 {
     class GL3Mesh : public ImportedScene::IMesh
     {
