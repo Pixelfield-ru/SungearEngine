@@ -15,20 +15,25 @@ namespace Core::ECS
 {
     struct SystemsFlags
     {
-        static const std::uint8_t SGSF_NOT_PER_ENTITY = 1;
-        static const std::uint8_t SGSF_PER_ENTITY = SGSF_NOT_PER_ENTITY << 1;
+        static inline const std::uint16_t SGSF_NOT_PER_ENTITY = 0 << 1;
+        static inline const std::uint16_t SGSF_PER_ENTITY = 0 << 2;
     };
 
-    class ISystem : Patterns
+    class ISystem : public Patterns::Marker<ISystem>
     {
     public:
-        std::uint8_t m_flags = SystemsFlags::SGSF_PER_ENTITY;
-
         bool m_active = true;
 
         virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) = 0;
 
-        virtual void deltaUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity, const double& deltaTime) = 0;
+        virtual void deltaUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity,
+                                 const double& deltaTime) = 0;
+
+    private:
+        void init() override
+        {
+            addFlag(SystemsFlags::SGSF_PER_ENTITY);
+        }
     };
 }
 

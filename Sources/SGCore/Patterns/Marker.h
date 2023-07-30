@@ -6,30 +6,64 @@
 #define SUNGEARENGINE_MARKER_H
 
 #include <cstdint>
+#include <iostream>
+#include <memory>
 
 namespace Core::Patterns
 {
-    class Marker
+    template<typename T>
+    class Marker : public std::enable_shared_from_this<T>
     {
     public:
+        virtual void init() { };
+
         bool isFlagSet(const std::uint16_t& flag) const noexcept
         {
+            // 0x000 000 11
+            // 0x000 000 10
+            // 0x000 000 10 != 0
+
             return (m_flags & flag) != 0;
         }
 
-        void addFlag(const std::uint16_t& flag) noexcept
+        std::shared_ptr<T> addFlag(const std::uint16_t& flag) noexcept
         {
             m_flags |= flag;
+            // 0x000 000 00
+            // 0x000 000 10
+
+            // 0x000 000 10
+
+            // 0x000 000 10
+            // 0x000 000 01
+
+            // 0x000 000 11
+
+            return this->shared_from_this();
         }
 
-        void removeFlag(const std::uint16_t& flag) noexcept
+        std::shared_ptr<T> removeFlag(const std::uint16_t& flag) noexcept
         {
             m_flags &= ~flag;
+            // 0x000 000 11
+
+            // 0x000 000 10
+
+            // 0x111 111 01
+            // 0x000 000 01
+
+            // 0x000 000 01
+            // 0x111 111 10
+            // 0x000 000 00
+
+            return this->shared_from_this();
         }
 
-        void resetFlags() noexcept
+        std::shared_ptr<T> resetFlags() noexcept
         {
             m_flags = 0;
+
+            return this->shared_from_this();
         }
 
     protected:

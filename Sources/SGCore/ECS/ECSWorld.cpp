@@ -14,7 +14,7 @@ void Core::ECS::ECSWorld::init() noexcept
     m_systems.push_back(std::make_shared<TransformationsSystem>());
     m_systems.push_back(std::make_shared<Camera3DMovementSystem>());
     m_systems.push_back(std::make_shared<CameraRenderingSystem>());
-    m_systems.push_back(std::make_shared<ShadowsCasterSystem>());
+    m_systems.push_back(std::make_shared<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY));
 }
 
 void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
