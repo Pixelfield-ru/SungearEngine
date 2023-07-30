@@ -2,8 +2,6 @@
 // Created by stuka on 24.04.2023.
 //
 
-#pragma once
-
 #ifndef NATIVECORE_IRENDERER_H
 #define NATIVECORE_IRENDERER_H
 
@@ -22,10 +20,19 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/ImportedScenesArch/IMesh.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
-#include "SGCore/ECS/Rendering/MeshComponent.h"
-#include "SGCore/ECS/Transformations/TransformComponent.h"
-#include "SGCore/ECS/Rendering/CameraComponent.h"
+#include "SGCore/ECS/Entity.h"
+#include "SGCore/Graphics/API/ShadersParameters.h"
+
 #include "APIType.h"
+#include "IFrameBuffer.h"
+
+namespace Core::ECS
+{
+    class CameraComponent;
+    class MeshComponent;
+    class TransformComponent;
+    class ShadowsCasterComponent;
+}
 
 namespace Core::Graphics
 {
@@ -55,9 +62,15 @@ namespace Core::Graphics
 
         /**
          * Renders the model using matrices from objectMatricesBuffer.
-         *
          */
-        virtual void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+        virtual void renderMesh(const std::shared_ptr<ECS::CameraComponent>& entity,
+                                    const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
+
+        /**
+        * Renders the model for shadow using matrices from objectMatricesBuffer.
+        */
+        virtual void renderMesh(const std::shared_ptr<ECS::ShadowsCasterComponent>& shadowsCasterComponent,
                                 const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                 const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
 
@@ -69,12 +82,16 @@ namespace Core::Graphics
         virtual void checkForErrors(const std::source_location& = std::source_location::current()) noexcept { }
 
         [[nodiscard]] virtual IShader* createShader() = 0;
+        [[nodiscard]] virtual IShader* createPBRShader() = 0;
+        [[nodiscard]] virtual IShader* createOnlyGeometryShader() = 0;
+
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
         [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;
         [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
         [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
         [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
         [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
+        [[nodiscard]] virtual IFrameBuffer* createFrameBuffer() = 0;
 
         [[nodiscard]] virtual ImportedScene::IMesh* createMesh() = 0;
 

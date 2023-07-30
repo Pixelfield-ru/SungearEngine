@@ -2,15 +2,14 @@
 // Created by stuka on 17.04.2023.
 //
 
-#pragma once
-
 #ifndef NATIVECORE_COREMAIN_H
 #define NATIVECORE_COREMAIN_H
 
 #include "SGCore/Logging/Log.h"
 #include "Window.h"
-#include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Utils/Timer.h"
+
+#include "SGCore/Graphics/API/IRenderer.h"
 
 namespace Core::Main
 {

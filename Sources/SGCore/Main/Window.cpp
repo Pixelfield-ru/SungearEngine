@@ -1,7 +1,8 @@
+#include "SGCore/Graphics/API/IRenderer.h"
 #include "Window.h"
 #include "CoreMain.h"
 
-void Core::Main::Window::create(const std::shared_ptr<Graphics::IRenderer>& renderer)
+void Core::Main::Window::create()
 {
     glfwSetErrorCallback(errorCallback);
 
@@ -21,7 +22,7 @@ void Core::Main::Window::create(const std::shared_ptr<Graphics::IRenderer>& rend
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // OpenGL is the default API for GLFW, so it's not here
-    switch(renderer->getAPIType())
+    switch(CoreMain::getRenderer().getAPIType())
     {
         case Graphics::VULKAN: glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); break;
         case Graphics::DIRECTX:break;

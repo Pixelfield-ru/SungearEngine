@@ -1,3 +1,7 @@
+#ifdef SHADOWS_CASTERS_NUM
+    uniform sampler2D shadowMaps[SHADOWS_CASTERS_NUM];
+#endif
+
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;
     layout (location = 1) in vec3 UVAttribute;
@@ -105,6 +109,6 @@
         #endif
 
         //fragColor = vec4(1.0);
-        fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb * colorFromDiffuse.rgb, colorFromDiffuse.a);
+        fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb, colorFromDiffuse.a);
     }
 #endif

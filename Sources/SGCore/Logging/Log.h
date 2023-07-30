@@ -14,6 +14,7 @@
 
 #define SG_GL_SUPPORTING_EXTENSIONS_FILE "SGSupportingGLExtensions.txt"
 #define SG_LOG_CURRENT_SESSION_FILE "SGCurrentSession.txt"
+#define SG_LOG_GAPI_FILE "SGGAPILog.txt"
 
 #define SGC_ERROR(msg) Core::Logging::printf(Core::Logging::MessageType::SG_ERROR, msg)
 #define SGC_ERROR_SL(msg, sourceLocation) Core::Logging::printf(Core::Logging::MessageType::SG_ERROR, msg, Core::Logging::WriteType::SG_CONSOLE, "", sourceLocation)

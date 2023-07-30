@@ -8,9 +8,14 @@
 
 #include <GLFW/glfw3.h>
 
+#include "SGCore/ECS/Transformations/TransformComponent.h"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
+#include "SGCore/ECS/Rendering/CameraComponent.h"
+#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
+
 void Core::Graphics::VkRenderer::init() noexcept
 {
-    m_applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    /*m_applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     m_applicationInfo.pApplicationName = "Sungear Engine Core";
     m_applicationInfo.applicationVersion = VK_MAKE_VERSION(SG_CORE_MAJOR_VERSION, SG_CORE_MINOR_VERSION, SG_CORE_PATCH_VERSION);
     m_applicationInfo.pEngineName = "Sungear Engine";
@@ -28,7 +33,7 @@ void Core::Graphics::VkRenderer::init() noexcept
     m_instanceCreateInfo.enabledExtensionCount = glfwExtensionCount;
     m_instanceCreateInfo.ppEnabledExtensionNames = glfwExtensions;
 
-    m_instanceCreateInfo.enabledLayerCount = 0;
+    m_instanceCreateInfo.enabledLayerCount = 0;*/
 
     /*if(vkCreateInstance(&m_instanceCreateInfo, nullptr, &m_vkInstance) != VK_SUCCESS)
     {
@@ -68,6 +73,16 @@ Core::Graphics::VkShader* Core::Graphics::VkRenderer::createShader()
     return new VkShader;
 }
 
+Core::Graphics::VkShader* Core::Graphics::VkRenderer::createPBRShader()
+{
+    return nullptr;
+}
+
+Core::Graphics::VkShader* Core::Graphics::VkRenderer::createOnlyGeometryShader()
+{
+    return nullptr;
+}
+
 Core::Graphics::VkVertexArray* Core::Graphics::VkRenderer::createVertexArray()
 {
     return new VkVertexArray;
@@ -96,6 +111,11 @@ Core::Graphics::VkTexture2D* Core::Graphics::VkRenderer::createTexture2D()
 Core::Graphics::VkUniformBuffer* Core::Graphics::VkRenderer::createUniformBuffer()
 {
     return new VkUniformBuffer;
+}
+
+Core::Graphics::VkFrameBuffer* Core::Graphics::VkRenderer::createFrameBuffer()
+{
+    return new VkFrameBuffer;
 }
 
 Core::Graphics::VkMesh* Core::Graphics::VkRenderer::createMesh()

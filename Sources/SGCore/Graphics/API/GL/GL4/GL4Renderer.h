@@ -22,6 +22,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/ImportedScenesArch/IMesh.h"
 #include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
+#include "GL4FrameBuffer.h"
 
 namespace Core::Main
 {
@@ -56,6 +57,10 @@ namespace Core::Graphics
                         const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                         const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
 
+        void renderMesh(const std::shared_ptr<ECS::ShadowsCasterComponent>& shadowsCasterComponent,
+                        const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                        const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
+
         void printInfo() noexcept override;
 
         /**
@@ -66,12 +71,16 @@ namespace Core::Graphics
 
         // TODO: create docs
         [[nodiscard]] GL46Shader* createShader() override;
+        [[nodiscard]] GL46Shader* createPBRShader() override;
+        [[nodiscard]] GL46Shader* createOnlyGeometryShader() override;
+
         [[nodiscard]] GLVertexArray* createVertexArray() override;
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;
         [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() override;
         [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] ITexture2D* createTexture2D() override;
         [[nodiscard]] GL46UniformBuffer* createUniformBuffer() override;
+        [[nodiscard]] GL4FrameBuffer* createFrameBuffer() override;
 
         [[nodiscard]] GL3Mesh* createMesh() override;
 

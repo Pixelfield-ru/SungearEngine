@@ -7,16 +7,13 @@
 #ifndef SUNGEARENGINE_GL46FRAMEBUFFER_H
 #define SUNGEARENGINE_GL46FRAMEBUFFER_H
 
+#include "SGCore/Graphics/API/GL/GL4/GL4FrameBuffer.h"
+
 namespace Core::Graphics
 {
-    class GL46FrameBuffer : public IFrameBuffer
+    class GL46FrameBuffer : public GL4FrameBuffer
     {
-    private:
-        GLuint m_handler;
-
     public:
-        GL46FrameBuffer() noexcept;
-
         ~GL46FrameBuffer() noexcept;
     };
 }

@@ -23,12 +23,12 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
 
     if(m_channelsInFile == 4)
     {
-        m_internalFormat = SGGInternalFormat::SGG_RGBA8;
-        m_format = SGGFormat::SGG_RGBA;
+        m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
+        m_format = SGGColorFormat::SGG_RGBA;
     }
     else if(m_channelsInFile == 3)
     {
-        m_format = SGGFormat::SGG_RGB;
+        m_format = SGGColorFormat::SGG_RGB;
     }
 
     std::shared_ptr<Texture2DAsset> sharedPtr = shared_from_this();
@@ -46,12 +46,12 @@ std::shared_ptr<Core::Graphics::ITexture2D> Core::Memory::Assets::Texture2DAsset
     return m_texture2D;
 }
 
-SGGInternalFormat Core::Memory::Assets::Texture2DAsset::getInternalFormat() noexcept
+SGGColorInternalFormat Core::Memory::Assets::Texture2DAsset::getInternalFormat() noexcept
 {
     return m_internalFormat;
 }
 
-SGGFormat Core::Memory::Assets::Texture2DAsset::getFormat() noexcept
+SGGColorFormat Core::Memory::Assets::Texture2DAsset::getFormat() noexcept
 {
     return m_format;
 }

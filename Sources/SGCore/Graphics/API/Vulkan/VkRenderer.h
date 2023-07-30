@@ -14,8 +14,9 @@
 #include "VkTexture2D.h"
 #include "VkUniformBuffer.h"
 #include "VkMesh.h"
+#include "VkFrameBuffer.h"
 
-#include <vulkan/vulkan.h>
+//#include <vulkan/vulkan.h>
 
 namespace Core::Graphics
 {
@@ -24,9 +25,9 @@ namespace Core::Graphics
     private:
         VkRenderer() noexcept = default;
 
-        VkInstance m_vkInstance = nullptr;
+        /*VkInstance m_vkInstance = nullptr;
         VkApplicationInfo m_applicationInfo { };
-        VkInstanceCreateInfo m_instanceCreateInfo { };
+        VkInstanceCreateInfo m_instanceCreateInfo { };*/
 
         // singleton instance
         static inline std::shared_ptr<VkRenderer> m_instance;
@@ -55,12 +56,16 @@ namespace Core::Graphics
 
         // TODO: create docs
         [[nodiscard]] VkShader* createShader() override;
+        [[nodiscard]] VkShader* createPBRShader() override;
+        [[nodiscard]] VkShader* createOnlyGeometryShader() override;
+
         [[nodiscard]] VkVertexArray* createVertexArray() override;
         [[nodiscard]] VkVertexBuffer* createVertexBuffer() override;
         [[nodiscard]] VkVertexBufferLayout* createVertexBufferLayout() override;
         [[nodiscard]] VkIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] VkTexture2D* createTexture2D() override;
         [[nodiscard]] VkUniformBuffer* createUniformBuffer() override;
+        [[nodiscard]] VkFrameBuffer* createFrameBuffer() override;
 
         [[nodiscard]] VkMesh* createMesh() override;
 

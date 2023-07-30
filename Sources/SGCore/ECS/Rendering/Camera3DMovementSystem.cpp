@@ -81,23 +81,4 @@ void Core::ECS::Camera3DMovementSystem::deltaUpdate
     cameraComponent->m_viewMatrix = glm::toMat4(rotationQuat);
     cameraComponent->m_viewMatrix = glm::translate(cameraComponent->m_viewMatrix, transformComponent->m_position);
     cameraComponent->m_viewMatrix = glm::scale(cameraComponent->m_viewMatrix, transformComponent->m_scale);
-
-    // if some part of projection matrix of camera is changed
-    if(cameraComponent->m_lastFov != cameraComponent->m_fov ||
-    cameraComponent->m_lastAspect != cameraComponent->m_aspect ||
-    cameraComponent->m_lastZNear != cameraComponent->m_zNear ||
-    cameraComponent->m_lastZFar != cameraComponent->m_zFar)
-    {
-        cameraComponent->m_projectionMatrix = glm::perspective<float>(
-                glm::radians(cameraComponent->m_fov),
-                cameraComponent->m_aspect,
-                cameraComponent->m_zNear,
-                cameraComponent->m_zFar
-                );
-
-        cameraComponent->m_lastFov = cameraComponent->m_fov;
-        cameraComponent->m_lastAspect = cameraComponent->m_aspect;
-        cameraComponent->m_lastZNear = cameraComponent->m_zNear;
-        cameraComponent->m_lastZFar = cameraComponent->m_zFar;
-    }
 }

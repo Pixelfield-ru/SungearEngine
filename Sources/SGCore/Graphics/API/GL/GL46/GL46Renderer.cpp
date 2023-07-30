@@ -2,6 +2,11 @@
 
 #include <thread>
 
+#include "SGCore/ECS/Transformations/TransformComponent.h"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
+#include "SGCore/ECS/Rendering/CameraComponent.h"
+#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
+
 bool Core::Graphics::GL46Renderer::confirmSupport() noexcept
 {
     std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -15,6 +20,28 @@ bool Core::Graphics::GL46Renderer::confirmSupport() noexcept
     return true;
 }
 
+Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createPBRShader()
+{
+    auto* shader = new GL46Shader;
+    shader->m_version = "460";
+    shader->compile(
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL46_PBR_SHADER_PATH)
+    );
+
+    return shader;
+}
+
+Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createOnlyGeometryShader()
+{
+    auto* shader = new GL46Shader;
+    shader->m_version = "460";
+    shader->compile(
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL4_ONLY_GEOM_SHADER_PATH)
+    );
+
+    return shader;
+}
+
 Core::Graphics::GL46Texture2D *Core::Graphics::GL46Renderer::createTexture2D()
 {
     return new GL46Texture2D;
@@ -24,14 +51,7 @@ Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createMaterial()
 {
     auto* mat = new Memory::Assets::IMaterial;
 
-    mat->m_shader = std::shared_ptr<Core::Graphics::IShader>(createShader());
-    mat->m_shader->m_version = "460";
-    mat->m_shader->compile(Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(
-            "../SGResources/shaders/glsl46/pbr/default_shader.glsl")
-            );
-    mat->m_shader->addShaderDefines({
-                                       //Core::Graphics::API::ShaderDefine("FLIP_TEXTURES_Y", "")
-                               });
+    mat->m_shader = std::shared_ptr<Core::Graphics::IShader>(createPBRShader());
 
     // setting maximum textures of different types
     mat->getTextures()[SGMaterialTextureType::SGTP_EMISSIVE].m_maximumTextures = 1;

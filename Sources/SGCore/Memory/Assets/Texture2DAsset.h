@@ -20,8 +20,8 @@ namespace Core::Memory::Assets
     class Texture2DAsset : public IAsset, public std::enable_shared_from_this<Texture2DAsset>
     {
     private:
-        SGGInternalFormat m_internalFormat = SGGInternalFormat::SGG_RGBA8;
-        SGGFormat m_format = SGGFormat::SGG_RGBA;
+        SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
+        SGGColorFormat m_format = SGGColorFormat::SGG_RGBA;
         int m_width = 0;
         int m_height = 0;
         int m_channelsInFile = 0;
@@ -37,8 +37,8 @@ namespace Core::Memory::Assets
         std::shared_ptr<Graphics::ITexture2D> getTexture2D() noexcept;
 
         #pragma region Getters
-        SGGInternalFormat getInternalFormat() noexcept;
-        SGGFormat getFormat() noexcept;
+        SGGColorInternalFormat getInternalFormat() noexcept;
+        SGGColorFormat getFormat() noexcept;
 
         int getWidth() noexcept;
         int getHeight() noexcept;

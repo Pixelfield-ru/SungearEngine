@@ -125,9 +125,6 @@ std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL4UniformBuffer
     }
      */
 
-    //auto lights_index = glGetUniformBlockIndex(shaderA.ID, "Lights");
-    //glUniformBlockBinding(shaderA.ID, lights_index, 2);
-
     return shared_from_this();
 }
 

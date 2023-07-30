@@ -4,6 +4,9 @@
 
 #include "CameraRenderingSystem.h"
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/ECS/Transformations/TransformComponent.h"
+#include "CameraComponent.h"
+#include "MeshComponent.h"
 
 void Core::ECS::CameraRenderingSystem::update
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)

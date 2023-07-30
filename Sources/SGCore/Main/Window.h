@@ -11,8 +11,6 @@
 #include <utility>
 
 #include "SGCore/Input/InputManager.h"
-#include "SGCore/Memory/Resource.h"
-#include "SGCore/Graphics/API/IRenderer.h"
 
 #include "Callbacks.h"
 
@@ -119,7 +117,7 @@ namespace Core::Main
             glfwDestroyWindow(m_handler);
         }
 
-        void create(const std::shared_ptr<Graphics::IRenderer>& renderer);
+        void create();
 
         void swapBuffers();
         void pollEvents();

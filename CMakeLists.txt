@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.25)
 project(SungearEngine)
 
 add_definitions(-DSUNGEAR_DEBUG)
-add_definitions(-DBUILD_SHARED_LIBS=ON)
 
 set(CMAKE_CXX_STANDARD 23)
 

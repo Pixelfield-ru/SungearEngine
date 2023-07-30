@@ -3,6 +3,7 @@
 #include <cstdlib>
 
 #include "CoreTest.h"
+#include "SGCore/Main/CoreMain.h"
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Graphics/API/IShader.h"
@@ -28,6 +29,11 @@
 
 #include "SGCore/ECS/Scene.h"
 #include "SGCore/ECS/ECSWorld.h"
+
+#include "SGCore/ECS/Transformations/TransformComponent.h"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
+#include "SGCore/ECS/Rendering/CameraComponent.h"
+#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
 
 std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
 
@@ -71,8 +77,13 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode)
 
 void init()
 {
+
+    testScene = std::make_shared<Core::ECS::Scene>();
+    Core::ECS::Scene::setCurrentScene(testScene);
+
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
     testCameraEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
+    testCameraEntity->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
     testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
 
     // найс это работает. TODO: убрать! просто ради теста ---------------------
@@ -88,9 +99,6 @@ void init()
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/lenin/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/ak74m/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
-
-    testScene = std::make_shared<Core::ECS::Scene>();
-    Core::ECS::Scene::setCurrentScene(testScene);
 
     for(auto& node : testModel->m_nodes)
     {
@@ -117,7 +125,9 @@ void deltaUpdate(const double& deltaTime)
 
 int main()
 {
-    SGConsole::Console::start();
+    std::cout << "sdfsdfsdf" << std::endl;
+
+    //SGConsole::Console::start();
 
     sgSetCoreInitCallback(init);
     sgSetFramePostRenderCallback(framePostRender);
@@ -125,7 +135,7 @@ int main()
 
     Core::Main::CoreMain::start();
 
-    SGConsole::Console::stop();
+    //SGConsole::Console::stop();
 
     return EXIT_SUCCESS;
 }

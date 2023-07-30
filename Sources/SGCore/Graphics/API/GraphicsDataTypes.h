@@ -10,6 +10,14 @@
 #include <iostream>
 #include <cstdint>
 
+enum SGFrameBufferAttachmentType
+{
+    SGG_DEPTH_ATTACHMENT,
+    SGG_DEPTH_STENCIL_ATTACHMENT,
+    SGG_COLOR_ATTACHMENT,
+    SGG_RENDER_ATTACHMENT
+};
+
 enum SGGDataType
 {
     SGG_NONE,
@@ -164,7 +172,7 @@ enum SGGUsage
     SGG_STATIC
 };
 
-enum SGGInternalFormat
+enum SGGColorInternalFormat
 {
     SGG_R8,
     SGG_R8_SIGNED_NORMALIZED,
@@ -267,10 +275,18 @@ enum SGGInternalFormat
     SGG_COMPRESSED_SRGB,
     SGG_COMPRESSED_SRGBA,
     // ------------------------
-    SGG_STENCIL_INDEX8
+    SGG_STENCIL_INDEX8,
+
+    SGG_DEPTH_COMPONENT16,
+    SGG_DEPTH_COMPONENT24,
+    SGG_DEPTH_COMPONENT32,
+    SGG_DEPTH_COMPONENT32F,
+
+    SGG_DEPTH24_STENCIL8,
+    SGG_DEPTH32F_STENCIL8
 };
 
-enum SGGFormat
+enum SGGColorFormat
 {
     SGG_R,
     SGG_RG,

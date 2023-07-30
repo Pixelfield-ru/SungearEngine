@@ -1,14 +1,14 @@
+#include "CoreMain.h"
+
 #include <locale>
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
+#include "SGCore/Graphics/API/Vulkan/VkRenderer.h"
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
 #include "SGCore/ECS/ECSWorld.h"
-#include "SGCore/Graphics/API/Vulkan/VkRenderer.h"
-#include "Window.h"
-#include "CoreMain.h"
 
 void Core::Main::CoreMain::start()
 {
@@ -25,7 +25,7 @@ void Core::Main::CoreMain::start()
     m_renderer = Graphics::GL4Renderer::getInstance();
     //m_renderer = Graphics::VkRenderer::getInstance();
 
-    m_window.create(m_renderer);
+    m_window.create();
 
     m_renderer->init();
 

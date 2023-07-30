@@ -7,6 +7,4 @@
 #ifndef NATIVECORE_CORETEST_H
 #define NATIVECORE_CORETEST_H
 
-#include "SGCore/Main/CoreMain.h"
-
 #endif //NATIVECORE_CORETEST_H

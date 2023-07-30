@@ -2,9 +2,14 @@
 
 #include "SGCore/Main/CoreMain.h"
 
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 #include <thread>
+
+#include "SGCore/ECS/Transformations/TransformComponent.h"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
+#include "SGCore/ECS/Rendering/CameraComponent.h"
+#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
 
 void Core::Graphics::GL4Renderer::init() noexcept
 {
@@ -146,13 +151,61 @@ void Core::Graphics::GL4Renderer::renderMesh(
     m_cameraMatricesBuffer->subData("cameraProjectionMatrix", glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+}
 
-    //std::cout << "rendered object with mesh " <<  meshComponent->m_mesh->m_name << std::endl;
+void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsCasterComponent>& shadowsCasterComponent,
+                                             const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                             const std::shared_ptr<ECS::MeshComponent>& meshComponent)
+{
+    if(!meshComponent->m_mesh) return;
+
+    // TODO: MAKE CHECKING FOR ALREADY BIND FRAMEBUFFERS, VAOs, VBOs e.t.c. (for not to bind every time the same buffer)
+    shadowsCasterComponent->m_frameBuffer->bind();
+    //std::cout << "ECS::ShadowsCasterComponent::getObjectsShader(): " << ECS::ShadowsCasterComponent::getObjectsShader() << std::endl;
+    ECS::ShadowsCasterComponent::getObjectsShader()->bind();
+    meshComponent->m_mesh->getVertexArray()->bind();
+
+    m_modelMatricesBuffer->bind();
+    m_cameraMatricesBuffer->bind();
+
+    ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_modelMatricesBuffer);
+    ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_cameraMatricesBuffer);
+
+    m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
+
+    m_cameraMatricesBuffer->subData("cameraViewMatrix", glm::value_ptr(shadowsCasterComponent->m_viewMatrix), 16);
+    m_cameraMatricesBuffer->subData("cameraProjectionMatrix", glm::value_ptr(shadowsCasterComponent->m_projectionMatrix), 16);
+
+    glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+
+    shadowsCasterComponent->m_frameBuffer->unbind();
 }
 
 Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createShader()
 {
     return new GL46Shader;
+}
+
+Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createPBRShader()
+{
+    auto* shader = new GL46Shader;
+    shader->m_version = "400";
+    shader->compile(
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL4_PBR_SHADER_PATH)
+    );
+
+    return shader;
+}
+
+Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createOnlyGeometryShader()
+{
+    auto* shader = new GL46Shader;
+    shader->m_version = "400";
+    shader->compile(
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL4_ONLY_GEOM_SHADER_PATH)
+    );
+
+    return shader;
 }
 
 Core::Graphics::GLVertexArray* Core::Graphics::GL4Renderer::createVertexArray()
@@ -185,23 +238,21 @@ Core::Graphics::GL46UniformBuffer* Core::Graphics::GL4Renderer::createUniformBuf
     return new GL46UniformBuffer;
 }
 
+Core::Graphics::GL4FrameBuffer* Core::Graphics::GL4Renderer::createFrameBuffer()
+{
+    return new GL4FrameBuffer;
+}
+
 Core::Graphics::GL3Mesh* Core::Graphics::GL4Renderer::createMesh()
 {
     return new GL3Mesh;
 }
 
-Core::Memory::Assets::IMaterial *Core::Graphics::GL4Renderer::createMaterial()
+Core::Memory::Assets::IMaterial* Core::Graphics::GL4Renderer::createMaterial()
 {
     auto* mat = new Memory::Assets::IMaterial;
 
-    mat->m_shader = std::shared_ptr<Core::Graphics::IShader>(createShader());
-    mat->m_shader->m_version = "400";
-    mat->m_shader->compile(Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(
-            "../SGResources/shaders/glsl4/pbr/default_shader.glsl")
-            );
-    mat->m_shader->addShaderDefines({
-                                       //Core::Graphics::API::ShaderDefine("FLIP_TEXTURES_Y", "")
-                               });
+    mat->m_shader = std::shared_ptr<Core::Graphics::IShader>(createPBRShader());
 
     // setting maximum textures of different types
     mat->getTextures()[SGMaterialTextureType::SGTP_EMISSIVE].m_maximumTextures = 1;
