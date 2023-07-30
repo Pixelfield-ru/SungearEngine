@@ -8,8 +8,6 @@
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "SGCore/Input/InputManager.h"
 #include "glm/gtx/rotate_vector.hpp"
-#include "glm/ext/quaternion_trigonometric.hpp"
-#include "glm/gtx/quaternion.hpp"
 #include "SGCore/Main/CoreMain.h"
 
 void Core::ECS::Camera3DMovementSystem::update
@@ -73,12 +71,4 @@ void Core::ECS::Camera3DMovementSystem::deltaUpdate
     {
         Core::Main::CoreMain::getWindow().setHideAndCentralizeCursor(!Core::Main::CoreMain::getWindow().isHideAndCentralizeCursor());
     }
-
-    glm::quat rotationQuat = glm::angleAxis(glm::radians(transformComponent->m_rotation.x), glm::vec3(1, 0, 0));
-    rotationQuat *= glm::angleAxis(glm::radians(transformComponent->m_rotation.y), glm::vec3(0, 1, 0));
-
-    // TODO: make checking for lastTransformation != current transformation
-    cameraComponent->m_viewMatrix = glm::toMat4(rotationQuat);
-    cameraComponent->m_viewMatrix = glm::translate(cameraComponent->m_viewMatrix, transformComponent->m_position);
-    cameraComponent->m_viewMatrix = glm::scale(cameraComponent->m_viewMatrix, transformComponent->m_scale);
 }

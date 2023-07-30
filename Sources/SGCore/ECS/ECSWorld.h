@@ -22,6 +22,18 @@ namespace Core::ECS
 
         static void update(const std::shared_ptr<Scene>& scene);
         static void deltaUpdate(const std::shared_ptr<Scene>& scene, const double& deltaTime);
+
+        template<typename SystemT>
+        requires(std::is_base_of_v<ISystem, SystemT>)
+        static std::shared_ptr<SystemT> createSystem()
+        {
+            std::shared_ptr<SystemT> newSystem = std::make_shared<SystemT>();
+            newSystem->addFlag(SystemsFlags::SGSF_PER_ENTITY);
+
+            m_systems.push_back(newSystem);
+
+            return newSystem;
+        }
     };
 }
 

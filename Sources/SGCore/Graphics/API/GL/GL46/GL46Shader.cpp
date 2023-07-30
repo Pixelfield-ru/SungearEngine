@@ -271,6 +271,13 @@ void Core::Graphics::GL46Shader::useMaterialTexture(const Memory::Assets::Materi
     glUniform1i(texLoc, materialTexture.m_textureUnit);
 }
 
+void Core::Graphics::GL46Shader::useTexture(const std::string& name, const uint8_t& texBlock)
+{
+    int texLoc = glGetUniformLocation(m_programHandler,
+                                      name.c_str());
+    glUniform1i(texLoc, texBlock);
+}
+
 /*
 Core::Graphics::API::GL46::GL46Shader& Core::Graphics::API::GL46::GL46Shader::operator=(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
 {

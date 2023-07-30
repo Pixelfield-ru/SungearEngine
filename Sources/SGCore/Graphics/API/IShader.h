@@ -40,8 +40,6 @@ namespace Core::Graphics
 
         virtual void bind() = 0;
 
-        virtual void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) = 0;
-
         virtual void compile(std::shared_ptr<Memory::Assets::FileAsset> asset) = 0;
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
@@ -56,6 +54,8 @@ namespace Core::Graphics
         #pragma region Uniforms use
 
         virtual void useMaterialTexture(const Memory::Assets::MaterialTexture&) = 0;
+        virtual void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) = 0;
+        virtual void useTexture(const std::string& name, const std::uint8_t& texBlock) { };
 
         #pragma endregion
 

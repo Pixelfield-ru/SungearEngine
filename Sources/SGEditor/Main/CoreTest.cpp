@@ -81,11 +81,6 @@ void init()
     testScene = std::make_shared<Core::ECS::Scene>();
     Core::ECS::Scene::setCurrentScene(testScene);
 
-    testCameraEntity = std::make_shared<Core::ECS::Entity>();
-    testCameraEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
-    testCameraEntity->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
-    testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
-
     // найс это работает. TODO: убрать! просто ради теста ---------------------
     int windowWidth;
     int windowHeight;
@@ -105,7 +100,19 @@ void init()
         processLoadedNode(node);
     }
 
+    testCameraEntity = std::make_shared<Core::ECS::Entity>();
+    testCameraEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
+    //testCameraEntity->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
+    testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
+
     testScene->m_entities.push_back(testCameraEntity);
+
+    auto testShadowsCaster = std::make_shared<Core::ECS::Entity>();
+    auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
+    testShadowsCaster->addComponent(shadowsCasterTransform);
+    testShadowsCaster->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
+
+    testScene->m_entities.push_back(testShadowsCaster);
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------

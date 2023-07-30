@@ -15,8 +15,6 @@ namespace Core::Patterns
     class Marker : public std::enable_shared_from_this<T>
     {
     public:
-        virtual void init() { };
-
         bool isFlagSet(const std::uint16_t& flag) const noexcept
         {
             // 0x000 000 11
@@ -29,6 +27,7 @@ namespace Core::Patterns
         std::shared_ptr<T> addFlag(const std::uint16_t& flag) noexcept
         {
             m_flags |= flag;
+
             // 0x000 000 00
             // 0x000 000 10
 

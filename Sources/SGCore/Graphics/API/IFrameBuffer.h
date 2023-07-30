@@ -14,6 +14,7 @@
 
 namespace Core::Graphics
 {
+    // todo: make read and draw bindings
     class IFrameBuffer : public std::enable_shared_from_this<IFrameBuffer>
     {
     public:

@@ -25,7 +25,8 @@ void Core::ECS::Scene::setShadowsCastersNum(const int& num)
     // define new shadow casters num for all entities in scene
     for(const auto& entity : m_entities)
     {
-        for(const auto& meshComponent : entity->getComponents<MeshComponent>())
+        auto meshes = entity->getComponents<MeshComponent>();
+        for(const auto& meshComponent : meshes)
         {
             meshComponent->m_mesh->m_material->m_shader->setAssetModifiedChecking(false);
 

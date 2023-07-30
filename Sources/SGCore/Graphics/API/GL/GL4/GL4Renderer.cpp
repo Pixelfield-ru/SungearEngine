@@ -161,7 +161,6 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsC
 
     // TODO: MAKE CHECKING FOR ALREADY BIND FRAMEBUFFERS, VAOs, VBOs e.t.c. (for not to bind every time the same buffer)
     shadowsCasterComponent->m_frameBuffer->bind();
-    //std::cout << "ECS::ShadowsCasterComponent::getObjectsShader(): " << ECS::ShadowsCasterComponent::getObjectsShader() << std::endl;
     ECS::ShadowsCasterComponent::getObjectsShader()->bind();
     meshComponent->m_mesh->getVertexArray()->bind();
 

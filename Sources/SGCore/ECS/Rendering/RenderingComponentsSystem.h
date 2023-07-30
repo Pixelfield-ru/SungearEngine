@@ -9,7 +9,7 @@
 
 namespace Core::ECS
 {
-    class RenderingComponentsSystem : ISystem
+    class RenderingComponentsSystem : public ISystem
     {
     public:
         void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;

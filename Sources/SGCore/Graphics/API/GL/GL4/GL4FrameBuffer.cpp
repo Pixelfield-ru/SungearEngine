@@ -112,7 +112,7 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
 
                 glTexImage2D(GL_TEXTURE_2D,
                              mipLevel,
-                             GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
+                             GL_DEPTH_COMPONENT,
                              width, height,
                              0,
                              GL_DEPTH_COMPONENT,

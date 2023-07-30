@@ -108,7 +108,21 @@
             colorFromNormalMap = texture(sgmat_normals7, vec2(finalUV.x, finalUV.y)).rgb;
         #endif
 
-        //fragColor = vec4(1.0);
         fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb, colorFromDiffuse.a);
+
+        #ifdef SHADOWS_CASTERS_NUM
+            vec4 shadowColor = vec4(0.0);
+
+            for(int i = 0; i < SHADOWS_CASTERS_NUM; i += 1)
+            {
+                shadowColor += texture(shadowMaps[i], vec2(finalUV.x, finalUV.y));
+            }
+
+            shadowColor /= SHADOWS_CASTERS_NUM;
+
+            fragColor *= shadowColor.r;
+        #endif
+
+        //fragColor = vec4(1.0);
     }
 #endif
