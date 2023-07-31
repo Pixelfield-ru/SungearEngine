@@ -9,37 +9,46 @@
 
 void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 {
-    size_t totalShadowCasters = 0;
-
-    for(const auto& shadowsCasterEntity : scene->m_entities)
+    for(const auto& entity: scene->m_entities)
     {
-        std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent =
-                shadowsCasterEntity->getComponent<ShadowsCasterComponent>();
+        auto meshComponents = entity->getComponents<MeshComponent>();
 
-        if(!shadowsCasterComponent) continue;
-
-        shadowsCasterComponent->m_frameBuffer->bindAttachment("depthAttachment");
-
-        for(const auto& entity: scene->m_entities)
+        for(auto& meshComponent: meshComponents)
         {
-            auto meshComponents = entity->getComponents<MeshComponent>();
+            std::uint8_t shadowMapsBlockOffset = meshComponent->
+                    m_mesh->
+                    m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
 
-            for(auto& meshComponent : meshComponents)
+            std::uint8_t currentTextureBlock = 0;
+
+            size_t totalShadowCasters = 0;
+
+            for(const auto& shadowsCasterEntity: scene->m_entities)
             {
+                std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent =
+                        shadowsCasterEntity->getComponent<ShadowsCasterComponent>();
+
+                if(!shadowsCasterComponent) continue;
+
+                std::uint8_t finalTextureBlock = shadowMapsBlockOffset + currentTextureBlock;
+
+                shadowsCasterComponent->m_frameBuffer->bindAttachment("depthAttachment", finalTextureBlock);
+
                 meshComponent->m_mesh->m_material->m_shader->bind();
 
                 meshComponent->m_mesh->m_material->m_shader->useTexture(
                         "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowMap",
-                        30);
+                        finalTextureBlock);
 
                 // todo: maybe make uniform buffer for shadows casters
                 meshComponent->m_mesh->m_material->m_shader->useMatrix(
                         "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
                         shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
+
+                currentTextureBlock++;
+                totalShadowCasters++;
             }
         }
-
-        totalShadowCasters++;
     }
 }
 

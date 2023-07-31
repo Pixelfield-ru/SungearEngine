@@ -39,15 +39,6 @@ namespace Core::Memory::Assets
     // TODO: make function addBlockDeclaration
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
-    protected:
-        // Blocks of textures that correspond to a specific type of texture
-        std::map<SGMaterialTextureType, MaterialTexturesBlock> m_blocks;
-
-        // Textures that could not be added to the material. This collection is used to migrate textures to another material
-        std::map<SGMaterialTextureType, std::list<std::shared_ptr<Texture2DAsset>>> m_notUsedTextures;
-
-        //std::uint8_t m_maxUnit = 0;
-
     public:
         std::string m_name;
 
@@ -58,9 +49,11 @@ namespace Core::Memory::Assets
         // TODO: impl
         std::shared_ptr<IAsset> load(const std::string& path) override;
 
-        std::shared_ptr<IMaterial> addBlockDeclaration(const SGMaterialTextureType& blockType,
+        void addBlockDeclaration(const SGMaterialTextureType& blockType,
                                                        const std::uint8_t& maxTextures,
                                                        const std::uint8_t& blockOffset);
+
+        std::shared_ptr<IMaterial> bindBlock(const SGMaterialTextureType& blockType);
 
         /**
         * Adds texture2D. Method is not copying texture.
@@ -99,7 +92,7 @@ namespace Core::Memory::Assets
          */
         std::shared_ptr<IMaterial> findAndSetTexture2D(const SGMaterialTextureType& type, const std::string& oldTextureAssetPath, const std::string& newTextureAssetPath);
 
-        auto&& getTextures()
+        auto&& getBlocks()
         {
             return m_blocks;
         }
@@ -111,6 +104,13 @@ namespace Core::Memory::Assets
          * @return Modified this material
          */
         IMaterial& operator=(const IMaterial& other) noexcept;
+
+    protected:
+        // Blocks of textures that correspond to a specific type of texture
+        std::map<SGMaterialTextureType, MaterialTexturesBlock> m_blocks;
+
+        // Textures that could not be added to the material. This collection is used to migrate textures to another material
+        std::map<SGMaterialTextureType, std::list<std::shared_ptr<Texture2DAsset>>> m_notUsedTextures;
     };
 }
 

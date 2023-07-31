@@ -18,7 +18,8 @@ namespace Core::Graphics
     class IFrameBuffer : public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
-        virtual std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName) { };
+        virtual std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName,
+                                                             const std::uint8_t& textureBlock) { };
 
         virtual std::shared_ptr<IFrameBuffer> bind() = 0;
         virtual std::shared_ptr<IFrameBuffer> unbind() = 0;

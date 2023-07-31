@@ -9,9 +9,12 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
     {
         for(const auto& typedTexture : block.second.m_textures)
         {
-            const auto& texture = typedTexture.second.m_textureAsset->getTexture2D();
             const auto& textureUnit = typedTexture.second.m_textureUnit;
-            texture->bind(textureUnit);
+            if(typedTexture.second.m_textureAsset)
+            {
+                const auto& texture = typedTexture.second.m_textureAsset->getTexture2D();
+                if(texture) texture->bind(textureUnit);
+            }
             m_shader->useMaterialTexture(typedTexture.second);
         }
     }
@@ -24,7 +27,7 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::IMaterial::l
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::addBlockDeclaration
+void Core::Memory::Assets::IMaterial::addBlockDeclaration
 (const SGMaterialTextureType& blockType, const uint8_t& maxTextures, const uint8_t& blockOffset)
 {
     m_blocks[blockType].m_maximumTextures = maxTextures;
@@ -35,9 +38,28 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
 
     SGC_SUCCESS("Final define for this type textures number: " + maxTextureBlockDefine);
 
+    m_shader->setAssetModifiedChecking(false);
+
+    m_shader->removeShaderDefine(maxTextureBlockDefine);
     m_shader->addShaderDefines({
         Graphics::ShaderDefine(maxTextureBlockDefine, std::to_string(maxTextures)),
         });
+
+    m_shader->setAssetModifiedChecking(true);
+}
+
+std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bindBlock(const SGMaterialTextureType& blockType)
+{
+    for(const auto& typedTexture : m_blocks[blockType].m_textures)
+    {
+        const auto& textureUnit = typedTexture.second.m_textureUnit;
+        if(typedTexture.second.m_textureAsset)
+        {
+            const auto& texture = typedTexture.second.m_textureAsset->getTexture2D();
+            if(texture) texture->bind(textureUnit);
+        }
+        m_shader->useMaterialTexture(typedTexture.second);
+    }
 
     return shared_from_this();
 }

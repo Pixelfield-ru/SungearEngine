@@ -53,49 +53,49 @@ Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createMaterial()
 
     mat->m_shader = std::shared_ptr<Core::Graphics::IShader>(createPBRShader());
 
-    // setting maximum textures of different types
-    mat->getTextures()[SGMaterialTextureType::SGTP_EMISSIVE].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_AMBIENT_OCCLUSION].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_AMBIENT].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_DIFFUSE_ROUGHNESS].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_DIFFUSE].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_DISPLACEMENT].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_HEIGHT].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_NORMALS].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_BASE_COLOR].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_CLEARCOAT].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_EMISSION_COLOR].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_LIGHTMAP].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_METALNESS].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_NORMAL_CAMERA].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_OPACITY].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_REFLECTION].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_SHEEN].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_SHININESS].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_SPECULAR].m_maximumTextures = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_TRANSMISSION].m_maximumTextures = 1;
-
-    // setting offsets
-    mat->getTextures()[SGMaterialTextureType::SGTP_EMISSIVE].m_texturesUnitOffset = 0;
-    mat->getTextures()[SGMaterialTextureType::SGTP_AMBIENT_OCCLUSION].m_texturesUnitOffset = 1;
-    mat->getTextures()[SGMaterialTextureType::SGTP_AMBIENT].m_texturesUnitOffset = 2;
-    mat->getTextures()[SGMaterialTextureType::SGTP_DIFFUSE_ROUGHNESS].m_texturesUnitOffset = 3;
-    mat->getTextures()[SGMaterialTextureType::SGTP_DIFFUSE].m_texturesUnitOffset = 4;
-    mat->getTextures()[SGMaterialTextureType::SGTP_DISPLACEMENT].m_texturesUnitOffset = 5;
-    mat->getTextures()[SGMaterialTextureType::SGTP_HEIGHT].m_texturesUnitOffset = 6;
-    mat->getTextures()[SGMaterialTextureType::SGTP_NORMALS].m_texturesUnitOffset = 7;
-    mat->getTextures()[SGMaterialTextureType::SGTP_BASE_COLOR].m_texturesUnitOffset = 8;
-    mat->getTextures()[SGMaterialTextureType::SGTP_CLEARCOAT].m_texturesUnitOffset = 9;
-    mat->getTextures()[SGMaterialTextureType::SGTP_EMISSION_COLOR].m_texturesUnitOffset = 10;
-    mat->getTextures()[SGMaterialTextureType::SGTP_LIGHTMAP].m_texturesUnitOffset = 11;
-    mat->getTextures()[SGMaterialTextureType::SGTP_METALNESS].m_texturesUnitOffset = 12;
-    mat->getTextures()[SGMaterialTextureType::SGTP_NORMAL_CAMERA].m_texturesUnitOffset = 13;
-    mat->getTextures()[SGMaterialTextureType::SGTP_OPACITY].m_texturesUnitOffset = 14;
-    mat->getTextures()[SGMaterialTextureType::SGTP_REFLECTION].m_texturesUnitOffset = 15;
-    mat->getTextures()[SGMaterialTextureType::SGTP_SHEEN].m_texturesUnitOffset = 16;
-    mat->getTextures()[SGMaterialTextureType::SGTP_SHININESS].m_texturesUnitOffset = 17;
-    mat->getTextures()[SGMaterialTextureType::SGTP_SPECULAR].m_texturesUnitOffset = 18;
-    mat->getTextures()[SGMaterialTextureType::SGTP_TRANSMISSION].m_texturesUnitOffset = 19;
+    // adding block decls
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSIVE,
+                             1, 0);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_AMBIENT_OCCLUSION,
+                             1, 1);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_AMBIENT,
+                             1, 2);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_DIFFUSE_ROUGHNESS,
+                             1, 3);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_DIFFUSE,
+                             1, 4);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_DISPLACEMENT,
+                             1, 5);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_HEIGHT,
+                             1, 6);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_NORMALS,
+                             1, 7);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_BASE_COLOR,
+                             1, 8);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_CLEARCOAT,
+                             1, 9);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSION_COLOR,
+                             1, 10);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_LIGHTMAP,
+                             1, 11);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_METALNESS,
+                             1, 12);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_NORMAL_CAMERA,
+                             1, 13);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_OPACITY,
+                             1, 14);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_REFLECTION,
+                             1, 15);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SHEEN,
+                             1, 16);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SHININESS,
+                             1, 17);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SPECULAR,
+                             1, 18);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_TRANSMISSION,
+                             1, 19);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SHADOW_MAP,
+                             5, 20);
 
     return mat;
 }

@@ -92,6 +92,7 @@ static std::string sgMaterialTextureTypeToString(const SGMaterialTextureType& sg
         case SGTP_SHININESS: return "sgmat_shininess";
         case SGTP_SPECULAR: return "sgmat_specular";
         case SGTP_TRANSMISSION: return "sgmat_transmission";
+        case SGTP_SHADOW_MAP: return "sgmat_shadowMap";
     }
 
     return "";

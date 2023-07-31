@@ -52,7 +52,7 @@ struct ShadowsCaster
 #endif
 
 // shadows impl
-#ifdef SHADOWS_CASTERS_NUM
+#if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
     float rand(vec2 uv)
     {
         return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453123);
@@ -154,10 +154,10 @@ struct ShadowsCaster
 
         fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb, colorFromDiffuse.a);
 
-        #ifdef SHADOWS_CASTERS_NUM
+        #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
             float shadowCoeff = 0.0;
 
-            for(int i = 0; i < SHADOWS_CASTERS_NUM; i += 1)
+            for(int i = 0; i < SHADOWS_CASTERS_NUM && i < sgmat_shadowMap_MAX_TEXTURES_NUM; i += 1)
             {
                 shadowCoeff += calculateShadow(
                     shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),

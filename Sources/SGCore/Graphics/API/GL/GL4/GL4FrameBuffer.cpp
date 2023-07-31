@@ -8,9 +8,10 @@
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 #include "SGCore/Main/CoreMain.h"
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachment(const std::string& attachmentName)
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachment
+(const std::string& attachmentName, const std::uint8_t& textureBlock)
 {
-    glActiveTexture(GL_TEXTURE0 + 30);
+    glActiveTexture(GL_TEXTURE0 + textureBlock);
     glBindTexture(GL_TEXTURE_2D, m_attachments[attachmentName].m_handler);
 
     return shared_from_this();
@@ -45,11 +46,8 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::cr
     }();
 
     glGenFramebuffers(1, &m_handler);
-
+    
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
-
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
 
     return shared_from_this();
 }

@@ -23,7 +23,8 @@ namespace Core::Graphics
         std::map<std::string, GLFrameBufferAttachment> m_attachments;
 
     public:
-        std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName) override;
+        std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName,
+                                                     const std::uint8_t& textureBlock) override;
 
         std::shared_ptr<IFrameBuffer> bind() override;
         std::shared_ptr<IFrameBuffer> unbind() override;
