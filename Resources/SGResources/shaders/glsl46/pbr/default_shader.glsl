@@ -17,10 +17,10 @@
         mat4 objectModelMatrix;
     };
 
-    layout(std140, binding = 1) uniform CameraMatrices
+    layout(std140, location = 1) uniform ViewMatrices
     {
-        mat4 cameraProjectionMatrix;
-        mat4 cameraViewMatrix;
+        mat4 projectionMatrix;
+        mat4 viewMatrix;
     };
 
     // final yet
@@ -36,7 +36,7 @@
         vec3 lightDir = normalize(lightPos - vsOut.fragPos);
         vsOut.diffPower = max(dot(normalize(vsOut.normal), lightDir), 0.0) * 5.5;
 
-        gl_Position = cameraProjectionMatrix * cameraViewMatrix * objectModelMatrix * vec4(positionsAttribute.xy, positionsAttribute.z, 1.0);
+        gl_Position = projectionMatrix * viewMatrix * objectModelMatrix * vec4(positionsAttribute.xy, positionsAttribute.z, 1.0);
     }
 #endif
 

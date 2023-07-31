@@ -64,7 +64,8 @@ enum SGMaterialTextureType
     SGTP_SHEEN,
     SGTP_SHININESS,
     SGTP_SPECULAR,
-    SGTP_TRANSMISSION
+    SGTP_TRANSMISSION,
+    SGTP_SHADOW_MAP
 };
 
 static std::string sgMaterialTextureTypeToString(const SGMaterialTextureType& sgMaterialTextureType)

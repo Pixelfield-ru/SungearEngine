@@ -37,7 +37,8 @@ namespace Core::Graphics
 
         void useMaterialTexture(const Memory::Assets::MaterialTexture&) final;
         void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) override;
-        void useTexture(const std::string& name, const std::uint8_t& texBlock) final;
+        void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) final;
+        void useMatrix(const std::string& uniformName, const glm::mat4& matrix) final;
     };
 }
 

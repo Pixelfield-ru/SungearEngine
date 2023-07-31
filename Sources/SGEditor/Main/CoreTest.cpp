@@ -43,7 +43,10 @@ std::shared_ptr<Core::ECS::Scene> testScene;
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
 // example how to convert imported scene to Sungear ECS scene
-void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode)
+void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
+                       const glm::vec3& pos,
+                       const glm::vec3& rot,
+                       const glm::vec3& scale)
 {
     std::shared_ptr<Core::ECS::Entity> nodeEntity = std::make_shared<Core::ECS::Entity>();
     nodeEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
@@ -51,13 +54,16 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode)
 
     testScene->m_entities.push_back(nodeEntity);
 
+    static float cur = 1;
+
     for(auto& mesh : sgNode->m_meshes)
     {
         std::shared_ptr<Core::ECS::TransformComponent> meshedEntityTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
         // hardcoded transformations =)
-        meshedEntityTransformComponent->m_position = glm::vec3(0, 0, -10);
+        meshedEntityTransformComponent->m_position = pos;
+        meshedEntityTransformComponent->m_rotation = rot;
         //transformComponent->m_scale = glm::vec3(0.1, 0.1, 0.1);
-        meshedEntityTransformComponent->m_scale = glm::vec3(2, 2, 2);
+        meshedEntityTransformComponent->m_scale = scale;
 
         std::shared_ptr<Core::ECS::MeshComponent> meshComponent = std::make_shared<Core::ECS::MeshComponent>();
         meshComponent->m_mesh = mesh;
@@ -67,11 +73,13 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode)
         meshedEntity->addComponent(meshComponent);
 
         testScene->m_entities.push_back(meshedEntity);
+
+        cur += 0.05;
     }
 
     for(auto& node : sgNode->m_children)
     {
-        processLoadedNode(node);
+        processLoadedNode(node, pos, rot, scale);
     }
 }
 
@@ -89,30 +97,56 @@ void init()
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza/sponza.obj");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf");
-    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/btr_80a2016/scene.gltf");
+    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/btr_80a2016/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/lenin/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/ak74m/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
+    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+            "../SGResources/models/test/plane.obj"
+            );
+
+    auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+            "../SGResources/models/test/btr_80a2016/scene.gltf"
+            //"../SGResources/models/test/sponza/sponza.obj"
+            //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
+            //"../SGResources/models/test/lenin/scene.gltf"
+    );
 
     for(auto& node : testModel->m_nodes)
     {
-        processLoadedNode(node);
+        processLoadedNode(node, { 0, -3, -15 }, { }, { 1, 1, 1 });
+    }
+
+    for(auto& node : btrModel->m_nodes)
+    {
+        processLoadedNode(node, { 0, 0, -7 }, { 0, 90, 0 }, { 2, 2, 2 });
+        //processLoadedNode(node, { 0, -2, -4 }, { -90, 0, 0 }, { 0.005, 0.005, 0.005 });
     }
 
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
-    testCameraEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
+    //testCameraEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
     //testCameraEntity->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
+    auto cameraTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
+    cameraTransformComponent->m_position.z = 0;
+    testCameraEntity->addComponent(cameraTransformComponent);
     testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
 
     testScene->m_entities.push_back(testCameraEntity);
 
     auto testShadowsCaster = std::make_shared<Core::ECS::Entity>();
-    auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
-    testShadowsCaster->addComponent(shadowsCasterTransform);
-    testShadowsCaster->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
-
     testScene->m_entities.push_back(testShadowsCaster);
+    auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
+    shadowsCasterTransform->m_position.y = -5;
+    shadowsCasterTransform->m_position.z = 0.0;
+    shadowsCasterTransform->m_rotation.x = 30;
+    auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
+    /*shadowCasterComponent->m_projectionMatrix = glm::ortho(-10.0f, 10.0f,
+                                                           -10.0f, 10.0f,
+                                                           shadowCasterComponent->m_zNear,
+                                                           shadowCasterComponent->m_zFar);*/
+    testShadowsCaster->addComponent(shadowsCasterTransform);
+    testShadowsCaster->addComponent(shadowCasterComponent);
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------

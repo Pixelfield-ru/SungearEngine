@@ -1,6 +1,13 @@
+struct ShadowsCaster
+{
+    mat4 shadowsCasterSpace;
+    sampler2D shadowMap;
+};
+
 #ifdef SHADOWS_CASTERS_NUM
-    uniform sampler2D shadowMaps[SHADOWS_CASTERS_NUM];
+    uniform ShadowsCaster shadowsCasters[SHADOWS_CASTERS_NUM];
 #endif
+
 
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;
@@ -21,14 +28,14 @@
         mat4 objectModelMatrix;
     };
 
-    layout(std140, location = 1) uniform CameraMatrices
+    layout(std140, location = 1) uniform ViewMatrices
     {
-        mat4 cameraProjectionMatrix;
-        mat4 cameraViewMatrix;
+        mat4 projectionMatrix;
+        mat4 viewMatrix;
     };
 
     // final yet
-    vec3 lightPos = vec3(0, 25, 15);
+    vec3 lightPos = vec3(0, 20, 7);
 
     void main()
     {
@@ -40,7 +47,44 @@
         vec3 lightDir = normalize(lightPos - vsOut.fragPos);
         vsOut.diffPower = max(dot(normalize(vsOut.normal), lightDir), 0.0) * 5.5;
 
-        gl_Position = cameraProjectionMatrix * cameraViewMatrix * objectModelMatrix * vec4(positionsAttribute.xy, positionsAttribute.z, 1.0);
+        gl_Position = projectionMatrix * viewMatrix * vec4(vsOut.fragPos, 1.0);
+    }
+#endif
+
+// shadows impl
+#ifdef SHADOWS_CASTERS_NUM
+    float rand(vec2 uv)
+    {
+        return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453123);
+    }
+
+    vec2 poissonDisk[4] = vec2[] (
+        vec2( -0.94201624, -0.39906216 ),
+        vec2( 0.94558609, -0.76890725 ),
+        vec2( -0.094184101, -0.92938870 ),
+        vec2( 0.34495938, 0.29387760 )
+    );
+
+    float calculateShadow(vec4 shadowsCasterSpaceFragPos, int shadowsCasterIdx)
+    {
+        vec3 projCoords = shadowsCasterSpaceFragPos.xyz / shadowsCasterSpaceFragPos.w;
+        projCoords = projCoords * 0.5 + 0.5;
+
+        float shadowVisibility = 1.0;
+
+        float bias = 0.0001;
+        for(int i = 0; i < 4; i++)
+        {
+            int index = int(8.0 * rand(vec2(shadowsCasterSpaceFragPos.xy * i))) % 8;
+            float depthFactor = texture(shadowsCasters[shadowsCasterIdx].shadowMap,
+            projCoords.xy + poissonDisk[index] / 1500.0).z;
+            depthFactor = depthFactor < projCoords.z - bias ?
+            depthFactor : 0.0;
+
+            shadowVisibility -= 0.2 * depthFactor;
+        }
+
+        return shadowVisibility;
     }
 #endif
 
@@ -111,18 +155,17 @@
         fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb, colorFromDiffuse.a);
 
         #ifdef SHADOWS_CASTERS_NUM
-            vec4 shadowColor = vec4(0.0);
+            float shadowCoeff = 0.0;
 
             for(int i = 0; i < SHADOWS_CASTERS_NUM; i += 1)
             {
-                shadowColor += texture(shadowMaps[i], vec2(finalUV.x, finalUV.y));
+                shadowCoeff += calculateShadow(
+                    shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
+                    i
+                );
             }
 
-            shadowColor /= SHADOWS_CASTERS_NUM;
-
-            fragColor *= shadowColor.r;
+            fragColor.rgb *= shadowCoeff / 1.5;
         #endif
-
-        //fragColor = vec4(1.0);
     }
 #endif

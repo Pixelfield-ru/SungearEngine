@@ -3,6 +3,8 @@
 #include <vector>
 #include <sstream>
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "SGCore/Logging/Log.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 
@@ -271,11 +273,18 @@ void Core::Graphics::GL46Shader::useMaterialTexture(const Memory::Assets::Materi
     glUniform1i(texLoc, materialTexture.m_textureUnit);
 }
 
-void Core::Graphics::GL46Shader::useTexture(const std::string& name, const uint8_t& texBlock)
+void Core::Graphics::GL46Shader::useTexture(const std::string& uniformName, const uint8_t& texBlock)
 {
     int texLoc = glGetUniformLocation(m_programHandler,
-                                      name.c_str());
+                                      uniformName.c_str());
     glUniform1i(texLoc, texBlock);
+}
+
+void Core::Graphics::GL46Shader::useMatrix(const std::string& uniformName, const glm::mat4& matrix)
+{
+    int matLoc = glGetUniformLocation(m_programHandler,
+                                      uniformName.c_str());
+    glUniformMatrix4fv(matLoc, 1, false, glm::value_ptr(matrix));
 }
 
 /*

@@ -14,9 +14,9 @@ void Core::ECS::ECSWorld::init() noexcept
 {
     createSystem<TransformationsSystem>();
     createSystem<RenderingComponentsSystem>();
+    createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
     createSystem<Camera3DMovementSystem>();
     createSystem<CameraRenderingSystem>();
-    createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 }
 
 void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)

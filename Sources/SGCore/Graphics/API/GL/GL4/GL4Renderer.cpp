@@ -55,16 +55,16 @@ void Core::Graphics::GL4Renderer::init() noexcept
     m_modelMatricesBuffer->setLayoutLocation(0);
     m_modelMatricesBuffer->prepare();
 
-    m_cameraMatricesBuffer = std::shared_ptr<GL46UniformBuffer>(createUniformBuffer());
-    m_cameraMatricesBuffer->m_blockName = "CameraMatrices";
-    m_cameraMatricesBuffer->putUniforms({
-                                                Core::Graphics::IShaderUniform("cameraProjectionMatrix", SGGDataType::SGG_MAT4),
-                                                Core::Graphics::IShaderUniform("cameraViewMatrix", SGGDataType::SGG_MAT4)
+    m_viewMatricesBuffer = std::shared_ptr<GL46UniformBuffer>(createUniformBuffer());
+    m_viewMatricesBuffer->m_blockName = "ViewMatrices";
+    m_viewMatricesBuffer->putUniforms({
+                                                Core::Graphics::IShaderUniform("projectionMatrix", SGGDataType::SGG_MAT4),
+                                                Core::Graphics::IShaderUniform("viewMatrix", SGGDataType::SGG_MAT4)
                                         });
-    m_cameraMatricesBuffer->putData<float>({ });
-    m_cameraMatricesBuffer->putData<float>({ });
-    m_cameraMatricesBuffer->setLayoutLocation(1);
-    m_cameraMatricesBuffer->prepare();
+    m_viewMatricesBuffer->putData<float>({ });
+    m_viewMatricesBuffer->putData<float>({ });
+    m_viewMatricesBuffer->setLayoutLocation(1);
+    m_viewMatricesBuffer->prepare();
 }
 
 bool Core::Graphics::GL4Renderer::confirmSupport() noexcept
@@ -140,15 +140,15 @@ void Core::Graphics::GL4Renderer::renderMesh(
     meshComponent->m_mesh->getVertexArray()->bind();
 
     m_modelMatricesBuffer->bind();
-    m_cameraMatricesBuffer->bind();
+    m_viewMatricesBuffer->bind();
 
     meshComponent->m_mesh->m_material->m_shader->useUniformBuffer(m_modelMatricesBuffer);
-    meshComponent->m_mesh->m_material->m_shader->useUniformBuffer(m_cameraMatricesBuffer);
+    meshComponent->m_mesh->m_material->m_shader->useUniformBuffer(m_viewMatricesBuffer);
 
     m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
 
-    m_cameraMatricesBuffer->subData("cameraViewMatrix", glm::value_ptr(cameraComponent->m_viewMatrix), 16);
-    m_cameraMatricesBuffer->subData("cameraProjectionMatrix", glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
+    m_viewMatricesBuffer->subData("viewMatrix", glm::value_ptr(cameraComponent->m_viewMatrix), 16);
+    m_viewMatricesBuffer->subData("projectionMatrix", glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
@@ -165,15 +165,15 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsC
     meshComponent->m_mesh->getVertexArray()->bind();
 
     m_modelMatricesBuffer->bind();
-    m_cameraMatricesBuffer->bind();
+    m_viewMatricesBuffer->bind();
 
     ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_modelMatricesBuffer);
-    ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_cameraMatricesBuffer);
+    ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_viewMatricesBuffer);
 
     m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
 
-    m_cameraMatricesBuffer->subData("cameraViewMatrix", glm::value_ptr(shadowsCasterComponent->m_viewMatrix), 16);
-    m_cameraMatricesBuffer->subData("cameraProjectionMatrix", glm::value_ptr(shadowsCasterComponent->m_projectionMatrix), 16);
+    m_viewMatricesBuffer->subData("viewMatrix", glm::value_ptr(shadowsCasterComponent->m_viewMatrix), 16);
+    m_viewMatricesBuffer->subData("projectionMatrix", glm::value_ptr(shadowsCasterComponent->m_projectionMatrix), 16);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 

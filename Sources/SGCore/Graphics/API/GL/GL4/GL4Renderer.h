@@ -37,7 +37,7 @@ namespace Core::Graphics
         // Buffer for storing matrices of the currently rendered model.
         std::shared_ptr<GL46UniformBuffer> m_modelMatricesBuffer;
         // Buffer for storing matrices of the currently main camera.
-        std::shared_ptr<GL46UniformBuffer> m_cameraMatricesBuffer;
+        std::shared_ptr<GL46UniformBuffer> m_viewMatricesBuffer;
 
         GL4Renderer() noexcept = default;
 

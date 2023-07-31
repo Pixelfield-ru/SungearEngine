@@ -24,6 +24,24 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::IMaterial::l
     return shared_from_this();
 }
 
+std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::addBlockDeclaration
+(const SGMaterialTextureType& blockType, const uint8_t& maxTextures, const uint8_t& blockOffset)
+{
+    m_blocks[blockType].m_maximumTextures = maxTextures;
+    m_blocks[blockType].m_texturesUnitOffset = blockOffset;
+
+    auto typeName = sgMaterialTextureTypeToString(blockType);
+    auto maxTextureBlockDefine = typeName + "_MAX_TEXTURES_NUM";
+
+    SGC_SUCCESS("Final define for this type textures number: " + maxTextureBlockDefine);
+
+    m_shader->addShaderDefines({
+        Graphics::ShaderDefine(maxTextureBlockDefine, std::to_string(maxTextures)),
+        });
+
+    return shared_from_this();
+}
+
 std::shared_ptr<Core::Memory::Assets::Texture2DAsset>
 Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGMaterialTextureType& type, const std::string& path)
 {
@@ -55,40 +73,45 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
     // path to texture
     auto texturePath = texture2DAsset->getPath().string();
 
+    std::uint8_t freeUnit = 0;
+
     // if this texture not exists
     if(typedTextures.find(texturePath) == typedTextures.end())
     {
         // current max found unit
-        m_maxUnit = texturesUnitOffset;
+        freeUnit = texturesUnitOffset;
         if(!typedTextures.empty())
         {
             // finding current maximum texture unit
             for(auto& texPair : typedTextures)
             {
-                if(texPair.second.m_textureUnit > m_maxUnit)
+                if(texPair.second.m_textureUnit > freeUnit)
                 {
-                    m_maxUnit = texPair.second.m_textureUnit;
+                    freeUnit = texPair.second.m_textureUnit;
                 }
             }
 
-            m_maxUnit += 1;
+            freeUnit += 1;
 
         }
         // if there is free space for another texture of this type
-        if(m_maxUnit < m_maxUnit + maximumTextures)
+        if(freeUnit < freeUnit + maximumTextures)
         {
             // this is texture unit to bind for this texture
-            typedTextures[texturePath].m_textureUnit = m_maxUnit;
+            typedTextures[texturePath].m_textureUnit = freeUnit;
             typedTextures[texturePath].m_textureAsset = texture2DAsset;
 
-            std::string finalName = sgMaterialTextureTypeToString(type)  + std::to_string(m_maxUnit);
-            std::string finalDefine = finalName +  + "_DEFINED";
-            SGC_SUCCESS("Final define for material texture: " + finalDefine);
+            auto typeName = sgMaterialTextureTypeToString(type);
+            auto finalName = typeName + std::to_string(freeUnit);
+            auto newTextureFinalDefine = finalName +  + "_DEFINED";
+            SGC_SUCCESS("Final define for new material texture: " + newTextureFinalDefine);
 
             typedTextures[texturePath].m_nameInShader = finalName;
             //texture2DAsset->m_name = finalName;
 
-            m_shader->addShaderDefines({Graphics::ShaderDefine(finalDefine, "")});
+            m_shader->addShaderDefines({
+                Graphics::ShaderDefine(newTextureFinalDefine, "")
+            });
         }
         else // there is no free texture units for texture
         {

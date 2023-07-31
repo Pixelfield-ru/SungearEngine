@@ -35,6 +35,8 @@ namespace Core::Memory::Assets
         std::map<std::string, MaterialTexture> m_textures;
     };
 
+    // TODO: make remove texture
+    // TODO: make function addBlockDeclaration
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
     protected:
@@ -44,7 +46,7 @@ namespace Core::Memory::Assets
         // Textures that could not be added to the material. This collection is used to migrate textures to another material
         std::map<SGMaterialTextureType, std::list<std::shared_ptr<Texture2DAsset>>> m_notUsedTextures;
 
-        std::uint8_t m_maxUnit = 0;
+        //std::uint8_t m_maxUnit = 0;
 
     public:
         std::string m_name;
@@ -55,6 +57,10 @@ namespace Core::Memory::Assets
 
         // TODO: impl
         std::shared_ptr<IAsset> load(const std::string& path) override;
+
+        std::shared_ptr<IMaterial> addBlockDeclaration(const SGMaterialTextureType& blockType,
+                                                       const std::uint8_t& maxTextures,
+                                                       const std::uint8_t& blockOffset);
 
         /**
         * Adds texture2D. Method is not copying texture.

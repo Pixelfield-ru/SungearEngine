@@ -16,26 +16,30 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
         std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent =
                 shadowsCasterEntity->getComponent<ShadowsCasterComponent>();
 
-        if(shadowsCasterComponent)
+        if(!shadowsCasterComponent) continue;
+
+        shadowsCasterComponent->m_frameBuffer->bindAttachment("depthAttachment");
+
+        for(const auto& entity: scene->m_entities)
         {
-            shadowsCasterComponent->m_frameBuffer->bind();
+            auto meshComponents = entity->getComponents<MeshComponent>();
 
-            for(const auto& entity : scene->m_entities)
+            for(auto& meshComponent : meshComponents)
             {
-                std::shared_ptr<MeshComponent> meshComponent = entity->getComponent<MeshComponent>();
+                meshComponent->m_mesh->m_material->m_shader->bind();
 
-                if(meshComponent)
-                {
-                    meshComponent->m_mesh->m_material->m_shader->useTexture(
-                            "shadowMaps[" + std::to_string(totalShadowCasters) + "]",
-                            0);
-                }
+                meshComponent->m_mesh->m_material->m_shader->useTexture(
+                        "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowMap",
+                        30);
+
+                // todo: maybe make uniform buffer for shadows casters
+                meshComponent->m_mesh->m_material->m_shader->useMatrix(
+                        "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
+                        shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
             }
-
-            shadowsCasterComponent->m_frameBuffer->unbind();
-
-            totalShadowCasters++;
         }
+
+        totalShadowCasters++;
     }
 }
 
@@ -45,6 +49,8 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
     std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent = entity->getComponent<ShadowsCasterComponent>();
 
     if(!shadowsCasterComponent) return;
+
+    shadowsCasterComponent->m_frameBuffer->bind()->clear()->unbind();
 
     for(auto& sceneEntity : scene->m_entities)
     {

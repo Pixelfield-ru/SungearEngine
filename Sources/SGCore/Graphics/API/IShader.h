@@ -8,11 +8,15 @@
 
 #include <list>
 
-#include "ShaderDefine.h"
+#include <glm/matrix.hpp>
+
 #include "SGCore/Memory/Assets/FileAsset.h"
 #include "SGCore/Memory/Assets/IAssetObserver.h"
+
 #include "IUniformBuffer.h"
 #include "ITexture2D.h"
+#include "ShaderDefine.h"
+
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 namespace Core::Memory::Assets
@@ -55,7 +59,8 @@ namespace Core::Graphics
 
         virtual void useMaterialTexture(const Memory::Assets::MaterialTexture&) = 0;
         virtual void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) = 0;
-        virtual void useTexture(const std::string& name, const std::uint8_t& texBlock) { };
+        virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
+        virtual void useMatrix(const std::string& uniformName, const glm::mat4& matrix) { };
 
         #pragma endregion
 

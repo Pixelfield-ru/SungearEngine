@@ -23,11 +23,15 @@ namespace Core::Graphics
         std::map<std::string, GLFrameBufferAttachment> m_attachments;
 
     public:
+        std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName) override;
+
         std::shared_ptr<IFrameBuffer> bind() override;
         std::shared_ptr<IFrameBuffer> unbind() override;
 
         std::shared_ptr<IFrameBuffer> create() override;
         void destroy() override;
+
+        std::shared_ptr<IFrameBuffer> clear() override;
 
         std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType&,
                                                     const std::string& name,

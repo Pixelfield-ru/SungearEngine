@@ -6,10 +6,21 @@
 
 #include "SGCore/Logging/Log.h"
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
+#include "SGCore/Main/CoreMain.h"
+
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachment(const std::string& attachmentName)
+{
+    glActiveTexture(GL_TEXTURE0 + 30);
+    glBindTexture(GL_TEXTURE_2D, m_attachments[attachmentName].m_handler);
+
+    return shared_from_this();
+}
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bind()
 {
+    glViewport(0, 0, 1024 * 2, 1024 * 2);
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
+    //glActiveTexture(GL_TEXTURE0);
 
     return shared_from_this();
 }
@@ -17,6 +28,10 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    int wndWidth;
+    int wndHeight;
+    Main::CoreMain::getWindow().getSize(wndWidth, wndHeight);
+    glViewport(0, 0, wndWidth, wndHeight);
 
     return shared_from_this();
 }
@@ -33,10 +48,8 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::cr
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
 
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        SGCF_ERROR("Error when creating a framebuffer", SG_LOG_GAPI_FILE);
-    }
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
 
     return shared_from_this();
 }
@@ -44,6 +57,13 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::cr
 void Core::Graphics::GL4FrameBuffer::destroy()
 {
     glDeleteFramebuffers(1, &m_handler);
+}
+
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::clear()
+{
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    return shared_from_this();
 }
 
 std::shared_ptr<Core::Graphics::IFrameBuffer>
@@ -94,7 +114,7 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
             // adding new depth attachment
             if(!depthAttachmentExists)
             {
-                GLFrameBufferAttachment& newAttachment = m_attachments[name];
+                auto& newAttachment = m_attachments[name];
 
                 newAttachment.m_type = attachmentType;
 
@@ -112,7 +132,7 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
 
                 glTexImage2D(GL_TEXTURE_2D,
                              mipLevel,
-                             GL_DEPTH_COMPONENT,
+                             GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
                              width, height,
                              0,
                              GL_DEPTH_COMPONENT,
@@ -123,6 +143,8 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
                 // TODO: make it customizable
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER    );
 
                 glFramebufferTexture2D(GL_FRAMEBUFFER,
                                        GL_DEPTH_ATTACHMENT,

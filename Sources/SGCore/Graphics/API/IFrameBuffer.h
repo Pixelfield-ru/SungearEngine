@@ -18,11 +18,15 @@ namespace Core::Graphics
     class IFrameBuffer : public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
+        virtual std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName) { };
+
         virtual std::shared_ptr<IFrameBuffer> bind() = 0;
         virtual std::shared_ptr<IFrameBuffer> unbind() = 0;
 
         virtual std::shared_ptr<IFrameBuffer> create() = 0;
         virtual void destroy() = 0;
+
+        virtual std::shared_ptr<IFrameBuffer> clear() { };
 
         virtual std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                             const std::string& name,

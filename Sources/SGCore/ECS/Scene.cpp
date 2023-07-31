@@ -7,6 +7,7 @@
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/Graphics/API/ShaderDefine.h"
 #include "SGCore/Graphics/API/ShadersParameters.h"
+#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
 
 std::shared_ptr<Core::ECS::Scene> Core::ECS::Scene::getCurrentScene() noexcept
 {
