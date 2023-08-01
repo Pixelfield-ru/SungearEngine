@@ -17,11 +17,63 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
     return shared_from_this();
 }
 
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToRead()
+{
+    return shared_from_this();
+}
+
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToDraw()
+{
+    if(m_attachments.find(m_drawAttachmentName) != m_attachments.end())
+    {
+        auto& attachment = m_attachments[m_drawAttachmentName];
+
+        switch(attachment.m_type)
+        {
+            case SGG_DEPTH_ATTACHMENT:
+            {
+                glDrawBuffer(GL_DEPTH_ATTACHMENT);
+                break;
+            }
+            case SGG_DEPTH_STENCIL_ATTACHMENT:
+            {
+                glDrawBuffer(GL_DEPTH_STENCIL_ATTACHMENT);
+                break;
+            }
+            case SGG_COLOR_ATTACHMENT:
+            {
+                glDrawBuffer(GL_COLOR_ATTACHMENT0 + attachment.m_ID);
+                break;
+            }
+            case SGG_RENDER_ATTACHMENT:
+            {
+                //glDrawBuffer(GL_RENDER);
+                break;
+            }
+        }
+    }
+
+    return shared_from_this();
+}
+
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::unbindAttachmentToRead()
+{
+    glReadBuffer(GL_NONE);
+
+    return shared_from_this();
+}
+
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::unbindAttachmentToDraw()
+{
+    glDrawBuffer(GL_NONE);
+
+    return shared_from_this();
+}
+
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bind()
 {
-    glViewport(0, 0, 1024 * 2, 1024 * 2);
+    glViewport(0, 0, m_width, m_height);
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
-    //glActiveTexture(GL_TEXTURE0);
 
     return shared_from_this();
 }
@@ -29,6 +81,7 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     int wndWidth;
     int wndHeight;
     Main::CoreMain::getWindow().getSize(wndWidth, wndHeight);
@@ -46,7 +99,7 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::cr
     }();
 
     glGenFramebuffers(1, &m_handler);
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
 
     return shared_from_this();
@@ -59,7 +112,7 @@ void Core::Graphics::GL4FrameBuffer::destroy()
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::clear()
 {
-    glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     return shared_from_this();
 }
@@ -67,7 +120,6 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::cl
 std::shared_ptr<Core::Graphics::IFrameBuffer>
 Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                               const std::string& name,
-                                              const int &width, const int& height,
                                               const SGGColorFormat& format,
                                               const SGGColorInternalFormat& internalFormat,
                                               const int& mipLevel,
@@ -118,8 +170,6 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
 
                 newAttachment.m_name = name;
                 newAttachment.m_ID = 0;
-                newAttachment.m_width = width;
-                newAttachment.m_height = height;
                 newAttachment.m_format = format;
                 newAttachment.m_internalFormat = internalFormat;
                 newAttachment.m_mipLevel = mipLevel;
@@ -131,7 +181,7 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
                 glTexImage2D(GL_TEXTURE_2D,
                              mipLevel,
                              GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
-                             width, height,
+                             m_width, m_height,
                              0,
                              GL_DEPTH_COMPONENT,
                              // todo: make customizable
@@ -142,7 +192,10 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER    );
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+                // todo: make it customizable
+                /*float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+                glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);*/
 
                 glFramebufferTexture2D(GL_FRAMEBUFFER,
                                        GL_DEPTH_ATTACHMENT,
@@ -194,8 +247,6 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
 
                 newAttachment.m_name = name;
                 newAttachment.m_ID = foundAttachment;
-                newAttachment.m_width = width;
-                newAttachment.m_height = height;
                 newAttachment.m_format = format;
                 newAttachment.m_internalFormat = internalFormat;
                 newAttachment.m_mipLevel = mipLevel;
@@ -207,7 +258,7 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
                 glTexImage2D(GL_TEXTURE_2D,
                              mipLevel,
                              GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
-                             width, height,
+                             m_width, m_height,
                              0,
                              GLGraphicsTypesCaster::sggFormatToGL(format),
                              GL_UNSIGNED_BYTE,

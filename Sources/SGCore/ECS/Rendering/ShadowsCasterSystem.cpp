@@ -9,45 +9,52 @@
 
 void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 {
-    for(const auto& entity: scene->m_entities)
+    std::uint8_t currentTextureBlock = 0;
+    size_t totalShadowCasters = 0;
+
+    for(const auto& shadowsCasterEntity: scene->m_entities)
     {
-        auto meshComponents = entity->getComponents<MeshComponent>();
+        std::list<std::shared_ptr<ShadowsCasterComponent>> shadowsCasterComponents =
+                shadowsCasterEntity->getComponents<ShadowsCasterComponent>();
 
-        for(auto& meshComponent: meshComponents)
+        for(const auto& shadowsCasterComponent : shadowsCasterComponents)
         {
-            std::uint8_t shadowMapsBlockOffset = meshComponent->
-                    m_mesh->
-                    m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
-
-            std::uint8_t currentTextureBlock = 0;
-
-            size_t totalShadowCasters = 0;
-
-            for(const auto& shadowsCasterEntity: scene->m_entities)
+            for(const auto& entity: scene->m_entities)
             {
-                std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent =
-                        shadowsCasterEntity->getComponent<ShadowsCasterComponent>();
+                auto meshComponents = entity->getComponents<MeshComponent>();
 
-                if(!shadowsCasterComponent) continue;
+                for(auto& meshComponent: meshComponents)
+                {
+                    std::uint8_t shadowMapsBlockOffset = meshComponent->
+                            m_mesh->
+                            m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
 
-                std::uint8_t finalTextureBlock = shadowMapsBlockOffset + currentTextureBlock;
+                    std::uint8_t finalTextureBlock = shadowMapsBlockOffset + currentTextureBlock;
 
-                shadowsCasterComponent->m_frameBuffer->bindAttachment("depthAttachment", finalTextureBlock);
+                    shadowsCasterComponent->m_frameBuffer->bindAttachment("depthAttachment",
+                                                                          finalTextureBlock);
 
-                meshComponent->m_mesh->m_material->m_shader->bind();
+                    meshComponent->m_mesh->m_material->m_shader->bind();
 
-                meshComponent->m_mesh->m_material->m_shader->useTexture(
-                        "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowMap",
-                        finalTextureBlock);
+                    meshComponent->m_mesh->m_material->m_shader->useTexture(
+                            "shadowsCastersShadowMaps[" + std::to_string(totalShadowCasters) + "]",
+                            finalTextureBlock);
+                    /*meshComponent->m_mesh->m_material->m_shader->useTexture(
+                            "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowMap",
+                            finalTextureBlock);*/
+                    /*meshComponent->m_mesh->m_material->m_shader->useTexture(
+                            "shadowsCasters[" + std::to_string(0) + "].shadowMap",
+                            21);*/
 
-                // todo: maybe make uniform buffer for shadows casters
-                meshComponent->m_mesh->m_material->m_shader->useMatrix(
-                        "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
-                        shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
-
-                currentTextureBlock++;
-                totalShadowCasters++;
+                    // todo: maybe make uniform buffer for shadows casters
+                    meshComponent->m_mesh->m_material->m_shader->useMatrix(
+                            "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
+                            shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
+                }
             }
+
+            currentTextureBlock++;
+            totalShadowCasters++;
         }
     }
 }
@@ -55,6 +62,7 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
                                             const std::shared_ptr<Core::ECS::Entity>& entity)
 {
+    // todo: make for all shadows casters
     std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent = entity->getComponent<ShadowsCasterComponent>();
 
     if(!shadowsCasterComponent) return;

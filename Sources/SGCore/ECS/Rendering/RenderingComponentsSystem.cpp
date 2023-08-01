@@ -26,6 +26,10 @@ void Core::ECS::RenderingComponentsSystem::update(const std::shared_ptr<Scene>& 
                     glm::radians(transformComponent->m_rotation.y),
                     glm::vec3(0, 1, 0)
             );
+            rotationQuat *= glm::angleAxis(
+                    glm::radians(transformComponent->m_rotation.z),
+                    glm::vec3(0, 0, 1)
+            );
 
             // TODO: make checking for lastTransformation != current transformation
             renderingComponent->m_viewMatrix = glm::toMat4(rotationQuat);

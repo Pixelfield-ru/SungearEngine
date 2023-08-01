@@ -133,7 +133,6 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
         SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
     }
 
-    // TODO: make materials, texture process
     sgMesh->prepare();
 
     SGC_SUCCESS("Loaded mesh '" + sgMesh->m_name + "'. Vertices count: " + std::to_string(sgMesh->m_positions.size()) + ", indices count: " + std::to_string(sgMesh->m_indices.size()));

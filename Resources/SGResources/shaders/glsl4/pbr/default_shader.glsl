@@ -1,11 +1,11 @@
 struct ShadowsCaster
 {
     mat4 shadowsCasterSpace;
-    sampler2D shadowMap;
 };
 
 #ifdef SHADOWS_CASTERS_NUM
     uniform ShadowsCaster shadowsCasters[SHADOWS_CASTERS_NUM];
+    uniform sampler2D shadowsCastersShadowMaps[SHADOWS_CASTERS_NUM];
 #endif
 
 
@@ -65,18 +65,29 @@ struct ShadowsCaster
         vec2( 0.34495938, 0.29387760 )
     );
 
+    float bias = 0.0001;
+
     float calculateShadow(vec4 shadowsCasterSpaceFragPos, int shadowsCasterIdx)
     {
         vec3 projCoords = shadowsCasterSpaceFragPos.xyz / shadowsCasterSpaceFragPos.w;
         projCoords = projCoords * 0.5 + 0.5;
 
+        if(projCoords.z > 1.0)
+        {
+            return 1.0;
+        }
+
+        /*float closestDepth = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy).r;
+        float currentDepth = projCoords.z;
+        float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+        return 1.0 - shadow / 1.5;*/
+
         float shadowVisibility = 1.0;
 
-        float bias = 0.0001;
         for(int i = 0; i < 4; i++)
         {
             int index = int(8.0 * rand(vec2(shadowsCasterSpaceFragPos.xy * i))) % 8;
-            float depthFactor = texture(shadowsCasters[shadowsCasterIdx].shadowMap,
+            float depthFactor = texture(shadowsCastersShadowMaps[shadowsCasterIdx],
             projCoords.xy + poissonDisk[index] / 1500.0).z;
             depthFactor = depthFactor < projCoords.z - bias ?
             depthFactor : 0.0;
@@ -84,7 +95,7 @@ struct ShadowsCaster
             shadowVisibility -= 0.2 * depthFactor;
         }
 
-        return shadowVisibility;
+        return shadowVisibility / 1.5;
     }
 #endif
 
@@ -159,13 +170,13 @@ struct ShadowsCaster
 
             for(int i = 0; i < SHADOWS_CASTERS_NUM && i < sgmat_shadowMap_MAX_TEXTURES_NUM; i += 1)
             {
-                shadowCoeff += calculateShadow(
+                fragColor.rgb *= calculateShadow(
                     shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
                     i
                 );
             }
 
-            fragColor.rgb *= shadowCoeff / 1.5;
+            //fragColor.rgb *= shadowCoeff / 1.5;
         #endif
     }
 #endif

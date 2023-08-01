@@ -20,7 +20,6 @@ namespace Core::Graphics
 
         std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType&,
                                                     const std::string& name,
-                                                    const int& width, const int& height,
                                                     const SGGColorFormat& format, const SGGColorInternalFormat& internalFormat,
                                                     const int& mipLevel,
                                                     const int& layer) override;

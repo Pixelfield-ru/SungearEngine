@@ -18,8 +18,19 @@ namespace Core::Graphics
     class IFrameBuffer : public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
+        // name of attachment to read
+        std::string m_readAttachmentName;
+        // name of attachment to draw
+        std::string m_drawAttachmentName;
+
         virtual std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName,
                                                              const std::uint8_t& textureBlock) { };
+
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToRead() { }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToDraw() { }
+
+        virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() { }
+        virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() { }
 
         virtual std::shared_ptr<IFrameBuffer> bind() = 0;
         virtual std::shared_ptr<IFrameBuffer> unbind() = 0;
@@ -31,11 +42,46 @@ namespace Core::Graphics
 
         virtual std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                             const std::string& name,
-                                                            const int& width, const int& height,
                                                             const SGGColorFormat& format,
                                                             const SGGColorInternalFormat& internalFormat,
                                                             const int& mipLevel,
                                                             const int& layer) = 0;
+
+        std::shared_ptr<IFrameBuffer> setWidth(int&& width) noexcept
+        {
+            m_width = width;
+
+            return shared_from_this();
+        }
+
+        std::shared_ptr<IFrameBuffer> setHeight(int&& height) noexcept
+        {
+            m_height = height;
+
+            return shared_from_this();
+        }
+
+        std::shared_ptr<IFrameBuffer> setSize(int&& width, int&& height) noexcept
+        {
+            m_width = width;
+            m_height = height;
+
+            return shared_from_this();
+        }
+
+        int getWidth() const noexcept
+        {
+            return m_width;
+        }
+
+        int getHeight() const noexcept
+        {
+            return m_height;
+        }
+
+    protected:
+        int m_width = 0;
+        int m_height = 0;
     };
 }
 

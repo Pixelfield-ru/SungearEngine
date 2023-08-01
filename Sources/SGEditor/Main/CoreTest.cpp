@@ -140,13 +140,22 @@ void init()
     shadowsCasterTransform->m_position.y = -5;
     shadowsCasterTransform->m_position.z = 0.0;
     shadowsCasterTransform->m_rotation.x = 30;
+    //shadowsCasterTransform->m_rotation.y = -90;
     auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
-    /*shadowCasterComponent->m_projectionMatrix = glm::ortho(-10.0f, 10.0f,
-                                                           -10.0f, 10.0f,
-                                                           shadowCasterComponent->m_zNear,
-                                                           shadowCasterComponent->m_zFar);*/
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(shadowCasterComponent);
+
+    auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
+    testScene->m_entities.push_back(testShadowsCaster1);
+    auto shadowsCasterTransform1 = std::make_shared<Core::ECS::TransformComponent>();
+    shadowsCasterTransform1->m_position.x = 10;
+    shadowsCasterTransform1->m_position.y = -5;
+    shadowsCasterTransform1->m_position.z = 0.0;
+    shadowsCasterTransform1->m_rotation.x = 30;
+    //shadowsCasterTransform1->m_rotation.y = 30;
+    auto shadowCasterComponent1 = std::make_shared<Core::ECS::ShadowsCasterComponent>();
+    testShadowsCaster1->addComponent(shadowsCasterTransform1);
+    testShadowsCaster1->addComponent(shadowCasterComponent1);
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------

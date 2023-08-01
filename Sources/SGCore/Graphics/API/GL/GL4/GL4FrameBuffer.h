@@ -26,6 +26,12 @@ namespace Core::Graphics
         std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName,
                                                      const std::uint8_t& textureBlock) override;
 
+        std::shared_ptr<IFrameBuffer> bindAttachmentToRead() override;
+        std::shared_ptr<IFrameBuffer> bindAttachmentToDraw() override;
+
+        std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() override;
+        std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() override;
+
         std::shared_ptr<IFrameBuffer> bind() override;
         std::shared_ptr<IFrameBuffer> unbind() override;
 
@@ -36,7 +42,6 @@ namespace Core::Graphics
 
         std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType&,
                                                     const std::string& name,
-                                                    const int& width, const int& height,
                                                     const SGGColorFormat& format, const SGGColorInternalFormat& internalFormat,
                                                     const int& mipLevel,
                                                     const int& layer) override;

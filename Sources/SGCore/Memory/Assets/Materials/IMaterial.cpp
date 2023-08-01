@@ -1,10 +1,12 @@
 #include "IMaterial.h"
 
 #include "SGCore/Main/CoreMain.h"
+#include <glad/glad.h>
 
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind()
 {
     m_shader->bind();
+
     for(const auto& block : m_blocks)
     {
         for(const auto& typedTexture : block.second.m_textures)
@@ -15,6 +17,7 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
                 const auto& texture = typedTexture.second.m_textureAsset->getTexture2D();
                 if(texture) texture->bind(textureUnit);
             }
+
             m_shader->useMaterialTexture(typedTexture.second);
         }
     }

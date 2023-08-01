@@ -26,7 +26,7 @@ void Core::Graphics::VkFrameBuffer::destroy()
 
 std::shared_ptr<Core::Graphics::IFrameBuffer>
 Core::Graphics::VkFrameBuffer::addAttachment(const SGFrameBufferAttachmentType&, const std::string& name,
-                                             const int& width, const int& height, const SGGColorFormat& format,
+                                             const SGGColorFormat& format,
                                              const SGGColorInternalFormat& internalFormat, const int& mipLevel,
                                              const int& layer)
 {

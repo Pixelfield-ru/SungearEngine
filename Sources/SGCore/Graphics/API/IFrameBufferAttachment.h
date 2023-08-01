@@ -17,9 +17,6 @@ namespace Core::Graphics
 
         std::uint32_t m_ID = 0;
 
-        int m_width = 0;
-        int m_height = 0;
-
         SGGColorFormat m_format = SGGColorFormat::SGG_RGB;
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGB8;
 
