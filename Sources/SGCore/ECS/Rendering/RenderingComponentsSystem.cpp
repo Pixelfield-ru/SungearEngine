@@ -34,7 +34,7 @@ void Core::ECS::RenderingComponentsSystem::update(const std::shared_ptr<Scene>& 
             // TODO: make checking for lastTransformation != current transformation
             renderingComponent->m_viewMatrix = glm::toMat4(rotationQuat);
             renderingComponent->m_viewMatrix = glm::translate(renderingComponent->m_viewMatrix,
-                                                              transformComponent->m_position);
+                                                              -transformComponent->m_position);
             renderingComponent->m_viewMatrix =
                     glm::scale(renderingComponent->m_viewMatrix, transformComponent->m_scale);
         }

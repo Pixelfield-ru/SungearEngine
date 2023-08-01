@@ -16,6 +16,7 @@ namespace Core::ECS
         static inline std::shared_ptr<Scene> m_currentScene;
 
         int m_shadowsCastersNum = 0;
+        int m_directionalLightsNum = 0;
 
     public:
         std::string name;
@@ -27,7 +28,10 @@ namespace Core::ECS
         static void setCurrentScene(const std::shared_ptr<Scene>& newCurrentScene) noexcept;
 
         void setShadowsCastersNum(const int&);
-        int getShadowsCastersNum() const;
+        int getShadowsCastersNum() const noexcept;
+
+        void setDirectionalLightsNum(const int&);
+        int getDirectionalLightsNum() const noexcept;
     };
 }
 

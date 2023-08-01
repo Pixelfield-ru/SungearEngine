@@ -9,7 +9,6 @@
 
 void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 {
-    std::uint8_t currentTextureBlock = 0;
     size_t totalShadowCasters = 0;
 
     for(const auto& shadowsCasterEntity: scene->m_entities)
@@ -29,7 +28,7 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
                             m_mesh->
                             m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
 
-                    std::uint8_t finalTextureBlock = shadowMapsBlockOffset + currentTextureBlock;
+                    std::uint8_t finalTextureBlock = shadowMapsBlockOffset + totalShadowCasters;
 
                     shadowsCasterComponent->m_frameBuffer->bindAttachment("depthAttachment",
                                                                           finalTextureBlock);
@@ -39,12 +38,6 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
                     meshComponent->m_mesh->m_material->m_shader->useTexture(
                             "shadowsCastersShadowMaps[" + std::to_string(totalShadowCasters) + "]",
                             finalTextureBlock);
-                    /*meshComponent->m_mesh->m_material->m_shader->useTexture(
-                            "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowMap",
-                            finalTextureBlock);*/
-                    /*meshComponent->m_mesh->m_material->m_shader->useTexture(
-                            "shadowsCasters[" + std::to_string(0) + "].shadowMap",
-                            21);*/
 
                     // todo: maybe make uniform buffer for shadows casters
                     meshComponent->m_mesh->m_material->m_shader->useMatrix(
@@ -53,7 +46,6 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
                 }
             }
 
-            currentTextureBlock++;
             totalShadowCasters++;
         }
     }

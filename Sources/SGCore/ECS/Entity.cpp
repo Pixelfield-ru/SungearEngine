@@ -7,6 +7,7 @@
 #include "ECSWorld.h"
 
 #include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Rendering/DirectionalLightComponent.h"
 
 void Core::ECS::Entity::addComponent(const std::shared_ptr<IComponent>& component) noexcept
 {
@@ -18,6 +19,17 @@ void Core::ECS::Entity::addComponent(const std::shared_ptr<IComponent>& componen
         {
             // todo: do for scene where entity is placed
             Scene::getCurrentScene()->setShadowsCastersNum(Scene::getCurrentScene()->getShadowsCastersNum() + 1);
+        }
+    }
+
+    if(SG_INSTANCEOF(component.get(), DirectionalLightComponent))
+    {
+        if(Scene::getCurrentScene())
+        {
+            // todo: do for scene where entity is placed
+            Scene::getCurrentScene()->setDirectionalLightsNum(
+                    Scene::getCurrentScene()->getDirectionalLightsNum() + 1
+                    );
         }
     }
 }

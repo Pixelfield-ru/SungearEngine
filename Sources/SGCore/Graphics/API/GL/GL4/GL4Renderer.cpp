@@ -161,8 +161,7 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsC
 
     // TODO: MAKE CHECKING FOR ALREADY BIND FRAMEBUFFERS, VAOs, VBOs e.t.c. (for not to bind every time the same buffer)
     shadowsCasterComponent->m_frameBuffer->bind();
-    shadowsCasterComponent->m_objectsShader->bind();
-    //ECS::ShadowsCasterComponent::getObjectsShader()->bind();
+    ECS::ShadowsCasterComponent::getObjectsShader()->bind();
     meshComponent->m_mesh->getVertexArray()->bind();
 
     m_modelMatricesBuffer->bind();
@@ -173,10 +172,8 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsC
     m_viewMatricesBuffer->subData("viewMatrix", glm::value_ptr(shadowsCasterComponent->m_viewMatrix), 16);
     m_viewMatricesBuffer->subData("projectionMatrix", glm::value_ptr(shadowsCasterComponent->m_projectionMatrix), 16);
 
-    shadowsCasterComponent->m_objectsShader->useUniformBuffer(m_modelMatricesBuffer);
-    shadowsCasterComponent->m_objectsShader->useUniformBuffer(m_viewMatricesBuffer);
-    //ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_modelMatricesBuffer);
-    //ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_viewMatricesBuffer);
+    ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_modelMatricesBuffer);
+    ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_viewMatricesBuffer);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 

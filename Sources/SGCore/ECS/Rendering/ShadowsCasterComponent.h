@@ -27,12 +27,11 @@ namespace Core::ECS
 
     private:
 
+        static inline std::shared_ptr<Graphics::IShader> m_objectsShader;
+
         void init() noexcept final { }
 
     public:
-        std::shared_ptr<Graphics::IShader> m_objectsShader =
-                std::shared_ptr<Core::Graphics::IShader>(Main::CoreMain::getRenderer().createOnlyGeometryShader());
-
         // frame buffer with depth attachment
         std::shared_ptr<Core::Graphics::IFrameBuffer> m_frameBuffer =
                 std::shared_ptr<Core::Graphics::IFrameBuffer>(Main::CoreMain::getRenderer().createFrameBuffer())
@@ -46,7 +45,7 @@ namespace Core::ECS
                                 0)
                                 ->unbind();
 
-        /*static std::shared_ptr<Graphics::IShader> getObjectsShader()
+        static std::shared_ptr<Graphics::IShader> getObjectsShader()
         {
             static bool firstInit = []() {
                 m_objectsShader = std::shared_ptr<Graphics::IShader>(
@@ -57,7 +56,7 @@ namespace Core::ECS
             }();
 
             return m_objectsShader;
-        }*/
+        }
     };
 }
 

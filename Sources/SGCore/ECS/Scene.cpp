@@ -31,7 +31,9 @@ void Core::ECS::Scene::setShadowsCastersNum(const int& num)
         {
             meshComponent->m_mesh->m_material->m_shader->setAssetModifiedChecking(false);
 
-            meshComponent->m_mesh->m_material->m_shader->removeShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME);
+            meshComponent->m_mesh->m_material->m_shader->removeShaderDefine(
+                    SG_SHADERS_SHADOWS_CASTERS_NUM_NAME
+                    );
             meshComponent->m_mesh->m_material->m_shader->addShaderDefines({
                 Graphics::ShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME,
                                        std::to_string(m_shadowsCastersNum))
@@ -42,7 +44,37 @@ void Core::ECS::Scene::setShadowsCastersNum(const int& num)
     }
 }
 
-int Core::ECS::Scene::getShadowsCastersNum() const
+int Core::ECS::Scene::getShadowsCastersNum() const noexcept
 {
     return m_shadowsCastersNum;
+}
+
+void Core::ECS::Scene::setDirectionalLightsNum(const int& num)
+{
+    m_directionalLightsNum = num;
+
+    // define new shadow casters num for all entities in scene
+    for(const auto& entity : m_entities)
+    {
+        auto meshes = entity->getComponents<MeshComponent>();
+        for(const auto& meshComponent : meshes)
+        {
+            meshComponent->m_mesh->m_material->m_shader->setAssetModifiedChecking(false);
+
+            meshComponent->m_mesh->m_material->m_shader->removeShaderDefine(
+                    SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME
+                    );
+            meshComponent->m_mesh->m_material->m_shader->addShaderDefines({
+                Graphics::ShaderDefine(SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME,
+                                       std::to_string(m_directionalLightsNum))
+            });
+
+            meshComponent->m_mesh->m_material->m_shader->setAssetModifiedChecking(true);
+        }
+    }
+}
+
+int Core::ECS::Scene::getDirectionalLightsNum() const noexcept
+{
+    return m_directionalLightsNum;
 }

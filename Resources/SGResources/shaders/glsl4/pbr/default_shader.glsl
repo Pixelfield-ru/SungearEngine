@@ -3,11 +3,20 @@ struct ShadowsCaster
     mat4 shadowsCasterSpace;
 };
 
+struct DirectionalLight
+{
+    vec3 position;
+    vec4 color;
+};
+
 #ifdef SHADOWS_CASTERS_NUM
     uniform ShadowsCaster shadowsCasters[SHADOWS_CASTERS_NUM];
     uniform sampler2D shadowsCastersShadowMaps[SHADOWS_CASTERS_NUM];
 #endif
 
+#ifdef DIRECTIONAL_LIGHTS_NUM
+    uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_NUM];
+#endif
 
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;
@@ -19,7 +28,6 @@ struct ShadowsCaster
         vec2 UV;
         vec3 normal;
 
-        float diffPower;
         vec3 fragPos;
     } vsOut;
 
@@ -34,9 +42,6 @@ struct ShadowsCaster
         mat4 viewMatrix;
     };
 
-    // final yet
-    vec3 lightPos = vec3(0, 20, 7);
-
     void main()
     {
         vsOut.UV = UVAttribute.xy;
@@ -44,10 +49,22 @@ struct ShadowsCaster
 
         vsOut.fragPos = vec3(objectModelMatrix * vec4(positionsAttribute, 1.0));
 
-        vec3 lightDir = normalize(lightPos - vsOut.fragPos);
-        vsOut.diffPower = max(dot(normalize(vsOut.normal), lightDir), 0.0) * 5.5;
-
         gl_Position = projectionMatrix * viewMatrix * vec4(vsOut.fragPos, 1.0);
+    }
+#endif
+
+#ifdef DIRECTIONAL_LIGHTS_NUM
+    vec3 calculateDiffuseColor(
+        const in vec3 normal,
+        const in vec3 lightPos,
+        const in vec3 fragPos,
+        const in vec4 lightColor
+        )
+    {
+        vec3 lightDir = normalize(lightPos - fragPos);
+        float finalDiffuse = max(dot(normalize(normal), lightDir), 0.0) * 5.5;
+
+        return vec3(finalDiffuse) * lightColor.rgb;
     }
 #endif
 
@@ -65,7 +82,7 @@ struct ShadowsCaster
         vec2( 0.34495938, 0.29387760 )
     );
 
-    float bias = 0.0001;
+    float bias = 0.00003;
 
     float calculateShadow(vec4 shadowsCasterSpaceFragPos, int shadowsCasterIdx)
     {
@@ -86,9 +103,10 @@ struct ShadowsCaster
 
         for(int i = 0; i < 4; i++)
         {
-            int index = int(8.0 * rand(vec2(shadowsCasterSpaceFragPos.xy * i))) % 8;
+            // todo: make random poisson
+            //int index = int(8.0 * rand(vec2(shadowsCasterSpaceFragPos.xy * i))) % 8;
             float depthFactor = texture(shadowsCastersShadowMaps[shadowsCasterIdx],
-            projCoords.xy + poissonDisk[index] / 1500.0).z;
+            projCoords.xy + poissonDisk[i] / 3000.0).z;
             depthFactor = depthFactor < projCoords.z - bias ?
             depthFactor : 0.0;
 
@@ -128,7 +146,6 @@ struct ShadowsCaster
         vec2 UV;
         vec3 normal;
 
-        float diffPower;
         vec3 fragPos;
     } vsIn;
 
@@ -163,7 +180,24 @@ struct ShadowsCaster
             colorFromNormalMap = texture(sgmat_normals7, vec2(finalUV.x, finalUV.y)).rgb;
         #endif
 
-        fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb, colorFromDiffuse.a);
+        fragColor = colorFromBase;
+
+        #ifdef DIRECTIONAL_LIGHTS_NUM
+            vec3 finalDiffuse = vec3(1.0);
+
+            for(int i = 0; i < DIRECTIONAL_LIGHTS_NUM; i++)
+            {
+                finalDiffuse *= calculateDiffuseColor(
+                    vsIn.normal,
+                    directionalLights[i].position,
+                    vsIn.fragPos,
+                    directionalLights[i].color
+                );
+            }
+
+            fragColor.rgb *= finalDiffuse + vec3(ambient);
+        #endif
+        //fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb, colorFromDiffuse.a);
 
         #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
             float shadowCoeff = 0.0;
@@ -175,8 +209,6 @@ struct ShadowsCaster
                     i
                 );
             }
-
-            //fragColor.rgb *= shadowCoeff / 1.5;
         #endif
     }
 #endif

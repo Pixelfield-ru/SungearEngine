@@ -9,12 +9,14 @@
 #include "SGCore/ECS/Rendering/CameraRenderingSystem.h"
 #include "SGCore/ECS/Rendering/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/RenderingComponentsSystem.h"
+#include "SGCore/ECS/Rendering/DirectionalLightsSystem.h"
 
 void Core::ECS::ECSWorld::init() noexcept
 {
     createSystem<TransformationsSystem>();
     createSystem<RenderingComponentsSystem>();
     createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    createSystem<DirectionalLightsSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
     createSystem<Camera3DMovementSystem>();
     createSystem<CameraRenderingSystem>();
 }

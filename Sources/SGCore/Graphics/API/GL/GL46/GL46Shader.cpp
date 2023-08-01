@@ -198,13 +198,6 @@ void Core::Graphics::GL46Shader::bind() noexcept
     glUseProgram(m_programHandler);
 }
 
-void Core::Graphics::GL46Shader::useUniformBuffer(const std::shared_ptr<IUniformBuffer>& uniformBuffer)
-{
-    auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandler, uniformBuffer->m_blockName.c_str());
-    glUniformBlockBinding(m_programHandler, uniformBufferIdx,
-                          uniformBuffer->getLayoutLocation());
-}
-
 // TODO: watch SGP1
 void Core::Graphics::GL46Shader::destroy() noexcept
 {
@@ -263,28 +256,71 @@ void Core::Graphics::GL46Shader::destroy() noexcept
 
 std::int32_t Core::Graphics::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
 {
-    return glGetUniformLocation(m_programHandler, uniformName.data());
+    return glGetUniformLocation(m_programHandler, uniformName.c_str());
 }
 
 void Core::Graphics::GL46Shader::useMaterialTexture(const Memory::Assets::MaterialTexture& materialTexture)
 {
-    int texLoc = glGetUniformLocation(m_programHandler,
-                                      materialTexture.m_nameInShader.c_str());
+    int texLoc = getShaderUniformLocation(materialTexture.m_nameInShader);
     glUniform1i(texLoc, materialTexture.m_textureUnit);
+}
+
+void Core::Graphics::GL46Shader::useUniformBuffer(const std::shared_ptr<IUniformBuffer>& uniformBuffer)
+{
+    auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandler, uniformBuffer->m_blockName.c_str());
+    glUniformBlockBinding(m_programHandler, uniformBufferIdx,
+                          uniformBuffer->getLayoutLocation());
 }
 
 void Core::Graphics::GL46Shader::useTexture(const std::string& uniformName, const uint8_t& texBlock)
 {
-    int texLoc = glGetUniformLocation(m_programHandler,
-                                      uniformName.c_str());
+    int texLoc = getShaderUniformLocation(uniformName);
     glUniform1i(texLoc, texBlock);
 }
 
 void Core::Graphics::GL46Shader::useMatrix(const std::string& uniformName, const glm::mat4& matrix)
 {
-    int matLoc = glGetUniformLocation(m_programHandler,
-                                      uniformName.c_str());
+    int matLoc = getShaderUniformLocation(uniformName);
     glUniformMatrix4fv(matLoc, 1, false, glm::value_ptr(matrix));
+}
+
+void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y)
+{
+    int vecLoc = getShaderUniformLocation(uniformName);
+    glUniform2f(vecLoc, x, y);
+}
+
+void
+Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z)
+{
+    int vecLoc = getShaderUniformLocation(uniformName);
+    glUniform3f(vecLoc, x, y, z);
+}
+
+void
+Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z,
+                                       const float& w)
+{
+    int vecLoc = getShaderUniformLocation(uniformName);
+    glUniform4f(vecLoc, x, y, z, w);
+}
+
+void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec2& vec)
+{
+    int vecLoc = getShaderUniformLocation(uniformName);
+    glUniform2f(vecLoc, vec.x, vec.y);
+}
+
+void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec3& vec)
+{
+    int vecLoc = getShaderUniformLocation(uniformName);
+    glUniform3f(vecLoc, vec.x, vec.y, vec.z);
+}
+
+void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec4& vec)
+{
+    int vecLoc = getShaderUniformLocation(uniformName);
+    glUniform4f(vecLoc, vec.x, vec.y, vec.z, vec.w);
 }
 
 /*

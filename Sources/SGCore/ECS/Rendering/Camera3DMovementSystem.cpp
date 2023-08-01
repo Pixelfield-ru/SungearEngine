@@ -40,31 +40,39 @@ void Core::ECS::Camera3DMovementSystem::deltaUpdate
 
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W) || InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
     {
-        rotatedForward = glm::rotate(rotatedForward, glm::radians(-transformComponent->m_rotation.x), glm::vec3(1, 0, 0));
-        rotatedForward = glm::rotate(rotatedForward, glm::radians(-transformComponent->m_rotation.y), glm::vec3(0, 1, 0));
+        rotatedForward = glm::rotate(rotatedForward,
+                                     glm::radians(-transformComponent->m_rotation.x),
+                                     glm::vec3(1, 0, 0));
+        rotatedForward = glm::rotate(rotatedForward,
+                                     glm::radians(-transformComponent->m_rotation.y),
+                                     glm::vec3(0, 1, 0));
     }
 
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A) || InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
     {
-        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-transformComponent->m_rotation.x), glm::vec3(1, 0, 0));
-        rotatedLeft = glm::rotate(rotatedLeft, glm::radians(-transformComponent->m_rotation.y), glm::vec3(0, 1, 0));
+        rotatedLeft = glm::rotate(rotatedLeft,
+                                  glm::radians(-transformComponent->m_rotation.x),
+                                  glm::vec3(1, 0, 0));
+        rotatedLeft = glm::rotate(rotatedLeft,
+                                  glm::radians(-transformComponent->m_rotation.y),
+                                  glm::vec3(0, 1, 0));
     }
 
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
     {
-        transformComponent->m_position += rotatedForward * cameraComponent->m_movementSpeed * (float) deltaTime;
+        transformComponent->m_position -= rotatedForward * cameraComponent->m_movementSpeed * (float) deltaTime;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
     {
-        transformComponent->m_position -= rotatedForward * cameraComponent->m_movementSpeed * (float) deltaTime;
+        transformComponent->m_position += rotatedForward * cameraComponent->m_movementSpeed * (float) deltaTime;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
     {
-        transformComponent->m_position -= rotatedLeft * cameraComponent->m_movementSpeed * (float) deltaTime;
+        transformComponent->m_position += rotatedLeft * cameraComponent->m_movementSpeed * (float) deltaTime;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
     {
-        transformComponent->m_position += rotatedLeft * cameraComponent->m_movementSpeed * (float) deltaTime;
+        transformComponent->m_position -= rotatedLeft * cameraComponent->m_movementSpeed * (float) deltaTime;
     }
 
     if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))

@@ -29,10 +29,10 @@ namespace Core::ECS
 
         virtual void deltaUpdate(const std::shared_ptr<Scene>& scene, const double& deltaTime) { };
 
-        virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) = 0;
+        virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { };
 
         virtual void deltaUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity,
-                                 const double& deltaTime) = 0;
+                                 const double& deltaTime) { };
     };
 }
 

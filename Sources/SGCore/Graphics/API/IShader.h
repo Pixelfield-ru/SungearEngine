@@ -60,7 +60,18 @@ namespace Core::Graphics
         virtual void useMaterialTexture(const Memory::Assets::MaterialTexture&) = 0;
         virtual void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) = 0;
         virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
+
         virtual void useMatrix(const std::string& uniformName, const glm::mat4& matrix) { };
+
+        virtual void useVectorf(const std::string& uniformName, const float& x, const float& y) { };
+        virtual void useVectorf(const std::string& uniformName,
+                                const float& x, const float& y, const float& z) { };
+        virtual void useVectorf(const std::string& uniformName,
+                                const float& x, const float& y, const float& z, const float& w) { };
+
+        virtual void useVectorf(const std::string& uniformName, const glm::vec2& vec) { };
+        virtual void useVectorf(const std::string& uniformName, const glm::vec3& vec) { };
+        virtual void useVectorf(const std::string& uniformName, const glm::vec4& vec) { };
 
         #pragma endregion
 
