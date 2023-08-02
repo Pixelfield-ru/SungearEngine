@@ -1,3 +1,7 @@
+// TODO: make optimization
+
+in int gl_FrontFacing;
+
 layout(std140, location = 0) uniform ObjectMatrices
 {
     mat4 objectModelMatrix;
@@ -65,30 +69,6 @@ float ambient = 0.1;
     }
 #endif
 
-#ifdef DIRECTIONAL_LIGHTS_NUM
-    void calculateDiffuseAndSpecularColor(
-        const in vec3 normal,
-        const in vec3 lightPos,
-        const in vec3 fragPos,
-        const in vec4 lightColor,
-        out vec3 diffuseColor,
-        out vec3 specularColor
-        )
-    {
-        vec3 lightDir = normalize(lightPos - fragPos);
-        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 11.5;
-
-        diffuseColor = vec3(finalDiffuse) * lightColor.rgb;
-
-        vec3 viewDir = normalize(viewDirection - fragPos);
-        vec3 reflectDir = reflect(-lightDir, normal);
-
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
-
-        specularColor = 4.0 * spec * lightColor.rgb;
-    }
-#endif
-
 // shadows impl
 #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
     float rand(vec2 uv)
@@ -115,15 +95,16 @@ float ambient = 0.1;
             return 1.0;
         }
 
-        // to fix incorrect self-shadowing
+        if(gl_FrontFacing == 0) normal *= -1;
+
         vec3 shadowCasterDir = normalize(shadowsCasters[shadowsCasterIdx].position -
-        shadowsCasterSpaceFragPos.xyz);
+        fragPos);
         float shadowFactor = dot(normal, shadowCasterDir);
 
-        /*if(shadowFactor < 0.0)
+        if(shadowFactor < 0.0)
         {
             return 1.0;
-        }*/
+        }
 
         /*float closestDepth = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy).r;
         float currentDepth = projCoords.z;
@@ -145,6 +126,30 @@ float ambient = 0.1;
         }
 
         return shadowVisibility / 1.5;
+    }
+#endif
+
+#ifdef DIRECTIONAL_LIGHTS_NUM
+    void calculateDiffuseAndSpecularColor(
+        const in vec3 normal,
+        const in vec3 lightPos,
+        const in vec3 fragPos,
+        const in vec4 lightColor,
+        out vec3 diffuseColor,
+        out vec3 specularColor
+        )
+    {
+        vec3 lightDir = normalize(lightPos - fragPos);
+        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 11.5;
+
+        diffuseColor = vec3(finalDiffuse) * lightColor.rgb;
+
+        vec3 viewDir = normalize(viewDirection - fragPos);
+        vec3 reflectDir = reflect(-lightDir, normal);
+
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
+
+        specularColor = 4.0 * spec * lightColor.rgb;
     }
 #endif
 

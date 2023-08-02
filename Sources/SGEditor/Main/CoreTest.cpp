@@ -119,7 +119,7 @@ void init()
     for(auto& node : testModel->m_nodes)
     {
         //processLoadedNode(node, { 0, 0, -10 }, { 0, 90, 0 }, { 2, 2, 2 });
-        processLoadedNode(node, { 0, -3, -15 }, { }, { 1, 1, 1 });
+        processLoadedNode(node, { 0, -3, -15 }, { }, { 1, 1, 2 });
     }
 
     for(auto& node : btrModel->m_nodes)

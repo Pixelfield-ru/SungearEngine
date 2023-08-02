@@ -137,6 +137,9 @@ void Core::Graphics::GL4Renderer::renderMesh(
 {
     if(!meshComponent->m_mesh) return;
 
+    /*glEnable(GL_CULL_FACE);
+    glCullface(GL_BACK);*/
+
     meshComponent->m_mesh->m_material->bind();
     meshComponent->m_mesh->getVertexArray()->bind();
 
