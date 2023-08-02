@@ -52,6 +52,7 @@ void Core::Graphics::VkRenderer::renderFrame(const glm::ivec2& windowSize)
 }
 
 void Core::Graphics::VkRenderer::renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+                                            const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
                                             const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                             const std::shared_ptr<ECS::MeshComponent>& meshComponent)
 {

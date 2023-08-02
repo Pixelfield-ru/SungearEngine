@@ -43,6 +43,7 @@ namespace Core::Graphics
         void renderFrame(const glm::ivec2& windowSize) override;
 
         void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+                        const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
                         const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                         const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
 

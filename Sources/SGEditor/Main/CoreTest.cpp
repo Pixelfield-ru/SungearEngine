@@ -100,7 +100,9 @@ void init()
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/btr_80a2016/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj");
-    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/lenin/scene.gltf");
+    /*testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+     "../SGResources/models/test/lenin/scene.gltf"
+     );*/
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/ak74m/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
     testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
@@ -122,8 +124,10 @@ void init()
 
     for(auto& node : btrModel->m_nodes)
     {
-        processLoadedNode(node, { 0, 0, -7 }, { 0, 90, 0 }, { 2, 2, 2 });
-        //processLoadedNode(node, { 0, -2, -4 }, { -90, 0, 0 }, { 0.005, 0.005, 0.005 });
+        processLoadedNode(node, { 0, 0, -4 }, { 0, 90, 0 },
+                          { 4, 4, 4 });
+        /*processLoadedNode(node, { 0, -5, -4 }, { -90, 0, -90 },
+                          { 0.015, 0.015, 0.015 });*/
     }
 
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
@@ -131,6 +135,7 @@ void init()
     //testCameraEntity->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
     auto cameraTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
     cameraTransformComponent->m_position.y = -5;
+    //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
     testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
 
@@ -139,8 +144,8 @@ void init()
     auto testShadowsCaster = std::make_shared<Core::ECS::Entity>();
     testScene->m_entities.push_back(testShadowsCaster);
     auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
-    shadowsCasterTransform->m_position.y = 5;
-    shadowsCasterTransform->m_position.z = 0.0;
+    shadowsCasterTransform->m_position.y = 3;
+    shadowsCasterTransform->m_position.z = 2.0;
     shadowsCasterTransform->m_rotation.x = 30;
     //shadowsCasterTransform->m_rotation.y = -90;
     auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
@@ -148,17 +153,18 @@ void init()
     testShadowsCaster->addComponent(shadowCasterComponent);
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
 
-    /*auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
+    auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
     testScene->m_entities.push_back(testShadowsCaster1);
     auto shadowsCasterTransform1 = std::make_shared<Core::ECS::TransformComponent>();
-    shadowsCasterTransform1->m_position.x = 10;
-    shadowsCasterTransform1->m_position.y = -5;
-    shadowsCasterTransform1->m_position.z = 0.0;
-    shadowsCasterTransform1->m_rotation.x = 30;
+    shadowsCasterTransform1->m_position.x = 0;
+    shadowsCasterTransform1->m_position.y = -3;
+    shadowsCasterTransform1->m_position.z = 2.0;
+    shadowsCasterTransform1->m_rotation.x = -30;
     //shadowsCasterTransform1->m_rotation.y = 30;
     auto shadowCasterComponent1 = std::make_shared<Core::ECS::ShadowsCasterComponent>();
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
-    testShadowsCaster1->addComponent(shadowCasterComponent1);*/
+    testShadowsCaster1->addComponent(shadowCasterComponent1);
+    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------

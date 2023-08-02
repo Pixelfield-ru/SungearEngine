@@ -15,6 +15,10 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
     {
         std::list<std::shared_ptr<ShadowsCasterComponent>> shadowsCasterComponents =
                 shadowsCasterEntity->getComponents<ShadowsCasterComponent>();
+        std::shared_ptr<TransformComponent> shadowCasterTransform =
+                shadowsCasterEntity->getComponent<TransformComponent>();
+
+        if(!shadowCasterTransform) continue;
 
         for(const auto& shadowsCasterComponent : shadowsCasterComponents)
         {
@@ -43,6 +47,10 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
                     meshComponent->m_mesh->m_material->m_shader->useMatrix(
                             "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
                             shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
+
+                    meshComponent->m_mesh->m_material->m_shader->useVectorf(
+                            "shadowsCasters[" + std::to_string(totalShadowCasters) + "].position",
+                            shadowCasterTransform->m_position);
                 }
             }
 

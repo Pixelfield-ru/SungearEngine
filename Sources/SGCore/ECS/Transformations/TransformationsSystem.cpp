@@ -23,6 +23,7 @@ void Core::ECS::TransformationsSystem::update
         transformationChanged = true;
     }
 
+    // todo: fix rotation. make global (not local) rotations
     // checking rotation for changes. if changed then update
     if(transformComponent->m_lastRotation != transformComponent->m_rotation)
     {

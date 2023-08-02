@@ -28,6 +28,8 @@ namespace Core::ImportedScene
         std::shared_ptr<Graphics::IVertexBuffer> m_positionsBuffer;
         std::shared_ptr<Graphics::IVertexBuffer> m_uvBuffer;
         std::shared_ptr<Graphics::IVertexBuffer> m_normalsBuffer;
+        std::shared_ptr<Graphics::IVertexBuffer> m_tangentsBuffer;
+        std::shared_ptr<Graphics::IVertexBuffer> m_bitangentsBuffer;
 
         std::shared_ptr<Graphics::IIndexBuffer> m_indicesBuffer;
 
@@ -48,6 +50,12 @@ namespace Core::ImportedScene
 
         // normals array
         std::vector<float> m_normals;
+
+        // tangents array
+        std::vector<float> m_tangents;
+
+        // bitangents array
+        std::vector<float> m_bitangents;
 
         std::shared_ptr<Memory::Assets::IMaterial> m_material;
 

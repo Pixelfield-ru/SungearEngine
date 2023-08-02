@@ -12,6 +12,7 @@
     {
         mat4 projectionMatrix;
         mat4 viewMatrix;
+        vec3 viewDirection;
     };
 
     void main()

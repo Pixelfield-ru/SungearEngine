@@ -70,6 +70,14 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
         sgMesh->m_normals.push_back(aiMesh->mNormals[i].y);
         sgMesh->m_normals.push_back(aiMesh->mNormals[i].z);
 
+        sgMesh->m_tangents.push_back(aiMesh->mTangents[i].x);
+        sgMesh->m_tangents.push_back(aiMesh->mTangents[i].y);
+        sgMesh->m_tangents.push_back(aiMesh->mTangents[i].z);
+
+        sgMesh->m_bitangents.push_back(aiMesh->mBitangents[i].x);
+        sgMesh->m_bitangents.push_back(aiMesh->mBitangents[i].y);
+        sgMesh->m_bitangents.push_back(aiMesh->mBitangents[i].z);
+
         // if mesh has texture coordinates
         // TODO: make process all texture coordinates
         if(aiMesh->mTextureCoords[0])

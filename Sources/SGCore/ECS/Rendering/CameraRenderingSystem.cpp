@@ -12,8 +12,9 @@ void Core::ECS::CameraRenderingSystem::update
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::shared_ptr<CameraComponent> cameraComponent = entity->getComponent<CameraComponent>();
+    std::shared_ptr<TransformComponent> cameraTransformComponent = entity->getComponent<TransformComponent>();
 
-    if(!cameraComponent) return;
+    if(!cameraComponent || !cameraTransformComponent) return;
 
     for(auto& sceneEntity : scene->m_entities)
     {
@@ -22,7 +23,7 @@ void Core::ECS::CameraRenderingSystem::update
 
         if(!transformComponent || !meshComponent) continue;
 
-        Core::Main::CoreMain::getRenderer().renderMesh(cameraComponent, transformComponent, meshComponent);
+        Core::Main::CoreMain::getRenderer().renderMesh(cameraComponent, cameraTransformComponent, transformComponent, meshComponent);
     }
 }
 

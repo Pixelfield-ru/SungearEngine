@@ -42,15 +42,13 @@ void Core::Graphics::GL4Renderer::init() noexcept
     glEnable (GL_ALPHA_TEST);
     glAlphaFunc (GL_GREATER, 0.2);
 
-    /*glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);*/
-
     // -------------------------------------
 
     m_modelMatricesBuffer = std::shared_ptr<GL46UniformBuffer>(createUniformBuffer());
     m_modelMatricesBuffer->m_blockName = "ObjectMatrices";
-    m_modelMatricesBuffer->putUniforms({Core::Graphics::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4)});
+    m_modelMatricesBuffer->putUniforms({
+        Core::Graphics::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4)
+    });
     m_modelMatricesBuffer->putData<float>({ });
     m_modelMatricesBuffer->setLayoutLocation(0);
     m_modelMatricesBuffer->prepare();
@@ -58,9 +56,11 @@ void Core::Graphics::GL4Renderer::init() noexcept
     m_viewMatricesBuffer = std::shared_ptr<GL46UniformBuffer>(createUniformBuffer());
     m_viewMatricesBuffer->m_blockName = "ViewMatrices";
     m_viewMatricesBuffer->putUniforms({
-                                                Core::Graphics::IShaderUniform("projectionMatrix", SGGDataType::SGG_MAT4),
-                                                Core::Graphics::IShaderUniform("viewMatrix", SGGDataType::SGG_MAT4)
+        Core::Graphics::IShaderUniform("projectionMatrix", SGGDataType::SGG_MAT4),
+        Core::Graphics::IShaderUniform("viewMatrix", SGGDataType::SGG_MAT4),
+        Core::Graphics::IShaderUniform("viewDirection", SGGDataType::SGG_FLOAT3)
                                         });
+    m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->setLayoutLocation(1);
@@ -131,6 +131,7 @@ void Core::Graphics::GL4Renderer::renderFrame(const glm::ivec2& windowSize)
 // TODO: just test. delete
 void Core::Graphics::GL4Renderer::renderMesh(
         const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+        const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
         const std::shared_ptr<ECS::TransformComponent>& transformComponent,
         const std::shared_ptr<ECS::MeshComponent>& meshComponent)
 {
@@ -147,8 +148,12 @@ void Core::Graphics::GL4Renderer::renderMesh(
 
     m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
 
-    m_viewMatricesBuffer->subData("viewMatrix", glm::value_ptr(cameraComponent->m_viewMatrix), 16);
-    m_viewMatricesBuffer->subData("projectionMatrix", glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
+    m_viewMatricesBuffer->subData("viewMatrix",
+                                  glm::value_ptr(cameraComponent->m_viewMatrix), 16);
+    m_viewMatricesBuffer->subData("projectionMatrix",
+                                  glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
+    m_viewMatricesBuffer->subData("viewDirection",
+                                  glm::value_ptr(cameraTransformComponent->m_position), 3);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }

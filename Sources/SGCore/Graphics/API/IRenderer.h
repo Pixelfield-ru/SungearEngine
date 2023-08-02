@@ -63,8 +63,9 @@ namespace Core::Graphics
         /**
          * Renders the model using matrices from objectMatricesBuffer.
          */
-        virtual void renderMesh(const std::shared_ptr<ECS::CameraComponent>& entity,
-                                    const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+        virtual void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+                                const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
+                                const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                 const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
 
         /**

@@ -1,6 +1,19 @@
+layout(std140, location = 0) uniform ObjectMatrices
+{
+    mat4 objectModelMatrix;
+};
+
+layout(std140, location = 1) uniform ViewMatrices
+{
+    mat4 projectionMatrix;
+    mat4 viewMatrix;
+    vec3 viewDirection;
+};
+
 struct ShadowsCaster
 {
     mat4 shadowsCasterSpace;
+    vec3 position;
 };
 
 struct DirectionalLight
@@ -8,6 +21,8 @@ struct DirectionalLight
     vec3 position;
     vec4 color;
 };
+
+float ambient = 0.1;
 
 #ifdef SHADOWS_CASTERS_NUM
     uniform ShadowsCaster shadowsCasters[SHADOWS_CASTERS_NUM];
@@ -22,6 +37,8 @@ struct DirectionalLight
     layout (location = 0) in vec3 positionsAttribute;
     layout (location = 1) in vec3 UVAttribute;
     layout (location = 2) in vec3 normalsAttribute;
+    layout (location = 3) in vec3 tangentsAttribute;
+    layout (location = 4) in vec3 bitangentsAttribute;
 
     out VSOut
     {
@@ -29,18 +46,8 @@ struct DirectionalLight
         vec3 normal;
 
         vec3 fragPos;
+        mat3 TBN;
     } vsOut;
-
-    layout(std140, location = 0) uniform ObjectMatrices
-    {
-        mat4 objectModelMatrix;
-    };
-
-    layout(std140, location = 1) uniform ViewMatrices
-    {
-        mat4 projectionMatrix;
-        mat4 viewMatrix;
-    };
 
     void main()
     {
@@ -49,22 +56,36 @@ struct DirectionalLight
 
         vsOut.fragPos = vec3(objectModelMatrix * vec4(positionsAttribute, 1.0));
 
+        vec3 T = normalize(vec3(objectModelMatrix * vec4(tangentsAttribute,   0.0)));
+        vec3 B = normalize(vec3(objectModelMatrix * vec4(bitangentsAttribute, 0.0)));
+        vec3 N = normalize(vec3(objectModelMatrix * vec4(normalsAttribute,    0.0)));
+        vsOut.TBN = mat3(T, B, N);
+
         gl_Position = projectionMatrix * viewMatrix * vec4(vsOut.fragPos, 1.0);
     }
 #endif
 
 #ifdef DIRECTIONAL_LIGHTS_NUM
-    vec3 calculateDiffuseColor(
+    void calculateDiffuseAndSpecularColor(
         const in vec3 normal,
         const in vec3 lightPos,
         const in vec3 fragPos,
-        const in vec4 lightColor
+        const in vec4 lightColor,
+        out vec3 diffuseColor,
+        out vec3 specularColor
         )
     {
         vec3 lightDir = normalize(lightPos - fragPos);
-        float finalDiffuse = max(dot(normalize(normal), lightDir), 0.0) * 5.5;
+        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 11.5;
 
-        return vec3(finalDiffuse) * lightColor.rgb;
+        diffuseColor = vec3(finalDiffuse) * lightColor.rgb;
+
+        vec3 viewDir = normalize(viewDirection - fragPos);
+        vec3 reflectDir = reflect(-lightDir, normal);
+
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
+
+        specularColor = 4.0 * spec * lightColor.rgb;
     }
 #endif
 
@@ -84,7 +105,7 @@ struct DirectionalLight
 
     float bias = 0.00003;
 
-    float calculateShadow(vec4 shadowsCasterSpaceFragPos, int shadowsCasterIdx)
+    float calculateShadow(vec4 shadowsCasterSpaceFragPos, vec3 fragPos, vec3 normal, int shadowsCasterIdx)
     {
         vec3 projCoords = shadowsCasterSpaceFragPos.xyz / shadowsCasterSpaceFragPos.w;
         projCoords = projCoords * 0.5 + 0.5;
@@ -93,6 +114,16 @@ struct DirectionalLight
         {
             return 1.0;
         }
+
+        // to fix incorrect self-shadowing
+        vec3 shadowCasterDir = normalize(shadowsCasters[shadowsCasterIdx].position -
+        shadowsCasterSpaceFragPos.xyz);
+        float shadowFactor = dot(normal, shadowCasterDir);
+
+        /*if(shadowFactor < 0.0)
+        {
+            return 1.0;
+        }*/
 
         /*float closestDepth = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy).r;
         float currentDepth = projCoords.z;
@@ -147,9 +178,8 @@ struct DirectionalLight
         vec3 normal;
 
         vec3 fragPos;
+        mat3 TBN;
     } vsIn;
-
-    float ambient = 0.1;
 
     void main()
     {
@@ -157,7 +187,7 @@ struct DirectionalLight
         vec4 colorFromDiffuse = vec4(1);
         vec4 colorFromMetalness = vec4(1);
         vec4 colorFromRoughness = vec4(1);
-        vec3 colorFromNormalMap = vec3(1);
+        vec3 colorFromNormalMap = vec3(normalize(vsIn.normal));
 
         vec2 finalUV = vsIn.UV;
         #ifdef FLIP_TEXTURES_Y
@@ -178,26 +208,37 @@ struct DirectionalLight
 
         #ifdef sgmat_normals7_DEFINED
             colorFromNormalMap = texture(sgmat_normals7, vec2(finalUV.x, finalUV.y)).rgb;
+            colorFromNormalMap = normalize(colorFromNormalMap * 2.0 - 1.0);
+            colorFromNormalMap = normalize(vsIn.TBN * colorFromNormalMap);
         #endif
 
         fragColor = colorFromBase;
 
+        // todo: fix multiple directional lights
         #ifdef DIRECTIONAL_LIGHTS_NUM
-            vec3 finalDiffuse = vec3(1.0);
+            vec3 finalDiffuse = vec3(0.0);
+            vec3 finalSpecular = vec3(0.0);
+
+            vec3 intermediateDiffuse = vec3(0.0);
+            vec3 intermediateSpecular = vec3(0.0);
 
             for(int i = 0; i < DIRECTIONAL_LIGHTS_NUM; i++)
             {
-                finalDiffuse *= calculateDiffuseColor(
-                    vsIn.normal,
+                calculateDiffuseAndSpecularColor(
+                    colorFromNormalMap,
                     directionalLights[i].position,
                     vsIn.fragPos,
-                    directionalLights[i].color
+                    directionalLights[i].color,
+                    intermediateDiffuse,
+                    intermediateSpecular
                 );
+
+                finalDiffuse += intermediateDiffuse * colorFromDiffuse.rgb;
+                finalSpecular += intermediateSpecular;
             }
 
-            fragColor.rgb *= finalDiffuse + vec3(ambient);
+            fragColor.rgb *= vec3(ambient) + finalDiffuse + finalSpecular;
         #endif
-        //fragColor = vec4((vsIn.diffPower + vec3(ambient)) * colorFromBase.rgb, colorFromDiffuse.a);
 
         #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
             float shadowCoeff = 0.0;
@@ -206,6 +247,8 @@ struct DirectionalLight
             {
                 fragColor.rgb *= calculateShadow(
                     shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
+                    vsIn.fragPos,
+                    colorFromNormalMap,
                     i
                 );
             }
