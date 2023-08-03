@@ -34,8 +34,10 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 
                     std::uint8_t finalTextureBlock = shadowMapsBlockOffset + totalShadowCasters;
 
-                    shadowsCasterComponent->m_frameBuffer->bindAttachment("depthAttachment",
-                                                                          finalTextureBlock);
+                    shadowsCasterComponent->m_frameBuffer->bindAttachment(
+                            SG_FRAMEBUFFER_DEPTH_ATTACHMENT_NAME,
+                            finalTextureBlock
+                            );
 
                     meshComponent->m_mesh->m_material->m_shader->bind();
 

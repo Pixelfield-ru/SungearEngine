@@ -21,7 +21,7 @@
 #include "SGCore/ImportedScenesArch/IMesh.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
 #include "SGCore/ECS/Entity.h"
-#include "SGCore/Graphics/API/ShadersParameters.h"
+#include "SGCore/Utils/Defines.h"
 
 #include "APIType.h"
 #include "IFrameBuffer.h"

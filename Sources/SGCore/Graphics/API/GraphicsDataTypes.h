@@ -10,6 +10,21 @@
 #include <iostream>
 #include <cstdint>
 
+enum SGFaceType
+{
+    SGG_FRONT_FACE,
+    SGG_BACK_FACE,
+    SGG_FRONT_BACK_FACE
+};
+
+enum SGPolygonsOrder
+{
+    // clockwise
+    SGG_CW,
+    // counter-clockwise
+    SGG_CCW
+};
+
 enum SGFrameBufferAttachmentType
 {
     SGG_DEPTH_ATTACHMENT,

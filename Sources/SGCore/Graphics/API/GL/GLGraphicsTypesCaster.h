@@ -13,6 +13,33 @@
 
 namespace GLGraphicsTypesCaster
 {
+    static std::uint32_t sggFaceTypeToGL(const SGFaceType& faceType)
+    {
+        std::uint32_t glFaceType = GL_BACK;
+
+        switch(faceType)
+        {
+            case SGG_FRONT_FACE: glFaceType = GL_FRONT; break;
+            case SGG_BACK_FACE: glFaceType = GL_BACK; break;
+            case SGG_FRONT_BACK_FACE: glFaceType = GL_FRONT_AND_BACK; break;
+        }
+
+        return glFaceType;
+    }
+
+    static std::uint32_t sggPolygonsOrderToGL(const SGPolygonsOrder& polygonsOrder)
+    {
+        std::uint32_t glPolygonsOrder = GL_CCW;
+
+        switch(polygonsOrder)
+        {
+            case SGG_CW: glPolygonsOrder = GL_CW; break;
+            case SGG_CCW: glPolygonsOrder = GL_CCW; break;
+        }
+
+        return glPolygonsOrder;
+    }
+
     static GLint sggInternalFormatToGL(const SGGColorInternalFormat& sggInternalFormat) noexcept
     {
         GLint glInternalFormat = GL_RGB8;

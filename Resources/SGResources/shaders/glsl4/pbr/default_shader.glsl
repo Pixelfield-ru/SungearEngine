@@ -1,6 +1,7 @@
 // TODO: make optimization
 
 in int gl_FrontFacing;
+in vec4 gl_FragCoord;
 
 layout(std140, location = 0) uniform ObjectMatrices
 {
@@ -71,11 +72,6 @@ float ambient = 0.1;
 
 // shadows impl
 #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
-    float rand(vec2 uv)
-    {
-        return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453123);
-    }
-
     vec2 poissonDisk[4] = vec2[] (
         vec2( -0.94201624, -0.39906216 ),
         vec2( 0.94558609, -0.76890725 ),
@@ -85,7 +81,12 @@ float ambient = 0.1;
 
     float bias = 0.00003;
 
-    float calculateShadow(vec4 shadowsCasterSpaceFragPos, vec3 fragPos, vec3 normal, int shadowsCasterIdx)
+    float calculateShadow(
+        const in vec4 shadowsCasterSpaceFragPos,
+        const in vec3 fragPos,
+        vec3 normal,
+        const in int shadowsCasterIdx
+    )
     {
         vec3 projCoords = shadowsCasterSpaceFragPos.xyz / shadowsCasterSpaceFragPos.w;
         projCoords = projCoords * 0.5 + 0.5;
@@ -116,7 +117,6 @@ float ambient = 0.1;
         for(int i = 0; i < 4; i++)
         {
             // todo: make random poisson
-            //int index = int(8.0 * rand(vec2(shadowsCasterSpaceFragPos.xy * i))) % 8;
             float depthFactor = texture(shadowsCastersShadowMaps[shadowsCasterIdx],
             projCoords.xy + poissonDisk[i] / 3000.0).z;
             depthFactor = depthFactor < projCoords.z - bias ?
@@ -188,11 +188,13 @@ float ambient = 0.1;
 
     void main()
     {
+        vec3 normalizedNormal = normalize(vsIn.normal);
+
         vec4 colorFromBase = vec4(1);
         vec4 colorFromDiffuse = vec4(1);
         vec4 colorFromMetalness = vec4(1);
         vec4 colorFromRoughness = vec4(1);
-        vec3 colorFromNormalMap = vec3(normalize(vsIn.normal));
+        vec3 colorFromNormalMap = vec3(normalizedNormal);
 
         vec2 finalUV = vsIn.UV;
         #ifdef FLIP_TEXTURES_Y

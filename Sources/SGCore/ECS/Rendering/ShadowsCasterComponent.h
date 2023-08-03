@@ -38,7 +38,7 @@ namespace Core::ECS
                 ->create()
                 ->setSize(1024 * 2, 1024 * 2)
                 ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT,
-                                "depthAttachment",
+                                SG_FRAMEBUFFER_DEPTH_ATTACHMENT_NAME,
                                 SGGColorFormat::SGG_DEPTH_COMPONENT,
                                 SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                                 0,

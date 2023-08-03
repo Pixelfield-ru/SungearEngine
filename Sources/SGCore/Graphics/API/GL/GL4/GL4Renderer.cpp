@@ -11,6 +11,8 @@
 #include "SGCore/ECS/Rendering/CameraComponent.h"
 #include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
 
+#include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
+
 void Core::Graphics::GL4Renderer::init() noexcept
 {
     SGCF_INFO("-----------------------------------", SG_LOG_CURRENT_SESSION_FILE);
@@ -137,8 +139,18 @@ void Core::Graphics::GL4Renderer::renderMesh(
 {
     if(!meshComponent->m_mesh) return;
 
-    /*glEnable(GL_CULL_FACE);
-    glCullface(GL_BACK);*/
+    if(meshComponent->m_enableFacesCulling)
+    {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshComponent->m_facesCullingFaceType));
+        glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
+                meshComponent->m_facesCullingPolygonsOrder)
+        );
+    }
+    else
+    {
+        glDisable(GL_CULL_FACE);
+    }
 
     meshComponent->m_mesh->m_material->bind();
     meshComponent->m_mesh->getVertexArray()->bind();

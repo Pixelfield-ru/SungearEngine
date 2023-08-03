@@ -47,23 +47,20 @@ std::shared_ptr<Core::ECS::Scene> testScene;
 void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
                        const glm::vec3& pos,
                        const glm::vec3& rot,
-                       const glm::vec3& scale)
+                       const glm::vec3& scale,
+                       std::vector<std::shared_ptr<Core::ECS::Entity>>& outputEntities)
 {
     std::shared_ptr<Core::ECS::Entity> nodeEntity = std::make_shared<Core::ECS::Entity>();
     nodeEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
     nodeEntity->m_name = sgNode->m_name;
 
-    testScene->m_entities.push_back(nodeEntity);
-
-    static float cur = 1;
+    outputEntities.push_back(nodeEntity);
 
     for(auto& mesh : sgNode->m_meshes)
     {
         std::shared_ptr<Core::ECS::TransformComponent> meshedEntityTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
-        // hardcoded transformations =)
         meshedEntityTransformComponent->m_position = pos;
         meshedEntityTransformComponent->m_rotation = rot;
-        //transformComponent->m_scale = glm::vec3(0.1, 0.1, 0.1);
         meshedEntityTransformComponent->m_scale = scale;
 
         std::shared_ptr<Core::ECS::MeshComponent> meshComponent = std::make_shared<Core::ECS::MeshComponent>();
@@ -73,20 +70,18 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
         meshedEntity->addComponent(meshedEntityTransformComponent);
         meshedEntity->addComponent(meshComponent);
 
-        testScene->m_entities.push_back(meshedEntity);
-
-        cur += 0.05;
+        outputEntities.push_back(meshedEntity);
+        //testScene->m_entities.push_back(meshedEntity);
     }
 
     for(auto& node : sgNode->m_children)
     {
-        processLoadedNode(node, pos, rot, scale);
+        processLoadedNode(node, pos, rot, scale, outputEntities);
     }
 }
 
 void init()
 {
-
     testScene = std::make_shared<Core::ECS::Scene>();
     Core::ECS::Scene::setCurrentScene(testScene);
 
@@ -116,25 +111,45 @@ void init()
             //"../SGResources/models/test/lenin/scene.gltf"
     );
 
+    std::vector<std::shared_ptr<Core::ECS::Entity>> planeEntities;
+
     for(auto& node : testModel->m_nodes)
     {
         //processLoadedNode(node, { 0, 0, -10 }, { 0, 90, 0 }, { 2, 2, 2 });
-        processLoadedNode(node, { 0, -3, -15 }, { }, { 1, 1, 2 });
+        processLoadedNode(node, { 0, -3, -15 }, { }, { 1, 1, 2 }, planeEntities);
     }
+
+    for(const auto& entity : planeEntities)
+    {
+        auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
+        if(meshComponent) meshComponent->m_enableFacesCulling = false;
+        testScene->m_entities.push_back(entity);
+    }
+
+    // -------
+
+    std::vector<std::shared_ptr<Core::ECS::Entity>> btrEntities;
 
     for(auto& node : btrModel->m_nodes)
     {
         processLoadedNode(node, { 0, 0, -4 }, { 0, 90, 0 },
-                          { 4, 4, 4 });
+                          { 4, 4, 4 }, btrEntities);
         /*processLoadedNode(node, { 0, -5, -4 }, { -90, 0, -90 },
                           { 0.015, 0.015, 0.015 });*/
+    }
+
+    for(const auto& entity : btrEntities)
+    {
+        testScene->m_entities.push_back(entity);
     }
 
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
     //testCameraEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
     //testCameraEntity->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
     auto cameraTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
-    cameraTransformComponent->m_position.y = -5;
+    cameraTransformComponent->m_position.y = -3;
+    cameraTransformComponent->m_position.z = 2;
+    cameraTransformComponent->m_rotation.x = -30;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
     testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
@@ -153,7 +168,7 @@ void init()
     testShadowsCaster->addComponent(shadowCasterComponent);
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
 
-    auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
+    /*auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
     testScene->m_entities.push_back(testShadowsCaster1);
     auto shadowsCasterTransform1 = std::make_shared<Core::ECS::TransformComponent>();
     shadowsCasterTransform1->m_position.x = 0;
@@ -164,7 +179,7 @@ void init()
     auto shadowCasterComponent1 = std::make_shared<Core::ECS::ShadowsCasterComponent>();
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
     testShadowsCaster1->addComponent(shadowCasterComponent1);
-    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
+    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());*/
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
