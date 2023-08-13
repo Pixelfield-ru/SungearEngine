@@ -20,10 +20,17 @@ bool Core::Graphics::GL46Renderer::confirmSupport() noexcept
     return true;
 }
 
-Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createPBRShader()
+Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createShader()
 {
     auto* shader = new GL46Shader;
     shader->m_version = "460";
+
+    return shader;
+}
+
+Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createPBRShader()
+{
+    auto* shader = createShader();
     shader->compile(
             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL46_PBR_SHADER_PATH)
     );
@@ -33,8 +40,7 @@ Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createPBRShader()
 
 Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createOnlyGeometryShader()
 {
-    auto* shader = new GL46Shader;
-    shader->m_version = "460";
+    auto* shader = createShader();
     shader->compile(
             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL4_ONLY_GEOM_SHADER_PATH)
     );
@@ -51,7 +57,7 @@ Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createMaterial()
 {
     auto* mat = new Memory::Assets::IMaterial;
 
-    mat->m_shader = std::shared_ptr<Core::Graphics::IShader>(createPBRShader());
+    mat->setShader(std::shared_ptr<Core::Graphics::IShader>(createPBRShader()));
 
     // adding block decls
     mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSIVE,
@@ -96,6 +102,8 @@ Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createMaterial()
                              1, 19);
     mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SHADOW_MAP,
                              5, 20);
+    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SKYBOX,
+                             1, 25);
 
     return mat;
 }

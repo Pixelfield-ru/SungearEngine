@@ -59,6 +59,7 @@ namespace Core::Graphics
         [[nodiscard]] VkShader* createShader() override;
         [[nodiscard]] VkShader* createPBRShader() override;
         [[nodiscard]] VkShader* createOnlyGeometryShader() override;
+        [[nodiscard]] VkShader* createSkyboxShader() override;
 
         [[nodiscard]] VkVertexArray* createVertexArray() override;
         [[nodiscard]] VkVertexBuffer* createVertexBuffer() override;

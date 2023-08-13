@@ -32,6 +32,7 @@ namespace Core::ECS
     class MeshComponent;
     class TransformComponent;
     class ShadowsCasterComponent;
+    class SkyboxComponent;
 }
 
 namespace Core::Graphics
@@ -76,6 +77,14 @@ namespace Core::Graphics
                                 const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
 
         /**
+        * Renders the model using skybox shader and matrices from objectMatricesBuffer.
+        */
+        virtual void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+                                const std::shared_ptr<ECS::SkyboxComponent>& skyboxComponent,
+                                const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
+
+        /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
          */
         virtual void printInfo() noexcept { }
@@ -85,6 +94,7 @@ namespace Core::Graphics
         [[nodiscard]] virtual IShader* createShader() = 0;
         [[nodiscard]] virtual IShader* createPBRShader() = 0;
         [[nodiscard]] virtual IShader* createOnlyGeometryShader() = 0;
+        [[nodiscard]] virtual IShader* createSkyboxShader() = 0;
 
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
         [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;

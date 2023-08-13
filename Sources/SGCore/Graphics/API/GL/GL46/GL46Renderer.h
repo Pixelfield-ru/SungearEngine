@@ -50,6 +50,7 @@ namespace Core::Graphics
 
         bool confirmSupport() noexcept override;
 
+        [[nodiscard]] GL46Shader* createShader() override;
         [[nodiscard]] GL46Shader* createPBRShader() override;
         [[nodiscard]] GL46Shader* createOnlyGeometryShader() override;
 

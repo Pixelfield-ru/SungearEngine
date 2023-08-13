@@ -42,9 +42,8 @@ namespace Core::Memory::Assets
     public:
         std::string m_name;
 
-        std::shared_ptr<Graphics::IShader> m_shader;
-
         std::shared_ptr<IMaterial> bind();
+        std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::IShader>& otherShader);
 
         // TODO: impl
         std::shared_ptr<IAsset> load(const std::string& path) override;
@@ -70,7 +69,9 @@ namespace Core::Memory::Assets
         * @param texture2DAsset - Texture asset
         * @return this
         */
-        std::shared_ptr<Texture2DAsset> findAndAddTexture2D(const SGMaterialTextureType& type, const std::string& path);
+        std::shared_ptr<Texture2DAsset> findAndAddTexture2D(const SGMaterialTextureType& type,
+                                                            const std::string& path,
+                                                            const SGTextureType& textureType = SGTextureType::SGG_DEFAULT_TEXTURE);
 
         /**
          * Sets texture2D by name. Method is copying texture.
@@ -97,6 +98,9 @@ namespace Core::Memory::Assets
             return m_blocks;
         }
 
+        void setShader(std::shared_ptr<Graphics::IShader> otherShader);
+        std::shared_ptr<Graphics::IShader> getShader() const noexcept;
+
         /**
          * Copies all texture assets (textures data is not copied) to another material.\n
          * Also tries to do the same with unused textures of this material.
@@ -106,6 +110,8 @@ namespace Core::Memory::Assets
         IMaterial& operator=(const IMaterial& other) noexcept;
 
     protected:
+        std::shared_ptr<Graphics::IShader> m_shader;
+
         // Blocks of textures that correspond to a specific type of texture
         std::map<SGMaterialTextureType, MaterialTexturesBlock> m_blocks;
 

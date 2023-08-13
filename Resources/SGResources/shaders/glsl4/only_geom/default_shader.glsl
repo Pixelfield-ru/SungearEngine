@@ -22,8 +22,6 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-    //out vec4 fragColor;
-
     void main()
     {
         gl_FragColor = vec4(gl_FragCoord.z);

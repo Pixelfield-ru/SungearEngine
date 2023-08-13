@@ -30,11 +30,6 @@ namespace Core::Graphics
 
     class IShader : public Memory::Assets::IAssetObserver
     {
-    protected:
-        std::list<ShaderDefine> m_defines;
-
-        std::weak_ptr<Memory::Assets::FileAsset> m_fileAsset;
-
     public:
         std::string m_version;
 
@@ -75,9 +70,17 @@ namespace Core::Graphics
 
         #pragma endregion
 
+        void replaceDefines(const std::list<ShaderDefine>& otherDefines) noexcept;
+        void replaceDefines(std::shared_ptr<IShader> otherShader) noexcept;
+
         #pragma region Operators
-        //IShader& operator=(IShader&&) noexcept;
+        IShader& operator=(const IShader&) noexcept;
         #pragma endregion
+
+    protected:
+        std::list<ShaderDefine> m_defines;
+
+        std::weak_ptr<Memory::Assets::FileAsset> m_fileAsset;
     };
     //class IUniformType
 }

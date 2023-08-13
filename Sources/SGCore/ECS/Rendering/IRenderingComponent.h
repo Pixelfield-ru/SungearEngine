@@ -22,12 +22,11 @@ namespace Core::ECS
         float m_aspect = 16.0f / 9.0f;
 
         float m_zNear = 0.1;
-        float m_zFar = 100.0;
+        float m_zFar = 260.0;
 
         float m_movementSpeed = 5.0f;
         float m_rotationSensitive = 0.075f;
 
-        //glm::mat4 m_projectionMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, m_zNear, m_zFar);
         glm::mat4 m_projectionMatrix = glm::perspective<float>(glm::radians(m_fov), m_aspect, m_zNear, m_zFar);
         glm::mat4 m_viewMatrix = glm::mat4(1);
 

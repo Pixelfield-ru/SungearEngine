@@ -5,7 +5,13 @@
 
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind()
 {
-    m_shader->bind();
+    return bind(m_shader);
+}
+
+std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind
+(const std::shared_ptr<Graphics::IShader>& otherShader)
+{
+    otherShader->bind();
 
     for(const auto& block : m_blocks)
     {
@@ -18,7 +24,7 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
                 if(texture) texture->bind(textureUnit);
             }
 
-            m_shader->useMaterialTexture(typedTexture.second);
+            otherShader->useMaterialTexture(typedTexture.second);
         }
     }
 
@@ -68,7 +74,9 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
 }
 
 std::shared_ptr<Core::Memory::Assets::Texture2DAsset>
-Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGMaterialTextureType& type, const std::string& path)
+Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGMaterialTextureType& type,
+                                                     const std::string& path,
+                                                     const SGTextureType& textureType)
 {
     auto& texturesWithType = m_blocks[type];
 
@@ -76,7 +84,8 @@ Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGMaterialTextureType
 
     if(typedTextures.find(path) == typedTextures.end())
     {
-        auto foundTex = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(path);
+        auto foundTex =
+                Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(path, textureType);
 
         addTexture2D(type, foundTex);
 
@@ -86,8 +95,9 @@ Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGMaterialTextureType
     return nullptr;
 }
 
-std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::addTexture2D(const SGMaterialTextureType& type,
-                                                                         const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset)
+std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::addTexture2D
+(const SGMaterialTextureType& type,
+ const std::shared_ptr<Memory::Assets::Texture2DAsset>& texture2DAsset)
 {
     auto& texturesWithType = m_blocks[type];
 
@@ -163,8 +173,10 @@ Core::Memory::Assets::IMaterial::setTexture2D(const SGMaterialTextureType& type,
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Memory::Assets::IMaterial>
-Core::Memory::Assets::IMaterial::findAndSetTexture2D(const SGMaterialTextureType& type, const std::string& oldTextureAssetPath, const std::string& newTextureAssetPath)
+std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::findAndSetTexture2D
+(const SGMaterialTextureType& type,
+ const std::string& oldTextureAssetPath,
+ const std::string& newTextureAssetPath)
 {
     if(oldTextureAssetPath != newTextureAssetPath)
     {
@@ -173,6 +185,22 @@ Core::Memory::Assets::IMaterial::findAndSetTexture2D(const SGMaterialTextureType
     }
 
     return shared_from_this();
+}
+
+void Core::Memory::Assets::IMaterial::setShader
+(std::shared_ptr<Graphics::IShader> otherShader)
+{
+    if(m_shader)
+    {
+        otherShader->replaceDefines(m_shader);
+    }
+
+    m_shader = otherShader;
+}
+
+std::shared_ptr<Core::Graphics::IShader> Core::Memory::Assets::IMaterial::getShader() const noexcept
+{
+    return m_shader;
 }
 
 Core::Memory::Assets::IMaterial&

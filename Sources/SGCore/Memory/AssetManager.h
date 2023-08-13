@@ -35,9 +35,9 @@ namespace Core::Memory
         * @param path - Asset path
         * @return Added or already loaded asset
         */
-        template<typename AssetT>
+        template<typename AssetT, typename... Args>
         requires(std::is_base_of_v<Assets::IAsset, AssetT>)
-        static std::shared_ptr<AssetT> loadAsset(const std::string& path)
+        static std::shared_ptr<AssetT> loadAsset(const std::string& path, const Args&... args)
         {
             auto foundAssetPair = m_assets.find(path);
 
@@ -46,13 +46,13 @@ namespace Core::Memory
                 return std::static_pointer_cast<AssetT>(foundAssetPair->second);
             }
 
-            std::shared_ptr<Assets::IAsset> newAsset = std::make_shared<AssetT>();
+            std::shared_ptr<AssetT> newAsset = std::make_shared<AssetT>(args...);
 
-            newAsset = newAsset->load(path);
+            newAsset->load(path);
 
             m_assets.emplace(path, newAsset);
 
-            return std::static_pointer_cast<AssetT>(newAsset);
+            return newAsset;
         }
 
         /**
@@ -62,9 +62,9 @@ namespace Core::Memory
          * @param path - Asset pseudonym
          * @return Created or found asset
          */
-        template<typename AssetT>
+        template<typename AssetT, typename... Args>
         requires(std::is_base_of_v<Assets::IAsset, AssetT>)
-        static std::shared_ptr<AssetT> createAsset(const std::string& path)
+        static std::shared_ptr<AssetT> createAsset(const std::string& path, const Args&... args)
         {
             auto foundAssetPair = m_assets.find(path);
 
@@ -73,11 +73,11 @@ namespace Core::Memory
                 return std::static_pointer_cast<AssetT>(foundAssetPair->second);
             }
 
-            std::shared_ptr<Assets::IAsset> newAsset = std::make_shared<AssetT>();
+            std::shared_ptr<AssetT> newAsset = std::make_shared<AssetT>(args...);
 
             m_assets.emplace(path, newAsset);
 
-            return std::static_pointer_cast<AssetT>(newAsset);
+            return newAsset;
         }
     };
 }

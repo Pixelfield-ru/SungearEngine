@@ -4,12 +4,22 @@
 
 //#include "Texture2DAsset.h"
 
-#include <stb/stb_image.h>
 #include <memory>
 #include <filesystem>
 
 #include "Texture2DAsset.h"
 #include "SGCore/Main/CoreMain.h"
+#include <stb/stb_image.h>
+
+void Core::Memory::Assets::Texture2DDataDeleter::operator()(std::uint8_t* data)
+{
+    stbi_image_free(data);
+}
+
+Core::Memory::Assets::Texture2DAsset::Texture2DAsset(const SGTextureType& type) noexcept
+{
+    m_type = type;
+}
 
 std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAsset::load(const std::string& path)
 {
@@ -17,7 +27,11 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
 
     m_path = path;
 
-    m_textureData = std::shared_ptr<std::uint8_t[]>(stbi_load(m_path.string().data(), &m_width, &m_height, &m_channelsInFile, channelsDesired));
+    m_textureData = std::shared_ptr<std::uint8_t[]>(
+            stbi_load(m_path.string().data(),
+                      &m_width, &m_height,
+                      &m_channelsInFile, channelsDesired),
+                      Texture2DDataDeleter { });
 
     m_texture2D = std::shared_ptr<Graphics::ITexture2D>(Core::Main::CoreMain::getRenderer().createTexture2D());
 
@@ -28,6 +42,7 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
     }
     else if(m_channelsInFile == 3)
     {
+        m_internalFormat = SGGColorInternalFormat::SGG_RGB8;
         m_format = SGGColorFormat::SGG_RGB;
     }
 
@@ -35,7 +50,7 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
     m_texture2D->create(sharedPtr);
 
     SGC_INFO("Loaded texture. Width: " + std::to_string(m_width) + ", height: " + std::to_string(m_height)
-             + ", byte size: " + std::to_string(m_width * m_height) + ", channels: " +
+             + ", MB size: " + std::to_string(m_width * m_height * m_channelsInFile / 1024.0 / 1024.0) + ", channels: " +
              std::to_string(m_channelsInFile) + ", path: " + m_path.string());
 
     return sharedPtr;
@@ -46,14 +61,19 @@ std::shared_ptr<Core::Graphics::ITexture2D> Core::Memory::Assets::Texture2DAsset
     return m_texture2D;
 }
 
-SGGColorInternalFormat Core::Memory::Assets::Texture2DAsset::getInternalFormat() noexcept
+SGGColorInternalFormat Core::Memory::Assets::Texture2DAsset::getInternalFormat() const noexcept
 {
     return m_internalFormat;
 }
 
-SGGColorFormat Core::Memory::Assets::Texture2DAsset::getFormat() noexcept
+SGGColorFormat Core::Memory::Assets::Texture2DAsset::getFormat() const noexcept
 {
     return m_format;
+}
+
+SGTextureType Core::Memory::Assets::Texture2DAsset::getType() const noexcept
+{
+    return m_type;
 }
 
 int Core::Memory::Assets::Texture2DAsset::getWidth() noexcept
@@ -70,4 +90,3 @@ std::shared_ptr<std::uint8_t[]> Core::Memory::Assets::Texture2DAsset::getData() 
 {
     return m_textureData;
 }
-

@@ -35,6 +35,7 @@
 #include "SGCore/ECS/Rendering/CameraComponent.h"
 #include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
 #include "SGCore/ECS/Rendering/DirectionalLightComponent.h"
+#include "SGCore/ECS/Rendering/SkyboxComponent.h"
 
 std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
 
@@ -106,9 +107,14 @@ void init()
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
             "../SGResources/models/test/btr_80a2016/scene.gltf"
+            //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/lenin/scene.gltf"
+    );
+
+    auto cubeModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+            "../SGResources/models/standard/cube.fbx"
     );
 
     std::vector<std::shared_ptr<Core::ECS::Entity>> planeEntities;
@@ -134,12 +140,49 @@ void init()
     {
         processLoadedNode(node, { 0, 0, -4 }, { 0, 90, 0 },
                           { 4, 4, 4 }, btrEntities);
+        /*processLoadedNode(node, { 0, 0, -4 }, { 0, 180, 0 },
+                          { 0.75, 0.75, 0.75 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -5, -4 }, { -90, 0, -90 },
                           { 0.015, 0.015, 0.015 });*/
     }
 
     for(const auto& entity : btrEntities)
     {
+        testScene->m_entities.push_back(entity);
+    }
+
+    std::vector<std::shared_ptr<Core::ECS::Entity>> cubeEntities;
+
+    for(auto& node : cubeModel->m_nodes)
+    {
+        processLoadedNode(node, { 0, 0, 0 }, { 0, 0, 0 },
+                          { 30, 30, 30 }, cubeEntities);
+        /*processLoadedNode(node, { 0, -5, -4 }, { -90, 0, -90 },
+                          { 0.015, 0.015, 0.015 });*/
+    }
+
+    for(const auto& entity : cubeEntities)
+    {
+        entity->addComponent(std::make_shared<Core::ECS::SkyboxComponent>());
+
+        auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
+        if(meshComponent)
+        {
+            meshComponent->m_enableFacesCulling = false;
+            meshComponent->m_mesh->m_material->addTexture2D(
+                    SGMaterialTextureType::SGTP_SKYBOX,
+                    Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                            "../SGResources/textures/skyboxes/standard_skybox5.png",
+                            //"../SGResources/models/test/btr_80a2016/textures/material_normal.png",
+                            //"../SGResources/textures/x.png",
+                            SGTextureType::SGG_CUBE_MAP_TEXTURE
+                    )
+            );
+
+            meshComponent->m_mesh->m_material->setShader(std::shared_ptr<Core::Graphics::IShader>(
+                    Core::Main::CoreMain::getRenderer().createSkyboxShader()
+            ));
+        }
         testScene->m_entities.push_back(entity);
     }
 

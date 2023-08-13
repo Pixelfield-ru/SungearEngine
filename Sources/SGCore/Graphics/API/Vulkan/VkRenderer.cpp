@@ -84,6 +84,11 @@ Core::Graphics::VkShader* Core::Graphics::VkRenderer::createOnlyGeometryShader()
     return nullptr;
 }
 
+Core::Graphics::VkShader* Core::Graphics::VkRenderer::createSkyboxShader()
+{
+    return nullptr;
+}
+
 Core::Graphics::VkVertexArray* Core::Graphics::VkRenderer::createVertexArray()
 {
     return new VkVertexArray;

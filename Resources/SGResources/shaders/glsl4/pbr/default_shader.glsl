@@ -140,14 +140,14 @@ float ambient = 0.1;
         )
     {
         vec3 lightDir = normalize(lightPos - fragPos);
-        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 11.5;
+        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 5;
 
         diffuseColor = vec3(finalDiffuse) * lightColor.rgb;
 
         vec3 viewDir = normalize(viewDirection - fragPos);
         vec3 reflectDir = reflect(-lightDir, normal);
 
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16);
 
         specularColor = 4.0 * spec * lightColor.rgb;
     }
@@ -240,11 +240,11 @@ float ambient = 0.1;
                     intermediateSpecular
                 );
 
-                finalDiffuse += intermediateDiffuse * colorFromDiffuse.rgb;
+                finalDiffuse += intermediateDiffuse;
                 finalSpecular += intermediateSpecular;
             }
 
-            fragColor.rgb *= vec3(ambient) + finalDiffuse + finalSpecular;
+            fragColor.rgb *= vec3(ambient) + (finalDiffuse * colorFromDiffuse.rgb) + finalSpecular;
         #endif
 
         #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)

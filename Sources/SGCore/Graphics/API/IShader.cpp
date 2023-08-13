@@ -39,3 +39,30 @@ void Core::Graphics::IShader::onAssetPathChanged()
 {
     compile(m_fileAsset.lock());
 }
+
+void Core::Graphics::IShader::replaceDefines(const std::list<ShaderDefine>& otherDefines) noexcept
+{
+    m_defines.clear();
+    m_defines.insert(m_defines.end(), otherDefines.begin(), otherDefines.end());
+
+    onAssetModified();
+}
+
+void Core::Graphics::IShader::replaceDefines(std::shared_ptr<IShader> otherShader) noexcept
+{
+    m_defines.clear();
+    m_defines.insert(m_defines.end(), otherShader->m_defines.begin(), otherShader->m_defines.end());
+
+    onAssetModified();
+}
+
+Core::Graphics::IShader& Core::Graphics::IShader::operator=(const Core::Graphics::IShader& other) noexcept
+{
+    assert(this != std::addressof(other));
+
+    replaceDefines(other.m_defines);
+
+    m_fileAsset = other.m_fileAsset;
+
+    return *this;
+}

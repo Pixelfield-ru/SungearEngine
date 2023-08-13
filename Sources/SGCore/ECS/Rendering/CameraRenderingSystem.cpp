@@ -4,9 +4,11 @@
 
 #include "CameraRenderingSystem.h"
 #include "SGCore/Main/CoreMain.h"
+
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "CameraComponent.h"
 #include "MeshComponent.h"
+#include "SkyboxComponent.h"
 
 void Core::ECS::CameraRenderingSystem::update
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
@@ -20,10 +22,28 @@ void Core::ECS::CameraRenderingSystem::update
     {
         std::shared_ptr<TransformComponent> transformComponent = sceneEntity->getComponent<TransformComponent>();
         std::shared_ptr<MeshComponent> meshComponent = sceneEntity->getComponent<MeshComponent>();
+        std::shared_ptr<SkyboxComponent> skyboxComponent = sceneEntity->getComponent<SkyboxComponent>();
 
         if(!transformComponent || !meshComponent) continue;
 
-        Core::Main::CoreMain::getRenderer().renderMesh(cameraComponent, cameraTransformComponent, transformComponent, meshComponent);
+        if(!skyboxComponent)
+        {
+            Core::Main::CoreMain::getRenderer().renderMesh(
+                    cameraComponent,
+                    cameraTransformComponent,
+                    transformComponent,
+                    meshComponent
+                    );
+        }
+        else
+        {
+            Core::Main::CoreMain::getRenderer().renderMesh(
+                    cameraComponent,
+                    skyboxComponent,
+                    transformComponent,
+                    meshComponent
+            );
+        }
     }
 }
 

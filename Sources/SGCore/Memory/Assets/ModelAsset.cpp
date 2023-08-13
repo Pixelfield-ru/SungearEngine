@@ -107,7 +107,7 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
     if(aiMesh->mMaterialIndex >= 0)
     {
         // disable recompiling when adding new define (when adding new texture)
-        sgMesh->m_material->m_shader->setAssetModifiedChecking(false);
+        sgMesh->m_material->getShader()->setAssetModifiedChecking(false);
 
         // get current mesh material
         auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
@@ -136,7 +136,7 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
         loadTextures(aiMat, sgMesh->m_material, aiTextureType_TRANSMISSION, SGMaterialTextureType::SGTP_TRANSMISSION);
 
         // enable recompile
-        sgMesh->m_material->m_shader->setAssetModifiedChecking(true);
+        sgMesh->m_material->getShader()->setAssetModifiedChecking(true);
 
         SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
     }

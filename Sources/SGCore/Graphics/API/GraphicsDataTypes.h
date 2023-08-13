@@ -10,6 +10,12 @@
 #include <iostream>
 #include <cstdint>
 
+enum SGTextureType
+{
+    SGG_DEFAULT_TEXTURE,
+    SGG_CUBE_MAP_TEXTURE
+};
+
 enum SGFaceType
 {
     SGG_FRONT_FACE,
@@ -80,7 +86,8 @@ enum SGMaterialTextureType
     SGTP_SHININESS,
     SGTP_SPECULAR,
     SGTP_TRANSMISSION,
-    SGTP_SHADOW_MAP
+    SGTP_SHADOW_MAP,
+    SGTP_SKYBOX
 };
 
 static std::string sgMaterialTextureTypeToString(const SGMaterialTextureType& sgMaterialTextureType)
@@ -108,6 +115,7 @@ static std::string sgMaterialTextureTypeToString(const SGMaterialTextureType& sg
         case SGTP_SPECULAR: return "sgmat_specular";
         case SGTP_TRANSMISSION: return "sgmat_transmission";
         case SGTP_SHADOW_MAP: return "sgmat_shadowMap";
+        case SGTP_SKYBOX: return "sgmat_skybox";
     }
 
     return "";

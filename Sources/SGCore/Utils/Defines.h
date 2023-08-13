@@ -12,6 +12,8 @@
 #define SG_GLSL4_ONLY_GEOM_SHADER_PATH "../SGResources/shaders/glsl4/only_geom/default_shader.glsl"
 #define SG_VULKAN_PBR_SHADER_PATH ""
 
+#define SG_GLSL4_SKYBOX_SHADER_PATH "../SGResources/shaders/glsl4/skybox/default_shader.glsl"
+
 #define SG_SHADERS_SHADOWS_CASTERS_NUM_NAME "SHADOWS_CASTERS_NUM"
 #define SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME "DIRECTIONAL_LIGHTS_NUM"
 

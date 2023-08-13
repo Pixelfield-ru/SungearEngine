@@ -62,6 +62,11 @@ namespace Core::Graphics
                         const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                         const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
 
+        void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+                        const std::shared_ptr<ECS::SkyboxComponent>& shadowsCasterComponent,
+                        const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                        const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
+
         void printInfo() noexcept override;
 
         /**
@@ -74,6 +79,7 @@ namespace Core::Graphics
         [[nodiscard]] GL46Shader* createShader() override;
         [[nodiscard]] GL46Shader* createPBRShader() override;
         [[nodiscard]] GL46Shader* createOnlyGeometryShader() override;
+        [[nodiscard]] GL46Shader* createSkyboxShader() override;
 
         [[nodiscard]] GLVertexArray* createVertexArray() override;
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;

@@ -6,6 +6,7 @@
 #include "ShadowsCasterComponent.h"
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "MeshComponent.h"
+#include "SkyboxComponent.h"
 
 void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 {
@@ -39,18 +40,18 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
                             finalTextureBlock
                             );
 
-                    meshComponent->m_mesh->m_material->m_shader->bind();
+                    meshComponent->m_mesh->m_material->getShader()->bind();
 
-                    meshComponent->m_mesh->m_material->m_shader->useTexture(
+                    meshComponent->m_mesh->m_material->getShader()->useTexture(
                             "shadowsCastersShadowMaps[" + std::to_string(totalShadowCasters) + "]",
                             finalTextureBlock);
 
                     // todo: maybe make uniform buffer for shadows casters
-                    meshComponent->m_mesh->m_material->m_shader->useMatrix(
+                    meshComponent->m_mesh->m_material->getShader()->useMatrix(
                             "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
                             shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
 
-                    meshComponent->m_mesh->m_material->m_shader->useVectorf(
+                    meshComponent->m_mesh->m_material->getShader()->useVectorf(
                             "shadowsCasters[" + std::to_string(totalShadowCasters) + "].position",
                             shadowCasterTransform->m_position);
                 }
@@ -73,10 +74,10 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
 
     for(auto& sceneEntity : scene->m_entities)
     {
-        std::shared_ptr<TransformComponent> transformComponent = sceneEntity->getComponent<TransformComponent>();
-        std::shared_ptr<MeshComponent> meshComponent = sceneEntity->getComponent<MeshComponent>();
+        auto transformComponent = sceneEntity->getComponent<TransformComponent>();
+        auto meshComponent = sceneEntity->getComponent<MeshComponent>();
 
-        if(!transformComponent || !meshComponent) continue;
+        if(!transformComponent || !meshComponent || sceneEntity->getComponent<SkyboxComponent>()) continue;
 
         // TODO: make rendering
         Core::Main::CoreMain::getRenderer().renderMesh(shadowsCasterComponent, transformComponent, meshComponent);
