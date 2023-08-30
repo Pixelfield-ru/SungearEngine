@@ -75,8 +75,7 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
 
 std::shared_ptr<Core::Memory::Assets::Texture2DAsset>
 Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGMaterialTextureType& type,
-                                                     const std::string& path,
-                                                     const SGTextureType& textureType)
+                                                     const std::string& path)
 {
     auto& texturesWithType = m_blocks[type];
 
@@ -85,7 +84,7 @@ Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGMaterialTextureType
     if(typedTextures.find(path) == typedTextures.end())
     {
         auto foundTex =
-                Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(path, textureType);
+                Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(path);
 
         addTexture2D(type, foundTex);
 

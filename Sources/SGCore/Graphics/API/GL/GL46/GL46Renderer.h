@@ -2,12 +2,8 @@
 // Created by stuka on 24.04.2023.
 //
 
-#pragma once
-
 #ifndef SUNGEARENGINE_GL46RENDERER_H
 #define SUNGEARENGINE_GL46RENDERER_H
-
-#include "OpenGL/include/glad/glad.h"
 
 #include "SGCore/Logging/Log.h"
 

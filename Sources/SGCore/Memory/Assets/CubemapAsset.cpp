@@ -12,6 +12,8 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::CubemapAsset
     m_cubemapTexture = std::shared_ptr<Graphics::ICubemapTexture>(Core::Main::CoreMain::getRenderer().createCubemapTexture());
     m_cubemapTexture->create(std::static_pointer_cast<CubemapAsset>(thisShared));
 
+    m_texture2D = m_cubemapTexture;
+
     return thisShared;
 }
 

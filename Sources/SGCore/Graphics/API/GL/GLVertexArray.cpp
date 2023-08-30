@@ -30,7 +30,6 @@ void Core::Graphics::GLVertexArray::destroy() noexcept
     if(glIsBuffer(m_handler))
     {
         glDeleteVertexArrays(1, &m_handler);
-        std::cout << "deleted buf" << std::endl;
     }
 
     #ifdef SUNGEAR_DEBUG

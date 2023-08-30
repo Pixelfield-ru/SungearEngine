@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include "GraphicsDataTypes.h"
-#include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Memory/Assets/Texture2DAsset.h"
 
 namespace Core::Memory::Assets

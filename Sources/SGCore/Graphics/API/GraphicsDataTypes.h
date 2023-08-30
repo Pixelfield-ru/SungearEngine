@@ -2,18 +2,11 @@
 // Created by stuka on 22.05.2023.
 //
 
-#pragma once
-
 #ifndef SUNGEARENGINE_GRAPHICSDATATYPES_H
 #define SUNGEARENGINE_GRAPHICSDATATYPES_H
 
 #include <iostream>
 #include <cstdint>
-
-enum SGTextureType
-{
-    SGG_DEFAULT_TEXTURE
-};
 
 enum SGFaceType
 {

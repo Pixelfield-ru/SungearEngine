@@ -173,34 +173,47 @@ void init()
             meshComponent->m_mesh->m_material->addTexture2D(
                     SGMaterialTextureType::SGTP_SKYBOX,
                     Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::CubemapAsset>(
-                            //"../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png",
                             "standard_skybox0",
                             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png",
-                                    SGTextureType::SGG_DEFAULT_TEXTURE
+                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
                             ),
                             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png",
-                                    SGTextureType::SGG_DEFAULT_TEXTURE
+                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
                             ),
 
                             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png",
-                                    SGTextureType::SGG_DEFAULT_TEXTURE
+                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
                             ),
                             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png",
-                                    SGTextureType::SGG_DEFAULT_TEXTURE
+                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
                             ),
 
                             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png",
-                                    SGTextureType::SGG_DEFAULT_TEXTURE
+                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
                             ),
                             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zbottom.png",
-                                    SGTextureType::SGG_DEFAULT_TEXTURE
+                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
                             )
+                            /*Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                                    "../SGResources/textures/skyboxes/skybox1/standard_skybox1_xleft.png"
+                            ),
+                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                                    "../SGResources/textures/skyboxes/skybox1/standard_skybox1_xright.png"
+                            ),
+
+                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                                    "../SGResources/textures/skyboxes/skybox1/standard_skybox1_ytop.png"
+                            ),
+                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                                    "../SGResources/textures/skyboxes/skybox1/standard_skybox1_ybottom.png"
+                            ),
+
+                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                                    "../SGResources/textures/skyboxes/skybox1/standard_skybox1_zfront.png"
+                            ),
+                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                                    "../SGResources/textures/skyboxes/skybox1/standard_skybox1_zback.png"
+                            )*/
                     )
             );
 

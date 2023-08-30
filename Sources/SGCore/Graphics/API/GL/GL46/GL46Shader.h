@@ -2,8 +2,6 @@
 // Created by stuka on 13.05.2023.
 //
 
-#pragma once
-
 #ifndef SUNGEARENGINE_GL46SHADER_H
 #define SUNGEARENGINE_GL46SHADER_H
 
@@ -14,7 +12,7 @@
 
 namespace Core::Graphics
 {
-    class GL46Shader : public IShader
+    class GL46Shader : public IShader, public std::enable_shared_from_this<GL46Shader>
     {
     public:
         ~GL46Shader() noexcept override;

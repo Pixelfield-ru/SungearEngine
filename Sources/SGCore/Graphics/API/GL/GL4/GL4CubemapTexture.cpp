@@ -8,20 +8,23 @@
 // todo: impl 
 void Core::Graphics::GL4CubemapTexture::create(std::weak_ptr<Memory::Assets::CubemapAsset> cubemapAsset)
 {
-    auto thisShared = shared_from_this();
+    auto thisWeak = weak_from_this();
 
     auto lockedCubemap = m_cubemapAsset.lock();
 
-    if(lockedCubemap && m_cubemapAsset.expired())
+    if(lockedCubemap)
     {
-        lockedCubemap->removeObserver(thisShared);
+        lockedCubemap->removeObserver(thisWeak.lock());
     }
 
     m_cubemapAsset = cubemapAsset;
 
     lockedCubemap = m_cubemapAsset.lock();
 
-    lockedCubemap->addObserver(thisShared);
+    if(lockedCubemap)
+    {
+        lockedCubemap->addObserver(thisWeak.lock());
+    }
 
     const auto& cubemapParts = lockedCubemap->getParts();
 

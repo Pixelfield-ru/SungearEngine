@@ -70,8 +70,7 @@ namespace Core::Memory::Assets
         * @return this
         */
         std::shared_ptr<Texture2DAsset> findAndAddTexture2D(const SGMaterialTextureType& type,
-                                                            const std::string& path,
-                                                            const SGTextureType& textureType = SGTextureType::SGG_DEFAULT_TEXTURE);
+                                                            const std::string& path);
 
         /**
          * Sets texture2D by name. Method is copying texture.

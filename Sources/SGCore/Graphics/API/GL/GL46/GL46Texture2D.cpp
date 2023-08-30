@@ -16,20 +16,23 @@ Core::Graphics::GL46Texture2D::~GL46Texture2D() noexcept
 // migrate to gl46
 void Core::Graphics::GL46Texture2D::create(std::weak_ptr<Memory::Assets::Texture2DAsset> asset) noexcept
 {
-    auto thisShared = shared_from_this();
+    auto thisWeak = weak_from_this();
 
     auto originalSharedPtr = m_texture2DAsset.lock();
 
-    if(originalSharedPtr && m_texture2DAsset.expired())
+    if(originalSharedPtr)
     {
-        originalSharedPtr->removeObserver(thisShared);
+        originalSharedPtr->removeObserver(thisWeak.lock());
     }
 
     m_texture2DAsset = asset;
 
     originalSharedPtr = m_texture2DAsset.lock();
 
-    originalSharedPtr->addObserver(thisShared);
+    if(originalSharedPtr)
+    {
+        originalSharedPtr->addObserver(thisWeak.lock());
+    }
 
     m_glInternalFormat = GLGraphicsTypesCaster::sggInternalFormatToGL(originalSharedPtr->getInternalFormat());
     m_glFormat = GLGraphicsTypesCaster::sggFormatToGL(originalSharedPtr->getFormat());

@@ -24,7 +24,6 @@ namespace Core::Memory::Assets
     {
     public:
         Texture2DAsset() = default;
-        explicit Texture2DAsset(const SGTextureType& type) noexcept;
 
         [[nodiscard]] std::shared_ptr<IAsset> load(const std::string& path) override;
 
@@ -33,7 +32,6 @@ namespace Core::Memory::Assets
         #pragma region Getters
         virtual SGGColorInternalFormat getInternalFormat() const noexcept;
         virtual SGGColorFormat getFormat() const noexcept;
-        virtual SGTextureType getType() const noexcept;
 
         virtual int getWidth() noexcept;
         virtual int getHeight() noexcept;
@@ -44,7 +42,6 @@ namespace Core::Memory::Assets
     protected:
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
         SGGColorFormat m_format = SGGColorFormat::SGG_RGBA;
-        SGTextureType m_type = SGTextureType::SGG_DEFAULT_TEXTURE;
 
         int m_width = 0;
         int m_height = 0;

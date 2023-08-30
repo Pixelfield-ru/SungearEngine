@@ -101,13 +101,15 @@ void Core::Graphics::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAss
 {
     destroy();
 
-    auto thisShared = shared_from_this();
+    std::cout << "sdfsdf" << std::endl;
+
+    auto thisWeak = weak_from_this();
 
     std::shared_ptr<Memory::Assets::FileAsset> fileAssetShared = m_fileAsset.lock();
 
     if(fileAssetShared)
     {
-        fileAssetShared->removeObserver(thisShared);
+        fileAssetShared->removeObserver(thisWeak.lock());
     }
 
     m_fileAsset = asset;
@@ -119,7 +121,7 @@ void Core::Graphics::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAss
         SGCF_ERROR("Error compiling shader. Invalid file asset passed.", SG_LOG_CURRENT_SESSION_FILE);
     }
 
-    fileAssetShared->addObserver(thisShared);
+    fileAssetShared->addObserver(thisWeak.lock());
 
     std::string definesCode;
 

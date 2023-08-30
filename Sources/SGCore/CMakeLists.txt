@@ -4,7 +4,7 @@
 
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
 
- add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES} Patterns/Singleton.h Graphics/API/GL/GL4/GL4FrameBuffer.cpp Graphics/API/GL/GL4/GL4FrameBuffer.h Graphics/API/IFrameBufferAttachment.h Graphics/API/GL/GLFrameBufferAttachment.h ECS/Rendering/DirectionalLightComponent.h ECS/Rendering/ShadowsCasterComponent.h ECS/Rendering/ShadowsCasterSystem.cpp ECS/Rendering/ShadowsCasterSystem.h Utils/Defines.h ECS/Rendering/IRenderingComponent.h ECS/Rendering/RenderingComponentsSystem.cpp ECS/Rendering/RenderingComponentsSystem.h Graphics/API/Vulkan/VkFrameBuffer.cpp Graphics/API/Vulkan/VkFrameBuffer.h Patterns/Marker.h Memory/Collections/BitVector.cpp Memory/Collections/BitVector.h ECS/Rendering/ILightComponent.h ECS/Rendering/DirectionalLightsSystem.cpp ECS/Rendering/DirectionalLightsSystem.h ECS/Rendering/SkyboxComponent.h ECS/Rendering/SkyboxRenderingSystem.cpp ECS/Rendering/SkyboxRenderingSystem.h)
+ add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
 
  #add_definitions(-DSTB_IMAGE_IMPLEMENTATION)
  target_include_directories(${PROJECT_NAME} PRIVATE

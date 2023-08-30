@@ -18,11 +18,6 @@ void Core::Memory::Assets::Texture2DDataDeleter::operator()(std::uint8_t* data)
 
 // ----
 
-Core::Memory::Assets::Texture2DAsset::Texture2DAsset(const SGTextureType& type) noexcept
-{
-    m_type = type;
-}
-
 std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAsset::load(const std::string& path)
 {
     int channelsDesired = 0;
@@ -71,11 +66,6 @@ SGGColorInternalFormat Core::Memory::Assets::Texture2DAsset::getInternalFormat()
 SGGColorFormat Core::Memory::Assets::Texture2DAsset::getFormat() const noexcept
 {
     return m_format;
-}
-
-SGTextureType Core::Memory::Assets::Texture2DAsset::getType() const noexcept
-{
-    return m_type;
 }
 
 int Core::Memory::Assets::Texture2DAsset::getWidth() noexcept

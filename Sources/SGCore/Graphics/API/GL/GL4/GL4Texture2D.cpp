@@ -16,20 +16,23 @@ Core::Graphics::GL4Texture2D::~GL4Texture2D() noexcept
 // migrate to gl46
 void Core::Graphics::GL4Texture2D::create(std::weak_ptr<Memory::Assets::Texture2DAsset> asset) noexcept
 {
-    auto thisShared = shared_from_this();
+    auto thisWeak = weak_from_this();
 
     std::shared_ptr<Core::Memory::Assets::Texture2DAsset> assetSharedPtr = m_texture2DAsset.lock();
 
-    if(assetSharedPtr && m_texture2DAsset.expired())
+    if(assetSharedPtr)
     {
-        assetSharedPtr->removeObserver(thisShared);
+        assetSharedPtr->removeObserver(thisWeak.lock());
     }
 
     m_texture2DAsset = asset;
 
     assetSharedPtr = m_texture2DAsset.lock();
 
-    assetSharedPtr->addObserver(thisShared);
+    if(assetSharedPtr)
+    {
+        assetSharedPtr->addObserver(thisWeak.lock());
+    }
 
     m_glInternalFormat = GLGraphicsTypesCaster::sggInternalFormatToGL(assetSharedPtr->getInternalFormat());
     m_glFormat = GLGraphicsTypesCaster::sggFormatToGL(assetSharedPtr->getFormat());
@@ -61,7 +64,7 @@ void Core::Graphics::GL4Texture2D::create(std::weak_ptr<Memory::Assets::Texture2
                     assetSharedPtr->getHeight(),
                     m_glFormat,
                     GL_UNSIGNED_BYTE,
-                    reinterpret_cast<const void*>(assetSharedPtr->getData().get()));
+                    assetSharedPtr->getData().get());
 
     /*glBindTexture(GL_TEXTURE_CUBE_MAP, m_handler);
 

@@ -58,21 +58,28 @@ void Core::ECS::Camera3DMovementSystem::deltaUpdate
                                   glm::vec3(0, 1, 0));
     }
 
+    float finalCameraSpeed = cameraComponent->m_movementSpeed;
+
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_LEFT_SHIFT))
+    {
+        finalCameraSpeed *= 6.0;
+    }
+
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
     {
-        transformComponent->m_position -= rotatedForward * cameraComponent->m_movementSpeed * (float) deltaTime;
+        transformComponent->m_position -= rotatedForward * finalCameraSpeed * (float) deltaTime;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
     {
-        transformComponent->m_position += rotatedForward * cameraComponent->m_movementSpeed * (float) deltaTime;
+        transformComponent->m_position += rotatedForward * finalCameraSpeed * (float) deltaTime;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
     {
-        transformComponent->m_position += rotatedLeft * cameraComponent->m_movementSpeed * (float) deltaTime;
+        transformComponent->m_position += rotatedLeft * finalCameraSpeed * (float) deltaTime;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
     {
-        transformComponent->m_position -= rotatedLeft * cameraComponent->m_movementSpeed * (float) deltaTime;
+        transformComponent->m_position -= rotatedLeft * finalCameraSpeed * (float) deltaTime;
     }
 
     if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))
