@@ -1,10 +1,5 @@
-#pragma once
-
 #ifndef SUNGEARENGINE_ECSWORLD_H
 #define SUNGEARENGINE_ECSWORLD_H
-
-#include <list>
-#include <memory>
 
 #include "IComponent.h"
 #include "ISystem.h"

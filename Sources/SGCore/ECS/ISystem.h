@@ -2,12 +2,9 @@
 // Created by stuka on 02.05.2023.
 //
 
-#pragma once
-
 #ifndef NATIVECORE_ISYSTEM_H
 #define NATIVECORE_ISYSTEM_H
 
-#include "Entity.h"
 #include "Scene.h"
 #include "SGCore/Patterns/Marker.h"
 

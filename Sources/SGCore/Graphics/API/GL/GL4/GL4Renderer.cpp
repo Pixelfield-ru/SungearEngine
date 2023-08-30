@@ -76,7 +76,12 @@ void Core::Graphics::GL4Renderer::init() noexcept
 bool Core::Graphics::GL4Renderer::confirmSupport() noexcept
 {
     std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-    if(!glVersion.starts_with("4.0"))
+
+    // because gl version always has this pattern
+    int glMajorVersion = glVersion[0] - '0';
+    int glMinorVersion = glVersion[2] - '0';
+
+    if(glMajorVersion < 4)
     {
         SGCF_ERROR("OpengGL 4.0 is not supported!", SG_LOG_CURRENT_SESSION_FILE);
 
@@ -307,9 +312,14 @@ Core::Graphics::GLIndexBuffer* Core::Graphics::GL4Renderer::createIndexBuffer()
     return new GLIndexBuffer;
 }
 
-Core::Graphics::ITexture2D* Core::Graphics::GL4Renderer::createTexture2D()
+Core::Graphics::GL4Texture2D* Core::Graphics::GL4Renderer::createTexture2D()
 {
     return new GL4Texture2D;
+}
+
+Core::Graphics::GL4CubemapTexture* Core::Graphics::GL4Renderer::createCubemapTexture()
+{
+    return new GL4CubemapTexture;
 }
 
 Core::Graphics::GL46UniformBuffer* Core::Graphics::GL4Renderer::createUniformBuffer()

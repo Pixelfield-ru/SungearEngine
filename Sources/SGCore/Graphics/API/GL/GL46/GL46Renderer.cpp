@@ -48,7 +48,7 @@ Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createOnlyGeometryShad
     return shader;
 }
 
-Core::Graphics::GL46Texture2D *Core::Graphics::GL46Renderer::createTexture2D()
+Core::Graphics::GL46Texture2D* Core::Graphics::GL46Renderer::createTexture2D()
 {
     return new GL46Texture2D;
 }

@@ -12,8 +12,7 @@
 
 enum SGTextureType
 {
-    SGG_DEFAULT_TEXTURE,
-    SGG_CUBE_MAP_TEXTURE
+    SGG_DEFAULT_TEXTURE
 };
 
 enum SGFaceType

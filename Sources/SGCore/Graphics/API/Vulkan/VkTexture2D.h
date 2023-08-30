@@ -13,7 +13,7 @@ namespace Core::Graphics
     class VkTexture2D : public ITexture2D
     {
     public:
-        ~VkTexture2D() noexcept override;
+        ~VkTexture2D() noexcept;
 
         void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) noexcept final;
         void destroy() noexcept final;

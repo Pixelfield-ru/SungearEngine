@@ -3,12 +3,12 @@
     layout (location = 1) in vec3 UVAttribute;
     layout (location = 2) in vec3 normalsAttribute;
 
-    layout(std140, location = 0) uniform ObjectMatrices
+    layout(std140) uniform ObjectMatrices
     {
         mat4 objectModelMatrix;
     };
 
-    layout(std140, location = 1) uniform ViewMatrices
+    layout(std140) uniform ViewMatrices
     {
         mat4 projectionMatrix;
         mat4 viewMatrix;

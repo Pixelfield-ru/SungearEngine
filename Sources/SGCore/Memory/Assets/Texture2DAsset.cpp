@@ -16,6 +16,8 @@ void Core::Memory::Assets::Texture2DDataDeleter::operator()(std::uint8_t* data)
     stbi_image_free(data);
 }
 
+// ----
+
 Core::Memory::Assets::Texture2DAsset::Texture2DAsset(const SGTextureType& type) noexcept
 {
     m_type = type;
@@ -33,8 +35,6 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
                       &m_channelsInFile, channelsDesired),
                       Texture2DDataDeleter { });
 
-    m_texture2D = std::shared_ptr<Graphics::ITexture2D>(Core::Main::CoreMain::getRenderer().createTexture2D());
-
     if(m_channelsInFile == 4)
     {
         m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
@@ -46,7 +46,9 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::Texture2DAss
         m_format = SGGColorFormat::SGG_RGB;
     }
 
-    std::shared_ptr<Texture2DAsset> sharedPtr = shared_from_this();
+    auto sharedPtr = shared_from_this();
+
+    m_texture2D = std::shared_ptr<Graphics::ITexture2D>(Core::Main::CoreMain::getRenderer().createTexture2D());
     m_texture2D->create(sharedPtr);
 
     SGC_INFO("Loaded texture. Width: " + std::to_string(m_width) + ", height: " + std::to_string(m_height)

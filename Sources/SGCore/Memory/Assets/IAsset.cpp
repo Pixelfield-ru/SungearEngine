@@ -41,12 +41,12 @@ void Core::Memory::Assets::IAsset::onRestored()
     }
 }
 
-void Core::Memory::Assets::IAsset::addObserver(IAssetObserver* observer) noexcept
+void Core::Memory::Assets::IAsset::addObserver(const std::shared_ptr<IAssetObserver>& observer) noexcept
 {
     m_observers.push_back(observer);
 }
 
-void Core::Memory::Assets::IAsset::removeObserver(IAssetObserver* observer) noexcept
+void Core::Memory::Assets::IAsset::removeObserver(const std::shared_ptr<IAssetObserver>& observer) noexcept
 {
     m_observers.remove(observer);
 }

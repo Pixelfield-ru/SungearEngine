@@ -16,14 +16,6 @@ namespace Core::Graphics
 {
     class GL46Shader : public IShader
     {
-    private:
-        GLuint m_programHandler = 0;
-
-        // vertex, fragment, geometry, compute, tesselation control and tesselation evaluation shaders
-        std::vector<GLuint> m_shaderPartsHandlers;
-
-        GLuint createShaderPart(const GLenum&, const std::string&) noexcept;
-
     public:
         ~GL46Shader() noexcept override;
 
@@ -50,6 +42,14 @@ namespace Core::Graphics
         void useVectorf(const std::string& uniformName, const glm::vec2& vec) override;
         void useVectorf(const std::string& uniformName, const glm::vec3& vec) override;
         void useVectorf(const std::string& uniformName, const glm::vec4& vec) override;
+
+    private:
+        GLuint m_programHandler = 0;
+
+        // vertex, fragment, geometry, compute, tesselation control and tesselation evaluation shaders
+        std::vector<GLuint> m_shaderPartsHandlers;
+
+        GLuint createShaderPart(const GLenum&, const std::string&) noexcept;
     };
 }
 

@@ -15,6 +15,7 @@
 #include "VkUniformBuffer.h"
 #include "VkMesh.h"
 #include "VkFrameBuffer.h"
+#include "VkCubemapTexture.h"
 
 //#include <vulkan/vulkan.h>
 
@@ -66,6 +67,7 @@ namespace Core::Graphics
         [[nodiscard]] VkVertexBufferLayout* createVertexBufferLayout() override;
         [[nodiscard]] VkIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] VkTexture2D* createTexture2D() override;
+        [[nodiscard]] VkCubemapTexture* createCubemapTexture() override;
         [[nodiscard]] VkUniformBuffer* createUniformBuffer() override;
         [[nodiscard]] VkFrameBuffer* createFrameBuffer() override;
 

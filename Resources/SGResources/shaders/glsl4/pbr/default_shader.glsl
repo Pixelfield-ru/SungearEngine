@@ -1,14 +1,14 @@
 // TODO: make optimization
 
-in int gl_FrontFacing;
-in vec4 gl_FragCoord;
+/**in int gl_FrontFacing;
+in vec4 gl_FragCoord;*/
 
-layout(std140, location = 0) uniform ObjectMatrices
+layout(std140) uniform ObjectMatrices
 {
     mat4 objectModelMatrix;
 };
 
-layout(std140, location = 1) uniform ViewMatrices
+layout(std140) uniform ViewMatrices
 {
     mat4 projectionMatrix;
     mat4 viewMatrix;
@@ -59,6 +59,8 @@ float ambient = 0.1;
         vsOut.UV = UVAttribute.xy;
         vsOut.normal = normalsAttribute;
 
+        //if(!gl_FrontFacing) vsOut.normal *= -1.0;
+
         vsOut.fragPos = vec3(objectModelMatrix * vec4(positionsAttribute, 1.0));
 
         vec3 T = normalize(vec3(objectModelMatrix * vec4(tangentsAttribute,   0.0)));
@@ -70,9 +72,10 @@ float ambient = 0.1;
     }
 #endif
 
-// shadows impl
-#if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
-    vec2 poissonDisk[4] = vec2[] (
+#ifdef FRAGMENT_SHADER
+    // shadows impl
+    #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
+        vec2 poissonDisk[4] = vec2[] (
         vec2( -0.94201624, -0.39906216 ),
         vec2( 0.94558609, -0.76890725 ),
         vec2( -0.094184101, -0.92938870 ),
@@ -84,7 +87,7 @@ float ambient = 0.1;
     float calculateShadow(
         const in vec4 shadowsCasterSpaceFragPos,
         const in vec3 fragPos,
-        vec3 normal,
+                 vec3 normal,
         const in int shadowsCasterIdx
     )
     {
@@ -96,10 +99,10 @@ float ambient = 0.1;
             return 1.0;
         }
 
-        if(gl_FrontFacing == 0) normal *= -1;
+        if(!gl_FrontFacing) normal *= -1;
 
         vec3 shadowCasterDir = normalize(shadowsCasters[shadowsCasterIdx].position -
-        fragPos);
+                                         fragPos);
         float shadowFactor = dot(normal, shadowCasterDir);
 
         if(shadowFactor < 0.0)
@@ -108,9 +111,9 @@ float ambient = 0.1;
         }
 
         /*float closestDepth = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy).r;
-        float currentDepth = projCoords.z;
-        float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
-        return 1.0 - shadow / 1.5;*/
+            float currentDepth = projCoords.z;
+            float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+            return 1.0 - shadow / 1.5;*/
 
         float shadowVisibility = 1.0;
 
@@ -118,7 +121,7 @@ float ambient = 0.1;
         {
             // todo: make random poisson
             float depthFactor = texture(shadowsCastersShadowMaps[shadowsCasterIdx],
-            projCoords.xy + poissonDisk[i] / 3000.0).z;
+                                        projCoords.xy + poissonDisk[i] / 3000.0).z;
             depthFactor = depthFactor < projCoords.z - bias ?
             depthFactor : 0.0;
 
@@ -127,16 +130,16 @@ float ambient = 0.1;
 
         return shadowVisibility / 1.5;
     }
-#endif
+    #endif
 
-#ifdef DIRECTIONAL_LIGHTS_NUM
-    void calculateDiffuseAndSpecularColor(
-        const in vec3 normal,
-        const in vec3 lightPos,
-        const in vec3 fragPos,
-        const in vec4 lightColor,
-        out vec3 diffuseColor,
-        out vec3 specularColor
+    #ifdef DIRECTIONAL_LIGHTS_NUM
+        void calculateDiffuseAndSpecularColor(
+            const in vec3 normal,
+            const in vec3 lightPos,
+            const in vec3 fragPos,
+            const in vec4 lightColor,
+            out vec3 diffuseColor,
+            out vec3 specularColor
         )
     {
         vec3 lightDir = normalize(lightPos - fragPos);
@@ -151,9 +154,8 @@ float ambient = 0.1;
 
         specularColor = 4.0 * spec * lightColor.rgb;
     }
-#endif
+    #endif
 
-#ifdef FRAGMENT_SHADER
     out vec4 fragColor;
 
     uniform sampler2D sgmat_emissive0;

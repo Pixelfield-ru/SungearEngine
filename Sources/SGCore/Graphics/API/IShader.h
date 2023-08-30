@@ -1,8 +1,6 @@
 //
 // Created by stuka on 13.05.2023.
 //
-#pragma once
-
 #ifndef NATIVECORE_SHADER_H
 #define NATIVECORE_SHADER_H
 
@@ -28,7 +26,7 @@ namespace Core::Graphics
 {
     class IUniformBuffer;
 
-    class IShader : public Memory::Assets::IAssetObserver
+    class IShader : public Memory::Assets::IAssetObserver, public std::enable_shared_from_this<IShader>
     {
     public:
         std::string m_version;

@@ -2,29 +2,28 @@
 // Created by stuka on 28.05.2023.
 //
 
-#pragma once
-
 #ifndef SUNGEARENGINE_GL4TEXTURE2D_H
 #define SUNGEARENGINE_GL4TEXTURE2D_H
 
 #include "SGCore/Graphics/API/ITexture2D.h"
+
 #include <glad/glad.h>
 
 namespace Core::Graphics
 {
     class GL4Texture2D : public ITexture2D
     {
-    private:
+    protected:
         GLuint m_handler = 0;
 
         GLint m_glInternalFormat = GL_RGB8;
         GLenum m_glFormat = GL_RGB;
 
     public:
-        ~GL4Texture2D() noexcept override;
+        ~GL4Texture2D() noexcept;
 
         void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) noexcept override;
-        void destroy() noexcept final;
+        void destroy() noexcept override;
 
         void onAssetModified() noexcept override;
         void onAssetPathChanged() noexcept override;
@@ -33,7 +32,7 @@ namespace Core::Graphics
 
         void bind(const std::uint8_t& textureUnit) noexcept override;
 
-        GL4Texture2D& operator=(const std::shared_ptr<ITexture2D>& other) final;
+        GL4Texture2D& operator=(const std::shared_ptr<ITexture2D>& other) override;
     };
 }
 

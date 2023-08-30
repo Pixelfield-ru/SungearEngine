@@ -23,6 +23,7 @@
 #include "SGCore/ImportedScenesArch/IMesh.h"
 #include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
 #include "GL4FrameBuffer.h"
+#include "GL4CubemapTexture.h"
 
 namespace Core::Main
 {
@@ -85,7 +86,8 @@ namespace Core::Graphics
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;
         [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() override;
         [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
-        [[nodiscard]] ITexture2D* createTexture2D() override;
+        [[nodiscard]] GL4Texture2D* createTexture2D() override;
+        [[nodiscard]] GL4CubemapTexture* createCubemapTexture() override;
         [[nodiscard]] GL46UniformBuffer* createUniformBuffer() override;
         [[nodiscard]] GL4FrameBuffer* createFrameBuffer() override;
 

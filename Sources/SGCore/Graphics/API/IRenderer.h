@@ -25,6 +25,7 @@
 
 #include "APIType.h"
 #include "IFrameBuffer.h"
+#include "ICubemapTexture.h"
 
 namespace Core::ECS
 {
@@ -101,6 +102,7 @@ namespace Core::Graphics
         [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
         [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
         [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
+        [[nodiscard]] virtual ICubemapTexture* createCubemapTexture() = 0;
         [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
         [[nodiscard]] virtual IFrameBuffer* createFrameBuffer() = 0;
 

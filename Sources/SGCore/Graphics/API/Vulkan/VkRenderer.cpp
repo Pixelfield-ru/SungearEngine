@@ -114,6 +114,11 @@ Core::Graphics::VkTexture2D* Core::Graphics::VkRenderer::createTexture2D()
     return new VkTexture2D;
 }
 
+Core::Graphics::VkCubemapTexture* Core::Graphics::VkRenderer::createCubemapTexture()
+{
+    return new VkCubemapTexture;
+}
+
 Core::Graphics::VkUniformBuffer* Core::Graphics::VkRenderer::createUniformBuffer()
 {
     return new VkUniformBuffer;
