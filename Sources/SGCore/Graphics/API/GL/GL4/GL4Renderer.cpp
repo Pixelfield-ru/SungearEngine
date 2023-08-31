@@ -50,7 +50,7 @@ void Core::Graphics::GL4Renderer::init() noexcept
 
     // -------------------------------------
 
-    m_modelMatricesBuffer = std::shared_ptr<GL46UniformBuffer>(createUniformBuffer());
+    m_modelMatricesBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
     m_modelMatricesBuffer->m_blockName = "ObjectMatrices";
     m_modelMatricesBuffer->putUniforms({
         Core::Graphics::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4)
@@ -59,7 +59,7 @@ void Core::Graphics::GL4Renderer::init() noexcept
     m_modelMatricesBuffer->setLayoutLocation(0);
     m_modelMatricesBuffer->prepare();
 
-    m_viewMatricesBuffer = std::shared_ptr<GL46UniformBuffer>(createUniformBuffer());
+    m_viewMatricesBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
     m_viewMatricesBuffer->m_blockName = "ViewMatrices";
     m_viewMatricesBuffer->putUniforms({
         Core::Graphics::IShaderUniform("projectionMatrix", SGGDataType::SGG_MAT4),
@@ -71,6 +71,15 @@ void Core::Graphics::GL4Renderer::init() noexcept
     m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->setLayoutLocation(1);
     m_viewMatricesBuffer->prepare();
+
+    m_programDataBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
+    m_programDataBuffer->m_blockName = "ProgramData";
+    m_programDataBuffer->putUniforms({
+                                               Core::Graphics::IShaderUniform("windowSize", SGGDataType::SGG_MAT4)
+                                       });
+    m_programDataBuffer->putData<float>({ });
+    m_programDataBuffer->setLayoutLocation(2);
+    m_programDataBuffer->prepare();
 }
 
 bool Core::Graphics::GL4Renderer::confirmSupport() noexcept
@@ -166,9 +175,11 @@ void Core::Graphics::GL4Renderer::renderMesh(
 
     m_modelMatricesBuffer->bind();
     m_viewMatricesBuffer->bind();
+    m_programDataBuffer->bind();
 
     meshComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_modelMatricesBuffer);
     meshComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_viewMatricesBuffer);
+    meshComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_programDataBuffer);
 
     m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
 
@@ -178,6 +189,13 @@ void Core::Graphics::GL4Renderer::renderMesh(
                                   glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
     m_viewMatricesBuffer->subData("viewDirection",
                                   glm::value_ptr(cameraTransformComponent->m_position), 3);
+
+    int windowWidth;
+    int windowHeight;
+
+    Main::CoreMain::getWindow().getSize(windowWidth, windowHeight);
+    // todo: перенести обновление в класс окна
+    m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
@@ -322,9 +340,9 @@ Core::Graphics::GL4CubemapTexture* Core::Graphics::GL4Renderer::createCubemapTex
     return new GL4CubemapTexture;
 }
 
-Core::Graphics::GL46UniformBuffer* Core::Graphics::GL4Renderer::createUniformBuffer()
+Core::Graphics::GL4UniformBuffer* Core::Graphics::GL4Renderer::createUniformBuffer()
 {
-    return new GL46UniformBuffer;
+    return new GL4UniformBuffer;
 }
 
 Core::Graphics::GL4FrameBuffer* Core::Graphics::GL4Renderer::createFrameBuffer()

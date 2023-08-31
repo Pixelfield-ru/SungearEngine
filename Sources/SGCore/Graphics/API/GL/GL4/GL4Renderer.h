@@ -20,6 +20,7 @@
 #include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
 #include "GL4FrameBuffer.h"
 #include "GL4CubemapTexture.h"
+#include "GL4UniformBuffer.h"
 
 namespace Core::Main
 {
@@ -32,9 +33,11 @@ namespace Core::Graphics
     {
     protected:
         // Buffer for storing matrices of the currently rendered model.
-        std::shared_ptr<GL46UniformBuffer> m_modelMatricesBuffer;
+        std::shared_ptr<GL4UniformBuffer> m_modelMatricesBuffer;
         // Buffer for storing matrices of the currently main camera.
-        std::shared_ptr<GL46UniformBuffer> m_viewMatricesBuffer;
+        std::shared_ptr<GL4UniformBuffer> m_viewMatricesBuffer;
+        // Buffer for storing matrices of the program.
+        std::shared_ptr<GL4UniformBuffer> m_programDataBuffer;
 
         GL4Renderer() noexcept = default;
 
@@ -84,7 +87,7 @@ namespace Core::Graphics
         [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
         [[nodiscard]] GL4Texture2D* createTexture2D() override;
         [[nodiscard]] GL4CubemapTexture* createCubemapTexture() override;
-        [[nodiscard]] GL46UniformBuffer* createUniformBuffer() override;
+        [[nodiscard]] GL4UniformBuffer* createUniformBuffer() override;
         [[nodiscard]] GL4FrameBuffer* createFrameBuffer() override;
 
         [[nodiscard]] GL3Mesh* createMesh() override;

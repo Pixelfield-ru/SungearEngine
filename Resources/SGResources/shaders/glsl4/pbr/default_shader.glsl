@@ -15,6 +15,11 @@ layout(std140) uniform ViewMatrices
     vec3 viewDirection;
 };
 
+layout(std140) uniform ProgramData
+{
+    vec2 windowSize;
+};
+
 struct ShadowsCaster
 {
     mat4 shadowsCasterSpace;
@@ -82,7 +87,231 @@ float ambient = 0.1;
         vec2( 0.34495938, 0.29387760 )
     );
 
-    float bias = 0.00003;
+    float rand(vec2 uv)
+    {
+        return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453123);
+    }
+
+    const float shadowsBias = 0.00003;
+
+    float sampleShadowMap(
+        const in vec2 coords,
+        const in int shadowsCasterIdx,
+        const in float compare,
+        const in float lightMinCoeff
+    )
+    {
+        return texture2D(shadowsCastersShadowMaps[shadowsCasterIdx], coords).z < compare ? lightMinCoeff : 1.0;
+        //return step(compare, texture2D(shadowsCastersShadowMaps[shadowsCasterIdx], coords).z);
+    }
+
+    // PCF FUNCTIONS ------------------------------
+
+    float calculateLinearDepth(
+        const in vec3 projCoords,
+        const in int shadowsCasterIdx,
+        const in vec2 texelSize,
+        const in float lightMinCoeff
+    )
+    {
+        float finalProjZ = projCoords.z - shadowsBias;
+
+        float shadow = 0.0;
+
+        vec2 pixelPos = projCoords.xy / texelSize + 0.5;
+        vec2 fractPart = fract(pixelPos);
+        vec2 startTexel = (pixelPos - fractPart) * texelSize;
+
+        float blTexel = sampleShadowMap(startTexel, shadowsCasterIdx, finalProjZ, lightMinCoeff);
+        float brTexel = sampleShadowMap(startTexel + vec2(texelSize.x, 0.0), shadowsCasterIdx, finalProjZ, lightMinCoeff);
+        float tlTexel = sampleShadowMap(startTexel + vec2(0.0, texelSize.y), shadowsCasterIdx, finalProjZ, lightMinCoeff);
+        float trTexel = sampleShadowMap(startTexel + texelSize, shadowsCasterIdx, finalProjZ, lightMinCoeff);
+
+        float mixA = mix(blTexel, tlTexel, fractPart.y);
+        float mixB = mix(brTexel, trTexel, fractPart.y);
+
+        return mix(mixA, mixB, fractPart.x);
+    }
+
+    float calculatePCF(
+        const in vec3 projCoords,
+        const in int shadowsCasterIdx,
+        const in float lightMinCoeff,
+        const in vec2 texelSize
+    )
+    {
+        const float samplesNum = 3.0;
+        const float samplesStart = (samplesNum - 1.0) / 2.0;
+        const float samplesNumSquared = samplesNum * samplesNum;
+
+        float resShadow = 0.0;
+
+        for(float y = -samplesStart; y <= samplesStart; y += 1.0)
+        {
+            for(float x = -samplesStart; x <= samplesStart; x += 1.0)
+            {
+                vec2 offset = vec2(x, y) * texelSize;
+                resShadow += calculateLinearDepth(vec3(projCoords.xy + offset, projCoords.z), shadowsCasterIdx, texelSize, lightMinCoeff);
+            }
+        }
+
+        return resShadow / samplesNumSquared;
+    }
+
+    // -------------------------------------------------
+    // PCSS FUNCTIONS ---------------------------------
+
+    /**float getPCSSBlockerDistance(
+        const in vec3 projCoords,
+        const in int shadowsCasterIdx,
+        const in float lightMinCoeff
+    )
+    {
+
+    }*/
+
+    float calculatePCSSBlockerDistance(
+        const in vec4 shadowsCasterSpaceFragPos,
+        const in vec3 projCoords,
+        const in int shadowsCasterIdx,
+        const in int onePartSamplesNum,
+        const in vec2 texelSize
+    )
+    {
+        const float samplesCount = 2;
+        float blockers = 0;
+        float avgBlocker = 0.0;
+
+        const int numBlockerSearchSamples = 4;
+
+        for(int i = 0; i < numBlockerSearchSamples; i++)
+        {
+            //int index = rand(vec2(i)) % 16;
+            //int index = int(8.0 * rand(vec2(shadowsCasterSpaceFragPos.xy * i))) % 8;
+            //vec2 randomDirection = poissonDisk[index].xy * 2.0 - 1.0;
+
+
+            float z = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + poissonDisk[i].xy / 200.0).r;
+            if(z < (projCoords.z - shadowsBias))
+            {
+                blockers += 1.0;
+                avgBlocker += z;
+            }
+        }
+
+        if (blockers > 0.0)
+            return avgBlocker / blockers;
+        else
+            return -1.0;
+
+        /**const int numBlockerSearchSamples = 8;
+
+        float blockers = 0;
+        float avgBlocker = 0.0;
+
+        for(int i = -numBlockerSearchSamples; i <= numBlockerSearchSamples; ++i)
+        {
+            for(int j = -numBlockerSearchSamples; j <= numBlockerSearchSamples; ++j)
+            {
+                float z = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + vec2(i, j) * texelSize).z;
+
+                if(z < projCoords.z - shadowsBias)
+                {
+                    blockers += 1.0;
+                    avgBlocker += z;
+                }
+            }
+        }
+
+        if (blockers > 0.0)
+            return avgBlocker / blockers;
+        else
+            return -1.0;*/
+    }
+
+    float calculatePCSS(
+        const in vec4 shadowsCasterSpaceFragPos,
+        const in vec3 projCoords,
+        const in int shadowsCasterIdx,
+        const in vec2 texelSize,
+        const in float lightMinCoeff
+    )
+    {
+        float resShadow = 0.0;
+
+        const int numBlockerSearchSamples = 8;
+
+        float blockers = 0;
+        float avgBlocker = 0.0;
+
+        float samplingsTotal = 0.0;
+
+        for(int i = -numBlockerSearchSamples; i <= numBlockerSearchSamples; ++i)
+        {
+            for(int j = -numBlockerSearchSamples; j <= numBlockerSearchSamples; ++j)
+            {
+                float z = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + vec2(i, j) * texelSize).z;
+
+                if(z < projCoords.z - shadowsBias)
+                {
+                    blockers += 1.0;
+                    avgBlocker += z;
+                    resShadow += z;
+
+                    samplingsTotal += 1.0;
+                }
+            }
+        }
+
+        return resShadow / samplingsTotal;
+
+        /**float blockersCoeff = -1.0;
+        if (blockers > 0.0)
+        {
+            blockersCoeff = avgBlocker / blockers;
+        }
+        else
+        {
+            return 1.0;
+        }
+
+        const float samplesNum = 3.0;
+        const float samplesStart = (samplesNum - 1.0) / 2.0;
+        const float samplesNumSquared = samplesNum * samplesNum;
+
+        const float lightSize = 10.0;
+
+        float penumbraSize = lightSize * (projCoords.z - blockersCoeff) / blockersCoeff;
+
+        for(float y = -samplesStart; y <= samplesStart; y += 1.0)
+        {
+            for(float x = -samplesStart; x <= samplesStart; x += 1.0)
+            {
+                vec2 offset = vec2(x, y) * texelSize * blockersCoeff;
+                //resShadow += calculateLinearDepth(vec3(projCoords.xy + offset, projCoords.z), shadowsCasterIdx, texelSize, lightMinCoeff);
+            }
+        }
+
+        return resShadow / samplingsTotal;*/
+
+        /**const float lightSize = 10.0;
+
+        float avgBlockerDistance = calculatePCSSBlockerDistance(shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, 0, texelSize);
+
+        if(avgBlockerDistance < 0.0)
+        {
+            return 1.0;
+        }
+
+        float penumbraSize = lightSize * (projCoords.z - avgBlockerDistance) / avgBlockerDistance;
+
+        float uvRadius = penumbraSize * 0.1 / projCoords.z;
+        return calculatePCF(projCoords, shadowsCasterIdx, lightMinCoeff, texelSize);*/
+
+        //return resShadow;
+    }
+
+    // --------------------------------------------------
 
     float calculateShadow(
         const in vec4 shadowsCasterSpaceFragPos,
@@ -110,25 +339,40 @@ float ambient = 0.1;
             return 1.0;
         }
 
-        /*float closestDepth = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy).r;
-            float currentDepth = projCoords.z;
-            float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
-            return 1.0 - shadow / 1.5;*/
+        vec2 texelSize = 1.0 / textureSize(shadowsCastersShadowMaps[shadowsCasterIdx], 0);
 
-        float shadowVisibility = 1.0;
+        // PCF ------------------
+
+        float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.35, texelSize);
+
+        return pcfShadow;
+
+        // -----------------------
+
+        // PCSS ------------------
+
+        /**float pcssShadow = calculatePCSS(shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.35);
+
+        return pcssShadow;*/
+
+        // -----------------------
+
+        // if defined poisson disk ----------
+        /*float shadowVisibility = 1.0;
 
         for(int i = 0; i < 4; i++)
         {
             // todo: make random poisson
             float depthFactor = texture(shadowsCastersShadowMaps[shadowsCasterIdx],
                                         projCoords.xy + poissonDisk[i] / 3000.0).z;
-            depthFactor = depthFactor < projCoords.z - bias ?
+            depthFactor = depthFactor < projCoords.z - shadowsBias ?
             depthFactor : 0.0;
 
             shadowVisibility -= 0.2 * depthFactor;
         }
 
-        return shadowVisibility / 1.5;
+        return shadowVisibility / 1.5;*/
+        // ------------------------
     }
     #endif
 
@@ -143,7 +387,7 @@ float ambient = 0.1;
         )
     {
         vec3 lightDir = normalize(lightPos - fragPos);
-        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 5;
+        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 6.0;
 
         diffuseColor = vec3(finalDiffuse) * lightColor.rgb;
 
@@ -152,7 +396,7 @@ float ambient = 0.1;
 
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16);
 
-        specularColor = 4.0 * spec * lightColor.rgb;
+        specularColor = spec * lightColor.rgb;
     }
     #endif
 
