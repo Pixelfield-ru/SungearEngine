@@ -78,16 +78,48 @@ float ambient = 0.1;
 #endif
 
 #ifdef FRAGMENT_SHADER
+    float saturate(float a) { return clamp(a, 0.0, 1.0); }
+    vec3 saturate(vec3 a) { return clamp(a, vec3(0.0), vec3(1.0)); }
+
+    vec3 ACESFilm(vec3 x)
+    {
+        float a = 2.51f;
+        float b = 0.03f;
+        float c = 2.43f;
+        float d = 0.59f;
+        float e = 0.14f;
+        return saturate((x*(a*x+b))/(x*(c*x+d)+e));
+    }
+
     // shadows impl
     #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
-        vec2 poissonDisk[4] = vec2[] (
-        vec2( -0.94201624, -0.39906216 ),
-        vec2( 0.94558609, -0.76890725 ),
-        vec2( -0.094184101, -0.92938870 ),
-        vec2( 0.34495938, 0.29387760 )
-    );
+        const vec2 poissonDisk4[4] = vec2[] (
+            vec2( -0.94201624, -0.39906216 ),
+            vec2( 0.94558609, -0.76890725 ),
+            vec2( -0.094184101, -0.92938870 ),
+            vec2( 0.34495938, 0.29387760 )
+        );
 
-    float rand(vec2 uv)
+        const vec2 poissonDisk16[16] = vec2[] (
+            vec2( -0.94201624, -0.39906216 ),
+            vec2( 0.94558609, -0.76890725 ),
+            vec2( -0.094184101, -0.92938870 ),
+            vec2( 0.34495938, 0.29387760 ),
+            vec2( -0.91588581, 0.45771432 ),
+            vec2( -0.81544232, -0.87912464 ),
+            vec2( -0.38277543, 0.27676845 ),
+            vec2( 0.97484398, 0.75648379 ),
+            vec2( 0.44323325, -0.97511554 ),
+            vec2( 0.53742981, -0.47373420 ),
+            vec2( -0.26496911, -0.41893023 ),
+            vec2( 0.79197514, 0.19090188 ),
+            vec2( -0.24188840, 0.99706507 ),
+            vec2( -0.81409955, 0.91437590 ),
+            vec2( 0.19984126, 0.78641367 ),
+            vec2( 0.14383161, -0.14100790 )
+        );
+
+    float random(vec2 uv)
     {
         return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453123);
     }
@@ -140,7 +172,7 @@ float ambient = 0.1;
         const in vec2 texelSize
     )
     {
-        const float samplesNum = 3.0;
+        const float samplesNum = 4.0;
         const float samplesStart = (samplesNum - 1.0) / 2.0;
         const float samplesNumSquared = samplesNum * samplesNum;
 
@@ -161,75 +193,8 @@ float ambient = 0.1;
     // -------------------------------------------------
     // PCSS FUNCTIONS ---------------------------------
 
-    /**float getPCSSBlockerDistance(
-        const in vec3 projCoords,
-        const in int shadowsCasterIdx,
-        const in float lightMinCoeff
-    )
-    {
-
-    }*/
-
-    float calculatePCSSBlockerDistance(
-        const in vec4 shadowsCasterSpaceFragPos,
-        const in vec3 projCoords,
-        const in int shadowsCasterIdx,
-        const in int onePartSamplesNum,
-        const in vec2 texelSize
-    )
-    {
-        const float samplesCount = 2;
-        float blockers = 0;
-        float avgBlocker = 0.0;
-
-        const int numBlockerSearchSamples = 4;
-
-        for(int i = 0; i < numBlockerSearchSamples; i++)
-        {
-            //int index = rand(vec2(i)) % 16;
-            //int index = int(8.0 * rand(vec2(shadowsCasterSpaceFragPos.xy * i))) % 8;
-            //vec2 randomDirection = poissonDisk[index].xy * 2.0 - 1.0;
-
-
-            float z = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + poissonDisk[i].xy / 200.0).r;
-            if(z < (projCoords.z - shadowsBias))
-            {
-                blockers += 1.0;
-                avgBlocker += z;
-            }
-        }
-
-        if (blockers > 0.0)
-            return avgBlocker / blockers;
-        else
-            return -1.0;
-
-        /**const int numBlockerSearchSamples = 8;
-
-        float blockers = 0;
-        float avgBlocker = 0.0;
-
-        for(int i = -numBlockerSearchSamples; i <= numBlockerSearchSamples; ++i)
-        {
-            for(int j = -numBlockerSearchSamples; j <= numBlockerSearchSamples; ++j)
-            {
-                float z = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + vec2(i, j) * texelSize).z;
-
-                if(z < projCoords.z - shadowsBias)
-                {
-                    blockers += 1.0;
-                    avgBlocker += z;
-                }
-            }
-        }
-
-        if (blockers > 0.0)
-            return avgBlocker / blockers;
-        else
-            return -1.0;*/
-    }
-
     float calculatePCSS(
+        const in vec3 normal,
         const in vec4 shadowsCasterSpaceFragPos,
         const in vec3 projCoords,
         const in int shadowsCasterIdx,
@@ -237,78 +202,56 @@ float ambient = 0.1;
         const in float lightMinCoeff
     )
     {
-        float resShadow = 0.0;
+        const int numBlockerSamples = 16;
+        const float nearPlane = 0.1;
+        const float lightWorldSize = 0.5;
+        const float lightFrustumWidth = 3.75;
+        const float lightSizeUV = lightWorldSize / lightFrustumWidth;
 
-        const int numBlockerSearchSamples = 8;
+        float searchWidth = lightSizeUV * (projCoords.z - nearPlane) / projCoords.z;
 
-        float blockers = 0;
+        float blockers = 0.0;
         float avgBlocker = 0.0;
 
         float samplingsTotal = 0.0;
 
-        for(int i = -numBlockerSearchSamples; i <= numBlockerSearchSamples; ++i)
-        {
-            for(int j = -numBlockerSearchSamples; j <= numBlockerSearchSamples; ++j)
+        float shadow = 0.0;
+
+        for (int j = 0; j < numBlockerSamples; ++j) {
+           /** random angle
+            float ang = random(vec2(gl_FragCoord)) * 2.0 - 1.0;
+            float s = sqrt(1.0 - ang * ang);
+            mat2 rot = mat2(ang, s, -s, ang);
+
+            vec2 pcf_offset = poissonDisk16[j] * rot;
+            vec2 uv = projCoords.xy + pcf_offset * texelSize;*/
+
+            float occluder = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + poissonDisk16[j] * searchWidth).z;
+
+            if(occluder < projCoords.z - shadowsBias)
             {
-                float z = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + vec2(i, j) * texelSize).z;
-
-                if(z < projCoords.z - shadowsBias)
-                {
-                    blockers += 1.0;
-                    avgBlocker += z;
-                    resShadow += z;
-
-                    samplingsTotal += 1.0;
-                }
+                blockers += 1.0;
+                avgBlocker += occluder;
             }
         }
 
-        return resShadow / samplingsTotal;
+        avgBlocker /= blockers;
 
-        /**float blockersCoeff = -1.0;
-        if (blockers > 0.0)
-        {
-            blockersCoeff = avgBlocker / blockers;
-        }
-        else
+        if(blockers < 1.0)
         {
             return 1.0;
         }
 
-        const float samplesNum = 3.0;
-        const float samplesStart = (samplesNum - 1.0) / 2.0;
-        const float samplesNumSquared = samplesNum * samplesNum;
+        float penumbraSize = (projCoords.z - avgBlocker) / avgBlocker;
+        float filterRadiusUV = penumbraSize * lightSizeUV * nearPlane / projCoords.z;
 
-        const float lightSize = 10.0;
-
-        float penumbraSize = lightSize * (projCoords.z - blockersCoeff) / blockersCoeff;
-
-        for(float y = -samplesStart; y <= samplesStart; y += 1.0)
+        for(int i = 0; i < 16; ++i)
         {
-            for(float x = -samplesStart; x <= samplesStart; x += 1.0)
-            {
-                vec2 offset = vec2(x, y) * texelSize * blockersCoeff;
-                //resShadow += calculateLinearDepth(vec3(projCoords.xy + offset, projCoords.z), shadowsCasterIdx, texelSize, lightMinCoeff);
-            }
+            vec2 offset = poissonDisk16[i].xy * filterRadiusUV;
+            shadow += calculateLinearDepth(vec3(projCoords.xy + offset, projCoords.z), shadowsCasterIdx, texelSize, lightMinCoeff);
         }
 
-        return resShadow / samplingsTotal;*/
-
-        /**const float lightSize = 10.0;
-
-        float avgBlockerDistance = calculatePCSSBlockerDistance(shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, 0, texelSize);
-
-        if(avgBlockerDistance < 0.0)
-        {
-            return 1.0;
-        }
-
-        float penumbraSize = lightSize * (projCoords.z - avgBlockerDistance) / avgBlockerDistance;
-
-        float uvRadius = penumbraSize * 0.1 / projCoords.z;
-        return calculatePCF(projCoords, shadowsCasterIdx, lightMinCoeff, texelSize);*/
-
-        //return resShadow;
+        return (shadow / 16.0);
     }
 
     // --------------------------------------------------
@@ -343,17 +286,17 @@ float ambient = 0.1;
 
         // PCF ------------------
 
-        float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.35, texelSize);
+        /**float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.35, texelSize);
 
         return pcfShadow;
-
+*/
         // -----------------------
 
         // PCSS ------------------
 
-        /**float pcssShadow = calculatePCSS(shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.35);
+        float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.35);
 
-        return pcssShadow;*/
+        return pcssShadow;
 
         // -----------------------
 
@@ -506,5 +449,7 @@ float ambient = 0.1;
                 );
             }
         #endif
+
+        fragColor.rgb = ACESFilm(fragColor.rgb);
     }
 #endif

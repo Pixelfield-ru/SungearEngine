@@ -241,7 +241,7 @@ void init()
     testScene->m_entities.push_back(testShadowsCaster);
     auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
     shadowsCasterTransform->m_position.y = 3;
-    shadowsCasterTransform->m_position.z = 2.0;
+    shadowsCasterTransform->m_position.z = 5.0;
     shadowsCasterTransform->m_rotation.x = 30;
     //shadowsCasterTransform->m_rotation.y = -90;
     auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
