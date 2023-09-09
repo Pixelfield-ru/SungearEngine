@@ -140,7 +140,7 @@ void init()
         if(meshComponent) meshComponent->m_enableFacesCulling = false;
         if(transformComponent)
         {
-            transformComponent->m_scale = { 40.0, 40.0, 40.0 };
+            transformComponent->m_scale = { 400.0, 400.0, 400.0 };
             //transformComponent->m_rotation = glm::vec3 { 90, 0, 0 };
         }
         testScene->m_entities.push_back(entity);
@@ -152,7 +152,7 @@ void init()
 
     for(auto& node : btrModel->m_nodes)
     {
-        processLoadedNode(node, { 0, 0, -2 }, { 0, 90, 0 },
+        processLoadedNode(node, { 0, 3, -20 }, { 0, 90, 0 },
                           { 4, 4, 4 }, btrEntities);
     }
 
@@ -166,14 +166,14 @@ void init()
     for(auto& node : cubeModel->m_nodes)
     {
         processLoadedNode(node, { 0, 0, 0 }, { 0, 0, 0 },
-                          { 30, 30, 30 }, cubeEntities);
+                          { 39, 39, 39 }, cubeEntities);
     }
 
     std::vector<std::shared_ptr<Core::ECS::Entity>> cube1Entities;
 
     for(auto& node : cubeModel1->m_nodes)
     {
-        processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
+        processLoadedNode(node, { -5, 3, -20 }, { 0, 0, 0 },
                           { 0.1, 0.4, 0.1 }, cube1Entities);
     }
 
@@ -242,7 +242,7 @@ void init()
     auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
     shadowsCasterTransform->m_position.y = 6;
     shadowsCasterTransform->m_position.z = 5.0;
-    shadowsCasterTransform->m_rotation.x = 45;
+    shadowsCasterTransform->m_rotation.x = 15;
     //shadowsCasterTransform->m_rotation.y = -90;
     auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
     testShadowsCaster->addComponent(shadowsCasterTransform);

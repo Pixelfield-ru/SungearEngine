@@ -279,7 +279,7 @@ float ambient = 0.1;
         const in float lightMinCoeff
     )
     {
-        return texture2D(shadowsCastersShadowMaps[shadowsCasterIdx], coords).z < compare ? lightMinCoeff : 1.0;
+        return texture(shadowsCastersShadowMaps[shadowsCasterIdx], coords).z < compare ? lightMinCoeff : 1.0;
         //return step(compare, texture2D(shadowsCastersShadowMaps[shadowsCasterIdx], coords).z);
     }
 
@@ -292,7 +292,7 @@ float ambient = 0.1;
         const in float lightMinCoeff
     )
     {
-        float finalProjZ = projCoords.z - shadowsBias;
+        float finalProjZ = projCoords.z;
 
         float shadow = 0.0;
 
@@ -342,7 +342,26 @@ float ambient = 0.1;
     }
 
     // -------------------------------------------------
-    // PCSS FUNCTIONS ---------------------------------
+    // PCSS FUNCTIONS ----------------------------------
+
+    vec2 vogelDiskSample(int sampleIndex, int samplesCount, float phi)
+    {
+        float GoldenAngle = 2.4f;
+
+        float r = sqrt(float(sampleIndex) + 0.5f) / sqrt(float(samplesCount));
+        float theta = sampleIndex * GoldenAngle + phi;
+
+        float sine = sin(theta);
+        float cosine = cos(theta);
+
+        return vec2(r * cosine, r * sine);
+    }
+
+    float interleavedGradientNoise(vec2 position_screen)
+    {
+        vec3 magic = vec3(0.06711056f, 0.00583715f, 52.9829189f);
+        return fract(magic.z * fract(dot(position_screen, magic.xy)));
+    }
 
     float calculatePCSS(
         const in vec3 normal,
@@ -357,38 +376,33 @@ float ambient = 0.1;
 
         const int numBlockerSamples = 16;
         const int numAASamples = 16;
-        //const float nearPlane = 9.5;
         const float nearPlane = 0.2;
-        //const float lightWorldSize = 8.5;
         const float lightWorldSize = 10.0;
         const float lightFrustumWidth = 3.75;
         const float lightSizeUV = lightWorldSize / lightFrustumWidth;
 
-        //float searchWidth = lightSizeUV * saturate(finalProjZ - nearPlane) / finalProjZ;
+        float finalBias = max(0.05 * (1.0 - dot(normal, shadowsCasters[shadowsCasterIdx].position)), shadowsBias);
+
         float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / shadowsCasters[shadowsCasterIdx].position.z;
-        //float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / finalProjZ;
 
         float blockers = 0.0;
         float avgBlocker = 0.0;
 
-        float samplingsTotal = 0.0;
-
         float shadow = 0.0;
 
-        float rand = random(vec2(projCoords.xy));
+        float rand = random(projCoords.xy);
         rand = mad(rand, 2.0, -1.0);
         float rotAngle = rand * PI;
         vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
 
-        //const float penumbraRot = 0.11 * PI;
-
+        // get blocker distance
         for (int j = 0; j < numBlockerSamples; ++j)
         {
             vec2 offset = poissonDisk[j] * searchWidth;
 
             float occluder = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + offset).r;
 
-            if(occluder < finalProjZ - shadowsBias)
+            if(occluder < finalProjZ - finalBias)
             {
                 blockers += 1.0;
                 avgBlocker += occluder;
@@ -404,12 +418,10 @@ float ambient = 0.1;
 
         float penumbraSize = (finalProjZ - avgBlocker) / avgBlocker;
         float filterRadiusUV = penumbraSize * lightSizeUV * nearPlane / finalProjZ;
-
         for(int i = 0; i < numAASamples; ++i)
         {
             vec2 offset = poissonDisk[i].xy * filterRadiusUV;
             offset = rotate(offset, rotTrig);
-            //shadow += sampleShadowMap(projCoords.xy + texelSize + offset, shadowsCasterIdx, finalProjZ, lightMinCoeff);
             shadow += calculateLinearDepth(vec3(projCoords.xy + offset, finalProjZ), shadowsCasterIdx, texelSize, lightMinCoeff);
         }
 
@@ -461,23 +473,6 @@ float ambient = 0.1;
         return pcssShadow;
 
         // -----------------------
-
-        // if defined poisson disk ----------
-        /*float shadowVisibility = 1.0;
-
-        for(int i = 0; i < 4; i++)
-        {
-            // todo: make random poisson
-            float depthFactor = texture(shadowsCastersShadowMaps[shadowsCasterIdx],
-                                        projCoords.xy + poissonDisk[i] / 3000.0).z;
-            depthFactor = depthFactor < projCoords.z - shadowsBias ?
-            depthFactor : 0.0;
-
-            shadowVisibility -= 0.2 * depthFactor;
-        }
-
-        return shadowVisibility / 1.5;*/
-        // ------------------------
     }
     #endif
 
@@ -492,16 +487,14 @@ float ambient = 0.1;
         )
     {
         vec3 lightDir = normalize(lightPos - fragPos);
-        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 15.0;
+        vec3 viewDir = normalize(viewDirection - fragPos);
+        vec3 halfWayDir = normalize(lightDir + viewDir);
 
-        //diffuseColor = vec3(finalDiffuse) * lightColor.rgb / distance(fragPos, lightDir);
+        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 16.0;
+
         diffuseColor = vec3(finalDiffuse) * lightColor.rgb / distance(fragPos, lightDir);
 
-        vec3 viewDir = normalize(viewDirection - fragPos);
-        //vec3 viewDir = normalize(fragPos - viewDirection);
-        vec3 reflectDir = reflect(-lightDir, normal);
-
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16);
+        float spec = pow(max(dot(normal, halfWayDir), 0.0), 32);
 
         specularColor = spec * lightColor.rgb;
     }
@@ -568,11 +561,11 @@ float ambient = 0.1;
 
         #ifdef sgmat_normals7_DEFINED
             colorFromNormalMap = texture(sgmat_normals7, vec2(finalUV.x, finalUV.y)).rgb;
-            colorFromNormalMap = normalize(colorFromNormalMap * 2.0 - 1.0);
-            colorFromNormalMap = normalize(vsIn.TBN * colorFromNormalMap);
+            colorFromNormalMap = normalize(vsIn.TBN * (colorFromNormalMap * 2.0 - 1.0));
         #endif
 
         fragColor = colorFromBase;
+        //fragColor = vec4(1.0);
 
         // todo: fix multiple directional lights
         #ifdef DIRECTIONAL_LIGHTS_NUM
@@ -597,7 +590,8 @@ float ambient = 0.1;
                 finalSpecular += intermediateSpecular;
             }
 
-            fragColor.rgb *= vec3(ambient) + (finalDiffuse * colorFromDiffuse.rgb) + finalSpecular;
+            //fragColor.rgb *= vec3(ambient) + (finalDiffuse * colorFromDiffuse.rgb) + finalSpecular;
+            fragColor.rgb *= vec3(ambient) + (finalDiffuse) + finalSpecular;
         #endif
 
         #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)

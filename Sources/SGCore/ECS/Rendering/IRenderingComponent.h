@@ -22,7 +22,7 @@ namespace Core::ECS
         float m_aspect = 16.0f / 9.0f;
 
         float m_zNear = 0.1;
-        float m_zFar = 260.0;
+        float m_zFar = 330.0;
 
         float m_movementSpeed = 5.0f;
         float m_rotationSensitive = 0.075f;
