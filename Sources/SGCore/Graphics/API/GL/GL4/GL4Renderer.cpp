@@ -291,7 +291,7 @@ Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createOnlyGeometryShade
     auto* shader = createShader();
     shader->compile(
             Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(
-                    SG_GLSL4_ONLY_GEOM_SHADER_PATH
+                    SG_GLSL4_SHADOWS_GENERATOR_SHADER_PATH
             )
     );
 

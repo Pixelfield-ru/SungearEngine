@@ -68,8 +68,8 @@ std::string Core::Graphics::GLShadersPreprocessor::processShader(const std::stri
                 }
                 else // if path valid and file exists
                 {
-                    SGCF_SUCCESS(("Included shader path for shader '" + shaderPath + "' is: ").append(includedPath),
-                                 SG_LOG_CURRENT_SESSION_FILE);
+                    /*SGCF_SUCCESS(("Included shader path for shader '" + shaderPath + "' is: ").append(includedPath),
+                                 SG_LOG_CURRENT_SESSION_FILE);*/
 
                     // loading code of included shader
                     auto includedShaderFile =
