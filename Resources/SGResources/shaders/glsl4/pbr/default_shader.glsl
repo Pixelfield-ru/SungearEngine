@@ -1,38 +1,11 @@
 // TODO: make optimization
 
+#sg_include "../light_structs_decl.glsl"
+#sg_include "../uniform_bufs_decl.glsl"
+
 /*in int gl_FrontFacing;
 in vec4 gl_FragCoord;*/
 #define PI 3.1415926
-
-
-layout(std140) uniform ObjectMatrices
-{
-    mat4 objectModelMatrix;
-};
-
-layout(std140) uniform ViewMatrices
-{
-    mat4 projectionMatrix;
-    mat4 viewMatrix;
-    vec3 viewDirection;
-};
-
-layout(std140) uniform ProgramData
-{
-    vec2 windowSize;
-};
-
-struct ShadowsCaster
-{
-    mat4 shadowsCasterSpace;
-    vec3 position;
-};
-
-struct DirectionalLight
-{
-    vec3 position;
-    vec4 color;
-};
 
 float ambient = 0.1;
 
@@ -95,13 +68,6 @@ float ambient = 0.1;
 
     // shadows impl
     #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
-        const vec2 poissonDisk4[4] = vec2[] (
-            vec2( -0.94201624, -0.39906216 ),
-            vec2( 0.94558609, -0.76890725 ),
-            vec2( -0.094184101, -0.92938870 ),
-            vec2( 0.34495938, 0.29387760 )
-        );
-
 /**const vec2 poissonDisk[32] = vec2[] (
     vec2(0.06407013, 0.05409927),
     vec2(0.7366577, 0.5789394),
@@ -268,9 +234,6 @@ float ambient = 0.1;
 
     //const float shadowsBias = 0.000003;
     const float shadowsBias = 0.000035;
-    //const float shadowsBias = 0.0;
-
-    //const float shadowsBias = 0.001;
 
     float sampleShadowMap(
         const in vec2 coords,

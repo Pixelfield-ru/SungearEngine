@@ -7,6 +7,7 @@
 
 #include "SGCore/Logging/Log.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
+#include "SGCore/Graphics/API/GL/GLShadersPreprocessor.h"
 
 Core::Graphics::GL46Shader::~GL46Shader() noexcept
 {
@@ -101,8 +102,6 @@ void Core::Graphics::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAss
 {
     destroy();
 
-    std::cout << "sdfsdf" << std::endl;
-
     auto thisWeak = weak_from_this();
 
     std::shared_ptr<Memory::Assets::FileAsset> fileAssetShared = m_fileAsset.lock();
@@ -130,7 +129,16 @@ void Core::Graphics::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAss
         definesCode += shaderDefine.toString() + "\n";
     }
 
-    const std::string finalCode = definesCode + fileAssetShared->getData();
+    std::string preprocessErrors;
+    std::string finalCode = definesCode + GLShadersPreprocessor::processShader(
+            fileAssetShared->getPath().string(),
+            fileAssetShared->getData(),
+            preprocessErrors);
+
+    if(!preprocessErrors.empty())
+    {
+        SGCF_ERROR(preprocessErrors, SG_LOG_CURRENT_SESSION_FILE);
+    }
 
     // parsing shaders types defines ----------------
     std::istringstream codeStream(finalCode);
