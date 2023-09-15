@@ -21,8 +21,7 @@
          SGCore
          )
 
- add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-         COMMAND ${CMAKE_COMMAND} -E copy
-         $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}d.dll
-         $<TARGET_FILE_DIR:SGEditor>
-         )
+ # todo: make by file
+ IF(EXISTS ${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}d.dll)
+   file(COPY ${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}d.dll DESTINATION ${CMAKE_BINARY_DIR}/Sources/SGEditor)
+ ENDIF ()

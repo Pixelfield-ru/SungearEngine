@@ -1,16 +1,21 @@
 project(SGResources)
 
-# copying resources to binary file
+file(COPY ${PROJECT_SOURCE_DIR}/${PROJECT_NAME} DESTINATION ${CMAKE_BINARY_DIR}/Tests)
+
 add_custom_target(SGResourcesCopy ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${PROJECT_SOURCE_DIR}
-        ${CMAKE_BINARY_DIR}/Sources
-        COMMENT "Copying resources into binary directory")
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${PROJECT_SOURCE_DIR}
+                ${CMAKE_BINARY_DIR}/Sources
+
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${PROJECT_SOURCE_DIR}
+                ${CMAKE_BINARY_DIR}/Tests
+                COMMENT "Copying resources into TESTS AND SOURCES directory")
 
 add_dependencies(SGEditor SGResourcesCopy)
+add_dependencies(SGPhysicsTest SGResourcesCopy)
 
-# does not working --------------------------------
-#set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
-#message(sdfsdf =${CMAKE_INSTALL_PREFIX})
 
-#install(DIRECTORY ../SGResources DESTINATION Sources)
+# copying resources to binary file
+#file(COPY ${PROJECT_SOURCE_DIR}/${PROJECT_NAME} DESTINATION ${CMAKE_BINARY_DIR}/Sources)
+#file(COPY ${PROJECT_SOURCE_DIR}/${PROJECT_NAME} DESTINATION ${CMAKE_BINARY_DIR}/Tests)

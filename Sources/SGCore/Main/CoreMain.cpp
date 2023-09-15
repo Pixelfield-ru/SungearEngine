@@ -10,6 +10,8 @@
 #include "SGConsole/API/Console.h"
 #include "SGCore/ECS/ECSWorld.h"
 
+//btDiscreteDynamicsWorld* 				dynamicsWorld;
+
 void Core::Main::CoreMain::start()
 {
     system("chcp 65001");

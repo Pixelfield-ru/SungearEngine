@@ -58,7 +58,7 @@ float ambient = 0.1;
     #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
 
     //const float shadowsBias = 0.000003;
-    const float shadowsBias = 0.000035;
+    const float shadowsBias = 0.0001;
 
     float sampleShadowMap(
         const in vec2 coords,
@@ -143,9 +143,13 @@ float ambient = 0.1;
         const float lightWorldSize = 10.0;
         const float lightFrustumWidth = 3.75;
         const float lightSizeUV = lightWorldSize / lightFrustumWidth;
+        //const float lightSizeUV = lightFrustumWidth / lightWorldSize;
 
-        float finalBias = max(0.05 * (1.0 - dot(normal, shadowsCasters[shadowsCasterIdx].position)), shadowsBias);
 
+        //float finalBias = max(0.05 * (1.0 - dot(normal, shadowsCasters[shadowsCasterIdx].position)), shadowsBias);
+
+        float finalBias = shadowsBias;
+        //float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / shadowsCasterSpaceFragPos.z;
         float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / shadowsCasters[shadowsCasterIdx].position.z;
 
         float blockers = 0.0;
@@ -154,7 +158,7 @@ float ambient = 0.1;
         float shadow = 0.0;
 
         float rand = random(projCoords.xy);
-        rand = mad(rand, 2.0, -1.0);
+        //rand = mad(rand, 2.0, -1.0);
         float rotAngle = rand * PI;
         vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
 
@@ -162,6 +166,7 @@ float ambient = 0.1;
         for (int j = 0; j < numBlockerSamples; ++j)
         {
             vec2 offset = poissonDisk[j] * searchWidth;
+            //offset = rotate(offset, rotTrig);
 
             float occluder = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + offset).r;
 
@@ -224,14 +229,15 @@ float ambient = 0.1;
 
         // PCF ------------------
 
-        /**float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.75, texelSize);
+        /**float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.075, texelSize);
 
         return pcfShadow;*/
+
         // -----------------------
 
         // PCSS ------------------
 
-        float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.55);
+        float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.075);
 
         return pcssShadow;
 
@@ -255,7 +261,7 @@ float ambient = 0.1;
 
         float finalDiffuse = max(dot(normal, lightDir), 0.0) * 16.0;
 
-        diffuseColor = vec3(finalDiffuse) * lightColor.rgb / distance(fragPos, lightDir);
+        diffuseColor = vec3(finalDiffuse) * lightColor.rgb; /// distance(fragPos, lightDir);
 
         float spec = pow(max(dot(normal, halfWayDir), 0.0), 32);
 

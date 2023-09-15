@@ -23,13 +23,10 @@ std::string Core::Graphics::GLShadersPreprocessor::processShader(const std::stri
 
     std::string line;
 
-    // regex for preprocessor directives
-    std::regex preprocDirectivesRegex("#[a-z_]+");
-
     // regex for paths
-    std::regex pathsRegex(R"("[a-z\\\/._ ]+")");
+    const std::regex pathsRegex(R"("[a-z\\\/._ ]+")");
 
-    auto endedIter = std::sregex_token_iterator();
+    const auto endedIter = std::sregex_token_iterator();
 
     size_t curLine = 1;
 
@@ -38,9 +35,9 @@ std::string Core::Graphics::GLShadersPreprocessor::processShader(const std::stri
         // process #sg_include directive
         if(line.starts_with(std::string("#") + SG_SHADER_INCLUDE_KEYWORD))
         {
-            auto pathsBegin = std::sregex_token_iterator(line.begin(), line.end(), pathsRegex);
+            const auto pathsBegin = std::sregex_token_iterator(line.begin(), line.end(), pathsRegex);
 
-            size_t dist = std::distance(pathsBegin, endedIter);
+            const size_t dist = std::distance(pathsBegin, endedIter);
 
             // if trying to multiple include by one #sg_include directive
             if(dist > 1)

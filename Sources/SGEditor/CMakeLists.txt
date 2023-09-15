@@ -11,16 +11,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
         ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
         ${CMAKE_SOURCE_DIR}/Externals/stb
+        ${CMAKE_SOURCE_DIR}/Externals/GLM
         )
 
 target_link_libraries(${PROJECT_NAME}
         SGConsoleAPI # includes SGCore
-        )
-
-# move all necessary dlls to target exe
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll
-        ${CMAKE_BINARY_DIR}/Externals/GLFW/src/glfw3d.dll
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>
         )

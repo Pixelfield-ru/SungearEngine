@@ -73,7 +73,6 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
         meshedEntity->addComponent(meshComponent);
 
         outputEntities.push_back(meshedEntity);
-        //testScene->m_entities.push_back(meshedEntity);
     }
 
     for(auto& node : sgNode->m_children)
@@ -107,6 +106,7 @@ void init()
             );
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+            //"../SGResources/models/test/gaz-66.obj"
             "../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
@@ -123,13 +123,10 @@ void init()
             "../SGResources/models/standard/cube.fbx"
     );
 
-    // todo: fix cubeModel and cubeModel1. (add to asset manager func)
-
     std::vector<std::shared_ptr<Core::ECS::Entity>> planeEntities;
 
     for(auto& node : testModel->m_nodes)
     {
-        //processLoadedNode(node, { 0, 0, -10 }, { 0, 90, 0 }, { 2, 2, 2 });
         processLoadedNode(node, { 0, -3, -15 }, { }, { 1, 1, 2 }, planeEntities);
     }
 
@@ -141,7 +138,6 @@ void init()
         if(transformComponent)
         {
             transformComponent->m_scale = { 400.0, 400.0, 400.0 };
-            //transformComponent->m_rotation = glm::vec3 { 90, 0, 0 };
         }
         testScene->m_entities.push_back(entity);
     }
@@ -159,6 +155,12 @@ void init()
     for(const auto& entity : btrEntities)
     {
         testScene->m_entities.push_back(entity);
+
+        auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
+        if(meshComponent)
+        {
+            meshComponent->m_enableFacesCulling = false;
+        }
     }
 
     std::vector<std::shared_ptr<Core::ECS::Entity>> cubeEntities;
@@ -225,8 +227,6 @@ void init()
     }
 
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
-    //testCameraEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
-    //testCameraEntity->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
     auto cameraTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
     cameraTransformComponent->m_position.y = -3;
     cameraTransformComponent->m_position.z = 2;
@@ -240,9 +240,10 @@ void init()
     auto testShadowsCaster = std::make_shared<Core::ECS::Entity>();
     testScene->m_entities.push_back(testShadowsCaster);
     auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
-    shadowsCasterTransform->m_position.y = 6;
+    shadowsCasterTransform->m_position.y = 15;
     shadowsCasterTransform->m_position.z = 5.0;
-    shadowsCasterTransform->m_rotation.x = 15;
+    shadowsCasterTransform->m_position.x = -5.0;
+    shadowsCasterTransform->m_rotation.x = 50;
     //shadowsCasterTransform->m_rotation.y = -90;
     auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
     testShadowsCaster->addComponent(shadowsCasterTransform);

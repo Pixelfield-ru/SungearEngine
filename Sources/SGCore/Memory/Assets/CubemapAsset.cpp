@@ -9,10 +9,9 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::CubemapAsset
 {
     auto thisShared = shared_from_this();
 
-    m_cubemapTexture = std::shared_ptr<Graphics::ICubemapTexture>(Core::Main::CoreMain::getRenderer().createCubemapTexture());
-    m_cubemapTexture->create(std::static_pointer_cast<CubemapAsset>(thisShared));
-
-    m_texture2D = m_cubemapTexture;
+    m_texture2D = std::shared_ptr<Graphics::ICubemapTexture>(Core::Main::CoreMain::getRenderer().createCubemapTexture());
+    std::static_pointer_cast<Graphics::ICubemapTexture>(m_texture2D)
+            ->create(std::static_pointer_cast<CubemapAsset>(thisShared));
 
     return thisShared;
 }
