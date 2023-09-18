@@ -1,7 +1,7 @@
 #ifndef SUNGEARENGINE_CAMERACOMPONENT_H
 #define SUNGEARENGINE_CAMERACOMPONENT_H
 
-#include "Camera3DMovementSystem.h"
+#include "SGCore/ECS/Transformations/Camera3DMovementSystem.h"
 
 #include "IRenderingComponent.h"
 

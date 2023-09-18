@@ -5,8 +5,8 @@
 #include "ShadowsCasterSystem.h"
 #include "ShadowsCasterComponent.h"
 #include "SGCore/ECS/Transformations/TransformComponent.h"
-#include "MeshComponent.h"
-#include "SkyboxComponent.h"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
+#include "SGCore/ECS/Rendering/SkyboxComponent.h"
 
 void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 {

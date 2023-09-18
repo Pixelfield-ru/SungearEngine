@@ -47,8 +47,7 @@ namespace Core::Graphics
         bool confirmSupport() noexcept override;
 
         [[nodiscard]] GL46Shader* createShader() override;
-        [[nodiscard]] GL46Shader* createPBRShader() override;
-        [[nodiscard]] GL46Shader* createOnlyGeometryShader() override;
+        [[nodiscard]] GL46Shader* createShader(const std::string& path) override;
 
         [[nodiscard]] GL46Texture2D* createTexture2D() final;
 

@@ -4,7 +4,7 @@
 
 #include "DirectionalLightsSystem.h"
 #include "DirectionalLightComponent.h"
-#include "MeshComponent.h"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 
 void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& scene)

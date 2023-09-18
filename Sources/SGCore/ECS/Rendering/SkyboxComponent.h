@@ -9,6 +9,8 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/Graphics/GraphicsFilesResourcesManager.h"
+#include "SGCore/Memory/Assets/ShaderAsset.h"
 
 namespace Core::ECS
 {
@@ -18,17 +20,10 @@ namespace Core::ECS
         void init() noexcept final { }
 
     public:
-        // loading standard skybox
-        /*std::shared_ptr<Memory::Assets::Texture2DAsset> m_texture =
-                Memory::AssetManager::loadAsset<Memory::Assets::Texture2DAsset>(
-                        "../SGResources/textures/skyboxes/standard_skybox0.png",
-                        SGTextureType::SGG_CUBE_MAP_TEXTURE
-                        );*/
-        // maybe static
-
-        std::shared_ptr<Graphics::IShader> m_shader = std::shared_ptr<Graphics::IShader>(
-                Main::CoreMain::getRenderer().createSkyboxShader()
-        );
+        std::shared_ptr<Memory::Assets::ShaderAsset> m_shaderAsset =
+                Memory::AssetManager::loadAsset<Memory::Assets::ShaderAsset>(
+                        Graphics::getShaderPath(Graphics::StandardShaderType::SG_SKYBOX_SHADER)
+                );
     };
 }
 

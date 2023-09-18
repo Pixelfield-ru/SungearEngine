@@ -22,11 +22,9 @@ void Core::Main::Window::create()
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // OpenGL is the default API for GLFW, so it's not here
-    switch(CoreMain::getRenderer().getAPIType())
+    if(CoreMain::getRenderer().getAPIType() == Graphics::SG_API_TYPE_VULKAN)
     {
-        case Graphics::VULKAN: glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); break;
-        case Graphics::DIRECTX:break;
-        case Graphics::METAL:break;
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     }
 
     m_handler = glfwCreateWindow(this->m_config->m_sizeX, this->m_config->m_sizeY, this->m_config->m_title.c_str(), nullptr, nullptr);
@@ -77,7 +75,7 @@ void Core::Main::Window::create()
 void Core::Main::Window::makeCurrent() noexcept
 {
     Graphics::APIType apiType = CoreMain::getRenderer().getAPIType();
-    if(apiType == Graphics::OPENGL || apiType == Graphics::APIType::OPENGLES)
+    if(apiType >= Graphics::SG_API_TYPE_GL4 && apiType <= Graphics::SG_API_TYPE_GLES3)
     {
         glfwMakeContextCurrent(m_handler);
     }
@@ -124,7 +122,7 @@ void Core::Main::Window::setSwapInterval(const bool& swapInterval) noexcept
     m_config->m_swapInterval = swapInterval;
 
     Graphics::APIType apiType = CoreMain::getRenderer().getAPIType();
-    if(apiType == Graphics::OPENGL || apiType == Graphics::APIType::OPENGLES)
+    if(apiType >= Graphics::SG_API_TYPE_GL4 && apiType <= Graphics::SG_API_TYPE_GLES3)
     {
         glfwSwapInterval(swapInterval);
     }

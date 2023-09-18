@@ -1,11 +1,11 @@
 // TODO: make optimization
 
-#sg_include "../light_structs_decl.glsl"
-#sg_include "../uniform_bufs_decl.glsl"
-#sg_include "../color_correction/aces.glsl"
-#sg_include "../random.glsl"
-#sg_include "../disks.glsl"
-#sg_include "../math.glsl"
+#include "../light_structs_decl.glsl"
+#include "../uniform_bufs_decl.glsl"
+#include "../color_correction/aces.glsl"
+#include "../random.glsl"
+#include "../disks.glsl"
+#include "../math.glsl"
 
 /*in int gl_FrontFacing;
 in vec4 gl_FragCoord;*/
@@ -247,13 +247,13 @@ float ambient = 0.1;
 
         // PCSS ------------------
 
-        float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.55);
+        /**float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.55);
 
-        return pcssShadow;
+        return pcssShadow;*/
 
         // -----------------------
 
-        /**float visibility = 1.0;
+        float visibility = 1.0;
 
         float rand = random(projCoords.xy);
         rand = mad(rand, 2.0, -1.0);
@@ -268,7 +268,7 @@ float ambient = 0.1;
             }
         }
 
-        return visibility;*/
+        return visibility;
     }
     #endif
 

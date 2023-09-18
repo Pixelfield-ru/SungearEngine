@@ -7,15 +7,17 @@
 
 namespace Core::Graphics
 {
-    enum APIType
-    {
-        OPENGL,
-        OPENGLES,
-        VULKAN,
-        DIRECTX,
-        METAL,
-        UNKNOWN
-    };
+    typedef char APIType;
+
+    static const APIType SG_API_TYPE_UNKNOWN = 0;
+
+    static const APIType SG_API_TYPE_GL4 = 1;
+    static const APIType SG_API_TYPE_GL46 = 2;
+
+    static const APIType SG_API_TYPE_GLES2 = 3;
+    static const APIType SG_API_TYPE_GLES3 = 4;
+
+    static const APIType SG_API_TYPE_VULKAN = 5;
 }
 
 #endif //SUNGEARENGINE_APITYPE_H

@@ -5,11 +5,11 @@
 #include "ECSWorld.h"
 
 #include "Transformations/TransformationsSystem.h"
-#include "SGCore/ECS/Rendering/Camera3DMovementSystem.h"
+#include "SGCore/ECS/Transformations/Camera3DMovementSystem.h"
 #include "SGCore/ECS/Rendering/CameraRenderingSystem.h"
-#include "SGCore/ECS/Rendering/ShadowsCasterSystem.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/RenderingComponentsSystem.h"
-#include "SGCore/ECS/Rendering/DirectionalLightsSystem.h"
+#include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
 #include "SGCore/ECS/Rendering/SkyboxRenderingSystem.h"
 
 void Core::ECS::ECSWorld::init() noexcept

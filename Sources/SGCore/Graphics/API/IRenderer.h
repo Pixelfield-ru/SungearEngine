@@ -21,7 +21,6 @@
 #include "SGCore/ImportedScenesArch/IMesh.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
 #include "SGCore/ECS/Entity.h"
-#include "SGCore/Utils/Defines.h"
 
 #include "APIType.h"
 #include "IFrameBuffer.h"
@@ -40,9 +39,6 @@ namespace Core::Graphics
 {
     class IRenderer
     {
-    protected:
-        APIType m_apiType = APIType::UNKNOWN;
-
     public:
         // check usages in IVertexArray implementations and IIndexBuffer implementations
         // TODO: UB IS HERE
@@ -93,9 +89,7 @@ namespace Core::Graphics
         virtual void checkForErrors(const std::source_location& = std::source_location::current()) noexcept { }
 
         [[nodiscard]] virtual IShader* createShader() = 0;
-        [[nodiscard]] virtual IShader* createPBRShader() = 0;
-        [[nodiscard]] virtual IShader* createOnlyGeometryShader() = 0;
-        [[nodiscard]] virtual IShader* createSkyboxShader() = 0;
+        [[nodiscard]] virtual IShader* createShader(const std::string& path) = 0;
 
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
         [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;
@@ -111,6 +105,9 @@ namespace Core::Graphics
         [[nodiscard]] virtual Memory::Assets::IMaterial* createMaterial() = 0;
 
         [[nodiscard]] APIType getAPIType() const noexcept;
+
+    protected:
+        APIType m_apiType = SG_API_TYPE_UNKNOWN;
     };
 }
 

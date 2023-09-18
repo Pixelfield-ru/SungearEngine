@@ -58,9 +58,7 @@ namespace Core::Graphics
 
         // TODO: create docs
         [[nodiscard]] VkShader* createShader() override;
-        [[nodiscard]] VkShader* createPBRShader() override;
-        [[nodiscard]] VkShader* createOnlyGeometryShader() override;
-        [[nodiscard]] VkShader* createSkyboxShader() override;
+        [[nodiscard]] VkShader* createShader(const std::string& path) override;
 
         [[nodiscard]] VkVertexArray* createVertexArray() override;
         [[nodiscard]] VkVertexBuffer* createVertexBuffer() override;

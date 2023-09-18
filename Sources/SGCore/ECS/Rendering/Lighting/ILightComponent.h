@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_ILIGHTCOMPONENT_H
 
 #include "SGCore/ECS/IComponent.h"
-#include <glm/glm.hpp>
+#include "GLM/glm/glm.hpp"
 
 namespace Core::ECS
 {

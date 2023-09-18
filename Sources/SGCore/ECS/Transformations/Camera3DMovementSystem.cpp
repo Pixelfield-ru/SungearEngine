@@ -3,7 +3,7 @@
 //
 
 #include "Camera3DMovementSystem.h"
-#include "CameraComponent.h"
+#include "SGCore/ECS/Rendering/CameraComponent.h"
 
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "SGCore/Input/InputManager.h"

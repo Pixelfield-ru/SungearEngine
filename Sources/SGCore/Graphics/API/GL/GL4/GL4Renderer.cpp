@@ -9,7 +9,7 @@
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
@@ -208,7 +208,7 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsC
 
     // TODO: MAKE CHECKING FOR ALREADY BIND FRAMEBUFFERS, VAOs, VBOs e.t.c. (for not to bind every time the same buffer)
     shadowsCasterComponent->m_frameBuffer->bind();
-    ECS::ShadowsCasterComponent::getObjectsShader()->bind();
+    shadowsCasterComponent->m_shaderAsset->getShader()->bind();
     meshComponent->m_mesh->getVertexArray()->bind();
 
     m_modelMatricesBuffer->bind();
@@ -219,8 +219,8 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsC
     m_viewMatricesBuffer->subData("viewMatrix", glm::value_ptr(shadowsCasterComponent->m_viewMatrix), 16);
     m_viewMatricesBuffer->subData("projectionMatrix", glm::value_ptr(shadowsCasterComponent->m_projectionMatrix), 16);
 
-    ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_modelMatricesBuffer);
-    ECS::ShadowsCasterComponent::getObjectsShader()->useUniformBuffer(m_viewMatricesBuffer);
+    shadowsCasterComponent->m_shaderAsset->getShader()->useUniformBuffer(m_modelMatricesBuffer);
+    shadowsCasterComponent->m_shaderAsset->getShader()->useUniformBuffer(m_viewMatricesBuffer);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 
@@ -276,35 +276,12 @@ Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createShader()
     return shader;
 }
 
-Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createPBRShader()
+Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createShader(const std::string& path)
 {
     auto* shader = createShader();
+
     shader->compile(
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL4_PBR_SHADER_PATH)
-    );
-
-    return shader;
-}
-
-Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createOnlyGeometryShader()
-{
-    auto* shader = createShader();
-    shader->compile(
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(
-                    SG_GLSL4_SHADOWS_GENERATOR_SHADER_PATH
-            )
-    );
-
-    return shader;
-}
-
-Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createSkyboxShader()
-{
-    auto* shader = createShader();
-    shader->compile(
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(
-                    SG_GLSL4_SKYBOX_SHADER_PATH
-                    )
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(path)
     );
 
     return shader;
@@ -359,7 +336,9 @@ Core::Memory::Assets::IMaterial* Core::Graphics::GL4Renderer::createMaterial()
 {
     auto* mat = new Memory::Assets::IMaterial;
 
-    mat->setShader(std::shared_ptr<Core::Graphics::IShader>(createPBRShader()));
+    mat->setShader(std::shared_ptr<Core::Graphics::IShader>(
+            createShader(getShaderPath(StandardShaderType::SG_PBR_SHADER))
+            ));
 
     // adding block decls
     mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSIVE,
@@ -413,7 +392,7 @@ Core::Memory::Assets::IMaterial* Core::Graphics::GL4Renderer::createMaterial()
 const std::shared_ptr<Core::Graphics::GL4Renderer>& Core::Graphics::GL4Renderer::getInstance() noexcept
 {
     static std::shared_ptr<GL4Renderer> s_instancePointer(new GL4Renderer);
-    s_instancePointer->m_apiType = APIType::OPENGL;
+    s_instancePointer->m_apiType = SG_API_TYPE_GL4;
 
     return s_instancePointer;
 }

@@ -77,9 +77,7 @@ namespace Core::Graphics
 
         // TODO: create docs
         [[nodiscard]] GL46Shader* createShader() override;
-        [[nodiscard]] GL46Shader* createPBRShader() override;
-        [[nodiscard]] GL46Shader* createOnlyGeometryShader() override;
-        [[nodiscard]] GL46Shader* createSkyboxShader() override;
+        [[nodiscard]] GL46Shader* createShader(const std::string& path) override;
 
         [[nodiscard]] GLVertexArray* createVertexArray() override;
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;

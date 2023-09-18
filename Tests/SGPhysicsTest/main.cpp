@@ -8,8 +8,8 @@
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
-#include "SGCore/ECS/Rendering/DirectionalLightComponent.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Rendering/Lighting/DirectionalLightComponent.h"
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 #include "SGCore/Memory/Assets/CubemapAsset.h"
 #include "SGCore/ECS/ECSWorld.h"
@@ -205,7 +205,9 @@ void init()
             );
 
             meshComponent->m_mesh->m_material->setShader(std::shared_ptr<Core::Graphics::IShader>(
-                    Core::Main::CoreMain::getRenderer().createSkyboxShader()
+                    Core::Main::CoreMain::getRenderer().createShader(
+                            Core::Graphics::getShaderPath(Core::Graphics::StandardShaderType::SG_SKYBOX_SHADER)
+                            )
             ));
         }
         testScene->m_entities.push_back(entity);

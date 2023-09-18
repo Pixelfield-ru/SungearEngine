@@ -5,7 +5,7 @@
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
 
 bool Core::Graphics::GL46Renderer::confirmSupport() noexcept
 {
@@ -28,21 +28,11 @@ Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createShader()
     return shader;
 }
 
-Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createPBRShader()
+Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createShader(const std::string& path)
 {
     auto* shader = createShader();
     shader->compile(
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL46_PBR_SHADER_PATH)
-    );
-
-    return shader;
-}
-
-Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createOnlyGeometryShader()
-{
-    auto* shader = createShader();
-    shader->compile(
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(SG_GLSL4_SHADOWS_GENERATOR_SHADER_PATH)
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(path)
     );
 
     return shader;
@@ -57,7 +47,9 @@ Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createMaterial()
 {
     auto* mat = new Memory::Assets::IMaterial;
 
-    mat->setShader(std::shared_ptr<Core::Graphics::IShader>(createPBRShader()));
+    mat->setShader(std::shared_ptr<Core::Graphics::IShader>(
+            createShader(getShaderPath(StandardShaderType::SG_PBR_SHADER))
+            ));
 
     // adding block decls
     mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSIVE,
@@ -111,7 +103,7 @@ Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createMaterial()
 const std::shared_ptr<Core::Graphics::GL46Renderer>& Core::Graphics::GL46Renderer::getInstance() noexcept
 {
     static std::shared_ptr<GL46Renderer> s_instancePointer(new GL46Renderer);
-    s_instancePointer->m_apiType = APIType::OPENGL;
+    s_instancePointer->m_apiType = SG_API_TYPE_GL46;
 
     return s_instancePointer;
 }

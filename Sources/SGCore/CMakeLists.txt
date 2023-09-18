@@ -52,10 +52,15 @@ endif()]]
          COMMAND ${CMAKE_COMMAND} -E copy
          ${SG_CORE_DLL}
          ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ}
-         #$<TARGET_FILE_DIR:SGPhysicsTest>
          )
 
-#[[ IF(EXISTS ${SG_CORE_DLL})
+ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+         COMMAND ${CMAKE_COMMAND} -E copy
+         ${SG_CORE_DLL}
+         ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ}
+         )
+
+ #[[IF(EXISTS ${SG_CORE_DLL})
     file(COPY ${SG_CORE_DLL} DESTINATION ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
     file(COPY ${SG_CORE_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
  ENDIF ()]]

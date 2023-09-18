@@ -10,9 +10,12 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 
-#include "IRenderingComponent.h"
+#include "SGCore/ECS/Rendering/IRenderingComponent.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Main/CoreMain.h"
+
+#include "SGCore/Graphics/GraphicsFilesResourcesManager.h"
+#include "SGCore/Memory/Assets/ShaderAsset.h"
 
 namespace Core::Graphics
 {
@@ -25,13 +28,12 @@ namespace Core::ECS
     {
         friend class ShadowsCasterSystem;
 
-    private:
-
-        static inline std::shared_ptr<Graphics::IShader> m_objectsShader;
-
-        void init() noexcept final { }
-
     public:
+        std::shared_ptr<Memory::Assets::ShaderAsset> m_shaderAsset =
+                Memory::AssetManager::loadAsset<Memory::Assets::ShaderAsset>(
+                        Graphics::getShaderPath(Graphics::StandardShaderType::SG_SHADOWS_GENERATOR_SHADER)
+                        );
+
         // frame buffer with depth attachment
         std::shared_ptr<Core::Graphics::IFrameBuffer> m_frameBuffer =
                 std::shared_ptr<Core::Graphics::IFrameBuffer>(Main::CoreMain::getRenderer().createFrameBuffer())
@@ -45,18 +47,25 @@ namespace Core::ECS
                                 0)
                                 ->unbind();
 
-        static std::shared_ptr<Graphics::IShader> getObjectsShader()
+        /*static std::shared_ptr<Graphics::IShader> getObjectsShader()
         {
             static bool firstInit = []() {
                 m_objectsShader = std::shared_ptr<Graphics::IShader>(
-                        Main::CoreMain::getRenderer().createOnlyGeometryShader()
+                        Main::CoreMain::getRenderer().createShader(
+                                Graphics::getShaderPath(Graphics::StandardShaderType::SG_SHADOWS_GENERATOR_SHADER)
+                                )
                 );
 
                 return true;
             }();
 
             return m_objectsShader;
-        }
+        }*/
+
+    private:
+        //std::shared_ptr<Graphics::IShader> m_shader;
+
+        void init() noexcept final { }
     };
 }
 

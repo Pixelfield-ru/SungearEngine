@@ -11,7 +11,7 @@
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
 
 void Core::Graphics::VkRenderer::init() noexcept
 {
@@ -74,19 +74,9 @@ Core::Graphics::VkShader* Core::Graphics::VkRenderer::createShader()
     return new VkShader;
 }
 
-Core::Graphics::VkShader* Core::Graphics::VkRenderer::createPBRShader()
+Core::Graphics::VkShader* Core::Graphics::VkRenderer::createShader(const std::string& path)
 {
-    return nullptr;
-}
-
-Core::Graphics::VkShader* Core::Graphics::VkRenderer::createOnlyGeometryShader()
-{
-    return nullptr;
-}
-
-Core::Graphics::VkShader* Core::Graphics::VkRenderer::createSkyboxShader()
-{
-    return nullptr;
+    return new VkShader;
 }
 
 Core::Graphics::VkVertexArray* Core::Graphics::VkRenderer::createVertexArray()
@@ -143,7 +133,7 @@ Core::Memory::Assets::IMaterial *Core::Graphics::VkRenderer::createMaterial()
 const std::shared_ptr<Core::Graphics::VkRenderer>& Core::Graphics::VkRenderer::getInstance() noexcept
 {
     static std::shared_ptr<VkRenderer> s_instancePointer(new VkRenderer);
-    s_instancePointer->m_apiType = APIType::VULKAN;
+    s_instancePointer->m_apiType = SG_API_TYPE_VULKAN;
 
     return s_instancePointer;
 }

@@ -6,8 +6,8 @@
 
 #include "ECSWorld.h"
 
-#include "SGCore/ECS/Rendering/ShadowsCasterComponent.h"
-#include "SGCore/ECS/Rendering/DirectionalLightComponent.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Rendering/Lighting/DirectionalLightComponent.h"
 
 void Core::ECS::Entity::addComponent(const std::shared_ptr<IComponent>& component) noexcept
 {

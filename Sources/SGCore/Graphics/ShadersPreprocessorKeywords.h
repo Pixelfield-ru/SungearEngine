@@ -7,7 +7,7 @@
 
 #include <string>
 
-#define SG_SHADER_INCLUDE_KEYWORD "sg_include"
+#define SG_SHADER_INCLUDE_KEYWORD "include"
 
 // errors ---------------------
 
