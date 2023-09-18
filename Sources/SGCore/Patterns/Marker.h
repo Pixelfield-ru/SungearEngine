@@ -1,7 +1,3 @@
-//
-// Created by stuka on 30.07.2023.
-//
-
 #ifndef SUNGEARENGINE_MARKER_H
 #define SUNGEARENGINE_MARKER_H
 

@@ -159,7 +159,7 @@ void init()
         auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
         if(meshComponent)
         {
-            meshComponent->m_enableFacesCulling = false;
+            //meshComponent->m_enableFacesCulling = false;
         }
     }
 

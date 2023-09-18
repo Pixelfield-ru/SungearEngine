@@ -57,8 +57,8 @@ float ambient = 0.1;
     // shadows impl
     #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
 
-    //const float shadowsBias = 0.000003;
-    const float shadowsBias = 0.0001;
+    const float shadowsBias = 0.000005;
+    //const float shadowsBias = 0.0002;
 
     float sampleShadowMap(
         const in vec2 coords,
@@ -76,14 +76,15 @@ float ambient = 0.1;
         const in vec3 projCoords,
         const in int shadowsCasterIdx,
         const in vec2 texelSize,
-        const in float lightMinCoeff
+        const in float lightMinCoeff,
+        const in vec4 shadowsCasterSpaceFragPos
     )
     {
-        float finalProjZ = projCoords.z;
+        float finalProjZ = projCoords.z - shadowsBias;
 
         float shadow = 0.0;
 
-        vec2 pixelPos = projCoords.xy / texelSize + 0.5;
+        vec2 pixelPos = projCoords.xy / texelSize;
         vec2 fractPart = fract(pixelPos);
         vec2 startTexel = (pixelPos - fractPart) * texelSize;
 
@@ -102,7 +103,8 @@ float ambient = 0.1;
         const in vec3 projCoords,
         const in int shadowsCasterIdx,
         const in float lightMinCoeff,
-        const in vec2 texelSize
+        const in vec2 texelSize,
+        const in vec4 shadowsCasterSpaceFragPos
     )
     {
         const float samplesNum = 5.0;
@@ -111,12 +113,15 @@ float ambient = 0.1;
 
         float resShadow = 0.0;
 
+        const int sn = 9;
+
         for(float y = -samplesStart; y <= samplesStart; y += 1.0)
         {
             for(float x = -samplesStart; x <= samplesStart; x += 1.0)
             {
                 vec2 offset = vec2(x, y) * texelSize;
-                resShadow += calculateLinearDepth(vec3(projCoords.xy + offset, projCoords.z), shadowsCasterIdx, texelSize, lightMinCoeff);
+                resShadow += calculateLinearDepth(vec3(projCoords.xy + offset, projCoords.z),
+                    shadowsCasterIdx, texelSize, lightMinCoeff, shadowsCasterSpaceFragPos);
             }
         }
 
@@ -138,7 +143,7 @@ float ambient = 0.1;
         float finalProjZ = projCoords.z;
 
         const int numBlockerSamples = 16;
-        const int numAASamples = 16;
+        const int numAASamples = 20;
         const float nearPlane = 0.2;
         const float lightWorldSize = 10.0;
         const float lightFrustumWidth = 3.75;
@@ -146,9 +151,10 @@ float ambient = 0.1;
         //const float lightSizeUV = lightFrustumWidth / lightWorldSize;
 
 
-        //float finalBias = max(0.05 * (1.0 - dot(normal, shadowsCasters[shadowsCasterIdx].position)), shadowsBias);
+        float finalBias = max(0.05 * (1.0 - dot(normal, shadowsCasters[shadowsCasterIdx].position)), shadowsBias);
+            //float finalBias = 0.00005;
 
-        float finalBias = shadowsBias;
+        //float finalBias = shadowsBias;
         //float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / shadowsCasterSpaceFragPos.z;
         float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / shadowsCasters[shadowsCasterIdx].position.z;
 
@@ -157,43 +163,47 @@ float ambient = 0.1;
 
         float shadow = 0.0;
 
-        float rand = random(projCoords.xy);
-        //rand = mad(rand, 2.0, -1.0);
-        float rotAngle = rand * PI;
-        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
-
         // get blocker distance
         for (int j = 0; j < numBlockerSamples; ++j)
         {
             vec2 offset = poissonDisk[j] * searchWidth;
-            //offset = rotate(offset, rotTrig);
 
             float occluder = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + offset).r;
 
-            if(occluder < finalProjZ - finalBias)
+            if(occluder < finalProjZ)
             {
                 blockers += 1.0;
                 avgBlocker += occluder;
             }
         }
 
-        avgBlocker /= blockers;
-
         if(blockers < 1.0)
         {
             return 1.0;
         }
 
+        avgBlocker /= blockers;
+
         float penumbraSize = (finalProjZ - avgBlocker) / avgBlocker;
         float filterRadiusUV = penumbraSize * lightSizeUV * nearPlane / finalProjZ;
-        for(int i = 0; i < numAASamples; ++i)
+
+        float visibility = 1.0;
+
+        float rand = random(projCoords.xy);
+        //rand = mad(rand, 2.0, -1.0);
+        float rotAngle = rand * PI;
+        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
+
+        for(int i = 0; i < 16; i++)
         {
-            vec2 offset = poissonDisk[i].xy * filterRadiusUV;
-            offset = rotate(offset, rotTrig);
-            shadow += calculateLinearDepth(vec3(projCoords.xy + offset, finalProjZ), shadowsCasterIdx, texelSize, lightMinCoeff);
+            if(texture(shadowsCastersShadowMaps[shadowsCasterIdx],
+                projCoords.xy + rotate(poissonDisk[i] * filterRadiusUV, rotTrig)).z < projCoords.z - finalBias)
+            {
+                visibility -= 0.04;
+            }
         }
 
-        return shadow / numAASamples;
+        return visibility;
     }
 
     // --------------------------------------------------
@@ -229,7 +239,7 @@ float ambient = 0.1;
 
         // PCF ------------------
 
-        /**float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.075, texelSize);
+        /**float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.075, texelSize, shadowsCasterSpaceFragPos);
 
         return pcfShadow;*/
 
@@ -237,11 +247,28 @@ float ambient = 0.1;
 
         // PCSS ------------------
 
-        float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.075);
+        float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.55);
 
         return pcssShadow;
 
         // -----------------------
+
+        /**float visibility = 1.0;
+
+        float rand = random(projCoords.xy);
+        rand = mad(rand, 2.0, -1.0);
+        float rotAngle = rand * PI;
+        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
+
+        for(int i = 0; i < 16; i++)
+        {
+             if(texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + rotate(poissonDisk[i] / 1500.0, rotTrig)).z < projCoords.z - shadowsBias)
+            {
+                visibility -= 0.04;
+            }
+        }
+
+        return visibility;*/
     }
     #endif
 
@@ -259,11 +286,11 @@ float ambient = 0.1;
         vec3 viewDir = normalize(viewDirection - fragPos);
         vec3 halfWayDir = normalize(lightDir + viewDir);
 
-        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 16.0;
+        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 32.0;
 
-        diffuseColor = vec3(finalDiffuse) * lightColor.rgb; /// distance(fragPos, lightDir);
+        diffuseColor = vec3(finalDiffuse) * lightColor.rgb / distance(fragPos, lightDir);
 
-        float spec = pow(max(dot(normal, halfWayDir), 0.0), 32);
+        float spec = pow(max(dot(normal, halfWayDir), 0.0), 32.0);
 
         specularColor = spec * lightColor.rgb;
     }

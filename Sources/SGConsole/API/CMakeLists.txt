@@ -1,7 +1,6 @@
- project(SGConsoleAPI)
+ project(${SG_CONSOLE_API_PROJ})
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")
- set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition")
 
  file(GLOB_RECURSE SGCONSOLEAPI_SOURCES ../API/*.cpp ../API/*.h)
 
@@ -18,10 +17,10 @@
          )
 
  target_link_libraries(${PROJECT_NAME}
-         SGCore
+         ${SG_CORE_PROJ}
          )
 
  # todo: make by file
  IF(EXISTS ${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}d.dll)
-   file(COPY ${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}d.dll DESTINATION ${CMAKE_BINARY_DIR}/Sources/SGEditor)
+   file(COPY ${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}d.dll DESTINATION ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
  ENDIF ()

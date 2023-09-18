@@ -12,7 +12,6 @@
 #include "SGCore/ECS/Rendering/DirectionalLightComponent.h"
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 #include "SGCore/Memory/Assets/CubemapAsset.h"
-#include "GLM/glm/vec3.hpp"
 #include "SGCore/ECS/ECSWorld.h"
 
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
@@ -21,6 +20,7 @@
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
+#include "BulletCollision/CollisionShapes/btBoxShape.h"
 
 std::shared_ptr<Core::ECS::Entity> testCameraEntity;
 std::shared_ptr<Core::ECS::Scene> testScene;
@@ -32,6 +32,31 @@ btBroadphaseInterface*                  overlappingPairCache;
 btSequentialImpulseConstraintSolver*    solver;
 btDiscreteDynamicsWorld* 				dynamicsWorld;
 btIDebugDraw*							debugDraw;
+
+btCollisionObject* testCollisionObject;
+btBoxShape* testBoxShape;
+
+void physicsInit()
+{
+    collisionConfiguration = new btDefaultCollisionConfiguration;
+    dispatcher = new btCollisionDispatcher(collisionConfiguration);
+
+    testBoxShape = new btBoxShape({ 0.5, 0.5, 0.5 });
+    testCollisionObject = new btCollisionObject;
+
+    overlappingPairCache = new btDbvtBroadphase();
+
+    solver = new btSequentialImpulseConstraintSolver;
+
+    //debugDraw = new btIDebugDraw;
+
+    dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+
+    //debugDraw->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    dynamicsWorld->setDebugDrawer(debugDraw);
+
+    dynamicsWorld->setGravity(btVector3(0, -10, 0));
+}
 
 // example how to convert imported scene to Sungear ECS scene
 void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
@@ -67,25 +92,6 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
     {
         processLoadedNode(node, pos, rot, scale, outputEntities);
     }
-}
-
-void physicsInit()
-{
-    collisionConfiguration = new btDefaultCollisionConfiguration;
-    dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
-    overlappingPairCache = new btDbvtBroadphase();
-
-    solver = new btSequentialImpulseConstraintSolver;
-
-    //debugDraw = new btIDebugDraw;
-
-    dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-
-    //debugDraw->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
-    dynamicsWorld->setDebugDrawer(debugDraw);
-
-    dynamicsWorld->setGravity(btVector3(0, -10, 0));
 }
 
 void init()

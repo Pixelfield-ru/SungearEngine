@@ -1,4 +1,4 @@
- project(SGConsoleApp)
+ project(${SG_CONSOLE_APP_PROJ})
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")
 
@@ -18,7 +18,7 @@
          )
 
  target_link_libraries(${PROJECT_NAME}
-         SGConsoleAPI
+         ${SG_CONSOLE_API_PROJ}
          )
 
  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

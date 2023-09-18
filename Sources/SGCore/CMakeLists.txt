@@ -48,14 +48,14 @@ else()
   target_link_libraries(${PROJECT_NAME} vulkan)
 endif()]]
 
-#[[ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
          COMMAND ${CMAKE_COMMAND} -E copy
-         $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}d.dll
-         $<TARGET_FILE_DIR:SGEditor>
-         $<TARGET_FILE_DIR:SGPhysicsTest>
-         )]]
+         ${SG_CORE_DLL}
+         ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ}
+         #$<TARGET_FILE_DIR:SGPhysicsTest>
+         )
 
- IF(EXISTS ${SG_CORE_DLL})
+#[[ IF(EXISTS ${SG_CORE_DLL})
     file(COPY ${SG_CORE_DLL} DESTINATION ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
     file(COPY ${SG_CORE_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
- ENDIF ()
+ ENDIF ()]]

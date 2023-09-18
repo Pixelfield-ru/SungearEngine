@@ -18,5 +18,5 @@
          )
 
  target_link_libraries(${PROJECT_NAME} PRIVATE
-         SGCore
+         ${SG_CORE_PROJ}
          )
