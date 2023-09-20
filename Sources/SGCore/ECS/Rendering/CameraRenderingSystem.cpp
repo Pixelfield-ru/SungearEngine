@@ -21,27 +21,40 @@ void Core::ECS::CameraRenderingSystem::update
     for(auto& sceneEntity : scene->m_entities)
     {
         std::shared_ptr<TransformComponent> transformComponent = sceneEntity->getComponent<TransformComponent>();
+
+        if(!transformComponent) continue;
+
         std::shared_ptr<MeshComponent> meshComponent = sceneEntity->getComponent<MeshComponent>();
         std::shared_ptr<SkyboxComponent> skyboxComponent = sceneEntity->getComponent<SkyboxComponent>();
+        std::list<std::shared_ptr<IPrimitiveComponent>> primitiveComponents = sceneEntity->getComponents<IPrimitiveComponent>();
 
-        if(!transformComponent || !meshComponent) continue;
-
-        if(!skyboxComponent)
+        if(meshComponent)
         {
-            Core::Main::CoreMain::getRenderer().renderMesh(
-                    cameraComponent,
-                    cameraTransformComponent,
-                    transformComponent,
-                    meshComponent
-                    );
+            if (!skyboxComponent)
+            {
+                Core::Main::CoreMain::getRenderer().renderMesh(
+                        cameraComponent,
+                        cameraTransformComponent,
+                        transformComponent,
+                        meshComponent
+                );
+            } else
+            {
+                Core::Main::CoreMain::getRenderer().renderMesh(
+                        cameraComponent,
+                        skyboxComponent,
+                        transformComponent,
+                        meshComponent
+                );
+            }
         }
-        else
+
+        for(const auto& primitiveComponent : primitiveComponents)
         {
-            Core::Main::CoreMain::getRenderer().renderMesh(
+            Core::Main::CoreMain::getRenderer().renderPrimitive(
                     cameraComponent,
-                    skyboxComponent,
                     transformComponent,
-                    meshComponent
+                    primitiveComponent
             );
         }
     }

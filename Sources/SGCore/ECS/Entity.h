@@ -18,7 +18,6 @@ namespace Core::ECS
 {
     class IComponent;
 
-    // todo: make weak ptr of scene where entity placed
     class Entity
     {
     private:

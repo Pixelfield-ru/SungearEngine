@@ -1,12 +1,7 @@
-//
-// Created by stuka on 27.07.2023.
-//
+#include <string>
 
 #ifndef SUNGEARENGINE_GRAPHICSFILESRESOURCESMANAGER_H
 #define SUNGEARENGINE_GRAPHICSFILESRESOURCESMANAGER_H
-
-#include "SGCore/Main/CoreMain.h"
-#include "SGCore/Graphics/API/APIType.h"
 
 // shaders ----------------------------------------------------------
 
@@ -19,7 +14,8 @@
 
 #define SG_GLSL4_SKYBOX_SHADER_PATH "../SGResources/shaders/glsl4/skybox/default_shader.glsl"
 
-#define SG_GLSL4_PRIMITIVES_SHADER_PATH "../SGResources/shaders/glsl4/primitives/default_shader.glsl"
+#define SG_GLSL4_LINES_SHADER_PATH "../SGResources/shaders/glsl4/primitives/lines_shader.glsl"
+#define SG_GLSL4_COMPLEX_PRIMITIVES_SHADER_PATH "../SGResources/shaders/glsl4/primitives/complex_primitives_shader.glsl"
 
 // -----------------------------------------------------------------
 
@@ -28,6 +24,11 @@
 
 #define SG_FRAMEBUFFER_DEPTH_ATTACHMENT_NAME "depthAttachment"
 
+namespace Core::Main
+{
+    class CoreMain;
+}
+
 namespace Core::Graphics
 {
     enum StandardShaderType
@@ -35,7 +36,8 @@ namespace Core::Graphics
         SG_PBR_SHADER,
         SG_SHADOWS_GENERATOR_SHADER,
         SG_SKYBOX_SHADER,
-        SG_PRIMITIVES_SHADER
+        SG_LINES_SHADER,
+        SG_COMPLEX_PRIMITIVES_SHADER
     };
 
     /**
@@ -43,55 +45,7 @@ namespace Core::Graphics
      * @param shaderType - Type of standard shader.
      * @return Path to the desired standard shader based on the currently selected renderer.
      */
-    static std::string getShaderPath(const StandardShaderType& shaderType)
-    {
-        std::string shaderPath;
-
-        switch(shaderType)
-        {
-            case SG_PBR_SHADER:
-                switch(Main::CoreMain::getRenderer().getAPIType())
-                {
-                    case SG_API_TYPE_GL4:
-                        shaderPath = SG_GLSL4_PBR_SHADER_PATH;
-                        break;
-
-                    case SG_API_TYPE_GL46:
-                        shaderPath = SG_GLSL46_PBR_SHADER_PATH;
-                        break;
-                }
-                break;
-
-            case SG_SHADOWS_GENERATOR_SHADER:
-                switch(Main::CoreMain::getRenderer().getAPIType())
-                {
-                    case SG_API_TYPE_GL4:
-                        shaderPath = SG_GLSL4_SHADOWS_GENERATOR_SHADER_PATH;
-                        break;
-                }
-                break;
-
-            case SG_SKYBOX_SHADER:
-                switch(Main::CoreMain::getRenderer().getAPIType())
-                {
-                    case SG_API_TYPE_GL4:
-                        shaderPath = SG_GLSL4_SKYBOX_SHADER_PATH;
-                        break;
-                }
-                break;
-
-            case SG_PRIMITIVES_SHADER:
-                switch(Main::CoreMain::getRenderer().getAPIType())
-                {
-                    case SG_API_TYPE_GL4:
-                        shaderPath = SG_GLSL4_PRIMITIVES_SHADER_PATH;
-                        break;
-                }
-                break;
-        }
-
-        return shaderPath;
-    }
+    std::string getShaderPath(const StandardShaderType& shaderType);
 }
 
 #endif //SUNGEARENGINE_GRAPHICSFILESRESOURCESMANAGER_H

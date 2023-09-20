@@ -11,12 +11,14 @@
 #include "SGCore/ECS/Rendering/RenderingComponentsSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
 #include "SGCore/ECS/Rendering/SkyboxRenderingSystem.h"
+#include "SGCore/ECS/Rendering/Primitives/PrimitivesUpdaterSystem.h"
 
 void Core::ECS::ECSWorld::init() noexcept
 {
     createSystem<TransformationsSystem>();
     createSystem<RenderingComponentsSystem>();
     createSystem<SkyboxRenderingSystem>();
+    createSystem<PrimitivesUpdaterSystem>();
     createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
     createSystem<DirectionalLightsSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
     createSystem<Camera3DMovementSystem>();

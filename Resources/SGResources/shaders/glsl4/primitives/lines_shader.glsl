@@ -3,11 +3,11 @@
 
 #ifdef VERTEX_SHADER
     uniform vec3 offset;
-    uniform vec3 verticesPositions[360];
+    uniform vec3 verticesPositions[2];
 
     void main()
     {
-        gl_Position = projectionMatrix * viewMatrix * objectModelMatrix * vec4(offset * verticesPositions[gl_VertexID], 1.0);
+        gl_Position = projectionMatrix * viewMatrix * objectModelMatrix * vec4(offset + verticesPositions[gl_VertexID], 1.0);
     }
 #endif
 
@@ -15,8 +15,6 @@
     out vec4 fragColor;
 
     uniform vec4 color;
-
-    in vec3 vs_UVAttribute;
 
     void main()
     {

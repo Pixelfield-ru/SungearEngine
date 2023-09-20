@@ -148,7 +148,6 @@ void Core::Graphics::GL4Renderer::renderFrame(const glm::ivec2& windowSize)
     glClearColor(1, 0, 1, 1);
 }
 
-// TODO: just test. delete
 void Core::Graphics::GL4Renderer::renderMesh(
         const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
         const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
@@ -266,6 +265,42 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::CameraCo
                                   glm::value_ptr(cameraTransformComponent->m_position), 3);*/
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+}
+
+void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
+                                                  const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                                  const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent)
+{
+    primitiveComponent->m_mesh->m_material->bind();
+    if(primitiveComponent->m_mesh->getVertexArray())
+    {
+        primitiveComponent->m_mesh->getVertexArray()->bind();
+    }
+
+    m_modelMatricesBuffer->bind();
+    m_viewMatricesBuffer->bind();
+
+    primitiveComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_modelMatricesBuffer);
+    primitiveComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_viewMatricesBuffer);
+
+    m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
+
+    m_viewMatricesBuffer->subData("viewMatrix",
+                                  glm::value_ptr(cameraComponent->m_viewMatrix), 16);
+    m_viewMatricesBuffer->subData("projectionMatrix",
+                                  glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
+
+    glLineWidth(primitiveComponent->m_linesWidth);
+
+    if(!primitiveComponent->m_mesh->m_useIndices)
+    {
+        glDrawArrays(GL_LINES, 0, primitiveComponent->m_mesh->m_positions.size());
+    }
+    else
+    {
+        glDrawElements(GL_LINES, primitiveComponent->m_mesh->getVertexArray()->m_indicesCount,
+                       GL_UNSIGNED_INT, nullptr);
+    }
 }
 
 Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createShader()

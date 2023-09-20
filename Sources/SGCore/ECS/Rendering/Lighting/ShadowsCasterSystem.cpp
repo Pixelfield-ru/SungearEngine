@@ -65,7 +65,6 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
                                             const std::shared_ptr<Core::ECS::Entity>& entity)
 {
-    // todo: make for all shadows casters
     std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent = entity->getComponent<ShadowsCasterComponent>();
 
     if(!shadowsCasterComponent) return;
@@ -79,7 +78,6 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
 
         if(!transformComponent || !meshComponent || sceneEntity->getComponent<SkyboxComponent>()) continue;
 
-        // TODO: make rendering
         Core::Main::CoreMain::getRenderer().renderMesh(shadowsCasterComponent, transformComponent, meshComponent);
     }
 }

@@ -18,8 +18,6 @@
 
 namespace Core::ImportedScene
 {
-    // TODO: make abstract with its own implementation for each GAPI
-    // TODO: make render method and material in mesh
     class IMesh
     {
     protected:
@@ -38,6 +36,8 @@ namespace Core::ImportedScene
         virtual ~IMesh() = default;
 
         std::string m_name;
+
+        bool m_useIndices = true;
 
         // indices array
         std::vector<std::uint32_t> m_indices;

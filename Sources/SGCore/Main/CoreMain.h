@@ -11,6 +11,11 @@
 
 #include "SGCore/Graphics/API/IRenderer.h"
 
+/*namespace Core::Graphics
+{
+    class IRenderer;
+}*/
+
 namespace Core::Main
 {
     class CoreMain

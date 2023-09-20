@@ -21,6 +21,8 @@
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
+#include "SGCore/ECS/Rendering/Primitives/LineComponent.h"
+#include "SGCore/ECS/Rendering/Primitives/BoxComponent.h"
 
 std::shared_ptr<Core::ECS::Entity> testCameraEntity;
 std::shared_ptr<Core::ECS::Scene> testScene;
@@ -236,10 +238,10 @@ void init()
     shadowsCasterTransform->m_position.x = 0.0;
     shadowsCasterTransform->m_rotation.x = 50;
     //shadowsCasterTransform->m_rotation.y = -90;
-    auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
     testShadowsCaster->addComponent(shadowsCasterTransform);
-    testShadowsCaster->addComponent(shadowCasterComponent);
+    testShadowsCaster->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
+    testShadowsCaster->addComponent(std::make_shared<Core::ECS::BoxComponent>());
 
     physicsInit();
 }
