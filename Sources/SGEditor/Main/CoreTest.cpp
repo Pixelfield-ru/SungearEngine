@@ -81,6 +81,8 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
     }
 }
 
+std::shared_ptr<Core::ECS::Entity> testShadowsCaster;
+
 void init()
 {
     testScene = std::make_shared<Core::ECS::Scene>();
@@ -239,7 +241,7 @@ void init()
 
     testScene->m_entities.push_back(testCameraEntity);
 
-    auto testShadowsCaster = std::make_shared<Core::ECS::Entity>();
+    testShadowsCaster = std::make_shared<Core::ECS::Entity>();
     testScene->m_entities.push_back(testShadowsCaster);
     auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
     shadowsCasterTransform->m_position.y = 15;
@@ -269,9 +271,15 @@ void init()
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
 
 
+int framesCnt = 0;
+
 void framePostRender()
 {
+    testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
+
     Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
+
+    framesCnt++;
 }
 
 // --------------------------------------------

@@ -13,9 +13,9 @@ namespace Core::Patterns
     public:
         bool isFlagSet(const std::uint16_t& flag) const noexcept
         {
-            // 0x000 000 11
-            // 0x000 000 10
-            // 0x000 000 10 != 0
+            // 000 000 11
+            // 000 000 10
+            // 000 000 10 != 0
 
             return (m_flags & flag) != 0;
         }
@@ -24,15 +24,15 @@ namespace Core::Patterns
         {
             m_flags |= flag;
 
-            // 0x000 000 00
-            // 0x000 000 10
+            // 000 000 00
+            // 000 000 10
 
-            // 0x000 000 10
+            // 000 000 10
 
-            // 0x000 000 10
-            // 0x000 000 01
+            // 000 000 10
+            // 000 000 01
 
-            // 0x000 000 11
+            // 000 000 11
 
             return this->shared_from_this();
         }
@@ -40,16 +40,16 @@ namespace Core::Patterns
         std::shared_ptr<T> removeFlag(const std::uint16_t& flag) noexcept
         {
             m_flags &= ~flag;
-            // 0x000 000 11
+            // 000 000 11
 
-            // 0x000 000 10
+            // 000 000 10
 
-            // 0x111 111 01
-            // 0x000 000 01
+            // 111 111 01
+            // 000 000 01
 
-            // 0x000 000 01
-            // 0x111 111 10
-            // 0x000 000 00
+            // 000 000 01
+            // 111 111 10
+            // 000 000 00
 
             return this->shared_from_this();
         }

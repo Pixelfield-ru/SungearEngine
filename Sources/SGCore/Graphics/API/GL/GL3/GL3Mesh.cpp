@@ -1,7 +1,3 @@
-//
-// Created by stuka on 30.06.2023.
-//
-
 #include "GL3Mesh.h"
 
 #include "SGCore/Main/CoreMain.h"

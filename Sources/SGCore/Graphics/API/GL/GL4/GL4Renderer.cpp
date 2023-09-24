@@ -291,6 +291,7 @@ void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::Cam
                                   glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
 
     glLineWidth(primitiveComponent->m_linesWidth);
+    glPointSize(primitiveComponent->m_linesWidth);
 
     if(!primitiveComponent->m_mesh->m_useIndices)
     {

@@ -23,6 +23,7 @@
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
 #include "SGCore/ECS/Rendering/Primitives/LineComponent.h"
 #include "SGCore/ECS/Rendering/Primitives/BoxComponent.h"
+#include "SGCore/ECS/Rendering/Primitives/SphereComponent.h"
 
 std::shared_ptr<Core::ECS::Entity> testCameraEntity;
 std::shared_ptr<Core::ECS::Scene> testScene;
@@ -95,6 +96,9 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
         processLoadedNode(node, pos, rot, scale, outputEntities);
     }
 }
+
+std::shared_ptr<Core::ECS::Entity> testShadowsCaster;
+std::shared_ptr<Core::ECS::SphereComponent> sphereComponent;
 
 void init()
 {
@@ -230,7 +234,7 @@ void init()
 
     // shadows caster ---------------------------
 
-    auto testShadowsCaster = std::make_shared<Core::ECS::Entity>();
+    testShadowsCaster = std::make_shared<Core::ECS::Entity>();
     testScene->m_entities.push_back(testShadowsCaster);
     auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
     shadowsCasterTransform->m_position.y = 25;
@@ -238,21 +242,29 @@ void init()
     shadowsCasterTransform->m_position.x = 0.0;
     shadowsCasterTransform->m_rotation.x = 50;
     //shadowsCasterTransform->m_rotation.y = -90;
+    sphereComponent = std::make_shared<Core::ECS::SphereComponent>();
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
+    sphereComponent->m_color.y = 1.0f;
+    testShadowsCaster->addComponent(sphereComponent);
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::BoxComponent>());
 
     physicsInit();
 }
 
+int framesCnt = 0;
+
 void framePostRender()
 {
+    //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
+
     Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
+
+    framesCnt++;
 }
 
 // --------------------------------------------
-
 void deltaUpdate(const double& deltaTime)
 {
     Core::ECS::ECSWorld::deltaUpdate(Core::ECS::Scene::getCurrentScene(), deltaTime);
