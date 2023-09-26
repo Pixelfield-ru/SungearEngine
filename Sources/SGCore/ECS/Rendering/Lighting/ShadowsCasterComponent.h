@@ -29,10 +29,10 @@ namespace Core::ECS
         friend class ShadowsCasterSystem;
 
     public:
-        std::shared_ptr<Memory::Assets::ShaderAsset> m_shaderAsset =
+        /*std::shared_ptr<Memory::Assets::ShaderAsset> m_shaderAsset =
                 Memory::AssetManager::loadAsset<Memory::Assets::ShaderAsset>(
                         Graphics::getShaderPath(Graphics::StandardShaderType::SG_SHADOWS_GENERATOR_SHADER)
-                        );
+                        );*/
 
         // frame buffer with depth attachment
         std::shared_ptr<Core::Graphics::IFrameBuffer> m_frameBuffer =

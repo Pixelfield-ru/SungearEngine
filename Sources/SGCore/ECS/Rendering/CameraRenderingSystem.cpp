@@ -18,6 +18,8 @@ void Core::ECS::CameraRenderingSystem::update
 
     if(!cameraComponent || !cameraTransformComponent) return;
 
+    Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
+
     for(auto& sceneEntity : scene->m_entities)
     {
         std::shared_ptr<TransformComponent> transformComponent = sceneEntity->getComponent<TransformComponent>();
@@ -38,7 +40,8 @@ void Core::ECS::CameraRenderingSystem::update
                         transformComponent,
                         meshComponent
                 );
-            } else
+            }
+            else
             {
                 Core::Main::CoreMain::getRenderer().renderMesh(
                         cameraComponent,

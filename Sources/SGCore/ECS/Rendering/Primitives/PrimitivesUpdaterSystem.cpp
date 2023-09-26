@@ -11,11 +11,15 @@ void Core::ECS::PrimitivesUpdaterSystem::update(const std::shared_ptr<Scene>& sc
 
     for(const auto& primitiveComponent : primitiveComponents)
     {
-        primitiveComponent->m_mesh->m_material->getShader()->bind();
+        const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
+
+        if (!materialShader) continue;
+
+        materialShader->bind();
 
         if(primitiveComponent->m_offset != primitiveComponent->m_lastOffset)
         {
-            primitiveComponent->m_mesh->m_material->getShader()->useVectorf(
+            materialShader->useVectorf(
                     "offset",
                     primitiveComponent->m_offset
                     );
@@ -25,7 +29,7 @@ void Core::ECS::PrimitivesUpdaterSystem::update(const std::shared_ptr<Scene>& sc
 
         if(primitiveComponent->m_color != primitiveComponent->m_lastColor)
         {
-            primitiveComponent->m_mesh->m_material->getShader()->useVectorf(
+            materialShader->useVectorf(
                     "color",
                     primitiveComponent->m_color
             );

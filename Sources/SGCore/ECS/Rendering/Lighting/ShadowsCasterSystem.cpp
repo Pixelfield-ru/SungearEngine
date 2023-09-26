@@ -29,6 +29,10 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 
                 for(auto& meshComponent: meshComponents)
                 {
+                    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
+
+                    if(!materialShader) return;
+
                     std::uint8_t shadowMapsBlockOffset = meshComponent->
                             m_mesh->
                             m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
@@ -40,18 +44,18 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
                             finalTextureBlock
                             );
 
-                    meshComponent->m_mesh->m_material->getShader()->bind();
+                    materialShader->bind();
 
-                    meshComponent->m_mesh->m_material->getShader()->useTexture(
+                    materialShader->useTexture(
                             "shadowsCastersShadowMaps[" + std::to_string(totalShadowCasters) + "]",
                             finalTextureBlock);
 
                     // todo: maybe make uniform buffer for shadows casters
-                    meshComponent->m_mesh->m_material->getShader()->useMatrix(
+                    materialShader->useMatrix(
                             "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
                             shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
 
-                    meshComponent->m_mesh->m_material->getShader()->useVectorf(
+                    materialShader->useVectorf(
                             "shadowsCasters[" + std::to_string(totalShadowCasters) + "].position",
                             shadowCasterTransform->m_position);
                 }
@@ -69,7 +73,9 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
 
     if(!shadowsCasterComponent) return;
 
-    shadowsCasterComponent->m_frameBuffer->bind()->clear()->unbind();
+    shadowsCasterComponent->m_frameBuffer->bind()->clear();
+
+    Core::Main::CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
 
     for(auto& sceneEntity : scene->m_entities)
     {
@@ -78,8 +84,14 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
 
         if(!transformComponent || !meshComponent || sceneEntity->getComponent<SkyboxComponent>()) continue;
 
+        meshComponent->m_mesh->m_material->setCurrentShader(SGMAT_SHADOW_GEN_SHADER_NAME);
+
         Core::Main::CoreMain::getRenderer().renderMesh(shadowsCasterComponent, transformComponent, meshComponent);
+
+        meshComponent->m_mesh->m_material->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
     }
+
+    shadowsCasterComponent->m_frameBuffer->bind()->unbind();
 }
 
 void Core::ECS::ShadowsCasterSystem::deltaUpdate(const std::shared_ptr<Scene>& scene,

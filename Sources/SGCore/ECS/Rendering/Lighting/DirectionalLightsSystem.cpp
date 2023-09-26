@@ -29,15 +29,19 @@ void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& sc
 
                 for(auto& meshComponent: meshComponents)
                 {
-                    meshComponent->m_mesh->m_material->getShader()->bind();
+                    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
 
-                    meshComponent->m_mesh->m_material->getShader()->useVectorf(
+                    if (!materialShader) continue;
+
+                    materialShader->bind();
+
+                    materialShader->useVectorf(
                             "directionalLights[" +
                             std::to_string(totalDirectionalLights) + "].color",
                             directionalLightComponent->m_color);
 
                     // todo: take into account the type of transformation and the direction of rotation
-                    meshComponent->m_mesh->m_material->getShader()->useVectorf(
+                    materialShader->useVectorf(
                             "directionalLights[" +
                             std::to_string(totalDirectionalLights) + "].position",
                             transformComponent->m_position);

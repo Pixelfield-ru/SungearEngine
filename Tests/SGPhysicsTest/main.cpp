@@ -210,7 +210,9 @@ void init()
                     )
             );
 
-            meshComponent->m_mesh->m_material->setShader(std::shared_ptr<Core::Graphics::IShader>(
+            meshComponent->m_mesh->m_material->setShader(
+                    SGMAT_STANDARD_SHADER_NAME,
+                    std::shared_ptr<Core::Graphics::IShader>(
                     Core::Main::CoreMain::getRenderer().createShader(
                             Core::Graphics::getShaderPath(Core::Graphics::StandardShaderType::SG_SKYBOX_SHADER)
                             )

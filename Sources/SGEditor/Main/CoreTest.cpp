@@ -110,6 +110,9 @@ void init()
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
             //"../SGResources/models/test/gaz-66.obj"
             "../SGResources/models/test/btr_80a2016/scene.gltf"
+            //"../SGResources/models/test/backpack/scene.gltf"
+            //"../SGResources/models/test/stalk_bunk/bunker.fbx"
+            //"../SGResources/models/test/Duty Exoskeleton/Duty Exoskeleton.obj"
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
@@ -150,8 +153,10 @@ void init()
 
     for(auto& node : btrModel->m_nodes)
     {
-        processLoadedNode(node, { 0, 3, -20 }, { 0, 90, 0 },
+        processLoadedNode(node, { 0, -1, -20 }, { 0, -90, 0 },
                           { 4, 4, 4 }, btrEntities);
+        /*processLoadedNode(node, { 100.0, -0.5f, 0 }, { 0, 0, 0 },
+                          { 0.5, 0.5, 0.5 }, btrEntities);*/
     }
 
     for(const auto& entity : btrEntities)
@@ -161,7 +166,7 @@ void init()
         auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
         if(meshComponent)
         {
-            //meshComponent->m_enableFacesCulling = false;
+            meshComponent->m_enableFacesCulling = false;
         }
     }
 
@@ -181,7 +186,7 @@ void init()
                           { 0.1, 0.4, 0.1 }, cube1Entities);
     }
 
-    for(const auto& entity : cube1Entities)
+    for (const auto& entity: cube1Entities)
     {
         testScene->m_entities.push_back(entity);
     }
@@ -221,7 +226,9 @@ void init()
                     )
             );
 
-            meshComponent->m_mesh->m_material->setShader(std::shared_ptr<Core::Graphics::IShader>(
+            meshComponent->m_mesh->m_material->setShader(
+                    SGMAT_STANDARD_SHADER_NAME,
+                    std::shared_ptr<Core::Graphics::IShader>(
                     Core::Main::CoreMain::getRenderer().createShader(
                             Core::Graphics::getShaderPath(Core::Graphics::StandardShaderType::SG_SKYBOX_SHADER)
                     )

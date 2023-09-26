@@ -26,6 +26,7 @@
 #include "IFrameBuffer.h"
 #include "ICubemapTexture.h"
 #include "SGCore/ECS/Rendering/Primitives/IPrimitiveComponent.h"
+#include "SGCore/ECS/Rendering/IRenderingComponent.h"
 
 namespace Core::ECS
 {
@@ -60,6 +61,15 @@ namespace Core::Graphics
          */
         virtual void renderFrame(const glm::ivec2& windowSize) { }
 
+        /**
+         * Preparing uniform buffers for render
+         * @param renderingComponent - The component that will be used as a "camera" for rendering entities.
+         * @param transformComponent - The transform component of this "camera".
+         */
+        virtual void prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
+                                           const std::shared_ptr<ECS::TransformComponent>& transformComponent) { }
+
+        // TODO: make one method for drawing mesh. input - transformComponent, meshComponent of entity
          /**
           * @param cameraComponent - The camera that will participate in rendering this mesh.
           * @param cameraTransformComponent - Camera transform component.

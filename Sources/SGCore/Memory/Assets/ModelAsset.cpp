@@ -106,11 +106,23 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
     // if has material
     if(aiMesh->mMaterialIndex >= 0)
     {
+        const auto& materialShader = sgMesh->m_material->getCurrentShader();
+
+        if(!materialShader)
+        {
+            SGCF_ERROR("Error loading the mesh: "
+                       "the current shader for the SGMesh mesh material is not set. Check the correctness of the SGMesh creation",
+                       SG_LOG_CURRENT_SESSION_FILE);
+        }
+
         // disable recompiling when adding new define (when adding new texture)
-        sgMesh->m_material->getShader()->setAssetModifiedChecking(false);
+        materialShader->setAssetModifiedChecking(false);
 
         // get current mesh material
         auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
+
+        aiVector3D dif;
+        aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, dif);
 
         sgMesh->m_material->m_name = aiMat->GetName().data;
 
@@ -136,7 +148,7 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
         loadTextures(aiMat, sgMesh->m_material, aiTextureType_TRANSMISSION, SGMaterialTextureType::SGTP_TRANSMISSION);
 
         // enable recompile
-        sgMesh->m_material->getShader()->setAssetModifiedChecking(true);
+        materialShader->setAssetModifiedChecking(true);
 
         SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
     }

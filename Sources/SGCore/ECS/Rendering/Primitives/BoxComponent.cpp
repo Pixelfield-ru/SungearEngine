@@ -87,12 +87,15 @@ Core::ECS::BoxComponent::BoxComponent()
 
 
     m_mesh->m_material->setShader(
+            SGMAT_STANDARD_SHADER_NAME,
             std::shared_ptr<Graphics::IShader>(
                     Core::Main::CoreMain::getRenderer().createShader(
                             Graphics::getShaderPath(Graphics::StandardShaderType::SG_COMPLEX_PRIMITIVES_SHADER)
                     )
             )
     );
+
+    //m_mesh->m_material->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
 
     m_mesh->prepare();
 }

@@ -47,9 +47,19 @@ Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createMaterial()
 {
     auto* mat = new Memory::Assets::IMaterial;
 
-    mat->setShader(std::shared_ptr<Core::Graphics::IShader>(
-            createShader(getShaderPath(StandardShaderType::SG_PBR_SHADER))
+    mat->setShader(
+            SGMAT_STANDARD_SHADER_NAME,
+            std::shared_ptr<Core::Graphics::IShader>(
+                createShader(getShaderPath(StandardShaderType::SG_PBR_SHADER))
             ));
+
+    mat->setShader(
+            SGMAT_SHADOW_GEN_SHADER_NAME,
+            std::shared_ptr<Core::Graphics::IShader>(
+                    createShader(getShaderPath(StandardShaderType::SG_SHADOWS_GENERATOR_SHADER))
+            ));
+
+    mat->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
 
     // adding block decls
     mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSIVE,

@@ -11,6 +11,9 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 
+#define SGMAT_STANDARD_SHADER_NAME      "standardShader"
+#define SGMAT_SHADOW_GEN_SHADER_NAME    "shadowGenShader"
+
 namespace Core::Graphics
 {
     class IShader;
@@ -97,8 +100,24 @@ namespace Core::Memory::Assets
             return m_blocks;
         }
 
-        void setShader(std::shared_ptr<Graphics::IShader> otherShader);
-        std::shared_ptr<Graphics::IShader> getShader() const noexcept;
+        void setShader(const std::string_view& name, const std::shared_ptr<Graphics::IShader>& otherShader);
+        std::shared_ptr<Graphics::IShader> getShader(const std::string_view& name) noexcept;
+
+        /**
+         *
+         * @param name - Name of shader in map of shaders.
+         */
+        void setCurrentShader(const std::string_view& name) noexcept;
+        /**
+         *
+         * @return Current shader that is
+         */
+        std::shared_ptr<Graphics::IShader> getCurrentShader() const noexcept;
+
+        auto&& getShaders()
+        {
+            return m_shaders;
+        }
 
         /**
          * Copies all texture assets (textures data is not copied) to another material.\n
@@ -109,7 +128,9 @@ namespace Core::Memory::Assets
         IMaterial& operator=(const IMaterial& other) noexcept;
 
     protected:
-        std::shared_ptr<Graphics::IShader> m_shader;
+        // first - shader name
+        std::map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;
+        std::shared_ptr<Graphics::IShader> m_currentShader;
 
         // Blocks of textures that correspond to a specific type of texture
         std::map<SGMaterialTextureType, MaterialTexturesBlock> m_blocks;

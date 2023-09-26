@@ -5,7 +5,7 @@
 
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind()
 {
-    return bind(m_shader);
+    return bind(m_currentShader);
 }
 
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind
@@ -47,14 +47,20 @@ void Core::Memory::Assets::IMaterial::addBlockDeclaration
 
     SGC_SUCCESS("Final define for this type textures number: " + maxTextureBlockDefine);
 
-    m_shader->setAssetModifiedChecking(false);
+    for(auto& shaderPair : m_shaders)
+    {
+        auto& shader = shaderPair.second;
 
-    m_shader->removeShaderDefine(maxTextureBlockDefine);
-    m_shader->addShaderDefines({
-        Graphics::ShaderDefine(maxTextureBlockDefine, std::to_string(maxTextures)),
-        });
+        shader->setAssetModifiedChecking(false);
 
-    m_shader->setAssetModifiedChecking(true);
+        shader->removeShaderDefine(maxTextureBlockDefine);
+        shader->addShaderDefines({
+                                   Graphics::ShaderDefine(maxTextureBlockDefine,
+                                                          std::to_string(maxTextures)),
+                           });
+
+        shader->setAssetModifiedChecking(true);
+    }
 }
 
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bindBlock(const SGMaterialTextureType& blockType)
@@ -67,7 +73,7 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
             const auto& texture = typedTexture.second.m_textureAsset->getTexture2D();
             if(texture) texture->bind(textureUnit);
         }
-        m_shader->useMaterialTexture(typedTexture.second);
+        m_currentShader->useMaterialTexture(typedTexture.second);
     }
 
     return shared_from_this();
@@ -143,9 +149,13 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
             typedTextures[texturePath].m_nameInShader = finalName;
             //texture2DAsset->m_name = finalName;
 
-            m_shader->addShaderDefines({
-                Graphics::ShaderDefine(newTextureFinalDefine, "")
-            });
+            for(auto& shaderPair : m_shaders)
+            {
+                auto& shader = shaderPair.second;
+                shader->addShaderDefines({
+                                                          Graphics::ShaderDefine(newTextureFinalDefine, "")
+                                                  });
+            }
         }
         else // there is no free texture units for texture
         {
@@ -187,19 +197,41 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
 }
 
 void Core::Memory::Assets::IMaterial::setShader
-(std::shared_ptr<Graphics::IShader> otherShader)
+(const std::string_view& name,
+ const std::shared_ptr<Graphics::IShader>& otherShader)
 {
-    if(m_shader)
+    const auto& foundShaderPair = m_shaders.find(name.data());
+    if(foundShaderPair != m_shaders.end())
     {
-        otherShader->replaceDefines(m_shader);
+        otherShader->replaceDefines(m_shaders[name.data()]);
     }
 
-    m_shader = otherShader;
+    if(foundShaderPair->second == m_currentShader)
+    {
+        m_currentShader = otherShader;
+    }
+
+    m_shaders[name.data()] = otherShader;
+
+    // TODO: MAKE ADDING ALREADY EXISTING BLOCKS DEFINES FOR NEW SHADER
 }
 
-std::shared_ptr<Core::Graphics::IShader> Core::Memory::Assets::IMaterial::getShader() const noexcept
+std::shared_ptr<Core::Graphics::IShader> Core::Memory::Assets::IMaterial::getShader(const std::string_view& name) noexcept
 {
-    return m_shader;
+    return m_shaders.find(name.data()) != m_shaders.end() ? m_shaders[name.data()] : nullptr;
+}
+
+void Core::Memory::Assets::IMaterial::setCurrentShader(const std::string_view& name) noexcept
+{
+    if(m_shaders.find(name.data()) != m_shaders.end())
+    {
+        m_currentShader = m_shaders[name.data()];
+    }
+}
+
+std::shared_ptr<Core::Graphics::IShader> Core::Memory::Assets::IMaterial::getCurrentShader() const noexcept
+{
+    return m_currentShader;
 }
 
 Core::Memory::Assets::IMaterial&

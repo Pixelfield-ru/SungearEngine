@@ -239,7 +239,7 @@ float ambient = 0.1;
 
         // PCF ------------------
 
-        /**float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.075, texelSize, shadowsCasterSpaceFragPos);
+        /**float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.35, texelSize, shadowsCasterSpaceFragPos);
 
         return pcfShadow;*/
 
@@ -253,18 +253,22 @@ float ambient = 0.1;
 
         // -----------------------
 
+        const float shadowsMinCoeff = 0.55;
+        const int samplesNum = 24;
+
         float visibility = 1.0;
+        float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
 
         float rand = random(projCoords.xy);
         rand = mad(rand, 2.0, -1.0);
         float rotAngle = rand * PI;
         vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
 
-        for(int i = 0; i < 16; i++)
+        for(int i = 0; i < samplesNum; i++)
         {
-             if(texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + rotate(poissonDisk[i] / 1500.0, rotTrig)).z < projCoords.z - shadowsBias)
+            if(texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + rotate(poissonDisk[i], rotTrig) / 1500.0).z < projCoords.z - shadowsBias)
             {
-                visibility -= 0.04;
+                visibility -= downstep;
             }
         }
 
@@ -344,19 +348,19 @@ float ambient = 0.1;
         #endif
 
         #ifdef sgmat_metalness12_DEFINED
-            colorFromMetalness = texture(sgmat_metalness12, vec2(finalUV.x, finalUV.y));
+            colorFromMetalness = texture(sgmat_metalness12, finalUV);
         #endif
 
         #ifdef sgmat_baseColor8_DEFINED
-            colorFromBase = texture(sgmat_baseColor8, vec2(finalUV.x, finalUV.y));
+            colorFromBase = texture(sgmat_baseColor8, finalUV);
         #endif
 
         #ifdef sgmat_diffuse4_DEFINED
-            colorFromDiffuse = texture(sgmat_diffuse4, vec2(finalUV.x, finalUV.y));
+            colorFromDiffuse = texture(sgmat_diffuse4, finalUV);
         #endif
 
         #ifdef sgmat_normals7_DEFINED
-            colorFromNormalMap = texture(sgmat_normals7, vec2(finalUV.x, finalUV.y)).rgb;
+            colorFromNormalMap = texture(sgmat_normals7, finalUV).rgb;
             colorFromNormalMap = normalize(vsIn.TBN * (colorFromNormalMap * 2.0 - 1.0));
         #endif
 
@@ -386,8 +390,9 @@ float ambient = 0.1;
                 finalSpecular += intermediateSpecular;
             }
 
-            //fragColor.rgb *= vec3(ambient) + (finalDiffuse * colorFromDiffuse.rgb) + finalSpecular;
-            fragColor.rgb *= vec3(ambient) + (finalDiffuse) + finalSpecular;
+            fragColor.rgb *= vec3(ambient) + (finalDiffuse * colorFromDiffuse.rgb) + finalSpecular;
+            fragColor.a = colorFromDiffuse.a;
+            //fragColor.rgb *= vec3(ambient) + (finalDiffuse) + finalSpecular;
         #endif
 
         #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)

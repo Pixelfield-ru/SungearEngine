@@ -1,8 +1,6 @@
 #include "../uniform_bufs_decl.glsl"
 #include "../color_correction/aces.glsl"
 
-// todo: make atmosphere
-
 #define PI 3.141592
 #define iSteps 16
 #define jSteps 8
@@ -149,7 +147,7 @@ vec3 atmosphere(vec3 r, vec3 r0,
             30.0,                           // intensity of the sun
             6371e3,                         // radius of the planet in meters
             6471e3,                         // radius of the atmosphere in meters
-            vec3(5.5e-6, 13.0e-6, 22.4e-6), // Rayleigh scattering coefficient
+            vec3(12.5e-6, 13.0e-6, 20.4e-6), // Rayleigh scattering coefficient
             20e-6,                          // Mie scattering coefficient
             8e3,                            // Rayleigh scale height
             1.0e3,                          // Mie scale height
@@ -162,7 +160,7 @@ vec3 atmosphere(vec3 r, vec3 r0,
 
         #ifdef sgmat_skybox25_DEFINED
             vec4 skyboxCol = texture(sgmat_skybox25, vs_UVAttribute.xyz);
-            fragColor = vec4(ACESFilm(skyboxCol.rgb * atmosphereCol), skyboxCol.a);
+            fragColor = vec4(ACESFilm(atmosphereCol), skyboxCol.a);
         #else
             fragColor = vec4(atmosphereCol, 1.0);
         #endif

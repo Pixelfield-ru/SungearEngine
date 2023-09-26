@@ -29,17 +29,22 @@ void Core::ECS::Scene::setShadowsCastersNum(const int& num)
         auto meshes = entity->getComponents<MeshComponent>();
         for(const auto& meshComponent : meshes)
         {
-            meshComponent->m_mesh->m_material->getShader()->setAssetModifiedChecking(false);
+            for(const auto& shaderPair : meshComponent->m_mesh->m_material->getShaders())
+            {
+                const auto& shader = shaderPair.second;
 
-            meshComponent->m_mesh->m_material->getShader()->removeShaderDefine(
-                    SG_SHADERS_SHADOWS_CASTERS_NUM_NAME
-                    );
-            meshComponent->m_mesh->m_material->getShader()->addShaderDefines({
-                Graphics::ShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME,
-                                       std::to_string(m_shadowsCastersNum))
-            });
+                shader->setAssetModifiedChecking(false);
 
-            meshComponent->m_mesh->m_material->getShader()->setAssetModifiedChecking(true);
+                shader->removeShaderDefine(
+                        SG_SHADERS_SHADOWS_CASTERS_NUM_NAME
+                );
+                shader->addShaderDefines({
+                                                         Graphics::ShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME,
+                                                                                std::to_string(m_shadowsCastersNum))
+                                                 });
+
+                shader->setAssetModifiedChecking(true);
+            }
         }
     }
 }
@@ -59,17 +64,22 @@ void Core::ECS::Scene::setDirectionalLightsNum(const int& num)
         auto meshes = entity->getComponents<MeshComponent>();
         for(const auto& meshComponent : meshes)
         {
-            meshComponent->m_mesh->m_material->getShader()->setAssetModifiedChecking(false);
+            for(const auto& shaderPair : meshComponent->m_mesh->m_material->getShaders())
+            {
+                const auto& shader = shaderPair.second;
 
-            meshComponent->m_mesh->m_material->getShader()->removeShaderDefine(
-                    SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME
-                    );
-            meshComponent->m_mesh->m_material->getShader()->addShaderDefines({
-                Graphics::ShaderDefine(SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME,
-                                       std::to_string(m_directionalLightsNum))
-            });
+                shader->setAssetModifiedChecking(false);
 
-            meshComponent->m_mesh->m_material->getShader()->setAssetModifiedChecking(true);
+                shader->removeShaderDefine(
+                        SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME
+                );
+                shader->addShaderDefines({
+                                                         Graphics::ShaderDefine(SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME,
+                                                                                std::to_string(m_directionalLightsNum))
+                                                 });
+
+                shader->setAssetModifiedChecking(true);
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ Core::ECS::LineComponent::LineComponent() noexcept
     m_mesh->m_positions.push_back(0.0);
 
     m_mesh->m_material->setShader(
+            SGMAT_STANDARD_SHADER_NAME,
             std::shared_ptr<Graphics::IShader>(
                     Core::Main::CoreMain::getRenderer().createShader(
                             Graphics::getShaderPath(Graphics::StandardShaderType::SG_LINES_SHADER)
@@ -28,14 +29,18 @@ Core::ECS::LineComponent::LineComponent() noexcept
             )
     );
 
-    m_mesh->m_material->getShader()->bind();
+    //m_mesh->m_material->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
 
-    m_mesh->m_material->getShader()->useVectorf(
+    const auto& materialShader = m_mesh->m_material->getCurrentShader();
+
+    materialShader->bind();
+
+    materialShader->useVectorf(
             "verticesPositions[" + std::to_string(0) + "]",
             0.0, 0.0, 0.0
     );
 
-    m_mesh->m_material->getShader()->useVectorf(
+    materialShader->useVectorf(
             "verticesPositions[" + std::to_string(1) + "]",
             0.0, 10.0, 0.0
     );
@@ -54,9 +59,13 @@ void Core::ECS::LineComponent::setVertexPosition
 
     if(x != curX || y != curY || z != curZ)
     {
-        m_mesh->m_material->getShader()->bind();
+        const auto& materialShader = m_mesh->m_material->getCurrentShader();
 
-        m_mesh->m_material->getShader()->useVectorf(
+        if(!materialShader) return;
+
+        materialShader->bind();
+
+        materialShader->useVectorf(
                 "verticesPositions[" + std::to_string(vertexIdx) + "]",
                 x, y, z);
     }

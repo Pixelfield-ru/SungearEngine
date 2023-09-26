@@ -39,11 +39,11 @@ void Core::Graphics::GL4Renderer::init() noexcept
     }
 
     glEnable(GL_DEPTH_TEST);
-    /*glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);*/
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
-    glEnable (GL_ALPHA_TEST);
-    glAlphaFunc (GL_GREATER, 0.2);
+    /*glEnable (GL_ALPHA_TEST);
+    glAlphaFunc (GL_GREATER, 0.2);*/
 
     /*glEnable(GL_TEXTURE_GEN_S);
     glEnable(GL_TEXTURE_GEN_T);*/
@@ -148,6 +148,33 @@ void Core::Graphics::GL4Renderer::renderFrame(const glm::ivec2& windowSize)
     glClearColor(1, 0, 1, 1);
 }
 
+void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
+                                                        const std::shared_ptr<ECS::TransformComponent>& transformComponent)
+{
+    m_viewMatricesBuffer->bind();
+    m_programDataBuffer->bind();
+
+    if(renderingComponent)
+    {
+        m_viewMatricesBuffer->subData("viewMatrix",
+                                      glm::value_ptr(renderingComponent->m_viewMatrix), 16);
+        m_viewMatricesBuffer->subData("projectionMatrix",
+                                      glm::value_ptr(renderingComponent->m_projectionMatrix), 16);
+    }
+    if(transformComponent)
+    {
+        m_viewMatricesBuffer->subData("viewDirection",
+                                      glm::value_ptr(transformComponent->m_position), 3);
+    }
+
+    int windowWidth;
+    int windowHeight;
+
+    Main::CoreMain::getWindow().getSize(windowWidth, windowHeight);
+    // todo: перенести обновление в класс окна
+    m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
+}
+
 void Core::Graphics::GL4Renderer::renderMesh(
         const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
         const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
@@ -155,6 +182,10 @@ void Core::Graphics::GL4Renderer::renderMesh(
         const std::shared_ptr<ECS::MeshComponent>& meshComponent)
 {
     if(!meshComponent->m_mesh) return;
+
+    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
+
+    if(!materialShader) return;
 
     if(meshComponent->m_enableFacesCulling)
     {
@@ -169,32 +200,16 @@ void Core::Graphics::GL4Renderer::renderMesh(
         glDisable(GL_CULL_FACE);
     }
 
+    m_modelMatricesBuffer->bind();
+    m_modelMatricesBuffer->subData("objectModelMatrix",
+                                   glm::value_ptr(transformComponent->m_modelMatrix), 16);
+
     meshComponent->m_mesh->m_material->bind();
     meshComponent->m_mesh->getVertexArray()->bind();
 
-    m_modelMatricesBuffer->bind();
-    m_viewMatricesBuffer->bind();
-    m_programDataBuffer->bind();
-
-    meshComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_modelMatricesBuffer);
-    meshComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_viewMatricesBuffer);
-    meshComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_programDataBuffer);
-
-    m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
-
-    m_viewMatricesBuffer->subData("viewMatrix",
-                                  glm::value_ptr(cameraComponent->m_viewMatrix), 16);
-    m_viewMatricesBuffer->subData("projectionMatrix",
-                                  glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
-    m_viewMatricesBuffer->subData("viewDirection",
-                                  glm::value_ptr(cameraTransformComponent->m_position), 3);
-
-    int windowWidth;
-    int windowHeight;
-
-    Main::CoreMain::getWindow().getSize(windowWidth, windowHeight);
-    // todo: перенести обновление в класс окна
-    m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
+    materialShader->useUniformBuffer(m_modelMatricesBuffer);
+    materialShader->useUniformBuffer(m_viewMatricesBuffer);
+    materialShader->useUniformBuffer(m_programDataBuffer);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
@@ -205,25 +220,26 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsC
 {
     if(!meshComponent->m_mesh) return;
 
-    // TODO: MAKE CHECKING FOR ALREADY BIND FRAMEBUFFERS, VAOs, VBOs e.t.c. (for not to bind every time the same buffer)
-    shadowsCasterComponent->m_frameBuffer->bind();
-    shadowsCasterComponent->m_shaderAsset->getShader()->bind();
-    meshComponent->m_mesh->getVertexArray()->bind();
+    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
+
+    if(!materialShader) return;
 
     m_modelMatricesBuffer->bind();
-    m_viewMatricesBuffer->bind();
+    m_modelMatricesBuffer->subData("objectModelMatrix",
+                                   glm::value_ptr(transformComponent->m_modelMatrix), 16);
+    // TODO: MAKE OWN SHADOW CASTING SHADER FOR EACH MESH
+    // TODO: MAKE CHECKING FOR ALREADY BIND FRAMEBUFFERS, VAOs, VBOs e.t.c. (for not to bind every time the same buffer)
+    //shadowsCasterComponent->m_frameBuffer->bind();
+    //materialShader->bind();
+    meshComponent->m_mesh->m_material->bind();
+    meshComponent->m_mesh->getVertexArray()->bind();
 
-    m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
-
-    m_viewMatricesBuffer->subData("viewMatrix", glm::value_ptr(shadowsCasterComponent->m_viewMatrix), 16);
-    m_viewMatricesBuffer->subData("projectionMatrix", glm::value_ptr(shadowsCasterComponent->m_projectionMatrix), 16);
-
-    shadowsCasterComponent->m_shaderAsset->getShader()->useUniformBuffer(m_modelMatricesBuffer);
-    shadowsCasterComponent->m_shaderAsset->getShader()->useUniformBuffer(m_viewMatricesBuffer);
+    materialShader->useUniformBuffer(m_modelMatricesBuffer);
+    materialShader->useUniformBuffer(m_viewMatricesBuffer);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 
-    shadowsCasterComponent->m_frameBuffer->unbind();
+    //shadowsCasterComponent->m_frameBuffer->unbind();
 }
 
 void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
@@ -232,6 +248,10 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::CameraCo
                                              const std::shared_ptr<ECS::MeshComponent>& meshComponent)
 {
     if(!meshComponent->m_mesh) return;
+
+    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
+
+    if(!materialShader) return;
 
     if(meshComponent->m_enableFacesCulling)
     {
@@ -250,19 +270,11 @@ void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::CameraCo
     meshComponent->m_mesh->getVertexArray()->bind();
 
     m_modelMatricesBuffer->bind();
-    m_viewMatricesBuffer->bind();
+    m_modelMatricesBuffer->subData("objectModelMatrix",
+                                   glm::value_ptr(transformComponent->m_modelMatrix), 16);
 
-    meshComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_modelMatricesBuffer);
-    meshComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_viewMatricesBuffer);
-
-    m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
-
-    m_viewMatricesBuffer->subData("viewMatrix",
-                                  glm::value_ptr(cameraComponent->m_viewMatrix), 16);
-    m_viewMatricesBuffer->subData("projectionMatrix",
-                                  glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
-    /*m_viewMatricesBuffer->subData("viewDirection",
-                                  glm::value_ptr(cameraTransformComponent->m_position), 3);*/
+    materialShader->useUniformBuffer(m_modelMatricesBuffer);
+    materialShader->useUniformBuffer(m_viewMatricesBuffer);
 
     glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
@@ -271,6 +283,10 @@ void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::Cam
                                                   const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                                   const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent)
 {
+    const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
+
+    if(!materialShader) return;
+
     primitiveComponent->m_mesh->m_material->bind();
     if(primitiveComponent->m_mesh->getVertexArray())
     {
@@ -278,20 +294,14 @@ void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::Cam
     }
 
     m_modelMatricesBuffer->bind();
-    m_viewMatricesBuffer->bind();
+    m_modelMatricesBuffer->subData("objectModelMatrix",
+                                   glm::value_ptr(transformComponent->m_modelMatrix), 16);
 
-    primitiveComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_modelMatricesBuffer);
-    primitiveComponent->m_mesh->m_material->getShader()->useUniformBuffer(m_viewMatricesBuffer);
-
-    m_modelMatricesBuffer->subData("objectModelMatrix", glm::value_ptr(transformComponent->m_modelMatrix), 16);
-
-    m_viewMatricesBuffer->subData("viewMatrix",
-                                  glm::value_ptr(cameraComponent->m_viewMatrix), 16);
-    m_viewMatricesBuffer->subData("projectionMatrix",
-                                  glm::value_ptr(cameraComponent->m_projectionMatrix), 16);
+    materialShader->useUniformBuffer(m_modelMatricesBuffer);
+    materialShader->useUniformBuffer(m_viewMatricesBuffer);
 
     glLineWidth(primitiveComponent->m_linesWidth);
-    glPointSize(primitiveComponent->m_linesWidth);
+    //glPointSize(primitiveComponent->m_linesWidth);
 
     if(!primitiveComponent->m_mesh->m_useIndices)
     {
@@ -372,9 +382,19 @@ Core::Memory::Assets::IMaterial* Core::Graphics::GL4Renderer::createMaterial()
 {
     auto* mat = new Memory::Assets::IMaterial;
 
-    mat->setShader(std::shared_ptr<Core::Graphics::IShader>(
-            createShader(getShaderPath(StandardShaderType::SG_PBR_SHADER))
+    mat->setShader(
+            SGMAT_STANDARD_SHADER_NAME,
+            std::shared_ptr<Core::Graphics::IShader>(
+                createShader(getShaderPath(StandardShaderType::SG_PBR_SHADER))
             ));
+
+    mat->setShader(
+            SGMAT_SHADOW_GEN_SHADER_NAME,
+            std::shared_ptr<Core::Graphics::IShader>(
+                    createShader(getShaderPath(StandardShaderType::SG_SHADOWS_GENERATOR_SHADER))
+            ));
+
+    mat->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
 
     // adding block decls
     mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSIVE,

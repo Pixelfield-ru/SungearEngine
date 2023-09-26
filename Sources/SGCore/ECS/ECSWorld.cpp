@@ -19,8 +19,9 @@ void Core::ECS::ECSWorld::init() noexcept
     createSystem<RenderingComponentsSystem>();
     createSystem<SkyboxRenderingSystem>();
     createSystem<PrimitivesUpdaterSystem>();
-    createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    // directional light system must be always before shadows caster system
     createSystem<DirectionalLightsSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
     createSystem<Camera3DMovementSystem>();
     createSystem<CameraRenderingSystem>();
 }
