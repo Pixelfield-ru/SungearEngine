@@ -8,6 +8,19 @@
 #include <iostream>
 #include <cstdint>
 
+enum SGShaderDefineType
+{
+    SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+    SGG_OTHER_DEFINE
+};
+
+enum SGDrawMode
+{
+    SGG_TRIANGLES,
+    SGG_LINES,
+    SGG_QUADS
+};
+
 enum SGFaceType
 {
     SGG_FRONT_FACE,

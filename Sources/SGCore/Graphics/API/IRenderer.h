@@ -71,46 +71,18 @@ namespace Core::Graphics
 
         // TODO: make one method for drawing mesh. input - transformComponent, meshComponent of entity
          /**
-          * @param cameraComponent - The camera that will participate in rendering this mesh.
-          * @param cameraTransformComponent - Camera transform component.
           * @param transformComponent - The mesh transformation component to be rendered.
           * @param meshComponent - The mesh component to be rendered.
           */
-        virtual void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-                                const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
-                                const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+        virtual void renderMesh(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                 const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
 
         /**
-         * Renders a mesh relative to a light source that can cast shadows.
-         * @param shadowsCasterComponent - The component of the shadow caster, relative to which the mesh will be rendered.
-         * @param transformComponent - The mesh transformation component to be rendered.
-         * @param meshComponent - The mesh component to be rendered.
-         */
-        virtual void renderMesh(const std::shared_ptr<ECS::ShadowsCasterComponent>& shadowsCasterComponent,
-                                const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
-
-        /**
-         * Renders an arbitrary-shaped skybox relative to the camera component.
-         * @param cameraComponent - The camera component relative to which the skybox will be rendered.
-         * @param skyboxComponent - The skybox component from which information about the skybox for rendering will be taken.
-         * @param transformComponent - Skybox transformation component.
-         * @param meshComponent - Skybox mesh.
-         */
-        virtual void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-                                const std::shared_ptr<ECS::SkyboxComponent>& skyboxComponent,
-                                const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
-
-        /**
-         * Renders a primitive component (i.e. sphere, line, cube, etc.) relative to the camera component.
-         * @param cameraComponent - The camera component relative to which the primitive will be rendered.
+         * Renders a primitive component (i.e. sphere, line, cube, etc.).
          * @param transformComponent - Primitive transformation component.
          * @param primitiveComponent - The component of the primitive to be rendered.
          */
-        virtual void renderPrimitive(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-                                     const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+        virtual void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                      const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) { }
 
         /**

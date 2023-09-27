@@ -13,6 +13,26 @@
 
 namespace GLGraphicsTypesCaster
 {
+    static GLuint sggDrawModeToGL(const SGDrawMode& sgDrawMode)
+    {
+        GLuint glDrawMode = GL_TRIANGLES;
+
+        switch(sgDrawMode)
+        {
+            case SGG_TRIANGLES:
+                glDrawMode = GL_TRIANGLES;
+                break;
+            case SGG_LINES:
+                glDrawMode = GL_LINES;
+                break;
+            case SGG_QUADS:
+                glDrawMode = GL_QUADS;
+                break;
+        }
+
+        return glDrawMode;
+    }
+
     static std::uint32_t sggFaceTypeToGL(const SGFaceType& faceType)
     {
         std::uint32_t glFaceType = GL_BACK;

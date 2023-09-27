@@ -32,6 +32,8 @@ namespace Core::ImportedScene
         std::shared_ptr<Graphics::IIndexBuffer> m_indicesBuffer;
 
     public:
+        SGDrawMode m_drawMode = SGDrawMode::SGG_TRIANGLES;
+
         IMesh() noexcept;
         virtual ~IMesh() = default;
 

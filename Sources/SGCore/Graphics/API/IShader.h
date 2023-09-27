@@ -26,6 +26,7 @@ namespace Core::Graphics
 {
     class IUniformBuffer;
 
+    // todo: add various types of defines like material textures block define e.t.c.
     class IShader : public Memory::Assets::IAssetObserver
     {
     public:
@@ -41,9 +42,14 @@ namespace Core::Graphics
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
 
-        void addShaderDefines(const std::vector<ShaderDefine>& shaderDefines);
-        void removeShaderDefine(const ShaderDefine& shaderDefine);
-        void removeShaderDefine(const std::string& shaderDefineName);
+        void addShaderDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
+        void removeShaderDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
+        void removeShaderDefine(const SGShaderDefineType& shaderDefineType, const std::string& shaderDefineName);
+
+        void replaceDefines(const SGShaderDefineType& shaderDefineType, const std::list<ShaderDefine>& otherDefines) noexcept;
+        void replaceDefines(const SGShaderDefineType& shaderDefineType, std::shared_ptr<IShader> otherShader) noexcept;
+
+        void clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept;
 
         void onAssetModified() override;
         void onAssetPathChanged() override;
@@ -68,15 +74,12 @@ namespace Core::Graphics
 
         #pragma endregion
 
-        void replaceDefines(const std::list<ShaderDefine>& otherDefines) noexcept;
-        void replaceDefines(std::shared_ptr<IShader> otherShader) noexcept;
-
         #pragma region Operators
         IShader& operator=(const IShader&) noexcept;
         #pragma endregion
 
     protected:
-        std::list<ShaderDefine> m_defines;
+        std::map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
 
         std::weak_ptr<Memory::Assets::FileAsset> m_fileAsset;
     };

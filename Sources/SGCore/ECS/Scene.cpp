@@ -36,12 +36,14 @@ void Core::ECS::Scene::setShadowsCastersNum(const int& num)
                 shader->setAssetModifiedChecking(false);
 
                 shader->removeShaderDefine(
+                        SGShaderDefineType::SGG_OTHER_DEFINE,
                         SG_SHADERS_SHADOWS_CASTERS_NUM_NAME
                 );
-                shader->addShaderDefines({
-                                                         Graphics::ShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME,
-                                                                                std::to_string(m_shadowsCastersNum))
-                                                 });
+                shader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                         {
+                                                 Graphics::ShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME,
+                                                                        std::to_string(m_shadowsCastersNum))
+                                         });
 
                 shader->setAssetModifiedChecking(true);
             }
@@ -71,12 +73,14 @@ void Core::ECS::Scene::setDirectionalLightsNum(const int& num)
                 shader->setAssetModifiedChecking(false);
 
                 shader->removeShaderDefine(
+                        SGShaderDefineType::SGG_OTHER_DEFINE,
                         SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME
                 );
-                shader->addShaderDefines({
-                                                         Graphics::ShaderDefine(SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME,
-                                                                                std::to_string(m_directionalLightsNum))
-                                                 });
+                shader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                         {
+                                                 Graphics::ShaderDefine(SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME,
+                                                                        std::to_string(m_directionalLightsNum))
+                                         });
 
                 shader->setAssetModifiedChecking(true);
             }

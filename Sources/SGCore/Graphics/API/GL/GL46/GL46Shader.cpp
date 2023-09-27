@@ -124,9 +124,12 @@ void Core::Graphics::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAss
 
     std::string definesCode;
 
-    for(auto const& shaderDefine : m_defines)
+    for(auto const& shaderDefinePair : m_defines)
     {
-        definesCode += shaderDefine.toString() + "\n";
+        for(const auto& shaderDefine : shaderDefinePair.second)
+        {
+            definesCode += shaderDefine.toString() + "\n";
+        }
     }
 
     std::string preprocessErrors;

@@ -32,30 +32,15 @@ void Core::ECS::CameraRenderingSystem::update
 
         if(meshComponent)
         {
-            if (!skyboxComponent)
-            {
-                Core::Main::CoreMain::getRenderer().renderMesh(
-                        cameraComponent,
-                        cameraTransformComponent,
-                        transformComponent,
-                        meshComponent
-                );
-            }
-            else
-            {
-                Core::Main::CoreMain::getRenderer().renderMesh(
-                        cameraComponent,
-                        skyboxComponent,
-                        transformComponent,
-                        meshComponent
-                );
-            }
+            Core::Main::CoreMain::getRenderer().renderMesh(
+                    transformComponent,
+                    meshComponent
+            );
         }
 
         for(const auto& primitiveComponent : primitiveComponents)
         {
             Core::Main::CoreMain::getRenderer().renderPrimitive(
-                    cameraComponent,
                     transformComponent,
                     primitiveComponent
             );

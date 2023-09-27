@@ -4,30 +4,62 @@
 
 #include "IShader.h"
 
-void Core::Graphics::IShader::addShaderDefines(const std::vector<ShaderDefine>& shaderDefines)
+void Core::Graphics::IShader::addShaderDefines(const SGShaderDefineType& shaderDefineType,
+                                               const std::vector<ShaderDefine>& shaderDefines)
 {
     for(auto& shaderDefine : shaderDefines)
     {
-        if(std::find(m_defines.begin(), m_defines.end(), shaderDefine) != m_defines.end()) return;
+        auto& shaderTypedDefines = m_defines[shaderDefineType];
+        if(std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine) != shaderTypedDefines.end()) return;
 
-        m_defines.push_back(shaderDefine);
+        shaderTypedDefines.push_back(shaderDefine);
     }
 
     if(m_assetModifiedChecking) onAssetModified();
 }
 
-void Core::Graphics::IShader::removeShaderDefine(const Core::Graphics::ShaderDefine& shaderDefine)
+void Core::Graphics::IShader::removeShaderDefine(const SGShaderDefineType& shaderDefineType,
+                                                 const Core::Graphics::ShaderDefine& shaderDefine)
 {
-    m_defines.remove(shaderDefine);
+    m_defines[shaderDefineType].remove(shaderDefine);
 
     if(m_assetModifiedChecking) onAssetModified();
 }
 
-void Core::Graphics::IShader::removeShaderDefine(const std::string& shaderDefineName)
+void Core::Graphics::IShader::removeShaderDefine(const SGShaderDefineType& shaderDefineType,
+                                                 const std::string& shaderDefineName)
 {
-    m_defines.remove(ShaderDefine(shaderDefineName, ""));
+    m_defines[shaderDefineType].remove(ShaderDefine(shaderDefineName, ""));
 
     if(m_assetModifiedChecking) onAssetModified();
+}
+
+void Core::Graphics::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
+                                             const std::list<ShaderDefine>& otherDefines) noexcept
+{
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
+
+    shaderTypedDefines.clear();
+    shaderTypedDefines.insert(shaderTypedDefines.end(), otherDefines.begin(), otherDefines.end());
+
+    onAssetModified();
+}
+
+void Core::Graphics::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
+                                             std::shared_ptr<IShader> otherShader) noexcept
+{
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
+    auto& otherShaderTypedDefines = otherShader->m_defines[shaderDefineType];
+
+    shaderTypedDefines.clear();
+    shaderTypedDefines.insert(shaderTypedDefines.end(), otherShaderTypedDefines.begin(), otherShaderTypedDefines.end());
+
+    onAssetModified();
+}
+
+void Core::Graphics::IShader::clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept
+{
+    m_defines[shaderDefineType].clear();
 }
 
 void Core::Graphics::IShader::onAssetModified()
@@ -40,27 +72,14 @@ void Core::Graphics::IShader::onAssetPathChanged()
     compile(m_fileAsset.lock());
 }
 
-void Core::Graphics::IShader::replaceDefines(const std::list<ShaderDefine>& otherDefines) noexcept
-{
-    m_defines.clear();
-    m_defines.insert(m_defines.end(), otherDefines.begin(), otherDefines.end());
-
-    onAssetModified();
-}
-
-void Core::Graphics::IShader::replaceDefines(std::shared_ptr<IShader> otherShader) noexcept
-{
-    m_defines.clear();
-    m_defines.insert(m_defines.end(), otherShader->m_defines.begin(), otherShader->m_defines.end());
-
-    onAssetModified();
-}
-
 Core::Graphics::IShader& Core::Graphics::IShader::operator=(const Core::Graphics::IShader& other) noexcept
 {
     assert(this != std::addressof(other));
 
-    replaceDefines(other.m_defines);
+    for(const auto& shaderDefinesPair : m_defines)
+    {
+        replaceDefines(shaderDefinesPair.first, shaderDefinesPair.second);
+    }
 
     m_fileAsset = other.m_fileAsset;
 

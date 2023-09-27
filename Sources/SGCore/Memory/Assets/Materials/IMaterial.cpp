@@ -53,11 +53,13 @@ void Core::Memory::Assets::IMaterial::addBlockDeclaration
 
         shader->setAssetModifiedChecking(false);
 
-        shader->removeShaderDefine(maxTextureBlockDefine);
-        shader->addShaderDefines({
-                                   Graphics::ShaderDefine(maxTextureBlockDefine,
-                                                          std::to_string(maxTextures)),
-                           });
+        shader->removeShaderDefine(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                   maxTextureBlockDefine);
+        shader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                 {
+                                         Graphics::ShaderDefine(maxTextureBlockDefine,
+                                                                std::to_string(maxTextures)),
+                                 });
 
         shader->setAssetModifiedChecking(true);
     }
@@ -152,9 +154,10 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
             for(auto& shaderPair : m_shaders)
             {
                 auto& shader = shaderPair.second;
-                shader->addShaderDefines({
-                                                          Graphics::ShaderDefine(newTextureFinalDefine, "")
-                                                  });
+                shader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                         {
+                                                 Graphics::ShaderDefine(newTextureFinalDefine, "")
+                                         });
             }
         }
         else // there is no free texture units for texture
@@ -200,15 +203,31 @@ void Core::Memory::Assets::IMaterial::setShader
 (const std::string_view& name,
  const std::shared_ptr<Graphics::IShader>& otherShader)
 {
+    otherShader->clearDefinesOfType(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE);
+
     const auto& foundShaderPair = m_shaders.find(name.data());
-    if(foundShaderPair != m_shaders.end())
+    const bool shaderFound = foundShaderPair != m_shaders.end();
+    if(shaderFound)
     {
-        otherShader->replaceDefines(m_shaders[name.data()]);
+        otherShader->replaceDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                    m_shaders[name.data()]);
     }
 
     if(foundShaderPair->second == m_currentShader)
     {
         m_currentShader = otherShader;
+    }
+
+    // adding blocks decls to new shader
+    if(!shaderFound)
+    {
+        for(const auto& block : m_blocks)
+        {
+            auto typeName = sgMaterialTextureTypeToString(block.first);
+            auto maxTextureBlockDefine = typeName + "_MAX_TEXTURES_NUM";
+
+
+        }
     }
 
     m_shaders[name.data()] = otherShader;

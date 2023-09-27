@@ -56,22 +56,10 @@ namespace Core::Graphics
         void prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
                                    const std::shared_ptr<ECS::TransformComponent>& transformComponent) override;
 
-        void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-                        const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
-                        const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+        void renderMesh(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                         const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
 
-        void renderMesh(const std::shared_ptr<ECS::ShadowsCasterComponent>& shadowsCasterComponent,
-                        const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                        const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
-
-        void renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-                        const std::shared_ptr<ECS::SkyboxComponent>& shadowsCasterComponent,
-                        const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                        const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
-
-        void renderPrimitive(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-                             const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+        void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                              const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) override;
 
         void printInfo() noexcept override;

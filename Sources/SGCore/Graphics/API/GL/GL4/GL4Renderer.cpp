@@ -176,10 +176,9 @@ void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<EC
 }
 
 void Core::Graphics::GL4Renderer::renderMesh(
-        const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-        const std::shared_ptr<ECS::TransformComponent>& cameraTransformComponent,
         const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-        const std::shared_ptr<ECS::MeshComponent>& meshComponent)
+        const std::shared_ptr<ECS::MeshComponent>& meshComponent
+        )
 {
     if(!meshComponent->m_mesh) return;
 
@@ -211,76 +210,10 @@ void Core::Graphics::GL4Renderer::renderMesh(
     materialShader->useUniformBuffer(m_viewMatricesBuffer);
     materialShader->useUniformBuffer(m_programDataBuffer);
 
-    glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(meshComponent->m_mesh->m_drawMode), meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::ShadowsCasterComponent>& shadowsCasterComponent,
-                                             const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                             const std::shared_ptr<ECS::MeshComponent>& meshComponent)
-{
-    if(!meshComponent->m_mesh) return;
-
-    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
-
-    if(!materialShader) return;
-
-    m_modelMatricesBuffer->bind();
-    m_modelMatricesBuffer->subData("objectModelMatrix",
-                                   glm::value_ptr(transformComponent->m_modelMatrix), 16);
-    // TODO: MAKE OWN SHADOW CASTING SHADER FOR EACH MESH
-    // TODO: MAKE CHECKING FOR ALREADY BIND FRAMEBUFFERS, VAOs, VBOs e.t.c. (for not to bind every time the same buffer)
-    //shadowsCasterComponent->m_frameBuffer->bind();
-    //materialShader->bind();
-    meshComponent->m_mesh->m_material->bind();
-    meshComponent->m_mesh->getVertexArray()->bind();
-
-    materialShader->useUniformBuffer(m_modelMatricesBuffer);
-    materialShader->useUniformBuffer(m_viewMatricesBuffer);
-
-    glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
-
-    //shadowsCasterComponent->m_frameBuffer->unbind();
-}
-
-void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-                                             const std::shared_ptr<ECS::SkyboxComponent>& skyboxComponent,
-                                             const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                             const std::shared_ptr<ECS::MeshComponent>& meshComponent)
-{
-    if(!meshComponent->m_mesh) return;
-
-    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
-
-    if(!materialShader) return;
-
-    if(meshComponent->m_enableFacesCulling)
-    {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshComponent->m_facesCullingFaceType));
-        glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
-                meshComponent->m_facesCullingPolygonsOrder)
-        );
-    }
-    else
-    {
-        glDisable(GL_CULL_FACE);
-    }
-
-    meshComponent->m_mesh->m_material->bind();
-    meshComponent->m_mesh->getVertexArray()->bind();
-
-    m_modelMatricesBuffer->bind();
-    m_modelMatricesBuffer->subData("objectModelMatrix",
-                                   glm::value_ptr(transformComponent->m_modelMatrix), 16);
-
-    materialShader->useUniformBuffer(m_modelMatricesBuffer);
-    materialShader->useUniformBuffer(m_viewMatricesBuffer);
-
-    glDrawElements(GL_TRIANGLES, meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
-}
-
-void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::CameraComponent>& cameraComponent,
-                                                  const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                                   const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent)
 {
     const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
