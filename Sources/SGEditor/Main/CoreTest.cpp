@@ -109,9 +109,9 @@ void init()
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
             //"../SGResources/models/test/gaz-66.obj"
-            //"../SGResources/models/test/btr_80a2016/scene.gltf"
+            "../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/backpack/scene.gltf"
-            "../SGResources/models/test/stalk_bunk/bunker.fbx"
+            //"../SGResources/models/test/stalk_bunk/bunker.fbx"
             //"../SGResources/models/test/Duty Exoskeleton/Duty Exoskeleton.obj"
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
@@ -153,10 +153,10 @@ void init()
 
     for(auto& node : btrModel->m_nodes)
     {
-        /*processLoadedNode(node, { 0, -1, -20 }, { 0, -90, 0 },
-                          { 4, 4, 4 }, btrEntities);*/
-        processLoadedNode(node, { 100.0, -0.5f, 0 }, { 0, 0, 0 },
-                          { 0.5, 0.5, 0.5 }, btrEntities);
+        processLoadedNode(node, { 0, -1, -20 }, { 0, -90, 0 },
+                          { 4, 4, 4 }, btrEntities);
+        /*processLoadedNode(node, { 100.0, -0.5f, 0 }, { 0, 0, 0 },
+                          { 0.5, 0.5, 0.5 }, btrEntities);*/
     }
 
     for(const auto& entity : btrEntities)
@@ -280,14 +280,23 @@ void init()
 
 int framesCnt = 0;
 
-void framePostRender()
+void FPSNotRelativeFixedUpdate()
 {
+    //boxComponent->m_size.z += sin(framesCnt / 75.0) / 10.0;
+    //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += sin(framesCnt / 75.0) / 2.0;
+
     testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
 
-    Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
+    Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(Core::ECS::Scene::getCurrentScene());
 
     framesCnt++;
 }
+
+void FPSRelativeFixedUpdate()
+{
+    Core::ECS::ECSWorld::FPSRelativeFixedUpdate(Core::ECS::Scene::getCurrentScene());
+}
+
 
 // --------------------------------------------
 
@@ -301,8 +310,8 @@ int main()
     //SGConsole::Console::start();
 
     sgSetCoreInitCallback(init);
-    sgSetFramePostRenderCallback(framePostRender);
-    sgSetDeltaUpdateCallback(deltaUpdate);
+    sgSetFPSNotRelativeFixedUpdateCallback(FPSNotRelativeFixedUpdate);
+    sgSetFPSRelativeFixedUpdateCallback(FPSRelativeFixedUpdate);
 
     Core::Main::CoreMain::start();
 

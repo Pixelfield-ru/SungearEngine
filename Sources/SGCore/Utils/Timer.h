@@ -15,6 +15,7 @@
 
 namespace Core::Utils
 {
+    // TODO: documentation
     class Timer
     {
     private:
@@ -27,8 +28,6 @@ namespace Core::Utils
 
         // fixed delta time for update functions
         double m_elapsedTimeForUpdate = 0;
-        // fixed delta time for delta update functions
-        double m_fixedDeltaTime = 0;
 
         bool m_firstTime = true;
 
@@ -41,17 +40,7 @@ namespace Core::Utils
 
         double m_target = 0;
 
-        // 7 ms
-        double m_fixedDeltaTimeValue = 7.0 / 1000.0;
-
         double m_targetFrameRate = 120.0;
-
-        // if true:
-        // 1) determinism. No matter your FPS, the physics will always run with the same exact steps
-        // 2) robustness. Event if you have a long disk access, or some streaming delays, or anything that makes a frame longer, your objects won't jump into outer space.
-        // 3) online-play readiness. When we will do online multi-player, we'll have to pick an approach.
-        // For many techniques like input-passing, the small steps will be significantly easier to make online.
-        bool m_useFixedDeltaTime = true;
 
         // ------------------------------------
 

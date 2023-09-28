@@ -8,7 +8,7 @@
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 
-void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
+void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     size_t totalShadowCasters = 0;
 
@@ -66,7 +66,7 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
     }
 }
 
-void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
+void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene,
                                             const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent = entity->getComponent<ShadowsCasterComponent>();
@@ -94,9 +94,3 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene,
     shadowsCasterComponent->m_frameBuffer->bind()->unbind();
 }
 
-void Core::ECS::ShadowsCasterSystem::deltaUpdate(const std::shared_ptr<Scene>& scene,
-                                                 const std::shared_ptr<Core::ECS::Entity>& entity,
-                                                 const double& deltaTime)
-{
-
-}

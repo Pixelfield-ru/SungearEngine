@@ -15,8 +15,8 @@ namespace Core::ECS
     public:
         static void init() noexcept;
 
-        static void update(const std::shared_ptr<Scene>& scene);
-        static void deltaUpdate(const std::shared_ptr<Scene>& scene, const double& deltaTime);
+        static void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene);
+        static void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene);
 
         template<typename SystemT>
         requires(std::is_base_of_v<ISystem, SystemT>)

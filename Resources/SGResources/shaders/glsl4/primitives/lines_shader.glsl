@@ -1,3 +1,7 @@
+#define FRAGMENT_SHADER
+
+#define PI 3.14
+
 #include "../uniform_bufs_decl.glsl"
 #include "../color_correction/aces.glsl"
 

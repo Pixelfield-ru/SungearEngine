@@ -10,14 +10,8 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include "SGCore/Main/CoreMain.h"
 
-void Core::ECS::Camera3DMovementSystem::update
+void Core::ECS::Camera3DMovementSystem::FPSNotRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
-{
-
-}
-
-void Core::ECS::Camera3DMovementSystem::deltaUpdate
-(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity, const double& deltaTime)
 {
     std::shared_ptr<CameraComponent> cameraComponent = entity->getComponent<CameraComponent>();
     std::shared_ptr<TransformComponent> transformComponent = entity->getComponent<TransformComponent>();
@@ -67,19 +61,19 @@ void Core::ECS::Camera3DMovementSystem::deltaUpdate
 
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
     {
-        transformComponent->m_position -= rotatedForward * finalCameraSpeed * (float) deltaTime;
+        transformComponent->m_position -= rotatedForward * finalCameraSpeed;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
     {
-        transformComponent->m_position += rotatedForward * finalCameraSpeed * (float) deltaTime;
+        transformComponent->m_position += rotatedForward * finalCameraSpeed;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
     {
-        transformComponent->m_position += rotatedLeft * finalCameraSpeed * (float) deltaTime;
+        transformComponent->m_position += rotatedLeft * finalCameraSpeed;
     }
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
     {
-        transformComponent->m_position -= rotatedLeft * finalCameraSpeed * (float) deltaTime;
+        transformComponent->m_position -= rotatedLeft * finalCameraSpeed;
     }
 
     if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))

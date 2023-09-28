@@ -26,7 +26,7 @@ void Core::ECS::ECSWorld::init() noexcept
     createSystem<CameraRenderingSystem>();
 }
 
-void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
+void Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     for(auto& system : m_systems)
     {
@@ -34,20 +34,20 @@ void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
 
         if(system->isFlagSet(SystemsFlags::SGSF_NOT_PER_ENTITY))
         {
-            system->update(scene);
+            system->FPSNotRelativeFixedUpdate(scene);
         }
 
         if(system->isFlagSet(SystemsFlags::SGSF_PER_ENTITY))
         {
             for(auto& entity: scene->m_entities)
             {
-                system->update(scene, entity);
+                system->FPSNotRelativeFixedUpdate(scene, entity);
             }
         }
     }
 }
 
-void Core::ECS::ECSWorld::deltaUpdate(const std::shared_ptr<Scene>& scene, const double& deltaTime)
+void Core::ECS::ECSWorld::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     for(auto& system : m_systems)
     {
@@ -55,14 +55,14 @@ void Core::ECS::ECSWorld::deltaUpdate(const std::shared_ptr<Scene>& scene, const
 
         if(system->isFlagSet(SystemsFlags::SGSF_NOT_PER_ENTITY))
         {
-            system->deltaUpdate(scene, deltaTime);
+            system->FPSRelativeFixedUpdate(scene);
         }
 
         if(system->isFlagSet(SystemsFlags::SGSF_PER_ENTITY))
         {
             for(auto& entity: scene->m_entities)
             {
-                system->deltaUpdate(scene, entity, deltaTime);
+                system->FPSRelativeFixedUpdate(scene, entity);
             }
         }
     }

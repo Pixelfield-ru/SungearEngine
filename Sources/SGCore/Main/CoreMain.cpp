@@ -32,19 +32,32 @@ void Core::Main::CoreMain::start()
     std::shared_ptr<Utils::TimerCallback> globalTimerCallback = std::make_shared<Utils::TimerCallback>();
 
     // delta update
-    globalTimerCallback->setDeltaUpdateFunction([](const double& deltaTime) { deltaUpdate(deltaTime); });
+    //globalTimerCallback->setDeltaUpdateFunction([](const double& deltaTime) { deltaUpdate(deltaTime); });
 
     // update
-    globalTimerCallback->setUpdateFunction([]() {
-        update();
-    });
+    globalTimerCallback->setFixedUpdateFunction([]()
+                                                {
+                                                    FPSRelativeFixedUpdate();
+                                                });
 
     // when reached destination (in the case of this timer, 1 second) second
     globalTimerCallback->setDestinationReachedFunction([]() {
-        m_window.setTitle("Sungear Engine. FPS: " + std::to_string(m_globalTimer.getFramesPerDestination()));
+        m_window.setTitle("Sungear Engine. FPS: " + std::to_string(m_renderTimer.getFramesPerDestination()));
     });
 
-    m_globalTimer.addCallback(globalTimerCallback);
+    m_renderTimer.addCallback(globalTimerCallback);
+
+    // -----------------
+
+    std::shared_ptr<Utils::TimerCallback> fixedTimerCallback = std::make_shared<Utils::TimerCallback>();
+
+    fixedTimerCallback->setFixedUpdateFunction([]()
+                                                {
+                                                    FPSNotRelativeFixedUpdate();
+                                                });
+
+    m_fixedTimer.m_targetFrameRate = 60;
+    m_fixedTimer.addCallback(fixedTimerCallback);
 
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
 
@@ -52,27 +65,34 @@ void Core::Main::CoreMain::start()
 
     while(!m_window.shouldClose())
     {
-        m_globalTimer.startFrame();
+        m_renderTimer.startFrame();
+        m_fixedTimer.startFrame();
     }
 }
 
-void Core::Main::CoreMain::update()
+void Core::Main::CoreMain::FPSNotRelativeFixedUpdate()
 {
+    sgCallFPSNotRelativeFixedUpdateCallback();
+}
+
+void Core::Main::CoreMain::FPSRelativeFixedUpdate()
+{
+    InputManager::startFrame();
+
     glm::ivec2 windowSize;
     m_window.getSize(windowSize.x, windowSize.y);
     m_renderer->renderFrame(windowSize);
 
-    sgCallFramePostRenderCallback();
+    sgCallFPSRelativeFixedUpdateCallback();
 
     m_window.swapBuffers();
+
+    m_window.pollEvents();
 }
 
 void Core::Main::CoreMain::deltaUpdate(const long double& deltaTime)
 {
-    InputManager::startFrame();
-    sgCallDeltaUpdateCallback(deltaTime);
 
-    m_window.pollEvents();
 }
 
 Core::Main::Window& Core::Main::CoreMain::getWindow() noexcept

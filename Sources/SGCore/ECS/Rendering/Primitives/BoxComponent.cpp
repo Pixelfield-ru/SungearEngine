@@ -7,6 +7,22 @@ Core::ECS::BoxComponent::BoxComponent()
 {
     m_mesh = std::shared_ptr<ImportedScene::IMesh>(Core::Main::CoreMain::getRenderer().createMesh());
 
+    m_mesh->m_material->setShader(
+            SGMAT_STANDARD_SHADER_NAME,
+            std::shared_ptr<Graphics::IShader>(
+                    Core::Main::CoreMain::getRenderer().createShader(
+                            Graphics::getShaderPath(Graphics::StandardShaderType::SG_COMPLEX_PRIMITIVES_SHADER)
+                    )
+            )
+    );
+
+    build();
+}
+
+void Core::ECS::BoxComponent::build()
+{
+    m_mesh->m_positions.clear();
+
     // building a cube ------------------------------
 
     m_mesh->m_positions.push_back(-m_size.x / 2.0f);
@@ -84,18 +100,6 @@ Core::ECS::BoxComponent::BoxComponent()
 
     m_mesh->m_indices.push_back(1);
     m_mesh->m_indices.push_back(5);
-
-
-    m_mesh->m_material->setShader(
-            SGMAT_STANDARD_SHADER_NAME,
-            std::shared_ptr<Graphics::IShader>(
-                    Core::Main::CoreMain::getRenderer().createShader(
-                            Graphics::getShaderPath(Graphics::StandardShaderType::SG_COMPLEX_PRIMITIVES_SHADER)
-                    )
-            )
-    );
-
-    //m_mesh->m_material->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
 
     m_mesh->prepare();
 }

@@ -7,8 +7,8 @@ struct SGCallbacks
     SGWindowIconifyCallback c_windowIconify;
     SGWindowKeyCallback c_keyCallback;
     SGWindowMouseButtonCallback c_mouseButtonCallback;
-    SGUpdateCallback c_framePostRender;
-    SGDeltaUpdateCallback c_deltaUpdate;
+    SGFixedUpdateCallback c_FPSNotRelativeFixedUpdate;
+    SGFixedUpdateCallback c_FPSRelativeFixedUpdate;
 };
 
 SGCallbacks sgCallbacks;
@@ -38,14 +38,14 @@ void sgSetWindowMouseButtonCallback(const SGWindowMouseButtonCallback& callback)
     sgCallbacks.c_mouseButtonCallback = callback;
 }
 
-void sgSetFramePostRenderCallback(const SGUpdateCallback& callback) noexcept
+void sgSetFPSNotRelativeFixedUpdateCallback(const SGFixedUpdateCallback& callback) noexcept
 {
-    sgCallbacks.c_framePostRender = callback;
+    sgCallbacks.c_FPSNotRelativeFixedUpdate = callback;
 }
 
-void sgSetDeltaUpdateCallback(const SGDeltaUpdateCallback& callback) noexcept
+void sgSetFPSRelativeFixedUpdateCallback(const SGFixedUpdateCallback& callback) noexcept
 {
-    sgCallbacks.c_deltaUpdate = callback;
+    sgCallbacks.c_FPSRelativeFixedUpdate = callback;
 }
 
 // ---------------------------------------
@@ -90,18 +90,18 @@ void sgCallWindowMouseButtonCallback(GLFWwindow* wnd, int key, int scanCode, int
     }
 }
 
-void sgCallFramePostRenderCallback()
+void sgCallFPSNotRelativeFixedUpdateCallback()
 {
-    if(sgCallbacks.c_framePostRender)
+    if(sgCallbacks.c_FPSNotRelativeFixedUpdate)
     {
-        sgCallbacks.c_framePostRender();
+        sgCallbacks.c_FPSNotRelativeFixedUpdate();
     }
 }
 
-void sgCallDeltaUpdateCallback(const double& deltaTime)
+void sgCallFPSRelativeFixedUpdateCallback()
 {
-    if(sgCallbacks.c_deltaUpdate)
+    if(sgCallbacks.c_FPSRelativeFixedUpdate)
     {
-        sgCallbacks.c_deltaUpdate(deltaTime);
+        sgCallbacks.c_FPSRelativeFixedUpdate();
     }
 }

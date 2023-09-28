@@ -203,6 +203,9 @@ void Core::Memory::Assets::IMaterial::setShader
 (const std::string_view& name,
  const std::shared_ptr<Graphics::IShader>& otherShader)
 {
+    // setting to false so as not to compile otherShader after each defines change
+    otherShader->setAssetModifiedChecking(false);
+
     otherShader->clearDefinesOfType(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE);
 
     const auto& foundShaderPair = m_shaders.find(name.data());
@@ -218,21 +221,31 @@ void Core::Memory::Assets::IMaterial::setShader
         m_currentShader = otherShader;
     }
 
-    // adding blocks decls to new shader
+    // adding blocks decls and textures in blocks decls to shader if shader haven't been in m_shaders
     if(!shaderFound)
     {
-        for(const auto& block : m_blocks)
+        for(const auto& blockPair : m_blocks)
         {
-            auto typeName = sgMaterialTextureTypeToString(block.first);
+            auto typeName = sgMaterialTextureTypeToString(blockPair.first);
             auto maxTextureBlockDefine = typeName + "_MAX_TEXTURES_NUM";
 
+            otherShader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                          { Graphics::ShaderDefine(maxTextureBlockDefine,
+                                                                   std::to_string(blockPair.second.m_maximumTextures)) });
 
+            for(const auto& blockTexture : blockPair.second.m_textures)
+            {
+                otherShader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                              { Graphics::ShaderDefine(maxTextureBlockDefine,
+                                                                       blockTexture.second.m_nameInShader + "_DEFINED") });
+            }
         }
     }
 
-    m_shaders[name.data()] = otherShader;
+    // set to true (means calling function onAssetModified)
+    otherShader->setAssetModifiedChecking(true);
 
-    // TODO: MAKE ADDING ALREADY EXISTING BLOCKS DEFINES FOR NEW SHADER
+    m_shaders[name.data()] = otherShader;
 }
 
 std::shared_ptr<Core::Graphics::IShader> Core::Memory::Assets::IMaterial::getShader(const std::string_view& name) noexcept

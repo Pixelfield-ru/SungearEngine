@@ -15,18 +15,18 @@ namespace Core::Utils
     {
     private:
         std::function<void()> startFunction;
-        std::function<void()> updateFunction;
+        std::function<void()> fixedUpdateFunction;
         std::function<void(const long double&)> deltaUpdateFunction;
         std::function<void()> destinationReachedFunction;
 
     public:
         void setStartFunction(const std::function<void()>&) noexcept;
-        void setUpdateFunction(const std::function<void()>&) noexcept;
+        void setFixedUpdateFunction(const std::function<void()>&) noexcept;
         void setDeltaUpdateFunction(const std::function<void(const long double&)>&) noexcept;
         void setDestinationReachedFunction(const std::function<void()>&) noexcept;
 
         void callStartFunction();
-        void callUpdateFunction();
+        void callFixedUpdateFunction();
         void callDeltaUpdateFunction(const long double&);
         void callDestinationReachedFunction();
     };

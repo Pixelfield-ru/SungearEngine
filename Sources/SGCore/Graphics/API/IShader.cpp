@@ -42,7 +42,7 @@ void Core::Graphics::IShader::replaceDefines(const SGShaderDefineType& shaderDef
     shaderTypedDefines.clear();
     shaderTypedDefines.insert(shaderTypedDefines.end(), otherDefines.begin(), otherDefines.end());
 
-    onAssetModified();
+    if(m_assetModifiedChecking) onAssetModified();
 }
 
 void Core::Graphics::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
@@ -54,12 +54,14 @@ void Core::Graphics::IShader::replaceDefines(const SGShaderDefineType& shaderDef
     shaderTypedDefines.clear();
     shaderTypedDefines.insert(shaderTypedDefines.end(), otherShaderTypedDefines.begin(), otherShaderTypedDefines.end());
 
-    onAssetModified();
+    if(m_assetModifiedChecking) onAssetModified();
 }
 
 void Core::Graphics::IShader::clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept
 {
     m_defines[shaderDefineType].clear();
+
+    if(m_assetModifiedChecking) onAssetModified();
 }
 
 void Core::Graphics::IShader::onAssetModified()

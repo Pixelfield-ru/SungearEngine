@@ -6,7 +6,7 @@
 #include "TransformComponent.h"
 #include "glm/ext/matrix_transform.hpp"
 
-void Core::ECS::TransformationsSystem::update
+void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::shared_ptr<TransformComponent> transformComponent = entity->getComponent<TransformComponent>();
@@ -28,13 +28,13 @@ void Core::ECS::TransformationsSystem::update
     if(transformComponent->m_lastRotation != transformComponent->m_rotation)
     {
         transformComponent->m_rotationMatrix = glm::rotate(transformComponent->m_rotationMatrix,
-                                                           glm::radians(transformComponent->m_rotation.x - transformComponent->m_lastRotation.x),
+                                                           -glm::radians(transformComponent->m_rotation.x - transformComponent->m_lastRotation.x),
                                                            glm::vec3(1, 0, 0));
         transformComponent->m_rotationMatrix = glm::rotate(transformComponent->m_rotationMatrix,
-                                                           glm::radians(transformComponent->m_rotation.y - transformComponent->m_lastRotation.y),
+                                                           -glm::radians(transformComponent->m_rotation.y - transformComponent->m_lastRotation.y),
                                                            glm::vec3(0, 1, 0));
         transformComponent->m_rotationMatrix = glm::rotate(transformComponent->m_rotationMatrix,
-                                                           glm::radians(transformComponent->m_rotation.z - transformComponent->m_lastRotation.z),
+                                                           -glm::radians(transformComponent->m_rotation.z - transformComponent->m_lastRotation.z),
                                                            glm::vec3(0, 0, 1));
 
         transformComponent->m_lastRotation = transformComponent->m_rotation;
@@ -56,10 +56,4 @@ void Core::ECS::TransformationsSystem::update
     {
         transformComponent->m_modelMatrix = transformComponent->m_translationMatrix * transformComponent->m_rotationMatrix * transformComponent->m_scaleMatrix;
     }
-}
-
-void Core::ECS::TransformationsSystem::deltaUpdate
-(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity, const double& deltaTime)
-{
-
 }

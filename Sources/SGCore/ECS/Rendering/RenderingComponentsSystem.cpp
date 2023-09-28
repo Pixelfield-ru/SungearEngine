@@ -8,7 +8,7 @@
 #include "glm/ext/quaternion_trigonometric.hpp"
 #include "glm/gtx/quaternion.hpp"
 
-void Core::ECS::RenderingComponentsSystem::update(const std::shared_ptr<Scene>& scene,
+void Core::ECS::RenderingComponentsSystem::FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene,
                                                   const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::list<std::shared_ptr<IRenderingComponent>> renderingComponents = entity->getComponents<IRenderingComponent>();
@@ -58,11 +58,4 @@ void Core::ECS::RenderingComponentsSystem::update(const std::shared_ptr<Scene>& 
             renderingComponent->m_lastZFar = renderingComponent->m_zFar;
         }
     }
-}
-
-void Core::ECS::RenderingComponentsSystem::deltaUpdate(const std::shared_ptr<Scene>& scene,
-                                                       const std::shared_ptr<Core::ECS::Entity>& entity,
-                                                       const double& deltaTime)
-{
-
 }

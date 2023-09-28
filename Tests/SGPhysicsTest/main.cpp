@@ -98,7 +98,9 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
 }
 
 std::shared_ptr<Core::ECS::Entity> testShadowsCaster;
+
 std::shared_ptr<Core::ECS::SphereComponent> sphereComponent;
+std::shared_ptr<Core::ECS::BoxComponent> boxComponent;
 
 void init()
 {
@@ -166,7 +168,7 @@ void init()
 
         if (transformComponent)
         {
-            transformComponent->m_position.y = curY;
+            //transformComponent->m_position.y = curY;
             transformComponent->m_position.z = -curY;
         }
 
@@ -225,9 +227,11 @@ void init()
 
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
     auto cameraTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
-    cameraTransformComponent->m_position.y = -3;
+    /*cameraTransformComponent->m_position.y = -3;
     cameraTransformComponent->m_position.z = 2;
-    cameraTransformComponent->m_rotation.x = -30;
+    cameraTransformComponent->m_rotation.x = -30;*/
+
+    cameraTransformComponent->m_position.z = 4.0;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
     testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
@@ -245,31 +249,54 @@ void init()
     shadowsCasterTransform->m_rotation.x = 50;
     //shadowsCasterTransform->m_rotation.y = -90;
     sphereComponent = std::make_shared<Core::ECS::SphereComponent>();
+    sphereComponent->m_color.y = 1.0f;
+    auto sphereComponent1 = std::make_shared<Core::ECS::SphereComponent>();
+    boxComponent = std::make_shared<Core::ECS::BoxComponent>();
+
+    boxComponent->m_offset.z = -7.5f;
+    boxComponent->m_size.x = boxComponent->m_size.y = 1.0f;
+    boxComponent->m_size.z = 5.0f;
+
+    sphereComponent1->m_radius = 3.0f;
+    sphereComponent1->m_offset.z = -(5.0f + 5.0f + 3.0);
+    sphereComponent1->m_color.b = 1.0f;
+
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::ShadowsCasterComponent>());
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
-    sphereComponent->m_color.y = 1.0f;
+
     testShadowsCaster->addComponent(sphereComponent);
-    testShadowsCaster->addComponent(std::make_shared<Core::ECS::BoxComponent>());
+    testShadowsCaster->addComponent(sphereComponent1);
+    testShadowsCaster->addComponent(sphereComponent);
+    testShadowsCaster->addComponent(boxComponent);
 
     physicsInit();
 }
 
 int framesCnt = 0;
 
-void framePostRender()
+void FPSNotRelativeFixedUpdate()
 {
-    //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
+    //boxComponent->m_size.z += sin(framesCnt / 75.0) / 10.0;
+    //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += sin(framesCnt / 75.0) / 2.0;
 
-    Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
+    testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += 0.3f;
+
+    Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(Core::ECS::Scene::getCurrentScene());
 
     framesCnt++;
+}
+
+void FPSRelativeFixedUpdate()
+{
+    Core::ECS::ECSWorld::FPSRelativeFixedUpdate(Core::ECS::Scene::getCurrentScene());
 }
 
 // --------------------------------------------
 void deltaUpdate(const double& deltaTime)
 {
-    Core::ECS::ECSWorld::deltaUpdate(Core::ECS::Scene::getCurrentScene(), deltaTime);
+
+    //Core::ECS::ECSWorld::deltaUpdate(Core::ECS::Scene::getCurrentScene(), deltaTime);
 }
 
 
@@ -280,8 +307,8 @@ int main()
     //SGConsole::Console::start();
 
     sgSetCoreInitCallback(init);
-    sgSetFramePostRenderCallback(framePostRender);
-    sgSetDeltaUpdateCallback(deltaUpdate);
+    sgSetFPSNotRelativeFixedUpdateCallback(FPSNotRelativeFixedUpdate);
+    sgSetFPSRelativeFixedUpdateCallback(FPSRelativeFixedUpdate);
 
     Core::Main::CoreMain::start();
 

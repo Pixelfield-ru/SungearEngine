@@ -10,7 +10,7 @@
 #include "MeshComponent.h"
 #include "SkyboxComponent.h"
 
-void Core::ECS::CameraRenderingSystem::update
+void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::shared_ptr<CameraComponent> cameraComponent = entity->getComponent<CameraComponent>();
@@ -46,10 +46,4 @@ void Core::ECS::CameraRenderingSystem::update
             );
         }
     }
-}
-
-void Core::ECS::CameraRenderingSystem::deltaUpdate
-(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity, const double& deltaTime)
-{
-
 }

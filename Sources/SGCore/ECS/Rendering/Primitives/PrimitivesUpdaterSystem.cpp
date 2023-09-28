@@ -3,8 +3,9 @@
 #include "LineComponent.h"
 #include "SphereComponent.h"
 #include "glm/gtx/rotate_vector.hpp"
+#include "BoxComponent.h"
 
-void Core::ECS::PrimitivesUpdaterSystem::update(const std::shared_ptr<Scene>& scene,
+void Core::ECS::PrimitivesUpdaterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene,
                                                 const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::list<std::shared_ptr<IPrimitiveComponent>> primitiveComponents = entity->getComponents<IPrimitiveComponent>();
@@ -149,15 +150,22 @@ void Core::ECS::PrimitivesUpdaterSystem::update(const std::shared_ptr<Scene>& sc
                 sphereComponent->m_lastRadius = sphereComponent->m_radius;
             }
         }
+        else
+        {
+            auto boxComponent = std::dynamic_pointer_cast<BoxComponent>(primitiveComponent);
+
+            if(boxComponent)
+            {
+                if(boxComponent->m_size != boxComponent->m_lastSize)
+                {
+                    boxComponent->build();
+
+                    boxComponent->m_lastSize = boxComponent->m_size;
+                }
+            }
+        }
 
         // todo: make individual update for box, and other primitives
     }
-
-}
-
-void Core::ECS::PrimitivesUpdaterSystem::deltaUpdate(const std::shared_ptr<Scene>& scene,
-                                                     const std::shared_ptr<Core::ECS::Entity>& entity,
-                                                     const double& deltaTime)
-{
 
 }

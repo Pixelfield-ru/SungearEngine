@@ -7,7 +7,7 @@
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 
-void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& scene)
+void Core::ECS::DirectionalLightsSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     size_t totalDirectionalLights = 0;
 

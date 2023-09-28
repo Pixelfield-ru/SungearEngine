@@ -24,14 +24,16 @@ namespace Core::Main
         static inline Window m_window {};
         static inline std::shared_ptr<Graphics::IRenderer> m_renderer;
 
-        static inline Utils::Timer m_globalTimer { true, 1.0 };
+        static inline Utils::Timer m_renderTimer {true, 1.0 };
+        static inline Utils::Timer m_fixedTimer {true, 1.0 };
 
     public:
         CoreMain() = delete;
 
         static void start();
 
-        static void update();
+        static void FPSNotRelativeFixedUpdate();
+        static void FPSRelativeFixedUpdate();
 
         static void deltaUpdate(const long double&);
 

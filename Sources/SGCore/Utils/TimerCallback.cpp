@@ -9,9 +9,9 @@ void Core::Utils::TimerCallback::setStartFunction(const std::function<void()>& f
     startFunction = function;
 }
 
-void Core::Utils::TimerCallback::setUpdateFunction(const std::function<void()>& function) noexcept
+void Core::Utils::TimerCallback::setFixedUpdateFunction(const std::function<void()>& function) noexcept
 {
-    updateFunction = function;
+    fixedUpdateFunction = function;
 }
 
 void Core::Utils::TimerCallback::setDeltaUpdateFunction(const std::function<void(const long double&)>& function) noexcept
@@ -34,11 +34,11 @@ void Core::Utils::TimerCallback::callStartFunction()
     }
 }
 
-void Core::Utils::TimerCallback::callUpdateFunction()
+void Core::Utils::TimerCallback::callFixedUpdateFunction()
 {
-    if(updateFunction)
+    if(fixedUpdateFunction)
     {
-        updateFunction();
+        fixedUpdateFunction();
     }
 }
 

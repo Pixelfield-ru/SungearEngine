@@ -51,7 +51,14 @@ namespace Core::Graphics
 
         void clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept;
 
+        /**
+         * Calls recompile of shader program.
+         */
         void onAssetModified() override;
+
+        /**
+         * Calls recompile of shader program.
+         */
         void onAssetPathChanged() override;
 
         #pragma region Uniforms use

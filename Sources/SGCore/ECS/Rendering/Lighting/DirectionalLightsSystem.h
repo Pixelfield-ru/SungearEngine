@@ -12,7 +12,7 @@ namespace Core::ECS
     class DirectionalLightsSystem : public ISystem
     {
     public:
-        void update(const std::shared_ptr<Scene>& scene) override;
+        void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) final;
     };
 }
 

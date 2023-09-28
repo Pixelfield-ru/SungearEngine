@@ -4,6 +4,7 @@
 
 #include <chrono>
 #include <GLFW/glfw3.h>
+#include <numeric>
 
 #include "Timer.h"
 #include "TimerCallback.h"
@@ -22,45 +23,33 @@ void Core::Utils::Timer::startFrame()
     m_current = glfwGetTime();
 
     m_rawDeltaTime = m_current - last;
-    m_fixedDeltaTime += m_current - last;
-    m_elapsedTimeForUpdate += m_current - last;
+    m_elapsedTimeForUpdate += m_rawDeltaTime;
+
+    double destDeltaTime = 1.0 / m_targetFrameRate;
+    m_elapsedTimeForUpdate = m_elapsedTimeForUpdate >= 0.1 ? 0.1 : m_elapsedTimeForUpdate;
 
     // if time to update
-    if(m_elapsedTimeForUpdate > 1.0 / m_targetFrameRate)
+    if(m_elapsedTimeForUpdate >= destDeltaTime)
     {
-        for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
+        while(m_elapsedTimeForUpdate >= destDeltaTime)
         {
-            callback->callUpdateFunction();
+            for (const std::shared_ptr<TimerCallback>& callback: m_callbacks)
+            {
+                callback->callFixedUpdateFunction();
+            }
+
+            m_elapsedTimeForUpdate -= destDeltaTime;
         }
+
+        m_current = glfwGetTime();
 
         m_framesPerTarget++;
-
         m_elapsedTimeForUpdate = 0.0f;
-    }
-
-    if(m_useFixedDeltaTime)
-    {
-        // fixing delta update
-        while(m_fixedDeltaTime > m_fixedDeltaTimeValue)
-        {
-            for(const std::shared_ptr<TimerCallback>& callback: m_callbacks)
-            {
-                callback->callDeltaUpdateFunction(m_fixedDeltaTime);
-            }
-            m_fixedDeltaTime -= m_fixedDeltaTimeValue;
-        }
-    }
-    else // if delta time is not fixed
-    {
-        for(const std::shared_ptr<TimerCallback>& callback: m_callbacks)
-        {
-            callback->callDeltaUpdateFunction(m_rawDeltaTime);
-        }
     }
 
     m_elapsedTime = m_current - m_startTime;
 
-    if(m_elapsedTime > m_target)
+    if(m_elapsedTime >= m_target)
     {
         for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
         {
