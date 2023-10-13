@@ -11,7 +11,7 @@ Externals/imgui/docs
 Externals/Vulkan/Bin
 Externals/Vulkan/Bin32
 Externals/bullet3/data
-Externals/bullet3/examples
+#Externals/bullet3/examples
 Externals/bullet3/docs
 # -----------------------
 
