@@ -10,9 +10,11 @@
 #include <glm/glm.hpp>
 
 #include "SGCore/ECS/IComponent.h"
+#include "SGCore/Utils/Math.h"
 
 namespace Core::ECS
 {
+    // todo: make quaternion transformations
     class TransformComponent : public IComponent
     {
         friend class TransformationsSystem;
@@ -30,6 +32,10 @@ namespace Core::ECS
         glm::vec3 m_position { 0.0, 0.0, 0.0 };
         glm::vec3 m_rotation { 0.0, 0.0, 0.0 };
         glm::vec3 m_scale = glm::vec3(1);
+
+        glm::vec3 m_left = Utils::MathUtils::left3;
+        glm::vec3 m_forward = Utils::MathUtils::forward3;
+        glm::vec3 m_up = Utils::MathUtils::up3;
 
         glm::mat4 m_translationMatrix = glm::mat4(1);
         glm::mat4 m_rotationMatrix = glm::mat4(1);

@@ -23,6 +23,8 @@
 
     void main()
     {
+        float depth = gl_FragCoord.z;
+
         vec2 finalUV = vs_UVAttribute.xy;
         #ifdef FLIP_TEXTURES_Y
             finalUV.y = 1.0 - vs_UVAttribute.y;
@@ -34,10 +36,6 @@
             {
                 discard;
             }
-            else
-            {
-                gl_FragColor = vec4(gl_FragCoord.z);
-            }
         #elif sgmat_baseColor8_DEFINED
             float a = texture(sgmat_baseColor8, finalUV).a;
             // todo: make 0.2 flexible value
@@ -45,14 +43,17 @@
             {
                 discard;
             }
-            else
-            {
-                gl_FragColor = vec4(gl_FragCoord.z);
-            }
-            //gl_FragColor = vec4(gl_FragCoord.zzz * texture(sgmat_baseColor8, finalUV).a, gl_FragCoord.z);
-        #else
-            gl_FragColor = vec4(1.0);
         #endif
+
+        depth = depth * 0.5 + 0.5;
+
+        float dx = dFdx(depth);
+        float dy = dFdy(depth);
+
+        float moment1 = depth;
+        float moment2 = depth * depth - 0.25 * (dx * dx + dy * dy);
+        // vsm
+        gl_FragColor = vec4(moment1, moment2, 0.0, 1.0);
         //gl_FragColor = vec4(0.0);
     }
 #endif

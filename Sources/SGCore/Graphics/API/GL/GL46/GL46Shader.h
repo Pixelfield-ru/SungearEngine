@@ -41,6 +41,8 @@ namespace Core::Graphics
         void useVectorf(const std::string& uniformName, const glm::vec3& vec) override;
         void useVectorf(const std::string& uniformName, const glm::vec4& vec) override;
 
+        void useFloat(const std::string& uniformName, const float& f) override;
+
     private:
         GLuint m_programHandler = 0;
 

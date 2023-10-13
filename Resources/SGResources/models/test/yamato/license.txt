@@ -1,0 +1,11 @@
+Model Information:
+* title:	Vergil's Yamato V2
+* source:	https://sketchfab.com/3d-models/vergils-yamato-v2-a4d2b2ef06d24ea998366b5c8dc833e5
+* author:	MalakaiGregory06 (https://sketchfab.com/MalakaiGregory06)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Vergil's Yamato V2" (https://sketchfab.com/3d-models/vergils-yamato-v2-a4d2b2ef06d24ea998366b5c8dc833e5) by MalakaiGregory06 (https://sketchfab.com/MalakaiGregory06) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

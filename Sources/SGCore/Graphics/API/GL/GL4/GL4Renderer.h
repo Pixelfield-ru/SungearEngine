@@ -34,6 +34,8 @@ namespace Core::Graphics
     protected:
         // Buffer for storing matrices of the currently rendered model.
         std::shared_ptr<GL4UniformBuffer> m_modelMatricesBuffer;
+        // stores material colors, coeffs, but not samplers
+        std::shared_ptr<GL4UniformBuffer> m_materialDataBuffer;
         // Buffer for storing matrices of the currently main camera.
         std::shared_ptr<GL4UniformBuffer> m_viewMatricesBuffer;
         // Buffer for storing matrices of the program.

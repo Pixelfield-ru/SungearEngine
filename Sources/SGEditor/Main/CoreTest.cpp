@@ -37,6 +37,7 @@
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightComponent.h"
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 #include "SGCore/Memory/Assets/CubemapAsset.h"
+#include "SGCore/ECS/Rendering/Primitives/BoxComponent.h"
 
 std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
 
@@ -61,9 +62,9 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
     for(auto& mesh : sgNode->m_meshes)
     {
         std::shared_ptr<Core::ECS::TransformComponent> meshedEntityTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
-        meshedEntityTransformComponent->m_position = pos;
-        meshedEntityTransformComponent->m_rotation = rot;
-        meshedEntityTransformComponent->m_scale = scale;
+        meshedEntityTransformComponent->m_position = sgNode->m_position + pos;
+        meshedEntityTransformComponent->m_rotation = eulerAngles(sgNode->m_rotationQuaternion) + rot;
+        meshedEntityTransformComponent->m_scale = sgNode->m_scale * scale;
 
         std::shared_ptr<Core::ECS::MeshComponent> meshComponent = std::make_shared<Core::ECS::MeshComponent>();
         meshComponent->m_mesh = mesh;
@@ -109,13 +110,29 @@ void init()
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
             //"../SGResources/models/test/gaz-66.obj"
-            "../SGResources/models/test/btr_80a2016/scene.gltf"
+            //"../SGResources/models/test/btr_80a2016/scene.gltf"
+            //"../SGResources/models/test/hamada_gun/scene.gltf"
+            //"../SGResources/models/test/ak74/scene.gltf"
             //"../SGResources/models/test/backpack/scene.gltf"
             //"../SGResources/models/test/stalk_bunk/bunker.fbx"
             //"../SGResources/models/test/Duty Exoskeleton/Duty Exoskeleton.obj"
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
+            "../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/yamato/scene.gltf"
+            //"../SGResources/models/test/ak47/scene.gltf"
+            //"../SGResources/models/test/pavlov/scene.gltf"
+            //"../SGResources/models/test/kv2/scene.gltf"
+            //"../SGResources/models/test/Putin/scene.gltf"
+            //"../SGResources/models/test/Russia_flag/scene.gltf"
+            //"../SGResources/models/test/old_building/scene.gltf"
+            //"../SGResources/models/test/cathedral/scene.gltf"
+            //"../SGResources/models/test/stierlitz/scene.gltf"
+            //"../SGResources/models/test/panelka/scene.gltf"
+            //"../SGResources/models/test/t55a/scene.gltf"
+            //"../SGResources/models/test/rpg7/scene.gltf"
+            //"../SGResources/models/test/zucchini/scene.gltf"
             //"../SGResources/models/test/lenin/scene.gltf"
     );
 
@@ -153,10 +170,24 @@ void init()
 
     for(auto& node : btrModel->m_nodes)
     {
-        processLoadedNode(node, { 0, -1, -20 }, { 0, -90, 0 },
-                          { 4, 4, 4 }, btrEntities);
+        /*processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
+                          { 4, 4, 4 }, btrEntities);*/
+        /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
+                          { 0.075, 0.075, 0.075 }, btrEntities);*/
+        /*processLoadedNode(node, { 3, -1, -20 }, { 90, 0, 90 },
+                          { 0.2, 0.2, 0.2 }, btrEntities);*/
+        /*processLoadedNode(node, { 3, 1.5, -20 }, { 90, 0, 0 },
+                          { 0.2, 0.2, 0.2 }, btrEntities);*/
+
+        // for uaz
+        processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);
         /*processLoadedNode(node, { 100.0, -0.5f, 0 }, { 0, 0, 0 },
                           { 0.5, 0.5, 0.5 }, btrEntities);*/
+        /*processLoadedNode(node, { 0, -1, -20 }, { 90, 0, 90 },
+                          { 0.025, 0.025, 0.025 }, btrEntities);*/
+        /*processLoadedNode(node, { 0, -1, -20 }, { 0, -90, 0 },
+                          { 20, 20, 20 }, btrEntities);*/
     }
 
     for(const auto& entity : btrEntities)
@@ -166,7 +197,7 @@ void init()
         auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
         if(meshComponent)
         {
-            meshComponent->m_enableFacesCulling = false;
+            //meshComponent->m_enableFacesCulling = false;
         }
     }
 
@@ -259,20 +290,35 @@ void init()
     auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(shadowCasterComponent);
-    testShadowsCaster->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
+    auto directionalLight = std::make_shared<Core::ECS::DirectionalLightComponent>();
+    directionalLight->m_color.r = 250.0f / 255.0f;
+    directionalLight->m_color.g = 129.0f / 255.0f;
+    directionalLight->m_color.b = 0.0f / 255.0f;
+    //directionalLight->m_color.r = 255.0f / 255.0f * 2.0f;
+    //directionalLight->m_color.g = 255.0f / 255.0f * 2.0f;
+    //directionalLight->m_color.b = 255.0f / 255.0f * 2.0f;
+    testShadowsCaster->addComponent(directionalLight);
+    testShadowsCaster->addComponent(std::make_shared<Core::ECS::BoxComponent>());
 
-    /*auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
+    auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
     testScene->m_entities.push_back(testShadowsCaster1);
     auto shadowsCasterTransform1 = std::make_shared<Core::ECS::TransformComponent>();
-    shadowsCasterTransform1->m_position.x = 0;
-    shadowsCasterTransform1->m_position.y = -3;
-    shadowsCasterTransform1->m_position.z = 2.0;
-    shadowsCasterTransform1->m_rotation.x = -30;
+    shadowsCasterTransform1->m_position.x = -10;
+    shadowsCasterTransform1->m_position.y = 10;
+    shadowsCasterTransform1->m_position.z = -50.0;
+    shadowsCasterTransform1->m_rotation.y = 180;
+    //shadowsCasterTransform1->m_rotation.x = 40;
     //shadowsCasterTransform1->m_rotation.y = 30;
     auto shadowCasterComponent1 = std::make_shared<Core::ECS::ShadowsCasterComponent>();
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
     testShadowsCaster1->addComponent(shadowCasterComponent1);
-    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());*/
+    auto directionalLight1 = std::make_shared<Core::ECS::DirectionalLightComponent>();
+    directionalLight1->m_color.r = 139.0f / 255.0f;
+    directionalLight1->m_color.g = 184.0f / 255.0f;
+    directionalLight1->m_color.b = 241.0f / 255.0f;
+    //directionalLight1->m_intensity = 10.0f;
+    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
+    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::BoxComponent>());
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -302,7 +348,7 @@ void FPSRelativeFixedUpdate()
 
 void deltaUpdate(const double& deltaTime)
 {
-    Core::ECS::ECSWorld::deltaUpdate(Core::ECS::Scene::getCurrentScene(), deltaTime);
+    //Core::ECS::ECSWorld::deltaUpdate(Core::ECS::Scene::getCurrentScene(), deltaTime);
 }
 
 int main()

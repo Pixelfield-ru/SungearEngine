@@ -8,4 +8,5 @@ struct DirectionalLight
 {
     vec3 position;
     vec4 color;
+    float intensity;
 };

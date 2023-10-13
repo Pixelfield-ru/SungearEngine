@@ -2,13 +2,14 @@
 // Created by stuka on 04.07.2023.
 //
 
+#include "glm/gtx/rotate_vector.hpp"
+
 #include "Camera3DMovementSystem.h"
 #include "SGCore/ECS/Rendering/CameraComponent.h"
-
 #include "SGCore/ECS/Transformations/TransformComponent.h"
 #include "SGCore/Input/InputManager.h"
-#include "glm/gtx/rotate_vector.hpp"
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/Utils/Math.h"
 
 void Core::ECS::Camera3DMovementSystem::FPSNotRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
@@ -29,8 +30,8 @@ void Core::ECS::Camera3DMovementSystem::FPSNotRelativeFixedUpdate
         transformComponent->m_position.x = transformComponent->m_position.y = transformComponent->m_position.z = 0.0f;
     }
 
-    glm::vec3 rotatedForward = CameraComponent::forward;
-    glm::vec3 rotatedLeft = CameraComponent::left;
+    glm::vec3 rotatedForward = Utils::MathUtils::forward3;
+    glm::vec3 rotatedLeft = Utils::MathUtils::left3;
 
     if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W) || InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
     {

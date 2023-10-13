@@ -33,6 +33,7 @@ float ambient = 0.1;
         vec2 UV;
         vec3 normal;
 
+        vec3 vertexPos;
         vec3 fragPos;
         mat3 TBN;
     } vsOut;
@@ -42,6 +43,7 @@ float ambient = 0.1;
         vsOut.UV = UVAttribute.xy;
         vsOut.normal = normalsAttribute;
 
+        vsOut.vertexPos = positionsAttribute;
         vsOut.fragPos = vec3(objectModelMatrix * vec4(positionsAttribute, 1.0));
 
         vec3 T = normalize(vec3(objectModelMatrix * vec4(tangentsAttribute,   0.0)));
@@ -57,7 +59,7 @@ float ambient = 0.1;
     // shadows impl
     #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
 
-    const float shadowsBias = 0.000005;
+    const float shadowsBias = 0.0000165;
     //const float shadowsBias = 0.0002;
 
     float sampleShadowMap(
@@ -163,6 +165,11 @@ float ambient = 0.1;
 
         float shadow = 0.0;
 
+        float rand = random(projCoords.xy);
+        //rand = mad(rand, 2.0, -1.0);
+        float rotAngle = rand * PI;
+        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
+
         // get blocker distance
         for (int j = 0; j < numBlockerSamples; ++j)
         {
@@ -188,11 +195,6 @@ float ambient = 0.1;
         float filterRadiusUV = penumbraSize * lightSizeUV * nearPlane / finalProjZ;
 
         float visibility = 1.0;
-
-        float rand = random(projCoords.xy);
-        //rand = mad(rand, 2.0, -1.0);
-        float rotAngle = rand * PI;
-        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
 
         for(int i = 0; i < 16; i++)
         {
@@ -223,8 +225,17 @@ float ambient = 0.1;
             return 1.0;
         }
 
+        float ct = dot(normalize(shadowsCasters[shadowsCasterIdx].position -
+        fragPos), normal);
+
+        // make customizable
+        if(ct < 0.125)
+        {
+            return 1.0;
+        }
+
         //if(!gl_FrontFacing) normal *= -1;
-        /**if(!gl_FrontFacing) normal *= -1;
+        /*if(!gl_FrontFacing) normal *= -1;
 
         vec3 shadowCasterDir = normalize(shadowsCasters[shadowsCasterIdx].position -
                                          fragPos);
@@ -239,21 +250,21 @@ float ambient = 0.1;
 
         // PCF ------------------
 
-        /**float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.35, texelSize, shadowsCasterSpaceFragPos);
+        float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.35, texelSize, shadowsCasterSpaceFragPos);
 
-        return pcfShadow;*/
+        return pcfShadow;
 
         // -----------------------
 
         // PCSS ------------------
 
-        /**float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.55);
+        /*float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.55);
 
         return pcssShadow;*/
 
         // -----------------------
 
-        const float shadowsMinCoeff = 0.55;
+        /*const float shadowsMinCoeff = 0.55;
         const int samplesNum = 24;
 
         float visibility = 1.0;
@@ -272,12 +283,35 @@ float ambient = 0.1;
             }
         }
 
-        return visibility;
+        return visibility;*/
+
+        // VSM (VARIANCE SHADOW MAPPING) -------------------
+
+        /*vec2 moments = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy).rg;
+
+        float p = 0.0;
+        //float depth = length(shadowsCasters[shadowsCasterIdx].position - fragPos);
+        float depth = projCoords.z;
+
+        if (depth <= moments.x)
+        {
+            return 1.0;
+        }
+
+        float variance = moments.y - (moments.x * moments.x);
+        variance = max(variance, 0.00001);
+
+        float d = depth - moments.x;
+        float pmax = variance / (variance + d * d);
+
+        return pmax;*/
+
+        // -------------------------------------------------
     }
     #endif
 
     #ifdef DIRECTIONAL_LIGHTS_NUM
-        void calculateDiffuseAndSpecularColor(
+        void BlinnPhong_calculateDiffuseAndSpecularColor(
             const in vec3 normal,
             const in vec3 lightPos,
             const in vec3 fragPos,
@@ -285,19 +319,19 @@ float ambient = 0.1;
             out vec3 diffuseColor,
             out vec3 specularColor
         )
-    {
-        vec3 lightDir = normalize(lightPos - fragPos);
-        vec3 viewDir = normalize(viewDirection - fragPos);
-        vec3 halfWayDir = normalize(lightDir + viewDir);
+        {
+            vec3 lightDir = normalize(lightPos - fragPos);
+            vec3 viewDir = normalize(viewDirection - fragPos);
+            vec3 halfWayDir = normalize(lightDir + viewDir);
 
-        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 32.0;
+            float finalDiffuse = max(dot(normal, lightDir), 0.0) * 1.0;
 
-        diffuseColor = vec3(finalDiffuse) * lightColor.rgb / distance(fragPos, lightDir);
+            diffuseColor = vec3(finalDiffuse) * lightColor.rgb * materialDiffuseCol.rgb;
 
-        float spec = pow(max(dot(normal, halfWayDir), 0.0), 32.0);
+            float spec = pow(max(dot(normal, halfWayDir), 0.0), materialShininess);
 
-        specularColor = spec * lightColor.rgb;
-    }
+            specularColor = spec * lightColor.rgb * materialSpecularCol.rgb;
+        }
     #endif
 
     out vec4 fragColor;
@@ -328,9 +362,65 @@ float ambient = 0.1;
         vec2 UV;
         vec3 normal;
 
+        vec3 vertexPos;
         vec3 fragPos;
         mat3 TBN;
     } vsIn;
+
+    // N - normal
+    // VD - view dir
+    float GeometryShlickGGX(const in float NdotVD, const in float roughness)
+    {
+        float r = (roughness + 1.0);
+        float k = (r * r) / 8.0;
+
+        float denom = NdotVD * (1.0 - k) + k;
+
+        return NdotVD / denom;
+    }
+
+    // площадь поверхности, где микроскопические неровности перекрывают друг друга
+    float GeometrySmith(const in vec3 normal, const in vec3 viewDir, const in vec3 lightDir, float roughness)
+    {
+        // косинус между направлением камеры и нормалью к поверхности
+        float NdotVD = max(dot(normal, viewDir), 0.0);
+        // косинус между направлением источника света и нормалью к поверхности
+        float NdotL = max(dot(normal, lightDir), 0.0);
+
+        // ggx from view dir
+        // насколько освещён фрагмент при виде от камеры
+        float ggx1 = GeometryShlickGGX(NdotVD, roughness);
+        // ggx from light dir
+        // насколько освещён тот же фрагмент при виде от источника света
+        float ggx2 = GeometryShlickGGX(NdotL, roughness);
+
+        // если ggx1 = 1, а ggx2 = 0, то это geometry shadowing
+        // если ggx1 = 0, а ggx2 = 1, то это geometry obstruction
+        return ggx1 * ggx2;
+    }
+
+    // Trowbridge-Reitz GGX (Normal Distribution Function)
+    float GGXTR(const in vec3 normal, const in vec3 medianVec, const in float roughness)
+    {
+        float roughness4 = pow(roughness, 6.0);
+
+        // косинус между медианным вектором и нормалью фрагмента
+        float NdotMV = max(dot(normal, medianVec), 0.0);
+        float NdotMV2 = NdotMV * NdotMV;
+
+        // числитель
+        float numerator = roughness4;
+        // заменатель
+        float denominator = (NdotMV2 * (roughness4 - 1.0) + 1.0);
+        denominator =  PI * denominator * denominator;
+
+        return numerator / denominator;
+    }
+
+    vec3 SchlickFresnel(const in float cosTheta, const in vec3 F0)
+    {
+        return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+    }
 
     void main()
     {
@@ -338,8 +428,11 @@ float ambient = 0.1;
 
         vec4 colorFromBase = vec4(1);
         vec4 colorFromDiffuse = vec4(1);
+        vec4 colorFromAlbedo = vec4(1);
+        vec4 colorFromAO = vec4(1);
         vec4 colorFromMetalness = vec4(1);
         vec4 colorFromRoughness = vec4(1);
+        vec4 colorFromShininess = vec4(1);
         vec3 colorFromNormalMap = vec3(normalizedNormal);
 
         vec2 finalUV = vsIn.UV;
@@ -349,6 +442,10 @@ float ambient = 0.1;
 
         #ifdef sgmat_metalness12_DEFINED
             colorFromMetalness = texture(sgmat_metalness12, finalUV);
+        #endif
+
+        #ifdef sgmat_diffuseRoughness3_DEFINED
+            colorFromRoughness = texture(sgmat_diffuseRoughness3, finalUV);
         #endif
 
         #ifdef sgmat_baseColor8_DEFINED
@@ -364,12 +461,91 @@ float ambient = 0.1;
             colorFromNormalMap = normalize(vsIn.TBN * (colorFromNormalMap * 2.0 - 1.0));
         #endif
 
-        fragColor = colorFromBase;
+        #ifdef sgmat_ambientOcclusion1_DEFINED
+            colorFromAO = texture(sgmat_ambientOcclusion1, finalUV);
+        #endif
+
+        #ifdef sgmat_shininess17_DEFINED
+            colorFromShininess = texture(sgmat_shininess17, finalUV);
+        #endif
+
+        //fragColor = colorFromBase;
         //fragColor = vec4(1.0);
 
         // todo: fix multiple directional lights
         #ifdef DIRECTIONAL_LIGHTS_NUM
-            vec3 finalDiffuse = vec3(0.0);
+            // TODO: make customizable with defines
+            // PBR pipline (using Cook-Torrance BRDF) --------------------
+
+            vec3 viewDir = normalize(viewDirection - vsIn.fragPos);
+
+        // colorFromRoughness.r = AO MAP
+        // colorFromRoughness.g = ROUGHNESS
+        // colorFromRoughness.b = METALNESS
+
+            vec3 albedo = colorFromDiffuse.rgb;
+            float ao = colorFromRoughness.r;
+            float roughness = colorFromRoughness.g * materialRoughnessFactor;
+            float metalness = colorFromRoughness.b * materialMetallicFactor;
+
+            // для формулы Шлика-Френеля
+            vec3 F0 = vec3(0.04);
+            F0 = mix(F0, albedo, metalness);
+
+            //float geomRoughness = ((colorFromRoughness.g + 1.0) * (colorFromRoughness.g + 1.0)) / 8.0;
+
+            vec3 lo = vec3(0.0);
+            for(int i = 0; i < DIRECTIONAL_LIGHTS_NUM; i++)
+            {
+                vec3 lightDir = normalize(directionalLights[i].position - vsIn.fragPos);
+                vec3 halfWayDir = normalize(lightDir + viewDir);
+
+                float distance = length(directionalLights[i].position - vsIn.fragPos);
+                float attenuation = 1.0 / (distance * distance);
+                vec3 radiance = directionalLights[i].color.rgb * attenuation * 700.0;
+                //radiance = vec3(1.0);
+
+                // energy brightness coeff (коэфф. энергетической яркости)
+                float ebCoeff = max(dot(colorFromNormalMap, lightDir), 0.0);
+
+                // cooktorrance func: DFG /
+
+                // NDF (normal distribution func)
+                float D = GGXTR(
+                    colorFromNormalMap,
+                    halfWayDir,
+                    roughness
+                );
+                vec3 F = SchlickFresnel(max(dot(halfWayDir, viewDir), 0.0), F0);
+                // geometry function
+                float G = GeometrySmith(colorFromNormalMap, viewDir, lightDir, roughness);
+
+                vec3 diffuse = vec3(1.0) - F;
+                diffuse *= (1.0 - metalness) * materialDiffuseCol.rgb;
+                //diffuse *= max((1.0 - metalness) * materialDiffuseCol.rgb, vec3(115.0 / 255.0, 133.0 / 255.0, 179.0 / 255.0) / 2.0);
+
+                vec3 ctNumerator = D * F * G;
+                float ctDenominator = 4.0 * max(dot(colorFromNormalMap, viewDir), 0.0) * ebCoeff;
+                vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
+
+                lo += (diffuse * albedo.rgb / PI + specular) * radiance * ebCoeff;
+            }
+            vec3 ambient = vec3(0.03) * albedo.rgb * ao;
+            vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
+
+            // HDR standard tonemapper
+            finalCol = finalCol / (finalCol + vec3(1.0));
+            finalCol = pow(finalCol, vec3(1.0 / 2.2));
+
+            fragColor.a = colorFromBase.a;
+            fragColor.rgb = finalCol;
+
+            // blinn-phong pipeline  -----------------------------
+
+            //fragColor.rgb *= materialAmbientCol.rgb + ggxtrAccum * geomSmithAccum;
+            // ----------------------------------
+
+            /*vec3 finalDiffuse = vec3(0.0);
             vec3 finalSpecular = vec3(0.0);
 
             vec3 intermediateDiffuse = vec3(0.0);
@@ -377,7 +553,7 @@ float ambient = 0.1;
 
             for(int i = 0; i < DIRECTIONAL_LIGHTS_NUM; i++)
             {
-                calculateDiffuseAndSpecularColor(
+                BlinnPhong_calculateDiffuseAndSpecularColor(
                     colorFromNormalMap,
                     directionalLights[i].position,
                     vsIn.fragPos,
@@ -390,9 +566,8 @@ float ambient = 0.1;
                 finalSpecular += intermediateSpecular;
             }
 
-            fragColor.rgb *= vec3(ambient) + (finalDiffuse * colorFromDiffuse.rgb) + finalSpecular;
             fragColor.a = colorFromDiffuse.a;
-            //fragColor.rgb *= vec3(ambient) + (finalDiffuse) + finalSpecular;
+            fragColor.rgb = colorFromBase.rgb * (materialAmbientCol.rgb + finalDiffuse + finalSpecular);*/
         #endif
 
         #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
@@ -409,6 +584,7 @@ float ambient = 0.1;
             }
         #endif
 
-        fragColor.rgb = ACESFilm(fragColor.rgb);
+        //fragColor.rgb = vec3(colorFromRoughness.b);
+        //fragColor.rgb = ACESFilm(fragColor.rgb);
     }
 #endif

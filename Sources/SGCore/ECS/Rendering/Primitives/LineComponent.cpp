@@ -1,7 +1,7 @@
 #include "LineComponent.h"
 
 #include "SGCore/Memory/Assets/ShaderAsset.h"
-#include "SGCore/Graphics/GraphicsFilesResourcesManager.h"
+#include "SGCore/Graphics/Defines.h"
 #include "SGCore/Main/CoreMain.h"
 
 Core::ECS::LineComponent::LineComponent() noexcept
@@ -55,7 +55,7 @@ void Core::ECS::LineComponent::setVertexPosition
     float curY;
     float curZ;
 
-    m_mesh->getVertexNormal(vertexIdx, curX, curY, curZ);
+    m_mesh->getVertexPosition(vertexIdx, curX, curY, curZ);
 
     if(x != curX || y != curY || z != curZ)
     {

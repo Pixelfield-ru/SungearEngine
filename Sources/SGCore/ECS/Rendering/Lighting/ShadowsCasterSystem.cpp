@@ -84,11 +84,17 @@ void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_pt
 
         if(!transformComponent || !meshComponent || sceneEntity->getComponent<SkyboxComponent>()) continue;
 
+        //auto lastFacesCullingType = meshComponent->m_facesCullingFaceType;
+        //auto lastFacesCullingPolygonsOrder = meshComponent->m_facesCullingPolygonsOrder;
         meshComponent->m_mesh->m_material->setCurrentShader(SGMAT_SHADOW_GEN_SHADER_NAME);
+        //meshComponent->m_facesCullingFaceType = SGFaceType::SGG_FRONT_FACE;
+        //meshComponent->m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
 
         Core::Main::CoreMain::getRenderer().renderMesh(transformComponent, meshComponent);
 
         meshComponent->m_mesh->m_material->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
+        //meshComponent->m_facesCullingFaceType = lastFacesCullingType;
+        //meshComponent->m_facesCullingPolygonsOrder = lastFacesCullingPolygonsOrder;
     }
 
     shadowsCasterComponent->m_frameBuffer->bind()->unbind();

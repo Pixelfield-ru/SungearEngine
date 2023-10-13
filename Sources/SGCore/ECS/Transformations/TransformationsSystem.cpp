@@ -5,6 +5,11 @@
 #include "TransformationsSystem.h"
 #include "TransformComponent.h"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/quaternion_transform.hpp"
+#include "glm/gtx/rotate_vector.hpp"
+#include "glm/ext/quaternion_common.hpp"
+#include "glm/detail/type_quat.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
@@ -27,15 +32,49 @@ void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
     // checking rotation for changes. if changed then update
     if(transformComponent->m_lastRotation != transformComponent->m_rotation)
     {
+        // todo:fix rotation
+        /*glm::quat rotQuat = glm::angleAxis(
+                              -glm::radians(transformComponent->m_rotation.x - transformComponent->m_lastRotation.x),
+                              glm::vec3(1, 0, 0));
+        rotQuat *= glm::angleAxis(
+                              -glm::radians(transformComponent->m_rotation.y - transformComponent->m_lastRotation.y),
+                              glm::vec3(0, 1, 0));
+        rotQuat *= glm::angleAxis(
+                              -glm::radians(transformComponent->m_rotation.z - transformComponent->m_lastRotation.z),
+                              glm::vec3(0, 0, 1));*/
+
+        const float rotDifX = transformComponent->m_rotation.x - transformComponent->m_lastRotation.x;
+        const float rotDifY = transformComponent->m_rotation.y - transformComponent->m_lastRotation.y;
+        const float rotDifZ = transformComponent->m_rotation.z - transformComponent->m_lastRotation.z;
+
         transformComponent->m_rotationMatrix = glm::rotate(transformComponent->m_rotationMatrix,
-                                                           -glm::radians(transformComponent->m_rotation.x - transformComponent->m_lastRotation.x),
+                                                           -glm::radians(rotDifX),
                                                            glm::vec3(1, 0, 0));
+
         transformComponent->m_rotationMatrix = glm::rotate(transformComponent->m_rotationMatrix,
-                                                           -glm::radians(transformComponent->m_rotation.y - transformComponent->m_lastRotation.y),
+                                                           -glm::radians(rotDifY),
                                                            glm::vec3(0, 1, 0));
         transformComponent->m_rotationMatrix = glm::rotate(transformComponent->m_rotationMatrix,
-                                                           -glm::radians(transformComponent->m_rotation.z - transformComponent->m_lastRotation.z),
+                                                           -glm::radians(rotDifZ),
                                                            glm::vec3(0, 0, 1));
+
+        // rotating directions vectors
+        transformComponent->m_left = glm::rotate(transformComponent->m_left,
+                                                 -glm::radians(rotDifY), glm::vec3(0, 1, 0));
+        transformComponent->m_left = glm::rotate(transformComponent->m_left,
+                                                 -glm::radians(rotDifZ), glm::vec3(0, 0, 1));
+
+        transformComponent->m_forward = glm::rotate(transformComponent->m_forward,
+                                                    -glm::radians(rotDifX), glm::vec3(1, 0, 0));
+        transformComponent->m_forward = glm::rotate(transformComponent->m_forward,
+                                                    -glm::radians(rotDifY), glm::vec3(0, 1, 0));
+
+        transformComponent->m_up = glm::rotate(transformComponent->m_up,
+                                               -glm::radians(rotDifX), glm::vec3(1, 0, 0));
+        transformComponent->m_up = glm::rotate(transformComponent->m_up,
+                                               -glm::radians(rotDifZ), glm::vec3(0, 0, 1));
+
+        //transformComponent->m_rotationMatrix = glm::toMat4(rotQuat);
 
         transformComponent->m_lastRotation = transformComponent->m_rotation;
 

@@ -7,9 +7,10 @@
 void Core::Graphics::IShader::addShaderDefines(const SGShaderDefineType& shaderDefineType,
                                                const std::vector<ShaderDefine>& shaderDefines)
 {
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
+
     for(auto& shaderDefine : shaderDefines)
     {
-        auto& shaderTypedDefines = m_defines[shaderDefineType];
         if(std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine) != shaderTypedDefines.end()) return;
 
         shaderTypedDefines.push_back(shaderDefine);

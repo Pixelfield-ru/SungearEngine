@@ -338,6 +338,12 @@ void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, cons
     glUniform4f(vecLoc, vec.x, vec.y, vec.z, vec.w);
 }
 
+void Core::Graphics::GL46Shader::useFloat(const std::string& uniformName, const float& f)
+{
+    int fLoc = getShaderUniformLocation(uniformName);
+    glUniform1f(fLoc, f);
+}
+
 /*
 Core::Graphics::API::GL46::GL46Shader& Core::Graphics::API::GL46::GL46Shader::operator=(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
 {

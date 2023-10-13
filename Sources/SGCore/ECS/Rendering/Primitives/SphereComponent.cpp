@@ -1,7 +1,7 @@
 #include "SphereComponent.h"
 
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Graphics/GraphicsFilesResourcesManager.h"
+#include "SGCore/Graphics/Defines.h"
 
 Core::ECS::SphereComponent::SphereComponent()
 {

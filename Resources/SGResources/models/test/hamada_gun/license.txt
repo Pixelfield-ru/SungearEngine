@@ -1,0 +1,11 @@
+Model Information:
+* title:	Hamada 7.65mm Handgun
+* source:	https://sketchfab.com/3d-models/hamada-765mm-handgun-811fbfc03f6147f3a6a7edf264b88cd5
+* author:	creationwasteland (https://sketchfab.com/creationwasteland)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Hamada 7.65mm Handgun" (https://sketchfab.com/3d-models/hamada-765mm-handgun-811fbfc03f6147f3a6a7edf264b88cd5) by creationwasteland (https://sketchfab.com/creationwasteland) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

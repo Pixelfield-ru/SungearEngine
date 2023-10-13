@@ -1,5 +1,6 @@
 #include "../uniform_bufs_decl.glsl"
 #include "../color_correction/aces.glsl"
+#include "../disks.glsl"
 
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;

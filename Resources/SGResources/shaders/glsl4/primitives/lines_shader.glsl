@@ -1,5 +1,3 @@
-#define FRAGMENT_SHADER
-
 #define PI 3.14
 
 #include "../uniform_bufs_decl.glsl"
@@ -11,7 +9,28 @@
 
     void main()
     {
-        gl_Position = projectionMatrix * viewMatrix * objectModelMatrix * vec4(offset + verticesPositions[gl_VertexID], 1.0);
+        #if defined(SG_TRANSLATE_WITH_OBJECT) && defined(SG_ROTATE_WITH_OBJECT) && defined(SG_SCALE_WITH_OBJECT)
+            gl_Position = projectionMatrix * viewMatrix * objectModelMatrix * vec4(offset + verticesPositions[gl_VertexID], 1.0);
+        #else
+            mat4 newObjModelMatrix;
+
+            #ifdef SG_TRANSLATE_WITH_OBJECT
+                newObjModelMatrix[0] = vec4(1.0, 0.0, 0.0, 0.0);
+                newObjModelMatrix[1] = vec4(0.0, 1.0, 0.0, 0.0);
+                newObjModelMatrix[2] = vec4(0.0, 0.0, 1.0, 0.0);
+                newObjModelMatrix[3] = vec4(objectPosition, 1.0);
+            #endif
+
+            #ifdef SG_ROTATE_WITH_OBJECT
+
+            #endif
+
+            #ifdef SG_SCALE_WITH_OBJECT
+
+            #endif
+
+            gl_Position = projectionMatrix * viewMatrix * newObjModelMatrix * vec4(offset + verticesPositions[gl_VertexID], 1.0);
+        #endif
     }
 #endif
 

@@ -6,6 +6,7 @@
 
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/Utils/AssimpUtils.h"
 
 std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::load(const std::string& path)
 {
@@ -37,6 +38,15 @@ std::shared_ptr<Core::ImportedScene::Node> Core::Memory::Assets::ModelAsset::pro
 {
     std::shared_ptr<ImportedScene::Node> sgNode = std::make_shared<ImportedScene::Node>();
     sgNode->m_name = aiNode->mName.data;
+
+    aiVector3D position;
+    aiQuaternion rotationQ;
+    aiVector3D scale;
+    aiNode->mTransformation.Decompose(scale, rotationQ, position);
+
+    sgNode->m_position = { position.x, position.y, position.z };
+    sgNode->m_rotationQuaternion = { rotationQ.w, rotationQ.x, rotationQ.y, rotationQ.z };
+    sgNode->m_scale = { scale.x, scale.y, scale.z };
 
     // process all meshes in node
     for(unsigned int i = 0; i < aiNode->mNumMeshes; i++)
@@ -121,8 +131,48 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
         // get current mesh material
         auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
 
-        aiVector3D dif;
-        aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, dif);
+        aiColor4D diffuseColor;
+        aiColor4D specularColor;
+        aiColor4D ambientColor;
+        aiColor4D emissionColor;
+        float shininess;
+        float metallic;
+        float roughness;
+
+        if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) == AI_SUCCESS)
+        {
+            sgMesh->m_material->m_diffuseColor = Utils::AssimpUtils::aiVectorToGLM(diffuseColor);
+        }
+
+        if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_SPECULAR, &specularColor) == AI_SUCCESS)
+        {
+            sgMesh->m_material->m_specularColor = Utils::AssimpUtils::aiVectorToGLM(specularColor);
+        }
+
+        if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_AMBIENT, &ambientColor) == AI_SUCCESS)
+        {
+            sgMesh->m_material->m_ambientColor = Utils::AssimpUtils::aiVectorToGLM(ambientColor);
+        }
+
+        if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissionColor) == AI_SUCCESS)
+        {
+            sgMesh->m_material->m_emissionColor = Utils::AssimpUtils::aiVectorToGLM(emissionColor);
+        }
+
+        if(aiGetMaterialFloat(aiMat, AI_MATKEY_SHININESS, &shininess) == AI_SUCCESS)
+        {
+            sgMesh->m_material->m_shininess = shininess;
+        }
+
+        if(aiGetMaterialFloat(aiMat, AI_MATKEY_METALLIC_FACTOR, &metallic) == AI_SUCCESS)
+        {
+            sgMesh->m_material->m_metallicFactor = metallic;
+        }
+
+        if(aiGetMaterialFloat(aiMat, AI_MATKEY_ROUGHNESS_FACTOR, &roughness) == AI_SUCCESS)
+        {
+            sgMesh->m_material->m_roughnessFactor = roughness;
+        }
 
         sgMesh->m_material->m_name = aiMat->GetName().data;
 

@@ -4,6 +4,7 @@
 #include "SphereComponent.h"
 #include "glm/gtx/rotate_vector.hpp"
 #include "BoxComponent.h"
+#include "SGCore/Graphics/Defines.h"
 
 void Core::ECS::PrimitivesUpdaterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene,
                                                 const std::shared_ptr<Core::ECS::Entity>& entity)
@@ -15,6 +16,56 @@ void Core::ECS::PrimitivesUpdaterSystem::FPSRelativeFixedUpdate(const std::share
         const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
 
         if (!materialShader) continue;
+
+        // ----------------------- checking for transformations flags changed
+
+        if(primitiveComponent->m_followEntityTRS != primitiveComponent->m_lastFollowEntityTRS)
+        {
+            materialShader->setAssetModifiedChecking(false);
+
+            if(primitiveComponent->m_followEntityTRS.x)
+            {
+                materialShader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                 { Graphics::ShaderDefine(SG_TRANSLATE_WITH_OBJECT, "") });
+            }
+            else
+            {
+                materialShader->removeShaderDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                   SG_TRANSLATE_WITH_OBJECT);
+            }
+
+            // ---------------
+
+            if(primitiveComponent->m_followEntityTRS.y)
+            {
+                materialShader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                 { Graphics::ShaderDefine(SG_ROTATE_WITH_OBJECT, "") });
+            }
+            else
+            {
+                materialShader->removeShaderDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                   SG_ROTATE_WITH_OBJECT);
+            }
+
+            // ---------------
+
+            if(primitiveComponent->m_followEntityTRS.z)
+            {
+                materialShader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                 { Graphics::ShaderDefine(SG_SCALE_WITH_OBJECT, "") });
+            }
+            else
+            {
+                materialShader->removeShaderDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                   SG_SCALE_WITH_OBJECT);
+            }
+
+            materialShader->setAssetModifiedChecking(true);
+
+            primitiveComponent->m_lastFollowEntityTRS = primitiveComponent->m_followEntityTRS;
+        }
+
+        // -------------------------------
 
         materialShader->bind();
 
@@ -37,6 +88,8 @@ void Core::ECS::PrimitivesUpdaterSystem::FPSRelativeFixedUpdate(const std::share
 
             primitiveComponent->m_lastColor = primitiveComponent->m_color;
         }
+
+        // ------------------- individual for every primitive component
 
         auto sphereComponent = std::dynamic_pointer_cast<SphereComponent>(primitiveComponent);
 

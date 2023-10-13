@@ -1,6 +1,6 @@
 #include "BoxComponent.h"
 
-#include "SGCore/Graphics/GraphicsFilesResourcesManager.h"
+#include "SGCore/Graphics/Defines.h"
 #include "SGCore/Main/CoreMain.h"
 
 Core::ECS::BoxComponent::BoxComponent()

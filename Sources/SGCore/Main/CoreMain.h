@@ -1,7 +1,3 @@
-//
-// Created by stuka on 17.04.2023.
-//
-
 #ifndef NATIVECORE_COREMAIN_H
 #define NATIVECORE_COREMAIN_H
 
@@ -34,8 +30,6 @@ namespace Core::Main
 
         static void FPSNotRelativeFixedUpdate();
         static void FPSRelativeFixedUpdate();
-
-        static void deltaUpdate(const long double&);
 
         static Window& getWindow() noexcept;
 

@@ -90,11 +90,6 @@ void Core::Main::CoreMain::FPSRelativeFixedUpdate()
     m_window.pollEvents();
 }
 
-void Core::Main::CoreMain::deltaUpdate(const long double& deltaTime)
-{
-
-}
-
 Core::Main::Window& Core::Main::CoreMain::getWindow() noexcept
 {
     return m_window;

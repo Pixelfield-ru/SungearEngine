@@ -14,7 +14,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Main/CoreMain.h"
 
-#include "SGCore/Graphics/GraphicsFilesResourcesManager.h"
+#include "SGCore/Graphics/Defines.h"
 #include "SGCore/Memory/Assets/ShaderAsset.h"
 
 namespace Core::Graphics

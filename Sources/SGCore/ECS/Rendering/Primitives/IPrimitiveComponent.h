@@ -14,9 +14,11 @@ namespace Core::ECS
         friend class PrimitivesUpdaterSystem;
 
     public:
-        bool m_translateWithEntity = true;
-        bool m_rotateWithEntity = true;
-        bool m_scaleWithEntity = true;
+        // will primitive component follow entity`s translation, rotation and scale
+        // x - follow translation
+        // y - follow rotation
+        // z - follow scale
+        glm::bvec3 m_followEntityTRS = glm::vec3 { true, true, true };
 
         glm::vec4 m_color { 1.0, 0.0, 0.0, 1.0 };
 
@@ -29,9 +31,7 @@ namespace Core::ECS
         std::shared_ptr<ImportedScene::IMesh> m_mesh;
 
     protected:
-        bool m_lastTranslateWithEntity = false;
-        bool m_lastRotateWithEntity = false;
-        bool m_lastScaleWithEntity = false;
+        glm::bvec3 m_lastFollowEntityTRS = glm::vec3 { false, false, false };
 
         glm::vec4 m_lastColor;
 

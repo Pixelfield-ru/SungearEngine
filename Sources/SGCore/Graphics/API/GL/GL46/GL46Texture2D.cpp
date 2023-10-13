@@ -49,7 +49,7 @@ void Core::Graphics::GL46Texture2D::create(std::weak_ptr<Memory::Assets::Texture
     glTextureParameteri(m_handler, GL_GENERATE_MIPMAP, GL_TRUE);
 
     glTextureParameteri(m_handler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTextureParameteri(m_handler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(m_handler, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
     glTextureStorage2D(m_handler, 1, m_glInternalFormat, originalSharedPtr->getWidth(), originalSharedPtr->getHeight());
     glTextureSubImage2D(m_handler,

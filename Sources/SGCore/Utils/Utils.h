@@ -1,7 +1,3 @@
-//
-// Created by stuka on 07.06.2023.
-//
-
 #ifndef SUNGEARENGINE_UTILS_H
 #define SUNGEARENGINE_UTILS_H
 

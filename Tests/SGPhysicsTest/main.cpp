@@ -102,6 +102,10 @@ std::shared_ptr<Core::ECS::Entity> testShadowsCaster;
 std::shared_ptr<Core::ECS::SphereComponent> sphereComponent;
 std::shared_ptr<Core::ECS::BoxComponent> boxComponent;
 
+std::shared_ptr<Core::ECS::LineComponent> lineLeftComponent;
+std::shared_ptr<Core::ECS::LineComponent> lineForwardComponent;
+std::shared_ptr<Core::ECS::LineComponent> lineUpComponent;
+
 void init()
 {
     testScene = std::make_shared<Core::ECS::Scene>();
@@ -246,12 +250,28 @@ void init()
     shadowsCasterTransform->m_position.y = 25;
     shadowsCasterTransform->m_position.z = 20.0;
     shadowsCasterTransform->m_position.x = 0.0;
-    shadowsCasterTransform->m_rotation.x = 50;
+    //shadowsCasterTransform->m_rotation.x = 50;
     //shadowsCasterTransform->m_rotation.y = -90;
     sphereComponent = std::make_shared<Core::ECS::SphereComponent>();
     sphereComponent->m_color.y = 1.0f;
     auto sphereComponent1 = std::make_shared<Core::ECS::SphereComponent>();
     boxComponent = std::make_shared<Core::ECS::BoxComponent>();
+
+    lineLeftComponent = std::make_shared<Core::ECS::LineComponent>();
+    lineForwardComponent = std::make_shared<Core::ECS::LineComponent>();
+    lineUpComponent = std::make_shared<Core::ECS::LineComponent>();
+
+    lineLeftComponent->m_followEntityTRS.y = false;
+
+    lineForwardComponent->m_followEntityTRS.y = false;
+
+    lineForwardComponent->m_color.x = 0.0f;
+    lineForwardComponent->m_color.z = 1.0f;
+
+    lineUpComponent->m_followEntityTRS.y = false;
+
+    lineUpComponent->m_color.x = 0.0f;
+    lineUpComponent->m_color.y = 1.0f;
 
     boxComponent->m_offset.z = -7.5f;
     boxComponent->m_size.x = boxComponent->m_size.y = 1.0f;
@@ -270,6 +290,10 @@ void init()
     testShadowsCaster->addComponent(sphereComponent);
     testShadowsCaster->addComponent(boxComponent);
 
+    testShadowsCaster->addComponent(lineLeftComponent);
+    testShadowsCaster->addComponent(lineForwardComponent);
+    testShadowsCaster->addComponent(lineUpComponent);
+
     physicsInit();
 }
 
@@ -280,7 +304,50 @@ void FPSNotRelativeFixedUpdate()
     //boxComponent->m_size.z += sin(framesCnt / 75.0) / 10.0;
     //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += sin(framesCnt / 75.0) / 2.0;
 
-    testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += 0.3f;
+    const auto& scTransformComponent = testShadowsCaster->getComponent<Core::ECS::TransformComponent>();
+
+    auto& shadowCasterRot = scTransformComponent->m_rotation;
+    auto& shadowCasterPos = scTransformComponent->m_position;
+    auto& cameraPos = testCameraEntity->getComponent<Core::ECS::TransformComponent>()->m_position;
+
+    //auto dotProduct = glm::dot(shadowCasterPos, cameraPos);
+    lineLeftComponent->setVertexPosition(0, 0.0f, 0.0f, 0.0f);
+    lineLeftComponent->setVertexPosition(1, scTransformComponent->m_left.x,
+                                         scTransformComponent->m_left.y,
+                                         scTransformComponent->m_left.z);
+
+    lineForwardComponent->setVertexPosition(0, 0.0f, 0.0f, 0.0f);
+    lineForwardComponent->setVertexPosition(1, scTransformComponent->m_forward.x,
+                                         scTransformComponent->m_forward.y,
+                                         scTransformComponent->m_forward.z);
+
+    lineUpComponent->setVertexPosition(0, 0.0f, 0.0f, 0.0f);
+    lineUpComponent->setVertexPosition(1, scTransformComponent->m_up.x,
+                                         scTransformComponent->m_up.y,
+                                         scTransformComponent->m_up.z);
+
+    //float xRotation = cameraPos.z != 0.0f ? atan(cameraPos.y / cameraPos.z) - atan(shadowCasterPos.y / shadowCasterPos.z) : 0.0f;
+    //float yRotation = cameraPos.z != 0.0f ? atan(cameraPos.x / cameraPos.z) : 0.0f;
+    //float zRotation = cameraPos.z != 0.0f ? cameraPos.y / cameraPos.z : 0.0f;
+    glm::vec3 distance = shadowCasterPos - cameraPos;
+
+    float xRotation = atan2(distance.y, distance.z);
+    float yRotation = atan2(distance.z, distance.x);
+
+    //float xRotation = -atan2(distance.y, sqrt(distance.x * distance.x + distance.z * distance.z));
+    //float yRotation = atan2(distance.x, distance.z);
+    /*float xRotation = acos(dot(glm::normalize(glm::vec3(0.0f, cameraPos.y, cameraPos.z)),
+                               glm::normalize(glm::vec3(0.0f, shadowCasterPos.y, shadowCasterPos.z))));*/
+
+    // всё топ, это работает, но нужно сделать вращение вокруг глобальных координат
+    shadowCasterRot.x = glm::degrees(xRotation);
+    shadowCasterRot.y = glm::degrees(yRotation) - 90.0f;
+   // shadowCasterRot.y = glm::degrees(yRotation);
+    //shadowCasterRot.z = glm::degrees(zRotation);
+    //shadowCasterRot.x += 0.5;
+
+    SGC_INFO("SCR: " + std::to_string(shadowCasterRot.x) + ", " +
+    std::to_string(shadowCasterRot.y) + ", " + std::to_string(shadowCasterRot.z));
 
     Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(Core::ECS::Scene::getCurrentScene());
 

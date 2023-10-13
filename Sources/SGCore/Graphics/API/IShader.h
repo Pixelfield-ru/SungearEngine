@@ -79,16 +79,19 @@ namespace Core::Graphics
         virtual void useVectorf(const std::string& uniformName, const glm::vec3& vec) { };
         virtual void useVectorf(const std::string& uniformName, const glm::vec4& vec) { };
 
+        virtual void useFloat(const std::string& uniformName, const float& f) { };
+
         #pragma endregion
 
         #pragma region Operators
         IShader& operator=(const IShader&) noexcept;
         #pragma endregion
 
+        std::weak_ptr<Memory::Assets::FileAsset> m_fileAsset;
+
     protected:
         std::map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
 
-        std::weak_ptr<Memory::Assets::FileAsset> m_fileAsset;
     };
     //class IUniformType
 }

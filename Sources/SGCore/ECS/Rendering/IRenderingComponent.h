@@ -30,11 +30,6 @@ namespace Core::ECS
         glm::mat4 m_projectionMatrix = glm::perspective<float>(glm::radians(m_fov), m_aspect, m_zNear, m_zFar);
         glm::mat4 m_viewMatrix = glm::mat4(1);
 
-        // todo: move in class Math
-        constexpr const static glm::vec3 left = glm::vec3(-1, 0, 0);
-        constexpr const static glm::vec3 forward = glm::vec3(0, 0, 1);
-        constexpr const static glm::vec3 up = glm::vec3(0, 1, 0);
-
     private:
         void init() noexcept override { }
 

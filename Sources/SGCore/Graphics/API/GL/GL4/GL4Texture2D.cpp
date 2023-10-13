@@ -56,6 +56,7 @@ void Core::Graphics::GL4Texture2D::create(std::weak_ptr<Memory::Assets::Texture2
     glTexStorage2D(GL_TEXTURE_2D, 1, m_glInternalFormat,
                    assetSharedPtr->getWidth(), assetSharedPtr->getHeight());
 
+    // gl_unsigned_byte may produce SIGSEGV
     glTexSubImage2D(GL_TEXTURE_2D,
                     0,
                     0,

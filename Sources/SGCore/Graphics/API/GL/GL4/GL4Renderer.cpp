@@ -41,7 +41,6 @@ void Core::Graphics::GL4Renderer::init() noexcept
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-
     /*glEnable (GL_ALPHA_TEST);
     glAlphaFunc (GL_GREATER, 0.2);*/
 
@@ -50,11 +49,19 @@ void Core::Graphics::GL4Renderer::init() noexcept
 
     // -------------------------------------
 
+    // TODO: make defines for uniforms names
+
     m_modelMatricesBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
-    m_modelMatricesBuffer->m_blockName = "ObjectMatrices";
+    m_modelMatricesBuffer->m_blockName = "ObjectTransformationData";
     m_modelMatricesBuffer->putUniforms({
-        Core::Graphics::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4)
+        Core::Graphics::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4),
+        Core::Graphics::IShaderUniform("objectPosition", SGGDataType::SGG_FLOAT3),
+        Core::Graphics::IShaderUniform("objectRotation", SGGDataType::SGG_FLOAT3),
+        Core::Graphics::IShaderUniform("objectScale", SGGDataType::SGG_FLOAT3)
     });
+    m_modelMatricesBuffer->putData<float>({ });
+    m_modelMatricesBuffer->putData<float>({ });
+    m_modelMatricesBuffer->putData<float>({ });
     m_modelMatricesBuffer->putData<float>({ });
     m_modelMatricesBuffer->setLayoutLocation(0);
     m_modelMatricesBuffer->prepare();
@@ -72,13 +79,36 @@ void Core::Graphics::GL4Renderer::init() noexcept
     m_viewMatricesBuffer->setLayoutLocation(1);
     m_viewMatricesBuffer->prepare();
 
+    m_materialDataBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
+    m_materialDataBuffer->m_blockName = "MaterialData";
+    m_materialDataBuffer->putUniforms({
+        Core::Graphics::IShaderUniform("materialDiffuseCol", SGGDataType::SGG_FLOAT4),
+        Core::Graphics::IShaderUniform("materialSpecularCol", SGGDataType::SGG_FLOAT4),
+        Core::Graphics::IShaderUniform("materialAmbientCol", SGGDataType::SGG_FLOAT4),
+        Core::Graphics::IShaderUniform("materialEmissionCol", SGGDataType::SGG_FLOAT4),
+        Core::Graphics::IShaderUniform("materialTransparentCol", SGGDataType::SGG_FLOAT4),
+        Core::Graphics::IShaderUniform("materialShininess", SGGDataType::SGG_FLOAT),
+        Core::Graphics::IShaderUniform("materialMetallicFactor", SGGDataType::SGG_FLOAT),
+        Core::Graphics::IShaderUniform("materialRoughnessFactor", SGGDataType::SGG_FLOAT)
+                                      });
+    m_materialDataBuffer->putData<float>({ });
+    m_materialDataBuffer->putData<float>({ });
+    m_materialDataBuffer->putData<float>({ });
+    m_materialDataBuffer->putData<float>({ });
+    m_materialDataBuffer->putData<float>({ });
+    m_materialDataBuffer->putData<float>({ });
+    m_materialDataBuffer->putData<float>({ });
+    m_materialDataBuffer->putData<float>({ });
+    m_materialDataBuffer->setLayoutLocation(2);
+    m_materialDataBuffer->prepare();
+
     m_programDataBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
     m_programDataBuffer->m_blockName = "ProgramData";
     m_programDataBuffer->putUniforms({
                                                Core::Graphics::IShaderUniform("windowSize", SGGDataType::SGG_MAT4)
                                        });
     m_programDataBuffer->putData<float>({ });
-    m_programDataBuffer->setLayoutLocation(2);
+    m_programDataBuffer->setLayoutLocation(3);
     m_programDataBuffer->prepare();
 }
 
@@ -202,6 +232,30 @@ void Core::Graphics::GL4Renderer::renderMesh(
     m_modelMatricesBuffer->bind();
     m_modelMatricesBuffer->subData("objectModelMatrix",
                                    glm::value_ptr(transformComponent->m_modelMatrix), 16);
+    m_modelMatricesBuffer->subData("objectPosition",
+                                   glm::value_ptr(transformComponent->m_position), 3);
+    m_modelMatricesBuffer->subData("objectRotation",
+                                   glm::value_ptr(transformComponent->m_rotation), 3);
+    m_modelMatricesBuffer->subData("objectScale",
+                                   glm::value_ptr(transformComponent->m_scale), 3);
+
+    m_materialDataBuffer->bind();
+    m_materialDataBuffer->subData("materialDiffuseCol",
+                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_diffuseColor), 4);
+    m_materialDataBuffer->subData("materialSpecularCol",
+                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_specularColor), 4);
+    m_materialDataBuffer->subData("materialAmbientCol",
+                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_ambientColor), 4);
+    m_materialDataBuffer->subData("materialEmissionCol",
+                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_emissionColor), 4);
+    m_materialDataBuffer->subData("materialTransparentCol",
+                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_transparentColor), 4);
+    m_materialDataBuffer->subData("materialShininess",
+                                         { meshComponent->m_mesh->m_material->m_shininess });
+    m_materialDataBuffer->subData("materialMetallicFactor",
+                                  { meshComponent->m_mesh->m_material->m_metallicFactor });
+    m_materialDataBuffer->subData("materialRoughnessFactor",
+                                  { meshComponent->m_mesh->m_material->m_roughnessFactor });
 
     meshComponent->m_mesh->m_material->bind();
     meshComponent->m_mesh->getVertexArray()->bind();
@@ -209,6 +263,7 @@ void Core::Graphics::GL4Renderer::renderMesh(
     materialShader->useUniformBuffer(m_modelMatricesBuffer);
     materialShader->useUniformBuffer(m_viewMatricesBuffer);
     materialShader->useUniformBuffer(m_programDataBuffer);
+    materialShader->useUniformBuffer(m_materialDataBuffer);
 
     glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(meshComponent->m_mesh->m_drawMode), meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
@@ -229,6 +284,12 @@ void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::Tra
     m_modelMatricesBuffer->bind();
     m_modelMatricesBuffer->subData("objectModelMatrix",
                                    glm::value_ptr(transformComponent->m_modelMatrix), 16);
+    m_modelMatricesBuffer->subData("objectPosition",
+                                   glm::value_ptr(transformComponent->m_position), 3);
+    m_modelMatricesBuffer->subData("objectRotation",
+                                   glm::value_ptr(transformComponent->m_rotation), 3);
+    m_modelMatricesBuffer->subData("objectScale",
+                                   glm::value_ptr(transformComponent->m_scale), 3);
 
     materialShader->useUniformBuffer(m_modelMatricesBuffer);
     materialShader->useUniformBuffer(m_viewMatricesBuffer);

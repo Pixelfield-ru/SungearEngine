@@ -40,6 +40,11 @@ void Core::ECS::DirectionalLightsSystem::FPSRelativeFixedUpdate(const std::share
                             std::to_string(totalDirectionalLights) + "].color",
                             directionalLightComponent->m_color);
 
+                    materialShader->useFloat(
+                            "directionalLights[" +
+                            std::to_string(totalDirectionalLights) + "].intensity",
+                            directionalLightComponent->m_intensity);
+
                     // todo: take into account the type of transformation and the direction of rotation
                     materialShader->useVectorf(
                             "directionalLights[" +

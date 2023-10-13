@@ -45,6 +45,15 @@ namespace Core::Memory::Assets
     public:
         std::string m_name;
 
+        glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
+        glm::vec4 m_specularColor       = glm::vec4(1.0f);
+        glm::vec4 m_ambientColor        = glm::vec4(0.0f);
+        glm::vec4 m_emissionColor       = glm::vec4(1.0f);
+        glm::vec4 m_transparentColor    = glm::vec4(1.0f);
+        float m_shininess               = 32.0f;
+        float m_metallicFactor          = 1.0f;
+        float m_roughnessFactor         = 1.0f;
+
         std::shared_ptr<IMaterial> bind();
         std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::IShader>& otherShader);
 
