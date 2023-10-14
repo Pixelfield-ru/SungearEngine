@@ -38,11 +38,14 @@
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 #include "SGCore/Memory/Assets/CubemapAsset.h"
 #include "SGCore/ECS/Rendering/Primitives/BoxComponent.h"
+#include <imgui/imgui.h>
 
 std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
 
 std::shared_ptr<Core::ECS::Entity> testCameraEntity;
 std::shared_ptr<Core::ECS::Scene> testScene;
+
+ImColor f;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -111,6 +114,10 @@ void init()
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/btr_80a2016/scene.gltf"
+            //"../SGResources/models/test/btr_80/scene.gltf"
+            //"../SGResources/models/test/train_ep20/scene.gltf"
+            //"../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf"
+            //"../SGResources/models/test/stalker/stalk_e/fbx/stalker_1.fbx"
             //"../SGResources/models/test/hamada_gun/scene.gltf"
             //"../SGResources/models/test/ak74/scene.gltf"
             //"../SGResources/models/test/backpack/scene.gltf"
@@ -119,14 +126,14 @@ void init()
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
-            "../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/ak47/scene.gltf"
             //"../SGResources/models/test/pavlov/scene.gltf"
             //"../SGResources/models/test/kv2/scene.gltf"
             //"../SGResources/models/test/Putin/scene.gltf"
             //"../SGResources/models/test/Russia_flag/scene.gltf"
-            //"../SGResources/models/test/old_building/scene.gltf"
+            "../SGResources/models/test/old_building/scene.gltf"
             //"../SGResources/models/test/cathedral/scene.gltf"
             //"../SGResources/models/test/stierlitz/scene.gltf"
             //"../SGResources/models/test/panelka/scene.gltf"
@@ -180,10 +187,10 @@ void init()
                           { 0.2, 0.2, 0.2 }, btrEntities);*/
 
         // for uaz
-        processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);
-        /*processLoadedNode(node, { 100.0, -0.5f, 0 }, { 0, 0, 0 },
-                          { 0.5, 0.5, 0.5 }, btrEntities);*/
+        /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
+        processLoadedNode(node, { 0.0, -3.0, -20 }, { 90, 0, 0 },
+                          { 0.01, 0.01, 0.01 }, btrEntities);
         /*processLoadedNode(node, { 0, -1, -20 }, { 90, 0, 90 },
                           { 0.025, 0.025, 0.025 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1, -20 }, { 0, -90, 0 },
@@ -345,11 +352,6 @@ void FPSRelativeFixedUpdate()
 
 
 // --------------------------------------------
-
-void deltaUpdate(const double& deltaTime)
-{
-    //Core::ECS::ECSWorld::deltaUpdate(Core::ECS::Scene::getCurrentScene(), deltaTime);
-}
 
 int main()
 {

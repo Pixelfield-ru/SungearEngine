@@ -11,21 +11,23 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 #set(BUILD_SHARED_LIBS ON)
 
 # projects --------------------
-SET(SG_SOURCES_PROJ Sources)
-SET(SG_CORE_PROJ SGCore)
-SET(SG_EDITOR_PROJ SGEditor)
-SET(SG_CONSOLE_PROJ SGConsole)
-SET(SG_CONSOLE_API_PROJ SGConsoleAPI)
-SET(SG_CONSOLE_APP_PROJ SGConsoleApp)
+set(SG_SOURCES_PROJ Sources)
+set(SG_CORE_PROJ SGCore)
+set(SG_EDITOR_PROJ SGEditor)
+set(SG_CONSOLE_PROJ SGConsole)
+set(SG_CONSOLE_API_PROJ SGConsoleAPI)
+set(SG_CONSOLE_APP_PROJ SGConsoleApp)
 
-SET(SG_TESTS_PROJ Tests)
-SET(SG_PHYS_TEST_PROJ SGPhysicsTest)
+set(SG_TESTS_PROJ Tests)
+set(SG_PHYS_TEST_PROJ SGPhysicsTest)
 
 # libs ------------------------
-SET(SG_CORE_DLL ${CMAKE_BINARY_DIR}/lib/${SG_CORE_PROJ}d.dll)
+set(SG_CORE_DLL ${CMAKE_BINARY_DIR}/lib/${SG_CORE_PROJ}d.dll)
 
-SET(SG_PHYS_TEST_BIN ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ})
-SET(SG_EDITOR_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
+set(SG_SOURCES_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ})
+set(SG_TESTS_BIN ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ})
+set(SG_PHYS_TEST_BIN ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ})
+set(SG_EDITOR_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
 
 # -----------------------------
 
@@ -33,22 +35,35 @@ SET(SG_EDITOR_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
 set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static -Wl,-allow-multiple-definition")
 set(CMAKE_BUILD_TYPE "Debug")
 
+# options --------------------------
+
+# TODO: make SG_BUILD_EDITOR
+set(SG_BUILD_TESTS OFF)
+
+set(SG_RESOURCES_COPY_MODELS OFF)
+set(SG_RESOURCES_COPY_SHADERS ON)
+set(SG_RESOURCES_COPY_TEXTURES OFF)
+
+# ----------------------------------
+
 include_directories(${JNI_INCLUDE_DIRS} ${_classDir} ${_stubDir})
 
 add_subdirectory(syslibs)
 add_subdirectory(Externals)
 add_subdirectory(Sources)
-add_subdirectory(Tests)
+if(${SG_BUILD_TESTS})
+    add_subdirectory(Tests)
+endif()
 add_subdirectory(Resources)
 
 # move all necessary dlls to target exes ------------------
 
-IF(EXISTS ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll)
+if(EXISTS ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll)
     file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll DESTINATION ${SG_PHYS_TEST_BIN})
     file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll DESTINATION ${SG_EDITOR_BIN})
-ENDIF ()
+endif()
 
-IF(EXISTS ${CMAKE_BINARY_DIR}/lib/glfw3d.dll)
+if(EXISTS ${CMAKE_BINARY_DIR}/lib/glfw3d.dll)
     file(COPY ${CMAKE_BINARY_DIR}/lib/glfw3d.dll DESTINATION ${SG_PHYS_TEST_BIN})
     file(COPY ${CMAKE_BINARY_DIR}/lib/glfw3d.dll DESTINATION ${SG_EDITOR_BIN})
-ENDIF ()
+endif()

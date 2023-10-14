@@ -225,14 +225,14 @@ float ambient = 0.1;
             return 1.0;
         }
 
-        float ct = dot(normalize(shadowsCasters[shadowsCasterIdx].position -
+        /*float ct = dot(normalize(shadowsCasters[shadowsCasterIdx].position -
         fragPos), normal);
 
         // make customizable
         if(ct < 0.125)
         {
             return 1.0;
-        }
+        }*/
 
         //if(!gl_FrontFacing) normal *= -1;
         /*if(!gl_FrontFacing) normal *= -1;
@@ -250,9 +250,9 @@ float ambient = 0.1;
 
         // PCF ------------------
 
-        float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.35, texelSize, shadowsCasterSpaceFragPos);
+        /*float pcfShadow = calculatePCF(projCoords, shadowsCasterIdx, 0.35, texelSize, shadowsCasterSpaceFragPos);
 
-        return pcfShadow;
+        return pcfShadow;*/
 
         // -----------------------
 
@@ -264,7 +264,7 @@ float ambient = 0.1;
 
         // -----------------------
 
-        /*const float shadowsMinCoeff = 0.55;
+        const float shadowsMinCoeff = 0.55;
         const int samplesNum = 24;
 
         float visibility = 1.0;
@@ -283,7 +283,7 @@ float ambient = 0.1;
             }
         }
 
-        return visibility;*/
+        return visibility;
 
         // VSM (VARIANCE SHADOW MAPPING) -------------------
 
@@ -585,6 +585,6 @@ float ambient = 0.1;
         #endif
 
         //fragColor.rgb = vec3(colorFromRoughness.b);
-        //fragColor.rgb = ACESFilm(fragColor.rgb);
+        fragColor.rgb = ACESFilm(fragColor.rgb);
     }
 #endif

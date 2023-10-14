@@ -27,6 +27,7 @@ add_subdirectory(Assimp)
 add_subdirectory(GLFW)
 add_subdirectory(OpenGL)
 add_subdirectory(GLM)
+add_subdirectory(imgui)
 
 add_subdirectory(bullet3)
 
@@ -37,6 +38,24 @@ SET(BULLET_DYNAMICS_DLL ${CMAKE_BINARY_DIR}/lib/libBulletDynamicsd.dll)
 SET(BULLET_GEOMETRY_DLL ${CMAKE_BINARY_DIR}/lib/libBulletGeometryd.dll)
 SET(BULLET_INVERSE_DYNAMICS_DLL ${CMAKE_BINARY_DIR}/lib/libBulletInverseDynamicsd.dll)
 SET(BULLET_SOFT_BODY_DLL ${CMAKE_BINARY_DIR}/lib/libBulletSoftBodyd.dll)
+
+#[[SET(EXTERNALS_DLLS_PROJ ExternalsDlls)
+
+add_custom_target(${EXTERNALS_DLLS_PROJ})
+
+message(${SG_EDITOR_BIN})
+
+add_custom_command(TARGET ${EXTERNALS_DLLS_PROJ} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll
+        ${SG_EDITOR_BIN}
+)
+
+add_custom_command(TARGET ${EXTERNALS_DLLS_PROJ} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll
+        ${SG_PHYS_TEST_BIN}
+)]]
 
 IF(EXISTS ${BULLET_LINEAR_MATH_DLL})
     file(COPY ${BULLET_LINEAR_MATH_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
