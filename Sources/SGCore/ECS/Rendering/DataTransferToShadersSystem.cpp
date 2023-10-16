@@ -9,10 +9,13 @@
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
 #include "MeshComponent.h"
+#include "SGCore/Utils/Timer.h"
 
 void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene,
                                                                     const std::shared_ptr<Core::ECS::Entity>& entity)
 {
+    double t0 = glfwGetTime();
+
     // THIS SYSTEM USES VARIOUS CACHED DATA (FOR EXAMPLE, DATA FROM ShadowsCasterSystem or DirectionalLightsSystem SYSTEMS)
 
     static const size_t directionalLightsSystemHashCode = typeid(DirectionalLightsSystem).hash_code();
@@ -24,11 +27,18 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
     auto meshComponents = entity->getComponents<MeshComponent>();
 
+    if(meshComponents.empty()) return;
+
     size_t counter = 0;
 
     // DIRECTIONAL LIGHTS ---------------------------------------------------
 
-    const SystemCachedComponents& directionalLightsSystemComponents = ECSWorld::getSystemCachedComponents(directionalLightsSystemHashCode);
+    // TODO: BOTTLE NECK
+    // WITH THIS: 0.676700 MS AVERAGE FOR FPSRelativeFixedUpdate SYSTEMS
+    // WITHOUT THIS: 0.645000 MS AVERAGE FOR FPSRelativeFixedUpdate SYSTEMS
+    auto directionalLightsSystemComponents = ECSWorld::getSystemCachedComponents(directionalLightsSystemHashCode);
+
+    //std::cout << "size: " << std::to_string(ECSWorld::m_cachedComponents.size()) << std::endl;
 
     for(auto& entities : directionalLightsSystemComponents.m_entitiesComponents)
     {
@@ -42,12 +52,12 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
         for(const auto& directionalLight: directionalLightComponents->second)
         {
+            auto* castedDirectionalLight = dynamic_cast<DirectionalLightComponent*>(directionalLight.get());
+
             for(const auto& meshComponent: meshComponents)
             {
                 const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
                 if (!materialShader) continue;
-
-                auto* castedDirectionalLight = dynamic_cast<DirectionalLightComponent*>(directionalLight.get());
 
                 materialShader->bind();
 
@@ -79,7 +89,7 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
     counter = 0;
 
-    const SystemCachedComponents& shadowCastersSystemComponents = ECSWorld::getSystemCachedComponents(shadowsCasterSystemHashCode);
+    auto shadowCastersSystemComponents = ECSWorld::getSystemCachedComponents(shadowsCasterSystemHashCode);
 
     for(auto& entities : shadowCastersSystemComponents.m_entitiesComponents)
     {
@@ -93,12 +103,12 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
         for(const auto& shadowsCaster: shadowsCasterComponents->second)
         {
+            auto* castedShadowsCaster = dynamic_cast<ShadowsCasterComponent*>(shadowsCaster.get());
+
             for(const auto& meshComponent: meshComponents)
             {
                 const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
                 if (!materialShader) continue;
-
-                auto* castedShadowsCaster = dynamic_cast<ShadowsCasterComponent*>(shadowsCaster.get());
 
                 std::uint8_t shadowMapsBlockOffset = meshComponent->
                         m_mesh->
@@ -130,4 +140,10 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
             counter++;
         }
     }
+
+    double t1 = glfwGetTime();
+
+    // 0.020200 ms average
+
+    //std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }

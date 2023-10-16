@@ -49,6 +49,7 @@ namespace Core::Utils
         Timer(const bool& cyclic, const double& destination) noexcept : m_cyclic(cyclic), m_target(destination) { }
 
         void startFrame();
+        //void endFrame();
 
         void reset() noexcept;
 
@@ -58,6 +59,7 @@ namespace Core::Utils
         void removeCallback(const std::shared_ptr<TimerCallback>& callback);
 
         [[nodiscard]] std::uint16_t getFramesPerDestination() const noexcept;
+        double getRawDeltaTime() const noexcept;
     };
 }
 

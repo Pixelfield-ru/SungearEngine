@@ -13,6 +13,7 @@
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
 #include "SGCore/ECS/Rendering/SkyboxRenderingSystem.h"
 #include "SGCore/ECS/Rendering/Primitives/PrimitivesUpdaterSystem.h"
+#include "GLFW/glfw3.h"
 
 void Core::ECS::ECSWorld::init() noexcept
 {
@@ -37,6 +38,8 @@ void Core::ECS::ECSWorld::init() noexcept
 
 void Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
 {
+    double t0 = glfwGetTime();
+
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
@@ -54,10 +57,18 @@ void Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>
             }
         }
     }
+
+    double t1 = glfwGetTime();
+
+    // 0.025100 ms average
+
+    // std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void Core::ECS::ECSWorld::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
 {
+    double t0 = glfwGetTime();
+
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
@@ -75,4 +86,10 @@ void Core::ECS::ECSWorld::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& s
             }
         }
     }
+
+    double t1 = glfwGetTime();
+
+    // 0.895500 ms average !!!!!!!!!!!!!!
+
+    std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }

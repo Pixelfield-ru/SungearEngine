@@ -9,6 +9,11 @@
 #include "Timer.h"
 #include "TimerCallback.h"
 
+// TODO:  FIX rawDeltaTime between two startFrame
+// timer.startFrame();
+// some code...
+// timer.startFrame();
+// timer.getRawDeltaTime() == glfwGetTime() ! NOT CORRECT !
 void Core::Utils::Timer::startFrame()
 {
     if(!m_active) return;
@@ -72,6 +77,7 @@ void Core::Utils::Timer::reset() noexcept
 void Core::Utils::Timer::firstTimeStart()
 {
     m_startTime = glfwGetTime();
+    //m_current = m_startTime;
 
     for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
     {
@@ -92,4 +98,9 @@ void Core::Utils::Timer::removeCallback(const std::shared_ptr<TimerCallback>& ca
 uint16_t Core::Utils::Timer::getFramesPerDestination() const noexcept
 {
     return m_framesPerTarget;
+}
+
+double Core::Utils::Timer::getRawDeltaTime() const noexcept
+{
+    return m_rawDeltaTime;
 }

@@ -5,19 +5,26 @@
 #include "ISystem.h"
 #include "Scene.h"
 #include "SGCore/Utils/Utils.h"
+#include "SGCore/Patterns/UUID.h"
 #include <unordered_map>
 #include <vector>
 
 namespace Core::ECS
 {
-    struct MappedComponents
+    struct MappedComponents : public Patterns::UUID
     {
+        /*void d()
+        {
+            UUID d;
+            bool f = *this == d;
+        }*/
+
         // first - hash of component
         // second - components with this hash
         std::unordered_map<size_t, std::set<std::shared_ptr<IComponent>>> m_components;
     };
 
-    struct SystemCachedComponents
+    struct SystemCachedComponents : public Patterns::UUID
     {
         // first - the entity whose components were cached
         // second - MappedComponents
@@ -38,7 +45,10 @@ namespace Core::ECS
                                    const size_t& componentHashCode,
                                    const std::shared_ptr<ComponentT>& component)
         {
-            m_cachedComponents[systemHashCode].m_entitiesComponents[entity].m_components[componentHashCode].insert(component);
+            m_cachedComponents[systemHashCode]
+                    .m_entitiesComponents[entity]
+                    .m_components[componentHashCode]
+                    .insert(component);
         }
 
         template<typename SystemT, typename... ComponentsT>
@@ -47,26 +57,28 @@ namespace Core::ECS
             size_t systemHashCode = typeid(SystemT).hash_code();
 
             Utils::Utils::forTypes<ComponentsT...>([&entity, &systemHashCode](auto t)
-            {
-                using type = typename decltype(t)::type;
+                                                   {
+                                                       using type = typename decltype(t)::type;
 
-                size_t TComponentHashCode = typeid(type).hash_code();
+                                                       size_t TComponentHashCode = typeid(type).hash_code();
 
-                std::list<std::shared_ptr<type>> components = entity->getComponents<type>();
+                                                       std::list<std::shared_ptr<type>> components = entity->getComponents<type>();
 
-                for(const auto& component : components)
-                {
-                    ECSWorld::cacheComponent(systemHashCode, entity, TComponentHashCode, component);
-                }
-            });
+                                                       for (const auto& component: components)
+                                                       {
+                                                           ECSWorld::cacheComponent(systemHashCode, entity,
+                                                                                    TComponentHashCode, component);
+                                                       }
+                                                   });
         }
 
-        __forceinline static SystemCachedComponents getSystemCachedComponents(const size_t& systemHashCode) noexcept
+        static SystemCachedComponents getSystemCachedComponents(const size_t& systemHashCode) noexcept
         {
             return m_cachedComponents[systemHashCode];
         }
 
         static void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene);
+
         static void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene);
 
         template<typename SystemT>
@@ -81,12 +93,12 @@ namespace Core::ECS
             return newSystem;
         }
 
-    private:
-        static inline std::list<std::shared_ptr<ISystem>> m_systems;
-
-        // first - hash code of component class
+        // first - hash code of system class
         // second - EntityCachedComponents
         static inline std::unordered_map<size_t, SystemCachedComponents> m_cachedComponents;
+
+    private:
+        static inline std::list<std::shared_ptr<ISystem>> m_systems;
     };
 }
 
