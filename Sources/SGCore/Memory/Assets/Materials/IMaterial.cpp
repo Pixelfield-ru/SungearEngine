@@ -214,11 +214,11 @@ void Core::Memory::Assets::IMaterial::setShader
     {
         otherShader->replaceDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
                                     m_shaders[name.data()]);
-    }
 
-    if(foundShaderPair->second == m_currentShader)
-    {
-        m_currentShader = otherShader;
+        if(foundShaderPair->second == m_currentShader)
+        {
+            m_currentShader = otherShader;
+        }
     }
 
     // adding blocks decls and textures in blocks decls to shader if shader haven't been in m_shaders

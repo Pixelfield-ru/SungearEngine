@@ -14,5 +14,7 @@ add_library(${PROJECT_NAME} SHARED ${IMGUI_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ../imgui ../imgui/backends)
 
-file(COPY ${IMGUI_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
-file(COPY ${IMGUI_DLL} DESTINATION ${SG_EDITOR_BIN})
+if(EXISTS ${IMGUI_DLL})
+    file(COPY ${IMGUI_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
+    file(COPY ${IMGUI_DLL} DESTINATION ${SG_EDITOR_BIN})
+endif()

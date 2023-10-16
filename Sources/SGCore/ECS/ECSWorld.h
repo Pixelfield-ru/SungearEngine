@@ -5,7 +5,7 @@
 #include "ISystem.h"
 #include "Scene.h"
 #include "SGCore/Utils/Utils.h"
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 namespace Core::ECS
@@ -14,27 +14,20 @@ namespace Core::ECS
     {
         // first - hash of component
         // second - components with this hash
-        std::map<size_t, std::set<std::shared_ptr<IComponent>>> m_components;
+        std::unordered_map<size_t, std::set<std::shared_ptr<IComponent>>> m_components;
     };
 
     struct SystemCachedComponents
     {
         // first - the entity whose components were cached
         // second - MappedComponents
-        std::map<std::shared_ptr<Entity>, MappedComponents> m_entitiesComponents;
+        std::unordered_map<std::shared_ptr<Entity>, MappedComponents> m_entitiesComponents;
     };
 
     // TODO: add allocator and free for components that will remove component from cached components if free
     // TODO: when the component is free, the allocator will make a signal to the systems that cache this type of components for the recache
     class ECSWorld
     {
-    private:
-        static inline std::list<std::shared_ptr<ISystem>> m_systems;
-
-        // first - hash code of component class
-        // second - EntityCachedComponents
-        static inline std::map<size_t, SystemCachedComponents> m_cachedComponents;
-
     public:
         static void init() noexcept;
 
@@ -87,6 +80,13 @@ namespace Core::ECS
 
             return newSystem;
         }
+
+    private:
+        static inline std::list<std::shared_ptr<ISystem>> m_systems;
+
+        // first - hash code of component class
+        // second - EntityCachedComponents
+        static inline std::unordered_map<size_t, SystemCachedComponents> m_cachedComponents;
     };
 }
 

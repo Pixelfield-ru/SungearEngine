@@ -112,7 +112,7 @@ void init()
             );
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
-            "../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
+            //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/btr_80/scene.gltf"
@@ -137,7 +137,7 @@ void init()
             //"../SGResources/models/test/old_building/scene.gltf"
             //"../SGResources/models/test/cathedral/scene.gltf"
             //"../SGResources/models/test/stierlitz/scene.gltf"
-            //"../SGResources/models/test/panelka/scene.gltf"
+            "../SGResources/models/test/panelka/scene.gltf"
             //"../SGResources/models/test/t55a/scene.gltf"
             //"../SGResources/models/test/rpg7/scene.gltf"
             //"../SGResources/models/test/zucchini/scene.gltf"
