@@ -10,12 +10,15 @@
 #include "glm/ext/quaternion_common.hpp"
 #include "glm/detail/type_quat.hpp"
 #include "glm/gtx/quaternion.hpp"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
 
 void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::shared_ptr<TransformComponent> transformComponent = entity->getComponent<TransformComponent>();
     if(!transformComponent) return;
+
+    //m_firstCycleComponents.push
 
     bool transformationChanged = false;
 

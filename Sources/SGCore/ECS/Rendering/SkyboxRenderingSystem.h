@@ -9,10 +9,10 @@
 
 namespace Core::ECS
 {
-    class SkyboxRenderingSystem : public ISystem
+    /*class SkyboxRenderingSystem : public ISystem
     {
 
-    };
+    };*/
 }
 
 #endif //SUNGEARENGINE_SKYBOXRENDERINGSYSTEM_H

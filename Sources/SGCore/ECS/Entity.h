@@ -20,10 +20,9 @@ namespace Core::ECS
 
     class Entity
     {
-    private:
+    public:
         std::list<std::shared_ptr<IComponent>> m_components;
 
-    public:
         std::string m_name;
 
         std::set<std::shared_ptr<Entity>> m_children;

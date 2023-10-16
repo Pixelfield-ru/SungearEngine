@@ -9,6 +9,7 @@
 
 #include "SGCore/ECS/ISystem.h"
 #include "SGCore/ECS/Transformations/TransformComponent.h"
+#include "SGCore/ECS/Rendering/MeshComponent.h"
 
 namespace Core::ECS
 {

@@ -6,13 +6,14 @@
 #define SUNGEARENGINE_DIRECTIONALLIGHTSSYSTEM_H
 
 #include "SGCore/ECS/ISystem.h"
+#include "DirectionalLightComponent.h"
 
 namespace Core::ECS
 {
     class DirectionalLightsSystem : public ISystem
     {
     public:
-        void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) final;
+        void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
     };
 }
 

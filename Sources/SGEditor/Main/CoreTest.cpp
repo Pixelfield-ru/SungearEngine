@@ -112,6 +112,7 @@ void init()
             );
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+            "../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/btr_80/scene.gltf"
@@ -133,7 +134,7 @@ void init()
             //"../SGResources/models/test/kv2/scene.gltf"
             //"../SGResources/models/test/Putin/scene.gltf"
             //"../SGResources/models/test/Russia_flag/scene.gltf"
-            "../SGResources/models/test/old_building/scene.gltf"
+            //"../SGResources/models/test/old_building/scene.gltf"
             //"../SGResources/models/test/cathedral/scene.gltf"
             //"../SGResources/models/test/stierlitz/scene.gltf"
             //"../SGResources/models/test/panelka/scene.gltf"
@@ -187,10 +188,10 @@ void init()
                           { 0.2, 0.2, 0.2 }, btrEntities);*/
 
         // for uaz
-        /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
-        processLoadedNode(node, { 0.0, -3.0, -20 }, { 90, 0, 0 },
-                          { 0.01, 0.01, 0.01 }, btrEntities);
+        processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);
+        /*processLoadedNode(node, { 0.0, -3.0, -20 }, { 90, 0, 0 },
+                          { 0.01, 0.01, 0.01 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1, -20 }, { 90, 0, 90 },
                           { 0.025, 0.025, 0.025 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1, -20 }, { 0, -90, 0 },

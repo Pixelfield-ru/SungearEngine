@@ -7,6 +7,7 @@
 
 #include "Scene.h"
 #include "SGCore/Patterns/Marker.h"
+#include "Transformations/TransformComponent.h"
 
 namespace Core::ECS
 {
@@ -22,11 +23,11 @@ namespace Core::ECS
     public:
         bool m_active = true;
 
-        virtual void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) { };
-        virtual void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) { };
+        virtual void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) { }
+        virtual void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) { }
 
-        virtual void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { };
-        virtual void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { };
+        virtual void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
+        virtual void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
     };
 }
 
