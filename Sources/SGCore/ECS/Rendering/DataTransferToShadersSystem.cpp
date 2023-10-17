@@ -32,23 +32,19 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
     size_t counter = 0;
 
     // DIRECTIONAL LIGHTS ---------------------------------------------------
-
-    // TODO: BOTTLE NECK
-    // WITH THIS: 0.676700 MS AVERAGE FOR FPSRelativeFixedUpdate SYSTEMS
-    // WITHOUT THIS: 0.645000 MS AVERAGE FOR FPSRelativeFixedUpdate SYSTEMS
-    auto directionalLightsSystemComponents = ECSWorld::getSystemCachedComponents(directionalLightsSystemHashCode);
+    const auto& directionalLightsSystemComponents = ECSWorld::getSystemCachedComponents(directionalLightsSystemHashCode);
 
     //std::cout << "size: " << std::to_string(ECSWorld::m_cachedComponents.size()) << std::endl;
 
     for(auto& entities : directionalLightsSystemComponents.m_entitiesComponents)
     {
-        const auto& directionalLightComponents = entities.second.m_components.find(directionalLightComponentHashCode);
+        /*const auto& directionalLightComponents = entities.second.m_components.find(directionalLightComponentHashCode);
         const auto& transformComponent = entities.second.m_components.find(transformComponentHashCode);
 
         if(directionalLightComponents == entities.second.m_components.cend()) continue;
-        if(transformComponent == entities.second.m_components.cend()) continue;
+        if(transformComponent == entities.second.m_components.cend()) continue;*/
 
-        auto* castedTransformComponent = dynamic_cast<TransformComponent*>(transformComponent->second.begin()->get());
+        /*auto* castedTransformComponent = dynamic_cast<TransformComponent*>(transformComponent->second.begin()->get());
 
         for(const auto& directionalLight: directionalLightComponents->second)
         {
@@ -81,7 +77,7 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
             }
 
             counter++;
-        }
+        }*/
     }
 
     // ----------------------------------------------
@@ -89,17 +85,17 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
     counter = 0;
 
-    auto shadowCastersSystemComponents = ECSWorld::getSystemCachedComponents(shadowsCasterSystemHashCode);
+    const auto& shadowCastersSystemComponents = ECSWorld::getSystemCachedComponents(shadowsCasterSystemHashCode);
 
     for(auto& entities : shadowCastersSystemComponents.m_entitiesComponents)
     {
-        const auto& shadowsCasterComponents = entities.second.m_components.find(shadowsCasterComponentHashCode);
+        /*const auto& shadowsCasterComponents = entities.second.m_components.find(shadowsCasterComponentHashCode);
         const auto& transformComponent = entities.second.m_components.find(transformComponentHashCode);
 
         if(shadowsCasterComponents == entities.second.m_components.cend()) continue;
-        if(transformComponent == entities.second.m_components.cend()) continue;
+        if(transformComponent == entities.second.m_components.cend()) continue;*/
 
-        auto* castedTransformComponent = dynamic_cast<TransformComponent*>(transformComponent->second.begin()->get());
+        /*auto* castedTransformComponent = dynamic_cast<TransformComponent*>(transformComponent->second.begin()->get());
 
         for(const auto& shadowsCaster: shadowsCasterComponents->second)
         {
@@ -138,7 +134,7 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
             }
 
             counter++;
-        }
+        }*/
     }
 
     double t1 = glfwGetTime();

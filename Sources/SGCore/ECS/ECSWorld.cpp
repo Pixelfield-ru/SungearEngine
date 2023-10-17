@@ -91,5 +91,5 @@ void Core::ECS::ECSWorld::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& s
 
     // 0.895500 ms average !!!!!!!!!!!!!!
 
-    std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+    //std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }

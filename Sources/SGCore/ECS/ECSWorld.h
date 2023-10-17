@@ -8,6 +8,7 @@
 #include "SGCore/Patterns/UUID.h"
 #include <unordered_map>
 #include <vector>
+#include <robin_map/include/tsl/robin_map.h>
 
 namespace Core::ECS
 {
@@ -21,14 +22,14 @@ namespace Core::ECS
 
         // first - hash of component
         // second - components with this hash
-        std::unordered_map<size_t, std::set<std::shared_ptr<IComponent>>> m_components;
+        tsl::robin_map<size_t, std::set<std::shared_ptr<IComponent>>> m_components;
     };
 
     struct SystemCachedComponents : public Patterns::UUID
     {
         // first - the entity whose components were cached
         // second - MappedComponents
-        std::unordered_map<std::shared_ptr<Entity>, MappedComponents> m_entitiesComponents;
+        tsl::robin_map<std::shared_ptr<Entity>, MappedComponents> m_entitiesComponents;
     };
 
     // TODO: add allocator and free for components that will remove component from cached components if free
@@ -64,15 +65,17 @@ namespace Core::ECS
 
                                                        std::list<std::shared_ptr<type>> components = entity->getComponents<type>();
 
-                                                       for (const auto& component: components)
+                                                       for(const auto& component: components)
                                                        {
                                                            ECSWorld::cacheComponent(systemHashCode, entity,
-                                                                                    TComponentHashCode, component);
+                                                                                    TComponentHashCode, component
+                                                           );
                                                        }
-                                                   });
+                                                   }
+            );
         }
 
-        static SystemCachedComponents getSystemCachedComponents(const size_t& systemHashCode) noexcept
+        static SystemCachedComponents& getSystemCachedComponents(const size_t& systemHashCode) noexcept
         {
             return m_cachedComponents[systemHashCode];
         }
@@ -95,7 +98,7 @@ namespace Core::ECS
 
         // first - hash code of system class
         // second - EntityCachedComponents
-        static inline std::unordered_map<size_t, SystemCachedComponents> m_cachedComponents;
+        static inline tsl::robin_map<size_t, SystemCachedComponents> m_cachedComponents;
 
     private:
         static inline std::list<std::shared_ptr<ISystem>> m_systems;

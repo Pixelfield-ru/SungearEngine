@@ -10,6 +10,7 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/IAsset.h"
+#include <tsl/robin_map.h>
 
 #define SGMAT_STANDARD_SHADER_NAME      "standardShader"
 #define SGMAT_SHADOW_GEN_SHADER_NAME    "shadowGenShader"
@@ -35,7 +36,7 @@ namespace Core::Memory::Assets
         // Offset for texture block (beginning)
         std::uint8_t m_texturesUnitOffset = 0;
         // Textures of this type. Each of them also contains a path. It is not possible to add two textures with the same path
-        std::unordered_map<std::string, MaterialTexture> m_textures;
+        tsl::robin_map<std::string, MaterialTexture> m_textures;
     };
 
     // TODO: make remove texture
@@ -104,7 +105,7 @@ namespace Core::Memory::Assets
          */
         std::shared_ptr<IMaterial> findAndSetTexture2D(const SGMaterialTextureType& type, const std::string& oldTextureAssetPath, const std::string& newTextureAssetPath);
 
-        auto&& getBlocks()
+        auto& getBlocks()
         {
             return m_blocks;
         }
@@ -123,7 +124,7 @@ namespace Core::Memory::Assets
          */
         std::shared_ptr<Graphics::IShader> getCurrentShader() const noexcept;
 
-        auto&& getShaders()
+        auto& getShaders()
         {
             return m_shaders;
         }
@@ -138,14 +139,14 @@ namespace Core::Memory::Assets
 
     protected:
         // first - shader name
-        std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;
+        tsl::robin_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;
         std::shared_ptr<Graphics::IShader> m_currentShader;
 
         // Blocks of textures that correspond to a specific type of texture
-        std::unordered_map<SGMaterialTextureType, MaterialTexturesBlock> m_blocks;
+        tsl::robin_map<SGMaterialTextureType, MaterialTexturesBlock> m_blocks;
 
         // Textures that could not be added to the material. This collection is used to migrate textures to another material
-        std::unordered_map<SGMaterialTextureType, std::list<std::shared_ptr<Texture2DAsset>>> m_notUsedTextures;
+        tsl::robin_map<SGMaterialTextureType, std::list<std::shared_ptr<Texture2DAsset>>> m_notUsedTextures;
     };
 }
 

@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/common.hpp>
 #include <forward_list>
+#include <cstring>
 
 #include "IShaderUniform.h"
 #include "SGCore/Logging/Log.h"
@@ -78,7 +79,7 @@ namespace Core::Graphics
             for(auto& scalar : scalars)
             {
                 // copying scalar to current position (localPtr)
-                memcpy(localPositionPtr, &scalar, sizeof(scalar));
+                std::memcpy(localPositionPtr, &scalar, sizeof(scalar));
                 localPositionPtr += sizeof(scalar);
             }
 
@@ -146,7 +147,7 @@ namespace Core::Graphics
             for(int i = 0; i < scalarsNum; i++)
             {
                 // copying scalar to current position (uniformScalarPtr)
-                memcpy(uniformScalarPtr, &scalars[i], sizeof(scalars[i]));
+                std::memcpy(uniformScalarPtr, &scalars[i], sizeof(scalars[i]));
                 // offset
                 uniformScalarPtr += sizeof(scalars[i]);
             }

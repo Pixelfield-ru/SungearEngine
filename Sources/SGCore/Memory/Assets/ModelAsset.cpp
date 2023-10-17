@@ -106,7 +106,7 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
 
     for(unsigned i = 0; i < aiMesh->mNumFaces; i++)
     {
-        const aiFace& face = aiMesh->mFaces[i];
+        const auto& face = aiMesh->mFaces[i];
         for(unsigned j = 0; j < face.mNumIndices; j++)
         {
             sgMesh->m_indices.push_back(face.mIndices[j]);

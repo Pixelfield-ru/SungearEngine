@@ -127,7 +127,7 @@ void init()
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
-            "../SGResources/models/test/uaz/scene.gltf"
+             "../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/ak47/scene.gltf"
             //"../SGResources/models/test/pavlov/scene.gltf"

@@ -31,6 +31,8 @@ add_subdirectory(imgui)
 
 add_subdirectory(bullet3)
 
+add_subdirectory(robin_map)
+
 SET(BULLET_LINEAR_MATH_DLL ${CMAKE_BINARY_DIR}/lib/libLinearMathd.dll)
 SET(BULLET_COLLISION_DLL ${CMAKE_BINARY_DIR}/lib/libBulletCollisiond.dll)
 SET(BULLET3_COMMON_DLL ${CMAKE_BINARY_DIR}/lib/libBullet3Commond.dll)

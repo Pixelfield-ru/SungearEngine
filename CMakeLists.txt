@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.22)
 
 project(SungearEngine)
 
@@ -7,6 +7,9 @@ add_definitions(-DSUNGEAR_DEBUG)
 set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fPIC")
 
 #set(BUILD_SHARED_LIBS ON)
 
@@ -22,6 +25,7 @@ set(SG_TESTS_PROJ Tests)
 set(SG_PHYS_TEST_PROJ SGPhysicsTest)
 
 # libs ------------------------
+# TODO: MAKE SG_CORE_STATIC OR SHARED
 set(SG_CORE_DLL ${CMAKE_BINARY_DIR}/lib/${SG_CORE_PROJ}d.dll)
 
 set(SG_SOURCES_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ})
@@ -33,6 +37,9 @@ set(SG_EDITOR_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
 
 # multiple definition because of bullet library
 set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static -Wl,-allow-multiple-definition")
+
+# FOR LINUX
+#set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition")
 set(CMAKE_BUILD_TYPE "Debug")
 
 # options --------------------------
@@ -42,7 +49,7 @@ set(SG_BUILD_TESTS OFF)
 
 set(SG_RESOURCES_COPY_MODELS OFF)
 set(SG_RESOURCES_COPY_SHADERS ON)
-set(SG_RESOURCES_COPY_TEXTURES OFF)
+set(SG_RESOURCES_COPY_TEXTURES OFF )
 
 # ----------------------------------
 

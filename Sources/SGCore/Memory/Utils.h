@@ -9,6 +9,8 @@
 
 #define SG_DELETE(p) { delete p; p = nullptr; }
 
+#ifdef _WIN64
+
 #include <windows.h>
 #include <psapi.h>
 
@@ -19,5 +21,6 @@ namespace Core::Memory::Utils
     void getMegabyteProcessMemUsage(size_t &pagefile_usage, size_t &working_set_size);
 }
 
+#endif
 
 #endif //NATIVECORE_UTILS_H

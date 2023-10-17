@@ -41,7 +41,7 @@ void SGConsole::Console::start() noexcept
 
 }
 
-#elifdef __APPLE__
+#elif defined(__APPLE__)
 
 #include <TargetConditionals.h>
 

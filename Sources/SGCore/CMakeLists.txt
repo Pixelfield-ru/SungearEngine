@@ -1,10 +1,12 @@
  project(${SG_CORE_PROJ})
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")
+     #SET(CMAKE_STATIC_LIBRARY_SUFFIX "")
 
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
 
- add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
+ # STATIC FOR LINUX
+ add_library(${PROJECT_NAME} STATIC ${SGCORE_SOURCES})
 
  target_include_directories(${PROJECT_NAME} PRIVATE
          ${CMAKE_SOURCE_DIR}/Externals
@@ -16,6 +18,7 @@
          ${CMAKE_SOURCE_DIR}/Externals/bullet3/src
          ${Vulkan_INCLUDE_DIR}
          ${CMAKE_SOURCE_DIR}/Sources
+         ${CMAKE_SOURCE_DIR}/Externals/robin_map/include
          #${BULLET_INCLUDE_DIR}
 
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
@@ -29,8 +32,6 @@
          gl46
          ${Vulkan_LIBRARIES}
          assimp
-         wsock32
-         ws2_32
 
          LinearMath
          Bullet3Common
@@ -40,7 +41,17 @@
          BulletSoftBody
 
          ImGui
+
+         tsl::robin_map
          )
+
+ #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)
+
+ if(WIN32)
+     target_link_libraries(${PROJECT_NAME} PUBLIC
+             wsock32
+             ws2_32)
+ endif()
 
 #[[ target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Externals/Vulkan/Lib)
 
@@ -50,6 +61,7 @@ else()
   target_link_libraries(${PROJECT_NAME} vulkan)
 endif()]]
 
+ # TODO: DO THIS ONLY WHEN CORE BUILD TYPE IS DYNAMIC LIBRARY
  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
          COMMAND ${CMAKE_COMMAND} -E copy
          ${SG_CORE_DLL}
@@ -63,6 +75,7 @@ endif()]]
              ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ}
              )
 endif()
+
  #[[IF(EXISTS ${SG_CORE_DLL})
     file(COPY ${SG_CORE_DLL} DESTINATION ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
     file(COPY ${SG_CORE_DLL} DESTINATION ${SG_PHYS_TEST_BIN})

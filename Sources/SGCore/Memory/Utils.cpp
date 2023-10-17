@@ -1,5 +1,7 @@
 #include "Utils.h"
 
+#ifdef _WIN64
+
 void Core::Memory::Utils::getByteProcessMemUsage(size_t &pagefile_usage, size_t &working_set_size)
 {
     PROCESS_MEMORY_COUNTERS memCounter;
@@ -24,3 +26,5 @@ void Core::Memory::Utils::getMegabyteProcessMemUsage(size_t &pagefile_usage, siz
     pagefile_usage /= 1024 * 1024;
     working_set_size /= 1024 * 1024;
 }
+
+#endif
