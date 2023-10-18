@@ -26,8 +26,8 @@ namespace Core::Graphics
 
         void destroy() noexcept override;
 
-        std::shared_ptr<IVertexBuffer> putData(std::vector<float> data) noexcept override;
-        std::shared_ptr<IVertexBuffer> subData(std::vector<float> data, const int& offset) noexcept override;
+        std::shared_ptr<IVertexBuffer> putData(const std::vector<float>& data) noexcept override;
+        std::shared_ptr<IVertexBuffer> subData(const std::vector<float>& data, const size_t& offset) noexcept override;
         std::shared_ptr<IVertexBuffer> bind() noexcept override;
 
         std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) noexcept override;

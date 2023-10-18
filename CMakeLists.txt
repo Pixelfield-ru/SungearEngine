@@ -8,10 +8,15 @@ set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fPIC")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-#set(BUILD_SHARED_LIBS ON)
+set(MSVC_RUNTIME "dynamic")
+
+if(MSVC)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+    set(BUILD_SHARED_LIBS TRUE)
+endif()
 
 # projects --------------------
 set(SG_SOURCES_PROJ Sources)
@@ -36,7 +41,7 @@ set(SG_EDITOR_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
 # -----------------------------
 
 # multiple definition because of bullet library
-set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static -Wl,-allow-multiple-definition")
+set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static -Wl,-allow-multiple-definition -Wno-return-type")
 
 # FOR LINUX
 #set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition")
@@ -49,7 +54,7 @@ set(SG_BUILD_TESTS OFF)
 
 set(SG_RESOURCES_COPY_MODELS OFF)
 set(SG_RESOURCES_COPY_SHADERS ON)
-set(SG_RESOURCES_COPY_TEXTURES OFF )
+set(SG_RESOURCES_COPY_TEXTURES OFF)
 
 # ----------------------------------
 

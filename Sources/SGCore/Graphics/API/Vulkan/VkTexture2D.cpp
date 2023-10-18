@@ -46,5 +46,5 @@ void Core::Graphics::VkTexture2D::bind(const uint8_t& textureUnit) noexcept
 
 Core::Graphics::VkTexture2D& Core::Graphics::VkTexture2D::operator=(const std::shared_ptr<ITexture2D>& other)
 {
-
+    return *this;
 }

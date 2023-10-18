@@ -25,7 +25,7 @@
 #endif
 
 #if GLM_COMPILER & GLM_COMPILER_VC
-#	date <cfloat>
+#	include <cfloat>
 #elif GLM_COMPILER & GLM_COMPILER_GCC
 #	include <cmath>
 #	if(GLM_PLATFORM & GLM_PLATFORM_ANDROID)

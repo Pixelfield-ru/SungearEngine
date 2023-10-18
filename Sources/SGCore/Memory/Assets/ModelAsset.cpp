@@ -67,6 +67,12 @@ std::shared_ptr<Core::ImportedScene::Node> Core::Memory::Assets::ModelAsset::pro
 std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
     std::shared_ptr<ImportedScene::IMesh> sgMesh(Core::Main::CoreMain::getRenderer().createMesh());
+    sgMesh->m_positions.reserve(aiMesh->mNumVertices * 3);
+    sgMesh->m_normals.reserve(aiMesh->mNumVertices * 3);
+    sgMesh->m_tangents.reserve(aiMesh->mNumVertices * 3);
+    sgMesh->m_bitangents.reserve(aiMesh->mNumVertices * 3);
+    // TODO: make reserve for all texture coordinates
+    sgMesh->m_uv.reserve(aiMesh->mNumVertices * 3);
 
     sgMesh->m_name = aiMesh->mName.data;
 
@@ -200,12 +206,12 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
         // enable recompile
         materialShader->setAssetModifiedChecking(true);
 
-        SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
+        // SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
     }
 
     sgMesh->prepare();
 
-    SGC_SUCCESS("Loaded mesh '" + sgMesh->m_name + "'. Vertices count: " + std::to_string(sgMesh->m_positions.size()) + ", indices count: " + std::to_string(sgMesh->m_indices.size()));
+    // SGC_SUCCESS("Loaded mesh '" + sgMesh->m_name + "'. Vertices count: " + std::to_string(sgMesh->m_positions.size()) + ", indices count: " + std::to_string(sgMesh->m_indices.size()));
 
     return sgMesh;
 }
@@ -223,7 +229,7 @@ void Core::Memory::Assets::ModelAsset::loadTextures
 
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 
-        SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Raw type name: '" +
-                            sgMaterialTextureTypeToString(sgMaterialTextureType) + "', path: " + std::string(finalPath));
+        //SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Raw type name: '" +
+        //                    sgMaterialTextureTypeToString(sgMaterialTextureType) + "', path: " + std::string(finalPath));
     }
 }

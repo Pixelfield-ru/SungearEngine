@@ -1,3 +1,4 @@
+ cmake_minimum_required(VERSION 3.11)
  project(${SG_CORE_PROJ})
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")
@@ -6,7 +7,16 @@
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
 
  # STATIC FOR LINUX
- add_library(${PROJECT_NAME} STATIC ${SGCORE_SOURCES})
+ add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
+
+ include(GenerateExportHeader)
+ #generate_export_header(${PROJECT_NAME})
+
+ #[[GENERATE_EXPORT_HEADER(${PROJECT_NAME}           
+    BASE_NAME ${PROJECT_NAME}
+    EXPORT_MACRO_NAME SGCORE_EXPORTS
+    EXPORT_FILE_NAME ${SGCORE_SOURCES}
+    STATIC_DEFINE SHARED_EXPORTS_BUILT_AS_STATIC)]]
 
  target_include_directories(${PROJECT_NAME} PRIVATE
          ${CMAKE_SOURCE_DIR}/Externals
@@ -33,12 +43,13 @@
          ${Vulkan_LIBRARIES}
          assimp
 
-         LinearMath
-         Bullet3Common
-         BulletDynamics
-         BulletCollision
-         BulletInverseDynamics
-         BulletSoftBody
+         gl46
+         #LinearMath
+         #Bullet3Common
+         #BulletDynamics 
+         #BulletCollision
+         #BulletInverseDynamics
+         #BulletSoftBody
 
          ImGui
 
@@ -62,6 +73,7 @@ else()
 endif()]]
 
  # TODO: DO THIS ONLY WHEN CORE BUILD TYPE IS DYNAMIC LIBRARY
+ IF(EXISTS ${SG_CORE_DLL})
  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
          COMMAND ${CMAKE_COMMAND} -E copy
          ${SG_CORE_DLL}
@@ -74,7 +86,8 @@ endif()]]
              ${SG_CORE_DLL}
              ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ}
              )
-endif()
+ endif()
+ endif()
 
  #[[IF(EXISTS ${SG_CORE_DLL})
     file(COPY ${SG_CORE_DLL} DESTINATION ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})

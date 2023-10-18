@@ -19,13 +19,13 @@ void Core::Graphics::VkVertexBuffer::destroy() noexcept
 
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::VkVertexBuffer::putData(std::vector<float> data) noexcept
+std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::VkVertexBuffer::putData(const std::vector<float>& data) noexcept
 {
     return shared_from_this();
 }
 
 std::shared_ptr<Core::Graphics::IVertexBuffer>
-Core::Graphics::VkVertexBuffer::subData(std::vector<float> data, const int& offset) noexcept
+Core::Graphics::VkVertexBuffer::subData(const std::vector<float>& data, const size_t& offset) noexcept
 {
     return shared_from_this();
 }

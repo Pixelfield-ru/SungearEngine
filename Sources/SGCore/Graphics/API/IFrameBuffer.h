@@ -24,13 +24,13 @@ namespace Core::Graphics
         std::string m_drawAttachmentName;
 
         virtual std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName,
-                                                             const std::uint8_t& textureBlock) { };
+                                                             const std::uint8_t& textureBlock) { return shared_from_this(); };
 
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToRead() { }
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToDraw() { }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToRead() { return shared_from_this(); }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToDraw() { return shared_from_this(); }
 
-        virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() { }
-        virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() { }
+        virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() { return shared_from_this(); }
+        virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() { return shared_from_this(); }
 
         virtual std::shared_ptr<IFrameBuffer> bind() = 0;
         virtual std::shared_ptr<IFrameBuffer> unbind() = 0;
@@ -38,7 +38,7 @@ namespace Core::Graphics
         virtual std::shared_ptr<IFrameBuffer> create() = 0;
         virtual void destroy() = 0;
 
-        virtual std::shared_ptr<IFrameBuffer> clear() { };
+        virtual std::shared_ptr<IFrameBuffer> clear() { return shared_from_this(); };
 
         virtual std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                             const std::string& name,

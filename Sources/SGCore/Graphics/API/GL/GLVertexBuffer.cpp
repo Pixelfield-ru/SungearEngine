@@ -34,9 +34,11 @@ void Core::Graphics::GLVertexBuffer::destroy() noexcept
 }
 
 std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::putData
-(std::vector<float> data) noexcept
+(const std::vector<float>& data) noexcept
 {
-    m_data = std::move(data);
+    if(data.size() == 0) return shared_from_this();
+
+    m_data.insert(m_data.end(), data.begin(), data.end());
 
     glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(m_data[0])), &m_data[0],
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
@@ -49,8 +51,12 @@ std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::p
 }
 
 std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::subData
-(std::vector<float> data, const int& offset) noexcept
+(const std::vector<float>& data, const size_t& offset) noexcept
 {
+    if(data.size() == 0) return shared_from_this();
+
+    m_data.insert(m_data.begin() + offset, data.begin(), data.end());
+
     glBufferSubData(GL_ARRAY_BUFFER, offset, (GLsizeiptr) (m_data.size() * sizeof(m_data[0])),
                     &m_data[0]);
 

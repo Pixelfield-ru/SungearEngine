@@ -391,11 +391,17 @@ int JoinVerticesProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex) {
                 // if the vertex is a unique one, translate it
                 if ( !( replaceIndex[ ow.mVertexId ] & 0x80000000 ) ) {
                     bool weightAlreadyExists = false;
-                    for (std::vector<aiVertexWeight>::iterator vit = newWeights.begin(); vit != newWeights.end(); ++vit) {
+                    /* for (auto vit = newWeights.begin(); vit != newWeights.end(); ++vit) {
                         if (vit->mVertexId == replaceIndex[ow.mVertexId]) {
                             weightAlreadyExists = true;
                             break;
-                        }
+                        }                   
+                    }*/
+                    for (const auto& weight : newWeights) {
+                        if (weight.mVertexId == replaceIndex[ow.mVertexId]) {
+                            weightAlreadyExists = true;
+                            break;
+                        }      
                     }
                     if (weightAlreadyExists) {
                         continue;

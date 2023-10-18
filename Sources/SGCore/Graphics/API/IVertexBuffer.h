@@ -26,12 +26,12 @@ namespace Core::Graphics
         virtual std::shared_ptr<IVertexBuffer> create() = 0;
         virtual void destroy() = 0;
 
-        virtual std::shared_ptr<IVertexBuffer> putData(std::vector<float> data) = 0;
+        virtual std::shared_ptr<IVertexBuffer> putData(const std::vector<float>& data) = 0;
         /*
          * TODO: задуматься над темплейтным методом для того, чтобы класть не только float, но и другие числовые типы.
          * но тогда придётся отказаться от хранения копии / оригинала вектора
         */
-        virtual std::shared_ptr<IVertexBuffer> subData(std::vector<float> data, const int& offset) = 0;
+        virtual std::shared_ptr<IVertexBuffer> subData(const std::vector<float>& data, const size_t& offset) = 0;
         virtual std::shared_ptr<IVertexBuffer> bind() = 0;
 
         virtual std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) = 0;

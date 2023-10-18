@@ -10,7 +10,10 @@
 #include <cstdio>
 #include <fcntl.h>
 #include <io.h>
-#include <unistd.h>
+#include <stdlib.h>
+#include <io.h>
+#include <process.h>
+#include <direct.h> 
 #include <charconv>
 
 // TODO: make errors catch

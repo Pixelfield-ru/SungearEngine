@@ -3,6 +3,8 @@
 
 #define SG_INSTANCEOF(data, type) Core::Utils::Utils::instanceof<type>(data)
 
+#define SG_MAY_NORETURN __declspec(noreturn)
+
 namespace Core::Utils
 {
     class Utils

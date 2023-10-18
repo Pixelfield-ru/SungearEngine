@@ -53,7 +53,7 @@ namespace Core::Graphics
         /**
          * Confirmation of GAPI support by the user's graphics card
          */
-        virtual bool confirmSupport() noexcept { }
+        virtual bool confirmSupport() noexcept { return false; }
 
         /**
          *

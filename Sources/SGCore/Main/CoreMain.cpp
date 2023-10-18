@@ -13,7 +13,7 @@
 void Core::Main::CoreMain::start()
 {
     system("chcp 65001");
-    setlocale(1251, "ru");
+    setlocale(LC_ALL, "Russian");
 
     // core components init -------------
     InputManager::init();
@@ -46,6 +46,7 @@ void Core::Main::CoreMain::start()
     });
 
     m_renderTimer.addCallback(globalTimerCallback);
+    m_renderTimer.m_targetFrameRate = 120.0;
 
     // -----------------
 

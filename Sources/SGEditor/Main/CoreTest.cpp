@@ -112,7 +112,7 @@ void init()
             );
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
-            //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
+            "../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/btr_80/scene.gltf"
@@ -127,7 +127,7 @@ void init()
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
-             "../SGResources/models/test/uaz/scene.gltf"
+             //"../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/ak47/scene.gltf"
             //"../SGResources/models/test/pavlov/scene.gltf"
@@ -307,6 +307,8 @@ void init()
     //directionalLight->m_color.b = 255.0f / 255.0f * 2.0f;
     testShadowsCaster->addComponent(directionalLight);
     testShadowsCaster->addComponent(std::make_shared<Core::ECS::BoxComponent>());
+
+    std::cout << "bam bam bam mi" << std::endl;
 
     auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
     testScene->m_entities.push_back(testShadowsCaster1);

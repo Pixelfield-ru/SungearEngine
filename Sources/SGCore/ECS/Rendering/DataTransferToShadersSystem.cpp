@@ -8,6 +8,8 @@
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Rendering/CameraRenderingSystem.h"
+#include "SGCore/ECS/Rendering/CameraComponent.h"
 #include "MeshComponent.h"
 #include "SGCore/Utils/Timer.h"
 
@@ -20,9 +22,11 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
     static const size_t directionalLightsSystemHashCode = typeid(DirectionalLightsSystem).hash_code();
     static const size_t shadowsCasterSystemHashCode = typeid(ShadowsCasterSystem).hash_code();
+    static const size_t cameraRenderingSystemHashCode = typeid(CameraRenderingSystem).hash_code();
 
     static const size_t directionalLightComponentHashCode = typeid(DirectionalLightComponent).hash_code();
     static const size_t shadowsCasterComponentHashCode = typeid(ShadowsCasterComponent).hash_code();
+    static const size_t cameraComponentHashCode = typeid(CameraComponent).hash_code();
     static const size_t transformComponentHashCode = typeid(TransformComponent).hash_code();
 
     auto meshComponents = entity->getComponents<MeshComponent>();
@@ -32,19 +36,19 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
     size_t counter = 0;
 
     // DIRECTIONAL LIGHTS ---------------------------------------------------
-    const auto& directionalLightsSystemComponents = ECSWorld::getSystemCachedComponents(directionalLightsSystemHashCode);
+    /*const auto& directionalLightsSystemComponents = ECSWorld::getSystemCachedComponents(directionalLightsSystemHashCode);
 
     //std::cout << "size: " << std::to_string(ECSWorld::m_cachedComponents.size()) << std::endl;
 
     for(auto& entities : directionalLightsSystemComponents.m_entitiesComponents)
     {
-        /*const auto& directionalLightComponents = entities.second.m_components.find(directionalLightComponentHashCode);
+        const auto& directionalLightComponents = entities.second.m_components.find(directionalLightComponentHashCode);
         const auto& transformComponent = entities.second.m_components.find(transformComponentHashCode);
 
         if(directionalLightComponents == entities.second.m_components.cend()) continue;
-        if(transformComponent == entities.second.m_components.cend()) continue;*/
+        if(transformComponent == entities.second.m_components.cend()) continue;
 
-        /*auto* castedTransformComponent = dynamic_cast<TransformComponent*>(transformComponent->second.begin()->get());
+        auto* castedTransformComponent = dynamic_cast<TransformComponent*>(transformComponent->second.begin()->get());
 
         for(const auto& directionalLight: directionalLightComponents->second)
         {
@@ -57,27 +61,23 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
                 materialShader->bind();
 
-                materialShader->useVectorf(
-                        "directionalLights[" +
-                        std::to_string(counter) + "].color",
+                std::string dirLightStr = "directionalLights[" + std::to_string(counter) + "]";
+
+                materialShader->useVectorf(dirLightStr + ".color",
                         castedDirectionalLight->m_color
                 );
 
-                materialShader->useFloat(
-                        "directionalLights[" +
-                        std::to_string(counter) + "].intensity",
+                materialShader->useFloat(dirLightStr + ".intensity",
                         castedDirectionalLight->m_intensity
                 );
 
-                materialShader->useVectorf(
-                        "directionalLights[" +
-                        std::to_string(counter) + "].position",
+                materialShader->useVectorf(dirLightStr + ".position",
                         castedTransformComponent->m_position
                 );
             }
 
             counter++;
-        }*/
+        }
     }
 
     // ----------------------------------------------
@@ -89,13 +89,13 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
     for(auto& entities : shadowCastersSystemComponents.m_entitiesComponents)
     {
-        /*const auto& shadowsCasterComponents = entities.second.m_components.find(shadowsCasterComponentHashCode);
+        const auto& shadowsCasterComponents = entities.second.m_components.find(shadowsCasterComponentHashCode);
         const auto& transformComponent = entities.second.m_components.find(transformComponentHashCode);
 
         if(shadowsCasterComponents == entities.second.m_components.cend()) continue;
-        if(transformComponent == entities.second.m_components.cend()) continue;*/
+        if(transformComponent == entities.second.m_components.cend()) continue;
 
-        /*auto* castedTransformComponent = dynamic_cast<TransformComponent*>(transformComponent->second.begin()->get());
+        auto* castedTransformComponent = dynamic_cast<TransformComponent*>(transformComponent->second.begin()->get());
 
         for(const auto& shadowsCaster: shadowsCasterComponents->second)
         {
@@ -119,23 +119,97 @@ void Core::ECS::DataTransferToShadersSystem::FPSRelativeFixedUpdate(const std::s
 
                 materialShader->bind();
 
+                std::string counterString = std::to_string(counter);
+
                 materialShader->useTexture(
-                        "shadowsCastersShadowMaps[" + std::to_string(counter) + "]",
+                        "shadowsCastersShadowMaps[" + counterString + "]",
                         finalTextureBlock);
 
                 // todo: maybe make uniform buffer for shadows casters
                 materialShader->useMatrix(
-                        "shadowsCasters[" + std::to_string(counter) + "].shadowsCasterSpace",
+                        "shadowsCasters[" + counterString + "].shadowsCasterSpace",
                         castedShadowsCaster->m_projectionMatrix * castedShadowsCaster->m_viewMatrix);
 
                 materialShader->useVectorf(
-                        "shadowsCasters[" + std::to_string(counter) + "].position",
+                        "shadowsCasters[" + counterString + "].position",
                         castedTransformComponent->m_position);
             }
 
             counter++;
-        }*/
+        }
+    }*/
+
+    std::shared_ptr<TransformComponent> entityTransform = entity->getComponent<TransformComponent>();
+    if(!entityTransform) return; //!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    const auto& cameraRenderingSystemComponents = ECSWorld::getSystemCachedComponents(cameraRenderingSystemHashCode);
+
+    for(auto& entities : cameraRenderingSystemComponents.m_entitiesComponents)
+    {
+        const auto& cameraComponent = entities.second.m_components.find(cameraComponentHashCode);
+        const auto& transformComponent = entities.second.m_components.find(transformComponentHashCode);
+
+        if(cameraComponent == entities.second.m_components.cend()) continue;
+        if(transformComponent == entities.second.m_components.cend()) continue;
+
+        auto castedTransformComponent = std::dynamic_pointer_cast<TransformComponent>(*transformComponent->second.begin());
+        auto castedCameraComponent = std::dynamic_pointer_cast<CameraComponent>(*cameraComponent->second.begin());
+
+        Core::Main::CoreMain::getRenderer().prepareUniformBuffers(castedCameraComponent, castedTransformComponent);
+
+        std::list<std::shared_ptr<MeshComponent>> entityMeshComponents = entity->getComponents<MeshComponent>();
+        std::list<std::shared_ptr<IPrimitiveComponent>> primitiveComponents = entity->getComponents<IPrimitiveComponent>();
+
+        for(const auto& meshComponent : meshComponents)
+        {
+            Core::Main::CoreMain::getRenderer().renderMesh(
+                    entityTransform,
+                    meshComponent
+            );
+        }
+
+        for(const auto& primitiveComponent : primitiveComponents)
+        {
+            Core::Main::CoreMain::getRenderer().renderPrimitive(
+                    entityTransform,
+                    primitiveComponent
+            );
+        }
     }
+
+    /*std::shared_ptr<CameraComponent> cameraComponent = entity->getComponent<CameraComponent>();
+    std::shared_ptr<TransformComponent> cameraTransformComponent = entity->getComponent<TransformComponent>();
+
+    if(!cameraComponent || !cameraTransformComponent) return;
+
+    Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
+
+    for(auto& sceneEntity : scene->m_entities)
+    {
+        std::shared_ptr<TransformComponent> transformComponent = sceneEntity->getComponent<TransformComponent>();
+
+        if(!transformComponent) continue;
+
+        std::list<std::shared_ptr<MeshComponent>> meshComponents = sceneEntity->getComponents<MeshComponent>();
+        std::shared_ptr<SkyboxComponent> skyboxComponent = sceneEntity->getComponent<SkyboxComponent>();
+        std::list<std::shared_ptr<IPrimitiveComponent>> primitiveComponents = sceneEntity->getComponents<IPrimitiveComponent>();
+
+        for(const auto& meshComponent : meshComponents)
+        {
+            Core::Main::CoreMain::getRenderer().renderMesh(
+                    transformComponent,
+                    meshComponent
+            );
+        }
+
+        for(const auto& primitiveComponent : primitiveComponents)
+        {
+            Core::Main::CoreMain::getRenderer().renderPrimitive(
+                    transformComponent,
+                    primitiveComponent
+            );
+        }
+    }*/
 
     double t1 = glfwGetTime();
 

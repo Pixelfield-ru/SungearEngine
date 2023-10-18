@@ -21,5 +21,5 @@ void Core::Graphics::VkCubemapTexture::destroy()
 
 Core::Graphics::VkCubemapTexture& Core::Graphics::VkCubemapTexture::operator=(const std::shared_ptr<ITexture2D>& other)
 {
-
+	return *this;
 }

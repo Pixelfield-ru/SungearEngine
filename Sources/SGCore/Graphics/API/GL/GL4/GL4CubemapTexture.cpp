@@ -70,5 +70,5 @@ void Core::Graphics::GL4CubemapTexture::bind(const uint8_t& textureUnit)
 Core::Graphics::GL4CubemapTexture&
 Core::Graphics::GL4CubemapTexture::operator=(const std::shared_ptr<ITexture2D>& other)
 {
-
+    return *this;
 }

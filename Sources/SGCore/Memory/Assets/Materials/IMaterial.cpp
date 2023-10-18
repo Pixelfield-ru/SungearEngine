@@ -45,7 +45,7 @@ void Core::Memory::Assets::IMaterial::addBlockDeclaration
     auto typeName = sgMaterialTextureTypeToString(blockType);
     auto maxTextureBlockDefine = typeName + "_MAX_TEXTURES_NUM";
 
-    SGC_SUCCESS("Final define for this type textures number: " + maxTextureBlockDefine);
+    //SGC_SUCCESS("Final define for this type textures number: " + maxTextureBlockDefine);
 
     for(auto& shaderPair : m_shaders)
     {
