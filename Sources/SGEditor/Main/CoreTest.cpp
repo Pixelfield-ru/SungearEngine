@@ -112,7 +112,7 @@ void init()
             );
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
-            "../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
+            //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/btr_80/scene.gltf"
@@ -127,7 +127,7 @@ void init()
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
-             //"../SGResources/models/test/uaz/scene.gltf"
+            "../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/ak47/scene.gltf"
             //"../SGResources/models/test/pavlov/scene.gltf"
@@ -277,6 +277,7 @@ void init()
     }
 
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
+    testCameraEntity->m_name = "SGMainCamera";
     auto cameraTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
     cameraTransformComponent->m_position.y = -3;
     cameraTransformComponent->m_position.z = 2;
@@ -327,7 +328,7 @@ void init()
     directionalLight1->m_color.g = 184.0f / 255.0f;
     directionalLight1->m_color.b = 241.0f / 255.0f;
     //directionalLight1->m_intensity = 10.0f;
-    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::DirectionalLightComponent>());
+    testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(std::make_shared<Core::ECS::BoxComponent>());
 }
 

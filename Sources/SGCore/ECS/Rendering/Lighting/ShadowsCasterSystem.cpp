@@ -9,16 +9,70 @@
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 #include "SGCore/ECS/ECSWorld.h"
 
+void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
+{
+    size_t totalShadowCasters = 0;
+
+    for(const auto& shadowsCasterEntity: scene->m_entities)
+    {
+        std::list<std::shared_ptr<ShadowsCasterComponent>> shadowsCasterComponents =
+                shadowsCasterEntity->getComponents<ShadowsCasterComponent>();
+        std::shared_ptr<TransformComponent> shadowCasterTransform =
+                shadowsCasterEntity->getComponent<TransformComponent>();
+
+        if(!shadowCasterTransform) continue;
+
+        for(const auto& shadowsCasterComponent : shadowsCasterComponents)
+        {
+            for(const auto& entity: scene->m_entities)
+            {
+                auto meshComponents = entity->getComponents<MeshComponent>();
+
+                for(auto& meshComponent: meshComponents)
+                {
+                    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
+
+                    if(!materialShader) return;
+
+                    std::uint8_t shadowMapsBlockOffset = meshComponent->
+                            m_mesh->
+                            m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
+
+                    std::uint8_t finalTextureBlock = shadowMapsBlockOffset + totalShadowCasters;
+
+                    shadowsCasterComponent->m_frameBuffer->bindAttachment(
+                            SG_FRAMEBUFFER_DEPTH_ATTACHMENT_NAME,
+                            finalTextureBlock
+                    );
+
+                    materialShader->bind();
+
+                    materialShader->useTexture(
+                            "shadowsCastersShadowMaps[" + std::to_string(totalShadowCasters) + "]",
+                            finalTextureBlock);
+
+                    // todo: maybe make uniform buffer for shadows casters
+                    materialShader->useMatrix(
+                            "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
+                            shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
+
+                    materialShader->useVectorf(
+                            "shadowsCasters[" + std::to_string(totalShadowCasters) + "].position",
+                            shadowCasterTransform->m_position);
+                }
+            }
+
+            totalShadowCasters++;
+        }
+    }
+}
+
 void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene,
                                             const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent = entity->getComponent<ShadowsCasterComponent>();
 
     if(!shadowsCasterComponent) return;
-
-    // --------------
-    ECSWorld::cacheComponents<ShadowsCasterSystem, ShadowsCasterComponent, TransformComponent>(entity);
-    // --------------
 
     shadowsCasterComponent->m_frameBuffer->bind()->clear();
 

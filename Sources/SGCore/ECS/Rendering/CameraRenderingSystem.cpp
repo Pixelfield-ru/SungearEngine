@@ -14,9 +14,7 @@
 void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
 {
-    ECSWorld::cacheComponents<CameraRenderingSystem, CameraComponent, TransformComponent>(entity);
-
-    /*std::shared_ptr<CameraComponent> cameraComponent = entity->getComponent<CameraComponent>();
+    std::shared_ptr<CameraComponent> cameraComponent = entity->getComponent<CameraComponent>();
     std::shared_ptr<TransformComponent> cameraTransformComponent = entity->getComponent<TransformComponent>();
 
     if(!cameraComponent || !cameraTransformComponent) return;
@@ -48,5 +46,5 @@ void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate
                     primitiveComponent
             );
         }
-    }*/
+    }
 }

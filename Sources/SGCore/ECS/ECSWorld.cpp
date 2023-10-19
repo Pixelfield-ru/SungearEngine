@@ -9,7 +9,6 @@
 #include "SGCore/ECS/Rendering/CameraRenderingSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/RenderingComponentsSystem.h"
-#include "SGCore/ECS/Rendering/DataTransferToShadersSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
 #include "SGCore/ECS/Rendering/SkyboxRenderingSystem.h"
 #include "SGCore/ECS/Rendering/Primitives/PrimitivesUpdaterSystem.h"
@@ -22,12 +21,9 @@ void Core::ECS::ECSWorld::init() noexcept
     //createSystem<SkyboxRenderingSystem>();
     createSystem<PrimitivesUpdaterSystem>();
     // directional light system must be always before shadows caster system
-    //createSystem<DirectionalLightsSystem>()->removeFlag(SystemsFlags::SGSF_PER_ENTITY)->addFlag(SystemsFlags::SGSF_ENTITY_PER_ENTITY);
-    //createSystem<ShadowsCasterSystem>()->removeFlag(SystemsFlags::SGSF_PER_ENTITY)->addFlag(SystemsFlags::SGSF_ENTITY_PER_ENTITY);
-    createSystem<DirectionalLightsSystem>();
-    createSystem<ShadowsCasterSystem>();
+    createSystem<DirectionalLightsSystem>()->removeFlag(SystemsFlags::SGSF_PER_ENTITY)->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    createSystem<DataTransferToShadersSystem>();
     createSystem<Camera3DMovementSystem>();
     createSystem<CameraRenderingSystem>();
 

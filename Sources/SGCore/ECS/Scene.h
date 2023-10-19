@@ -6,10 +6,10 @@
 #include <list>
 #include <memory>
 
-#include "Entity.h"
-
 namespace Core::ECS
 {
+    class Entity;
+
     class Scene
     {
     private:

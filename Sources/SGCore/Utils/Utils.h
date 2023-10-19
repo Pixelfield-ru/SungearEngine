@@ -15,6 +15,8 @@ namespace Core::Utils
         struct TypeWrapper { using type = T; };
 
         /**
+         * Example
+         * forTypes<InTypes...>([](auto t) { using type = typename decltype(t)::type; });
          * @tparam InTypes Types through which iteration will occur.
          * @tparam Func Type of function.
          * @param f Function.

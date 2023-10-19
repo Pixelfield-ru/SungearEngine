@@ -22,6 +22,11 @@ namespace Core::Graphics
     class IRenderer;
 }
 
+namespace Core::Main
+{
+    class CoreMain;
+}
+
 namespace Core::ECS
 {
     class ShadowsCasterComponent : public IRenderingComponent
@@ -29,6 +34,7 @@ namespace Core::ECS
         friend class ShadowsCasterSystem;
 
     public:
+
         // frame buffer with depth attachment
         std::shared_ptr<Core::Graphics::IFrameBuffer> m_frameBuffer =
                 std::shared_ptr<Core::Graphics::IFrameBuffer>(Main::CoreMain::getRenderer().createFrameBuffer())
