@@ -1,29 +1,22 @@
 //
-// Created by stuka on 02.05.2023.
+// Created by Ilya on 20.10.2023.
 //
 
-#ifndef NATIVECORE_ENTITY_H
-#define NATIVECORE_ENTITY_H
+#ifndef SUNGEARENGINE_COMPONENTSCOLLECTION_H
+#define SUNGEARENGINE_COMPONENTSCOLLECTION_H
 
-#include <iostream>
-#include <list>
+#include <vector>
 #include <memory>
-#include <set>
-#include <string>
-#include <tsl/robin_map.h>
-
 #include "IComponent.h"
-#include "SGCore/Utils/Utils.h"
 
 namespace Core::ECS
 {
-    class IComponent;
-    class Entity
+    class ComponentsCollection
     {
+    private:
+        std::vector<std::shared_ptr<IComponent>> m_components;
     public:
-        std::string m_name;
-
-        std::set<std::shared_ptr<Entity>> m_children;
+        ComponentsCollection() = default;
 
         void addComponent(const std::shared_ptr<IComponent>&) noexcept;
 
@@ -68,12 +61,7 @@ namespace Core::ECS
 
             return foundComponents;
         }
-
-        // todo: make remove component and remove components of type
-
-    private:
-        std::list<std::shared_ptr<IComponent>> m_components;
     };
 }
 
-#endif //NATIVECORE_ENTITY_H
+#endif //SUNGEARENGINE_COMPONENTSCOLLECTION_H

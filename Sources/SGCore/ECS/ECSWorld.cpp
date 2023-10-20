@@ -25,7 +25,7 @@ void Core::ECS::ECSWorld::init() noexcept
     createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     createSystem<Camera3DMovementSystem>();
-    createSystem<CameraRenderingSystem>();
+    createSystem<CameraRenderingSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     //DirectionalLightsSystem f;
 

@@ -10,6 +10,8 @@ namespace Core::ECS
     class CameraRenderingSystem : public ISystem
     {
     public:
+        void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) final;
+
         void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
     };
 }
