@@ -21,11 +21,17 @@ void Core::ECS::ECSWorld::init() noexcept
     //createSystem<SkyboxRenderingSystem>();
     createSystem<PrimitivesUpdaterSystem>();
     // directional light system must be always before shadows caster system
-    createSystem<DirectionalLightsSystem>()->removeFlag(SystemsFlags::SGSF_PER_ENTITY)->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
-    createSystem<ShadowsCasterSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    createSystem<DirectionalLightsSystem>()
+            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
+            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    createSystem<ShadowsCasterSystem>()
+            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
+            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     createSystem<Camera3DMovementSystem>();
-    createSystem<CameraRenderingSystem>()->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    createSystem<CameraRenderingSystem>()
+            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
+            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     //DirectionalLightsSystem f;
 
@@ -88,4 +94,33 @@ void Core::ECS::ECSWorld::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& s
     // 0.895500 ms average !!!!!!!!!!!!!!
 
     //std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+}
+
+void Core::ECS::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
+{
+    double t0 = glfwGetTime();
+
+    // clearing all cached components for this entity
+    for(const auto& systemCachedEntities : m_cachedComponentsCollections)
+    {
+        if(systemCachedEntities.second != nullptr)
+        {
+            auto& foundComponentsCollection = systemCachedEntities.second->m_cachedEntities[entity];
+            if(foundComponentsCollection != nullptr)
+            {
+                foundComponentsCollection->clear();
+            }
+        }
+    }
+
+    for(auto& system : m_systems)
+    {
+        if (!system->m_active) continue;
+
+        system->cacheEntity(entity);
+    }
+
+    double t1 = glfwGetTime();
+
+    // std::cout << "ms for recache: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }

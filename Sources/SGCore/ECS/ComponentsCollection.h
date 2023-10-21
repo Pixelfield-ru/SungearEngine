@@ -18,6 +18,8 @@ namespace Core::ECS
     public:
         ComponentsCollection() = default;
 
+        void clear() noexcept;
+
         void addComponent(const std::shared_ptr<IComponent>&) noexcept;
 
         /**

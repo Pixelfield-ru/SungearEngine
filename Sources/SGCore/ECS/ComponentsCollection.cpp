@@ -4,6 +4,11 @@
 
 #include "ComponentsCollection.h"
 
+void Core::ECS::ComponentsCollection::clear() noexcept
+{
+    m_components.clear();
+}
+
 void Core::ECS::ComponentsCollection::addComponent(const std::shared_ptr<IComponent>& component) noexcept
 {
     m_components.push_back(component);

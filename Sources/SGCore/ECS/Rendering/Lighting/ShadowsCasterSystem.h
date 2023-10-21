@@ -14,7 +14,7 @@ namespace Core::ECS
     public:
         void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) final;
 
-        void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const final;
     };
 }
 

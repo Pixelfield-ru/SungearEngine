@@ -13,17 +13,23 @@ void Core::ECS::DirectionalLightsSystem::FPSRelativeFixedUpdate(const std::share
 {
     double t0 = glfwGetTime();
 
+    auto systemCachedComponents = ECSWorld::getSystemCachedEntities<DirectionalLightsSystem>();
+
+    if(systemCachedComponents == nullptr) return;
+
     size_t totalDirectionalLights = 0;
 
-    for(const auto& directionalLightEntity: scene->m_entities)
+    for (const auto& cachedEntities : systemCachedComponents->m_cachedEntities)
     {
+        if(cachedEntities.second == nullptr) continue;
+
         std::list<std::shared_ptr<DirectionalLightComponent>> directionalLightComponents =
-                directionalLightEntity->getComponents<DirectionalLightComponent>();
+                cachedEntities.second->getComponents<DirectionalLightComponent>();
 
         std::shared_ptr<TransformComponent> transformComponent =
-                directionalLightEntity->getComponent<TransformComponent>();
+                cachedEntities.second->getComponent<TransformComponent>();
 
-        if(!transformComponent) continue;
+        if(!transformComponent || directionalLightComponents.empty()) continue;
 
         for(const auto& directionalLightComponent : directionalLightComponents)
         {
@@ -65,5 +71,10 @@ void Core::ECS::DirectionalLightsSystem::FPSRelativeFixedUpdate(const std::share
 
     // 0.002500 ms average
 
-    //std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+    // std::cout << "ms for directional lights system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+}
+
+void Core::ECS::DirectionalLightsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const
+{
+    ECSWorld::cacheComponents<DirectionalLightsSystem, DirectionalLightComponent, TransformComponent>(entity);
 }

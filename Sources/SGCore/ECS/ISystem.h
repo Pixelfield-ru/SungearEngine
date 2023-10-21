@@ -28,6 +28,8 @@ namespace Core::ECS
 
         virtual void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
         virtual void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
+
+        virtual void cacheEntity(const std::shared_ptr<Entity>& entity) const { }
     };
 }
 

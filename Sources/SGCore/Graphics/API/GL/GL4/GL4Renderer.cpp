@@ -229,6 +229,8 @@ void Core::Graphics::GL4Renderer::renderMesh(
         glDisable(GL_CULL_FACE);
     }
 
+    double t0 = glfwGetTime();
+
     m_modelMatricesBuffer->bind();
     m_modelMatricesBuffer->subData("objectModelMatrix",
                                    glm::value_ptr(transformComponent->m_modelMatrix), 16);
@@ -256,6 +258,10 @@ void Core::Graphics::GL4Renderer::renderMesh(
                                   { meshComponent->m_mesh->m_material->m_metallicFactor });
     m_materialDataBuffer->subData("materialRoughnessFactor",
                                   { meshComponent->m_mesh->m_material->m_roughnessFactor });
+
+    double t1 = glfwGetTime();
+
+    std::cout << "ms for sub  data: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 
     meshComponent->m_mesh->m_material->bind();
     meshComponent->m_mesh->getVertexArray()->bind();

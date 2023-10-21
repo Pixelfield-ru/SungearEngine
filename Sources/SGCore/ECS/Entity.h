@@ -18,7 +18,7 @@
 namespace Core::ECS
 {
     class IComponent;
-    class Entity
+    class Entity : public std::enable_shared_from_this<Entity>
     {
     public:
         std::string m_name;

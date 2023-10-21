@@ -32,4 +32,7 @@ void Core::ECS::Entity::addComponent(const std::shared_ptr<IComponent>& componen
                     );
         }
     }
+
+    // recache all systems, that can use this entity
+    ECSWorld::recacheEntity(shared_from_this());
 }
