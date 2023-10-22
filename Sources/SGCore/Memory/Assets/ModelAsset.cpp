@@ -8,6 +8,8 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/AssimpUtils.h"
 
+size_t polygonsNumber = 0;
+
 std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::load(const std::string& path)
 {
     m_path = path;
@@ -75,6 +77,9 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
     sgMesh->m_uv.reserve(aiMesh->mNumVertices * 3);
 
     sgMesh->m_name = aiMesh->mName.data;
+
+    polygonsNumber += aiMesh->mNumVertices / 3;
+    std::cout << "current polygons num: " << std::to_string(polygonsNumber) << std::endl;
 
     for(unsigned i = 0; i < aiMesh->mNumVertices; i++)
     {

@@ -229,7 +229,7 @@ void Core::Graphics::GL4Renderer::renderMesh(
         glDisable(GL_CULL_FACE);
     }
 
-    double t0 = glfwGetTime();
+    // double t0 = glfwGetTime();
 
     // VERY EXPENSIVE IN TIME (0.04 FOR ONE MESH!!!!!!!!!!!!!!!!!!!!!!!!!!)
     // REPLACE WITH JUST UNIFORMS
@@ -262,13 +262,15 @@ void Core::Graphics::GL4Renderer::renderMesh(
     m_materialDataBuffer->subData("materialRoughnessFactor",
                                   { meshComponent->m_mesh->m_material->m_roughnessFactor });*/
 
-    double t1 = glfwGetTime();
+    // double t1 = glfwGetTime();
 
     // std::cout << "ms for sub  data: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 
     meshComponent->m_mesh->m_material->bind();
 
-    meshComponent->m_mesh->m_material->getCurrentShader()->useMatrix("objectModelMatrix", transformComponent->m_modelMatrix);
+    // double t0 = glfwGetTime();
+
+    /*meshComponent->m_mesh->m_material->getCurrentShader()->useMatrix("objectModelMatrix", transformComponent->m_modelMatrix);
     meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectPosition", transformComponent->m_position);
     meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectRotation", transformComponent->m_rotation);
     meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectScale", transformComponent->m_scale);
@@ -280,7 +282,11 @@ void Core::Graphics::GL4Renderer::renderMesh(
     meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialTransparentCol", meshComponent->m_mesh->m_material->m_transparentColor);
     meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialShininess", meshComponent->m_mesh->m_material->m_shininess);
     meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialMetallicFactor", meshComponent->m_mesh->m_material->m_metallicFactor);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialRoughnessFactor", meshComponent->m_mesh->m_material->m_roughnessFactor);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialRoughnessFactor", meshComponent->m_mesh->m_material->m_roughnessFactor);*/
+
+    // double t1 = glfwGetTime();
+
+    // std::cout << "ms for sub  data: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 
     meshComponent->m_mesh->getVertexArray()->bind();
 
@@ -315,10 +321,10 @@ void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::Tra
     m_modelMatricesBuffer->subData("objectScale",
                                    glm::value_ptr(transformComponent->m_scale), 3);*/
 
-    primitiveComponent->m_mesh->m_material->getCurrentShader()->useMatrix("objectModelMatrix", transformComponent->m_modelMatrix);
+    /*primitiveComponent->m_mesh->m_material->getCurrentShader()->useMatrix("objectModelMatrix", transformComponent->m_modelMatrix);
     primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectPosition", transformComponent->m_position);
     primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectRotation", transformComponent->m_rotation);
-    primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectScale", transformComponent->m_scale);
+    primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectScale", transformComponent->m_scale);*/
 
     //materialShader->useUniformBuffer(m_modelMatricesBuffer);
     materialShader->useUniformBuffer(m_viewMatricesBuffer);

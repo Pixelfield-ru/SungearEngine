@@ -15,8 +15,11 @@ namespace Core::ECS
 {
     class TransformationsSystem : public ISystem
     {
+    private:
+        void updateMeshUniforms(const std::shared_ptr<ImportedScene::IMesh>& mesh, const std::shared_ptr<TransformComponent>& transformComponent) const noexcept;
+
     public:
-        void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) final;
     };
 }
 

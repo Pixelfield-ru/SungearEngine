@@ -18,6 +18,8 @@ void Core::Utils::Timer::startFrame()
 {
     if(!m_active) return;
 
+    m_currentCatchUpLoops = 0;
+
     if(m_firstTime)
     {
         firstTimeStart();
@@ -33,23 +35,22 @@ void Core::Utils::Timer::startFrame()
     double destDeltaTime = 1.0 / m_targetFrameRate;
     m_elapsedTimeForUpdate = m_elapsedTimeForUpdate >= 0.1 ? 0.1 : m_elapsedTimeForUpdate;
 
-    // if time to update
     if(m_elapsedTimeForUpdate >= destDeltaTime)
     {
-        while(m_elapsedTimeForUpdate >= destDeltaTime)
+        // if time to update
+        // TODO: FIX THIS SHUIIIIIIIIIIIIIIIIIIIIIIT
+        while(m_elapsedTimeForUpdate >= destDeltaTime && m_currentCatchUpLoops < m_maxCatchUpLoops)
         {
-            for (const std::shared_ptr<TimerCallback>& callback: m_callbacks)
+            for(const std::shared_ptr<TimerCallback>& callback: m_callbacks)
             {
                 callback->callFixedUpdateFunction();
             }
 
             m_elapsedTimeForUpdate -= destDeltaTime;
+            m_currentCatchUpLoops++;
+
+            m_framesPerTarget++;
         }
-
-        m_current = glfwGetTime();
-
-        m_framesPerTarget++;
-        m_elapsedTimeForUpdate = 0.0f;
     }
 
     m_elapsedTime = m_current - m_startTime;

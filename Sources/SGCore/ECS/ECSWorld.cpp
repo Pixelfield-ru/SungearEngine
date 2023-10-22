@@ -17,7 +17,9 @@
 
 void Core::ECS::ECSWorld::init() noexcept
 {
-    createSystem<TransformationsSystem>();
+    createSystem<TransformationsSystem>()
+            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
+            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
     createSystem<MeshedEntitiesCollectorSystem>()
             ->removeFlag(SystemsFlags::SGSF_PER_ENTITY);
     createSystem<RenderingComponentsSystem>()

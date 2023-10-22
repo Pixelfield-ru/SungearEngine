@@ -23,7 +23,7 @@ void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate(const std::shared_
 
     for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
     {
-        if(cachedEntities.second == nullptr) return;
+        if(cachedEntities.second == nullptr) continue;
 
         std::shared_ptr<CameraComponent> cameraComponent = cachedEntities.second->getComponent<CameraComponent>();
         std::shared_ptr<TransformComponent> cameraTransformComponent = cachedEntities.second->getComponent<TransformComponent>();

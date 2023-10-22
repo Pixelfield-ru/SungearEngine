@@ -46,7 +46,7 @@ void Core::Main::CoreMain::start()
     });
 
     m_renderTimer.addCallback(globalTimerCallback);
-    m_renderTimer.m_targetFrameRate = 12000.0;
+    m_renderTimer.m_targetFrameRate = 120.0;
 
     // -----------------
 

@@ -34,6 +34,9 @@ namespace Core::Utils
         uint16_t m_framesPerTarget = 0;
 
         std::list<std::shared_ptr<TimerCallback>> m_callbacks;
+
+        size_t m_currentCatchUpLoops = 0;
+        size_t m_maxCatchUpLoops = 5;
     public:
         bool m_active = true;
         bool m_cyclic = false;
