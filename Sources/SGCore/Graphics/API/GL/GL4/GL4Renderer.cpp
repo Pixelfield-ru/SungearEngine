@@ -231,7 +231,10 @@ void Core::Graphics::GL4Renderer::renderMesh(
 
     double t0 = glfwGetTime();
 
-    m_modelMatricesBuffer->bind();
+    // VERY EXPENSIVE IN TIME (0.04 FOR ONE MESH!!!!!!!!!!!!!!!!!!!!!!!!!!)
+    // REPLACE WITH JUST UNIFORMS
+
+    /*m_modelMatricesBuffer->bind();
     m_modelMatricesBuffer->subData("objectModelMatrix",
                                    glm::value_ptr(transformComponent->m_modelMatrix), 16);
     m_modelMatricesBuffer->subData("objectPosition",
@@ -257,19 +260,34 @@ void Core::Graphics::GL4Renderer::renderMesh(
     m_materialDataBuffer->subData("materialMetallicFactor",
                                   { meshComponent->m_mesh->m_material->m_metallicFactor });
     m_materialDataBuffer->subData("materialRoughnessFactor",
-                                  { meshComponent->m_mesh->m_material->m_roughnessFactor });
+                                  { meshComponent->m_mesh->m_material->m_roughnessFactor });*/
 
     double t1 = glfwGetTime();
 
-    std::cout << "ms for sub  data: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+    // std::cout << "ms for sub  data: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 
     meshComponent->m_mesh->m_material->bind();
+
+    meshComponent->m_mesh->m_material->getCurrentShader()->useMatrix("objectModelMatrix", transformComponent->m_modelMatrix);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectPosition", transformComponent->m_position);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectRotation", transformComponent->m_rotation);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectScale", transformComponent->m_scale);
+
+    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialDiffuseCol", meshComponent->m_mesh->m_material->m_diffuseColor);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialSpecularCol", meshComponent->m_mesh->m_material->m_specularColor);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialAmbientCol", meshComponent->m_mesh->m_material->m_ambientColor);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialEmissionCol", meshComponent->m_mesh->m_material->m_emissionColor);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialTransparentCol", meshComponent->m_mesh->m_material->m_transparentColor);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialShininess", meshComponent->m_mesh->m_material->m_shininess);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialMetallicFactor", meshComponent->m_mesh->m_material->m_metallicFactor);
+    meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialRoughnessFactor", meshComponent->m_mesh->m_material->m_roughnessFactor);
+
     meshComponent->m_mesh->getVertexArray()->bind();
 
-    materialShader->useUniformBuffer(m_modelMatricesBuffer);
+    //materialShader->useUniformBuffer(m_modelMatricesBuffer);
     materialShader->useUniformBuffer(m_viewMatricesBuffer);
     materialShader->useUniformBuffer(m_programDataBuffer);
-    materialShader->useUniformBuffer(m_materialDataBuffer);
+    //materialShader->useUniformBuffer(m_materialDataBuffer);
 
     glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(meshComponent->m_mesh->m_drawMode), meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
@@ -287,7 +305,7 @@ void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::Tra
         primitiveComponent->m_mesh->getVertexArray()->bind();
     }
 
-    m_modelMatricesBuffer->bind();
+    /*m_modelMatricesBuffer->bind();
     m_modelMatricesBuffer->subData("objectModelMatrix",
                                    glm::value_ptr(transformComponent->m_modelMatrix), 16);
     m_modelMatricesBuffer->subData("objectPosition",
@@ -295,9 +313,14 @@ void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::Tra
     m_modelMatricesBuffer->subData("objectRotation",
                                    glm::value_ptr(transformComponent->m_rotation), 3);
     m_modelMatricesBuffer->subData("objectScale",
-                                   glm::value_ptr(transformComponent->m_scale), 3);
+                                   glm::value_ptr(transformComponent->m_scale), 3);*/
 
-    materialShader->useUniformBuffer(m_modelMatricesBuffer);
+    primitiveComponent->m_mesh->m_material->getCurrentShader()->useMatrix("objectModelMatrix", transformComponent->m_modelMatrix);
+    primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectPosition", transformComponent->m_position);
+    primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectRotation", transformComponent->m_rotation);
+    primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectScale", transformComponent->m_scale);
+
+    //materialShader->useUniformBuffer(m_modelMatricesBuffer);
     materialShader->useUniformBuffer(m_viewMatricesBuffer);
 
     glLineWidth(primitiveComponent->m_linesWidth);

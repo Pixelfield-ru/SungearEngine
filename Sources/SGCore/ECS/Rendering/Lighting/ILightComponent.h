@@ -12,12 +12,17 @@ namespace Core::ECS
 {
     class ILightComponent : public IComponent
     {
-    private:
-        void init() noexcept override { }
+        friend class DirectionalLightsSystem;
 
     public:
         glm::vec4 m_color { 1.0, 1.0, 1.0, 1.0 };
         float m_intensity = 1.0f;
+
+    private:
+        glm::vec4 m_lastColor { 0.0, 0.0, 0.0, 0.0 };
+        float m_lastIntensity = 0.0f;
+
+        void init() noexcept override { }
     };
 }
 

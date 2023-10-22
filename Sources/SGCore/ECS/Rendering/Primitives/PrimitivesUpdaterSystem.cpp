@@ -6,6 +6,8 @@
 #include "BoxComponent.h"
 #include "SGCore/Graphics/Defines.h"
 
+// todo: make optimization
+
 void Core::ECS::PrimitivesUpdaterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene,
                                                 const std::shared_ptr<Core::ECS::Entity>& entity)
 {

@@ -10,16 +10,18 @@
 #include "MeshComponent.h"
 #include "SkyboxComponent.h"
 #include "SGCore/ECS/ECSWorld.h"
+#include "MeshedEntitiesCollectorSystem.h"
 
 void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
-    auto systemCachedComponents = ECSWorld::getSystemCachedEntities<CameraRenderingSystem>();
+    auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<CameraRenderingSystem>();
+    auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
 
-    if(systemCachedComponents == nullptr) return;
+    if(thisSystemCachedEntities == nullptr || meshedCachedEntities == nullptr) return;
 
-    for (const auto& cachedEntities : systemCachedComponents->m_cachedEntities)
+    for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
     {
         if(cachedEntities.second == nullptr) return;
 
@@ -30,15 +32,18 @@ void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate(const std::shared_
 
         Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
 
-        for (auto& sceneEntity: scene->m_entities)
+        for(const auto& meshedEntity: meshedCachedEntities->m_cachedEntities)
         {
-            std::shared_ptr<TransformComponent> transformComponent = sceneEntity->getComponent<TransformComponent>();
+            if(meshedEntity.second == nullptr) continue;
+
+            std::shared_ptr<TransformComponent> transformComponent = meshedEntity.second->getComponent<TransformComponent>();
 
             if (!transformComponent) continue;
 
-            std::list<std::shared_ptr<MeshComponent>> meshComponents = sceneEntity->getComponents<MeshComponent>();
-            std::shared_ptr<SkyboxComponent> skyboxComponent = sceneEntity->getComponent<SkyboxComponent>();
-            std::list<std::shared_ptr<IPrimitiveComponent>> primitiveComponents = sceneEntity->getComponents<IPrimitiveComponent>();
+            auto meshComponents =
+                    meshedEntity.second->getComponents<MeshComponent>();
+            auto primitiveComponents =
+                    meshedEntity.second->getComponents<IPrimitiveComponent>();
 
             for (const auto& meshComponent: meshComponents)
             {
@@ -60,13 +65,12 @@ void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate(const std::shared_
 
     double t1 = glfwGetTime();
 
-    // 0.0016
-    // 0,249000
-    // 0,253200
-    // 0,341100
-    // 0,674100
+    // last:
+    // 5,30880
+    // new:
+    // 4,805300
 
-    // std::cout << "ms for directional lights system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+    //std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void Core::ECS::CameraRenderingSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const

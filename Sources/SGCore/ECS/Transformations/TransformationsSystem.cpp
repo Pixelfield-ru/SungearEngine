@@ -11,16 +11,19 @@
 #include "glm/detail/type_quat.hpp"
 #include "glm/gtx/quaternion.hpp"
 #include "SGCore/ECS/Rendering/MeshComponent.h"
+#include "GLFW/glfw3.h"
 
 void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
 {
+    double t0 = glfwGetTime();
+
     std::shared_ptr<TransformComponent> transformComponent = entity->getComponent<TransformComponent>();
     if(!transformComponent) return;
 
-    //m_firstCycleComponents.push
-
-    bool transformationChanged = false;
+    transformComponent->m_translationChanged = false;
+    transformComponent->m_rotationChanged = false;
+    transformComponent->m_scaleChanged = false;
 
     // checking position for changes. if changed then update
     if(transformComponent->m_lastPosition != transformComponent->m_position)
@@ -28,7 +31,7 @@ void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
         transformComponent->m_translationMatrix = glm::translate(transformComponent->m_translationMatrix, transformComponent->m_position - transformComponent->m_lastPosition);
         transformComponent->m_lastPosition = transformComponent->m_position;
 
-        transformationChanged = true;
+        transformComponent->m_translationChanged = true;
     }
 
     // todo: fix rotation. make global (not local) rotations
@@ -81,7 +84,7 @@ void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
 
         transformComponent->m_lastRotation = transformComponent->m_rotation;
 
-        transformationChanged = true;
+        transformComponent->m_rotationChanged = true;
     }
 
     // checking scale for changes. if changed then update
@@ -90,12 +93,16 @@ void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
         transformComponent->m_scaleMatrix = glm::scale(transformComponent->m_scaleMatrix, transformComponent->m_scale - transformComponent->m_lastScale);
         transformComponent->m_lastScale = transformComponent->m_scale;
 
-        transformationChanged = true;
+        transformComponent->m_scaleChanged = true;
     }
 
     // if any matrix is changed then update model matrix
-    if(transformationChanged)
+    if(transformComponent->m_translationChanged || transformComponent->m_rotationChanged || transformComponent->m_scaleChanged)
     {
         transformComponent->m_modelMatrix = transformComponent->m_translationMatrix * transformComponent->m_rotationMatrix * transformComponent->m_scaleMatrix;
     }
+
+    double t1 = glfwGetTime();
+
+    //std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }

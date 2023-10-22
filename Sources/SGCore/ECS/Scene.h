@@ -15,8 +15,8 @@ namespace Core::ECS
     private:
         static inline std::shared_ptr<Scene> m_currentScene;
 
-        int m_shadowsCastersNum = 0;
-        int m_directionalLightsNum = 0;
+        size_t m_shadowsCastersNum = 0;
+        size_t m_directionalLightsNum = 0;
 
     public:
         std::string name;

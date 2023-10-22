@@ -11,11 +11,18 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/Math.h"
 
+// todo: optimize
 void Core::ECS::Camera3DMovementSystem::FPSNotRelativeFixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
 {
+    double t0 = glfwGetTime();
+
     std::shared_ptr<CameraComponent> cameraComponent = entity->getComponent<CameraComponent>();
     std::shared_ptr<TransformComponent> transformComponent = entity->getComponent<TransformComponent>();
+
+    /*double t1 = glfwGetTime();
+
+    std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << ", entities cnt: " << std::to_string(scene->m_entities.size()) << std::endl;*/
 
     if(!transformComponent || !cameraComponent) return;
 
@@ -81,4 +88,8 @@ void Core::ECS::Camera3DMovementSystem::FPSNotRelativeFixedUpdate
     {
         Core::Main::CoreMain::getWindow().setHideAndCentralizeCursor(!Core::Main::CoreMain::getWindow().isHideAndCentralizeCursor());
     }
+
+    /*double t1 = glfwGetTime();
+
+    std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << ", entities cnt: " << std::to_string(scene->m_entities.size()) << std::endl;*/
 }

@@ -12,7 +12,9 @@ namespace Core::ECS
     class RenderingComponentsSystem : public ISystem
     {
     public:
-        void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) final;
+
+        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const final;
     };
 }
 

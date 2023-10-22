@@ -45,15 +45,18 @@
             }
         #endif
 
-        depth = depth * 0.5 + 0.5;
+        // vsm
+
+        /*depth = depth * 0.5 + 0.5;
 
         float dx = dFdx(depth);
         float dy = dFdy(depth);
 
         float moment1 = depth;
         float moment2 = depth * depth - 0.25 * (dx * dx + dy * dy);
-        // vsm
-        gl_FragColor = vec4(moment1, moment2, 0.0, 1.0);
+
+        gl_FragColor = vec4(moment1, moment2, 0.0, 1.0);*/
+        gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
         //gl_FragColor = vec4(0.0);
     }
 #endif

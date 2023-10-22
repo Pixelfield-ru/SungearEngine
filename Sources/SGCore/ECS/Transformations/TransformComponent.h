@@ -18,12 +18,13 @@ namespace Core::ECS
     class TransformComponent : public IComponent
     {
         friend class TransformationsSystem;
+        friend class DirectionalLightsSystem;
 
     private:
         void init() noexcept final { }
 
-        glm::vec3 m_lastPosition;
-        glm::vec3 m_lastRotation;
+        glm::vec3 m_lastPosition { 0.0, 0.0, 0.0 };
+        glm::vec3 m_lastRotation { 0.0, 0.0, 0.0 };
         glm::vec3 m_lastScale = glm::vec3(0);
 
         glm::vec3 m_lastCenter;
@@ -42,6 +43,10 @@ namespace Core::ECS
         glm::mat4 m_scaleMatrix = glm::mat4(1);
 
         glm::mat4 m_modelMatrix = glm::mat4(1);
+
+        bool m_translationChanged = false;
+        bool m_rotationChanged = false;
+        bool m_scaleChanged = false;
     };
 }
 

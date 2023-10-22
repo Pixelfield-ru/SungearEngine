@@ -12,12 +12,17 @@
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
 #include "SGCore/ECS/Rendering/SkyboxRenderingSystem.h"
 #include "SGCore/ECS/Rendering/Primitives/PrimitivesUpdaterSystem.h"
+#include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 #include "GLFW/glfw3.h"
 
 void Core::ECS::ECSWorld::init() noexcept
 {
     createSystem<TransformationsSystem>();
-    createSystem<RenderingComponentsSystem>();
+    createSystem<MeshedEntitiesCollectorSystem>()
+            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY);
+    createSystem<RenderingComponentsSystem>()
+            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
+            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
     //createSystem<SkyboxRenderingSystem>();
     createSystem<PrimitivesUpdaterSystem>();
     // directional light system must be always before shadows caster system
@@ -91,9 +96,9 @@ void Core::ECS::ECSWorld::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& s
 
     double t1 = glfwGetTime();
 
-    // 0.895500 ms average !!!!!!!!!!!!!!
+    // 20,761000 ms average !!!!!!!!!!!!!!
 
-    //std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+    //std::cout << "ms for Core::ECS::ECSWorld::FPSRelativeFixedUpdate: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void Core::ECS::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)

@@ -8,18 +8,20 @@
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 #include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 
 void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
-    auto systemCachedComponents = ECSWorld::getSystemCachedEntities<ShadowsCasterSystem>();
+    auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<ShadowsCasterSystem>();
+    auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
 
-    if(systemCachedComponents == nullptr) return;
+    if(thisSystemCachedEntities == nullptr || meshedCachedEntities == nullptr) return;
 
     size_t totalShadowCasters = 0;
 
-    for (const auto& cachedEntities : systemCachedComponents->m_cachedEntities)
+    for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
     {
         if(cachedEntities.second == nullptr) continue;
 
@@ -32,56 +34,67 @@ void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_pt
         shadowsCasterComponent->m_frameBuffer->bind()->clear();
         Core::Main::CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
 
-        for(auto& sceneEntity : scene->m_entities)
+        for(const auto& meshedEntity: meshedCachedEntities->m_cachedEntities)
         {
+            if(meshedEntity.second == nullptr) continue;
+
             // todo: make caching for entities with TransformComponent and MeshComponent
-            auto transformComponent = sceneEntity->getComponent<TransformComponent>();
-            // todo: make process all MeshComponents
-            auto meshComponent = sceneEntity->getComponent<MeshComponent>();
+            auto entityTransformComponent = meshedEntity.second->getComponent<TransformComponent>();
 
-            if(!transformComponent || !meshComponent || sceneEntity->getComponent<SkyboxComponent>()) continue;
+            auto meshComponents =
+                    meshedEntity.second->getComponents<MeshComponent>();
 
-            const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
+            if(!entityTransformComponent || meshComponents.empty()) continue;
 
-            if(!materialShader) return;
+            for(const auto& meshComponent : meshComponents)
+            {
+                const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
 
-            std::uint8_t shadowMapsBlockOffset = meshComponent->
-                    m_mesh->
-                    m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
+                if(!materialShader) return;
 
-            std::uint8_t finalTextureBlock = shadowMapsBlockOffset + totalShadowCasters;
+                std::uint8_t shadowMapsBlockOffset = meshComponent->
+                        m_mesh->
+                        m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
 
-            shadowsCasterComponent->m_frameBuffer->bindAttachment(
-                    SG_FRAMEBUFFER_DEPTH_ATTACHMENT_NAME,
-                    finalTextureBlock
-            );
+                std::uint8_t finalTextureBlock = shadowMapsBlockOffset + totalShadowCasters;
 
-            materialShader->bind();
+                shadowsCasterComponent->m_frameBuffer->bindAttachment(
+                        SG_FRAMEBUFFER_DEPTH_ATTACHMENT_NAME,
+                        finalTextureBlock
+                );
 
-            materialShader->useTexture(
-                    "shadowsCastersShadowMaps[" + std::to_string(totalShadowCasters) + "]",
-                    finalTextureBlock);
+                std::string totalShadowsCastersStr = std::to_string(totalShadowCasters);
 
-            // todo: maybe make uniform buffer for shadows casters
-            materialShader->useMatrix(
-                    "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
-                    shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
+                materialShader->bind();
 
-            materialShader->useVectorf(
-                    "shadowsCasters[" + std::to_string(totalShadowCasters) + "].position",
-                    shadowCasterTransform->m_position);
+                materialShader->useTexture(
+                        "shadowsCastersShadowMaps[" + totalShadowsCastersStr + "]",
+                        finalTextureBlock
+                );
 
-            //auto lastFacesCullingType = meshComponent->m_facesCullingFaceType;
-            //auto lastFacesCullingPolygonsOrder = meshComponent->m_facesCullingPolygonsOrder;
-            meshComponent->m_mesh->m_material->setCurrentShader(SGMAT_SHADOW_GEN_SHADER_NAME);
-            //meshComponent->m_facesCullingFaceType = SGFaceType::SGG_FRONT_FACE;
-            //meshComponent->m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
+                // todo: maybe make uniform buffer for shadows casters
+                materialShader->useMatrix(
+                        "shadowsCasters[" + totalShadowsCastersStr + "].shadowsCasterSpace",
+                        shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix
+                );
 
-            Core::Main::CoreMain::getRenderer().renderMesh(transformComponent, meshComponent);
+                materialShader->useVectorf(
+                        "shadowsCasters[" + totalShadowsCastersStr + "].position",
+                        shadowCasterTransform->m_position
+                );
 
-            meshComponent->m_mesh->m_material->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
-            //meshComponent->m_facesCullingFaceType = lastFacesCullingType;
-            //meshComponent->m_facesCullingPolygonsOrder = lastFacesCullingPolygonsOrder;
+                //auto lastFacesCullingType = meshComponent->m_facesCullingFaceType;
+                //auto lastFacesCullingPolygonsOrder = meshComponent->m_facesCullingPolygonsOrder;
+                meshComponent->m_mesh->m_material->setCurrentShader(SGMAT_SHADOW_GEN_SHADER_NAME);
+                //meshComponent->m_facesCullingFaceType = SGFaceType::SGG_FRONT_FACE;
+                //meshComponent->m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
+
+                Core::Main::CoreMain::getRenderer().renderMesh(entityTransformComponent, meshComponent);
+
+                meshComponent->m_mesh->m_material->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
+                //meshComponent->m_facesCullingFaceType = lastFacesCullingType;
+                //meshComponent->m_facesCullingPolygonsOrder = lastFacesCullingPolygonsOrder;
+            }
         }
 
         shadowsCasterComponent->m_frameBuffer->bind()->unbind();
@@ -91,60 +104,8 @@ void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_pt
 
     double t1 = glfwGetTime();
 
-    //std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
-
-    /*for(const auto& shadowsCasterEntity: scene->m_entities)
-    {
-        std::list<std::shared_ptr<ShadowsCasterComponent>> shadowsCasterComponents =
-                shadowsCasterEntity->getComponents<ShadowsCasterComponent>();
-        std::shared_ptr<TransformComponent> shadowCasterTransform =
-                shadowsCasterEntity->getComponent<TransformComponent>();
-
-        if(!shadowCasterTransform) continue;
-
-        for(const auto& shadowsCasterComponent : shadowsCasterComponents)
-        {
-            for(const auto& entity: scene->m_entities)
-            {
-                auto meshComponents = entity->getComponents<MeshComponent>();
-
-                for(auto& meshComponent: meshComponents)
-                {
-                    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
-
-                    if(!materialShader) return;
-
-                    std::uint8_t shadowMapsBlockOffset = meshComponent->
-                            m_mesh->
-                            m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
-
-                    std::uint8_t finalTextureBlock = shadowMapsBlockOffset + totalShadowCasters;
-
-                    shadowsCasterComponent->m_frameBuffer->bindAttachment(
-                            SG_FRAMEBUFFER_DEPTH_ATTACHMENT_NAME,
-                            finalTextureBlock
-                    );
-
-                    materialShader->bind();
-
-                    materialShader->useTexture(
-                            "shadowsCastersShadowMaps[" + std::to_string(totalShadowCasters) + "]",
-                            finalTextureBlock);
-
-                    // todo: maybe make uniform buffer for shadows casters
-                    materialShader->useMatrix(
-                            "shadowsCasters[" + std::to_string(totalShadowCasters) + "].shadowsCasterSpace",
-                            shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix);
-
-                    materialShader->useVectorf(
-                            "shadowsCasters[" + std::to_string(totalShadowCasters) + "].position",
-                            shadowCasterTransform->m_position);
-                }
-            }
-
-            totalShadowCasters++;
-        }
-    }*/
+    // 13,601600
+    // std::cout << "ms for shadows caster: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void Core::ECS::ShadowsCasterSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const
