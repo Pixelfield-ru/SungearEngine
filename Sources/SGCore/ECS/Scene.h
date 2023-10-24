@@ -5,6 +5,7 @@
 
 #include <list>
 #include <memory>
+#include "Layer.h"
 
 namespace Core::ECS
 {
@@ -12,17 +13,18 @@ namespace Core::ECS
 
     class Scene
     {
-    private:
-        static inline std::shared_ptr<Scene> m_currentScene;
-
-        size_t m_shadowsCastersNum = 0;
-        size_t m_directionalLightsNum = 0;
+        friend class ECSWorld;
 
     public:
         std::string name;
 
-        // TODO: JUST FOR TEST. MUST MAKE LAYERING
-        std::list<std::shared_ptr<Entity>> m_entities;
+        Scene() noexcept;
+
+        void setLayerName(const std::string& oldLayerName, std::string&& newLayerName) noexcept;
+        void addLayer(std::string&& layerName) noexcept;
+        void addEntity(const std::shared_ptr<Entity>& entity) noexcept;
+        void addEntity(const std::string& layerName, const std::shared_ptr<Entity>& entity) noexcept;
+        void addEntity(const std::shared_ptr<Layer>& layer, const std::shared_ptr<Entity>& entity) noexcept;
 
         static std::shared_ptr<Scene> getCurrentScene() noexcept;
         static void setCurrentScene(const std::shared_ptr<Scene>& newCurrentScene) noexcept;
@@ -32,6 +34,19 @@ namespace Core::ECS
 
         void setDirectionalLightsNum(const int&);
         int getDirectionalLightsNum() const noexcept;
+
+        [[nodiscard]] const auto& getLayers() const noexcept
+        {
+            return m_layers;
+        }
+
+    private:
+        static inline std::shared_ptr<Scene> m_currentScene;
+
+        tsl::robin_map<std::string, std::shared_ptr<Layer>> m_layers;
+
+        size_t m_shadowsCastersNum = 0;
+        size_t m_directionalLightsNum = 0;
     };
 }
 

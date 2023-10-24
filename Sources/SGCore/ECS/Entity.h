@@ -18,8 +18,12 @@
 namespace Core::ECS
 {
     class IComponent;
+    class Layer;
+
     class Entity : public std::enable_shared_from_this<Entity>
     {
+        friend class Scene;
+
     public:
         std::string m_name;
 
@@ -73,6 +77,7 @@ namespace Core::ECS
 
     private:
         std::list<std::shared_ptr<IComponent>> m_components;
+        std::weak_ptr<Layer> m_layer;
     };
 }
 

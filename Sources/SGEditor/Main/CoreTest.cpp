@@ -132,8 +132,14 @@ void init()
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            "../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/uaz/scene.gltf"
+            "../SGResources/models/test/wooden_table/scene.gltf"
+            //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
+            //"../SGResources/models/test/vss/scene.gltf"
+            //"../SGResources/models/test/vsk94/scene.gltf"
+            //"../SGResources/models/test/helicopter/scene.gltf"
+            //"../SGResources/models/test/metal_door/scene.gltf"
             //"../SGResources/models/test/ak47/scene.gltf"
             //"../SGResources/models/test/pavlov/scene.gltf"
             //"../SGResources/models/test/kv2/scene.gltf"
@@ -174,7 +180,7 @@ void init()
         {
             transformComponent->m_scale = { 400.0, 400.0, 400.0 };
         }
-        testScene->m_entities.push_back(entity);
+        testScene->addEntity(entity);
     }
 
     // -------
@@ -185,6 +191,16 @@ void init()
     {
         /*processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
                           { 4, 4, 4 }, btrEntities);*/
+        /*processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
+                          { 0.25, 0.25, 0.25 }, btrEntities);*/
+        /*processLoadedNode(node, { 0, -1, -20 }, { 90, 0, 0 },
+                          { 1, 1, 1 }, btrEntities);*/
+        processLoadedNode(node, { 0, -1.65, -20 }, { 0, 90, 0 },
+                          { 0.1, 0.1, 0.1 }, btrEntities);
+        /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 90 },
+                          { 0.005, 0.005, 0.005 }, btrEntities);*/
+        /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 0 },
+                          { 0.005, 0.005, 0.005 }, btrEntities);*/
         /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
                           { 0.075, 0.075, 0.075 }, btrEntities);*/
         /*processLoadedNode(node, { 3, -1, -20 }, { 90, 0, 90 },
@@ -193,8 +209,8 @@ void init()
                           { 0.2, 0.2, 0.2 }, btrEntities);*/
 
         // for uaz
-        processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);
+        /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
         /*processLoadedNode(node, { 3, -3, -20 }, { 0, 0, 0 },
                           { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
         /*processLoadedNode(node, { 0.0, -3.0, -20 }, { 90, 0, 0 },
@@ -207,7 +223,7 @@ void init()
 
     for(const auto& entity : btrEntities)
     {
-        testScene->m_entities.push_back(entity);
+        testScene->addEntity(entity);
 
         auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
         if(meshComponent)
@@ -234,7 +250,7 @@ void init()
 
     for (const auto& entity: cube1Entities)
     {
-        testScene->m_entities.push_back(entity);
+        testScene->addEntity(entity);
     }
 
     for(const auto& entity : cubeEntities)
@@ -280,7 +296,7 @@ void init()
                     )
             ));
         }
-        testScene->m_entities.push_back(entity);
+        testScene->addEntity(entity);
     }
 
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
@@ -293,10 +309,10 @@ void init()
     testCameraEntity->addComponent(cameraTransformComponent);
     testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
 
-    testScene->m_entities.push_back(testCameraEntity);
+    testScene->addEntity(testCameraEntity);
 
     testShadowsCaster = std::make_shared<Core::ECS::Entity>();
-    testScene->m_entities.push_back(testShadowsCaster);
+    testScene->addEntity(testShadowsCaster);
     auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
     shadowsCasterTransform->m_position.y = 15;
     shadowsCasterTransform->m_position.z = 5.0;
@@ -319,7 +335,7 @@ void init()
     std::cout << "bam bam bam mi" << std::endl;
 
     auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
-    testScene->m_entities.push_back(testShadowsCaster1);
+    testScene->addEntity(testShadowsCaster1);
     auto shadowsCasterTransform1 = std::make_shared<Core::ECS::TransformComponent>();
     shadowsCasterTransform1->m_position.x = -10;
     shadowsCasterTransform1->m_position.y = 10;

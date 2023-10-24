@@ -8,6 +8,50 @@
 #include "SGCore/Graphics/API/ShaderDefine.h"
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
+#include "Layer.h"
+
+Core::ECS::Scene::Scene() noexcept
+{
+    auto defaultLayer = std::make_shared<Layer>();
+    defaultLayer->m_name = "default";
+
+    m_layers[defaultLayer->m_name] = std::move(defaultLayer);
+}
+
+void Core::ECS::Scene::setLayerName(const std::string& oldLayerName, std::string&& newLayerName) noexcept
+{
+    m_layers[oldLayerName]->m_name = std::move(newLayerName);
+}
+
+void Core::ECS::Scene::addLayer(std::string&& layerName) noexcept
+{
+    auto newLayer = std::make_shared<Layer>();
+    newLayer->m_name = std::move(layerName);
+
+    m_layers[newLayer->m_name] = std::move(newLayer);
+}
+
+void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity) noexcept
+{
+    auto layer = m_layers["default"];
+    entity->m_layer = layer;
+    layer->m_entities.push_back(entity);
+}
+
+void Core::ECS::Scene::addEntity(const std::string& layerName, const std::shared_ptr<Entity>& entity) noexcept
+{
+    auto layer = m_layers[layerName];
+    entity->m_layer = layer;
+    layer->m_entities.push_back(entity);
+}
+
+void Core::ECS::Scene::addEntity(const std::shared_ptr<Core::ECS::Layer>& layer, const std::shared_ptr<Entity>& entity) noexcept
+{
+    entity->m_layer = layer;
+    layer->m_entities.push_back(entity);
+}
+
+// ----------------
 
 std::shared_ptr<Core::ECS::Scene> Core::ECS::Scene::getCurrentScene() noexcept
 {
@@ -23,29 +67,33 @@ void Core::ECS::Scene::setShadowsCastersNum(const int& num)
 {
     m_shadowsCastersNum = num;
 
-    // define new shadow casters num for all entities in scene
-    for(const auto& entity : m_entities)
+    for(const auto& layer : m_layers)
     {
-        auto meshes = entity->getComponents<MeshComponent>();
-        for(const auto& meshComponent : meshes)
+        // define new shadow casters num for all entities in scene
+        for(const auto& entity : layer.second->m_entities)
         {
-            for(const auto& shaderPair : meshComponent->m_mesh->m_material->getShaders())
+            auto meshes = entity->getComponents<MeshComponent>();
+            for(const auto& meshComponent: meshes)
             {
-                const auto& shader = shaderPair.second;
+                for(const auto& shaderPair: meshComponent->m_mesh->m_material->getShaders())
+                {
+                    const auto& shader = shaderPair.second;
 
-                shader->setAssetModifiedChecking(false);
+                    shader->setAssetModifiedChecking(false);
 
-                shader->removeShaderDefine(
-                        SGShaderDefineType::SGG_OTHER_DEFINE,
-                        SG_SHADERS_SHADOWS_CASTERS_NUM_NAME
-                );
-                shader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                         {
-                                                 Graphics::ShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME,
-                                                                        std::to_string(m_shadowsCastersNum))
-                                         });
+                    shader->removeShaderDefine(
+                            SGShaderDefineType::SGG_OTHER_DEFINE,
+                            SG_SHADERS_SHADOWS_CASTERS_NUM_NAME
+                    );
+                    shader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                             {
+                                                     Graphics::ShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME,
+                                                                            std::to_string(m_shadowsCastersNum))
+                                             }
+                    );
 
-                shader->setAssetModifiedChecking(true);
+                    shader->setAssetModifiedChecking(true);
+                }
             }
         }
     }
@@ -60,29 +108,33 @@ void Core::ECS::Scene::setDirectionalLightsNum(const int& num)
 {
     m_directionalLightsNum = num;
 
-    // define new shadow casters num for all entities in scene
-    for(const auto& entity : m_entities)
+    for(const auto& layer : m_layers)
     {
-        auto meshes = entity->getComponents<MeshComponent>();
-        for(const auto& meshComponent : meshes)
+        // define new shadow casters num for all entities in scene
+        for(const auto& entity : layer.second->m_entities)
         {
-            for(const auto& shaderPair : meshComponent->m_mesh->m_material->getShaders())
+            auto meshes = entity->getComponents<MeshComponent>();
+            for(const auto& meshComponent: meshes)
             {
-                const auto& shader = shaderPair.second;
+                for(const auto& shaderPair: meshComponent->m_mesh->m_material->getShaders())
+                {
+                    const auto& shader = shaderPair.second;
 
-                shader->setAssetModifiedChecking(false);
+                    shader->setAssetModifiedChecking(false);
 
-                shader->removeShaderDefine(
-                        SGShaderDefineType::SGG_OTHER_DEFINE,
-                        SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME
-                );
-                shader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                         {
-                                                 Graphics::ShaderDefine(SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME,
-                                                                        std::to_string(m_directionalLightsNum))
-                                         });
+                    shader->removeShaderDefine(
+                            SGShaderDefineType::SGG_OTHER_DEFINE,
+                            SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME
+                    );
+                    shader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                             {
+                                                     Graphics::ShaderDefine(SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME,
+                                                                            std::to_string(m_directionalLightsNum))
+                                             }
+                    );
 
-                shader->setAssetModifiedChecking(true);
+                    shader->setAssetModifiedChecking(true);
+                }
             }
         }
     }

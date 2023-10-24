@@ -60,9 +60,12 @@ void Core::ECS::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
 
         if(system->isFlagSet(SystemsFlags::SGSF_PER_ENTITY))
         {
-            for(auto& entity: scene->m_entities)
+            for(const auto& layer : scene->getLayers())
             {
-                system->fixedUpdate(scene, entity);
+                for(auto& entity : layer.second->m_entities)
+                {
+                    system->fixedUpdate(scene, entity);
+                }
             }
         }
     }
@@ -89,9 +92,12 @@ void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
 
         if(system->isFlagSet(SystemsFlags::SGSF_PER_ENTITY))
         {
-            for(auto& entity: scene->m_entities)
+            for(const auto& layer : scene->getLayers())
             {
-                system->update(scene, entity);
+                for(auto& entity : layer.second->m_entities)
+                {
+                    system->update(scene, entity);
+                }
             }
         }
     }
