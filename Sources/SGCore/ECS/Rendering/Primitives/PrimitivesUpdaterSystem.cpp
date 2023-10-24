@@ -8,7 +8,7 @@
 
 // todo: make optimization
 
-void Core::ECS::PrimitivesUpdaterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene,
+void Core::ECS::PrimitivesUpdaterSystem::update(const std::shared_ptr<Scene>& scene,
                                                 const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     std::list<std::shared_ptr<IPrimitiveComponent>> primitiveComponents = entity->getComponents<IPrimitiveComponent>();

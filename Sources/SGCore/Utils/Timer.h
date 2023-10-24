@@ -18,28 +18,10 @@ namespace Core::Utils
     // TODO: documentation
     class Timer
     {
-    private:
-        double m_current = 0;
-        double m_startTime = 0;
-
-        double m_elapsedTime = 0;
-
-        double m_rawDeltaTime = 0;
-
-        // fixed delta time for update functions
-        double m_elapsedTimeForUpdate = 0;
-
-        bool m_firstTime = true;
-
-        uint16_t m_framesPerTarget = 0;
-
-        std::list<std::shared_ptr<TimerCallback>> m_callbacks;
-
-        size_t m_currentCatchUpLoops = 0;
-        size_t m_maxCatchUpLoops = 5;
     public:
         bool m_active = true;
         bool m_cyclic = false;
+        bool m_useFixedUpdate = false;
 
         double m_target = 0;
 
@@ -63,6 +45,23 @@ namespace Core::Utils
 
         [[nodiscard]] std::uint16_t getFramesPerDestination() const noexcept;
         double getRawDeltaTime() const noexcept;
+
+    private:
+        double m_current = 0;
+        double m_startTime = 0;
+
+        double m_elapsedTime = 0;
+
+        double m_rawDeltaTime = 0;
+
+        // fixed delta time for update functions
+        double m_elapsedTimeForUpdate = 0;
+
+        bool m_firstTime = true;
+
+        uint16_t m_framesPerTarget = 0;
+
+        std::list<std::shared_ptr<TimerCallback>> m_callbacks;
     };
 }
 

@@ -112,8 +112,12 @@ void init()
             );
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
-            "../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
+            //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
+            //"../SGResources/models/test/t62/scene.gltf"
+            //"../SGResources/models/test/stalk_bagger/bagger.fbx"
+            //"../SGResources/models/test/cnpp/scene.gltf"
+            //"../SGResources/models/test/apb/scene.gltf"
             //"../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/btr_80/scene.gltf"
             //"../SGResources/models/test/train_ep20/scene.gltf"
@@ -127,7 +131,8 @@ void init()
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
-            //"../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
+            "../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/ak47/scene.gltf"
             //"../SGResources/models/test/pavlov/scene.gltf"
@@ -190,6 +195,8 @@ void init()
         // for uaz
         processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
                           { 0.0025, 0.0025, 0.0025 }, btrEntities);
+        /*processLoadedNode(node, { 3, -3, -20 }, { 0, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
         /*processLoadedNode(node, { 0.0, -3.0, -20 }, { 90, 0, 0 },
                           { 0.01, 0.01, 0.01 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1, -20 }, { 90, 0, 90 },
@@ -334,26 +341,24 @@ void init()
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
 
-
 int framesCnt = 0;
 
-void FPSNotRelativeFixedUpdate()
+void fixedUpdate()
 {
     //boxComponent->m_size.z += sin(framesCnt / 75.0) / 10.0;
     //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += sin(framesCnt / 75.0) / 2.0;
 
     testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
 
-    Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(Core::ECS::Scene::getCurrentScene());
+    Core::ECS::ECSWorld::fixedUpdate(Core::ECS::Scene::getCurrentScene());
 
     framesCnt++;
 }
 
-void FPSRelativeFixedUpdate()
+void update()
 {
-    Core::ECS::ECSWorld::FPSRelativeFixedUpdate(Core::ECS::Scene::getCurrentScene());
+    Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
 }
-
 
 // --------------------------------------------
 
@@ -362,8 +367,8 @@ int main()
     //SGConsole::Console::start();
 
     sgSetCoreInitCallback(init);
-    sgSetFPSNotRelativeFixedUpdateCallback(FPSNotRelativeFixedUpdate);
-    sgSetFPSRelativeFixedUpdateCallback(FPSRelativeFixedUpdate);
+    sgSetFixedUpdateCallback(fixedUpdate);
+    sgSetUpdateCallback(update);
 
     Core::Main::CoreMain::start();
 

@@ -9,7 +9,7 @@
 #include "glm/gtx/quaternion.hpp"
 #include "SGCore/ECS/ECSWorld.h"
 
-void Core::ECS::RenderingComponentsSystem::FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
+void Core::ECS::RenderingComponentsSystem::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<RenderingComponentsSystem>();
 
@@ -24,29 +24,58 @@ void Core::ECS::RenderingComponentsSystem::FPSNotRelativeFixedUpdate(const std::
 
         if(!transformComponent) continue;
 
-        glm::quat rotationQuat = glm::angleAxis(
-                glm::radians(transformComponent->m_rotation.x),
-                glm::vec3(1, 0, 0)
-        );
-        rotationQuat *= glm::angleAxis(
-                glm::radians(transformComponent->m_rotation.y),
-                glm::vec3(0, 1, 0)
-        );
-        rotationQuat *= glm::angleAxis(
-                glm::radians(transformComponent->m_rotation.z),
-                glm::vec3(0, 0, 1)
-        );
+        bool viewMatrixChanged = transformComponent->m_rotationChanged ||
+                                 transformComponent->m_translationChanged ||
+                                 transformComponent->m_scaleChanged;
+
+        glm::quat rotationQuat;
+        if(/*transformComponent->m_rotationChanged*/viewMatrixChanged)
+        {
+            rotationQuat = glm::angleAxis(
+                    glm::radians(transformComponent->m_rotation.x),
+                    glm::vec3(1, 0, 0)
+            );
+            rotationQuat *= glm::angleAxis(
+                    glm::radians(transformComponent->m_rotation.y),
+                    glm::vec3(0, 1, 0)
+            );
+            rotationQuat *= glm::angleAxis(
+                    glm::radians(transformComponent->m_rotation.z),
+                    glm::vec3(0, 0, 1)
+            );
+        }
 
         for(auto& renderingComponent : renderingComponents)
         {
+            renderingComponent->m_spaceMatrixChanged = false;
+
+            bool projectionMatrixChanged = false;
 
             // TODO: make checking for lastTransformation != current transformation
-            renderingComponent->m_viewMatrix = glm::toMat4(rotationQuat);
-            renderingComponent->m_viewMatrix = glm::translate(renderingComponent->m_viewMatrix,
-                                                              -transformComponent->m_position
-            );
-            renderingComponent->m_viewMatrix =
-                    glm::scale(renderingComponent->m_viewMatrix, transformComponent->m_scale);
+            if(viewMatrixChanged)
+            {
+                renderingComponent->m_viewMatrix = glm::toMat4(rotationQuat);
+                renderingComponent->m_viewMatrix = glm::translate(renderingComponent->m_viewMatrix,
+                                                                  -transformComponent->m_position
+                );
+                renderingComponent->m_viewMatrix =
+                        glm::scale(renderingComponent->m_viewMatrix, transformComponent->m_scale);
+            }
+            /*if(transformComponent->m_rotationChanged)
+            {
+                renderingComponent->m_viewMatrix = glm::toMat4(rotationQuat);
+            }
+            if(transformComponent->m_translationChanged)
+            {
+                renderingComponent->m_viewMatrix = glm::translate(renderingComponent->m_viewMatrix,
+                                                                  transformComponent->m_position
+                );
+            }
+            if(transformComponent->m_scaleChanged)
+            {
+                renderingComponent->m_viewMatrix =
+                        glm::scale(renderingComponent->m_viewMatrix, transformComponent->m_scale);
+            }*/
 
             // if some part of projection matrix of camera is changed
             if(renderingComponent->m_lastFov != renderingComponent->m_fov ||
@@ -65,6 +94,14 @@ void Core::ECS::RenderingComponentsSystem::FPSNotRelativeFixedUpdate(const std::
                 renderingComponent->m_lastAspect = renderingComponent->m_aspect;
                 renderingComponent->m_lastZNear = renderingComponent->m_zNear;
                 renderingComponent->m_lastZFar = renderingComponent->m_zFar;
+
+                projectionMatrixChanged = true;
+            }
+
+            if(viewMatrixChanged || projectionMatrixChanged)
+            {
+                renderingComponent->m_spaceMatrix = renderingComponent->m_projectionMatrix * renderingComponent->m_viewMatrix;
+                renderingComponent->m_spaceMatrixChanged = true;
             }
         }
     }

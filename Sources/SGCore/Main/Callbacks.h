@@ -14,6 +14,7 @@ typedef void(*SGWindowMouseButtonCallback)(GLFWwindow*, int, int, int);
 // -------------------------------------------------------------------------
 // update callbacks ---------------------------------------------------------
 typedef void(*SGFixedUpdateCallback)();
+typedef void(*SGUpdateCallback)();
 // --------------------------------------------------------------------------
 
 // glfw standard callbacks -------------------------------------------------
@@ -23,8 +24,8 @@ void sgSetWindowIconifyCallback(const SGWindowIconifyCallback&) noexcept;
 void sgSetWindowKeyCallback(const SGWindowKeyCallback&) noexcept;
 void sgSetWindowMouseButtonCallback(const SGWindowMouseButtonCallback&) noexcept;
 
-void sgSetFPSNotRelativeFixedUpdateCallback(const SGFixedUpdateCallback& callback) noexcept;
-void sgSetFPSRelativeFixedUpdateCallback(const SGFixedUpdateCallback& callback) noexcept;
+void sgSetFixedUpdateCallback(const SGFixedUpdateCallback& callback) noexcept;
+void sgSetUpdateCallback(const SGUpdateCallback& callback) noexcept;
 
 void sgCallCoreInitCallback();
 void sgCallWindowCloseCallback(GLFWwindow*);
@@ -32,7 +33,7 @@ void sgCallWindowIconifyCallback(GLFWwindow*, int);
 void sgCallWindowKeyCallback(GLFWwindow*, int, int, int, int);
 void sgCallWindowMouseButtonCallback(GLFWwindow*, int, int, int);
 
-void sgCallFPSNotRelativeFixedUpdateCallback();
-void sgCallFPSRelativeFixedUpdateCallback();
+void sgCallFixedUpdateCallback();
+void sgCallUpdateCallback();
 
 #endif //NATIVECORE_CALLBACKS_H

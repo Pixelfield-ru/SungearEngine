@@ -12,7 +12,7 @@ namespace Core::ECS
     class ShadowsCasterSystem : public ISystem
     {
     public:
-        void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) final;
+        void update(const std::shared_ptr<Scene>& scene) final;
 
         void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const final;
     };

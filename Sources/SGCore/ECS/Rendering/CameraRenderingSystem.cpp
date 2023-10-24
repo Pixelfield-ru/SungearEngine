@@ -12,7 +12,7 @@
 #include "SGCore/ECS/ECSWorld.h"
 #include "MeshedEntitiesCollectorSystem.h"
 
-void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
+void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
@@ -68,9 +68,9 @@ void Core::ECS::CameraRenderingSystem::FPSRelativeFixedUpdate(const std::shared_
     // last:
     // 5,30880
     // new:
-    // 4,805300
+    // 3,348900
 
-    //std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+    // std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void Core::ECS::CameraRenderingSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const

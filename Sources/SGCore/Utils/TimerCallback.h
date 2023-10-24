@@ -13,22 +13,22 @@ namespace Core::Utils
 {
     class TimerCallback
     {
-    private:
-        std::function<void()> startFunction;
-        std::function<void()> fixedUpdateFunction;
-        std::function<void(const long double&)> deltaUpdateFunction;
-        std::function<void()> destinationReachedFunction;
-
     public:
-        void setStartFunction(const std::function<void()>&) noexcept;
-        void setFixedUpdateFunction(const std::function<void()>&) noexcept;
-        void setDeltaUpdateFunction(const std::function<void(const long double&)>&) noexcept;
-        void setDestinationReachedFunction(const std::function<void()>&) noexcept;
+        void setStartFunction(std::function<void()>&& function) noexcept;
+        void setFixedUpdateFunction(std::function<void()>&& function) noexcept;
+        void setUpdateFunction(std::function<void()>&& function) noexcept;
+        void setDestinationReachedFunction(std::function<void()>&& function) noexcept;
 
         void callStartFunction();
         void callFixedUpdateFunction();
-        void callDeltaUpdateFunction(const long double&);
+        void callUpdateFunction();
         void callDestinationReachedFunction();
+
+    private:
+        std::function<void()> m_startFunction;
+        std::function<void()> m_fixedUpdateFunction;
+        std::function<void()> m_updateFunction;
+        std::function<void()> m_destinationReachedFunction;
     };
 }
 

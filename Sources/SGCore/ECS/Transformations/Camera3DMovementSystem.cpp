@@ -12,7 +12,7 @@
 #include "SGCore/Utils/Math.h"
 
 // todo: optimize
-void Core::ECS::Camera3DMovementSystem::FPSNotRelativeFixedUpdate
+void Core::ECS::Camera3DMovementSystem::fixedUpdate
 (const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     double t0 = glfwGetTime();

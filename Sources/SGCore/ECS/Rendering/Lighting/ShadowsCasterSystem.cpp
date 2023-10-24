@@ -10,9 +10,9 @@
 #include "SGCore/ECS/ECSWorld.h"
 #include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 
-void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
+void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 {
-    double t0 = glfwGetTime();
+    // double t0 = glfwGetTime();
 
     auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<ShadowsCasterSystem>();
     auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
@@ -27,9 +27,9 @@ void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_pt
 
         // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
         std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent = cachedEntities.second->getComponent<ShadowsCasterComponent>();
-        std::shared_ptr<TransformComponent> shadowCasterTransform = cachedEntities.second->getComponent<TransformComponent>();
+        std::shared_ptr<TransformComponent> shadowsCasterTransform = cachedEntities.second->getComponent<TransformComponent>();
 
-        if (!shadowCasterTransform || !shadowsCasterComponent) continue;
+        if (!shadowsCasterTransform || !shadowsCasterComponent) continue;
 
         shadowsCasterComponent->m_frameBuffer->bind()->clear();
         Core::Main::CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
@@ -73,15 +73,21 @@ void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_pt
                 );
 
                 // todo: maybe make uniform buffer for shadows casters
-                materialShader->useMatrix(
-                        "shadowsCasters[" + totalShadowsCastersStr + "].shadowsCasterSpace",
-                        shadowsCasterComponent->m_projectionMatrix * shadowsCasterComponent->m_viewMatrix
-                );
+                //if(shadowsCasterComponent->m_spaceMatrixChanged)
+                //{
+                    materialShader->useMatrix(
+                            "shadowsCasters[" + totalShadowsCastersStr + "].shadowsCasterSpace",
+                            shadowsCasterComponent->m_spaceMatrix
+                    );
+                //}
 
-                materialShader->useVectorf(
-                        "shadowsCasters[" + totalShadowsCastersStr + "].position",
-                        shadowCasterTransform->m_position
-                );
+                if(shadowsCasterTransform->m_translationChanged)
+                {
+                    materialShader->useVectorf(
+                            "shadowsCasters[" + totalShadowsCastersStr + "].position",
+                            shadowsCasterTransform->m_position
+                    );
+                }
 
                 //auto lastFacesCullingType = meshComponent->m_facesCullingFaceType;
                 //auto lastFacesCullingPolygonsOrder = meshComponent->m_facesCullingPolygonsOrder;
@@ -102,9 +108,10 @@ void Core::ECS::ShadowsCasterSystem::FPSRelativeFixedUpdate(const std::shared_pt
         totalShadowCasters++;
     }
 
-    double t1 = glfwGetTime();
+    // double t1 = glfwGetTime();
 
     // 13,601600
+    // 9,531500 current
     // std::cout << "ms for shadows caster: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 

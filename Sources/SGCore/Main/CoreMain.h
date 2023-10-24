@@ -28,8 +28,8 @@ namespace Core::Main
 
         static void start();
 
-        static void FPSNotRelativeFixedUpdate();
-        static void FPSRelativeFixedUpdate();
+        static void fixedUpdate();
+        static void update();
 
         static Window& getWindow() noexcept;
 

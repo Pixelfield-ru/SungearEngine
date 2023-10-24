@@ -23,11 +23,11 @@ namespace Core::ECS
     public:
         bool m_active = true;
 
-        virtual void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) { }
-        virtual void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene) { }
+        virtual void fixedUpdate(const std::shared_ptr<Scene>& scene) { }
+        virtual void update(const std::shared_ptr<Scene>& scene) { }
 
-        virtual void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
-        virtual void FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
+        virtual void fixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
+        virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
 
         virtual void cacheEntity(const std::shared_ptr<Entity>& entity) const { }
     };

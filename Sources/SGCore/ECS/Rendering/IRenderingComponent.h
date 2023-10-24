@@ -27,8 +27,11 @@ namespace Core::ECS
         float m_movementSpeed = 0.075f;
         float m_rotationSensitive = 0.2f;
 
+        bool m_spaceMatrixChanged = false;
+
         glm::mat4 m_projectionMatrix = glm::perspective<float>(glm::radians(m_fov), m_aspect, m_zNear, m_zFar);
-        glm::mat4 m_viewMatrix = glm::mat4(1);
+        glm::mat4 m_viewMatrix { 1 };
+        glm::mat4 m_spaceMatrix { 1 };
 
     private:
         void init() noexcept override { }

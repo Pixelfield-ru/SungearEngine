@@ -4,56 +4,56 @@
 
 #include "TimerCallback.h"
 
-void Core::Utils::TimerCallback::setStartFunction(const std::function<void()>& function) noexcept
+void Core::Utils::TimerCallback::setStartFunction(std::function<void()>&& function) noexcept
 {
-    startFunction = function;
+    m_startFunction = function;
 }
 
-void Core::Utils::TimerCallback::setFixedUpdateFunction(const std::function<void()>& function) noexcept
+void Core::Utils::TimerCallback::setFixedUpdateFunction(std::function<void()>&& function) noexcept
 {
-    fixedUpdateFunction = function;
+    m_fixedUpdateFunction = function;
 }
 
-void Core::Utils::TimerCallback::setDeltaUpdateFunction(const std::function<void(const long double&)>& function) noexcept
+void Core::Utils::TimerCallback::setUpdateFunction(std::function<void()>&& function) noexcept
 {
-    deltaUpdateFunction = function;
+    m_updateFunction = function;
 }
 
-void Core::Utils::TimerCallback::setDestinationReachedFunction(const std::function<void()>& function) noexcept
+void Core::Utils::TimerCallback::setDestinationReachedFunction(std::function<void()>&& function) noexcept
 {
-    destinationReachedFunction = function;
+    m_destinationReachedFunction = function;
 }
 
 // ------------------------------------------------------------------
 
 void Core::Utils::TimerCallback::callStartFunction()
 {
-    if(startFunction)
+    if(m_startFunction)
     {
-        startFunction();
+        m_startFunction();
     }
 }
 
 void Core::Utils::TimerCallback::callFixedUpdateFunction()
 {
-    if(fixedUpdateFunction)
+    if(m_fixedUpdateFunction)
     {
-        fixedUpdateFunction();
+        m_fixedUpdateFunction();
     }
 }
 
-void Core::Utils::TimerCallback::callDeltaUpdateFunction(const long double& deltaTime)
+void Core::Utils::TimerCallback::callUpdateFunction()
 {
-    if(deltaUpdateFunction)
+    if(m_updateFunction)
     {
-        deltaUpdateFunction(deltaTime);
+        m_updateFunction();
     }
 }
 
 void Core::Utils::TimerCallback::callDestinationReachedFunction()
 {
-    if(destinationReachedFunction)
+    if(m_destinationReachedFunction)
     {
-        destinationReachedFunction();
+        m_destinationReachedFunction();
     }
 }

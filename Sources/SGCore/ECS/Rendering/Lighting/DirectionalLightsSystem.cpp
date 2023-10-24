@@ -10,7 +10,7 @@
 #include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 #include "GLFW/glfw3.h"
 
-void Core::ECS::DirectionalLightsSystem::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
+void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
@@ -86,7 +86,7 @@ void Core::ECS::DirectionalLightsSystem::FPSRelativeFixedUpdate(const std::share
 
     // 0.002500 ms average
 
-    //std::cout << "ms for directional lights system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+    // std::cout << "ms for directional lights system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void Core::ECS::DirectionalLightsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const

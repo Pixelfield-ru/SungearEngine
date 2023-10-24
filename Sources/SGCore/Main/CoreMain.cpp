@@ -35,9 +35,9 @@ void Core::Main::CoreMain::start()
     //globalTimerCallback->setDeltaUpdateFunction([](const double& deltaTime) { deltaUpdate(deltaTime); });
 
     // update
-    globalTimerCallback->setFixedUpdateFunction([]()
+    globalTimerCallback->setUpdateFunction([]()
                                                 {
-                                                    FPSRelativeFixedUpdate();
+                                                    update();
                                                 });
 
     // when reached destination (in the case of this timer, 1 second) second
@@ -54,10 +54,11 @@ void Core::Main::CoreMain::start()
 
     fixedTimerCallback->setFixedUpdateFunction([]()
                                                 {
-                                                    FPSNotRelativeFixedUpdate();
+                                                    fixedUpdate();
                                                 });
 
     m_fixedTimer.m_targetFrameRate = 60;
+    m_fixedTimer.m_useFixedUpdate = true;
     m_fixedTimer.addCallback(fixedTimerCallback);
 
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
@@ -71,20 +72,22 @@ void Core::Main::CoreMain::start()
     }
 }
 
-void Core::Main::CoreMain::FPSNotRelativeFixedUpdate()
-{
-    sgCallFPSNotRelativeFixedUpdateCallback();
-}
-
-void Core::Main::CoreMain::FPSRelativeFixedUpdate()
+void Core::Main::CoreMain::fixedUpdate()
 {
     InputManager::startFrame();
+
+    sgCallFixedUpdateCallback();
+}
+
+void Core::Main::CoreMain::update()
+{
+    // InputManager::startFrame();
 
     glm::ivec2 windowSize;
     m_window.getSize(windowSize.x, windowSize.y);
     m_renderer->renderFrame(windowSize);
 
-    sgCallFPSRelativeFixedUpdateCallback();
+    sgCallUpdateCallback();
 
     m_window.swapBuffers();
 

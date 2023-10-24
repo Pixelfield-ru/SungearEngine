@@ -16,9 +16,25 @@
 #include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 #include "SGCore/ECS/Rendering/Primitives/IPrimitiveComponent.h"
 
-void Core::ECS::TransformationsSystem::FPSNotRelativeFixedUpdate
+/*double curT = 0.0;
+double accum = 0.0;
+size_t fps = 0;*/
+
+void Core::ECS::TransformationsSystem::fixedUpdate
 (const std::shared_ptr<Scene>& scene)
 {
+    /*double lastT = curT;
+    curT = glfwGetTime();
+
+    accum += curT - lastT;
+    if(accum >= 1.0)
+    {
+        accum = 0.0;
+        std::cout << "fps: " << std::to_string(fps) << std::endl;
+        fps = 0;
+    }
+    fps++;*/
+
     double t0 = glfwGetTime();
 
     auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();

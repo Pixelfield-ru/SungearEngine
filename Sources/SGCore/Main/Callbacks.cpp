@@ -7,8 +7,8 @@ struct SGCallbacks
     SGWindowIconifyCallback c_windowIconify;
     SGWindowKeyCallback c_keyCallback;
     SGWindowMouseButtonCallback c_mouseButtonCallback;
-    SGFixedUpdateCallback c_FPSNotRelativeFixedUpdate;
-    SGFixedUpdateCallback c_FPSRelativeFixedUpdate;
+    SGFixedUpdateCallback c_fixedUpdate;
+    SGFixedUpdateCallback c_update;
 };
 
 SGCallbacks sgCallbacks;
@@ -38,14 +38,14 @@ void sgSetWindowMouseButtonCallback(const SGWindowMouseButtonCallback& callback)
     sgCallbacks.c_mouseButtonCallback = callback;
 }
 
-void sgSetFPSNotRelativeFixedUpdateCallback(const SGFixedUpdateCallback& callback) noexcept
+void sgSetFixedUpdateCallback(const SGFixedUpdateCallback& callback) noexcept
 {
-    sgCallbacks.c_FPSNotRelativeFixedUpdate = callback;
+    sgCallbacks.c_fixedUpdate = callback;
 }
 
-void sgSetFPSRelativeFixedUpdateCallback(const SGFixedUpdateCallback& callback) noexcept
+void sgSetUpdateCallback(const SGUpdateCallback& callback) noexcept
 {
-    sgCallbacks.c_FPSRelativeFixedUpdate = callback;
+    sgCallbacks.c_update = callback;
 }
 
 // ---------------------------------------
@@ -90,18 +90,18 @@ void sgCallWindowMouseButtonCallback(GLFWwindow* wnd, int key, int scanCode, int
     }
 }
 
-void sgCallFPSNotRelativeFixedUpdateCallback()
+void sgCallFixedUpdateCallback()
 {
-    if(sgCallbacks.c_FPSNotRelativeFixedUpdate)
+    if(sgCallbacks.c_fixedUpdate)
     {
-        sgCallbacks.c_FPSNotRelativeFixedUpdate();
+        sgCallbacks.c_fixedUpdate();
     }
 }
 
-void sgCallFPSRelativeFixedUpdateCallback()
+void sgCallUpdateCallback()
 {
-    if(sgCallbacks.c_FPSRelativeFixedUpdate)
+    if(sgCallbacks.c_update)
     {
-        sgCallbacks.c_FPSRelativeFixedUpdate();
+        sgCallbacks.c_update();
     }
 }

@@ -45,7 +45,7 @@ void Core::ECS::ECSWorld::init() noexcept
     //m_systems.push_back(std::make_shared<TransformationsSystem>());
 }
 
-void Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
+void Core::ECS::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
@@ -55,14 +55,14 @@ void Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>
 
         if(system->isFlagSet(SystemsFlags::SGSF_NOT_PER_ENTITY))
         {
-            system->FPSNotRelativeFixedUpdate(scene);
+            system->fixedUpdate(scene);
         }
 
         if(system->isFlagSet(SystemsFlags::SGSF_PER_ENTITY))
         {
             for(auto& entity: scene->m_entities)
             {
-                system->FPSNotRelativeFixedUpdate(scene, entity);
+                system->fixedUpdate(scene, entity);
             }
         }
     }
@@ -74,7 +74,7 @@ void Core::ECS::ECSWorld::FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>
     // std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void Core::ECS::ECSWorld::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& scene)
+void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
@@ -84,14 +84,14 @@ void Core::ECS::ECSWorld::FPSRelativeFixedUpdate(const std::shared_ptr<Scene>& s
 
         if(system->isFlagSet(SystemsFlags::SGSF_NOT_PER_ENTITY))
         {
-            system->FPSRelativeFixedUpdate(scene);
+            system->update(scene);
         }
 
         if(system->isFlagSet(SystemsFlags::SGSF_PER_ENTITY))
         {
             for(auto& entity: scene->m_entities)
             {
-                system->FPSRelativeFixedUpdate(scene, entity);
+                system->update(scene, entity);
             }
         }
     }

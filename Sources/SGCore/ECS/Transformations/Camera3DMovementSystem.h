@@ -10,7 +10,7 @@ namespace Core::ECS
     class Camera3DMovementSystem : public ISystem
     {
     public:
-        void FPSNotRelativeFixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void fixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
     };
 }
 
