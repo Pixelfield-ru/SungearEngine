@@ -9,5 +9,5 @@
 
 void Core::ECS::MeshedEntitiesCollectorSystem::cacheEntity(const std::shared_ptr<Entity>& entity) const
 {
-    ECSWorld::cacheComponents<MeshedEntitiesCollectorSystem, MeshComponent, TransformComponent, IPrimitiveComponent>(entity);
+    ECSWorld::cacheComponents<MeshedEntitiesCollectorSystem, MeshComponent, TransformComponent>(entity);
 }

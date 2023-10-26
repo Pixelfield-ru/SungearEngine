@@ -25,7 +25,7 @@ void Core::ECS::RenderingComponentsSystem::fixedUpdate(const std::shared_ptr<Sce
         if(!transformComponent) continue;
 
         bool viewMatrixChanged = transformComponent->m_rotationChanged ||
-                                 transformComponent->m_translationChanged ||
+                                 transformComponent->m_positionChanged ||
                                  transformComponent->m_scaleChanged;
 
         glm::quat rotationQuat;

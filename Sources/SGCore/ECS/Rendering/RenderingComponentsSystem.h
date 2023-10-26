@@ -11,6 +11,8 @@ namespace Core::ECS
 {
     class RenderingComponentsSystem : public ISystem
     {
+        SG_DECLARE_SINGLETON(RenderingComponentsSystem)
+
     public:
         void fixedUpdate(const std::shared_ptr<Scene>& scene) final;
 

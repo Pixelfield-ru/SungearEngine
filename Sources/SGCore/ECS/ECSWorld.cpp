@@ -17,28 +17,39 @@
 
 void Core::ECS::ECSWorld::init() noexcept
 {
-    createSystem<TransformationsSystem>()
-            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
-            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
-    createSystem<MeshedEntitiesCollectorSystem>()
-            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY);
-    createSystem<RenderingComponentsSystem>()
-            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
-            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
-    //createSystem<SkyboxRenderingSystem>();
-    createSystem<PrimitivesUpdaterSystem>();
-    // directional light system must be always before shadows caster system
-    createSystem<DirectionalLightsSystem>()
-            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
-            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
-    createSystem<ShadowsCasterSystem>()
-            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
-            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsSystem>();
+    transformationsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    createSystem<Camera3DMovementSystem>();
-    createSystem<CameraRenderingSystem>()
-            ->removeFlag(SystemsFlags::SGSF_PER_ENTITY)
-            ->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    auto meshedEntitiesCollectorSystem = Patterns::Singleton::getInstance<MeshedEntitiesCollectorSystem>();
+
+    auto renderingComponentsSystem = Patterns::Singleton::getInstance<RenderingComponentsSystem>();
+    renderingComponentsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+
+    auto primitivesUpdaterSystem = Patterns::Singleton::getInstance<PrimitivesUpdaterSystem>();
+    primitivesUpdaterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+
+    auto directionalLightsSystem = Patterns::Singleton::getInstance<DirectionalLightsSystem>();
+    directionalLightsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+
+    auto shadowsCasterSystem = Patterns::Singleton::getInstance<ShadowsCasterSystem>();
+    shadowsCasterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+
+    auto camera3DMovementSystem = Patterns::Singleton::getInstance<Camera3DMovementSystem>();
+    camera3DMovementSystem->addFlag(SystemsFlags::SGSF_PER_ENTITY);
+
+    auto cameraRenderingSystem = Patterns::Singleton::getInstance<CameraRenderingSystem>();
+    cameraRenderingSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+
+    // -------------------------------
+    m_systems.emplace(transformationsSystem);
+    m_systems.emplace(meshedEntitiesCollectorSystem);
+    m_systems.emplace(renderingComponentsSystem);
+    m_systems.emplace(primitivesUpdaterSystem);
+    // directional light system must be always before shadows caster system
+    m_systems.emplace(directionalLightsSystem);
+    m_systems.emplace(shadowsCasterSystem);
+    m_systems.emplace(camera3DMovementSystem);
+    m_systems.emplace(cameraRenderingSystem);
 
     //DirectionalLightsSystem f;
 
@@ -49,9 +60,26 @@ void Core::ECS::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
+    // const auto& f = m_cachedComponentsCollections;
+
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
+
+        auto updateFuncsQueryIter = system->m_fixedUpdateFunctionsQuery.begin();
+        while(updateFuncsQueryIter != system->m_fixedUpdateFunctionsQuery.end())
+        {
+            bool funcDone = (*updateFuncsQueryIter)();
+
+            if(funcDone)
+            {
+                system->m_fixedUpdateFunctionsQuery.erase(updateFuncsQueryIter++);
+            }
+            else
+            {
+                updateFuncsQueryIter++;
+            }
+        }
 
         if(system->isFlagSet(SystemsFlags::SGSF_NOT_PER_ENTITY))
         {
@@ -84,6 +112,22 @@ void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
+
+        // todo:: fix infinite adding to query
+        auto updateFuncsQueryIter = system->m_updateFunctionsQuery.begin();
+        while(updateFuncsQueryIter != system->m_updateFunctionsQuery.end())
+        {
+            bool funcDone = (*updateFuncsQueryIter)();
+
+            if(funcDone)
+            {
+                system->m_updateFunctionsQuery.erase(updateFuncsQueryIter++);
+            }
+            else
+            {
+                updateFuncsQueryIter++;
+            }
+        }
 
         if(system->isFlagSet(SystemsFlags::SGSF_NOT_PER_ENTITY))
         {

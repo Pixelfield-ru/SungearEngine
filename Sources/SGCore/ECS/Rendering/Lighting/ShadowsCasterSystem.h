@@ -11,6 +11,8 @@ namespace Core::ECS
 {
     class ShadowsCasterSystem : public ISystem
     {
+        SG_DECLARE_SINGLETON(ShadowsCasterSystem)
+
     public:
         void update(const std::shared_ptr<Scene>& scene) final;
 

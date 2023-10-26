@@ -6,11 +6,14 @@
 #define SUNGEARENGINE_MESHEDENTITIESCOLLECTORSYSTEM_H
 
 #include "SGCore/ECS/ISystem.h"
+#include "SGCore/Patterns/Singleton.h"
 
 namespace Core::ECS
 {
     class MeshedEntitiesCollectorSystem : public ISystem
     {
+        SG_DECLARE_SINGLETON(MeshedEntitiesCollectorSystem)
+
     public:
         void cacheEntity(const std::shared_ptr<Entity>& entity) const final;
     };

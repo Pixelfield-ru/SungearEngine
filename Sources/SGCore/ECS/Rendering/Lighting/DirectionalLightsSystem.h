@@ -12,6 +12,8 @@ namespace Core::ECS
 {
     class DirectionalLightsSystem : public ISystem
     {
+        SG_DECLARE_SINGLETON(DirectionalLightsSystem)
+
     public:
         void update(const std::shared_ptr<Scene>& scene) final;
 

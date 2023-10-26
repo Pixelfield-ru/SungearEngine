@@ -6,6 +6,7 @@
 #include "SGCore/ImportedScenesArch/IMesh.h"
 #include "SGCore/ECS/IComponent.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
+#include "SGCore/ECS/Transformations/ITransformComponentObserver.h"
 
 namespace Core::ECS
 {
@@ -19,7 +20,6 @@ namespace Core::ECS
         SGFaceType m_facesCullingFaceType = SGFaceType::SGG_BACK_FACE;
         SGPolygonsOrder m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
 
-        // just only mesh, yeah =)
         std::shared_ptr<ImportedScene::IMesh> m_mesh;
     };
 }

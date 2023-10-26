@@ -9,6 +9,8 @@ namespace Core::ECS
 {
     class Camera3DMovementSystem : public ISystem
     {
+        SG_DECLARE_SINGLETON(Camera3DMovementSystem)
+
     public:
         void fixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) final;
     };

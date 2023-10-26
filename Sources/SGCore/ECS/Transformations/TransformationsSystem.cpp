@@ -37,21 +37,21 @@ void Core::ECS::TransformationsSystem::fixedUpdate
 
     double t0 = glfwGetTime();
 
-    auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
+    auto entitiesWithTransform = ECSWorld::getSystemCachedEntities<TransformationsSystem>();
 
-    if(meshedCachedEntities == nullptr) return;
 
-    for(const auto& cachedEntities : meshedCachedEntities->m_cachedEntities)
+
+    if(!entitiesWithTransform) return;
+
+    for(const auto& cachedEntities : entitiesWithTransform->m_cachedEntities)
     {
-        if(cachedEntities.second == nullptr) continue;
+        if(!cachedEntities.second) continue;
 
-        auto meshComponents = cachedEntities.second->getComponents<MeshComponent>();
         auto transformComponent = cachedEntities.second->getComponent<TransformComponent>();
-        auto primitiveComponents = cachedEntities.second->getComponents<IPrimitiveComponent>();
 
         if(!transformComponent) continue;
 
-        transformComponent->m_translationChanged = false;
+        transformComponent->m_positionChanged = false;
         transformComponent->m_rotationChanged = false;
         transformComponent->m_scaleChanged = false;
 
@@ -61,7 +61,7 @@ void Core::ECS::TransformationsSystem::fixedUpdate
             transformComponent->m_translationMatrix = glm::translate(transformComponent->m_translationMatrix, transformComponent->m_position - transformComponent->m_lastPosition);
             transformComponent->m_lastPosition = transformComponent->m_position;
 
-            transformComponent->m_translationChanged = true;
+            transformComponent->m_positionChanged = true;
         }
 
         // todo: fix rotation. make global (not local) rotations
@@ -127,11 +127,11 @@ void Core::ECS::TransformationsSystem::fixedUpdate
         }
 
         // if any matrix is changed then update model matrix
-        if(transformComponent->m_translationChanged || transformComponent->m_rotationChanged || transformComponent->m_scaleChanged)
+        if(transformComponent->m_positionChanged || transformComponent->m_rotationChanged || transformComponent->m_scaleChanged)
         {
             transformComponent->m_modelMatrix = transformComponent->m_translationMatrix * transformComponent->m_rotationMatrix * transformComponent->m_scaleMatrix;
 
-            for(const auto& meshComponent : meshComponents)
+            /*for(const auto& meshComponent : meshComponents)
             {
                 updateMeshUniforms(meshComponent->m_mesh, transformComponent);
             }
@@ -139,7 +139,7 @@ void Core::ECS::TransformationsSystem::fixedUpdate
             for(const auto& primitiveComponent : primitiveComponents)
             {
                 updateMeshUniforms(primitiveComponent->m_mesh, transformComponent);
-            }
+            }*/
         }
     }
 
@@ -194,4 +194,9 @@ void Core::ECS::TransformationsSystem::updateMeshUniforms(const std::shared_ptr<
                                 mesh->m_material->m_roughnessFactor
         );
     }
+}
+
+void Core::ECS::TransformationsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const
+{
+    ECSWorld::cacheComponents<TransformationsSystem, TransformComponent>(entity);
 }

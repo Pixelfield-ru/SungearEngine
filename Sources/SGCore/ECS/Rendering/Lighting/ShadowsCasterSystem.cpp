@@ -17,13 +17,13 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
     auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<ShadowsCasterSystem>();
     auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
 
-    if(thisSystemCachedEntities == nullptr || meshedCachedEntities == nullptr) return;
+    if(!thisSystemCachedEntities || !meshedCachedEntities) return;
 
     size_t totalShadowCasters = 0;
 
     for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
     {
-        if(cachedEntities.second == nullptr) continue;
+        if(!cachedEntities.second) continue;
 
         // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
         std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent = cachedEntities.second->getComponent<ShadowsCasterComponent>();
@@ -36,7 +36,7 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
 
         for(const auto& meshedEntity: meshedCachedEntities->m_cachedEntities)
         {
-            if(meshedEntity.second == nullptr) continue;
+            if(!meshedEntity.second) continue;
 
             // todo: make caching for entities with TransformComponent and MeshComponent
             auto entityTransformComponent = meshedEntity.second->getComponent<TransformComponent>();
@@ -81,7 +81,7 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
                     );
                 //}
 
-                if(shadowsCasterTransform->m_translationChanged)
+                if(shadowsCasterTransform->m_positionChanged)
                 {
                     materialShader->useVectorf(
                             "shadowsCasters[" + totalShadowsCastersStr + "].position",

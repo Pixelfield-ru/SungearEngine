@@ -17,13 +17,13 @@ void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& sc
     auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<DirectionalLightsSystem>();
     auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
 
-    if(thisSystemCachedEntities == nullptr || meshedCachedEntities == nullptr) return;
+    if(!thisSystemCachedEntities || !meshedCachedEntities) return;
 
     size_t totalDirectionalLights = 0;
 
     for (const auto& directionalLightEntity : thisSystemCachedEntities->m_cachedEntities)
     {
-        if(directionalLightEntity.second == nullptr) continue;
+        if(!directionalLightEntity.second) continue;
 
         auto directionalLightComponents =
                 directionalLightEntity.second->getComponents<DirectionalLightComponent>();
@@ -37,11 +37,11 @@ void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& sc
         {
             if(directionalLightComponent->m_color != directionalLightComponent->m_lastColor ||
             directionalLightComponent->m_intensity != directionalLightComponent->m_lastIntensity ||
-            directionalLightTransform->m_translationChanged)
+            directionalLightTransform->m_positionChanged)
             {
                 for(const auto& meshedEntity: meshedCachedEntities->m_cachedEntities)
                 {
-                    if(meshedEntity.second == nullptr) continue;
+                    if(!meshedEntity.second) continue;
 
                     auto meshComponents =
                             meshedEntity.second->getComponents<MeshComponent>();

@@ -8,18 +8,27 @@
 #define NATIVECORE_TRANSFORMATIONSSYSTEM_H
 
 #include "SGCore/ECS/ISystem.h"
-#include "SGCore/ECS/Transformations/TransformComponent.h"
-#include "SGCore/ECS/Rendering/MeshComponent.h"
+
+namespace Core::ImportedScene
+{
+    class IMesh;
+}
 
 namespace Core::ECS
 {
+    class TransformComponent;
+
     class TransformationsSystem : public ISystem
     {
+        SG_DECLARE_SINGLETON(TransformationsSystem)
+
     private:
         void updateMeshUniforms(const std::shared_ptr<ImportedScene::IMesh>& mesh, const std::shared_ptr<TransformComponent>& transformComponent) const noexcept;
 
     public:
         void fixedUpdate(const std::shared_ptr<Scene>& scene) final;
+
+        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const final;
     };
 }
 

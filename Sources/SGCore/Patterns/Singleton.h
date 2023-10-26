@@ -5,17 +5,23 @@
 #ifndef SUNGEARENGINE_SINGLETON_H
 #define SUNGEARENGINE_SINGLETON_H
 
+#include <memory>
+
+#define SG_DECLARE_SINGLETON(cls)                   \
+        friend struct Core::Patterns::Singleton;    \
+    protected:                                      \
+        cls() = default;                            \
+        cls(const cls&) = default;                  \
+        cls(cls&&) = default;
+
 namespace Core::Patterns
 {
-    template<typename T>
-    class Singleton
+    struct Singleton
     {
-    private:
-
-    public:
-        static T* getInstance()
+        template<class T>
+        static std::shared_ptr<T> getInstance()
         {
-            static T* s_instance = new T;
+            static std::shared_ptr<T> s_instance(new T);
             return s_instance;
         }
     };

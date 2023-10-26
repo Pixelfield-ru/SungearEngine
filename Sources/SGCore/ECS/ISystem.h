@@ -5,9 +5,12 @@
 #ifndef NATIVECORE_ISYSTEM_H
 #define NATIVECORE_ISYSTEM_H
 
+#include <functional>
+
 #include "Scene.h"
 #include "SGCore/Patterns/Marker.h"
 #include "Transformations/TransformComponent.h"
+#include "SGCore/Patterns/Singleton.h"
 
 namespace Core::ECS
 {
@@ -20,6 +23,12 @@ namespace Core::ECS
 
     class ISystem : public Patterns::Marker<ISystem>
     {
+        friend class ECSWorld;
+
+    private:
+        std::list<std::function<bool()>> m_fixedUpdateFunctionsQuery;
+        std::list<std::function<bool()>> m_updateFunctionsQuery;
+
     public:
         bool m_active = true;
 
@@ -30,6 +39,20 @@ namespace Core::ECS
         virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
 
         virtual void cacheEntity(const std::shared_ptr<Entity>& entity) const { }
+
+        template<typename Func, typename... Args>
+        void addFunctionToFixedUpdateQuery(const Func& f, const Args&... args)
+        {
+            std::function<bool()> bindFunc = [f, args...]() { return f(args...); };
+            m_fixedUpdateFunctionsQuery.push_back(bindFunc);
+        }
+
+        template<typename Func, typename... Args>
+        void addFunctionToUpdateQuery(const Func& f, const Args&... args)
+        {
+            std::function<bool()> bindFunc = [&f, &args...]() { return f(args...); };
+            m_updateFunctionsQuery.push_back(bindFunc);
+        }
     };
 }
 
