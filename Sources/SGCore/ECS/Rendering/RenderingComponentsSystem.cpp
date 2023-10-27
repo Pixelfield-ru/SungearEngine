@@ -29,7 +29,7 @@ void Core::ECS::RenderingComponentsSystem::fixedUpdate(const std::shared_ptr<Sce
                                  transformComponent->m_scaleChanged;
 
         glm::quat rotationQuat;
-        if(/*transformComponent->m_rotationChanged*/viewMatrixChanged)
+        if(viewMatrixChanged)
         {
             rotationQuat = glm::angleAxis(
                     glm::radians(transformComponent->m_rotation.x),

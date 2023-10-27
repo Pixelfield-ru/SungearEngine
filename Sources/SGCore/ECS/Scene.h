@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SUNGEARENGINE_SCENE_H
 #define SUNGEARENGINE_SCENE_H
 

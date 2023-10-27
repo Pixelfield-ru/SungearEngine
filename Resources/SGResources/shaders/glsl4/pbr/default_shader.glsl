@@ -537,7 +537,7 @@ float ambient = 0.1;
             finalCol = finalCol / (finalCol + vec3(1.0));
             finalCol = pow(finalCol, vec3(1.0 / 2.2));
 
-            fragColor.a = colorFromBase.a;
+            fragColor.a = colorFromDiffuse.a;
             fragColor.rgb = finalCol;
 
             // blinn-phong pipeline  -----------------------------

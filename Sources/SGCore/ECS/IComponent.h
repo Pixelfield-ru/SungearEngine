@@ -8,12 +8,13 @@
 #include <memory>
 
 #include "Entity.h"
+#include "SGCore/Patterns/UUID.h"
 
 namespace Core::ECS
 {
     class Entity;
 
-    class IComponent
+    class IComponent : public Patterns::UUID
     {
     private:
         // just for polymorphism

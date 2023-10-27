@@ -6,6 +6,8 @@
 #define NATIVECORE_ISYSTEM_H
 
 #include <functional>
+#include <map>
+#include <source_location>
 
 #include "Scene.h"
 #include "SGCore/Patterns/Marker.h"
@@ -26,8 +28,8 @@ namespace Core::ECS
         friend class ECSWorld;
 
     private:
-        std::list<std::function<bool()>> m_fixedUpdateFunctionsQuery;
-        std::list<std::function<bool()>> m_updateFunctionsQuery;
+        std::map<std::string, std::function<bool()>> m_fixedUpdateFunctionsQuery;
+        std::map<std::string, std::function<bool()>> m_updateFunctionsQuery;
 
     public:
         bool m_active = true;
@@ -41,17 +43,17 @@ namespace Core::ECS
         virtual void cacheEntity(const std::shared_ptr<Entity>& entity) const { }
 
         template<typename Func, typename... Args>
-        void addFunctionToFixedUpdateQuery(const Func& f, const Args&... args)
+        void addFunctionToFixedUpdateQuery(const std::string& funcUUID, const Func& f, const Args&... args)
         {
             std::function<bool()> bindFunc = [f, args...]() { return f(args...); };
-            m_fixedUpdateFunctionsQuery.push_back(bindFunc);
+            m_fixedUpdateFunctionsQuery[funcUUID] = bindFunc;
         }
 
         template<typename Func, typename... Args>
-        void addFunctionToUpdateQuery(const Func& f, const Args&... args)
+        void addFunctionToUpdateQuery(const std::string& funcUUID, const Func& f, const Args&... args)
         {
-            std::function<bool()> bindFunc = [&f, &args...]() { return f(args...); };
-            m_updateFunctionsQuery.push_back(bindFunc);
+            std::function<bool()> bindFunc = [f, args...]() { return f(args...); };
+            m_updateFunctionsQuery[funcUUID] = (bindFunc);
         }
     };
 }

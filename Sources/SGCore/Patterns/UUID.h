@@ -61,7 +61,12 @@ namespace Core::Patterns
 
             m_uuid = ss.str();
 
-            std::cout << "uuid: " << m_uuid << std::endl;
+            // std::cout << "uuid: " << m_uuid << std::endl;
+        }
+
+        const std::string& getUUID() const noexcept
+        {
+            return m_uuid;
         }
 
         bool operator==(const UUID& other) const

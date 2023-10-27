@@ -109,7 +109,7 @@ void init()
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
     testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
             "../SGResources/models/test/plane.obj"
-            );
+    );
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
             //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
@@ -132,8 +132,10 @@ void init()
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            //"../SGResources/models/test/uaz/scene.gltf"
-            "../SGResources/models/test/wooden_table/scene.gltf"
+            "../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/mgu/scene.gltf"
+            //"../SGResources/models/test/realistic_tree/scene.gltf"
+            //"../SGResources/models/test/wooden_table/scene.gltf"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/vss/scene.gltf"
@@ -155,13 +157,15 @@ void init()
             //"../SGResources/models/test/lenin/scene.gltf"
     );
 
+    const std::string cubePath = "../SGResources/models/standard/cube.obj";
+
     auto cubeModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
-            "../SGResources/models/standard/cube.fbx"
+            cubePath
     );
 
     auto cubeModel1 = Core::Memory::AssetManager::loadAssetWithAlias<Core::Memory::Assets::ModelAsset>(
             "cube1",
-            "../SGResources/models/standard/cube.fbx"
+            cubePath
     );
 
     std::vector<std::shared_ptr<Core::ECS::Entity>> planeEntities;
@@ -193,10 +197,12 @@ void init()
                           { 4, 4, 4 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
                           { 0.25, 0.25, 0.25 }, btrEntities);*/
-        /*processLoadedNode(node, { 0, -1, -20 }, { 90, 0, 0 },
+        /*processLoadedNode(node, { 5, -1, -20 }, { 180, 0, 0 },
                           { 1, 1, 1 }, btrEntities);*/
-        processLoadedNode(node, { 0, -1.65, -20 }, { 0, 90, 0 },
-                          { 0.1, 0.1, 0.1 }, btrEntities);
+        /*processLoadedNode(node, { 5, -1, -20 }, { 0, 0, 0 },
+                          { 0.01, 0.01, 0.01 }, btrEntities);*/
+        /*processLoadedNode(node, { 0, -1.65, -20 }, { 0, 90, 0 },
+                          { 0.1, 0.1, 0.1 }, btrEntities);*/
         /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 90 },
                           { 0.005, 0.005, 0.005 }, btrEntities);*/
         /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 0 },
@@ -209,8 +215,8 @@ void init()
                           { 0.2, 0.2, 0.2 }, btrEntities);*/
 
         // for uaz
-        /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
+        processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);
         /*processLoadedNode(node, { 3, -3, -20 }, { 0, 0, 0 },
                           { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
         /*processLoadedNode(node, { 0.0, -3.0, -20 }, { 90, 0, 0 },
@@ -237,7 +243,7 @@ void init()
     for(auto& node : cubeModel->m_nodes)
     {
         processLoadedNode(node, { 0, 0, 0 }, { 0, 0, 0 },
-                          { 39, 39, 39 }, cubeEntities);
+                          { 1300, 1300, 1300 }, cubeEntities);
     }
 
     std::vector<std::shared_ptr<Core::ECS::Entity>> cube1Entities;
@@ -245,12 +251,24 @@ void init()
     for(auto& node : cubeModel1->m_nodes)
     {
         processLoadedNode(node, { -5, 3, -20 }, { 0, 0, 0 },
-                          { 0.1, 0.4, 0.1 }, cube1Entities);
+                          { 0.1 * 10.0, 0.4 * 10.0, 0.1 * 10.0 }, cube1Entities);
     }
 
     for (const auto& entity: cube1Entities)
     {
         testScene->addEntity(entity);
+
+        auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
+
+        if(meshComponent)
+        {
+            meshComponent->m_mesh->m_material->addTexture2D(
+                    SGMaterialTextureType::SGTP_DIFFUSE,
+                    Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                            "../SGResources/textures/genius.jpg"
+                    )
+            );
+        }
     }
 
     for(const auto& entity : cubeEntities)
@@ -291,10 +309,10 @@ void init()
             meshComponent->m_mesh->m_material->setShader(
                     SGMAT_STANDARD_SHADER_NAME,
                     std::shared_ptr<Core::Graphics::IShader>(
-                    Core::Main::CoreMain::getRenderer().createShader(
-                            Core::Graphics::getShaderPath(Core::Graphics::StandardShaderType::SG_SKYBOX_SHADER)
-                    )
-            ));
+                            Core::Main::CoreMain::getRenderer().createShader(
+                                    Core::Graphics::getShaderPath(Core::Graphics::StandardShaderType::SG_SKYBOX_SHADER)
+                            )
+                    ));
         }
         testScene->addEntity(entity);
     }

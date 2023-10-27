@@ -25,6 +25,8 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
 
     if(!thisSystemCachedEntities || (!meshedCachedEntities && !primitivesCachedEntities)) return;
 
+    size_t curFunc = 0;
+
     for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
     {
         if(!cachedEntities.second) continue;
@@ -35,19 +37,6 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
         if (!cameraComponent || !cameraTransformComponent) continue;
 
         Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
-
-        auto uniformsUpdaterLambda =
-                [](const std::shared_ptr<ImportedScene::IMesh>& mesh, const std::shared_ptr<TransformComponent>& tc)
-                {
-                    if(tc->m_positionChanged || tc->m_rotationChanged || tc->m_scaleChanged)
-                    {
-                        Patterns::Singleton::getInstance<CameraRenderingSystem>()->updateMeshUniforms(mesh, tc);
-
-                        return true;
-                    }
-
-                    return false;
-                };
 
         for(const auto& meshedEntity: meshedCachedEntities->m_cachedEntities)
         {
@@ -63,11 +52,10 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
             for (const auto& meshComponent : meshComponents)
             {
                 transformationsSystem->addFunctionToFixedUpdateQuery(
+                        meshComponent->getUUID(),
                         uniformsUpdaterLambda,
                         meshComponent->m_mesh, transformComponent
                 );
-
-                // updateMeshUniforms(meshComponent->m_mesh, transformComponent);
 
                 Core::Main::CoreMain::getRenderer().renderMesh(
                         transformComponent,
@@ -90,11 +78,10 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
             for (const auto& primitiveComponent : primitiveComponents)
             {
                 transformationsSystem->addFunctionToFixedUpdateQuery(
+                        primitiveComponent->getUUID(),
                         uniformsUpdaterLambda,
                         primitiveComponent->m_mesh, transformComponent
                 );
-
-                updateMeshUniforms(primitiveComponent->m_mesh, transformComponent);
 
                 Core::Main::CoreMain::getRenderer().renderPrimitive(
                         transformComponent,

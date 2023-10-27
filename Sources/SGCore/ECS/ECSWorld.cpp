@@ -69,7 +69,7 @@ void Core::ECS::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
         auto updateFuncsQueryIter = system->m_fixedUpdateFunctionsQuery.begin();
         while(updateFuncsQueryIter != system->m_fixedUpdateFunctionsQuery.end())
         {
-            bool funcDone = (*updateFuncsQueryIter)();
+            bool funcDone = updateFuncsQueryIter->second();
 
             if(funcDone)
             {
@@ -117,7 +117,7 @@ void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
         auto updateFuncsQueryIter = system->m_updateFunctionsQuery.begin();
         while(updateFuncsQueryIter != system->m_updateFunctionsQuery.end())
         {
-            bool funcDone = (*updateFuncsQueryIter)();
+            bool funcDone = updateFuncsQueryIter->second();
 
             if(funcDone)
             {

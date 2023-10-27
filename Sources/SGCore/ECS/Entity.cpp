@@ -29,7 +29,7 @@ void Core::ECS::Entity::addComponent(const std::shared_ptr<IComponent>& componen
             // todo: do for scene where entity is placed
             Scene::getCurrentScene()->setDirectionalLightsNum(
                     Scene::getCurrentScene()->getDirectionalLightsNum() + 1
-                    );
+            );
         }
     }
 
