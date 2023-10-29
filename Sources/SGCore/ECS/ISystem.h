@@ -8,11 +8,14 @@
 #include <functional>
 #include <map>
 #include <source_location>
+#include <GLFW/glfw3.h>
 
 #include "Scene.h"
 #include "SGCore/Patterns/Marker.h"
 #include "Transformations/TransformComponent.h"
 #include "SGCore/Patterns/Singleton.h"
+
+#include "ComponentsCollection.h"
 
 namespace Core::ECS
 {
@@ -27,9 +30,11 @@ namespace Core::ECS
     {
         friend class ECSWorld;
 
-    private:
+    protected:
         std::map<std::string, std::function<bool()>> m_fixedUpdateFunctionsQuery;
         std::map<std::string, std::function<bool()>> m_updateFunctionsQuery;
+
+        std::map<std::shared_ptr<Entity>, std::shared_ptr<ComponentsCollection>> m_cachedEntities;
 
     public:
         bool m_active = true;
@@ -40,7 +45,58 @@ namespace Core::ECS
         virtual void fixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
         virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
 
-        virtual void cacheEntity(const std::shared_ptr<Entity>& entity) const { }
+        virtual void cacheEntity(const std::shared_ptr<Entity>& entity) { }
+
+        template<typename... ComponentsT>
+        requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
+        void cacheEntityComponents(const std::shared_ptr<Entity>& entity)
+        {
+            double t0 = glfwGetTime();
+
+            // is components of all ComponentsT... exists
+            bool componentsSetExistsInEntity = true;
+            Utils::Utils::forTypes<ComponentsT...>([&entity, &componentsSetExistsInEntity](auto t)
+                                                   {
+                                                       using type = typename decltype(t)::type;
+
+                                                       if(entity->getComponent<type>() == nullptr)
+                                                       {
+                                                           componentsSetExistsInEntity = false;
+                                                           return;
+                                                       }
+                                                   });
+
+            // if not exists that we wil not cache components of this entity
+            if(!componentsSetExistsInEntity) return;
+
+            auto& foundComponentsCollection = m_cachedEntities[entity];
+            foundComponentsCollection = foundComponentsCollection == nullptr ?
+                                        std::make_shared<ComponentsCollection>() : foundComponentsCollection;
+
+            Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection](auto t)
+                                                   {
+                                                       using type = typename decltype(t)::type;
+
+                                                       // if component already exists in components collection then we wont cache
+                                                       if (foundComponentsCollection->getComponent<type>() == nullptr)
+                                                       {
+                                                           auto entityComponentsList = entity->getComponents<type>();
+                                                           for (const auto& component: entityComponentsList)
+                                                           {
+                                                               foundComponentsCollection->addComponent(component);
+                                                           }
+                                                       }
+                                                   });
+
+            double t1 = glfwGetTime();
+
+            std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+        }
+
+        const auto& getCachedEntities() const noexcept
+        {
+            return m_cachedEntities;
+        }
 
         template<typename Func, typename... Args>
         void addFunctionToFixedUpdateQuery(const std::string& funcUUID, const Func& f, const Args&... args)

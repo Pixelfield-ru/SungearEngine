@@ -12,8 +12,6 @@
 #include <tsl/robin_map.h>
 #include <GLFW/glfw3.h>
 
-#include "ComponentsCollection.h"
-
 namespace Core::ECS
 {
     struct SystemCachedEntities
@@ -32,89 +30,9 @@ namespace Core::ECS
 
         static void update(const std::shared_ptr<Scene>& scene);
 
-        template<typename SystemT, typename... ComponentsT>
-        requires(std::is_base_of_v<ISystem, SystemT> && (std::is_base_of_v<IComponent, ComponentsT> && ...))
-        static void cacheComponents(const std::shared_ptr<Entity>& entity)
-        {
-            double t0 = glfwGetTime();
-
-            const size_t systemTID = typeid(SystemT).hash_code();
-
-            // is components of all ComponentsT... exists
-            bool componentsSetExistsInEntity = true;
-            Utils::Utils::forTypes<ComponentsT...>([&entity, &componentsSetExistsInEntity](auto t)
-            {
-                using type = typename decltype(t)::type;
-
-                if(entity->getComponent<type>() == nullptr)
-                {
-                    componentsSetExistsInEntity = false;
-                    return;
-                }
-            });
-
-            // if not exists that we wil not cache components of this entity
-            if(!componentsSetExistsInEntity) return;
-
-            auto& systemCachedEntities = m_cachedComponentsCollections[systemTID];
-            systemCachedEntities = systemCachedEntities == nullptr ?
-                                   std::make_shared<SystemCachedEntities>() : systemCachedEntities;
-
-            auto& foundComponentsCollection = systemCachedEntities->m_cachedEntities[entity];
-            foundComponentsCollection = foundComponentsCollection == nullptr ?
-                                        std::make_shared<ComponentsCollection>() : foundComponentsCollection;
-
-            Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection](auto t)
-            {
-                using type = typename decltype(t)::type;
-
-                // if component already exists in components collection then we wont cache
-                if (foundComponentsCollection->getComponent<type>() == nullptr)
-                {
-                    auto entityComponentsList = entity->getComponents<type>();
-                    for (const auto& component: entityComponentsList)
-                    {
-                        foundComponentsCollection->addComponent(component);
-                    }
-                }
-            });
-
-            double t1 = glfwGetTime();
-
-            std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
-        }
-
-        template<typename SystemT>
-        requires(std::is_base_of_v<ISystem, SystemT>)
-        static std::shared_ptr<SystemCachedEntities> getSystemCachedEntities()
-        {
-            return m_cachedComponentsCollections[typeid(SystemT).hash_code()];
-        }
-
-        /*template<typename SystemT>
-        requires(std::is_base_of_v<ISystem, SystemT>)
-        static std::shared_ptr<SystemT> createSystem()
-        {
-            std::shared_ptr<SystemT> newSystem = std::make_shared<SystemT>();
-            newSystem->addFlag(SystemsFlags::SGSF_PER_ENTITY);
-
-            m_systems.emplace(newSystem);
-
-            return newSystem;
-        }*/
-
         static void recacheEntity(const std::shared_ptr<Entity>& entity);
-
-        /*template<typename ComponentT>
-        requires(std::is_base_of_v<IComponent, ComponentT>)
-        static std::shared_ptr<ComponentT> createComponent()
-        {
-            auto component = std::make_shared<ComponentT>();
-
-        }*/
-
     private:
-        static inline std::map<size_t, std::shared_ptr<SystemCachedEntities>> m_cachedComponentsCollections;
+        // static inline std::map<size_t, std::shared_ptr<SystemCachedEntities>> m_cachedComponentsCollections;
         //static inline tsl::robin_map<size_t,
         static inline std::set<std::shared_ptr<ISystem>> m_systems;
     };

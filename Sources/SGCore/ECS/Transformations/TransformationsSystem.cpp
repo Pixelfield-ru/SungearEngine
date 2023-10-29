@@ -37,13 +37,7 @@ void Core::ECS::TransformationsSystem::fixedUpdate
 
     double t0 = glfwGetTime();
 
-    auto entitiesWithTransform = ECSWorld::getSystemCachedEntities<TransformationsSystem>();
-
-
-
-    if(!entitiesWithTransform) return;
-
-    for(const auto& cachedEntities : entitiesWithTransform->m_cachedEntities)
+    for(const auto& cachedEntities : m_cachedEntities)
     {
         if(!cachedEntities.second) continue;
 
@@ -196,7 +190,7 @@ void Core::ECS::TransformationsSystem::updateMeshUniforms(const std::shared_ptr<
     }
 }
 
-void Core::ECS::TransformationsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const
+void Core::ECS::TransformationsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
 {
-    ECSWorld::cacheComponents<TransformationsSystem, TransformComponent>(entity);
+    cacheEntityComponents<TransformComponent>(entity);
 }

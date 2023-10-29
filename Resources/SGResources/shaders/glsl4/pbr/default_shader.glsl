@@ -136,29 +136,34 @@ float ambient = 0.1;
     float calculatePCSS(
         const in vec3 normal,
         const in vec4 shadowsCasterSpaceFragPos,
+        vec3 fragPos,
         const in vec3 projCoords,
         const in int shadowsCasterIdx,
         const in vec2 texelSize,
         const in float lightMinCoeff
     )
     {
+        //float finalBias = max(0.05 * (1.0 - dot(normal, shadowsCasters[shadowsCasterIdx].position)), shadowsBias);
+        //float finalBias = 0.00005;
+
+        vec3 lightDir = normalize(shadowsCasters[shadowsCasterIdx].position - fragPos);
+        float cosTheta = clamp(dot(normal, lightDir), 0.0, 1.0);
+        //float finalBias = clamp(0.000007 * tan(acos(cosTheta)), 0.0, 0.01);
+        float finalBias = 0.0;
+
         float finalProjZ = projCoords.z;
 
         const int numBlockerSamples = 16;
-        const int numAASamples = 20;
-        const float nearPlane = 0.2;
+        const int numAASamples = 16;
+        const float nearPlane = 1.1;
         const float lightWorldSize = 10.0;
         const float lightFrustumWidth = 3.75;
         const float lightSizeUV = lightWorldSize / lightFrustumWidth;
         //const float lightSizeUV = lightFrustumWidth / lightWorldSize;
 
-
-        float finalBias = max(0.05 * (1.0 - dot(normal, shadowsCasters[shadowsCasterIdx].position)), shadowsBias);
-            //float finalBias = 0.00005;
-
         //float finalBias = shadowsBias;
         //float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / shadowsCasterSpaceFragPos.z;
-        float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / shadowsCasters[shadowsCasterIdx].position.z;
+        float searchWidth = lightSizeUV * (finalProjZ - nearPlane) / finalProjZ;
 
         float blockers = 0.0;
         float avgBlocker = 0.0;
@@ -177,7 +182,7 @@ float ambient = 0.1;
 
             float occluder = texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + offset).r;
 
-            if(occluder < finalProjZ)
+            if(occluder < finalProjZ - finalBias)
             {
                 blockers += 1.0;
                 avgBlocker += occluder;
@@ -195,13 +200,14 @@ float ambient = 0.1;
         float filterRadiusUV = penumbraSize * lightSizeUV * nearPlane / finalProjZ;
 
         float visibility = 1.0;
+        float m = (visibility - lightMinCoeff) / numAASamples;
 
-        for(int i = 0; i < 16; i++)
+        for(int i = 0; i < numAASamples; i++)
         {
             if(texture(shadowsCastersShadowMaps[shadowsCasterIdx],
-                projCoords.xy + rotate(poissonDisk[i] * filterRadiusUV, rotTrig)).z < projCoords.z - finalBias)
+            projCoords.xy + rotate(poissonDisk[i] * filterRadiusUV, rotTrig)).z < finalProjZ - finalBias)
             {
-                visibility -= 0.04;
+                visibility -= m;
             }
         }
 
@@ -258,7 +264,7 @@ float ambient = 0.1;
 
         // PCSS ------------------
 
-        /*float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, projCoords, shadowsCasterIdx, texelSize, 0.55);
+        /*float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, fragPos, projCoords, shadowsCasterIdx, texelSize, 0.4);
 
         return pcssShadow;*/
 
@@ -268,7 +274,7 @@ float ambient = 0.1;
         const int samplesNum = 24;
 
         float visibility = 1.0;
-        float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
+        const float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
 
         float rand = random(projCoords.xy);
         rand = mad(rand, 2.0, -1.0);
@@ -441,7 +447,7 @@ float ambient = 0.1;
         #endif
 
         #ifdef sgmat_metalness12_DEFINED
-            colorFromMetalness = texture(sgmat_metalness12, finalUV);
+            // colorFromMetalness = texture(sgmat_metalness12, finalUV);
         #endif
 
         #ifdef sgmat_diffuseRoughness3_DEFINED
@@ -449,7 +455,7 @@ float ambient = 0.1;
         #endif
 
         #ifdef sgmat_baseColor8_DEFINED
-            colorFromBase = texture(sgmat_baseColor8, finalUV);
+            // colorFromBase = texture(sgmat_baseColor8, finalUV);
         #endif
 
         #ifdef sgmat_diffuse4_DEFINED
@@ -462,11 +468,11 @@ float ambient = 0.1;
         #endif
 
         #ifdef sgmat_ambientOcclusion1_DEFINED
-            colorFromAO = texture(sgmat_ambientOcclusion1, finalUV);
+            // colorFromAO = texture(sgmat_ambientOcclusion1, finalUV);
         #endif
 
         #ifdef sgmat_shininess17_DEFINED
-            colorFromShininess = texture(sgmat_shininess17, finalUV);
+            // colorFromShininess = texture(sgmat_shininess17, finalUV);
         #endif
 
         //fragColor = colorFromBase;

@@ -146,7 +146,8 @@ vec3 atmosphere(vec3 r, vec3 ro,
 
         #ifdef sgmat_skybox25_DEFINED
             vec4 skyboxCol = texture(sgmat_skybox25, vs_UVAttribute.xyz);
-            fragColor = vec4(ACESFilm(atmosphereCol), skyboxCol.a);
+            // fragColor = vec4(ACESFilm(atmosphereCol), skyboxCol.a);
+            fragColor = vec4(ACESFilm(atmosphereCol * skyboxCol.rgb), skyboxCol.a);
         #else
             fragColor = vec4(atmosphereCol, 1.0);
         #endif

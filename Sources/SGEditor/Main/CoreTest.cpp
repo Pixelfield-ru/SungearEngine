@@ -121,7 +121,7 @@ void init()
             //"../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/btr_80/scene.gltf"
             //"../SGResources/models/test/train_ep20/scene.gltf"
-            //"../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf"
+            "../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf"
             //"../SGResources/models/test/stalker/stalk_e/fbx/stalker_1.fbx"
             //"../SGResources/models/test/hamada_gun/scene.gltf"
             //"../SGResources/models/test/ak74/scene.gltf"
@@ -132,7 +132,7 @@ void init()
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            "../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
             //"../SGResources/models/test/wooden_table/scene.gltf"
@@ -197,8 +197,8 @@ void init()
                           { 4, 4, 4 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
                           { 0.25, 0.25, 0.25 }, btrEntities);*/
-        /*processLoadedNode(node, { 5, -1, -20 }, { 180, 0, 0 },
-                          { 1, 1, 1 }, btrEntities);*/
+        processLoadedNode(node, { 5, -3, -20 }, { 0, 0, 0 },
+                          { 1, 1, 1 }, btrEntities);
         /*processLoadedNode(node, { 5, -1, -20 }, { 0, 0, 0 },
                           { 0.01, 0.01, 0.01 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1.65, -20 }, { 0, 90, 0 },
@@ -215,8 +215,10 @@ void init()
                           { 0.2, 0.2, 0.2 }, btrEntities);*/
 
         // for uaz
-        processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);
+        /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
+        /*processLoadedNode(node, { -0, -3, -20 }, { 90, 0, 0 },
+                          { 0.00025 * 2, 0.00025 * 2, 0.00025 * 2 }, btrEntities);*/
         /*processLoadedNode(node, { 3, -3, -20 }, { 0, 0, 0 },
                           { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
         /*processLoadedNode(node, { 0.0, -3.0, -20 }, { 90, 0, 0 },
@@ -243,14 +245,14 @@ void init()
     for(auto& node : cubeModel->m_nodes)
     {
         processLoadedNode(node, { 0, 0, 0 }, { 0, 0, 0 },
-                          { 1300, 1300, 1300 }, cubeEntities);
+                          { 1100, 1100, 1100 }, cubeEntities);
     }
 
     std::vector<std::shared_ptr<Core::ECS::Entity>> cube1Entities;
 
     for(auto& node : cubeModel1->m_nodes)
     {
-        processLoadedNode(node, { -5, 3, -20 }, { 0, 0, 0 },
+        processLoadedNode(node, { -5, 3, -30 }, { 0, 0, 0 },
                           { 0.1 * 10.0, 0.4 * 10.0, 0.1 * 10.0 }, cube1Entities);
     }
 

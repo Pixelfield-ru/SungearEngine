@@ -6,7 +6,6 @@
 #include "SGCore/ImportedScenesArch/IMesh.h"
 #include "SGCore/ECS/IComponent.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
-#include "SGCore/ECS/Transformations/ITransformComponentObserver.h"
 
 namespace Core::ECS
 {

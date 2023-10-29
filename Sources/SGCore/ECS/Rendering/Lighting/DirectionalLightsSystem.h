@@ -15,9 +15,9 @@ namespace Core::ECS
         SG_DECLARE_SINGLETON(DirectionalLightsSystem)
 
     public:
-        void update(const std::shared_ptr<Scene>& scene) final;
+        void fixedUpdate(const std::shared_ptr<Scene>& scene) final;
 
-        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const final;
+        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) final;
     };
 }
 

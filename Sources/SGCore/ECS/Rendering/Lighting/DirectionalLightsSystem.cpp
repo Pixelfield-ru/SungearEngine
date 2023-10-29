@@ -9,19 +9,21 @@
 #include "SGCore/ECS/ECSWorld.h"
 #include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 #include "GLFW/glfw3.h"
+#include "SGCore/ECS/Transformations/TransformationsSystem.h"
 
-void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& scene)
+void Core::ECS::DirectionalLightsSystem::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
-    auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<DirectionalLightsSystem>();
-    auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
+    auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsSystem>();
 
-    if(!thisSystemCachedEntities || !meshedCachedEntities) return;
+    const auto& meshedCachedEntities = Patterns::Singleton::getInstance<MeshedEntitiesCollectorSystem>()->getCachedEntities();
 
-    size_t totalDirectionalLights = 0;
+    if(meshedCachedEntities.empty()) return;
 
-    for (const auto& directionalLightEntity : thisSystemCachedEntities->m_cachedEntities)
+    size_t currentDirectionalLight = 0;
+
+    for (const auto& directionalLightEntity : m_cachedEntities)
     {
         if(!directionalLightEntity.second) continue;
 
@@ -35,11 +37,13 @@ void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& sc
 
         for(const auto& directionalLightComponent: directionalLightComponents)
         {
-            if(directionalLightComponent->m_color != directionalLightComponent->m_lastColor ||
-            directionalLightComponent->m_intensity != directionalLightComponent->m_lastIntensity ||
-            directionalLightTransform->m_positionChanged)
+            bool colorChanged = directionalLightComponent->m_color != directionalLightComponent->m_lastColor;
+            bool intensityChanged = directionalLightComponent->m_intensity != directionalLightComponent->m_lastIntensity;
+            bool posChanged = directionalLightTransform->m_positionChanged;
+
+            if(colorChanged || intensityChanged || posChanged)
             {
-                for(const auto& meshedEntity: meshedCachedEntities->m_cachedEntities)
+                for(const auto& meshedEntity: meshedCachedEntities)
                 {
                     if(!meshedEntity.second) continue;
 
@@ -52,25 +56,35 @@ void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& sc
 
                         if(!materialShader) continue;
 
-                        std::string directionalLightString = "directionalLights[" + std::to_string(totalDirectionalLights) + "]";
+                        std::string directionalLightString =
+                                "directionalLights[" + std::to_string(currentDirectionalLight) + "]";
 
                         materialShader->bind();
 
-                        materialShader->useVectorf(
-                                directionalLightString + ".color",
-                                directionalLightComponent->m_color
-                        );
+                        if(colorChanged)
+                        {
+                            materialShader->useVectorf(
+                                    directionalLightString + ".color",
+                                    directionalLightComponent->m_color
+                            );
+                        }
 
-                        materialShader->useFloat(
-                                directionalLightString + ".intensity",
-                                directionalLightComponent->m_intensity
-                        );
+                        if(intensityChanged)
+                        {
+                            materialShader->useFloat(
+                                    directionalLightString + ".intensity",
+                                    directionalLightComponent->m_intensity
+                            );
+                        }
 
-                        // todo: take into account the type of transformation and the direction of rotation
-                        materialShader->useVectorf(
-                                directionalLightString + ".position",
-                                directionalLightTransform->m_position
-                        );
+                        if(posChanged)
+                        {
+                            // todo: take into account the type of transformation and the direction of rotation
+                            materialShader->useVectorf(
+                                    directionalLightString + ".position",
+                                    directionalLightTransform->m_position
+                            );
+                        }
                     }
                 }
 
@@ -78,7 +92,7 @@ void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& sc
                 directionalLightComponent->m_lastIntensity = directionalLightComponent->m_intensity;
             }
 
-            totalDirectionalLights++;
+            currentDirectionalLight++;
         }
     }
 
@@ -89,7 +103,7 @@ void Core::ECS::DirectionalLightsSystem::update(const std::shared_ptr<Scene>& sc
     // std::cout << "ms for directional lights system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void Core::ECS::DirectionalLightsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const
+void Core::ECS::DirectionalLightsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
 {
-    ECSWorld::cacheComponents<DirectionalLightsSystem, DirectionalLightComponent, TransformComponent>(entity);
+    cacheEntityComponents<DirectionalLightComponent, TransformComponent>(entity);
 }

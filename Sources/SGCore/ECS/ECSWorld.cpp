@@ -35,7 +35,7 @@ void Core::ECS::ECSWorld::init() noexcept
     shadowsCasterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto camera3DMovementSystem = Patterns::Singleton::getInstance<Camera3DMovementSystem>();
-    camera3DMovementSystem->addFlag(SystemsFlags::SGSF_PER_ENTITY);
+    camera3DMovementSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto cameraRenderingSystem = Patterns::Singleton::getInstance<CameraRenderingSystem>();
     cameraRenderingSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
@@ -157,22 +157,16 @@ void Core::ECS::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
 {
     double t0 = glfwGetTime();
 
-    // clearing all cached components for this entity
-    for(const auto& systemCachedEntities : m_cachedComponentsCollections)
-    {
-        if(systemCachedEntities.second != nullptr)
-        {
-            auto& foundComponentsCollection = systemCachedEntities.second->m_cachedEntities[entity];
-            if(foundComponentsCollection != nullptr)
-            {
-                foundComponentsCollection->clear();
-            }
-        }
-    }
-
     for(auto& system : m_systems)
     {
         if (!system->m_active) continue;
+
+        // clearing all cached components for this entity
+        auto& foundComponentsCollection = system->m_cachedEntities[entity];
+        if(foundComponentsCollection)
+        {
+            foundComponentsCollection->clear();
+        }
 
         system->cacheEntity(entity);
     }

@@ -19,15 +19,12 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
 
     auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsSystem>();
 
-    auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<CameraRenderingSystem>();
-    auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
-    auto primitivesCachedEntities = ECSWorld::getSystemCachedEntities<PrimitivesUpdaterSystem>();
+    const auto& meshedCachedEntities = Patterns::Singleton::getInstance<MeshedEntitiesCollectorSystem>()->getCachedEntities();
+    const auto& primitivesCachedEntities = Patterns::Singleton::getInstance<PrimitivesUpdaterSystem>()->getCachedEntities();
 
-    if(!thisSystemCachedEntities || (!meshedCachedEntities && !primitivesCachedEntities)) return;
+    if(meshedCachedEntities.empty() && primitivesCachedEntities.empty()) return;
 
-    size_t curFunc = 0;
-
-    for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
+    for (const auto& cachedEntities : m_cachedEntities)
     {
         if(!cachedEntities.second) continue;
 
@@ -38,7 +35,7 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
 
         Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
 
-        for(const auto& meshedEntity: meshedCachedEntities->m_cachedEntities)
+        for(const auto& meshedEntity: meshedCachedEntities)
         {
             if(!meshedEntity.second) continue;
 
@@ -64,7 +61,7 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
             }
         }
 
-        for(const auto& primitiveEntity : primitivesCachedEntities->m_cachedEntities)
+        for(const auto& primitiveEntity : primitivesCachedEntities)
         {
             if(!primitiveEntity.second) continue;
 
@@ -101,9 +98,9 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
     // std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void Core::ECS::CameraRenderingSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const
+void Core::ECS::CameraRenderingSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
 {
-    ECSWorld::cacheComponents<CameraRenderingSystem, CameraComponent, TransformComponent>(entity);
+    cacheEntityComponents<CameraComponent, TransformComponent>(entity);
 }
 
 void Core::ECS::CameraRenderingSystem::updateMeshUniforms(const std::shared_ptr<ImportedScene::IMesh>& mesh,

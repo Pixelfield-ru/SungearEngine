@@ -9,13 +9,9 @@
 
 // todo: make optimization
 
-void Core::ECS::PrimitivesUpdaterSystem::update(const std::shared_ptr<Scene>& scene)
+void Core::ECS::PrimitivesUpdaterSystem::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
-    auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<PrimitivesUpdaterSystem>();
-
-    if(!thisSystemCachedEntities) return;
-
-    for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
+    for (const auto& cachedEntities : m_cachedEntities)
     {
         if(!cachedEntities.second) continue;
 
@@ -235,7 +231,7 @@ void Core::ECS::PrimitivesUpdaterSystem::update(const std::shared_ptr<Scene>& sc
     }
 }
 
-void Core::ECS::PrimitivesUpdaterSystem::cacheEntity(const std::shared_ptr<Entity>& entity) const
+void Core::ECS::PrimitivesUpdaterSystem::cacheEntity(const std::shared_ptr<Entity>& entity)
 {
-    ECSWorld::cacheComponents<PrimitivesUpdaterSystem, IPrimitiveComponent, TransformComponent>(entity);
+    cacheEntityComponents<IPrimitiveComponent, TransformComponent>(entity);
 }

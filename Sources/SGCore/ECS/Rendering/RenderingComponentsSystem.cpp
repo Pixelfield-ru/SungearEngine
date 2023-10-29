@@ -11,13 +11,9 @@
 
 void Core::ECS::RenderingComponentsSystem::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
-    auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<RenderingComponentsSystem>();
-
-    if(thisSystemCachedEntities == nullptr) return;
-
-    for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
+    for (const auto& cachedEntities : m_cachedEntities)
     {
-        if(cachedEntities.second == nullptr) continue;
+        if(!cachedEntities.second) continue;
 
         std::list<std::shared_ptr<IRenderingComponent>> renderingComponents = cachedEntities.second->getComponents<IRenderingComponent>();
         std::shared_ptr<TransformComponent> transformComponent = cachedEntities.second->getComponent<TransformComponent>();
@@ -107,7 +103,7 @@ void Core::ECS::RenderingComponentsSystem::fixedUpdate(const std::shared_ptr<Sce
     }
 }
 
-void Core::ECS::RenderingComponentsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const
+void Core::ECS::RenderingComponentsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
 {
-    ECSWorld::cacheComponents<RenderingComponentsSystem, IRenderingComponent, TransformComponent>(entity);
+    cacheEntityComponents<IRenderingComponent, TransformComponent>(entity);
 }

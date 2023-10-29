@@ -7,7 +7,7 @@
 #include "MeshComponent.h"
 #include "SGCore/ECS/Rendering/Primitives/IPrimitiveComponent.h"
 
-void Core::ECS::MeshedEntitiesCollectorSystem::cacheEntity(const std::shared_ptr<Entity>& entity) const
+void Core::ECS::MeshedEntitiesCollectorSystem::cacheEntity(const std::shared_ptr<Entity>& entity)
 {
-    ECSWorld::cacheComponents<MeshedEntitiesCollectorSystem, MeshComponent, TransformComponent>(entity);
+    cacheEntityComponents<MeshComponent, TransformComponent>(entity);
 }

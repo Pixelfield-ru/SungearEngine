@@ -15,7 +15,7 @@ namespace Core::ECS
         SG_DECLARE_SINGLETON(MeshedEntitiesCollectorSystem)
 
     public:
-        void cacheEntity(const std::shared_ptr<Entity>& entity) const final;
+        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
     };
 }
 

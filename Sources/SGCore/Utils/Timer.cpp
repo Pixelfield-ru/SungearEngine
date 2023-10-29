@@ -29,6 +29,11 @@ void Core::Utils::Timer::startFrame()
 
     m_rawDeltaTime = m_current - last;
     m_elapsedTimeForUpdate += m_rawDeltaTime;
+    // m_elapsedTimeForUpdate = std::min(m_elapsedTimeForUpdate, 0.5);
+    if(m_elapsedTimeForUpdate >= 1.0)
+    {
+        m_elapsedTimeForUpdate = 0.0;
+    }
 
     double destDeltaTime = 1.0 / m_targetFrameRate;
 

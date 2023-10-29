@@ -10,18 +10,17 @@
 #include "SGCore/ECS/ECSWorld.h"
 #include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 
-void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
+void Core::ECS::ShadowsCasterSystem::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     // double t0 = glfwGetTime();
 
-    auto thisSystemCachedEntities = ECSWorld::getSystemCachedEntities<ShadowsCasterSystem>();
-    auto meshedCachedEntities = ECSWorld::getSystemCachedEntities<MeshedEntitiesCollectorSystem>();
+    const auto& meshedCachedEntities = Patterns::Singleton::getInstance<MeshedEntitiesCollectorSystem>()->getCachedEntities();
 
-    if(!thisSystemCachedEntities || !meshedCachedEntities) return;
+    if(meshedCachedEntities.empty()) return;
 
     size_t totalShadowCasters = 0;
 
-    for (const auto& cachedEntities : thisSystemCachedEntities->m_cachedEntities)
+    for (const auto& cachedEntities : m_cachedEntities)
     {
         if(!cachedEntities.second) continue;
 
@@ -34,7 +33,7 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
         shadowsCasterComponent->m_frameBuffer->bind()->clear();
         Core::Main::CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
 
-        for(const auto& meshedEntity: meshedCachedEntities->m_cachedEntities)
+        for(const auto& meshedEntity: meshedCachedEntities)
         {
             if(!meshedEntity.second) continue;
 
@@ -73,13 +72,13 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
                 );
 
                 // todo: maybe make uniform buffer for shadows casters
-                //if(shadowsCasterComponent->m_spaceMatrixChanged)
-                //{
+                if(shadowsCasterComponent->m_spaceMatrixChanged)
+                {
                     materialShader->useMatrix(
                             "shadowsCasters[" + totalShadowsCastersStr + "].shadowsCasterSpace",
                             shadowsCasterComponent->m_spaceMatrix
                     );
-                //}
+                }
 
                 if(shadowsCasterTransform->m_positionChanged)
                 {
@@ -115,8 +114,8 @@ void Core::ECS::ShadowsCasterSystem::update(const std::shared_ptr<Scene>& scene)
     // std::cout << "ms for shadows caster: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void Core::ECS::ShadowsCasterSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) const
+void Core::ECS::ShadowsCasterSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
 {
-    ECSWorld::cacheComponents<ShadowsCasterSystem, ShadowsCasterComponent, TransformComponent>(entity);
+    cacheEntityComponents<ShadowsCasterComponent, TransformComponent>(entity);
 }
 
