@@ -342,26 +342,17 @@ float ambient = 0.1;
 
     out vec4 fragColor;
 
-    uniform sampler2D sgmat_emissive0;
-    uniform sampler2D sgmat_ambientOcclusion1;
-    uniform sampler2D sgmat_ambient2;
-    uniform sampler2D sgmat_diffuseRoughness3;
-    uniform sampler2D sgmat_diffuse4;
-    uniform sampler2D sgmat_displacement5;
-    uniform sampler2D sgmat_height6;
-    uniform sampler2D sgmat_normals7;
-    uniform sampler2D sgmat_baseColor8;
-    uniform sampler2D sgmat_clearcoat9;
-    uniform sampler2D sgmat_emissionColor10;
-    uniform sampler2D sgmat_lightmap11;
-    uniform sampler2D sgmat_metalness12;
-    uniform sampler2D sgmat_normalCamera13;
-    uniform sampler2D sgmat_opacity14;
-    uniform sampler2D sgmat_relfection15;
-    uniform sampler2D sgmat_sheen16;
-    uniform sampler2D sgmat_shininess17;
-    uniform sampler2D sgmat_specular18;
-    uniform sampler2D sgmat_transmission19;
+    #ifdef sgmat_diffuseRoughnessSamplers_COUNT
+        uniform sampler2D sgmat_diffuseRoughnessSamplers[sgmat_diffuseRoughnessSamplers_COUNT];
+    #endif
+
+    #ifdef sgmat_diffuseSamplers_COUNT
+        uniform sampler2D sgmat_diffuseSamplers[sgmat_diffuseSamplers_COUNT];
+    #endif
+
+    #ifdef sgmat_normalsSamplers_COUNT
+        uniform sampler2D sgmat_normalsSamplers[sgmat_normalsSamplers_COUNT];
+    #endif
 
     in VSOut
     {
@@ -432,51 +423,51 @@ float ambient = 0.1;
     {
         vec3 normalizedNormal = normalize(vsIn.normal);
 
-        vec4 colorFromBase = vec4(1);
-        vec4 colorFromDiffuse = vec4(1);
-        vec4 colorFromAlbedo = vec4(1);
-        vec4 colorFromAO = vec4(1);
-        vec4 colorFromMetalness = vec4(1);
-        vec4 colorFromRoughness = vec4(1);
-        vec4 colorFromShininess = vec4(1);
-        vec3 colorFromNormalMap = vec3(normalizedNormal);
+        vec4 diffuseColor = vec4(0, 0, 0, 1);
+        vec4 diffuseRoughnessColor = vec4(0, 0, 0, 1);
+        vec3 normalMapColor = vec3(0);
 
         vec2 finalUV = vsIn.UV;
         #ifdef FLIP_TEXTURES_Y
             finalUV.y = 1.0 - vsIn.UV.y;
         #endif
 
-        #ifdef sgmat_metalness12_DEFINED
-            // colorFromMetalness = texture(sgmat_metalness12, finalUV);
+        #ifdef sgmat_diffuseSamplers_COUNT
+        {
+            float mixCoeff = 1.0 / sgmat_diffuseSamplers_COUNT;
+
+            for (int i = 0; i < sgmat_diffuseSamplers_COUNT; i++)
+            {
+                diffuseColor += texture(sgmat_diffuseSamplers[i], finalUV) * mixCoeff;
+            }
+        }
         #endif
 
-        #ifdef sgmat_diffuseRoughness3_DEFINED
-            colorFromRoughness = texture(sgmat_diffuseRoughness3, finalUV);
+        #ifdef sgmat_diffuseRoughnessSamplers_COUNT
+        {
+            float mixCoeff = 1.0 / sgmat_diffuseRoughnessSamplers_COUNT;
+
+            for (int i = 0; i < sgmat_diffuseRoughnessSamplers_COUNT; i++)
+            {
+                diffuseRoughnessColor += texture(sgmat_diffuseRoughnessSamplers[i], finalUV) * mixCoeff;
+            }
+        }
         #endif
 
-        #ifdef sgmat_baseColor8_DEFINED
-            // colorFromBase = texture(sgmat_baseColor8, finalUV);
-        #endif
+        #ifdef sgmat_normalsSamplers_COUNT
+        {
+            float mixCoeff = 1.0 / sgmat_normalsSamplers_COUNT;
 
-        #ifdef sgmat_diffuse4_DEFINED
-            colorFromDiffuse = texture(sgmat_diffuse4, finalUV);
-        #endif
+            for (int i = 0; i < sgmat_normalsSamplers_COUNT; i++)
+            {
+                normalMapColor += texture(sgmat_normalsSamplers[i], finalUV).rgb * mixCoeff;
+            }
 
-        #ifdef sgmat_normals7_DEFINED
-            colorFromNormalMap = texture(sgmat_normals7, finalUV).rgb;
-            colorFromNormalMap = normalize(vsIn.TBN * (colorFromNormalMap * 2.0 - 1.0));
+            normalMapColor = normalize(vsIn.TBN * (normalMapColor * 2.0 - 1.0));
+        }
+        #else
+            normalMapColor = normalizedNormal;
         #endif
-
-        #ifdef sgmat_ambientOcclusion1_DEFINED
-            // colorFromAO = texture(sgmat_ambientOcclusion1, finalUV);
-        #endif
-
-        #ifdef sgmat_shininess17_DEFINED
-            // colorFromShininess = texture(sgmat_shininess17, finalUV);
-        #endif
-
-        //fragColor = colorFromBase;
-        //fragColor = vec4(1.0);
 
         // todo: fix multiple directional lights
         #ifdef DIRECTIONAL_LIGHTS_NUM
@@ -485,14 +476,14 @@ float ambient = 0.1;
 
             vec3 viewDir = normalize(viewDirection - vsIn.fragPos);
 
-        // colorFromRoughness.r = AO MAP
-        // colorFromRoughness.g = ROUGHNESS
-        // colorFromRoughness.b = METALNESS
+            // colorFromRoughness.r = AO MAP
+            // colorFromRoughness.g = ROUGHNESS
+            // colorFromRoughness.b = METALNESS
 
-            vec3 albedo = colorFromDiffuse.rgb;
-            float ao = colorFromRoughness.r;
-            float roughness = colorFromRoughness.g * materialRoughnessFactor;
-            float metalness = colorFromRoughness.b * materialMetallicFactor;
+            vec3 albedo = diffuseColor.rgb;
+            float ao = diffuseRoughnessColor.r;
+            float roughness = diffuseRoughnessColor.g * materialRoughnessFactor;
+            float metalness = diffuseRoughnessColor.b * materialMetallicFactor;
 
             // для формулы Шлика-Френеля
             vec3 F0 = vec3(0.04);
@@ -512,26 +503,26 @@ float ambient = 0.1;
                 //radiance = vec3(1.0);
 
                 // energy brightness coeff (коэфф. энергетической яркости)
-                float ebCoeff = max(dot(colorFromNormalMap, lightDir), 0.0);
+                float ebCoeff = max(dot(normalMapColor, lightDir), 0.0);
 
                 // cooktorrance func: DFG /
 
                 // NDF (normal distribution func)
                 float D = GGXTR(
-                    colorFromNormalMap,
+                    normalMapColor,
                     halfWayDir,
                     roughness
                 );
                 vec3 F = SchlickFresnel(max(dot(halfWayDir, viewDir), 0.0), F0);
                 // geometry function
-                float G = GeometrySmith(colorFromNormalMap, viewDir, lightDir, roughness);
+                float G = GeometrySmith(normalMapColor, viewDir, lightDir, roughness);
 
                 vec3 diffuse = vec3(1.0) - F;
                 diffuse *= (1.0 - metalness) * materialDiffuseCol.rgb;
                 //diffuse *= max((1.0 - metalness) * materialDiffuseCol.rgb, vec3(115.0 / 255.0, 133.0 / 255.0, 179.0 / 255.0) / 2.0);
 
                 vec3 ctNumerator = D * F * G;
-                float ctDenominator = 4.0 * max(dot(colorFromNormalMap, viewDir), 0.0) * ebCoeff;
+                float ctDenominator = 4.0 * max(dot(normalMapColor, viewDir), 0.0) * ebCoeff;
                 vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
                 lo += (diffuse * albedo.rgb / PI + specular) * radiance * ebCoeff;
@@ -543,7 +534,7 @@ float ambient = 0.1;
             finalCol = finalCol / (finalCol + vec3(1.0));
             finalCol = pow(finalCol, vec3(1.0 / 2.2));
 
-            fragColor.a = colorFromDiffuse.a;
+            fragColor.a = diffuseColor.a;
             fragColor.rgb = finalCol;
 
             // blinn-phong pipeline  -----------------------------
@@ -584,7 +575,7 @@ float ambient = 0.1;
                 fragColor.rgb *= calculateShadow(
                     shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
                     vsIn.fragPos,
-                    colorFromNormalMap,
+                    normalMapColor,
                     i
                 );
             }

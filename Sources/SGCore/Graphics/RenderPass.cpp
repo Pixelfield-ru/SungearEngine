@@ -3,3 +3,8 @@
 //
 
 #include "RenderPass.h"
+
+Core::Graphics::RenderPass::RenderPass()
+{
+
+}

@@ -132,9 +132,9 @@ void init()
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            //"../SGResources/models/test/uaz/scene.gltf"
+            "../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/zis_sport/scene.gltf"
-            "../SGResources/models/test/vodka/scene.gltf"
+            //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
             //"../SGResources/models/test/wooden_table/scene.gltf"
@@ -217,10 +217,10 @@ void init()
                           { 0.2, 0.2, 0.2 }, btrEntities);*/
 
         // for uaz
-        /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
-        processLoadedNode(node, { 3, -1.7, -20 }, { 0, 0, 0 },
+        processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
                           { 0.0025, 0.0025, 0.0025 }, btrEntities);
+        /*processLoadedNode(node, { 3, -1.7, -20 }, { 0, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
         /*processLoadedNode(node, { -0, -3, -20 }, { 90, 0, 0 },
                           { 0.00025 * 2, 0.00025 * 2, 0.00025 * 2 }, btrEntities);*/
         /*processLoadedNode(node, { 3, -3, -20 }, { 0, 0, 0 },

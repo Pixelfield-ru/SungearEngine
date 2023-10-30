@@ -143,20 +143,21 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
             typedTextures[texturePath].m_textureUnit = freeUnit;
             typedTextures[texturePath].m_textureAsset = texture2DAsset;
 
-            auto typeName = sgMaterialTextureTypeToString(type);
-            auto finalName = typeName + std::to_string(freeUnit);
-            auto newTextureFinalDefine = finalName +  + "_DEFINED";
+            auto currentTexturesCountStr = std::to_string(texturesWithType.m_textures.size());
+
+            auto typeName = sgMaterialTextureTypeToString(type) + "Samplers";
+            auto newTextureFinalDefine = typeName +  + "_COUNT";
             SGC_SUCCESS("Final define for new material texture: " + newTextureFinalDefine);
 
-            typedTextures[texturePath].m_nameInShader = finalName;
-            //texture2DAsset->m_name = finalName;
+            typedTextures[texturePath].m_nameInShader =
+                    typeName + "[" + std::to_string(texturesWithType.m_textures.size() - 1) + "]";
 
             for(auto& shaderPair : m_shaders)
             {
                 auto& shader = shaderPair.second;
                 shader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
                                          {
-                                                 Graphics::ShaderDefine(newTextureFinalDefine, "")
+                                                 Graphics::ShaderDefine(newTextureFinalDefine, currentTexturesCountStr)
                                          });
             }
         }
@@ -226,19 +227,17 @@ void Core::Memory::Assets::IMaterial::setShader
     {
         for(const auto& blockPair : m_blocks)
         {
-            auto typeName = sgMaterialTextureTypeToString(blockPair.first);
+            auto typeName = sgMaterialTextureTypeToString(blockPair.first) + "Samplers";
             auto maxTextureBlockDefine = typeName + "_MAX_TEXTURES_NUM";
 
             otherShader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
                                           { Graphics::ShaderDefine(maxTextureBlockDefine,
                                                                    std::to_string(blockPair.second.m_maximumTextures)) });
 
-            for(const auto& blockTexture : blockPair.second.m_textures)
-            {
-                otherShader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
-                                              { Graphics::ShaderDefine(maxTextureBlockDefine,
-                                                                       blockTexture.second.m_nameInShader + "_DEFINED") });
-            }
+
+            otherShader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                          {Graphics::ShaderDefine(maxTextureBlockDefine + "_COUNT",
+                                                                  std::to_string(blockPair.second.m_textures.size()))});
         }
     }
 
