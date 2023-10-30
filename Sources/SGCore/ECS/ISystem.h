@@ -26,7 +26,7 @@ namespace Core::ECS
         static inline const std::uint16_t SGSF_PER_ENTITY = 1 << 1;
     };
 
-    class ISystem : public Patterns::Marker<ISystem>
+    class ISystem : public Patterns::Marker<ISystem, std::uint16_t>
     {
         friend class ECSWorld;
     public:

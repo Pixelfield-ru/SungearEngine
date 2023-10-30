@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_LAYER_H
 
 #include <list>
+
 #include "Entity.h"
 
 #define SG_LAYER_OPAQUE_NAME        "Opaque"
@@ -24,8 +25,10 @@ namespace Core::ECS
 
         std::string m_name;
 
+        bool m_isOpaque = true;
+
     private:
-        size_t m_index;
+        size_t m_index = 0;
     };
 
     struct LayersComparator

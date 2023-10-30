@@ -41,10 +41,9 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
             {
                 // if layer is layer of transparent objects than sort
 
-                // TODO: MAKE FLAGS FOR LAYER (OPAQUE/TRANSPARENT ETC) AND CHECK FOR FLAGS
                 // TODO: MAKE DEPTH MASK FOR RENDERER TO RENDER TRANSPARENT OBJECTS
                 // todo: make normal render for transparent objects
-                if(meshedLayer.first->m_name == SG_LAYER_TRANSPARENT_NAME)
+                if(!meshedLayer.first->m_isOpaque)
                 {
                     meshedLayer.first->m_entities.sort([&cameraTransformComponent](const std::shared_ptr<Entity>& e0, const std::shared_ptr<Entity>& e1)
                                                        {

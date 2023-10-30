@@ -7,7 +7,6 @@
 #include "SGCore/ECS/Rendering/MeshComponent.h"
 #include "SGCore/Graphics/API/ShaderDefine.h"
 #include "SGCore/Graphics/Defines.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
 #include "Layer.h"
 #include "ECSWorld.h"
 
@@ -16,6 +15,7 @@ Core::ECS::Scene::Scene() noexcept
     auto transparentLayer = std::make_shared<Layer>();
     transparentLayer->m_name = SG_LAYER_TRANSPARENT_NAME;
     transparentLayer->m_index = 0;
+    transparentLayer->m_isOpaque  = false;
 
     auto opaqueLayer = std::make_shared<Layer>();
     opaqueLayer->m_name = SG_LAYER_OPAQUE_NAME;
@@ -76,7 +76,7 @@ void Core::ECS::Scene::setCurrentScene(const std::shared_ptr<Scene>& newCurrentS
     m_currentScene = newCurrentScene;
 }
 
-void Core::ECS::Scene::setShadowsCastersNum(const int& num)
+void Core::ECS::Scene::setShadowsCastersNum(const size_t& num)
 {
     m_shadowsCastersNum = num;
 
@@ -112,12 +112,12 @@ void Core::ECS::Scene::setShadowsCastersNum(const int& num)
     }
 }
 
-int Core::ECS::Scene::getShadowsCastersNum() const noexcept
+size_t Core::ECS::Scene::getShadowsCastersNum() const noexcept
 {
     return m_shadowsCastersNum;
 }
 
-void Core::ECS::Scene::setDirectionalLightsNum(const int& num)
+void Core::ECS::Scene::setDirectionalLightsNum(const size_t& num)
 {
     m_directionalLightsNum = num;
 
@@ -153,7 +153,7 @@ void Core::ECS::Scene::setDirectionalLightsNum(const int& num)
     }
 }
 
-int Core::ECS::Scene::getDirectionalLightsNum() const noexcept
+size_t Core::ECS::Scene::getDirectionalLightsNum() const noexcept
 {
     return m_directionalLightsNum;
 }

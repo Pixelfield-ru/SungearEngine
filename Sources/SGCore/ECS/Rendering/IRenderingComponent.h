@@ -13,6 +13,7 @@
 
 namespace Core::ECS
 {
+    // todo: make render passes
     class IRenderingComponent : public IComponent
     {
         friend class RenderingComponentsSystem;

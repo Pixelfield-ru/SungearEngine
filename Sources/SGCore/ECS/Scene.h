@@ -29,11 +29,11 @@ namespace Core::ECS
         static std::shared_ptr<Scene> getCurrentScene() noexcept;
         static void setCurrentScene(const std::shared_ptr<Scene>& newCurrentScene) noexcept;
 
-        void setShadowsCastersNum(const int&);
-        int getShadowsCastersNum() const noexcept;
+        void setShadowsCastersNum(const size_t&);
+        size_t getShadowsCastersNum() const noexcept;
 
-        void setDirectionalLightsNum(const int&);
-        int getDirectionalLightsNum() const noexcept;
+        void setDirectionalLightsNum(const size_t&);
+        size_t getDirectionalLightsNum() const noexcept;
 
         [[nodiscard]] const auto& getLayers() const noexcept
         {
