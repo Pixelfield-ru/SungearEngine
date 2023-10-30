@@ -41,6 +41,7 @@ void Core::Graphics::GL4Renderer::init() noexcept
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+
     /*glEnable (GL_ALPHA_TEST);
     glAlphaFunc (GL_GREATER, 0.2);*/
 

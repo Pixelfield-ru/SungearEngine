@@ -17,85 +17,90 @@ void Core::ECS::Camera3DMovementSystem::fixedUpdate
 {
     double t0 = glfwGetTime();
 
-    for (const auto& cachedEntities : m_cachedEntities)
+    for (const auto& layer : m_cachedEntities)
     {
-        if(!cachedEntities.second) continue;
-
-        std::shared_ptr<CameraComponent> cameraComponent = cachedEntities.second->getComponent<CameraComponent>();
-        std::shared_ptr<TransformComponent> transformComponent = cachedEntities.second->getComponent<TransformComponent>();
-
-        /*double t1 = glfwGetTime();
-
-        std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << ", entities cnt: " << std::to_string(scene->m_entities.size()) << std::endl;*/
-
-        if(!transformComponent || !cameraComponent) return;
-
-        // rotate camera by mouse
-        transformComponent->m_rotation.x += (float) InputManager::getMainInputListener()->getCursorPositionDeltaY() *
-                                            cameraComponent->m_rotationSensitive;
-        transformComponent->m_rotation.y += (float) InputManager::getMainInputListener()->getCursorPositionDeltaX() *
-                                            cameraComponent->m_rotationSensitive;
-
-        // restore camera`s transformation
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_R))
+        for(const auto& cachedEntity : layer.second)
         {
-            transformComponent->m_rotation.x = transformComponent->m_rotation.y = transformComponent->m_rotation.z =
-            transformComponent->m_position.x = transformComponent->m_position.y = transformComponent->m_position.z = 0.0f;
-        }
+            if(!cachedEntity.second) continue;
 
-        glm::vec3 rotatedForward = Utils::MathUtils::forward3;
-        glm::vec3 rotatedLeft = Utils::MathUtils::left3;
+            std::shared_ptr<CameraComponent> cameraComponent = cachedEntity.second->getComponent<CameraComponent>();
+            std::shared_ptr<TransformComponent> transformComponent = cachedEntity.second->getComponent<TransformComponent>();
 
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W) ||
-           InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
-        {
-            rotatedForward = glm::rotate(rotatedForward,
-                                         glm::radians(-transformComponent->m_rotation.x),
-                                         glm::vec3(1, 0, 0));
-            rotatedForward = glm::rotate(rotatedForward,
-                                         glm::radians(-transformComponent->m_rotation.y),
-                                         glm::vec3(0, 1, 0));
-        }
+            /*double t1 = glfwGetTime();
 
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A) ||
-           InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
-        {
-            rotatedLeft = glm::rotate(rotatedLeft,
-                                      glm::radians(-transformComponent->m_rotation.x),
-                                      glm::vec3(1, 0, 0));
-            rotatedLeft = glm::rotate(rotatedLeft,
-                                      glm::radians(-transformComponent->m_rotation.y),
-                                      glm::vec3(0, 1, 0));
-        }
+            std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << ", entities cnt: " << std::to_string(scene->m_entities.size()) << std::endl;*/
 
-        float finalCameraSpeed = cameraComponent->m_movementSpeed;
+            if(!transformComponent || !cameraComponent) return;
 
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_LEFT_SHIFT))
-        {
-            finalCameraSpeed *= 6.0;
-        }
+            // rotate camera by mouse
+            transformComponent->m_rotation.x +=
+                    (float) InputManager::getMainInputListener()->getCursorPositionDeltaY() *
+                    cameraComponent->m_rotationSensitive;
+            transformComponent->m_rotation.y +=
+                    (float) InputManager::getMainInputListener()->getCursorPositionDeltaX() *
+                    cameraComponent->m_rotationSensitive;
 
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
-        {
-            transformComponent->m_position -= rotatedForward * finalCameraSpeed;
-        }
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
-        {
-            transformComponent->m_position += rotatedForward * finalCameraSpeed;
-        }
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
-        {
-            transformComponent->m_position += rotatedLeft * finalCameraSpeed;
-        }
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
-        {
-            transformComponent->m_position -= rotatedLeft * finalCameraSpeed;
-        }
+            // restore camera`s transformation
+            if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_R))
+            {
+                transformComponent->m_rotation.x = transformComponent->m_rotation.y = transformComponent->m_rotation.z =
+                transformComponent->m_position.x = transformComponent->m_position.y = transformComponent->m_position.z = 0.0f;
+            }
 
-        if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))
-        {
-            Core::Main::CoreMain::getWindow().setHideAndCentralizeCursor(
-                    !Core::Main::CoreMain::getWindow().isHideAndCentralizeCursor());
+            glm::vec3 rotatedForward = Utils::MathUtils::forward3;
+            glm::vec3 rotatedLeft = Utils::MathUtils::left3;
+
+            if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W) ||
+               InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
+            {
+                rotatedForward = glm::rotate(rotatedForward,
+                                             glm::radians(-transformComponent->m_rotation.x),
+                                             glm::vec3(1, 0, 0));
+                rotatedForward = glm::rotate(rotatedForward,
+                                             glm::radians(-transformComponent->m_rotation.y),
+                                             glm::vec3(0, 1, 0));
+            }
+
+            if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A) ||
+               InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
+            {
+                rotatedLeft = glm::rotate(rotatedLeft,
+                                          glm::radians(-transformComponent->m_rotation.x),
+                                          glm::vec3(1, 0, 0));
+                rotatedLeft = glm::rotate(rotatedLeft,
+                                          glm::radians(-transformComponent->m_rotation.y),
+                                          glm::vec3(0, 1, 0));
+            }
+
+            float finalCameraSpeed = cameraComponent->m_movementSpeed;
+
+            if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_LEFT_SHIFT))
+            {
+                finalCameraSpeed *= 6.0;
+            }
+
+            if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
+            {
+                transformComponent->m_position -= rotatedForward * finalCameraSpeed;
+            }
+            if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
+            {
+                transformComponent->m_position += rotatedForward * finalCameraSpeed;
+            }
+            if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
+            {
+                transformComponent->m_position += rotatedLeft * finalCameraSpeed;
+            }
+            if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
+            {
+                transformComponent->m_position -= rotatedLeft * finalCameraSpeed;
+            }
+
+            if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))
+            {
+                Core::Main::CoreMain::getWindow().setHideAndCentralizeCursor(
+                        !Core::Main::CoreMain::getWindow().isHideAndCentralizeCursor());
+            }
         }
     }
 

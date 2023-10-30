@@ -29,13 +29,6 @@ namespace Core::ECS
     class ISystem : public Patterns::Marker<ISystem>
     {
         friend class ECSWorld;
-
-    protected:
-        std::map<std::string, std::function<bool()>> m_fixedUpdateFunctionsQuery;
-        std::map<std::string, std::function<bool()>> m_updateFunctionsQuery;
-
-        std::map<std::shared_ptr<Entity>, std::shared_ptr<ComponentsCollection>> m_cachedEntities;
-
     public:
         bool m_active = true;
 
@@ -53,13 +46,16 @@ namespace Core::ECS
         {
             double t0 = glfwGetTime();
 
+            auto entityLayer = entity->getLayer();
+            if(!entityLayer) return;
+
             // is components of all ComponentsT... exists
             bool componentsSetExistsInEntity = true;
             Utils::Utils::forTypes<ComponentsT...>([&entity, &componentsSetExistsInEntity](auto t)
                                                    {
                                                        using type = typename decltype(t)::type;
 
-                                                       if(entity->getComponent<type>() == nullptr)
+                                                       if(!entity->getComponent<type>())
                                                        {
                                                            componentsSetExistsInEntity = false;
                                                            return;
@@ -69,8 +65,8 @@ namespace Core::ECS
             // if not exists that we wil not cache components of this entity
             if(!componentsSetExistsInEntity) return;
 
-            auto& foundComponentsCollection = m_cachedEntities[entity];
-            foundComponentsCollection = foundComponentsCollection == nullptr ?
+            auto& foundComponentsCollection = m_cachedEntities[entityLayer][entity];
+            foundComponentsCollection = !foundComponentsCollection ?
                                         std::make_shared<ComponentsCollection>() : foundComponentsCollection;
 
             Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection](auto t)
@@ -78,7 +74,7 @@ namespace Core::ECS
                                                        using type = typename decltype(t)::type;
 
                                                        // if component already exists in components collection then we wont cache
-                                                       if (foundComponentsCollection->getComponent<type>() == nullptr)
+                                                       if (!foundComponentsCollection->getComponent<type>())
                                                        {
                                                            auto entityComponentsList = entity->getComponents<type>();
                                                            for (const auto& component: entityComponentsList)
@@ -88,10 +84,35 @@ namespace Core::ECS
                                                        }
                                                    });
 
+            auto f = m_cachedEntities.begin();
+
+            // sorting layers by indices
+
+            /*auto& foundComponentsCollection = m_cachedEntities[entity];
+            foundComponentsCollection = foundComponentsCollection == nullptr ?
+                                        std::make_shared<ComponentsCollection>() : foundComponentsCollection;
+
+            Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection](auto t)
+                                                   {
+                                                       using type = typename decltype(t)::type;
+
+                                                       // if component already exists in components collection then we wont cache
+                                                       if (!foundComponentsCollection->getComponent<type>())
+                                                       {
+                                                           auto entityComponentsList = entity->getComponents<type>();
+                                                           for (const auto& component: entityComponentsList)
+                                                           {
+                                                               foundComponentsCollection->addComponent(component);
+                                                           }
+                                                       }
+                                                   });*/
+
             double t1 = glfwGetTime();
 
             std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
         }
+
+        bool in();
 
         const auto& getCachedEntities() const noexcept
         {
@@ -111,6 +132,12 @@ namespace Core::ECS
             std::function<bool()> bindFunc = [f, args...]() { return f(args...); };
             m_updateFunctionsQuery[funcUUID] = (bindFunc);
         }
+
+    protected:
+        std::unordered_map<std::string, std::function<bool()>> m_fixedUpdateFunctionsQuery;
+        std::unordered_map<std::string, std::function<bool()>> m_updateFunctionsQuery;
+
+        std::map<std::shared_ptr<Layer>, std::unordered_map<std::shared_ptr<Entity>, std::shared_ptr<ComponentsCollection>>, LayersComparator> m_cachedEntities;
     };
 }
 

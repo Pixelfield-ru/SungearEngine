@@ -16,7 +16,7 @@ namespace Core::ECS
 {
     struct SystemCachedEntities
     {
-        std::map<std::shared_ptr<Entity>, std::shared_ptr<ComponentsCollection>> m_cachedEntities;
+        std::unordered_map<std::shared_ptr<Entity>, std::shared_ptr<ComponentsCollection>> m_cachedEntities;
     };
 
     // TODO: add allocator and free for components that will remove component from cached components if free

@@ -5,11 +5,12 @@
 #ifndef SUNGEARENGINE_GL4FRAMEBUFFER_H
 #define SUNGEARENGINE_GL4FRAMEBUFFER_H
 
-#include "SGCore/Graphics/API/IFrameBuffer.h"
-#include "SGCore/Graphics/API/GL/GLFrameBufferAttachment.h"
-
+#include <tsl/robin_map.h>
 #include <glad/glad.h>
 #include <map>
+
+#include "SGCore/Graphics/API/IFrameBuffer.h"
+#include "SGCore/Graphics/API/GL/GLFrameBufferAttachment.h"
 
 namespace Core::Graphics
 {
@@ -20,7 +21,7 @@ namespace Core::Graphics
 
         GLuint m_handler = 0;
         // first - name
-        std::map<std::string, GLFrameBufferAttachment> m_attachments;
+        std::unordered_map<std::string, GLFrameBufferAttachment> m_attachments;
 
     public:
         std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName,

@@ -121,7 +121,7 @@ void init()
             //"../SGResources/models/test/btr_80a2016/scene.gltf"
             //"../SGResources/models/test/btr_80/scene.gltf"
             //"../SGResources/models/test/train_ep20/scene.gltf"
-            "../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf"
+            //"../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf"
             //"../SGResources/models/test/stalker/stalk_e/fbx/stalker_1.fbx"
             //"../SGResources/models/test/hamada_gun/scene.gltf"
             //"../SGResources/models/test/ak74/scene.gltf"
@@ -133,6 +133,8 @@ void init()
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
             //"../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/zis_sport/scene.gltf"
+            "../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
             //"../SGResources/models/test/wooden_table/scene.gltf"
@@ -197,13 +199,13 @@ void init()
                           { 4, 4, 4 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
                           { 0.25, 0.25, 0.25 }, btrEntities);*/
-        processLoadedNode(node, { 5, -3, -20 }, { 0, 0, 0 },
-                          { 1, 1, 1 }, btrEntities);
+        /*processLoadedNode(node, { 5, -3, -20 }, { 0, 0, 0 },
+                          { 1, 1, 1 }, btrEntities);*/
         /*processLoadedNode(node, { 5, -1, -20 }, { 0, 0, 0 },
                           { 0.01, 0.01, 0.01 }, btrEntities);*/
         /*processLoadedNode(node, { 0, -1.65, -20 }, { 0, 90, 0 },
                           { 0.1, 0.1, 0.1 }, btrEntities);*/
-        /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 90 },
+        /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 0 },
                           { 0.005, 0.005, 0.005 }, btrEntities);*/
         /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 0 },
                           { 0.005, 0.005, 0.005 }, btrEntities);*/
@@ -217,6 +219,8 @@ void init()
         // for uaz
         /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
                           { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
+        processLoadedNode(node, { 3, -1.7, -20 }, { 0, 0, 0 },
+                          { 0.0025, 0.0025, 0.0025 }, btrEntities);
         /*processLoadedNode(node, { -0, -3, -20 }, { 90, 0, 0 },
                           { 0.00025 * 2, 0.00025 * 2, 0.00025 * 2 }, btrEntities);*/
         /*processLoadedNode(node, { 3, -3, -20 }, { 0, 0, 0 },
@@ -231,7 +235,7 @@ void init()
 
     for(const auto& entity : btrEntities)
     {
-        testScene->addEntity(entity);
+        testScene->addEntity(entity, SG_LAYER_TRANSPARENT_NAME);
 
         auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
         if(meshComponent)

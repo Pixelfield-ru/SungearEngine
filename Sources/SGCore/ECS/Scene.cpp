@@ -9,13 +9,20 @@
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
 #include "Layer.h"
+#include "ECSWorld.h"
 
 Core::ECS::Scene::Scene() noexcept
 {
-    auto defaultLayer = std::make_shared<Layer>();
-    defaultLayer->m_name = "default";
+    auto transparentLayer = std::make_shared<Layer>();
+    transparentLayer->m_name = SG_LAYER_TRANSPARENT_NAME;
+    transparentLayer->m_index = 0;
 
-    m_layers[defaultLayer->m_name] = std::move(defaultLayer);
+    auto opaqueLayer = std::make_shared<Layer>();
+    opaqueLayer->m_name = SG_LAYER_OPAQUE_NAME;
+    opaqueLayer->m_index = 1;
+
+    m_layers[transparentLayer->m_name] = std::move(transparentLayer);
+    m_layers[opaqueLayer->m_name] = std::move(opaqueLayer);
 }
 
 void Core::ECS::Scene::setLayerName(const std::string& oldLayerName, std::string&& newLayerName) noexcept
@@ -33,22 +40,28 @@ void Core::ECS::Scene::addLayer(std::string&& layerName) noexcept
 
 void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity) noexcept
 {
-    auto layer = m_layers["default"];
+    auto layer = m_layers[SG_LAYER_OPAQUE_NAME];
     entity->m_layer = layer;
     layer->m_entities.push_back(entity);
+
+    ECSWorld::recacheEntity(entity);
 }
 
-void Core::ECS::Scene::addEntity(const std::string& layerName, const std::shared_ptr<Entity>& entity) noexcept
+void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const std::string& layerName) noexcept
 {
     auto layer = m_layers[layerName];
     entity->m_layer = layer;
     layer->m_entities.push_back(entity);
+
+    ECSWorld::recacheEntity(entity);
 }
 
-void Core::ECS::Scene::addEntity(const std::shared_ptr<Core::ECS::Layer>& layer, const std::shared_ptr<Entity>& entity) noexcept
+void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const std::shared_ptr<Core::ECS::Layer>& layer) noexcept
 {
     entity->m_layer = layer;
     layer->m_entities.push_back(entity);
+
+    ECSWorld::recacheEntity(entity);
 }
 
 // ----------------

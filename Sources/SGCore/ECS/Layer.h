@@ -8,31 +8,32 @@
 #include <list>
 #include "Entity.h"
 
+#define SG_LAYER_OPAQUE_NAME        "Opaque"
+#define SG_LAYER_TRANSPARENT_NAME   "Transparent"
+
 namespace Core::ECS
 {
     class Layer
     {
         friend class Scene;
+        friend class ISystem;
+        friend class LayersComparator;
 
     public:
         std::list<std::shared_ptr<Entity>> m_entities;
 
-        Layer() = default;
-
-        Layer(Layer&& layer)
-        {
-            m_name = std::move(layer.m_name);
-
-            std::cout << "layer move ctor" << std::endl;
-        }
-
-        Layer(const Layer& layer) = default;
-
-        Layer& operator=(const Layer& layer) = default;
-        Layer& operator=(Layer&& layer) = default;
+        std::string m_name;
 
     private:
-        std::string m_name;
+        size_t m_index;
+    };
+
+    struct LayersComparator
+    {
+        bool operator()(const std::shared_ptr<Layer>& l0, const std::shared_ptr<Layer>& l1) const
+        {
+            return l0->m_index > l1->m_index;
+        }
     };
 }
 

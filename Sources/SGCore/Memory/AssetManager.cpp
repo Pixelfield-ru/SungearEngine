@@ -2,10 +2,10 @@
 // Created by stuka on 07.05.2023.
 //
 
-#include <assimp/version.h>
-
 #include "AssetManager.h"
 #include "Assets/FileAsset.h"
+
+#include <assimp/version.h>
 
 void Core::Memory::AssetManager::init()
 {

@@ -5,7 +5,6 @@
 #define NATIVECORE_ISHADER_H
 
 #include <list>
-
 #include <glm/matrix.hpp>
 
 #include "SGCore/Memory/Assets/FileAsset.h"
@@ -90,7 +89,7 @@ namespace Core::Graphics
         std::weak_ptr<Memory::Assets::FileAsset> m_fileAsset;
 
     protected:
-        std::map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
+        std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
 
     };
     //class IUniformType

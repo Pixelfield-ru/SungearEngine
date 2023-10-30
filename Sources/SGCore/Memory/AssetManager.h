@@ -12,8 +12,6 @@
 #include <memory>
 
 #include "Assets/IAsset.h"
-#include "Assets/FileAsset.h"
-#include "Assets/Texture2DAsset.h"
 #include "SGCore/Logging/Log.h"
 
 namespace Core::Memory
@@ -21,7 +19,7 @@ namespace Core::Memory
     class AssetManager
     {
     private:
-        static inline std::map<std::string, std::shared_ptr<Core::Memory::Assets::IAsset>> m_assets;
+        static inline std::unordered_map<std::string, std::shared_ptr<Core::Memory::Assets::IAsset>> m_assets;
 
     public:
         AssetManager() = delete;

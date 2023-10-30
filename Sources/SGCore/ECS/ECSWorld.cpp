@@ -157,15 +157,25 @@ void Core::ECS::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
 {
     double t0 = glfwGetTime();
 
+    auto entityLayer = entity->getLayer();
+    if(!entityLayer) return;
+
     for(auto& system : m_systems)
     {
         if (!system->m_active) continue;
 
         // clearing all cached components for this entity
-        auto& foundComponentsCollection = system->m_cachedEntities[entity];
-        if(foundComponentsCollection)
+        const auto& foundLayerIter = system->m_cachedEntities.find(entityLayer);
+        if(foundLayerIter != system->m_cachedEntities.cend())
         {
-            foundComponentsCollection->clear();
+            const auto& foundEntityIter = foundLayerIter->second.find(entity);
+            if(foundEntityIter != foundLayerIter->second.cend())
+            {
+                if(foundEntityIter->second)
+                {
+                    foundEntityIter->second->clear();
+                }
+            }
         }
 
         system->cacheEntity(entity);

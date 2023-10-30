@@ -24,66 +24,96 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
 
     if(meshedCachedEntities.empty() && primitivesCachedEntities.empty()) return;
 
-    for (const auto& cachedEntities : m_cachedEntities)
+    for(const auto& camerasLayer : m_cachedEntities)
     {
-        if(!cachedEntities.second) continue;
-
-        std::shared_ptr<CameraComponent> cameraComponent = cachedEntities.second->getComponent<CameraComponent>();
-        std::shared_ptr<TransformComponent> cameraTransformComponent = cachedEntities.second->getComponent<TransformComponent>();
-
-        if (!cameraComponent || !cameraTransformComponent) continue;
-
-        Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
-
-        for(const auto& meshedEntity: meshedCachedEntities)
+        for(const auto& cachedEntity: camerasLayer.second)
         {
-            if(!meshedEntity.second) continue;
+            if(!cachedEntity.second) continue;
 
-            std::shared_ptr<TransformComponent> transformComponent = meshedEntity.second->getComponent<TransformComponent>();
+            std::shared_ptr<CameraComponent> cameraComponent = cachedEntity.second->getComponent<CameraComponent>();
+            std::shared_ptr<TransformComponent> cameraTransformComponent = cachedEntity.second->getComponent<TransformComponent>();
 
-            if (!transformComponent) continue;
+            if(!cameraComponent || !cameraTransformComponent) continue;
 
-            auto meshComponents =
-                    meshedEntity.second->getComponents<MeshComponent>();
+            Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
 
-            for (const auto& meshComponent : meshComponents)
+            for(const auto& meshedLayer : meshedCachedEntities)
             {
-                transformationsSystem->addFunctionToFixedUpdateQuery(
-                        meshComponent->getUUID(),
-                        uniformsUpdaterLambda,
-                        meshComponent->m_mesh, transformComponent
-                );
+                // if layer is layer of transparent objects than sort
 
-                Core::Main::CoreMain::getRenderer().renderMesh(
-                        transformComponent,
-                        meshComponent
-                );
+                // TODO: MAKE FLAGS FOR LAYER (OPAQUE/TRANSPARENT ETC) AND CHECK FOR FLAGS
+                // TODO: MAKE DEPTH MASK FOR RENDERER TO RENDER TRANSPARENT OBJECTS
+                // todo: make normal render for transparent objects
+                if(meshedLayer.first->m_name == SG_LAYER_TRANSPARENT_NAME)
+                {
+                    meshedLayer.first->m_entities.sort([&cameraTransformComponent](const std::shared_ptr<Entity>& e0, const std::shared_ptr<Entity>& e1)
+                                                       {
+                                                           auto t0 = e0->getComponent<TransformComponent>();
+                                                           auto t1 = e1->getComponent<TransformComponent>();
+
+                                                           float d0 = glm::distance(cameraTransformComponent->m_position, t0->m_position);
+                                                           float d1 = glm::distance(cameraTransformComponent->m_position, t1->m_position);
+
+                                                           return d0 > d1;
+                                                       });
+                }
+
+                // -------------------------------------------------
+
+                for(const auto& meshesEntity: meshedLayer.second)
+                {
+                    if(!meshesEntity.second) continue;
+
+                    std::shared_ptr<TransformComponent> transformComponent = meshesEntity.second->getComponent<TransformComponent>();
+
+                    if(!transformComponent) continue;
+
+                    auto meshComponents =
+                            meshesEntity.second->getComponents<MeshComponent>();
+
+                    for(const auto& meshComponent: meshComponents)
+                    {
+                        transformationsSystem->addFunctionToFixedUpdateQuery(
+                                meshComponent->getUUID(),
+                                uniformsUpdaterLambda,
+                                meshComponent->m_mesh, transformComponent
+                        );
+
+                        Core::Main::CoreMain::getRenderer().renderMesh(
+                                transformComponent,
+                                meshComponent
+                        );
+                    }
+                }
             }
-        }
 
-        for(const auto& primitiveEntity : primitivesCachedEntities)
-        {
-            if(!primitiveEntity.second) continue;
-
-            std::shared_ptr<TransformComponent> transformComponent = primitiveEntity.second->getComponent<TransformComponent>();
-
-            if (!transformComponent) continue;
-
-            auto primitiveComponents =
-                    primitiveEntity.second->getComponents<IPrimitiveComponent>();
-
-            for (const auto& primitiveComponent : primitiveComponents)
+            for(const auto& primitivesLayer : primitivesCachedEntities)
             {
-                transformationsSystem->addFunctionToFixedUpdateQuery(
-                        primitiveComponent->getUUID(),
-                        uniformsUpdaterLambda,
-                        primitiveComponent->m_mesh, transformComponent
-                );
+                for(const auto& primitiveEntity: primitivesLayer.second)
+                {
+                    if(!primitiveEntity.second) continue;
 
-                Core::Main::CoreMain::getRenderer().renderPrimitive(
-                        transformComponent,
-                        primitiveComponent
-                );
+                    std::shared_ptr<TransformComponent> transformComponent = primitiveEntity.second->getComponent<TransformComponent>();
+
+                    if(!transformComponent) continue;
+
+                    auto primitiveComponents =
+                            primitiveEntity.second->getComponents<IPrimitiveComponent>();
+
+                    for(const auto& primitiveComponent: primitiveComponents)
+                    {
+                        transformationsSystem->addFunctionToFixedUpdateQuery(
+                                primitiveComponent->getUUID(),
+                                uniformsUpdaterLambda,
+                                primitiveComponent->m_mesh, transformComponent
+                        );
+
+                        Core::Main::CoreMain::getRenderer().renderPrimitive(
+                                transformComponent,
+                                primitiveComponent
+                        );
+                    }
+                }
             }
         }
     }

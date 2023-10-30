@@ -73,6 +73,8 @@ namespace Core::ECS
             return foundComponents;
         }
 
+        std::shared_ptr<Layer> getLayer() const noexcept;
+
         // todo: make remove component and remove components of type
 
     private:

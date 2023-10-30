@@ -23,76 +23,83 @@ void Core::ECS::DirectionalLightsSystem::fixedUpdate(const std::shared_ptr<Scene
 
     size_t currentDirectionalLight = 0;
 
-    for (const auto& directionalLightEntity : m_cachedEntities)
+    for(const auto& layer0 : m_cachedEntities)
     {
-        if(!directionalLightEntity.second) continue;
-
-        auto directionalLightComponents =
-                directionalLightEntity.second->getComponents<DirectionalLightComponent>();
-
-        auto directionalLightTransform =
-                directionalLightEntity.second->getComponent<TransformComponent>();
-
-        if(!directionalLightTransform || directionalLightComponents.empty()) continue;
-
-        for(const auto& directionalLightComponent: directionalLightComponents)
+        for(const auto& directionalLightEntity: layer0.second)
         {
-            bool colorChanged = directionalLightComponent->m_color != directionalLightComponent->m_lastColor;
-            bool intensityChanged = directionalLightComponent->m_intensity != directionalLightComponent->m_lastIntensity;
-            bool posChanged = directionalLightTransform->m_positionChanged;
+            if(!directionalLightEntity.second) continue;
 
-            if(colorChanged || intensityChanged || posChanged)
+            auto directionalLightComponents =
+                    directionalLightEntity.second->getComponents<DirectionalLightComponent>();
+
+            auto directionalLightTransform =
+                    directionalLightEntity.second->getComponent<TransformComponent>();
+
+            if(!directionalLightTransform || directionalLightComponents.empty()) continue;
+
+            for(const auto& directionalLightComponent: directionalLightComponents)
             {
-                for(const auto& meshedEntity: meshedCachedEntities)
+                bool colorChanged = directionalLightComponent->m_color != directionalLightComponent->m_lastColor;
+                bool intensityChanged =
+                        directionalLightComponent->m_intensity != directionalLightComponent->m_lastIntensity;
+                bool posChanged = directionalLightTransform->m_positionChanged;
+
+                if(colorChanged || intensityChanged || posChanged)
                 {
-                    if(!meshedEntity.second) continue;
-
-                    auto meshComponents =
-                            meshedEntity.second->getComponents<MeshComponent>();
-
-                    for(auto& meshComponent: meshComponents)
+                    for(const auto& layer1 : meshedCachedEntities)
                     {
-                        const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
-
-                        if(!materialShader) continue;
-
-                        std::string directionalLightString =
-                                "directionalLights[" + std::to_string(currentDirectionalLight) + "]";
-
-                        materialShader->bind();
-
-                        if(colorChanged)
+                        for(const auto& meshedEntity: layer1.second)
                         {
-                            materialShader->useVectorf(
-                                    directionalLightString + ".color",
-                                    directionalLightComponent->m_color
-                            );
-                        }
+                            if(!meshedEntity.second) continue;
 
-                        if(intensityChanged)
-                        {
-                            materialShader->useFloat(
-                                    directionalLightString + ".intensity",
-                                    directionalLightComponent->m_intensity
-                            );
-                        }
+                            auto meshComponents =
+                                    meshedEntity.second->getComponents<MeshComponent>();
 
-                        if(posChanged)
-                        {
-                            // todo: take into account the type of transformation and the direction of rotation
-                            materialShader->useVectorf(
-                                    directionalLightString + ".position",
-                                    directionalLightTransform->m_position
-                            );
+                            for(auto& meshComponent: meshComponents)
+                            {
+                                const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
+
+                                if(!materialShader) continue;
+
+                                std::string directionalLightString =
+                                        "directionalLights[" + std::to_string(currentDirectionalLight) + "]";
+
+                                materialShader->bind();
+
+                                if(colorChanged)
+                                {
+                                    materialShader->useVectorf(
+                                            directionalLightString + ".color",
+                                            directionalLightComponent->m_color
+                                    );
+                                }
+
+                                if(intensityChanged)
+                                {
+                                    materialShader->useFloat(
+                                            directionalLightString + ".intensity",
+                                            directionalLightComponent->m_intensity
+                                    );
+                                }
+
+                                if(posChanged)
+                                {
+                                    // todo: take into account the type of transformation and the direction of rotation
+                                    materialShader->useVectorf(
+                                            directionalLightString + ".position",
+                                            directionalLightTransform->m_position
+                                    );
+                                }
+                            }
                         }
                     }
+
+                    directionalLightComponent->m_lastColor = directionalLightComponent->m_color;
+                    directionalLightComponent->m_lastIntensity = directionalLightComponent->m_intensity;
                 }
 
-                directionalLightComponent->m_lastColor = directionalLightComponent->m_color;
-                directionalLightComponent->m_lastIntensity = directionalLightComponent->m_intensity;
+                currentDirectionalLight++;
             }
-
-            currentDirectionalLight++;
         }
     }
 
