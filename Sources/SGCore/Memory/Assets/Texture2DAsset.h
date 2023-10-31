@@ -23,6 +23,8 @@ namespace Core::Memory::Assets
     class Texture2DAsset : public IAsset, public std::enable_shared_from_this<Texture2DAsset>
     {
     public:
+        std::shared_ptr<Graphics::ITexture2D> m_texture2D;
+
         Texture2DAsset() = default;
 
         [[nodiscard]] std::shared_ptr<IAsset> load(const std::string& path) override;
@@ -46,8 +48,6 @@ namespace Core::Memory::Assets
         int m_width = 0;
         int m_height = 0;
         int m_channelsInFile = 0;
-
-        std::shared_ptr<Graphics::ITexture2D> m_texture2D;
 
     private:
         std::shared_ptr<std::uint8_t[]> m_textureData;

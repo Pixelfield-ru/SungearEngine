@@ -5,27 +5,38 @@
 #ifndef SUNGEARENGINE_RENDERPASS_H
 #define SUNGEARENGINE_RENDERPASS_H
 
-#include "SGCore/ECS/Layer.h"
-#include "API/IFrameBuffer.h"
-#include "SGCore/Graphics/API/IShader.h"
-#include "SGCore/ImportedScenesArch/IMesh.h"
+#include <memory>
+#include <unordered_map>
+
+namespace Core::ECS
+{
+    class Layer;
+}
+
+namespace Core::ImportedScene
+{
+    class IMesh;
+}
 
 namespace Core::Graphics
 {
-    struct PostProcessLayer
-    {
-        std::shared_ptr<ECS::Layer> m_renderingLayer;
+    class IFrameBuffer;
 
-        std::shared_ptr<IFrameBuffer> m_frameBuffer;
-        std::shared_ptr<IShader> m_shader;
+    struct RenderOutput
+    {
         std::shared_ptr<ImportedScene::IMesh> m_billboard;
+
+        // output frame buffer
+        std::shared_ptr<IFrameBuffer> m_frameBuffer;
+
+        RenderOutput();
     };
 
-    class RenderPass
+    struct RenderPass
     {
-        std::list<PostProcessLayer> m_postProcessLayers;
+        std::unordered_map<std::shared_ptr<ECS::Layer>, RenderOutput> m_postProcessLayers;
 
-        RenderPass();
+        RenderOutput m_defaultRenderOutput;
     };
 }
 

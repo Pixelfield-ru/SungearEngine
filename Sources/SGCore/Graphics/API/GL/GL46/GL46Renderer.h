@@ -51,7 +51,7 @@ namespace Core::Graphics
 
         [[nodiscard]] GL46Texture2D* createTexture2D() final;
 
-        [[nodiscard]] Memory::Assets::IMaterial* createMaterial() override;
+        [[nodiscard]] Memory::Assets::IMaterial* createPBRMaterial() override;
 
         static const std::shared_ptr<GL46Renderer>& getInstance() noexcept;
     };

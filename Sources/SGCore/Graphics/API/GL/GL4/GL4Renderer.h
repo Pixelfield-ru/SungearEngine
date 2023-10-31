@@ -64,6 +64,8 @@ namespace Core::Graphics
         void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                              const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) override;
 
+        void renderRenderOutput(const RenderOutput& renderOutput) override;
+
         void printInfo() noexcept override;
 
         /**
@@ -86,8 +88,6 @@ namespace Core::Graphics
         [[nodiscard]] GL4FrameBuffer* createFrameBuffer() override;
 
         [[nodiscard]] GL3Mesh* createMesh() override;
-
-        [[nodiscard]] Memory::Assets::IMaterial* createMaterial() override;
 
         static const std::shared_ptr<GL4Renderer>& getInstance() noexcept;
     };

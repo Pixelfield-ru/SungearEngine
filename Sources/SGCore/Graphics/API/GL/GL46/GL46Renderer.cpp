@@ -43,7 +43,7 @@ Core::Graphics::GL46Texture2D* Core::Graphics::GL46Renderer::createTexture2D()
     return new GL46Texture2D;
 }
 
-Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createMaterial()
+Core::Memory::Assets::IMaterial *Core::Graphics::GL46Renderer::createPBRMaterial()
 {
     auto* mat = new Memory::Assets::IMaterial;
 

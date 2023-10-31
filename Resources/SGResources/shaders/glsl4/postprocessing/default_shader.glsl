@@ -1,39 +1,36 @@
-#include "../uniform_bufs_decl.glsl"
+// #include "../uniform_bufs_decl.glsl"
 
 #ifdef VERTEX_SHADER
-layout (location = 0) in vec3 positionsAttribute;
-layout (location = 1) in vec3 UVAttribute;
-layout (location = 2) in vec3 normalsAttribute;
+    const vec2 verticesPositions[] = vec2[]
+    (
+        vec2(-1.0, -1.0),
+        vec2(-1.0, 1.0),
+        vec2(1.0, 1.0),
+        vec2(1.0, -1.0)
+    );
 
-out vec3 vs_UVAttribute;
-
-void main()
-{
-    vs_UVAttribute = UVAttribute;
-
-    gl_Position = projectionMatrix * viewMatrix * objectModelMatrix * vec4(positionsAttribute, 1.0);
-}
-#endif
-
-#ifdef FRAGMENT_SHADER
-    uniform sampler2D sgmat_baseColor0;
-    uniform sampler2D sgmat_baseColor1;
-    uniform sampler2D sgmat_baseColor2;
-
-    in vec3 vs_UVAttribute;
+    out vec2 vs_UVAttribute;
 
     void main()
     {
-        vec4 baseColor0 = vec4(1.0);
-        vec4 baseColor1 = vec4(1.0);
-        vec4 baseColor2 = vec4(1.0);
-        vec4 baseColor3 = vec4(1.0);
-        vec4 baseColor4 = vec4(1.0);
-        vec4 baseColor5 = vec4(1.0);
-        vec4 baseColor6 = vec4(1.0);
-        vec4 baseColor7 = vec4(1.0);
-        vec4 baseColor8 = vec4(1.0);
-        vec4 baseColor9 = vec4(1.0);
+        vec2 pos = verticesPositions[gl_VertexID].xy;
+
+        vs_UVAttribute = pos;
+
+        gl_Position = vec4(vec3(pos, 0.0), 1.0);
+    }
+#endif
+
+#ifdef FRAGMENT_SHADER
+    #ifdef sgmat_frameBufferColorAttachmentSamplers_COUNT
+        uniform sampler2D sgmat_frameBufferColorAttachmentSamplers[sgmat_frameBufferColorAttachmentSamplers_COUNT];
+    #endif
+
+    in vec2 vs_UVAttribute;
+
+    void main()
+    {
+        vec4 baseColor = vec4(0.0);
 
         vec2 finalUV = vs_UVAttribute.xy;
 
@@ -41,10 +38,15 @@ void main()
             finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
-        #ifdef sgmat_baseColor1_DEFINED
-            float a = texture(sgmat_baseColor8, finalUV).a;
+        #ifdef sgmat_frameBufferColorAttachmentSamplers_COUNT
+            float mixCoeff = 1.0 / sgmat_frameBufferColorAttachmentSamplers_COUNT;
+SDFSDF
+            for(int i = 0; i < sgmat_frameBufferColorAttachmentSamplers_COUNT; i++)
+            {
+                baseColor += texture(sgmat_frameBufferColorAttachmentSamplers[i], finalUV) * mixCoeff;
+            }
         #endif
 
-        gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+        gl_FragColor = baseColor;
     }
 #endif

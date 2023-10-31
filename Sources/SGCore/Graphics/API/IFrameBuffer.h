@@ -2,8 +2,8 @@
 // Created by stuka on 24.04.2023.
 //
 
-#ifndef NATIVECORE_IFRAMEBUFFER_H
-#define NATIVECORE_IFRAMEBUFFER_H
+#ifndef SUNGEARENGINE_IFRAMEBUFFER_H
+#define SUNGEARENGINE_IFRAMEBUFFER_H
 
 #include <iostream>
 #include <memory>
@@ -12,18 +12,27 @@
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"
 
+namespace Core::Memory::Assets
+{
+    struct MaterialTexturesBlock;
+    class IMaterial;
+}
+
 namespace Core::Graphics
 {
     // todo: make read and draw bindings
     class IFrameBuffer : public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
-        // name of attachment to read
-        std::string m_readAttachmentName;
-        // name of attachment to draw
-        std::string m_drawAttachmentName;
+        // type of attachment to read
+        SGFrameBufferAttachmentType m_readAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
+        // type of attachment to draw
+        SGFrameBufferAttachmentType m_drawAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
 
-        virtual std::shared_ptr<IFrameBuffer> bindAttachment(const std::string& attachmentName,
+        virtual std::shared_ptr<IFrameBuffer> bindAttachments(const std::shared_ptr<Memory::Assets::IMaterial>& material)
+        { return shared_from_this(); }
+
+        virtual std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                              const std::uint8_t& textureBlock) { return shared_from_this(); };
 
         virtual std::shared_ptr<IFrameBuffer> bindAttachmentToRead() { return shared_from_this(); }
@@ -41,27 +50,26 @@ namespace Core::Graphics
         virtual std::shared_ptr<IFrameBuffer> clear() { return shared_from_this(); };
 
         virtual std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType& attachmentType,
-                                                            const std::string& name,
                                                             const SGGColorFormat& format,
                                                             const SGGColorInternalFormat& internalFormat,
                                                             const int& mipLevel,
                                                             const int& layer) = 0;
 
-        std::shared_ptr<IFrameBuffer> setWidth(int&& width) noexcept
+        std::shared_ptr<IFrameBuffer> setWidth(const int& width) noexcept
         {
             m_width = width;
 
             return shared_from_this();
         }
 
-        std::shared_ptr<IFrameBuffer> setHeight(int&& height) noexcept
+        std::shared_ptr<IFrameBuffer> setHeight(const int& height) noexcept
         {
             m_height = height;
 
             return shared_from_this();
         }
 
-        std::shared_ptr<IFrameBuffer> setSize(int&& width, int&& height) noexcept
+        std::shared_ptr<IFrameBuffer> setSize(const int& width, const int& height) noexcept
         {
             m_width = width;
             m_height = height;
@@ -85,4 +93,4 @@ namespace Core::Graphics
     };
 }
 
-#endif //NATIVECORE_IFRAMEBUFFER_H
+#endif // SUNGEARENGINE_IFRAMEBUFFER_H

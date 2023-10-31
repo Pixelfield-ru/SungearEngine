@@ -11,6 +11,9 @@ namespace Core::ECS
     {
         friend class Camera3DMovementSystem;
 
+    public:
+        CameraComponent();
+
     private:
         void init() noexcept final { }
     };

@@ -120,7 +120,9 @@ vec3 atmosphere(vec3 r, vec3 ro,
 
     out vec4 fragColor;
 
-    uniform samplerCube sgmat_skybox25;
+    #ifdef sgmat_skyboxSamplers_COUNT
+        uniform samplerCube sgmat_skyboxSamplers[sgmat_skyboxSamplers_COUNT];
+    #endif
 
     in vec3 vs_UVAttribute;
 
@@ -133,7 +135,7 @@ vec3 atmosphere(vec3 r, vec3 ro,
             30.0,                           // intensity of the sun
             6371e3,                         // radius of the planet in meters
             6471e3,                         // radius of the atmosphere in meters
-            vec3(12.5e-6, 13.0e-6, 20.4e-6), // Rayleigh scattering coefficient
+            vec3(14.5e-6, 15.0e-6, 17.4e-6), // Rayleigh scattering coefficient
             20e-6,                          // Mie scattering coefficient
             8e3,                            // Rayleigh scale height
             1.0e3,                          // Mie scale height
@@ -144,9 +146,15 @@ vec3 atmosphere(vec3 r, vec3 ro,
 
         //fragColor = vec4(atmosphereCol, 1.0);
 
-        #ifdef sgmat_skybox25_DEFINED
-            vec4 skyboxCol = texture(sgmat_skybox25, vs_UVAttribute.xyz);
-            // fragColor = vec4(ACESFilm(atmosphereCol), skyboxCol.a);
+        #ifdef sgmat_skyboxSamplers_COUNT
+            float mixCoeff = 1.0 / sgmat_skyboxSamplers_COUNT;
+
+            vec4 skyboxCol = vec4(0.0);
+            for(int i = 0; i < sgmat_skyboxSamplers_COUNT; i++)
+            {
+                skyboxCol += texture(sgmat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
+            }
+
             fragColor = vec4(ACESFilm(atmosphereCol * skyboxCol.rgb), skyboxCol.a);
         #else
             fragColor = vec4(atmosphereCol, 1.0);

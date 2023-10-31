@@ -78,7 +78,7 @@ namespace Core::ImportedScene
 
         /**
          * Moves all textures of the current material to the new material and sets the new material as the current one.
-         * @see Core::Memory::Assets::IMaterial::operator=
+         * @see Core::Memory::Assets::IMaterial::copyTextures
          * @param[in] newMaterial The material to which the textures will be moved and which will be set as the current one.
          */
         void migrateAndSetNewMaterial(const std::shared_ptr<Memory::Assets::IMaterial>& newMaterial) noexcept;

@@ -16,8 +16,9 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-    uniform sampler2D sgmat_diffuse4;
-    uniform sampler2D sgmat_baseColor8;
+    #ifdef sgmat_diffuseSamplers_COUNT
+        uniform sampler2D sgmat_diffuseSamplers[sgmat_diffuseSamplers_COUNT];
+    #endif
 
     in vec3 vs_UVAttribute;
 
@@ -30,15 +31,16 @@
             finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
-        #ifdef sgmat_diffuse4_DEFINED
-            float a = texture(sgmat_diffuse4, finalUV).a;
-            if(a < 0.2)
+        #ifdef sgmat_diffuseSamplers_COUNT
+            float a = 1.0;
+            float mixCoeff = 1.0 / sgmat_diffuseSamplers_COUNT;
+
+            for(int i = 0; i < sgmat_diffuseSamplers_COUNT; i++)
             {
-                discard;
+                a += texture(sgmat_diffuseSamplers[i], finalUV).a * mixCoeff;
             }
-        #elif sgmat_baseColor8_DEFINED
-            float a = texture(sgmat_baseColor8, finalUV).a;
-            // todo: make 0.2 flexible value
+
+            // todo: make blending for shadows
             if(a < 0.2)
             {
                 discard;

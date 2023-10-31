@@ -123,7 +123,7 @@ Core::Graphics::VkMesh* Core::Graphics::VkRenderer::createMesh()
 }
 
 // TODO: impl
-Core::Memory::Assets::IMaterial *Core::Graphics::VkRenderer::createMaterial()
+Core::Memory::Assets::IMaterial *Core::Graphics::VkRenderer::createPBRMaterial()
 {
     return nullptr;
 }

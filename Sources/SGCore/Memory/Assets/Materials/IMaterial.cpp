@@ -265,10 +265,34 @@ std::shared_ptr<Core::Graphics::IShader> Core::Memory::Assets::IMaterial::getCur
     return m_currentShader;
 }
 
+void Core::Memory::Assets::IMaterial::copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept
+{
+    // adding all used textures
+    for(auto& texturesTypes : m_blocks)
+    {
+        for(auto& texture : texturesTypes.second.m_textures)
+        {
+            to->addTexture2D(texturesTypes.first, texture.second.m_textureAsset);
+        }
+    }
+
+    // adding all not used textures
+    for(auto& texturesTypes : m_notUsedTextures)
+    {
+        for(auto& texture : texturesTypes.second)
+        {
+            to->addTexture2D(texturesTypes.first, texture);
+        }
+    }
+}
+
 Core::Memory::Assets::IMaterial&
 Core::Memory::Assets::IMaterial::operator=(const Core::Memory::Assets::IMaterial& other) noexcept
 {
     assert(this != std::addressof(other));
+
+    m_shaders = other.m_shaders;
+    m_currentShader = other.m_currentShader;
 
     // adding all used textures
     for(auto& texturesTypes : other.m_blocks)

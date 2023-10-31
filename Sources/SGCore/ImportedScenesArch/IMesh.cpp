@@ -4,7 +4,7 @@
 
 Core::ImportedScene::IMesh::IMesh() noexcept
 {
-    m_material = std::shared_ptr<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createMaterial());
+    m_material = std::shared_ptr<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createPBRMaterial());
 }
 
 void Core::ImportedScene::IMesh::setVertexPosition
@@ -77,6 +77,6 @@ std::shared_ptr<Core::Graphics::IVertexArray> Core::ImportedScene::IMesh::getVer
 void Core::ImportedScene::IMesh::migrateAndSetNewMaterial
 (const std::shared_ptr<Memory::Assets::IMaterial>& newMaterial) noexcept
 {
-    *newMaterial = *m_material;
+    m_material->copyTextures(newMaterial);
     m_material = newMaterial;
 }

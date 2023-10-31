@@ -230,73 +230,31 @@ void Core::Graphics::GL4Renderer::renderMesh(
         glDisable(GL_CULL_FACE);
     }
 
-    // double t0 = glfwGetTime();
-
-    // VERY EXPENSIVE IN TIME (0.04 FOR ONE MESH!!!!!!!!!!!!!!!!!!!!!!!!!!)
-    // REPLACE WITH JUST UNIFORMS
-
-    /*m_modelMatricesBuffer->bind();
-    m_modelMatricesBuffer->subData("objectModelMatrix",
-                                   glm::value_ptr(transformComponent->m_modelMatrix), 16);
-    m_modelMatricesBuffer->subData("objectPosition",
-                                   glm::value_ptr(transformComponent->m_position), 3);
-    m_modelMatricesBuffer->subData("objectRotation",
-                                   glm::value_ptr(transformComponent->m_rotation), 3);
-    m_modelMatricesBuffer->subData("objectScale",
-                                   glm::value_ptr(transformComponent->m_scale), 3);
-
-    m_materialDataBuffer->bind();
-    m_materialDataBuffer->subData("materialDiffuseCol",
-                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_diffuseColor), 4);
-    m_materialDataBuffer->subData("materialSpecularCol",
-                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_specularColor), 4);
-    m_materialDataBuffer->subData("materialAmbientCol",
-                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_ambientColor), 4);
-    m_materialDataBuffer->subData("materialEmissionCol",
-                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_emissionColor), 4);
-    m_materialDataBuffer->subData("materialTransparentCol",
-                                  glm::value_ptr(meshComponent->m_mesh->m_material->m_transparentColor), 4);
-    m_materialDataBuffer->subData("materialShininess",
-                                         { meshComponent->m_mesh->m_material->m_shininess });
-    m_materialDataBuffer->subData("materialMetallicFactor",
-                                  { meshComponent->m_mesh->m_material->m_metallicFactor });
-    m_materialDataBuffer->subData("materialRoughnessFactor",
-                                  { meshComponent->m_mesh->m_material->m_roughnessFactor });*/
-
-    // double t1 = glfwGetTime();
-
-    // std::cout << "ms for sub  data: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
-
     meshComponent->m_mesh->m_material->bind();
-
-    // double t0 = glfwGetTime();
-
-    /*meshComponent->m_mesh->m_material->getCurrentShader()->useMatrix("objectModelMatrix", transformComponent->m_modelMatrix);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectPosition", transformComponent->m_position);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectRotation", transformComponent->m_rotation);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectScale", transformComponent->m_scale);
-
-    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialDiffuseCol", meshComponent->m_mesh->m_material->m_diffuseColor);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialSpecularCol", meshComponent->m_mesh->m_material->m_specularColor);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialAmbientCol", meshComponent->m_mesh->m_material->m_ambientColor);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialEmissionCol", meshComponent->m_mesh->m_material->m_emissionColor);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useVectorf("materialTransparentCol", meshComponent->m_mesh->m_material->m_transparentColor);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialShininess", meshComponent->m_mesh->m_material->m_shininess);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialMetallicFactor", meshComponent->m_mesh->m_material->m_metallicFactor);
-    meshComponent->m_mesh->m_material->getCurrentShader()->useFloat("materialRoughnessFactor", meshComponent->m_mesh->m_material->m_roughnessFactor);*/
-
-    // double t1 = glfwGetTime();
-
-    // std::cout << "ms for sub  data: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
-
     meshComponent->m_mesh->getVertexArray()->bind();
 
-    //materialShader->useUniformBuffer(m_modelMatricesBuffer);
     materialShader->useUniformBuffer(m_viewMatricesBuffer);
     materialShader->useUniformBuffer(m_programDataBuffer);
-    //materialShader->useUniformBuffer(m_materialDataBuffer);
 
     glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(meshComponent->m_mesh->m_drawMode), meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+}
+
+void Core::Graphics::GL4Renderer::renderRenderOutput(const RenderOutput& renderOutput)
+{
+    if(!renderOutput.m_billboard) return;
+
+    const auto& materialShader = renderOutput.m_billboard->m_material->getCurrentShader();
+
+    if(!materialShader) return;
+
+    renderOutput.m_billboard->m_material->bind();
+    renderOutput.m_frameBuffer->bindAttachments(renderOutput.m_billboard->m_material);
+    renderOutput.m_billboard->getVertexArray()->bind();
+
+    materialShader->useUniformBuffer(m_viewMatricesBuffer);
+    materialShader->useUniformBuffer(m_programDataBuffer);
+
+    glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(renderOutput.m_billboard->m_drawMode), renderOutput.m_billboard->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
 void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
@@ -406,73 +364,6 @@ Core::Graphics::GL4FrameBuffer* Core::Graphics::GL4Renderer::createFrameBuffer()
 Core::Graphics::GL3Mesh* Core::Graphics::GL4Renderer::createMesh()
 {
     return new GL3Mesh;
-}
-
-Core::Memory::Assets::IMaterial* Core::Graphics::GL4Renderer::createMaterial()
-{
-    auto* mat = new Memory::Assets::IMaterial;
-
-    mat->setShader(
-            SGMAT_STANDARD_SHADER_NAME,
-            std::shared_ptr<Core::Graphics::IShader>(
-                createShader(getShaderPath(StandardShaderType::SG_PBR_SHADER))
-            ));
-
-    mat->setShader(
-            SGMAT_SHADOW_GEN_SHADER_NAME,
-            std::shared_ptr<Core::Graphics::IShader>(
-                    createShader(getShaderPath(StandardShaderType::SG_SHADOWS_GENERATOR_SHADER))
-            ));
-
-    mat->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
-
-    // adding block decls
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSIVE,
-                             1, 0);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_AMBIENT_OCCLUSION,
-                             1, 1);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_AMBIENT,
-                             1, 2);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_DIFFUSE_ROUGHNESS,
-                             1, 3);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_DIFFUSE,
-                             1, 4);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_DISPLACEMENT,
-                             1, 5);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_HEIGHT,
-                             1, 6);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_NORMALS,
-                             1, 7);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_BASE_COLOR,
-                             1, 8);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_CLEARCOAT,
-                             1, 9);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_EMISSION_COLOR,
-                             1, 10);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_LIGHTMAP,
-                             1, 11);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_METALNESS,
-                             1, 12);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_NORMAL_CAMERA,
-                             1, 13);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_OPACITY,
-                             1, 14);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_REFLECTION,
-                             1, 15);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SHEEN,
-                             1, 16);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SHININESS,
-                             1, 17);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SPECULAR,
-                             1, 18);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_TRANSMISSION,
-                             1, 19);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SHADOW_MAP,
-                             5, 20);
-    mat->addBlockDeclaration(SGMaterialTextureType::SGTP_SKYBOX,
-                             1, 25);
-
-    return mat;
 }
 
 const std::shared_ptr<Core::Graphics::GL4Renderer>& Core::Graphics::GL4Renderer::getInstance() noexcept

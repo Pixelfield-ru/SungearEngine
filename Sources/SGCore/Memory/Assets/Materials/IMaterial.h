@@ -5,12 +5,13 @@
 
 #include <map>
 #include <string>
+#include <tsl/robin_map.h>
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/IAsset.h"
-#include <tsl/robin_map.h>
+#include "SGCore/Graphics/API/IFrameBuffer.h"
 
 #define SGMAT_STANDARD_SHADER_NAME      "standardShader"
 #define SGMAT_SHADOW_GEN_SHADER_NAME    "shadowGenShader"
@@ -128,6 +129,8 @@ namespace Core::Memory::Assets
         {
             return m_shaders;
         }
+
+        void copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept;
 
         /**
          * Copies all texture assets (textures data is not copied) to another material.\n

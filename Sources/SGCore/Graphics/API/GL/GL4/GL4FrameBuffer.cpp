@@ -7,49 +7,121 @@
 #include "SGCore/Logging/Log.h"
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 #include "SGCore/Main/CoreMain.h"
+#include "GL4Texture2D.h"
+
+std::shared_ptr<Core::Graphics::IFrameBuffer>
+Core::Graphics::GL4FrameBuffer::bindAttachments(const std::shared_ptr<Memory::Assets::IMaterial>& material)
+{
+    const auto& blocks = material->getBlocks();
+
+    for(const auto& block : blocks)
+    {
+        SGMaterialTextureType textureType = block.first;
+
+        if(textureType == SGMaterialTextureType::SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT)
+        {
+            std::uint8_t finalOffset = block.second.m_texturesUnitOffset;
+
+            glActiveTexture(GL_TEXTURE0 + finalOffset);
+            glBindTexture(GL_TEXTURE_2D, m_attachments[SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT].m_handler);
+
+            auto uniformName = sgMaterialTextureTypeToString(textureType) + "Samplers[0]";
+
+            material->getCurrentShader()->useTexture(uniformName, finalOffset);
+        }
+        else if(textureType == SGMaterialTextureType::SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT)
+        {
+            // todo: impl
+        }
+        else if(textureType == SGMaterialTextureType::SGTP_FRAMEBUFFER_COLOR_ATTACHMENT)
+        {
+            std::uint8_t curColAttachment = 0;
+
+            for(const auto& fbAttachment : m_attachments)
+            {
+                if(fbAttachment.first >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+                   fbAttachment.first <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
+                {
+                    std::uint8_t finalOffset = block.second.m_texturesUnitOffset + curColAttachment;
+
+                    glActiveTexture(GL_TEXTURE0 + finalOffset);
+                    glBindTexture(GL_TEXTURE_2D, m_attachments[fbAttachment.first].m_handler);
+
+                    auto uniformName = sgMaterialTextureTypeToString(textureType) + "Samplers[" +
+                            std::to_string(curColAttachment) + "]";
+
+                    material->getCurrentShader()->useTexture(uniformName, finalOffset);
+
+                    ++curColAttachment;
+                }
+            }
+        }
+        else if(textureType == SGMaterialTextureType::SGTP_FRAMEBUFFER_RENDER_ATTACHMENT)
+        {
+            // todo: impl
+        }
+    }
+
+    return shared_from_this();
+}
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachment
-(const std::string& attachmentName, const std::uint8_t& textureBlock)
+(const SGFrameBufferAttachmentType& attachmentType, const std::uint8_t& textureBlock)
 {
     glActiveTexture(GL_TEXTURE0 + textureBlock);
-    glBindTexture(GL_TEXTURE_2D, m_attachments[attachmentName].m_handler);
+    glBindTexture(GL_TEXTURE_2D, m_attachments[attachmentType].m_handler);
 
     return shared_from_this();
 }
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToRead()
 {
+    if(m_attachments.find(m_drawAttachmentType) != m_attachments.cend())
+    {
+        if(m_drawAttachmentType == SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT)
+        {
+            glReadBuffer(GL_DEPTH_ATTACHMENT);
+        }
+        else if(m_drawAttachmentType == SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT)
+        {
+            glReadBuffer(GL_DEPTH_STENCIL_ATTACHMENT);
+        }
+        else if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+                m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
+        {
+            glReadBuffer(GL_COLOR_ATTACHMENT0 + (m_drawAttachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+        }
+        else if(m_drawAttachmentType == SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT)
+        {
+            // todo: impl
+            //glReadBuffer()
+        }
+    }
+
     return shared_from_this();
 }
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToDraw()
 {
-    if(m_attachments.find(m_drawAttachmentName) != m_attachments.end())
+    if(m_attachments.find(m_drawAttachmentType) != m_attachments.cend())
     {
-        auto& attachment = m_attachments[m_drawAttachmentName];
-
-        switch(attachment.m_type)
+        if(m_drawAttachmentType == SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT)
         {
-            case SGG_DEPTH_ATTACHMENT:
-            {
-                glDrawBuffer(GL_DEPTH_ATTACHMENT);
-                break;
-            }
-            case SGG_DEPTH_STENCIL_ATTACHMENT:
-            {
-                glDrawBuffer(GL_DEPTH_STENCIL_ATTACHMENT);
-                break;
-            }
-            case SGG_COLOR_ATTACHMENT:
-            {
-                glDrawBuffer(GL_COLOR_ATTACHMENT0 + attachment.m_ID);
-                break;
-            }
-            case SGG_RENDER_ATTACHMENT:
-            {
-                //glDrawBuffer(GL_RENDER);
-                break;
-            }
+            glDrawBuffer(GL_DEPTH_ATTACHMENT);
+        }
+        else if(m_drawAttachmentType == SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT)
+        {
+            glDrawBuffer(GL_DEPTH_STENCIL_ATTACHMENT);
+        }
+        else if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+                m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
+        {
+            glDrawBuffer(GL_COLOR_ATTACHMENT0 + (m_drawAttachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+        }
+        else if(m_drawAttachmentType == SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT)
+        {
+            // todo: impl
+            //glDrawBuffer()
         }
     }
 
@@ -119,16 +191,15 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::cl
 
 std::shared_ptr<Core::Graphics::IFrameBuffer>
 Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType& attachmentType,
-                                              const std::string& name,
                                               const SGGColorFormat& format,
                                               const SGGColorInternalFormat& internalFormat,
                                               const int& mipLevel,
                                               const int& layer)
 {
-    if(m_attachments.find(name) != m_attachments.end())
+    if(m_attachments.find(attachmentType) != m_attachments.end())
     {
-        SGCF_ERROR("Error when adding an attachment '" + name + "' to the framebuffer: "
-                   "an attachment with this name already exists.", SG_LOG_GAPI_FILE);
+        SGCF_ERROR("Error when adding an attachment to the framebuffer: "
+                   "an attachment with this type already exists.", SG_LOG_GAPI_FILE);
 
         return shared_from_this();
     }
@@ -136,164 +207,96 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
     // TODO: MAKE VERIFY INTERNAL FORMAT
     // TODO: MAKE VERIFY SIZE TYPE
 
-    switch(attachmentType)
+    if(attachmentType == SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT)
     {
-        case SGG_DEPTH_STENCIL_ATTACHMENT:
-        {
+            auto& newAttachment = m_attachments[attachmentType];
 
-            break;
-        }
+        newAttachment.m_format = format;
+        newAttachment.m_internalFormat = internalFormat;
+        newAttachment.m_mipLevel = mipLevel;
+        newAttachment.m_layer = layer;
 
-        case SGG_DEPTH_ATTACHMENT:
-        {
-            bool depthAttachmentExists = false;
+        glGenTextures(1, &newAttachment.m_handler);
+        glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
 
-            // finding depth attachment
-            for(const auto& attachment : m_attachments)
-            {
-                if(attachment.second.m_type == SGG_DEPTH_ATTACHMENT)
-                {
-                    depthAttachmentExists = true;
+        glTexImage2D(GL_TEXTURE_2D,
+                     mipLevel,
+                     GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
+                     m_width, m_height,
+                     0,
+                     GL_DEPTH_COMPONENT,
+                // todo: make customizable
+                     GL_FLOAT,
+                     nullptr
+        );
 
-                    SGCF_ERROR("Error adding depth attachment '" + name + "' to framebuffer: attachment already exists.", SG_LOG_GAPI_FILE);
+        // TODO: make it customizable
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-                    break;
-                }
-            }
+        /*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-            // adding new depth attachment
-            if(!depthAttachmentExists)
-            {
-                auto& newAttachment = m_attachments[name];
+        glGenerateMipmap(GL_TEXTURE_2D);
 
-                newAttachment.m_type = attachmentType;
+        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
-                newAttachment.m_name = name;
-                newAttachment.m_ID = 0;
-                newAttachment.m_format = format;
-                newAttachment.m_internalFormat = internalFormat;
-                newAttachment.m_mipLevel = mipLevel;
-                newAttachment.m_layer = layer;
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);*/
 
-                glGenTextures(1, &newAttachment.m_handler);
-                glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
+        // todo: make it customizable
+        float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-                glTexImage2D(GL_TEXTURE_2D,
-                             mipLevel,
-                             GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
-                             m_width, m_height,
-                             0,
-                             GL_DEPTH_COMPONENT,
-                             // todo: make customizable
-                             GL_FLOAT,
-                             nullptr);
+        glFramebufferTexture2D(GL_FRAMEBUFFER,
+                               GL_DEPTH_ATTACHMENT,
+                               GL_TEXTURE_2D, newAttachment.m_handler, mipLevel
+        );
+    }
+    else if(attachmentType == SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT)
+    {
+        // todo: make
+    }
+    else if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+            attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
+    {
+        GLFrameBufferAttachment& newAttachment = m_attachments[attachmentType];
 
-                // TODO: make it customizable
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        newAttachment.m_format = format;
+        newAttachment.m_internalFormat = internalFormat;
+        newAttachment.m_mipLevel = mipLevel;
+        newAttachment.m_layer = layer;
 
-                /*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glGenTextures(1, &newAttachment.m_handler);
+        glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
 
-                glGenerateMipmap(GL_TEXTURE_2D);
+        glTexImage2D(GL_TEXTURE_2D,
+                     mipLevel,
+                     GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
+                     m_width, m_height,
+                     0,
+                     GLGraphicsTypesCaster::sggFormatToGL(format),
+                     GL_UNSIGNED_BYTE,
+                     nullptr);
 
-                glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+        // TODO: make it customizable
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);*/
-
-                // todo: make it customizable
-                float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-                glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-                glFramebufferTexture2D(GL_FRAMEBUFFER,
-                                       GL_DEPTH_ATTACHMENT,
-                                       GL_TEXTURE_2D, newAttachment.m_handler, mipLevel);
-            }
-
-            break;
-        }
-
-        case SGG_COLOR_ATTACHMENT:
-        {
-            if(m_attachments.size() >= maxColorAttachments)
-            {
-                SGCF_ERROR("It is not possible to add a new color attachment '" + name + "' to the framebuffer: there are no free blocks.",
-                           SG_LOG_GAPI_FILE);
-
-                break;
-            }
-
-            int foundAttachment = -1;
-
-            // find free attachment id
-            for(int i = 0; i < maxColorAttachments; i++)
-            {
-                foundAttachment = i;
-
-                for(const auto& attachment : m_attachments)
-                {
-                    if(attachment.second.m_type == SGG_COLOR_ATTACHMENT)
-                    {
-                        if(attachment.second.m_ID == i)
-                        {
-                            // already exists
-                            foundAttachment = -1;
-                        }
-                    }
-                }
-
-                // free attachment found
-                if(foundAttachment != -1) break;
-            }
-
-            // creating texture
-            if(foundAttachment != -1)
-            {
-                GLFrameBufferAttachment& newAttachment = m_attachments[name];
-
-                newAttachment.m_type = attachmentType;
-
-                newAttachment.m_name = name;
-                newAttachment.m_ID = foundAttachment;
-                newAttachment.m_format = format;
-                newAttachment.m_internalFormat = internalFormat;
-                newAttachment.m_mipLevel = mipLevel;
-                newAttachment.m_layer = layer;
-
-                glGenTextures(1, &newAttachment.m_handler);
-                glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
-
-                glTexImage2D(GL_TEXTURE_2D,
-                             mipLevel,
-                             GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
-                             m_width, m_height,
-                             0,
-                             GLGraphicsTypesCaster::sggFormatToGL(format),
-                             GL_UNSIGNED_BYTE,
-                             nullptr);
-
-                // TODO: make it customizable
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-                glFramebufferTexture2D(GL_FRAMEBUFFER,
-                                       GL_COLOR_ATTACHMENT0 + newAttachment.m_ID,
-                                       GL_TEXTURE_2D, newAttachment.m_handler, mipLevel);
-            }
-
-            break;
-        }
-
-        case SGG_RENDER_ATTACHMENT:
-            break;
+        glFramebufferTexture2D(GL_FRAMEBUFFER,
+                               GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0),
+                               GL_TEXTURE_2D, newAttachment.m_handler, mipLevel);
+    }
+    else if(attachmentType == SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT)
+    {
+        // todo: make
     }
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        SGCF_ERROR("Error when adding attachment '" + name + "' to framebuffer: framebuffer is not completed", SG_LOG_GAPI_FILE);
+        SGCF_ERROR("Error when adding attachment to framebuffer: framebuffer is not completed", SG_LOG_GAPI_FILE);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

@@ -37,15 +37,15 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
 
             Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
 
-            for(const auto& meshedLayer : meshedCachedEntities)
+            for(const auto& meshesLayer : meshedCachedEntities)
             {
                 // if layer is layer of transparent objects than sort
 
                 // TODO: MAKE DEPTH MASK FOR RENDERER TO RENDER TRANSPARENT OBJECTS
                 // todo: make normal render for transparent objects
-                if(!meshedLayer.first->m_isOpaque)
+                if(!meshesLayer.first->m_isOpaque)
                 {
-                    meshedLayer.first->m_entities.sort([&cameraTransformComponent](const std::shared_ptr<Entity>& e0, const std::shared_ptr<Entity>& e1)
+                    meshesLayer.first->m_entities.sort([&cameraTransformComponent](const std::shared_ptr<Entity>& e0, const std::shared_ptr<Entity>& e1)
                                                        {
                                                            auto t0 = e0->getComponent<TransformComponent>();
                                                            auto t1 = e1->getComponent<TransformComponent>();
@@ -59,30 +59,50 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
 
                 // -------------------------------------------------
 
-                for(const auto& meshesEntity: meshedLayer.second)
+                for(auto& renderPass : cameraComponent->m_renderPasses)
                 {
-                    if(!meshesEntity.second) continue;
+                    Graphics::RenderOutput& currentRenderOutput = renderPass.m_defaultRenderOutput;
 
-                    std::shared_ptr<TransformComponent> transformComponent = meshesEntity.second->getComponent<TransformComponent>();
-
-                    if(!transformComponent) continue;
-
-                    auto meshComponents =
-                            meshesEntity.second->getComponents<MeshComponent>();
-
-                    for(const auto& meshComponent: meshComponents)
+                    const auto& foundPostProcessLayer = renderPass.m_postProcessLayers.find(meshesLayer.first);
+                    if(foundPostProcessLayer != renderPass.m_postProcessLayers.cend())
                     {
-                        transformationsSystem->addFunctionToFixedUpdateQuery(
-                                meshComponent->getUUID(),
-                                uniformsUpdaterLambda,
-                                meshComponent->m_mesh, transformComponent
-                        );
-
-                        Core::Main::CoreMain::getRenderer().renderMesh(
-                                transformComponent,
-                                meshComponent
-                        );
+                        currentRenderOutput = foundPostProcessLayer->second;
                     }
+
+                    currentRenderOutput.m_frameBuffer->bind()->clear();
+
+                    for(const auto& meshesEntity: meshesLayer.second)
+                    {
+                        if(!meshesEntity.second) continue;
+
+                        std::shared_ptr<TransformComponent> transformComponent = meshesEntity.second->getComponent<TransformComponent>();
+
+                        if(!transformComponent) continue;
+
+                        auto meshComponents =
+                                meshesEntity.second->getComponents<MeshComponent>();
+
+                        for(const auto& meshComponent: meshComponents)
+                        {
+                            transformationsSystem->addFunctionToFixedUpdateQuery(
+                                    meshComponent->getUUID(),
+                                    uniformsUpdaterLambda,
+                                    meshComponent->m_mesh, transformComponent
+                            );
+
+                            Core::Main::CoreMain::getRenderer().renderMesh(
+                                    transformComponent,
+                                    meshComponent
+                            );
+                        }
+                    }
+
+                    currentRenderOutput.m_frameBuffer->unbind();
+
+                    // now render RenderOutput
+                    Core::Main::CoreMain::getRenderer().renderRenderOutput(
+                            currentRenderOutput
+                    );
                 }
             }
 

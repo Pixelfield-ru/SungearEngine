@@ -27,6 +27,7 @@
 #include "ICubemapTexture.h"
 #include "SGCore/ECS/Rendering/Primitives/IPrimitiveComponent.h"
 #include "SGCore/ECS/Rendering/IRenderingComponent.h"
+#include "SGCore/Graphics/Defines.h"
 
 namespace Core::ECS
 {
@@ -85,6 +86,8 @@ namespace Core::Graphics
         virtual void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                      const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) { }
 
+        virtual void renderRenderOutput(const RenderOutput& renderOutput) { }
+
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
          */
@@ -106,7 +109,29 @@ namespace Core::Graphics
 
         [[nodiscard]] virtual ImportedScene::IMesh* createMesh() = 0;
 
-        [[nodiscard]] virtual Memory::Assets::IMaterial* createMaterial() = 0;
+        /**
+         * Create one of standard materials without textures blocks declarations.
+         * @return Blank standard material.
+         */
+        [[nodiscard]] virtual Memory::Assets::IMaterial* createBlankStandardMaterial(const StandardShaderType& standardShaderType);
+
+        /**
+         * Creates customized PBR material.
+         * @return PBR material.
+         */
+        [[nodiscard]] virtual Memory::Assets::IMaterial* createPBRMaterial();
+
+        /**
+         * Creates customized skybox material.
+         * @return Skybox material.
+         */
+        [[nodiscard]] virtual Memory::Assets::IMaterial* createSkyboxMaterial();
+
+        /**
+         * Creates customized post-process material.
+         * @return Post-process material.
+         */
+        [[nodiscard]] virtual Memory::Assets::IMaterial* createPostProcessingMaterial();
 
         [[nodiscard]] APIType getAPIType() const noexcept;
 

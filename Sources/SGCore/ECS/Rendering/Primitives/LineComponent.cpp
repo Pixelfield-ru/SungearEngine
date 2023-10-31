@@ -20,16 +20,11 @@ Core::ECS::LineComponent::LineComponent() noexcept
     m_mesh->m_positions.push_back(10.0);
     m_mesh->m_positions.push_back(0.0);
 
-    m_mesh->m_material->setShader(
-            SGMAT_STANDARD_SHADER_NAME,
-            std::shared_ptr<Graphics::IShader>(
-                    Core::Main::CoreMain::getRenderer().createShader(
-                            Graphics::getShaderPath(Graphics::StandardShaderType::SG_LINES_SHADER)
-                    )
+    m_mesh->m_material = std::shared_ptr<Memory::Assets::IMaterial>(
+            Core::Main::CoreMain::getRenderer().createBlankStandardMaterial(
+                    Graphics::StandardShaderType::SG_LINES_SHADER
             )
     );
-
-    //m_mesh->m_material->setCurrentShader(SGMAT_STANDARD_SHADER_NAME);
 
     const auto& materialShader = m_mesh->m_material->getCurrentShader();
 

@@ -271,7 +271,7 @@ float ambient = 0.1;
         // -----------------------
 
         const float shadowsMinCoeff = 0.55;
-        const int samplesNum = 24;
+        const int samplesNum = 16;
 
         float visibility = 1.0;
         const float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
@@ -283,7 +283,7 @@ float ambient = 0.1;
 
         for(int i = 0; i < samplesNum; i++)
         {
-            if(texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + rotate(poissonDisk[i], rotTrig) / 1500.0).z < projCoords.z - shadowsBias)
+            if(texture(shadowsCastersShadowMaps[shadowsCasterIdx], projCoords.xy + rotate(poissonDisk[i], rotTrig) / 750.0).z < projCoords.z - shadowsBias)
             {
                 visibility -= downstep;
             }
@@ -342,12 +342,12 @@ float ambient = 0.1;
 
     out vec4 fragColor;
 
-    #ifdef sgmat_diffuseRoughnessSamplers_COUNT
-        uniform sampler2D sgmat_diffuseRoughnessSamplers[sgmat_diffuseRoughnessSamplers_COUNT];
-    #endif
-
     #ifdef sgmat_diffuseSamplers_COUNT
         uniform sampler2D sgmat_diffuseSamplers[sgmat_diffuseSamplers_COUNT];
+    #endif
+
+    #ifdef sgmat_diffuseRoughnessSamplers_COUNT
+        uniform sampler2D sgmat_diffuseRoughnessSamplers[sgmat_diffuseRoughnessSamplers_COUNT];
     #endif
 
     #ifdef sgmat_normalsSamplers_COUNT

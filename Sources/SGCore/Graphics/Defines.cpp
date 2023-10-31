@@ -57,6 +57,15 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
                     break;
             }
             break;
+
+        case SG_POSTPROCESSING_SHADER:
+            switch(Main::CoreMain::getRenderer().getAPIType())
+            {
+                case SG_API_TYPE_GL4:
+                    shaderPath = SG_GLSL4_POSTPROCESSING_SHADER_PATH;
+                    break;
+            }
+            break;
     }
 
     return shaderPath;

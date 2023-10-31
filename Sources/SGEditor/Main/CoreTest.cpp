@@ -312,13 +312,9 @@ void init()
                     )
             );
 
-            meshComponent->m_mesh->m_material->setShader(
-                    SGMAT_STANDARD_SHADER_NAME,
-                    std::shared_ptr<Core::Graphics::IShader>(
-                            Core::Main::CoreMain::getRenderer().createShader(
-                                    Core::Graphics::getShaderPath(Core::Graphics::StandardShaderType::SG_SKYBOX_SHADER)
-                            )
-                    ));
+            auto skyboxMaterial = std::shared_ptr<Core::Memory::Assets::IMaterial>(Core::Main::CoreMain::getRenderer().createSkyboxMaterial());
+
+            meshComponent->m_mesh->migrateAndSetNewMaterial(skyboxMaterial);
         }
         testScene->addEntity(entity);
     }
