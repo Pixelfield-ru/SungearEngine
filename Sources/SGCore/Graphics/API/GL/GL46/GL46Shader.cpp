@@ -344,6 +344,12 @@ void Core::Graphics::GL46Shader::useFloat(const std::string& uniformName, const 
     glUniform1f(fLoc, f);
 }
 
+void Core::Graphics::GL46Shader::useInteger(const std::string& uniformName, const size_t& i)
+{
+    int iLoc = getShaderUniformLocation(uniformName);
+    glUniform1i(iLoc, i);
+}
+
 /*
 Core::Graphics::API::GL46::GL46Shader& Core::Graphics::API::GL46::GL46Shader::operator=(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
 {

@@ -41,9 +41,20 @@ namespace Core::Graphics
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
 
-        void addShaderDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
-        void removeShaderDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
-        void removeShaderDefine(const SGShaderDefineType& shaderDefineType, const std::string& shaderDefineName);
+        void addDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
+        void emplaceDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
+
+        void addDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
+        void emplaceDefine(const SGShaderDefineType& shaderDefineType, ShaderDefine&& shaderDefine);
+
+        void removeDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
+        void removeDefine(const SGShaderDefineType& shaderDefineType, const std::string& shaderDefineName);
+
+        void updateDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
+        void emplaceUpdateDefine(const SGShaderDefineType& shaderDefineType, ShaderDefine&& shaderDefine);
+
+        void updateDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
+        void emplaceUpdateDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
 
         void replaceDefines(const SGShaderDefineType& shaderDefineType, const std::list<ShaderDefine>& otherDefines) noexcept;
         void replaceDefines(const SGShaderDefineType& shaderDefineType, std::shared_ptr<IShader> otherShader) noexcept;
@@ -79,6 +90,7 @@ namespace Core::Graphics
         virtual void useVectorf(const std::string& uniformName, const glm::vec4& vec) { };
 
         virtual void useFloat(const std::string& uniformName, const float& f) { };
+        virtual void useInteger(const std::string& uniformName, const size_t& i) { };
 
         #pragma endregion
 

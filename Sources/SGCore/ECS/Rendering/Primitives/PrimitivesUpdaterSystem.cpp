@@ -35,14 +35,14 @@ void Core::ECS::PrimitivesUpdaterSystem::fixedUpdate(const std::shared_ptr<Scene
 
                     if(primitiveComponent->m_followEntityTRS.x)
                     {
-                        materialShader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                                         {Graphics::ShaderDefine(SG_TRANSLATE_WITH_OBJECT, "")}
+                        materialShader->addDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                   {Graphics::ShaderDefine(SG_TRANSLATE_WITH_OBJECT, "")}
                         );
                     }
                     else
                     {
-                        materialShader->removeShaderDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                                           SG_TRANSLATE_WITH_OBJECT
+                        materialShader->removeDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                     SG_TRANSLATE_WITH_OBJECT
                         );
                     }
 
@@ -50,14 +50,14 @@ void Core::ECS::PrimitivesUpdaterSystem::fixedUpdate(const std::shared_ptr<Scene
 
                     if(primitiveComponent->m_followEntityTRS.y)
                     {
-                        materialShader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                                         {Graphics::ShaderDefine(SG_ROTATE_WITH_OBJECT, "")}
+                        materialShader->addDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                   {Graphics::ShaderDefine(SG_ROTATE_WITH_OBJECT, "")}
                         );
                     }
                     else
                     {
-                        materialShader->removeShaderDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                                           SG_ROTATE_WITH_OBJECT
+                        materialShader->removeDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                     SG_ROTATE_WITH_OBJECT
                         );
                     }
 
@@ -65,14 +65,14 @@ void Core::ECS::PrimitivesUpdaterSystem::fixedUpdate(const std::shared_ptr<Scene
 
                     if(primitiveComponent->m_followEntityTRS.z)
                     {
-                        materialShader->addShaderDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                                         {Graphics::ShaderDefine(SG_SCALE_WITH_OBJECT, "")}
+                        materialShader->addDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                   {Graphics::ShaderDefine(SG_SCALE_WITH_OBJECT, "")}
                         );
                     }
                     else
                     {
-                        materialShader->removeShaderDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                                           SG_SCALE_WITH_OBJECT
+                        materialShader->removeDefine(SGShaderDefineType::SGG_OTHER_DEFINE,
+                                                     SG_SCALE_WITH_OBJECT
                         );
                     }
 

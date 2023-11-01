@@ -1,8 +1,5 @@
 #include "IMaterial.h"
 
-#include "SGCore/Main/CoreMain.h"
-#include <glad/glad.h>
-
 std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind()
 {
     return bind(m_currentShader);
@@ -53,13 +50,9 @@ void Core::Memory::Assets::IMaterial::addBlockDeclaration
 
         shader->setAssetModifiedChecking(false);
 
-        shader->removeShaderDefine(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
-                                   maxTextureBlockDefine);
-        shader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
-                                 {
-                                         Graphics::ShaderDefine(maxTextureBlockDefine,
-                                                                std::to_string(maxTextures)),
-                                 });
+        shader->emplaceUpdateDefine(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                    Graphics::ShaderDefine(maxTextureBlockDefine,
+                                                           std::to_string(maxTextures)));
 
         shader->setAssetModifiedChecking(true);
     }
@@ -155,10 +148,11 @@ std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial
             for(auto& shaderPair : m_shaders)
             {
                 auto& shader = shaderPair.second;
-                shader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
-                                         {
-                                                 Graphics::ShaderDefine(newTextureFinalDefine, currentTexturesCountStr)
-                                         });
+                shader->setAssetModifiedChecking(false);
+                shader->emplaceUpdateDefine(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                            Graphics::ShaderDefine(newTextureFinalDefine,
+                                                                   currentTexturesCountStr));
+                shader->setAssetModifiedChecking(true);
             }
         }
         else // there is no free texture units for texture
@@ -230,14 +224,14 @@ void Core::Memory::Assets::IMaterial::setShader
             auto typeName = sgMaterialTextureTypeToString(blockPair.first) + "Samplers";
             auto maxTextureBlockDefine = typeName + "_MAX_TEXTURES_NUM";
 
-            otherShader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
-                                          { Graphics::ShaderDefine(maxTextureBlockDefine,
-                                                                   std::to_string(blockPair.second.m_maximumTextures)) });
+            otherShader->emplaceUpdateDefine(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                             Graphics::ShaderDefine(maxTextureBlockDefine,
+                                                                    std::to_string(blockPair.second.m_maximumTextures)));
 
 
-            otherShader->addShaderDefines(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
-                                          {Graphics::ShaderDefine(maxTextureBlockDefine + "_COUNT",
-                                                                  std::to_string(blockPair.second.m_textures.size()))});
+            otherShader->emplaceUpdateDefine(SGShaderDefineType::SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
+                                             Graphics::ShaderDefine(maxTextureBlockDefine + "_COUNT",
+                                                                    std::to_string(blockPair.second.m_textures.size())));
         }
     }
 
