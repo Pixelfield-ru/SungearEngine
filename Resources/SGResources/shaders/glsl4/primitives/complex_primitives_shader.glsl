@@ -1,5 +1,4 @@
 #include "../uniform_bufs_decl.glsl"
-#include "../color_correction/aces.glsl"
 #include "../disks.glsl"
 
 #ifdef VERTEX_SHADER
@@ -20,6 +19,6 @@
 
     void main()
     {
-        fragColor = vec4(ACESFilm(color.rgb), color.a);
+        fragColor = vec4(color.rgb, color.a);
     }
 #endif

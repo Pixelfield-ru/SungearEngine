@@ -46,7 +46,7 @@ bool Core::Graphics::VkRenderer::confirmSupport() noexcept
     return false;
 }
 
-void Core::Graphics::VkRenderer::renderFrame(const glm::ivec2& windowSize)
+void Core::Graphics::VkRenderer::prepareFrame(const glm::ivec2& windowSize)
 {
 
 }

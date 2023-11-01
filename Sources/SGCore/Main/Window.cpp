@@ -168,8 +168,9 @@ void Core::Main::Window::setCursorPosition(const double& x, const double& y) noe
 
 void Core::Main::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
 {
-    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
-    glfwGetMonitorPhysicalSize(primaryMonitor, &sizeX, &sizeY);
+    const GLFWvidmode* primaryVideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    sizeX = primaryVideoMode->width;
+    sizeY = primaryVideoMode->height;
 }
 
 bool Core::Main::Window::shouldClose() noexcept

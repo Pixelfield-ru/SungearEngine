@@ -41,7 +41,7 @@ namespace Core::Graphics
 
         bool confirmSupport() noexcept final;
 
-        void renderFrame(const glm::ivec2& windowSize) override;
+        void prepareFrame(const glm::ivec2& windowSize) override;
 
         void renderMesh(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                         const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;

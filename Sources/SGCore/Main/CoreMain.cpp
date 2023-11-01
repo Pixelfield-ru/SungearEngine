@@ -85,7 +85,7 @@ void Core::Main::CoreMain::update()
 
     glm::ivec2 windowSize;
     m_window.getSize(windowSize.x, windowSize.y);
-    m_renderer->renderFrame(windowSize);
+    m_renderer->prepareFrame(windowSize);
 
     sgCallUpdateCallback();
 

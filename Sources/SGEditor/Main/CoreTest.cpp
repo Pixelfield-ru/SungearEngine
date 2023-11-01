@@ -249,7 +249,7 @@ void init()
     for(auto& node : cubeModel->m_nodes)
     {
         processLoadedNode(node, { 0, 0, 0 }, { 0, 0, 0 },
-                          { 1100, 1100, 1100 }, cubeEntities);
+                          { 1000, 1000, 1000 }, cubeEntities);
     }
 
     std::vector<std::shared_ptr<Core::ECS::Entity>> cube1Entities;

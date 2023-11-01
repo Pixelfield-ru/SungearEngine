@@ -1,7 +1,6 @@
 #define PI 3.14
 
 #include "../uniform_bufs_decl.glsl"
-#include "../color_correction/aces.glsl"
 
 #ifdef VERTEX_SHADER
     uniform vec3 offset;
@@ -41,6 +40,6 @@
 
     void main()
     {
-        fragColor = vec4(ACESFilm(color.rgb), color.a);
+        fragColor = vec4(color.rgb, color.a);
     }
 #endif

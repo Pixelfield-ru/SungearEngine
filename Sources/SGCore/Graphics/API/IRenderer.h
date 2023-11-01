@@ -60,7 +60,7 @@ namespace Core::Graphics
          *
          * @param windowSize
          */
-        virtual void renderFrame(const glm::ivec2& windowSize) { }
+        virtual void prepareFrame(const glm::ivec2& windowSize) { }
 
         /**
          * Preparing uniform buffers for render
@@ -86,7 +86,8 @@ namespace Core::Graphics
         virtual void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                      const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) { }
 
-        virtual void renderRenderOutput(const RenderOutput& renderOutput) { }
+        virtual void renderFrameBufferOnMesh(const std::shared_ptr<IFrameBuffer>& frameBuffer,
+                                             const std::shared_ptr<ImportedScene::IMesh>& mesh) { }
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.

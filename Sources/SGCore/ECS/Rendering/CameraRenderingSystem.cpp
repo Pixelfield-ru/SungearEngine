@@ -37,52 +37,63 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
 
             Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
 
-            for(const auto& meshesLayer : meshedCachedEntities)
+            for(auto& renderPass : cameraComponent->m_renderPasses)
             {
-                // if layer is layer of transparent objects than sort
+                // getting default layer frame buffer
+                auto& currentFrameBuffer = renderPass.m_defaultLayerFrameBuffer;
 
-                // TODO: MAKE DEPTH MASK FOR RENDERER TO RENDER TRANSPARENT OBJECTS
-                // todo: make normal render for transparent objects
-                if(!meshesLayer.first->m_isOpaque)
+                // clearing default layer frame buffer of this
+                currentFrameBuffer->bind()->clear()->unbind();
+
+                for (const auto& meshesLayer: meshedCachedEntities)
                 {
-                    meshesLayer.first->m_entities.sort([&cameraTransformComponent](const std::shared_ptr<Entity>& e0, const std::shared_ptr<Entity>& e1)
-                                                       {
-                                                           auto t0 = e0->getComponent<TransformComponent>();
-                                                           auto t1 = e1->getComponent<TransformComponent>();
-
-                                                           float d0 = glm::distance(cameraTransformComponent->m_position, t0->m_position);
-                                                           float d1 = glm::distance(cameraTransformComponent->m_position, t1->m_position);
-
-                                                           return d0 > d1;
-                                                       });
-                }
-
-                // -------------------------------------------------
-
-                for(auto& renderPass : cameraComponent->m_renderPasses)
-                {
-                    Graphics::RenderOutput& currentRenderOutput = renderPass.m_defaultRenderOutput;
-
+                    // find meshesLayer post-processing layer in render pass
                     const auto& foundPostProcessLayer = renderPass.m_postProcessLayers.find(meshesLayer.first);
-                    if(foundPostProcessLayer != renderPass.m_postProcessLayers.cend())
+                    // if found
+                    if (foundPostProcessLayer != renderPass.m_postProcessLayers.cend())
                     {
-                        currentRenderOutput = foundPostProcessLayer->second;
+                        currentFrameBuffer = foundPostProcessLayer->second;
+
+                        currentFrameBuffer->bind()->clear();
+                    }
+                    else // if not found then we use default layer framebuffer
+                    {
+                        currentFrameBuffer->bind();
                     }
 
-                    currentRenderOutput.m_frameBuffer->bind()->clear();
-
-                    for(const auto& meshesEntity: meshesLayer.second)
+                    // if layer is layer of transparent objects than sort
+                    // TODO: MAKE DEPTH MASK FOR RENDERER TO RENDER TRANSPARENT OBJECTS
+                    // todo: make normal render for transparent objects
+                    if (!meshesLayer.first->m_isOpaque)
                     {
-                        if(!meshesEntity.second) continue;
+                        meshesLayer.first->m_entities.sort(
+                                [&cameraTransformComponent](const std::shared_ptr<Entity>& e0,
+                                                            const std::shared_ptr<Entity>& e1)
+                                {
+                                    auto t0 = e0->getComponent<TransformComponent>();
+                                    auto t1 = e1->getComponent<TransformComponent>();
+
+                                    float d0 = glm::distance(cameraTransformComponent->m_position, t0->m_position);
+                                    float d1 = glm::distance(cameraTransformComponent->m_position, t1->m_position);
+
+                                    return d0 > d1;
+                                });
+                    }
+
+                    // -------------------------------------------------
+
+                    for (const auto& meshesEntity: meshesLayer.second)
+                    {
+                        if (!meshesEntity.second) continue;
 
                         std::shared_ptr<TransformComponent> transformComponent = meshesEntity.second->getComponent<TransformComponent>();
 
-                        if(!transformComponent) continue;
+                        if (!transformComponent) continue;
 
                         auto meshComponents =
                                 meshesEntity.second->getComponents<MeshComponent>();
 
-                        for(const auto& meshComponent: meshComponents)
+                        for (const auto& meshComponent: meshComponents)
                         {
                             transformationsSystem->addFunctionToFixedUpdateQuery(
                                     meshComponent->getUUID(),
@@ -96,42 +107,69 @@ void Core::ECS::CameraRenderingSystem::update(const std::shared_ptr<Scene>& scen
                             );
                         }
                     }
-
-                    currentRenderOutput.m_frameBuffer->unbind();
-
-                    // now render RenderOutput
-                    Core::Main::CoreMain::getRenderer().renderRenderOutput(
-                            currentRenderOutput
-                    );
                 }
-            }
 
-            for(const auto& primitivesLayer : primitivesCachedEntities)
-            {
-                for(const auto& primitiveEntity: primitivesLayer.second)
+                for (const auto& primitivesLayer: primitivesCachedEntities)
                 {
-                    if(!primitiveEntity.second) continue;
-
-                    std::shared_ptr<TransformComponent> transformComponent = primitiveEntity.second->getComponent<TransformComponent>();
-
-                    if(!transformComponent) continue;
-
-                    auto primitiveComponents =
-                            primitiveEntity.second->getComponents<IPrimitiveComponent>();
-
-                    for(const auto& primitiveComponent: primitiveComponents)
+                    // find meshesLayer post-processing layer in render pass
+                    const auto& foundPostProcessLayer = renderPass.m_postProcessLayers.find(primitivesLayer.first);
+                    // if found
+                    if (foundPostProcessLayer != renderPass.m_postProcessLayers.cend())
                     {
-                        transformationsSystem->addFunctionToFixedUpdateQuery(
-                                primitiveComponent->getUUID(),
-                                uniformsUpdaterLambda,
-                                primitiveComponent->m_mesh, transformComponent
-                        );
+                        currentFrameBuffer = foundPostProcessLayer->second;
 
-                        Core::Main::CoreMain::getRenderer().renderPrimitive(
-                                transformComponent,
-                                primitiveComponent
-                        );
+                        currentFrameBuffer->bind()->clear();
                     }
+                    else // if not found then we use default layer framebuffer
+                    {
+                        currentFrameBuffer->bind();
+                    }
+
+                    for (const auto& primitiveEntity: primitivesLayer.second)
+                    {
+                        if (!primitiveEntity.second) continue;
+
+                        std::shared_ptr<TransformComponent> transformComponent = primitiveEntity.second->getComponent<TransformComponent>();
+
+                        if (!transformComponent) continue;
+
+                        auto primitiveComponents =
+                                primitiveEntity.second->getComponents<IPrimitiveComponent>();
+
+                        for (const auto& primitiveComponent: primitiveComponents)
+                        {
+                            transformationsSystem->addFunctionToFixedUpdateQuery(
+                                    primitiveComponent->getUUID(),
+                                    uniformsUpdaterLambda,
+                                    primitiveComponent->m_mesh, transformComponent
+                            );
+
+                            Core::Main::CoreMain::getRenderer().renderPrimitive(
+                                    transformComponent,
+                                    primitiveComponent
+                            );
+                        }
+                    }
+                }
+
+                currentFrameBuffer->unbind();
+
+                // TODO: MAKE RENDER ALL FRAME BUFFERS
+                // render final frame of renderPass
+                if(renderPass.m_useFinalFrameBuffer)
+                {
+                    renderPass.m_finalFrameBuffer->bind()->clear();
+                }
+
+                // for(const auto)
+                Core::Main::CoreMain::getRenderer().renderFrameBufferOnMesh(
+                        renderPass.m_defaultLayerFrameBuffer,
+                        renderPass.m_billboard
+                );
+
+                if(renderPass.m_useFinalFrameBuffer)
+                {
+                    renderPass.m_finalFrameBuffer->unbind();
                 }
             }
         }

@@ -15,13 +15,18 @@ Core::ECS::CameraComponent::CameraComponent()
 
     Core::Main::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    defaultColorRenderPass.m_defaultRenderOutput.m_frameBuffer =
+    defaultColorRenderPass.m_defaultLayerFrameBuffer =
             std::shared_ptr<Graphics::IFrameBuffer>(Core::Main::CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
                                     SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA16_FLOAT,
+                                    SGGColorInternalFormat::SGG_RGBA16,
+                                    0,
+                                    0)
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT,
+                                    SGGColorFormat::SGG_DEPTH_COMPONENT,
+                                    SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                                     0,
                                     0)
                     ->unbind();

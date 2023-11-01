@@ -53,7 +53,7 @@ namespace Core::Graphics
 
         bool confirmSupport() noexcept override;
 
-        void renderFrame(const glm::ivec2& windowSize) override;
+        void prepareFrame(const glm::ivec2& windowSize) override;
 
         void prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
                                    const std::shared_ptr<ECS::TransformComponent>& transformComponent) override;
@@ -64,7 +64,8 @@ namespace Core::Graphics
         void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                              const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) override;
 
-        void renderRenderOutput(const RenderOutput& renderOutput) override;
+        void renderFrameBufferOnMesh(const std::shared_ptr<IFrameBuffer>& frameBuffer,
+                                     const std::shared_ptr<ImportedScene::IMesh>& mesh) override;
 
         void printInfo() noexcept override;
 

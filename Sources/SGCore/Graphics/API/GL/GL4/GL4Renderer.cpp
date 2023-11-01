@@ -171,12 +171,12 @@ void Core::Graphics::GL4Renderer::printInfo() noexcept
     }
 }
 
-void Core::Graphics::GL4Renderer::renderFrame(const glm::ivec2& windowSize)
+void Core::Graphics::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
 {
     glViewport(0, 0, windowSize.x, windowSize.y);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(1, 0, 1, 1);
+    glClearColor(0, 0, 0, 0);
 }
 
 void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
@@ -239,22 +239,24 @@ void Core::Graphics::GL4Renderer::renderMesh(
     glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(meshComponent->m_mesh->m_drawMode), meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void Core::Graphics::GL4Renderer::renderRenderOutput(const RenderOutput& renderOutput)
+void Core::Graphics::GL4Renderer::renderFrameBufferOnMesh(const std::shared_ptr<IFrameBuffer>& frameBuffer,
+                                                          const std::shared_ptr<ImportedScene::IMesh>& mesh)
 {
-    if(!renderOutput.m_billboard) return;
+    if(!mesh) return;
 
-    const auto& materialShader = renderOutput.m_billboard->m_material->getCurrentShader();
+    const auto& materialShader = mesh->m_material->getCurrentShader();
 
     if(!materialShader) return;
 
-    renderOutput.m_billboard->m_material->bind();
-    renderOutput.m_frameBuffer->bindAttachments(renderOutput.m_billboard->m_material);
-    renderOutput.m_billboard->getVertexArray()->bind();
+    mesh->m_material->bind();
+    frameBuffer->bindAttachments(mesh->m_material);
+    mesh->getVertexArray()->bind();
 
     materialShader->useUniformBuffer(m_viewMatricesBuffer);
     materialShader->useUniformBuffer(m_programDataBuffer);
 
-    glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(renderOutput.m_billboard->m_drawMode), renderOutput.m_billboard->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(mesh->m_drawMode),
+                   mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
 void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,

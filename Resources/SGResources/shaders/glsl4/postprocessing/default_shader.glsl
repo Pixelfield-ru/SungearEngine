@@ -1,4 +1,5 @@
 // #include "../uniform_bufs_decl.glsl"
+#include "../color_correction/aces.glsl"
 
 #ifdef VERTEX_SHADER
     const vec2 verticesPositions[] = vec2[]
@@ -25,7 +26,7 @@
 
         vs_UVAttribute = uvs[gl_VertexID];
 
-        gl_Position = vec4(vec3(pos, 0.0), 1.0);
+        gl_Position = vec4(pos, 0.0, 1.0);
     }
 #endif
 
@@ -40,7 +41,7 @@
 
     void main()
     {
-        vec4 baseColor = vec4(0.0, 0.0, 0.0, 1.0);
+        vec4 baseColor = vec4(0.0);
 
         vec2 finalUV = vs_UVAttribute.xy;
 
@@ -49,14 +50,15 @@
         #endif
 
         #ifdef sgmat_frameBufferColorAttachment_MAX_TEXTURES_NUM
-        // sgmat_frameBufferColorAttachmentSamplers_UNIFORM_COUNT
-            float mixCoeff = 1.0 / 1;
+            float mixCoeff = 1.0 / sgmat_frameBufferColorAttachment_UNIFORM_COUNT;
 
-            for(int i = 0; i < 1; i++)
+            for(int i = 0; i < sgmat_frameBufferColorAttachment_UNIFORM_COUNT; i++)
             {
                 baseColor += texture(sgmat_frameBufferColorAttachmentSamplers[i], finalUV) * mixCoeff;
             }
         #endif
+
+        baseColor.rgb = ACESFilm(baseColor.rgb);
 
         gl_FragColor = baseColor;
     }

@@ -2,7 +2,6 @@
 
 #include "../light_structs_decl.glsl"
 #include "../uniform_bufs_decl.glsl"
-#include "../color_correction/aces.glsl"
 #include "../random.glsl"
 #include "../disks.glsl"
 #include "../math.glsl"
@@ -582,6 +581,6 @@ float ambient = 0.1;
         #endif
 
         //fragColor.rgb = vec3(colorFromRoughness.b);
-        fragColor.rgb = ACESFilm(fragColor.rgb);
+        fragColor.rgb = fragColor.rgb;
     }
 #endif

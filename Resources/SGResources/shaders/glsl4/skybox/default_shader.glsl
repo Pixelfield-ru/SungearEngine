@@ -1,5 +1,4 @@
 #include "../uniform_bufs_decl.glsl"
-#include "../color_correction/aces.glsl"
 #include "../ray_intersections.glsl"
 
 #define PI 3.141592
@@ -155,7 +154,7 @@ vec3 atmosphere(vec3 r, vec3 ro,
                 skyboxCol += texture(sgmat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
             }
 
-            fragColor = vec4(ACESFilm(atmosphereCol * skyboxCol.rgb), skyboxCol.a);
+            fragColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);
         #else
             fragColor = vec4(atmosphereCol, 1.0);
         #endif
