@@ -4,6 +4,7 @@
 #define SUNGEARENGINE_CAMERARENDERINGSYSTEM_H
 
 #include "SGCore/ECS/ISystem.h"
+#include "IPipelineSystem.h"
 
 namespace Core::ImportedScene
 {
@@ -12,12 +13,15 @@ namespace Core::ImportedScene
 
 namespace Core::ECS
 {
-    class CameraRenderingSystem : public ISystem
+    class PBRForwardPipelineSystem : public IPipelineSystem
     {
-        SG_DECLARE_SINGLETON(CameraRenderingSystem)
+        SG_DECLARE_COPY_MOVE_SINGLETON(PBRForwardPipelineSystem)
+
+    protected:
+        PBRForwardPipelineSystem();
 
     private:
-        std::function<bool(const std::shared_ptr<ImportedScene::IMesh>&,
+        /*std::function<bool(const std::shared_ptr<ImportedScene::IMesh>&,
                 const std::shared_ptr<TransformComponent>&)> uniformsUpdaterLambda =
                 [](const std::shared_ptr<ImportedScene::IMesh>& mesh, const std::shared_ptr<TransformComponent>& tc)
                 {
@@ -25,15 +29,17 @@ namespace Core::ECS
 
                     if(tc->m_positionChanged || tc->m_rotationChanged || tc->m_scaleChanged)
                     {
-                        Patterns::Singleton::getInstance<CameraRenderingSystem>()->updateMeshUniforms(mesh, tc);
+                        Patterns::Singleton::getInstance<PBRForwardPipelineSystem>()->updateMeshUniforms(mesh, tc);
 
                         return true;
                     }
 
                     return false;
-                };
+                };*/
 
-        void updateMeshUniforms(const std::shared_ptr<ImportedScene::IMesh>& mesh, const std::shared_ptr<TransformComponent>& transformComponent) const noexcept;
+        void updateUniforms(const std::shared_ptr<Graphics::IShader>& shader,
+                            const std::shared_ptr<Memory::Assets::IMaterial>& material,
+                            const std::shared_ptr<TransformComponent>& transformComponent) const noexcept;
 
     public:
         void update(const std::shared_ptr<Scene>& scene) final;

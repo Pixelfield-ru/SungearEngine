@@ -25,7 +25,8 @@ namespace Core::Graphics
         std::unordered_map<SGFrameBufferAttachmentType, GLFrameBufferAttachment> m_attachments;
 
     public:
-        std::shared_ptr<IFrameBuffer> bindAttachments(const std::shared_ptr<Memory::Assets::IMaterial>& material) override;
+        std::shared_ptr<IFrameBuffer> bindAttachments(const std::shared_ptr<Memory::Assets::IMaterial>& material,
+                                                      const std::uint8_t& frameBufferIndex) override;
 
         std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                      const std::uint8_t& textureBlock) override;

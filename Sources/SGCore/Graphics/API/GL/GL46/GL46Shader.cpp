@@ -274,12 +274,6 @@ std::int32_t Core::Graphics::GL46Shader::getShaderUniformLocation(const std::str
     return glGetUniformLocation(m_programHandler, uniformName.c_str());
 }
 
-void Core::Graphics::GL46Shader::useMaterialTexture(const Memory::Assets::MaterialTexture& materialTexture)
-{
-    int texLoc = getShaderUniformLocation(materialTexture.m_nameInShader);
-    glUniform1i(texLoc, materialTexture.m_textureUnit);
-}
-
 void Core::Graphics::GL46Shader::useUniformBuffer(const std::shared_ptr<IUniformBuffer>& uniformBuffer)
 {
     auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandler, uniformBuffer->m_blockName.c_str());

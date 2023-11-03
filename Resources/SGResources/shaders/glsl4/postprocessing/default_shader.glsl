@@ -32,10 +32,15 @@
 
 #ifdef FRAGMENT_SHADER
     uniform int sgmat_frameBufferColorAttachment_UNIFORM_COUNT;
+    uniform int sgmat_frameBufferDepthAttachment_UNIFORM_COUNT;
 
     #ifdef sgmat_frameBufferColorAttachment_MAX_TEXTURES_NUM
         uniform sampler2D sgmat_frameBufferColorAttachmentSamplers[sgmat_frameBufferColorAttachment_MAX_TEXTURES_NUM];
     #endif
+
+    /*#ifdef sgmat_frameBufferDepthAttachment_MAX_TEXTURES_NUM
+        uniform sampler2D sgmat_frameBufferDepthAttachmentSamplers[sgmat_frameBufferDepthAttachment_MAX_TEXTURES_NUM];
+    #endif*/
 
     in vec2 vs_UVAttribute;
 
@@ -57,6 +62,15 @@
                 baseColor += texture(sgmat_frameBufferColorAttachmentSamplers[i], finalUV) * mixCoeff;
             }
         #endif
+
+        /*#ifdef sgmat_frameBufferDepthAttachment_MAX_TEXTURES_NUM
+            float mixCoeff = 1.0 / sgmat_frameBufferDepthAttachment_UNIFORM_COUNT;
+
+            for(int i = 0; i < sgmat_frameBufferDepthAttachment_UNIFORM_COUNT; i++)
+            {
+                baseColor += texture(sgmat_frameBufferDepthAttachmentSamplers[i], finalUV) * mixCoeff;
+            }
+        #endif*/
 
         baseColor.rgb = ACESFilm(baseColor.rgb);
 

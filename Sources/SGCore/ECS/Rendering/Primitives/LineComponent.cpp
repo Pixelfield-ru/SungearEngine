@@ -20,13 +20,15 @@ Core::ECS::LineComponent::LineComponent() noexcept
     m_mesh->m_positions.push_back(10.0);
     m_mesh->m_positions.push_back(0.0);
 
-    m_mesh->m_material = std::shared_ptr<Memory::Assets::IMaterial>(
+    // m_mesh->m_material = std::make_shared<>()
+    /*m_mesh->m_material = std::shared_ptr<Memory::Assets::IMaterial>(
             Core::Main::CoreMain::getRenderer().createBlankStandardMaterial(
                     Graphics::StandardShaderType::SG_LINES_SHADER
             )
-    );
+    );*/
 
-    const auto& materialShader = m_mesh->m_material->getCurrentShader();
+    // TODO: MOVE IN RENDER PIPELINE
+    /*const auto& materialShader = m_mesh->m_material->getCurrentShader();
 
     materialShader->bind();
 
@@ -38,7 +40,7 @@ Core::ECS::LineComponent::LineComponent() noexcept
     materialShader->useVectorf(
             "verticesPositions[" + std::to_string(1) + "]",
             0.0, 10.0, 0.0
-    );
+    );*/
 }
 
 void Core::ECS::LineComponent::setVertexPosition
@@ -52,7 +54,8 @@ void Core::ECS::LineComponent::setVertexPosition
 
     m_mesh->getVertexPosition(vertexIdx, curX, curY, curZ);
 
-    if(x != curX || y != curY || z != curZ)
+    // TODO: MOVE IN RENDER PIPELINE
+    /*if(x != curX || y != curY || z != curZ)
     {
         const auto& materialShader = m_mesh->m_material->getCurrentShader();
 
@@ -63,5 +66,5 @@ void Core::ECS::LineComponent::setVertexPosition
         materialShader->useVectorf(
                 "verticesPositions[" + std::to_string(vertexIdx) + "]",
                 x, y, z);
-    }
+    }*/
 }

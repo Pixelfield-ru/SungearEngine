@@ -9,49 +9,49 @@
 #include "SGCore/Main/CoreMain.h"
 #include "GL4Texture2D.h"
 
-std::shared_ptr<Core::Graphics::IFrameBuffer>
-Core::Graphics::GL4FrameBuffer::bindAttachments(const std::shared_ptr<Memory::Assets::IMaterial>& material)
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachments
+(const std::shared_ptr<Memory::Assets::IMaterial>& material, const std::uint8_t& frameBufferIndex)
 {
-    const auto& blocks = material->getBlocks();
+    /*const auto& blocks = material->getBlocks();
 
     std::uint8_t fbDepthAttachmentsCnt = 0;
     std::uint8_t fbDepthStencilAttachmentsCnt = 0;
     std::uint8_t fbColorAttachmentsCnt = 0;
     std::uint8_t fbRenderAttachmentsCnt = 0;
 
-    std::string fbDepthTextureTypeStr = sgMaterialTextureTypeToString(
-            SGMaterialTextureType::SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT
-            );
-    std::string fbDepthStencilTextureTypeStr = sgMaterialTextureTypeToString(
-            SGMaterialTextureType::SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT
+    std::string fbDepthTextureTypeStr = sgTextureTypeToString(
+            SGTextureType::SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT
     );
-    std::string fbColorTextureTypeStr = sgMaterialTextureTypeToString(
-            SGMaterialTextureType::SGTP_FRAMEBUFFER_COLOR_ATTACHMENT
+    std::string fbDepthStencilTextureTypeStr = sgTextureTypeToString(
+            SGTextureType::SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT
     );
-    std::string fbRenderTextureTypeStr = sgMaterialTextureTypeToString(
-            SGMaterialTextureType::SGTP_FRAMEBUFFER_RENDER_ATTACHMENT
+    std::string fbColorTextureTypeStr = sgTextureTypeToString(
+            SGTextureType::SGTP_FRAMEBUFFER_COLOR_ATTACHMENT
+    );
+    std::string fbRenderTextureTypeStr = sgTextureTypeToString(
+            SGTextureType::SGTP_FRAMEBUFFER_RENDER_ATTACHMENT
     );
 
     for(const auto& block : blocks)
     {
-        SGMaterialTextureType textureType = block.first;
+        SGTextureType textureType = block.first;
 
-        if(textureType == SGMaterialTextureType::SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT)
+        if(textureType == SGTextureType::SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT)
         {
-            std::uint8_t finalOffset = block.second.m_texturesUnitOffset;
+            std::uint8_t finalOffset = frameBufferIndex * block.second.m_texturesUnitOffset;
 
             glActiveTexture(GL_TEXTURE0 + finalOffset);
             glBindTexture(GL_TEXTURE_2D, m_attachments[SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT].m_handler);
 
-            material->getCurrentShader()->useTexture(fbDepthTextureTypeStr + "Samplers[0]", finalOffset);
+            material->getCurrentShader()->useTexture(fbDepthTextureTypeStr + "Samplers[" + std::to_string(frameBufferIndex) + "][0]", finalOffset);
 
             fbDepthAttachmentsCnt++;
         }
-        else if(textureType == SGMaterialTextureType::SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT)
+        else if(textureType == SGTextureType::SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT)
         {
             // todo: impl
         }
-        else if(textureType == SGMaterialTextureType::SGTP_FRAMEBUFFER_COLOR_ATTACHMENT)
+        else if(textureType == SGTextureType::SGTP_FRAMEBUFFER_COLOR_ATTACHMENT)
         {
             std::uint8_t curColAttachment = 0;
 
@@ -61,13 +61,14 @@ Core::Graphics::GL4FrameBuffer::bindAttachments(const std::shared_ptr<Memory::As
                    fbAttachment.first <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31 &&
                    curColAttachment < block.second.m_maximumTextures)
                 {
-                    std::uint8_t finalOffset = block.second.m_texturesUnitOffset + curColAttachment;
-
-                    glActiveTexture(GL_TEXTURE0 + finalOffset);
+                    glActiveTexture(GL_TEXTURE0 + (frameBufferIndex * block.second.m_texturesUnitOffset + curColAttachment));
                     glBindTexture(GL_TEXTURE_2D, m_attachments[fbAttachment.first].m_handler);
 
                     material->getCurrentShader()->useTexture(fbColorTextureTypeStr + "Samplers[" +
-                                                             std::to_string(curColAttachment) + "]", finalOffset);
+                    std::to_string(frameBufferIndex) +
+                    "]["+
+                                                             std::to_string(curColAttachment) + "]",
+                                                             block.second.m_texturesUnitOffset + curColAttachment);
 
                     ++curColAttachment;
 
@@ -75,7 +76,7 @@ Core::Graphics::GL4FrameBuffer::bindAttachments(const std::shared_ptr<Memory::As
                 }
             }
         }
-        else if(textureType == SGMaterialTextureType::SGTP_FRAMEBUFFER_RENDER_ATTACHMENT)
+        else if(textureType == SGTextureType::SGTP_FRAMEBUFFER_RENDER_ATTACHMENT)
         {
             // todo: impl
         }
@@ -84,7 +85,7 @@ Core::Graphics::GL4FrameBuffer::bindAttachments(const std::shared_ptr<Memory::As
     material->getCurrentShader()->useInteger(fbDepthTextureTypeStr + "_UNIFORM_COUNT", fbDepthAttachmentsCnt);
     material->getCurrentShader()->useInteger(fbDepthStencilTextureTypeStr + "_UNIFORM_COUNT", fbDepthStencilAttachmentsCnt);
     material->getCurrentShader()->useInteger(fbColorTextureTypeStr + "_UNIFORM_COUNT", fbColorAttachmentsCnt);
-    material->getCurrentShader()->useInteger(fbRenderTextureTypeStr + "_UNIFORM_COUNT", fbRenderAttachmentsCnt);
+    material->getCurrentShader()->useInteger(fbRenderTextureTypeStr + "_UNIFORM_COUNT", fbRenderAttachmentsCnt);*/
 
     return shared_from_this();
 }

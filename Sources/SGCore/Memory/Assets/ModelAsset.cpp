@@ -133,18 +133,6 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
     // if has material
     if(aiMesh->mMaterialIndex >= 0)
     {
-        const auto& materialShader = sgMesh->m_material->getCurrentShader();
-
-        if(!materialShader)
-        {
-            SGCF_ERROR("Error loading the mesh: "
-                       "the current shader for the SGMesh mesh material is not set. Check the correctness of the SGMesh creation",
-                       SG_LOG_CURRENT_SESSION_FILE);
-        }
-
-        // disable recompiling when adding new define (when adding new texture)
-        materialShader->setAssetModifiedChecking(false);
-
         // get current mesh material
         auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
 
@@ -193,29 +181,26 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
 
         sgMesh->m_material->m_name = aiMat->GetName().data;
 
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_EMISSIVE, SGMaterialTextureType::SGTP_EMISSIVE);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_AMBIENT_OCCLUSION, SGMaterialTextureType::SGTP_AMBIENT_OCCLUSION);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_AMBIENT, SGMaterialTextureType::SGTP_AMBIENT);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE_ROUGHNESS, SGMaterialTextureType::SGTP_DIFFUSE_ROUGHNESS);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE, SGMaterialTextureType::SGTP_DIFFUSE);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DISPLACEMENT, SGMaterialTextureType::SGTP_DISPLACEMENT);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_HEIGHT, SGMaterialTextureType::SGTP_HEIGHT);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_NORMALS, SGMaterialTextureType::SGTP_NORMALS);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_BASE_COLOR, SGMaterialTextureType::SGTP_BASE_COLOR);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_CLEARCOAT, SGMaterialTextureType::SGTP_CLEARCOAT);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_EMISSION_COLOR, SGMaterialTextureType::SGTP_EMISSION_COLOR);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_LIGHTMAP, SGMaterialTextureType::SGTP_LIGHTMAP);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_METALNESS, SGMaterialTextureType::SGTP_METALNESS);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_NORMAL_CAMERA, SGMaterialTextureType::SGTP_NORMAL_CAMERA);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_OPACITY, SGMaterialTextureType::SGTP_OPACITY);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_REFLECTION, SGMaterialTextureType::SGTP_REFLECTION);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SHEEN, SGMaterialTextureType::SGTP_SHEEN);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SHININESS, SGMaterialTextureType::SGTP_SHININESS);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SPECULAR, SGMaterialTextureType::SGTP_SPECULAR);
-        loadTextures(aiMat, sgMesh->m_material, aiTextureType_TRANSMISSION, SGMaterialTextureType::SGTP_TRANSMISSION);
-
-        // enable recompile
-        materialShader->setAssetModifiedChecking(true);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_EMISSIVE, SGTextureType::SGTP_EMISSIVE);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureType::SGTP_AMBIENT_OCCLUSION);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_AMBIENT, SGTextureType::SGTP_AMBIENT);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE_ROUGHNESS, SGTextureType::SGTP_DIFFUSE_ROUGHNESS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DIFFUSE, SGTextureType::SGTP_DIFFUSE);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_DISPLACEMENT, SGTextureType::SGTP_DISPLACEMENT);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_HEIGHT, SGTextureType::SGTP_HEIGHT);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_NORMALS, SGTextureType::SGTP_NORMALS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_BASE_COLOR, SGTextureType::SGTP_BASE_COLOR);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_CLEARCOAT, SGTextureType::SGTP_CLEARCOAT);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_EMISSION_COLOR, SGTextureType::SGTP_EMISSION_COLOR);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_LIGHTMAP, SGTextureType::SGTP_LIGHTMAP);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_METALNESS, SGTextureType::SGTP_METALNESS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_NORMAL_CAMERA, SGTextureType::SGTP_NORMAL_CAMERA);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_OPACITY, SGTextureType::SGTP_OPACITY);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_REFLECTION, SGTextureType::SGTP_REFLECTION);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SHEEN, SGTextureType::SGTP_SHEEN);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SHININESS, SGTextureType::SGTP_SHININESS);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_SPECULAR, SGTextureType::SGTP_SPECULAR);
+        loadTextures(aiMat, sgMesh->m_material, aiTextureType_TRANSMISSION, SGTextureType::SGTP_TRANSMISSION);
 
         // SGC_SUCCESS("Loaded material '" + sgMesh->m_material->m_name + "'");
     }
@@ -228,7 +213,7 @@ std::shared_ptr<Core::ImportedScene::IMesh> Core::Memory::Assets::ModelAsset::pr
 }
 
 void Core::Memory::Assets::ModelAsset::loadTextures
-(aiMaterial* aiMat, std::shared_ptr<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGMaterialTextureType& sgMaterialTextureType)
+(aiMaterial* aiMat, std::shared_ptr<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureType& sgMaterialTextureType)
 {
     for(unsigned i = 0; i < aiMat->GetTextureCount(aiTexType); i++)
     {

@@ -3,9 +3,9 @@
 //
 
 #include "ISystem.h"
-#include "SGCore/ECS/Rendering/CameraRenderingSystem.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRForwardPipelineSystem.h"
 
 bool Core::ECS::ISystem::in()
 {
-    return SG_INSTANCEOF(this, CameraRenderingSystem);
+    return SG_INSTANCEOF(this, PBRForwardPipelineSystem);
 }

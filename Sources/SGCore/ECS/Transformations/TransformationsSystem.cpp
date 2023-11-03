@@ -154,54 +154,6 @@ void Core::ECS::TransformationsSystem::fixedUpdate
     // std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void Core::ECS::TransformationsSystem::updateMeshUniforms(const std::shared_ptr<ImportedScene::IMesh>& mesh,
-                                                          const std::shared_ptr<TransformComponent>& transformComponent) const noexcept
-{
-    for(const auto& shader : mesh->m_material->getShaders())
-    {
-        shader.second->bind();
-
-        shader.second->useMatrix("objectModelMatrix",
-                                 transformComponent->m_modelMatrix
-        );
-        shader.second->useVectorf("objectPosition",
-                                  transformComponent->m_position
-        );
-        shader.second->useVectorf("objectRotation",
-                                  transformComponent->m_rotation
-        );
-        shader.second->useVectorf("objectScale",
-                                  transformComponent->m_scale
-        );
-
-        // TODO: MOVE MATERIAL UPDATE TO OTHER SYSTEM
-        shader.second->useVectorf("materialDiffuseCol",
-                                  mesh->m_material->m_diffuseColor
-        );
-        shader.second->useVectorf("materialSpecularCol",
-                                  mesh->m_material->m_specularColor
-        );
-        shader.second->useVectorf("materialAmbientCol",
-                                  mesh->m_material->m_ambientColor
-        );
-        shader.second->useVectorf("materialEmissionCol",
-                                  mesh->m_material->m_emissionColor
-        );
-        shader.second->useVectorf("materialTransparentCol",
-                                  mesh->m_material->m_transparentColor
-        );
-        shader.second->useFloat("materialShininess",
-                                mesh->m_material->m_shininess
-        );
-        shader.second->useFloat("materialMetallicFactor",
-                                mesh->m_material->m_metallicFactor
-        );
-        shader.second->useFloat("materialRoughnessFactor",
-                                mesh->m_material->m_roughnessFactor
-        );
-    }
-}
-
 void Core::ECS::TransformationsSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
 {
     cacheEntityComponents<TransformComponent>(entity);

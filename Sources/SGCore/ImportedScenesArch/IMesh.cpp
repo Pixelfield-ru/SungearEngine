@@ -2,10 +2,10 @@
 
 #include "SGCore/Main/CoreMain.h"
 
-Core::ImportedScene::IMesh::IMesh() noexcept
+/*Core::ImportedScene::IMesh::IMesh() noexcept
 {
     m_material = std::shared_ptr<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createPBRMaterial());
-}
+}*/
 
 void Core::ImportedScene::IMesh::setVertexPosition
 (const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept

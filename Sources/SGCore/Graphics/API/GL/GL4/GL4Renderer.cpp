@@ -38,7 +38,7 @@ void Core::Graphics::GL4Renderer::init() noexcept
         Core::Main::CoreMain::getWindow().setShouldClose(true);
     }
 
-    glEnable(GL_DEPTH_TEST);
+    setDepthTestingEnabled(true);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
@@ -52,21 +52,6 @@ void Core::Graphics::GL4Renderer::init() noexcept
 
     // TODO: make defines for uniforms names
 
-    m_modelMatricesBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
-    m_modelMatricesBuffer->m_blockName = "ObjectTransformationData";
-    m_modelMatricesBuffer->putUniforms({
-        Core::Graphics::IShaderUniform("objectModelMatrix", SGGDataType::SGG_MAT4),
-        Core::Graphics::IShaderUniform("objectPosition", SGGDataType::SGG_FLOAT3),
-        Core::Graphics::IShaderUniform("objectRotation", SGGDataType::SGG_FLOAT3),
-        Core::Graphics::IShaderUniform("objectScale", SGGDataType::SGG_FLOAT3)
-    });
-    m_modelMatricesBuffer->putData<float>({ });
-    m_modelMatricesBuffer->putData<float>({ });
-    m_modelMatricesBuffer->putData<float>({ });
-    m_modelMatricesBuffer->putData<float>({ });
-    m_modelMatricesBuffer->setLayoutLocation(0);
-    m_modelMatricesBuffer->prepare();
-
     m_viewMatricesBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
     m_viewMatricesBuffer->m_blockName = "ViewMatrices";
     m_viewMatricesBuffer->putUniforms({
@@ -79,29 +64,6 @@ void Core::Graphics::GL4Renderer::init() noexcept
     m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->setLayoutLocation(1);
     m_viewMatricesBuffer->prepare();
-
-    m_materialDataBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
-    m_materialDataBuffer->m_blockName = "MaterialData";
-    m_materialDataBuffer->putUniforms({
-        Core::Graphics::IShaderUniform("materialDiffuseCol", SGGDataType::SGG_FLOAT4),
-        Core::Graphics::IShaderUniform("materialSpecularCol", SGGDataType::SGG_FLOAT4),
-        Core::Graphics::IShaderUniform("materialAmbientCol", SGGDataType::SGG_FLOAT4),
-        Core::Graphics::IShaderUniform("materialEmissionCol", SGGDataType::SGG_FLOAT4),
-        Core::Graphics::IShaderUniform("materialTransparentCol", SGGDataType::SGG_FLOAT4),
-        Core::Graphics::IShaderUniform("materialShininess", SGGDataType::SGG_FLOAT),
-        Core::Graphics::IShaderUniform("materialMetallicFactor", SGGDataType::SGG_FLOAT),
-        Core::Graphics::IShaderUniform("materialRoughnessFactor", SGGDataType::SGG_FLOAT)
-                                      });
-    m_materialDataBuffer->putData<float>({ });
-    m_materialDataBuffer->putData<float>({ });
-    m_materialDataBuffer->putData<float>({ });
-    m_materialDataBuffer->putData<float>({ });
-    m_materialDataBuffer->putData<float>({ });
-    m_materialDataBuffer->putData<float>({ });
-    m_materialDataBuffer->putData<float>({ });
-    m_materialDataBuffer->putData<float>({ });
-    m_materialDataBuffer->setLayoutLocation(2);
-    m_materialDataBuffer->prepare();
 
     m_programDataBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
     m_programDataBuffer->m_blockName = "ProgramData";
@@ -213,9 +175,9 @@ void Core::Graphics::GL4Renderer::renderMesh(
 {
     if(!meshComponent->m_mesh) return;
 
-    const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
+    // const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
 
-    if(!materialShader) return;
+    // if(!materialShader) return;
 
     if(meshComponent->m_enableFacesCulling)
     {
@@ -230,65 +192,60 @@ void Core::Graphics::GL4Renderer::renderMesh(
         glDisable(GL_CULL_FACE);
     }
 
-    meshComponent->m_mesh->m_material->bind();
+    // meshComponent->m_mesh->m_material->bind();
     meshComponent->m_mesh->getVertexArray()->bind();
 
-    materialShader->useUniformBuffer(m_viewMatricesBuffer);
-    materialShader->useUniformBuffer(m_programDataBuffer);
+    // materialShader->useUniformBuffer(m_viewMatricesBuffer);
+    // materialShader->useUniformBuffer(m_programDataBuffer);
 
     glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(meshComponent->m_mesh->m_drawMode), meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void Core::Graphics::GL4Renderer::renderFrameBufferOnMesh(const std::shared_ptr<IFrameBuffer>& frameBuffer,
-                                                          const std::shared_ptr<ImportedScene::IMesh>& mesh)
+void Core::Graphics::GL4Renderer::renderRenderPass(RenderPass& renderPass,
+                                                   const std::shared_ptr<ImportedScene::IMesh>& mesh)
 {
-    if(!mesh) return;
+    /*if(!mesh) return;
 
     const auto& materialShader = mesh->m_material->getCurrentShader();
 
     if(!materialShader) return;
 
     mesh->m_material->bind();
-    frameBuffer->bindAttachments(mesh->m_material);
+    std::uint8_t frameBufferIndex = 0;
+    for(const auto& ppLayer : renderPass.m_postProcessLayers)
+    {
+        const auto& frameBuffer = ppLayer.second;
+
+        frameBuffer->bindAttachments(mesh->m_material, frameBufferIndex);
+        frameBufferIndex++;
+    }
+
+    renderPass.m_defaultLayerFrameBuffer->bindAttachments(mesh->m_material, frameBufferIndex);
+    // frameBuffer->bindAttachments(mesh->m_material);
     mesh->getVertexArray()->bind();
 
     materialShader->useUniformBuffer(m_viewMatricesBuffer);
     materialShader->useUniformBuffer(m_programDataBuffer);
 
     glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(mesh->m_drawMode),
-                   mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
+                   mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);*/
 }
 
 void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                                   const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent)
 {
-    const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
+    // const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
 
-    if(!materialShader) return;
+    // if(!materialShader) return;
 
-    primitiveComponent->m_mesh->m_material->bind();
+    // primitiveComponent->m_mesh->m_material->bind();
     if(primitiveComponent->m_mesh->getVertexArray())
     {
         primitiveComponent->m_mesh->getVertexArray()->bind();
     }
 
-    /*m_modelMatricesBuffer->bind();
-    m_modelMatricesBuffer->subData("objectModelMatrix",
-                                   glm::value_ptr(transformComponent->m_modelMatrix), 16);
-    m_modelMatricesBuffer->subData("objectPosition",
-                                   glm::value_ptr(transformComponent->m_position), 3);
-    m_modelMatricesBuffer->subData("objectRotation",
-                                   glm::value_ptr(transformComponent->m_rotation), 3);
-    m_modelMatricesBuffer->subData("objectScale",
-                                   glm::value_ptr(transformComponent->m_scale), 3);*/
-
-    /*primitiveComponent->m_mesh->m_material->getCurrentShader()->useMatrix("objectModelMatrix", transformComponent->m_modelMatrix);
-    primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectPosition", transformComponent->m_position);
-    primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectRotation", transformComponent->m_rotation);
-    primitiveComponent->m_mesh->m_material->getCurrentShader()->useVectorf("objectScale", transformComponent->m_scale);*/
-
     //materialShader->useUniformBuffer(m_modelMatricesBuffer);
-    materialShader->useUniformBuffer(m_viewMatricesBuffer);
+    // materialShader->useUniformBuffer(m_viewMatricesBuffer);
 
     glLineWidth(primitiveComponent->m_linesWidth);
     //glPointSize(primitiveComponent->m_linesWidth);
@@ -366,6 +323,18 @@ Core::Graphics::GL4FrameBuffer* Core::Graphics::GL4Renderer::createFrameBuffer()
 Core::Graphics::GL3Mesh* Core::Graphics::GL4Renderer::createMesh()
 {
     return new GL3Mesh;
+}
+
+void Core::Graphics::GL4Renderer::setDepthTestingEnabled(const bool& enabled) const noexcept
+{
+    if(enabled)
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
+    else
+    {
+        glDisable(GL_DEPTH_TEST);
+    }
 }
 
 const std::shared_ptr<Core::Graphics::GL4Renderer>& Core::Graphics::GL4Renderer::getInstance() noexcept

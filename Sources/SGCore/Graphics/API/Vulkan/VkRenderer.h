@@ -69,8 +69,6 @@ namespace Core::Graphics
 
         [[nodiscard]] VkMesh* createMesh() override;
 
-        [[nodiscard]] Memory::Assets::IMaterial* createPBRMaterial() override;
-
         static const std::shared_ptr<VkRenderer>& getInstance() noexcept;
     };
 }

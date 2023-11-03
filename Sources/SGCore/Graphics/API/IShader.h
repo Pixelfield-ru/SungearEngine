@@ -73,7 +73,6 @@ namespace Core::Graphics
 
         #pragma region Uniforms use
 
-        virtual void useMaterialTexture(const Memory::Assets::MaterialTexture&) { };
         virtual void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) { };
         virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
 

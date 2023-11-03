@@ -260,6 +260,11 @@ void init()
                           { 0.1 * 10.0, 0.4 * 10.0, 0.1 * 10.0 }, cube1Entities);
     }
 
+    auto geniusJPG = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+            "../SGResources/textures/genius.jpg"
+    );
+    geniusJPG->m_texture2D->m_textureType = SGTextureType::SGTP_DIFFUSE;
+
     for (const auto& entity: cube1Entities)
     {
         testScene->addEntity(entity);
@@ -268,14 +273,38 @@ void init()
 
         if(meshComponent)
         {
-            meshComponent->m_mesh->m_material->addTexture2D(
-                    SGMaterialTextureType::SGTP_DIFFUSE,
-                    Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                            "../SGResources/textures/genius.jpg"
-                    )
+            meshComponent->m_mesh->m_material->m_textures.emplace_back(
+                    SGTextureType::SGTP_DIFFUSE,
+                    geniusJPG->m_texture2D
             );
         }
     }
+
+    auto standardCubemap = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::CubemapAsset>(
+            "standard_skybox0",
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+            ),
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
+            ),
+
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
+            ),
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+            ),
+
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+            ),
+            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+            )
+    );
+
+    standardCubemap->m_texture2D->m_textureType = SGTextureType::SGTP_SKYBOX;
 
     for(const auto& entity : cubeEntities)
     {
@@ -285,36 +314,14 @@ void init()
         if(meshComponent)
         {
             meshComponent->m_enableFacesCulling = false;
-            meshComponent->m_mesh->m_material->addTexture2D(
-                    SGMaterialTextureType::SGTP_SKYBOX,
-                    Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::CubemapAsset>(
-                            "standard_skybox0",
-                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
-                            ),
-                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-                            ),
-
-                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-                            ),
-                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
-                            ),
-
-                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
-                            ),
-                            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
-                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
-                            )
-                    )
+            meshComponent->m_mesh->m_material->m_textures.emplace_back(
+                    SGTextureType::SGTP_SKYBOX,
+                    standardCubemap->getTexture2D()
             );
 
-            auto skyboxMaterial = std::shared_ptr<Core::Memory::Assets::IMaterial>(Core::Main::CoreMain::getRenderer().createSkyboxMaterial());
+            // auto skyboxMaterial = std::shared_ptr<Core::Memory::Assets::IMaterial>(Core::Main::CoreMain::getRenderer().createSkyboxMaterial());
 
-            meshComponent->m_mesh->migrateAndSetNewMaterial(skyboxMaterial);
+            // meshComponent->m_mesh->migrateAndSetNewMaterial(skyboxMaterial);
         }
         testScene->addEntity(entity);
     }

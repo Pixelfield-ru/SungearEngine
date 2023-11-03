@@ -17,11 +17,12 @@ Core::ECS::Scene::Scene() noexcept
     transparentLayer->m_index = 0;
     transparentLayer->m_isOpaque  = false;
 
+    m_layers[transparentLayer->m_name] = std::move(transparentLayer);
+
     auto opaqueLayer = std::make_shared<Layer>();
     opaqueLayer->m_name = SG_LAYER_OPAQUE_NAME;
     opaqueLayer->m_index = 1;
 
-    m_layers[transparentLayer->m_name] = std::move(transparentLayer);
     m_layers[opaqueLayer->m_name] = std::move(opaqueLayer);
 }
 
@@ -80,7 +81,7 @@ void Core::ECS::Scene::setShadowsCastersNum(const size_t& num)
 {
     m_shadowsCastersNum = num;
 
-    for(const auto& layer : m_layers)
+    /*for(const auto& layer : m_layers)
     {
         // define new shadow casters num for all entities in scene
         for(const auto& entity : layer.second->m_entities)
@@ -109,7 +110,7 @@ void Core::ECS::Scene::setShadowsCastersNum(const size_t& num)
                 }
             }
         }
-    }
+    }*/
 }
 
 size_t Core::ECS::Scene::getShadowsCastersNum() const noexcept
@@ -121,7 +122,7 @@ void Core::ECS::Scene::setDirectionalLightsNum(const size_t& num)
 {
     m_directionalLightsNum = num;
 
-    for(const auto& layer : m_layers)
+    /*for(const auto& layer : m_layers)
     {
         // define new shadow casters num for all entities in scene
         for(const auto& entity : layer.second->m_entities)
@@ -150,7 +151,7 @@ void Core::ECS::Scene::setDirectionalLightsNum(const size_t& num)
                 }
             }
         }
-    }
+    }*/
 }
 
 size_t Core::ECS::Scene::getDirectionalLightsNum() const noexcept

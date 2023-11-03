@@ -13,7 +13,7 @@
 
 void Core::ECS::DirectionalLightsSystem::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
-    double t0 = glfwGetTime();
+    /*double t0 = glfwGetTime();
 
     auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsSystem>();
 
@@ -103,7 +103,7 @@ void Core::ECS::DirectionalLightsSystem::fixedUpdate(const std::shared_ptr<Scene
         }
     }
 
-    double t1 = glfwGetTime();
+    double t1 = glfwGetTime();*/
 
     // 0.002500 ms average
 

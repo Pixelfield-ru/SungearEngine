@@ -14,6 +14,12 @@
         cls(const cls&) = default;                  \
         cls(cls&&) = default;
 
+#define SG_DECLARE_COPY_MOVE_SINGLETON(cls)             \
+        friend struct Core::Patterns::Singleton;        \
+    protected:                                          \
+        cls(const cls&) = default;                      \
+        cls(cls&&) = default;
+
 namespace Core::Patterns
 {
     struct Singleton

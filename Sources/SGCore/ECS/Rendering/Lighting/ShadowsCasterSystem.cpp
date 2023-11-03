@@ -14,7 +14,7 @@ void Core::ECS::ShadowsCasterSystem::fixedUpdate(const std::shared_ptr<Scene>& s
 {
     // double t0 = glfwGetTime();
 
-    const auto& meshedCachedEntities = Patterns::Singleton::getInstance<MeshedEntitiesCollectorSystem>()->getCachedEntities();
+    /*const auto& meshedCachedEntities = Patterns::Singleton::getInstance<MeshedEntitiesCollectorSystem>()->getCachedEntities();
 
     if(meshedCachedEntities.empty()) return;
 
@@ -41,7 +41,6 @@ void Core::ECS::ShadowsCasterSystem::fixedUpdate(const std::shared_ptr<Scene>& s
                 {
                     if(!meshedEntity.second) continue;
 
-                    // todo: make caching for entities with TransformComponent and MeshComponent
                     auto entityTransformComponent = meshedEntity.second->getComponent<TransformComponent>();
 
                     auto meshComponents =
@@ -57,7 +56,7 @@ void Core::ECS::ShadowsCasterSystem::fixedUpdate(const std::shared_ptr<Scene>& s
 
                         std::uint8_t shadowMapsBlockOffset = meshComponent->
                                 m_mesh->
-                                m_material->getBlocks()[SGMaterialTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
+                                m_material->getBlocks()[SGTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
 
                         std::uint8_t finalTextureBlock = shadowMapsBlockOffset + totalShadowCasters;
 
@@ -111,7 +110,7 @@ void Core::ECS::ShadowsCasterSystem::fixedUpdate(const std::shared_ptr<Scene>& s
 
             totalShadowCasters++;
         }
-    }
+    }*/
 
     // double t1 = glfwGetTime();
 

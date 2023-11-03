@@ -1,5 +1,13 @@
 #include "../uniform_bufs_decl.glsl"
 
+// ----- TODO: move defines in other file --------------------
+
+#define SGMAT_SAMPLERS_OF_TYPE_MAX      32
+#define DIRECTIONAL_LIGHTS_MAX_COUNT    10
+#define SHADOWS_CASTERS_MAX_COUNT       10
+
+// ------------------------------------------------------
+
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;
     layout (location = 1) in vec3 UVAttribute;
@@ -16,9 +24,8 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-    #ifdef sgmat_diffuseSamplers_COUNT
-        uniform sampler2D sgmat_diffuseSamplers[sgmat_diffuseSamplers_COUNT];
-    #endif
+    uniform int sgmat_diffuseSamplers_COUNT;
+    uniform sampler2D sgmat_diffuseSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
 
     in vec3 vs_UVAttribute;
 
@@ -31,21 +38,19 @@
             finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
-        #ifdef sgmat_diffuseSamplers_COUNT
-            float a = 1.0;
-            float mixCoeff = 1.0 / sgmat_diffuseSamplers_COUNT;
+        float a = 1.0;
+        float mixCoeff = 1.0 / sgmat_diffuseSamplers_COUNT;
 
-            for(int i = 0; i < sgmat_diffuseSamplers_COUNT; i++)
-            {
-                a += texture(sgmat_diffuseSamplers[i], finalUV).a * mixCoeff;
-            }
+        for (int i = 0; i < sgmat_diffuseSamplers_COUNT; i++)
+        {
+            a += texture(sgmat_diffuseSamplers[i], finalUV).a * mixCoeff;
+        }
 
-            // todo: make blending for shadows
-            if(a < 0.2)
-            {
-                discard;
-            }
-        #endif
+        // todo: make blending for shadows
+        if (a < 0.2)
+        {
+            discard;
+        }
 
         // vsm
 

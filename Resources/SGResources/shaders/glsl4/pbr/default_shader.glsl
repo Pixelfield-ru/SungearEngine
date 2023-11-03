@@ -9,16 +9,23 @@
 /*in int gl_FrontFacing;
 in vec4 gl_FragCoord;*/
 
+// ----- TODO: move defines in other file --------------------
+
+#define SGMAT_SAMPLERS_OF_TYPE_MAX      4
+#define DIRECTIONAL_LIGHTS_MAX_COUNT    10
+#define SHADOWS_CASTERS_MAX_COUNT       10
+
+// ------------------------------------------------------
+
 float ambient = 0.1;
 
-#ifdef SHADOWS_CASTERS_NUM
-    uniform ShadowsCaster shadowsCasters[SHADOWS_CASTERS_NUM];
-    uniform sampler2D shadowsCastersShadowMaps[SHADOWS_CASTERS_NUM];
-#endif
+uniform int DIRECTIONAL_LIGHTS_COUNT;
+uniform int SHADOWS_CASTERS_COUNT;
 
-#ifdef DIRECTIONAL_LIGHTS_NUM
-    uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_NUM];
-#endif
+uniform ShadowsCaster shadowsCasters[SHADOWS_CASTERS_MAX_COUNT];
+uniform sampler2D shadowsCastersShadowMaps[SHADOWS_CASTERS_MAX_COUNT];
+
+uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;
@@ -56,8 +63,6 @@ float ambient = 0.1;
 
 #ifdef FRAGMENT_SHADER
     // shadows impl
-    #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
-
     const float shadowsBias = 0.0000165;
     //const float shadowsBias = 0.0002;
 
@@ -313,45 +318,40 @@ float ambient = 0.1;
 
         // -------------------------------------------------
     }
-    #endif
 
-    #ifdef DIRECTIONAL_LIGHTS_NUM
-        void BlinnPhong_calculateDiffuseAndSpecularColor(
-            const in vec3 normal,
-            const in vec3 lightPos,
-            const in vec3 fragPos,
-            const in vec4 lightColor,
-            out vec3 diffuseColor,
-            out vec3 specularColor
-        )
-        {
-            vec3 lightDir = normalize(lightPos - fragPos);
-            vec3 viewDir = normalize(viewDirection - fragPos);
-            vec3 halfWayDir = normalize(lightDir + viewDir);
+    void BlinnPhong_calculateDiffuseAndSpecularColor(
+    const in vec3 normal,
+    const in vec3 lightPos,
+    const in vec3 fragPos,
+    const in vec4 lightColor,
+    out vec3 diffuseColor,
+    out vec3 specularColor
+    )
+    {
+        vec3 lightDir = normalize(lightPos - fragPos);
+        vec3 viewDir = normalize(viewDirection - fragPos);
+        vec3 halfWayDir = normalize(lightDir + viewDir);
 
-            float finalDiffuse = max(dot(normal, lightDir), 0.0) * 1.0;
+        float finalDiffuse = max(dot(normal, lightDir), 0.0) * 1.0;
 
-            diffuseColor = vec3(finalDiffuse) * lightColor.rgb * materialDiffuseCol.rgb;
+        diffuseColor = vec3(finalDiffuse) * lightColor.rgb * materialDiffuseCol.rgb;
 
-            float spec = pow(max(dot(normal, halfWayDir), 0.0), materialShininess);
+        float spec = pow(max(dot(normal, halfWayDir), 0.0), materialShininess);
 
-            specularColor = spec * lightColor.rgb * materialSpecularCol.rgb;
-        }
-    #endif
+        specularColor = spec * lightColor.rgb * materialSpecularCol.rgb;
+    }
 
     out vec4 fragColor;
 
-    #ifdef sgmat_diffuseSamplers_COUNT
-        uniform sampler2D sgmat_diffuseSamplers[sgmat_diffuseSamplers_COUNT];
-    #endif
+    uniform int sgmat_diffuseSamplers_COUNT;
+    uniform int sgmat_diffuseRoughnessSamplers_COUNT;
+    uniform int sgmat_normalsSamplers_COUNT;
 
-    #ifdef sgmat_diffuseRoughnessSamplers_COUNT
-        uniform sampler2D sgmat_diffuseRoughnessSamplers[sgmat_diffuseRoughnessSamplers_COUNT];
-    #endif
+    uniform sampler2D sgmat_diffuseSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
 
-    #ifdef sgmat_normalsSamplers_COUNT
-        uniform sampler2D sgmat_normalsSamplers[sgmat_normalsSamplers_COUNT];
-    #endif
+    uniform sampler2D sgmat_diffuseRoughnessSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
+
+    uniform sampler2D sgmat_normalsSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
 
     in VSOut
     {
@@ -431,154 +431,147 @@ float ambient = 0.1;
             finalUV.y = 1.0 - vsIn.UV.y;
         #endif
 
-        #ifdef sgmat_diffuseSamplers_COUNT
         {
             float mixCoeff = 1.0 / sgmat_diffuseSamplers_COUNT;
 
-            for (int i = 0; i < sgmat_diffuseSamplers_COUNT; i++)
+            for (int i = 0; i < sgmat_diffuseSamplers_COUNT; ++i)
             {
                 diffuseColor += texture(sgmat_diffuseSamplers[i], finalUV) * mixCoeff;
             }
         }
-        #endif
 
-        #ifdef sgmat_diffuseRoughnessSamplers_COUNT
         {
             float mixCoeff = 1.0 / sgmat_diffuseRoughnessSamplers_COUNT;
 
-            for (int i = 0; i < sgmat_diffuseRoughnessSamplers_COUNT; i++)
+            for (int i = 0; i < sgmat_diffuseRoughnessSamplers_COUNT; ++i)
             {
                 diffuseRoughnessColor += texture(sgmat_diffuseRoughnessSamplers[i], finalUV) * mixCoeff;
             }
         }
-        #endif
 
-        #ifdef sgmat_normalsSamplers_COUNT
+        if(sgmat_normalsSamplers_COUNT > 0)
         {
             float mixCoeff = 1.0 / sgmat_normalsSamplers_COUNT;
 
-            for (int i = 0; i < sgmat_normalsSamplers_COUNT; i++)
+            for (int i = 0; i < sgmat_normalsSamplers_COUNT; ++i)
             {
                 normalMapColor += texture(sgmat_normalsSamplers[i], finalUV).rgb * mixCoeff;
             }
 
             normalMapColor = normalize(vsIn.TBN * (normalMapColor * 2.0 - 1.0));
         }
-        #else
+        else
+        {
             normalMapColor = normalizedNormal;
-        #endif
+        }
 
         // todo: fix multiple directional lights
-        #ifdef DIRECTIONAL_LIGHTS_NUM
-            // TODO: make customizable with defines
-            // PBR pipline (using Cook-Torrance BRDF) --------------------
+        // TODO: make customizable with defines
+        // PBR pipeline (using Cook-Torrance BRDF) --------------------
 
-            vec3 viewDir = normalize(viewDirection - vsIn.fragPos);
+        vec3 viewDir = normalize(viewDirection - vsIn.fragPos);
 
-            // colorFromRoughness.r = AO MAP
-            // colorFromRoughness.g = ROUGHNESS
-            // colorFromRoughness.b = METALNESS
+        // colorFromRoughness.r = AO MAP
+        // colorFromRoughness.g = ROUGHNESS
+        // colorFromRoughness.b = METALNESS
 
-            vec3 albedo = diffuseColor.rgb;
-            float ao = diffuseRoughnessColor.r;
-            float roughness = diffuseRoughnessColor.g * materialRoughnessFactor;
-            float metalness = diffuseRoughnessColor.b * materialMetallicFactor;
+        vec3 albedo =       diffuseColor.rgb;
+        float ao =          diffuseRoughnessColor.r;
+        float roughness =   diffuseRoughnessColor.g * materialRoughnessFactor;
+        float metalness =   diffuseRoughnessColor.b * materialMetallicFactor;
 
-            // для формулы Шлика-Френеля
-            vec3 F0 = vec3(0.04);
-            F0 = mix(F0, albedo, metalness);
+        // для формулы Шлика-Френеля
+        vec3 F0 = vec3(0.04);
+        F0 = mix(F0, albedo, metalness);
 
-            //float geomRoughness = ((colorFromRoughness.g + 1.0) * (colorFromRoughness.g + 1.0)) / 8.0;
+        //float geomRoughness = ((colorFromRoughness.g + 1.0) * (colorFromRoughness.g + 1.0)) / 8.0;
 
-            vec3 lo = vec3(0.0);
-            for(int i = 0; i < DIRECTIONAL_LIGHTS_NUM; i++)
-            {
-                vec3 lightDir = normalize(directionalLights[i].position - vsIn.fragPos);
-                vec3 halfWayDir = normalize(lightDir + viewDir);
+        vec3 lo = vec3(0.0);
+        for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
+        {
+            vec3 lightDir = normalize(directionalLights[i].position - vsIn.fragPos);
+            vec3 halfWayDir = normalize(lightDir + viewDir);
 
-                float distance = length(directionalLights[i].position - vsIn.fragPos);
-                float attenuation = 1.0 / (distance * distance);
-                vec3 radiance = directionalLights[i].color.rgb * attenuation * 700.0;
-                //radiance = vec3(1.0);
+            float distance = length(directionalLights[i].position - vsIn.fragPos);
+            float attenuation = 1.0 / (distance * distance);
+            vec3 radiance = directionalLights[i].color.rgb * attenuation * 700.0;
+            //radiance = vec3(1.0);
 
-                // energy brightness coeff (коэфф. энергетической яркости)
-                float ebCoeff = max(dot(normalMapColor, lightDir), 0.0);
+            // energy brightness coeff (коэфф. энергетической яркости)
+            float ebCoeff = max(dot(normalMapColor, lightDir), 0.0);
 
-                // cooktorrance func: DFG /
+            // cooktorrance func: DFG /
 
-                // NDF (normal distribution func)
-                float D = GGXTR(
-                    normalMapColor,
-                    halfWayDir,
-                    roughness
-                );
-                vec3 F = SchlickFresnel(max(dot(halfWayDir, viewDir), 0.0), F0);
-                // geometry function
-                float G = GeometrySmith(normalMapColor, viewDir, lightDir, roughness);
+            // NDF (normal distribution func)
+            float D = GGXTR(
+            normalMapColor,
+            halfWayDir,
+            roughness
+            );
+            vec3 F = SchlickFresnel(max(dot(halfWayDir, viewDir), 0.0), F0);
+            // geometry function
+            float G = GeometrySmith(normalMapColor, viewDir, lightDir, roughness);
 
-                vec3 diffuse = vec3(1.0) - F;
-                diffuse *= (1.0 - metalness) * materialDiffuseCol.rgb;
-                //diffuse *= max((1.0 - metalness) * materialDiffuseCol.rgb, vec3(115.0 / 255.0, 133.0 / 255.0, 179.0 / 255.0) / 2.0);
+            vec3 diffuse = vec3(1.0) - F;
+            diffuse *= (1.0 - metalness) * materialDiffuseCol.rgb;
+            //diffuse *= max((1.0 - metalness) * materialDiffuseCol.rgb, vec3(115.0 / 255.0, 133.0 / 255.0, 179.0 / 255.0) / 2.0);
 
-                vec3 ctNumerator = D * F * G;
-                float ctDenominator = 4.0 * max(dot(normalMapColor, viewDir), 0.0) * ebCoeff;
-                vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
+            vec3 ctNumerator = D * F * G;
+            float ctDenominator = 4.0 * max(dot(normalMapColor, viewDir), 0.0) * ebCoeff;
+            vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
-                lo += (diffuse * albedo.rgb / PI + specular) * radiance * ebCoeff;
-            }
-            vec3 ambient = vec3(0.03) * albedo.rgb * ao;
-            vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
+            lo += (diffuse * albedo.rgb / PI + specular) * radiance * ebCoeff;
+        }
+        vec3 ambient = vec3(0.03) * albedo.rgb * ao;
+        vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
 
-            // HDR standard tonemapper
-            finalCol = finalCol / (finalCol + vec3(1.0));
-            finalCol = pow(finalCol, vec3(1.0 / 2.2));
+        // HDR standard tonemapper
+        finalCol = finalCol / (finalCol + vec3(1.0));
+        finalCol = pow(finalCol, vec3(1.0 / 2.2));
 
-            fragColor.a = diffuseColor.a;
-            fragColor.rgb = finalCol;
+        fragColor.a = diffuseColor.a;
+        fragColor.rgb = finalCol;
 
-            // blinn-phong pipeline  -----------------------------
+        // blinn-phong pipeline  -----------------------------
 
-            //fragColor.rgb *= materialAmbientCol.rgb + ggxtrAccum * geomSmithAccum;
-            // ----------------------------------
+        //fragColor.rgb *= materialAmbientCol.rgb + ggxtrAccum * geomSmithAccum;
+        // ----------------------------------
 
-            /*vec3 finalDiffuse = vec3(0.0);
-            vec3 finalSpecular = vec3(0.0);
+        /*vec3 finalDiffuse = vec3(0.0);
+        vec3 finalSpecular = vec3(0.0);
 
-            vec3 intermediateDiffuse = vec3(0.0);
-            vec3 intermediateSpecular = vec3(0.0);
+        vec3 intermediateDiffuse = vec3(0.0);
+        vec3 intermediateSpecular = vec3(0.0);
 
-            for(int i = 0; i < DIRECTIONAL_LIGHTS_NUM; i++)
-            {
-                BlinnPhong_calculateDiffuseAndSpecularColor(
-                    colorFromNormalMap,
-                    directionalLights[i].position,
-                    vsIn.fragPos,
-                    directionalLights[i].color,
-                    intermediateDiffuse,
-                    intermediateSpecular
-                );
+        for(int i = 0; i < DIRECTIONAL_LIGHTS_NUM; i++)
+        {
+            BlinnPhong_calculateDiffuseAndSpecularColor(
+                colorFromNormalMap,
+                directionalLights[i].position,
+                vsIn.fragPos,
+                directionalLights[i].color,
+                intermediateDiffuse,
+                intermediateSpecular
+            );
 
-                finalDiffuse += intermediateDiffuse;
-                finalSpecular += intermediateSpecular;
-            }
+            finalDiffuse += intermediateDiffuse;
+            finalSpecular += intermediateSpecular;
+        }
 
-            fragColor.a = colorFromDiffuse.a;
-            fragColor.rgb = colorFromBase.rgb * (materialAmbientCol.rgb + finalDiffuse + finalSpecular);*/
-        #endif
+        fragColor.a = colorFromDiffuse.a;
+        fragColor.rgb = colorFromBase.rgb * (materialAmbientCol.rgb + finalDiffuse + finalSpecular);*/
 
-        #if defined(SHADOWS_CASTERS_NUM) && defined(sgmat_shadowMap_MAX_TEXTURES_NUM)
-            float shadowCoeff = 0.0;
+        float shadowCoeff = 0.0;
 
-            for(int i = 0; i < SHADOWS_CASTERS_NUM && i < sgmat_shadowMap_MAX_TEXTURES_NUM; i += 1)
-            {
-                fragColor.rgb *= calculateShadow(
-                    shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
-                    vsIn.fragPos,
-                    normalMapColor,
-                    i
-                );
-            }
-        #endif
+        for (int i = 0; i < SHADOWS_CASTERS_MAX_COUNT && i < SHADOWS_CASTERS_COUNT; i += 1)
+        {
+            fragColor.rgb *= calculateShadow(
+                shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
+                vsIn.fragPos,
+                normalMapColor,
+                i
+            );
+        }
 
         //fragColor.rgb = vec3(colorFromRoughness.b);
         fragColor.rgb = fragColor.rgb;

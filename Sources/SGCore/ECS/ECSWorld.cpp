@@ -6,7 +6,7 @@
 
 #include "Transformations/TransformationsSystem.h"
 #include "SGCore/ECS/Transformations/Camera3DMovementSystem.h"
-#include "SGCore/ECS/Rendering/CameraRenderingSystem.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRForwardPipelineSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/RenderingComponentsSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
@@ -37,7 +37,7 @@ void Core::ECS::ECSWorld::init() noexcept
     auto camera3DMovementSystem = Patterns::Singleton::getInstance<Camera3DMovementSystem>();
     camera3DMovementSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto cameraRenderingSystem = Patterns::Singleton::getInstance<CameraRenderingSystem>();
+    auto cameraRenderingSystem = Patterns::Singleton::getInstance<PBRForwardPipelineSystem>();
     cameraRenderingSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     // -------------------------------

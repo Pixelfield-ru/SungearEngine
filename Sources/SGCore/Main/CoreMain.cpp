@@ -15,19 +15,19 @@ void Core::Main::CoreMain::start()
     system("chcp 65001");
     setlocale(LC_ALL, "Russian");
 
-    // core components init -------------
-    InputManager::init();
-    Memory::AssetManager::init();
-    Logging::init();
-    ECS::ECSWorld::init();
-    // ----------------------------------
-
     m_renderer = Graphics::GL4Renderer::getInstance();
     //m_renderer = Graphics::VkRenderer::getInstance();
 
     m_window.create();
 
     m_renderer->init();
+
+    // core components init -------------
+    InputManager::init();
+    Memory::AssetManager::init();
+    Logging::init();
+    ECS::ECSWorld::init();
+    // ----------------------------------
 
     std::shared_ptr<Utils::TimerCallback> globalTimerCallback = std::make_shared<Utils::TimerCallback>();
 

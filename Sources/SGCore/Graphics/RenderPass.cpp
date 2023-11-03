@@ -10,7 +10,7 @@ Core::Graphics::RenderPass::RenderPass()
 {
     m_billboard = std::shared_ptr<ImportedScene::IMesh>(Core::Main::CoreMain::getRenderer().createMesh());
 
-    m_billboard->m_material = std::shared_ptr<Memory::Assets::IMaterial>(Core::Main::CoreMain::getRenderer().createPostProcessingMaterial());
+    // m_billboard->m_material = std::shared_ptr<Memory::Assets::IMaterial>(Core::Main::CoreMain::getRenderer().createPostProcessingMaterial());
 
     m_billboard->m_indices.push_back(0);
     m_billboard->m_indices.push_back(2);

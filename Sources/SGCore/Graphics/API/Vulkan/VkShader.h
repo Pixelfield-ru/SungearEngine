@@ -24,8 +24,6 @@ namespace Core::Graphics
         void destroy() noexcept final;
 
         std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept final;
-
-        void useMaterialTexture(const Memory::Assets::MaterialTexture&) final;
     };
 }
 

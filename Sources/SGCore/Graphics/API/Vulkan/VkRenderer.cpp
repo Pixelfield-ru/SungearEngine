@@ -122,12 +122,6 @@ Core::Graphics::VkMesh* Core::Graphics::VkRenderer::createMesh()
     return new VkMesh;
 }
 
-// TODO: impl
-Core::Memory::Assets::IMaterial *Core::Graphics::VkRenderer::createPBRMaterial()
-{
-    return nullptr;
-}
-
 const std::shared_ptr<Core::Graphics::VkRenderer>& Core::Graphics::VkRenderer::getInstance() noexcept
 {
     static std::shared_ptr<VkRenderer> s_instancePointer(new VkRenderer);

@@ -102,7 +102,7 @@ enum SGGDataType
     SGG_STRUCT_END
 };
 
-enum SGMaterialTextureType
+enum SGTextureType
 {
     SGTP_EMISSIVE,
     SGTP_AMBIENT_OCCLUSION,
@@ -134,7 +134,7 @@ enum SGMaterialTextureType
     SGTP_FRAMEBUFFER_RENDER_ATTACHMENT
 };
 
-static std::string sgMaterialTextureTypeToString(const SGMaterialTextureType& sgMaterialTextureType)
+static std::string sgTextureTypeToString(const SGTextureType& sgMaterialTextureType)
 {
     switch(sgMaterialTextureType)
     {

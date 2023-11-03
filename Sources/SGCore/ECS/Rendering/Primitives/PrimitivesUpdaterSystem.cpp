@@ -23,7 +23,8 @@ void Core::ECS::PrimitivesUpdaterSystem::fixedUpdate(const std::shared_ptr<Scene
 
             for(const auto& primitiveComponent: primitiveComponents)
             {
-                const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
+                // TODO: MOVE IN RENDER PIPELINE
+                /*const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
 
                 if(!materialShader) continue;
 
@@ -103,7 +104,7 @@ void Core::ECS::PrimitivesUpdaterSystem::fixedUpdate(const std::shared_ptr<Scene
                     );
 
                     primitiveComponent->m_lastColor = primitiveComponent->m_color;
-                }
+                }*/
 
                 // ------------------- individual for every primitive component
 

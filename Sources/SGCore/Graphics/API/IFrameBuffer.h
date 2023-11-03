@@ -29,7 +29,14 @@ namespace Core::Graphics
         // type of attachment to draw
         SGFrameBufferAttachmentType m_drawAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
 
-        virtual std::shared_ptr<IFrameBuffer> bindAttachments(const std::shared_ptr<Memory::Assets::IMaterial>& material)
+        /**
+         * Binds all frame buffer attachments based on the layout of the blocks of the material.
+         * @param material - The material from which the markup will be taken.
+         * @param frameBufferIndex - Framebuffer index in the material.
+         * @return This.
+         */
+        virtual std::shared_ptr<IFrameBuffer> bindAttachments(const std::shared_ptr<Memory::Assets::IMaterial>& material,
+                                                              const std::uint8_t& frameBufferIndex)
         { return shared_from_this(); }
 
         virtual std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,

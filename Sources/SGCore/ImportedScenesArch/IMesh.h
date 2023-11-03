@@ -34,7 +34,7 @@ namespace Core::ImportedScene
     public:
         SGDrawMode m_drawMode = SGDrawMode::SGG_TRIANGLES;
 
-        IMesh() noexcept;
+        // IMesh() noexcept;
         virtual ~IMesh() = default;
 
         std::string m_name;
@@ -59,7 +59,7 @@ namespace Core::ImportedScene
         // bitangents array
         std::vector<float> m_bitangents;
 
-        std::shared_ptr<Memory::Assets::IMaterial> m_material;
+        std::shared_ptr<Memory::Assets::IMaterial> m_material = std::make_shared<Memory::Assets::IMaterial>();
 
         // ----------------
         virtual void prepare() = 0;

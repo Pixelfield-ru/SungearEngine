@@ -7,11 +7,11 @@ Core::ECS::BoxComponent::BoxComponent()
 {
     m_mesh = std::shared_ptr<ImportedScene::IMesh>(Core::Main::CoreMain::getRenderer().createMesh());
 
-    m_mesh->m_material = std::shared_ptr<Memory::Assets::IMaterial>(
+    /*m_mesh->m_material = std::shared_ptr<Memory::Assets::IMaterial>(
             Core::Main::CoreMain::getRenderer().createBlankStandardMaterial(
                     Graphics::StandardShaderType::SG_COMPLEX_PRIMITIVES_SHADER
             )
-    );
+    );*/
 
     build();
 }

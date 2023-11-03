@@ -33,8 +33,3 @@ std::int32_t Core::Graphics::VkShader::getShaderUniformLocation(const std::strin
 {
     return 0;
 }
-
-void Core::Graphics::VkShader::useMaterialTexture(const Memory::Assets::MaterialTexture&)
-{
-
-}

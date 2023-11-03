@@ -44,6 +44,11 @@ namespace Core::Graphics
     class IRenderer
     {
     public:
+        // Buffer for storing matrices of the currently main camera.
+        std::shared_ptr<IUniformBuffer> m_viewMatricesBuffer;
+        // Buffer for storing matrices of the program.
+        std::shared_ptr<IUniformBuffer> m_programDataBuffer;
+
         // check usages in IVertexArray implementations and IIndexBuffer implementations
         // TODO: UB IS HERE
         IIndexBuffer* m_currentBoundIndexBuffer = nullptr;
@@ -86,8 +91,8 @@ namespace Core::Graphics
         virtual void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                                      const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) { }
 
-        virtual void renderFrameBufferOnMesh(const std::shared_ptr<IFrameBuffer>& frameBuffer,
-                                             const std::shared_ptr<ImportedScene::IMesh>& mesh) { }
+        virtual void renderRenderPass(RenderPass& renderPass,
+                                      const std::shared_ptr<ImportedScene::IMesh>& mesh) { }
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
@@ -110,29 +115,9 @@ namespace Core::Graphics
 
         [[nodiscard]] virtual ImportedScene::IMesh* createMesh() = 0;
 
-        /**
-         * Create one of standard materials without textures blocks declarations.
-         * @return Blank standard material.
-         */
-        [[nodiscard]] virtual Memory::Assets::IMaterial* createBlankStandardMaterial(const StandardShaderType& standardShaderType);
-
-        /**
-         * Creates customized PBR material.
-         * @return PBR material.
-         */
-        [[nodiscard]] virtual Memory::Assets::IMaterial* createPBRMaterial();
-
-        /**
-         * Creates customized skybox material.
-         * @return Skybox material.
-         */
-        [[nodiscard]] virtual Memory::Assets::IMaterial* createSkyboxMaterial();
-
-        /**
-         * Creates customized post-process material.
-         * @return Post-process material.
-         */
-        [[nodiscard]] virtual Memory::Assets::IMaterial* createPostProcessingMaterial();
+        // ------------- some settings for renderer ---------
+        virtual void setDepthTestingEnabled(const bool& enabled) const noexcept { }
+        // --------------------------------------------------
 
         [[nodiscard]] APIType getAPIType() const noexcept;
 

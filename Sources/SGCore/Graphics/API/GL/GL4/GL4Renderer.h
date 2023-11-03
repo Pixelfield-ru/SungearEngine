@@ -32,15 +32,6 @@ namespace Core::Graphics
     class GL4Renderer : public IRenderer
     {
     protected:
-        // Buffer for storing matrices of the currently rendered model.
-        std::shared_ptr<GL4UniformBuffer> m_modelMatricesBuffer;
-        // stores material colors, coeffs, but not samplers
-        std::shared_ptr<GL4UniformBuffer> m_materialDataBuffer;
-        // Buffer for storing matrices of the currently main camera.
-        std::shared_ptr<GL4UniformBuffer> m_viewMatricesBuffer;
-        // Buffer for storing matrices of the program.
-        std::shared_ptr<GL4UniformBuffer> m_programDataBuffer;
-
         GL4Renderer() noexcept = default;
 
         static inline std::shared_ptr<GL4Renderer> m_instance;
@@ -64,8 +55,8 @@ namespace Core::Graphics
         void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
                              const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) override;
 
-        void renderFrameBufferOnMesh(const std::shared_ptr<IFrameBuffer>& frameBuffer,
-                                     const std::shared_ptr<ImportedScene::IMesh>& mesh) override;
+        void renderRenderPass(RenderPass& renderPass,
+                              const std::shared_ptr<ImportedScene::IMesh>& mesh) override;
 
         void printInfo() noexcept override;
 
@@ -89,6 +80,10 @@ namespace Core::Graphics
         [[nodiscard]] GL4FrameBuffer* createFrameBuffer() override;
 
         [[nodiscard]] GL3Mesh* createMesh() override;
+
+        // ------------- some settings for renderer ---------
+        void setDepthTestingEnabled(const bool& enabled) const noexcept override;
+        // --------------------------------------------------
 
         static const std::shared_ptr<GL4Renderer>& getInstance() noexcept;
     };
