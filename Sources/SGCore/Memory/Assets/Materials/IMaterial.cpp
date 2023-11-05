@@ -23,7 +23,11 @@ Core::Memory::Assets::IMaterial::bind(const std::shared_ptr<Graphics::IShader>& 
             }
         }
 
-        shader->useInteger(texBlockTypeStr + "Samplers_COUNT", currentTexBlockOfType);
+        // if not in framebuffers area
+        if(markedTextureBlock.first < SGTextureType::SGTP_SHADOW_MAP)
+        {
+            shader->useInteger(texBlockTypeStr + "Samplers_COUNT", currentTexBlockOfType);
+        }
 
         currentTexBlockOfType = 0;
     }

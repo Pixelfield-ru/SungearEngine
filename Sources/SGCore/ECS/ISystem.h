@@ -42,9 +42,11 @@ namespace Core::ECS
 
         template<typename... ComponentsT>
         requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
-        void cacheEntityComponents(const std::shared_ptr<Entity>& entity)
+        void cacheEntityComponents(const std::shared_ptr<Entity>& entity, const std::function<bool()> willCachePredicate)
         {
             double t0 = glfwGetTime();
+
+            if(!willCachePredicate()) return;
 
             auto entityLayer = entity->getLayer();
             if(!entityLayer) return;
@@ -86,33 +88,17 @@ namespace Core::ECS
 
             auto f = m_cachedEntities.begin();
 
-            // sorting layers by indices
-
-            /*auto& foundComponentsCollection = m_cachedEntities[entity];
-            foundComponentsCollection = foundComponentsCollection == nullptr ?
-                                        std::make_shared<ComponentsCollection>() : foundComponentsCollection;
-
-            Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection](auto t)
-                                                   {
-                                                       using type = typename decltype(t)::type;
-
-                                                       // if component already exists in components collection then we wont cache
-                                                       if (!foundComponentsCollection->getComponent<type>())
-                                                       {
-                                                           auto entityComponentsList = entity->getComponents<type>();
-                                                           for (const auto& component: entityComponentsList)
-                                                           {
-                                                               foundComponentsCollection->addComponent(component);
-                                                           }
-                                                       }
-                                                   });*/
-
             double t1 = glfwGetTime();
 
             std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
         }
 
-        bool in();
+        template<typename... ComponentsT>
+        requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
+        void cacheEntityComponents(const std::shared_ptr<Entity>& entity)
+        {
+            cacheEntityComponents<ComponentsT...>(entity, []() { return true; });
+        }
 
         const auto& getCachedEntities() const noexcept
         {

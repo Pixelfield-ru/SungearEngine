@@ -1,5 +1,6 @@
 #include "../uniform_bufs_decl.glsl"
 #include "../ray_intersections.glsl"
+#include "../defines.glsl"
 
 #define PI 3.141592
 #define iSteps 16
@@ -119,9 +120,8 @@ vec3 atmosphere(vec3 r, vec3 ro,
 
     out vec4 fragColor;
 
-    #ifdef sgmat_skyboxSamplers_COUNT
-        uniform samplerCube sgmat_skyboxSamplers[sgmat_skyboxSamplers_COUNT];
-    #endif
+    uniform int sgmat_skyboxSamplers_COUNT;
+    uniform samplerCube sgmat_skyboxSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
 
     in vec3 vs_UVAttribute;
 
@@ -141,22 +141,20 @@ vec3 atmosphere(vec3 r, vec3 ro,
             0.958                          // Mie preferred scattering direction
         );
 
-        //atmosphereCol = 1.0 - exp(-1.0 * atmosphereCol);
-
-        //fragColor = vec4(atmosphereCol, 1.0);
-
-        #ifdef sgmat_skyboxSamplers_COUNT
+        if(sgmat_skyboxSamplers_COUNT > 0)
+        {
             float mixCoeff = 1.0 / sgmat_skyboxSamplers_COUNT;
-
             vec4 skyboxCol = vec4(0.0);
-            for(int i = 0; i < sgmat_skyboxSamplers_COUNT; i++)
+            for (int i = 0; i < sgmat_skyboxSamplers_COUNT; i++)
             {
                 skyboxCol += texture(sgmat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
             }
 
             fragColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);
-        #else
+        }
+        else
+        {
             fragColor = vec4(atmosphereCol, 1.0);
-        #endif
+        }
     }
 #endif

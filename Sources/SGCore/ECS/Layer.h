@@ -8,6 +8,9 @@
 #include <list>
 
 #include "Entity.h"
+#include "SGCore/Graphics/API/MarkedShader.h"
+
+// STANDARD LAYERS DEFINES
 
 #define SG_LAYER_OPAQUE_NAME        "Opaque"
 #define SG_LAYER_TRANSPARENT_NAME   "Transparent"
@@ -23,9 +26,12 @@ namespace Core::ECS
     public:
         std::list<std::shared_ptr<Entity>> m_entities;
 
+        std::shared_ptr<Graphics::MarkedShader> m_markedShader = std::make_shared<Graphics::MarkedShader>();
+
         std::string m_name;
 
         bool m_isOpaque = true;
+        bool m_useCustomShader = false;
 
     private:
         size_t m_index = 0;

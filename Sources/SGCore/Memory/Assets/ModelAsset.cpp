@@ -221,7 +221,9 @@ void Core::Memory::Assets::ModelAsset::loadTextures
         aiMat->GetTexture(aiTexType, i, &texturePath);
 
         // final path is model directory file + separator + relative texture path
-        const std::string finalPath = m_path.parent_path().string() + "/" + texturePath.data;
+        std::string finalPath = m_path.parent_path().string();
+        finalPath += "/";
+        finalPath += texturePath.data;
 
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 

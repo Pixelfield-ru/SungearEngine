@@ -23,7 +23,7 @@ void Core::Graphics::MarkedShader::bind() const noexcept
         std::uint8_t offset = block.second.m_texturesUnitOffset;
         std::uint8_t maxTex = block.second.m_maximumTextures;
 
-        for(std::uint8_t blockIdx = offset; blockIdx < offset + maxTex; blockIdx++)
+        for(std::uint8_t blockIdx = offset; blockIdx < offset + maxTex; ++blockIdx)
         {
             m_shader->useInteger(blockName + "Samplers[" + std::to_string(blockIdx - offset) + "]",
                                  blockIdx);

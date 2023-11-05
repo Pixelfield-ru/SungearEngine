@@ -263,7 +263,6 @@ void init()
     auto geniusJPG = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
             "../SGResources/textures/genius.jpg"
     );
-    geniusJPG->m_texture2D->m_textureType = SGTextureType::SGTP_DIFFUSE;
 
     for (const auto& entity: cube1Entities)
     {
@@ -303,8 +302,6 @@ void init()
                     "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
             )
     );
-
-    standardCubemap->m_texture2D->m_textureType = SGTextureType::SGTP_SKYBOX;
 
     for(const auto& entity : cubeEntities)
     {

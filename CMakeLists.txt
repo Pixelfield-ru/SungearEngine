@@ -46,6 +46,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static -Wl,-all
 # FOR LINUX
 #set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition")
 set(CMAKE_BUILD_TYPE "Debug")
+#set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # options --------------------------
 
@@ -73,6 +74,11 @@ add_subdirectory(Resources)
 if(EXISTS ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll)
     file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll DESTINATION ${SG_PHYS_TEST_BIN})
     file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll DESTINATION ${SG_EDITOR_BIN})
+endif()
+
+if(MSVC AND EXISTS ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/assimp-vc143-mtd.dll)
+    file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/assimp-vc143-mtd.dll DESTINATION ${SG_PHYS_TEST_BIN})
+    file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/assimp-vc143-mtd.dll DESTINATION ${SG_EDITOR_BIN})
 endif()
 
 if(EXISTS ${CMAKE_BINARY_DIR}/lib/glfw3d.dll)

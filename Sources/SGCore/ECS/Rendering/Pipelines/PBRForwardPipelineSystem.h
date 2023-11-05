@@ -21,22 +21,6 @@ namespace Core::ECS
         PBRForwardPipelineSystem();
 
     private:
-        /*std::function<bool(const std::shared_ptr<ImportedScene::IMesh>&,
-                const std::shared_ptr<TransformComponent>&)> uniformsUpdaterLambda =
-                [](const std::shared_ptr<ImportedScene::IMesh>& mesh, const std::shared_ptr<TransformComponent>& tc)
-                {
-                    if(!mesh || !tc) return true;
-
-                    if(tc->m_positionChanged || tc->m_rotationChanged || tc->m_scaleChanged)
-                    {
-                        Patterns::Singleton::getInstance<PBRForwardPipelineSystem>()->updateMeshUniforms(mesh, tc);
-
-                        return true;
-                    }
-
-                    return false;
-                };*/
-
         void updateUniforms(const std::shared_ptr<Graphics::IShader>& shader,
                             const std::shared_ptr<Memory::Assets::IMaterial>& material,
                             const std::shared_ptr<TransformComponent>& transformComponent) const noexcept;

@@ -11,7 +11,6 @@ namespace Core::Graphics
 {
     struct IFrameBufferAttachment
     {
-        std::string m_name;
 
         SGGColorFormat m_format = SGGColorFormat::SGG_RGB;
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGB8;

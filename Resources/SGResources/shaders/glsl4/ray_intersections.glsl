@@ -1,4 +1,4 @@
-vec2 raySphereIntersection(vec3 ro, vec3 rd, float sr)
+vec2 raySphereIntersection(const in vec3 ro, const in vec3 rd, const in float sr)
 {
     float b = dot(ro, rd);
     float c = dot(ro, ro) - sr * sr;

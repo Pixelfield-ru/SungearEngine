@@ -19,8 +19,6 @@ namespace Core::Graphics
     class ITexture2D : public Memory::Assets::IAssetObserver, public std::enable_shared_from_this<ITexture2D>
     {
     public:
-        SGTextureType m_textureType = SGTextureType::SGTP_DIFFUSE;
-
         virtual void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) { };
         virtual void destroy() = 0;
 

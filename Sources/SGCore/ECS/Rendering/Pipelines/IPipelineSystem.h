@@ -15,6 +15,7 @@ namespace Core::ECS
     public:
         std::shared_ptr<Graphics::MarkedShader> m_shadowsPassMarkedShader;
         std::shared_ptr<Graphics::MarkedShader> m_geometryPassMarkedShader;
+        std::shared_ptr<Graphics::MarkedShader> m_skyboxPassMarkedShader;
 
         // IPipelineSystem();
     };

@@ -25,7 +25,7 @@ namespace Core::Graphics
 
 namespace Core::Memory::Assets
 {
-    struct MaterialTexturesBlock
+    struct MaterialTexture
     {
         SGTextureType m_type = SGTextureType::SGTP_DIFFUSE;
 
@@ -39,7 +39,7 @@ namespace Core::Memory::Assets
     public:
         std::string m_name;
 
-        std::vector<MaterialTexturesBlock> m_textures;
+        std::vector<MaterialTexture> m_textures;
 
         // TODO: REMOVE
         std::shared_ptr<Graphics::IShader> m_customShader;
@@ -53,6 +53,7 @@ namespace Core::Memory::Assets
         float m_metallicFactor          = 1.0f;
         float m_roughnessFactor         = 1.0f;
 
+        // FRAMEBUFFER ATTACHMENTS SHOULD BE CUSTOM-BOUND BY THE USER BASED ON MarkedShader!!!!!!!!!!!!!!!!!!
         std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::MarkedShader>& markedShader);
 
         std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::IShader>& shader,

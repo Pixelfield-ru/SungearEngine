@@ -1,12 +1,5 @@
 #include "../uniform_bufs_decl.glsl"
-
-// ----- TODO: move defines in other file --------------------
-
-#define SGMAT_SAMPLERS_OF_TYPE_MAX      32
-#define DIRECTIONAL_LIGHTS_MAX_COUNT    10
-#define SHADOWS_CASTERS_MAX_COUNT       10
-
-// ------------------------------------------------------
+#include "../defines.glsl"
 
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;
@@ -47,10 +40,10 @@
         }
 
         // todo: make blending for shadows
-        if (a < 0.2)
+        /*if (a < 0.2)
         {
             discard;
-        }
+        }*/
 
         // vsm
 

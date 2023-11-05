@@ -267,6 +267,9 @@ void Core::Graphics::GL46Shader::destroy() noexcept
     #endif
 
     m_shaderPartsHandlers.clear();
+
+    // clearing cached values
+    m_cachedMat4.clear();
 }
 
 std::int32_t Core::Graphics::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
@@ -291,6 +294,34 @@ void Core::Graphics::GL46Shader::useMatrix(const std::string& uniformName, const
 {
     int matLoc = getShaderUniformLocation(uniformName);
     glUniformMatrix4fv(matLoc, 1, false, glm::value_ptr(matrix));
+
+   /* bool alreadyCached = false;
+    if(m_cachedMat4.count(uniformName))
+    {
+        alreadyCached = true;
+    }
+
+    GLint loc = -1;
+    if(!alreadyCached)
+    {
+        loc = glGetUniformLocation(m_programHandler, uniformName.c_str());
+
+        // not caching
+        if(loc == -1) return;
+    }
+
+    auto& cachedPair = m_cachedMat4[uniformName];
+
+    if(!alreadyCached)
+    {
+        cachedPair.first = loc;
+    }
+
+    if(cachedPair.second != matrix)
+    {
+        cachedPair.second = matrix;
+        glUniformMatrix4fv(cachedPair.first, 1, false, glm::value_ptr(matrix));
+    }*/
 }
 
 void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y)
@@ -324,6 +355,34 @@ void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, cons
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform3f(vecLoc, vec.x, vec.y, vec.z);
+
+    /*bool alreadyCached = false;
+    if(m_cachedVec3.find(uniformName) != m_cachedVec3.end())
+    {
+        alreadyCached = true;
+    }
+
+    GLint loc = -1;
+    if(!alreadyCached)
+    {
+        loc = glGetUniformLocation(m_programHandler, uniformName.c_str());
+
+        // not caching
+        if(loc == -1) return;
+    }
+
+    auto& cachedPair = m_cachedVec3[uniformName];
+
+    if(!alreadyCached)
+    {
+        cachedPair.first = loc;
+    }
+
+    if(cachedPair.second != vec)
+    {
+        cachedPair.second = vec;
+        glUniform3f(cachedPair.first, vec.x, vec.y, vec.z);
+    }*/
 }
 
 void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec4& vec)
@@ -342,6 +401,23 @@ void Core::Graphics::GL46Shader::useInteger(const std::string& uniformName, cons
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, i);
+    /*bool alreadyCached = false;
+    if(m_cachedIntegers.find(uniformName) != m_cachedIntegers.end())
+    {
+        alreadyCached = true;
+    }
+
+    auto& cachedPair = m_cachedIntegers[uniformName];
+    if(!alreadyCached)
+    {
+        cachedPair.first = glGetUniformLocation(m_programHandler, uniformName.c_str());
+    }
+
+    if(cachedPair.second != i)
+    {
+        cachedPair.second = i;
+        glUniform1i(cachedPair.first, i);
+    }*/
 }
 
 /*

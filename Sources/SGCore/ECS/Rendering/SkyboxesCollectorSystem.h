@@ -9,10 +9,11 @@
 
 namespace Core::ECS
 {
-    /*class SkyboxRenderingSystem : public ISystem
+    class SkyboxesCollectorSystem : public ISystem
     {
-
-    };*/
+    public:
+        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) final;
+    };
 }
 
 #endif //SUNGEARENGINE_SKYBOXRENDERINGSYSTEM_H

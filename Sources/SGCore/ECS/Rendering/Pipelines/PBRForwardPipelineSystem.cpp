@@ -15,12 +15,13 @@
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Rendering/SkyboxesCollectorSystem.h"
 
 Core::ECS::PBRForwardPipelineSystem::PBRForwardPipelineSystem()
 {
     m_geometryPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_geometryPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(SG_GLSL4_PBR_SHADER_PATH)
+            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(Graphics::StandardShaderType::SG_PBR_SHADER))
     );
 
     m_geometryPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_DIFFUSE,
@@ -36,11 +37,19 @@ Core::ECS::PBRForwardPipelineSystem::PBRForwardPipelineSystem()
 
     m_shadowsPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_shadowsPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(SG_GLSL4_SHADOWS_GENERATOR_SHADER_PATH)
+            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(Graphics::StandardShaderType::SG_SHADOWS_GENERATOR_SHADER))
     );
 
     m_shadowsPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_DIFFUSE,
                                                     1, 0);
+
+    m_skyboxPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
+    m_skyboxPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
+            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(Graphics::StandardShaderType::SG_SKYBOX_SHADER))
+    );
+
+    m_skyboxPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_SKYBOX,
+                                                   1, 0);
 }
 
 void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& scene)
@@ -55,7 +64,56 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
     const auto& directionalLightsCachedEntities = Patterns::Singleton::getInstance<DirectionalLightsSystem>()->getCachedEntities();
     const auto& shadowsCastersCachedEntities = Patterns::Singleton::getInstance<ShadowsCasterSystem>()->getCachedEntities();
 
-    if(meshedCachedEntities.empty() && primitivesCachedEntities.empty()) return;
+    const auto& skyboxSystemCachedEntities = Patterns::Singleton::getInstance<SkyboxesCollectorSystem>()->getCachedEntities();
+
+    if(meshedCachedEntities.empty() && primitivesCachedEntities.empty() && skyboxSystemCachedEntities.empty()) return;
+
+    // first render skybox
+    m_skyboxPassMarkedShader->bind();
+
+    for (const auto& camerasLayer: m_cachedEntities)
+    {
+        for (const auto& cachedEntity: camerasLayer.second)
+        {
+            if (!cachedEntity.second) continue;
+
+            std::shared_ptr<CameraComponent> cameraComponent = cachedEntity.second->getComponent<CameraComponent>();
+            std::shared_ptr<TransformComponent> cameraTransformComponent = cachedEntity.second->getComponent<TransformComponent>();
+
+            if (!cameraComponent || !cameraTransformComponent) continue;
+
+            Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
+            m_skyboxPassMarkedShader->m_shader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
+
+            for (const auto& skyboxesLayer: skyboxSystemCachedEntities)
+            {
+                for (const auto& skyboxEntity : skyboxesLayer.second)
+                {
+                    if (!skyboxEntity.second) continue;
+
+                    std::shared_ptr<TransformComponent> transformComponent = skyboxEntity.second->getComponent<TransformComponent>();
+
+                    if (!transformComponent) continue;
+
+                    auto meshComponents =
+                            skyboxEntity.second->getComponents<MeshComponent>();
+
+                    for (const auto& meshComponent: meshComponents)
+                    {
+                        meshComponent->m_mesh->m_material->bind(m_skyboxPassMarkedShader);
+                        updateUniforms(m_skyboxPassMarkedShader->m_shader,
+                                       meshComponent->m_mesh->m_material,
+                                       transformComponent);
+
+                        Core::Main::CoreMain::getRenderer().renderMesh(
+                                transformComponent,
+                                meshComponent
+                        );
+                    }
+                }
+            }
+        }
+    }
 
     // binding geom pass shader
     m_geometryPassMarkedShader->bind();
@@ -126,39 +184,30 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
 
             if (!shadowsCasterTransform || !shadowsCasterComponent) continue;
 
-            shadowsCasterComponent->m_frameBuffer->bind()->clear();
+            std::string currentShadowCasterStr = "shadowsCasters[";
+            currentShadowCasterStr += std::to_string(shadowsCastersCount);
+            currentShadowCasterStr += "]";
 
-            std::uint8_t shadowMapsBlockOffset = m_geometryPassMarkedShader->
-                    getBlocks()[SGTextureType::SGTP_SHADOW_MAP].m_texturesUnitOffset;
-
-            std::uint8_t finalTextureBlock = shadowMapsBlockOffset + shadowsCastersCount;
-
-            shadowsCasterComponent->m_frameBuffer->bindAttachment(
-                    SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT,
-                    finalTextureBlock
-            );
-
-            std::string totalShadowsCastersStr = std::to_string(shadowsCastersCount);
-
+            // updating shadows casters uniforms of geometry shader
             m_geometryPassMarkedShader->m_shader->bind();
 
-            m_geometryPassMarkedShader->m_shader->useTexture(
-                    "shadowsCastersShadowMaps[" + totalShadowsCastersStr + "]",
-                    finalTextureBlock
-            );
-
-            // todo: maybe make uniform buffer for shadows casters
             m_geometryPassMarkedShader->m_shader->useMatrix(
-                    "shadowsCasters[" + totalShadowsCastersStr + "].shadowsCasterSpace",
+                    currentShadowCasterStr + ".shadowsCasterSpace",
                     shadowsCasterComponent->m_spaceMatrix
             );
 
             m_geometryPassMarkedShader->m_shader->useVectorf(
-                    "shadowsCasters[" + totalShadowsCastersStr + "].position",
+                    currentShadowCasterStr + ".position",
                     shadowsCasterTransform->m_position
             );
 
-            m_shadowsPassMarkedShader->m_shader->bind();
+            // binding frame buffer of shadow caster and rendering in
+            shadowsCasterComponent->m_frameBuffer->bind()->clear();
+
+            m_shadowsPassMarkedShader->bind();
+
+            Core::Main::CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
+            m_shadowsPassMarkedShader->m_shader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
             for (const auto& meshesLayer: meshedCachedEntities)
             {
@@ -194,13 +243,12 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
         }
     }
 
-    // m_geometryPassMarkedShader->bind();
-    // todo: make name as define
-    m_geometryPassMarkedShader->m_shader->useInteger("SHADOWS_CASTERS_COUNT", shadowsCastersCount);
+    m_geometryPassMarkedShader->m_shader->bind();
+    m_geometryPassMarkedShader->m_shader->useInteger(sgTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP) + "Samplers_COUNT", shadowsCastersCount);
 
     // ---------------------------------------------------
 
-    // ----- render meshes and primitives ------
+    // ----- render meshes and primitives (geometry + light pass pbr) ------
 
     for (const auto& camerasLayer: m_cachedEntities)
     {
@@ -231,6 +279,29 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
 
                     for (const auto& meshComponent: meshComponents)
                     {
+                        const auto& shadowsMapsTexturesBlock = m_geometryPassMarkedShader->getBlocks()[SGTextureType::SGTP_SHADOW_MAP];
+
+                        std::uint8_t currentShadowsCaster = 0;
+                        for(const auto& shadowsCastersLayer : shadowsCastersCachedEntities)
+                        {
+                            for(const auto& shadowsCasterEntity: shadowsCastersLayer.second)
+                            {
+                                if(!shadowsCasterEntity.second) continue;
+
+                                // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
+                                std::shared_ptr<ShadowsCasterComponent> shadowsCasterComponent = shadowsCasterEntity.second->getComponent<ShadowsCasterComponent>();
+
+                                if(!shadowsCasterComponent) continue;
+
+                                shadowsCasterComponent->m_frameBuffer->bindAttachment(
+                                            SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT,
+                                            shadowsMapsTexturesBlock.m_texturesUnitOffset + currentShadowsCaster
+                                        );
+
+                                currentShadowsCaster++;
+                            }
+                        }
+
                         meshComponent->m_mesh->m_material->bind(m_geometryPassMarkedShader);
                         updateUniforms(m_geometryPassMarkedShader->m_shader,
                                        meshComponent->m_mesh->m_material,
@@ -267,12 +338,12 @@ void Core::ECS::PBRForwardPipelineSystem::updateUniforms(const std::shared_ptr<G
                                                          const std::shared_ptr<Memory::Assets::IMaterial>& material,
                                                          const std::shared_ptr<TransformComponent>& transformComponent) const noexcept
 {
-    shader->bind();
+    // shader->bind();
 
     shader->useMatrix("objectModelMatrix",
                       transformComponent->m_modelMatrix
     );
-    shader->useVectorf("objectPosition",
+    /*shader->useVectorf("objectPosition",
                        transformComponent->m_position
     );
     shader->useVectorf("objectRotation",
@@ -280,7 +351,7 @@ void Core::ECS::PBRForwardPipelineSystem::updateUniforms(const std::shared_ptr<G
     );
     shader->useVectorf("objectScale",
                        transformComponent->m_scale
-    );
+    );*/
 
     // TODO: MOVE MATERIAL UPDATE TO OTHER SYSTEM
     shader->useVectorf("materialDiffuseCol",

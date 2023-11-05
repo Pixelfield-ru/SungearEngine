@@ -10,7 +10,7 @@
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/RenderingComponentsSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
-#include "SGCore/ECS/Rendering/SkyboxRenderingSystem.h"
+#include "SGCore/ECS/Rendering/SkyboxesCollectorSystem.h"
 #include "SGCore/ECS/Rendering/Primitives/PrimitivesUpdaterSystem.h"
 #include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 #include "GLFW/glfw3.h"
@@ -29,16 +29,18 @@ void Core::ECS::ECSWorld::init() noexcept
     primitivesUpdaterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto directionalLightsSystem = Patterns::Singleton::getInstance<DirectionalLightsSystem>();
-    directionalLightsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    // directionalLightsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto shadowsCasterSystem = Patterns::Singleton::getInstance<ShadowsCasterSystem>();
-    shadowsCasterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    // shadowsCasterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto camera3DMovementSystem = Patterns::Singleton::getInstance<Camera3DMovementSystem>();
     camera3DMovementSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto cameraRenderingSystem = Patterns::Singleton::getInstance<PBRForwardPipelineSystem>();
-    cameraRenderingSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+    auto pipelineSystem = Patterns::Singleton::getInstance<PBRForwardPipelineSystem>();
+    pipelineSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
+
+    auto skyboxesCollectorSystem = Patterns::Singleton::getInstance<SkyboxesCollectorSystem>();
 
     // -------------------------------
     m_systems.emplace(transformationsSystem);
@@ -49,7 +51,8 @@ void Core::ECS::ECSWorld::init() noexcept
     m_systems.emplace(directionalLightsSystem);
     m_systems.emplace(shadowsCasterSystem);
     m_systems.emplace(camera3DMovementSystem);
-    m_systems.emplace(cameraRenderingSystem);
+    m_systems.emplace(pipelineSystem);
+    m_systems.emplace(skyboxesCollectorSystem);
 
     //DirectionalLightsSystem f;
 

@@ -124,10 +124,10 @@ enum SGTextureType
     SGTP_SHININESS,
     SGTP_SPECULAR,
     SGTP_TRANSMISSION,
-    SGTP_SHADOW_MAP,
     SGTP_SKYBOX,
 
     // frame buffers attachments textures types ||| THE TYPES OF ATTACHMENTS HERE SHOULD GO IN A ROW!!!!!
+    SGTP_SHADOW_MAP,
     SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT,
     SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT,
     SGTP_FRAMEBUFFER_COLOR_ATTACHMENT,
@@ -158,9 +158,9 @@ static std::string sgTextureTypeToString(const SGTextureType& sgMaterialTextureT
         case SGTP_SHININESS: return "sgmat_shininess";
         case SGTP_SPECULAR: return "sgmat_specular";
         case SGTP_TRANSMISSION: return "sgmat_transmission";
-        case SGTP_SHADOW_MAP: return "sgmat_shadowMap";
         case SGTP_SKYBOX: return "sgmat_skybox";
 
+        case SGTP_SHADOW_MAP: return "sgmat_shadowMap";
         case SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT: return "sgmat_frameBufferDepthAttachment";
         case SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT: return "sgmat_frameBufferDepthStencilAttachment";
         case SGTP_FRAMEBUFFER_COLOR_ATTACHMENT: return "sgmat_frameBufferColorAttachment";

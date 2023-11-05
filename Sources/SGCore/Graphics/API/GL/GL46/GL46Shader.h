@@ -49,6 +49,10 @@ namespace Core::Graphics
         // vertex, fragment, geometry, compute, tesselation control and tesselation evaluation shaders
         std::vector<GLuint> m_shaderPartsHandlers;
 
+        // first - name
+        // second - pair of location and value vec
+        std::unordered_map<std::string, std::pair<GLint, glm::mat4>> m_cachedMat4;
+
         GLuint createShaderPart(const GLenum&, const std::string&) noexcept;
     };
 }
