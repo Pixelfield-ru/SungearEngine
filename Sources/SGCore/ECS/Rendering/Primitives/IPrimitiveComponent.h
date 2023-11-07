@@ -24,6 +24,8 @@ namespace Core::ECS
 
         glm::vec3 m_offset { 0.0, 0.0, 0.0 };
 
+        glm::mat4 m_modelMatrix { 1.0 };
+
         virtual void setVertexPosition(const size_t& vertexIdx, const float& x, const float& y, const float& z) = 0;
 
         float m_linesWidth = 3.0f;

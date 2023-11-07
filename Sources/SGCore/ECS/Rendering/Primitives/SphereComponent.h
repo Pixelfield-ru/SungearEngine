@@ -1,11 +1,11 @@
 #ifndef SUNGEARENGINE_SPHERECOMPONENT_H
 #define SUNGEARENGINE_SPHERECOMPONENT_H
 
-#include "IPrimitiveComponent.h"
+#include "ComplexPrimitiveComponent.h"
 
 namespace Core::ECS
 {
-    class SphereComponent : public IPrimitiveComponent
+    class SphereComponent : public ComplexPrimitiveComponent
     {
         friend class PrimitivesUpdaterSystem;
 

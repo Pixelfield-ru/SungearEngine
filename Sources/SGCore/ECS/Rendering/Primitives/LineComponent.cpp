@@ -48,11 +48,7 @@ void Core::ECS::LineComponent::setVertexPosition
 {
     if(vertexIdx > 1) return;
 
-    float curX;
-    float curY;
-    float curZ;
-
-    m_mesh->getVertexPosition(vertexIdx, curX, curY, curZ);
+    m_mesh->setVertexPosition(vertexIdx, x, y, z);
 
     // TODO: MOVE IN RENDER PIPELINE
     /*if(x != curX || y != curY || z != curZ)

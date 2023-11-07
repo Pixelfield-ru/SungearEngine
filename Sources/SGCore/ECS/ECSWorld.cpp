@@ -14,6 +14,8 @@
 #include "SGCore/ECS/Rendering/Primitives/PrimitivesUpdaterSystem.h"
 #include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
 #include "GLFW/glfw3.h"
+#include "SGCore/ECS/Rendering/Primitives/ComplexPrimitivesCollectorSystem.h"
+#include "SGCore/ECS/Rendering/Primitives/LinesCollectorSystem.h"
 
 void Core::ECS::ECSWorld::init() noexcept
 {
@@ -42,6 +44,9 @@ void Core::ECS::ECSWorld::init() noexcept
 
     auto skyboxesCollectorSystem = Patterns::Singleton::getInstance<SkyboxesCollectorSystem>();
 
+    auto linesCollectorSystem = Patterns::Singleton::getInstance<LinesCollectorSystem>();
+    auto complexPrimitivesCollectorSystem = Patterns::Singleton::getInstance<ComplexPrimitivesCollectorSystem>();
+
     // -------------------------------
     m_systems.emplace(transformationsSystem);
     m_systems.emplace(meshedEntitiesCollectorSystem);
@@ -53,6 +58,9 @@ void Core::ECS::ECSWorld::init() noexcept
     m_systems.emplace(camera3DMovementSystem);
     m_systems.emplace(pipelineSystem);
     m_systems.emplace(skyboxesCollectorSystem);
+
+    m_systems.emplace(linesCollectorSystem);
+    m_systems.emplace(complexPrimitivesCollectorSystem);
 
     //DirectionalLightsSystem f;
 

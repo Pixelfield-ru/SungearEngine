@@ -17,6 +17,10 @@ namespace Core::ECS
         std::shared_ptr<Graphics::MarkedShader> m_geometryPassMarkedShader;
         std::shared_ptr<Graphics::MarkedShader> m_skyboxPassMarkedShader;
 
+        // primitives pass
+        std::shared_ptr<Graphics::MarkedShader> m_linesPassMarkedShader;
+        std::shared_ptr<Graphics::MarkedShader> m_complexPrimitivesPassMarkedShader;
+
         // IPipelineSystem();
     };
 }

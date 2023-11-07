@@ -23,6 +23,34 @@ void Core::ECS::PrimitivesUpdaterSystem::fixedUpdate(const std::shared_ptr<Scene
 
             for(const auto& primitiveComponent: primitiveComponents)
             {
+                // if follow all
+                if (primitiveComponent->m_followEntityTRS.x &&
+                    primitiveComponent->m_followEntityTRS.y &&
+                    primitiveComponent->m_followEntityTRS.z)
+                {
+                    primitiveComponent->m_modelMatrix = transformComponent->m_modelMatrix;
+                }
+                else
+                {
+                    primitiveComponent->m_modelMatrix  = glm::identity<glm::mat4>();
+
+                    // if follow translation
+                    if(primitiveComponent->m_followEntityTRS.x)
+                    {
+                        primitiveComponent->m_modelMatrix *= transformComponent->m_translationMatrix;
+                    }
+                    // if follow rotation
+                    if(primitiveComponent->m_followEntityTRS.y)
+                    {
+                        primitiveComponent->m_modelMatrix *= transformComponent->m_rotationMatrix;
+                    }
+                    // if follow scale
+                    if(primitiveComponent->m_followEntityTRS.z)
+                    {
+                        primitiveComponent->m_modelMatrix *= transformComponent->m_scaleMatrix;
+                    }
+                }
+
                 // TODO: MOVE IN RENDER PIPELINE
                 /*const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
 
@@ -240,9 +268,4 @@ void Core::ECS::PrimitivesUpdaterSystem::fixedUpdate(const std::shared_ptr<Scene
             }
         }
     }
-}
-
-void Core::ECS::PrimitivesUpdaterSystem::cacheEntity(const std::shared_ptr<Entity>& entity)
-{
-    cacheEntityComponents<IPrimitiveComponent, TransformComponent>(entity);
 }

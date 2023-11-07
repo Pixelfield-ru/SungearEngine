@@ -1,11 +1,11 @@
 #ifndef SUNGEARENGINE_BOXCOMPONENT_H
 #define SUNGEARENGINE_BOXCOMPONENT_H
 
-#include "IPrimitiveComponent.h"
+#include "ComplexPrimitiveComponent.h"
 
 namespace Core::ECS
 {
-    class BoxComponent : public IPrimitiveComponent
+    class BoxComponent : public ComplexPrimitiveComponent
     {
         friend class PrimitivesUpdaterSystem;
 

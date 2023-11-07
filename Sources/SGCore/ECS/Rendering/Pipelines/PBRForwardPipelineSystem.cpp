@@ -16,12 +16,17 @@
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
 #include "SGCore/ECS/Rendering/SkyboxesCollectorSystem.h"
+#include "SGCore/ECS/Rendering/Primitives/LinesCollectorSystem.h"
+#include "SGCore/ECS/Rendering/Primitives/ComplexPrimitivesCollectorSystem.h"
+#include "SGCore/ECS/Rendering/Primitives/LineComponent.h"
+#include "SGCore/ECS/Rendering/Primitives/ComplexPrimitiveComponent.h"
 
 Core::ECS::PBRForwardPipelineSystem::PBRForwardPipelineSystem()
 {
     m_geometryPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_geometryPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(Graphics::StandardShaderType::SG_PBR_SHADER))
+            Core::Main::CoreMain::getRenderer().createShader(
+                    Graphics::getShaderPath(Graphics::StandardShaderType::SG_PBR_SHADER))
     );
 
     m_geometryPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_DIFFUSE,
@@ -37,19 +42,34 @@ Core::ECS::PBRForwardPipelineSystem::PBRForwardPipelineSystem()
 
     m_shadowsPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_shadowsPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(Graphics::StandardShaderType::SG_SHADOWS_GENERATOR_SHADER))
+            Core::Main::CoreMain::getRenderer().createShader(
+                    Graphics::getShaderPath(Graphics::StandardShaderType::SG_SHADOWS_GENERATOR_SHADER))
     );
 
     m_shadowsPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_DIFFUSE,
-                                                    1, 0);
+                                                   1, 0);
 
     m_skyboxPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_skyboxPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(Graphics::StandardShaderType::SG_SKYBOX_SHADER))
+            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
+                    Graphics::StandardShaderType::SG_SKYBOX_SHADER)
+            )
     );
 
     m_skyboxPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_SKYBOX,
-                                                   1, 0);
+                                                  1, 0);
+
+    m_linesPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
+    m_linesPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
+            Core::Main::CoreMain::getRenderer().createShader(
+                    Graphics::getShaderPath(Graphics::StandardShaderType::SG_LINES_SHADER))
+    );
+
+    m_complexPrimitivesPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
+    m_complexPrimitivesPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
+            Core::Main::CoreMain::getRenderer().createShader(
+                    Graphics::getShaderPath(Graphics::StandardShaderType::SG_COMPLEX_PRIMITIVES_SHADER))
+    );
 }
 
 void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& scene)
@@ -64,9 +84,13 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
     const auto& directionalLightsCachedEntities = Patterns::Singleton::getInstance<DirectionalLightsSystem>()->getCachedEntities();
     const auto& shadowsCastersCachedEntities = Patterns::Singleton::getInstance<ShadowsCasterSystem>()->getCachedEntities();
 
-    const auto& skyboxSystemCachedEntities = Patterns::Singleton::getInstance<SkyboxesCollectorSystem>()->getCachedEntities();
+    const auto& skyboxesCachedEntities = Patterns::Singleton::getInstance<SkyboxesCollectorSystem>()->getCachedEntities();
 
-    if(meshedCachedEntities.empty() && primitivesCachedEntities.empty() && skyboxSystemCachedEntities.empty()) return;
+    const auto& linesCachedEntities = Patterns::Singleton::getInstance<LinesCollectorSystem>()->getCachedEntities();
+    const auto& complexPrimitivesCachedEntities =
+            Patterns::Singleton::getInstance<ComplexPrimitivesCollectorSystem>()->getCachedEntities();
+
+    if(meshedCachedEntities.empty() && primitivesCachedEntities.empty() && skyboxesCachedEntities.empty()) return;
 
     // first render skybox
     m_skyboxPassMarkedShader->bind();
@@ -85,7 +109,7 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
             Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
             m_skyboxPassMarkedShader->m_shader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
-            for (const auto& skyboxesLayer: skyboxSystemCachedEntities)
+            for (const auto& skyboxesLayer: skyboxesCachedEntities)
             {
                 for (const auto& skyboxEntity : skyboxesLayer.second)
                 {
@@ -244,7 +268,10 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
     }
 
     m_geometryPassMarkedShader->m_shader->bind();
-    m_geometryPassMarkedShader->m_shader->useInteger(sgTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP) + "Samplers_COUNT", shadowsCastersCount);
+    m_geometryPassMarkedShader->m_shader->useInteger(
+            sgTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP) + "Samplers_COUNT",
+            shadowsCastersCount
+    );
 
     // ---------------------------------------------------
 
@@ -256,12 +283,14 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
         {
             if (!cachedEntity.second) continue;
 
-            std::shared_ptr<CameraComponent> cameraComponent = cachedEntity.second->getComponent<CameraComponent>();
             std::shared_ptr<TransformComponent> cameraTransformComponent = cachedEntity.second->getComponent<TransformComponent>();
-
-            if (!cameraComponent || !cameraTransformComponent) continue;
+            if(!cameraTransformComponent) continue;
+            std::shared_ptr<CameraComponent> cameraComponent = cachedEntity.second->getComponent<CameraComponent>();
+            if (!cameraComponent) continue;
 
             Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
+
+            m_geometryPassMarkedShader->m_shader->bind();
             m_geometryPassMarkedShader->m_shader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
             for (const auto& meshesLayer: meshedCachedEntities)
@@ -314,6 +343,45 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
                     }
                 }
             }
+
+            // complex primitives pass ----------------
+            m_complexPrimitivesPassMarkedShader->m_shader->bind();
+            m_complexPrimitivesPassMarkedShader->m_shader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
+
+            for(const auto& complexPrimitivesLayer : complexPrimitivesCachedEntities)
+            {
+                for(const auto& cachedPrimitive : complexPrimitivesLayer.second)
+                {
+                    if(!cachedPrimitive.second) continue;
+
+                    std::shared_ptr<TransformComponent> complexPrimitiveTransform = cachedPrimitive.second->getComponent<TransformComponent>();
+                    if(!complexPrimitiveTransform) continue;
+                    std::list<std::shared_ptr<ComplexPrimitiveComponent>> complexPrimitiveComponents =
+                            cachedPrimitive.second->getComponents<ComplexPrimitiveComponent>();
+
+                    for(const auto& complexPrimitiveComponent : complexPrimitiveComponents)
+                    {
+                        m_complexPrimitivesPassMarkedShader->m_shader->useMatrix(
+                                "u_primitiveModelMatrix", complexPrimitiveTransform->m_modelMatrix
+                        );
+
+                        m_complexPrimitivesPassMarkedShader->m_shader->useVectorf(
+                                "u_offset", complexPrimitiveComponent->m_offset
+                        );
+
+                        m_complexPrimitivesPassMarkedShader->m_shader->useVectorf(
+                                "u_color", complexPrimitiveComponent->m_color
+                        );
+
+                        Core::Main::CoreMain::getRenderer().renderPrimitive(
+                                complexPrimitiveTransform,
+                                complexPrimitiveComponent
+                        );
+                    }
+                }
+            }
+
+            // ------------------------------
         }
     }
 
