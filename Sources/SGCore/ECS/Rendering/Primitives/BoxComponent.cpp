@@ -18,9 +18,9 @@ Core::ECS::BoxComponent::BoxComponent()
 
 void Core::ECS::BoxComponent::build()
 {
-    m_mesh->m_positions.clear();
-
     // building a cube ------------------------------
+
+    m_mesh->m_positions.clear();
 
     m_mesh->m_positions.push_back(-m_size.x / 2.0f);
     m_mesh->m_positions.push_back(-m_size.y / 2.0f);
@@ -57,6 +57,8 @@ void Core::ECS::BoxComponent::build()
     m_mesh->m_positions.push_back(m_size.z / 2.0f);
 
     // -------------------
+
+    m_mesh->m_indices.clear();
 
     m_mesh->m_indices.push_back(0);
     m_mesh->m_indices.push_back(1);

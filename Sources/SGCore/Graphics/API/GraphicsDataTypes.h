@@ -38,8 +38,28 @@ enum SGPolygonsOrder
 
 enum SGFrameBufferAttachmentType
 {
-    SGG_DEPTH_ATTACHMENT,
-    SGG_DEPTH_STENCIL_ATTACHMENT,
+    SGG_DEPTH_ATTACHMENT0,
+    SGG_DEPTH_ATTACHMENT1,
+    SGG_DEPTH_ATTACHMENT2,
+    SGG_DEPTH_ATTACHMENT3,
+    SGG_DEPTH_ATTACHMENT4,
+    SGG_DEPTH_ATTACHMENT5,
+    SGG_DEPTH_ATTACHMENT6,
+    SGG_DEPTH_ATTACHMENT7,
+    SGG_DEPTH_ATTACHMENT8,
+    SGG_DEPTH_ATTACHMENT9,
+
+
+    SGG_DEPTH_STENCIL_ATTACHMENT0,
+    SGG_DEPTH_STENCIL_ATTACHMENT1,
+    SGG_DEPTH_STENCIL_ATTACHMENT2,
+    SGG_DEPTH_STENCIL_ATTACHMENT3,
+    SGG_DEPTH_STENCIL_ATTACHMENT4,
+    SGG_DEPTH_STENCIL_ATTACHMENT5,
+    SGG_DEPTH_STENCIL_ATTACHMENT6,
+    SGG_DEPTH_STENCIL_ATTACHMENT7,
+    SGG_DEPTH_STENCIL_ATTACHMENT8,
+    SGG_DEPTH_STENCIL_ATTACHMENT9,
 
     SGG_COLOR_ATTACHMENT0,
     SGG_COLOR_ATTACHMENT1,
@@ -74,7 +94,16 @@ enum SGFrameBufferAttachmentType
     SGG_COLOR_ATTACHMENT30,
     SGG_COLOR_ATTACHMENT31,
 
-    SGG_RENDER_ATTACHMENT
+    SGG_RENDER_ATTACHMENT0,
+    SGG_RENDER_ATTACHMENT1,
+    SGG_RENDER_ATTACHMENT2,
+    SGG_RENDER_ATTACHMENT3,
+    SGG_RENDER_ATTACHMENT4,
+    SGG_RENDER_ATTACHMENT5,
+    SGG_RENDER_ATTACHMENT6,
+    SGG_RENDER_ATTACHMENT7,
+    SGG_RENDER_ATTACHMENT8,
+    SGG_RENDER_ATTACHMENT9
 };
 
 enum SGGDataType
@@ -126,45 +155,40 @@ enum SGTextureType
     SGTP_TRANSMISSION,
     SGTP_SKYBOX,
 
-    // frame buffers attachments textures types ||| THE TYPES OF ATTACHMENTS HERE SHOULD GO IN A ROW!!!!!
-    SGTP_SHADOW_MAP,
-    SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT,
-    SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT,
-    SGTP_FRAMEBUFFER_COLOR_ATTACHMENT,
-    SGTP_FRAMEBUFFER_RENDER_ATTACHMENT
+    SGTP_SHADOW_MAP
 };
 
-static std::string sgTextureTypeToString(const SGTextureType& sgMaterialTextureType)
+static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterialTextureType)
 {
     switch(sgMaterialTextureType)
     {
-        case SGTP_EMISSIVE: return "sgmat_emissive";
-        case SGTP_AMBIENT_OCCLUSION: return "sgmat_ambientOcclusion";
-        case SGTP_AMBIENT: return "sgmat_ambient";
-        case SGTP_DIFFUSE_ROUGHNESS: return "sgmat_diffuseRoughness";
-        case SGTP_DIFFUSE: return "sgmat_diffuse";
-        case SGTP_DISPLACEMENT: return "sgmat_displacement";
-        case SGTP_HEIGHT: return "sgmat_height";
-        case SGTP_NORMALS: return "sgmat_normals";
-        case SGTP_BASE_COLOR: return "sgmat_baseColor";
-        case SGTP_CLEARCOAT: return "sgmat_clearcoat";
-        case SGTP_EMISSION_COLOR: return "sgmat_emissionColor";
-        case SGTP_LIGHTMAP: return "sgmat_lightmap";
-        case SGTP_METALNESS: return "sgmat_metalness";
-        case SGTP_NORMAL_CAMERA: return "sgmat_normalCamera";
-        case SGTP_OPACITY: return "sgmat_opacity";
-        case SGTP_REFLECTION: return "sgmat_relfection";
-        case SGTP_SHEEN: return "sgmat_sheen";
-        case SGTP_SHININESS: return "sgmat_shininess";
-        case SGTP_SPECULAR: return "sgmat_specular";
-        case SGTP_TRANSMISSION: return "sgmat_transmission";
-        case SGTP_SKYBOX: return "sgmat_skybox";
+        case SGTP_EMISSIVE: return "sgmat_emissiveSamplers";
+        case SGTP_AMBIENT_OCCLUSION: return "sgmat_ambientOcclusionSamplers";
+        case SGTP_AMBIENT: return "sgmat_ambientSamplers";
+        case SGTP_DIFFUSE_ROUGHNESS: return "sgmat_diffuseRoughnessSamplers";
+        case SGTP_DIFFUSE: return "sgmat_diffuseSamplers";
+        case SGTP_DISPLACEMENT: return "sgmat_displacementSamplers";
+        case SGTP_HEIGHT: return "sgmat_heightSamplers";
+        case SGTP_NORMALS: return "sgmat_normalsSamplers";
+        case SGTP_BASE_COLOR: return "sgmat_baseColorSamplers";
+        case SGTP_CLEARCOAT: return "sgmat_clearcoatSamplers";
+        case SGTP_EMISSION_COLOR: return "sgmat_emissionColorSamplers";
+        case SGTP_LIGHTMAP: return "sgmat_lightmapSamplers";
+        case SGTP_METALNESS: return "sgmat_metalnessSamplers";
+        case SGTP_NORMAL_CAMERA: return "sgmat_normalCameraSamplers";
+        case SGTP_OPACITY: return "sgmat_opacitySamplers";
+        case SGTP_REFLECTION: return "sgmat_relfectionSamplers";
+        case SGTP_SHEEN: return "sgmat_sheenSamplers";
+        case SGTP_SHININESS: return "sgmat_shininessSamplers";
+        case SGTP_SPECULAR: return "sgmat_specularSamplers";
+        case SGTP_TRANSMISSION: return "sgmat_transmissionSamplers";
+        case SGTP_SKYBOX: return "sgmat_skyboxSamplers";
 
-        case SGTP_SHADOW_MAP: return "sgmat_shadowMap";
-        case SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT: return "sgmat_frameBufferDepthAttachment";
+        case SGTP_SHADOW_MAP: return "sgmat_shadowMapSamplers";
+        /*case SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT: return "sgmat_frameBufferDepthAttachmentSamplers";
         case SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT: return "sgmat_frameBufferDepthStencilAttachment";
-        case SGTP_FRAMEBUFFER_COLOR_ATTACHMENT: return "sgmat_frameBufferColorAttachment";
-        case SGTP_FRAMEBUFFER_RENDER_ATTACHMENT: return "sgmat_frameBufferRenderAttachment";
+        case SGTP_FRAMEBUFFER_COLOR_ATTACHMENT: return "sgmat_frameBufferColorAttachmentSamplers";
+        case SGTP_FRAMEBUFFER_RENDER_ATTACHMENT: return "sgmat_frameBufferRenderAttachmentSamplers";*/
     }
 
     return "";

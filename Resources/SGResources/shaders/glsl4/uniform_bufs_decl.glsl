@@ -1,3 +1,8 @@
+#ifndef UNIFORM_BUFS_DECL_GLSL
+#define UNIFORM_BUFS_DECL_GLSL
+
+#include "defines.glsl"
+
 /*layout(std140) uniform ObjectTransformationData
 {
     mat4 objectModelMatrix;
@@ -32,6 +37,19 @@ uniform float materialShininess;
 uniform float materialMetallicFactor;
 uniform float materialRoughnessFactor;
 
+struct FrameBuffer
+{
+    int depthAttachmentsCount;
+    int depthStencilAttachmentsCount;
+    int colorAttachmentsCount;
+    int renderAttachmentsCount;
+
+    sampler2D depthAttachments[1];
+    sampler2D depthStencilAttachments[1];
+    sampler2D colorAttachments[32];
+    sampler2D renderAttachments[1];
+};
+
 layout(std140) uniform ViewMatrices
 {
     mat4 projectionMatrix;
@@ -43,3 +61,5 @@ layout(std140) uniform ProgramData
 {
     vec2 windowSize;
 };
+
+#endif // UNIFORM_BUFS_DECL_GLSL

@@ -168,16 +168,12 @@ void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<EC
     m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
 }
 
-void Core::Graphics::GL4Renderer::renderMesh(
+void Core::Graphics::GL4Renderer::renderMeshComponent(
         const std::shared_ptr<ECS::TransformComponent>& transformComponent,
         const std::shared_ptr<ECS::MeshComponent>& meshComponent
         )
 {
     if(!meshComponent->m_mesh) return;
-
-    // const auto& materialShader = meshComponent->m_mesh->m_material->getCurrentShader();
-
-    // if(!materialShader) return;
 
     if(meshComponent->m_enableFacesCulling)
     {
@@ -191,48 +187,20 @@ void Core::Graphics::GL4Renderer::renderMesh(
     {
         glDisable(GL_CULL_FACE);
     }
-
-    // meshComponent->m_mesh->m_material->bind();
     meshComponent->m_mesh->getVertexArray()->bind();
-
-    // materialShader->useUniformBuffer(m_viewMatricesBuffer);
-    // materialShader->useUniformBuffer(m_programDataBuffer);
 
     glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(meshComponent->m_mesh->m_drawMode), meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void Core::Graphics::GL4Renderer::renderRenderPass(RenderPass& renderPass,
-                                                   const std::shared_ptr<ImportedScene::IMesh>& mesh)
+void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ImportedScene::IMesh>& mesh)
 {
-    /*if(!mesh) return;
-
-    const auto& materialShader = mesh->m_material->getCurrentShader();
-
-    if(!materialShader) return;
-
-    mesh->m_material->bind();
-    std::uint8_t frameBufferIndex = 0;
-    for(const auto& ppLayer : renderPass.m_postProcessLayers)
-    {
-        const auto& frameBuffer = ppLayer.second;
-
-        frameBuffer->bindAttachments(mesh->m_material, frameBufferIndex);
-        frameBufferIndex++;
-    }
-
-    renderPass.m_defaultLayerFrameBuffer->bindAttachments(mesh->m_material, frameBufferIndex);
-    // frameBuffer->bindAttachments(mesh->m_material);
     mesh->getVertexArray()->bind();
 
-    materialShader->useUniformBuffer(m_viewMatricesBuffer);
-    materialShader->useUniformBuffer(m_programDataBuffer);
-
-    glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(mesh->m_drawMode),
-                   mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);*/
+    glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(mesh->m_drawMode), mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void Core::Graphics::GL4Renderer::renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                                  const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent)
+void Core::Graphics::GL4Renderer::renderPrimitiveComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                                           const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent)
 {
     // const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
 

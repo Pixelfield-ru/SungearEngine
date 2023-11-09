@@ -80,19 +80,19 @@ namespace Core::Graphics
           * @param transformComponent - The mesh transformation component to be rendered.
           * @param meshComponent - The mesh component to be rendered.
           */
-        virtual void renderMesh(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
+        // TODO:: remove renderMeshComponent
+        virtual void renderMeshComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                         const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
+
+        virtual void renderMesh(const std::shared_ptr<ImportedScene::IMesh>& mesh) { }
 
         /**
          * Renders a primitive component (i.e. sphere, line, cube, etc.).
          * @param transformComponent - Primitive transformation component.
          * @param primitiveComponent - The component of the primitive to be rendered.
          */
-        virtual void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                     const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) { }
-
-        virtual void renderRenderPass(RenderPass& renderPass,
-                                      const std::shared_ptr<ImportedScene::IMesh>& mesh) { }
+        virtual void renderPrimitiveComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                              const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) { }
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.

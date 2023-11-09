@@ -1,3 +1,6 @@
+#ifndef LIGHT_STRUCTS_DECL_GLSL
+#define LIGHT_STRUCTS_DECL_GLSL
+
 struct ShadowsCaster
 {
     mat4 shadowsCasterSpace;
@@ -10,3 +13,5 @@ struct DirectionalLight
     vec4 color;
     float intensity;
 };
+
+#endif // LIGHT_STRUCTS_DECL_GLSL

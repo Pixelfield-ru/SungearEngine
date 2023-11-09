@@ -1,3 +1,6 @@
+#ifndef RAY_INTERSECTIONS_GLSL
+#define RAY_INTERSECTIONS_GLSL
+
 vec2 raySphereIntersection(const in vec3 ro, const in vec3 rd, const in float sr)
 {
     float b = dot(ro, rd);
@@ -7,3 +10,5 @@ vec2 raySphereIntersection(const in vec3 ro, const in vec3 rd, const in float sr
     h = sqrt(h);
     return vec2(-b - h, -b + h);
 }
+
+#endif // RAY_INTERSECTIONS_GLSL

@@ -29,16 +29,36 @@ Core::ECS::PBRForwardPipelineSystem::PBRForwardPipelineSystem()
                     Graphics::getShaderPath(Graphics::StandardShaderType::SG_PBR_SHADER))
     );
 
-    m_geometryPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_DIFFUSE,
-                                                    1, 0);
-    m_geometryPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
-                                                    1, 1);
-    m_geometryPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_NORMALS,
-                                                    1, 2);
-    m_geometryPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_BASE_COLOR,
-                                                    1, 3);
-    m_geometryPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_SHADOW_MAP,
-                                                    5, 4);
+    m_geometryPassMarkedShader->addTexturesBlockDeclaration(
+            SGTextureType::SGTP_DIFFUSE,
+            sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
+            1
+    );
+    m_geometryPassMarkedShader->addTexturesBlockDeclaration(
+            SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
+            sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE_ROUGHNESS),
+            1
+    );
+    m_geometryPassMarkedShader->addTexturesBlockDeclaration(
+            SGTextureType::SGTP_NORMALS,
+            sgStandardTextureTypeToString(SGTextureType::SGTP_NORMALS),
+            1
+    );
+    m_geometryPassMarkedShader->addTexturesBlockDeclaration(
+            SGTextureType::SGTP_BASE_COLOR,
+            sgStandardTextureTypeToString(SGTextureType::SGTP_BASE_COLOR),
+            1
+    );
+    m_geometryPassMarkedShader->addTexturesBlockDeclaration(
+            SGTextureType::SGTP_SHADOW_MAP,
+            sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP),
+            5,
+            false
+    );
+
+    m_geometryPassMarkedShader->calculateBlocksOffsets();
+
+    // ---------------------
 
     m_shadowsPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_shadowsPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
@@ -46,8 +66,15 @@ Core::ECS::PBRForwardPipelineSystem::PBRForwardPipelineSystem()
                     Graphics::getShaderPath(Graphics::StandardShaderType::SG_SHADOWS_GENERATOR_SHADER))
     );
 
-    m_shadowsPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_DIFFUSE,
-                                                   1, 0);
+    m_shadowsPassMarkedShader->addTexturesBlockDeclaration(
+            SGTextureType::SGTP_DIFFUSE,
+            sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
+            1
+    );
+
+    m_shadowsPassMarkedShader->calculateBlocksOffsets();
+
+    // ---------------------
 
     m_skyboxPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_skyboxPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
@@ -56,14 +83,23 @@ Core::ECS::PBRForwardPipelineSystem::PBRForwardPipelineSystem()
             )
     );
 
-    m_skyboxPassMarkedShader->addBlockDeclaration(SGTextureType::SGTP_SKYBOX,
-                                                  1, 0);
+    m_skyboxPassMarkedShader->addTexturesBlockDeclaration(
+            SGTextureType::SGTP_SKYBOX,
+            sgStandardTextureTypeToString(SGTextureType::SGTP_SKYBOX),
+            1
+    );
+
+    m_skyboxPassMarkedShader->calculateBlocksOffsets();
+
+    // ---------------------
 
     m_linesPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_linesPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
             Core::Main::CoreMain::getRenderer().createShader(
                     Graphics::getShaderPath(Graphics::StandardShaderType::SG_LINES_SHADER))
     );
+
+    // ---------------------
 
     m_complexPrimitivesPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
     m_complexPrimitivesPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
@@ -109,8 +145,23 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
             Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
             m_skyboxPassMarkedShader->m_shader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
+            auto currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
+            currentLayerFrameBuffer->bind()->clear();
+
             for (const auto& skyboxesLayer: skyboxesCachedEntities)
             {
+                const auto& foundPPLayer = cameraComponent->getPostProcessLayerFrameBuffer(skyboxesLayer.first);
+                // if pp layer exists
+                if(foundPPLayer)
+                {
+                    currentLayerFrameBuffer = foundPPLayer;
+                    currentLayerFrameBuffer->bind()->clear();
+                }
+                else
+                {
+                    currentLayerFrameBuffer->bind();
+                }
+
                 for (const auto& skyboxEntity : skyboxesLayer.second)
                 {
                     if (!skyboxEntity.second) continue;
@@ -129,12 +180,14 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
                                        meshComponent->m_mesh->m_material,
                                        transformComponent);
 
-                        Core::Main::CoreMain::getRenderer().renderMesh(
+                        Core::Main::CoreMain::getRenderer().renderMeshComponent(
                                 transformComponent,
                                 meshComponent
                         );
                     }
                 }
+
+                currentLayerFrameBuffer->unbind();
             }
         }
     }
@@ -253,7 +306,7 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
                                        meshComponent->m_mesh->m_material,
                                        transformComponent);
 
-                        Core::Main::CoreMain::getRenderer().renderMesh(
+                        Core::Main::CoreMain::getRenderer().renderMeshComponent(
                                 transformComponent,
                                 meshComponent
                         );
@@ -269,7 +322,7 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
 
     m_geometryPassMarkedShader->m_shader->bind();
     m_geometryPassMarkedShader->m_shader->useInteger(
-            sgTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP) + "Samplers_COUNT",
+            sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP) + "_COUNT",
             shadowsCastersCount
     );
 
@@ -293,8 +346,23 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
             m_geometryPassMarkedShader->m_shader->bind();
             m_geometryPassMarkedShader->m_shader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
+            std::shared_ptr<Graphics::IFrameBuffer> currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
+
             for (const auto& meshesLayer: meshedCachedEntities)
             {
+                const auto& foundPPLayer = cameraComponent->getPostProcessLayerFrameBuffer(meshesLayer.first);
+                // if pp layer exists
+                if(foundPPLayer)
+                {
+                    currentLayerFrameBuffer = foundPPLayer;
+                    currentLayerFrameBuffer->bind()->clear();
+                }
+                else
+                {
+                    currentLayerFrameBuffer->bind();
+                }
+                // todo: make less bindings
+
                 for (const auto& meshesEntity: meshesLayer.second)
                 {
                     if (!meshesEntity.second) continue;
@@ -308,7 +376,7 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
 
                     for (const auto& meshComponent: meshComponents)
                     {
-                        const auto& shadowsMapsTexturesBlock = m_geometryPassMarkedShader->getBlocks()[SGTextureType::SGTP_SHADOW_MAP];
+                        const auto& shadowsMapsTexturesBlock = m_geometryPassMarkedShader->getTexturesBlocks()[SGTextureType::SGTP_SHADOW_MAP];
 
                         std::uint8_t currentShadowsCaster = 0;
                         for(const auto& shadowsCastersLayer : shadowsCastersCachedEntities)
@@ -323,8 +391,8 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
                                 if(!shadowsCasterComponent) continue;
 
                                 shadowsCasterComponent->m_frameBuffer->bindAttachment(
-                                            SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT,
-                                            shadowsMapsTexturesBlock.m_texturesUnitOffset + currentShadowsCaster
+                                            SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
+                                            shadowsMapsTexturesBlock.m_offset + currentShadowsCaster
                                         );
 
                                 currentShadowsCaster++;
@@ -336,20 +404,36 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
                                        meshComponent->m_mesh->m_material,
                                        transformComponent);
 
-                        Core::Main::CoreMain::getRenderer().renderMesh(
+                        Core::Main::CoreMain::getRenderer().renderMeshComponent(
                                 transformComponent,
                                 meshComponent
                         );
                     }
                 }
+
+                currentLayerFrameBuffer->unbind();
             }
 
             // complex primitives pass ----------------
             m_complexPrimitivesPassMarkedShader->m_shader->bind();
             m_complexPrimitivesPassMarkedShader->m_shader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
+            currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
+
             for(const auto& complexPrimitivesLayer : complexPrimitivesCachedEntities)
             {
+                const auto& foundPPLayer = cameraComponent->getPostProcessLayerFrameBuffer(complexPrimitivesLayer.first);
+                // if pp layer exists
+                if(foundPPLayer)
+                {
+                    currentLayerFrameBuffer = foundPPLayer;
+                    currentLayerFrameBuffer->bind()->clear();
+                }
+                else
+                {
+                    currentLayerFrameBuffer->bind();
+                }
+
                 for(const auto& cachedPrimitive : complexPrimitivesLayer.second)
                 {
                     if(!cachedPrimitive.second) continue;
@@ -373,15 +457,39 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
                                 "u_color", complexPrimitiveComponent->m_color
                         );
 
-                        Core::Main::CoreMain::getRenderer().renderPrimitive(
+                        Core::Main::CoreMain::getRenderer().renderPrimitiveComponent(
                                 complexPrimitiveTransform,
                                 complexPrimitiveComponent
                         );
                     }
                 }
+
+                currentLayerFrameBuffer->unbind();
             }
 
             // ------------------------------
+
+            // render post-process quad ------------
+
+            if(cameraComponent->m_useFinalFrameBuffer)
+            {
+                cameraComponent->m_finalFrameBuffer->bind()->clear();
+            }
+
+            cameraComponent->m_postProcessQuadPassMarkedShader->bind();
+
+            cameraComponent->bindPostProcessLayers();
+
+            Core::Main::CoreMain::getRenderer().renderMesh(
+                    cameraComponent->m_billboard
+            );
+
+            if(cameraComponent->m_useFinalFrameBuffer)
+            {
+                cameraComponent->m_finalFrameBuffer->unbind();
+            }
+
+            // -------------------------------------
         }
     }
 

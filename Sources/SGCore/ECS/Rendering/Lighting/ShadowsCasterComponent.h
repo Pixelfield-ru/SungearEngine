@@ -40,7 +40,7 @@ namespace Core::ECS
                 std::shared_ptr<Core::Graphics::IFrameBuffer>(Main::CoreMain::getRenderer().createFrameBuffer())
                 ->create()
                 ->setSize(1024 * 2, 1024 * 2)
-                ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT,
+                ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
                                 SGGColorFormat::SGG_DEPTH_COMPONENT,
                                 SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F,
                                 0,

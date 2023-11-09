@@ -9,7 +9,6 @@
 #include <glm/ext/matrix_clip_space.hpp>
 
 #include "SGCore/ECS/IComponent.h"
-#include "SGCore/Graphics/RenderPass.h"
 //#include "RenderingComponentsSystem.h"
 
 namespace Core::ECS
@@ -34,8 +33,6 @@ namespace Core::ECS
         glm::mat4 m_projectionMatrix = glm::perspective<float>(glm::radians(m_fov), m_aspect, m_zNear, m_zFar);
         glm::mat4 m_viewMatrix { 1 };
         glm::mat4 m_spaceMatrix { 1 };
-
-        std::list<Graphics::RenderPass> m_renderPasses;
 
     private:
         void init() noexcept override { }

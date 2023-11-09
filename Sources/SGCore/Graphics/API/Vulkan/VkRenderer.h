@@ -43,8 +43,8 @@ namespace Core::Graphics
 
         void prepareFrame(const glm::ivec2& windowSize) override;
 
-        void renderMesh(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                        const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
+        void renderMeshComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                 const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
 
         void printInfo() noexcept override;
 

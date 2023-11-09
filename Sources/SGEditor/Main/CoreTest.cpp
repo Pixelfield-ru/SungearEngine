@@ -333,6 +333,8 @@ void init()
     testCameraEntity->addComponent(cameraTransformComponent);
     testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
 
+    testCameraEntity->getComponent<Core::ECS::CameraComponent>()->addPostProcessLayer("blurPPLayer", testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second);
+
     testScene->addEntity(testCameraEntity);
 
     testShadowsCaster = std::make_shared<Core::ECS::Entity>();

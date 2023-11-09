@@ -51,8 +51,8 @@ void Core::Graphics::VkRenderer::prepareFrame(const glm::ivec2& windowSize)
 
 }
 
-void Core::Graphics::VkRenderer::renderMesh(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                            const std::shared_ptr<ECS::MeshComponent>& meshComponent)
+void Core::Graphics::VkRenderer::renderMeshComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                                     const std::shared_ptr<ECS::MeshComponent>& meshComponent)
 {
 
 }

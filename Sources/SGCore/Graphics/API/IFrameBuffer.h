@@ -20,6 +20,8 @@ namespace Core::Memory::Assets
 
 namespace Core::Graphics
 {
+    struct MarkedFrameBufferAttachmentsBlock;
+
     // todo: make read and draw bindings
     class IFrameBuffer : public std::enable_shared_from_this<IFrameBuffer>
     {
@@ -35,8 +37,7 @@ namespace Core::Graphics
          * @param frameBufferIndex - Framebuffer index in the material.
          * @return This.
          */
-        virtual std::shared_ptr<IFrameBuffer> bindAttachments(const std::shared_ptr<Memory::Assets::IMaterial>& material,
-                                                              const std::uint8_t& frameBufferIndex)
+        virtual std::shared_ptr<IFrameBuffer> bindAttachments(const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock)
         { return shared_from_this(); }
 
         virtual std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,

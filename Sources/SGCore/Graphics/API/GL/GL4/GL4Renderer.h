@@ -49,14 +49,13 @@ namespace Core::Graphics
         void prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
                                    const std::shared_ptr<ECS::TransformComponent>& transformComponent) override;
 
-        void renderMesh(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                        const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
+        void renderMeshComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                 const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
 
-        void renderPrimitive(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                             const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) override;
+        void renderMesh(const std::shared_ptr<ImportedScene::IMesh>& mesh) override;
 
-        void renderRenderPass(RenderPass& renderPass,
-                              const std::shared_ptr<ImportedScene::IMesh>& mesh) override;
+        void renderPrimitiveComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
+                                      const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) override;
 
         void printInfo() noexcept override;
 

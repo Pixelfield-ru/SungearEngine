@@ -74,7 +74,7 @@ std::string Core::Graphics::GLShadersPreprocessor::processShader(const std::stri
 
                     // adding included shader code
                     processedShaderCode += "\n// ---------------- " + includedPath + " ----------------\n\n";
-                    processedShaderCode += includedShaderFile->getData() + "\n";
+                    processedShaderCode += processShader(includedPath, includedShaderFile->getData(), outError) + "\n";
                     processedShaderCode += "\n// ------------------------------------------------------\n\n";
                 }
             }

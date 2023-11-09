@@ -27,7 +27,8 @@ namespace Core::Memory::Assets
 {
     struct MaterialTexture
     {
-        SGTextureType m_type = SGTextureType::SGTP_DIFFUSE;
+        SGTextureType m_type
+        = SGTextureType::SGTP_DIFFUSE;
 
         std::shared_ptr<Graphics::ITexture2D> m_texture;
     };
@@ -57,10 +58,10 @@ namespace Core::Memory::Assets
         std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::MarkedShader>& markedShader);
 
         std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::IShader>& shader,
-                                        const std::map<SGTextureType,
+                                        const std::unordered_map<SGTextureType,
                                                 Graphics::MarkedTexturesBlock>& markedTexturesBlocks);
 
-        std::shared_ptr<IMaterial> bind(const std::map<SGTextureType,
+        std::shared_ptr<IMaterial> bind(const std::unordered_map<SGTextureType,
                                                 Graphics::MarkedTexturesBlock>& markedTexturesBlocks);
 
         // TODO: impl
@@ -72,7 +73,7 @@ namespace Core::Memory::Assets
         * @param texture2DAsset - Texture asset
         * @return this
         */
-        std::shared_ptr<Texture2DAsset> findAndAddTexture2D(const SGTextureType& type,
+        std::shared_ptr<Texture2DAsset> findAndAddTexture2D(const SGTextureType& textureType,
                                                             const std::string& path);
 
         void copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept;
