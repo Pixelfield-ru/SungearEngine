@@ -71,7 +71,7 @@
             float depth = 0.0;
             float mixCoeff = 1.0 / blurPPLayer.depthAttachmentsCount;
 
-            for (int i = 0; i < blurPPLayer.depthAttachmentsCount; i++)
+            /*for (int i = 0; i < blurPPLayer.depthAttachmentsCount; i++)
             {
                 int s = 0;
 
@@ -86,6 +86,11 @@
                 }
 
                 depth /= s;
+            }*/
+
+            for (int i = 0; i < blurPPLayer.depthAttachmentsCount; i++)
+            {
+                depth += texture(blurPPLayer.depthAttachments[i], finalUV).r * mixCoeff;
             }
 
             if(depth < curDepth)
@@ -101,7 +106,21 @@
 
             for (int i = 0; i < sgpp_defaultFB.colorAttachmentsCount; i++)
             {
-                finalColor += texture(sgpp_defaultFB.colorAttachments[i], finalUV) * mixCoeff;
+                int s = 0;
+
+                for(int x = -3; x < 3; x++)
+                {
+                    for(int y = -3; y < 3; y++)
+                    {
+                        finalColor += texture(sgpp_defaultFB.colorAttachments[i], finalUV + vec2(x, y) * 0.001) * mixCoeff;
+
+                        s++;
+                    }
+                }
+
+                finalColor /= s;
+
+                //finalColor += texture(sgpp_defaultFB.colorAttachments[i], finalUV) * mixCoeff;
             }
         }
         else if (curFBIdx == 1)
