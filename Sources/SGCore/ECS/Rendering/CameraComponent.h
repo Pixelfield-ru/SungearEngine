@@ -12,6 +12,7 @@ namespace Core::ECS
     {
         std::shared_ptr<Graphics::IFrameBuffer> m_frameBuffer;
         std::string m_name = "default";
+        std::uint16_t m_index = 0;
     };
 
     class CameraComponent : public IRenderingComponent
@@ -29,7 +30,8 @@ namespace Core::ECS
         // final frame buffer with all post-processing
         std::shared_ptr<Graphics::IFrameBuffer> m_finalFrameBuffer;
 
-        std::shared_ptr<Graphics::MarkedShader> m_postProcessQuadPassMarkedShader;
+        std::shared_ptr<Graphics::MarkedShader> m_depthPostProcessQuadPassMarkedShader;
+        std::shared_ptr<Graphics::MarkedShader> m_colorPostProcessQuadPassMarkedShader;
 
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;
@@ -40,6 +42,11 @@ namespace Core::ECS
                                  const std::shared_ptr<ECS::Layer>& layer);
 
         void bindPostProcessLayers() const noexcept;
+
+        const auto& getPostProcessLayers() const noexcept
+        {
+            return m_postProcessLayers;
+        }
 
         // todo: make rename pp layer function
 

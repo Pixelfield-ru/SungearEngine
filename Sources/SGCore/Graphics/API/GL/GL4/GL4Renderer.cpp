@@ -13,6 +13,8 @@
 #include "SGCore/ECS/Rendering/SkyboxComponent.h"
 
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
+#include "SGCore/ImportedScenesArch/IMesh.h"
+#include "SGCore/ECS/Rendering/Primitives/IPrimitiveComponent.h"
 
 void Core::Graphics::GL4Renderer::init() noexcept
 {
@@ -41,6 +43,7 @@ void Core::Graphics::GL4Renderer::init() noexcept
     setDepthTestingEnabled(true);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+    glEnable(GL_STENCIL_TEST);
 
     /*glEnable (GL_ALPHA_TEST);
     glAlphaFunc (GL_GREATER, 0.2);*/

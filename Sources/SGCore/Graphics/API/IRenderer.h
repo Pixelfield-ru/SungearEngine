@@ -9,25 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/common.hpp>
 
-#include "IShader.h"
-#include "IVertexArray.h"
-#include "IVertexBuffer.h"
-#include "IVertexBufferLayout.h"
-#include "IIndexBuffer.h"
-#include "ITexture2D.h"
-#include "IUniformBuffer.h"
-
-#include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/ImportedScenesArch/IMesh.h"
-#include "SGCore/Memory/Assets/ModelAsset.h"
-#include "SGCore/ECS/Entity.h"
-
 #include "APIType.h"
-#include "IFrameBuffer.h"
-#include "ICubemapTexture.h"
-#include "SGCore/ECS/Rendering/Primitives/IPrimitiveComponent.h"
-#include "SGCore/ECS/Rendering/IRenderingComponent.h"
-#include "SGCore/Graphics/Defines.h"
+#include "IUniformBuffer.h"
 
 namespace Core::ECS
 {
@@ -36,10 +19,26 @@ namespace Core::ECS
     class TransformComponent;
     class ShadowsCasterComponent;
     class SkyboxComponent;
+    class IRenderingComponent;
+    class IPrimitiveComponent;
+}
+
+namespace Core::ImportedScene
+{
+    class IMesh;
 }
 
 namespace Core::Graphics
 {
+    class IVertexBufferLayout;
+    class ICubemapTexture;
+    class IIndexBuffer;
+    class IVertexArray;
+    class IVertexBuffer;
+    class IFrameBuffer;
+    class ITexture2D;
+    class IShader;
+
     // todo: make description of funcs
     class IRenderer
     {

@@ -4,6 +4,7 @@
 #include "CameraComponent.h"
 
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/Graphics/Defines.h"
 
 Core::ECS::CameraComponent::CameraComponent()
 {
@@ -38,8 +39,7 @@ Core::ECS::CameraComponent::CameraComponent()
                                     SGGColorFormat::SGG_DEPTH_COMPONENT,
                                     SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                                     0,
-                                    0
-                    )
+                                    0)
                     ->unbind();
 
     m_finalFrameBuffer =
@@ -53,20 +53,39 @@ Core::ECS::CameraComponent::CameraComponent()
                                     0)
                     ->unbind();
 
-    m_postProcessQuadPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
-    m_postProcessQuadPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
+    m_colorPostProcessQuadPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
+    m_colorPostProcessQuadPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
             Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
-                    Graphics::StandardShaderType::SG_POSTPROCESSING_SHADER)
+                    Graphics::StandardShaderType::SG_COLOR_POSTPROCESSING_SHADER)
             )
     );
 
-    m_postProcessQuadPassMarkedShader->addFrameBufferBlockDeclaration("sgpp_defaultFB", 1, 0, 1, 0);
+    m_colorPostProcessQuadPassMarkedShader->addFrameBufferBlockDeclaration("sgpp_defaultFB", 1, 0, 1, 0);
 
-    m_postProcessQuadPassMarkedShader->calculateBlocksOffsets();
+    m_colorPostProcessQuadPassMarkedShader->calculateBlocksOffsets();
 
-    m_postProcessQuadPassMarkedShader->m_shader->bind();
-    m_postProcessQuadPassMarkedShader->m_shader->useInteger("sgpp_defaultFB.colorAttachmentsCount", 1);
-    m_postProcessQuadPassMarkedShader->m_shader->useInteger("sgpp_defaultFB.depthAttachmentsCount", 1);
+    m_colorPostProcessQuadPassMarkedShader->m_shader->bind();
+    m_colorPostProcessQuadPassMarkedShader->m_shader->useInteger("sgpp_defaultFB.colorAttachmentsCount", 1);
+    m_colorPostProcessQuadPassMarkedShader->m_shader->useInteger("sgpp_defaultFB.depthAttachmentsCount", 1);
+
+    // -------------------------------------
+
+    m_depthPostProcessQuadPassMarkedShader = std::make_shared<Graphics::MarkedShader>();
+    m_depthPostProcessQuadPassMarkedShader->m_shader = std::shared_ptr<Graphics::IShader>(
+            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
+                    Graphics::StandardShaderType::SG_DEPTH_POSTPROCESSING_SHADER)
+            )
+    );
+
+    m_depthPostProcessQuadPassMarkedShader->addFrameBufferBlockDeclaration("allFB[0]", 1, 0, 1, 0);
+
+    m_depthPostProcessQuadPassMarkedShader->calculateBlocksOffsets();
+
+    m_depthPostProcessQuadPassMarkedShader->m_shader->bind();
+    //m_depthPostProcessQuadPassMarkedShader->m_shader->useInteger("allFB[0].index", 0);
+    m_depthPostProcessQuadPassMarkedShader->m_shader->useInteger("allFB[0].colorAttachmentsCount", 1);
+    m_depthPostProcessQuadPassMarkedShader->m_shader->useInteger("allFB[0].depthAttachmentsCount", 1);
+    m_depthPostProcessQuadPassMarkedShader->m_shader->useInteger("FBCount", m_postProcessLayers.size() + 1);
 }
 
 void Core::ECS::CameraComponent::addPostProcessLayer(const std::string& ppLayerName,
@@ -89,6 +108,8 @@ void Core::ECS::CameraComponent::addPostProcessLayer(const std::string& ppLayerN
     }
 
     auto& ppLayer = m_postProcessLayers[layer];
+    // without - 1 because 0 is always default FB
+    ppLayer.m_index = m_postProcessLayers.size();
 
     int primaryMonitorWidth;
     int primaryMonitorHeight;
@@ -109,29 +130,42 @@ void Core::ECS::CameraComponent::addPostProcessLayer(const std::string& ppLayerN
                             SGGColorFormat::SGG_DEPTH_COMPONENT,
                             SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                             0,
-                            0
-            )
+                            0)
             ->unbind();
 
-    m_postProcessQuadPassMarkedShader->addFrameBufferBlockDeclaration(ppLayerName, 1, 0, 1, 0);
+    m_colorPostProcessQuadPassMarkedShader->addFrameBufferBlockDeclaration(ppLayerName, 1, 0, 1, 0);
 
-    m_postProcessQuadPassMarkedShader->calculateBlocksOffsets();
+    m_colorPostProcessQuadPassMarkedShader->calculateBlocksOffsets();
 
-    m_postProcessQuadPassMarkedShader->m_shader->bind();
-    m_postProcessQuadPassMarkedShader->m_shader->useInteger(ppLayerName + ".colorAttachmentsCount", 1);
-    m_postProcessQuadPassMarkedShader->m_shader->useInteger(ppLayerName + ".depthAttachmentsCount", 1);
+    m_colorPostProcessQuadPassMarkedShader->m_shader->bind();
+    m_colorPostProcessQuadPassMarkedShader->m_shader->useInteger(ppLayerName + ".colorAttachmentsCount", 1);
+    m_colorPostProcessQuadPassMarkedShader->m_shader->useInteger(ppLayerName + ".depthAttachmentsCount", 1);
+
+    // ----------------------------------
+
+    std::string depthPassNewLayerName = "allFB[" + std::to_string(ppLayer.m_index) + "]";
+
+    m_depthPostProcessQuadPassMarkedShader->addFrameBufferBlockDeclaration(depthPassNewLayerName, 1, 0, 1, 0);
+
+    m_depthPostProcessQuadPassMarkedShader->calculateBlocksOffsets();
+
+    m_depthPostProcessQuadPassMarkedShader->m_shader->bind();
+    //m_depthPostProcessQuadPassMarkedShader->m_shader->useInteger(depthPassNewLayerName + ".index", newLayerIndex);
+    m_depthPostProcessQuadPassMarkedShader->m_shader->useInteger(depthPassNewLayerName + ".colorAttachmentsCount", 1);
+    m_depthPostProcessQuadPassMarkedShader->m_shader->useInteger(depthPassNewLayerName + ".depthAttachmentsCount", 1);
+    m_depthPostProcessQuadPassMarkedShader->m_shader->useInteger("FBCount", m_postProcessLayers.size() + 1);
 }
 
 void Core::ECS::CameraComponent::bindPostProcessLayers() const noexcept
 {
     m_defaultLayersFrameBuffer->bindAttachments(
-            m_postProcessQuadPassMarkedShader->getFrameBuffersAttachmentsBlocks()["sgpp_defaultFB"]
+            m_colorPostProcessQuadPassMarkedShader->getFrameBuffersAttachmentsBlocks()["sgpp_defaultFB"]
     );
 
     for(const auto& ppLayer : m_postProcessLayers)
     {
         ppLayer.second.m_frameBuffer->bindAttachments(
-                m_postProcessQuadPassMarkedShader
+                m_colorPostProcessQuadPassMarkedShader
                         ->getFrameBuffersAttachmentsBlocks()[ppLayer.second.m_name]
         );
     }

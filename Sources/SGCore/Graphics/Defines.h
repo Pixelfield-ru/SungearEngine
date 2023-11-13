@@ -14,7 +14,8 @@
 #define SG_GLSL4_LINES_SHADER_PATH                  "../SGResources/shaders/glsl4/primitives/lines_shader.glsl"
 #define SG_GLSL4_COMPLEX_PRIMITIVES_SHADER_PATH     "../SGResources/shaders/glsl4/primitives/complex_primitives_shader.glsl"
 
-#define SG_GLSL4_POSTPROCESSING_SHADER_PATH         "../SGResources/shaders/glsl4/postprocessing/default_shader.glsl"
+#define SG_GLSL4_COLOR_POSTPROCESSING_SHADER_PATH   "../SGResources/shaders/glsl4/postprocessing/color_pass.glsl"
+#define SG_GLSL4_DEPTH_POSTPROCESSING_SHADER_PATH   "../SGResources/shaders/glsl4/postprocessing/depth_pass.glsl"
 
 // -----------------------------------------------------------------
 
@@ -47,7 +48,8 @@ namespace Core::Graphics
         SG_SKYBOX_SHADER,
         SG_LINES_SHADER,
         SG_COMPLEX_PRIMITIVES_SHADER,
-        SG_POSTPROCESSING_SHADER
+        SG_COLOR_POSTPROCESSING_SHADER,
+        SG_DEPTH_POSTPROCESSING_SHADER
     };
 
     /**

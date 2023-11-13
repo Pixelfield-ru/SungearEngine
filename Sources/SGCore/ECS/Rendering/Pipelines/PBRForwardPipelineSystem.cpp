@@ -469,16 +469,63 @@ void Core::ECS::PBRForwardPipelineSystem::update(const std::shared_ptr<Scene>& s
 
             // ------------------------------
 
+            Core::Main::CoreMain::getRenderer().setDepthTestingEnabled(false);
+
+            // first - discard not visible fragments in every frame buffer of layer
+
+            cameraComponent->bindPostProcessLayers();
+
+            cameraComponent->m_depthPostProcessQuadPassMarkedShader->bind();
+
+            // first depth test for pixels in default FB
+
+            cameraComponent->m_defaultLayersFrameBuffer->bind();
+
+            cameraComponent->m_depthPostProcessQuadPassMarkedShader
+                    ->m_shader
+                    ->useInteger("currentFBIndex", 0);
+
+            Core::Main::CoreMain::getRenderer().renderMesh(
+                    cameraComponent->m_billboard
+            );
+
+            cameraComponent->m_defaultLayersFrameBuffer->unbind();
+
+            // ---------------------------------
+
+            // and then depth test for PP Layers
+
+            for(const auto& ppLayer : cameraComponent->getPostProcessLayers())
+            {
+                ppLayer.second.m_frameBuffer->bind();
+
+                cameraComponent->m_depthPostProcessQuadPassMarkedShader
+                        ->m_shader
+                        ->useInteger("currentFBIndex", ppLayer.second.m_index);
+
+                Core::Main::CoreMain::getRenderer().renderMesh(
+                        cameraComponent->m_billboard
+                );
+
+                ppLayer.second.m_frameBuffer->unbind();
+            }
+
+            Core::Main::CoreMain::getRenderer().setDepthTestingEnabled(true);
+
+            // ----------------------------------
+
+            // --------------------------------------------------------------------
+
             // render post-process quad ------------
+
+            cameraComponent->bindPostProcessLayers();
 
             if(cameraComponent->m_useFinalFrameBuffer)
             {
                 cameraComponent->m_finalFrameBuffer->bind()->clear();
             }
 
-            cameraComponent->m_postProcessQuadPassMarkedShader->bind();
-
-            cameraComponent->bindPostProcessLayers();
+            cameraComponent->m_colorPostProcessQuadPassMarkedShader->bind();
 
             Core::Main::CoreMain::getRenderer().renderMesh(
                     cameraComponent->m_billboard

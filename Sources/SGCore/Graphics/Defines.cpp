@@ -58,11 +58,20 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             }
             break;
 
-        case SG_POSTPROCESSING_SHADER:
+        case SG_COLOR_POSTPROCESSING_SHADER:
             switch(Main::CoreMain::getRenderer().getAPIType())
             {
                 case SG_API_TYPE_GL4:
-                    shaderPath = SG_GLSL4_POSTPROCESSING_SHADER_PATH;
+                    shaderPath = SG_GLSL4_COLOR_POSTPROCESSING_SHADER_PATH;
+                    break;
+            }
+            break;
+
+        case SG_DEPTH_POSTPROCESSING_SHADER:
+            switch(Main::CoreMain::getRenderer().getAPIType())
+            {
+                case SG_API_TYPE_GL4:
+                    shaderPath = SG_GLSL4_DEPTH_POSTPROCESSING_SHADER_PATH;
                     break;
             }
             break;

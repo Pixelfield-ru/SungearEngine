@@ -9,6 +9,8 @@
 #include "SGCore/Main/CoreMain.h"
 #include "GL4Texture2D.h"
 
+#include "SGCore/Graphics/API/MarkedShader.h"
+
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachments
 (const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock)
 {
@@ -75,25 +77,25 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToRead()
 {
-    if(m_attachments.find(m_drawAttachmentType) != m_attachments.cend())
+    if(m_attachments.find(m_readAttachmentType) != m_attachments.cend())
     {
-        if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
-           m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
+        if(m_readAttachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
+                m_readAttachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
         {
             glReadBuffer(GL_DEPTH_ATTACHMENT);
         }
-        else if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
-                m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
+        else if(m_readAttachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
+                m_readAttachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
         {
             glReadBuffer(GL_DEPTH_STENCIL_ATTACHMENT);
         }
-        else if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
-                m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
+        else if(m_readAttachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+                m_readAttachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
         {
-            glReadBuffer(GL_COLOR_ATTACHMENT0 + (m_drawAttachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+            glReadBuffer(GL_COLOR_ATTACHMENT0 + (m_readAttachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
         }
-        else if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
-                m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
+        else if(m_readAttachmentType >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
+                m_readAttachmentType <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
         {
             // todo: impl
             //glReadBuffer()
@@ -189,7 +191,7 @@ void Core::Graphics::GL4FrameBuffer::destroy()
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::clear()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
     return shared_from_this();
@@ -210,19 +212,19 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
         return shared_from_this();
     }
 
+    auto& newAttachment = m_attachments[attachmentType];
+
+    newAttachment.m_format = format;
+    newAttachment.m_internalFormat = internalFormat;
+    newAttachment.m_mipLevel = mipLevel;
+    newAttachment.m_layer = layer;
+
     // TODO: MAKE VERIFY INTERNAL FORMAT
     // TODO: MAKE VERIFY SIZE TYPE
 
     if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
        attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
     {
-            auto& newAttachment = m_attachments[attachmentType];
-
-        newAttachment.m_format = format;
-        newAttachment.m_internalFormat = internalFormat;
-        newAttachment.m_mipLevel = mipLevel;
-        newAttachment.m_layer = layer;
-
         glGenTextures(1, &newAttachment.m_handler);
         glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
 
@@ -231,7 +233,7 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
                      GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
                      m_width, m_height,
                      0,
-                     GL_DEPTH_COMPONENT,
+                     GLGraphicsTypesCaster::sggFormatToGL(format),
                 // todo: make customizable
                      GL_FLOAT,
                      nullptr
@@ -242,16 +244,6 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-        /*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);*/
 
         // todo: make it customizable
         float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -265,18 +257,37 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
     {
-        // todo: make
+        glGenTextures(1, &newAttachment.m_handler);
+        glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
+
+        glTexImage2D(GL_TEXTURE_2D,
+                     mipLevel,
+                     GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
+                     m_width, m_height,
+                     0,
+                     GLGraphicsTypesCaster::sggFormatToGL(format),
+                // todo: make customizable
+                     GL_UNSIGNED_INT_24_8,
+                     nullptr
+        );
+
+        // TODO: make it customizable
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+        // todo: make it customizable
+        //float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+        //glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER,
+                               GL_DEPTH_STENCIL_ATTACHMENT,
+                               GL_TEXTURE_2D, newAttachment.m_handler, mipLevel);
     }
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        GLFrameBufferAttachment& newAttachment = m_attachments[attachmentType];
-
-        newAttachment.m_format = format;
-        newAttachment.m_internalFormat = internalFormat;
-        newAttachment.m_mipLevel = mipLevel;
-        newAttachment.m_layer = layer;
-
         glGenTextures(1, &newAttachment.m_handler);
         glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
 

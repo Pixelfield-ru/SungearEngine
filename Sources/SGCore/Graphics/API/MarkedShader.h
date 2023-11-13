@@ -2,10 +2,11 @@
 // Created by Ilya on 03.11.2023.
 //
 
-#ifndef GITIGNORE_MARKEDSHADER_H
-#define GITIGNORE_MARKEDSHADER_H
+#ifndef SUNGEARENGINE_MARKEDSHADER_H
+#define SUNGEARENGINE_MARKEDSHADER_H
 
 #include "IShader.h"
+#include <string>
 
 namespace Core::Graphics
 {
@@ -79,4 +80,4 @@ namespace Core::Graphics
     };
 }
 
-#endif //GITIGNORE_MARKEDSHADER_H
+#endif // SUNGEARENGINE_MARKEDSHADER_H

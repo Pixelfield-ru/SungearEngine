@@ -39,6 +39,8 @@ uniform float materialRoughnessFactor;
 
 struct FrameBuffer
 {
+    //int index;
+
     int depthAttachmentsCount;
     int depthStencilAttachmentsCount;
     int colorAttachmentsCount;
