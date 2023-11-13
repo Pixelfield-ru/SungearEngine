@@ -16,8 +16,8 @@
 #include "SGCore/Graphics/API/GL/GL46/GL46UniformBuffer.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "SGCore/ImportedScenesArch/IMesh.h"
-#include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
+#include "SGCore/ImportedScenesArch/IMeshData.h"
+#include "SGCore/Graphics/API/GL/GL3/GL3MeshData.h"
 #include "GL4FrameBuffer.h"
 #include "GL4CubemapTexture.h"
 #include "GL4UniformBuffer.h"
@@ -47,15 +47,10 @@ namespace Core::Graphics
         void prepareFrame(const glm::ivec2& windowSize) override;
 
         void prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
-                                   const std::shared_ptr<ECS::TransformComponent>& transformComponent) override;
+                                   const std::shared_ptr<ECS::Transform>& transformComponent) override;
 
-        void renderMeshComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                 const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
-
-        void renderMesh(const std::shared_ptr<ImportedScene::IMesh>& mesh) override;
-
-        void renderPrimitiveComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                      const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) override;
+        void renderMeshData(const std::shared_ptr<ImportedScene::IMeshData>& meshData,
+                                    const ImportedScene::MeshDataRenderInfo& meshDataRenderInfo) override;
 
         void printInfo() noexcept override;
 
@@ -78,7 +73,7 @@ namespace Core::Graphics
         [[nodiscard]] GL4UniformBuffer* createUniformBuffer() override;
         [[nodiscard]] GL4FrameBuffer* createFrameBuffer() override;
 
-        [[nodiscard]] GL3Mesh* createMesh() override;
+        [[nodiscard]] GL3MeshData* createMeshData() override;
 
         // ------------- some settings for renderer ---------
         void setDepthTestingEnabled(const bool& enabled) const noexcept override;

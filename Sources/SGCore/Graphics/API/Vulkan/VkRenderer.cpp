@@ -8,10 +8,10 @@
 
 #include <GLFW/glfw3.h>
 
-#include "SGCore/ECS/Transformations/TransformComponent.h"
-#include "SGCore/ECS/Rendering/MeshComponent.h"
-#include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Transformations/Transform.h"
+#include "SGCore/ECS/Rendering/Mesh.h"
+#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 
 void Core::Graphics::VkRenderer::init() noexcept
 {
@@ -47,12 +47,6 @@ bool Core::Graphics::VkRenderer::confirmSupport() noexcept
 }
 
 void Core::Graphics::VkRenderer::prepareFrame(const glm::ivec2& windowSize)
-{
-
-}
-
-void Core::Graphics::VkRenderer::renderMeshComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                                     const std::shared_ptr<ECS::MeshComponent>& meshComponent)
 {
 
 }
@@ -117,9 +111,9 @@ Core::Graphics::VkFrameBuffer* Core::Graphics::VkRenderer::createFrameBuffer()
     return new VkFrameBuffer;
 }
 
-Core::Graphics::VkMesh* Core::Graphics::VkRenderer::createMesh()
+Core::Graphics::VkMeshData* Core::Graphics::VkRenderer::createMeshData()
 {
-    return new VkMesh;
+    return new VkMeshData;
 }
 
 const std::shared_ptr<Core::Graphics::VkRenderer>& Core::Graphics::VkRenderer::getInstance() noexcept

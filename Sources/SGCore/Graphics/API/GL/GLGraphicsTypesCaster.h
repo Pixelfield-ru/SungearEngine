@@ -15,49 +15,41 @@ namespace GLGraphicsTypesCaster
 {
     static GLuint sggDrawModeToGL(const SGDrawMode& sgDrawMode)
     {
-        GLuint glDrawMode = GL_TRIANGLES;
-
         switch(sgDrawMode)
         {
             case SGG_TRIANGLES:
-                glDrawMode = GL_TRIANGLES;
-                break;
+                return GL_TRIANGLES;
             case SGG_LINES:
-                glDrawMode = GL_LINES;
-                break;
+                return GL_LINES;
             case SGG_QUADS:
-                glDrawMode = GL_QUADS;
-                break;
-        }
+                return GL_QUADS;
+            case SGG_POINTS:
+                return GL_POINTS;
 
-        return glDrawMode;
+            default:
+                return GL_TRIANGLES;
+        }
     }
 
     static std::uint32_t sggFaceTypeToGL(const SGFaceType& faceType)
     {
-        std::uint32_t glFaceType = GL_BACK;
-
         switch(faceType)
         {
-            case SGG_FRONT_FACE: glFaceType = GL_FRONT; break;
-            case SGG_BACK_FACE: glFaceType = GL_BACK; break;
-            case SGG_FRONT_BACK_FACE: glFaceType = GL_FRONT_AND_BACK; break;
-        }
+            case SGG_FRONT_FACE: return GL_FRONT;
+            case SGG_BACK_FACE: return GL_BACK;
+            case SGG_FRONT_BACK_FACE: return GL_FRONT_AND_BACK;
 
-        return glFaceType;
+            default: return GL_BACK;
+        }
     }
 
     static std::uint32_t sggPolygonsOrderToGL(const SGPolygonsOrder& polygonsOrder)
     {
-        std::uint32_t glPolygonsOrder = GL_CCW;
-
         switch(polygonsOrder)
         {
-            case SGG_CW: glPolygonsOrder = GL_CW; break;
-            case SGG_CCW: glPolygonsOrder = GL_CCW; break;
+            case SGG_CW: return GL_CW;
+            case SGG_CCW: return GL_CCW;
         }
-
-        return glPolygonsOrder;
     }
 
     static GLint sggInternalFormatToGL(const SGGColorInternalFormat& sggInternalFormat) noexcept
@@ -180,74 +172,64 @@ namespace GLGraphicsTypesCaster
 
     static GLenum sggFormatToGL(const SGGColorFormat& sggFormat) noexcept
     {
-        GLenum glFormat = GL_RGB;
-
         switch(sggFormat)
         {
-            case SGG_R: glFormat = GL_RED; break;
-            case SGG_RG: glFormat = GL_RG; break;
-            case SGG_RGB: glFormat = GL_RGB; break;
-            case SGG_BGR: glFormat = GL_BGR; break;
-            case SGG_RGBA: glFormat = GL_RGBA; break;
-            case SGG_BGRA: glFormat = GL_BGRA; break;
+            case SGG_R: return GL_RED;
+            case SGG_RG: return GL_RG;
+            case SGG_RGB: return GL_RGB;
+            case SGG_BGR: return GL_BGR;
+            case SGG_RGBA: return GL_RGBA;
+            case SGG_BGRA: return GL_BGRA;
 
-            case SGG_R_INTEGER: glFormat = GL_RED_INTEGER; break;
-            case SGG_RG_INTEGER: glFormat = GL_RG_INTEGER; break;
-            case SGG_RGB_INTEGER: glFormat = GL_RGB_INTEGER; break;
-            case SGG_BGR_INTEGER: glFormat = GL_BGR_INTEGER; break;
-            case SGG_RGBA_INTEGER: glFormat = GL_RGBA_INTEGER; break;
-            case SGG_BGRA_INTEGER: glFormat = GL_BGRA_INTEGER; break;
+            case SGG_R_INTEGER: return GL_RED_INTEGER;
+            case SGG_RG_INTEGER: return GL_RG_INTEGER;
+            case SGG_RGB_INTEGER: return GL_RGB_INTEGER;
+            case SGG_BGR_INTEGER: return GL_BGR_INTEGER;
+            case SGG_RGBA_INTEGER: return GL_RGBA_INTEGER;
+            case SGG_BGRA_INTEGER: return GL_BGRA_INTEGER;
 
-            case SGG_STENCIL_INDEX: glFormat = GL_STENCIL_INDEX; break;
+            case SGG_STENCIL_INDEX: return GL_STENCIL_INDEX;
 
-            case SGG_DEPTH_COMPONENT: glFormat = GL_DEPTH_COMPONENT; break;
-            case SGG_DEPTH_STENCIL: glFormat = GL_DEPTH_STENCIL; break;
+            case SGG_DEPTH_COMPONENT: return GL_DEPTH_COMPONENT;
+            case SGG_DEPTH_STENCIL: return GL_DEPTH_STENCIL;
+
+            default: return GL_RGB;
         }
-
-        return glFormat;
     }
 
     static GLenum sggBufferUsageToGL(const SGGUsage& sggBufferUsage) noexcept
     {
-        GLenum usage = GL_STATIC_DRAW;
-
         switch(sggBufferUsage)
         {
-            case SGG_DYNAMIC: usage = GL_DYNAMIC_DRAW; break;
-            case SGG_STATIC: usage = GL_STATIC_DRAW; break;
+            case SGG_DYNAMIC: return GL_DYNAMIC_DRAW;
+            case SGG_STATIC: return GL_STATIC_DRAW;
         }
-
-        return usage;
     }
 
     static std::uint16_t sggDataTypeToGL(const SGGDataType& sggDataType) noexcept
     {
-        int apiDataType;
-
         switch(sggDataType)
         {
-            case SGG_NONE: apiDataType = GL_NONE; break;
+            case SGG_NONE: return GL_NONE;
 
-            case SGG_INT: apiDataType = GL_INT; break;
-            case SGG_INT2: apiDataType = GL_INT; break;
-            case SGG_INT3: apiDataType = GL_INT; break;
-            case SGG_INT4: apiDataType = GL_INT; break;
+            case SGG_INT: return GL_INT;
+            case SGG_INT2: return GL_INT;
+            case SGG_INT3: return GL_INT;
+            case SGG_INT4: return GL_INT;
 
-            case SGG_FLOAT: apiDataType = GL_FLOAT; break;
-            case SGG_FLOAT2: apiDataType = GL_FLOAT; break;
-            case SGG_FLOAT3: apiDataType = GL_FLOAT; break;
-            case SGG_FLOAT4: apiDataType = GL_FLOAT; break;
+            case SGG_FLOAT: return GL_FLOAT;
+            case SGG_FLOAT2: return GL_FLOAT;
+            case SGG_FLOAT3: return GL_FLOAT;
+            case SGG_FLOAT4: return GL_FLOAT;
 
-            case SGG_MAT2: apiDataType = GL_FLOAT; break;
-            case SGG_MAT3: apiDataType = GL_FLOAT; break;
-            case SGG_MAT4: apiDataType = GL_FLOAT; break;
+            case SGG_MAT2: return GL_FLOAT;
+            case SGG_MAT3: return GL_FLOAT;
+            case SGG_MAT4: return GL_FLOAT;
 
-            case SGG_BOOL: apiDataType = GL_BOOL; break;
+            case SGG_BOOL: return GL_BOOL;
 
-            default: apiDataType = GL_NONE; break;
+            default: return GL_NONE;
         }
-
-        return apiDataType;
     }
 };
 

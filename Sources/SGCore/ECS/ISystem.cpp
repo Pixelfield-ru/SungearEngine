@@ -3,4 +3,4 @@
 //
 
 #include "ISystem.h"
-#include "SGCore/ECS/Rendering/Pipelines/PBRForwardPipelineSystem.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRForwardRenderPipeline.h"

@@ -5,12 +5,12 @@
 #include "SGCore/ECS/Entity.h"
 #include "SGCore/ECS/Scene.h"
 
-#include "SGCore/ECS/Transformations/TransformComponent.h"
-#include "SGCore/ECS/Rendering/MeshComponent.h"
-#include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLightComponent.h"
-#include "SGCore/ECS/Rendering/SkyboxComponent.h"
+#include "SGCore/ECS/Transformations/Transform.h"
+#include "SGCore/ECS/Rendering/Mesh.h"
+#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
+#include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
+#include "SGCore/ECS/Rendering/Skybox.h"
 #include "SGCore/Memory/Assets/CubemapAsset.h"
 #include "SGCore/ECS/ECSWorld.h"
 

@@ -13,7 +13,7 @@
 #include "VkIndexBuffer.h"
 #include "VkTexture2D.h"
 #include "VkUniformBuffer.h"
-#include "VkMesh.h"
+#include "VkMeshData.h"
 #include "VkFrameBuffer.h"
 #include "VkCubemapTexture.h"
 
@@ -43,9 +43,6 @@ namespace Core::Graphics
 
         void prepareFrame(const glm::ivec2& windowSize) override;
 
-        void renderMeshComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                 const std::shared_ptr<ECS::MeshComponent>& meshComponent) override;
-
         void printInfo() noexcept override;
 
         /**
@@ -67,7 +64,7 @@ namespace Core::Graphics
         [[nodiscard]] VkUniformBuffer* createUniformBuffer() override;
         [[nodiscard]] VkFrameBuffer* createFrameBuffer() override;
 
-        [[nodiscard]] VkMesh* createMesh() override;
+        [[nodiscard]] VkMeshData* createMeshData() override;
 
         static const std::shared_ptr<VkRenderer>& getInstance() noexcept;
     };

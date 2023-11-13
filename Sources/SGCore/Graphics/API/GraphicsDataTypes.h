@@ -18,7 +18,8 @@ enum SGDrawMode
 {
     SGG_TRIANGLES,
     SGG_LINES,
-    SGG_QUADS
+    SGG_QUADS,
+    SGG_POINTS
 };
 
 enum SGFaceType

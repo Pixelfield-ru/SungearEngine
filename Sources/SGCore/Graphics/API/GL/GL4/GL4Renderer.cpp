@@ -6,15 +6,16 @@
 
 #include <thread>
 
-#include "SGCore/ECS/Transformations/TransformComponent.h"
-#include "SGCore/ECS/Rendering/MeshComponent.h"
-#include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
-#include "SGCore/ECS/Rendering/SkyboxComponent.h"
+#include "SGCore/ECS/Transformations/Transform.h"
+#include "SGCore/ECS/Rendering/Mesh.h"
+#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
+#include "SGCore/ECS/Rendering/Skybox.h"
 
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
-#include "SGCore/ImportedScenesArch/IMesh.h"
-#include "SGCore/ECS/Rendering/Primitives/IPrimitiveComponent.h"
+#include "SGCore/ImportedScenesArch/IMeshData.h"
+#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/ECS/Rendering/Gizmos/IGizmo.h"
 
 void Core::Graphics::GL4Renderer::init() noexcept
 {
@@ -145,7 +146,7 @@ void Core::Graphics::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
 }
 
 void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
-                                                        const std::shared_ptr<ECS::TransformComponent>& transformComponent)
+                                                        const std::shared_ptr<ECS::Transform>& transformComponent)
 {
     m_viewMatricesBuffer->bind();
     m_programDataBuffer->bind();
@@ -171,63 +172,45 @@ void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<EC
     m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
 }
 
-void Core::Graphics::GL4Renderer::renderMeshComponent(
-        const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-        const std::shared_ptr<ECS::MeshComponent>& meshComponent
-        )
+void Core::Graphics::GL4Renderer::renderMeshData(const std::shared_ptr<ImportedScene::IMeshData>& meshData,
+                                                 const ImportedScene::MeshDataRenderInfo& meshDataRenderInfo)
 {
-    if(!meshComponent->m_mesh) return;
-
-    if(meshComponent->m_enableFacesCulling)
+    if(meshDataRenderInfo.m_enableFacesCulling)
     {
         glEnable(GL_CULL_FACE);
-        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshComponent->m_facesCullingFaceType));
+        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshDataRenderInfo.m_facesCullingFaceType));
         glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
-                meshComponent->m_facesCullingPolygonsOrder)
+                meshDataRenderInfo.m_facesCullingPolygonsOrder)
         );
     }
     else
     {
         glDisable(GL_CULL_FACE);
     }
-    meshComponent->m_mesh->getVertexArray()->bind();
-
-    glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(meshComponent->m_mesh->m_drawMode), meshComponent->m_mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
-}
-
-void Core::Graphics::GL4Renderer::renderMesh(const std::shared_ptr<ImportedScene::IMesh>& mesh)
-{
-    mesh->getVertexArray()->bind();
-
-    glDrawElements(GLGraphicsTypesCaster::sggDrawModeToGL(mesh->m_drawMode), mesh->getVertexArray()->m_indicesCount, GL_UNSIGNED_INT, nullptr);
-}
-
-void Core::Graphics::GL4Renderer::renderPrimitiveComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                                           const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent)
-{
-    // const auto& materialShader = primitiveComponent->m_mesh->m_material->getCurrentShader();
-
-    // if(!materialShader) return;
-
-    // primitiveComponent->m_mesh->m_material->bind();
-    if(primitiveComponent->m_mesh->getVertexArray())
+    if(meshData->getVertexArray())
     {
-        primitiveComponent->m_mesh->getVertexArray()->bind();
+        meshData->getVertexArray()->bind();
     }
 
-    //materialShader->useUniformBuffer(m_modelMatricesBuffer);
-    // materialShader->useUniformBuffer(m_viewMatricesBuffer);
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshDataRenderInfo.m_drawMode);
 
-    glLineWidth(primitiveComponent->m_linesWidth);
-    //glPointSize(primitiveComponent->m_linesWidth);
-
-    if(!primitiveComponent->m_mesh->m_useIndices)
+    if(drawMode == GL_LINES)
     {
-        glDrawArrays(GL_LINES, 0, primitiveComponent->m_mesh->m_positions.size());
+        glLineWidth(meshDataRenderInfo.m_linesWidth);
+    }
+
+    if(drawMode == GL_POINTS)
+    {
+        glPointSize(meshDataRenderInfo.m_pointsSize);
+    }
+
+    if(!meshData->m_useIndices)
+    {
+        glDrawArrays(drawMode, 0, meshData->m_positions.size());
     }
     else
     {
-        glDrawElements(GL_LINES, primitiveComponent->m_mesh->getVertexArray()->m_indicesCount,
+        glDrawElements(drawMode, meshData->getVertexArray()->m_indicesCount,
                        GL_UNSIGNED_INT, nullptr);
     }
 }
@@ -291,9 +274,9 @@ Core::Graphics::GL4FrameBuffer* Core::Graphics::GL4Renderer::createFrameBuffer()
     return new GL4FrameBuffer;
 }
 
-Core::Graphics::GL3Mesh* Core::Graphics::GL4Renderer::createMesh()
+Core::Graphics::GL3MeshData* Core::Graphics::GL4Renderer::createMeshData()
 {
-    return new GL3Mesh;
+    return new GL3MeshData;
 }
 
 void Core::Graphics::GL4Renderer::setDepthTestingEnabled(const bool& enabled) const noexcept

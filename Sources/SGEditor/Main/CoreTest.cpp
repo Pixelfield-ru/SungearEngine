@@ -15,7 +15,7 @@
 
 #include "SGConsole/API/Console.h"
 
-#include "SGCore/ECS/Transformations/TransformationsSystem.h"
+#include "SGCore/ECS/Transformations/TransformationsUpdater.h"
 
 #include <glm/glm.hpp>
 #include "glm/ext/matrix_clip_space.hpp"
@@ -30,14 +30,14 @@
 #include "SGCore/ECS/Scene.h"
 #include "SGCore/ECS/ECSWorld.h"
 
-#include "SGCore/ECS/Transformations/TransformComponent.h"
-#include "SGCore/ECS/Rendering/MeshComponent.h"
-#include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLightComponent.h"
-#include "SGCore/ECS/Rendering/SkyboxComponent.h"
+#include "SGCore/ECS/Transformations/Transform.h"
+#include "SGCore/ECS/Rendering/Mesh.h"
+#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
+#include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
+#include "SGCore/ECS/Rendering/Skybox.h"
 #include "SGCore/Memory/Assets/CubemapAsset.h"
-#include "SGCore/ECS/Rendering/Primitives/BoxComponent.h"
+#include "SGCore/ECS/Rendering/Gizmos/BoxGizmo.h"
 #include <imgui/imgui.h>
 
 std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
@@ -57,20 +57,20 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
                        std::vector<std::shared_ptr<Core::ECS::Entity>>& outputEntities)
 {
     std::shared_ptr<Core::ECS::Entity> nodeEntity = std::make_shared<Core::ECS::Entity>();
-    nodeEntity->addComponent(std::make_shared<Core::ECS::TransformComponent>());
+    nodeEntity->addComponent(std::make_shared<Core::ECS::Transform>());
     nodeEntity->m_name = sgNode->m_name;
 
     outputEntities.push_back(nodeEntity);
 
-    for(auto& mesh : sgNode->m_meshes)
+    for(auto& mesh : sgNode->m_meshesData)
     {
-        std::shared_ptr<Core::ECS::TransformComponent> meshedEntityTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
+        std::shared_ptr<Core::ECS::Transform> meshedEntityTransformComponent = std::make_shared<Core::ECS::Transform>();
         meshedEntityTransformComponent->m_position = sgNode->m_position + pos;
         meshedEntityTransformComponent->m_rotation = eulerAngles(sgNode->m_rotationQuaternion) + rot;
         meshedEntityTransformComponent->m_scale = sgNode->m_scale * scale;
 
-        std::shared_ptr<Core::ECS::MeshComponent> meshComponent = std::make_shared<Core::ECS::MeshComponent>();
-        meshComponent->m_mesh = mesh;
+        std::shared_ptr<Core::ECS::Mesh> meshComponent = std::make_shared<Core::ECS::Mesh>();
+        meshComponent->m_meshData = mesh;
 
         std::shared_ptr<Core::ECS::Entity> meshedEntity = std::make_shared<Core::ECS::Entity>();
         meshedEntity->addComponent(meshedEntityTransformComponent);
@@ -179,9 +179,9 @@ void init()
 
     for(const auto& entity : planeEntities)
     {
-        auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
-        auto transformComponent = entity->getComponent<Core::ECS::TransformComponent>();
-        if(meshComponent) meshComponent->m_enableFacesCulling = false;
+        auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
+        auto transformComponent = entity->getComponent<Core::ECS::Transform>();
+        if(meshComponent) meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
         if(transformComponent)
         {
             transformComponent->m_scale = { 400.0, 400.0, 400.0 };
@@ -237,7 +237,7 @@ void init()
     {
         testScene->addEntity(entity, SG_LAYER_TRANSPARENT_NAME);
 
-        auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
+        auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
         if(meshComponent)
         {
             //meshComponent->m_enableFacesCulling = false;
@@ -268,11 +268,11 @@ void init()
     {
         testScene->addEntity(entity);
 
-        auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
+        auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
 
         if(meshComponent)
         {
-            meshComponent->m_mesh->m_material->m_textures.emplace_back(
+            meshComponent->m_meshData->m_material->m_textures.emplace_back(
                     SGTextureType::SGTP_DIFFUSE,
                     geniusJPG->m_texture2D
             );
@@ -305,13 +305,13 @@ void init()
 
     for(const auto& entity : cubeEntities)
     {
-        entity->addComponent(std::make_shared<Core::ECS::SkyboxComponent>());
+        entity->addComponent(std::make_shared<Core::ECS::Skybox>());
 
-        auto meshComponent = entity->getComponent<Core::ECS::MeshComponent>();
+        auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
         if(meshComponent)
         {
-            meshComponent->m_enableFacesCulling = false;
-            meshComponent->m_mesh->m_material->m_textures.emplace_back(
+            meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
+            meshComponent->m_meshData->m_material->m_textures.emplace_back(
                     SGTextureType::SGTP_SKYBOX,
                     standardCubemap->getTexture2D()
             );
@@ -325,30 +325,38 @@ void init()
 
     testCameraEntity = std::make_shared<Core::ECS::Entity>();
     testCameraEntity->m_name = "SGMainCamera";
-    auto cameraTransformComponent = std::make_shared<Core::ECS::TransformComponent>();
+    auto cameraTransformComponent = std::make_shared<Core::ECS::Transform>();
     cameraTransformComponent->m_position.y = -3;
     cameraTransformComponent->m_position.z = 2;
     cameraTransformComponent->m_rotation.x = -30;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
-    testCameraEntity->addComponent(std::make_shared<Core::ECS::CameraComponent>());
+    testCameraEntity->addComponent(std::make_shared<Core::ECS::Camera>());
 
-    testCameraEntity->getComponent<Core::ECS::CameraComponent>()->addPostProcessLayer("blurPPLayer", testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second);
+    int primaryMonitorWidth;
+    int primaryMonitorHeight;
+
+    Core::Main::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
+
+    testCameraEntity->getComponent<Core::ECS::Camera>()->addPostProcessLayer("blurPPLayer",
+                                                                             testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
+                                                                             primaryMonitorWidth,
+                                                                             primaryMonitorHeight);
 
     testScene->addEntity(testCameraEntity);
 
     testShadowsCaster = std::make_shared<Core::ECS::Entity>();
     testScene->addEntity(testShadowsCaster);
-    auto shadowsCasterTransform = std::make_shared<Core::ECS::TransformComponent>();
+    auto shadowsCasterTransform = std::make_shared<Core::ECS::Transform>();
     shadowsCasterTransform->m_position.y = 15;
     shadowsCasterTransform->m_position.z = 5.0;
     shadowsCasterTransform->m_position.x = -5.0;
     shadowsCasterTransform->m_rotation.x = 50;
     //shadowsCasterTransform->m_rotation.y = -90;
-    auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCasterComponent>();
+    auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCaster>();
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(shadowCasterComponent);
-    auto directionalLight = std::make_shared<Core::ECS::DirectionalLightComponent>();
+    auto directionalLight = std::make_shared<Core::ECS::DirectionalLight>();
     directionalLight->m_color.r = 250.0f / 255.0f;
     directionalLight->m_color.g = 129.0f / 255.0f;
     directionalLight->m_color.b = 0.0f / 255.0f;
@@ -356,29 +364,29 @@ void init()
     //directionalLight->m_color.g = 255.0f / 255.0f * 2.0f;
     //directionalLight->m_color.b = 255.0f / 255.0f * 2.0f;
     testShadowsCaster->addComponent(directionalLight);
-    testShadowsCaster->addComponent(std::make_shared<Core::ECS::BoxComponent>());
+    testShadowsCaster->addComponent(std::make_shared<Core::ECS::BoxGizmo>());
 
     std::cout << "bam bam bam mi" << std::endl;
 
     auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
     testScene->addEntity(testShadowsCaster1);
-    auto shadowsCasterTransform1 = std::make_shared<Core::ECS::TransformComponent>();
+    auto shadowsCasterTransform1 = std::make_shared<Core::ECS::Transform>();
     shadowsCasterTransform1->m_position.x = -10;
     shadowsCasterTransform1->m_position.y = 10;
     shadowsCasterTransform1->m_position.z = -50.0;
     shadowsCasterTransform1->m_rotation.y = 180;
     //shadowsCasterTransform1->m_rotation.x = 40;
     //shadowsCasterTransform1->m_rotation.y = 30;
-    auto shadowCasterComponent1 = std::make_shared<Core::ECS::ShadowsCasterComponent>();
+    auto shadowCasterComponent1 = std::make_shared<Core::ECS::ShadowsCaster>();
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
     testShadowsCaster1->addComponent(shadowCasterComponent1);
-    auto directionalLight1 = std::make_shared<Core::ECS::DirectionalLightComponent>();
+    auto directionalLight1 = std::make_shared<Core::ECS::DirectionalLight>();
     directionalLight1->m_color.r = 139.0f / 255.0f;
     directionalLight1->m_color.g = 184.0f / 255.0f;
     directionalLight1->m_color.b = 241.0f / 255.0f;
     //directionalLight1->m_intensity = 10.0f;
     testShadowsCaster1->addComponent(directionalLight1);
-    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::BoxComponent>());
+    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::BoxGizmo>());
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -390,7 +398,7 @@ void fixedUpdate()
     //boxComponent->m_size.z += sin(framesCnt / 75.0) / 10.0;
     //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += sin(framesCnt / 75.0) / 2.0;
 
-    testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
+    testShadowsCaster->getComponent<Core::ECS::Transform>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
 
     Core::ECS::ECSWorld::fixedUpdate(Core::ECS::Scene::getCurrentScene());
 

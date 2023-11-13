@@ -14,18 +14,19 @@
 
 namespace Core::ECS
 {
-    class CameraComponent;
-    class MeshComponent;
-    class TransformComponent;
-    class ShadowsCasterComponent;
-    class SkyboxComponent;
+    class Camera;
+    class Mesh;
+    class Transform;
+    class ShadowsCaster;
+    class Skybox;
     class IRenderingComponent;
-    class IPrimitiveComponent;
+    class IGizmo;
 }
 
 namespace Core::ImportedScene
 {
-    class IMesh;
+    class IMeshData;
+    struct MeshDataRenderInfo;
 }
 
 namespace Core::Graphics
@@ -72,26 +73,10 @@ namespace Core::Graphics
          * @param transformComponent - The transform component of this "camera".
          */
         virtual void prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
-                                           const std::shared_ptr<ECS::TransformComponent>& transformComponent) { }
+                                           const std::shared_ptr<ECS::Transform>& transformComponent) { }
 
-        // TODO: make one method for drawing mesh. input - transformComponent, meshComponent of entity
-         /**
-          * @param transformComponent - The mesh transformation component to be rendered.
-          * @param meshComponent - The mesh component to be rendered.
-          */
-        // TODO:: remove renderMeshComponent
-        virtual void renderMeshComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                         const std::shared_ptr<ECS::MeshComponent>& meshComponent) { }
-
-        virtual void renderMesh(const std::shared_ptr<ImportedScene::IMesh>& mesh) { }
-
-        /**
-         * Renders a primitive component (i.e. sphere, line, cube, etc.).
-         * @param transformComponent - Primitive transformation component.
-         * @param primitiveComponent - The component of the primitive to be rendered.
-         */
-        virtual void renderPrimitiveComponent(const std::shared_ptr<ECS::TransformComponent>& transformComponent,
-                                              const std::shared_ptr<ECS::IPrimitiveComponent>& primitiveComponent) { }
+        virtual void renderMeshData(const std::shared_ptr<ImportedScene::IMeshData>& meshData,
+                                    const ImportedScene::MeshDataRenderInfo& meshDataRenderInfo) { }
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
@@ -112,7 +97,7 @@ namespace Core::Graphics
         [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
         [[nodiscard]] virtual IFrameBuffer* createFrameBuffer() = 0;
 
-        [[nodiscard]] virtual ImportedScene::IMesh* createMesh() = 0;
+        [[nodiscard]] virtual ImportedScene::IMeshData* createMeshData() = 0;
 
         // ------------- some settings for renderer ---------
         virtual void setDepthTestingEnabled(const bool& enabled) const noexcept { }

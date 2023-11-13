@@ -2,10 +2,10 @@
 
 #include <thread>
 
-#include "SGCore/ECS/Transformations/TransformComponent.h"
-#include "SGCore/ECS/Rendering/MeshComponent.h"
-#include "SGCore/ECS/Rendering/CameraComponent.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
+#include "SGCore/ECS/Transformations/Transform.h"
+#include "SGCore/ECS/Rendering/Mesh.h"
+#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 
 bool Core::Graphics::GL46Renderer::confirmSupport() noexcept
 {

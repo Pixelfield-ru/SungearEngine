@@ -4,48 +4,47 @@
 
 #include "ECSWorld.h"
 
-#include "Transformations/TransformationsSystem.h"
-#include "SGCore/ECS/Transformations/Camera3DMovementSystem.h"
-#include "SGCore/ECS/Rendering/Pipelines/PBRForwardPipelineSystem.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterSystem.h"
-#include "SGCore/ECS/Rendering/RenderingComponentsSystem.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLightsSystem.h"
-#include "SGCore/ECS/Rendering/SkyboxesCollectorSystem.h"
-#include "SGCore/ECS/Rendering/Primitives/PrimitivesUpdaterSystem.h"
-#include "SGCore/ECS/Rendering/MeshedEntitiesCollectorSystem.h"
-#include "GLFW/glfw3.h"
-#include "SGCore/ECS/Rendering/Primitives/ComplexPrimitivesCollectorSystem.h"
-#include "SGCore/ECS/Rendering/Primitives/LinesCollectorSystem.h"
+#include "Transformations/TransformationsUpdater.h"
+#include "SGCore/ECS/Transformations/CameraMovement3DSystem.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRForwardRenderPipeline.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCastersCollector.h"
+#include "SGCore/ECS/Rendering/RenderingComponentsUpdater.h"
+#include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"
+#include "SGCore/ECS/Rendering/SkyboxesCollector.h"
+#include "SGCore/ECS/Rendering/MeshesCollector.h"
+#include "SGCore/ECS/Rendering/Gizmos/GizmosMeshesRebuilder.h"
+#include "SGCore/ECS/Rendering/Gizmos/LinesGizmosCollector.h"
+#include "SGCore/ECS/Rendering/Gizmos/ComplexGizmosCollector.h"
 
 void Core::ECS::ECSWorld::init() noexcept
 {
-    auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsSystem>();
+    auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsUpdater>();
     transformationsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto meshedEntitiesCollectorSystem = Patterns::Singleton::getInstance<MeshedEntitiesCollectorSystem>();
+    auto meshedEntitiesCollectorSystem = Patterns::Singleton::getInstance<MeshesCollector>();
 
-    auto renderingComponentsSystem = Patterns::Singleton::getInstance<RenderingComponentsSystem>();
+    auto renderingComponentsSystem = Patterns::Singleton::getInstance<RenderingComponentsUpdater>();
     renderingComponentsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto primitivesUpdaterSystem = Patterns::Singleton::getInstance<PrimitivesUpdaterSystem>();
+    auto primitivesUpdaterSystem = Patterns::Singleton::getInstance<GizmosMeshesRebuilder>();
     primitivesUpdaterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto directionalLightsSystem = Patterns::Singleton::getInstance<DirectionalLightsSystem>();
+    auto directionalLightsSystem = Patterns::Singleton::getInstance<DirectionalLightsCollector>();
     // directionalLightsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto shadowsCasterSystem = Patterns::Singleton::getInstance<ShadowsCasterSystem>();
+    auto shadowsCasterSystem = Patterns::Singleton::getInstance<ShadowsCastersCollector>();
     // shadowsCasterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto camera3DMovementSystem = Patterns::Singleton::getInstance<Camera3DMovementSystem>();
+    auto camera3DMovementSystem = Patterns::Singleton::getInstance<CameraMovement3DSystem>();
     camera3DMovementSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto pipelineSystem = Patterns::Singleton::getInstance<PBRForwardPipelineSystem>();
+    auto pipelineSystem = Patterns::Singleton::getInstance<PBRForwardRenderPipeline>();
     pipelineSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
-    auto skyboxesCollectorSystem = Patterns::Singleton::getInstance<SkyboxesCollectorSystem>();
+    auto skyboxesCollectorSystem = Patterns::Singleton::getInstance<SkyboxesCollector>();
 
-    auto linesCollectorSystem = Patterns::Singleton::getInstance<LinesCollectorSystem>();
-    auto complexPrimitivesCollectorSystem = Patterns::Singleton::getInstance<ComplexPrimitivesCollectorSystem>();
+    auto linesCollectorSystem = Patterns::Singleton::getInstance<LinesGizmosCollector>();
+    auto complexPrimitivesCollectorSystem = Patterns::Singleton::getInstance<ComplexGizmosCollector>();
 
     // -------------------------------
     m_systems.emplace(transformationsSystem);

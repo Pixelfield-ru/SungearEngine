@@ -16,8 +16,8 @@
 #include "SGCore/Graphics/API/GL/GL46/GL46UniformBuffer.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "SGCore/ImportedScenesArch/IMesh.h"
-#include "SGCore/Graphics/API/GL/GL3/GL3Mesh.h"
+#include "SGCore/ImportedScenesArch/IMeshData.h"
+#include "SGCore/Graphics/API/GL/GL3/GL3MeshData.h"
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 

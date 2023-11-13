@@ -12,7 +12,7 @@
 
 #include "Scene.h"
 #include "SGCore/Patterns/Marker.h"
-#include "Transformations/TransformComponent.h"
+#include "Transformations/Transform.h"
 #include "SGCore/Patterns/Singleton.h"
 
 #include "ComponentsCollection.h"
@@ -42,7 +42,9 @@ namespace Core::ECS
 
         template<typename... ComponentsT>
         requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
-        void cacheEntityComponents(const std::shared_ptr<Entity>& entity, const std::function<bool()> willCachePredicate)
+        void cacheEntityComponents(const std::shared_ptr<Entity>& entity,
+                                   const std::function<bool()>& willCachePredicate,
+                                   const std::function<bool(const std::shared_ptr<IComponent>& component)>& willCacheComponentPredicate)
         {
             double t0 = glfwGetTime();
 
@@ -71,7 +73,7 @@ namespace Core::ECS
             foundComponentsCollection = !foundComponentsCollection ?
                                         std::make_shared<ComponentsCollection>() : foundComponentsCollection;
 
-            Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection](auto t)
+            Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection, &willCacheComponentPredicate](auto t)
                                                    {
                                                        using type = typename decltype(t)::type;
 
@@ -79,9 +81,12 @@ namespace Core::ECS
                                                        if (!foundComponentsCollection->getComponent<type>())
                                                        {
                                                            auto entityComponentsList = entity->getComponents<type>();
-                                                           for (const auto& component: entityComponentsList)
+                                                           for (const auto& component : entityComponentsList)
                                                            {
-                                                               foundComponentsCollection->addComponent(component);
+                                                               if(willCacheComponentPredicate(component))
+                                                               {
+                                                                   foundComponentsCollection->addComponent(component);
+                                                               }
                                                            }
                                                        }
                                                    });
@@ -95,9 +100,25 @@ namespace Core::ECS
 
         template<typename... ComponentsT>
         requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
+        void cacheEntityComponents(const std::shared_ptr<Entity>& entity,
+                                   const std::function<bool()>& willCachePredicate)
+        {
+            cacheEntityComponents<ComponentsT...>(entity, willCachePredicate, [](const std::shared_ptr<IComponent>& component) { return true; });
+        }
+
+        template<typename... ComponentsT>
+        requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
+        void cacheEntityComponents(const std::shared_ptr<Entity>& entity,
+                                   const std::function<bool(const std::shared_ptr<IComponent>& component)>& willCacheComponentPredicate)
+        {
+            cacheEntityComponents<ComponentsT...>(entity, []() { return true; }, willCacheComponentPredicate);
+        }
+
+        template<typename... ComponentsT>
+        requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
         void cacheEntityComponents(const std::shared_ptr<Entity>& entity)
         {
-            cacheEntityComponents<ComponentsT...>(entity, []() { return true; });
+            cacheEntityComponents<ComponentsT...>(entity, []() { return true; }, [](const std::shared_ptr<IComponent>& component) { return true; });
         }
 
         const auto& getCachedEntities() const noexcept

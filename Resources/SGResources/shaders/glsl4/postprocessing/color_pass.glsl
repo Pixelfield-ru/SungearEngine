@@ -35,6 +35,9 @@
     uniform FrameBuffer sgpp_defaultFB;
     uniform FrameBuffer blurPPLayer;
 
+    float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+    uniform bool blurHorizontally;
+
     in vec2 vs_UVAttribute;
 
     void main()
@@ -62,9 +65,9 @@
         {
             int s = 0;
 
-            for(int x = -9; x < 9; x++)
+            for(int x = -3; x < 3; x++)
             {
-                for(int y = -9; y < 9; y++)
+                for(int y = -3; y < 3; y++)
                 {
                     blurCol += texture(blurPPLayer.colorAttachments[i], finalUV + vec2(x, y) * 0.001) * mixCoeff;
                     s++;
@@ -74,12 +77,35 @@
             blurCol /= s;
         }
 
+        /*vec2 blurLayerSize = 1.0 / textureSize(blurPPLayer.colorAttachments[0], 0);
+        vec4 blurCol = texture(blurPPLayer.colorAttachments[0], finalUV);
+        blurCol.rgb *= weight[0];*/
+
+        //if(blurHorizontally)
+        /*for(int k = 0; k < 5; ++k)
+        {
+            for (int i = 1; i < 5; ++i)
+            {
+                blurCol.rgb += texture(blurPPLayer.colorAttachments[0], finalUV + vec2(blurLayerSize.x * i, 0.0)).rgb * weight[i];
+                blurCol.rgb += texture(blurPPLayer.colorAttachments[0], finalUV - vec2(blurLayerSize.x * i, 0.0)).rgb * weight[i];
+            }
+        }
+        //else
+        for(int k = 0; k < 5; ++k)
+        {
+            for (int i = 1; i < 5; ++i)
+            {
+                blurCol.rgb += texture(blurPPLayer.colorAttachments[0], finalUV + vec2(0.0, blurLayerSize.y * i)).rgb * weight[i];
+                blurCol.rgb += texture(blurPPLayer.colorAttachments[0], finalUV - vec2(0.0, blurLayerSize.y * i)).rgb * weight[i];
+            }
+        }*/
+
         /*for (int i = 0; i < blurPPLayer.colorAttachmentsCount; i++)
         {
             finalColor += texture(blurPPLayer.colorAttachments[i], finalUV) * mixCoeff;
         }*/
 
-        finalColor += blurCol * 100.0;
+        finalColor.rgb += ACESFilm(blurCol.rgb) * 10.0;
 
         finalColor.rgb = ACESFilm(finalColor.rgb);
 

@@ -16,7 +16,6 @@ namespace Core::ECS
 
     class IComponent : public Patterns::UUID
     {
-    private:
         // just for polymorphism
         virtual void init() = 0;
 

@@ -6,14 +6,14 @@
 
 #include "ECSWorld.h"
 
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCasterComponent.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLightComponent.h"
+#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
+#include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
 
 void Core::ECS::Entity::addComponent(const std::shared_ptr<IComponent>& component) noexcept
 {
     m_components.push_back(component);
 
-    if(SG_INSTANCEOF(component.get(), ShadowsCasterComponent))
+    if(SG_INSTANCEOF(component.get(), ShadowsCaster))
     {
         if(Scene::getCurrentScene())
         {
@@ -22,7 +22,7 @@ void Core::ECS::Entity::addComponent(const std::shared_ptr<IComponent>& componen
         }
     }
 
-    if(SG_INSTANCEOF(component.get(), DirectionalLightComponent))
+    if(SG_INSTANCEOF(component.get(), DirectionalLight))
     {
         if(Scene::getCurrentScene())
         {

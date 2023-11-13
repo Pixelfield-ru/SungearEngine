@@ -4,7 +4,7 @@
 
 #include "Scene.h"
 
-#include "SGCore/ECS/Rendering/MeshComponent.h"
+#include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/Graphics/API/ShaderDefine.h"
 #include "SGCore/Graphics/Defines.h"
 #include "Layer.h"

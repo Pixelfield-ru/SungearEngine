@@ -73,7 +73,7 @@ public final class AiScene {
      * @return the number of meshes
      */
     public int getNumMeshes() {
-        return m_meshes.size();
+        return m_meshesData.size();
     }
     
 
@@ -85,7 +85,7 @@ public final class AiScene {
      * @return the list of meshes
      */
     public List<AiMesh> getMeshes() {
-        return m_meshes;
+        return m_meshesData;
     }
     
     
@@ -210,14 +210,14 @@ public final class AiScene {
 
     @Override
     public String toString() {
-        return "AiScene (" + m_meshes.size() + " mesh/es)";
+        return "AiScene (" + m_meshesData.size() + " mesh/es)";
     }
 
 
     /**
      * Meshes.
      */
-    private final List<AiMesh> m_meshes = new ArrayList<AiMesh>();
+    private final List<AiMesh> m_meshesData = new ArrayList<AiMesh>();
     
     
     /**

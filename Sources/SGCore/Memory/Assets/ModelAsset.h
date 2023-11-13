@@ -27,7 +27,7 @@ namespace Core::Memory::Assets
         std::string m_name;
 
         std::shared_ptr<ImportedScene::Node> processNode(const aiNode*, const aiScene*);
-        std::shared_ptr<ImportedScene::IMesh> processMesh(const aiMesh*, const aiScene*);
+        std::shared_ptr<ImportedScene::IMeshData> processMesh(const aiMesh*, const aiScene*);
         void loadTextures(aiMaterial* aiMat, std::shared_ptr<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureType& sgMaterialTextureType);
 
     public:

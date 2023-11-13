@@ -16,7 +16,7 @@ namespace Core::ECS
     // todo: make render passes
     class IRenderingComponent : public IComponent
     {
-        friend class RenderingComponentsSystem;
+        friend class RenderingComponentsUpdater;
 
     public:
         float m_fov = 75.0f;

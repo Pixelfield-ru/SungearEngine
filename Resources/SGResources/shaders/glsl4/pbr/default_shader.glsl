@@ -507,6 +507,8 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
         fragColor.a = diffuseColor.a;
         fragColor.rgb = finalCol;
 
+        // shadows apply ---------------------------------------
+
         float shadowCoeff = 0.0;
 
         for (int i = 0; i < SHADOWS_CASTERS_MAX_COUNT && i < sgmat_shadowMapSamplers_COUNT; ++i)
