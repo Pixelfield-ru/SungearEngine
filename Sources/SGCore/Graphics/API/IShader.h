@@ -16,6 +16,8 @@
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
+#include "ShaderMarkup.h"
+
 namespace Core::Memory::Assets
 {
     class MaterialTexture;
@@ -24,6 +26,7 @@ namespace Core::Memory::Assets
 namespace Core::Graphics
 {
     class IUniformBuffer;
+    class IFrameBuffer;
 
     // todo: add various types of defines like material textures block define e.t.c.
     class IShader : public Memory::Assets::IAssetObserver
@@ -38,6 +41,10 @@ namespace Core::Graphics
         virtual void bind() = 0;
 
         virtual void compile(std::shared_ptr<Memory::Assets::FileAsset> asset) = 0;
+
+        virtual void useShaderMarkup(const ShaderMarkup& shaderMarkup);
+        virtual void updateFrameBufferAttachmentsCount(const std::shared_ptr<IFrameBuffer>& frameBuffer,
+                                                       const std::string& frameBufferNameInShader);
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
 

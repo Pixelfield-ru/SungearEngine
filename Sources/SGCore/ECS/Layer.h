@@ -8,7 +8,7 @@
 #include <list>
 
 #include "Entity.h"
-#include "SGCore/Graphics/API/MarkedShader.h"
+#include "SGCore/Graphics/API/ShaderMarkup.h"
 
 // STANDARD LAYERS DEFINES
 
@@ -25,8 +25,6 @@ namespace Core::ECS
 
     public:
         std::list<std::shared_ptr<Entity>> m_entities;
-
-        std::shared_ptr<Graphics::MarkedShader> m_markedShader = std::make_shared<Graphics::MarkedShader>();
 
         std::string m_name;
 

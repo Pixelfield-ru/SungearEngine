@@ -11,6 +11,11 @@ namespace Core::ImportedScene
     class IMeshData;
 }
 
+namespace Core::Memory::Assets
+{
+    class IMaterial;
+}
+
 namespace Core::ECS
 {
     class PBRForwardRenderPipeline : public IRenderPipeline

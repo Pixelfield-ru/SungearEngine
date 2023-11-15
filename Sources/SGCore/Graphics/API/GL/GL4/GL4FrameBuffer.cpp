@@ -9,7 +9,7 @@
 #include "SGCore/Main/CoreMain.h"
 #include "GL4Texture2D.h"
 
-#include "SGCore/Graphics/API/MarkedShader.h"
+#include "SGCore/Graphics/API/ShaderMarkup.h"
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachments
 (const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock)
@@ -191,8 +191,8 @@ void Core::Graphics::GL4FrameBuffer::destroy()
 
 std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::clear()
 {
+    glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
 
     return shared_from_this();
 }
@@ -322,4 +322,39 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
     }
 
     return shared_from_this();
+}
+
+void Core::Graphics::GL4FrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,
+                                                         uint16_t& depthStencilAttachmentsCount,
+                                                         uint16_t& colorAttachmentsCount,
+                                                         uint16_t& renderAttachmentsCount) const noexcept
+{
+    depthAttachmentsCount = 0;
+    depthStencilAttachmentsCount = 0;
+    colorAttachmentsCount = 0;
+    renderAttachmentsCount = 0;
+
+    for(const auto& attachment : m_attachments)
+    {
+        if(attachment.first >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
+           attachment.first <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
+        {
+            ++depthAttachmentsCount;
+        }
+        else if(attachment.first >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
+                attachment.first <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
+        {
+            ++depthStencilAttachmentsCount;
+        }
+        else if(attachment.first >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+                attachment.first <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
+        {
+            ++colorAttachmentsCount;
+        }
+        else if(attachment.first >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
+                attachment.first <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
+        {
+            ++renderAttachmentsCount;
+        }
+    }
 }

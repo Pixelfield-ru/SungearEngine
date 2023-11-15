@@ -58,20 +58,29 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             }
             break;
 
-        case SG_COLOR_POSTPROCESSING_SHADER:
+        case SG_PP_LAYER_DEPTH_TEST_SHADER:
             switch(Main::CoreMain::getRenderer().getAPIType())
             {
                 case SG_API_TYPE_GL4:
-                    shaderPath = SG_GLSL4_COLOR_POSTPROCESSING_SHADER_PATH;
+                    shaderPath = SG_GLSL4_PP_LAYER_DEPTH_TEST_SHADER_PATH;
                     break;
             }
             break;
 
-        case SG_DEPTH_POSTPROCESSING_SHADER:
+        case SG_PP_LAYER_APPLY_FX_SHADER:
             switch(Main::CoreMain::getRenderer().getAPIType())
             {
                 case SG_API_TYPE_GL4:
-                    shaderPath = SG_GLSL4_DEPTH_POSTPROCESSING_SHADER_PATH;
+                    shaderPath = SG_GLSL4_DEFAULT_PP_LAYER_FX_APPLY_SHADER_PATH;
+                    break;
+            }
+            break;
+
+        case SG_PP_FINAL_OVERLAY_SHADER:
+            switch(Main::CoreMain::getRenderer().getAPIType())
+            {
+                case SG_API_TYPE_GL4:
+                    shaderPath = SG_GLSL4_FINAL_PP_OVERLAY_SHADER_PATH;
                     break;
             }
             break;

@@ -34,6 +34,11 @@ namespace Core::ECS
         friend class ShadowsCastersCollector;
 
     public:
+        ShadowsCaster()
+        {
+            m_frameBuffer->m_bgColor.a = 1.0;
+        }
+
 
         // frame buffer with depth attachment
         std::shared_ptr<Core::Graphics::IFrameBuffer> m_frameBuffer =

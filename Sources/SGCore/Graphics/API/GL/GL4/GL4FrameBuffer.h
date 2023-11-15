@@ -48,6 +48,11 @@ namespace Core::Graphics
                                                     const SGGColorFormat& format, const SGGColorInternalFormat& internalFormat,
                                                     const int& mipLevel,
                                                     const int& layer) override;
+
+        void getAttachmentsCount(std::uint16_t& depthAttachmentsCount,
+                                 std::uint16_t& depthStencilAttachmentsCount,
+                                 std::uint16_t& colorAttachmentsCount,
+                                 std::uint16_t& renderAttachmentsCount) const noexcept override;
     };
 }
 

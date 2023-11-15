@@ -112,7 +112,7 @@ void init()
     );
 
     auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
-            //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
+            "../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/t62/scene.gltf"
             //"../SGResources/models/test/stalk_bagger/bagger.fbx"
@@ -132,7 +132,7 @@ void init()
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            "../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/zis_sport/scene.gltf"
             //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
@@ -240,7 +240,7 @@ void init()
         auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
         if(meshComponent)
         {
-            //meshComponent->m_enableFacesCulling = false;
+            // meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
         }
     }
 
@@ -331,17 +331,24 @@ void init()
     cameraTransformComponent->m_rotation.x = -30;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
-    testCameraEntity->addComponent(std::make_shared<Core::ECS::Camera>());
+    auto camera = std::make_shared<Core::ECS::Camera>();
+    testCameraEntity->addComponent(camera);
 
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
     Core::Main::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    testCameraEntity->getComponent<Core::ECS::Camera>()->addPostProcessLayer("blurPPLayer",
-                                                                             testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
-                                                                             primaryMonitorWidth,
-                                                                             primaryMonitorHeight);
+    camera->addPostProcessLayer("blurPPLayer",
+                                testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
+                                primaryMonitorWidth,
+                                primaryMonitorHeight
+    );
+
+    /*camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
+                                      std::shared_ptr<Core::Graphics::IShader>(
+            Core::Main::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/test_pp_layer.glsl")
+            ));*/
 
     testScene->addEntity(testCameraEntity);
 

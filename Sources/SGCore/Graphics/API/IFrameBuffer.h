@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <list>
+#include <glm/glm.hpp>
 
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"
@@ -26,6 +27,8 @@ namespace Core::Graphics
     class IFrameBuffer : public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
+        glm::vec4 m_bgColor { 0.0, 0.0, 0.0, 1.0 };
+
         // type of attachment to read
         SGFrameBufferAttachmentType m_readAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
         // type of attachment to draw
@@ -63,37 +66,18 @@ namespace Core::Graphics
                                                             const int& mipLevel,
                                                             const int& layer) = 0;
 
-        std::shared_ptr<IFrameBuffer> setWidth(const int& width) noexcept
-        {
-            m_width = width;
+        std::shared_ptr<IFrameBuffer> setWidth(const int& width) noexcept;
+        std::shared_ptr<IFrameBuffer> setHeight(const int& height) noexcept;
 
-            return shared_from_this();
-        }
+        std::shared_ptr<IFrameBuffer> setSize(const int& width, const int& height) noexcept;
 
-        std::shared_ptr<IFrameBuffer> setHeight(const int& height) noexcept
-        {
-            m_height = height;
+        int getWidth() const noexcept;
+        int getHeight() const noexcept;
 
-            return shared_from_this();
-        }
-
-        std::shared_ptr<IFrameBuffer> setSize(const int& width, const int& height) noexcept
-        {
-            m_width = width;
-            m_height = height;
-
-            return shared_from_this();
-        }
-
-        int getWidth() const noexcept
-        {
-            return m_width;
-        }
-
-        int getHeight() const noexcept
-        {
-            return m_height;
-        }
+        virtual void getAttachmentsCount(std::uint16_t& depthAttachmentsCount,
+                                         std::uint16_t& depthStencilAttachmentsCount,
+                                         std::uint16_t& colorAttachmentsCount,
+                                         std::uint16_t& renderAttachmentsCount) const noexcept = 0;
 
     protected:
         int m_width = 0;

@@ -5,8 +5,10 @@
 #ifndef SUNGEARENGINE_MARKEDSHADER_H
 #define SUNGEARENGINE_MARKEDSHADER_H
 
-#include "IShader.h"
 #include <string>
+#include <cstdint>
+#include <unordered_map>
+#include "GraphicsDataTypes.h"
 
 namespace Core::Graphics
 {
@@ -34,11 +36,8 @@ namespace Core::Graphics
         std::string m_name = "sgfb_unknown";
     };
 
-    class MarkedShader
+    struct ShaderMarkup
     {
-    public:
-        std::shared_ptr<IShader> m_shader;
-
         void addTexturesBlockDeclaration(const SGTextureType& blockType,
                                          const std::string& blockTypeName,
                                          const std::uint8_t& maxTextures) noexcept;
@@ -58,19 +57,6 @@ namespace Core::Graphics
 
         void calculateBlocksOffsets() noexcept;
 
-        void bind() const noexcept;
-
-        auto& getTexturesBlocks() noexcept
-        {
-            return m_texturesBlocks;
-        }
-
-        auto& getFrameBuffersAttachmentsBlocks() noexcept
-        {
-            return m_frameBuffersAttachmentsBlocks;
-        };
-
-    private:
         // Blocks of textures that correspond to a specific type of texture
         std::unordered_map<SGTextureType, MarkedTexturesBlock> m_texturesBlocks;
 

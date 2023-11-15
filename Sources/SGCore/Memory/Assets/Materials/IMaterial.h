@@ -19,7 +19,7 @@
 namespace Core::Graphics
 {
     class IShader;
-    class MarkedShader;
+    class ShaderMarkup;
     class MarkedTexturesBlock;
 }
 
@@ -54,15 +54,9 @@ namespace Core::Memory::Assets
         float m_metallicFactor          = 1.0f;
         float m_roughnessFactor         = 1.0f;
 
-        // FRAMEBUFFER ATTACHMENTS SHOULD BE CUSTOM-BOUND BY THE USER BASED ON MarkedShader!!!!!!!!!!!!!!!!!!
-        std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::MarkedShader>& markedShader);
 
         std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::IShader>& shader,
-                                        const std::unordered_map<SGTextureType,
-                                                Graphics::MarkedTexturesBlock>& markedTexturesBlocks);
-
-        std::shared_ptr<IMaterial> bind(const std::unordered_map<SGTextureType,
-                                                Graphics::MarkedTexturesBlock>& markedTexturesBlocks);
+                                        const Graphics::ShaderMarkup& shaderMarkup);
 
         // TODO: impl
         std::shared_ptr<IAsset> load(const std::string& path) override;

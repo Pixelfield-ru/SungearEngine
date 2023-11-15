@@ -1,15 +1,14 @@
 #include "IMaterial.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Graphics/API/MarkedShader.h"
+#include "SGCore/Graphics/API/ShaderMarkup.h"
 
 std::shared_ptr<Core::Memory::Assets::IMaterial>
 Core::Memory::Assets::IMaterial::bind(const std::shared_ptr<Graphics::IShader>& shader,
-                                      const std::unordered_map<SGTextureType,
-                                              Graphics::MarkedTexturesBlock>& markedTexturesBlocks)
+                                      const Graphics::ShaderMarkup& shaderMarkup)
 {
     std::uint8_t currentTexBlockOfType = 0;
 
-    for(const auto& markedTextureBlock : markedTexturesBlocks)
+    for(const auto& markedTextureBlock : shaderMarkup.m_texturesBlocks)
     {
         std::string texBlockTypeStr = markedTextureBlock.second.m_name;
 
@@ -32,18 +31,6 @@ Core::Memory::Assets::IMaterial::bind(const std::shared_ptr<Graphics::IShader>& 
     }
 
     return shared_from_this();
-}
-
-std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind
-(const std::shared_ptr<Graphics::MarkedShader>& markedShader)
-{
-    return bind(markedShader->m_shader, markedShader->getTexturesBlocks());
-}
-
-std::shared_ptr<Core::Memory::Assets::IMaterial> Core::Memory::Assets::IMaterial::bind(
-        const std::unordered_map<SGTextureType, Graphics::MarkedTexturesBlock>& markedTexturesBlocks)
-{
-    return bind(m_customShader, markedTexturesBlocks);
 }
 
 std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::IMaterial::load(const std::string& path)

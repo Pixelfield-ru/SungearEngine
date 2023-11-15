@@ -4,6 +4,86 @@
 
 #include "IShader.h"
 
+void Core::Graphics::IShader::useShaderMarkup(const Core::Graphics::ShaderMarkup& shaderMarkup)
+{
+    for(const auto& block : shaderMarkup.m_texturesBlocks)
+    {
+        std::uint8_t offset = block.second.m_offset;
+        std::uint8_t maxTex = block.second.m_maximumTextures;
+
+        for(std::uint8_t blockIdx = offset; blockIdx < offset + maxTex; ++blockIdx)
+        {
+            useInteger(block.second.m_name + "[" + std::to_string(blockIdx - offset) + "]",
+                                 blockIdx);
+        }
+    }
+
+    for(const auto& block : shaderMarkup.m_frameBuffersAttachmentsBlocks)
+    {
+        std::uint8_t offset = block.second.m_offset;
+
+        for(std::uint8_t blockIdx = offset; blockIdx < offset + block.second.m_maxDepthAttachments; ++blockIdx)
+        {
+            useInteger(block.second.m_name + ".depthAttachments[" + std::to_string(blockIdx - offset) + "]",
+                       blockIdx
+            );
+        }
+
+        offset += block.second.m_maxDepthAttachments;
+
+        // -------------
+
+        for(std::uint8_t blockIdx = offset; blockIdx < offset + block.second.m_maxDepthStencilAttachments; ++blockIdx)
+        {
+            useInteger(block.second.m_name + ".depthStencilAttachments[" + std::to_string(blockIdx - offset) + "]",
+                       blockIdx
+            );
+        }
+
+        offset += block.second.m_maxDepthStencilAttachments;
+
+        // -------------
+
+        for(std::uint8_t blockIdx = offset; blockIdx < offset + block.second.m_maxColorAttachments; ++blockIdx)
+        {
+            useInteger(block.second.m_name + ".colorAttachments[" + std::to_string(blockIdx - offset) + "]",
+                       blockIdx
+            );
+        }
+
+        offset += block.second.m_maxColorAttachments;
+
+        // -------------
+
+        for(std::uint8_t blockIdx = offset; blockIdx < offset + block.second.m_maxRenderAttachments; ++blockIdx)
+        {
+            useInteger(block.second.m_name + ".renderAttachments[" + std::to_string(blockIdx - offset) + "]",
+                       blockIdx
+            );
+        }
+    }
+}
+
+void Core::Graphics::IShader::updateFrameBufferAttachmentsCount(const std::shared_ptr<IFrameBuffer>& frameBuffer,
+                                                                const std::string& frameBufferNameInShader)
+{
+    std::uint16_t depthAttachmentsCount;
+    std::uint16_t depthStencilAttachmentsCount;
+    std::uint16_t colorAttachmentsCount;
+    std::uint16_t renderAttachmentsCount;
+
+    frameBuffer->getAttachmentsCount(depthAttachmentsCount,
+                                     depthStencilAttachmentsCount,
+                                     colorAttachmentsCount,
+                                     renderAttachmentsCount);
+
+    // todo: names below are constant. mb make as defines
+    useInteger(frameBufferNameInShader + ".depthAttachmentsCount", depthAttachmentsCount);
+    useInteger(frameBufferNameInShader + ".depthStencilAttachmentsCount", depthStencilAttachmentsCount);
+    useInteger(frameBufferNameInShader + ".colorAttachmentsCount", colorAttachmentsCount);
+    useInteger(frameBufferNameInShader + ".renderAttachmentsCount", renderAttachmentsCount);
+}
+
 void Core::Graphics::IShader::addDefines(const SGShaderDefineType& shaderDefineType,
                                          const std::vector<ShaderDefine>& shaderDefines)
 {

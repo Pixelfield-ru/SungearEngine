@@ -32,3 +32,11 @@ Core::Graphics::VkFrameBuffer::addAttachment(const SGFrameBufferAttachmentType&,
 {
     return shared_from_this();
 }
+
+void Core::Graphics::VkFrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,
+                                                        uint16_t& depthStencilAttachmentsCount,
+                                                        uint16_t& colorAttachmentsCount,
+                                                        uint16_t& renderAttachmentsCount) const noexcept
+{
+
+}

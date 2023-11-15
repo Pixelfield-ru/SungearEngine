@@ -48,6 +48,8 @@
             finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
+        // depth test pass -------------------------------------------
+
         // first - sampling depth from current frame buffer
         float mixCoeff = 1.0 / allFB[currentFBIndex].depthAttachmentsCount;
         float currentFBDepth = 0.0;
@@ -57,7 +59,6 @@
             currentFBDepth += texture(allFB[currentFBIndex].depthAttachments[i], finalUV).r * mixCoeff;
         }
 
-        bool closerDepthFound = false;
         // then sampling depth from other frame buffers and if we have closer depth then discard fragment
         for(int i = 0; i < FBCount; i++)
         {
@@ -75,24 +76,27 @@
             // discard fragment
             if(otherDepth < currentFBDepth)
             {
-                closerDepthFound = true;
-                break;
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+                return;
             }
         }
 
+        // ----------------------------------------------------
+        // applying color (if depth test passed) --------------
+
         // then if depth of current frame buffer is closest we render pixel of this frame buffer
+
         vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
+        mixCoeff = 1.0 / allFB[currentFBIndex].colorAttachmentsCount;
 
-        if(!closerDepthFound)
+        for (int i = 0; i < allFB[currentFBIndex].colorAttachmentsCount; i++)
         {
-            mixCoeff = 1.0 / allFB[currentFBIndex].colorAttachmentsCount;
-
-            for (int i = 0; i < allFB[currentFBIndex].colorAttachmentsCount; i++)
-            {
-                currentFBColor += texture(allFB[currentFBIndex].colorAttachments[i], finalUV) * mixCoeff;
-            }
+            currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[i], finalUV).rgb * mixCoeff;
         }
 
         gl_FragColor = currentFBColor;
+
+        // -----------------------------------------------------
     }
 #endif

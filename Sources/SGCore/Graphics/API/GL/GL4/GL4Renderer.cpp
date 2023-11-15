@@ -141,8 +141,8 @@ void Core::Graphics::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
 {
     glViewport(0, 0, windowSize.x, windowSize.y);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
