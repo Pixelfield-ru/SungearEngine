@@ -58,20 +58,11 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             }
             break;
 
-        case SG_PP_LAYER_DEPTH_TEST_SHADER:
+        case SG_PP_LAYER_SHADER:
             switch(Main::CoreMain::getRenderer().getAPIType())
             {
                 case SG_API_TYPE_GL4:
-                    shaderPath = SG_GLSL4_PP_LAYER_DEPTH_TEST_SHADER_PATH;
-                    break;
-            }
-            break;
-
-        case SG_PP_LAYER_APPLY_FX_SHADER:
-            switch(Main::CoreMain::getRenderer().getAPIType())
-            {
-                case SG_API_TYPE_GL4:
-                    shaderPath = SG_GLSL4_DEFAULT_PP_LAYER_FX_APPLY_SHADER_PATH;
+                    shaderPath = SG_GLSL4_PP_LAYER_SHADER_PATH;
                     break;
             }
             break;

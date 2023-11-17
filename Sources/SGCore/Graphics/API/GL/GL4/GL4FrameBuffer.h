@@ -30,8 +30,16 @@ namespace Core::Graphics
         std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                      const std::uint8_t& textureBlock) override;
 
-        std::shared_ptr<IFrameBuffer> bindAttachmentToRead() override;
-        std::shared_ptr<IFrameBuffer> bindAttachmentToDraw() override;
+        std::shared_ptr<IFrameBuffer> bindAttachmentToRead(const SGFrameBufferAttachmentType& attachmentType) override;
+        std::shared_ptr<IFrameBuffer> bindAttachmentToDraw(const SGFrameBufferAttachmentType& attachmentType) override;
+
+        /**
+         * OPENGL DOES NOT SUPPORT THIS.
+         * @param attachmentsTypes
+         * @return
+         */
+        std::shared_ptr<IFrameBuffer> bindAttachmentsToRead(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes) override;
+        std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes) override;
 
         std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() override;
         std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() override;

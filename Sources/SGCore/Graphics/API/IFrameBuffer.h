@@ -8,7 +8,9 @@
 #include <iostream>
 #include <memory>
 #include <list>
+#include <vector>
 #include <glm/glm.hpp>
+#include <initializer_list>
 
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"
@@ -29,11 +31,6 @@ namespace Core::Graphics
     public:
         glm::vec4 m_bgColor { 0.0, 0.0, 0.0, 1.0 };
 
-        // type of attachment to read
-        SGFrameBufferAttachmentType m_readAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
-        // type of attachment to draw
-        SGFrameBufferAttachmentType m_drawAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
-
         /**
          * Binds all frame buffer attachments based on the layout of the blocks of the material.
          * @param material - The material from which the markup will be taken.
@@ -46,8 +43,11 @@ namespace Core::Graphics
         virtual std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                              const std::uint8_t& textureBlock) { return shared_from_this(); };
 
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToRead() { return shared_from_this(); }
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToDraw() { return shared_from_this(); }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToRead(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToDraw(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
+
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToRead(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
 
         virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() { return shared_from_this(); }
         virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() { return shared_from_this(); }

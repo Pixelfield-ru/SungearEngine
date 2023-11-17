@@ -158,6 +158,8 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                     currentLayerFrameBuffer->bind();
                 }
 
+                currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
+
                 for (const auto& skyboxEntity : skyboxesLayer.second)
                 {
                     if (!skyboxEntity.second) continue;
@@ -346,7 +348,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
             std::shared_ptr<Graphics::IFrameBuffer> currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
 
-            for (const auto& meshesLayer: meshedCachedEntities)
+            for (const auto& meshesLayer : meshedCachedEntities)
             {
                 const auto& foundPPLayer = cameraComponent->getPostProcessLayerFrameBuffer(meshesLayer.first);
                 // if pp layer exists
@@ -359,6 +361,8 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                 {
                     currentLayerFrameBuffer->bind();
                 }
+
+                currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
                 // todo: make less bindings
 
                 for (const auto& meshesEntity: meshesLayer.second)
@@ -432,6 +436,8 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                     currentLayerFrameBuffer->bind();
                 }
 
+                currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
+
                 for(const auto& cachedPrimitive : complexPrimitivesLayer.second)
                 {
                     if(!cachedPrimitive.second) continue;
@@ -481,14 +487,33 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
             // first depth test for pixels in default FB
 
-            cameraComponent->m_defaultLayersFrameBuffer->bind();
-
             cameraComponent->m_defaultPostProcessShader->useInteger("currentFBIndex", 0);
 
-            Core::Main::CoreMain::getRenderer().renderMeshData(
-                    cameraComponent->m_postProcessQuad,
-                    cameraComponent->m_postProcessQuadRenderInfo
-            );
+            cameraComponent->m_defaultLayersFrameBuffer->bind();
+
+            // first pass - depth pass --------------------------------------------
+
+            {
+                cameraComponent->m_defaultLayersFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
+
+                cameraComponent->m_defaultPostProcessShader->useInteger("depthTestPass", true);
+
+                Core::Main::CoreMain::getRenderer().renderMeshData(
+                        cameraComponent->m_postProcessQuad,
+                        cameraComponent->m_postProcessQuadRenderInfo
+                );
+
+                // second pass - FX pass --------------------------------------------
+
+                cameraComponent->m_defaultLayersFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT1);
+
+                cameraComponent->m_defaultPostProcessShader->useInteger("depthTestPass", false);
+
+                Core::Main::CoreMain::getRenderer().renderMeshData(
+                        cameraComponent->m_postProcessQuad,
+                        cameraComponent->m_postProcessQuadRenderInfo
+                );
+            }
 
             cameraComponent->m_defaultLayersFrameBuffer->unbind();
 
@@ -498,19 +523,35 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
             for(const auto& ppLayer : cameraComponent->getPostProcessLayers())
             {
-                ppLayer.second.m_frameBuffer->bind();
-
-                ppLayer.second.m_postProcessLayerShader->bind();
-                ppLayer.second.m_postProcessLayerShader
+                ppLayer.second.m_shader->bind();
+                ppLayer.second.m_shader
                         ->useShaderMarkup(cameraComponent->m_postProcessShadersMarkup);
 
-                ppLayer.second.m_postProcessLayerShader
+                ppLayer.second.m_shader
                         ->useInteger("currentFBIndex", ppLayer.second.m_index);
 
-                Core::Main::CoreMain::getRenderer().renderMeshData(
-                        cameraComponent->m_postProcessQuad,
-                        cameraComponent->m_postProcessQuadRenderInfo
-                );
+                ppLayer.second.m_frameBuffer->bind();
+
+                {
+                    ppLayer.second.m_frameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
+
+                    // if pass == 1 then depth pass
+                    ppLayer.second.m_shader->useInteger("depthTestPass", true);
+
+                    Core::Main::CoreMain::getRenderer().renderMeshData(
+                            cameraComponent->m_postProcessQuad,
+                            cameraComponent->m_postProcessQuadRenderInfo
+                    );
+
+                    ppLayer.second.m_frameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT1);
+
+                    ppLayer.second.m_shader->useInteger("depthTestPass", false);
+
+                    Core::Main::CoreMain::getRenderer().renderMeshData(
+                            cameraComponent->m_postProcessQuad,
+                            cameraComponent->m_postProcessQuadRenderInfo
+                    );
+                }
 
                 ppLayer.second.m_frameBuffer->unbind();
             }

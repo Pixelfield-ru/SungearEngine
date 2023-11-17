@@ -1,9 +1,6 @@
 #include "../uniform_bufs_decl.glsl"
 #include "../color_correction/aces.glsl"
 #include "../defines.glsl"
-#include "../random.glsl"
-#include "../disks.glsl"
-#include "../math.glsl"
 
 #define MAX_FB_COUNT 5
 
@@ -50,7 +47,7 @@
         vec2 finalUV = vs_UVAttribute.xy;
 
         #ifdef FLIP_TEXTURES_Y
-        finalUV.y = 1.0 - vs_UVAttribute.y;
+            finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
         if(depthTestPass)
@@ -97,7 +94,7 @@
             /*vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
             mixCoeff = 1.0 / allFB[currentFBIndex].colorAttachmentsCount;
 
-            //for (int i = 0; i < allFB[currentFBIndex].colorAttachmentsCount; i++)
+            //for (int i = 0; i < allFB[currentFBIndex].colorAttachmentsCount - ; i++)
             {
                 currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV).rgb * mixCoeff;
             }
@@ -115,41 +112,12 @@
 
         vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
 
+        // first is depth test attachment
         for (int i = 1; i < allFB[currentFBIndex].colorAttachmentsCount; i++)
         {
-            int s = 0;
-
-            /*for(int x = -4; x < 4; ++x)
-            {
-                for(int y = -4; y < 4; ++y)
-                {
-                    vec2 fUV = finalUV + vec2(x, y) * 0.003;
-
-                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], fUV).rgb * mixCoeff;
-
-                    ++s;
-                }
-            }*/
-
-            const float shadowsMinCoeff = 0.55;
-            const int samplesNum = 32;
-
-            float visibility = 1.0;
-            const float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
-
-            float rand = random(finalUV.xy);
-            // rand = mad(rand, 2.0, -1.0);
-            float rotAngle = rand * PI;
-            vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
-
-            for(int i = 0; i < samplesNum; i++)
-            {
-                currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV.xy + rotate(poissonDisk[i], rotTrig) / 100.0).rgb;
-            }
-
-            currentFBColor.rgb /= samplesNum;
+            currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV).rgb * mixCoeff;
         }
 
-        gl_FragColor = currentFBColor * 100.0;
+        gl_FragColor = currentFBColor;
     }
 #endif

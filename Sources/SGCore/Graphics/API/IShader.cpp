@@ -48,7 +48,7 @@ void Core::Graphics::IShader::useShaderMarkup(const Core::Graphics::ShaderMarkup
         {
             useInteger(block.second.m_name + ".colorAttachments[" + std::to_string(blockIdx - offset) + "]",
                        blockIdx
-            );
+            ); /// verified
         }
 
         offset += block.second.m_maxColorAttachments;

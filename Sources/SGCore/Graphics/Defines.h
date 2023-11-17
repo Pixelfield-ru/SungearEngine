@@ -14,8 +14,7 @@
 #define SG_GLSL4_LINES_SHADER_PATH                          "../SGResources/shaders/glsl4/primitives/lines_shader.glsl"
 #define SG_GLSL4_COMPLEX_PRIMITIVES_SHADER_PATH             "../SGResources/shaders/glsl4/primitives/complex_primitives_shader.glsl"
 
-#define SG_GLSL4_PP_LAYER_DEPTH_TEST_SHADER_PATH            "../SGResources/shaders/glsl4/postprocessing/pp_layer_depth_test_shader.glsl"
-#define SG_GLSL4_DEFAULT_PP_LAYER_FX_APPLY_SHADER_PATH     "../SGResources/shaders/glsl4/postprocessing/default_pp_layer_fx_apply_shader.glsl"
+#define SG_GLSL4_PP_LAYER_SHADER_PATH                       "../SGResources/shaders/glsl4/postprocessing/pp_layer_shader.glsl"
 #define SG_GLSL4_FINAL_PP_OVERLAY_SHADER_PATH               "../SGResources/shaders/glsl4/postprocessing/final_pp_overlay_shader.glsl"
 
 // -----------------------------------------------------------------
@@ -40,8 +39,7 @@ namespace Core::Graphics
         SG_SKYBOX_SHADER,
         SG_LINES_SHADER,
         SG_COMPLEX_PRIMITIVES_SHADER,
-        SG_PP_LAYER_DEPTH_TEST_SHADER,
-        SG_PP_LAYER_APPLY_FX_SHADER,
+        SG_PP_LAYER_SHADER,
         SG_PP_FINAL_OVERLAY_SHADER
     };
 

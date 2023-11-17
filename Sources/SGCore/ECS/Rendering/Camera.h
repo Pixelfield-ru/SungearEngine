@@ -14,7 +14,8 @@ namespace Core::ECS
         friend class Camera;
 
         std::shared_ptr<Graphics::IFrameBuffer> m_frameBuffer;
-        std::shared_ptr<Graphics::IShader> m_postProcessLayerShader;
+
+        std::shared_ptr<Graphics::IShader> m_shader;
 
         // name just for user. for convenience
         std::string m_name = "default";
@@ -39,14 +40,14 @@ namespace Core::ECS
         ImportedScene::MeshDataRenderInfo m_postProcessQuadRenderInfo;
         std::shared_ptr<ImportedScene::IMeshData> m_postProcessQuad;
 
+        // passes
+        std::shared_ptr<Graphics::IShader> m_defaultPostProcessShader;
+        std::shared_ptr<Graphics::IShader> m_finalPostProcessOverlayShader;
+
         // default frame buffer for layers that does not have post-processing
         std::shared_ptr<Graphics::IFrameBuffer> m_defaultLayersFrameBuffer;
-        std::shared_ptr<Graphics::IShader> m_defaultPostProcessShader;
-
         // final frame buffer with all post-processing
         std::shared_ptr<Graphics::IFrameBuffer> m_finalFrameBuffer;
-
-        std::shared_ptr<Graphics::IShader> m_finalPostProcessOverlayShader;
 
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;

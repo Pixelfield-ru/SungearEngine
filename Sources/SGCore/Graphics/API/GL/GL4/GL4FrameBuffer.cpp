@@ -27,7 +27,7 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
 
     std::uint8_t curOffset = blockOffset;
 
-    for(std::uint8_t i = curOffset; i < curOffset + maxDAttachments; i++)
+    for(std::uint8_t i = curOffset; i < curOffset + maxDAttachments; ++i)
     {
         bindAttachment((SGFrameBufferAttachmentType) ((std::uint8_t) SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 + (i - curOffset)),
                        i);
@@ -37,7 +37,7 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
 
     // -------------------------
 
-    for(std::uint8_t i = curOffset; i < curOffset + maxDSAttachments; i++)
+    for(std::uint8_t i = curOffset; i < curOffset + maxDSAttachments; ++i)
     {
         bindAttachment((SGFrameBufferAttachmentType) ((std::uint8_t) SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 + (i - curOffset)),
                        i);
@@ -47,17 +47,17 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
 
     // -------------------------
 
-    for(std::uint8_t i = curOffset; i < curOffset + maxCAttachments; i++)
+    for(std::uint8_t i = curOffset; i < curOffset + maxCAttachments; ++i)
     {
         bindAttachment((SGFrameBufferAttachmentType) ((std::uint8_t) SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 + (i - curOffset)),
-                       i);
+                       i); /// verified
     }
 
     curOffset += maxCAttachments;
 
     // -------------------------
 
-    for(std::uint8_t i = curOffset; i < curOffset + maxRAttachments; i++)
+    for(std::uint8_t i = curOffset; i < curOffset + maxRAttachments; ++i)
     {
         bindAttachment((SGFrameBufferAttachmentType) ((std::uint8_t) SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 + (i - curOffset)),
                        i);
@@ -75,62 +75,52 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToRead()
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToRead
+(const SGFrameBufferAttachmentType& attachmentType)
 {
-    if(m_attachments.find(m_readAttachmentType) != m_attachments.cend())
+    if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+       attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        if(m_readAttachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
-                m_readAttachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
-        {
-            glReadBuffer(GL_DEPTH_ATTACHMENT);
-        }
-        else if(m_readAttachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
-                m_readAttachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
-        {
-            glReadBuffer(GL_DEPTH_STENCIL_ATTACHMENT);
-        }
-        else if(m_readAttachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
-                m_readAttachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
-        {
-            glReadBuffer(GL_COLOR_ATTACHMENT0 + (m_readAttachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
-        }
-        else if(m_readAttachmentType >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
-                m_readAttachmentType <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
-        {
-            // todo: impl
-            //glReadBuffer()
-        }
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
     }
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToDraw()
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToDraw
+(const SGFrameBufferAttachmentType& attachmentType)
 {
-    if(m_attachments.find(m_drawAttachmentType) != m_attachments.cend())
+    if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+       attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
-           m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
+        glDrawBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+    }
+
+    return shared_from_this();
+}
+
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentsToRead
+(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes)
+{
+    return shared_from_this();
+}
+
+std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentsToDraw
+(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes)
+{
+    std::vector<GLenum> attachmentsToBind;
+    attachmentsToBind.reserve(attachmentsTypes.size());
+
+    for(const auto& type: attachmentsTypes)
+    {
+        if(type >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
+           type <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
         {
-            glDrawBuffer(GL_DEPTH_ATTACHMENT);
-        }
-        else if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
-                m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
-        {
-            glDrawBuffer(GL_DEPTH_STENCIL_ATTACHMENT);
-        }
-        else if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
-                m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
-        {
-            glDrawBuffer(GL_COLOR_ATTACHMENT0 + (m_drawAttachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
-        }
-        else if(m_drawAttachmentType >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
-                m_drawAttachmentType <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
-        {
-            // todo: impl
-            //glDrawBuffer()
+            attachmentsToBind.push_back(GL_COLOR_ATTACHMENT0 + (type - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
         }
     }
+
+    glDrawBuffers(attachmentsTypes.size(), attachmentsToBind.data());
 
     return shared_from_this();
 }

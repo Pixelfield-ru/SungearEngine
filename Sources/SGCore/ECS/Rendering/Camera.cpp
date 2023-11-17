@@ -31,17 +31,23 @@ Core::ECS::Camera::Camera()
             std::shared_ptr<Graphics::IFrameBuffer>(Core::Main::CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA16,
-                                    0,
-                                    0
-                    )
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
                                     SGGColorFormat::SGG_DEPTH_COMPONENT,
                                     SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                                     0,
                                     0)
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
+                                    SGGColorFormat::SGG_RGBA,
+                                    SGGColorInternalFormat::SGG_RGBA16,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // for FX apply
+                                    SGGColorFormat::SGG_RGBA,
+                                    SGGColorInternalFormat::SGG_RGBA16,
+                                    0,
+                                    0
+                    )
                     ->unbind();
 
     // m_defaultLayersFrameBuffer->m_bgColor.a = 0.0;
@@ -59,7 +65,7 @@ Core::ECS::Camera::Camera()
 
     // ---------------------------------------
 
-    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration("allFB[0]", 1, 0, 1, 0);
+    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration("allFB[0]", 1, 0, 2, 0);
     m_postProcessShadersMarkup.calculateBlocksOffsets();
 
     // ----------------------------------------
@@ -78,7 +84,7 @@ Core::ECS::Camera::Camera()
 
     m_defaultPostProcessShader = std::shared_ptr<Graphics::IShader>(
             Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
-                    Graphics::StandardShaderType::SG_PP_LAYER_DEPTH_TEST_SHADER)
+                    Graphics::StandardShaderType::SG_PP_LAYER_SHADER)
             )
     );
 
@@ -116,24 +122,30 @@ void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
     newPPLayer.m_frameBuffer = std::shared_ptr<Graphics::IFrameBuffer>(Core::Main::CoreMain::getRenderer().createFrameBuffer())
             ->create()
             ->setSize(fbWidth, fbHeight)
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
-                            SGGColorFormat::SGG_RGBA,
-                            SGGColorInternalFormat::SGG_RGBA16,
-                            0,
-                            0
-            )
             ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
                             SGGColorFormat::SGG_DEPTH_COMPONENT,
                             SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                             0,
                             0)
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
+                            SGGColorFormat::SGG_RGBA,
+                            SGGColorInternalFormat::SGG_RGBA16,
+                            0,
+                            0
+            )
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // for FX apply
+                            SGGColorFormat::SGG_RGBA,
+                            SGGColorInternalFormat::SGG_RGBA16,
+                            0,
+                            0
+            )
             ->unbind();
 
     // newPPLayer.m_frameBuffer->m_bgColor.a = 0.0;
 
-    newPPLayer.m_postProcessLayerShader = std::shared_ptr<Graphics::IShader>(
+    newPPLayer.m_shader = std::shared_ptr<Graphics::IShader>(
             Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
-                    Graphics::StandardShaderType::SG_PP_LAYER_DEPTH_TEST_SHADER)
+                    Graphics::StandardShaderType::SG_PP_LAYER_SHADER)
             )
     );
 
@@ -145,7 +157,7 @@ void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
 
     // ----------------------------------
 
-    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 1, 0);
+    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 2, 0);
     m_postProcessShadersMarkup.calculateBlocksOffsets();
 
     // ----------------------------------
@@ -161,19 +173,19 @@ void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
     m_defaultPostProcessShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
     m_defaultPostProcessShader->useInteger("FBCount", ppFBCount);
 
-    newPPLayer.m_postProcessLayerShader->bind();
-    newPPLayer.m_postProcessLayerShader->updateFrameBufferAttachmentsCount(m_defaultLayersFrameBuffer, "allFB[0]");
-    newPPLayer.m_postProcessLayerShader->useInteger("FBCount", ppFBCount);
+    newPPLayer.m_shader->bind();
+    newPPLayer.m_shader->updateFrameBufferAttachmentsCount(m_defaultLayersFrameBuffer, "allFB[0]");
+    newPPLayer.m_shader->useInteger("FBCount", ppFBCount);
 
     for(const auto& ppLayer : m_postProcessLayers)
     {
-        ppLayer.second.m_postProcessLayerShader->bind();
-        ppLayer.second.m_postProcessLayerShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
+        ppLayer.second.m_shader->bind();
+        ppLayer.second.m_shader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
 
         // ------------------------------
 
-        newPPLayer.m_postProcessLayerShader->bind();
-        newPPLayer.m_postProcessLayerShader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
+        newPPLayer.m_shader->bind();
+        newPPLayer.m_shader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
     }
 }
 
@@ -206,7 +218,7 @@ void Core::ECS::Camera::setPostProcessLayerShader(const std::shared_ptr<Layer>& 
         shader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
     }
 
-    m_postProcessLayers[layer].m_postProcessLayerShader = shader;
+    m_postProcessLayers[layer].m_shader = shader;
 }
 
 void Core::ECS::Camera::bindPostProcessLayers() noexcept

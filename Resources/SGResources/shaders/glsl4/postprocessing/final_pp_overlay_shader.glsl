@@ -52,9 +52,10 @@
 
         for(int i = 0; i < FBCount; ++i)
         {
-            mixCoeff = 1.0 / allFB[i].colorAttachmentsCount;
+            mixCoeff = 1.0 / (allFB[i].colorAttachmentsCount - 1);
 
-            for (int k = 0; k < allFB[i].colorAttachmentsCount; ++k)
+            // first is depth test attachment
+            for (int k = 1; k < allFB[i].colorAttachmentsCount; ++k)
             {
                 // finalColor.rgb += vec3(1.0);
                 finalColor.rgb += texture(allFB[i].colorAttachments[k], finalUV).rgb * mixCoeff;
