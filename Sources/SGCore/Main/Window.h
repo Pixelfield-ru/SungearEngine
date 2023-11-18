@@ -94,7 +94,7 @@ namespace Core::Main
     class Window
     {
     private:
-        GLFWwindow* m_handler = nullptr;
+        //GLFWwindow* m_handler = nullptr;
 
         std::shared_ptr<WindowConfig> m_config = std::make_shared<WindowConfig>();
 
@@ -105,6 +105,7 @@ namespace Core::Main
         static void errorCallback(int errCode, const char* err_msg);
 
     public:
+        GLFWwindow* m_handler = nullptr;
         Window() noexcept = default;
 
         Window(const Window& other) noexcept : m_config(other.m_config) { }

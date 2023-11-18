@@ -105,8 +105,6 @@ Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
 void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scene)
 {
-    double t0 = glfwGetTime();
-
     auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsUpdater>();
 
     const auto& meshedCachedEntities = Patterns::Singleton::getInstance<MeshesCollector>()->getCachedEntities();
@@ -588,15 +586,6 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
     }
 
     // --------------------------------
-
-    double t1 = glfwGetTime();
-
-    // last:
-    // 5,30880
-    // new:
-    // 3,348900
-
-    // std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void Core::ECS::PBRForwardRenderPipeline::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)

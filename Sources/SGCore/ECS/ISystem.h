@@ -19,14 +19,7 @@
 
 namespace Core::ECS
 {
-    struct SystemsFlags
-    {
-        // system`s functions will call not per entity
-        static inline const std::uint16_t SGSF_NOT_PER_ENTITY = 1;
-        static inline const std::uint16_t SGSF_PER_ENTITY = 1 << 1;
-    };
-
-    class ISystem : public Patterns::Marker<ISystem, std::uint16_t>
+    class ISystem
     {
         friend class ECSWorld;
     public:
@@ -140,7 +133,13 @@ namespace Core::ECS
             m_updateFunctionsQuery[funcUUID] = (bindFunc);
         }
 
+        double getUpdateFunctionExecutionTime() const noexcept;
+        double getFixedUpdateFunctionExecutionTime() const noexcept;
+
     protected:
+        double m_update_executionTime = 0.0;
+        double m_fixedUpdate_executionTime = 0.0;
+
         std::unordered_map<std::string, std::function<bool()>> m_fixedUpdateFunctionsQuery;
         std::unordered_map<std::string, std::function<bool()>> m_updateFunctionsQuery;
 

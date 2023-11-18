@@ -31,9 +31,10 @@ namespace Core::ECS
         static void update(const std::shared_ptr<Scene>& scene);
 
         static void recacheEntity(const std::shared_ptr<Entity>& entity);
+
+        static std::set<std::shared_ptr<ISystem>>& getSystems() noexcept;
+
     private:
-        // static inline std::map<size_t, std::shared_ptr<SystemCachedEntities>> m_cachedComponentsCollections;
-        //static inline tsl::robin_map<size_t,
         static inline std::set<std::shared_ptr<ISystem>> m_systems;
     };
 }

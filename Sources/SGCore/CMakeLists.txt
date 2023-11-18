@@ -18,7 +18,7 @@
     EXPORT_FILE_NAME ${SGCORE_SOURCES}
     STATIC_DEFINE SHARED_EXPORTS_BUILT_AS_STATIC)]]
 
- target_include_directories(${PROJECT_NAME} PRIVATE
+ target_include_directories(${PROJECT_NAME} PUBLIC
          ${CMAKE_SOURCE_DIR}/Externals
          ${CMAKE_SOURCE_DIR}/Externals/GLM
          ${CMAKE_SOURCE_DIR}/Externals/Assimp/include

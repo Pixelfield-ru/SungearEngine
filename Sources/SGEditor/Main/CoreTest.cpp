@@ -38,14 +38,15 @@
 #include "SGCore/ECS/Rendering/Skybox.h"
 #include "SGCore/Memory/Assets/CubemapAsset.h"
 #include "SGCore/ECS/Rendering/Gizmos/BoxGizmo.h"
-#include <imgui/imgui.h>
+
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
+#include <imgui.h>
 
 std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
 
 std::shared_ptr<Core::ECS::Entity> testCameraEntity;
 std::shared_ptr<Core::ECS::Scene> testScene;
-
-ImColor f;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -394,6 +395,20 @@ void init()
     //directionalLight1->m_intensity = 10.0f;
     testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(std::make_shared<Core::ECS::BoxGizmo>());
+
+    // IMGUI DEBUG -----------------------------------------------------------
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    // TODO: MOVE IN RENDERER AND WINDOW
+    ImGui_ImplGlfw_InitForOpenGL(Core::Main::CoreMain::getWindow().m_handler, true);
+    ImGui_ImplOpenGL3_Init();
+
+    // -----------------------------------------------------------------------
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -414,7 +429,48 @@ void fixedUpdate()
 
 void update()
 {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("ECS Systems Stats");
+    {
+        ImGui::BeginTable("SystemsStats", 3);
+        {
+            ImGui::TableNextColumn();
+            ImGui::Text("System");
+            ImGui::TableNextColumn();
+            ImGui::Text("update");
+            ImGui::TableNextColumn();
+            ImGui::Text("fixedUpdate");
+            ImGui::TableNextColumn();
+
+            for(const auto& system: Core::ECS::ECSWorld::getSystems())
+            {
+                std::string systemName = std::string(typeid(*(system)).name());
+                ImGui::Text(systemName.c_str());
+
+                ImGui::TableNextColumn();
+
+                ImGui::Text((std::to_string(system->getUpdateFunctionExecutionTime()) + " ms").c_str());
+
+                ImGui::TableNextColumn();
+
+                ImGui::Text((std::to_string(system->getFixedUpdateFunctionExecutionTime()) + " ms").c_str());
+
+                ImGui::TableNextColumn();
+            }
+        }
+        ImGui::EndTable();
+    }
+    ImGui::End();
+
+    //ImGui::ShowDemoWindow();
+
     Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 // --------------------------------------------

@@ -19,31 +19,25 @@
 void Core::ECS::ECSWorld::init() noexcept
 {
     auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsUpdater>();
-    transformationsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto meshedEntitiesCollectorSystem = Patterns::Singleton::getInstance<MeshesCollector>();
 
     auto renderingComponentsSystem = Patterns::Singleton::getInstance<RenderingComponentsUpdater>();
-    renderingComponentsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto primitivesUpdaterSystem = Patterns::Singleton::getInstance<GizmosMeshesRebuilder>();
-    primitivesUpdaterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto directionalLightsSystem = Patterns::Singleton::getInstance<DirectionalLightsCollector>();
-    // directionalLightsSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto shadowsCasterSystem = Patterns::Singleton::getInstance<ShadowsCastersCollector>();
-    // shadowsCasterSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto camera3DMovementSystem = Patterns::Singleton::getInstance<CameraMovement3DSystem>();
-    camera3DMovementSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto pipelineSystem = Patterns::Singleton::getInstance<PBRForwardRenderPipeline>();
-    pipelineSystem->addFlag(SystemsFlags::SGSF_NOT_PER_ENTITY);
 
     auto skyboxesCollectorSystem = Patterns::Singleton::getInstance<SkyboxesCollector>();
 
     auto linesCollectorSystem = Patterns::Singleton::getInstance<LinesGizmosCollector>();
+
     auto complexPrimitivesCollectorSystem = Patterns::Singleton::getInstance<ComplexGizmosCollector>();
 
     // -------------------------------
@@ -91,21 +85,11 @@ void Core::ECS::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
             }
         }
 
-        if(system->isFlagSet(SystemsFlags::SGSF_NOT_PER_ENTITY))
-        {
-            system->fixedUpdate(scene);
-        }
+        double before = glfwGetTime();
+        system->fixedUpdate(scene);
+        double after = glfwGetTime();
 
-        if(system->isFlagSet(SystemsFlags::SGSF_PER_ENTITY))
-        {
-            for(const auto& layer : scene->getLayers())
-            {
-                for(auto& entity : layer.second->m_entities)
-                {
-                    system->fixedUpdate(scene, entity);
-                }
-            }
-        }
+        system->m_fixedUpdate_executionTime = (after - before) * 1000.0;
     }
 
     double t1 = glfwGetTime();
@@ -139,21 +123,11 @@ void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
             }
         }
 
-        if(system->isFlagSet(SystemsFlags::SGSF_NOT_PER_ENTITY))
-        {
-            system->update(scene);
-        }
+        double before = glfwGetTime();
+        system->update(scene);
+        double after = glfwGetTime();
 
-        if(system->isFlagSet(SystemsFlags::SGSF_PER_ENTITY))
-        {
-            for(const auto& layer : scene->getLayers())
-            {
-                for(auto& entity : layer.second->m_entities)
-                {
-                    system->update(scene, entity);
-                }
-            }
-        }
+        system->m_update_executionTime = (after - before) * 1000.0;
     }
 
     double t1 = glfwGetTime();
@@ -194,4 +168,9 @@ void Core::ECS::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
     double t1 = glfwGetTime();
 
     // std::cout << "ms for recache: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+}
+
+std::set<std::shared_ptr<Core::ECS::ISystem>>& Core::ECS::ECSWorld::getSystems() noexcept
+{
+    return m_systems;
 }

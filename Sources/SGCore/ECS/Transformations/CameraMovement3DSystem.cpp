@@ -15,8 +15,6 @@
 void Core::ECS::CameraMovement3DSystem::fixedUpdate
 (const std::shared_ptr<Scene>& scene)
 {
-    double t0 = glfwGetTime();
-
     for (const auto& layer : m_cachedEntities)
     {
         for(const auto& cachedEntity : layer.second)
@@ -25,10 +23,6 @@ void Core::ECS::CameraMovement3DSystem::fixedUpdate
 
             std::shared_ptr<Camera> cameraComponent = cachedEntity.second->getComponent<Camera>();
             std::shared_ptr<Transform> transformComponent = cachedEntity.second->getComponent<Transform>();
-
-            /*double t1 = glfwGetTime();
-
-            std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << ", entities cnt: " << std::to_string(scene->m_entities.size()) << std::endl;*/
 
             if(!transformComponent || !cameraComponent) return;
 
@@ -103,10 +97,6 @@ void Core::ECS::CameraMovement3DSystem::fixedUpdate
             }
         }
     }
-
-    /*double t1 = glfwGetTime();
-
-    std::cout << "ms for camera render system: " << std::to_string((t1 - t0) * 1000.0) << ", entities cnt: " << std::to_string(scene->m_entities.size()) << std::endl;*/
 }
 
 void Core::ECS::CameraMovement3DSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)

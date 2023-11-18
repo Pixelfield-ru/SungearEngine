@@ -22,20 +22,6 @@ size_t fps = 0;*/
 void Core::ECS::TransformationsUpdater::fixedUpdate
 (const std::shared_ptr<Scene>& scene)
 {
-    /*double lastT = curT;
-    curT = glfwGetTime();
-
-    accum += curT - lastT;
-    if(accum >= 1.0)
-    {
-        accum = 0.0;
-        std::cout << "fps: " << std::to_string(fps) << std::endl;
-        fps = 0;
-    }
-    fps++;*/
-
-    double t0 = glfwGetTime();
-
     for(const auto& layer : m_cachedEntities)
     {
         for(const auto& cachedEntity: layer.second)
@@ -149,8 +135,6 @@ void Core::ECS::TransformationsUpdater::fixedUpdate
     }
 
     double t1 = glfwGetTime();
-
-    // std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void Core::ECS::TransformationsUpdater::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)

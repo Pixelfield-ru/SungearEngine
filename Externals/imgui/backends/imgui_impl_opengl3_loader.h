@@ -602,7 +602,7 @@ GL3W_API extern union GL3WProcs imgl3wProcs;
 extern "C" {
 #endif
 
-#date <stdlib.h>
+#include <stdlib.h>
 
 #define ARRAY_SIZE(x)  (sizeof(x) / sizeof((x)[0]))
 
@@ -610,7 +610,7 @@ extern "C" {
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
-#date <windows.h>
+#include <windows.h>
 
 static HMODULE libgl;
 typedef PROC(__stdcall* GL3WglGetProcAddr)(LPCSTR);
