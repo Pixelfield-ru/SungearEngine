@@ -1,7 +1,7 @@
 #include "Defines.h"
 
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Graphics/API/APIType.h"
+#include "SGCore/Graphics/API/GAPIType.h"
 
 std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
 {
@@ -10,7 +10,7 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
     switch(shaderType)
     {
         case SG_PBR_SHADER:
-            switch(Main::CoreMain::getRenderer().getAPIType())
+            switch(Main::CoreMain::getRenderer().getGAPIType())
             {
                 case SG_API_TYPE_GL4:
                     shaderPath = SG_GLSL4_PBR_SHADER_PATH;
@@ -23,7 +23,7 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             break;
 
         case SG_SHADOWS_GENERATOR_SHADER:
-            switch(Main::CoreMain::getRenderer().getAPIType())
+            switch(Main::CoreMain::getRenderer().getGAPIType())
             {
                 case SG_API_TYPE_GL4:
                     shaderPath = SG_GLSL4_SHADOWS_GENERATOR_SHADER_PATH;
@@ -32,7 +32,7 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             break;
 
         case SG_SKYBOX_SHADER:
-            switch(Main::CoreMain::getRenderer().getAPIType())
+            switch(Main::CoreMain::getRenderer().getGAPIType())
             {
                 case SG_API_TYPE_GL4:
                     shaderPath = SG_GLSL4_SKYBOX_SHADER_PATH;
@@ -41,7 +41,7 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             break;
 
         case SG_LINES_SHADER:
-            switch(Main::CoreMain::getRenderer().getAPIType())
+            switch(Main::CoreMain::getRenderer().getGAPIType())
             {
                 case SG_API_TYPE_GL4:
                     shaderPath = SG_GLSL4_LINES_SHADER_PATH;
@@ -50,7 +50,7 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             break;
 
         case SG_COMPLEX_PRIMITIVES_SHADER:
-            switch(Main::CoreMain::getRenderer().getAPIType())
+            switch(Main::CoreMain::getRenderer().getGAPIType())
             {
                 case SG_API_TYPE_GL4:
                     shaderPath = SG_GLSL4_COMPLEX_PRIMITIVES_SHADER_PATH;
@@ -59,7 +59,7 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             break;
 
         case SG_PP_LAYER_SHADER:
-            switch(Main::CoreMain::getRenderer().getAPIType())
+            switch(Main::CoreMain::getRenderer().getGAPIType())
             {
                 case SG_API_TYPE_GL4:
                     shaderPath = SG_GLSL4_PP_LAYER_SHADER_PATH;
@@ -68,7 +68,7 @@ std::string Core::Graphics::getShaderPath(const StandardShaderType& shaderType)
             break;
 
         case SG_PP_FINAL_OVERLAY_SHADER:
-            switch(Main::CoreMain::getRenderer().getAPIType())
+            switch(Main::CoreMain::getRenderer().getGAPIType())
             {
                 case SG_API_TYPE_GL4:
                     shaderPath = SG_GLSL4_FINAL_PP_OVERLAY_SHADER_PATH;

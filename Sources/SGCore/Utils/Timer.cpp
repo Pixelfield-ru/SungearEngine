@@ -41,7 +41,7 @@ void Core::Utils::Timer::startFrame()
     {
         while(m_elapsedTimeForUpdate >= destDeltaTime)
         {
-            for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
+            for(const auto& callback : m_callbacks)
             {
                 callback->callFixedUpdateFunction();
             }
@@ -54,7 +54,7 @@ void Core::Utils::Timer::startFrame()
     {
         if(m_elapsedTimeForUpdate >= destDeltaTime)
         {
-            for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
+            for(const auto& callback : m_callbacks)
             {
                 callback->callUpdateFunction();
             }
@@ -68,7 +68,7 @@ void Core::Utils::Timer::startFrame()
 
     if(m_elapsedTime >= m_target)
     {
-        for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
+        for(const auto& callback : m_callbacks)
         {
             callback->callDestinationReachedFunction();
         }

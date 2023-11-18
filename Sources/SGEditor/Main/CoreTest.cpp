@@ -39,9 +39,7 @@
 #include "SGCore/Memory/Assets/CubemapAsset.h"
 #include "SGCore/ECS/Rendering/Gizmos/BoxGizmo.h"
 
-#include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_glfw.h>
-#include <imgui.h>
+#include "SGCore/Utils/ImGuiLayer.h"
 
 std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
 
@@ -398,15 +396,7 @@ void init()
 
     // IMGUI DEBUG -----------------------------------------------------------
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
-    // TODO: MOVE IN RENDERER AND WINDOW
-    ImGui_ImplGlfw_InitForOpenGL(Core::Main::CoreMain::getWindow().m_handler, true);
-    ImGui_ImplOpenGL3_Init();
+    Core::Utils::ImGuiLayer::initImGui();
 
     // -----------------------------------------------------------------------
 }
@@ -429,13 +419,11 @@ void fixedUpdate()
 
 void update()
 {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    Core::Utils::ImGuiLayer::beginFrame();
 
     ImGui::Begin("ECS Systems Stats");
     {
-        ImGui::BeginTable("SystemsStats", 3);
+        if(ImGui::BeginTable("SystemsStats", 3))
         {
             ImGui::TableNextColumn();
             ImGui::Text("System");
@@ -460,8 +448,9 @@ void update()
 
                 ImGui::TableNextColumn();
             }
+
+            ImGui::EndTable();
         }
-        ImGui::EndTable();
     }
     ImGui::End();
 
@@ -469,8 +458,7 @@ void update()
 
     Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
 
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    Core::Utils::ImGuiLayer::endFrame();
 }
 
 // --------------------------------------------

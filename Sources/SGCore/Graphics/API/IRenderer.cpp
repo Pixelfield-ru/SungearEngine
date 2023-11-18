@@ -1,6 +1,6 @@
 #include "IRenderer.h"
 
-Core::Graphics::APIType Core::Graphics::IRenderer::getAPIType() const noexcept
+Core::Graphics::GAPIType Core::Graphics::IRenderer::getGAPIType() const noexcept
 {
     return m_apiType;
 }

@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/common.hpp>
 
-#include "APIType.h"
+#include "GAPIType.h"
 #include "IUniformBuffer.h"
 
 namespace Core::ECS
@@ -103,10 +103,10 @@ namespace Core::Graphics
         virtual void setDepthTestingEnabled(const bool& enabled) const noexcept { }
         // --------------------------------------------------
 
-        [[nodiscard]] APIType getAPIType() const noexcept;
+        [[nodiscard]] GAPIType getGAPIType() const noexcept;
 
     protected:
-        APIType m_apiType = SG_API_TYPE_UNKNOWN;
+        GAPIType m_apiType = SG_API_TYPE_UNKNOWN;
     };
 }
 

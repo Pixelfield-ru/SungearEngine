@@ -6,8 +6,6 @@
 #include <memory>
 #include "GraphicsDataTypes.h"
 
-#include "IShader.h"
-
 namespace Core::Graphics
 {
     struct IShaderUniform

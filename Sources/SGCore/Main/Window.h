@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "SGCore/Input/InputManager.h"
+#include "SGCore/Utils/ImGuiLayer.h"
 
 #include "Callbacks.h"
 
@@ -93,24 +94,14 @@ namespace Core::Main
 
     class Window
     {
-    private:
-        //GLFWwindow* m_handler = nullptr;
-
-        std::shared_ptr<WindowConfig> m_config = std::make_shared<WindowConfig>();
-
-        static void windowCloseCallback(GLFWwindow* window);
-
-        static void windowIconifyCallback(GLFWwindow* window, int iconified);
-
-        static void errorCallback(int errCode, const char* err_msg);
+        friend class Core::Utils::ImGuiLayer;
 
     public:
-        GLFWwindow* m_handler = nullptr;
         Window() noexcept = default;
 
         Window(const Window& other) noexcept : m_config(other.m_config) { }
 
-        explicit Window(std::shared_ptr<WindowConfig> otherConfig) noexcept : m_config(std::move(otherConfig)) { }
+        explicit Window(WindowConfig&& otherConfig) noexcept : m_config(std::move(otherConfig)) { }
 
         ~Window() noexcept
         {
@@ -148,7 +139,7 @@ namespace Core::Main
 
         void setCursorPosition(const double&, const double&) noexcept;
 
-        void setConfig(const std::shared_ptr<WindowConfig>&) noexcept;
+        void setConfig(WindowConfig&& config) noexcept;
 
         #pragma endregion
 
@@ -156,13 +147,24 @@ namespace Core::Main
 
         bool shouldClose() noexcept;
 
-        std::shared_ptr<WindowConfig> getConfig() noexcept;
+        WindowConfig& getConfig() noexcept;
 
         void getSize(int& sizeX, int& sizeY) noexcept;
 
         static void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept;
 
         #pragma endregion
+
+    private:
+        WindowConfig m_config;
+
+        static void windowCloseCallback(GLFWwindow* window);
+
+        static void windowIconifyCallback(GLFWwindow* window, int iconified);
+
+        static void errorCallback(int errCode, const char* err_msg);
+
+        GLFWwindow* m_handler = nullptr;
     };
 }
 

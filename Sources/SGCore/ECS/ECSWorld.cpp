@@ -101,8 +101,6 @@ void Core::ECS::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
 
 void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
 {
-    double t0 = glfwGetTime();
-
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
@@ -129,8 +127,6 @@ void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
 
         system->m_update_executionTime = (after - before) * 1000.0;
     }
-
-    double t1 = glfwGetTime();
 
     // 20,761000 ms average !!!!!!!!!!!!!!
 
