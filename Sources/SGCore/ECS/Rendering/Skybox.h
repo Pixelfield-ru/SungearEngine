@@ -11,6 +11,7 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Memory/Assets/ShaderAsset.h"
+#include "SGCore/Utils/ShadersPaths.h"
 
 namespace Core::ECS
 {
@@ -18,12 +19,6 @@ namespace Core::ECS
     {
     private:
         void init() noexcept final { }
-
-    public:
-        std::shared_ptr<Memory::Assets::ShaderAsset> m_shaderAsset =
-                Memory::AssetManager::loadAsset<Memory::Assets::ShaderAsset>(
-                        Graphics::getShaderPath(Graphics::StandardShaderType::SG_SKYBOX_SHADER)
-                );
     };
 }
 

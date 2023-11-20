@@ -2,13 +2,10 @@
 // Created by stuka on 07.05.2023.
 //
 
-#pragma once
-
-#ifndef NATIVECORE_ASSETMANAGER_H
-#define NATIVECORE_ASSETMANAGER_H
+#ifndef SUNGEARENGINE_ASSETMANAGER_H
+#define SUNGEARENGINE_ASSETMANAGER_H
 
 #include <iostream>
-#include <map>
 #include <memory>
 
 #include "Assets/IAsset.h"
@@ -100,4 +97,4 @@ namespace Core::Memory
     };
 }
 
-#endif //NATIVECORE_ASSETMANAGER_H
+#endif // SUNGEARENGINE_ASSETMANAGER_H

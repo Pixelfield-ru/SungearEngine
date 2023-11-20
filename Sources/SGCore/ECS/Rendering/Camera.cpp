@@ -5,6 +5,7 @@
 
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/Defines.h"
+#include "SGCore/Utils/ShadersPaths.h"
 
 Core::ECS::Camera::Camera()
 {
@@ -71,8 +72,8 @@ Core::ECS::Camera::Camera()
     // ----------------------------------------
 
     m_finalPostProcessOverlayShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
-                    Graphics::StandardShaderType::SG_PP_FINAL_OVERLAY_SHADER)
+            Core::Main::CoreMain::getRenderer().createShader(
+                    ShadersPaths::getMainInstance()["PostProcessing"]["FinalOverlayShader"]
             )
     );
 
@@ -83,8 +84,8 @@ Core::ECS::Camera::Camera()
     // -----------------------------------------
 
     m_defaultPostProcessShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
-                    Graphics::StandardShaderType::SG_PP_LAYER_SHADER)
+            Core::Main::CoreMain::getRenderer().createShader(
+                    ShadersPaths::getMainInstance()["PostProcessing"]["DefaultLayerShader"]
             )
     );
 
@@ -141,11 +142,9 @@ void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
             )
             ->unbind();
 
-    // newPPLayer.m_frameBuffer->m_bgColor.a = 0.0;
-
     newPPLayer.m_shader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
-                    Graphics::StandardShaderType::SG_PP_LAYER_SHADER)
+            Core::Main::CoreMain::getRenderer().createShader(
+                    ShadersPaths::getMainInstance()["PostProcessing"]["DefaultLayerShader"]
             )
     );
 

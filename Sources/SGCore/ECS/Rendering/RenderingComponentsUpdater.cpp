@@ -11,14 +11,9 @@
 
 void Core::ECS::RenderingComponentsUpdater::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
-    for(const auto& layer : m_cachedEntities)
-    {
-        for(const auto& cachedEntity: layer.second)
-        {
-            if(!cachedEntity.second) continue;
-
-            std::list<std::shared_ptr<IRenderingComponent>> renderingComponents = cachedEntity.second->getComponents<IRenderingComponent>();
-            std::shared_ptr<Transform> transformComponent = cachedEntity.second->getComponent<Transform>();
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
+            std::list<std::shared_ptr<IRenderingComponent>> renderingComponents = cachedEntity->getComponents<IRenderingComponent>();
+            std::shared_ptr<Transform> transformComponent = cachedEntity->getComponent<Transform>();
 
             if(!transformComponent) continue;
 
@@ -88,8 +83,7 @@ void Core::ECS::RenderingComponentsUpdater::fixedUpdate(const std::shared_ptr<Sc
                     renderingComponent->m_spaceMatrixChanged = true;
                 }
             }
-        }
-    }
+    SG_END_ITERATE_CACHED_ENTITIES
 }
 
 void Core::ECS::RenderingComponentsUpdater::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)

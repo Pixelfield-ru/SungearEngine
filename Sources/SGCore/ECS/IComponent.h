@@ -14,7 +14,7 @@ namespace Core::ECS
 {
     class Entity;
 
-    class IComponent : public Patterns::UUID
+    class IComponent : public UUID
     {
         // just for polymorphism
         virtual void init() = 0;

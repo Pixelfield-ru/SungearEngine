@@ -8,29 +8,33 @@
 #include <memory>
 
 #define SG_DECLARE_SINGLETON(cls)                   \
-        friend struct Core::Patterns::Singleton;    \
+        friend struct ::SGSingleton;                \
     protected:                                      \
         cls() = default;                            \
         cls(const cls&) = default;                  \
         cls(cls&&) = default;
 
 #define SG_DECLARE_COPY_MOVE_SINGLETON(cls)             \
-        friend struct Core::Patterns::Singleton;        \
+        friend struct ::SGSingleton;                    \
     protected:                                          \
         cls(const cls&) = default;                      \
         cls(cls&&) = default;
 
-namespace Core::Patterns
+struct SGSingleton
 {
-    struct Singleton
+    template<class T>
+    static std::shared_ptr<T> getSharedPtrInstance()
     {
-        template<class T>
-        static std::shared_ptr<T> getInstance()
-        {
-            static std::shared_ptr<T> s_instance(new T);
-            return s_instance;
-        }
-    };
-}
+        static std::shared_ptr<T> s_instance(new T);
+        return s_instance;
+    }
+
+    template<class T>
+    static T& getInstance()
+    {
+        static T s_instance;
+        return s_instance;
+    }
+};
 
 #endif //SUNGEARENGINE_SINGLETON_H

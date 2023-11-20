@@ -49,7 +49,7 @@ std::shared_ptr<Core::ECS::Scene> testScene;
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
 // example how to convert imported scene to Sungear ECS scene
-void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
+void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode, 
                        const glm::vec3& pos,
                        const glm::vec3& rot,
                        const glm::vec3& scale,
@@ -349,8 +349,9 @@ void init()
             Core::Main::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/test_pp_layer.glsl")
             ));
 
-    testScene->addEntity(testCameraEntity);
+    testScene->addEntity(testCameraEntity); /// PASSED
 
+    /// THIS CODE CLEARS CACHED COMPONENTS WTF
     testShadowsCaster = std::make_shared<Core::ECS::Entity>();
     testScene->addEntity(testShadowsCaster);
     auto shadowsCasterTransform = std::make_shared<Core::ECS::Transform>();
@@ -394,11 +395,15 @@ void init()
     testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(std::make_shared<Core::ECS::BoxGizmo>());
 
+    /// -----------------------------------------
+
     // IMGUI DEBUG -----------------------------------------------------------
 
     Core::Utils::ImGuiLayer::initImGui();
 
     // -----------------------------------------------------------------------
+
+    auto& sys = Core::ECS::ECSWorld::getSystems();
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------

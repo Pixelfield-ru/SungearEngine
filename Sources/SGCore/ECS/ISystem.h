@@ -84,8 +84,6 @@ namespace Core::ECS
                                                        }
                                                    });
 
-            auto f = m_cachedEntities.begin();
-
             double t1 = glfwGetTime();
 
             std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;

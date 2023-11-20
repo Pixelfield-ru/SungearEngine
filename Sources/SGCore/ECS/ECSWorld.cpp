@@ -18,27 +18,27 @@
 
 void Core::ECS::ECSWorld::init() noexcept
 {
-    auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsUpdater>();
+    auto transformationsSystem = SGSingleton::getSharedPtrInstance<TransformationsUpdater>();
 
-    auto meshedEntitiesCollectorSystem = Patterns::Singleton::getInstance<MeshesCollector>();
+    auto meshedEntitiesCollectorSystem = SGSingleton::getSharedPtrInstance<MeshesCollector>();
 
-    auto renderingComponentsSystem = Patterns::Singleton::getInstance<RenderingComponentsUpdater>();
+    auto renderingComponentsSystem = SGSingleton::getSharedPtrInstance<RenderingComponentsUpdater>();
 
-    auto primitivesUpdaterSystem = Patterns::Singleton::getInstance<GizmosMeshesRebuilder>();
+    auto primitivesUpdaterSystem = SGSingleton::getSharedPtrInstance<GizmosMeshesRebuilder>();
 
-    auto directionalLightsSystem = Patterns::Singleton::getInstance<DirectionalLightsCollector>();
+    auto directionalLightsSystem = SGSingleton::getSharedPtrInstance<DirectionalLightsCollector>();
 
-    auto shadowsCasterSystem = Patterns::Singleton::getInstance<ShadowsCastersCollector>();
+    auto shadowsCasterSystem = SGSingleton::getSharedPtrInstance<ShadowsCastersCollector>();
 
-    auto camera3DMovementSystem = Patterns::Singleton::getInstance<CameraMovement3DSystem>();
+    auto camera3DMovementSystem = SGSingleton::getSharedPtrInstance<CameraMovement3DSystem>();
 
-    auto pipelineSystem = Patterns::Singleton::getInstance<PBRForwardRenderPipeline>();
+    auto pipelineSystem = SGSingleton::getSharedPtrInstance<PBRForwardRenderPipeline>();
 
-    auto skyboxesCollectorSystem = Patterns::Singleton::getInstance<SkyboxesCollector>();
+    auto skyboxesCollectorSystem = SGSingleton::getSharedPtrInstance<SkyboxesCollector>();
 
-    auto linesCollectorSystem = Patterns::Singleton::getInstance<LinesGizmosCollector>();
+    auto linesCollectorSystem = SGSingleton::getSharedPtrInstance<LinesGizmosCollector>();
 
-    auto complexPrimitivesCollectorSystem = Patterns::Singleton::getInstance<ComplexGizmosCollector>();
+    auto complexPrimitivesCollectorSystem = SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>();
 
     // -------------------------------
     m_systems.emplace(transformationsSystem);

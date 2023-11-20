@@ -17,18 +17,13 @@ Core::ECS::Scene::Scene() noexcept
     transparentLayer->m_index = 0;
     transparentLayer->m_isOpaque  = false;
 
-    m_layers[transparentLayer->m_name] = std::move(transparentLayer);
+    m_layers[SG_LAYER_TRANSPARENT_NAME] = std::move(transparentLayer);
 
     auto opaqueLayer = std::make_shared<Layer>();
     opaqueLayer->m_name = SG_LAYER_OPAQUE_NAME;
     opaqueLayer->m_index = 1;
 
-    m_layers[opaqueLayer->m_name] = std::move(opaqueLayer);
-}
-
-void Core::ECS::Scene::setLayerName(const std::string& oldLayerName, std::string&& newLayerName) noexcept
-{
-    m_layers[oldLayerName]->m_name = std::move(newLayerName);
+    m_layers[SG_LAYER_OPAQUE_NAME] = std::move(opaqueLayer);
 }
 
 void Core::ECS::Scene::addLayer(std::string&& layerName) noexcept
@@ -41,18 +36,16 @@ void Core::ECS::Scene::addLayer(std::string&& layerName) noexcept
 
 void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity) noexcept
 {
-    auto layer = m_layers[SG_LAYER_OPAQUE_NAME];
-    entity->m_layer = layer;
-    layer->m_entities.push_back(entity);
+    entity->m_layer = m_layers[SG_LAYER_OPAQUE_NAME];
+    m_entities.push_back(entity);
 
     ECSWorld::recacheEntity(entity);
 }
 
 void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const std::string& layerName) noexcept
 {
-    auto layer = m_layers[layerName];
-    entity->m_layer = layer;
-    layer->m_entities.push_back(entity);
+    entity->m_layer = m_layers[layerName];
+    m_entities.push_back(entity);
 
     ECSWorld::recacheEntity(entity);
 }
@@ -60,7 +53,7 @@ void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const st
 void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const std::shared_ptr<Core::ECS::Layer>& layer) noexcept
 {
     entity->m_layer = layer;
-    layer->m_entities.push_back(entity);
+    m_entities.push_back(entity);
 
     ECSWorld::recacheEntity(entity);
 }
@@ -77,84 +70,17 @@ void Core::ECS::Scene::setCurrentScene(const std::shared_ptr<Scene>& newCurrentS
     m_currentScene = newCurrentScene;
 }
 
-void Core::ECS::Scene::setShadowsCastersNum(const size_t& num)
+std::shared_ptr<Core::ECS::Layer> Core::ECS::Scene::getLayer(const size_t& layerIndex) noexcept
 {
-    m_shadowsCastersNum = num;
-
-    /*for(const auto& layer : m_layers)
+    std::shared_ptr<Layer> foundLayer;
+    for(const auto& layer : m_layers)
     {
-        // define new shadow casters num for all entities in scene
-        for(const auto& entity : layer.second->m_entities)
+        if(layer.second->m_index == layerIndex)
         {
-            auto meshes = entity->getComponents<MeshComponent>();
-            for(const auto& meshComponent: meshes)
-            {
-                for(const auto& shaderPair: meshComponent->m_mesh->m_material->getShaders())
-                {
-                    const auto& shader = shaderPair.second;
-
-                    shader->setAssetModifiedChecking(false);
-
-                    shader->removeDefine(
-                            SGShaderDefineType::SGG_OTHER_DEFINE,
-                            SG_SHADERS_SHADOWS_CASTERS_NUM_NAME
-                    );
-                    shader->addDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                       {
-                                               Graphics::ShaderDefine(SG_SHADERS_SHADOWS_CASTERS_NUM_NAME,
-                                                                      std::to_string(m_shadowsCastersNum))
-                                       }
-                    );
-
-                    shader->setAssetModifiedChecking(true);
-                }
-            }
+            foundLayer = layer.second;
         }
-    }*/
-}
+    }
 
-size_t Core::ECS::Scene::getShadowsCastersNum() const noexcept
-{
-    return m_shadowsCastersNum;
-}
-
-void Core::ECS::Scene::setDirectionalLightsNum(const size_t& num)
-{
-    m_directionalLightsNum = num;
-
-    /*for(const auto& layer : m_layers)
-    {
-        // define new shadow casters num for all entities in scene
-        for(const auto& entity : layer.second->m_entities)
-        {
-            auto meshes = entity->getComponents<MeshComponent>();
-            for(const auto& meshComponent: meshes)
-            {
-                for(const auto& shaderPair: meshComponent->m_mesh->m_material->getShaders())
-                {
-                    const auto& shader = shaderPair.second;
-
-                    shader->setAssetModifiedChecking(false);
-
-                    shader->removeDefine(
-                            SGShaderDefineType::SGG_OTHER_DEFINE,
-                            SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME
-                    );
-                    shader->addDefines(SGShaderDefineType::SGG_OTHER_DEFINE,
-                                       {
-                                               Graphics::ShaderDefine(SG_SHADERS_DIRECTIONAL_LIGHTS_NUM_NAME,
-                                                                      std::to_string(m_directionalLightsNum))
-                                       }
-                    );
-
-                    shader->setAssetModifiedChecking(true);
-                }
-            }
-        }
-    }*/
-}
-
-size_t Core::ECS::Scene::getDirectionalLightsNum() const noexcept
-{
-    return m_directionalLightsNum;
+    return foundLayer;
+    //return m_layers.
 }

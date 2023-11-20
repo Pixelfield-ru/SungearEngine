@@ -11,6 +11,7 @@
 
 #include "GAPIType.h"
 #include "IUniformBuffer.h"
+#include "SGCore/Utils/ShadersPaths.h"
 
 namespace Core::ECS
 {
@@ -87,6 +88,11 @@ namespace Core::Graphics
 
         [[nodiscard]] virtual IShader* createShader() = 0;
         [[nodiscard]] virtual IShader* createShader(const std::string& path) = 0;
+
+        [[nodiscard]] IShader* createShader(const ShadersPaths& shadersPaths)
+        {
+            return createShader(shadersPaths.getCurrentRealization());
+        };
 
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
         [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;

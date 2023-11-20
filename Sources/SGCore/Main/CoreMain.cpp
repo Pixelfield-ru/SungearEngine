@@ -9,6 +9,7 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
 #include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/Utils/ShadersPaths.h"
 
 void Core::Main::CoreMain::start()
 {
@@ -23,6 +24,7 @@ void Core::Main::CoreMain::start()
     m_renderer->init();
 
     // core components init -------------
+    ShadersPaths::getMainInstance().createDefaultPaths();
     InputManager::init();
     Memory::AssetManager::init();
     Logging::init();
@@ -81,8 +83,6 @@ void Core::Main::CoreMain::fixedUpdate()
 
 void Core::Main::CoreMain::update()
 {
-    // InputManager::startFrame();
-
     glm::ivec2 windowSize;
     m_window.getSize(windowSize.x, windowSize.y);
     m_renderer->prepareFrame(windowSize);

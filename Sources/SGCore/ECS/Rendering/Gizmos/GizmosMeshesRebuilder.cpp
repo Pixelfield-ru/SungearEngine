@@ -11,178 +11,172 @@
 
 void Core::ECS::GizmosMeshesRebuilder::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
-    for(const auto& layer : m_cachedEntities)
-    {
-        for(const auto& cachedEntity: layer.second)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
+        auto transformComponent = cachedEntity->getComponent<Transform>();
+        if(!transformComponent) continue;
+        auto primitiveComponents = cachedEntity->getComponents<IGizmo>();
+
+        for(const auto& primitiveComponent: primitiveComponents)
         {
-            if(!cachedEntity.second) continue;
-
-            auto transformComponent = cachedEntity.second->getComponent<Transform>();
-            if(!transformComponent) continue;
-            auto primitiveComponents = cachedEntity.second->getComponents<IGizmo>();
-
-            for(const auto& primitiveComponent: primitiveComponents)
+            // if follow all
+            if(primitiveComponent->m_followEntityTRS.x &&
+               primitiveComponent->m_followEntityTRS.y &&
+               primitiveComponent->m_followEntityTRS.z)
             {
-                // if follow all
-                if (primitiveComponent->m_followEntityTRS.x &&
-                    primitiveComponent->m_followEntityTRS.y &&
-                    primitiveComponent->m_followEntityTRS.z)
+                primitiveComponent->m_modelMatrix = transformComponent->m_modelMatrix;
+            }
+            else
+            {
+                primitiveComponent->m_modelMatrix = glm::identity<glm::mat4>();
+
+                // if follow translation
+                if(primitiveComponent->m_followEntityTRS.x)
                 {
-                    primitiveComponent->m_modelMatrix = transformComponent->m_modelMatrix;
+                    primitiveComponent->m_modelMatrix *= transformComponent->m_translationMatrix;
                 }
-                else
+                // if follow rotation
+                if(primitiveComponent->m_followEntityTRS.y)
                 {
-                    primitiveComponent->m_modelMatrix  = glm::identity<glm::mat4>();
-
-                    // if follow translation
-                    if(primitiveComponent->m_followEntityTRS.x)
-                    {
-                        primitiveComponent->m_modelMatrix *= transformComponent->m_translationMatrix;
-                    }
-                    // if follow rotation
-                    if(primitiveComponent->m_followEntityTRS.y)
-                    {
-                        primitiveComponent->m_modelMatrix *= transformComponent->m_rotationMatrix;
-                    }
-                    // if follow scale
-                    if(primitiveComponent->m_followEntityTRS.z)
-                    {
-                        primitiveComponent->m_modelMatrix *= transformComponent->m_scaleMatrix;
-                    }
+                    primitiveComponent->m_modelMatrix *= transformComponent->m_rotationMatrix;
                 }
-
-                // ------------------- individual for every primitive component
-
-                auto sphereComponent = std::dynamic_pointer_cast<SphereGizmo>(primitiveComponent);
-
-                if(sphereComponent != nullptr)
+                // if follow scale
+                if(primitiveComponent->m_followEntityTRS.z)
                 {
-                    if(sphereComponent->m_angleIncrement != sphereComponent->m_lastAngleIncrement ||
-                       sphereComponent->m_radius != sphereComponent->m_lastRadius)
+                    primitiveComponent->m_modelMatrix *= transformComponent->m_scaleMatrix;
+                }
+            }
+
+            // ------------------- individual for every primitive component
+
+            auto sphereComponent = std::dynamic_pointer_cast<SphereGizmo>(primitiveComponent);
+
+            if(sphereComponent != nullptr)
+            {
+                if(sphereComponent->m_angleIncrement != sphereComponent->m_lastAngleIncrement ||
+                   sphereComponent->m_radius != sphereComponent->m_lastRadius)
+                {
+                    // clear
+                    sphereComponent->m_meshData->m_positions.clear();
+                    sphereComponent->m_meshData->m_indices.clear();
+
+
+                    // degrees left to iterate through every circle point
+                    float degLeft = 360.0f;
+
+                    // vertices count for every circle in sphere
+                    int circleVerticesNum = (int) floorf(360.0f / sphereComponent->m_angleIncrement);
+
+                    // circle x-offset
+                    float circlesXOffset = (sphereComponent->m_radius * 2.0f) / ((float) (circleVerticesNum));
+
+                    glm::vec3 curPos = {0.0, 0.0, 0.0};
+
+                    // creating vertices for every circle in sphere
+                    // iterating from left end point of sphere to right end point of sphere
+                    for(float curCircleOffset = -sphereComponent->m_radius;
+                        curCircleOffset < sphereComponent->m_radius; curCircleOffset += circlesXOffset)
                     {
-                        // clear
-                        sphereComponent->m_meshData->m_positions.clear();
-                        sphereComponent->m_meshData->m_indices.clear();
-
-
-                        // degrees left to iterate through every circle point
-                        float degLeft = 360.0f;
-
-                        // vertices count for every circle in sphere
-                        int circleVerticesNum = (int) floorf(360.0f / sphereComponent->m_angleIncrement);
-
-                        // circle x-offset
-                        float circlesXOffset = (sphereComponent->m_radius * 2.0f) / ((float) (circleVerticesNum));
-
-                        glm::vec3 curPos = {0.0, 0.0, 0.0};
-
-                        // creating vertices for every circle in sphere
-                        // iterating from left end point of sphere to right end point of sphere
-                        for(float curCircleOffset = -sphereComponent->m_radius;
-                            curCircleOffset < sphereComponent->m_radius; curCircleOffset += circlesXOffset)
+                        while(degLeft >= sphereComponent->m_angleIncrement)
                         {
-                            while(degLeft >= sphereComponent->m_angleIncrement)
-                            {
-                                curPos.x = curPos.y = 0.0;
-                                float circleRadius = sqrt(
-                                        pow(sphereComponent->m_radius, 2.0f) - pow(curCircleOffset, 2.0f));
-                                curPos.z = circleRadius;
+                            curPos.x = curPos.y = 0.0;
+                            float circleRadius = sqrt(
+                                    pow(sphereComponent->m_radius, 2.0f) - pow(curCircleOffset, 2.0f));
+                            curPos.z = circleRadius;
 
-                                curPos = glm::rotate(curPos, glm::radians(degLeft), glm::vec3 {1.0, 0.0, 0.0});
+                            curPos = glm::rotate(curPos, glm::radians(degLeft), glm::vec3 {1.0, 0.0, 0.0});
 
-                                degLeft -= sphereComponent->m_angleIncrement;
+                            degLeft -= sphereComponent->m_angleIncrement;
 
-                                sphereComponent->m_meshData->m_positions.push_back(curPos.x + curCircleOffset);
-                                sphereComponent->m_meshData->m_positions.push_back(curPos.y);
-                                sphereComponent->m_meshData->m_positions.push_back(curPos.z);
-                            }
-                            degLeft = 360.0f;
+                            sphereComponent->m_meshData->m_positions.push_back(curPos.x + curCircleOffset);
+                            sphereComponent->m_meshData->m_positions.push_back(curPos.y);
+                            sphereComponent->m_meshData->m_positions.push_back(curPos.z);
                         }
+                        degLeft = 360.0f;
+                    }
 
-                        // just for iterate trough loops
-                        size_t i = 0;
-                        size_t k = 0;
+                    // just for iterate trough loops
+                    size_t i = 0;
+                    size_t k = 0;
 
-                        // pushing first index
-                        sphereComponent->m_meshData->m_indices.push_back(0);
+                    // pushing first index
+                    sphereComponent->m_meshData->m_indices.push_back(0);
 
-                        // creating the right end of the sphere
-                        for(i = 0; i < circleVerticesNum; i++)
+                    // creating the right end of the sphere
+                    for(i = 0; i < circleVerticesNum; i++)
+                    {
+                        sphereComponent->m_meshData->m_positions.push_back(sphereComponent->m_radius);
+                        sphereComponent->m_meshData->m_positions.push_back(0);
+                        sphereComponent->m_meshData->m_positions.push_back(0);
+                    }
+
+                    size_t resultIndex = 0;
+
+                    // do we need to go in the opposite direction to index the positions of the sphere
+                    bool goBackwards = false;
+                    // push indices to x-join vertices
+                    for(i = 0; i < circleVerticesNum; ++i)
+                    {
+                        if(!goBackwards)
                         {
-                            sphereComponent->m_meshData->m_positions.push_back(sphereComponent->m_radius);
-                            sphereComponent->m_meshData->m_positions.push_back(0);
-                            sphereComponent->m_meshData->m_positions.push_back(0);
-                        }
-
-                        size_t resultIndex = 0;
-
-                        // do we need to go in the opposite direction to index the positions of the sphere
-                        bool goBackwards = false;
-                        // push indices to x-join vertices
-                        for(i = 0; i < circleVerticesNum; ++i)
-                        {
-                            if(!goBackwards)
+                            for(k = 0; k <= circleVerticesNum; ++k)
                             {
-                                for(k = 0; k <= circleVerticesNum; ++k)
-                                {
-                                    resultIndex = i + k * circleVerticesNum;
-
-                                    sphereComponent->m_meshData->m_indices.push_back(resultIndex);
-                                    sphereComponent->m_meshData->m_indices.push_back(resultIndex);
-                                }
-                            }
-                            else
-                            {
-                                for(k = circleVerticesNum; k > 0; --k)
-                                {
-                                    resultIndex = i + k * circleVerticesNum;
-
-                                    sphereComponent->m_meshData->m_indices.push_back(resultIndex);
-                                    sphereComponent->m_meshData->m_indices.push_back(resultIndex);
-                                }
-                            }
-
-                            goBackwards = !goBackwards;
-                        }
-
-                        // push indices to y-join vertices
-                        for(i = 0; i <= circleVerticesNum; ++i)
-                        {
-                            for(k = 0; k < circleVerticesNum; ++k)
-                            {
-                                resultIndex = k + i * circleVerticesNum;
+                                resultIndex = i + k * circleVerticesNum;
 
                                 sphereComponent->m_meshData->m_indices.push_back(resultIndex);
                                 sphereComponent->m_meshData->m_indices.push_back(resultIndex);
                             }
-
-                            sphereComponent->m_meshData->m_indices.push_back(i * circleVerticesNum);
                         }
-
-                        // preparing mesh
-                        sphereComponent->m_meshData->prepare();
-
-                        sphereComponent->m_lastAngleIncrement = sphereComponent->m_angleIncrement;
-                        sphereComponent->m_lastRadius = sphereComponent->m_radius;
-                    }
-                }
-                else
-                {
-                    auto boxComponent = std::dynamic_pointer_cast<BoxGizmo>(primitiveComponent);
-
-                    if(boxComponent)
-                    {
-                        if(boxComponent->m_size != boxComponent->m_lastSize)
+                        else
                         {
-                            boxComponent->build();
+                            for(k = circleVerticesNum; k > 0; --k)
+                            {
+                                resultIndex = i + k * circleVerticesNum;
 
-                            boxComponent->m_lastSize = boxComponent->m_size;
+                                sphereComponent->m_meshData->m_indices.push_back(resultIndex);
+                                sphereComponent->m_meshData->m_indices.push_back(resultIndex);
+                            }
                         }
+
+                        goBackwards = !goBackwards;
+                    }
+
+                    // push indices to y-join vertices
+                    for(i = 0; i <= circleVerticesNum; ++i)
+                    {
+                        for(k = 0; k < circleVerticesNum; ++k)
+                        {
+                            resultIndex = k + i * circleVerticesNum;
+
+                            sphereComponent->m_meshData->m_indices.push_back(resultIndex);
+                            sphereComponent->m_meshData->m_indices.push_back(resultIndex);
+                        }
+
+                        sphereComponent->m_meshData->m_indices.push_back(i * circleVerticesNum);
+                    }
+
+                    // preparing mesh
+                    sphereComponent->m_meshData->prepare();
+
+                    sphereComponent->m_lastAngleIncrement = sphereComponent->m_angleIncrement;
+                    sphereComponent->m_lastRadius = sphereComponent->m_radius;
+                }
+            }
+            else
+            {
+                auto boxComponent = std::dynamic_pointer_cast<BoxGizmo>(primitiveComponent);
+
+                if(boxComponent)
+                {
+                    if(boxComponent->m_size != boxComponent->m_lastSize)
+                    {
+                        boxComponent->build();
+
+                        boxComponent->m_lastSize = boxComponent->m_size;
                     }
                 }
-
-                // todo: make individual update for box, and other primitives
             }
         }
-    }
+
+            // todo: make individual update for box, and other primitives
+    SG_END_ITERATE_CACHED_ENTITIES
 }

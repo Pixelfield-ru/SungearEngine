@@ -7,17 +7,18 @@
 
 namespace Core::Graphics
 {
-    typedef char GAPIType;
+    enum GAPIType
+    {
+        SG_API_TYPE_UNKNOWN,
 
-    static const GAPIType SG_API_TYPE_UNKNOWN = 0;
+        SG_API_TYPE_GL4,
+        SG_API_TYPE_GL46,
 
-    static const GAPIType SG_API_TYPE_GL4 = 1;
-    static const GAPIType SG_API_TYPE_GL46 = 2;
+        SG_API_TYPE_GLES2,
+        SG_API_TYPE_GLES3,
 
-    static const GAPIType SG_API_TYPE_GLES2 = 3;
-    static const GAPIType SG_API_TYPE_GLES3 = 4;
-
-    static const GAPIType SG_API_TYPE_VULKAN = 5;
+        SG_API_TYPE_VULKAN
+    };
 }
 
 #endif //SUNGEARENGINE_APITYPE_H

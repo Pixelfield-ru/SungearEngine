@@ -22,10 +22,9 @@ namespace Core::ECS
         friend class Scene;
         friend class ISystem;
         friend class LayersComparator;
+        friend struct CachedEntitiesComparator;
 
     public:
-        std::list<std::shared_ptr<Entity>> m_entities;
-
         std::string m_name;
 
         bool m_isOpaque = true;

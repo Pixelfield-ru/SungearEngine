@@ -86,23 +86,6 @@
                 }
             }
 
-            // ----------------------------------------------------
-            // applying color (if depth test passed) --------------
-
-            // then if depth of current frame buffer is closest we render pixel of this frame buffer
-
-            /*vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
-            mixCoeff = 1.0 / allFB[currentFBIndex].colorAttachmentsCount;
-
-            //for (int i = 0; i < allFB[currentFBIndex].colorAttachmentsCount - ; i++)
-            {
-                currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV).rgb * mixCoeff;
-            }
-
-            gl_FragColor = currentFBColor;*/
-
-            // -----------------------------------------------------
-
             return;
         }
 

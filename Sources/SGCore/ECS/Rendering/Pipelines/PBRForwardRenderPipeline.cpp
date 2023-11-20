@@ -25,7 +25,8 @@ Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
     m_geometryPassShader = std::shared_ptr<Graphics::IShader>(
             Core::Main::CoreMain::getRenderer().createShader(
-                    Graphics::getShaderPath(Graphics::StandardShaderType::SG_PBR_SHADER))
+                    ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
+            )
     );
 
     m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
@@ -61,7 +62,8 @@ Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     m_shadowsPassShader = std::shared_ptr<Graphics::IShader>(
             Core::Main::CoreMain::getRenderer().createShader(
-                    Graphics::getShaderPath(Graphics::StandardShaderType::SG_SHADOWS_GENERATOR_SHADER))
+                    ShadersPaths::getMainInstance()["ShadowsGeneration"]["DefaultShader"]
+            )
     );
 
     m_shadowsPassShaderMarkup.addTexturesBlockDeclaration(
@@ -75,8 +77,8 @@ Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
     // ---------------------
 
     m_skyboxPassShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(Graphics::getShaderPath(
-                    Graphics::StandardShaderType::SG_SKYBOX_SHADER)
+            Core::Main::CoreMain::getRenderer().createShader(
+                    ShadersPaths::getMainInstance()["Skybox"]["DefaultShader"]
             )
     );
 
@@ -92,32 +94,34 @@ Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     m_linesGizmosPassShader = std::shared_ptr<Graphics::IShader>(
             Core::Main::CoreMain::getRenderer().createShader(
-                    Graphics::getShaderPath(Graphics::StandardShaderType::SG_LINES_SHADER))
+                    ShadersPaths::getMainInstance()["Gizmos"]["LinesShader"]
+            )
     );
 
     // ---------------------
 
     m_complexGizmosPassShader = std::shared_ptr<Graphics::IShader>(
             Core::Main::CoreMain::getRenderer().createShader(
-                    Graphics::getShaderPath(Graphics::StandardShaderType::SG_COMPLEX_PRIMITIVES_SHADER))
+                    ShadersPaths::getMainInstance()["Gizmos"]["ComplexGizmosShader"]
+            )
     );
 }
 
 void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scene)
 {
-    auto transformationsSystem = Patterns::Singleton::getInstance<TransformationsUpdater>();
+    auto transformationsSystem = SGSingleton::getSharedPtrInstance<TransformationsUpdater>();
 
-    const auto& meshedCachedEntities = Patterns::Singleton::getInstance<MeshesCollector>()->getCachedEntities();
-    const auto& primitivesCachedEntities = Patterns::Singleton::getInstance<GizmosMeshesRebuilder>()->getCachedEntities();
+    const auto& meshedCachedEntities = SGSingleton::getSharedPtrInstance<MeshesCollector>()->getCachedEntities();
+    const auto& primitivesCachedEntities = SGSingleton::getSharedPtrInstance<GizmosMeshesRebuilder>()->getCachedEntities();
 
-    const auto& directionalLightsCachedEntities = Patterns::Singleton::getInstance<DirectionalLightsCollector>()->getCachedEntities();
-    const auto& shadowsCastersCachedEntities = Patterns::Singleton::getInstance<ShadowsCastersCollector>()->getCachedEntities();
+    const auto& directionalLightsCachedEntities = SGSingleton::getSharedPtrInstance<DirectionalLightsCollector>()->getCachedEntities();
+    const auto& shadowsCastersCachedEntities = SGSingleton::getSharedPtrInstance<ShadowsCastersCollector>()->getCachedEntities();
 
-    const auto& skyboxesCachedEntities = Patterns::Singleton::getInstance<SkyboxesCollector>()->getCachedEntities();
+    const auto& skyboxesCachedEntities = SGSingleton::getSharedPtrInstance<SkyboxesCollector>()->getCachedEntities();
 
-    const auto& linesCachedEntities = Patterns::Singleton::getInstance<LinesGizmosCollector>()->getCachedEntities();
+    const auto& linesCachedEntities = SGSingleton::getSharedPtrInstance<LinesGizmosCollector>()->getCachedEntities();
     const auto& complexPrimitivesCachedEntities =
-            Patterns::Singleton::getInstance<ComplexGizmosCollector>()->getCachedEntities();
+            SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>()->getCachedEntities();
 
     if(meshedCachedEntities.empty() && primitivesCachedEntities.empty() && skyboxesCachedEntities.empty()) return;
 
@@ -125,30 +129,26 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
     m_skyboxPassShader->bind();
     m_skyboxPassShader->useShaderMarkup(m_skyboxPassShaderMarkup);
 
-    for (const auto& camerasLayer: m_cachedEntities)
-    {
-        for (const auto& cachedEntity: camerasLayer.second)
-        {
-            if (!cachedEntity.second) continue;
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, camerasLayer, cameraEntity)
+            std::shared_ptr<Camera> cameraComponent = cameraEntity->getComponent<Camera>();
+            std::shared_ptr<Transform> cameraTransformComponent = cameraEntity->getComponent<Transform>();
 
-            std::shared_ptr<Camera> cameraComponent = cachedEntity.second->getComponent<Camera>();
-            std::shared_ptr<Transform> cameraTransformComponent = cachedEntity.second->getComponent<Transform>();
-
-            if (!cameraComponent || !cameraTransformComponent) continue;
+            if(!cameraComponent || !cameraTransformComponent) continue;
 
             Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
             m_skyboxPassShader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
             auto currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
+            std::shared_ptr<Graphics::IFrameBuffer> foundFrameBuffer;
             currentLayerFrameBuffer->bind()->clear();
 
-            for (const auto& skyboxesLayer: skyboxesCachedEntities)
+            for(const auto& skyboxesLayer: skyboxesCachedEntities)
             {
-                const auto& foundPPLayer = cameraComponent->getPostProcessLayerFrameBuffer(skyboxesLayer.first);
+                foundFrameBuffer = cameraComponent->getPostProcessLayerFrameBuffer(skyboxesLayer.first);
                 // if pp layer exists
-                if(foundPPLayer)
+                if(foundFrameBuffer)
                 {
-                    currentLayerFrameBuffer = foundPPLayer;
+                    currentLayerFrameBuffer = foundFrameBuffer;
                     currentLayerFrameBuffer->bind()->clear();
                 }
                 else
@@ -158,35 +158,37 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
                 currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
 
-                for (const auto& skyboxEntity : skyboxesLayer.second)
+                for(const auto& skyboxEntity: skyboxesLayer.second)
                 {
-                    if (!skyboxEntity.second) continue;
+
+                    if(!skyboxEntity.second) continue;
 
                     std::shared_ptr<Transform> transformComponent = skyboxEntity.second->getComponent<Transform>();
 
-                    if (!transformComponent) continue;
+                    if(!transformComponent) continue;
 
                     auto meshComponents =
                             skyboxEntity.second->getComponents<Mesh>();
 
-                    for (const auto& meshComponent: meshComponents)
+                    for(const auto& meshComponent: meshComponents)
                     {
                         meshComponent->m_meshData->m_material->bind(m_skyboxPassShader, m_skyboxPassShaderMarkup);
                         updateUniforms(m_skyboxPassShader,
                                        meshComponent->m_meshData->m_material,
-                                       transformComponent);
+                                       transformComponent
+                        );
 
                         Core::Main::CoreMain::getRenderer().renderMeshData(
                                 meshComponent->m_meshData,
                                 meshComponent->m_meshDataRenderInfo
                         );
                     }
-                }
 
-                currentLayerFrameBuffer->unbind();
+                    currentLayerFrameBuffer->unbind();
+                }
             }
-        }
-    }
+
+    SG_END_ITERATE_CACHED_ENTITIES
 
     // binding geom pass shader
     m_geometryPassShader->bind();
@@ -196,17 +198,12 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
     size_t directionalLightsCount = 0;
 
-    for(const auto& directionalLightsLayer : directionalLightsCachedEntities)
-    {
-        for(const auto& directionalLightEntity : directionalLightsLayer.second)
-        {
-            if (!directionalLightEntity.second) continue;
-
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(directionalLightsCachedEntities, dirLightsLayer, directionalLightEntity)
             auto directionalLightComponents =
-                    directionalLightEntity.second->getComponents<DirectionalLight>();
+                    directionalLightEntity->getComponents<DirectionalLight>();
 
             auto directionalLightTransform =
-                    directionalLightEntity.second->getComponent<Transform>();
+                    directionalLightEntity->getComponent<Transform>();
 
             if(!directionalLightTransform) continue;
 
@@ -233,8 +230,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
                 directionalLightsCount++;
             }
-        }
-    }
+    SG_END_ITERATE_CACHED_ENTITIES
 
     // todo: make name as define
     m_geometryPassShader->useInteger("DIRECTIONAL_LIGHTS_COUNT", directionalLightsCount);
@@ -245,17 +241,12 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
     size_t shadowsCastersCount = 0;
 
-    for(const auto& shadowsCastersLayer : shadowsCastersCachedEntities)
-    {
-        for (const auto& cachedEntity : shadowsCastersLayer.second)
-        {
-            if (!cachedEntity.second) continue;
-
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(shadowsCastersCachedEntities, shadowsCastersLayer, shadowsCasterEntity)
             // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
-            std::shared_ptr<ShadowsCaster> shadowsCasterComponent = cachedEntity.second->getComponent<ShadowsCaster>();
-            std::shared_ptr<Transform> shadowsCasterTransform = cachedEntity.second->getComponent<Transform>();
+            std::shared_ptr<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity->getComponent<ShadowsCaster>();
+            std::shared_ptr<Transform> shadowsCasterTransform = shadowsCasterEntity->getComponent<Transform>();
 
-            if (!shadowsCasterTransform || !shadowsCasterComponent) continue;
+            if(!shadowsCasterTransform || !shadowsCasterComponent) continue;
 
             std::string currentShadowCasterStr = "shadowsCasters[";
             currentShadowCasterStr += std::to_string(shadowsCastersCount);
@@ -283,39 +274,33 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
             Core::Main::CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
             m_shadowsPassShader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
-            for (const auto& meshesLayer: meshedCachedEntities)
-            {
-                for (const auto& meshesEntity: meshesLayer.second)
-                {
-                    if (!meshesEntity.second) continue;
+            SG_BEGIN_ITERATE_CACHED_ENTITIES(meshedCachedEntities, meshesLayer, meshesEntity)
+                    std::shared_ptr<Transform> transformComponent = meshesEntity->getComponent<Transform>();
 
-                    std::shared_ptr<Transform> transformComponent = meshesEntity.second->getComponent<Transform>();
-
-                    if (!transformComponent) continue;
+                    if(!transformComponent) continue;
 
                     auto meshComponents =
-                            meshesEntity.second->getComponents<Mesh>();
+                            meshesEntity->getComponents<Mesh>();
 
-                    for (const auto& meshComponent: meshComponents)
+                    for(const auto& meshComponent: meshComponents)
                     {
                         meshComponent->m_meshData->m_material->bind(m_shadowsPassShader, m_shadowsPassShaderMarkup);
                         updateUniforms(m_shadowsPassShader,
                                        meshComponent->m_meshData->m_material,
-                                       transformComponent);
+                                       transformComponent
+                        );
 
                         Core::Main::CoreMain::getRenderer().renderMeshData(
                                 meshComponent->m_meshData,
                                 meshComponent->m_meshDataRenderInfo
                         );
                     }
-                }
-            }
+            SG_END_ITERATE_CACHED_ENTITIES
 
             shadowsCasterComponent->m_frameBuffer->unbind();
 
             shadowsCastersCount++;
-        }
-    }
+    SG_END_ITERATE_CACHED_ENTITIES
 
     m_geometryPassShader->bind();
     m_geometryPassShader->useInteger(
@@ -327,16 +312,11 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
     // ----- render meshes and primitives (geometry + light pass pbr) ------
 
-    for (const auto& camerasLayer: m_cachedEntities)
-    {
-        for (const auto& cachedEntity: camerasLayer.second)
-        {
-            if (!cachedEntity.second) continue;
-
-            std::shared_ptr<Transform> cameraTransformComponent = cachedEntity.second->getComponent<Transform>();
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, camerasLayer, cameraEntity)
+            std::shared_ptr<Transform> cameraTransformComponent = cameraEntity->getComponent<Transform>();
             if(!cameraTransformComponent) continue;
-            std::shared_ptr<Camera> cameraComponent = cachedEntity.second->getComponent<Camera>();
-            if (!cameraComponent) continue;
+            std::shared_ptr<Camera> cameraComponent = cameraEntity->getComponent<Camera>();
+            if(!cameraComponent) continue;
 
             Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
 
@@ -345,14 +325,16 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
             m_geometryPassShader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
 
             std::shared_ptr<Graphics::IFrameBuffer> currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
+            std::shared_ptr<Graphics::IFrameBuffer> foundFrameBuffer;
+            // todo: make less bindings
 
-            for (const auto& meshesLayer : meshedCachedEntities)
+            for(const auto& meshesLayer: meshedCachedEntities)
             {
-                const auto& foundPPLayer = cameraComponent->getPostProcessLayerFrameBuffer(meshesLayer.first);
+                foundFrameBuffer = cameraComponent->getPostProcessLayerFrameBuffer(meshesLayer.first);
                 // if pp layer exists
-                if(foundPPLayer)
+                if(foundFrameBuffer)
                 {
-                    currentLayerFrameBuffer = foundPPLayer;
+                    currentLayerFrameBuffer = foundFrameBuffer;
                     currentLayerFrameBuffer->bind()->clear();
                 }
                 else
@@ -361,48 +343,44 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                 }
 
                 currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
-                // todo: make less bindings
 
-                for (const auto& meshesEntity: meshesLayer.second)
+                for(const auto& meshesEntity: meshesLayer.second)
                 {
-                    if (!meshesEntity.second) continue;
+                    if(!meshesEntity.second) continue;
 
                     std::shared_ptr<Transform> transformComponent = meshesEntity.second->getComponent<Transform>();
 
-                    if (!transformComponent) continue;
+                    if(!transformComponent) continue;
 
                     auto meshComponents =
                             meshesEntity.second->getComponents<Mesh>();
 
-                    for (const auto& meshComponent: meshComponents)
+                    for(const auto& meshComponent: meshComponents)
                     {
                         const auto& shadowsMapsTexturesBlock = m_geometryPassShaderMarkup.m_texturesBlocks[SGTextureType::SGTP_SHADOW_MAP];
 
                         std::uint8_t currentShadowsCaster = 0;
-                        for(const auto& shadowsCastersLayer : shadowsCastersCachedEntities)
-                        {
-                            for(const auto& shadowsCasterEntity: shadowsCastersLayer.second)
-                            {
-                                if(!shadowsCasterEntity.second) continue;
 
+                        SG_BEGIN_ITERATE_CACHED_ENTITIES(shadowsCastersCachedEntities, shadowsCastersLayer,
+                                                         shadowsCasterEntity)
                                 // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
-                                std::shared_ptr<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity.second->getComponent<ShadowsCaster>();
+                                std::shared_ptr<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity->getComponent<ShadowsCaster>();
 
                                 if(!shadowsCasterComponent) continue;
 
                                 shadowsCasterComponent->m_frameBuffer->bindAttachment(
-                                            SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
-                                            shadowsMapsTexturesBlock.m_offset + currentShadowsCaster
-                                        );
+                                        SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
+                                        shadowsMapsTexturesBlock.m_offset + currentShadowsCaster
+                                );
 
                                 currentShadowsCaster++;
-                            }
-                        }
+                        SG_END_ITERATE_CACHED_ENTITIES
 
                         meshComponent->m_meshData->m_material->bind(m_geometryPassShader, m_geometryPassShaderMarkup);
                         updateUniforms(m_geometryPassShader,
                                        meshComponent->m_meshData->m_material,
-                                       transformComponent);
+                                       transformComponent
+                        );
 
                         Core::Main::CoreMain::getRenderer().renderMeshData(
                                 meshComponent->m_meshData,
@@ -410,9 +388,9 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                         );
                     }
                 }
-
-                currentLayerFrameBuffer->unbind();
             }
+
+            currentLayerFrameBuffer->unbind();
 
             // complex primitives pass ----------------
             m_complexGizmosPassShader->bind();
@@ -420,13 +398,13 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
             currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
 
-            for(const auto& complexPrimitivesLayer : complexPrimitivesCachedEntities)
+            for(const auto& cachedPrimitivesLayer: complexPrimitivesCachedEntities)
             {
-                const auto& foundPPLayer = cameraComponent->getPostProcessLayerFrameBuffer(complexPrimitivesLayer.first);
+                foundFrameBuffer = cameraComponent->getPostProcessLayerFrameBuffer(cachedPrimitivesLayer.first);
                 // if pp layer exists
-                if(foundPPLayer)
+                if(foundFrameBuffer)
                 {
-                    currentLayerFrameBuffer = foundPPLayer;
+                    currentLayerFrameBuffer = foundFrameBuffer;
                     currentLayerFrameBuffer->bind()->clear();
                 }
                 else
@@ -436,7 +414,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
                 currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
 
-                for(const auto& cachedPrimitive : complexPrimitivesLayer.second)
+                for(const auto& cachedPrimitive: cachedPrimitivesLayer.second)
                 {
                     if(!cachedPrimitive.second) continue;
 
@@ -445,7 +423,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                     std::list<std::shared_ptr<IComplexGizmo>> complexPrimitiveComponents =
                             cachedPrimitive.second->getComponents<IComplexGizmo>();
 
-                    for(const auto& complexPrimitiveComponent : complexPrimitiveComponents)
+                    for(const auto& complexPrimitiveComponent: complexPrimitiveComponents)
                     {
                         m_complexGizmosPassShader->useMatrix(
                                 "u_primitiveModelMatrix", complexPrimitiveTransform->m_modelMatrix
@@ -519,7 +497,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
             // and then depth test for PP Layers
 
-            for(const auto& ppLayer : cameraComponent->getPostProcessLayers())
+            for(const auto& ppLayer: cameraComponent->getPostProcessLayers())
             {
                 ppLayer.second.m_shader->bind();
                 ppLayer.second.m_shader
@@ -584,6 +562,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
             // -------------------------------------
         }
     }
+
 
     // --------------------------------
 }
