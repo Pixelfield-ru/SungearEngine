@@ -25,7 +25,7 @@ struct ShadersPaths
 
     void createDefaultPaths() noexcept;
 
-    std::string getCurrentRealization() const noexcept;
+    [[nodiscard]] std::string getCurrentRealization() const noexcept;
 
     // ---------------
 
@@ -41,7 +41,7 @@ struct ShadersPaths
     }
 
 private:
-    std::unordered_map<std::string, ShadersPaths> m_paths;
+    std::unordered_map<std::string, std::shared_ptr<ShadersPaths>> m_paths;
 };
 
 #endif // SUNGEARENGINE_SHADERSPATHS_H
