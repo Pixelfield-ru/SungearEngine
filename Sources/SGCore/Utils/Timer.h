@@ -13,7 +13,7 @@
 
 #include "TimerCallback.h"
 
-namespace Core::Utils
+namespace SGCore
 {
     // TODO: documentation
     class Timer

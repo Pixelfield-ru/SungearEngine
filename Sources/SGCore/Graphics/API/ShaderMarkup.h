@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include "GraphicsDataTypes.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     struct MarkedTexturesBlock
     {

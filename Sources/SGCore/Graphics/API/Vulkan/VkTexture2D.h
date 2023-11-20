@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     // TODO: impl VkTexture2D
     class VkTexture2D : public ITexture2D
@@ -15,7 +15,7 @@ namespace Core::Graphics
     public:
         ~VkTexture2D() noexcept;
 
-        void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) noexcept final;
+        void create(std::weak_ptr<Texture2DAsset>) noexcept final;
         void destroy() noexcept final;
 
         void onAssetModified() noexcept final;

@@ -11,7 +11,7 @@
 #include <utility>
 #include <string>
 
-namespace Core::Exceptions
+namespace SGCore
 {
     class SGNotImplementedException : std::exception
     {

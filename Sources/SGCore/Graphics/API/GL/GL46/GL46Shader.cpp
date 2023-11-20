@@ -9,13 +9,13 @@
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Graphics/API/GL/GLShadersPreprocessor.h"
 
-Core::Graphics::GL46Shader::~GL46Shader() noexcept
+SGCore::GL46Shader::~GL46Shader() noexcept
 {
     destroy();
 }
 
 // TODO: watch SGP1
-GLuint Core::Graphics::GL46Shader::createShaderPart(const GLenum& type, const std::string& finalShaderCode) noexcept
+GLuint SGCore::GL46Shader::createShaderPart(const GLenum& type, const std::string& finalShaderCode) noexcept
 {
     std::string additionalShaderInfo =
             "#version " + m_version + "\n";
@@ -98,13 +98,13 @@ GLuint Core::Graphics::GL46Shader::createShaderPart(const GLenum& type, const st
 
 // TODO: watch SGP1
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
-void Core::Graphics::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAsset> asset) noexcept
+void SGCore::GL46Shader::compile(std::shared_ptr<FileAsset> asset) noexcept
 {
     destroy();
 
     auto thisWeak = weak_from_this();
 
-    std::shared_ptr<Memory::Assets::FileAsset> fileAssetShared = m_fileAsset.lock();
+    std::shared_ptr<FileAsset> fileAssetShared = m_fileAsset.lock();
 
     if(fileAssetShared)
     {
@@ -208,13 +208,13 @@ void Core::Graphics::GL46Shader::compile(std::shared_ptr<Memory::Assets::FileAss
     }
 }
 
-void Core::Graphics::GL46Shader::bind() noexcept
+void SGCore::GL46Shader::bind() noexcept
 {
     glUseProgram(m_programHandler);
 }
 
 // TODO: watch SGP1
-void Core::Graphics::GL46Shader::destroy() noexcept
+void SGCore::GL46Shader::destroy() noexcept
 {
     for(const GLuint shaderPartHandler : m_shaderPartsHandlers)
     {
@@ -272,25 +272,25 @@ void Core::Graphics::GL46Shader::destroy() noexcept
     m_cachedMat4.clear();
 }
 
-std::int32_t Core::Graphics::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
+std::int32_t SGCore::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
 {
     return glGetUniformLocation(m_programHandler, uniformName.c_str());
 }
 
-void Core::Graphics::GL46Shader::useUniformBuffer(const std::shared_ptr<IUniformBuffer>& uniformBuffer)
+void SGCore::GL46Shader::useUniformBuffer(const std::shared_ptr<IUniformBuffer>& uniformBuffer)
 {
     auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandler, uniformBuffer->m_blockName.c_str());
     glUniformBlockBinding(m_programHandler, uniformBufferIdx,
                           uniformBuffer->getLayoutLocation());
 }
 
-void Core::Graphics::GL46Shader::useTexture(const std::string& uniformName, const uint8_t& texBlock)
+void SGCore::GL46Shader::useTexture(const std::string& uniformName, const uint8_t& texBlock)
 {
     int texLoc = getShaderUniformLocation(uniformName);
     glUniform1i(texLoc, texBlock);
 }
 
-void Core::Graphics::GL46Shader::useMatrix(const std::string& uniformName, const glm::mat4& matrix)
+void SGCore::GL46Shader::useMatrix(const std::string& uniformName, const glm::mat4& matrix)
 {
     int matLoc = getShaderUniformLocation(uniformName);
     glUniformMatrix4fv(matLoc, 1, false, glm::value_ptr(matrix));
@@ -324,34 +324,32 @@ void Core::Graphics::GL46Shader::useMatrix(const std::string& uniformName, const
     }*/
 }
 
-void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform2f(vecLoc, x, y);
 }
 
-void
-Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform3f(vecLoc, x, y, z);
 }
 
-void
-Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z,
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z,
                                        const float& w)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform4f(vecLoc, x, y, z, w);
 }
 
-void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec2& vec)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec2& vec)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform2f(vecLoc, vec.x, vec.y);
 }
 
-void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec3& vec)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec3& vec)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform3f(vecLoc, vec.x, vec.y, vec.z);
@@ -385,19 +383,19 @@ void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, cons
     }*/
 }
 
-void Core::Graphics::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec4& vec)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec4& vec)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform4f(vecLoc, vec.x, vec.y, vec.z, vec.w);
 }
 
-void Core::Graphics::GL46Shader::useFloat(const std::string& uniformName, const float& f)
+void SGCore::GL46Shader::useFloat(const std::string& uniformName, const float& f)
 {
     int fLoc = getShaderUniformLocation(uniformName);
     glUniform1f(fLoc, f);
 }
 
-void Core::Graphics::GL46Shader::useInteger(const std::string& uniformName, const size_t& i)
+void SGCore::GL46Shader::useInteger(const std::string& uniformName, const size_t& i)
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, i);
@@ -421,7 +419,7 @@ void Core::Graphics::GL46Shader::useInteger(const std::string& uniformName, cons
 }
 
 /*
-Core::Graphics::API::GL46::GL46Shader& Core::Graphics::API::GL46::GL46Shader::operator=(Core::Graphics::API::GL46::GL46Shader&& other) noexcept
+SGCore::API::GL46::GL46Shader& SGCore::API::GL46::GL46Shader::operator=(SGCore::API::GL46::GL46Shader&& other) noexcept
 {
     this->m_programHandler = other.m_programHandler;
     other.m_programHandler = 0;

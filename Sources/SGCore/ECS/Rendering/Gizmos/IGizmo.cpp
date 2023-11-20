@@ -3,7 +3,7 @@
 //
 #include "IGizmo.h"
 
-Core::ECS::IGizmo::IGizmo() noexcept
+SGCore::IGizmo::IGizmo() noexcept
 {
     m_meshDataRenderInfo.m_enableFacesCulling = false;
     m_meshDataRenderInfo.m_drawMode = SGDrawMode::SGG_LINES;

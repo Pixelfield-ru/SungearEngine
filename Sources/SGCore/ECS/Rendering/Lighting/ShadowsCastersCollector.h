@@ -7,14 +7,14 @@
 
 #include "SGCore/ECS/ISystem.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class ShadowsCastersCollector : public ISystem
     {
         SG_DECLARE_SINGLETON(ShadowsCastersCollector)
 
     public:
-        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
     };
 }
 

@@ -4,7 +4,7 @@
 #include "IMeshData.h"
 #include "glm/detail/type_quat.hpp"
 
-namespace Core::ImportedScene
+namespace SGCore
 {
     class Node
     {

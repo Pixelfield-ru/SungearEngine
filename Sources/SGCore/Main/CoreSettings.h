@@ -14,9 +14,9 @@
 
 #include "assimp/postprocess.h"
 
-namespace Core::Main::CoreSettings
+namespace SGCore
 {
-    namespace ModelsImport
+    namespace ModelsImportSettings
     {
         static inline const int IMPORTER_FLAGS = aiProcess_Triangulate |
                 aiProcess_GenSmoothNormals |

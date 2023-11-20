@@ -17,13 +17,13 @@ void InputManager::startFrame() noexcept
         inputListener->startFrame();
     }
 
-    if(Core::Main::CoreMain::getWindow().isHideAndCentralizeCursor())
+    if(SGCore::CoreMain::getWindow().isHideAndCentralizeCursor())
     {
         int windowSizeX;
         int windowSizeY;
 
-        Core::Main::CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
-        Core::Main::CoreMain::getWindow().setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
+        SGCore::CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
+        SGCore::CoreMain::getWindow().setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
 
         for(const auto& inputListener : m_inputListeners)
         {

@@ -8,7 +8,7 @@
 #include "SGCore/ECS/ISystem.h"
 #include "SGCore/Patterns/Singleton.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class MeshesCollector : public ISystem
     {

@@ -19,7 +19,7 @@
 double accum = 0.0;
 size_t fps = 0;*/
 
-void Core::ECS::TransformationsUpdater::fixedUpdate
+void SGCore::TransformationsUpdater::fixedUpdate
 (const std::shared_ptr<Scene>& scene)
 {
     SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
@@ -131,7 +131,7 @@ void Core::ECS::TransformationsUpdater::fixedUpdate
     double t1 = glfwGetTime();
 }
 
-void Core::ECS::TransformationsUpdater::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
+void SGCore::TransformationsUpdater::cacheEntity(const std::shared_ptr<Entity>& entity)
 {
     cacheEntityComponents<Transform>(entity);
 }

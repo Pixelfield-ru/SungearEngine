@@ -9,13 +9,10 @@
 
 #include "SGCore/ECS/ISystem.h"
 
-namespace Core::ImportedScene
+namespace SGCore
 {
     class IMeshData;
-}
 
-namespace Core::ECS
-{
     class Transform;
 
     class TransformationsUpdater : public ISystem
@@ -25,7 +22,7 @@ namespace Core::ECS
     public:
         void fixedUpdate(const std::shared_ptr<Scene>& scene) final;
 
-        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
     };
 }
 

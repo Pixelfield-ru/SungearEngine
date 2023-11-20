@@ -4,12 +4,12 @@
 
 #include "IAsset.h"
 
-long Core::Memory::Assets::IAsset::getLastModified() noexcept
+long SGCore::IAsset::getLastModified() noexcept
 {
     return m_lastModified;
 }
 
-void Core::Memory::Assets::IAsset::onModified()
+void SGCore::IAsset::onModified()
 {
     for(const auto& observer : m_observers)
     {
@@ -17,7 +17,7 @@ void Core::Memory::Assets::IAsset::onModified()
     }
 }
 
-void Core::Memory::Assets::IAsset::onPathChanged()
+void SGCore::IAsset::onPathChanged()
 {
     for(const auto& observer : m_observers)
     {
@@ -25,7 +25,7 @@ void Core::Memory::Assets::IAsset::onPathChanged()
     }
 }
 
-void Core::Memory::Assets::IAsset::onDeleted()
+void SGCore::IAsset::onDeleted()
 {
     for(const auto& observer : m_observers)
     {
@@ -33,7 +33,7 @@ void Core::Memory::Assets::IAsset::onDeleted()
     }
 }
 
-void Core::Memory::Assets::IAsset::onRestored()
+void SGCore::IAsset::onRestored()
 {
     for(const auto& observer : m_observers)
     {
@@ -41,17 +41,17 @@ void Core::Memory::Assets::IAsset::onRestored()
     }
 }
 
-void Core::Memory::Assets::IAsset::addObserver(const std::shared_ptr<IAssetObserver>& observer) noexcept
+void SGCore::IAsset::addObserver(const std::shared_ptr<IAssetObserver>& observer) noexcept
 {
     m_observers.push_back(observer);
 }
 
-void Core::Memory::Assets::IAsset::removeObserver(const std::shared_ptr<IAssetObserver>& observer) noexcept
+void SGCore::IAsset::removeObserver(const std::shared_ptr<IAssetObserver>& observer) noexcept
 {
     m_observers.remove(observer);
 }
 
-std::filesystem::path Core::Memory::Assets::IAsset::getPath() const noexcept
+std::filesystem::path SGCore::IAsset::getPath() const noexcept
 {
     return m_path;
 }

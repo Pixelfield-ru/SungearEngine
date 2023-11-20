@@ -17,18 +17,11 @@
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Memory/Assets/ShaderAsset.h"
 
-namespace Core::Graphics
-{
-    class IRenderer;
-}
-
-namespace Core::Main
+namespace SGCore
 {
     class CoreMain;
-}
+    class IRenderer;
 
-namespace Core::ECS
-{
     class ShadowsCaster : public IRenderingComponent
     {
         friend class ShadowsCastersCollector;
@@ -41,8 +34,8 @@ namespace Core::ECS
 
 
         // frame buffer with depth attachment
-        std::shared_ptr<Core::Graphics::IFrameBuffer> m_frameBuffer =
-                std::shared_ptr<Core::Graphics::IFrameBuffer>(Main::CoreMain::getRenderer().createFrameBuffer())
+        std::shared_ptr<IFrameBuffer> m_frameBuffer =
+                std::shared_ptr<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                 ->create()
                 ->setSize(1024 * 2, 1024 * 2)
                 ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,

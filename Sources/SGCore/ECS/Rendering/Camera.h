@@ -7,15 +7,15 @@
 
 #include "IRenderingComponent.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     struct PostProcessLayer
     {
         friend class Camera;
 
-        std::shared_ptr<Graphics::IFrameBuffer> m_frameBuffer;
+        std::shared_ptr<IFrameBuffer> m_frameBuffer;
 
-        std::shared_ptr<Graphics::IShader> m_shader;
+        std::shared_ptr<IShader> m_shader;
 
         // name just for user. for convenience
         std::string m_name = "default";
@@ -35,35 +35,35 @@ namespace Core::ECS
     public:
         Camera();
 
-        Graphics::ShaderMarkup m_postProcessShadersMarkup;
+        ShaderMarkup m_postProcessShadersMarkup;
 
-        ImportedScene::MeshDataRenderInfo m_postProcessQuadRenderInfo;
-        std::shared_ptr<ImportedScene::IMeshData> m_postProcessQuad;
+        MeshDataRenderInfo m_postProcessQuadRenderInfo;
+        std::shared_ptr<IMeshData> m_postProcessQuad;
 
         // passes
-        std::shared_ptr<Graphics::IShader> m_defaultPostProcessShader;
-        std::shared_ptr<Graphics::IShader> m_finalPostProcessOverlayShader;
+        std::shared_ptr<IShader> m_defaultPostProcessShader;
+        std::shared_ptr<IShader> m_finalPostProcessOverlayShader;
 
         // default frame buffer for layers that does not have post-processing
-        std::shared_ptr<Graphics::IFrameBuffer> m_defaultLayersFrameBuffer;
+        std::shared_ptr<IFrameBuffer> m_defaultLayersFrameBuffer;
         // final frame buffer with all post-processing
-        std::shared_ptr<Graphics::IFrameBuffer> m_finalFrameBuffer;
+        std::shared_ptr<IFrameBuffer> m_finalFrameBuffer;
 
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;
 
-        std::shared_ptr<Graphics::IFrameBuffer> getPostProcessLayerFrameBuffer(const std::shared_ptr<ECS::Layer>& layer) noexcept;
+        std::shared_ptr<IFrameBuffer> getPostProcessLayerFrameBuffer(const std::shared_ptr<Layer>& layer) noexcept;
 
         void addPostProcessLayer(const std::string& ppLayerName,
-                                 const std::shared_ptr<ECS::Layer>& layer,
+                                 const std::shared_ptr<Layer>& layer,
                                  const std::uint16_t& fbWidth,
                                  const std::uint16_t& fbHeight);
 
         void addPostProcessLayer(const std::string& ppLayerName,
-                                 const std::shared_ptr<ECS::Layer>& layer);
+                                 const std::shared_ptr<Layer>& layer);
 
         void setPostProcessLayerShader(const std::shared_ptr<Layer>& layer,
-                                       const std::shared_ptr<Graphics::IShader>& shader) noexcept;
+                                       const std::shared_ptr<IShader>& shader) noexcept;
 
         void bindPostProcessLayers() noexcept;
 
@@ -75,7 +75,7 @@ namespace Core::ECS
         // todo: make rename pp layer function
 
     private:
-        std::unordered_map<std::shared_ptr<ECS::Layer>, PostProcessLayer> m_postProcessLayers;
+        std::unordered_map<std::shared_ptr<Layer>, PostProcessLayer> m_postProcessLayers;
 
         void init() noexcept final { }
     };

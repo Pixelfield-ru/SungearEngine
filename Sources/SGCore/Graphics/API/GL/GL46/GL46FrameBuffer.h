@@ -9,7 +9,7 @@
 
 #include "SGCore/Graphics/API/GL/GL4/GL4FrameBuffer.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GL46FrameBuffer : public GL4FrameBuffer
     {

@@ -3,7 +3,7 @@
 
 #include "IGizmo.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     struct LineGizmo : public IGizmo
     {

@@ -8,7 +8,7 @@
 #include "SGCore/Graphics/API/IVertexBufferLayout.h"
 #include "VkVertexAttribute.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     // TODO: impl VkVertexBufferLayout
     class VkVertexBufferLayout : public IVertexBufferLayout

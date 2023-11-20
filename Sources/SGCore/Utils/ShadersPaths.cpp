@@ -49,16 +49,16 @@ void ShadersPaths::createDefaultPaths() noexcept
 
 std::string ShadersPaths::getCurrentRealization() const noexcept
 {
-    auto gapiType = Core::Main::CoreMain::getRenderer().getGAPIType();
+    auto gapiType = SGCore::CoreMain::getRenderer().getGAPIType();
 
     switch(gapiType)
     {
-        case Core::Graphics::SG_API_TYPE_UNKNOWN: return "";
-        case Core::Graphics::SG_API_TYPE_GL4: return m_GLSL4RealizationPath;
-        case Core::Graphics::SG_API_TYPE_GL46: return m_GLSL46RealizationPath;
-        case Core::Graphics::SG_API_TYPE_GLES2: return "";
-        case Core::Graphics::SG_API_TYPE_GLES3: return "";
-        case Core::Graphics::SG_API_TYPE_VULKAN: return m_GLSL46RealizationPath;
+        case SGCore::GAPIType::SG_API_TYPE_UNKNOWN: return "";
+        case SGCore::GAPIType::SG_API_TYPE_GL4: return m_GLSL4RealizationPath;
+        case SGCore::GAPIType::SG_API_TYPE_GL46: return m_GLSL46RealizationPath;
+        case SGCore::GAPIType::SG_API_TYPE_GLES2: return "";
+        case SGCore::GAPIType::SG_API_TYPE_GLES3: return "";
+        case SGCore::GAPIType::SG_API_TYPE_VULKAN: return m_GLSL46RealizationPath;
 
         default: return "";
     }

@@ -27,7 +27,7 @@ namespace Core::Main
     class CoreMain;
 }
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GL4Renderer : public IRenderer
     {
@@ -46,11 +46,11 @@ namespace Core::Graphics
 
         void prepareFrame(const glm::ivec2& windowSize) override;
 
-        void prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
-                                   const std::shared_ptr<ECS::Transform>& transformComponent) override;
+        void prepareUniformBuffers(const std::shared_ptr<IRenderingComponent>& renderingComponent,
+                                   const std::shared_ptr<Transform>& transformComponent) override;
 
-        void renderMeshData(const std::shared_ptr<ImportedScene::IMeshData>& meshData,
-                                    const ImportedScene::MeshDataRenderInfo& meshDataRenderInfo) override;
+        void renderMeshData(const std::shared_ptr<IMeshData>& meshData,
+                                    const MeshDataRenderInfo& meshDataRenderInfo) override;
 
         void printInfo() noexcept override;
 

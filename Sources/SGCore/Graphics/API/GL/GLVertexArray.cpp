@@ -7,12 +7,12 @@
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Main/CoreMain.h"
 
-Core::Graphics::GLVertexArray::~GLVertexArray() noexcept
+SGCore::GLVertexArray::~GLVertexArray() noexcept
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::IVertexArray> Core::Graphics::GLVertexArray::create() noexcept
+std::shared_ptr<SGCore::IVertexArray> SGCore::GLVertexArray::create() noexcept
 {
     destroy();
 
@@ -25,7 +25,7 @@ std::shared_ptr<Core::Graphics::IVertexArray> Core::Graphics::GLVertexArray::cre
     return shared_from_this();
 }
 
-void Core::Graphics::GLVertexArray::destroy() noexcept
+void SGCore::GLVertexArray::destroy() noexcept
 {
     if(glIsBuffer(m_handler))
     {
@@ -37,11 +37,11 @@ void Core::Graphics::GLVertexArray::destroy() noexcept
     #endif
 }
 
-std::shared_ptr<Core::Graphics::IVertexArray> Core::Graphics::GLVertexArray::bind() noexcept
+std::shared_ptr<SGCore::IVertexArray> SGCore::GLVertexArray::bind() noexcept
 {
     glBindVertexArray(m_handler);
 
-    Core::Main::CoreMain::getRenderer().m_currentBoundVertexArray = this;
+    CoreMain::getRenderer().m_currentBoundVertexArray = this;
 
     return shared_from_this();
 }

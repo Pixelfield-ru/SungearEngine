@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/IVertexAttribute.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class VkVertexAttribute : public IVertexAttribute
     {

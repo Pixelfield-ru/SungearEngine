@@ -3,9 +3,9 @@
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Main/CoreMain.h"
 
-Core::ECS::BoxGizmo::BoxGizmo()
+SGCore::BoxGizmo::BoxGizmo()
 {
-    m_meshData = std::shared_ptr<ImportedScene::IMeshData>(Core::Main::CoreMain::getRenderer().createMeshData());
+    m_meshData = std::shared_ptr<IMeshData>(CoreMain::getRenderer().createMeshData());
 
     /*m_mesh->m_material = std::shared_ptr<Memory::Assets::IMaterial>(
             Core::Main::CoreMain::getRenderer().createBlankStandardMaterial(
@@ -16,7 +16,7 @@ Core::ECS::BoxGizmo::BoxGizmo()
     build();
 }
 
-void Core::ECS::BoxGizmo::build()
+void SGCore::BoxGizmo::build()
 {
     // building a cube ------------------------------
 
@@ -103,7 +103,7 @@ void Core::ECS::BoxGizmo::build()
     m_meshData->prepare();
 }
 
-void Core::ECS::BoxGizmo::setVertexPosition(const size_t& vertexIdx, const float& x, const float& y,
+void SGCore::BoxGizmo::setVertexPosition(const size_t& vertexIdx, const float& x, const float& y,
                                             const float& z) noexcept
 {
 

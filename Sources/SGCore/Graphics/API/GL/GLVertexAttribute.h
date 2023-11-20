@@ -12,7 +12,7 @@
 #include "SGCore/Graphics/API/IVertexAttribute.h"
 //#include "GLVertexBufferLayout.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GLVertexAttribute : public IVertexAttribute
     {

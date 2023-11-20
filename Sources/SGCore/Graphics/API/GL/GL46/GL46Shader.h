@@ -10,14 +10,14 @@
 
 #include "SGCore/Graphics/API/IShader.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GL46Shader : public IShader, public std::enable_shared_from_this<GL46Shader>
     {
     public:
         ~GL46Shader() noexcept override;
 
-        void compile(std::shared_ptr<Memory::Assets::FileAsset>) noexcept override;
+        void compile(std::shared_ptr<FileAsset>) noexcept override;
 
         void bind() noexcept override;
 

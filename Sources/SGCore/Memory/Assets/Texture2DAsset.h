@@ -8,13 +8,10 @@
 #include "IAsset.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class ITexture2D;
-}
 
-namespace Core::Memory::Assets
-{
     struct Texture2DDataDeleter
     {
         void operator()(std::uint8_t* data);
@@ -23,13 +20,13 @@ namespace Core::Memory::Assets
     class Texture2DAsset : public IAsset, public std::enable_shared_from_this<Texture2DAsset>
     {
     public:
-        std::shared_ptr<Graphics::ITexture2D> m_texture2D;
+        std::shared_ptr<ITexture2D> m_texture2D;
 
         Texture2DAsset() = default;
 
         [[nodiscard]] std::shared_ptr<IAsset> load(const std::string& path) override;
 
-        virtual std::shared_ptr<Graphics::ITexture2D> getTexture2D() noexcept;
+        virtual std::shared_ptr<ITexture2D> getTexture2D() noexcept;
 
         #pragma region Getters
         virtual SGGColorInternalFormat getInternalFormat() const noexcept;

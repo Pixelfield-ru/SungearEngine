@@ -4,12 +4,12 @@
 
 #include "IAssetObserver.h"
 
-bool Core::Memory::Assets::IAssetObserver::isAssetModifiedChecking() const noexcept
+bool SGCore::IAssetObserver::isAssetModifiedChecking() const noexcept
 {
     return m_assetModifiedChecking;
 }
 
-void Core::Memory::Assets::IAssetObserver::setAssetModifiedChecking(const bool& checking) noexcept
+void SGCore::IAssetObserver::setAssetModifiedChecking(const bool& checking) noexcept
 {
     m_assetModifiedChecking = checking;
 
@@ -21,12 +21,12 @@ void Core::Memory::Assets::IAssetObserver::setAssetModifiedChecking(const bool& 
 
 // ----------
 
-bool Core::Memory::Assets::IAssetObserver::isAssetPathChangedChecking() const noexcept
+bool SGCore::IAssetObserver::isAssetPathChangedChecking() const noexcept
 {
     return m_assetPathChangedChecking;
 }
 
-void Core::Memory::Assets::IAssetObserver::setAssetPathChangedChecking(const bool& checking) noexcept
+void SGCore::IAssetObserver::setAssetPathChangedChecking(const bool& checking) noexcept
 {
     m_assetPathChangedChecking = checking;
 
@@ -38,12 +38,12 @@ void Core::Memory::Assets::IAssetObserver::setAssetPathChangedChecking(const boo
 
 // ---------
 
-bool Core::Memory::Assets::IAssetObserver::isAssetDeletedChecking() const noexcept
+bool SGCore::IAssetObserver::isAssetDeletedChecking() const noexcept
 {
     return m_assetDeletedChecking;
 }
 
-void Core::Memory::Assets::IAssetObserver::setAssetDeletedChecking(const bool& checking) noexcept
+void SGCore::IAssetObserver::setAssetDeletedChecking(const bool& checking) noexcept
 {
     m_assetDeletedChecking = checking;
 
@@ -55,12 +55,12 @@ void Core::Memory::Assets::IAssetObserver::setAssetDeletedChecking(const bool& c
 
 // ---------
 
-bool Core::Memory::Assets::IAssetObserver::isAssetRestoredChecking() const noexcept
+bool SGCore::IAssetObserver::isAssetRestoredChecking() const noexcept
 {
     return m_assetRestoredChecking;
 }
 
-void Core::Memory::Assets::IAssetObserver::setAssetRestoredChecking(const bool& checking) noexcept
+void SGCore::IAssetObserver::setAssetRestoredChecking(const bool& checking) noexcept
 {
     m_assetRestoredChecking = checking;
 

@@ -9,12 +9,12 @@
 
 #include <glad/glad.h>
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GL4CubemapTexture : public ICubemapTexture
     {
     public:
-        void create(std::weak_ptr<Memory::Assets::CubemapAsset> cubemapAsset) override;
+        void create(std::weak_ptr<CubemapAsset> cubemapAsset) override;
         void destroy() override;
 
         void bind(const std::uint8_t& textureUnit) override;

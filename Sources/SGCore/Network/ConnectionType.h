@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_CONNECTIONTYPE_H
 #define SUNGEARENGINE_CONNECTIONTYPE_H
 
-namespace SGCore::Network
+namespace SGCore
 {
     enum ConnectionType
     {

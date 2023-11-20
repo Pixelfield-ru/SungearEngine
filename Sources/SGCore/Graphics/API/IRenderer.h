@@ -13,7 +13,7 @@
 #include "IUniformBuffer.h"
 #include "SGCore/Utils/ShadersPaths.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class Camera;
     class Mesh;
@@ -22,16 +22,10 @@ namespace Core::ECS
     class Skybox;
     class IRenderingComponent;
     class IGizmo;
-}
 
-namespace Core::ImportedScene
-{
     class IMeshData;
     struct MeshDataRenderInfo;
-}
 
-namespace Core::Graphics
-{
     class IVertexBufferLayout;
     class ICubemapTexture;
     class IIndexBuffer;
@@ -73,11 +67,11 @@ namespace Core::Graphics
          * @param renderingComponent - The component that will be used as a "camera" for rendering entities.
          * @param transformComponent - The transform component of this "camera".
          */
-        virtual void prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
-                                           const std::shared_ptr<ECS::Transform>& transformComponent) { }
+        virtual void prepareUniformBuffers(const std::shared_ptr<IRenderingComponent>& renderingComponent,
+                                           const std::shared_ptr<Transform>& transformComponent) { }
 
-        virtual void renderMeshData(const std::shared_ptr<ImportedScene::IMeshData>& meshData,
-                                    const ImportedScene::MeshDataRenderInfo& meshDataRenderInfo) { }
+        virtual void renderMeshData(const std::shared_ptr<IMeshData>& meshData,
+                                    const MeshDataRenderInfo& meshDataRenderInfo) { }
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
@@ -103,7 +97,7 @@ namespace Core::Graphics
         [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
         [[nodiscard]] virtual IFrameBuffer* createFrameBuffer() = 0;
 
-        [[nodiscard]] virtual ImportedScene::IMeshData* createMeshData() = 0;
+        [[nodiscard]] virtual IMeshData* createMeshData() = 0;
 
         // ------------- some settings for renderer ---------
         virtual void setDepthTestingEnabled(const bool& enabled) const noexcept { }

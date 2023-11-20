@@ -16,21 +16,17 @@
 #define SGMAT_STANDARD_SHADER_NAME      "standardShader"
 #define SGMAT_SHADOW_GEN_SHADER_NAME    "shadowGenShader"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class IShader;
     class ShaderMarkup;
     class MarkedTexturesBlock;
-}
 
-namespace Core::Memory::Assets
-{
     struct MaterialTexture
     {
-        SGTextureType m_type
-        = SGTextureType::SGTP_DIFFUSE;
+        SGTextureType m_type = SGTextureType::SGTP_DIFFUSE;
 
-        std::shared_ptr<Graphics::ITexture2D> m_texture;
+        std::shared_ptr<ITexture2D> m_texture;
     };
 
     // TODO: make remove texture
@@ -43,7 +39,7 @@ namespace Core::Memory::Assets
         std::vector<MaterialTexture> m_textures;
 
         // TODO: REMOVE
-        std::shared_ptr<Graphics::IShader> m_customShader;
+        std::shared_ptr<IShader> m_customShader;
 
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
         glm::vec4 m_specularColor       = glm::vec4(1.0f);
@@ -55,8 +51,8 @@ namespace Core::Memory::Assets
         float m_roughnessFactor         = 1.0f;
 
 
-        std::shared_ptr<IMaterial> bind(const std::shared_ptr<Graphics::IShader>& shader,
-                                        const Graphics::ShaderMarkup& shaderMarkup);
+        std::shared_ptr<IMaterial> bind(const std::shared_ptr<IShader>& shader,
+                                        const ShaderMarkup& shaderMarkup);
 
         // TODO: impl
         std::shared_ptr<IAsset> load(const std::string& path) override;

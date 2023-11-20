@@ -21,13 +21,10 @@
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 
-namespace Core::Main
+namespace SGCore
 {
     class CoreMain;
-}
 
-namespace Core::Graphics
-{
     class GL46Renderer : public GL4Renderer
     {
     private:

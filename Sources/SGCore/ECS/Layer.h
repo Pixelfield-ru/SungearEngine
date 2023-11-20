@@ -15,7 +15,7 @@
 #define SG_LAYER_OPAQUE_NAME        "Opaque"
 #define SG_LAYER_TRANSPARENT_NAME   "Transparent"
 
-namespace Core::ECS
+namespace SGCore
 {
     class Layer
     {

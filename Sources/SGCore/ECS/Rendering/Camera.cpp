@@ -7,11 +7,11 @@
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Utils/ShadersPaths.h"
 
-Core::ECS::Camera::Camera()
+SGCore::Camera::Camera()
 {
     m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
 
-    m_postProcessQuad = std::shared_ptr<ImportedScene::IMeshData>(Core::Main::CoreMain::getRenderer().createMeshData());
+    m_postProcessQuad = std::shared_ptr<IMeshData>(CoreMain::getRenderer().createMeshData());
 
     m_postProcessQuad->m_indices.push_back(0);
     m_postProcessQuad->m_indices.push_back(2);
@@ -26,10 +26,10 @@ Core::ECS::Camera::Camera()
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
-    Core::Main::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
+    Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
     m_defaultLayersFrameBuffer =
-            std::shared_ptr<Graphics::IFrameBuffer>(Core::Main::CoreMain::getRenderer().createFrameBuffer())
+            std::shared_ptr<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
@@ -38,14 +38,14 @@ Core::ECS::Camera::Camera()
                                     0,
                                     0)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA16,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
                                     0,
                                     0
                     )
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // for FX apply
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA16,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
                                     0,
                                     0
                     )
@@ -54,12 +54,12 @@ Core::ECS::Camera::Camera()
     // m_defaultLayersFrameBuffer->m_bgColor.a = 0.0;
 
     m_finalFrameBuffer =
-            std::shared_ptr<Graphics::IFrameBuffer>(Core::Main::CoreMain::getRenderer().createFrameBuffer())
+            std::shared_ptr<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA16,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
                                     0,
                                     0)
                     ->unbind();
@@ -71,8 +71,8 @@ Core::ECS::Camera::Camera()
 
     // ----------------------------------------
 
-    m_finalPostProcessOverlayShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(
+    m_finalPostProcessOverlayShader = std::shared_ptr<IShader>(
+            CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PostProcessing"]["FinalOverlayShader"]
             )
     );
@@ -83,8 +83,8 @@ Core::ECS::Camera::Camera()
 
     // -----------------------------------------
 
-    m_defaultPostProcessShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(
+    m_defaultPostProcessShader = std::shared_ptr<IShader>(
+            CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PostProcessing"]["DefaultLayerShader"]
             )
     );
@@ -94,8 +94,8 @@ Core::ECS::Camera::Camera()
     m_defaultPostProcessShader->useInteger("FBCount", m_postProcessLayers.size() + 1);
 }
 
-void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
-                                            const std::shared_ptr<ECS::Layer>& layer,
+void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
+                                            const std::shared_ptr<Layer>& layer,
                                             const std::uint16_t& fbWidth,
                                             const std::uint16_t& fbHeight)
 {
@@ -120,7 +120,7 @@ void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
     newPPLayer.m_index = m_postProcessLayers.size();
 
     newPPLayer.m_name = ppLayerName;
-    newPPLayer.m_frameBuffer = std::shared_ptr<Graphics::IFrameBuffer>(Core::Main::CoreMain::getRenderer().createFrameBuffer())
+    newPPLayer.m_frameBuffer = std::shared_ptr<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
             ->create()
             ->setSize(fbWidth, fbHeight)
             ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
@@ -129,21 +129,21 @@ void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
                             0,
                             0)
             ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
-                            SGGColorFormat::SGG_RGBA,
-                            SGGColorInternalFormat::SGG_RGBA16,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
             ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // for FX apply
-                            SGGColorFormat::SGG_RGBA,
-                            SGGColorInternalFormat::SGG_RGBA16,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
             ->unbind();
 
-    newPPLayer.m_shader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(
+    newPPLayer.m_shader = std::shared_ptr<IShader>(
+            CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PostProcessing"]["DefaultLayerShader"]
             )
     );
@@ -188,19 +188,19 @@ void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
     }
 }
 
-void Core::ECS::Camera::addPostProcessLayer(const std::string& ppLayerName,
-                                            const std::shared_ptr<ECS::Layer>& layer)
+void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
+                                            const std::shared_ptr<Layer>& layer)
 {
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
-    Core::Main::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
+    Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
     addPostProcessLayer(ppLayerName, layer, primaryMonitorWidth, primaryMonitorHeight);
 }
 
-void Core::ECS::Camera::setPostProcessLayerShader(const std::shared_ptr<Layer>& layer,
-                                                  const std::shared_ptr<Graphics::IShader>& shader) noexcept
+void SGCore::Camera::setPostProcessLayerShader(const std::shared_ptr<Layer>& layer,
+                                                  const std::shared_ptr<IShader>& shader) noexcept
 {
     if(m_postProcessLayers.find(layer) == m_postProcessLayers.end())
     {
@@ -220,7 +220,7 @@ void Core::ECS::Camera::setPostProcessLayerShader(const std::shared_ptr<Layer>& 
     m_postProcessLayers[layer].m_shader = shader;
 }
 
-void Core::ECS::Camera::bindPostProcessLayers() noexcept
+void SGCore::Camera::bindPostProcessLayers() noexcept
 {
     m_defaultLayersFrameBuffer->bindAttachments(
             m_postProcessShadersMarkup.m_frameBuffersAttachmentsBlocks["allFB[0]"]
@@ -234,8 +234,8 @@ void Core::ECS::Camera::bindPostProcessLayers() noexcept
     }
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer>
-Core::ECS::Camera::getPostProcessLayerFrameBuffer(const std::shared_ptr<ECS::Layer>& layer) noexcept
+std::shared_ptr<SGCore::IFrameBuffer>
+SGCore::Camera::getPostProcessLayerFrameBuffer(const std::shared_ptr<Layer>& layer) noexcept
 {
     const auto& foundPPLayer = m_postProcessLayers.find(layer);
 

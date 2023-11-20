@@ -14,7 +14,7 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-void Core::Logging::init()
+void SGCore::Log::init()
 {
     SGC_ERROR("Log init: this is error message!");
     SGC_WARNING("Log init: this is warning message!");
@@ -29,7 +29,7 @@ void Core::Logging::init()
 }
 
 // TODO: исправить вывод
-void Core::Logging::printf(const MessageType& messageType, const std::string& text,
+void SGCore::Log::printf(const MessageType& messageType, const std::string& text,
                            const WriteType& writeType, const std::string_view& filePath, std::source_location location)
 {
     std::string msgStr = std::string {text};
@@ -58,7 +58,7 @@ void Core::Logging::printf(const MessageType& messageType, const std::string& te
 
     if(writeType == SG_FILE || writeType == SG_CONSOLE_FILE)
     {
-        Core::Utils::FileUtils::writeToFile(filePath, finalString, true);
+        FileUtils::writeToFile(filePath, finalString, true);
     }
     if(writeType == SG_CONSOLE || writeType == SG_CONSOLE_FILE)
     {
@@ -66,7 +66,7 @@ void Core::Logging::printf(const MessageType& messageType, const std::string& te
     }
 }
 
-std::string Core::Logging::messageTypeToString(const MessageType& messageType, const bool& addColor)
+std::string SGCore::Log::messageTypeToString(const MessageType& messageType, const bool& addColor)
 {
     std::string ret;
     switch(messageType)

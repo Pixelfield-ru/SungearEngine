@@ -7,7 +7,7 @@
 
 #include <assimp/version.h>
 
-void Core::Memory::AssetManager::init()
+void SGCore::AssetManager::init()
 {
     SGC_INFO("-----------------------------------");
 

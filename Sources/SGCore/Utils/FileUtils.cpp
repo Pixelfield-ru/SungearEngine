@@ -6,7 +6,7 @@
 #include "FileUtils.h"
 #include "SGCore/Logging/Log.h"
 
-std::string Core::Utils::FileUtils::readFile(const std::string_view& path)
+std::string SGCore::FileUtils::readFile(const std::string_view& path)
 {
     try
     {
@@ -39,7 +39,7 @@ std::string Core::Utils::FileUtils::readFile(const std::string_view& path)
     return "";
 }
 
-void Core::Utils::FileUtils::writeToFile(const std::string_view& path, std::string& text, const bool& append)
+void SGCore::FileUtils::writeToFile(const std::string_view& path, std::string& text, const bool& append)
 {
     try
     {

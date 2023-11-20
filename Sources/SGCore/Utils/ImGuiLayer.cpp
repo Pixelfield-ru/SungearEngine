@@ -5,7 +5,7 @@
 #include "ImGuiLayer.h"
 #include "SGCore/Main/CoreMain.h"
 
-void Core::Utils::ImGuiLayer::initImGui() noexcept
+void SGCore::ImGuiLayer::initImGui() noexcept
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -13,22 +13,22 @@ void Core::Utils::ImGuiLayer::initImGui() noexcept
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
-    auto gapiType = Core::Main::CoreMain::getRenderer().getGAPIType();
+    auto gapiType = CoreMain::getRenderer().getGAPIType();
 
-    if (gapiType == Core::Graphics::SG_API_TYPE_GL4 ||
-        gapiType == Core::Graphics::SG_API_TYPE_GL46)
+    if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
+        gapiType == GAPIType::SG_API_TYPE_GL46)
     {
-        ImGui_ImplGlfw_InitForOpenGL(Core::Main::CoreMain::getWindow().m_handler, true);
+        ImGui_ImplGlfw_InitForOpenGL(CoreMain::getWindow().m_handler, true);
         ImGui_ImplOpenGL3_Init();
     }
 }
 
-void Core::Utils::ImGuiLayer::beginFrame() noexcept
+void SGCore::ImGuiLayer::beginFrame() noexcept
 {
-    auto gapiType = Core::Main::CoreMain::getRenderer().getGAPIType();
+    auto gapiType = CoreMain::getRenderer().getGAPIType();
 
-    if (gapiType == Core::Graphics::SG_API_TYPE_GL4 ||
-        gapiType == Core::Graphics::SG_API_TYPE_GL46)
+    if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
+        gapiType == GAPIType::SG_API_TYPE_GL46)
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -37,14 +37,14 @@ void Core::Utils::ImGuiLayer::beginFrame() noexcept
     ImGui::NewFrame();
 }
 
-void Core::Utils::ImGuiLayer::endFrame() noexcept
+void SGCore::ImGuiLayer::endFrame() noexcept
 {
-    auto gapiType = Core::Main::CoreMain::getRenderer().getGAPIType();
+    auto gapiType = CoreMain::getRenderer().getGAPIType();
 
     ImGui::Render();
 
-    if (gapiType == Core::Graphics::SG_API_TYPE_GL4 ||
-        gapiType == Core::Graphics::SG_API_TYPE_GL46)
+    if (gapiType == GAPIType::SG_API_TYPE_GL4 ||
+        gapiType == GAPIType::SG_API_TYPE_GL46)
     {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }

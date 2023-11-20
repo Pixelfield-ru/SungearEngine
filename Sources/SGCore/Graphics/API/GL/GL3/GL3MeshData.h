@@ -5,9 +5,9 @@
 
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
-    class GL3MeshData : public ImportedScene::IMeshData
+    class GL3MeshData : public IMeshData
     {
     public:
         /**

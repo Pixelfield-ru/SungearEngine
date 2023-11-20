@@ -15,7 +15,7 @@
 #include "IComponent.h"
 #include "SGCore/Utils/Utils.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class IComponent;
     class Layer;

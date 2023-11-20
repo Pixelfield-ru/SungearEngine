@@ -13,7 +13,7 @@
 
 #include "GraphicsDataTypes.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class IVertexBuffer : public std::enable_shared_from_this<IVertexBuffer>
     {

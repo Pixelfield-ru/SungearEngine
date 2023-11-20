@@ -4,7 +4,7 @@
 
 #include "VkMeshData.h"
 
-void Core::Graphics::VkMeshData::prepare()
+void SGCore::VkMeshData::prepare()
 {
 
 }

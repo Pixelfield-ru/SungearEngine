@@ -3,7 +3,7 @@
 
 #include "IComplexGizmo.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     struct BoxGizmo : public IComplexGizmo
     {

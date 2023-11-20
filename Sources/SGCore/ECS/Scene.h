@@ -9,7 +9,7 @@
 
 #include "Layer.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class Entity;
 

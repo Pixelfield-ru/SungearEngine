@@ -18,7 +18,7 @@
 #endif
 
 // TODO: MAKE MULTITHREADED
-namespace SGCore::Network
+namespace SGCore
 {
     class Server
     {

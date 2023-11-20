@@ -9,7 +9,7 @@
 
 #include <glad/glad.h>
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GL4Texture2D : public ITexture2D
     {
@@ -22,7 +22,7 @@ namespace Core::Graphics
     public:
         ~GL4Texture2D() noexcept;
 
-        void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) noexcept override;
+        void create(std::weak_ptr<Texture2DAsset>) noexcept override;
         void destroy() noexcept override;
 
         void onAssetModified() noexcept override;

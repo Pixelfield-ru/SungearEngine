@@ -7,12 +7,12 @@
 #include "SGCore/ECS/IComponent.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     struct Mesh : public IComponent
     {
-        ImportedScene::MeshDataRenderInfo m_meshDataRenderInfo;
-        std::shared_ptr<ImportedScene::IMeshData> m_meshData;
+        MeshDataRenderInfo m_meshDataRenderInfo;
+        std::shared_ptr<IMeshData> m_meshData;
 
     protected:
         void init() noexcept final { }

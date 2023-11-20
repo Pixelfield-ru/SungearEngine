@@ -19,7 +19,7 @@
 
 //#include <vulkan/vulkan.h>
 
-namespace Core::Graphics
+namespace SGCore
 {
     class VkRenderer : public IRenderer
     {

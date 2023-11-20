@@ -3,13 +3,10 @@
 
 #include "SGCore/Graphics/API/ICubemapTexture.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class ICubemapTexture;
-}
 
-namespace Core::Memory::Assets
-{
     class CubemapAsset : public Texture2DAsset
     {
     public:
@@ -25,7 +22,7 @@ namespace Core::Memory::Assets
 
     private:
         std::list<std::shared_ptr<Texture2DAsset>> m_parts;
-        std::shared_ptr<Graphics::ICubemapTexture> m_cubemapTexture;
+        std::shared_ptr<ICubemapTexture> m_cubemapTexture;
     };
 }
 

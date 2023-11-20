@@ -7,7 +7,7 @@
 
 #include "ILight.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class DirectionalLight : public ILight
     {

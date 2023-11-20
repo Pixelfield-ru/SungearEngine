@@ -8,7 +8,7 @@
 #include "SGCore/ECS/IComponent.h"
 #include "GLM/glm/glm.hpp"
 
-namespace Core::ECS
+namespace SGCore
 {
     class ILight : public IComponent
     {

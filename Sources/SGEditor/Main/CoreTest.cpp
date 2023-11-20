@@ -41,37 +41,37 @@
 
 #include "SGCore/Utils/ImGuiLayer.h"
 
-std::shared_ptr<Core::Memory::Assets::ModelAsset> testModel;
+std::shared_ptr<SGCore::ModelAsset> testModel;
 
-std::shared_ptr<Core::ECS::Entity> testCameraEntity;
-std::shared_ptr<Core::ECS::Scene> testScene;
+std::shared_ptr<SGCore::Entity> testCameraEntity;
+std::shared_ptr<SGCore::Scene> testScene;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
 // example how to convert imported scene to Sungear ECS scene
-void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode, 
+void processLoadedNode(const std::shared_ptr<SGCore::Node>& sgNode,
                        const glm::vec3& pos,
                        const glm::vec3& rot,
                        const glm::vec3& scale,
-                       std::vector<std::shared_ptr<Core::ECS::Entity>>& outputEntities)
+                       std::vector<std::shared_ptr<SGCore::Entity>>& outputEntities)
 {
-    std::shared_ptr<Core::ECS::Entity> nodeEntity = std::make_shared<Core::ECS::Entity>();
-    nodeEntity->addComponent(std::make_shared<Core::ECS::Transform>());
+    std::shared_ptr<SGCore::Entity> nodeEntity = std::make_shared<SGCore::Entity>();
+    nodeEntity->addComponent(std::make_shared<SGCore::Transform>());
     nodeEntity->m_name = sgNode->m_name;
 
     outputEntities.push_back(nodeEntity);
 
     for(auto& mesh : sgNode->m_meshesData)
     {
-        std::shared_ptr<Core::ECS::Transform> meshedEntityTransformComponent = std::make_shared<Core::ECS::Transform>();
+        std::shared_ptr<SGCore::Transform> meshedEntityTransformComponent = std::make_shared<SGCore::Transform>();
         meshedEntityTransformComponent->m_position = sgNode->m_position + pos;
         meshedEntityTransformComponent->m_rotation = eulerAngles(sgNode->m_rotationQuaternion) + rot;
         meshedEntityTransformComponent->m_scale = sgNode->m_scale * scale;
 
-        std::shared_ptr<Core::ECS::Mesh> meshComponent = std::make_shared<Core::ECS::Mesh>();
+        std::shared_ptr<SGCore::Mesh> meshComponent = std::make_shared<SGCore::Mesh>();
         meshComponent->m_meshData = mesh;
 
-        std::shared_ptr<Core::ECS::Entity> meshedEntity = std::make_shared<Core::ECS::Entity>();
+        std::shared_ptr<SGCore::Entity> meshedEntity = std::make_shared<SGCore::Entity>();
         meshedEntity->addComponent(meshedEntityTransformComponent);
         meshedEntity->addComponent(meshComponent);
 
@@ -84,18 +84,18 @@ void processLoadedNode(const std::shared_ptr<Core::ImportedScene::Node>& sgNode,
     }
 }
 
-std::shared_ptr<Core::ECS::Entity> testShadowsCaster;
+std::shared_ptr<SGCore::Entity> testShadowsCaster;
 
 void init()
 {
-    testScene = std::make_shared<Core::ECS::Scene>();
-    Core::ECS::Scene::setCurrentScene(testScene);
+    testScene = std::make_shared<SGCore::Scene>();
+    SGCore::Scene::setCurrentScene(testScene);
 
     // найс это работает. TODO: убрать! просто ради теста ---------------------
     int windowWidth;
     int windowHeight;
 
-    Core::Main::CoreMain::getWindow().getSize(windowWidth, windowHeight);
+    SGCore::CoreMain::getWindow().getSize(windowWidth, windowHeight);
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza/sponza.obj");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf");
@@ -106,11 +106,11 @@ void init()
      );*/
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/ak74m/scene.gltf");
     //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
-    testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+    testModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
             "../SGResources/models/test/plane.obj"
     );
 
-    auto btrModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+    auto btrModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
             //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/t62/scene.gltf"
@@ -160,16 +160,16 @@ void init()
 
     const std::string cubePath = "../SGResources/models/standard/cube.obj";
 
-    auto cubeModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
+    auto cubeModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
             cubePath
     );
 
-    auto cubeModel1 = Core::Memory::AssetManager::loadAssetWithAlias<Core::Memory::Assets::ModelAsset>(
+    auto cubeModel1 = SGCore::AssetManager::loadAssetWithAlias<SGCore::ModelAsset>(
             "cube1",
             cubePath
     );
 
-    std::vector<std::shared_ptr<Core::ECS::Entity>> planeEntities;
+    std::vector<std::shared_ptr<SGCore::Entity>> planeEntities;
 
     for(auto& node : testModel->m_nodes)
     {
@@ -178,8 +178,8 @@ void init()
 
     for(const auto& entity : planeEntities)
     {
-        auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
-        auto transformComponent = entity->getComponent<Core::ECS::Transform>();
+        auto meshComponent = entity->getComponent<SGCore::Mesh>();
+        auto transformComponent = entity->getComponent<SGCore::Transform>();
         if(meshComponent) meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
         if(transformComponent)
         {
@@ -190,7 +190,7 @@ void init()
 
     // -------
 
-    std::vector<std::shared_ptr<Core::ECS::Entity>> btrEntities;
+    std::vector<std::shared_ptr<SGCore::Entity>> btrEntities;
 
     for(auto& node : btrModel->m_nodes)
     {
@@ -236,14 +236,14 @@ void init()
     {
         testScene->addEntity(entity, SG_LAYER_OPAQUE_NAME);
 
-        auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
+        auto meshComponent = entity->getComponent<SGCore::Mesh>();
         if(meshComponent)
         {
             // meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
         }
     }
 
-    std::vector<std::shared_ptr<Core::ECS::Entity>> cubeEntities;
+    std::vector<std::shared_ptr<SGCore::Entity>> cubeEntities;
 
     for(auto& node : cubeModel->m_nodes)
     {
@@ -251,7 +251,7 @@ void init()
                           { 1000, 1000, 1000 }, cubeEntities);
     }
 
-    std::vector<std::shared_ptr<Core::ECS::Entity>> cube1Entities;
+    std::vector<std::shared_ptr<SGCore::Entity>> cube1Entities;
 
     for(auto& node : cubeModel1->m_nodes)
     {
@@ -259,7 +259,7 @@ void init()
                           { 0.1 * 10.0, 0.4 * 10.0, 0.1 * 10.0 }, cube1Entities);
     }
 
-    auto geniusJPG = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+    auto geniusJPG = SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
             "../SGResources/textures/genius.jpg"
     );
 
@@ -267,7 +267,7 @@ void init()
     {
         testScene->addEntity(entity, SG_LAYER_TRANSPARENT_NAME);
 
-        auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
+        auto meshComponent = entity->getComponent<SGCore::Mesh>();
 
         if(meshComponent)
         {
@@ -278,35 +278,35 @@ void init()
         }
     }
 
-    auto standardCubemap = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::CubemapAsset>(
+    auto standardCubemap = SGCore::AssetManager::loadAsset<SGCore::CubemapAsset>(
             "standard_skybox0",
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
                     "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
             ),
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
                     "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
             ),
 
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
                     "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
             ),
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
                     "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
             ),
 
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
                     "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
             ),
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(
+            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
                     "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
             )
     );
 
     for(const auto& entity : cubeEntities)
     {
-        entity->addComponent(std::make_shared<Core::ECS::Skybox>());
+        entity->addComponent(std::make_shared<SGCore::Skybox>());
 
-        auto meshComponent = entity->getComponent<Core::ECS::Mesh>();
+        auto meshComponent = entity->getComponent<SGCore::Mesh>();
         if(meshComponent)
         {
             meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
@@ -322,21 +322,21 @@ void init()
         testScene->addEntity(entity);
     }
 
-    testCameraEntity = std::make_shared<Core::ECS::Entity>();
+    testCameraEntity = std::make_shared<SGCore::Entity>();
     testCameraEntity->m_name = "SGMainCamera";
-    auto cameraTransformComponent = std::make_shared<Core::ECS::Transform>();
+    auto cameraTransformComponent = std::make_shared<SGCore::Transform>();
     cameraTransformComponent->m_position.y = -3;
     cameraTransformComponent->m_position.z = 2;
     cameraTransformComponent->m_rotation.x = -30;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
-    auto camera = std::make_shared<Core::ECS::Camera>();
+    auto camera = std::make_shared<SGCore::Camera>();
     testCameraEntity->addComponent(camera);
 
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
-    Core::Main::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
+    SGCore::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
     camera->addPostProcessLayer("blurPPLayer",
                                 testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
@@ -345,25 +345,25 @@ void init()
     );
 
     camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
-                                      std::shared_ptr<Core::Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/test_pp_layer.glsl")
+                                      std::shared_ptr<SGCore::IShader>(
+                                              SGCore::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/test_pp_layer.glsl")
             ));
 
     testScene->addEntity(testCameraEntity); /// PASSED
 
     /// THIS CODE CLEARS CACHED COMPONENTS WTF
-    testShadowsCaster = std::make_shared<Core::ECS::Entity>();
+    testShadowsCaster = std::make_shared<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster);
-    auto shadowsCasterTransform = std::make_shared<Core::ECS::Transform>();
+    auto shadowsCasterTransform = std::make_shared<SGCore::Transform>();
     shadowsCasterTransform->m_position.y = 15;
     shadowsCasterTransform->m_position.z = 5.0;
     shadowsCasterTransform->m_position.x = -5.0;
     shadowsCasterTransform->m_rotation.x = 50;
     //shadowsCasterTransform->m_rotation.y = -90;
-    auto shadowCasterComponent = std::make_shared<Core::ECS::ShadowsCaster>();
+    auto shadowCasterComponent = std::make_shared<SGCore::ShadowsCaster>();
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(shadowCasterComponent);
-    auto directionalLight = std::make_shared<Core::ECS::DirectionalLight>();
+    auto directionalLight = std::make_shared<SGCore::DirectionalLight>();
     directionalLight->m_color.r = 250.0f / 255.0f;
     directionalLight->m_color.g = 129.0f / 255.0f;
     directionalLight->m_color.b = 0.0f / 255.0f;
@@ -371,39 +371,39 @@ void init()
     //directionalLight->m_color.g = 255.0f / 255.0f * 2.0f;
     //directionalLight->m_color.b = 255.0f / 255.0f * 2.0f;
     testShadowsCaster->addComponent(directionalLight);
-    testShadowsCaster->addComponent(std::make_shared<Core::ECS::BoxGizmo>());
+    testShadowsCaster->addComponent(std::make_shared<SGCore::BoxGizmo>());
 
     std::cout << "bam bam bam mi" << std::endl;
 
-    auto testShadowsCaster1 = std::make_shared<Core::ECS::Entity>();
+    auto testShadowsCaster1 = std::make_shared<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster1);
-    auto shadowsCasterTransform1 = std::make_shared<Core::ECS::Transform>();
+    auto shadowsCasterTransform1 = std::make_shared<SGCore::Transform>();
     shadowsCasterTransform1->m_position.x = -10;
     shadowsCasterTransform1->m_position.y = 10;
     shadowsCasterTransform1->m_position.z = -50.0;
     shadowsCasterTransform1->m_rotation.y = 180;
     //shadowsCasterTransform1->m_rotation.x = 40;
     //shadowsCasterTransform1->m_rotation.y = 30;
-    auto shadowCasterComponent1 = std::make_shared<Core::ECS::ShadowsCaster>();
+    auto shadowCasterComponent1 = std::make_shared<SGCore::ShadowsCaster>();
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
     testShadowsCaster1->addComponent(shadowCasterComponent1);
-    auto directionalLight1 = std::make_shared<Core::ECS::DirectionalLight>();
+    auto directionalLight1 = std::make_shared<SGCore::DirectionalLight>();
     directionalLight1->m_color.r = 139.0f / 255.0f;
     directionalLight1->m_color.g = 184.0f / 255.0f;
     directionalLight1->m_color.b = 241.0f / 255.0f;
     //directionalLight1->m_intensity = 10.0f;
     testShadowsCaster1->addComponent(directionalLight1);
-    testShadowsCaster1->addComponent(std::make_shared<Core::ECS::BoxGizmo>());
+    testShadowsCaster1->addComponent(std::make_shared<SGCore::BoxGizmo>());
 
     /// -----------------------------------------
 
     // IMGUI DEBUG -----------------------------------------------------------
 
-    Core::Utils::ImGuiLayer::initImGui();
+    SGCore::ImGuiLayer::initImGui();
 
     // -----------------------------------------------------------------------
 
-    auto& sys = Core::ECS::ECSWorld::getSystems();
+    auto& sys = SGCore::ECSWorld::getSystems();
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -415,16 +415,16 @@ void fixedUpdate()
     //boxComponent->m_size.z += sin(framesCnt / 75.0) / 10.0;
     //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += sin(framesCnt / 75.0) / 2.0;
 
-    testShadowsCaster->getComponent<Core::ECS::Transform>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
+    testShadowsCaster->getComponent<SGCore::Transform>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
 
-    Core::ECS::ECSWorld::fixedUpdate(Core::ECS::Scene::getCurrentScene());
+    SGCore::ECSWorld::fixedUpdate(SGCore::Scene::getCurrentScene());
 
     framesCnt++;
 }
 
 void update()
 {
-    Core::Utils::ImGuiLayer::beginFrame();
+    SGCore::ImGuiLayer::beginFrame();
 
     ImGui::Begin("ECS Systems Stats");
     {
@@ -438,7 +438,7 @@ void update()
             ImGui::Text("fixedUpdate");
             ImGui::TableNextColumn();
 
-            for(const auto& system: Core::ECS::ECSWorld::getSystems())
+            for(const auto& system : SGCore::ECSWorld::getSystems())
             {
                 std::string systemName = std::string(typeid(*(system)).name());
                 ImGui::Text(systemName.c_str());
@@ -461,9 +461,9 @@ void update()
 
     //ImGui::ShowDemoWindow();
 
-    Core::ECS::ECSWorld::update(Core::ECS::Scene::getCurrentScene());
+    SGCore::ECSWorld::update(SGCore::Scene::getCurrentScene());
 
-    Core::Utils::ImGuiLayer::endFrame();
+    SGCore::ImGuiLayer::endFrame();
 }
 
 // --------------------------------------------
@@ -476,7 +476,7 @@ int main()
     sgSetFixedUpdateCallback(fixedUpdate);
     sgSetUpdateCallback(update);
 
-    Core::Main::CoreMain::start();
+    SGCore::CoreMain::start();
 
     //SGConsole::Console::stop();
 

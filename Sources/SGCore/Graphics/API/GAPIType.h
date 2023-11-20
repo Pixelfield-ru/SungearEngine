@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_APITYPE_H
 #define SUNGEARENGINE_APITYPE_H
 
-namespace Core::Graphics
+namespace SGCore
 {
     enum GAPIType
     {

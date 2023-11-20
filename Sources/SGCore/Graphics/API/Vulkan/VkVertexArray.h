@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/IVertexArray.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class VkVertexArray : public IVertexArray
     {

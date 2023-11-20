@@ -2,14 +2,12 @@
 // Created by stuka on 27.05.2023.
 //
 
-#pragma once
-
 #ifndef SUNGEARENGINE_FILESMARTPOINTER_H
 #define SUNGEARENGINE_FILESMARTPOINTER_H
 
 #include <iostream>
 
-namespace Core::Utils
+namespace SGCore
 {
     class FileSmartPointer
     {

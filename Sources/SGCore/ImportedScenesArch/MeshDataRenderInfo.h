@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
 
-namespace Core::ImportedScene
+namespace SGCore
 {
     struct MeshDataRenderInfo
     {

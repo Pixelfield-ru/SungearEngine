@@ -5,8 +5,8 @@
 #include <iostream>
 #include "SGCore/Logging/Log.h"
 
-SGCore::Network::Server::Server
-(const SGCore::Network::ConnectionType& connectionType, const std::string& ip, const std::uint16_t& port) noexcept
+SGCore::Server::Server
+(const SGCore::ConnectionType& connectionType, const std::string& ip, const std::uint16_t& port) noexcept
 {
     m_connectionType = connectionType;
 

@@ -10,7 +10,7 @@
 #include "Layer.h"
 #include "ECSWorld.h"
 
-Core::ECS::Scene::Scene() noexcept
+SGCore::Scene::Scene() noexcept
 {
     auto transparentLayer = std::make_shared<Layer>();
     transparentLayer->m_name = SG_LAYER_TRANSPARENT_NAME;
@@ -26,7 +26,7 @@ Core::ECS::Scene::Scene() noexcept
     m_layers[SG_LAYER_OPAQUE_NAME] = std::move(opaqueLayer);
 }
 
-void Core::ECS::Scene::addLayer(std::string&& layerName) noexcept
+void SGCore::Scene::addLayer(std::string&& layerName) noexcept
 {
     auto newLayer = std::make_shared<Layer>();
     newLayer->m_name = std::move(layerName);
@@ -34,7 +34,7 @@ void Core::ECS::Scene::addLayer(std::string&& layerName) noexcept
     m_layers[newLayer->m_name] = std::move(newLayer);
 }
 
-void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity) noexcept
+void SGCore::Scene::addEntity(const std::shared_ptr<Entity>& entity) noexcept
 {
     entity->m_layer = m_layers[SG_LAYER_OPAQUE_NAME];
     m_entities.push_back(entity);
@@ -42,7 +42,7 @@ void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity) noexcept
     ECSWorld::recacheEntity(entity);
 }
 
-void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const std::string& layerName) noexcept
+void SGCore::Scene::addEntity(const std::shared_ptr<Entity>& entity, const std::string& layerName) noexcept
 {
     entity->m_layer = m_layers[layerName];
     m_entities.push_back(entity);
@@ -50,7 +50,7 @@ void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const st
     ECSWorld::recacheEntity(entity);
 }
 
-void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const std::shared_ptr<Core::ECS::Layer>& layer) noexcept
+void SGCore::Scene::addEntity(const std::shared_ptr<Entity>& entity, const std::shared_ptr<Layer>& layer) noexcept
 {
     entity->m_layer = layer;
     m_entities.push_back(entity);
@@ -60,17 +60,17 @@ void Core::ECS::Scene::addEntity(const std::shared_ptr<Entity>& entity, const st
 
 // ----------------
 
-std::shared_ptr<Core::ECS::Scene> Core::ECS::Scene::getCurrentScene() noexcept
+std::shared_ptr<SGCore::Scene> SGCore::Scene::getCurrentScene() noexcept
 {
     return m_currentScene;
 }
 
-void Core::ECS::Scene::setCurrentScene(const std::shared_ptr<Scene>& newCurrentScene) noexcept
+void SGCore::Scene::setCurrentScene(const std::shared_ptr<Scene>& newCurrentScene) noexcept
 {
     m_currentScene = newCurrentScene;
 }
 
-std::shared_ptr<Core::ECS::Layer> Core::ECS::Scene::getLayer(const size_t& layerIndex) noexcept
+std::shared_ptr<SGCore::Layer> SGCore::Scene::getLayer(const size_t& layerIndex) noexcept
 {
     std::shared_ptr<Layer> foundLayer;
     for(const auto& layer : m_layers)

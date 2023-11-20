@@ -5,7 +5,7 @@
 #include "FileSmartPointer.h"
 #include "SGCore/Logging/Log.h"
 
-Core::Utils::FileSmartPointer::FileSmartPointer(std::string path, std::string mode)
+SGCore::FileSmartPointer::FileSmartPointer(std::string path, std::string mode)
 {
     m_path = std::move(path);
     m_mode = std::move(mode);
@@ -18,7 +18,7 @@ Core::Utils::FileSmartPointer::FileSmartPointer(std::string path, std::string mo
     }
 }
 
-Core::Utils::FileSmartPointer::~FileSmartPointer()
+SGCore::FileSmartPointer::~FileSmartPointer()
 {
     if(fclose(m_filePtr) == -1)
     {
@@ -26,7 +26,7 @@ Core::Utils::FileSmartPointer::~FileSmartPointer()
     }
 }
 
-FILE* Core::Utils::FileSmartPointer::get() noexcept
+FILE* SGCore::FileSmartPointer::get() noexcept
 {
     return m_filePtr;
 }

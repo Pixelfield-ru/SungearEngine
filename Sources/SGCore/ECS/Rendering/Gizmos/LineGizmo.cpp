@@ -4,9 +4,9 @@
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Main/CoreMain.h"
 
-Core::ECS::LineGizmo::LineGizmo() noexcept
+SGCore::LineGizmo::LineGizmo() noexcept
 {
-    m_meshData = std::shared_ptr<ImportedScene::IMeshData>(Core::Main::CoreMain::getRenderer().createMeshData());
+    m_meshData = std::shared_ptr<IMeshData>(CoreMain::getRenderer().createMeshData());
 
     m_meshData->m_useIndices = false;
 
@@ -21,7 +21,7 @@ Core::ECS::LineGizmo::LineGizmo() noexcept
     m_meshData->m_positions.push_back(0.0);
 }
 
-void Core::ECS::LineGizmo::setVertexPosition
+void SGCore::LineGizmo::setVertexPosition
 (const size_t& vertexIdx, const float& x, const float& y, const float& z) noexcept
 {
     if(vertexIdx > 1) return;

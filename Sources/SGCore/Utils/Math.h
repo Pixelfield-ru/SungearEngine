@@ -3,11 +3,10 @@
 
 #include "glm/vec3.hpp"
 
-namespace Core::Utils
+namespace SGCore
 {
-    class MathUtils
+    struct MathUtils
     {
-    public:
         constexpr const static glm::vec3 left3 = glm::vec3(-1, 0, 0);
         constexpr const static glm::vec3 forward3 = glm::vec3(0, 0, 1);
         constexpr const static glm::vec3 up3 = glm::vec3(0, 1, 0);

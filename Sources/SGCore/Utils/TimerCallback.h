@@ -9,7 +9,7 @@
 #include <iostream>
 #include <functional>
 
-namespace Core::Utils
+namespace SGCore
 {
     class TimerCallback
     {

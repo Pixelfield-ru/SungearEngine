@@ -11,7 +11,7 @@
 #include "SGCore/ECS/IComponent.h"
 //#include "RenderingComponentsSystem.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     // todo: make render passes
     class IRenderingComponent : public IComponent

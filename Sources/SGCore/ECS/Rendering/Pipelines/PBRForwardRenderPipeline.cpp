@@ -21,10 +21,10 @@
 #include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
 #include "SGCore/ECS/Rendering/Gizmos/IComplexGizmo.h"
 
-Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
+SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
-    m_geometryPassShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(
+    m_geometryPassShader = std::shared_ptr<IShader>(
+            CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
             )
     );
@@ -60,8 +60,8 @@ Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     // ---------------------
 
-    m_shadowsPassShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(
+    m_shadowsPassShader = std::shared_ptr<IShader>(
+            CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["ShadowsGeneration"]["DefaultShader"]
             )
     );
@@ -76,8 +76,8 @@ Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     // ---------------------
 
-    m_skyboxPassShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(
+    m_skyboxPassShader = std::shared_ptr<IShader>(
+            CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["Skybox"]["DefaultShader"]
             )
     );
@@ -92,22 +92,22 @@ Core::ECS::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     // ---------------------
 
-    m_linesGizmosPassShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(
+    m_linesGizmosPassShader = std::shared_ptr<IShader>(
+            CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["Gizmos"]["LinesShader"]
             )
     );
 
     // ---------------------
 
-    m_complexGizmosPassShader = std::shared_ptr<Graphics::IShader>(
-            Core::Main::CoreMain::getRenderer().createShader(
+    m_complexGizmosPassShader = std::shared_ptr<IShader>(
+            CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["Gizmos"]["ComplexGizmosShader"]
             )
     );
 }
 
-void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scene)
+void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scene)
 {
     auto transformationsSystem = SGSingleton::getSharedPtrInstance<TransformationsUpdater>();
 
@@ -135,11 +135,11 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
             if(!cameraComponent || !cameraTransformComponent) continue;
 
-            Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
-            m_skyboxPassShader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
+            CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
+            m_skyboxPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
             auto currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
-            std::shared_ptr<Graphics::IFrameBuffer> foundFrameBuffer;
+            std::shared_ptr<IFrameBuffer> foundFrameBuffer;
             currentLayerFrameBuffer->bind()->clear();
 
             for(const auto& skyboxesLayer: skyboxesCachedEntities)
@@ -178,7 +178,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                                        transformComponent
                         );
 
-                        Core::Main::CoreMain::getRenderer().renderMeshData(
+                        CoreMain::getRenderer().renderMeshData(
                                 meshComponent->m_meshData,
                                 meshComponent->m_meshDataRenderInfo
                         );
@@ -192,7 +192,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
     // binding geom pass shader
     m_geometryPassShader->bind();
-    m_geometryPassShader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_programDataBuffer);
+    m_geometryPassShader->useUniformBuffer(CoreMain::getRenderer().m_programDataBuffer);
 
     // ------ updating all lights in geom shader -------------
 
@@ -271,8 +271,8 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
             m_shadowsPassShader->bind();
             m_shadowsPassShader->useShaderMarkup(m_shadowsPassShaderMarkup);
 
-            Core::Main::CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
-            m_shadowsPassShader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
+            CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
+            m_shadowsPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
             SG_BEGIN_ITERATE_CACHED_ENTITIES(meshedCachedEntities, meshesLayer, meshesEntity)
                     std::shared_ptr<Transform> transformComponent = meshesEntity->getComponent<Transform>();
@@ -290,7 +290,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                                        transformComponent
                         );
 
-                        Core::Main::CoreMain::getRenderer().renderMeshData(
+                        CoreMain::getRenderer().renderMeshData(
                                 meshComponent->m_meshData,
                                 meshComponent->m_meshDataRenderInfo
                         );
@@ -318,14 +318,14 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
             std::shared_ptr<Camera> cameraComponent = cameraEntity->getComponent<Camera>();
             if(!cameraComponent) continue;
 
-            Core::Main::CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
+            CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
 
             m_geometryPassShader->bind();
             m_geometryPassShader->useShaderMarkup(m_geometryPassShaderMarkup);
-            m_geometryPassShader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
+            m_geometryPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
-            std::shared_ptr<Graphics::IFrameBuffer> currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
-            std::shared_ptr<Graphics::IFrameBuffer> foundFrameBuffer;
+            std::shared_ptr<IFrameBuffer> currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
+            std::shared_ptr<IFrameBuffer> foundFrameBuffer;
             // todo: make less bindings
 
             for(const auto& meshesLayer: meshedCachedEntities)
@@ -382,7 +382,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                                        transformComponent
                         );
 
-                        Core::Main::CoreMain::getRenderer().renderMeshData(
+                        CoreMain::getRenderer().renderMeshData(
                                 meshComponent->m_meshData,
                                 meshComponent->m_meshDataRenderInfo
                         );
@@ -394,7 +394,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
             // complex primitives pass ----------------
             m_complexGizmosPassShader->bind();
-            m_complexGizmosPassShader->useUniformBuffer(Core::Main::CoreMain::getRenderer().m_viewMatricesBuffer);
+            m_complexGizmosPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
             currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
 
@@ -437,7 +437,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                                 "u_color", complexPrimitiveComponent->m_color
                         );
 
-                        Core::Main::CoreMain::getRenderer().renderMeshData(
+                        CoreMain::getRenderer().renderMeshData(
                                 complexPrimitiveComponent->m_meshData,
                                 complexPrimitiveComponent->m_meshDataRenderInfo
                         );
@@ -451,7 +451,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
             // ------------------------------
 
-            Core::Main::CoreMain::getRenderer().setDepthTestingEnabled(false);
+            CoreMain::getRenderer().setDepthTestingEnabled(false);
 
             // first - discard not visible fragments in every frame buffer of layer and apply PP FX for each PP layer
 
@@ -474,7 +474,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
                 cameraComponent->m_defaultPostProcessShader->useInteger("depthTestPass", true);
 
-                Core::Main::CoreMain::getRenderer().renderMeshData(
+                CoreMain::getRenderer().renderMeshData(
                         cameraComponent->m_postProcessQuad,
                         cameraComponent->m_postProcessQuadRenderInfo
                 );
@@ -485,7 +485,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
                 cameraComponent->m_defaultPostProcessShader->useInteger("depthTestPass", false);
 
-                Core::Main::CoreMain::getRenderer().renderMeshData(
+                CoreMain::getRenderer().renderMeshData(
                         cameraComponent->m_postProcessQuad,
                         cameraComponent->m_postProcessQuadRenderInfo
                 );
@@ -514,7 +514,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                     // if pass == 1 then depth pass
                     ppLayer.second.m_shader->useInteger("depthTestPass", true);
 
-                    Core::Main::CoreMain::getRenderer().renderMeshData(
+                    CoreMain::getRenderer().renderMeshData(
                             cameraComponent->m_postProcessQuad,
                             cameraComponent->m_postProcessQuadRenderInfo
                     );
@@ -523,7 +523,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
 
                     ppLayer.second.m_shader->useInteger("depthTestPass", false);
 
-                    Core::Main::CoreMain::getRenderer().renderMeshData(
+                    CoreMain::getRenderer().renderMeshData(
                             cameraComponent->m_postProcessQuad,
                             cameraComponent->m_postProcessQuadRenderInfo
                     );
@@ -532,7 +532,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
                 ppLayer.second.m_frameBuffer->unbind();
             }
 
-            Core::Main::CoreMain::getRenderer().setDepthTestingEnabled(true);
+            CoreMain::getRenderer().setDepthTestingEnabled(true);
 
             // --------------------------------------------------------------------
 
@@ -549,7 +549,7 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
             cameraComponent->m_finalPostProcessOverlayShader
                     ->useShaderMarkup(cameraComponent->m_postProcessShadersMarkup);
 
-            Core::Main::CoreMain::getRenderer().renderMeshData(
+            CoreMain::getRenderer().renderMeshData(
                     cameraComponent->m_postProcessQuad,
                     cameraComponent->m_postProcessQuadRenderInfo
             );
@@ -567,13 +567,13 @@ void Core::ECS::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& s
     // --------------------------------
 }
 
-void Core::ECS::PBRForwardRenderPipeline::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
+void SGCore::PBRForwardRenderPipeline::cacheEntity(const std::shared_ptr<Entity>& entity)
 {
     cacheEntityComponents<Camera, Transform>(entity);
 }
 
-void Core::ECS::PBRForwardRenderPipeline::updateUniforms(const std::shared_ptr<Graphics::IShader>& shader,
-                                                         const std::shared_ptr<Memory::Assets::IMaterial>& material,
+void SGCore::PBRForwardRenderPipeline::updateUniforms(const std::shared_ptr<IShader>& shader,
+                                                         const std::shared_ptr<IMaterial>& material,
                                                          const std::shared_ptr<Transform>& transformComponent) const noexcept
 {
     // shader->bind();

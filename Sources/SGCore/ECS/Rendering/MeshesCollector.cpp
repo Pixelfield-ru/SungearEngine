@@ -8,7 +8,7 @@
 #include "Skybox.h"
 #include "SGCore/ECS/Rendering/Gizmos/IGizmo.h"
 
-void Core::ECS::MeshesCollector::cacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::MeshesCollector::cacheEntity(const std::shared_ptr<Entity>& entity)
 {
     cacheEntityComponents<Mesh, Transform>(entity, [&entity]() {
         if(entity->getComponent<Skybox>())

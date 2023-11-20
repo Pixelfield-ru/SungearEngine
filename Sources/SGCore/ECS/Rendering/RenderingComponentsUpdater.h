@@ -7,7 +7,7 @@
 
 #include "SGCore/ECS/ISystem.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class RenderingComponentsUpdater : public ISystem
     {
@@ -16,7 +16,7 @@ namespace Core::ECS
     public:
         void fixedUpdate(const std::shared_ptr<Scene>& scene) final;
 
-        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
     };
 }
 

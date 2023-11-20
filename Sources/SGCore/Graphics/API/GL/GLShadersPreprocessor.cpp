@@ -13,7 +13,7 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/FileAsset.h"
 
-std::string Core::Graphics::GLShadersPreprocessor::processShader(const std::string& shaderPath,
+std::string SGCore::GLShadersPreprocessor::processShader(const std::string& shaderPath,
                                                                  const std::string& inputCode,
                                                                  std::string& outError)
 {
@@ -70,7 +70,7 @@ std::string Core::Graphics::GLShadersPreprocessor::processShader(const std::stri
 
                     // loading code of included shader
                     auto includedShaderFile =
-                            Memory::AssetManager::loadAsset<Memory::Assets::FileAsset>(includedPath);
+                            AssetManager::loadAsset<FileAsset>(includedPath);
 
                     // adding included shader code
                     processedShaderCode += "\n// ---------------- " + includedPath + " ----------------\n\n";

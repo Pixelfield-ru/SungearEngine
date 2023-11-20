@@ -4,7 +4,7 @@
 
 #include "ICubemapTexture.h"
 
-std::weak_ptr<Core::Memory::Assets::CubemapAsset> Core::Graphics::ICubemapTexture::getAsset() noexcept
+std::weak_ptr<SGCore::CubemapAsset> SGCore::ICubemapTexture::getAsset() noexcept
 {
     return m_cubemapAsset;
 }

@@ -4,38 +4,38 @@
 
 #include "VkIndexBuffer.h"
 
-Core::Graphics::VkIndexBuffer::~VkIndexBuffer() noexcept
+SGCore::VkIndexBuffer::~VkIndexBuffer() noexcept
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::VkIndexBuffer::create() noexcept
+std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::create() noexcept
 {
     return shared_from_this();
 }
 
-void Core::Graphics::VkIndexBuffer::destroy() noexcept
+void SGCore::VkIndexBuffer::destroy() noexcept
 {
 
 }
 
-std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::VkIndexBuffer::putData(std::vector<std::uint32_t> data) noexcept
+std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::putData(std::vector<std::uint32_t> data) noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::VkIndexBuffer::subData
+std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::subData
 (std::vector<std::uint32_t> data, const int& offset) noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::VkIndexBuffer::bind() noexcept
+std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::bind() noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IIndexBuffer> Core::Graphics::VkIndexBuffer::setUsage(SGGUsage) noexcept
+std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::setUsage(SGGUsage) noexcept
 {
     return shared_from_this();
 }

@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/IShader.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     // TODO: impl VkShader
     class VkShader : public IShader
@@ -15,7 +15,7 @@ namespace Core::Graphics
     public:
         ~VkShader() noexcept override;
 
-        void compile(std::shared_ptr<Memory::Assets::FileAsset>) noexcept final;
+        void compile(std::shared_ptr<FileAsset>) noexcept final;
 
         void bind() noexcept final;
 

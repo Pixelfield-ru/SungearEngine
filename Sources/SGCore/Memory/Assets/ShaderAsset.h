@@ -9,17 +9,17 @@
 
 #include "SGCore/Graphics/API/IShader.h"
 
-namespace Core::Memory::Assets
+namespace SGCore
 {
     class ShaderAsset : public IAsset, public std::enable_shared_from_this<ShaderAsset>
     {
     private:
-        std::shared_ptr<Graphics::IShader> m_shader;
+        std::shared_ptr<IShader> m_shader;
 
     public:
         [[nodiscard]] std::shared_ptr<IAsset> load(const std::string& path) override;
 
-        std::shared_ptr<Graphics::IShader> getShader() const noexcept;
+        std::shared_ptr<IShader> getShader() const noexcept;
     };
 }
 

@@ -13,7 +13,7 @@
 #include "SGCore/Graphics/API/GL/GLFrameBufferAttachment.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GL4FrameBuffer : public IFrameBuffer
     {

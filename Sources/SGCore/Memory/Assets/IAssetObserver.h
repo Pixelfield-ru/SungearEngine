@@ -7,7 +7,7 @@
 
 #include "IAsset.h"
 
-namespace Core::Memory::Assets
+namespace SGCore
 {
     class IAsset;
 

@@ -6,7 +6,7 @@
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 
 // todo: impl 
-void Core::Graphics::GL4CubemapTexture::create(std::weak_ptr<Memory::Assets::CubemapAsset> cubemapAsset)
+void SGCore::GL4CubemapTexture::create(std::weak_ptr<CubemapAsset> cubemapAsset)
 {
     auto thisWeak = weak_from_this();
 
@@ -56,19 +56,19 @@ void Core::Graphics::GL4CubemapTexture::create(std::weak_ptr<Memory::Assets::Cub
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
-void Core::Graphics::GL4CubemapTexture::destroy()
+void SGCore::GL4CubemapTexture::destroy()
 {
     glDeleteTextures(1, &m_handler);
 }
 
-void Core::Graphics::GL4CubemapTexture::bind(const uint8_t& textureUnit)
+void SGCore::GL4CubemapTexture::bind(const uint8_t& textureUnit)
 {
     glActiveTexture(GL_TEXTURE0 + textureUnit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_handler);
 }
 
-Core::Graphics::GL4CubemapTexture&
-Core::Graphics::GL4CubemapTexture::operator=(const std::shared_ptr<ITexture2D>& other)
+SGCore::GL4CubemapTexture&
+SGCore::GL4CubemapTexture::operator=(const std::shared_ptr<ITexture2D>& other)
 {
     return *this;
 }

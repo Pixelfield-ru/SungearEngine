@@ -13,7 +13,7 @@
 #include "SGCore/Memory/Assets/ShaderAsset.h"
 #include "SGCore/Utils/ShadersPaths.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class Skybox : public IComponent
     {

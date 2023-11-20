@@ -9,7 +9,7 @@
 #include <memory>
 #include "IComponent.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class ComponentsCollection
     {

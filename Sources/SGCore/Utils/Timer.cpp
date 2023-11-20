@@ -14,7 +14,7 @@
 // some code...
 // timer.startFrame();
 // timer.getRawDeltaTime() == glfwGetTime() ! NOT CORRECT !
-void Core::Utils::Timer::startFrame()
+void SGCore::Timer::startFrame()
 {
     if(!m_active) return;
 
@@ -79,14 +79,14 @@ void Core::Utils::Timer::startFrame()
     }
 }
 
-void Core::Utils::Timer::reset() noexcept
+void SGCore::Timer::reset() noexcept
 {
     m_elapsedTime = 0;
     m_startTime = glfwGetTime();
     m_framesPerTarget = 0;
 }
 
-void Core::Utils::Timer::firstTimeStart()
+void SGCore::Timer::firstTimeStart()
 {
     m_startTime = glfwGetTime();
     //m_current = m_startTime;
@@ -97,22 +97,22 @@ void Core::Utils::Timer::firstTimeStart()
     }
 }
 
-void Core::Utils::Timer::addCallback(std::shared_ptr<TimerCallback> callback)
+void SGCore::Timer::addCallback(std::shared_ptr<TimerCallback> callback)
 {
     m_callbacks.push_back(std::move(callback));
 }
 
-void Core::Utils::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
+void SGCore::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
 {
     m_callbacks.remove(callback);
 }
 
-uint16_t Core::Utils::Timer::getFramesPerDestination() const noexcept
+uint16_t SGCore::Timer::getFramesPerDestination() const noexcept
 {
     return m_framesPerTarget;
 }
 
-double Core::Utils::Timer::getRawDeltaTime() const noexcept
+double SGCore::Timer::getRawDeltaTime() const noexcept
 {
     return m_rawDeltaTime;
 }

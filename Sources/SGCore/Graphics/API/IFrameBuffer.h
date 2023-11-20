@@ -15,14 +15,11 @@
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"
 
-namespace Core::Memory::Assets
+namespace SGCore
 {
     struct MaterialTexturesBlock;
     class IMaterial;
-}
 
-namespace Core::Graphics
-{
     struct MarkedFrameBufferAttachmentsBlock;
 
     // todo: make read and draw bindings

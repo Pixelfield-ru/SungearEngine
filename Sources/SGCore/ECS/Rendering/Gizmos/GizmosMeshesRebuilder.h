@@ -3,7 +3,7 @@
 
 #include "SGCore/ECS/ISystem.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class GizmosMeshesRebuilder : public ISystem
     {

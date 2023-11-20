@@ -12,7 +12,7 @@
 #include "SGCore/Logging/Log.h"
 #include "IShader.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class IShader;
 

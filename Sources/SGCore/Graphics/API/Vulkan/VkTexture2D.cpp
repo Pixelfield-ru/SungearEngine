@@ -4,47 +4,47 @@
 
 #include "VkTexture2D.h"
 
-Core::Graphics::VkTexture2D::~VkTexture2D() noexcept
+SGCore::VkTexture2D::~VkTexture2D() noexcept
 {
     destroy();
 }
 
-void Core::Graphics::VkTexture2D::create(std::weak_ptr<Memory::Assets::Texture2DAsset>) noexcept
+void SGCore::VkTexture2D::create(std::weak_ptr<Texture2DAsset>) noexcept
 {
 
 }
 
-void Core::Graphics::VkTexture2D::destroy() noexcept
+void SGCore::VkTexture2D::destroy() noexcept
 {
 
 }
 
-void Core::Graphics::VkTexture2D::onAssetModified() noexcept
+void SGCore::VkTexture2D::onAssetModified() noexcept
 {
 
 }
 
-void Core::Graphics::VkTexture2D::onAssetPathChanged() noexcept
+void SGCore::VkTexture2D::onAssetPathChanged() noexcept
 {
 
 }
 
-void Core::Graphics::VkTexture2D::onAssetDeleted() noexcept
+void SGCore::VkTexture2D::onAssetDeleted() noexcept
 {
 
 }
 
-void Core::Graphics::VkTexture2D::onAssetRestored() noexcept
+void SGCore::VkTexture2D::onAssetRestored() noexcept
 {
 
 }
 
-void Core::Graphics::VkTexture2D::bind(const uint8_t& textureUnit) noexcept
+void SGCore::VkTexture2D::bind(const uint8_t& textureUnit) noexcept
 {
 
 }
 
-Core::Graphics::VkTexture2D& Core::Graphics::VkTexture2D::operator=(const std::shared_ptr<ITexture2D>& other)
+SGCore::VkTexture2D& SGCore::VkTexture2D::operator=(const std::shared_ptr<ITexture2D>& other)
 {
     return *this;
 }

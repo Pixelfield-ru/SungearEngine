@@ -8,14 +8,14 @@
 #include "SGCore/ECS/ISystem.h"
 #include "DirectionalLight.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class DirectionalLightsCollector : public ISystem
     {
         SG_DECLARE_SINGLETON(DirectionalLightsCollector)
 
     public:
-        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
     };
 }
 

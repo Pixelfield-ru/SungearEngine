@@ -4,32 +4,32 @@
 
 #include "VkShader.h"
 
-Core::Graphics::VkShader::~VkShader() noexcept
+SGCore::VkShader::~VkShader() noexcept
 {
     destroy();
 }
 
-void Core::Graphics::VkShader::compile(std::shared_ptr<Memory::Assets::FileAsset>) noexcept
+void SGCore::VkShader::compile(std::shared_ptr<FileAsset>) noexcept
 {
 
 }
 
-void Core::Graphics::VkShader::bind() noexcept
+void SGCore::VkShader::bind() noexcept
 {
 
 }
 
-void Core::Graphics::VkShader::useUniformBuffer(const std::shared_ptr<IUniformBuffer> &)
+void SGCore::VkShader::useUniformBuffer(const std::shared_ptr<IUniformBuffer> &)
 {
 
 }
 
-void Core::Graphics::VkShader::destroy() noexcept
+void SGCore::VkShader::destroy() noexcept
 {
 
 }
 
-std::int32_t Core::Graphics::VkShader::getShaderUniformLocation(const std::string& uniformName) const noexcept
+std::int32_t SGCore::VkShader::getShaderUniformLocation(const std::string& uniformName) const noexcept
 {
     return 0;
 }

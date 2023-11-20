@@ -9,22 +9,19 @@
 
 #include "SGCore/Memory/Assets/CubemapAsset.h"
 
-namespace Core::Memory::Assets
+namespace SGCore
 {
     class CubemapAsset;
-}
 
-namespace Core::Graphics
-{
     class ICubemapTexture : public ITexture2D
     {
     protected:
-        std::weak_ptr<Memory::Assets::CubemapAsset> m_cubemapAsset;
+        std::weak_ptr<CubemapAsset> m_cubemapAsset;
 
     public:
-        virtual void create(std::weak_ptr<Memory::Assets::CubemapAsset> cubemapAsset) = 0;
+        virtual void create(std::weak_ptr<CubemapAsset> cubemapAsset) = 0;
 
-        std::weak_ptr<Memory::Assets::CubemapAsset> getAsset() noexcept;
+        std::weak_ptr<CubemapAsset> getAsset() noexcept;
     };
 }
 

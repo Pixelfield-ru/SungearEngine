@@ -9,7 +9,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include <imgui.h>
 
-namespace Core::Utils
+namespace SGCore
 {
     // TODO: ADD ON EXIT CLEAR
     struct ImGuiLayer

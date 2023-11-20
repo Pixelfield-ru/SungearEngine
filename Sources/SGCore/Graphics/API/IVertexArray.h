@@ -10,7 +10,7 @@
 #include <memory>
 #include <cstdint>
 
-namespace Core::Graphics
+namespace SGCore
 {
     class IVertexArray : public std::enable_shared_from_this<IVertexArray>
     {

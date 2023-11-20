@@ -10,7 +10,7 @@
 #include <glm/vec2.hpp>
 #include <assimp/types.h>
 
-namespace Core::Utils::AssimpUtils
+namespace SGCore::AssimpUtils
 {
     static glm::vec4 aiVectorToGLM(const aiColor4D& vec)
     {

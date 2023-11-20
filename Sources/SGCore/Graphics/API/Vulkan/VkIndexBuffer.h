@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/IIndexBuffer.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     // TODO: impl VkIndexBuffer
     class VkIndexBuffer : public IIndexBuffer

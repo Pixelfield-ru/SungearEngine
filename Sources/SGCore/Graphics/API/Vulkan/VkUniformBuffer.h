@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     // TODO: impl VkUniformBuffer
     class VkUniformBuffer : public IUniformBuffer

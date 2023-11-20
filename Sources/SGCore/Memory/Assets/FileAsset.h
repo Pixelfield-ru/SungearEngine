@@ -10,7 +10,7 @@
 #include "IAsset.h"
 #include "SGCore/Utils/FileUtils.h"
 
-namespace Core::Memory::Assets
+namespace SGCore
 {
     class FileAsset : public IAsset, public std::enable_shared_from_this<FileAsset>
     {

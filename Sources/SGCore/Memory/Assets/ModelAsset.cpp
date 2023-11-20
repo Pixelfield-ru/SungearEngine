@@ -10,11 +10,11 @@
 
 size_t polygonsNumber = 0;
 
-std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::load(const std::string& path)
+std::shared_ptr<SGCore::IAsset> SGCore::ModelAsset::load(const std::string& path)
 {
     m_path = path;
 
-    m_importerFlags = Main::CoreSettings::ModelsImport::IMPORTER_FLAGS;
+    m_importerFlags = ModelsImportSettings::IMPORTER_FLAGS;
 
     Assimp::Importer importer;
 
@@ -36,9 +36,9 @@ std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::ModelAsset::
     return shared_from_this();
 }
 
-std::shared_ptr<Core::ImportedScene::Node> Core::Memory::Assets::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
+std::shared_ptr<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
 {
-    std::shared_ptr<ImportedScene::Node> sgNode = std::make_shared<ImportedScene::Node>();
+    std::shared_ptr<Node> sgNode = std::make_shared<Node>();
     sgNode->m_name = aiNode->mName.data;
 
     aiVector3D position;
@@ -66,9 +66,9 @@ std::shared_ptr<Core::ImportedScene::Node> Core::Memory::Assets::ModelAsset::pro
     return sgNode;
 }
 
-std::shared_ptr<Core::ImportedScene::IMeshData> Core::Memory::Assets::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
+std::shared_ptr<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
-    std::shared_ptr<ImportedScene::IMeshData> sgMeshData(Core::Main::CoreMain::getRenderer().createMeshData());
+    std::shared_ptr<IMeshData> sgMeshData(CoreMain::getRenderer().createMeshData());
     sgMeshData->m_positions.reserve(aiMesh->mNumVertices * 3);
     sgMeshData->m_normals.reserve(aiMesh->mNumVertices * 3);
     sgMeshData->m_tangents.reserve(aiMesh->mNumVertices * 3);
@@ -146,22 +146,22 @@ std::shared_ptr<Core::ImportedScene::IMeshData> Core::Memory::Assets::ModelAsset
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->m_diffuseColor = Utils::AssimpUtils::aiVectorToGLM(diffuseColor);
+            sgMeshData->m_material->m_diffuseColor = AssimpUtils::aiVectorToGLM(diffuseColor);
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_SPECULAR, &specularColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->m_specularColor = Utils::AssimpUtils::aiVectorToGLM(specularColor);
+            sgMeshData->m_material->m_specularColor = AssimpUtils::aiVectorToGLM(specularColor);
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_AMBIENT, &ambientColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->m_ambientColor = Utils::AssimpUtils::aiVectorToGLM(ambientColor);
+            sgMeshData->m_material->m_ambientColor = AssimpUtils::aiVectorToGLM(ambientColor);
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissionColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->m_emissionColor = Utils::AssimpUtils::aiVectorToGLM(emissionColor);
+            sgMeshData->m_material->m_emissionColor = AssimpUtils::aiVectorToGLM(emissionColor);
         }
 
         if(aiGetMaterialFloat(aiMat, AI_MATKEY_SHININESS, &shininess) == AI_SUCCESS)
@@ -208,7 +208,7 @@ std::shared_ptr<Core::ImportedScene::IMeshData> Core::Memory::Assets::ModelAsset
     return sgMeshData;
 }
 
-void Core::Memory::Assets::ModelAsset::loadTextures(aiMaterial* aiMat,
+void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
                                                     std::shared_ptr<IMaterial>& sgMaterial,
                                                     const aiTextureType& aiTexType,
                                                     const SGTextureType& sgMaterialTextureType)

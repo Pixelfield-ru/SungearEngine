@@ -15,7 +15,7 @@
 
 #include "Callbacks.h"
 
-namespace Core::Main
+namespace SGCore
 {
     class Window;
 
@@ -94,7 +94,7 @@ namespace Core::Main
 
     class Window
     {
-        friend class Core::Utils::ImGuiLayer;
+        friend class ImGuiLayer;
 
     public:
         Window() noexcept = default;

@@ -2,9 +2,9 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/ShaderMarkup.h"
 
-std::shared_ptr<Core::Memory::Assets::IMaterial>
-Core::Memory::Assets::IMaterial::bind(const std::shared_ptr<Graphics::IShader>& shader,
-                                      const Graphics::ShaderMarkup& shaderMarkup)
+std::shared_ptr<SGCore::IMaterial>
+SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader,
+                                      const ShaderMarkup& shaderMarkup)
 {
     std::uint8_t currentTexBlockOfType = 0;
 
@@ -33,24 +33,24 @@ Core::Memory::Assets::IMaterial::bind(const std::shared_ptr<Graphics::IShader>& 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::IMaterial::load(const std::string& path)
+std::shared_ptr<SGCore::IAsset> SGCore::IMaterial::load(const std::string& path)
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Memory::Assets::Texture2DAsset>
-Core::Memory::Assets::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
+std::shared_ptr<SGCore::Texture2DAsset>
+SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
                                                      const std::string& path)
 {
     auto foundTex =
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::Texture2DAsset>(path);
+            AssetManager::loadAsset<Texture2DAsset>(path);
 
     m_textures.emplace_back(textureType, foundTex->m_texture2D);
 
     return foundTex;
 }
 
-void Core::Memory::Assets::IMaterial::copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept
+void SGCore::IMaterial::copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept
 {
     // adding all textures
     for(auto& texture : m_textures)
@@ -59,8 +59,8 @@ void Core::Memory::Assets::IMaterial::copyTextures(const std::shared_ptr<IMateri
     }
 }
 
-Core::Memory::Assets::IMaterial&
-Core::Memory::Assets::IMaterial::operator=(const Core::Memory::Assets::IMaterial& other) noexcept
+SGCore::IMaterial&
+SGCore::IMaterial::operator=(const SGCore::IMaterial& other) noexcept
 {
     assert(this != std::addressof(other));
 

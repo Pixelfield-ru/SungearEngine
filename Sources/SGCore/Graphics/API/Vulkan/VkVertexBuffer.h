@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/IVertexBuffer.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     // TODO: impl VkVertexBuffer
     class VkVertexBuffer : public IVertexBuffer

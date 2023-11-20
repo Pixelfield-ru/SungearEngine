@@ -12,7 +12,7 @@
 
 #include "IVertexAttribute.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class IVertexBufferLayout : public std::enable_shared_from_this<IVertexBufferLayout>
     {

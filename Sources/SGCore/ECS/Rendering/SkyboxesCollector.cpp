@@ -8,7 +8,7 @@
 #include "Mesh.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 
-void Core::ECS::SkyboxesCollector::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
+void SGCore::SkyboxesCollector::cacheEntity(const std::shared_ptr<SGCore::Entity>& entity)
 {
     cacheEntityComponents<Skybox, Mesh, Transform>(entity);
 }

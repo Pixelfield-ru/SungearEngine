@@ -1,19 +1,19 @@
 #include "IUniformBuffer.h"
 
 #include "SGCore/Logging/Log.h"
-#include "SGCore/Memory/Utils.h"
+#include "SGCore/Utils/MemoryUtils.h"
 
-Core::Graphics::IUniformBuffer::~IUniformBuffer()
+SGCore::IUniformBuffer::~IUniformBuffer()
 {
-    SG_DELETE(m_buffer);
+    SG_DELETE(m_buffer)
 }
 
-Core::Graphics::IUniformBuffer::IUniformBuffer(const std::list<IShaderUniform>& uniforms)
+SGCore::IUniformBuffer::IUniformBuffer(const std::list<IShaderUniform>& uniforms)
 {
     putUniforms(uniforms);
 }
 
-void Core::Graphics::IUniformBuffer::putUniforms
+void SGCore::IUniformBuffer::putUniforms
 (const std::list<IShaderUniform>& uniforms) noexcept
 {
     m_uniforms.insert(m_uniforms.end(), uniforms.begin(), uniforms.end());
@@ -72,12 +72,12 @@ void Core::Graphics::IUniformBuffer::putUniforms
     SGCF_INFO("uniforms buffer size: " + std::to_string(m_bufferSize), SG_LOG_CURRENT_SESSION_FILE);
 }
 
-std::uint16_t Core::Graphics::IUniformBuffer::getLayoutLocation() const noexcept
+std::uint16_t SGCore::IUniformBuffer::getLayoutLocation() const noexcept
 {
     return m_layoutLocation;
 }
 
-bool Core::Graphics::IUniformBuffer::isBindPerUniform() const noexcept
+bool SGCore::IUniformBuffer::isBindPerUniform() const noexcept
 {
     return false;
 }

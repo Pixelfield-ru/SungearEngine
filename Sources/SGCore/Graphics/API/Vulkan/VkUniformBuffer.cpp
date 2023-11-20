@@ -4,38 +4,38 @@
 
 #include "VkUniformBuffer.h"
 
-Core::Graphics::VkUniformBuffer::~VkUniformBuffer()
+SGCore::VkUniformBuffer::~VkUniformBuffer()
 {
     destroy();
 }
 
-void Core::Graphics::VkUniformBuffer::subDataOnGAPISide(const int64_t& offset, const int& size) noexcept
+void SGCore::VkUniformBuffer::subDataOnGAPISide(const int64_t& offset, const int& size) noexcept
 {
 
 }
 
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::VkUniformBuffer::bind() noexcept
-{
-    return shared_from_this();
-}
-
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::VkUniformBuffer::prepare() noexcept
+std::shared_ptr<SGCore::IUniformBuffer> SGCore::VkUniformBuffer::bind() noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::VkUniformBuffer::updateLocations
-(const Core::Graphics::IShader& fromShader) noexcept
+std::shared_ptr<SGCore::IUniformBuffer> SGCore::VkUniformBuffer::prepare() noexcept
 {
     return shared_from_this();
 }
 
-void Core::Graphics::VkUniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
+std::shared_ptr<SGCore::IUniformBuffer> SGCore::VkUniformBuffer::updateLocations
+(const SGCore::IShader& fromShader) noexcept
+{
+    return shared_from_this();
+}
+
+void SGCore::VkUniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
 {
 
 }
 
-void Core::Graphics::VkUniformBuffer::destroy() noexcept
+void SGCore::VkUniformBuffer::destroy() noexcept
 {
 
 }

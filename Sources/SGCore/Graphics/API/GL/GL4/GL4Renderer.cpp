@@ -17,7 +17,7 @@
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/ECS/Rendering/Gizmos/IGizmo.h"
 
-void Core::Graphics::GL4Renderer::init() noexcept
+void SGCore::GL4Renderer::init() noexcept
 {
     SGCF_INFO("-----------------------------------", SG_LOG_CURRENT_SESSION_FILE);
     SGCF_INFO("GLRenderer initializing...", SG_LOG_CURRENT_SESSION_FILE);
@@ -38,7 +38,7 @@ void Core::Graphics::GL4Renderer::init() noexcept
 
     if(!confirmSupport())
     {
-        Core::Main::CoreMain::getWindow().setShouldClose(true);
+        CoreMain::getWindow().setShouldClose(true);
     }
 
     setDepthTestingEnabled(true);
@@ -59,9 +59,9 @@ void Core::Graphics::GL4Renderer::init() noexcept
     m_viewMatricesBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
     m_viewMatricesBuffer->m_blockName = "ViewMatrices";
     m_viewMatricesBuffer->putUniforms({
-        Core::Graphics::IShaderUniform("projectionMatrix", SGGDataType::SGG_MAT4),
-        Core::Graphics::IShaderUniform("viewMatrix", SGGDataType::SGG_MAT4),
-        Core::Graphics::IShaderUniform("viewDirection", SGGDataType::SGG_FLOAT3)
+        IShaderUniform("projectionMatrix", SGGDataType::SGG_MAT4),
+        IShaderUniform("viewMatrix", SGGDataType::SGG_MAT4),
+        IShaderUniform("viewDirection", SGGDataType::SGG_FLOAT3)
                                         });
     m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->putData<float>({ });
@@ -72,14 +72,14 @@ void Core::Graphics::GL4Renderer::init() noexcept
     m_programDataBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
     m_programDataBuffer->m_blockName = "ProgramData";
     m_programDataBuffer->putUniforms({
-                                               Core::Graphics::IShaderUniform("windowSize", SGGDataType::SGG_MAT4)
+                                             IShaderUniform("windowSize", SGGDataType::SGG_MAT4)
                                        });
     m_programDataBuffer->putData<float>({ });
     m_programDataBuffer->setLayoutLocation(3);
     m_programDataBuffer->prepare();
 }
 
-bool Core::Graphics::GL4Renderer::confirmSupport() noexcept
+bool SGCore::GL4Renderer::confirmSupport() noexcept
 {
     std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 
@@ -97,7 +97,7 @@ bool Core::Graphics::GL4Renderer::confirmSupport() noexcept
     return true;
 }
 
-void Core::Graphics::GL4Renderer::checkForErrors(const std::source_location& location) noexcept
+void SGCore::GL4Renderer::checkForErrors(const std::source_location& location) noexcept
 {
     int errCode = glGetError();
 
@@ -122,7 +122,7 @@ void Core::Graphics::GL4Renderer::checkForErrors(const std::source_location& loc
     }
 }
 
-void Core::Graphics::GL4Renderer::printInfo() noexcept
+void SGCore::GL4Renderer::printInfo() noexcept
 {
     SGCF_INFO("GLRenderer info:", SG_LOG_CURRENT_SESSION_FILE);
     SGCF_INFO("OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))), SG_LOG_CURRENT_SESSION_FILE);
@@ -137,7 +137,7 @@ void Core::Graphics::GL4Renderer::printInfo() noexcept
     }
 }
 
-void Core::Graphics::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
+void SGCore::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
 {
     glViewport(0, 0, windowSize.x, windowSize.y);
 
@@ -145,8 +145,8 @@ void Core::Graphics::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<ECS::IRenderingComponent>& renderingComponent,
-                                                        const std::shared_ptr<ECS::Transform>& transformComponent)
+void SGCore::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<IRenderingComponent>& renderingComponent,
+                                                        const std::shared_ptr<Transform>& transformComponent)
 {
     m_viewMatricesBuffer->bind();
     m_programDataBuffer->bind();
@@ -167,13 +167,13 @@ void Core::Graphics::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<EC
     int windowWidth;
     int windowHeight;
 
-    Main::CoreMain::getWindow().getSize(windowWidth, windowHeight);
+    CoreMain::getWindow().getSize(windowWidth, windowHeight);
     // todo: перенести обновление в класс окна
     m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
 }
 
-void Core::Graphics::GL4Renderer::renderMeshData(const std::shared_ptr<ImportedScene::IMeshData>& meshData,
-                                                 const ImportedScene::MeshDataRenderInfo& meshDataRenderInfo)
+void SGCore::GL4Renderer::renderMeshData(const std::shared_ptr<IMeshData>& meshData,
+                                                 const MeshDataRenderInfo& meshDataRenderInfo)
 {
     if(meshDataRenderInfo.m_enableFacesCulling)
     {
@@ -215,7 +215,7 @@ void Core::Graphics::GL4Renderer::renderMeshData(const std::shared_ptr<ImportedS
     }
 }
 
-Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createShader()
+SGCore::GL46Shader* SGCore::GL4Renderer::createShader()
 {
     auto* shader = new GL46Shader;
     shader->m_version = "400";
@@ -223,63 +223,63 @@ Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createShader()
     return shader;
 }
 
-Core::Graphics::GL46Shader* Core::Graphics::GL4Renderer::createShader(const std::string& path)
+SGCore::GL46Shader* SGCore::GL4Renderer::createShader(const std::string& path)
 {
     auto* shader = createShader();
 
     shader->compile(
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(path)
+            AssetManager::loadAsset<FileAsset>(path)
     );
 
     return shader;
 }
 
-Core::Graphics::GLVertexArray* Core::Graphics::GL4Renderer::createVertexArray()
+SGCore::GLVertexArray* SGCore::GL4Renderer::createVertexArray()
 {
     return new GLVertexArray;
 }
 
-Core::Graphics::GLVertexBuffer* Core::Graphics::GL4Renderer::createVertexBuffer()
+SGCore::GLVertexBuffer* SGCore::GL4Renderer::createVertexBuffer()
 {
     return new GLVertexBuffer;
 }
 
-Core::Graphics::GLVertexBufferLayout* Core::Graphics::GL4Renderer::createVertexBufferLayout()
+SGCore::GLVertexBufferLayout* SGCore::GL4Renderer::createVertexBufferLayout()
 {
     return new GLVertexBufferLayout;
 }
 
-Core::Graphics::GLIndexBuffer* Core::Graphics::GL4Renderer::createIndexBuffer()
+SGCore::GLIndexBuffer* SGCore::GL4Renderer::createIndexBuffer()
 {
     return new GLIndexBuffer;
 }
 
-Core::Graphics::GL4Texture2D* Core::Graphics::GL4Renderer::createTexture2D()
+SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D()
 {
     return new GL4Texture2D;
 }
 
-Core::Graphics::GL4CubemapTexture* Core::Graphics::GL4Renderer::createCubemapTexture()
+SGCore::GL4CubemapTexture* SGCore::GL4Renderer::createCubemapTexture()
 {
     return new GL4CubemapTexture;
 }
 
-Core::Graphics::GL4UniformBuffer* Core::Graphics::GL4Renderer::createUniformBuffer()
+SGCore::GL4UniformBuffer* SGCore::GL4Renderer::createUniformBuffer()
 {
     return new GL4UniformBuffer;
 }
 
-Core::Graphics::GL4FrameBuffer* Core::Graphics::GL4Renderer::createFrameBuffer()
+SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer()
 {
     return new GL4FrameBuffer;
 }
 
-Core::Graphics::GL3MeshData* Core::Graphics::GL4Renderer::createMeshData()
+SGCore::GL3MeshData* SGCore::GL4Renderer::createMeshData()
 {
     return new GL3MeshData;
 }
 
-void Core::Graphics::GL4Renderer::setDepthTestingEnabled(const bool& enabled) const noexcept
+void SGCore::GL4Renderer::setDepthTestingEnabled(const bool& enabled) const noexcept
 {
     if(enabled)
     {
@@ -291,7 +291,7 @@ void Core::Graphics::GL4Renderer::setDepthTestingEnabled(const bool& enabled) co
     }
 }
 
-const std::shared_ptr<Core::Graphics::GL4Renderer>& Core::Graphics::GL4Renderer::getInstance() noexcept
+const std::shared_ptr<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept
 {
     static std::shared_ptr<GL4Renderer> s_instancePointer(new GL4Renderer);
     s_instancePointer->m_apiType = SG_API_TYPE_GL4;

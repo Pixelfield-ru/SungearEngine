@@ -5,12 +5,12 @@
 #include "GL46UniformBuffer.h"
 #include <glad/glad.h>
 
-Core::Graphics::GL46UniformBuffer::~GL46UniformBuffer()
+SGCore::GL46UniformBuffer::~GL46UniformBuffer()
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffer::bind() noexcept
+std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL46UniformBuffer::bind() noexcept
 {
     /*
     // iterating on data and on uniforms to avoid mistakes of going abroad
@@ -128,14 +128,14 @@ std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffe
     return shared_from_this();
 }
 
-void Core::Graphics::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
+void SGCore::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
                                                                          const int& size) noexcept
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, m_buffer + offset);
 }
 
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffer::prepare() noexcept
+std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL46UniformBuffer::prepare() noexcept
 {
     destroy();
 
@@ -147,8 +147,8 @@ std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffe
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffer::updateLocations(
-        const Core::Graphics::IShader& fromShader) noexcept
+std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL46UniformBuffer::updateLocations
+(const IShader& fromShader) noexcept
 {
     for(auto& uniform : m_uniforms)
     {
@@ -158,12 +158,12 @@ std::shared_ptr<Core::Graphics::IUniformBuffer> Core::Graphics::GL46UniformBuffe
     return shared_from_this();
 }
 
-void Core::Graphics::GL46UniformBuffer::destroy() noexcept
+void SGCore::GL46UniformBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);
 }
 
-void Core::Graphics::GL46UniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
+void SGCore::GL46UniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
 {
     m_layoutLocation = location;
 }

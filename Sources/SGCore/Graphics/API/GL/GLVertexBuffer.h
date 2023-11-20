@@ -11,7 +11,7 @@
 
 #include <glad/glad.h>
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GLVertexBuffer : public IVertexBuffer
     {

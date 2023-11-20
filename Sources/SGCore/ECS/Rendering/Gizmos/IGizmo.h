@@ -8,7 +8,7 @@
 
 #include <glm/vec3.hpp>
 
-namespace Core::ECS
+namespace SGCore
 {
     struct IGizmo : public Mesh
     {

@@ -11,7 +11,7 @@
 
 #include "SGCore/Graphics/API/ShaderMarkup.h"
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachments
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachments
 (const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock)
 {
     // depth
@@ -66,7 +66,7 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachment
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachment
 (const SGFrameBufferAttachmentType& attachmentType, const std::uint8_t& textureBlock)
 {
     glActiveTexture(GL_TEXTURE0 + textureBlock);
@@ -75,7 +75,7 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToRead
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentToRead
 (const SGFrameBufferAttachmentType& attachmentType)
 {
     if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
@@ -87,7 +87,7 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentToDraw
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentToDraw
 (const SGFrameBufferAttachmentType& attachmentType)
 {
     if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
@@ -99,13 +99,13 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentsToRead
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToRead
 (const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes)
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bindAttachmentsToDraw
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToDraw
 (const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes)
 {
     std::vector<GLenum> attachmentsToBind;
@@ -125,21 +125,21 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::unbindAttachmentToRead()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::unbindAttachmentToRead()
 {
     glReadBuffer(GL_NONE);
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::unbindAttachmentToDraw()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::unbindAttachmentToDraw()
 {
     glDrawBuffer(GL_NONE);
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bind()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bind()
 {
     glViewport(0, 0, m_width, m_height);
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
@@ -147,19 +147,19 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::bi
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::unbind()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     int wndWidth;
     int wndHeight;
-    Main::CoreMain::getWindow().getSize(wndWidth, wndHeight);
+    CoreMain::getWindow().getSize(wndWidth, wndHeight);
     glViewport(0, 0, wndWidth, wndHeight);
 
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::create()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::create()
 {
     static bool staticInit = []() {
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
@@ -174,12 +174,12 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::cr
     return shared_from_this();
 }
 
-void Core::Graphics::GL4FrameBuffer::destroy()
+void SGCore::GL4FrameBuffer::destroy()
 {
     glDeleteFramebuffers(1, &m_handler);
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::clear()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::clear()
 {
     glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -187,8 +187,8 @@ std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::GL4FrameBuffer::cl
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer>
-Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType& attachmentType,
+std::shared_ptr<SGCore::IFrameBuffer>
+SGCore::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                               const SGGColorFormat& format,
                                               const SGGColorInternalFormat& internalFormat,
                                               const int& mipLevel,
@@ -314,7 +314,7 @@ Core::Graphics::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType&
     return shared_from_this();
 }
 
-void Core::Graphics::GL4FrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,
+void SGCore::GL4FrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,
                                                          uint16_t& depthStencilAttachmentsCount,
                                                          uint16_t& colorAttachmentsCount,
                                                          uint16_t& renderAttachmentsCount) const noexcept

@@ -2,7 +2,7 @@
 #include "Window.h"
 #include "CoreMain.h"
 
-void Core::Main::Window::create()
+void SGCore::Window::create()
 {
     glfwSetErrorCallback(errorCallback);
 
@@ -22,7 +22,7 @@ void Core::Main::Window::create()
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // OpenGL is the default API for GLFW, so it's not here
-    if(CoreMain::getRenderer().getGAPIType() == Graphics::SG_API_TYPE_VULKAN)
+    if(CoreMain::getRenderer().getGAPIType() == GAPIType::SG_API_TYPE_VULKAN)
     {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     }
@@ -72,10 +72,10 @@ void Core::Main::Window::create()
     // -------------------------
 }
 
-void Core::Main::Window::makeCurrent() noexcept
+void SGCore::Window::makeCurrent() noexcept
 {
-    Graphics::GAPIType apiType = CoreMain::getRenderer().getGAPIType();
-    if(apiType >= Graphics::SG_API_TYPE_GL4 && apiType <= Graphics::SG_API_TYPE_GLES3)
+    GAPIType apiType = CoreMain::getRenderer().getGAPIType();
+    if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
     {
         glfwMakeContextCurrent(m_handler);
     }
@@ -83,7 +83,7 @@ void Core::Main::Window::makeCurrent() noexcept
 
 #pragma region Setters
 
-void Core::Main::Window::setSize(const int& sizeX, const int& sizeY) noexcept
+void SGCore::Window::setSize(const int& sizeX, const int& sizeY) noexcept
 {
     m_config.m_sizeX = sizeX;
     m_config.m_sizeY = sizeY;
@@ -91,7 +91,7 @@ void Core::Main::Window::setSize(const int& sizeX, const int& sizeY) noexcept
     glfwSetWindowSize(m_handler, sizeX, sizeY);
 }
 
-void Core::Main::Window::setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept
+void SGCore::Window::setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept
 {
     m_config.m_sizeMinLimitX = sizeMinLimitX;
     m_config.m_sizeMinLimitY = sizeMinLimitY;
@@ -102,7 +102,7 @@ void Core::Main::Window::setSizeLimits(const int& sizeMinLimitX, const int& size
     glfwSetWindowSizeLimits(m_handler, sizeMinLimitX, sizeMinLimitY, sizeMaxLimitX, sizeMaxLimitY);
 }
 
-void Core::Main::Window::setPosition(const int& posX, const int& posY) noexcept
+void SGCore::Window::setPosition(const int& posX, const int& posY) noexcept
 {
     m_config.m_positionX = posX;
     m_config.m_positionY = posY;
@@ -110,54 +110,54 @@ void Core::Main::Window::setPosition(const int& posX, const int& posY) noexcept
     glfwSetWindowPos(m_handler, posX, posY);
 }
 
-void Core::Main::Window::setTitle(const std::string& title) noexcept
+void SGCore::Window::setTitle(const std::string& title) noexcept
 {
     m_config.m_title = title;
 
     glfwSetWindowTitle(m_handler, title.c_str());
 }
 
-void Core::Main::Window::setSwapInterval(const bool& swapInterval) noexcept
+void SGCore::Window::setSwapInterval(const bool& swapInterval) noexcept
 {
     m_config.m_swapInterval = swapInterval;
 
-    Graphics::GAPIType apiType = CoreMain::getRenderer().getGAPIType();
-    if(apiType >= Graphics::SG_API_TYPE_GL4 && apiType <= Graphics::SG_API_TYPE_GLES3)
+    GAPIType apiType = CoreMain::getRenderer().getGAPIType();
+    if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
     {
         glfwSwapInterval(swapInterval);
     }
 }
 
-void Core::Main::Window::setEnableStickyKeys(const bool& enableStickyKeys) noexcept
+void SGCore::Window::setEnableStickyKeys(const bool& enableStickyKeys) noexcept
 {
     m_config.m_enableStickyKeys = enableStickyKeys;
 
     glfwSetInputMode(m_handler, GLFW_STICKY_KEYS, enableStickyKeys);
 }
 
-void Core::Main::Window::setHideAndCentralizeCursor(const bool& hideAndCentralizeCursor) noexcept
+void SGCore::Window::setHideAndCentralizeCursor(const bool& hideAndCentralizeCursor) noexcept
 {
     m_config.m_hideAndCentralizeCursor = hideAndCentralizeCursor;
 
     glfwSetInputMode(m_handler, GLFW_CURSOR, hideAndCentralizeCursor ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
 }
 
-bool Core::Main::Window::isHideAndCentralizeCursor() noexcept
+bool SGCore::Window::isHideAndCentralizeCursor() noexcept
 {
     return m_config.m_hideAndCentralizeCursor;
 }
 
-void Core::Main::Window::setConfig(WindowConfig&& other) noexcept
+void SGCore::Window::setConfig(WindowConfig&& other) noexcept
 {
     m_config = std::move(other);
 }
 
-void Core::Main::Window::setShouldClose(const bool& shouldClose) noexcept
+void SGCore::Window::setShouldClose(const bool& shouldClose) noexcept
 {
     glfwSetWindowShouldClose(m_handler, shouldClose);
 }
 
-void Core::Main::Window::setCursorPosition(const double& x, const double& y) noexcept
+void SGCore::Window::setCursorPosition(const double& x, const double& y) noexcept
 {
     glfwSetCursorPos(m_handler, x, y);
 }
@@ -166,55 +166,55 @@ void Core::Main::Window::setCursorPosition(const double& x, const double& y) noe
 
 #pragma region Getters
 
-void Core::Main::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
+void SGCore::Window::getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept
 {
     const GLFWvidmode* primaryVideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     sizeX = primaryVideoMode->width;
     sizeY = primaryVideoMode->height;
 }
 
-bool Core::Main::Window::shouldClose() noexcept
+bool SGCore::Window::shouldClose() noexcept
 {
     return glfwWindowShouldClose(m_handler);
 }
 
-Core::Main::WindowConfig& Core::Main::Window::getConfig() noexcept
+SGCore::WindowConfig& SGCore::Window::getConfig() noexcept
 {
     return m_config;
 }
 
-void Core::Main::Window::getSize(int& sizeX, int& sizeY) noexcept
+void SGCore::Window::getSize(int& sizeX, int& sizeY) noexcept
 {
     glfwGetWindowSize(m_handler, &sizeX, &sizeY);
 }
 
 #pragma endregion
 
-void Core::Main::Window::windowCloseCallback(GLFWwindow* window)
+void SGCore::Window::windowCloseCallback(GLFWwindow* window)
 {
     sgCallWindowCloseCallback(window);
 
     SGC_INFO("GLFW window closed.");
 }
 
-void Core::Main::Window::windowIconifyCallback(GLFWwindow* window, int iconified)
+void SGCore::Window::windowIconifyCallback(GLFWwindow* window, int iconified)
 {
     sgCallWindowIconifyCallback(window, iconified);
 
     SGC_INFO("GLFW window iconified.");
 }
 
-void Core::Main::Window::errorCallback(int errCode, const char* err_msg)
+void SGCore::Window::errorCallback(int errCode, const char* err_msg)
 {
     SGC_ERROR("GLFW error (code " + std::to_string(errCode) + "): " + err_msg);
 }
 
-void Core::Main::Window::swapBuffers()
+void SGCore::Window::swapBuffers()
 {
     glfwSwapBuffers(m_handler);
 }
 
-void Core::Main::Window::pollEvents()
+void SGCore::Window::pollEvents()
 {
     glfwPollEvents();
 }

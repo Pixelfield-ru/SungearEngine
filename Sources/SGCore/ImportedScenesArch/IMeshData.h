@@ -16,20 +16,20 @@
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
-namespace Core::ImportedScene
+namespace SGCore
 {
     class IMeshData
     {
     protected:
-        std::shared_ptr<Graphics::IVertexArray> m_vertexArray;
+        std::shared_ptr<IVertexArray> m_vertexArray;
 
-        std::shared_ptr<Graphics::IVertexBuffer> m_positionsBuffer;
-        std::shared_ptr<Graphics::IVertexBuffer> m_uvBuffer;
-        std::shared_ptr<Graphics::IVertexBuffer> m_normalsBuffer;
-        std::shared_ptr<Graphics::IVertexBuffer> m_tangentsBuffer;
-        std::shared_ptr<Graphics::IVertexBuffer> m_bitangentsBuffer;
+        std::shared_ptr<IVertexBuffer> m_positionsBuffer;
+        std::shared_ptr<IVertexBuffer> m_uvBuffer;
+        std::shared_ptr<IVertexBuffer> m_normalsBuffer;
+        std::shared_ptr<IVertexBuffer> m_tangentsBuffer;
+        std::shared_ptr<IVertexBuffer> m_bitangentsBuffer;
 
-        std::shared_ptr<Graphics::IIndexBuffer> m_indicesBuffer;
+        std::shared_ptr<IIndexBuffer> m_indicesBuffer;
 
     public:
         // IMesh() noexcept;
@@ -57,7 +57,7 @@ namespace Core::ImportedScene
         // bitangents array
         std::vector<float> m_bitangents;
 
-        std::shared_ptr<Memory::Assets::IMaterial> m_material = std::make_shared<Memory::Assets::IMaterial>();
+        std::shared_ptr<IMaterial> m_material = std::make_shared<IMaterial>();
 
         // ----------------
         virtual void prepare() = 0;
@@ -79,9 +79,9 @@ namespace Core::ImportedScene
          * @see Core::Memory::Assets::IMaterial::copyTextures
          * @param[in] newMaterial The material to which the textures will be moved and which will be set as the current one.
          */
-        void migrateAndSetNewMaterial(const std::shared_ptr<Memory::Assets::IMaterial>& newMaterial) noexcept;
+        void migrateAndSetNewMaterial(const std::shared_ptr<IMaterial>& newMaterial) noexcept;
 
-        std::shared_ptr<Graphics::IVertexArray> getVertexArray() noexcept;
+        std::shared_ptr<IVertexArray> getVertexArray() noexcept;
     };
 }
 

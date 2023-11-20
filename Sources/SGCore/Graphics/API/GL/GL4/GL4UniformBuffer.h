@@ -5,7 +5,7 @@
 
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GL4UniformBuffer : public IUniformBuffer
     {

@@ -4,38 +4,38 @@
 
 #include "VkVertexBuffer.h"
 
-Core::Graphics::VkVertexBuffer::~VkVertexBuffer() noexcept
+SGCore::VkVertexBuffer::~VkVertexBuffer() noexcept
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::VkVertexBuffer::create() noexcept
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::create() noexcept
 {
     return shared_from_this();
 }
 
-void Core::Graphics::VkVertexBuffer::destroy() noexcept
+void SGCore::VkVertexBuffer::destroy() noexcept
 {
 
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::VkVertexBuffer::putData(const std::vector<float>& data) noexcept
-{
-    return shared_from_this();
-}
-
-std::shared_ptr<Core::Graphics::IVertexBuffer>
-Core::Graphics::VkVertexBuffer::subData(const std::vector<float>& data, const size_t& offset) noexcept
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::putData(const std::vector<float>& data) noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::VkVertexBuffer::bind() noexcept
+std::shared_ptr<SGCore::IVertexBuffer>
+SGCore::VkVertexBuffer::subData(const std::vector<float>& data, const size_t& offset) noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::VkVertexBuffer::setUsage(SGGUsage) noexcept
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::bind() noexcept
+{
+    return shared_from_this();
+}
+
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::setUsage(SGGUsage) noexcept
 {
     return shared_from_this();
 }

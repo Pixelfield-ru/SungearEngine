@@ -22,7 +22,7 @@
                     auto entityName = entityName ## Iter.second;
 
 #define SG_END_ITERATE_CACHED_ENTITIES }}
-namespace Core::ECS
+namespace SGCore
 {
     struct SystemCachedEntities
     {

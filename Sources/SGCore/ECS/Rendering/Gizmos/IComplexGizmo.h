@@ -7,7 +7,7 @@
 
 #include "IGizmo.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     struct IComplexGizmo : public IGizmo
     {

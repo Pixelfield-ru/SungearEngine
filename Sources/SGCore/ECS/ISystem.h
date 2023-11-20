@@ -17,7 +17,7 @@
 
 #include "ComponentsCollection.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class ISystem
     {
@@ -28,8 +28,8 @@ namespace Core::ECS
         virtual void fixedUpdate(const std::shared_ptr<Scene>& scene) { }
         virtual void update(const std::shared_ptr<Scene>& scene) { }
 
-        virtual void fixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
-        virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Core::ECS::Entity>& entity) { }
+        virtual void fixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Entity>& entity) { }
+        virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Entity>& entity) { }
 
         virtual void cacheEntity(const std::shared_ptr<Entity>& entity) { }
 

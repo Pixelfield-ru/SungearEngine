@@ -9,14 +9,11 @@
 
 #include <iostream>
 
-namespace Core::Utils
+namespace SGCore::FileUtils
 {
-    class FileUtils
-    {
-    public:
-        static std::string readFile(const std::string_view&);
-        static void writeToFile(const std::string_view&, std::string&, const bool&);
-    };
+    std::string readFile(const std::string_view&);
+
+    void writeToFile(const std::string_view&, std::string&, const bool&);
 }
 
 #endif //NATIVECORE_FILEUTILS_H

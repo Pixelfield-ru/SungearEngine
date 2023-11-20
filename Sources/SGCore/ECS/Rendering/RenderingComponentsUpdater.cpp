@@ -9,7 +9,7 @@
 #include "glm/gtx/quaternion.hpp"
 #include "SGCore/ECS/ECSWorld.h"
 
-void Core::ECS::RenderingComponentsUpdater::fixedUpdate(const std::shared_ptr<Scene>& scene)
+void SGCore::RenderingComponentsUpdater::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
             std::list<std::shared_ptr<IRenderingComponent>> renderingComponents = cachedEntity->getComponents<IRenderingComponent>();
@@ -86,7 +86,7 @@ void Core::ECS::RenderingComponentsUpdater::fixedUpdate(const std::shared_ptr<Sc
     SG_END_ITERATE_CACHED_ENTITIES
 }
 
-void Core::ECS::RenderingComponentsUpdater::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
+void SGCore::RenderingComponentsUpdater::cacheEntity(const std::shared_ptr<SGCore::Entity>& entity)
 {
     cacheEntityComponents<IRenderingComponent, Transform>(entity);
 }

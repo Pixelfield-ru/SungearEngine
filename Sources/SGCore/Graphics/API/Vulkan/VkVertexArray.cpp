@@ -4,22 +4,22 @@
 
 #include "VkVertexArray.h"
 
-Core::Graphics::VkVertexArray::~VkVertexArray() noexcept
+SGCore::VkVertexArray::~VkVertexArray() noexcept
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::IVertexArray> Core::Graphics::VkVertexArray::create() noexcept
+std::shared_ptr<SGCore::IVertexArray> SGCore::VkVertexArray::create() noexcept
 {
     return shared_from_this();
 }
 
-void Core::Graphics::VkVertexArray::destroy() noexcept
+void SGCore::VkVertexArray::destroy() noexcept
 {
 
 }
 
-std::shared_ptr<Core::Graphics::IVertexArray> Core::Graphics::VkVertexArray::bind() noexcept
+std::shared_ptr<SGCore::IVertexArray> SGCore::VkVertexArray::bind() noexcept
 {
     return shared_from_this();
 }

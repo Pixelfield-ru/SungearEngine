@@ -5,18 +5,18 @@
 #include "CubemapAsset.h"
 #include "SGCore/Main/CoreMain.h"
 
-std::shared_ptr<Core::Memory::Assets::IAsset> Core::Memory::Assets::CubemapAsset::load(const std::string& path)
+std::shared_ptr<SGCore::IAsset> SGCore::CubemapAsset::load(const std::string& path)
 {
     auto thisShared = shared_from_this();
 
-    m_texture2D = std::shared_ptr<Graphics::ICubemapTexture>(Core::Main::CoreMain::getRenderer().createCubemapTexture());
-    std::static_pointer_cast<Graphics::ICubemapTexture>(m_texture2D)
+    m_texture2D = std::shared_ptr<ICubemapTexture>(CoreMain::getRenderer().createCubemapTexture());
+    std::static_pointer_cast<ICubemapTexture>(m_texture2D)
             ->create(std::static_pointer_cast<CubemapAsset>(thisShared));
 
     return thisShared;
 }
 
-Core::Memory::Assets::CubemapAsset::CubemapAsset(std::shared_ptr<Texture2DAsset> xPositive,
+SGCore::CubemapAsset::CubemapAsset(std::shared_ptr<Texture2DAsset> xPositive,
                                                  std::shared_ptr<Texture2DAsset> xNegative,
                                                  std::shared_ptr<Texture2DAsset> yPositive,
                                                  std::shared_ptr<Texture2DAsset> yNegative,
@@ -33,7 +33,7 @@ Core::Memory::Assets::CubemapAsset::CubemapAsset(std::shared_ptr<Texture2DAsset>
     m_parts.push_back(zNegative);
 }
 
-std::list<std::shared_ptr<Core::Memory::Assets::Texture2DAsset>> Core::Memory::Assets::CubemapAsset::getParts() noexcept
+std::list<std::shared_ptr<SGCore::Texture2DAsset>> SGCore::CubemapAsset::getParts() noexcept
 {
     return m_parts;
 }

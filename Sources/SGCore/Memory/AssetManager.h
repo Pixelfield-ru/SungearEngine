@@ -11,12 +11,12 @@
 #include "Assets/IAsset.h"
 #include "SGCore/Logging/Log.h"
 
-namespace Core::Memory
+namespace SGCore
 {
     class AssetManager
     {
     private:
-        static inline std::unordered_map<std::string, std::shared_ptr<Core::Memory::Assets::IAsset>> m_assets;
+        static inline std::unordered_map<std::string, std::shared_ptr<IAsset>> m_assets;
 
     public:
         AssetManager() = delete;
@@ -31,7 +31,7 @@ namespace Core::Memory
         * @return Added or already loaded asset
         */
         template<typename AssetT, typename... Args>
-        requires(std::is_base_of_v<Assets::IAsset, AssetT>)
+        requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> loadAsset(const std::string& path, const Args&... args)
         {
             auto foundAssetPair = m_assets.find(path);
@@ -51,7 +51,7 @@ namespace Core::Memory
         }
 
         template<typename AssetT, typename... Args>
-        requires(std::is_base_of_v<Assets::IAsset, AssetT>)
+        requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias, const std::string& path, const Args&... args)
         {
             auto foundAssetPair = m_assets.find(alias);
@@ -78,7 +78,7 @@ namespace Core::Memory
          * @return Created or found asset
          */
         template<typename AssetT, typename... Args>
-        requires(std::is_base_of_v<Assets::IAsset, AssetT>)
+        requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> createAsset(const std::string& path, const Args&... args)
         {
             auto foundAssetPair = m_assets.find(path);

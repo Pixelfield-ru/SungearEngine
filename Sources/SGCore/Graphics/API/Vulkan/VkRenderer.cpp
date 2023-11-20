@@ -13,7 +13,7 @@
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 
-void Core::Graphics::VkRenderer::init() noexcept
+void SGCore::VkRenderer::init() noexcept
 {
     /*m_applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     m_applicationInfo.pApplicationName = "Sungear Engine Core";
@@ -41,82 +41,82 @@ void Core::Graphics::VkRenderer::init() noexcept
     }*/
 }
 
-bool Core::Graphics::VkRenderer::confirmSupport() noexcept
+bool SGCore::VkRenderer::confirmSupport() noexcept
 {
     return false;
 }
 
-void Core::Graphics::VkRenderer::prepareFrame(const glm::ivec2& windowSize)
+void SGCore::VkRenderer::prepareFrame(const glm::ivec2& windowSize)
 {
 
 }
 
-void Core::Graphics::VkRenderer::printInfo() noexcept
+void SGCore::VkRenderer::printInfo() noexcept
 {
 
 }
 
-void Core::Graphics::VkRenderer::checkForErrors(const std::source_location& location) noexcept
+void SGCore::VkRenderer::checkForErrors(const std::source_location& location) noexcept
 {
 
 }
 
-Core::Graphics::VkShader* Core::Graphics::VkRenderer::createShader()
-{
-    return new VkShader;
-}
-
-Core::Graphics::VkShader* Core::Graphics::VkRenderer::createShader(const std::string& path)
+SGCore::VkShader* SGCore::VkRenderer::createShader()
 {
     return new VkShader;
 }
 
-Core::Graphics::VkVertexArray* Core::Graphics::VkRenderer::createVertexArray()
+SGCore::VkShader* SGCore::VkRenderer::createShader(const std::string& path)
+{
+    return new VkShader;
+}
+
+SGCore::VkVertexArray* SGCore::VkRenderer::createVertexArray()
 {
     return new VkVertexArray;
 }
 
-Core::Graphics::VkVertexBuffer* Core::Graphics::VkRenderer::createVertexBuffer()
+SGCore::VkVertexBuffer* SGCore::VkRenderer::createVertexBuffer()
 {
     return new VkVertexBuffer;
 }
 
-Core::Graphics::VkVertexBufferLayout* Core::Graphics::VkRenderer::createVertexBufferLayout()
+SGCore::VkVertexBufferLayout* SGCore::VkRenderer::createVertexBufferLayout()
 {
     return new VkVertexBufferLayout;
 }
 
-Core::Graphics::VkIndexBuffer* Core::Graphics::VkRenderer::createIndexBuffer()
+SGCore::VkIndexBuffer* SGCore::VkRenderer::createIndexBuffer()
 {
     return new VkIndexBuffer;
 }
 
-Core::Graphics::VkTexture2D* Core::Graphics::VkRenderer::createTexture2D()
+SGCore::VkTexture2D* SGCore::VkRenderer::createTexture2D()
 {
     return new VkTexture2D;
 }
 
-Core::Graphics::VkCubemapTexture* Core::Graphics::VkRenderer::createCubemapTexture()
+SGCore::VkCubemapTexture* SGCore::VkRenderer::createCubemapTexture()
 {
     return new VkCubemapTexture;
 }
 
-Core::Graphics::VkUniformBuffer* Core::Graphics::VkRenderer::createUniformBuffer()
+SGCore::VkUniformBuffer* SGCore::VkRenderer::createUniformBuffer()
 {
     return new VkUniformBuffer;
 }
 
-Core::Graphics::VkFrameBuffer* Core::Graphics::VkRenderer::createFrameBuffer()
+SGCore::VkFrameBuffer* SGCore::VkRenderer::createFrameBuffer()
 {
     return new VkFrameBuffer;
 }
 
-Core::Graphics::VkMeshData* Core::Graphics::VkRenderer::createMeshData()
+SGCore::VkMeshData* SGCore::VkRenderer::createMeshData()
 {
     return new VkMeshData;
 }
 
-const std::shared_ptr<Core::Graphics::VkRenderer>& Core::Graphics::VkRenderer::getInstance() noexcept
+const std::shared_ptr<SGCore::VkRenderer>& SGCore::VkRenderer::getInstance() noexcept
 {
     static std::shared_ptr<VkRenderer> s_instancePointer(new VkRenderer);
     s_instancePointer->m_apiType = SG_API_TYPE_VULKAN;

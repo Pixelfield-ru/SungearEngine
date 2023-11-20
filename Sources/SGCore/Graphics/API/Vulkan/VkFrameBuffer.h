@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class VkFrameBuffer : public IFrameBuffer
     {

@@ -7,7 +7,7 @@
 
 #include "SGCore/ECS/ISystem.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class LinesGizmosCollector : public ISystem
     {

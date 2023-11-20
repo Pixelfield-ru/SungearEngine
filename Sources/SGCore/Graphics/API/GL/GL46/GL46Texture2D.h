@@ -7,14 +7,14 @@
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Texture2D.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GL46Texture2D : public GL4Texture2D
     {
     public:
         ~GL46Texture2D() noexcept;
 
-        void create(std::weak_ptr<Memory::Assets::Texture2DAsset>) noexcept final;
+        void create(std::weak_ptr<Texture2DAsset>) noexcept final;
         void destroy() noexcept final;
 
         void onAssetModified() noexcept final;

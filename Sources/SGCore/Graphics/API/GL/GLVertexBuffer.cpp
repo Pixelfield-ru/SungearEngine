@@ -6,12 +6,12 @@
 #include "GLGraphicsTypesCaster.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 
-Core::Graphics::GLVertexBuffer::~GLVertexBuffer() noexcept
+SGCore::GLVertexBuffer::~GLVertexBuffer() noexcept
 {
     destroy();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::create() noexcept
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::create() noexcept
 {
     destroy();
 
@@ -24,7 +24,7 @@ std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::c
     return shared_from_this();
 }
 
-void Core::Graphics::GLVertexBuffer::destroy() noexcept
+void SGCore::GLVertexBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);
 
@@ -33,7 +33,7 @@ void Core::Graphics::GLVertexBuffer::destroy() noexcept
     #endif
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::putData
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::putData
 (const std::vector<float>& data) noexcept
 {
     if(data.size() == 0) return shared_from_this();
@@ -50,7 +50,7 @@ std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::p
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::subData
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::subData
 (const std::vector<float>& data, const size_t& offset) noexcept
 {
     if(data.size() == 0) return shared_from_this();
@@ -67,7 +67,7 @@ std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::s
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::bind() noexcept
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_handler);
 
@@ -78,7 +78,7 @@ std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::b
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IVertexBuffer> Core::Graphics::GLVertexBuffer::setUsage(SGGUsage usage) noexcept
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::setUsage(SGGUsage usage) noexcept
 {
     m_usage = usage;
 

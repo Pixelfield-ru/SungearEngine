@@ -16,7 +16,7 @@
 #include "SGCore/ECS/Rendering/Gizmos/LinesGizmosCollector.h"
 #include "SGCore/ECS/Rendering/Gizmos/ComplexGizmosCollector.h"
 
-void Core::ECS::ECSWorld::init() noexcept
+void SGCore::ECSWorld::init() noexcept
 {
     auto transformationsSystem = SGSingleton::getSharedPtrInstance<TransformationsUpdater>();
 
@@ -60,7 +60,7 @@ void Core::ECS::ECSWorld::init() noexcept
     //m_systems.push_back(std::make_shared<TransformationsSystem>());
 }
 
-void Core::ECS::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
+void SGCore::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
@@ -99,7 +99,7 @@ void Core::ECS::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
     // std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
+void SGCore::ECSWorld::update(const std::shared_ptr<Scene>& scene)
 {
     for(auto& system : m_systems)
     {
@@ -130,10 +130,10 @@ void Core::ECS::ECSWorld::update(const std::shared_ptr<Scene>& scene)
 
     // 20,761000 ms average !!!!!!!!!!!!!!
 
-    //std::cout << "ms for Core::ECS::ECSWorld::FPSRelativeFixedUpdate: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
+    //std::cout << "ms for SGCore::ECSWorld::FPSRelativeFixedUpdate: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void Core::ECS::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
 {
     double t0 = glfwGetTime();
 
@@ -166,7 +166,7 @@ void Core::ECS::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
     // std::cout << "ms for recache: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-std::set<std::shared_ptr<Core::ECS::ISystem>>& Core::ECS::ECSWorld::getSystems() noexcept
+std::set<std::shared_ptr<SGCore::ISystem>>& SGCore::ECSWorld::getSystems() noexcept
 {
     return m_systems;
 }

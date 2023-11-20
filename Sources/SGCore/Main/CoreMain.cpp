@@ -11,12 +11,12 @@
 #include "SGCore/ECS/ECSWorld.h"
 #include "SGCore/Utils/ShadersPaths.h"
 
-void Core::Main::CoreMain::start()
+void SGCore::CoreMain::start()
 {
     system("chcp 65001");
     setlocale(LC_ALL, "Russian");
 
-    m_renderer = Graphics::GL4Renderer::getInstance();
+    m_renderer = GL4Renderer::getInstance();
     //m_renderer = Graphics::VkRenderer::getInstance();
 
     m_window.create();
@@ -26,12 +26,12 @@ void Core::Main::CoreMain::start()
     // core components init -------------
     ShadersPaths::getMainInstance().createDefaultPaths();
     InputManager::init();
-    Memory::AssetManager::init();
-    Logging::init();
-    ECS::ECSWorld::init();
+    AssetManager::init();
+    Log::init();
+    ECSWorld::init();
     // ----------------------------------
 
-    std::shared_ptr<Utils::TimerCallback> globalTimerCallback = std::make_shared<Utils::TimerCallback>();
+    std::shared_ptr<TimerCallback> globalTimerCallback = std::make_shared<TimerCallback>();
 
     // delta update
     //globalTimerCallback->setDeltaUpdateFunction([](const double& deltaTime) { deltaUpdate(deltaTime); });
@@ -52,7 +52,7 @@ void Core::Main::CoreMain::start()
 
     // -----------------
 
-    std::shared_ptr<Utils::TimerCallback> fixedTimerCallback = std::make_shared<Utils::TimerCallback>();
+    std::shared_ptr<TimerCallback> fixedTimerCallback = std::make_shared<TimerCallback>();
 
     fixedTimerCallback->setFixedUpdateFunction([]()
                                                 {
@@ -74,14 +74,14 @@ void Core::Main::CoreMain::start()
     }
 }
 
-void Core::Main::CoreMain::fixedUpdate()
+void SGCore::CoreMain::fixedUpdate()
 {
     InputManager::startFrame();
 
     sgCallFixedUpdateCallback();
 }
 
-void Core::Main::CoreMain::update()
+void SGCore::CoreMain::update()
 {
     glm::ivec2 windowSize;
     m_window.getSize(windowSize.x, windowSize.y);
@@ -94,12 +94,12 @@ void Core::Main::CoreMain::update()
     m_window.pollEvents();
 }
 
-Core::Main::Window& Core::Main::CoreMain::getWindow() noexcept
+SGCore::Window& SGCore::CoreMain::getWindow() noexcept
 {
     return m_window;
 }
 
-Core::Graphics::IRenderer& Core::Main::CoreMain::getRenderer() noexcept
+SGCore::IRenderer& SGCore::CoreMain::getRenderer() noexcept
 {
     return *m_renderer;
 }

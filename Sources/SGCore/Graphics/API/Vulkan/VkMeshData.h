@@ -7,10 +7,10 @@
 
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     // TODO: impl VkMesh
-    class VkMeshData : public ImportedScene::IMeshData
+    class VkMeshData : public IMeshData
     {
     public:
         void prepare() final;

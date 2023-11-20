@@ -4,28 +4,28 @@
 
 #include "VkFrameBuffer.h"
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::VkFrameBuffer::bind()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::VkFrameBuffer::bind()
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::VkFrameBuffer::unbind()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::VkFrameBuffer::unbind()
 {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer> Core::Graphics::VkFrameBuffer::create()
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::VkFrameBuffer::create()
 {
     return shared_from_this();
 }
 
-void Core::Graphics::VkFrameBuffer::destroy()
+void SGCore::VkFrameBuffer::destroy()
 {
 
 }
 
-std::shared_ptr<Core::Graphics::IFrameBuffer>
-Core::Graphics::VkFrameBuffer::addAttachment(const SGFrameBufferAttachmentType&,
+std::shared_ptr<SGCore::IFrameBuffer>
+SGCore::VkFrameBuffer::addAttachment(const SGFrameBufferAttachmentType&,
                                              const SGGColorFormat& format,
                                              const SGGColorInternalFormat& internalFormat, const int& mipLevel,
                                              const int& layer)
@@ -33,7 +33,7 @@ Core::Graphics::VkFrameBuffer::addAttachment(const SGFrameBufferAttachmentType&,
     return shared_from_this();
 }
 
-void Core::Graphics::VkFrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,
+void SGCore::VkFrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,
                                                         uint16_t& depthStencilAttachmentsCount,
                                                         uint16_t& colorAttachmentsCount,
                                                         uint16_t& renderAttachmentsCount) const noexcept

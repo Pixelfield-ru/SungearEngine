@@ -6,18 +6,11 @@
 #include "SGCore/ECS/ISystem.h"
 #include "IRenderPipeline.h"
 
-namespace Core::ImportedScene
+namespace SGCore
 {
     class IMeshData;
-}
-
-namespace Core::Memory::Assets
-{
     class IMaterial;
-}
 
-namespace Core::ECS
-{
     class PBRForwardRenderPipeline : public IRenderPipeline
     {
         SG_DECLARE_COPY_MOVE_SINGLETON(PBRForwardRenderPipeline)
@@ -26,14 +19,14 @@ namespace Core::ECS
         PBRForwardRenderPipeline();
 
     private:
-        void updateUniforms(const std::shared_ptr<Graphics::IShader>& shader,
-                            const std::shared_ptr<Memory::Assets::IMaterial>& material,
+        void updateUniforms(const std::shared_ptr<IShader>& shader,
+                            const std::shared_ptr<IMaterial>& material,
                             const std::shared_ptr<Transform>& transformComponent) const noexcept;
 
     public:
         void update(const std::shared_ptr<Scene>& scene) final;
 
-        void cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity) final;
+        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
     };
 }
 

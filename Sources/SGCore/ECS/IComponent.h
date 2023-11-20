@@ -10,7 +10,7 @@
 #include "Entity.h"
 #include "SGCore/Patterns/UUID.h"
 
-namespace Core::ECS
+namespace SGCore
 {
     class Entity;
 

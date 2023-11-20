@@ -4,14 +4,14 @@
 
 #include "ShaderMarkup.h"
 
-void Core::Graphics::ShaderMarkup::addTexturesBlockDeclaration(const SGTextureType& blockType,
+void SGCore::ShaderMarkup::addTexturesBlockDeclaration(const SGTextureType& blockType,
                                                                const std::string& blockTypeName,
                                                                const std::uint8_t& maxTextures) noexcept
 {
     addTexturesBlockDeclaration(blockType, blockTypeName, maxTextures, true);
 }
 
-void Core::Graphics::ShaderMarkup::addTexturesBlockDeclaration(const SGTextureType& blockType,
+void SGCore::ShaderMarkup::addTexturesBlockDeclaration(const SGTextureType& blockType,
                                                                const std::string& blockTypeName,
                                                                const std::uint8_t& maxTextures,
                                                                const bool& autoSamplersCount) noexcept
@@ -22,7 +22,7 @@ void Core::Graphics::ShaderMarkup::addTexturesBlockDeclaration(const SGTextureTy
     m_texturesBlocks[blockType].m_autoSamplersCount = autoSamplersCount;
 }
 
-void Core::Graphics::ShaderMarkup::calculateBlocksOffsets() noexcept
+void SGCore::ShaderMarkup::calculateBlocksOffsets() noexcept
 {
     std::uint8_t offset = 0;
     for(auto& block : m_texturesBlocks)
@@ -41,7 +41,7 @@ void Core::Graphics::ShaderMarkup::calculateBlocksOffsets() noexcept
     }
 }
 
-void Core::Graphics::ShaderMarkup::addFrameBufferBlockDeclaration(const std::string& blockName,
+void SGCore::ShaderMarkup::addFrameBufferBlockDeclaration(const std::string& blockName,
                                                                   const uint8_t& maxDepthAttachments,
                                                                   const uint8_t& maxDepthStencilAttachments,
                                                                   const uint8_t& maxColorAttachments,
@@ -55,7 +55,7 @@ void Core::Graphics::ShaderMarkup::addFrameBufferBlockDeclaration(const std::str
     m_frameBuffersAttachmentsBlocks[blockName].m_maxRenderAttachments = maxRenderAttachments;
 }
 
-void Core::Graphics::ShaderMarkup::addFrameBufferBlockDeclaration(const std::string& blockName) noexcept
+void SGCore::ShaderMarkup::addFrameBufferBlockDeclaration(const std::string& blockName) noexcept
 {
     addFrameBufferBlockDeclaration(blockName, 1, 1, 1, 1);
 }

@@ -9,7 +9,7 @@
 
 #include "SGCore/Graphics/ShadersPreprocessorKeywords.h"
 
-namespace Core::Graphics
+namespace SGCore
 {
     class GLShadersPreprocessor
     {

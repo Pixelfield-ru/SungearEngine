@@ -7,7 +7,7 @@
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 
-bool Core::Graphics::GL46Renderer::confirmSupport() noexcept
+bool SGCore::GL46Renderer::confirmSupport() noexcept
 {
     std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     if(!glVersion.starts_with("4.6"))
@@ -20,7 +20,7 @@ bool Core::Graphics::GL46Renderer::confirmSupport() noexcept
     return true;
 }
 
-Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createShader()
+SGCore::GL46Shader* SGCore::GL46Renderer::createShader()
 {
     auto* shader = new GL46Shader;
     shader->m_version = "460";
@@ -28,22 +28,22 @@ Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createShader()
     return shader;
 }
 
-Core::Graphics::GL46Shader* Core::Graphics::GL46Renderer::createShader(const std::string& path)
+SGCore::GL46Shader* SGCore::GL46Renderer::createShader(const std::string& path)
 {
     auto* shader = createShader();
     shader->compile(
-            Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::FileAsset>(path)
+            AssetManager::loadAsset<FileAsset>(path)
     );
 
     return shader;
 }
 
-Core::Graphics::GL46Texture2D* Core::Graphics::GL46Renderer::createTexture2D()
+SGCore::GL46Texture2D* SGCore::GL46Renderer::createTexture2D()
 {
     return new GL46Texture2D;
 }
 
-const std::shared_ptr<Core::Graphics::GL46Renderer>& Core::Graphics::GL46Renderer::getInstance() noexcept
+const std::shared_ptr<SGCore::GL46Renderer>& SGCore::GL46Renderer::getInstance() noexcept
 {
     static std::shared_ptr<GL46Renderer> s_instancePointer(new GL46Renderer);
     s_instancePointer->m_apiType = SG_API_TYPE_GL46;

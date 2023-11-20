@@ -8,13 +8,13 @@
 
 #include "SGCore/Logging/Log.h"
 
-Core::Graphics::GL46Texture2D::~GL46Texture2D() noexcept
+SGCore::GL46Texture2D::~GL46Texture2D() noexcept
 {
     destroy();
 }
 
 // migrate to gl46
-void Core::Graphics::GL46Texture2D::create(std::weak_ptr<Memory::Assets::Texture2DAsset> asset) noexcept
+void SGCore::GL46Texture2D::create(std::weak_ptr<Texture2DAsset> asset) noexcept
 {
     auto thisWeak = weak_from_this();
 
@@ -67,39 +67,39 @@ void Core::Graphics::GL46Texture2D::create(std::weak_ptr<Memory::Assets::Texture
     #endif
 }
 
-void Core::Graphics::GL46Texture2D::destroy() noexcept
+void SGCore::GL46Texture2D::destroy() noexcept
 {
     glDeleteTextures(1, &m_handler);
 }
 
-void Core::Graphics::GL46Texture2D::bind(const std::uint8_t& textureUnit) noexcept
+void SGCore::GL46Texture2D::bind(const std::uint8_t& textureUnit) noexcept
 {
     glBindTextureUnit(textureUnit, m_handler);
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, m_handler);
 }
 
-void Core::Graphics::GL46Texture2D::onAssetModified() noexcept
+void SGCore::GL46Texture2D::onAssetModified() noexcept
 {
 
 }
 
-void Core::Graphics::GL46Texture2D::onAssetPathChanged() noexcept
+void SGCore::GL46Texture2D::onAssetPathChanged() noexcept
 {
 
 }
 
-void Core::Graphics::GL46Texture2D::onAssetDeleted() noexcept
+void SGCore::GL46Texture2D::onAssetDeleted() noexcept
 {
 
 }
 
-void Core::Graphics::GL46Texture2D::onAssetRestored() noexcept
+void SGCore::GL46Texture2D::onAssetRestored() noexcept
 {
 
 }
 
-Core::Graphics::GL46Texture2D& Core::Graphics::GL46Texture2D::operator=
+SGCore::GL46Texture2D& SGCore::GL46Texture2D::operator=
         (const std::shared_ptr<ITexture2D>& other)
 {
     create(other->getAsset());

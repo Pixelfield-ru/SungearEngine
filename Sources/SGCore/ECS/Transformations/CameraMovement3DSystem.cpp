@@ -13,7 +13,7 @@
 #include "SGCore/ECS/ECSWorld.h"
 
 // todo: optimize
-void Core::ECS::CameraMovement3DSystem::fixedUpdate
+void SGCore::CameraMovement3DSystem::fixedUpdate
 (const std::shared_ptr<Scene>& scene)
 {
     SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
@@ -37,8 +37,8 @@ void Core::ECS::CameraMovement3DSystem::fixedUpdate
             transformComponent->m_position.x = transformComponent->m_position.y = transformComponent->m_position.z = 0.0f;
         }
 
-        glm::vec3 rotatedForward = Utils::MathUtils::forward3;
-        glm::vec3 rotatedLeft = Utils::MathUtils::left3;
+        glm::vec3 rotatedForward = MathUtils::forward3;
+        glm::vec3 rotatedLeft = MathUtils::left3;
 
         if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W) ||
            InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
@@ -88,13 +88,13 @@ void Core::ECS::CameraMovement3DSystem::fixedUpdate
 
         if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))
         {
-            Core::Main::CoreMain::getWindow().setHideAndCentralizeCursor(
-                    !Core::Main::CoreMain::getWindow().isHideAndCentralizeCursor());
+            CoreMain::getWindow().setHideAndCentralizeCursor(
+                    !CoreMain::getWindow().isHideAndCentralizeCursor());
         }
     SG_END_ITERATE_CACHED_ENTITIES
 }
 
-void Core::ECS::CameraMovement3DSystem::cacheEntity(const std::shared_ptr<Core::ECS::Entity>& entity)
+void SGCore::CameraMovement3DSystem::cacheEntity(const std::shared_ptr<Entity>& entity)
 {
     cacheEntityComponents<Camera, Transform>(entity);
 }
