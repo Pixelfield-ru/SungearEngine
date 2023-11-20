@@ -4,12 +4,12 @@
 
 #include "VkVertexBufferLayout.h"
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::prepare() noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::prepare() noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::reset() noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::reset() noexcept
 {
     return shared_from_this();
 }
@@ -31,19 +31,19 @@ SGCore::VkVertexAttribute* SGCore::VkVertexBufferLayout::createVertexAttribute
     return nullptr;
 }
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::enableAttribute
-(const std::shared_ptr<IVertexAttribute>&) noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::enableAttribute
+(const Ref<IVertexAttribute>&) noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::enableAttributes() noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::enableAttributes() noexcept
 {
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::addAttribute
-(std::shared_ptr<IVertexAttribute> attribute) noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::addAttribute
+(Ref<IVertexAttribute> attribute) noexcept
 {
     return shared_from_this();
 }

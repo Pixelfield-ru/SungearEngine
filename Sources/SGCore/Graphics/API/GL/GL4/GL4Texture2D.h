@@ -22,7 +22,7 @@ namespace SGCore
     public:
         ~GL4Texture2D() noexcept;
 
-        void create(std::weak_ptr<Texture2DAsset>) noexcept override;
+        void create(Weak<Texture2DAsset>) noexcept override;
         void destroy() noexcept override;
 
         void onAssetModified() noexcept override;
@@ -32,7 +32,7 @@ namespace SGCore
 
         void bind(const std::uint8_t& textureUnit) noexcept override;
 
-        GL4Texture2D& operator=(const std::shared_ptr<ITexture2D>& other) override;
+        GL4Texture2D& operator=(const Ref<ITexture2D>& other) override;
     };
 }
 

@@ -17,7 +17,7 @@ namespace SGCore
     public:
         ~GL46Shader() noexcept override;
 
-        void compile(std::shared_ptr<FileAsset>) noexcept override;
+        void compile(Ref<FileAsset>) noexcept override;
 
         void bind() noexcept override;
 
@@ -25,7 +25,7 @@ namespace SGCore
 
         std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept override;
 
-        void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) override;
+        void useUniformBuffer(const Ref<IUniformBuffer>&) override;
         void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) final;
 
         void useMatrix(const std::string& uniformName, const glm::mat4& matrix) final;

@@ -32,21 +32,21 @@ namespace SGCore
         friend class ECSWorld;
 
     public:
-        std::list<std::shared_ptr<Entity>> m_entities;
+        std::list<Ref<Entity>> m_entities;
 
         std::string name;
 
         Scene() noexcept;
 
         void addLayer(std::string&& layerName) noexcept;
-        void addEntity(const std::shared_ptr<Entity>& entity) noexcept;
-        void addEntity(const std::shared_ptr<Entity>& entity, const std::string& layerName) noexcept;
-        void addEntity(const std::shared_ptr<Entity>& entity, const std::shared_ptr<Layer>& layer) noexcept;
+        void addEntity(const Ref<Entity>& entity) noexcept;
+        void addEntity(const Ref<Entity>& entity, const std::string& layerName) noexcept;
+        void addEntity(const Ref<Entity>& entity, const Ref<Layer>& layer) noexcept;
 
-        static std::shared_ptr<Scene> getCurrentScene() noexcept;
-        static void setCurrentScene(const std::shared_ptr<Scene>& newCurrentScene) noexcept;
+        static Ref<Scene> getCurrentScene() noexcept;
+        static void setCurrentScene(const Ref<Scene>& newCurrentScene) noexcept;
 
-        std::shared_ptr<Layer> getLayer(const size_t& layerIndex) noexcept;
+        Ref<Layer> getLayer(const size_t& layerIndex) noexcept;
 
         [[nodiscard]] const auto& getLayers() const noexcept
         {
@@ -54,9 +54,9 @@ namespace SGCore
         }
 
     private:
-        static inline std::shared_ptr<Scene> m_currentScene;
+        static inline Ref<Scene> m_currentScene;
 
-        std::map<std::string, std::shared_ptr<Layer>> m_layers;
+        std::map<std::string, Ref<Layer>> m_layers;
         // first - index
         //std::map<size_t, std::shared_ptr<Layer>> m_layers;
     };

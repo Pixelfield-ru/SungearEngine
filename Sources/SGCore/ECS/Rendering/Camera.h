@@ -13,9 +13,9 @@ namespace SGCore
     {
         friend class Camera;
 
-        std::shared_ptr<IFrameBuffer> m_frameBuffer;
+        Ref<IFrameBuffer> m_frameBuffer;
 
-        std::shared_ptr<IShader> m_shader;
+        Ref<IShader> m_shader;
 
         // name just for user. for convenience
         std::string m_name = "default";
@@ -38,32 +38,32 @@ namespace SGCore
         ShaderMarkup m_postProcessShadersMarkup;
 
         MeshDataRenderInfo m_postProcessQuadRenderInfo;
-        std::shared_ptr<IMeshData> m_postProcessQuad;
+        Ref<IMeshData> m_postProcessQuad;
 
         // passes
-        std::shared_ptr<IShader> m_defaultPostProcessShader;
-        std::shared_ptr<IShader> m_finalPostProcessOverlayShader;
+        Ref<IShader> m_defaultPostProcessShader;
+        Ref<IShader> m_finalPostProcessOverlayShader;
 
         // default frame buffer for layers that does not have post-processing
-        std::shared_ptr<IFrameBuffer> m_defaultLayersFrameBuffer;
+        Ref<IFrameBuffer> m_defaultLayersFrameBuffer;
         // final frame buffer with all post-processing
-        std::shared_ptr<IFrameBuffer> m_finalFrameBuffer;
+        Ref<IFrameBuffer> m_finalFrameBuffer;
 
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;
 
-        std::shared_ptr<IFrameBuffer> getPostProcessLayerFrameBuffer(const std::shared_ptr<Layer>& layer) noexcept;
+        Ref<IFrameBuffer> getPostProcessLayerFrameBuffer(const Ref<Layer>& layer) noexcept;
 
         void addPostProcessLayer(const std::string& ppLayerName,
-                                 const std::shared_ptr<Layer>& layer,
+                                 const Ref<Layer>& layer,
                                  const std::uint16_t& fbWidth,
                                  const std::uint16_t& fbHeight);
 
         void addPostProcessLayer(const std::string& ppLayerName,
-                                 const std::shared_ptr<Layer>& layer);
+                                 const Ref<Layer>& layer);
 
-        void setPostProcessLayerShader(const std::shared_ptr<Layer>& layer,
-                                       const std::shared_ptr<IShader>& shader) noexcept;
+        void setPostProcessLayerShader(const Ref<Layer>& layer,
+                                       const Ref<IShader>& shader) noexcept;
 
         void bindPostProcessLayers() noexcept;
 
@@ -75,7 +75,7 @@ namespace SGCore
         // todo: make rename pp layer function
 
     private:
-        std::unordered_map<std::shared_ptr<Layer>, PostProcessLayer> m_postProcessLayers;
+        std::unordered_map<Ref<Layer>, PostProcessLayer> m_postProcessLayers;
 
         void init() noexcept final { }
     };

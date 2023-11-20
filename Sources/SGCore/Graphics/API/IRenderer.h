@@ -40,9 +40,9 @@ namespace SGCore
     {
     public:
         // Buffer for storing matrices of the currently main camera.
-        std::shared_ptr<IUniformBuffer> m_viewMatricesBuffer;
+        Ref<IUniformBuffer> m_viewMatricesBuffer;
         // Buffer for storing matrices of the program.
-        std::shared_ptr<IUniformBuffer> m_programDataBuffer;
+        Ref<IUniformBuffer> m_programDataBuffer;
 
         // check usages in IVertexArray implementations and IIndexBuffer implementations
         // TODO: UB IS HERE
@@ -67,10 +67,10 @@ namespace SGCore
          * @param renderingComponent - The component that will be used as a "camera" for rendering entities.
          * @param transformComponent - The transform component of this "camera".
          */
-        virtual void prepareUniformBuffers(const std::shared_ptr<IRenderingComponent>& renderingComponent,
-                                           const std::shared_ptr<Transform>& transformComponent) { }
+        virtual void prepareUniformBuffers(const Ref<IRenderingComponent>& renderingComponent,
+                                           const Ref<Transform>& transformComponent) { }
 
-        virtual void renderMeshData(const std::shared_ptr<IMeshData>& meshData,
+        virtual void renderMeshData(const Ref<IMeshData>& meshData,
                                     const MeshDataRenderInfo& meshDataRenderInfo) { }
 
         /**

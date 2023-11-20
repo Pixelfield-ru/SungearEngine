@@ -37,10 +37,10 @@ namespace SGCore
 
         virtual void bind() = 0;
 
-        virtual void compile(std::shared_ptr<FileAsset> asset) = 0;
+        virtual void compile(Ref<FileAsset> asset) = 0;
 
         virtual void useShaderMarkup(const ShaderMarkup& shaderMarkup);
-        virtual void updateFrameBufferAttachmentsCount(const std::shared_ptr<IFrameBuffer>& frameBuffer,
+        virtual void updateFrameBufferAttachmentsCount(const Ref<IFrameBuffer>& frameBuffer,
                                                        const std::string& frameBufferNameInShader);
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
@@ -61,7 +61,7 @@ namespace SGCore
         void emplaceUpdateDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
 
         void replaceDefines(const SGShaderDefineType& shaderDefineType, const std::list<ShaderDefine>& otherDefines) noexcept;
-        void replaceDefines(const SGShaderDefineType& shaderDefineType, std::shared_ptr<IShader> otherShader) noexcept;
+        void replaceDefines(const SGShaderDefineType& shaderDefineType, Ref<IShader> otherShader) noexcept;
 
         void clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept;
 
@@ -77,7 +77,7 @@ namespace SGCore
 
         #pragma region Uniforms use
 
-        virtual void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) { };
+        virtual void useUniformBuffer(const Ref<IUniformBuffer>&) { };
         virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
 
         virtual void useMatrix(const std::string& uniformName, const glm::mat4& matrix) { };
@@ -101,7 +101,7 @@ namespace SGCore
         IShader& operator=(const IShader&) noexcept;
         #pragma endregion
 
-        std::weak_ptr<FileAsset> m_fileAsset;
+        Weak<FileAsset> m_fileAsset;
 
     protected:
         std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;

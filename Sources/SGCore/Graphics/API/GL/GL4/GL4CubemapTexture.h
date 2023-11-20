@@ -14,12 +14,12 @@ namespace SGCore
     class GL4CubemapTexture : public ICubemapTexture
     {
     public:
-        void create(std::weak_ptr<CubemapAsset> cubemapAsset) override;
+        void create(Weak<CubemapAsset> cubemapAsset) override;
         void destroy() override;
 
         void bind(const std::uint8_t& textureUnit) override;
 
-        GL4CubemapTexture& operator=(const std::shared_ptr<ITexture2D>& other) override;
+        GL4CubemapTexture& operator=(const Ref<ITexture2D>& other) override;
 
     private:
         GLuint m_handler = 0;

@@ -9,7 +9,7 @@
 
 // todo: make optimization
 
-void SGCore::GizmosMeshesRebuilder::fixedUpdate(const std::shared_ptr<Scene>& scene)
+void SGCore::GizmosMeshesRebuilder::fixedUpdate(const Ref<Scene>& scene)
 {
     SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
         auto transformComponent = cachedEntity->getComponent<Transform>();

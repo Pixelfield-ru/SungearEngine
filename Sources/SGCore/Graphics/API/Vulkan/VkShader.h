@@ -15,11 +15,11 @@ namespace SGCore
     public:
         ~VkShader() noexcept override;
 
-        void compile(std::shared_ptr<FileAsset>) noexcept final;
+        void compile(Ref<FileAsset>) noexcept final;
 
         void bind() noexcept final;
 
-        void useUniformBuffer(const std::shared_ptr<IUniformBuffer>&) override;
+        void useUniformBuffer(const Ref<IUniformBuffer>&) override;
 
         void destroy() noexcept final;
 

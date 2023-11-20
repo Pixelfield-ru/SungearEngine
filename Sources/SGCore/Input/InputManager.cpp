@@ -5,25 +5,25 @@
 #include "InputManager.h"
 #include "SGCore/Main/CoreMain.h"
 
-void InputManager::init() noexcept
+void SGCore::InputManager::init() noexcept
 {
     addInputListener(mainInputListener);
 }
 
-void InputManager::startFrame() noexcept
+void SGCore::InputManager::startFrame() noexcept
 {
     for(const auto& inputListener : m_inputListeners)
     {
         inputListener->startFrame();
     }
 
-    if(SGCore::CoreMain::getWindow().isHideAndCentralizeCursor())
+    if(CoreMain::getWindow().isHideAndCentralizeCursor())
     {
         int windowSizeX;
         int windowSizeY;
 
-        SGCore::CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
-        SGCore::CoreMain::getWindow().setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
+        CoreMain::getWindow().getSize(windowSizeX, windowSizeY);
+        CoreMain::getWindow().setCursorPosition((float) windowSizeX / 2.0f, (float) windowSizeY / 2.0f);
 
         for(const auto& inputListener : m_inputListeners)
         {
@@ -32,7 +32,7 @@ void InputManager::startFrame() noexcept
     }
 }
 
-void InputManager::keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
+void SGCore::InputManager::keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
 {
     for(const auto& inputListener : m_inputListeners)
     {
@@ -42,7 +42,7 @@ void InputManager::keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, i
     sgCallWindowKeyCallback(wnd, key, scanCode, action, mods);
 }
 
-void InputManager::mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode, int action)
+void SGCore::InputManager::mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode, int action)
 {
     for(const auto& inputListener : m_inputListeners)
     {
@@ -52,24 +52,24 @@ void InputManager::mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode
     sgCallWindowMouseButtonCallback(wnd, button, scanCode, action);
 }
 
-void InputManager::addInputListener(std::shared_ptr<InputListener> inputListener) noexcept
+void SGCore::InputManager::addInputListener(Ref<InputListener> inputListener) noexcept
 {
     const std::lock_guard<std::mutex> guard(m_keysMutex);
     m_inputListeners.push_back(std::move(inputListener));
 }
 
-void InputManager::removeInputListener(const std::shared_ptr<InputListener>& inputListener) noexcept
+void SGCore::InputManager::removeInputListener(const Ref<InputListener>& inputListener) noexcept
 {
     const std::lock_guard<std::mutex> guard(m_keysMutex);
     m_inputListeners.remove(inputListener);
 }
 
-std::shared_ptr<InputListener> InputManager::getMainInputListener() noexcept
+SGCore::Ref<SGCore::InputListener> SGCore::InputManager::getMainInputListener() noexcept
 {
     return mainInputListener;
 }
 
-void InputManager::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
+void SGCore::InputManager::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
 {
     /*if(Core::Main::Core::getWindow().getConfig().m_hideAndCentralizeCursor)
     {

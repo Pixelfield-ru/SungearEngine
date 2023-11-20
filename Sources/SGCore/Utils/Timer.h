@@ -12,6 +12,7 @@
 #include <list>
 
 #include "TimerCallback.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
@@ -40,8 +41,8 @@ namespace SGCore
 
         void firstTimeStart();
 
-        void addCallback(std::shared_ptr<TimerCallback> callback);
-        void removeCallback(const std::shared_ptr<TimerCallback>& callback);
+        void addCallback(Ref<TimerCallback> callback);
+        void removeCallback(const Ref<TimerCallback>& callback);
 
         [[nodiscard]] std::uint16_t getFramesPerDestination() const noexcept;
         double getRawDeltaTime() const noexcept;
@@ -61,7 +62,7 @@ namespace SGCore
 
         uint16_t m_framesPerTarget = 0;
 
-        std::list<std::shared_ptr<TimerCallback>> m_callbacks;
+        std::list<Ref<TimerCallback>> m_callbacks;
     };
 }
 

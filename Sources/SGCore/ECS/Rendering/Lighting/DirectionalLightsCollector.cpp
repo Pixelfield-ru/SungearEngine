@@ -11,7 +11,7 @@
 #include "GLFW/glfw3.h"
 #include "SGCore/ECS/Transformations/TransformationsUpdater.h"
 
-void SGCore::DirectionalLightsCollector::cacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::DirectionalLightsCollector::cacheEntity(const Ref<Entity>& entity)
 {
     cacheEntityComponents<DirectionalLight, Transform>(entity);
 }

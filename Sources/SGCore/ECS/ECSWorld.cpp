@@ -60,7 +60,7 @@ void SGCore::ECSWorld::init() noexcept
     //m_systems.push_back(std::make_shared<TransformationsSystem>());
 }
 
-void SGCore::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
+void SGCore::ECSWorld::fixedUpdate(const Ref<Scene>& scene)
 {
     double t0 = glfwGetTime();
 
@@ -99,7 +99,7 @@ void SGCore::ECSWorld::fixedUpdate(const std::shared_ptr<Scene>& scene)
     // std::cout << "ms: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void SGCore::ECSWorld::update(const std::shared_ptr<Scene>& scene)
+void SGCore::ECSWorld::update(const Ref<Scene>& scene)
 {
     for(auto& system : m_systems)
     {
@@ -133,7 +133,7 @@ void SGCore::ECSWorld::update(const std::shared_ptr<Scene>& scene)
     //std::cout << "ms for SGCore::ECSWorld::FPSRelativeFixedUpdate: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void SGCore::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::ECSWorld::recacheEntity(const Ref<Entity>& entity)
 {
     double t0 = glfwGetTime();
 
@@ -166,7 +166,7 @@ void SGCore::ECSWorld::recacheEntity(const std::shared_ptr<Entity>& entity)
     // std::cout << "ms for recache: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-std::set<std::shared_ptr<SGCore::ISystem>>& SGCore::ECSWorld::getSystems() noexcept
+std::set<SGCore::Ref<SGCore::ISystem>>& SGCore::ECSWorld::getSystems() noexcept
 {
     return m_systems;
 }

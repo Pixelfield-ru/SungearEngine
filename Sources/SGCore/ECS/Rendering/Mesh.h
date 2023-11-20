@@ -12,7 +12,7 @@ namespace SGCore
     struct Mesh : public IComponent
     {
         MeshDataRenderInfo m_meshDataRenderInfo;
-        std::shared_ptr<IMeshData> m_meshData;
+        Ref<IMeshData> m_meshData;
 
     protected:
         void init() noexcept final { }

@@ -7,12 +7,12 @@
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "GLGraphicsTypesCaster.h"
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::prepare() noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::prepare() noexcept
 {
     std::uint32_t offset = 0;
     m_stride = 0;
 
-    for(const std::shared_ptr<IVertexAttribute>& attribute : m_attributes)
+    for(const Ref<IVertexAttribute>& attribute : m_attributes)
     {
         attribute->m_offset = offset;
 
@@ -66,8 +66,8 @@ SGCore::GLVertexAttribute* SGCore::GLVertexBufferLayout::createVertexAttribute
     return new GLVertexAttribute(ID, std::move(name), dataType, normalized);
 }
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::addAttribute
-(std::shared_ptr<IVertexAttribute> attribute) noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::addAttribute
+(Ref<IVertexAttribute> attribute) noexcept
 {
     attribute->m_size = getSGGDataTypeSizeInBytes(attribute->m_dataType);
     m_attributes.push_back(std::move(attribute));
@@ -75,8 +75,8 @@ std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::addAt
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enableAttribute
-(const std::shared_ptr<IVertexAttribute>& attribute) noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enableAttribute
+(const Ref<IVertexAttribute>& attribute) noexcept
 {
     glEnableVertexAttribArray(attribute->m_ID);
     glVertexAttribPointer(
@@ -97,7 +97,7 @@ std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enabl
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enableAttributes() noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enableAttributes() noexcept
 {
     for(auto& attribute : m_attributes)
     {
@@ -107,7 +107,7 @@ std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enabl
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::reset() noexcept
+SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::reset() noexcept
 {
     m_stride = 0;
     m_attributes.clear();

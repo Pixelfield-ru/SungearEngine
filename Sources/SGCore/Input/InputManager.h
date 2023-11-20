@@ -163,37 +163,42 @@
 #include <list>
 #include <memory>
 #include <algorithm>
+#include <thread>
 
 #include "SGCore/Main/Callbacks.h"
-#include <thread>
+#include "SGCore/Main/CoreGlobals.h"
 #include "InputListener.h"
 
-class InputManager
+namespace SGCore
 {
-private:
-    static inline std::list<std::shared_ptr<InputListener>> m_inputListeners;
-    static inline std::mutex m_keysMutex;
-    const static inline std::shared_ptr<InputListener> mainInputListener = std::make_shared<InputListener>();
+    class InputManager
+    {
+    private:
+        static inline std::list<Ref<InputListener>> m_inputListeners;
+        static inline std::mutex m_keysMutex;
+        const static inline Ref<InputListener> mainInputListener = MakeRef<InputListener>();
 
-public:
-    InputManager() = delete;
+    public:
+        InputManager() = delete;
 
-    static void init() noexcept;
+        static void init() noexcept;
 
-    static void startFrame() noexcept;
+        static void startFrame() noexcept;
 
-    static void keyboardKeyCallback(GLFWwindow*, int, int, int, int);
+        static void keyboardKeyCallback(GLFWwindow*, int, int, int, int);
 
-    static void mouseButtonCallback(GLFWwindow*, int, int, int);
+        static void mouseButtonCallback(GLFWwindow*, int, int, int);
 
-    static void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
+        static void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
 
-    static void addInputListener(std::shared_ptr<InputListener>) noexcept;
-    static void removeInputListener(const std::shared_ptr<InputListener>&) noexcept;
+        static void addInputListener(Ref<InputListener>) noexcept;
 
-    static std::shared_ptr<InputListener> getMainInputListener() noexcept;
-};
+        static void removeInputListener(const Ref<InputListener>&) noexcept;
 
-//const static inline std::shared_ptr<InputListener> mainInputListener = std::make_shared<InputListener>();
+        static Ref<InputListener> getMainInputListener() noexcept;
+    };
+}
+
+//const static inline Ref<InputListener> mainInputListener = std::make_shared<InputListener>();
 
 #endif //NATIVECORE_INPUTMANAGER_H

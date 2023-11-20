@@ -21,15 +21,15 @@ namespace SGCore
     class IMeshData
     {
     protected:
-        std::shared_ptr<IVertexArray> m_vertexArray;
+        Ref<IVertexArray> m_vertexArray;
 
-        std::shared_ptr<IVertexBuffer> m_positionsBuffer;
-        std::shared_ptr<IVertexBuffer> m_uvBuffer;
-        std::shared_ptr<IVertexBuffer> m_normalsBuffer;
-        std::shared_ptr<IVertexBuffer> m_tangentsBuffer;
-        std::shared_ptr<IVertexBuffer> m_bitangentsBuffer;
+        Ref<IVertexBuffer> m_positionsBuffer;
+        Ref<IVertexBuffer> m_uvBuffer;
+        Ref<IVertexBuffer> m_normalsBuffer;
+        Ref<IVertexBuffer> m_tangentsBuffer;
+        Ref<IVertexBuffer> m_bitangentsBuffer;
 
-        std::shared_ptr<IIndexBuffer> m_indicesBuffer;
+        Ref<IIndexBuffer> m_indicesBuffer;
 
     public:
         // IMesh() noexcept;
@@ -57,7 +57,7 @@ namespace SGCore
         // bitangents array
         std::vector<float> m_bitangents;
 
-        std::shared_ptr<IMaterial> m_material = std::make_shared<IMaterial>();
+        Ref<IMaterial> m_material = MakeRef<IMaterial>();
 
         // ----------------
         virtual void prepare() = 0;
@@ -79,9 +79,9 @@ namespace SGCore
          * @see Core::Memory::Assets::IMaterial::copyTextures
          * @param[in] newMaterial The material to which the textures will be moved and which will be set as the current one.
          */
-        void migrateAndSetNewMaterial(const std::shared_ptr<IMaterial>& newMaterial) noexcept;
+        void migrateAndSetNewMaterial(const Ref<IMaterial>& newMaterial) noexcept;
 
-        std::shared_ptr<IVertexArray> getVertexArray() noexcept;
+        Ref<IVertexArray> getVertexArray() noexcept;
     };
 }
 

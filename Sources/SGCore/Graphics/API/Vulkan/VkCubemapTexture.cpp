@@ -4,7 +4,7 @@
 
 #include "VkCubemapTexture.h"
 
-void SGCore::VkCubemapTexture::create(std::weak_ptr<CubemapAsset> cubemapAsset)
+void SGCore::VkCubemapTexture::create(Weak<CubemapAsset> cubemapAsset)
 {
 
 }
@@ -19,7 +19,7 @@ void SGCore::VkCubemapTexture::destroy()
 
 }
 
-SGCore::VkCubemapTexture& SGCore::VkCubemapTexture::operator=(const std::shared_ptr<ITexture2D>& other)
+SGCore::VkCubemapTexture& SGCore::VkCubemapTexture::operator=(const Ref<ITexture2D>& other)
 {
 	return *this;
 }

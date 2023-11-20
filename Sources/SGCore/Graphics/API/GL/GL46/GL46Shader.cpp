@@ -98,13 +98,13 @@ GLuint SGCore::GL46Shader::createShaderPart(const GLenum& type, const std::strin
 
 // TODO: watch SGP1
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
-void SGCore::GL46Shader::compile(std::shared_ptr<FileAsset> asset) noexcept
+void SGCore::GL46Shader::compile(Ref<FileAsset> asset) noexcept
 {
     destroy();
 
     auto thisWeak = weak_from_this();
 
-    std::shared_ptr<FileAsset> fileAssetShared = m_fileAsset.lock();
+    Ref<FileAsset> fileAssetShared = m_fileAsset.lock();
 
     if(fileAssetShared)
     {
@@ -277,7 +277,7 @@ std::int32_t SGCore::GL46Shader::getShaderUniformLocation(const std::string& uni
     return glGetUniformLocation(m_programHandler, uniformName.c_str());
 }
 
-void SGCore::GL46Shader::useUniformBuffer(const std::shared_ptr<IUniformBuffer>& uniformBuffer)
+void SGCore::GL46Shader::useUniformBuffer(const Ref<IUniformBuffer>& uniformBuffer)
 {
     auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandler, uniformBuffer->m_blockName.c_str());
     glUniformBlockBinding(m_programHandler, uniformBufferIdx,

@@ -14,6 +14,7 @@
 
 #include "IComponent.h"
 #include "SGCore/Utils/Utils.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
@@ -27,9 +28,9 @@ namespace SGCore
     public:
         std::string m_name;
 
-        std::set<std::shared_ptr<Entity>> m_children;
+        std::set<Ref<Entity>> m_children;
 
-        void addComponent(const std::shared_ptr<IComponent>&) noexcept;
+        void addComponent(const Ref<IComponent>&) noexcept;
 
         /**
          * Finds the first component of type ComponentT.
@@ -38,7 +39,7 @@ namespace SGCore
          */
         template<typename ComponentT>
         requires(std::is_base_of_v<IComponent, ComponentT>)
-        std::shared_ptr<ComponentT> getComponent()
+        Ref<ComponentT> getComponent()
         {
             for(auto& component : m_components)
             {
@@ -58,9 +59,9 @@ namespace SGCore
          */
         template<typename ComponentT>
         requires(std::is_base_of_v<IComponent, ComponentT>)
-        std::list<std::shared_ptr<ComponentT>> getComponents()
+        std::list<Ref<ComponentT>> getComponents()
         {
-            std::list<std::shared_ptr<ComponentT>> foundComponents;
+            std::list<Ref<ComponentT>> foundComponents;
 
             for(auto& component : m_components)
             {
@@ -73,13 +74,13 @@ namespace SGCore
             return foundComponents;
         }
 
-        std::shared_ptr<Layer> getLayer() const noexcept;
+        Ref<Layer> getLayer() const noexcept;
 
         // todo: make remove component and remove components of type
 
     private:
-        std::list<std::shared_ptr<IComponent>> m_components;
-        std::weak_ptr<Layer> m_layer;
+        std::list<Ref<IComponent>> m_components;
+        Weak<Layer> m_layer;
     };
 }
 

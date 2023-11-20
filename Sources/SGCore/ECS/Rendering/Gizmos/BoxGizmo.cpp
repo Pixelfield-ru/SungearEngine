@@ -5,13 +5,7 @@
 
 SGCore::BoxGizmo::BoxGizmo()
 {
-    m_meshData = std::shared_ptr<IMeshData>(CoreMain::getRenderer().createMeshData());
-
-    /*m_mesh->m_material = std::shared_ptr<Memory::Assets::IMaterial>(
-            Core::Main::CoreMain::getRenderer().createBlankStandardMaterial(
-                    Graphics::StandardShaderType::SG_COMPLEX_PRIMITIVES_SHADER
-            )
-    );*/
+    m_meshData = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
 
     build();
 }

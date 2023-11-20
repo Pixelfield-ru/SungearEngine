@@ -2,10 +2,8 @@
 // Created by stuka on 11.05.2023.
 //
 
-#pragma once
-
-#ifndef NATIVECORE_FILEUTILS_H
-#define NATIVECORE_FILEUTILS_H
+#ifndef SUNGEARENGINE_FILEUTILS_H
+#define SUNGEARENGINE_FILEUTILS_H
 
 #include <iostream>
 
@@ -16,4 +14,4 @@ namespace SGCore::FileUtils
     void writeToFile(const std::string_view&, std::string&, const bool&);
 }
 
-#endif //NATIVECORE_FILEUTILS_H
+#endif // SUNGEARENGINE_FILEUTILS_H

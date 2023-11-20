@@ -15,7 +15,7 @@ namespace SGCore
         SG_DECLARE_SINGLETON(DirectionalLightsCollector)
 
     public:
-        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
+        void cacheEntity(const Ref<Entity>& entity) final;
     };
 }
 

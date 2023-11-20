@@ -9,6 +9,7 @@
 
 #include "Entity.h"
 #include "SGCore/Patterns/UUID.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
@@ -20,7 +21,7 @@ namespace SGCore
         virtual void init() = 0;
 
     protected:
-        std::shared_ptr<Entity> entity;
+        Ref<Entity> entity;
     };
 }
 

@@ -26,7 +26,7 @@ namespace SGCore
 {
     struct SystemCachedEntities
     {
-        std::unordered_map<std::shared_ptr<Entity>, std::shared_ptr<ComponentsCollection>> m_cachedEntities;
+        std::unordered_map<Ref<Entity>, Ref<ComponentsCollection>> m_cachedEntities;
     };
 
     // TODO: add allocator and free for components that will remove component from cached components if free
@@ -36,16 +36,16 @@ namespace SGCore
     public:
         static void init() noexcept;
 
-        static void fixedUpdate(const std::shared_ptr<Scene>& scene);
+        static void fixedUpdate(const Ref<Scene>& scene);
 
-        static void update(const std::shared_ptr<Scene>& scene);
+        static void update(const Ref<Scene>& scene);
 
-        static void recacheEntity(const std::shared_ptr<Entity>& entity);
+        static void recacheEntity(const Ref<Entity>& entity);
 
-        static std::set<std::shared_ptr<ISystem>>& getSystems() noexcept;
+        static std::set<Ref<ISystem>>& getSystems() noexcept;
 
     private:
-        static inline std::set<std::shared_ptr<ISystem>> m_systems;
+        static inline std::set<Ref<ISystem>> m_systems;
     };
 }
 

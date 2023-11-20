@@ -15,7 +15,7 @@ namespace SGCore
     public:
         ~VkTexture2D() noexcept;
 
-        void create(std::weak_ptr<Texture2DAsset>) noexcept final;
+        void create(Weak<Texture2DAsset>) noexcept final;
         void destroy() noexcept final;
 
         void onAssetModified() noexcept final;
@@ -25,7 +25,7 @@ namespace SGCore
 
         void bind(const std::uint8_t& textureUnit) noexcept final;
 
-        VkTexture2D& operator=(const std::shared_ptr<ITexture2D>& other) final;
+        VkTexture2D& operator=(const Ref<ITexture2D>& other) final;
     };
 }
 

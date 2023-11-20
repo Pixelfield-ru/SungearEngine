@@ -8,6 +8,7 @@
 #include "ITexture2D.h"
 
 #include "SGCore/Memory/Assets/CubemapAsset.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
@@ -16,12 +17,12 @@ namespace SGCore
     class ICubemapTexture : public ITexture2D
     {
     protected:
-        std::weak_ptr<CubemapAsset> m_cubemapAsset;
+        Weak<CubemapAsset> m_cubemapAsset;
 
     public:
-        virtual void create(std::weak_ptr<CubemapAsset> cubemapAsset) = 0;
+        virtual void create(Weak<CubemapAsset> cubemapAsset) = 0;
 
-        std::weak_ptr<CubemapAsset> getAsset() noexcept;
+        Weak<CubemapAsset> getAsset() noexcept;
     };
 }
 

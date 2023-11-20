@@ -23,7 +23,7 @@
 
 SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
-    m_geometryPassShader = std::shared_ptr<IShader>(
+    m_geometryPassShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
             )
@@ -60,7 +60,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     // ---------------------
 
-    m_shadowsPassShader = std::shared_ptr<IShader>(
+    m_shadowsPassShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["ShadowsGeneration"]["DefaultShader"]
             )
@@ -76,7 +76,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     // ---------------------
 
-    m_skyboxPassShader = std::shared_ptr<IShader>(
+    m_skyboxPassShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["Skybox"]["DefaultShader"]
             )
@@ -92,7 +92,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     // ---------------------
 
-    m_linesGizmosPassShader = std::shared_ptr<IShader>(
+    m_linesGizmosPassShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["Gizmos"]["LinesShader"]
             )
@@ -100,14 +100,14 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     // ---------------------
 
-    m_complexGizmosPassShader = std::shared_ptr<IShader>(
+    m_complexGizmosPassShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["Gizmos"]["ComplexGizmosShader"]
             )
     );
 }
 
-void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scene)
+void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 {
     auto transformationsSystem = SGSingleton::getSharedPtrInstance<TransformationsUpdater>();
 
@@ -130,8 +130,8 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
     m_skyboxPassShader->useShaderMarkup(m_skyboxPassShaderMarkup);
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, camerasLayer, cameraEntity)
-            std::shared_ptr<Camera> cameraComponent = cameraEntity->getComponent<Camera>();
-            std::shared_ptr<Transform> cameraTransformComponent = cameraEntity->getComponent<Transform>();
+            Ref<Camera> cameraComponent = cameraEntity->getComponent<Camera>();
+            Ref<Transform> cameraTransformComponent = cameraEntity->getComponent<Transform>();
 
             if(!cameraComponent || !cameraTransformComponent) continue;
 
@@ -139,7 +139,7 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
             m_skyboxPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
             auto currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
-            std::shared_ptr<IFrameBuffer> foundFrameBuffer;
+            Ref<IFrameBuffer> foundFrameBuffer;
             currentLayerFrameBuffer->bind()->clear();
 
             for(const auto& skyboxesLayer: skyboxesCachedEntities)
@@ -163,7 +163,7 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
 
                     if(!skyboxEntity.second) continue;
 
-                    std::shared_ptr<Transform> transformComponent = skyboxEntity.second->getComponent<Transform>();
+                    Ref<Transform> transformComponent = skyboxEntity.second->getComponent<Transform>();
 
                     if(!transformComponent) continue;
 
@@ -243,8 +243,8 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(shadowsCastersCachedEntities, shadowsCastersLayer, shadowsCasterEntity)
             // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
-            std::shared_ptr<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity->getComponent<ShadowsCaster>();
-            std::shared_ptr<Transform> shadowsCasterTransform = shadowsCasterEntity->getComponent<Transform>();
+            Ref<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity->getComponent<ShadowsCaster>();
+            Ref<Transform> shadowsCasterTransform = shadowsCasterEntity->getComponent<Transform>();
 
             if(!shadowsCasterTransform || !shadowsCasterComponent) continue;
 
@@ -275,7 +275,7 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
             m_shadowsPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
             SG_BEGIN_ITERATE_CACHED_ENTITIES(meshedCachedEntities, meshesLayer, meshesEntity)
-                    std::shared_ptr<Transform> transformComponent = meshesEntity->getComponent<Transform>();
+                    Ref<Transform> transformComponent = meshesEntity->getComponent<Transform>();
 
                     if(!transformComponent) continue;
 
@@ -313,9 +313,9 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
     // ----- render meshes and primitives (geometry + light pass pbr) ------
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, camerasLayer, cameraEntity)
-            std::shared_ptr<Transform> cameraTransformComponent = cameraEntity->getComponent<Transform>();
+            Ref<Transform> cameraTransformComponent = cameraEntity->getComponent<Transform>();
             if(!cameraTransformComponent) continue;
-            std::shared_ptr<Camera> cameraComponent = cameraEntity->getComponent<Camera>();
+            Ref<Camera> cameraComponent = cameraEntity->getComponent<Camera>();
             if(!cameraComponent) continue;
 
             CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
@@ -324,8 +324,8 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
             m_geometryPassShader->useShaderMarkup(m_geometryPassShaderMarkup);
             m_geometryPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
-            std::shared_ptr<IFrameBuffer> currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
-            std::shared_ptr<IFrameBuffer> foundFrameBuffer;
+            Ref<IFrameBuffer> currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
+            Ref<IFrameBuffer> foundFrameBuffer;
             // todo: make less bindings
 
             for(const auto& meshesLayer: meshedCachedEntities)
@@ -348,7 +348,7 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
                 {
                     if(!meshesEntity.second) continue;
 
-                    std::shared_ptr<Transform> transformComponent = meshesEntity.second->getComponent<Transform>();
+                    Ref<Transform> transformComponent = meshesEntity.second->getComponent<Transform>();
 
                     if(!transformComponent) continue;
 
@@ -364,7 +364,7 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
                         SG_BEGIN_ITERATE_CACHED_ENTITIES(shadowsCastersCachedEntities, shadowsCastersLayer,
                                                          shadowsCasterEntity)
                                 // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
-                                std::shared_ptr<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity->getComponent<ShadowsCaster>();
+                                Ref<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity->getComponent<ShadowsCaster>();
 
                                 if(!shadowsCasterComponent) continue;
 
@@ -418,9 +418,9 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
                 {
                     if(!cachedPrimitive.second) continue;
 
-                    std::shared_ptr<Transform> complexPrimitiveTransform = cachedPrimitive.second->getComponent<Transform>();
+                    Ref<Transform> complexPrimitiveTransform = cachedPrimitive.second->getComponent<Transform>();
                     if(!complexPrimitiveTransform) continue;
-                    std::list<std::shared_ptr<IComplexGizmo>> complexPrimitiveComponents =
+                    std::list<Ref<IComplexGizmo>> complexPrimitiveComponents =
                             cachedPrimitive.second->getComponents<IComplexGizmo>();
 
                     for(const auto& complexPrimitiveComponent: complexPrimitiveComponents)
@@ -567,14 +567,14 @@ void SGCore::PBRForwardRenderPipeline::update(const std::shared_ptr<Scene>& scen
     // --------------------------------
 }
 
-void SGCore::PBRForwardRenderPipeline::cacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::PBRForwardRenderPipeline::cacheEntity(const Ref<Entity>& entity)
 {
     cacheEntityComponents<Camera, Transform>(entity);
 }
 
-void SGCore::PBRForwardRenderPipeline::updateUniforms(const std::shared_ptr<IShader>& shader,
-                                                         const std::shared_ptr<IMaterial>& material,
-                                                         const std::shared_ptr<Transform>& transformComponent) const noexcept
+void SGCore::PBRForwardRenderPipeline::updateUniforms(const Ref<IShader>& shader,
+                                                         const Ref<IMaterial>& material,
+                                                         const Ref<Transform>& transformComponent) const noexcept
 {
     // shader->bind();
 

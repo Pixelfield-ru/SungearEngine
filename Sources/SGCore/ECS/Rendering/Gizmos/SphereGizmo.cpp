@@ -5,7 +5,7 @@
 
 SGCore::SphereGizmo::SphereGizmo()
 {
-    m_meshData = std::shared_ptr<IMeshData>(CoreMain::getRenderer().createMeshData());
+    m_meshData = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
 
     /*m_mesh->m_material = std::shared_ptr<Memory::Assets::IMaterial>(
             Core::Main::CoreMain::getRenderer().createBlankStandardMaterial(

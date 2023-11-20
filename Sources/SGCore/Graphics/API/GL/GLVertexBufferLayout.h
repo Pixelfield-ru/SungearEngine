@@ -18,19 +18,19 @@ namespace SGCore
         std::uint32_t m_stride = 0;
 
     public:
-        std::shared_ptr<IVertexBufferLayout> prepare() noexcept override;
+        Ref<IVertexBufferLayout> prepare() noexcept override;
 
-        std::shared_ptr<IVertexBufferLayout> reset() noexcept final;
+        Ref<IVertexBufferLayout> reset() noexcept final;
 
         std::uint16_t getVertexAttributeSizeInLayout(const SGGDataType&) noexcept;
 
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType) noexcept override;
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) noexcept override;
 
-        std::shared_ptr<IVertexBufferLayout> enableAttribute(const std::shared_ptr<IVertexAttribute>&) noexcept override;
-        std::shared_ptr<IVertexBufferLayout> enableAttributes() noexcept override;
+        Ref<IVertexBufferLayout> enableAttribute(const Ref<IVertexAttribute>&) noexcept override;
+        Ref<IVertexBufferLayout> enableAttributes() noexcept override;
 
-        std::shared_ptr<IVertexBufferLayout> addAttribute(std::shared_ptr<IVertexAttribute> attribute) noexcept override;
+        Ref<IVertexBufferLayout> addAttribute(Ref<IVertexAttribute> attribute) noexcept override;
     };
 }
 

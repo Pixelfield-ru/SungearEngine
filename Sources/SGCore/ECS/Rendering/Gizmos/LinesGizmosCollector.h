@@ -12,7 +12,7 @@ namespace SGCore
     class LinesGizmosCollector : public ISystem
     {
     public:
-        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
+        void cacheEntity(const Ref<Entity>& entity) final;
     };
 }
 

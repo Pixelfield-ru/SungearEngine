@@ -41,37 +41,37 @@
 
 #include "SGCore/Utils/ImGuiLayer.h"
 
-std::shared_ptr<SGCore::ModelAsset> testModel;
+SGCore::Ref<SGCore::ModelAsset> testModel;
 
-std::shared_ptr<SGCore::Entity> testCameraEntity;
-std::shared_ptr<SGCore::Scene> testScene;
+SGCore::Ref<SGCore::Entity> testCameraEntity;
+SGCore::Ref<SGCore::Scene> testScene;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
 // example how to convert imported scene to Sungear ECS scene
-void processLoadedNode(const std::shared_ptr<SGCore::Node>& sgNode,
+void processLoadedNode(const SGCore::Ref<SGCore::Node>& sgNode,
                        const glm::vec3& pos,
                        const glm::vec3& rot,
                        const glm::vec3& scale,
-                       std::vector<std::shared_ptr<SGCore::Entity>>& outputEntities)
+                       std::vector<SGCore::Ref<SGCore::Entity>>& outputEntities)
 {
-    std::shared_ptr<SGCore::Entity> nodeEntity = std::make_shared<SGCore::Entity>();
-    nodeEntity->addComponent(std::make_shared<SGCore::Transform>());
+    SGCore::Ref<SGCore::Entity> nodeEntity = SGCore::MakeRef<SGCore::Entity>();
+    nodeEntity->addComponent(SGCore::MakeRef<SGCore::Transform>());
     nodeEntity->m_name = sgNode->m_name;
 
     outputEntities.push_back(nodeEntity);
 
     for(auto& mesh : sgNode->m_meshesData)
     {
-        std::shared_ptr<SGCore::Transform> meshedEntityTransformComponent = std::make_shared<SGCore::Transform>();
+        SGCore::Ref<SGCore::Transform> meshedEntityTransformComponent = SGCore::MakeRef<SGCore::Transform>();
         meshedEntityTransformComponent->m_position = sgNode->m_position + pos;
         meshedEntityTransformComponent->m_rotation = eulerAngles(sgNode->m_rotationQuaternion) + rot;
         meshedEntityTransformComponent->m_scale = sgNode->m_scale * scale;
 
-        std::shared_ptr<SGCore::Mesh> meshComponent = std::make_shared<SGCore::Mesh>();
+        SGCore::Ref<SGCore::Mesh> meshComponent = SGCore::MakeRef<SGCore::Mesh>();
         meshComponent->m_meshData = mesh;
 
-        std::shared_ptr<SGCore::Entity> meshedEntity = std::make_shared<SGCore::Entity>();
+        SGCore::Ref<SGCore::Entity> meshedEntity = SGCore::MakeRef<SGCore::Entity>();
         meshedEntity->addComponent(meshedEntityTransformComponent);
         meshedEntity->addComponent(meshComponent);
 
@@ -84,11 +84,11 @@ void processLoadedNode(const std::shared_ptr<SGCore::Node>& sgNode,
     }
 }
 
-std::shared_ptr<SGCore::Entity> testShadowsCaster;
+SGCore::Ref<SGCore::Entity> testShadowsCaster;
 
 void init()
 {
-    testScene = std::make_shared<SGCore::Scene>();
+    testScene = SGCore::MakeRef<SGCore::Scene>();
     SGCore::Scene::setCurrentScene(testScene);
 
     // найс это работает. TODO: убрать! просто ради теста ---------------------
@@ -169,7 +169,7 @@ void init()
             cubePath
     );
 
-    std::vector<std::shared_ptr<SGCore::Entity>> planeEntities;
+    std::vector<SGCore::Ref<SGCore::Entity>> planeEntities;
 
     for(auto& node : testModel->m_nodes)
     {
@@ -190,7 +190,7 @@ void init()
 
     // -------
 
-    std::vector<std::shared_ptr<SGCore::Entity>> btrEntities;
+    std::vector<SGCore::Ref<SGCore::Entity>> btrEntities;
 
     for(auto& node : btrModel->m_nodes)
     {
@@ -243,7 +243,7 @@ void init()
         }
     }
 
-    std::vector<std::shared_ptr<SGCore::Entity>> cubeEntities;
+    std::vector<SGCore::Ref<SGCore::Entity>> cubeEntities;
 
     for(auto& node : cubeModel->m_nodes)
     {
@@ -251,7 +251,7 @@ void init()
                           { 1000, 1000, 1000 }, cubeEntities);
     }
 
-    std::vector<std::shared_ptr<SGCore::Entity>> cube1Entities;
+    std::vector<SGCore::Ref<SGCore::Entity>> cube1Entities;
 
     for(auto& node : cubeModel1->m_nodes)
     {
@@ -304,7 +304,7 @@ void init()
 
     for(const auto& entity : cubeEntities)
     {
-        entity->addComponent(std::make_shared<SGCore::Skybox>());
+        entity->addComponent(SGCore::MakeRef<SGCore::Skybox>());
 
         auto meshComponent = entity->getComponent<SGCore::Mesh>();
         if(meshComponent)
@@ -315,22 +315,22 @@ void init()
                     standardCubemap->getTexture2D()
             );
 
-            // auto skyboxMaterial = std::shared_ptr<Core::Memory::Assets::IMaterial>(Core::Main::CoreMain::getRenderer().createSkyboxMaterial());
+            // auto skyboxMaterial = SGCore::Ref<Core::Memory::Assets::IMaterial>(Core::Main::CoreMain::getRenderer().createSkyboxMaterial());
 
             // meshComponent->m_mesh->migrateAndSetNewMaterial(skyboxMaterial);
         }
         testScene->addEntity(entity);
     }
 
-    testCameraEntity = std::make_shared<SGCore::Entity>();
+    testCameraEntity = SGCore::MakeRef<SGCore::Entity>();
     testCameraEntity->m_name = "SGMainCamera";
-    auto cameraTransformComponent = std::make_shared<SGCore::Transform>();
+    auto cameraTransformComponent = SGCore::MakeRef<SGCore::Transform>();
     cameraTransformComponent->m_position.y = -3;
     cameraTransformComponent->m_position.z = 2;
     cameraTransformComponent->m_rotation.x = -30;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
-    auto camera = std::make_shared<SGCore::Camera>();
+    auto camera = SGCore::MakeRef<SGCore::Camera>();
     testCameraEntity->addComponent(camera);
 
     int primaryMonitorWidth;
@@ -345,25 +345,25 @@ void init()
     );
 
     camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
-                                      std::shared_ptr<SGCore::IShader>(
+                                      SGCore::Ref<SGCore::IShader>(
                                               SGCore::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/test_pp_layer.glsl")
             ));
 
     testScene->addEntity(testCameraEntity); /// PASSED
 
     /// THIS CODE CLEARS CACHED COMPONENTS WTF
-    testShadowsCaster = std::make_shared<SGCore::Entity>();
+    testShadowsCaster = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster);
-    auto shadowsCasterTransform = std::make_shared<SGCore::Transform>();
+    auto shadowsCasterTransform = SGCore::MakeRef<SGCore::Transform>();
     shadowsCasterTransform->m_position.y = 15;
     shadowsCasterTransform->m_position.z = 5.0;
     shadowsCasterTransform->m_position.x = -5.0;
     shadowsCasterTransform->m_rotation.x = 50;
     //shadowsCasterTransform->m_rotation.y = -90;
-    auto shadowCasterComponent = std::make_shared<SGCore::ShadowsCaster>();
+    auto shadowCasterComponent = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(shadowCasterComponent);
-    auto directionalLight = std::make_shared<SGCore::DirectionalLight>();
+    auto directionalLight = SGCore::MakeRef<SGCore::DirectionalLight>();
     directionalLight->m_color.r = 250.0f / 255.0f;
     directionalLight->m_color.g = 129.0f / 255.0f;
     directionalLight->m_color.b = 0.0f / 255.0f;
@@ -371,29 +371,29 @@ void init()
     //directionalLight->m_color.g = 255.0f / 255.0f * 2.0f;
     //directionalLight->m_color.b = 255.0f / 255.0f * 2.0f;
     testShadowsCaster->addComponent(directionalLight);
-    testShadowsCaster->addComponent(std::make_shared<SGCore::BoxGizmo>());
+    testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
     std::cout << "bam bam bam mi" << std::endl;
 
-    auto testShadowsCaster1 = std::make_shared<SGCore::Entity>();
+    auto testShadowsCaster1 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster1);
-    auto shadowsCasterTransform1 = std::make_shared<SGCore::Transform>();
+    auto shadowsCasterTransform1 = SGCore::MakeRef<SGCore::Transform>();
     shadowsCasterTransform1->m_position.x = -10;
     shadowsCasterTransform1->m_position.y = 10;
     shadowsCasterTransform1->m_position.z = -50.0;
     shadowsCasterTransform1->m_rotation.y = 180;
     //shadowsCasterTransform1->m_rotation.x = 40;
     //shadowsCasterTransform1->m_rotation.y = 30;
-    auto shadowCasterComponent1 = std::make_shared<SGCore::ShadowsCaster>();
+    auto shadowCasterComponent1 = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
     testShadowsCaster1->addComponent(shadowCasterComponent1);
-    auto directionalLight1 = std::make_shared<SGCore::DirectionalLight>();
+    auto directionalLight1 = SGCore::MakeRef<SGCore::DirectionalLight>();
     directionalLight1->m_color.r = 139.0f / 255.0f;
     directionalLight1->m_color.g = 184.0f / 255.0f;
     directionalLight1->m_color.b = 241.0f / 255.0f;
     //directionalLight1->m_intensity = 10.0f;
     testShadowsCaster1->addComponent(directionalLight1);
-    testShadowsCaster1->addComponent(std::make_shared<SGCore::BoxGizmo>());
+    testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
     /// -----------------------------------------
 

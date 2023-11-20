@@ -17,6 +17,8 @@
 
 #include "ComponentsCollection.h"
 
+#include "SGCore/Main/CoreGlobals.h"
+
 namespace SGCore
 {
     class ISystem
@@ -25,19 +27,19 @@ namespace SGCore
     public:
         bool m_active = true;
 
-        virtual void fixedUpdate(const std::shared_ptr<Scene>& scene) { }
-        virtual void update(const std::shared_ptr<Scene>& scene) { }
+        virtual void fixedUpdate(const Ref<Scene>& scene) { }
+        virtual void update(const Ref<Scene>& scene) { }
 
-        virtual void fixedUpdate(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Entity>& entity) { }
-        virtual void update(const std::shared_ptr<Scene>& scene, const std::shared_ptr<Entity>& entity) { }
+        virtual void fixedUpdate(const Ref<Scene>& scene, const Ref<Entity>& entity) { }
+        virtual void update(const Ref<Scene>& scene, const Ref<Entity>& entity) { }
 
-        virtual void cacheEntity(const std::shared_ptr<Entity>& entity) { }
+        virtual void cacheEntity(const Ref<Entity>& entity) { }
 
         template<typename... ComponentsT>
         requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
-        void cacheEntityComponents(const std::shared_ptr<Entity>& entity,
+        void cacheEntityComponents(const Ref<Entity>& entity,
                                    const std::function<bool()>& willCachePredicate,
-                                   const std::function<bool(const std::shared_ptr<IComponent>& component)>& willCacheComponentPredicate)
+                                   const std::function<bool(const Ref<IComponent>& component)>& willCacheComponentPredicate)
         {
             double t0 = glfwGetTime();
 
@@ -64,7 +66,7 @@ namespace SGCore
 
             auto& foundComponentsCollection = m_cachedEntities[entityLayer][entity];
             foundComponentsCollection = !foundComponentsCollection ?
-                                        std::make_shared<ComponentsCollection>() : foundComponentsCollection;
+                                        MakeRef<ComponentsCollection>() : foundComponentsCollection;
 
             Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection, &willCacheComponentPredicate](auto t)
                                                    {
@@ -91,25 +93,25 @@ namespace SGCore
 
         template<typename... ComponentsT>
         requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
-        void cacheEntityComponents(const std::shared_ptr<Entity>& entity,
+        void cacheEntityComponents(const Ref<Entity>& entity,
                                    const std::function<bool()>& willCachePredicate)
         {
-            cacheEntityComponents<ComponentsT...>(entity, willCachePredicate, [](const std::shared_ptr<IComponent>& component) { return true; });
+            cacheEntityComponents<ComponentsT...>(entity, willCachePredicate, [](const Ref<IComponent>& component) { return true; });
         }
 
         template<typename... ComponentsT>
         requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
-        void cacheEntityComponents(const std::shared_ptr<Entity>& entity,
-                                   const std::function<bool(const std::shared_ptr<IComponent>& component)>& willCacheComponentPredicate)
+        void cacheEntityComponents(const Ref<Entity>& entity,
+                                   const std::function<bool(const Ref<IComponent>& component)>& willCacheComponentPredicate)
         {
             cacheEntityComponents<ComponentsT...>(entity, []() { return true; }, willCacheComponentPredicate);
         }
 
         template<typename... ComponentsT>
         requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
-        void cacheEntityComponents(const std::shared_ptr<Entity>& entity)
+        void cacheEntityComponents(const Ref<Entity>& entity)
         {
-            cacheEntityComponents<ComponentsT...>(entity, []() { return true; }, [](const std::shared_ptr<IComponent>& component) { return true; });
+            cacheEntityComponents<ComponentsT...>(entity, []() { return true; }, [](const Ref<IComponent>& component) { return true; });
         }
 
         const auto& getCachedEntities() const noexcept
@@ -141,7 +143,7 @@ namespace SGCore
         std::unordered_map<std::string, std::function<bool()>> m_fixedUpdateFunctionsQuery;
         std::unordered_map<std::string, std::function<bool()>> m_updateFunctionsQuery;
 
-        std::map<std::shared_ptr<Layer>, std::unordered_map<std::shared_ptr<Entity>, std::shared_ptr<ComponentsCollection>>, LayersComparator> m_cachedEntities;
+        std::map<Ref<Layer>, std::unordered_map<Ref<Entity>, Ref<ComponentsCollection>>, LayersComparator> m_cachedEntities;
     };
 }
 

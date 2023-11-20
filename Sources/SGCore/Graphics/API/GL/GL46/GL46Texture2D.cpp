@@ -14,7 +14,7 @@ SGCore::GL46Texture2D::~GL46Texture2D() noexcept
 }
 
 // migrate to gl46
-void SGCore::GL46Texture2D::create(std::weak_ptr<Texture2DAsset> asset) noexcept
+void SGCore::GL46Texture2D::create(Weak<Texture2DAsset> asset) noexcept
 {
     auto thisWeak = weak_from_this();
 
@@ -100,7 +100,7 @@ void SGCore::GL46Texture2D::onAssetRestored() noexcept
 }
 
 SGCore::GL46Texture2D& SGCore::GL46Texture2D::operator=
-        (const std::shared_ptr<ITexture2D>& other)
+        (const Ref<ITexture2D>& other)
 {
     create(other->getAsset());
 

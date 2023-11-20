@@ -14,11 +14,11 @@
 
 // todo: optimize
 void SGCore::CameraMovement3DSystem::fixedUpdate
-(const std::shared_ptr<Scene>& scene)
+(const Ref<Scene>& scene)
 {
     SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
-        std::shared_ptr<Camera> cameraComponent = cachedEntity->getComponent<Camera>();
-        std::shared_ptr<Transform> transformComponent = cachedEntity->getComponent<Transform>();
+        Ref<Camera> cameraComponent = cachedEntity->getComponent<Camera>();
+        Ref<Transform> transformComponent = cachedEntity->getComponent<Transform>();
 
         if(!transformComponent || !cameraComponent) return;
 
@@ -94,7 +94,7 @@ void SGCore::CameraMovement3DSystem::fixedUpdate
     SG_END_ITERATE_CACHED_ENTITIES
 }
 
-void SGCore::CameraMovement3DSystem::cacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::CameraMovement3DSystem::cacheEntity(const Ref<Entity>& entity)
 {
     cacheEntityComponents<Camera, Transform>(entity);
 }

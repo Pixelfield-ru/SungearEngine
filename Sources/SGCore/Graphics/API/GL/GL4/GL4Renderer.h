@@ -34,7 +34,7 @@ namespace SGCore
     protected:
         GL4Renderer() noexcept = default;
 
-        static inline std::shared_ptr<GL4Renderer> m_instance;
+        static inline Ref<GL4Renderer> m_instance;
 
     public:
         GL4Renderer(const GL4Renderer&) = delete;
@@ -46,10 +46,10 @@ namespace SGCore
 
         void prepareFrame(const glm::ivec2& windowSize) override;
 
-        void prepareUniformBuffers(const std::shared_ptr<IRenderingComponent>& renderingComponent,
-                                   const std::shared_ptr<Transform>& transformComponent) override;
+        void prepareUniformBuffers(const Ref<IRenderingComponent>& renderingComponent,
+                                   const Ref<Transform>& transformComponent) override;
 
-        void renderMeshData(const std::shared_ptr<IMeshData>& meshData,
+        void renderMeshData(const Ref<IMeshData>& meshData,
                                     const MeshDataRenderInfo& meshDataRenderInfo) override;
 
         void printInfo() noexcept override;
@@ -79,7 +79,7 @@ namespace SGCore
         void setDepthTestingEnabled(const bool& enabled) const noexcept override;
         // --------------------------------------------------
 
-        static const std::shared_ptr<GL4Renderer>& getInstance() noexcept;
+        static const Ref<GL4Renderer>& getInstance() noexcept;
     };
 }
 

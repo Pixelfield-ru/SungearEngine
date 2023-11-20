@@ -9,7 +9,7 @@ void SGCore::ComponentsCollection::clear() noexcept
     m_components.clear();
 }
 
-void SGCore::ComponentsCollection::addComponent(const std::shared_ptr<IComponent>& component) noexcept
+void SGCore::ComponentsCollection::addComponent(const Ref<IComponent>& component) noexcept
 {
     m_components.push_back(component);
 }

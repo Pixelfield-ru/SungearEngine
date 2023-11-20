@@ -9,7 +9,7 @@ SGCore::VkShader::~VkShader() noexcept
     destroy();
 }
 
-void SGCore::VkShader::compile(std::shared_ptr<FileAsset>) noexcept
+void SGCore::VkShader::compile(Ref<FileAsset>) noexcept
 {
 
 }
@@ -19,7 +19,7 @@ void SGCore::VkShader::bind() noexcept
 
 }
 
-void SGCore::VkShader::useUniformBuffer(const std::shared_ptr<IUniformBuffer> &)
+void SGCore::VkShader::useUniformBuffer(const Ref<IUniformBuffer> &)
 {
 
 }

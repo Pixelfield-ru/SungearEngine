@@ -64,7 +64,7 @@ void SGCore::IShader::useShaderMarkup(const SGCore::ShaderMarkup& shaderMarkup)
     }
 }
 
-void SGCore::IShader::updateFrameBufferAttachmentsCount(const std::shared_ptr<IFrameBuffer>& frameBuffer,
+void SGCore::IShader::updateFrameBufferAttachmentsCount(const Ref<IFrameBuffer>& frameBuffer,
                                                                 const std::string& frameBufferNameInShader)
 {
     std::uint16_t depthAttachmentsCount;
@@ -226,7 +226,7 @@ void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
 }
 
 void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
-                                             std::shared_ptr<IShader> otherShader) noexcept
+                                             Ref<IShader> otherShader) noexcept
 {
     auto& shaderTypedDefines = m_defines[shaderDefineType];
     auto& otherShaderTypedDefines = otherShader->m_defines[shaderDefineType];

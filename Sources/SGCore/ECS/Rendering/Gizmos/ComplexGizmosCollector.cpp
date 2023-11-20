@@ -6,7 +6,7 @@
 #include "IComplexGizmo.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 
-void SGCore::ComplexGizmosCollector::cacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::ComplexGizmosCollector::cacheEntity(const Ref<Entity>& entity)
 {
     cacheEntityComponents<IComplexGizmo, Transform>(entity);
 }

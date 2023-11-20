@@ -10,7 +10,7 @@
 
 size_t polygonsNumber = 0;
 
-std::shared_ptr<SGCore::IAsset> SGCore::ModelAsset::load(const std::string& path)
+SGCore::Ref<SGCore::IAsset> SGCore::ModelAsset::load(const std::string& path)
 {
     m_path = path;
 
@@ -36,9 +36,9 @@ std::shared_ptr<SGCore::IAsset> SGCore::ModelAsset::load(const std::string& path
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
+SGCore::Ref<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
 {
-    std::shared_ptr<Node> sgNode = std::make_shared<Node>();
+    Ref<Node> sgNode = MakeRef<Node>();
     sgNode->m_name = aiNode->mName.data;
 
     aiVector3D position;
@@ -66,9 +66,9 @@ std::shared_ptr<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNo
     return sgNode;
 }
 
-std::shared_ptr<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
+SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
-    std::shared_ptr<IMeshData> sgMeshData(CoreMain::getRenderer().createMeshData());
+    Ref<IMeshData> sgMeshData(CoreMain::getRenderer().createMeshData());
     sgMeshData->m_positions.reserve(aiMesh->mNumVertices * 3);
     sgMeshData->m_normals.reserve(aiMesh->mNumVertices * 3);
     sgMeshData->m_tangents.reserve(aiMesh->mNumVertices * 3);
@@ -209,7 +209,7 @@ std::shared_ptr<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh*
 }
 
 void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
-                                                    std::shared_ptr<IMaterial>& sgMaterial,
+                                                    Ref<IMaterial>& sgMaterial,
                                                     const aiTextureType& aiTexType,
                                                     const SGTextureType& sgMaterialTextureType)
 {

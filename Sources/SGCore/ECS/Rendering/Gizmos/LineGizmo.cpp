@@ -1,12 +1,11 @@
 #include "LineGizmo.h"
 
-#include "SGCore/Memory/Assets/ShaderAsset.h"
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Main/CoreMain.h"
 
 SGCore::LineGizmo::LineGizmo() noexcept
 {
-    m_meshData = std::shared_ptr<IMeshData>(CoreMain::getRenderer().createMeshData());
+    m_meshData = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
 
     m_meshData->m_useIndices = false;
 

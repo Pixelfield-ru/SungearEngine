@@ -56,7 +56,7 @@ void SGCore::GL4Renderer::init() noexcept
 
     // TODO: make defines for uniforms names
 
-    m_viewMatricesBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
+    m_viewMatricesBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
     m_viewMatricesBuffer->m_blockName = "ViewMatrices";
     m_viewMatricesBuffer->putUniforms({
         IShaderUniform("projectionMatrix", SGGDataType::SGG_MAT4),
@@ -69,7 +69,7 @@ void SGCore::GL4Renderer::init() noexcept
     m_viewMatricesBuffer->setLayoutLocation(1);
     m_viewMatricesBuffer->prepare();
 
-    m_programDataBuffer = std::shared_ptr<GL4UniformBuffer>(createUniformBuffer());
+    m_programDataBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
     m_programDataBuffer->m_blockName = "ProgramData";
     m_programDataBuffer->putUniforms({
                                              IShaderUniform("windowSize", SGGDataType::SGG_MAT4)
@@ -145,8 +145,8 @@ void SGCore::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void SGCore::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<IRenderingComponent>& renderingComponent,
-                                                        const std::shared_ptr<Transform>& transformComponent)
+void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<IRenderingComponent>& renderingComponent,
+                                                        const Ref<Transform>& transformComponent)
 {
     m_viewMatricesBuffer->bind();
     m_programDataBuffer->bind();
@@ -172,7 +172,7 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const std::shared_ptr<IRendering
     m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
 }
 
-void SGCore::GL4Renderer::renderMeshData(const std::shared_ptr<IMeshData>& meshData,
+void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
                                                  const MeshDataRenderInfo& meshDataRenderInfo)
 {
     if(meshDataRenderInfo.m_enableFacesCulling)
@@ -291,9 +291,9 @@ void SGCore::GL4Renderer::setDepthTestingEnabled(const bool& enabled) const noex
     }
 }
 
-const std::shared_ptr<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept
+const SGCore::Ref<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept
 {
-    static std::shared_ptr<GL4Renderer> s_instancePointer(new GL4Renderer);
+    static Ref<GL4Renderer> s_instancePointer(new GL4Renderer);
     s_instancePointer->m_apiType = SG_API_TYPE_GL4;
 
     return s_instancePointer;

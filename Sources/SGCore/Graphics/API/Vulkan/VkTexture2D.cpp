@@ -9,7 +9,7 @@ SGCore::VkTexture2D::~VkTexture2D() noexcept
     destroy();
 }
 
-void SGCore::VkTexture2D::create(std::weak_ptr<Texture2DAsset>) noexcept
+void SGCore::VkTexture2D::create(Weak<Texture2DAsset>) noexcept
 {
 
 }
@@ -44,7 +44,7 @@ void SGCore::VkTexture2D::bind(const uint8_t& textureUnit) noexcept
 
 }
 
-SGCore::VkTexture2D& SGCore::VkTexture2D::operator=(const std::shared_ptr<ITexture2D>& other)
+SGCore::VkTexture2D& SGCore::VkTexture2D::operator=(const Ref<ITexture2D>& other)
 {
     return *this;
 }

@@ -34,8 +34,8 @@ namespace SGCore
 
 
         // frame buffer with depth attachment
-        std::shared_ptr<IFrameBuffer> m_frameBuffer =
-                std::shared_ptr<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
+        Ref<IFrameBuffer> m_frameBuffer =
+                Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                 ->create()
                 ->setSize(1024 * 2, 1024 * 2)
                 ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,

@@ -11,7 +11,7 @@ SGCore::Camera::Camera()
 {
     m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
 
-    m_postProcessQuad = std::shared_ptr<IMeshData>(CoreMain::getRenderer().createMeshData());
+    m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
 
     m_postProcessQuad->m_indices.push_back(0);
     m_postProcessQuad->m_indices.push_back(2);
@@ -29,7 +29,7 @@ SGCore::Camera::Camera()
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
     m_defaultLayersFrameBuffer =
-            std::shared_ptr<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
+            Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
@@ -54,7 +54,7 @@ SGCore::Camera::Camera()
     // m_defaultLayersFrameBuffer->m_bgColor.a = 0.0;
 
     m_finalFrameBuffer =
-            std::shared_ptr<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
+            Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
@@ -71,7 +71,7 @@ SGCore::Camera::Camera()
 
     // ----------------------------------------
 
-    m_finalPostProcessOverlayShader = std::shared_ptr<IShader>(
+    m_finalPostProcessOverlayShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PostProcessing"]["FinalOverlayShader"]
             )
@@ -83,7 +83,7 @@ SGCore::Camera::Camera()
 
     // -----------------------------------------
 
-    m_defaultPostProcessShader = std::shared_ptr<IShader>(
+    m_defaultPostProcessShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PostProcessing"]["DefaultLayerShader"]
             )
@@ -95,7 +95,7 @@ SGCore::Camera::Camera()
 }
 
 void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
-                                            const std::shared_ptr<Layer>& layer,
+                                            const Ref<Layer>& layer,
                                             const std::uint16_t& fbWidth,
                                             const std::uint16_t& fbHeight)
 {
@@ -120,7 +120,7 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
     newPPLayer.m_index = m_postProcessLayers.size();
 
     newPPLayer.m_name = ppLayerName;
-    newPPLayer.m_frameBuffer = std::shared_ptr<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
+    newPPLayer.m_frameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
             ->create()
             ->setSize(fbWidth, fbHeight)
             ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
@@ -142,7 +142,7 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
             )
             ->unbind();
 
-    newPPLayer.m_shader = std::shared_ptr<IShader>(
+    newPPLayer.m_shader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PostProcessing"]["DefaultLayerShader"]
             )
@@ -189,7 +189,7 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
 }
 
 void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
-                                            const std::shared_ptr<Layer>& layer)
+                                            const Ref<Layer>& layer)
 {
     int primaryMonitorWidth;
     int primaryMonitorHeight;
@@ -199,8 +199,8 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
     addPostProcessLayer(ppLayerName, layer, primaryMonitorWidth, primaryMonitorHeight);
 }
 
-void SGCore::Camera::setPostProcessLayerShader(const std::shared_ptr<Layer>& layer,
-                                                  const std::shared_ptr<IShader>& shader) noexcept
+void SGCore::Camera::setPostProcessLayerShader(const Ref<Layer>& layer,
+                                                  const Ref<IShader>& shader) noexcept
 {
     if(m_postProcessLayers.find(layer) == m_postProcessLayers.end())
     {
@@ -234,8 +234,8 @@ void SGCore::Camera::bindPostProcessLayers() noexcept
     }
 }
 
-std::shared_ptr<SGCore::IFrameBuffer>
-SGCore::Camera::getPostProcessLayerFrameBuffer(const std::shared_ptr<Layer>& layer) noexcept
+SGCore::Ref<SGCore::IFrameBuffer>
+SGCore::Camera::getPostProcessLayerFrameBuffer(const Ref<Layer>& layer) noexcept
 {
     const auto& foundPPLayer = m_postProcessLayers.find(layer);
 

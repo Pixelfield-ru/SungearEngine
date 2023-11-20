@@ -4,7 +4,7 @@
 
 /*SGCore::IMesh::IMesh() noexcept
 {
-    m_material = std::shared_ptr<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createPBRMaterial());
+    m_material = Ref<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createPBRMaterial());
 }*/
 
 void SGCore::IMeshData::setVertexPosition
@@ -69,13 +69,13 @@ void SGCore::IMeshData::getFaceIndices(const std::uint64_t& faceIdx, std::uint64
     outIdx2 = m_indices[faceIdx * 3 + 2];
 }
 
-std::shared_ptr<SGCore::IVertexArray> SGCore::IMeshData::getVertexArray() noexcept
+SGCore::Ref<SGCore::IVertexArray> SGCore::IMeshData::getVertexArray() noexcept
 {
     return m_vertexArray;
 }
 
 void SGCore::IMeshData::migrateAndSetNewMaterial
-(const std::shared_ptr<IMaterial>& newMaterial) noexcept
+(const Ref<IMaterial>& newMaterial) noexcept
 {
     m_material->copyTextures(newMaterial);
     m_material = newMaterial;

@@ -20,9 +20,9 @@ namespace SGCore
         SG_DECLARE_SINGLETON(TransformationsUpdater)
 
     public:
-        void fixedUpdate(const std::shared_ptr<Scene>& scene) final;
+        void fixedUpdate(const Ref<Scene>& scene) final;
 
-        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
+        void cacheEntity(const Ref<Entity>& entity) final;
     };
 }
 

@@ -91,18 +91,18 @@ void SGCore::Timer::firstTimeStart()
     m_startTime = glfwGetTime();
     //m_current = m_startTime;
 
-    for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
+    for(const Ref<TimerCallback>& callback : m_callbacks)
     {
         callback->callStartFunction();
     }
 }
 
-void SGCore::Timer::addCallback(std::shared_ptr<TimerCallback> callback)
+void SGCore::Timer::addCallback(Ref<TimerCallback> callback)
 {
     m_callbacks.push_back(std::move(callback));
 }
 
-void SGCore::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
+void SGCore::Timer::removeCallback(const Ref<TimerCallback>& callback)
 {
     m_callbacks.remove(callback);
 }

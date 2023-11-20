@@ -11,33 +11,34 @@
 #include <memory>
 
 #include "IVertexAttribute.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
     class IVertexBufferLayout : public std::enable_shared_from_this<IVertexBufferLayout>
     {
     protected:
-        std::list<std::shared_ptr<IVertexAttribute>> m_attributes;
+        std::list<Ref<IVertexAttribute>> m_attributes;
 
     public:
         virtual ~IVertexBufferLayout() = default;
 
         // prepare vertex buffer layout before enable attributes
-        virtual std::shared_ptr<IVertexBufferLayout> prepare() = 0;
+        virtual Ref<IVertexBufferLayout> prepare() = 0;
 
-        virtual std::shared_ptr<IVertexBufferLayout> reset() = 0;
+        virtual Ref<IVertexBufferLayout> reset() = 0;
 
         // create new vertex attribute
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType) = 0;
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) = 0;
 
         // enable attributes (GRAPHICS API SIDE)
-        virtual std::shared_ptr<IVertexBufferLayout> enableAttribute(const std::shared_ptr<IVertexAttribute>&) = 0;
-        virtual std::shared_ptr<IVertexBufferLayout> enableAttributes() = 0;
+        virtual Ref<IVertexBufferLayout> enableAttribute(const Ref<IVertexAttribute>&) = 0;
+        virtual Ref<IVertexBufferLayout> enableAttributes() = 0;
 
         // put attribute
-        virtual std::shared_ptr<IVertexBufferLayout> addAttribute(std::shared_ptr<IVertexAttribute>) noexcept;
-        virtual void removeAttribute(const std::shared_ptr<IVertexAttribute>&) noexcept;
+        virtual Ref<IVertexBufferLayout> addAttribute(Ref<IVertexAttribute>) noexcept;
+        virtual void removeAttribute(const Ref<IVertexAttribute>&) noexcept;
     };
 }
 

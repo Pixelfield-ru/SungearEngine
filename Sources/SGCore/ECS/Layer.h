@@ -36,7 +36,7 @@ namespace SGCore
 
     struct LayersComparator
     {
-        bool operator()(const std::shared_ptr<Layer>& l0, const std::shared_ptr<Layer>& l1) const
+        bool operator()(const Ref<Layer>& l0, const Ref<Layer>& l1) const
         {
             return l0->m_index > l1->m_index;
         }

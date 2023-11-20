@@ -8,7 +8,7 @@
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/ECSWorld.h"
 
-void SGCore::ShadowsCastersCollector::cacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::ShadowsCastersCollector::cacheEntity(const Ref<Entity>& entity)
 {
     cacheEntityComponents<ShadowsCaster, Transform>(entity);
 }

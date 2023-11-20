@@ -19,14 +19,14 @@ namespace SGCore
         PBRForwardRenderPipeline();
 
     private:
-        void updateUniforms(const std::shared_ptr<IShader>& shader,
-                            const std::shared_ptr<IMaterial>& material,
-                            const std::shared_ptr<Transform>& transformComponent) const noexcept;
+        void updateUniforms(const Ref<IShader>& shader,
+                            const Ref<IMaterial>& material,
+                            const Ref<Transform>& transformComponent) const noexcept;
 
     public:
-        void update(const std::shared_ptr<Scene>& scene) final;
+        void update(const Ref<Scene>& scene) final;
 
-        void cacheEntity(const std::shared_ptr<Entity>& entity) final;
+        void cacheEntity(const Ref<Entity>& entity) final;
     };
 }
 

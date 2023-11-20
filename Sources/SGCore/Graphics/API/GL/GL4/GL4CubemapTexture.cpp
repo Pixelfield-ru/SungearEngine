@@ -6,7 +6,7 @@
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 
 // todo: impl 
-void SGCore::GL4CubemapTexture::create(std::weak_ptr<CubemapAsset> cubemapAsset)
+void SGCore::GL4CubemapTexture::create(Weak<CubemapAsset> cubemapAsset)
 {
     auto thisWeak = weak_from_this();
 
@@ -68,7 +68,7 @@ void SGCore::GL4CubemapTexture::bind(const uint8_t& textureUnit)
 }
 
 SGCore::GL4CubemapTexture&
-SGCore::GL4CubemapTexture::operator=(const std::shared_ptr<ITexture2D>& other)
+SGCore::GL4CubemapTexture::operator=(const Ref<ITexture2D>& other)
 {
     return *this;
 }

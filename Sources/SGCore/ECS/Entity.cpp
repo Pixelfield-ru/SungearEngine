@@ -9,7 +9,7 @@
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
 
-void SGCore::Entity::addComponent(const std::shared_ptr<IComponent>& component) noexcept
+void SGCore::Entity::addComponent(const Ref<IComponent>& component) noexcept
 {
     m_components.push_back(component);
 
@@ -17,7 +17,7 @@ void SGCore::Entity::addComponent(const std::shared_ptr<IComponent>& component) 
     ECSWorld::recacheEntity(shared_from_this());
 }
 
-std::shared_ptr<SGCore::Layer> SGCore::Entity::getLayer() const noexcept
+SGCore::Ref<SGCore::Layer> SGCore::Entity::getLayer() const noexcept
 {
     return m_layer.lock();
 }

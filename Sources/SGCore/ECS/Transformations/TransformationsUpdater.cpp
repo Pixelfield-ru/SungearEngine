@@ -20,7 +20,7 @@ double accum = 0.0;
 size_t fps = 0;*/
 
 void SGCore::TransformationsUpdater::fixedUpdate
-(const std::shared_ptr<Scene>& scene)
+(const Ref<Scene>& scene)
 {
     SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
         auto transformComponent = cachedEntity->getComponent<Transform>();
@@ -131,7 +131,7 @@ void SGCore::TransformationsUpdater::fixedUpdate
     double t1 = glfwGetTime();
 }
 
-void SGCore::TransformationsUpdater::cacheEntity(const std::shared_ptr<Entity>& entity)
+void SGCore::TransformationsUpdater::cacheEntity(const Ref<Entity>& entity)
 {
     cacheEntityComponents<Transform>(entity);
 }

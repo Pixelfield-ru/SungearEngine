@@ -14,13 +14,13 @@ namespace SGCore
     class ComponentsCollection
     {
     private:
-        std::vector<std::shared_ptr<IComponent>> m_components;
+        std::vector<Ref<IComponent>> m_components;
     public:
         ComponentsCollection() = default;
 
         void clear() noexcept;
 
-        void addComponent(const std::shared_ptr<IComponent>&) noexcept;
+        void addComponent(const Ref<IComponent>&) noexcept;
 
         /**
          * Finds the first component of type ComponentT.
@@ -29,7 +29,7 @@ namespace SGCore
          */
         template<typename ComponentT>
         requires(std::is_base_of_v<IComponent, ComponentT>)
-        std::shared_ptr<ComponentT> getComponent()
+        Ref<ComponentT> getComponent()
         {
             for(auto& component : m_components)
             {
@@ -49,9 +49,9 @@ namespace SGCore
          */
         template<typename ComponentT>
         requires(std::is_base_of_v<IComponent, ComponentT>)
-        std::list<std::shared_ptr<ComponentT>> getComponents()
+        std::list<Ref<ComponentT>> getComponents()
         {
-            std::list<std::shared_ptr<ComponentT>> foundComponents;
+            std::list<Ref<ComponentT>> foundComponents;
 
             for(auto& component : m_components)
             {

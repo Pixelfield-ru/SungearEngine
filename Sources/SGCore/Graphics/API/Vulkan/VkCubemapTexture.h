@@ -13,12 +13,12 @@ namespace SGCore
     class VkCubemapTexture : public ICubemapTexture
     {
     public:
-        void create(std::weak_ptr<CubemapAsset> cubemapAsset) override;
+        void create(Weak<CubemapAsset> cubemapAsset) override;
         void destroy() override;
 
         void bind(const std::uint8_t& textureUnit) override;
 
-        VkCubemapTexture& operator=(const std::shared_ptr<ITexture2D>& other) override;
+        VkCubemapTexture& operator=(const Ref<ITexture2D>& other) override;
     };
 }
 
