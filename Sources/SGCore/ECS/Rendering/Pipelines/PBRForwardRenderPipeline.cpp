@@ -56,6 +56,27 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
             false
     );
 
+    struct A
+    {
+        size_t d = 0;
+
+        virtual void m() { }
+    };
+
+    struct D
+    {
+        D(A&&)
+        {
+
+        }
+    };
+
+    A a;
+
+    auto&& ra = std::move(a);
+
+    Ref<D> r = MakeRef<D>(a);
+
     m_geometryPassShaderMarkup.calculateBlocksOffsets();
 
     // ---------------------
