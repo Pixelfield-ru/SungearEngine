@@ -21,6 +21,11 @@
 
 namespace SGCore
 {
+    struct LayerCachedEntities
+    {
+        std::unordered_map<Ref<Entity>, ComponentsCollection> m_cachedEntities;
+    };
+
     class ISystem
     {
         friend class ECSWorld;
@@ -64,23 +69,21 @@ namespace SGCore
             // if not exists that we wil not cache components of this entity
             if(!componentsSetExistsInEntity) return;
 
-            auto& foundComponentsCollection = m_cachedEntities[entityLayer][entity];
-            foundComponentsCollection = !foundComponentsCollection ?
-                                        MakeRef<ComponentsCollection>() : foundComponentsCollection;
+            auto& foundComponentsCollection = m_cachedEntities[entityLayer].m_cachedEntities[entity];
 
             Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection, &willCacheComponentPredicate](auto t)
                                                    {
                                                        using type = typename decltype(t)::type;
 
                                                        // if component already exists in components collection then we wont cache
-                                                       if (!foundComponentsCollection->getComponent<type>())
+                                                       if (!foundComponentsCollection.getComponent<type>())
                                                        {
                                                            auto entityComponentsList = entity->getComponents<type>();
                                                            for (const auto& component : entityComponentsList)
                                                            {
                                                                if(willCacheComponentPredicate(component))
                                                                {
-                                                                   foundComponentsCollection->addComponent(component);
+                                                                   foundComponentsCollection.addComponent(component);
                                                                }
                                                            }
                                                        }
@@ -114,7 +117,7 @@ namespace SGCore
             cacheEntityComponents<ComponentsT...>(entity, []() { return true; }, [](const Ref<IComponent>& component) { return true; });
         }
 
-        const auto& getCachedEntities() const noexcept
+        auto& getCachedEntities() noexcept
         {
             return m_cachedEntities;
         }
@@ -143,7 +146,7 @@ namespace SGCore
         std::unordered_map<std::string, std::function<bool()>> m_fixedUpdateFunctionsQuery;
         std::unordered_map<std::string, std::function<bool()>> m_updateFunctionsQuery;
 
-        std::map<Ref<Layer>, std::unordered_map<Ref<Entity>, Ref<ComponentsCollection>>, LayersComparator> m_cachedEntities;
+        std::map<Ref<Layer>, LayerCachedEntities, LayersComparator> m_cachedEntities;
     };
 }
 

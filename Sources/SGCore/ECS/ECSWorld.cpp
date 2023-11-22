@@ -148,13 +148,10 @@ void SGCore::ECSWorld::recacheEntity(const Ref<Entity>& entity)
         const auto& foundLayerIter = system->m_cachedEntities.find(entityLayer);
         if(foundLayerIter != system->m_cachedEntities.cend())
         {
-            const auto& foundEntityIter = foundLayerIter->second.find(entity);
-            if(foundEntityIter != foundLayerIter->second.cend())
+            const auto& foundEntityIter = foundLayerIter->second.m_cachedEntities.find(entity);
+            if(foundEntityIter != foundLayerIter->second.m_cachedEntities.cend())
             {
-                if(foundEntityIter->second)
-                {
-                    foundEntityIter->second->clear();
-                }
+                foundEntityIter->second.clear();
             }
         }
 
