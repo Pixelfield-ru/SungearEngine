@@ -12,11 +12,15 @@
 #include "SGCore/Utils/Math.h"
 #include "SGCore/ECS/ECSWorld.h"
 
-// todo: optimize
+SGCore::CameraMovement3DSystem::CameraMovement3DSystem()
+{
+    m_componentsCollector.configureCachingFunction<Camera, Transform>();
+}
+
 void SGCore::CameraMovement3DSystem::fixedUpdate
 (const Ref<Scene>& scene)
 {
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, layer, cachedEntity)
         Ref<Camera> cameraComponent = cachedEntity.getComponent<Camera>();
         Ref<Transform> transformComponent = cachedEntity.getComponent<Transform>();
 
@@ -92,9 +96,4 @@ void SGCore::CameraMovement3DSystem::fixedUpdate
                     !CoreMain::getWindow().isHideAndCentralizeCursor());
         }
     SG_END_ITERATE_CACHED_ENTITIES
-}
-
-void SGCore::CameraMovement3DSystem::cacheEntity(const Ref<Entity>& entity)
-{
-    cacheEntityComponents<Camera, Transform>(entity);
 }

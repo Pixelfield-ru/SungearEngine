@@ -9,46 +9,51 @@
 
 // todo: make optimization
 
+SGCore::GizmosMeshesRebuilder::GizmosMeshesRebuilder()
+{
+    m_componentsCollector.configureCachingFunction<IGizmo, Transform>();
+}
+
 void SGCore::GizmosMeshesRebuilder::fixedUpdate(const Ref<Scene>& scene)
 {
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, layer, cachedEntity)
         auto transformComponent = cachedEntity.getComponent<Transform>();
         if(!transformComponent) continue;
-        auto primitiveComponents = cachedEntity.getComponents<IGizmo>();
+        auto gizmoComponents = cachedEntity.getComponents<IGizmo>();
 
-        for(const auto& primitiveComponent: primitiveComponents)
+        for(const auto& gizmoComponent : gizmoComponents)
         {
             // if follow all
-            if(primitiveComponent->m_followEntityTRS.x &&
-               primitiveComponent->m_followEntityTRS.y &&
-               primitiveComponent->m_followEntityTRS.z)
+            if(gizmoComponent->m_followEntityTRS.x &&
+               gizmoComponent->m_followEntityTRS.y &&
+               gizmoComponent->m_followEntityTRS.z)
             {
-                primitiveComponent->m_modelMatrix = transformComponent->m_modelMatrix;
+                gizmoComponent->m_modelMatrix = transformComponent->m_modelMatrix;
             }
             else
             {
-                primitiveComponent->m_modelMatrix = glm::identity<glm::mat4>();
+                gizmoComponent->m_modelMatrix = glm::identity<glm::mat4>();
 
                 // if follow translation
-                if(primitiveComponent->m_followEntityTRS.x)
+                if(gizmoComponent->m_followEntityTRS.x)
                 {
-                    primitiveComponent->m_modelMatrix *= transformComponent->m_translationMatrix;
+                    gizmoComponent->m_modelMatrix *= transformComponent->m_translationMatrix;
                 }
                 // if follow rotation
-                if(primitiveComponent->m_followEntityTRS.y)
+                if(gizmoComponent->m_followEntityTRS.y)
                 {
-                    primitiveComponent->m_modelMatrix *= transformComponent->m_rotationMatrix;
+                    gizmoComponent->m_modelMatrix *= transformComponent->m_rotationMatrix;
                 }
                 // if follow scale
-                if(primitiveComponent->m_followEntityTRS.z)
+                if(gizmoComponent->m_followEntityTRS.z)
                 {
-                    primitiveComponent->m_modelMatrix *= transformComponent->m_scaleMatrix;
+                    gizmoComponent->m_modelMatrix *= transformComponent->m_scaleMatrix;
                 }
             }
 
             // ------------------- individual for every primitive component
 
-            auto sphereComponent = std::dynamic_pointer_cast<SphereGizmo>(primitiveComponent);
+            auto sphereComponent = std::dynamic_pointer_cast<SphereGizmo>(gizmoComponent);
 
             if(sphereComponent != nullptr)
             {
@@ -163,7 +168,7 @@ void SGCore::GizmosMeshesRebuilder::fixedUpdate(const Ref<Scene>& scene)
             }
             else
             {
-                auto boxComponent = std::dynamic_pointer_cast<BoxGizmo>(primitiveComponent);
+                auto boxComponent = std::dynamic_pointer_cast<BoxGizmo>(gizmoComponent);
 
                 if(boxComponent)
                 {

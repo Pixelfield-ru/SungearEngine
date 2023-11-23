@@ -11,10 +11,9 @@ namespace SGCore
 {
     class ShadowsCastersCollector : public ISystem
     {
-        SG_DECLARE_SINGLETON(ShadowsCastersCollector)
-
-    public:
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(ShadowsCastersCollector)
+        SG_COPY_SINGLETON(ShadowsCastersCollector)
+        SG_MOVE_SINGLETON(ShadowsCastersCollector)
     };
 }
 

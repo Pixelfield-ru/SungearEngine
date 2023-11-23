@@ -15,14 +15,13 @@ namespace SGCore
 
     class Transform;
 
-    class TransformationsUpdater : public ISystem
+    struct TransformationsUpdater : public ISystem
     {
-        SG_DECLARE_SINGLETON(TransformationsUpdater)
-
-    public:
         void fixedUpdate(const Ref<Scene>& scene) final;
 
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(TransformationsUpdater)
+        SG_COPY_SINGLETON(TransformationsUpdater)
+        SG_MOVE_SINGLETON(TransformationsUpdater)
     };
 }
 

@@ -6,7 +6,7 @@
 #include "IComplexGizmo.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 
-void SGCore::ComplexGizmosCollector::cacheEntity(const Ref<Entity>& entity)
+SGCore::ComplexGizmosCollector::ComplexGizmosCollector()
 {
-    cacheEntityComponents<IComplexGizmo, Transform>(entity);
+    m_componentsCollector.configureCachingFunction<IComplexGizmo, Transform>();
 }

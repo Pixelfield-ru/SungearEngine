@@ -9,10 +9,11 @@
 
 namespace SGCore
 {
-    class SkyboxesCollector : public ISystem
+    struct SkyboxesCollector : public ISystem
     {
-    public:
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(SkyboxesCollector)
+        SG_COPY_SINGLETON(SkyboxesCollector)
+        SG_MOVE_SINGLETON(SkyboxesCollector)
     };
 }
 

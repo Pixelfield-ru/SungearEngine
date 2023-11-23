@@ -23,6 +23,8 @@
 
 SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
+    m_componentsCollector.configureCachingFunction<Camera, Transform>();
+
     m_geometryPassShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
@@ -111,25 +113,24 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 {
     auto transformationsSystem = SGSingleton::getSharedPtrInstance<TransformationsUpdater>();
 
-    auto& meshedCachedEntities = SGSingleton::getSharedPtrInstance<MeshesCollector>()->getCachedEntities();
-    auto& primitivesCachedEntities = SGSingleton::getSharedPtrInstance<GizmosMeshesRebuilder>()->getCachedEntities();
+    auto& meshedCachedEntities = SGSingleton::getSharedPtrInstance<MeshesCollector>()->m_componentsCollector.m_cachedEntities;
 
-    auto& directionalLightsCachedEntities = SGSingleton::getSharedPtrInstance<DirectionalLightsCollector>()->getCachedEntities();
-    auto& shadowsCastersCachedEntities = SGSingleton::getSharedPtrInstance<ShadowsCastersCollector>()->getCachedEntities();
+    auto& directionalLightsCachedEntities = SGSingleton::getSharedPtrInstance<DirectionalLightsCollector>()->m_componentsCollector.m_cachedEntities;
+    auto& shadowsCastersCachedEntities = SGSingleton::getSharedPtrInstance<ShadowsCastersCollector>()->m_componentsCollector.m_cachedEntities;
 
-    auto& skyboxesCachedEntities = SGSingleton::getSharedPtrInstance<SkyboxesCollector>()->getCachedEntities();
+    auto& skyboxesCachedEntities = SGSingleton::getSharedPtrInstance<SkyboxesCollector>()->m_componentsCollector.m_cachedEntities;
 
-    auto& linesCachedEntities = SGSingleton::getSharedPtrInstance<LinesGizmosCollector>()->getCachedEntities();
+    auto& linesCachedEntities = SGSingleton::getSharedPtrInstance<LinesGizmosCollector>()->m_componentsCollector.m_cachedEntities;
     auto& complexGizmoCachedEntities =
-            SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>()->getCachedEntities();
+            SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>()->m_componentsCollector.m_cachedEntities;
 
-    if(meshedCachedEntities.empty() && primitivesCachedEntities.empty() && skyboxesCachedEntities.empty()) return;
+    if(meshedCachedEntities.empty() && complexGizmoCachedEntities.empty() && linesCachedEntities.empty() && skyboxesCachedEntities.empty()) return;
 
     // first render skybox
     m_skyboxPassShader->bind();
     m_skyboxPassShader->useShaderMarkup(m_skyboxPassShaderMarkup);
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, camerasLayer, cameraEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, camerasLayer, cameraEntity)
             Ref<Camera> cameraComponent = cameraEntity.getComponent<Camera>();
             Ref<Transform> cameraTransformComponent = cameraEntity.getComponent<Transform>();
 
@@ -311,7 +312,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
     // ----- render meshes and primitives (geometry + light pass pbr) ------
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, camerasLayer, cameraEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, camerasLayer, cameraEntity)
             Ref<Transform> cameraTransformComponent = cameraEntity.getComponent<Transform>();
             if(!cameraTransformComponent) continue;
             Ref<Camera> cameraComponent = cameraEntity.getComponent<Camera>();
@@ -563,11 +564,6 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
 
     // --------------------------------
-}
-
-void SGCore::PBRForwardRenderPipeline::cacheEntity(const Ref<Entity>& entity)
-{
-    cacheEntityComponents<Camera, Transform>(entity);
 }
 
 void SGCore::PBRForwardRenderPipeline::updateUniforms(const Ref<IShader>& shader,

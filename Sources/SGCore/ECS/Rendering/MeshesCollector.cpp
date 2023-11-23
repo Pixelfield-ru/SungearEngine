@@ -8,17 +8,21 @@
 #include "Skybox.h"
 #include "SGCore/ECS/Rendering/Gizmos/IGizmo.h"
 
-void SGCore::MeshesCollector::cacheEntity(const Ref<Entity>& entity)
+SGCore::MeshesCollector::MeshesCollector()
 {
-    cacheEntityComponents<Mesh, Transform>(entity, [&entity]() {
-        if(entity->getComponent<Skybox>())
-        {
-            return false;
-        }
+    m_componentsCollector.configureCachingFunction<Mesh, Transform>([](const Ref<Entity>& entity)
+                                                                    {
+                                                                        if(entity->getComponent<Skybox>())
+                                                                        {
+                                                                            return false;
+                                                                        }
 
-        return true;
-    }, [](const Ref<IComponent>& component){
-        // we wont cache mesh component if it is gizmo, because gizmo renderings in different way
-        return !SG_INSTANCEOF(component.get(), IGizmo);
-    });
+                                                                        return true;
+                                                                    }, [](const Ref<Entity>& entity,
+                                                                          const Ref<IComponent>& component)
+                                                                    {
+                                                                        // we wont cache mesh component if it is gizmo, because gizmo renderings in different way
+                                                                        return !SG_INSTANCEOF(component.get(), IGizmo);
+                                                                    }
+    );
 }

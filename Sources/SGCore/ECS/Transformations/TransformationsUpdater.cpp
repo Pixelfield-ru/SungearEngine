@@ -19,10 +19,15 @@
 double accum = 0.0;
 size_t fps = 0;*/
 
+SGCore::TransformationsUpdater::TransformationsUpdater()
+{
+    m_componentsCollector.configureCachingFunction<Transform>();
+}
+
 void SGCore::TransformationsUpdater::fixedUpdate
 (const Ref<Scene>& scene)
 {
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_cachedEntities, layer, cachedEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, layer, cachedEntity)
         auto transformComponent = cachedEntity.getComponent<Transform>();
 
         if(!transformComponent) continue;
@@ -129,9 +134,4 @@ void SGCore::TransformationsUpdater::fixedUpdate
     SG_END_ITERATE_CACHED_ENTITIES
 
     double t1 = glfwGetTime();
-}
-
-void SGCore::TransformationsUpdater::cacheEntity(const Ref<Entity>& entity)
-{
-    cacheEntityComponents<Transform>(entity);
 }

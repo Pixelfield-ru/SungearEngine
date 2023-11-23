@@ -144,9 +144,11 @@ void SGCore::ECSWorld::recacheEntity(const Ref<Entity>& entity)
     {
         if (!system->m_active) continue;
 
+        auto& componentsCollector = system->m_componentsCollector;
+
         // clearing all cached components for this entity
-        const auto& foundLayerIter = system->m_cachedEntities.find(entityLayer);
-        if(foundLayerIter != system->m_cachedEntities.cend())
+        const auto& foundLayerIter = componentsCollector.m_cachedEntities.find(entityLayer);
+        if(foundLayerIter != componentsCollector.m_cachedEntities.cend())
         {
             const auto& foundEntityIter = foundLayerIter->second.m_cachedEntities.find(entity);
             if(foundEntityIter != foundLayerIter->second.m_cachedEntities.cend())
@@ -155,7 +157,7 @@ void SGCore::ECSWorld::recacheEntity(const Ref<Entity>& entity)
             }
         }
 
-        system->cacheEntity(entity);
+        componentsCollector.cacheEntity(entity);
     }
 
     double t1 = glfwGetTime();

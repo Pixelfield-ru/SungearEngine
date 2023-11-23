@@ -9,14 +9,13 @@
 
 namespace SGCore
 {
-    class RenderingComponentsUpdater : public ISystem
+    struct RenderingComponentsUpdater : public ISystem
     {
-        SG_DECLARE_SINGLETON(RenderingComponentsUpdater)
-
-    public:
         void fixedUpdate(const Ref<Scene>& scene) final;
 
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(RenderingComponentsUpdater)
+        SG_COPY_SINGLETON(RenderingComponentsUpdater)
+        SG_MOVE_SINGLETON(RenderingComponentsUpdater)
     };
 }
 

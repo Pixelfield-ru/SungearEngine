@@ -10,12 +10,11 @@
 
 namespace SGCore
 {
-    class MeshesCollector : public ISystem
+    struct MeshesCollector : public ISystem
     {
-        SG_DECLARE_SINGLETON(MeshesCollector)
-
-    public:
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(MeshesCollector)
+        SG_COPY_SINGLETON(MeshesCollector)
+        SG_MOVE_SINGLETON(MeshesCollector)
     };
 }
 

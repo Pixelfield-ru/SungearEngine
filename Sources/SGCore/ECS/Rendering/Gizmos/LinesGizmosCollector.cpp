@@ -6,7 +6,7 @@
 #include "LineGizmo.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 
-void SGCore::LinesGizmosCollector::cacheEntity(const Ref<Entity>& entity)
+SGCore::LinesGizmosCollector::LinesGizmosCollector()
 {
-    cacheEntityComponents<LineGizmo, Transform>(entity);
+    m_componentsCollector.configureCachingFunction<LineGizmo, Transform>();
 }

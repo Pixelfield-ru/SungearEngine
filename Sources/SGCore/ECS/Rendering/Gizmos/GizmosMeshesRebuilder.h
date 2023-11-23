@@ -5,12 +5,13 @@
 
 namespace SGCore
 {
-    class GizmosMeshesRebuilder : public ISystem
+    struct GizmosMeshesRebuilder : public ISystem
     {
-        SG_DECLARE_SINGLETON(GizmosMeshesRebuilder)
-
-    public:
         void fixedUpdate(const Ref<Scene>& scene) final;
+
+        SG_CUSTOM_CTOR_SINGLETON(GizmosMeshesRebuilder)
+        SG_COPY_SINGLETON(GizmosMeshesRebuilder)
+        SG_MOVE_SINGLETON(GizmosMeshesRebuilder)
     };
 }
 

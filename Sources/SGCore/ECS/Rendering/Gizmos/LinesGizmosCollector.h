@@ -11,8 +11,9 @@ namespace SGCore
 {
     class LinesGizmosCollector : public ISystem
     {
-    public:
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(LinesGizmosCollector)
+        SG_COPY_SINGLETON(LinesGizmosCollector)
+        SG_MOVE_SINGLETON(LinesGizmosCollector)
     };
 }
 

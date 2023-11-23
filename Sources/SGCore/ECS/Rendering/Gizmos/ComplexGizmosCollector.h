@@ -11,8 +11,9 @@ namespace SGCore
 {
     class ComplexGizmosCollector : public ISystem
     {
-    public:
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(ComplexGizmosCollector)
+        SG_COPY_SINGLETON(ComplexGizmosCollector)
+        SG_MOVE_SINGLETON(ComplexGizmosCollector)
     };
 }
 

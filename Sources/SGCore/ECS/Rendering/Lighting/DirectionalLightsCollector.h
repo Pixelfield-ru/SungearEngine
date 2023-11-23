@@ -10,12 +10,11 @@
 
 namespace SGCore
 {
-    class DirectionalLightsCollector : public ISystem
+    struct DirectionalLightsCollector : public ISystem
     {
-        SG_DECLARE_SINGLETON(DirectionalLightsCollector)
-
-    public:
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(DirectionalLightsCollector)
+        SG_COPY_SINGLETON(DirectionalLightsCollector)
+        SG_MOVE_SINGLETON(DirectionalLightsCollector)
     };
 }
 

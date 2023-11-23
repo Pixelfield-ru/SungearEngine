@@ -7,18 +7,43 @@
 
 #include <memory>
 
-#define SG_DECLARE_SINGLETON(cls)                   \
-        friend struct ::SGSingleton;                \
-    protected:                                      \
-        cls() = default;                            \
-        cls(const cls&) = default;                  \
-        cls(cls&&) = default;
-
-#define SG_DECLARE_COPY_MOVE_SINGLETON(cls)             \
+#define SG_FULL_SINGLETON(cls)                          \
         friend struct ::SGSingleton;                    \
     protected:                                          \
+        cls() = default;                                \
         cls(const cls&) = default;                      \
-        cls(cls&&) = default;
+        cls(cls&&) noexcept = default;
+
+#define SG_CTOR_SINGLETON(cls)                          \
+        friend struct ::SGSingleton;                    \
+    protected:                                          \
+        cls(const cls&) = default;
+
+#define SG_COPY_SINGLETON(cls)                          \
+        friend struct ::SGSingleton;                    \
+    protected:                                          \
+        cls(const cls&) = default;
+
+#define SG_MOVE_SINGLETON(cls)                          \
+        friend struct ::SGSingleton;                    \
+    protected:                                          \
+        cls(cls&&) noexcept = default;
+
+#define SG_CUSTOM_CTOR_SINGLETON(cls)                   \
+        friend struct ::SGSingleton;                    \
+    protected:                                          \
+        cls();
+
+#define SG_CUSTOM_COPY_SINGLETON(cls)                   \
+        friend struct ::SGSingleton;                    \
+    protected:                                          \
+        cls(const cls&);
+
+#define SG_CUSTOM_MOVE_SINGLETON(cls)                   \
+        friend struct ::SGSingleton;                    \
+    protected:                                          \
+        cls(cls&&) noexcept;
+
 
 struct SGSingleton
 {

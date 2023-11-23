@@ -11,22 +11,18 @@ namespace SGCore
     class IMeshData;
     class IMaterial;
 
-    class PBRForwardRenderPipeline : public IRenderPipeline
+    struct PBRForwardRenderPipeline : public IRenderPipeline
     {
-        SG_DECLARE_COPY_MOVE_SINGLETON(PBRForwardRenderPipeline)
-
-    protected:
-        PBRForwardRenderPipeline();
+        void update(const Ref<Scene>& scene) final;
 
     private:
         void updateUniforms(const Ref<IShader>& shader,
                             const Ref<IMaterial>& material,
                             const Ref<Transform>& transformComponent) const noexcept;
 
-    public:
-        void update(const Ref<Scene>& scene) final;
-
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(PBRForwardRenderPipeline)
+        SG_COPY_SINGLETON(PBRForwardRenderPipeline)
+        SG_MOVE_SINGLETON(PBRForwardRenderPipeline)
     };
 }
 

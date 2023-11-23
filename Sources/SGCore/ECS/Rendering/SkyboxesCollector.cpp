@@ -8,7 +8,7 @@
 #include "Mesh.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 
-void SGCore::SkyboxesCollector::cacheEntity(const Ref<SGCore::Entity>& entity)
+SGCore::SkyboxesCollector::SkyboxesCollector()
 {
-    cacheEntityComponents<Skybox, Mesh, Transform>(entity);
+    m_componentsCollector.configureCachingFunction<Skybox, Mesh, Transform>();
 }

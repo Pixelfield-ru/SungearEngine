@@ -7,6 +7,7 @@
 
 #include "SGCore/ECS/ISystem.h"
 #include "SGCore/Graphics/API/ShaderMarkup.h"
+#include "RenderPass.h"
 
 namespace SGCore
 {
@@ -14,7 +15,6 @@ namespace SGCore
 
     struct IRenderPipeline : public ISystem
     {
-    public:
         Ref<IShader> m_shadowsPassShader;
         ShaderMarkup m_shadowsPassShaderMarkup;
 
@@ -30,6 +30,8 @@ namespace SGCore
         Ref<IShader> m_complexGizmosPassShader;
 
         // ------------------------------------
+
+        std::vector<RenderPass> m_renderPasses;
 
         // IPipelineSystem();
     };

@@ -1,4 +1,4 @@
-//
+    //
 // Created by stuka on 01.08.2023.
 //
 
@@ -11,7 +11,7 @@
 #include "GLFW/glfw3.h"
 #include "SGCore/ECS/Transformations/TransformationsUpdater.h"
 
-void SGCore::DirectionalLightsCollector::cacheEntity(const Ref<Entity>& entity)
+SGCore::DirectionalLightsCollector::DirectionalLightsCollector()
 {
-    cacheEntityComponents<DirectionalLight, Transform>(entity);
+    m_componentsCollector.configureCachingFunction<DirectionalLight, Transform>();
 }

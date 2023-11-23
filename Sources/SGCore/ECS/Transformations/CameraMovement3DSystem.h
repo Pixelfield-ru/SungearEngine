@@ -7,14 +7,13 @@
 
 namespace SGCore
 {
-    class CameraMovement3DSystem : public ISystem
+    struct CameraMovement3DSystem : public ISystem
     {
-        SG_DECLARE_SINGLETON(CameraMovement3DSystem)
-
-    public:
         void fixedUpdate(const Ref<Scene>& scene) final;
 
-        void cacheEntity(const Ref<Entity>& entity) final;
+        SG_CUSTOM_CTOR_SINGLETON(CameraMovement3DSystem)
+        SG_COPY_SINGLETON(CameraMovement3DSystem)
+        SG_MOVE_SINGLETON(CameraMovement3DSystem)
     };
 }
 

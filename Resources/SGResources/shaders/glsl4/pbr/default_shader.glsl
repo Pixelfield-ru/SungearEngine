@@ -216,7 +216,8 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
         const in vec4 shadowsCasterSpaceFragPos,
         const in vec3 fragPos,
         const in vec3 normal,
-        const in sampler2D shadowMap
+        const in sampler2D shadowMap,
+        const in int shadowsCasterIdx
     )
     {
         vec3 projCoords = shadowsCasterSpaceFragPos.xyz / shadowsCasterSpaceFragPos.w;
@@ -260,32 +261,31 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
         // PCSS ------------------
 
-        /*float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, fragPos, projCoords, shadowMap, texelSize, 0.4);
+        /*float pcssShadow = calculatePCSS(normal, shadowsCasterSpaceFragPos, fragPos, projCoords, shadowMap, shadowsCasterIdx, texelSize, 0.4);
 
         return pcssShadow;*/
 
         // -----------------------
 
-        const float shadowsMinCoeff = 0.55;
-        const int samplesNum = 16;
+            const float shadowsMinCoeff = 0.55;
+            const int samplesNum = 16;
 
-        float visibility = 1.0;
-        const float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
+            float visibility = 1.0;
+            const float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
 
-        float rand = random(projCoords.xy);
-        // rand = mad(rand, 2.0, -1.0);
-        float rotAngle = rand * PI;
-        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
+            float rand = random(projCoords.xy);
+            float rotAngle = rand * PI;
+            vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
 
-        for(int i = 0; i < samplesNum; i++)
-        {
-            if(texture(shadowMap, projCoords.xy + rotate(poissonDisk[i], rotTrig) / 750.0).z < projCoords.z - shadowsBias)
+            for(int i = 0; i < samplesNum; i++)
             {
-                visibility -= downstep;
+                if(texture(shadowMap, projCoords.xy + rotate(poissonDisk[i], rotTrig) / 750.0).z < projCoords.z - shadowsBias)
+                {
+                    visibility -= downstep;
+                }
             }
-        }
 
-        return visibility;
+            return visibility;
 
         // VSM (VARIANCE SHADOW MAPPING) -------------------
 
@@ -517,7 +517,8 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
                 shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
                 vsIn.fragPos,
                 normalMapColor,
-                sgmat_shadowMapSamplers[i]
+                sgmat_shadowMapSamplers[i],
+                i
             );
         }
     }

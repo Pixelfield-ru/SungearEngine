@@ -12,12 +12,12 @@
 #include <tsl/robin_map.h>
 #include <GLFW/glfw3.h>
 
-#define SG_BEGIN_ITERATE_CACHED_ENTITIES(cachedEntities, layerName, entityName)             \
-             for(auto& layerName ## Iter : cachedEntities)                                  \
-             {                                                                              \
-                auto& layerName = layerName ## Iter.second;                                 \
-                for(auto& entityName ## Iter : layerName ## Iter.second.m_cachedEntities)   \
-                {                                                                           \
+#define SG_BEGIN_ITERATE_CACHED_ENTITIES(cachedEntities, layerName, entityName)                         \
+             for(auto& layerName ## Iter : cachedEntities)                                              \
+             {                                                                                          \
+                auto& layerName = layerName ## Iter.second;                                             \
+                for(auto& entityName ## Iter : layerName ## Iter.second.m_cachedEntities)               \
+                {                                                                                       \
                     auto& entityName = entityName ## Iter.second;
 
 #define SG_END_ITERATE_CACHED_ENTITIES }}
