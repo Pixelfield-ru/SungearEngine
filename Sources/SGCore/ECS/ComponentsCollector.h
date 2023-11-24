@@ -16,10 +16,8 @@
 
 namespace SGCore
 {
-    struct LayerCachedEntities
-    {
-        std::unordered_map<Ref<Entity>, ComponentsCollection> m_cachedEntities;
-    };
+    using LayerCachedEntities = std::unordered_map<Ref<Entity>, ComponentsCollection>;
+    using CollectorCachedEntities = std::map<Ref<Layer>, LayerCachedEntities, LayersComparator>;
 
     struct ComponentsCollector
     {
@@ -28,7 +26,7 @@ namespace SGCore
         using WillComponentCachePredic = std::function<bool(const Ref<Entity>& entity, const Ref<IComponent>& component)>;
 
     public:
-        std::map<Ref<Layer>, LayerCachedEntities, LayersComparator> m_cachedEntities;
+        Ref<CollectorCachedEntities> m_cachedEntities = MakeRef<CollectorCachedEntities>();
 
         template<typename... ComponentsT>
         requires(std::is_base_of_v<IComponent, ComponentsT> && ...)
@@ -107,7 +105,7 @@ namespace SGCore
             // if not exists that we wil not cache components of this entity
             if(!componentsSetExistsInEntity) return;
 
-            auto& foundComponentsCollection = m_cachedEntities[entityLayer].m_cachedEntities[entity];
+            auto& foundComponentsCollection = (*m_cachedEntities)[entityLayer][entity];
 
             Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection, &willCacheComponentPredicate](auto t)
                                                    {

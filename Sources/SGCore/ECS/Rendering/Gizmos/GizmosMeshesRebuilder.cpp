@@ -16,7 +16,7 @@ SGCore::GizmosMeshesRebuilder::GizmosMeshesRebuilder()
 
 void SGCore::GizmosMeshesRebuilder::fixedUpdate(const Ref<Scene>& scene)
 {
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, layer, cachedEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, layer, cachedEntity)
         auto transformComponent = cachedEntity.getComponent<Transform>();
         if(!transformComponent) continue;
         auto gizmoComponents = cachedEntity.getComponents<IGizmo>();

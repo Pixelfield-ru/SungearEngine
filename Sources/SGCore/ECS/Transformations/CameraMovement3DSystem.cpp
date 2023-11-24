@@ -20,7 +20,7 @@ SGCore::CameraMovement3DSystem::CameraMovement3DSystem()
 void SGCore::CameraMovement3DSystem::fixedUpdate
 (const Ref<Scene>& scene)
 {
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, layer, cachedEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, layer, cachedEntity)
         Ref<Camera> cameraComponent = cachedEntity.getComponent<Camera>();
         Ref<Transform> transformComponent = cachedEntity.getComponent<Transform>();
 

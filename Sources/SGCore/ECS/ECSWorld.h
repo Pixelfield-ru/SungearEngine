@@ -16,7 +16,7 @@
              for(auto& layerName ## Iter : cachedEntities)                                              \
              {                                                                                          \
                 auto& layerName = layerName ## Iter.second;                                             \
-                for(auto& entityName ## Iter : layerName ## Iter.second.m_cachedEntities)               \
+                for(auto& entityName ## Iter : layerName)                                               \
                 {                                                                                       \
                     auto& entityName = entityName ## Iter.second;
 

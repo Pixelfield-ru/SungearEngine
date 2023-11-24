@@ -147,11 +147,11 @@ void SGCore::ECSWorld::recacheEntity(const Ref<Entity>& entity)
         auto& componentsCollector = system->m_componentsCollector;
 
         // clearing all cached components for this entity
-        const auto& foundLayerIter = componentsCollector.m_cachedEntities.find(entityLayer);
-        if(foundLayerIter != componentsCollector.m_cachedEntities.cend())
+        const auto& foundLayerIter = componentsCollector.m_cachedEntities->find(entityLayer);
+        if(foundLayerIter != componentsCollector.m_cachedEntities->cend())
         {
-            const auto& foundEntityIter = foundLayerIter->second.m_cachedEntities.find(entity);
-            if(foundEntityIter != foundLayerIter->second.m_cachedEntities.cend())
+            const auto& foundEntityIter = foundLayerIter->second.find(entity);
+            if(foundEntityIter != foundLayerIter->second.cend())
             {
                 foundEntityIter->second.clear();
             }

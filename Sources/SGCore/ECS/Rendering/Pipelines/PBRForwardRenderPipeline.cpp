@@ -25,56 +25,132 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
     m_componentsCollector.configureCachingFunction<Camera, Transform>();
 
-    m_geometryPassShader = Ref<IShader>(
-            CoreMain::getRenderer().createShader(
-                    ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
-            )
-    );
+    // configure render passes --------
 
-    m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
-            SGTextureType::SGTP_DIFFUSE,
-            sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
-            1
-    );
-    m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
-            SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
-            sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE_ROUGHNESS),
-            1
-    );
-    m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
-            SGTextureType::SGTP_NORMALS,
-            sgStandardTextureTypeToString(SGTextureType::SGTP_NORMALS),
-            1
-    );
-    m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
-            SGTextureType::SGTP_BASE_COLOR,
-            sgStandardTextureTypeToString(SGTextureType::SGTP_BASE_COLOR),
-            1
-    );
-    m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
-            SGTextureType::SGTP_SHADOW_MAP,
-            sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP),
-            5,
-            false
-    );
+    {
+        RenderPass shadowsPass;
 
-    m_geometryPassShaderMarkup.calculateBlocksOffsets();
+        shadowsPass.m_shader = Ref<IShader>(
+                CoreMain::getRenderer().createShader(
+                        ShadersPaths::getMainInstance()["ShadowsGeneration"]["DefaultShader"]
+                )
+        );
+
+        shadowsPass.m_shaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_DIFFUSE,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
+                1
+        );
+
+        shadowsPass.m_shaderMarkup.calculateBlocksOffsets();
+
+        shadowsPass.m_componentsToRender = SGSingleton::getSharedPtrInstance<MeshesCollector>()
+                ->m_componentsCollector.m_cachedEntities;
+        shadowsPass.m_componentsToRenderIn = SGSingleton::getSharedPtrInstance<ShadowsCastersCollector>()
+                ->m_componentsCollector.m_cachedEntities;
+
+        m_renderPasses.emplace_back(shadowsPass);
+    }
+
+    {
+        RenderPass geometryPass;
+
+        geometryPass.m_shader = Ref<IShader>(
+                CoreMain::getRenderer().createShader(
+                        ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
+                )
+        );
+        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_DIFFUSE,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
+                1
+        );
+        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE_ROUGHNESS),
+                1
+        );
+        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_NORMALS,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_NORMALS),
+                1
+        );
+        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_BASE_COLOR,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_BASE_COLOR),
+                1
+        );
+        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_SHADOW_MAP,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP),
+                5,
+                false
+        );
+
+        geometryPass.m_shaderMarkup.calculateBlocksOffsets();
+
+        geometryPass.m_componentsToRender = SGSingleton::getSharedPtrInstance<MeshesCollector>()->m_componentsCollector.m_cachedEntities;
+        geometryPass.m_componentsToRenderIn = m_componentsCollector.m_cachedEntities;
+
+        m_renderPasses.emplace_back(geometryPass);
+    }
+
+    // --------------------------------
+
+    {
+        m_geometryPassShader = Ref<IShader>(
+                CoreMain::getRenderer().createShader(
+                        ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
+                )
+        );
+
+        m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_DIFFUSE,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
+                1
+        );
+        m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE_ROUGHNESS),
+                1
+        );
+        m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_NORMALS,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_NORMALS),
+                1
+        );
+        m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_BASE_COLOR,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_BASE_COLOR),
+                1
+        );
+        m_geometryPassShaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_SHADOW_MAP,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP),
+                5,
+                false
+        );
+
+        m_geometryPassShaderMarkup.calculateBlocksOffsets();
+    }
 
     // ---------------------
 
-    m_shadowsPassShader = Ref<IShader>(
-            CoreMain::getRenderer().createShader(
-                    ShadersPaths::getMainInstance()["ShadowsGeneration"]["DefaultShader"]
-            )
-    );
+    {
+        m_shadowsPassShader = Ref<IShader>(
+                CoreMain::getRenderer().createShader(
+                        ShadersPaths::getMainInstance()["ShadowsGeneration"]["DefaultShader"]
+                )
+        );
 
-    m_shadowsPassShaderMarkup.addTexturesBlockDeclaration(
-            SGTextureType::SGTP_DIFFUSE,
-            sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
-            1
-    );
+        m_shadowsPassShaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_DIFFUSE,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
+                1
+        );
 
-    m_shadowsPassShaderMarkup.calculateBlocksOffsets();
+        m_shadowsPassShaderMarkup.calculateBlocksOffsets();
+    }
 
     // ---------------------
 
@@ -124,13 +200,16 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
     auto& complexGizmoCachedEntities =
             SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>()->m_componentsCollector.m_cachedEntities;
 
-    if(meshedCachedEntities.empty() && complexGizmoCachedEntities.empty() && linesCachedEntities.empty() && skyboxesCachedEntities.empty()) return;
+    if(meshedCachedEntities->empty() &&
+    complexGizmoCachedEntities->empty() &&
+    linesCachedEntities->empty() &&
+    skyboxesCachedEntities->empty()) return;
 
     // first render skybox
     m_skyboxPassShader->bind();
     m_skyboxPassShader->useShaderMarkup(m_skyboxPassShaderMarkup);
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, camerasLayer, cameraEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, camerasLayer, cameraEntity)
             Ref<Camera> cameraComponent = cameraEntity.getComponent<Camera>();
             Ref<Transform> cameraTransformComponent = cameraEntity.getComponent<Transform>();
 
@@ -143,7 +222,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
             Ref<IFrameBuffer> foundFrameBuffer;
             currentLayerFrameBuffer->bind()->clear();
 
-            for(auto& skyboxesLayerPair : skyboxesCachedEntities)
+            for(auto& skyboxesLayerPair : *skyboxesCachedEntities)
             {
                 foundFrameBuffer = cameraComponent->getPostProcessLayerFrameBuffer(skyboxesLayerPair.first);
                 // if pp layer exists
@@ -159,7 +238,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
                 currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
 
-                for(auto& skyboxEntityPair : skyboxesLayerPair.second.m_cachedEntities)
+                for(auto& skyboxEntityPair : skyboxesLayerPair.second)
                 {
                     auto& skyboxComponents = skyboxEntityPair.second;
 
@@ -198,7 +277,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
     size_t directionalLightsCount = 0;
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(directionalLightsCachedEntities, dirLightsLayer, directionalLightEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*directionalLightsCachedEntities, dirLightsLayer, directionalLightEntity)
             auto directionalLightComponents =
                     directionalLightEntity.getComponents<DirectionalLight>();
 
@@ -241,7 +320,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
     size_t shadowsCastersCount = 0;
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(shadowsCastersCachedEntities, shadowsCastersLayer, shadowsCasterEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*shadowsCastersCachedEntities, shadowsCastersLayer, shadowsCasterEntity)
             // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
             Ref<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity.getComponent<ShadowsCaster>();
             Ref<Transform> shadowsCasterTransform = shadowsCasterEntity.getComponent<Transform>();
@@ -274,7 +353,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
             CoreMain::getRenderer().prepareUniformBuffers(shadowsCasterComponent, nullptr);
             m_shadowsPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
-            SG_BEGIN_ITERATE_CACHED_ENTITIES(meshedCachedEntities, meshesLayer, meshesEntity)
+            SG_BEGIN_ITERATE_CACHED_ENTITIES(*meshedCachedEntities, meshesLayer, meshesEntity)
                     Ref<Transform> transformComponent = meshesEntity.getComponent<Transform>();
 
                     if(!transformComponent) continue;
@@ -312,7 +391,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
     // ----- render meshes and primitives (geometry + light pass pbr) ------
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, camerasLayer, cameraEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, camerasLayer, cameraEntity)
             Ref<Transform> cameraTransformComponent = cameraEntity.getComponent<Transform>();
             if(!cameraTransformComponent) continue;
             Ref<Camera> cameraComponent = cameraEntity.getComponent<Camera>();
@@ -328,7 +407,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
             Ref<IFrameBuffer> foundFrameBuffer;
             // todo: make less bindings
 
-            for(auto& meshesLayer: meshedCachedEntities)
+            for(auto& meshesLayer: *meshedCachedEntities)
             {
                 foundFrameBuffer = cameraComponent->getPostProcessLayerFrameBuffer(meshesLayer.first);
                 // if pp layer exists
@@ -344,7 +423,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
                 currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
 
-                for(auto& meshesEntity : meshesLayer.second.m_cachedEntities)
+                for(auto& meshesEntity : meshesLayer.second)
                 {
                     Ref<Transform> transformComponent = meshesEntity.second.getComponent<Transform>();
 
@@ -360,7 +439,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
                         std::uint8_t currentShadowsCaster = 0;
 
-                        SG_BEGIN_ITERATE_CACHED_ENTITIES(shadowsCastersCachedEntities, shadowsCastersLayer,
+                        SG_BEGIN_ITERATE_CACHED_ENTITIES(*shadowsCastersCachedEntities, shadowsCastersLayer,
                                                          shadowsCasterEntity)
                                 // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
                                 Ref<ShadowsCaster> shadowsCasterComponent = shadowsCasterEntity.getComponent<ShadowsCaster>();
@@ -397,7 +476,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
             currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
 
-            for(auto& cachedPrimitivesLayer: complexGizmoCachedEntities)
+            for(auto& cachedPrimitivesLayer: *complexGizmoCachedEntities)
             {
                 foundFrameBuffer = cameraComponent->getPostProcessLayerFrameBuffer(cachedPrimitivesLayer.first);
                 // if pp layer exists
@@ -413,7 +492,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
                 currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
 
-                for(auto& cachedGizmo : cachedPrimitivesLayer.second.m_cachedEntities)
+                for(auto& cachedGizmo : cachedPrimitivesLayer.second)
                 {
                     auto& gizmoComponents = cachedGizmo.second;
 

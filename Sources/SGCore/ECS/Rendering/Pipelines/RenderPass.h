@@ -7,6 +7,7 @@
 
 #include "SGCore/ECS/ComponentsCollector.h"
 #include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace SGCore
 {
@@ -15,8 +16,10 @@ namespace SGCore
         Ref<IShader> m_shader;
         ShaderMarkup m_shaderMarkup;
 
+        // components, that use to render in
+        Ref<CollectorCachedEntities> m_componentsToRenderIn;
         // collector for components to render
-        ComponentsCollector m_componentsCollector;
+        Ref<CollectorCachedEntities> m_componentsToRender;
     };
 }
 

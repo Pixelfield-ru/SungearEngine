@@ -5,6 +5,14 @@
 
 #define SG_MAY_NORETURN __declspec(noreturn)
 
+#define SG_CTOR(cls) cls() = default;
+#define SG_COPY_CTOR(cls) cls(const cls&) = default;
+#define SG_MOVE_CTOR(cls) cls(cls&& cls) noexcept = default;
+
+#define SG_NO_CTOR(cls) cls() = delete;
+#define SG_NO_COPY(cls) cls(const cls&) = delete;
+#define SG_NO_MOVE(cls) cls(cls&& cls) noexcept = delete;
+
 namespace SGCore
 {
     class Utils

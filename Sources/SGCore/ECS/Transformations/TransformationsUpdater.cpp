@@ -27,7 +27,7 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
 void SGCore::TransformationsUpdater::fixedUpdate
 (const Ref<Scene>& scene)
 {
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, layer, cachedEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, layer, cachedEntity)
         auto transformComponent = cachedEntity.getComponent<Transform>();
 
         if(!transformComponent) continue;

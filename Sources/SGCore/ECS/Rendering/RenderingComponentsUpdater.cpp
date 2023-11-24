@@ -16,7 +16,7 @@ SGCore::RenderingComponentsUpdater::RenderingComponentsUpdater()
 
 void SGCore::RenderingComponentsUpdater::fixedUpdate(const Ref<Scene>& scene)
 {
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(m_componentsCollector.m_cachedEntities, layer, cachedEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, layer, cachedEntity)
             std::list<Ref<IRenderingComponent>> renderingComponents = cachedEntity.getComponents<IRenderingComponent>();
             Ref<Transform> transformComponent = cachedEntity.getComponent<Transform>();
 
