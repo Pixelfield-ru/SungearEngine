@@ -15,6 +15,7 @@
 #include "SGCore/ECS/Rendering/Gizmos/GizmosMeshesRebuilder.h"
 #include "SGCore/ECS/Rendering/Gizmos/LinesGizmosCollector.h"
 #include "SGCore/ECS/Rendering/Gizmos/ComplexGizmosCollector.h"
+#include "SGCore/ECS/Rendering/CamerasCollector.h"
 
 void SGCore::ECSWorld::init() noexcept
 {
@@ -32,13 +33,15 @@ void SGCore::ECSWorld::init() noexcept
 
     auto camera3DMovementSystem = SGSingleton::getSharedPtrInstance<CameraMovement3DSystem>();
 
-    auto pipelineSystem = SGSingleton::getSharedPtrInstance<PBRForwardRenderPipeline>();
-
     auto skyboxesCollectorSystem = SGSingleton::getSharedPtrInstance<SkyboxesCollector>();
 
     auto linesCollectorSystem = SGSingleton::getSharedPtrInstance<LinesGizmosCollector>();
 
     auto complexPrimitivesCollectorSystem = SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>();
+
+    auto camerasCollectorSystem = SGSingleton::getSharedPtrInstance<CamerasCollector>();
+
+    auto pipelineSystem = SGSingleton::getSharedPtrInstance<PBRForwardRenderPipeline>();
 
     // -------------------------------
     m_systems.emplace(transformationsSystem);
@@ -49,11 +52,14 @@ void SGCore::ECSWorld::init() noexcept
     m_systems.emplace(directionalLightsSystem);
     m_systems.emplace(shadowsCasterSystem);
     m_systems.emplace(camera3DMovementSystem);
-    m_systems.emplace(pipelineSystem);
     m_systems.emplace(skyboxesCollectorSystem);
 
     m_systems.emplace(linesCollectorSystem);
     m_systems.emplace(complexPrimitivesCollectorSystem);
+
+    m_systems.emplace(camerasCollectorSystem);
+
+    m_systems.emplace(pipelineSystem);
 
     //DirectionalLightsSystem f;
 

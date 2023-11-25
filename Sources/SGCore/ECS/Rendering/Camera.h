@@ -72,10 +72,19 @@ namespace SGCore
             return m_postProcessLayers;
         }
 
+        void bindPostProcessFrameBuffer(const Ref<Layer>& layer,
+                                        const SGFrameBufferAttachmentType& attachmentToDrawType) noexcept;
+
+        void unbindPostProcessFrameBuffer() const noexcept;
+
+        void clearPostProcessFrameBuffers() const noexcept;
+
         // todo: make rename pp layer function
 
     private:
         std::unordered_map<Ref<Layer>, PostProcessLayer> m_postProcessLayers;
+
+        Ref<IFrameBuffer> m_currentPPFrameBufferToBind = m_defaultLayersFrameBuffer;
 
         void init() noexcept final { }
     };

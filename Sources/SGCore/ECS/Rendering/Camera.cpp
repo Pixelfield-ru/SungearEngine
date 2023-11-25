@@ -242,4 +242,41 @@ SGCore::Camera::getPostProcessLayerFrameBuffer(const Ref<Layer>& layer) noexcept
     return foundPPLayer != m_postProcessLayers.cend() ? foundPPLayer->second.m_frameBuffer : nullptr;
 }
 
+void SGCore::Camera::bindPostProcessFrameBuffer
+(const Ref<Layer>& layer, const SGFrameBufferAttachmentType& attachmentToDrawType) noexcept
+{
+    auto foundFrameBuffer = getPostProcessLayerFrameBuffer(layer);
+
+    if(foundFrameBuffer)
+    {
+        m_currentPPFrameBufferToBind = foundFrameBuffer;
+    }
+    else
+    {
+        m_currentPPFrameBufferToBind = m_defaultLayersFrameBuffer;
+    }
+
+    m_currentPPFrameBufferToBind->bind();
+    m_currentPPFrameBufferToBind->bindAttachmentToDraw(attachmentToDrawType);
+}
+
+void SGCore::Camera::unbindPostProcessFrameBuffer() const noexcept
+{
+    if(m_currentPPFrameBufferToBind)
+    {
+        m_currentPPFrameBufferToBind->unbind();
+    }
+}
+
+void SGCore::Camera::clearPostProcessFrameBuffers() const noexcept
+{
+    m_defaultLayersFrameBuffer->bind()->clear();
+    m_finalFrameBuffer->bind()->clear();
+
+    for(const auto& ppLayer : m_postProcessLayers)
+    {
+        ppLayer.second.m_frameBuffer->bind()->clear();
+    }
+}
+
 

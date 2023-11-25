@@ -20,79 +20,52 @@
 #include "SGCore/ECS/Rendering/Gizmos/ComplexGizmosCollector.h"
 #include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
 #include "SGCore/ECS/Rendering/Gizmos/IComplexGizmo.h"
+#include "SGCore/ECS/Rendering/Pipelines/RenderPasses/SkyboxesRenderPass.h"
+#include "SGCore/ECS/Rendering/CamerasCollector.h"
 
 SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
-    m_componentsCollector.configureCachingFunction<Camera, Transform>();
+    m_prepareFunc = []()
+    {
+        SG_BEGIN_ITERATE_CACHED_ENTITIES(
+                *SGSingleton::getSharedPtrInstance<CamerasCollector>()->m_componentsCollector.m_cachedEntities,
+                camerasLayer,
+                cameraEntity)
+
+                auto camera = cameraEntity.getComponent<Camera>();
+
+                if(camera)
+                {
+                    camera->clearPostProcessFrameBuffers();
+                }
+        SG_END_ITERATE_CACHED_ENTITIES
+    };
+
+    // m_componentsCollector.configureCachingFunction<Camera, Transform>();
 
     // configure render passes --------
-
     {
-        RenderPass shadowsPass;
-
-        shadowsPass.m_shader = Ref<IShader>(
+        Ref<SkyboxesRenderPass> skyboxesRenderPass = MakeRef<SkyboxesRenderPass>();
+        skyboxesRenderPass->m_shader = Ref<IShader>(
                 CoreMain::getRenderer().createShader(
-                        ShadersPaths::getMainInstance()["ShadowsGeneration"]["DefaultShader"]
+                        ShadersPaths::getMainInstance()["Skybox"]["DefaultShader"]
                 )
         );
 
-        shadowsPass.m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_DIFFUSE,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
+        skyboxesRenderPass->m_shaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_SKYBOX,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_SKYBOX),
                 1
         );
 
-        shadowsPass.m_shaderMarkup.calculateBlocksOffsets();
+        skyboxesRenderPass->m_shaderMarkup.calculateBlocksOffsets();
 
-        shadowsPass.m_componentsToRender = SGSingleton::getSharedPtrInstance<MeshesCollector>()
-                ->m_componentsCollector.m_cachedEntities;
-        shadowsPass.m_componentsToRenderIn = SGSingleton::getSharedPtrInstance<ShadowsCastersCollector>()
-                ->m_componentsCollector.m_cachedEntities;
+        skyboxesRenderPass->m_componentsToRenderIn =
+                SGSingleton::getSharedPtrInstance<CamerasCollector>()->m_componentsCollector.m_cachedEntities;
+        skyboxesRenderPass->m_componentsToRender =
+                SGSingleton::getSharedPtrInstance<SkyboxesCollector>()->m_componentsCollector.m_cachedEntities;
 
-        m_renderPasses.emplace_back(shadowsPass);
-    }
-
-    {
-        RenderPass geometryPass;
-
-        geometryPass.m_shader = Ref<IShader>(
-                CoreMain::getRenderer().createShader(
-                        ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
-                )
-        );
-        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_DIFFUSE,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
-                1
-        );
-        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE_ROUGHNESS),
-                1
-        );
-        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_NORMALS,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_NORMALS),
-                1
-        );
-        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_BASE_COLOR,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_BASE_COLOR),
-                1
-        );
-        geometryPass.m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_SHADOW_MAP,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP),
-                5,
-                false
-        );
-
-        geometryPass.m_shaderMarkup.calculateBlocksOffsets();
-
-        geometryPass.m_componentsToRender = SGSingleton::getSharedPtrInstance<MeshesCollector>()->m_componentsCollector.m_cachedEntities;
-        geometryPass.m_componentsToRenderIn = m_componentsCollector.m_cachedEntities;
-
-        m_renderPasses.emplace_back(geometryPass);
+        m_renderPasses.push_back(skyboxesRenderPass);
     }
 
     // --------------------------------
@@ -154,20 +127,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
     // ---------------------
 
-    m_skyboxPassShader = Ref<IShader>(
-            CoreMain::getRenderer().createShader(
-                    ShadersPaths::getMainInstance()["Skybox"]["DefaultShader"]
-            )
-    );
-
-    m_skyboxPassShaderMarkup.addTexturesBlockDeclaration(
-            SGTextureType::SGTP_SKYBOX,
-            sgStandardTextureTypeToString(SGTextureType::SGTP_SKYBOX),
-            1
-    );
-
-    m_skyboxPassShaderMarkup.calculateBlocksOffsets();
-
     // ---------------------
 
     m_linesGizmosPassShader = Ref<IShader>(
@@ -200,74 +159,23 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
     auto& complexGizmoCachedEntities =
             SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>()->m_componentsCollector.m_cachedEntities;
 
-    if(meshedCachedEntities->empty() &&
+    auto& camerasCachedEntities =
+            SGSingleton::getSharedPtrInstance<CamerasCollector>()->m_componentsCollector.m_cachedEntities;
+
+    if(camerasCachedEntities->empty() && meshedCachedEntities->empty() &&
     complexGizmoCachedEntities->empty() &&
     linesCachedEntities->empty() &&
     skyboxesCachedEntities->empty()) return;
 
-    // first render skybox
-    m_skyboxPassShader->bind();
-    m_skyboxPassShader->useShaderMarkup(m_skyboxPassShaderMarkup);
+    if(m_prepareFunc)
+    {
+        m_prepareFunc();
+    }
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, camerasLayer, cameraEntity)
-            Ref<Camera> cameraComponent = cameraEntity.getComponent<Camera>();
-            Ref<Transform> cameraTransformComponent = cameraEntity.getComponent<Transform>();
-
-            if(!cameraComponent || !cameraTransformComponent) continue;
-
-            CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
-            m_skyboxPassShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
-
-            auto currentLayerFrameBuffer = cameraComponent->m_defaultLayersFrameBuffer;
-            Ref<IFrameBuffer> foundFrameBuffer;
-            currentLayerFrameBuffer->bind()->clear();
-
-            for(auto& skyboxesLayerPair : *skyboxesCachedEntities)
-            {
-                foundFrameBuffer = cameraComponent->getPostProcessLayerFrameBuffer(skyboxesLayerPair.first);
-                // if pp layer exists
-                if(foundFrameBuffer)
-                {
-                    currentLayerFrameBuffer = foundFrameBuffer;
-                    currentLayerFrameBuffer->bind()->clear();
-                }
-                else
-                {
-                    currentLayerFrameBuffer->bind();
-                }
-
-                currentLayerFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
-
-                for(auto& skyboxEntityPair : skyboxesLayerPair.second)
-                {
-                    auto& skyboxComponents = skyboxEntityPair.second;
-
-                    Ref<Transform> transformComponent = skyboxComponents.getComponent<Transform>();
-
-                    if(!transformComponent) continue;
-
-                    auto meshComponents =
-                            skyboxComponents.getComponents<Mesh>();
-
-                    for(const auto& meshComponent: meshComponents)
-                    {
-                        meshComponent->m_meshData->m_material->bind(m_skyboxPassShader, m_skyboxPassShaderMarkup);
-                        updateUniforms(m_skyboxPassShader,
-                                       meshComponent->m_meshData->m_material,
-                                       transformComponent
-                        );
-
-                        CoreMain::getRenderer().renderMeshData(
-                                meshComponent->m_meshData,
-                                meshComponent->m_meshDataRenderInfo
-                        );
-                    }
-
-                    currentLayerFrameBuffer->unbind();
-                }
-            }
-
-    SG_END_ITERATE_CACHED_ENTITIES
+    for(auto& renderPass : m_renderPasses)
+    {
+        renderPass->render();
+    }
 
     // binding geom pass shader
     m_geometryPassShader->bind();
@@ -391,7 +299,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
 
     // ----- render meshes and primitives (geometry + light pass pbr) ------
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, camerasLayer, cameraEntity)
+    SG_BEGIN_ITERATE_CACHED_ENTITIES(*camerasCachedEntities, camerasLayer, cameraEntity)
             Ref<Transform> cameraTransformComponent = cameraEntity.getComponent<Transform>();
             if(!cameraTransformComponent) continue;
             Ref<Camera> cameraComponent = cameraEntity.getComponent<Camera>();
@@ -414,7 +322,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
                 if(foundFrameBuffer)
                 {
                     currentLayerFrameBuffer = foundFrameBuffer;
-                    currentLayerFrameBuffer->bind()->clear();
+                    currentLayerFrameBuffer->bind();
                 }
                 else
                 {
@@ -483,7 +391,7 @@ void SGCore::PBRForwardRenderPipeline::update(const Ref<Scene>& scene)
                 if(foundFrameBuffer)
                 {
                     currentLayerFrameBuffer = foundFrameBuffer;
-                    currentLayerFrameBuffer->bind()->clear();
+                    currentLayerFrameBuffer->bind();
                 }
                 else
                 {
@@ -665,7 +573,7 @@ void SGCore::PBRForwardRenderPipeline::updateUniforms(const Ref<IShader>& shader
     );*/
 
     // TODO: MOVE MATERIAL UPDATE TO OTHER SYSTEM
-    shader->useVectorf("materialDiffuseCol",
+    /*shader->useVectorf("materialDiffuseCol",
                        material->m_diffuseColor
     );
     shader->useVectorf("materialSpecularCol",
@@ -688,5 +596,5 @@ void SGCore::PBRForwardRenderPipeline::updateUniforms(const Ref<IShader>& shader
     );
     shader->useFloat("materialRoughnessFactor",
                      material->m_roughnessFactor
-    );
+    );*/
 }

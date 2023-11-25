@@ -7,7 +7,7 @@
 
 #include "SGCore/ECS/ISystem.h"
 #include "SGCore/Graphics/API/ShaderMarkup.h"
-#include "RenderPass.h"
+#include "SGCore/ECS/Rendering/Pipelines/RenderPasses/IRenderPass.h"
 
 namespace SGCore
 {
@@ -21,9 +21,6 @@ namespace SGCore
         Ref<IShader> m_geometryPassShader;
         ShaderMarkup m_geometryPassShaderMarkup;
 
-        Ref<IShader> m_skyboxPassShader;
-        ShaderMarkup m_skyboxPassShaderMarkup;
-
         // gizmos pass -----------------------
         Ref<IShader> m_linesGizmosPassShader;
 
@@ -31,7 +28,9 @@ namespace SGCore
 
         // ------------------------------------
 
-        std::vector<RenderPass> m_renderPasses;
+        std::vector<Ref<IRenderPass>> m_renderPasses;
+
+        std::function<void()> m_prepareFunc;
 
         // IPipelineSystem();
     };

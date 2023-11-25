@@ -38,9 +38,6 @@ namespace SGCore
 
         std::vector<MaterialTexture> m_textures;
 
-        // TODO: REMOVE
-        std::shared_ptr<IShader> m_customShader;
-
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
         glm::vec4 m_specularColor       = glm::vec4(1.0f);
         glm::vec4 m_ambientColor        = glm::vec4(0.0f);

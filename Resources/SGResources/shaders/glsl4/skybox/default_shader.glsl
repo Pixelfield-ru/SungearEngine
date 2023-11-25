@@ -141,6 +141,7 @@ vec3 atmosphere(vec3 r, vec3 ro,
             0.958                          // Mie preferred scattering direction
         );
 
+        // vec3 atmosphereCol = vec3(1.0);
         if(sgmat_skyboxSamplers_COUNT > 0)
         {
             float mixCoeff = 1.0 / sgmat_skyboxSamplers_COUNT;

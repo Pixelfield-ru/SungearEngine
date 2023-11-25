@@ -30,6 +30,31 @@ SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader,
         currentTexBlockOfType = 0;
     }
 
+    shader->useVectorf("materialDiffuseCol",
+                       m_diffuseColor
+    );
+    shader->useVectorf("materialSpecularCol",
+                       m_specularColor
+    );
+    shader->useVectorf("materialAmbientCol",
+                       m_ambientColor
+    );
+    shader->useVectorf("materialEmissionCol",
+                       m_emissionColor
+    );
+    shader->useVectorf("materialTransparentCol",
+                       m_transparentColor
+    );
+    shader->useFloat("materialShininess",
+                     m_shininess
+    );
+    shader->useFloat("materialMetallicFactor",
+                     m_metallicFactor
+    );
+    shader->useFloat("materialRoughnessFactor",
+                     m_roughnessFactor
+    );
+
     return shared_from_this();
 }
 
@@ -63,8 +88,6 @@ SGCore::IMaterial&
 SGCore::IMaterial::operator=(const SGCore::IMaterial& other) noexcept
 {
     assert(this != std::addressof(other));
-
-    m_customShader = other.m_customShader;
 
     other.copyTextures(shared_from_this());
 
