@@ -5,14 +5,19 @@
 #ifndef SUNGEARENGINE_IRENDERPASS_H
 #define SUNGEARENGINE_IRENDERPASS_H
 
+#include "IRenderPipeline.h"
 #include "SGCore/ECS/ComponentsCollector.h"
 #include "SGCore/Graphics/API/IShader.h"
-#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Timer.h"
 
 namespace SGCore
 {
+    class TimerCallback;
+
     struct IRenderPass
     {
+        bool m_active = true;
+
         Ref<IShader> m_shader;
         ShaderMarkup m_shaderMarkup;
 
@@ -21,7 +26,7 @@ namespace SGCore
         // collector for components to render
         Ref<CollectorCachedEntities> m_componentsToRender;
 
-        virtual void render() = 0;
+        virtual void render(const Ref<IRenderPipeline>& renderPipeline) = 0;
     };
 }
 

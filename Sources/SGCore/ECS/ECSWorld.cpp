@@ -6,7 +6,7 @@
 
 #include "Transformations/TransformationsUpdater.h"
 #include "SGCore/ECS/Transformations/CameraMovement3DSystem.h"
-#include "SGCore/ECS/Rendering/Pipelines/PBRForwardRenderPipeline.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRForwardRenderPipeline.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCastersCollector.h"
 #include "SGCore/ECS/Rendering/RenderingComponentsUpdater.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"

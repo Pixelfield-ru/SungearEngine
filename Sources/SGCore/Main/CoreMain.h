@@ -20,8 +20,8 @@ namespace SGCore
         static inline Window m_window {};
         static inline std::shared_ptr<IRenderer> m_renderer;
 
-        static inline Timer m_renderTimer {true, 1.0 };
-        static inline Timer m_fixedTimer {true, 1.0 };
+        static inline Timer m_renderTimer { true, 1.0 };
+        static inline Timer m_fixedTimer { true, 0.01666 };
 
     public:
         CoreMain() = delete;
@@ -34,6 +34,9 @@ namespace SGCore
         static Window& getWindow() noexcept;
 
         static IRenderer& getRenderer() noexcept;
+
+        static Timer& getRenderTimer() noexcept;
+        static Timer& getFixedTimer() noexcept;
     };
 }
 

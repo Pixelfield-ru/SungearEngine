@@ -270,13 +270,13 @@ void SGCore::Camera::unbindPostProcessFrameBuffer() const noexcept
 
 void SGCore::Camera::clearPostProcessFrameBuffers() const noexcept
 {
-    m_defaultLayersFrameBuffer->bind()->clear();
-    m_finalFrameBuffer->bind()->clear();
-
     for(const auto& ppLayer : m_postProcessLayers)
     {
         ppLayer.second.m_frameBuffer->bind()->clear();
     }
+
+    m_defaultLayersFrameBuffer->bind()->clear();
+    m_finalFrameBuffer->bind()->clear()->unbind();
 }
 
 

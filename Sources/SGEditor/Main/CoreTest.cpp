@@ -266,6 +266,7 @@ void init()
     for (const auto& entity: cube1Entities)
     {
         testScene->addEntity(entity, SG_LAYER_TRANSPARENT_NAME);
+        //testScene->addEntity(entity, SG_LAYER_OPAQUE_NAME);
 
         auto meshComponent = entity->getComponent<SGCore::Mesh>();
 
@@ -314,10 +315,6 @@ void init()
                     SGTextureType::SGTP_SKYBOX,
                     standardCubemap->getTexture2D()
             );
-
-            // auto skyboxMaterial = SGCore::Ref<Core::Memory::Assets::IMaterial>(Core::Main::CoreMain::getRenderer().createSkyboxMaterial());
-
-            // meshComponent->m_mesh->migrateAndSetNewMaterial(skyboxMaterial);
         }
         testScene->addEntity(entity);
     }

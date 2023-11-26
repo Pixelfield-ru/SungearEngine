@@ -13,11 +13,12 @@
 
 void SGCore::CoreMain::start()
 {
+    // todo: move
     system("chcp 65001");
     setlocale(LC_ALL, "Russian");
 
     m_renderer = GL4Renderer::getInstance();
-    //m_renderer = Graphics::VkRenderer::getInstance();
+    //m_renderer = VkRenderer::getInstance();
 
     m_window.create();
 
@@ -43,12 +44,13 @@ void SGCore::CoreMain::start()
                                                 });
 
     // when reached destination (in the case of this timer, 1 second) second
-    globalTimerCallback->setDestinationReachedFunction([]() {
+    globalTimerCallback->setFixedUpdateFunction([]() {
         m_window.setTitle("Sungear Engine. FPS: " + std::to_string(m_renderTimer.getFramesPerDestination()));
     });
 
     m_renderTimer.addCallback(globalTimerCallback);
     m_renderTimer.m_targetFrameRate = 1200.0;
+    m_renderTimer.m_useFixedUpdateCatchUp = false;
 
     // -----------------
 
@@ -59,8 +61,6 @@ void SGCore::CoreMain::start()
                                                     fixedUpdate();
                                                 });
 
-    m_fixedTimer.m_targetFrameRate = 60;
-    m_fixedTimer.m_useFixedUpdate = true;
     m_fixedTimer.addCallback(fixedTimerCallback);
 
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
@@ -102,4 +102,14 @@ SGCore::Window& SGCore::CoreMain::getWindow() noexcept
 SGCore::IRenderer& SGCore::CoreMain::getRenderer() noexcept
 {
     return *m_renderer;
+}
+
+SGCore::Timer& SGCore::CoreMain::getRenderTimer() noexcept
+{
+    return m_renderTimer;
+}
+
+SGCore::Timer& SGCore::CoreMain::getFixedTimer() noexcept
+{
+    return m_fixedTimer;
 }

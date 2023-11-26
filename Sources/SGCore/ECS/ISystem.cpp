@@ -3,7 +3,7 @@
 //
 
 #include "ISystem.h"
-#include "SGCore/ECS/Rendering/Pipelines/PBRForwardRenderPipeline.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRForwardRenderPipeline.h"
 
 double SGCore::ISystem::getUpdateFunctionExecutionTime() const noexcept
 {

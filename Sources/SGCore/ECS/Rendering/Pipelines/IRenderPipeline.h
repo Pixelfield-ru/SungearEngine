@@ -7,32 +7,34 @@
 
 #include "SGCore/ECS/ISystem.h"
 #include "SGCore/Graphics/API/ShaderMarkup.h"
-#include "SGCore/ECS/Rendering/Pipelines/RenderPasses/IRenderPass.h"
 
 namespace SGCore
 {
     class IShader;
+    struct IRenderPass;
 
-    struct IRenderPipeline : public ISystem
+    struct IRenderPipeline : public ISystem, public std::enable_shared_from_this<IRenderPipeline>
     {
-        Ref<IShader> m_shadowsPassShader;
-        ShaderMarkup m_shadowsPassShaderMarkup;
-
-        Ref<IShader> m_geometryPassShader;
-        ShaderMarkup m_geometryPassShaderMarkup;
-
-        // gizmos pass -----------------------
-        Ref<IShader> m_linesGizmosPassShader;
-
-        Ref<IShader> m_complexGizmosPassShader;
-
-        // ------------------------------------
+        void update(const Ref<Scene>& scene) noexcept override;
 
         std::vector<Ref<IRenderPass>> m_renderPasses;
 
         std::function<void()> m_prepareFunc;
 
-        // IPipelineSystem();
+        template<typename RenderPassT>
+        requires(std::is_base_of_v<IRenderPass, RenderPassT>)
+        Ref<RenderPassT> getRenderPass()
+        {
+            for(auto& renderPass : m_renderPasses)
+            {
+                if(SG_INSTANCEOF(renderPass.get(), RenderPassT))
+                {
+                    return std::static_pointer_cast<RenderPassT>(renderPass);
+                }
+            }
+
+            return nullptr;
+        }
     };
 }
 

@@ -37,45 +37,48 @@ void SGCore::Timer::startFrame()
 
     double destDeltaTime = 1.0 / m_targetFrameRate;
 
-    if(m_useFixedUpdate)
+    if(m_elapsedTimeForUpdate >= destDeltaTime)
     {
-        while(m_elapsedTimeForUpdate >= destDeltaTime)
+        for(const auto& callback: m_callbacks)
         {
-            for(const auto& callback : m_callbacks)
-            {
-                callback->callFixedUpdateFunction();
-            }
-
-            m_elapsedTimeForUpdate -= destDeltaTime;
-            m_framesPerTarget++;
+            callback->callUpdateFunction();
         }
-    }
-    else
-    {
-        if(m_elapsedTimeForUpdate >= destDeltaTime)
-        {
-            for(const auto& callback : m_callbacks)
-            {
-                callback->callUpdateFunction();
-            }
 
-            m_elapsedTimeForUpdate = 0.0;
-            m_framesPerTarget++;
-        }
+        m_elapsedTimeForUpdate = 0.0;
+        m_framesPerTarget++;
     }
 
     m_elapsedTime = m_current - m_startTime;
 
     if(m_elapsedTime >= m_target)
     {
-        for(const auto& callback : m_callbacks)
+        if(m_useFixedUpdateCatchUp)
         {
-            callback->callDestinationReachedFunction();
+            while(m_elapsedTime >= m_target)
+            {
+                if(!m_active) break;
+
+                for(const auto& callback: m_callbacks)
+                {
+                    callback->callFixedUpdateFunction();
+                }
+
+                m_elapsedTime -= m_target;
+            }
+        }
+        else
+        {
+            for(const auto& callback: m_callbacks)
+            {
+                callback->callFixedUpdateFunction();
+            }
         }
 
         reset();
 
         m_active = m_cyclic;
+
+        m_elapsedTime = 0.0;
     }
 }
 

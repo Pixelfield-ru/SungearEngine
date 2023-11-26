@@ -2,23 +2,23 @@
 // Created by Ilya on 25.11.2023.
 //
 
-#include "SkyboxesRenderPass.h"
+#include "PBRFRPSkyboxesPass.h"
 #include "SGCore/ECS/ECSWorld.h"
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/Main/CoreMain.h"
 
-void SGCore::SkyboxesRenderPass::render()
+void SGCore::PBRFRPSkyboxesPass::render(const Ref<IRenderPipeline>& renderPipeline)
 {
     m_shader->bind();
     m_shader->useShaderMarkup(m_shaderMarkup);
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
-            Ref<Camera> cameraComponent = cameraEntity.getComponent<Camera>();
-            Ref<Transform> cameraTransformComponent = cameraEntity.getComponent<Transform>();
-
-            if(!cameraComponent || !cameraTransformComponent) continue;
+            auto cameraComponent = cameraEntity.getComponent<Camera>();
+            if(!cameraComponent) continue;
+            auto cameraTransformComponent = cameraEntity.getComponent<Transform>();
+            if(!cameraTransformComponent) continue;
 
             CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
             m_shader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);

@@ -19,11 +19,6 @@ void SGCore::TimerCallback::setUpdateFunction(std::function<void()>&& function) 
     m_updateFunction = function;
 }
 
-void SGCore::TimerCallback::setDestinationReachedFunction(std::function<void()>&& function) noexcept
-{
-    m_destinationReachedFunction = function;
-}
-
 // ------------------------------------------------------------------
 
 void SGCore::TimerCallback::callStartFunction()
@@ -47,13 +42,5 @@ void SGCore::TimerCallback::callUpdateFunction()
     if(m_updateFunction)
     {
         m_updateFunction();
-    }
-}
-
-void SGCore::TimerCallback::callDestinationReachedFunction()
-{
-    if(m_destinationReachedFunction)
-    {
-        m_destinationReachedFunction();
     }
 }

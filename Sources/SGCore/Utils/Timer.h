@@ -22,7 +22,7 @@ namespace SGCore
     public:
         bool m_active = true;
         bool m_cyclic = false;
-        bool m_useFixedUpdate = false;
+        bool m_useFixedUpdateCatchUp = true;
 
         double m_target = 0;
 
@@ -45,7 +45,7 @@ namespace SGCore
         void removeCallback(const Ref<TimerCallback>& callback);
 
         [[nodiscard]] std::uint16_t getFramesPerDestination() const noexcept;
-        double getRawDeltaTime() const noexcept;
+        [[nodiscard]] double getRawDeltaTime() const noexcept;
 
     private:
         double m_current = 0;
