@@ -34,7 +34,7 @@ void ShadersPaths::createDefaultPaths() noexcept
 
     operator[]("Gizmos")["ComplexGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
 
-    operator[]("Gizmos")["LinesShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/lines_shader.glsl";
+    operator[]("Gizmos")["LinesGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/lines_shader.glsl";
 
     // -------------------------------------
 

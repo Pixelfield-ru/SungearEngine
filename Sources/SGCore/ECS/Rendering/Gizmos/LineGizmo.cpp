@@ -16,28 +16,6 @@ SGCore::LineGizmo::LineGizmo() noexcept
 
     // second point
     m_meshData->m_positions.push_back(0.0);
-    m_meshData->m_positions.push_back(10.0);
     m_meshData->m_positions.push_back(0.0);
-}
-
-void SGCore::LineGizmo::setVertexPosition
-(const size_t& vertexIdx, const float& x, const float& y, const float& z) noexcept
-{
-    if(vertexIdx > 1) return;
-
-    m_meshData->setVertexPosition(vertexIdx, x, y, z);
-
-    // TODO: MOVE IN RENDER PIPELINE
-    /*if(x != curX || y != curY || z != curZ)
-    {
-        const auto& materialShader = m_mesh->m_material->getCurrentShader();
-
-        if(!materialShader) return;
-
-        materialShader->bind();
-
-        materialShader->useVectorf(
-                "verticesPositions[" + std::to_string(vertexIdx) + "]",
-                x, y, z);
-    }*/
+    m_meshData->m_positions.push_back(0.0);
 }

@@ -25,6 +25,8 @@ subject to the following restrictions:
 #include "LinearR3.h"
 #include "MathMisc.h"
 #include "Node.h"
+#include "../../../../../Sources/SGCore/ImportedScenesArch/Node.h"
+
 
 extern int RotAxesOn;
 

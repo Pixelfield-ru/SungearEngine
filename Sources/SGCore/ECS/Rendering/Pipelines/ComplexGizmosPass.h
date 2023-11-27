@@ -2,17 +2,17 @@
 // Created by stuka on 26.11.2023.
 //
 
-#ifndef SUNGEARENGINE_PBRFRPCOMPLEXGIZMOSPASS_H
-#define SUNGEARENGINE_PBRFRPCOMPLEXGIZMOSPASS_H
+#ifndef SUNGEARENGINE_COMPLEXGIZMOSPASS_H
+#define SUNGEARENGINE_COMPLEXGIZMOSPASS_H
 
 #include "SGCore/ECS/Rendering/Pipelines/IRenderPass.h"
 
 namespace SGCore
 {
-    struct PBRFRPComplexGizmosPass : public IRenderPass
+    struct ComplexGizmosPass : public IRenderPass
     {
         void render(const Ref<IRenderPipeline>& renderPipeline) final;
     };
 }
 
-#endif //SUNGEARENGINE_PBRFRPCOMPLEXGIZMOSPASS_H
+#endif //SUNGEARENGINE_COMPLEXGIZMOSPASS_H

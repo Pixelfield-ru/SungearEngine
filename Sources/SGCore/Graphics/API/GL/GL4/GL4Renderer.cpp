@@ -206,11 +206,11 @@ void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
 
     if(!meshData->m_useIndices)
     {
-        glDrawArrays(drawMode, 0, meshData->m_positions.size());
+        glDrawArrays(GL_LINES, 0, meshData->m_positions.size() / 3);
     }
     else
     {
-        glDrawElements(drawMode, meshData->getVertexArray()->m_indicesCount,
+        glDrawElements(drawMode, meshData->m_indices.size(),
                        GL_UNSIGNED_INT, nullptr);
     }
 }

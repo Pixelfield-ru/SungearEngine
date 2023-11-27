@@ -12,13 +12,7 @@ namespace SGCore
 {
     struct PBRFRPShadowsPass : public IRenderPass
     {
-        PBRFRPShadowsPass()
-        {
-            m_renderTimer.m_useFixedUpdateCatchUp = false;
-            m_renderTimer.m_targetFrameRate = 24;
-
-            m_renderTimer.addCallback(m_renderTimerCallback);
-        }
+        PBRFRPShadowsPass() noexcept;
 
         void render(const Ref<IRenderPipeline>& renderPipeline) final;
 

@@ -8,6 +8,14 @@
 #include "SGCore/ECS/ECSWorld.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 
+SGCore::PBRFRPShadowsPass::PBRFRPShadowsPass() noexcept
+{
+    m_renderTimer.m_useFixedUpdateCatchUp = false;
+    m_renderTimer.m_targetFrameRate = 24;
+
+    m_renderTimer.addCallback(m_renderTimerCallback);
+}
+
 void SGCore::PBRFRPShadowsPass::render(const Ref<IRenderPipeline>& renderPipeline)
 {
     m_renderTimer.startFrame();

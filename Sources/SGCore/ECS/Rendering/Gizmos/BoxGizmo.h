@@ -13,8 +13,6 @@ namespace SGCore
 
         BoxGizmo();
 
-        void setVertexPosition(const size_t& vertexIdx, const float& x, const float& y, const float& z) noexcept final;
-
     private:
         glm::vec3 m_lastSize { 5.0, 5.0, 5.0 };
 

@@ -25,8 +25,9 @@
 #include "PBRFRPShadowsPass.h"
 #include "PBRFRPGeometryPass.h"
 #include "SGCore/ECS/Rendering/Pipelines/PostProcessFXPass.h"
-#include "PBRFRPComplexGizmosPass.h"
+#include "SGCore/ECS/Rendering/Pipelines/ComplexGizmosPass.h"
 #include "PBRFRPDirectionalLightsPass.h"
+#include "SGCore/ECS/Rendering/Pipelines/LinesGizmosPass.h"
 
 SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
@@ -34,6 +35,8 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
     auto& shadowsCasters = SGSingleton::getSharedPtrInstance<ShadowsCastersCollector>()->m_componentsCollector.m_cachedEntities;
 
     auto& meshes = SGSingleton::getSharedPtrInstance<MeshesCollector>()->m_componentsCollector.m_cachedEntities;
+
+    auto& linesGizmos = SGSingleton::getSharedPtrInstance<LinesGizmosCollector>()->m_componentsCollector.m_cachedEntities;
 
     auto& complexGizmos = SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>()->m_componentsCollector.m_cachedEntities;
 
@@ -53,10 +56,12 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
         SG_END_ITERATE_CACHED_ENTITIES
     };
 
-    {
-        auto setPass = MakeRef<PBRFRPDirectionalLightsPass>();
+    // -----------------------------
 
-        m_renderPasses.push_back(setPass);
+    {
+        auto directionalLightsPass = MakeRef<PBRFRPDirectionalLightsPass>();
+
+        m_renderPasses.push_back(directionalLightsPass);
     }
 
     // configure render passes --------
@@ -152,7 +157,22 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
     }
 
     {
-        auto complexGizmosPass = MakeRef<PBRFRPComplexGizmosPass>();
+        auto linesGizmosPass = MakeRef<LinesGizmosPass>();
+
+        linesGizmosPass->m_shader = Ref<IShader>(
+                CoreMain::getRenderer().createShader(
+                        ShadersPaths::getMainInstance()["Gizmos"]["LinesGizmosShader"]
+                )
+        );
+
+        linesGizmosPass->m_componentsToRenderIn = cameras;
+        linesGizmosPass->m_componentsToRender = linesGizmos;
+
+        m_renderPasses.push_back(linesGizmosPass);
+    }
+
+    {
+        auto complexGizmosPass = MakeRef<ComplexGizmosPass>();
 
         complexGizmosPass->m_shader = Ref<IShader>(
                 CoreMain::getRenderer().createShader(

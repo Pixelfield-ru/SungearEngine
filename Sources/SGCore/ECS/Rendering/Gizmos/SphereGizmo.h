@@ -14,8 +14,6 @@ namespace SGCore
 
         SphereGizmo();
 
-        void setVertexPosition(const size_t& vertexIdx, const float& x, const float& y, const float& z) noexcept final;
-
     private:
         float m_lastRadius = 0.0;
         float m_lastAngleIncrement = 0.0;

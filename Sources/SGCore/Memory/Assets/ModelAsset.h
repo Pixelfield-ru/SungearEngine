@@ -13,11 +13,18 @@
 
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
+#include "SGCore/ECS/Scene.h"
+#include "SGCore/ECS/Rendering/Mesh.h"
 
 namespace SGCore
 {
     class ModelAsset : public IAsset, public std::enable_shared_from_this<ModelAsset>
     {
+    public:
+        std::vector<std::shared_ptr<Node>> m_nodes;
+
+        std::shared_ptr<IAsset> load(const std::string&) override;
+
     private:
         // local import flags
         // TODO: maybe reimport after change flags
@@ -29,11 +36,6 @@ namespace SGCore
         std::shared_ptr<Node> processNode(const aiNode*, const aiScene*);
         std::shared_ptr<IMeshData> processMesh(const aiMesh*, const aiScene*);
         void loadTextures(aiMaterial* aiMat, std::shared_ptr<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureType& sgMaterialTextureType);
-
-    public:
-        std::vector<std::shared_ptr<Node>> m_nodes;
-
-        std::shared_ptr<IAsset> load(const std::string&) override;
     };
 }
 

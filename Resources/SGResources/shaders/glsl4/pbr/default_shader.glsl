@@ -349,7 +349,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
     }
 
     // площадь поверхности, где микроскопические неровности перекрывают друг друга
-    float GeometrySmith(const in vec3 normal, const in float NdotVD, const in float NdotL, float roughness)
+    float GeometrySmith(const in vec3 normal, const in float cosTheta, const in float NdotVD, const in float NdotL, float roughness)
     {
         // косинус между направлением камеры и нормалью к поверхности
         // float NdotVD = _NdotVD;
@@ -450,11 +450,11 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
         vec3 albedo =       diffuseColor.rgb;
         float ao =          diffuseRoughnessColor.r;
-        float roughness =   diffuseRoughnessColor.g * materialRoughnessFactor;
         float metalness =   diffuseRoughnessColor.b * materialMetallicFactor;
+        float roughness =   diffuseRoughnessColor.g * materialRoughnessFactor;
 
         // для формулы Шлика-Френеля
-        vec3 F0 = vec3(0.04);
+        vec3 F0 = vec3(0.1);
         F0 = mix(F0, albedo, metalness);
 
         //float geomRoughness = ((colorFromRoughness.g + 1.0) * (colorFromRoughness.g + 1.0)) / 8.0;
@@ -483,9 +483,11 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
                 roughness
             );
 
-            vec3 F = SchlickFresnel(max(dot(halfWayDir, viewDir), 0.0), F0);
+            float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
+
+            vec3 F = SchlickFresnel(cosTheta, F0);
             // geometry function
-            float G = GeometrySmith(normalMapColor, NdotVD, NdotL, roughness);
+            float G = GeometrySmith(normalMapColor, cosTheta, NdotVD, NdotL, roughness);
 
             vec3 diffuse = vec3(1.0) - F;
             diffuse *= (1.0 - metalness) * materialDiffuseCol.rgb;
@@ -493,11 +495,11 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
             vec3 ctNumerator = D * F * G;
             float ctDenominator = 4.0 * NdotVD * NdotL;
-            vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
+            vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb * 2.0;
 
             lo += (diffuse * albedo.rgb / PI + specular) * radiance * NdotL;
         }
-        vec3 ambient = vec3(0.03) * albedo.rgb * ao;
+        vec3 ambient = vec3(0.05) * albedo.rgb * ao;
         vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
 
         // HDR standard tonemapper

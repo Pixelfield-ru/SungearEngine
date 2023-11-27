@@ -96,9 +96,3 @@ void SGCore::BoxGizmo::build()
 
     m_meshData->prepare();
 }
-
-void SGCore::BoxGizmo::setVertexPosition(const size_t& vertexIdx, const float& x, const float& y,
-                                            const float& z) noexcept
-{
-
-}

@@ -10,20 +10,11 @@
 #include "SGCore/Graphics/API/ShaderDefine.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Graphics/API/IShaderUniform.h"
-#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
-
-#include "SGConsole/API/Console.h"
 
 #include "SGCore/ECS/Transformations/TransformationsUpdater.h"
 
-#include <glm/glm.hpp>
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/euler_angles.hpp"
-#include "glm/gtx/quaternion.hpp"
-#include "glm/gtx/rotate_vector.hpp"
 
 #include "SGCore/Main/Callbacks.h"
 
@@ -40,6 +31,7 @@
 #include "SGCore/ECS/Rendering/Gizmos/BoxGizmo.h"
 
 #include "SGCore/Utils/ImGuiLayer.h"
+#include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -47,42 +39,6 @@ SGCore::Ref<SGCore::Entity> testCameraEntity;
 SGCore::Ref<SGCore::Scene> testScene;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
-
-// example how to convert imported scene to Sungear ECS scene
-void processLoadedNode(const SGCore::Ref<SGCore::Node>& sgNode,
-                       const glm::vec3& pos,
-                       const glm::vec3& rot,
-                       const glm::vec3& scale,
-                       std::vector<SGCore::Ref<SGCore::Entity>>& outputEntities)
-{
-    SGCore::Ref<SGCore::Entity> nodeEntity = SGCore::MakeRef<SGCore::Entity>();
-    nodeEntity->addComponent(SGCore::MakeRef<SGCore::Transform>());
-    nodeEntity->m_name = sgNode->m_name;
-
-    outputEntities.push_back(nodeEntity);
-
-    for(auto& mesh : sgNode->m_meshesData)
-    {
-        SGCore::Ref<SGCore::Transform> meshedEntityTransformComponent = SGCore::MakeRef<SGCore::Transform>();
-        meshedEntityTransformComponent->m_position = sgNode->m_position + pos;
-        meshedEntityTransformComponent->m_rotation = eulerAngles(sgNode->m_rotationQuaternion) + rot;
-        meshedEntityTransformComponent->m_scale = sgNode->m_scale * scale;
-
-        SGCore::Ref<SGCore::Mesh> meshComponent = SGCore::MakeRef<SGCore::Mesh>();
-        meshComponent->m_meshData = mesh;
-
-        SGCore::Ref<SGCore::Entity> meshedEntity = SGCore::MakeRef<SGCore::Entity>();
-        meshedEntity->addComponent(meshedEntityTransformComponent);
-        meshedEntity->addComponent(meshComponent);
-
-        outputEntities.push_back(meshedEntity);
-    }
-
-    for(auto& node : sgNode->m_children)
-    {
-        processLoadedNode(node, pos, rot, scale, outputEntities);
-    }
-}
 
 SGCore::Ref<SGCore::Entity> testShadowsCaster;
 
@@ -96,21 +52,12 @@ void init()
     int windowHeight;
 
     SGCore::CoreMain::getWindow().getSize(windowWidth, windowHeight);
-    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf");
-    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/sponza/sponza.obj");
-    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf");
-    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/btr_80a2016/scene.gltf");
-    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj");
-    /*testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>(
-     "../SGResources/models/test/lenin/scene.gltf"
-     );*/
-    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/ak74m/scene.gltf");
-    //testModel = Core::Memory::AssetManager::loadAsset<Core::Memory::Assets::ModelAsset>("../SGResources/models/test/train_ep20/scene.gltf");
+
     testModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
             "../SGResources/models/test/plane.obj"
     );
 
-    auto btrModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+    auto model0 = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
             //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/t62/scene.gltf"
@@ -131,12 +78,60 @@ void init()
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            "../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/zis_sport/scene.gltf"
             //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
             //"../SGResources/models/test/wooden_table/scene.gltf"
+            //"../SGResources/models/test/svd/scene.gltf"
+            //"../SGResources/models/test/yamato/scene.gltf"
+            "../SGResources/models/test/vss/scene.gltf"
+            //"../SGResources/models/test/vsk94/scene.gltf"
+            //"../SGResources/models/test/helicopter/scene.gltf"
+            //"../SGResources/models/test/metal_door/scene.gltf"
+            //"../SGResources/models/test/ak47/scene.gltf"
+            //"../SGResources/models/test/pavlov/scene.gltf"
+            //"../SGResources/models/test/kv2/scene.gltf"
+            //"../SGResources/models/test/Putin/scene.gltf"
+            //"../SGResources/models/test/Russia_flag/scene.gltf"
+            //"../SGResources/models/test/old_building/scene.gltf"
+            //"../SGResources/models/test/cathedral/scene.gltf"
+            //"../SGResources/models/test/stierlitz/scene.gltf"
+            //"../SGResources/models/test/panelka/scene.gltf"
+            //"../SGResources/models/test/t55a/scene.gltf"
+            //"../SGResources/models/test/rpg7/scene.gltf"
+            //"../SGResources/models/test/zucchini/scene.gltf"
+            //"../SGResources/models/test/lenin/scene.gltf"
+    );
+
+    auto model1 = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+            //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
+            //"../SGResources/models/test/gaz-66.obj"
+            //"../SGResources/models/test/t62/scene.gltf"
+            //"../SGResources/models/test/stalk_bagger/bagger.fbx"
+            //"../SGResources/models/test/cnpp/scene.gltf"
+            //"../SGResources/models/test/apb/scene.gltf"
+            //"../SGResources/models/test/btr_80a2016/scene.gltf"
+            //"../SGResources/models/test/btr_80/scene.gltf"
+            //"../SGResources/models/test/train_ep20/scene.gltf"
+            //"../SGResources/models/test/trees/NewSponza_CypressTree_glTF.gltf"
+            //"../SGResources/models/test/stalker/stalk_e/fbx/stalker_1.fbx"
+            //"../SGResources/models/test/hamada_gun/scene.gltf"
+            //"../SGResources/models/test/ak74/scene.gltf"
+            //"../SGResources/models/test/backpack/scene.gltf"
+            //"../SGResources/models/test/stalk_bunk/bunker.fbx"
+            //"../SGResources/models/test/Duty Exoskeleton/Duty Exoskeleton.obj"
+            //"../SGResources/models/test/room/room.obj"
+            //"../SGResources/models/test/sponza/sponza.obj"
+            //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
+            //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
+            //"../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/zis_sport/scene.gltf"
+            //"../SGResources/models/test/vodka/scene.gltf"
+            //"../SGResources/models/test/mgu/scene.gltf"
+            //"../SGResources/models/test/realistic_tree/scene.gltf"
+            "../SGResources/models/test/wooden_table/scene.gltf"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/vss/scene.gltf"
@@ -169,155 +164,167 @@ void init()
             cubePath
     );
 
-    std::vector<SGCore::Ref<SGCore::Entity>> planeEntities;
+    // ==========================================================================================
+    // ==========================================================================================
+    // ==========================================================================================
 
-    for(auto& node : testModel->m_nodes)
-    {
-        processLoadedNode(node, { 0, -3, -15 }, { }, { 1, 1, 2 }, planeEntities);
-    }
+    testModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                      [](const SGCore::Ref<SGCore::Entity>& entity)
+                                      {
+                                          auto meshComponent = entity->getComponent<SGCore::Mesh>();
+                                          auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                          if(meshComponent) meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
+                                          if(transformComponent)
+                                          {
+                                              transformComponent->m_scale = { 400.0, 400.0, 400.0 };
+                                          }
+                                      }
+    );
 
-    for(const auto& entity : planeEntities)
+    // ==========================================================================================
+    // ==========================================================================================
+    // ==========================================================================================
+
+    model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                   [](const SGCore::Ref<SGCore::Entity>& entity)
     {
-        auto meshComponent = entity->getComponent<SGCore::Mesh>();
         auto transformComponent = entity->getComponent<SGCore::Transform>();
-        if(meshComponent) meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
         if(transformComponent)
         {
-            transformComponent->m_scale = { 400.0, 400.0, 400.0 };
+            // svd
+            /*transformComponent->m_position = { 3, -1, -20 };
+            transformComponent->m_rotation = { 0, 90, 0 };
+            transformComponent->m_scale = { 0.2, 0.2, 0.2 };*/
+
+            // vsk94
+            /*transformComponent->m_position = { 3, 4, -20 };
+            transformComponent->m_rotation = { 90, 0, 0 };
+            transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
+
+            // vss
+            transformComponent->m_position = { 3, 2.91, -20 };
+            transformComponent->m_rotation = { 0, 0, 0 };
+            transformComponent->m_scale = { 0.7, 0.7, 0.7 };
+
+            // sponza old model
+            /*transformComponent->m_position = { 3, 2.91, -20 };
+            transformComponent->m_rotation = { 0, 0, 0 };
+            transformComponent->m_scale = { 0.07, 0.07, 0.07 };*/
+
+            // old building
+            /*transformComponent->m_position = { 3, 1, -20 };
+            transformComponent->m_rotation = { 90, 0, 0 };
+            transformComponent->m_scale = { 0.007, 0.007, 0.007 };*/
         }
-        testScene->addEntity(entity);
-    }
+    });
 
-    // -------
+    // ==========================================================================================
+    // ==========================================================================================
+    // ==========================================================================================
 
-    std::vector<SGCore::Ref<SGCore::Entity>> btrEntities;
+    model1->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                      [](const SGCore::Ref<SGCore::Entity>& entity)
+                                      {
+                                          auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                          if(transformComponent)
+                                          {
+                                              // wooden table
+                                              transformComponent->m_position = { 3, 1.4, -20 };
+                                              transformComponent->m_rotation = { 0, 90, 0 };
+                                              transformComponent->m_scale = { 0.1, 0.1, 0.1 };
+                                          }
+                                      }
+    );
 
-    for(auto& node : btrModel->m_nodes)
+    // ==========================================================================================
+    // ==========================================================================================
+    // ==========================================================================================
+
+    // adding skybox
     {
-        /*processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
-                          { 4, 4, 4 }, btrEntities);*/
-        /*processLoadedNode(node, { 0, -1, -20 }, { 0, 0, 0 },
-                          { 0.25, 0.25, 0.25 }, btrEntities);*/
-        /*processLoadedNode(node, { 5, -3, -20 }, { 0, 0, 0 },
-                          { 1, 1, 1 }, btrEntities);*/
-        /*processLoadedNode(node, { 5, -1, -20 }, { 0, 0, 0 },
-                          { 0.01, 0.01, 0.01 }, btrEntities);*/
-        /*processLoadedNode(node, { 0, -1.65, -20 }, { 0, 90, 0 },
-                          { 0.1, 0.1, 0.1 }, btrEntities);*/
-        /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 0 },
-                          { 0.005, 0.005, 0.005 }, btrEntities);*/
-        /*processLoadedNode(node, { 0, 0, -20 }, { 90, 0, 0 },
-                          { 0.005, 0.005, 0.005 }, btrEntities);*/
-        /*processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
-                          { 0.075, 0.075, 0.075 }, btrEntities);*/
-        /*processLoadedNode(node, { 3, -1, -20 }, { 90, 0, 90 },
-                          { 0.2, 0.2, 0.2 }, btrEntities);*/
-        /*processLoadedNode(node, { 3, 1.5, -20 }, { 90, 0, 0 },
-                          { 0.2, 0.2, 0.2 }, btrEntities);*/
+        auto standardCubemap = SGCore::AssetManager::loadAsset<SGCore::CubemapAsset>(
+                "standard_skybox0",
+                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
+                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+                ),
+                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
+                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
+                ),
 
-        // for uaz
-        processLoadedNode(node, { 3, -3, -20 }, { 90, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);
-        /*processLoadedNode(node, { 3, -1.7, -20 }, { 0, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
-        /*processLoadedNode(node, { -0, -3, -20 }, { 90, 0, 0 },
-                          { 0.00025 * 2, 0.00025 * 2, 0.00025 * 2 }, btrEntities);*/
-        /*processLoadedNode(node, { 3, -3, -20 }, { 0, 0, 0 },
-                          { 0.0025, 0.0025, 0.0025 }, btrEntities);*/
-        /*processLoadedNode(node, { 0.0, -3.0, -20 }, { 90, 0, 0 },
-                          { 0.01, 0.01, 0.01 }, btrEntities);*/
-        /*processLoadedNode(node, { 0, -1, -20 }, { 90, 0, 90 },
-                          { 0.025, 0.025, 0.025 }, btrEntities);*/
-        /*processLoadedNode(node, { 0, -1, -20 }, { 0, -90, 0 },
-                          { 20, 20, 20 }, btrEntities);*/
+                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
+                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
+                ),
+                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
+                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+                ),
+
+                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
+                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+                ),
+                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
+                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+                )
+        );
+
+        cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                          [standardCubemap](const SGCore::Ref<SGCore::Entity>& entity)
+                                          {
+                                              entity->addComponent(SGCore::MakeRef<SGCore::Skybox>());
+
+                                              auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                              auto meshComponent = entity->getComponent<SGCore::Mesh>();
+
+                                              if(transformComponent)
+                                              {
+                                                  transformComponent->m_scale = {1000, 1000, 1000 };
+                                              }
+
+                                              if(meshComponent)
+                                              {
+                                                  meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
+                                                  meshComponent->m_meshData->m_material->m_textures.emplace_back(
+                                                          SGTextureType::SGTP_SKYBOX,
+                                                          standardCubemap->getTexture2D()
+                                                  );
+                                              }
+                                          }
+        );
     }
 
-    for(const auto& entity : btrEntities)
-    {
-        testScene->addEntity(entity, SG_LAYER_OPAQUE_NAME);
-
-        auto meshComponent = entity->getComponent<SGCore::Mesh>();
-        if(meshComponent)
-        {
-            // meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
-        }
-    }
-
-    std::vector<SGCore::Ref<SGCore::Entity>> cubeEntities;
-
-    for(auto& node : cubeModel->m_nodes)
-    {
-        processLoadedNode(node, { 0, 0, 0 }, { 0, 0, 0 },
-                          { 1000, 1000, 1000 }, cubeEntities);
-    }
-
-    std::vector<SGCore::Ref<SGCore::Entity>> cube1Entities;
-
-    for(auto& node : cubeModel1->m_nodes)
-    {
-        processLoadedNode(node, { -5, 3, -30 }, { 0, 0, 0 },
-                          { 0.1 * 10.0, 0.4 * 10.0, 0.1 * 10.0 }, cube1Entities);
-    }
+    // ==========================================================================================
+    // ==========================================================================================
+    // ==========================================================================================
 
     auto geniusJPG = SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
             "../SGResources/textures/genius.jpg"
     );
 
-    for (const auto& entity: cube1Entities)
-    {
-        testScene->addEntity(entity, SG_LAYER_TRANSPARENT_NAME);
-        //testScene->addEntity(entity, SG_LAYER_OPAQUE_NAME);
+    cubeModel1->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
+                                       [geniusJPG](const SGCore::Ref<SGCore::Entity>& entity)
+                                       {
+                                           auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                           auto meshComponent = entity->getComponent<SGCore::Mesh>();
 
-        auto meshComponent = entity->getComponent<SGCore::Mesh>();
+                                           if(transformComponent)
+                                           {
+                                               transformComponent->m_position = { -5, 3, -30 };
+                                               transformComponent->m_rotation = { 0, 0, 0 };
+                                               transformComponent->m_scale = {0.1 * 10.0, 0.4 * 10.0, 0.1 * 10.0 };
+                                           }
 
-        if(meshComponent)
-        {
-            meshComponent->m_meshData->m_material->m_textures.emplace_back(
-                    SGTextureType::SGTP_DIFFUSE,
-                    geniusJPG->m_texture2D
-            );
-        }
-    }
-
-    auto standardCubemap = SGCore::AssetManager::loadAsset<SGCore::CubemapAsset>(
-            "standard_skybox0",
-            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
-            ),
-            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-            ),
-
-            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-            ),
-            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
-            ),
-
-            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
-            ),
-            SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                    "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
-            )
+                                           if(meshComponent)
+                                           {
+                                               meshComponent->m_meshData->m_material->m_textures.emplace_back(
+                                                       SGTextureType::SGTP_DIFFUSE,
+                                                       geniusJPG->m_texture2D
+                                               );
+                                           }
+                                       }
     );
 
-    for(const auto& entity : cubeEntities)
-    {
-        entity->addComponent(SGCore::MakeRef<SGCore::Skybox>());
-
-        auto meshComponent = entity->getComponent<SGCore::Mesh>();
-        if(meshComponent)
-        {
-            meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
-            meshComponent->m_meshData->m_material->m_textures.emplace_back(
-                    SGTextureType::SGTP_SKYBOX,
-                    standardCubemap->getTexture2D()
-            );
-        }
-        testScene->addEntity(entity);
-    }
+    // ==========================================================================================
+    // ==========================================================================================
+    // ==========================================================================================
 
     testCameraEntity = SGCore::MakeRef<SGCore::Entity>();
     testCameraEntity->m_name = "SGMainCamera";
@@ -356,7 +363,6 @@ void init()
     shadowsCasterTransform->m_position.z = 5.0;
     shadowsCasterTransform->m_position.x = -5.0;
     shadowsCasterTransform->m_rotation.x = 50;
-    //shadowsCasterTransform->m_rotation.y = -90;
     auto shadowCasterComponent = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(shadowCasterComponent);
@@ -364,9 +370,6 @@ void init()
     directionalLight->m_color.r = 250.0f / 255.0f;
     directionalLight->m_color.g = 129.0f / 255.0f;
     directionalLight->m_color.b = 0.0f / 255.0f;
-    //directionalLight->m_color.r = 255.0f / 255.0f * 2.0f;
-    //directionalLight->m_color.g = 255.0f / 255.0f * 2.0f;
-    //directionalLight->m_color.b = 255.0f / 255.0f * 2.0f;
     testShadowsCaster->addComponent(directionalLight);
     testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
@@ -379,8 +382,6 @@ void init()
     shadowsCasterTransform1->m_position.y = 10;
     shadowsCasterTransform1->m_position.z = -50.0;
     shadowsCasterTransform1->m_rotation.y = 180;
-    //shadowsCasterTransform1->m_rotation.x = 40;
-    //shadowsCasterTransform1->m_rotation.y = 30;
     auto shadowCasterComponent1 = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
     testShadowsCaster1->addComponent(shadowCasterComponent1);
@@ -388,9 +389,75 @@ void init()
     directionalLight1->m_color.r = 139.0f / 255.0f;
     directionalLight1->m_color.g = 184.0f / 255.0f;
     directionalLight1->m_color.b = 241.0f / 255.0f;
-    //directionalLight1->m_intensity = 10.0f;
     testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+
+    auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
+    testScene->addEntity(testShadowsCaster2);
+    auto shadowsCasterTransform2 = SGCore::MakeRef<SGCore::Transform>();
+    shadowsCasterTransform2->m_position.x = 10;
+    shadowsCasterTransform2->m_position.y = 10;
+    shadowsCasterTransform2->m_position.z = -50.0;
+    shadowsCasterTransform2->m_rotation.y = 180;
+    auto shadowCasterComponent2 = SGCore::MakeRef<SGCore::ShadowsCaster>();
+    testShadowsCaster2->addComponent(shadowsCasterTransform2);
+    testShadowsCaster2->addComponent(shadowCasterComponent2);
+    auto directionalLight2 = SGCore::MakeRef<SGCore::DirectionalLight>();
+    directionalLight2->m_color.r = 20.0f / 255.0f;
+    directionalLight2->m_color.g = 184.0f / 255.0f;
+    directionalLight2->m_color.b = 241.0f / 255.0f;
+    testShadowsCaster2->addComponent(directionalLight2);
+    testShadowsCaster2->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+
+    auto testShadowsCaster3 = SGCore::MakeRef<SGCore::Entity>();
+    testScene->addEntity(testShadowsCaster3);
+    auto shadowsCasterTransform3 = SGCore::MakeRef<SGCore::Transform>();
+    shadowsCasterTransform3->m_position.x = -20;
+    shadowsCasterTransform3->m_position.y = 10;
+    shadowsCasterTransform3->m_position.z = -20.0;
+    shadowsCasterTransform3->m_rotation.y = 90;
+    auto shadowCasterComponent3 = SGCore::MakeRef<SGCore::ShadowsCaster>();
+    testShadowsCaster3->addComponent(shadowsCasterTransform3);
+    testShadowsCaster3->addComponent(shadowCasterComponent3);
+    auto directionalLight3 = SGCore::MakeRef<SGCore::DirectionalLight>();
+    directionalLight3->m_color.r = 139.0f / 255.0f;
+    directionalLight3->m_color.g = 15.0f / 255.0f;
+    directionalLight3->m_color.b = 5.0f / 255.0f;
+    testShadowsCaster3->addComponent(directionalLight3);
+    testShadowsCaster3->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+
+    auto testShadowsCaster4 = SGCore::MakeRef<SGCore::Entity>();
+    testScene->addEntity(testShadowsCaster4);
+    auto shadowsCasterTransform4 = SGCore::MakeRef<SGCore::Transform>();
+    shadowsCasterTransform4->m_position.x = 20;
+    shadowsCasterTransform4->m_position.y = 10;
+    shadowsCasterTransform4->m_position.z = -20.0;
+    shadowsCasterTransform4->m_rotation.y = -90;
+    auto shadowCasterComponent4 = SGCore::MakeRef<SGCore::ShadowsCaster>();
+    testShadowsCaster4->addComponent(shadowsCasterTransform4);
+    testShadowsCaster4->addComponent(shadowCasterComponent4);
+    auto directionalLight4 = SGCore::MakeRef<SGCore::DirectionalLight>();
+    directionalLight4->m_color.r = 139.0f / 255.0f;
+    directionalLight4->m_color.g = 50.0f / 255.0f;
+    directionalLight4->m_color.b = 241.0f / 255.0f;
+    testShadowsCaster4->addComponent(directionalLight4);
+    testShadowsCaster4->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+
+    auto xLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
+    xLineGizmo->m_meshData->setVertexPosition(1, 10, 0, 0);
+    xLineGizmo->m_color = { 1.0, 0.0, 0.0, 1.0 };
+
+    auto yLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
+    yLineGizmo->m_meshData->setVertexPosition(1, 0, 10, 0);
+    yLineGizmo->m_color = { 0.0, 1.0, 0.0, 1.0 };
+
+    auto zLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
+    zLineGizmo->m_meshData->setVertexPosition(1, 0, 0, 10);
+    zLineGizmo->m_color = { 0.0, 0.0, 1.0, 1.0 };
+
+    testShadowsCaster1->addComponent(xLineGizmo);
+    testShadowsCaster1->addComponent(yLineGizmo);
+    testShadowsCaster1->addComponent(zLineGizmo);
 
     /// -----------------------------------------
 

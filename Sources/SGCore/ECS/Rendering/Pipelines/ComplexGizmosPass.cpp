@@ -2,14 +2,14 @@
 // Created by stuka on 26.11.2023.
 //
 
-#include "PBRFRPComplexGizmosPass.h"
+#include "ComplexGizmosPass.h"
 #include "SGCore/ECS/ECSWorld.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ECS/Rendering/Gizmos/IComplexGizmo.h"
 
-void SGCore::PBRFRPComplexGizmosPass::render(const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
+void SGCore::ComplexGizmosPass::render(const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_shader->bind();
 

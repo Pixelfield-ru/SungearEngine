@@ -19,6 +19,6 @@
 
     void main()
     {
-        fragColor = vec4(u_color.rgb, u_color.a);
+        fragColor = u_color;
     }
 #endif
