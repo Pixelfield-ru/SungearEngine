@@ -32,6 +32,9 @@
 
 #include "SGCore/Utils/ImGuiLayer.h"
 #include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
+#include "SGEditor/Views/Base/Window.h"
+#include "SGEditor/Views/Base/CollapsingHeader.h"
+#include "EditorMain.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -466,8 +469,6 @@ void init()
     SGCore::ImGuiLayer::initImGui();
 
     // -----------------------------------------------------------------------
-
-    auto& sys = SGCore::ECSWorld::getSystems();
 }
 
 // -------------- CAMERA JUST FOR FIRST STABLE VERSION. MUST BE DELETED --------
@@ -486,9 +487,14 @@ void fixedUpdate()
     framesCnt++;
 }
 
+auto testWindow = std::make_shared<SGEditor::Window>();
+auto testCollapsingHeader = std::make_shared<SGEditor::CollapsingHeader>();
+
 void update()
 {
     SGCore::ImGuiLayer::beginFrame();
+
+    testWindow->render();
 
     ImGui::Begin("ECS Systems Stats");
     {
@@ -527,6 +533,8 @@ void update()
 
     SGCore::ECSWorld::update(SGCore::Scene::getCurrentScene());
 
+    SGEditor::EditorMain::getMainViewsManager()->renderRootViews();
+
     SGCore::ImGuiLayer::endFrame();
 }
 
@@ -534,6 +542,25 @@ void update()
 
 int main()
 {
+    SGEditor::EditorMain::start();
+
+    auto* testWindowOverdraw = new SGCore::EventListenerHolder<void()> {[]()
+                                                                        {
+                                                                            ImGui::Text("hi.");
+                                                                        }};
+
+    int* dragInt = new int(0);
+    auto* testCollapsingHeaderOverdraw = new SGCore::EventListenerHolder<void()> {[dragInt]()
+                                                                        {
+                                                                            ImGui::DragInt("Drag this int!", dragInt);
+                                                                            ImGui::Text("hi!!");
+                                                                        }};
+
+    testWindow->m_subViews.push_back(testCollapsingHeader);
+
+    (*testWindow->m_onRenderEvent) += testWindowOverdraw;
+    (*testCollapsingHeader->m_onRenderEvent) += testCollapsingHeaderOverdraw;
+
     //SGConsole::Console::start();
 
     sgSetCoreInitCallback(init);

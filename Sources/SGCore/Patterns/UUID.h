@@ -21,6 +21,21 @@ private:
 public:
     UUID()
     {
+        m_uuid = generateNew();
+    }
+
+    const std::string& getUUID() const noexcept
+    {
+        return m_uuid;
+    }
+
+    bool operator==(const UUID& other) const
+    {
+        return m_uuid == other.m_uuid;
+    }
+
+    static std::string generateNew() noexcept
+    {
         static std::random_device rd;
         static std::mt19937_64 gen(rd());
         static std::uniform_int_distribution<> dis(0, 15);
@@ -62,19 +77,11 @@ public:
             ss << dis(gen);
         };
 
-        m_uuid = ss.str();
+        std::string uuid = ss.str();
 
         // std::cout << "uuid: " << m_uuid << std::endl;
-    }
 
-    const std::string& getUUID() const noexcept
-    {
-        return m_uuid;
-    }
-
-    bool operator==(const UUID& other) const
-    {
-        return m_uuid == other.m_uuid;
+        return uuid;
     }
 };
 

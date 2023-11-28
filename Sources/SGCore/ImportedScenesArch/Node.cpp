@@ -39,6 +39,7 @@ void SGCore::Node::addOnScene(const Ref<Scene>& scene,
         meshedEntity->addComponent(meshedEntityTransformComponent);
         meshedEntity->addComponent(meshComponent);
 
+        // todo: add new entities as children in node
         scene->addEntity(meshedEntity, layerName);
 
         meshFunc(nodeEntity, meshedEntity);

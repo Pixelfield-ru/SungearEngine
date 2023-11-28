@@ -28,8 +28,7 @@ namespace SGCore
         std::unordered_map<Ref<Entity>, Ref<ComponentsCollection>> m_cachedEntities;
     };
 
-    // TODO: add allocator and free for components that will remove component from cached components if free
-    // TODO: when the component is free, the allocator will make a signal to the systems that cache this type of components for the recache
+    // todo: move in scene. delete ECSWorld
     class ECSWorld
     {
     public:
