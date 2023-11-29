@@ -3,13 +3,13 @@
 //
 
 #include "PBRFRPSkyboxesPass.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/Main/CoreMain.h"
 
-void SGCore::PBRFRPSkyboxesPass::render(const Ref<IRenderPipeline>& renderPipeline)
+void SGCore::PBRFRPSkyboxesPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     m_shader->bind();
     m_shader->useShaderMarkup(m_shaderMarkup);

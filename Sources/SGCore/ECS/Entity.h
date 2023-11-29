@@ -20,13 +20,15 @@ namespace SGCore
 {
     class IComponent;
     class Layer;
+    class Scene;
 
     class Entity : public std::enable_shared_from_this<Entity>
     {
         friend class Scene;
+        friend class Node;
 
     public:
-        std::string m_name;
+        std::string m_name = "SGEntity";
 
         std::set<Ref<Entity>> m_children;
 
@@ -76,11 +78,21 @@ namespace SGCore
 
         Ref<Layer> getLayer() const noexcept;
 
+        size_t getCountOfEntities(const std::string& entitiesNames) const noexcept;
+
+        size_t getSceneSameNameIndex() const noexcept;
+
         // todo: make remove component and remove components of type
 
     private:
+        // what index of same name in scene has this entity
+        size_t m_sceneSameNameIndex = 0;
+
         std::list<Ref<IComponent>> m_components;
+
+        // todo: make only index of layer.
         Weak<Layer> m_layer;
+        Weak<Scene> m_scene;
     };
 }
 

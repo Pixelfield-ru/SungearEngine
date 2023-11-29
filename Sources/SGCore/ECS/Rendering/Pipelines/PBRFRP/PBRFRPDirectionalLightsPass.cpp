@@ -3,13 +3,13 @@
 //
 
 #include "PBRFRPDirectionalLightsPass.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "PBRFRPGeometryPass.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCastersCollector.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
+#include "SGCore/ECS/Scene.h"
+#include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"
 
-void SGCore::PBRFRPDirectionalLightsPass::render(const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
+void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_renderTimer.startFrame();
 
@@ -27,7 +27,7 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const SGCore::Ref<SGCore::IRend
                                                      size_t directionalLightsCount = 0;
 
                                                      SG_BEGIN_ITERATE_CACHED_ENTITIES(
-                                                             *SGSingleton::getSharedPtrInstance<DirectionalLightsCollector>()->m_componentsCollector.m_cachedEntities,
+                                                             *(scene->getSystem<DirectionalLightsCollector>()->m_componentsCollector.m_cachedEntities),
                                                              dirLightsLayer, directionalLightEntity)
 
                                                              auto directionalLightComponents =

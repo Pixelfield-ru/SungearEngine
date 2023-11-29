@@ -9,11 +9,11 @@
 
 namespace SGCore
 {
-    class CamerasCollector : public ISystem
+    struct CamerasCollector : public ISystem
     {
-        SG_CUSTOM_CTOR_SINGLETON(CamerasCollector)
-        SG_COPY_SINGLETON(CamerasCollector)
-        SG_MOVE_SINGLETON(CamerasCollector)
+        CamerasCollector();
+        SG_COPY_CTOR(CamerasCollector);
+        SG_MOVE_CTOR(CamerasCollector);
     };
 }
 

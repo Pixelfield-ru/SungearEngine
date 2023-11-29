@@ -26,7 +26,7 @@ namespace SGCore
         // collector for components to render
         Ref<CollectorCachedEntities> m_componentsToRender;
 
-        virtual void render(const Ref<IRenderPipeline>& renderPipeline) = 0;
+        virtual void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) = 0;
     };
 }
 

@@ -6,8 +6,11 @@
 #include <memory>
 #include <map>
 #include <variant>
+#include <type_traits>
 
 #include "Layer.h"
+#include "ISystem.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace SGCore
 {
@@ -27,16 +30,16 @@ namespace SGCore
         }
     };
 
-    class Scene
+    class Scene : public std::enable_shared_from_this<Scene>
     {
-        friend class ECSWorld;
-
     public:
         std::list<Ref<Entity>> m_entities;
 
         std::string name;
 
         Scene() noexcept;
+
+        void createDefaultSystems();
 
         void addLayer(std::string&& layerName) noexcept;
         void addEntity(const Ref<Entity>& entity) noexcept;
@@ -53,12 +56,37 @@ namespace SGCore
             return m_layers;
         }
 
+        void fixedUpdate();
+
+        void update();
+
+        void recacheEntity(const Ref<Entity>& entity);
+
+        template<typename SystemT>
+        requires(std::is_base_of_v<ISystem, SystemT>)
+        Ref<SystemT> getSystem()
+        {
+            for(auto& system : m_systems)
+            {
+                if(SG_INSTANCEOF(system.get(), SystemT))
+                {
+                    return std::static_pointer_cast<SystemT>(system);
+                }
+            }
+
+            return nullptr;
+        }
+
+        std::set<Ref<ISystem>>& getSystems() noexcept;
+
+        size_t getCountOfEntities(const std::string& entitiesNames) const noexcept;
+
     private:
         static inline Ref<Scene> m_currentScene;
 
+        std::set<Ref<ISystem>> m_systems;
+
         std::map<std::string, Ref<Layer>> m_layers;
-        // first - index
-        //std::map<size_t, std::shared_ptr<Layer>> m_layers;
     };
 }
 

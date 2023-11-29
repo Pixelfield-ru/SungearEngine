@@ -3,14 +3,14 @@
 //
 
 #include "PBRFRPGeometryPass.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "PBRFRPShadowsPass.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 
-void SGCore::PBRFRPGeometryPass::render(const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
+void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     Ref<PBRFRPShadowsPass> shadowsPass = renderPipeline->getRenderPass<PBRFRPShadowsPass>();
 

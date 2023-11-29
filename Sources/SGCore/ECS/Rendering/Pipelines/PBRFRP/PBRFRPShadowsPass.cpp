@@ -5,7 +5,7 @@
 #include "PBRFRPShadowsPass.h"
 #include "PBRFRPGeometryPass.h"
 #include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 
 SGCore::PBRFRPShadowsPass::PBRFRPShadowsPass() noexcept
@@ -16,7 +16,7 @@ SGCore::PBRFRPShadowsPass::PBRFRPShadowsPass() noexcept
     m_renderTimer.addCallback(m_renderTimerCallback);
 }
 
-void SGCore::PBRFRPShadowsPass::render(const Ref<IRenderPipeline>& renderPipeline)
+void SGCore::PBRFRPShadowsPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     m_renderTimer.startFrame();
 

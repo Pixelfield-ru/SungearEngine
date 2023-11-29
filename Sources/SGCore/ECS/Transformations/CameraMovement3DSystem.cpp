@@ -10,7 +10,7 @@
 #include "SGCore/Input/InputManager.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/Math.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 
 SGCore::CameraMovement3DSystem::CameraMovement3DSystem()
 {

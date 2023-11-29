@@ -3,13 +3,13 @@
 //
 
 #include "ComplexGizmosPass.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ECS/Rendering/Gizmos/IComplexGizmo.h"
 
-void SGCore::ComplexGizmosPass::render(const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
+void SGCore::ComplexGizmosPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_shader->bind();
 

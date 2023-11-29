@@ -9,11 +9,11 @@
 
 namespace SGCore
 {
-    class ShadowsCastersCollector : public ISystem
+    struct ShadowsCastersCollector : public ISystem
     {
-        SG_CUSTOM_CTOR_SINGLETON(ShadowsCastersCollector)
-        SG_COPY_SINGLETON(ShadowsCastersCollector)
-        SG_MOVE_SINGLETON(ShadowsCastersCollector)
+        ShadowsCastersCollector();
+        SG_COPY_CTOR(ShadowsCastersCollector);
+        SG_MOVE_CTOR(ShadowsCastersCollector);
     };
 }
 

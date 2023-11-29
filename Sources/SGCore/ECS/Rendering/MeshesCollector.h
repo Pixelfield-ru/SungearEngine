@@ -12,9 +12,9 @@ namespace SGCore
 {
     struct MeshesCollector : public ISystem
     {
-        SG_CUSTOM_CTOR_SINGLETON(MeshesCollector)
-        SG_COPY_SINGLETON(MeshesCollector)
-        SG_MOVE_SINGLETON(MeshesCollector)
+        MeshesCollector();
+        SG_COPY_CTOR(MeshesCollector);
+        SG_MOVE_CTOR(MeshesCollector);
     };
 }
 

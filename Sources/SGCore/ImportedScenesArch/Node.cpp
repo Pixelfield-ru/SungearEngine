@@ -8,11 +8,15 @@
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "glm/gtc/quaternion.hpp"
 
-void SGCore::Node::addOnScene(const Ref<Scene>& scene,
-                              const std::string& layerName,
-                              const Node::EachEntityFunc& eachEntityFunc,
-                              const Node::MeshFunc& meshFunc) noexcept
+SGCore::Ref<SGCore::Entity> SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene, const std::string& layerName,
+                                                     const SGCore::Node::EachEntityFunc& eachEntityFunc,
+                                                     const SGCore::Node::MeshFunc& meshFunc,
+                                                     const bool& rootAdd) noexcept
 {
+    auto layer = scene->getLayers().find(layerName)->second;
+
+    if(!layer) return nullptr;
+
     Ref<Entity> nodeEntity = MakeRef<Entity>();
 
     auto nodeTransform = MakeRef<Transform>();
@@ -24,7 +28,17 @@ void SGCore::Node::addOnScene(const Ref<Scene>& scene,
 
     nodeEntity->m_name = m_name;
 
-    scene->addEntity(nodeEntity, layerName);
+    if(rootAdd)
+    {
+        scene->addEntity(nodeEntity, layerName);
+    }
+    else
+    {
+        nodeEntity->m_scene = scene;
+        nodeEntity->m_layer = layer;
+    }
+
+    scene->recacheEntity(nodeEntity);
 
     eachEntityFunc(nodeEntity);
 
@@ -39,17 +53,31 @@ void SGCore::Node::addOnScene(const Ref<Scene>& scene,
         meshedEntity->addComponent(meshedEntityTransformComponent);
         meshedEntity->addComponent(meshComponent);
 
-        // todo: add new entities as children in node
-        scene->addEntity(meshedEntity, layerName);
+        meshedEntity->m_scene = scene;
+        meshedEntity->m_layer = layer;
+        nodeEntity->m_children.insert(meshedEntity);
+
+        scene->recacheEntity(meshedEntity);
 
         meshFunc(nodeEntity, meshedEntity);
         eachEntityFunc(meshedEntity);
     }
 
-    for(auto& node : m_children)
+    for(auto& childNode : m_children)
     {
-        node->addOnScene(scene, layerName, eachEntityFunc, meshFunc);
+        auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
+        nodeEntity->m_children.insert(childNodeEntity);
     }
+
+    return nodeEntity;
+}
+
+void SGCore::Node::addOnScene(const Ref<Scene>& scene,
+                              const std::string& layerName,
+                              const Node::EachEntityFunc& eachEntityFunc,
+                              const Node::MeshFunc& meshFunc) noexcept
+{
+    addOnScene(scene, layerName, eachEntityFunc, meshFunc, true);
 }
 
 void SGCore::Node::addOnScene

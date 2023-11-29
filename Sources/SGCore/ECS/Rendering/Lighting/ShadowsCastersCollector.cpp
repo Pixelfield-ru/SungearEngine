@@ -6,7 +6,6 @@
 #include "ShadowsCaster.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/ECSWorld.h"
 
 SGCore::ShadowsCastersCollector::ShadowsCastersCollector()
 {

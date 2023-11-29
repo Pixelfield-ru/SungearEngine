@@ -9,11 +9,11 @@
 
 namespace SGCore
 {
-    class LinesGizmosCollector : public ISystem
+    struct LinesGizmosCollector : public ISystem
     {
-        SG_CUSTOM_CTOR_SINGLETON(LinesGizmosCollector)
-        SG_COPY_SINGLETON(LinesGizmosCollector)
-        SG_MOVE_SINGLETON(LinesGizmosCollector)
+        LinesGizmosCollector();
+        SG_COPY_CTOR(LinesGizmosCollector);
+        SG_MOVE_CTOR(LinesGizmosCollector);
     };
 }
 

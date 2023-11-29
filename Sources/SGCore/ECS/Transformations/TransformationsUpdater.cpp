@@ -12,7 +12,7 @@
 #include "glm/gtx/quaternion.hpp"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "GLFW/glfw3.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/ECS/Rendering/MeshesCollector.h"
 
 /*double curT = 0.0;

@@ -12,9 +12,9 @@ namespace SGCore
 {
     struct DirectionalLightsCollector : public ISystem
     {
-        SG_CUSTOM_CTOR_SINGLETON(DirectionalLightsCollector)
-        SG_COPY_SINGLETON(DirectionalLightsCollector)
-        SG_MOVE_SINGLETON(DirectionalLightsCollector)
+        DirectionalLightsCollector();
+        SG_COPY_CTOR(DirectionalLightsCollector);
+        SG_MOVE_CTOR(DirectionalLightsCollector);
     };
 }
 

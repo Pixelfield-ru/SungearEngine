@@ -13,9 +13,11 @@ namespace SGCore
 
     struct PBRForwardRenderPipeline : public IRenderPipeline
     {
-        SG_CUSTOM_CTOR_SINGLETON(PBRForwardRenderPipeline)
-        SG_COPY_SINGLETON(PBRForwardRenderPipeline)
-        SG_MOVE_SINGLETON(PBRForwardRenderPipeline)
+        PBRForwardRenderPipeline();
+        SG_COPY_CTOR(PBRForwardRenderPipeline);
+        SG_MOVE_CTOR(PBRForwardRenderPipeline);
+
+        void useScene(const Ref<Scene>& scene) override;
     };
 }
 

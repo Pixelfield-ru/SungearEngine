@@ -7,11 +7,11 @@ namespace SGCore
 {
     struct GizmosMeshesRebuilder : public ISystem
     {
-        void fixedUpdate(const Ref<Scene>& scene) final;
+        GizmosMeshesRebuilder();
+        SG_COPY_CTOR(GizmosMeshesRebuilder);
+        SG_MOVE_CTOR(GizmosMeshesRebuilder);
 
-        SG_CUSTOM_CTOR_SINGLETON(GizmosMeshesRebuilder)
-        SG_COPY_SINGLETON(GizmosMeshesRebuilder)
-        SG_MOVE_SINGLETON(GizmosMeshesRebuilder)
+        void fixedUpdate(const Ref<Scene>& scene) final;
     };
 }
 

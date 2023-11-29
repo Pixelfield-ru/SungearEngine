@@ -7,7 +7,7 @@
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "glm/ext/quaternion_trigonometric.hpp"
 #include "glm/gtx/quaternion.hpp"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 
 SGCore::RenderingComponentsUpdater::RenderingComponentsUpdater()
 {

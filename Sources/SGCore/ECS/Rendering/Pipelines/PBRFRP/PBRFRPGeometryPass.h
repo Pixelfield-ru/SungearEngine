@@ -11,7 +11,7 @@ namespace SGCore
 {
     struct PBRFRPGeometryPass : public IRenderPass
     {
-        void render(const Ref<IRenderPipeline>& renderPipeline) final;
+        void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
     };
 }
 

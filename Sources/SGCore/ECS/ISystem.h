@@ -9,7 +9,6 @@
 #include <map>
 #include <source_location>
 
-#include "Scene.h"
 #include "SGCore/Patterns/Marker.h"
 #include "Transformations/Transform.h"
 #include "SGCore/Patterns/Singleton.h"
@@ -23,7 +22,7 @@ namespace SGCore
 {
     class ISystem
     {
-        friend class ECSWorld;
+        friend class Scene;
     public:
         ComponentsCollector m_componentsCollector;
 
@@ -51,6 +50,12 @@ namespace SGCore
 
         double getUpdateFunctionExecutionTime() const noexcept;
         double getFixedUpdateFunctionExecutionTime() const noexcept;
+
+        // this function realization must clear cached components and set up system for scene
+        virtual void useScene(const Ref<Scene>& scene)
+        {
+            m_componentsCollector.m_cachedEntities->clear();
+        }
 
     protected:
         double m_update_executionTime = 0.0;

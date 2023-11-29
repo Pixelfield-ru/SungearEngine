@@ -17,11 +17,11 @@ namespace SGCore
 
     struct TransformationsUpdater : public ISystem
     {
-        void fixedUpdate(const Ref<Scene>& scene) final;
+        TransformationsUpdater();
+        SG_COPY_CTOR(TransformationsUpdater);
+        SG_MOVE_CTOR(TransformationsUpdater);
 
-        SG_CUSTOM_CTOR_SINGLETON(TransformationsUpdater)
-        SG_COPY_SINGLETON(TransformationsUpdater)
-        SG_MOVE_SINGLETON(TransformationsUpdater)
+        void fixedUpdate(const Ref<Scene>& scene) final;
     };
 }
 

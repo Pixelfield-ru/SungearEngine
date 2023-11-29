@@ -3,7 +3,7 @@
 //
 
 #include "MeshesCollector.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "Mesh.h"
 #include "Skybox.h"
 #include "SGCore/ECS/Rendering/Gizmos/IGizmo.h"

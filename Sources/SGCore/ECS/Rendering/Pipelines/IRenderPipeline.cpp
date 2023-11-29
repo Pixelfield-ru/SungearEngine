@@ -16,6 +16,6 @@ void SGCore::IRenderPipeline::update(const SGCore::Ref<SGCore::Scene>& scene) no
     {
         if(!renderPass->m_active) continue;
 
-        renderPass->render(shared_from_this());
+        renderPass->render(scene, shared_from_this());
     }
 }

@@ -14,6 +14,12 @@ namespace SGCore
         using MeshFunc = std::function<void(const Ref<Entity>& nodeEntity, const Ref<Entity>& meshEntity)>;
         using EachEntityFunc = std::function<void(const Ref<Entity>& nodeEntity)>;
 
+        Ref<Entity> addOnScene(const Ref<Scene>& scene,
+                               const std::string& layerName,
+                               const EachEntityFunc& eachEntityFunc,
+                               const MeshFunc& meshFunc,
+                               const bool& rootAdd) noexcept;
+
     public:
         std::string m_name;
 

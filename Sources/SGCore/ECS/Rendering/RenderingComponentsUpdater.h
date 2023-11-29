@@ -11,11 +11,11 @@ namespace SGCore
 {
     struct RenderingComponentsUpdater : public ISystem
     {
-        void fixedUpdate(const Ref<Scene>& scene) final;
+        RenderingComponentsUpdater();
+        SG_COPY_CTOR(RenderingComponentsUpdater);
+        SG_MOVE_CTOR(RenderingComponentsUpdater);
 
-        SG_CUSTOM_CTOR_SINGLETON(RenderingComponentsUpdater)
-        SG_COPY_SINGLETON(RenderingComponentsUpdater)
-        SG_MOVE_SINGLETON(RenderingComponentsUpdater)
+        void fixedUpdate(const Ref<Scene>& scene) final;
     };
 }
 

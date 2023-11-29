@@ -19,7 +19,7 @@
 #include "SGCore/Main/Callbacks.h"
 
 #include "SGCore/ECS/Scene.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
@@ -48,6 +48,7 @@ SGCore::Ref<SGCore::Entity> testShadowsCaster;
 void init()
 {
     testScene = SGCore::MakeRef<SGCore::Scene>();
+    testScene->createDefaultSystems();
     SGCore::Scene::setCurrentScene(testScene);
 
     // найс это работает. TODO: убрать! просто ради теста ---------------------
@@ -482,7 +483,7 @@ void fixedUpdate()
 
     testShadowsCaster->getComponent<SGCore::Transform>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
 
-    SGCore::ECSWorld::fixedUpdate(SGCore::Scene::getCurrentScene());
+    SGCore::Scene::getCurrentScene()->fixedUpdate();
 
     framesCnt++;
 }
@@ -508,7 +509,7 @@ void update()
             ImGui::Text("fixedUpdate");
             ImGui::TableNextColumn();
 
-            for(const auto& system : SGCore::ECSWorld::getSystems())
+            for(const auto& system : SGCore::Scene::getCurrentScene()->getSystems())
             {
                 std::string systemName = std::string(typeid(*(system)).name());
                 ImGui::Text(systemName.c_str());
@@ -531,7 +532,7 @@ void update()
 
     //ImGui::ShowDemoWindow();
 
-    SGCore::ECSWorld::update(SGCore::Scene::getCurrentScene());
+    SGCore::Scene::getCurrentScene()->update();
 
     SGEditor::EditorMain::getMainViewsManager()->renderRootViews();
 

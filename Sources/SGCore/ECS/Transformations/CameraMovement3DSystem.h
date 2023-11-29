@@ -9,11 +9,11 @@ namespace SGCore
 {
     struct CameraMovement3DSystem : public ISystem
     {
-        void fixedUpdate(const Ref<Scene>& scene) final;
+        CameraMovement3DSystem();
+        SG_COPY_CTOR(CameraMovement3DSystem);
+        SG_MOVE_CTOR(CameraMovement3DSystem);
 
-        SG_CUSTOM_CTOR_SINGLETON(CameraMovement3DSystem)
-        SG_COPY_SINGLETON(CameraMovement3DSystem)
-        SG_MOVE_SINGLETON(CameraMovement3DSystem)
+        void fixedUpdate(const Ref<Scene>& scene) final;
     };
 }
 

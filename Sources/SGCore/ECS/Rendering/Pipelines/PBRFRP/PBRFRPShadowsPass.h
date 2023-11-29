@@ -14,7 +14,7 @@ namespace SGCore
     {
         PBRFRPShadowsPass() noexcept;
 
-        void render(const Ref<IRenderPipeline>& renderPipeline) final;
+        void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
 
     private:
         Ref<TimerCallback> m_renderTimerCallback = MakeRef<TimerCallback>();

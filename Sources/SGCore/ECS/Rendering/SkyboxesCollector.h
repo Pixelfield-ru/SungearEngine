@@ -11,9 +11,9 @@ namespace SGCore
 {
     struct SkyboxesCollector : public ISystem
     {
-        SG_CUSTOM_CTOR_SINGLETON(SkyboxesCollector)
-        SG_COPY_SINGLETON(SkyboxesCollector)
-        SG_MOVE_SINGLETON(SkyboxesCollector)
+        SkyboxesCollector();
+        SG_COPY_CTOR(SkyboxesCollector);
+        SG_MOVE_CTOR(SkyboxesCollector);
     };
 }
 

@@ -8,7 +8,6 @@
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
-#include "SGCore/ECS/ECSWorld.h"
 #include "SGCore/Utils/ShadersPaths.h"
 
 void SGCore::CoreMain::start()
@@ -29,7 +28,6 @@ void SGCore::CoreMain::start()
     InputManager::init();
     AssetManager::init();
     Log::init();
-    ECSWorld::init();
     // ----------------------------------
 
     std::shared_ptr<TimerCallback> globalTimerCallback = std::make_shared<TimerCallback>();

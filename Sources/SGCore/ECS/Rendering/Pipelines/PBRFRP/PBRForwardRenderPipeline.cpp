@@ -9,7 +9,7 @@
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/Skybox.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/ECS/Rendering/MeshesCollector.h"
 #include "SGCore/ECS/Transformations/TransformationsUpdater.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"
@@ -28,34 +28,10 @@
 #include "SGCore/ECS/Rendering/Pipelines/ComplexGizmosPass.h"
 #include "PBRFRPDirectionalLightsPass.h"
 #include "SGCore/ECS/Rendering/Pipelines/LinesGizmosPass.h"
+#include "SGCore/ECS/Scene.h"
 
 SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
-    auto& cameras = SGSingleton::getSharedPtrInstance<CamerasCollector>()->m_componentsCollector.m_cachedEntities;
-    auto& shadowsCasters = SGSingleton::getSharedPtrInstance<ShadowsCastersCollector>()->m_componentsCollector.m_cachedEntities;
-
-    auto& meshes = SGSingleton::getSharedPtrInstance<MeshesCollector>()->m_componentsCollector.m_cachedEntities;
-
-    auto& linesGizmos = SGSingleton::getSharedPtrInstance<LinesGizmosCollector>()->m_componentsCollector.m_cachedEntities;
-
-    auto& complexGizmos = SGSingleton::getSharedPtrInstance<ComplexGizmosCollector>()->m_componentsCollector.m_cachedEntities;
-
-    m_prepareFunc = [&, cameras, shadowsCasters]()
-    {
-        SG_BEGIN_ITERATE_CACHED_ENTITIES(
-                *cameras,
-                camerasLayer,
-                cameraEntity)
-
-                auto camera = cameraEntity.getComponent<Camera>();
-
-                if(camera)
-                {
-                    camera->clearPostProcessFrameBuffers();
-                }
-        SG_END_ITERATE_CACHED_ENTITIES
-    };
-
     // -----------------------------
 
     {
@@ -82,10 +58,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
         skyboxesPass->m_shaderMarkup.calculateBlocksOffsets();
 
-        skyboxesPass->m_componentsToRenderIn = cameras;
-        skyboxesPass->m_componentsToRender =
-                SGSingleton::getSharedPtrInstance<SkyboxesCollector>()->m_componentsCollector.m_cachedEntities;
-
         m_renderPasses.push_back(skyboxesPass);
     }
 
@@ -105,9 +77,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
         );
 
         shadowsPass->m_shaderMarkup.calculateBlocksOffsets();
-
-        shadowsPass->m_componentsToRenderIn = shadowsCasters;
-        shadowsPass->m_componentsToRender = meshes;
 
         m_renderPasses.push_back(shadowsPass);
     }
@@ -150,9 +119,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
         geometryPass->m_shaderMarkup.calculateBlocksOffsets();
 
-        geometryPass->m_componentsToRenderIn = cameras;
-        geometryPass->m_componentsToRender = meshes;
-
         m_renderPasses.push_back(geometryPass);
     }
 
@@ -164,9 +130,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                         ShadersPaths::getMainInstance()["Gizmos"]["LinesGizmosShader"]
                 )
         );
-
-        linesGizmosPass->m_componentsToRenderIn = cameras;
-        linesGizmosPass->m_componentsToRender = linesGizmos;
 
         m_renderPasses.push_back(linesGizmosPass);
     }
@@ -180,9 +143,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 )
         );
 
-        complexGizmosPass->m_componentsToRenderIn = cameras;
-        complexGizmosPass->m_componentsToRender = complexGizmos;
-
         m_renderPasses.push_back(complexGizmosPass);
     }
 
@@ -190,8 +150,59 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
     {
         auto postProcessFXPass = MakeRef<PostProcessFXPass>();
 
-        postProcessFXPass->m_componentsToRenderIn = cameras;
-
         m_renderPasses.push_back(postProcessFXPass);
     }
+}
+
+void SGCore::PBRForwardRenderPipeline::useScene(const SGCore::Ref<SGCore::Scene>& scene)
+{
+    auto& cameras = scene->getSystem<CamerasCollector>()->m_componentsCollector.m_cachedEntities;
+    auto& shadowsCasters = scene->getSystem<ShadowsCastersCollector>()->m_componentsCollector.m_cachedEntities;
+
+    auto& meshes = scene->getSystem<MeshesCollector>()->m_componentsCollector.m_cachedEntities;
+
+    auto& linesGizmos = scene->getSystem<LinesGizmosCollector>()->m_componentsCollector.m_cachedEntities;
+
+    auto& complexGizmos = scene->getSystem<ComplexGizmosCollector>()->m_componentsCollector.m_cachedEntities;
+
+    auto& skyboxes = scene->getSystem<SkyboxesCollector>()->m_componentsCollector.m_cachedEntities;
+
+    m_prepareFunc = [&, cameras, shadowsCasters]()
+    {
+        SG_BEGIN_ITERATE_CACHED_ENTITIES(
+                *cameras,
+                camerasLayer,
+                cameraEntity)
+
+                auto camera = cameraEntity.getComponent<Camera>();
+
+                if(camera)
+                {
+                    camera->clearPostProcessFrameBuffers();
+                }
+        SG_END_ITERATE_CACHED_ENTITIES
+    };
+
+    auto skyboxesPass = getRenderPass<PBRFRPSkyboxesPass>();
+    skyboxesPass->m_componentsToRenderIn = cameras;
+    skyboxesPass->m_componentsToRender = skyboxes;
+
+    auto shadowsPass = getRenderPass<PBRFRPShadowsPass>();
+    shadowsPass->m_componentsToRenderIn = shadowsCasters;
+    shadowsPass->m_componentsToRender = meshes;
+
+    auto geometryPass = getRenderPass<PBRFRPGeometryPass>();
+    geometryPass->m_componentsToRenderIn = cameras;
+    geometryPass->m_componentsToRender = meshes;
+
+    auto linesGizmosPass = getRenderPass<LinesGizmosPass>();
+    linesGizmosPass->m_componentsToRenderIn = cameras;
+    linesGizmosPass->m_componentsToRender = linesGizmos;
+
+    auto complexGizmosPass = getRenderPass<ComplexGizmosPass>();
+    complexGizmosPass->m_componentsToRenderIn = cameras;
+    complexGizmosPass->m_componentsToRender = complexGizmos;
+
+    auto ppFXPass = getRenderPass<PostProcessFXPass>();
+    ppFXPass->m_componentsToRenderIn = cameras;
 }

@@ -3,12 +3,12 @@
 //
 
 #include "LinesGizmosPass.h"
-#include "SGCore/ECS/ECSWorld.h"
+#include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
 
-void SGCore::LinesGizmosPass::render(const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
+void SGCore::LinesGizmosPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_shader->bind();
 
