@@ -33,15 +33,10 @@ struct ShadersPaths
 
     // ---------------
 
-    static ShadersPaths& getMainInstance()
-    {
-        static ShadersPaths s_mainInstance;
-
-        return s_mainInstance;
-    }
-
 private:
     std::unordered_map<std::string, std::shared_ptr<ShadersPaths>> m_paths;
+
+    SG_FULL_SINGLETON(ShadersPaths)
 };
 
 #endif // SUNGEARENGINE_SHADERSPATHS_H

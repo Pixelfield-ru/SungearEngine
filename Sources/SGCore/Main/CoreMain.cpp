@@ -24,7 +24,7 @@ void SGCore::CoreMain::start()
     m_renderer->init();
 
     // core components init -------------
-    ShadersPaths::getMainInstance().createDefaultPaths();
+    SGSingleton::getSharedPtrInstance<ShadersPaths>()->createDefaultPaths();
     InputManager::init();
     AssetManager::init();
     Log::init();

@@ -9,6 +9,8 @@
 
 SGCore::Camera::Camera()
 {
+    auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
+
     m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
 
     m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
@@ -73,7 +75,7 @@ SGCore::Camera::Camera()
 
     m_finalPostProcessOverlayShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
-                    ShadersPaths::getMainInstance()["PostProcessing"]["FinalOverlayShader"]
+                    shadersPaths["PostProcessing"]["FinalOverlayShader"]
             )
     );
 
@@ -85,7 +87,7 @@ SGCore::Camera::Camera()
 
     m_defaultPostProcessShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
-                    ShadersPaths::getMainInstance()["PostProcessing"]["DefaultLayerShader"]
+                    shadersPaths["PostProcessing"]["DefaultLayerShader"]
             )
     );
 
@@ -99,6 +101,8 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
                                             const std::uint16_t& fbWidth,
                                             const std::uint16_t& fbHeight)
 {
+    auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
+
     if(m_postProcessLayers.find(layer) != m_postProcessLayers.end())
     {
         SGCF_ERROR("Error: can not add a new post-process layer to the camera. This layer already exists.", SG_LOG_CURRENT_SESSION_FILE);
@@ -144,7 +148,7 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
 
     newPPLayer.m_shader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
-                    ShadersPaths::getMainInstance()["PostProcessing"]["DefaultLayerShader"]
+                    shadersPaths["PostProcessing"]["DefaultLayerShader"]
             )
     );
 

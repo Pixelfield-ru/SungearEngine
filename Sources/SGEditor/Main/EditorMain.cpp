@@ -5,20 +5,21 @@
 #include <memory>
 
 #include "EditorMain.h"
-#include "SGEditor/Views/Base/Window.h"
 #include "SGEditor/Views/StandardEditor/SceneHierarchy.h"
-#include "SGEditor/Views/ViewsManager.h"
 #include "imgui.h"
+#include "SGCore/ImGuiWrap/Views/Base/Window.h"
+#include "SGCore/Patterns/Singleton.h"
+#include "SGCore/ImGuiWrap/ViewsInjector.h"
 
 void SGEditor::EditorMain::start() noexcept
 {
-    auto sceneHierarchyWnd = std::make_shared<Window>();
+    static auto sceneHierarchyWnd = std::make_shared<SGCore::ImGuiWrap::Window>();
     sceneHierarchyWnd->m_name = "Scene hierarchy";
 
-    auto sceneHierarchy = std::make_shared<SceneHierarchy>();
+    static auto sceneHierarchy = std::make_shared<SceneHierarchy>();
     sceneHierarchy->m_name = "Scene hierarchy tree";
 
-    sceneHierarchyWnd->m_subViews.push_back(sceneHierarchy);
-
-    getMainViewsManager()->m_rootViews.push_back(sceneHierarchyWnd);
+    auto& viewsInjector = *SGSingleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
+    viewsInjector[sceneHierarchyWnd->m_name].m_rootView = sceneHierarchyWnd;
+    viewsInjector[sceneHierarchyWnd->m_name].m_childrenViews.push_back(sceneHierarchy);
 }

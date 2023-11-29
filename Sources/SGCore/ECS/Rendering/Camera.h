@@ -35,6 +35,9 @@ namespace SGCore
     public:
         Camera();
 
+        bool m_blockRotation = false;
+        bool m_blockTranslation = false;
+
         ShaderMarkup m_postProcessShadersMarkup;
 
         MeshDataRenderInfo m_postProcessQuadRenderInfo;

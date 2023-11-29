@@ -6,18 +6,29 @@
 
 ShadersPaths& ShadersPaths::operator[](const std::string& path) noexcept
 {
-    auto& paths = m_paths[path];
+    /*auto& paths = m_paths[path];
     if(!paths)
     {
         paths = std::make_shared<ShadersPaths>();
     }
-    paths->m_virtualPath += m_virtualPath + "/" + path;
+    paths->m_virtualPath += m_virtualPath + "/" + path;*/
 
-    /*SGCF_INFO("New ShadersPaths. "
-              "Current realization: " + paths.getCurrentRealization() + ". ShadersPaths virtual path: " +
-              paths.m_virtualPath, SG_LOG_CURRENT_SESSION_FILE);*/
+    auto foundShadersPaths = m_paths.find(path);
 
-    return *paths;
+    if(foundShadersPaths == m_paths.end())
+    {
+        auto newShadersPaths = std::shared_ptr<ShadersPaths>(new ShadersPaths);
+
+        m_paths[path] = newShadersPaths;
+
+        newShadersPaths->m_virtualPath += m_virtualPath + "/" + path;
+
+        return *newShadersPaths;
+    }
+
+    foundShadersPaths->second->m_virtualPath += m_virtualPath + "/" + path;
+
+    return *foundShadersPaths->second;
 }
 
 void ShadersPaths::createDefaultPaths() noexcept

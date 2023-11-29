@@ -32,6 +32,8 @@
 
 SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
+    auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
+
     // -----------------------------
 
     {
@@ -46,7 +48,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
         skyboxesPass->m_shader = Ref<IShader>(
                 CoreMain::getRenderer().createShader(
-                        ShadersPaths::getMainInstance()["Skybox"]["DefaultShader"]
+                        shadersPaths["Skybox"]["DefaultShader"]
                 )
         );
 
@@ -66,7 +68,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
         shadowsPass->m_shader = Ref<IShader>(
                 CoreMain::getRenderer().createShader(
-                        ShadersPaths::getMainInstance()["ShadowsGeneration"]["DefaultShader"]
+                        shadersPaths["ShadowsGeneration"]["DefaultShader"]
                 )
         );
 
@@ -86,7 +88,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
         geometryPass->m_shader = Ref<IShader>(
                 CoreMain::getRenderer().createShader(
-                        ShadersPaths::getMainInstance()["PBR"]["DefaultShader"]
+                        shadersPaths["PBR"]["DefaultShader"]
                 )
         );
 
@@ -127,7 +129,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
         linesGizmosPass->m_shader = Ref<IShader>(
                 CoreMain::getRenderer().createShader(
-                        ShadersPaths::getMainInstance()["Gizmos"]["LinesGizmosShader"]
+                        shadersPaths["Gizmos"]["LinesGizmosShader"]
                 )
         );
 
@@ -139,7 +141,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 
         complexGizmosPass->m_shader = Ref<IShader>(
                 CoreMain::getRenderer().createShader(
-                        ShadersPaths::getMainInstance()["Gizmos"]["ComplexGizmosShader"]
+                        shadersPaths["Gizmos"]["ComplexGizmosShader"]
                 )
         );
 

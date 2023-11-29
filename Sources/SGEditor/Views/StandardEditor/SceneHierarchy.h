@@ -5,14 +5,16 @@
 #ifndef SUNGEARENGINE_SCENEHIERARCHY_H
 #define SUNGEARENGINE_SCENEHIERARCHY_H
 
-#include "SGEditor/Views/Base/IView.h"
 #include "SGCore/ECS/Entity.h"
+#include "SGCore/ImGuiWrap/Views/IView.h"
 
 namespace SGEditor
 {
-    struct SceneHierarchy : public IView
+    struct SceneHierarchy : public SGCore::ImGuiWrap::IView
     {
-        void render() final;
+        bool begin() noexcept final;
+        void renderBody() final;
+        void end() noexcept final;
 
     private:
         void renderEntity(const SGCore::Ref<SGCore::Entity>& entity) noexcept;

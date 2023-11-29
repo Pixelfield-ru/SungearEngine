@@ -5,13 +5,15 @@
 #ifndef SUNGEARENGINE_COLLAPSINGHEADER_H
 #define SUNGEARENGINE_COLLAPSINGHEADER_H
 
-#include "IView.h"
+#include "SGCore/ImGuiWrap/Views/IView.h"
 
-namespace SGEditor
+namespace SGCore::ImGuiWrap
 {
     struct CollapsingHeader : public IView
     {
-        void render() noexcept final;
+        bool begin() noexcept final;
+        void renderBody() final;
+        void end() noexcept final;
     };
 }
 

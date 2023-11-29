@@ -30,11 +30,12 @@
 #include "SGCore/Memory/Assets/CubemapAsset.h"
 #include "SGCore/ECS/Rendering/Gizmos/BoxGizmo.h"
 
-#include "SGCore/Utils/ImGuiLayer.h"
+#include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
-#include "SGEditor/Views/Base/Window.h"
-#include "SGEditor/Views/Base/CollapsingHeader.h"
 #include "EditorMain.h"
+#include "SGCore/ImGuiWrap/Views/Base/Window.h"
+#include "SGCore/ImGuiWrap/Views/Base/CollapsingHeader.h"
+#include "SGCore/ImGuiWrap/ViewsInjector.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -467,7 +468,7 @@ void init()
 
     // IMGUI DEBUG -----------------------------------------------------------
 
-    SGCore::ImGuiLayer::initImGui();
+    SGCore::ImGuiWrap::ImGuiLayer::initImGui();
 
     // -----------------------------------------------------------------------
 }
@@ -488,14 +489,12 @@ void fixedUpdate()
     framesCnt++;
 }
 
-auto testWindow = std::make_shared<SGEditor::Window>();
-auto testCollapsingHeader = std::make_shared<SGEditor::CollapsingHeader>();
+auto testWindow = std::make_shared<SGCore::ImGuiWrap::Window>();
+auto testCollapsingHeader = std::make_shared<SGCore::ImGuiWrap::CollapsingHeader>();
 
 void update()
 {
-    SGCore::ImGuiLayer::beginFrame();
-
-    testWindow->render();
+    SGCore::ImGuiWrap::ImGuiLayer::beginFrame();
 
     ImGui::Begin("ECS Systems Stats");
     {
@@ -534,9 +533,10 @@ void update()
 
     SGCore::Scene::getCurrentScene()->update();
 
-    SGEditor::EditorMain::getMainViewsManager()->renderRootViews();
+    auto& viewsInjector = *SGSingleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
+    viewsInjector.renderViews();
 
-    SGCore::ImGuiLayer::endFrame();
+    SGCore::ImGuiWrap::ImGuiLayer::endFrame();
 }
 
 // --------------------------------------------
@@ -545,6 +545,11 @@ int main()
 {
     SGEditor::EditorMain::start();
 
+    auto& viewsInjector = *SGSingleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
+    viewsInjector["TestWindow"].m_rootView = testWindow;
+    viewsInjector["TestWindow"].m_childrenViews.push_back(testCollapsingHeader);
+    //viewsInjector["Scene hierarchy"]["TestCollapsingHeader"].m_rootView = testCollapsingHeader;
+
     auto* testWindowOverdraw = new SGCore::EventListenerHolder<void()> {[]()
                                                                         {
                                                                             ImGui::Text("hi.");
@@ -552,12 +557,10 @@ int main()
 
     int* dragInt = new int(0);
     auto* testCollapsingHeaderOverdraw = new SGCore::EventListenerHolder<void()> {[dragInt]()
-                                                                        {
-                                                                            ImGui::DragInt("Drag this int!", dragInt);
-                                                                            ImGui::Text("hi!!");
-                                                                        }};
-
-    testWindow->m_subViews.push_back(testCollapsingHeader);
+                                                                                  {
+                                                                                      ImGui::DragInt("Drag this int!", dragInt);
+                                                                                      ImGui::Text("hi!!");
+                                                                                  }};
 
     (*testWindow->m_onRenderEvent) += testWindowOverdraw;
     (*testCollapsingHeader->m_onRenderEvent) += testCollapsingHeaderOverdraw;

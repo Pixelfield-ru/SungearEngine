@@ -5,7 +5,7 @@
 #include "ImGuiLayer.h"
 #include "SGCore/Main/CoreMain.h"
 
-void SGCore::ImGuiLayer::initImGui() noexcept
+void SGCore::ImGuiWrap::ImGuiLayer::initImGui() noexcept
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -23,7 +23,7 @@ void SGCore::ImGuiLayer::initImGui() noexcept
     }
 }
 
-void SGCore::ImGuiLayer::beginFrame() noexcept
+void SGCore::ImGuiWrap::ImGuiLayer::beginFrame() noexcept
 {
     auto gapiType = CoreMain::getRenderer().getGAPIType();
 
@@ -37,7 +37,7 @@ void SGCore::ImGuiLayer::beginFrame() noexcept
     ImGui::NewFrame();
 }
 
-void SGCore::ImGuiLayer::endFrame() noexcept
+void SGCore::ImGuiWrap::ImGuiLayer::endFrame() noexcept
 {
     auto gapiType = CoreMain::getRenderer().getGAPIType();
 

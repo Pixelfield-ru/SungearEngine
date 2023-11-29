@@ -5,14 +5,15 @@
 #ifndef SUNGEARENGINE_WINDOW_H
 #define SUNGEARENGINE_WINDOW_H
 
-#include <vector>
-#include "IView.h"
+#include "SGCore/ImGuiWrap/Views/IView.h"
 
-namespace SGEditor
+namespace SGCore::ImGuiWrap
 {
     struct Window : public IView
     {
-        void render() noexcept final;
+        bool begin() noexcept final;
+        void renderBody() final;
+        void end() noexcept final;
     };
 }
 

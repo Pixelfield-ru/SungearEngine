@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "SGCore/Input/InputManager.h"
-#include "SGCore/Utils/ImGuiLayer.h"
+#include "SGCore/ImGuiWrap/ImGuiLayer.h"
 
 #include "Callbacks.h"
 
@@ -94,7 +94,7 @@ namespace SGCore
 
     class Window
     {
-        friend class ImGuiLayer;
+        friend class ImGuiWrap::ImGuiLayer;
 
     public:
         Window() noexcept = default;

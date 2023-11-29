@@ -6,24 +6,30 @@
 #include "imgui.h"
 #include "SGCore/ECS/Scene.h"
 
-void SGEditor::SceneHierarchy::render()
+bool SGEditor::SceneHierarchy::begin() noexcept
 {
     ImGui::TreePush(m_name.c_str());
+
+    return true;
+}
+
+void SGEditor::SceneHierarchy::renderBody()
+{
+    auto curScene = SGCore::Scene::getCurrentScene();
+
+    if(curScene)
     {
-        auto curScene = SGCore::Scene::getCurrentScene();
-
-        if(curScene)
+        for(const auto& entity : curScene->m_entities)
         {
-            for(const auto& entity : curScene->m_entities)
-            {
-                renderEntity(entity);
-            }
+            renderEntity(entity);
         }
-
-        renderSubViews();
-
-        (*m_onRenderEvent)();
     }
+
+    (*m_onRenderEvent)();
+}
+
+void SGEditor::SceneHierarchy::end() noexcept
+{
     ImGui::TreePop();
 }
 

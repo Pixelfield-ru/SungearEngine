@@ -12,18 +12,19 @@
 #include "SGCore/Patterns/UUID.h"
 #include "SGCore/Patterns/Event.h"
 
-namespace SGEditor
+namespace SGCore::ImGuiWrap
 {
     struct IView
     {
-        std::shared_ptr<SGCore::Event<void()>> m_onRenderEvent = std::make_shared<SGCore::Event<void()>>();
+        bool m_active = true;
 
-        std::vector<std::shared_ptr<IView>> m_subViews;
+        std::shared_ptr<Event<void()>> m_onRenderEvent = std::make_shared<Event<void()>>();
 
         std::string m_name = UUID::generateNew();
 
-        virtual void render() = 0;
-        virtual void renderSubViews() const noexcept;
+        virtual bool begin() = 0;
+        virtual void renderBody() = 0;
+        virtual void end() = 0;
     };
 }
 
