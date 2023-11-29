@@ -5,7 +5,7 @@
 Open your console application of choice and run the following console commands:
 
 ```
-\> cd <Path to your Unity project>
+\> cd <Path to your folder>
 
 \> git clone https://github.com/Pixelfield-ru/SungearEngine
 
