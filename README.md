@@ -19,4 +19,4 @@ If you encounter any bugs when using SungearEngine, please report them in the bu
 
 https://github.com/Pixelfield-ru/SungearEngine/issues
 
-Make sure to first use the search function to see if the bug has already been reported. When filling out a bug report, make sure that you include as much information as possible to help the developers track down the issue, such as your version of Lilac, operating system, architecture, and any code and models that are necessary for the developers to reproduce the issue.
+Make sure to first use the search function to see if the bug has already been reported. When filling out a bug report, make sure that you include as much information as possible to help the developers track down the issue, such as your version of SungearEngine, operating system, architecture, and any code and models that are necessary for the developers to reproduce the issue.
