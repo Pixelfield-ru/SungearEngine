@@ -14,8 +14,12 @@
 
 namespace SGCore::ImGuiWrap
 {
-    struct IView
+    struct IView : public std::enable_shared_from_this<IView>
     {
+        friend struct ViewsInjector;
+
+        //IView() noexcept;
+
         bool m_active = true;
 
         std::shared_ptr<Event<void()>> m_onRenderEvent = std::make_shared<Event<void()>>();
@@ -25,6 +29,16 @@ namespace SGCore::ImGuiWrap
         virtual bool begin() = 0;
         virtual void renderBody() = 0;
         virtual void end() = 0;
+
+        [[nodiscard]] std::string getUniquePathPart() const noexcept;
+
+        virtual void inject() noexcept;
+
+    private:
+        // you may use pointer to string
+        std::string m_uniquePathPart;
+
+        virtual void updateUniquePathPart(const std::string& uniquePathPart) const noexcept { }
     };
 }
 

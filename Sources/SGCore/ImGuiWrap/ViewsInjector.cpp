@@ -36,7 +36,7 @@ void SGCore::ImGuiWrap::ViewsInjector::renderViews()
             {
                 auto lockedView = viewsIter->lock();
 
-                if(lockedView)
+                if(lockedView && lockedView->m_uniquePathPart == lockedRootView->m_uniquePathPart)
                 {
                     if(lockedView->begin())
                     {
@@ -55,7 +55,12 @@ void SGCore::ImGuiWrap::ViewsInjector::renderViews()
 
             for(const auto& viewsInjector : m_childrenInjectors)
             {
-                viewsInjector.second->renderViews();
+                auto lockedChildRootView = viewsInjector.second->m_rootView.lock();
+
+                if (lockedChildRootView && lockedChildRootView->m_uniquePathPart == lockedRootView->m_uniquePathPart)
+                {
+                    viewsInjector.second->renderViews();
+                }
             }
 
             lockedRootView->end();

@@ -6,6 +6,7 @@
 #include "../disks.glsl"
 #include "../math.glsl"
 #include "../defines.glsl"
+#include "../color_correction/aces.glsl"
 
 /*in int gl_FrontFacing;
 in vec4 gl_FragCoord;*/
@@ -267,7 +268,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
         // -----------------------
 
-            const float shadowsMinCoeff = 0.55;
+            const float shadowsMinCoeff = 0.0;
             const int samplesNum = 16;
 
             float visibility = 1.0;
@@ -438,6 +439,19 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
             normalMapColor = normalizedNormal;
         }
 
+        float shadowCoeff = 1.0;
+
+        for (int i = 0; i < SHADOWS_CASTERS_MAX_COUNT && i < sgmat_shadowMapSamplers_COUNT; ++i)
+        {
+            shadowCoeff *= calculateShadow(
+                shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
+                vsIn.fragPos,
+                normalMapColor,
+                sgmat_shadowMapSamplers[i],
+                i
+            );
+        }
+
         // todo: fix multiple directional lights
         // TODO: make customizable with defines
         // PBR pipeline (using Cook-Torrance BRDF) --------------------
@@ -459,6 +473,9 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
         //float geomRoughness = ((colorFromRoughness.g + 1.0) * (colorFromRoughness.g + 1.0)) / 8.0;
 
+        // TODO: MOVE TO LIGHT COMPONENT
+        const float lightIntensity = 700.0;
+
         vec3 lo = vec3(0.0);
         for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
         {
@@ -467,8 +484,8 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
             float distance = length(directionalLights[i].position - vsIn.fragPos);
             float attenuation = 1.0 / (distance * distance);
-            vec3 radiance = directionalLights[i].color.rgb * attenuation * 700.0;
-            //radiance = vec3(1.0);
+            vec3 radiance = directionalLights[i].color.rgb * attenuation * lightIntensity;
+            //vec3 radiance = directionalLights[i].color.rgb;
 
             // energy brightness coeff (коэфф. энергетической яркости)
             float NdotL = max(dot(normalMapColor, lightDir), 0.0);
@@ -498,7 +515,11 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
             vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb * 2.0;
 
             lo += (diffuse * albedo.rgb / PI + specular) * radiance * NdotL;
+
+            shadowCoeff *= NdotL / attenuation * lightIntensity;
+            // shadowCoeff *= (1.0 - NdotL);
         }
+
         vec3 ambient = vec3(0.05) * albedo.rgb * ao;
         vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
 
@@ -507,21 +528,8 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
         finalCol = pow(finalCol, vec3(1.0 / 2.2));
 
         fragColor.a = diffuseColor.a;
-        fragColor.rgb = finalCol;
+        fragColor.rgb = finalCol * shadowCoeff;
 
         // shadows apply ---------------------------------------
-
-        float shadowCoeff = 0.0;
-
-        for (int i = 0; i < SHADOWS_CASTERS_MAX_COUNT && i < sgmat_shadowMapSamplers_COUNT; ++i)
-        {
-            fragColor.rgb *= calculateShadow(
-                shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
-                vsIn.fragPos,
-                normalMapColor,
-                sgmat_shadowMapSamplers[i],
-                i
-            );
-        }
     }
 #endif
