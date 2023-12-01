@@ -55,7 +55,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
 #ifdef FRAGMENT_SHADER
     // shadows impl
-    const float shadowsBias = 0.0000165;
+    const float shadowsBias = 0.000025;
     //const float shadowsBias = 0.0002;
 
     float sampleShadowMap(
@@ -268,7 +268,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
         // -----------------------
 
-            const float shadowsMinCoeff = 0.0;
+            const float shadowsMinCoeff = 0.2;
             const int samplesNum = 16;
 
             float visibility = 1.0;
@@ -443,13 +443,16 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
         for (int i = 0; i < SHADOWS_CASTERS_MAX_COUNT && i < sgmat_shadowMapSamplers_COUNT; ++i)
         {
-            shadowCoeff *= calculateShadow(
+            float calculatedShadowCoeff = 1.0 - calculateShadow(
                 shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
                 vsIn.fragPos,
                 normalMapColor,
                 sgmat_shadowMapSamplers[i],
                 i
             );
+
+            if(!gl_FrontFacing) shadowCoeff += calculatedShadowCoeff;
+            else shadowCoeff -= calculatedShadowCoeff;
         }
 
         // todo: fix multiple directional lights
@@ -474,7 +477,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
         //float geomRoughness = ((colorFromRoughness.g + 1.0) * (colorFromRoughness.g + 1.0)) / 8.0;
 
         // TODO: MOVE TO LIGHT COMPONENT
-        const float lightIntensity = 700.0;
+        const float lightIntensity = 300.0;
 
         vec3 lo = vec3(0.0);
         for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
@@ -490,6 +493,8 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
             // energy brightness coeff (коэфф. энергетической яркости)
             float NdotL = max(dot(normalMapColor, lightDir), 0.0);
             float NdotVD = max(dot(normalMapColor, viewDir), 0.0);
+
+            // shadowCoeff += NdotL * attenuation * lightIntensity;
 
             // cooktorrance func: DFG /
 
@@ -516,9 +521,11 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
             lo += (diffuse * albedo.rgb / PI + specular) * radiance * NdotL;
 
-            shadowCoeff *= NdotL / attenuation * lightIntensity;
+            // shadowCoeff *= NdotL / attenuation * lightIntensity;
             // shadowCoeff *= (1.0 - NdotL);
         }
+
+        shadowCoeff = saturate(shadowCoeff);
 
         vec3 ambient = vec3(0.05) * albedo.rgb * ao;
         vec3 finalCol = materialAmbientCol.rgb + ambient + lo;

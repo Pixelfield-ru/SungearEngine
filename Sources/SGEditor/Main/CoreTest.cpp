@@ -78,12 +78,12 @@ void init()
             //"../SGResources/models/test/ak74/scene.gltf"
             //"../SGResources/models/test/backpack/scene.gltf"
             //"../SGResources/models/test/stalk_bunk/bunker.fbx"
-            "../SGResources/models/test/Duty Exoskeleton/Duty Exoskeleton.obj"
+            //"../SGResources/models/test/Duty Exoskeleton/Duty Exoskeleton.obj"
             //"../SGResources/models/test/room/room.obj"
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            //"../SGResources/models/test/uaz/scene.gltf"
+            "../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/zis_sport/scene.gltf"
             //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
@@ -196,6 +196,10 @@ void init()
         auto transformComponent = entity->getComponent<SGCore::Transform>();
         if(transformComponent)
         {
+            transformComponent->m_position = { 3, 4, -20 };
+            transformComponent->m_rotation = { 90, 0, 0 };
+            transformComponent->m_scale = { 0.002, 0.002, 0.002 };
+
             // svd
             /*transformComponent->m_position = { 3, -1, -20 };
             transformComponent->m_rotation = { 0, 90, 0 };
@@ -207,9 +211,9 @@ void init()
             transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
 
             // vss
-            transformComponent->m_position = { 3, 2.91, -20 };
+            /*transformComponent->m_position = { 3, 2.91, -20 };
             transformComponent->m_rotation = { 0, 0, 0 };
-            transformComponent->m_scale = { 0.7, 0.7, 0.7 };
+            transformComponent->m_scale = { 0.7, 0.7, 0.7 };*/
 
             // sponza old model
             /*transformComponent->m_position = { 3, 2.91, -20 };
@@ -397,7 +401,7 @@ void init()
     testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
-    auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
+    /*auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster2);
     auto shadowsCasterTransform2 = SGCore::MakeRef<SGCore::Transform>();
     shadowsCasterTransform2->m_position.x = 10;
@@ -462,7 +466,7 @@ void init()
 
     testShadowsCaster1->addComponent(xLineGizmo);
     testShadowsCaster1->addComponent(yLineGizmo);
-    testShadowsCaster1->addComponent(zLineGizmo);
+    testShadowsCaster1->addComponent(zLineGizmo);*/
 
     /// -----------------------------------------
 
