@@ -31,13 +31,13 @@
             finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
-        float a = 1.0;
+        /*float a = 1.0;
         float mixCoeff = 1.0 / sgmat_diffuseSamplers_COUNT;
 
         for (int i = 0; i < sgmat_diffuseSamplers_COUNT; i++)
         {
             a += texture(sgmat_diffuseSamplers[i], finalUV).a * mixCoeff;
-        }
+        }*/
 
         // todo: make blending for shadows
         /*if (a < 0.2)

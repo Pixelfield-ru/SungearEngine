@@ -25,10 +25,10 @@ void SGCore::VkFrameBuffer::destroy()
 }
 
 std::shared_ptr<SGCore::IFrameBuffer>
-SGCore::VkFrameBuffer::addAttachment(const SGFrameBufferAttachmentType&,
-                                             const SGGColorFormat& format,
-                                             const SGGColorInternalFormat& internalFormat, const int& mipLevel,
-                                             const int& layer)
+SGCore::VkFrameBuffer::addAttachment(SGFrameBufferAttachmentType,
+                                     SGGColorFormat format,
+                                     SGGColorInternalFormat internalFormat, const int& mipLevel,
+                                     const int& layer)
 {
     return shared_from_this();
 }

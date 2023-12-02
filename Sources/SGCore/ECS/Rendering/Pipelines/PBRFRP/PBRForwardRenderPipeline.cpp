@@ -108,8 +108,13 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 1
         );
         geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_BASE_COLOR,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_BASE_COLOR),
+                SGTextureType::SGTP_METALNESS,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_METALNESS),
+                1
+        );
+        geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
+                SGTextureType::SGTP_LIGHTMAP,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_LIGHTMAP),
                 1
         );
         geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(

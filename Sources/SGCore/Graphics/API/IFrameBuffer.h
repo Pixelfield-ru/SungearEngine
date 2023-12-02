@@ -57,11 +57,19 @@ namespace SGCore
 
         virtual std::shared_ptr<IFrameBuffer> clear() { return shared_from_this(); };
 
-        virtual std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType& attachmentType,
-                                                            const SGGColorFormat& format,
-                                                            const SGGColorInternalFormat& internalFormat,
+        virtual std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType attachmentType,
+                                                            SGGColorFormat format,
+                                                            SGGColorInternalFormat internalFormat,
                                                             const int& mipLevel,
                                                             const int& layer) = 0;
+
+        virtual std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType attachmentType,
+                                                            SGGColorFormat format,
+                                                            SGGColorInternalFormat internalFormat,
+                                                            const int& mipLevel,
+                                                            const int& layer,
+                                                            bool useMultisampling,
+                                                            std::uint8_t multisamplingSamplesCount) { };
 
         std::shared_ptr<IFrameBuffer> setWidth(const int& width) noexcept;
         std::shared_ptr<IFrameBuffer> setHeight(const int& height) noexcept;

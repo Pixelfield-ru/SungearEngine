@@ -63,6 +63,7 @@
         }
 
         gl_FragColor = finalColor;
+        // gl_FragColor = vec4(ACESFilm(finalColor.rgb), finalColor.a);
 
         // -----------------------------------------------------
     }

@@ -83,7 +83,7 @@ void init()
             //"../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            "../SGResources/models/test/uaz/scene.gltf"
+            //"../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/zis_sport/scene.gltf"
             //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
@@ -91,7 +91,7 @@ void init()
             //"../SGResources/models/test/wooden_table/scene.gltf"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
-            //"../SGResources/models/test/vss/scene.gltf"
+            "../SGResources/models/test/vss/scene.gltf"
             //"../SGResources/models/test/vsk94/scene.gltf"
             //"../SGResources/models/test/helicopter/scene.gltf"
             //"../SGResources/models/test/metal_door/scene.gltf"
@@ -136,7 +136,7 @@ void init()
             //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
-            //"../SGResources/models/test/wooden_table/scene.gltf"
+            "../SGResources/models/test/wooden_table/scene.gltf"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/vss/scene.gltf"
@@ -145,7 +145,7 @@ void init()
             //"../SGResources/models/test/metal_door/scene.gltf"
             //"../SGResources/models/test/ak47/scene.gltf"
             //"../SGResources/models/test/pavlov/scene.gltf"
-            "../SGResources/models/test/kv2/scene.gltf"
+            //"../SGResources/models/test/kv2/scene.gltf"
             //"../SGResources/models/test/Putin/scene.gltf"
             //"../SGResources/models/test/Russia_flag/scene.gltf"
             //"../SGResources/models/test/old_building/scene.gltf"
@@ -169,6 +169,48 @@ void init()
             cubePath
     );
 
+    auto sphereModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+            "../SGResources/models/standard/sphere.obj"
+    );
+
+    // ==========================================================================================
+    // ==========================================================================================
+    // ==========================================================================================
+
+    sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                      [](const SGCore::Ref<SGCore::Entity>& entity)
+                                      {
+                                          auto meshComponent = entity->getComponent<SGCore::Mesh>();
+                                          auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                          if(transformComponent)
+                                          {
+                                              transformComponent->m_position = { 0, 6.0, -20 };
+                                              transformComponent->m_rotation = { 0, 0, 0 };
+                                              transformComponent->m_scale = { 0.5, 0.5, 0.5 };
+                                          }
+                                          if(meshComponent)
+                                          {
+                                              meshComponent->m_meshData->m_material->m_metallicFactor = 1;
+                                              meshComponent->m_meshData->m_material->m_roughnessFactor = 1;
+
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_DIFFUSE,
+                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_albedo.png");
+
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_LIGHTMAP,
+                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_ao.png");
+
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_METALNESS,
+                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_metallic.png");
+
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_NORMALS,
+                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png");
+
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
+                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_roughness.png");
+                                          }
+                                      }
+    );
+
     // ==========================================================================================
     // ==========================================================================================
     // ==========================================================================================
@@ -178,7 +220,15 @@ void init()
                                       {
                                           auto meshComponent = entity->getComponent<SGCore::Mesh>();
                                           auto transformComponent = entity->getComponent<SGCore::Transform>();
-                                          if(meshComponent) meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
+                                          if(meshComponent)
+                                          {
+                                              meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_DIFFUSE, "../SGResources/textures/chess.jpg");
+                                              meshComponent->m_meshData->setVertexUV(0, 200, 0, 0);
+                                              meshComponent->m_meshData->setVertexUV(1, 0, 200, 0);
+                                              meshComponent->m_meshData->setVertexUV(2, 200, 200, 0);
+                                              meshComponent->m_meshData->prepare();
+                                          }
                                           if(transformComponent)
                                           {
                                               transformComponent->m_scale = { 400.0, 400.0, 400.0 };
@@ -196,9 +246,9 @@ void init()
         auto transformComponent = entity->getComponent<SGCore::Transform>();
         if(transformComponent)
         {
-            transformComponent->m_position = { 3, 4, -20 };
+            /*transformComponent->m_position = { 3, 4, -20 };
             transformComponent->m_rotation = { 90, 0, 0 };
-            transformComponent->m_scale = { 0.002, 0.002, 0.002 };
+            transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
 
             // svd
             /*transformComponent->m_position = { 3, -1, -20 };
@@ -211,9 +261,9 @@ void init()
             transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
 
             // vss
-            /*transformComponent->m_position = { 3, 2.91, -20 };
+            transformComponent->m_position = { 0, 2.91, -20 };
             transformComponent->m_rotation = { 0, 0, 0 };
-            transformComponent->m_scale = { 0.7, 0.7, 0.7 };*/
+            transformComponent->m_scale = { 0.7, 0.7, 0.7 };
 
             // sponza old model
             /*transformComponent->m_position = { 3, 2.91, -20 };
@@ -238,7 +288,7 @@ void init()
                                           if(transformComponent)
                                           {
                                               // wooden table
-                                              transformComponent->m_position = { 3, 1.4, -20 };
+                                              transformComponent->m_position = { 0, 1.4, -20 };
                                               transformComponent->m_rotation = { 0, 90, 0 };
                                               transformComponent->m_scale = { 0.1, 0.1, 0.1 };
                                           }
@@ -368,7 +418,7 @@ void init()
     testShadowsCaster = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster);
     auto shadowsCasterTransform = SGCore::MakeRef<SGCore::Transform>();
-    shadowsCasterTransform->m_position.y = 15;
+    shadowsCasterTransform->m_position.y = 25;
     shadowsCasterTransform->m_position.z = 5.0;
     shadowsCasterTransform->m_position.x = -5.0;
     shadowsCasterTransform->m_rotation.x = 50;
@@ -376,9 +426,9 @@ void init()
     testShadowsCaster->addComponent(shadowsCasterTransform);
     testShadowsCaster->addComponent(shadowCasterComponent);
     auto directionalLight = SGCore::MakeRef<SGCore::DirectionalLight>();
-    directionalLight->m_color.r = 250.0f / 255.0f;
-    directionalLight->m_color.g = 129.0f / 255.0f;
-    directionalLight->m_color.b = 0.0f / 255.0f;
+    // directionalLight->m_color.r = 10.0f / 255.0f;
+    // directionalLight->m_color.g = 129.0f / 255.0f;
+    // directionalLight->m_color.b = 100.0f / 255.0f;
     testShadowsCaster->addComponent(directionalLight);
     testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
@@ -401,7 +451,7 @@ void init()
     testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
-    /*auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
+    auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster2);
     auto shadowsCasterTransform2 = SGCore::MakeRef<SGCore::Transform>();
     shadowsCasterTransform2->m_position.x = 10;
@@ -422,7 +472,7 @@ void init()
     testScene->addEntity(testShadowsCaster3);
     auto shadowsCasterTransform3 = SGCore::MakeRef<SGCore::Transform>();
     shadowsCasterTransform3->m_position.x = -20;
-    shadowsCasterTransform3->m_position.y = 10;
+    shadowsCasterTransform3->m_position.y = 5;
     shadowsCasterTransform3->m_position.z = -20.0;
     shadowsCasterTransform3->m_rotation.y = 90;
     auto shadowCasterComponent3 = SGCore::MakeRef<SGCore::ShadowsCaster>();
@@ -439,7 +489,7 @@ void init()
     testScene->addEntity(testShadowsCaster4);
     auto shadowsCasterTransform4 = SGCore::MakeRef<SGCore::Transform>();
     shadowsCasterTransform4->m_position.x = 20;
-    shadowsCasterTransform4->m_position.y = 10;
+    shadowsCasterTransform4->m_position.y = 5;
     shadowsCasterTransform4->m_position.z = -20.0;
     shadowsCasterTransform4->m_rotation.y = -90;
     auto shadowCasterComponent4 = SGCore::MakeRef<SGCore::ShadowsCaster>();
@@ -464,9 +514,9 @@ void init()
     zLineGizmo->m_meshData->setVertexPosition(1, 0, 0, 10);
     zLineGizmo->m_color = { 0.0, 0.0, 1.0, 1.0 };
 
-    testShadowsCaster1->addComponent(xLineGizmo);
-    testShadowsCaster1->addComponent(yLineGizmo);
-    testShadowsCaster1->addComponent(zLineGizmo);*/
+    //testShadowsCaster1->addComponent(xLineGizmo);
+    //testShadowsCaster1->addComponent(yLineGizmo);
+    //testShadowsCaster1->addComponent(zLineGizmo);
 
     /// -----------------------------------------
 
@@ -486,7 +536,7 @@ void fixedUpdate()
     //boxComponent->m_size.z += sin(framesCnt / 75.0) / 10.0;
     //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += sin(framesCnt / 75.0) / 2.0;
 
-    testShadowsCaster->getComponent<SGCore::Transform>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
+    //testShadowsCaster->getComponent<SGCore::Transform>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
 
     SGCore::Scene::getCurrentScene()->fixedUpdate();
 

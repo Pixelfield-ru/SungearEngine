@@ -18,8 +18,8 @@ namespace SGCore
         std::shared_ptr<IFrameBuffer> create() override;
         void destroy() override;
 
-        std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType&,
-                                                    const SGGColorFormat& format, const SGGColorInternalFormat& internalFormat,
+        std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType,
+                                                    SGGColorFormat format, SGGColorInternalFormat internalFormat,
                                                     const int& mipLevel,
                                                     const int& layer) override;
 

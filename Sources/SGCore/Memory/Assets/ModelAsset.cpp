@@ -149,7 +149,7 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
             sgMeshData->m_material->m_diffuseColor = AssimpUtils::aiVectorToGLM(diffuseColor);
         }
 
-        if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_SPECULAR, &specularColor) == AI_SUCCESS)
+        if(aiGetMaterialColor(aiMat, AI_MATKEY_SPECULAR_FACTOR, &specularColor) == AI_SUCCESS)
         {
             sgMeshData->m_material->m_specularColor = AssimpUtils::aiVectorToGLM(specularColor);
         }
@@ -225,7 +225,7 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
 
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 
-        //SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Raw type name: '" +
-        //                    sgMaterialTextureTypeToString(sgMaterialTextureType) + "', path: " + std::string(finalPath));
+        SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Raw type name: '" +
+                            sgStandardTextureTypeToString(sgMaterialTextureType) + "', path: " + std::string(finalPath));
     }
 }

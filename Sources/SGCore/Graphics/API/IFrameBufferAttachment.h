@@ -11,12 +11,14 @@ namespace SGCore
 {
     struct IFrameBufferAttachment
     {
-
         SGGColorFormat m_format = SGGColorFormat::SGG_RGB;
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGB8;
 
         int m_mipLevel = 0;
         int m_layer = 0;
+
+        bool m_useMultisampling = false;
+        std::uint8_t m_multisamplingSamplesCount = 8;
     };
 }
 

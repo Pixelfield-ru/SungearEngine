@@ -52,10 +52,19 @@ namespace SGCore
 
         std::shared_ptr<IFrameBuffer> clear() override;
 
-        std::shared_ptr<IFrameBuffer> addAttachment(const SGFrameBufferAttachmentType&,
-                                                    const SGGColorFormat& format, const SGGColorInternalFormat& internalFormat,
+        std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType,
+                                                    SGGColorFormat format,
+                                                    SGGColorInternalFormat internalFormat,
                                                     const int& mipLevel,
                                                     const int& layer) override;
+
+        std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType attachmentType,
+                                                    SGGColorFormat format,
+                                                    SGGColorInternalFormat internalFormat,
+                                                    const int& mipLevel,
+                                                    const int& layer,
+                                                    bool useMultisampling,
+                                                    std::uint8_t multisamplingSamplesCount) override;
 
         void getAttachmentsCount(std::uint16_t& depthAttachmentsCount,
                                  std::uint16_t& depthStencilAttachmentsCount,

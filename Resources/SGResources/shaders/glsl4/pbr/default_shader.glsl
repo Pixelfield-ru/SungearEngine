@@ -214,6 +214,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
     // --------------------------------------------------
 
     float calculateShadow(
+        int shadowsCastersCount,
         const in vec4 shadowsCasterSpaceFragPos,
         const in vec3 fragPos,
         const in vec3 normal,
@@ -268,10 +269,12 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
         // -----------------------
 
-            const float shadowsMinCoeff = 0.2;
+            float penumbraCoeff = 1.0 / shadowsCastersCount;
+
+            const float shadowsMinCoeff = 0.0;
             const int samplesNum = 16;
 
-            float visibility = 1.0;
+            float fragmentVisibility = 1.0;
             const float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
 
             float rand = random(projCoords.xy);
@@ -282,11 +285,13 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
             {
                 if(texture(shadowMap, projCoords.xy + rotate(poissonDisk[i], rotTrig) / 750.0).z < projCoords.z - shadowsBias)
                 {
-                    visibility -= downstep;
+                    fragmentVisibility -= downstep;
+                    //visibility -= penumbraCoeff;
                 }
             }
 
-            return visibility;
+            // return (texture(shadowMap, projCoords.xy).z < projCoords.z - shadowsBias) ? 1.0 : 0.0;
+        return fragmentVisibility;
 
         // VSM (VARIANCE SHADOW MAPPING) -------------------
 
@@ -315,13 +320,19 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
     out vec4 fragColor;
 
     uniform int sgmat_diffuseSamplers_COUNT = 0;
+
+    uniform int sgmat_lightmapSamplers_COUNT = 0;
     uniform int sgmat_diffuseRoughnessSamplers_COUNT = 0;
+    uniform int sgmat_metalnessSamplers_COUNT = 0;
+
     uniform int sgmat_normalsSamplers_COUNT = 0;
     uniform int sgmat_shadowMapSamplers_COUNT = 0;
 
     uniform sampler2D sgmat_diffuseSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
 
+    uniform sampler2D sgmat_lightmapSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
     uniform sampler2D sgmat_diffuseRoughnessSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
+    uniform sampler2D sgmat_metalnessSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
 
     uniform sampler2D sgmat_normalsSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
 
@@ -350,7 +361,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
     }
 
     // площадь поверхности, где микроскопические неровности перекрывают друг друга
-    float GeometrySmith(const in vec3 normal, const in float cosTheta, const in float NdotVD, const in float NdotL, float roughness)
+    float GeometrySmith(const in vec3 normal, const in float NdotVD, const in float NdotL, float roughness)
     {
         // косинус между направлением камеры и нормалью к поверхности
         // float NdotVD = _NdotVD;
@@ -359,10 +370,10 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
 
         // ggx from view dir
         // насколько освещён фрагмент при виде от камеры
-        float ggx1 = GeometryShlickGGX(NdotVD, roughness);
+        float ggx2 = GeometryShlickGGX(NdotVD, roughness);
         // ggx from light dir
         // насколько освещён тот же фрагмент при виде от источника света
-        float ggx2 = GeometryShlickGGX(NdotL, roughness);
+        float ggx1 = GeometryShlickGGX(NdotL, roughness);
 
         // если ggx1 = 1, а ggx2 = 0, то это geometry shadowing
         // если ggx1 = 0, а ggx2 = 1, то это geometry obstruction
@@ -372,7 +383,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
     // Trowbridge-Reitz GGX (Normal Distribution Function)
     float GGXTR(const in vec3 normal, const in vec3 medianVec, const in float roughness)
     {
-        float roughness4 = pow(roughness, 6.0);
+        float roughness4 = pow(roughness, 4.0);
 
         // косинус между медианным вектором и нормалью фрагмента
         float NdotMV = max(dot(normal, medianVec), 0.0);
@@ -382,7 +393,7 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
         float numerator = roughness4;
         // заменатель
         float denominator = (NdotMV2 * (roughness4 - 1.0) + 1.0);
-        denominator =  PI * denominator * denominator;
+        denominator = PI * denominator * denominator;
 
         return numerator / denominator;
     }
@@ -396,30 +407,79 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
     {
         vec3 normalizedNormal = normalize(vsIn.normal);
 
-        vec4 diffuseColor = vec4(0, 0, 0, 1);
-        vec4 diffuseRoughnessColor = vec4(0, 0, 0, 1);
+        vec4 diffuseColor = vec4(materialDiffuseCol.rgb, 1);
+        vec4 aoRoughnessMetallic = vec4(1, materialRoughnessFactor, materialMetallicFactor, 1);
         vec3 normalMapColor = vec3(0);
+        vec3 finalNormal = vec3(0);
 
         vec2 finalUV = vsIn.UV;
         #ifdef FLIP_TEXTURES_Y
             finalUV.y = 1.0 - vsIn.UV.y;
         #endif
 
-        {
-            float mixCoeff = 1.0 / sgmat_diffuseSamplers_COUNT;
+        // ===============================================================================================
+        // ===============================        load textures       ====================================
+        // ===============================================================================================
 
-            for (int i = 0; i < sgmat_diffuseSamplers_COUNT; ++i)
+        {
+            if(sgmat_diffuseSamplers_COUNT > 0)
             {
-                diffuseColor += texture(sgmat_diffuseSamplers[i], finalUV) * mixCoeff;
+                float mixCoeff = 1.0 / sgmat_diffuseSamplers_COUNT;
+
+                diffuseColor.rgb = vec3(0.0, 0.0, 0.0);
+
+                for (int i = 0; i < sgmat_diffuseSamplers_COUNT; ++i)
+                {
+                    diffuseColor += texture(sgmat_diffuseSamplers[i], finalUV) * mixCoeff;
+                }
             }
         }
 
         {
-            float mixCoeff = 1.0 / sgmat_diffuseRoughnessSamplers_COUNT;
-
-            for (int i = 0; i < sgmat_diffuseRoughnessSamplers_COUNT; ++i)
             {
-                diffuseRoughnessColor += texture(sgmat_diffuseRoughnessSamplers[i], finalUV) * mixCoeff;
+                if(sgmat_lightmapSamplers_COUNT > 0)
+                {
+                    float mixCoeff = 1.0 / sgmat_lightmapSamplers_COUNT;
+
+                    aoRoughnessMetallic.r = 0.0;
+
+                    for (int i = 0; i < sgmat_lightmapSamplers_COUNT; ++i)
+                    {
+                        aoRoughnessMetallic.r += texture(sgmat_lightmapSamplers[i], finalUV).r * mixCoeff;
+                    }
+                }
+            }
+
+            {
+                if(sgmat_diffuseRoughnessSamplers_COUNT > 0)
+                {
+                    float mixCoeff = 1.0 / sgmat_diffuseRoughnessSamplers_COUNT;
+
+                    aoRoughnessMetallic.g = 0.0;
+
+                    for (int i = 0; i < sgmat_diffuseRoughnessSamplers_COUNT; ++i)
+                    {
+                        aoRoughnessMetallic.g += texture(sgmat_diffuseRoughnessSamplers[i], finalUV).g * mixCoeff;
+                    }
+
+                    aoRoughnessMetallic.g *= materialRoughnessFactor;
+                }
+            }
+
+            {
+                if(sgmat_metalnessSamplers_COUNT > 0)
+                {
+                    float mixCoeff = 1.0 / sgmat_metalnessSamplers_COUNT;
+
+                    aoRoughnessMetallic.b = 0.0;
+
+                    for (int i = 0; i < sgmat_metalnessSamplers_COUNT; ++i)
+                    {
+                        aoRoughnessMetallic.b += texture(sgmat_metalnessSamplers[i], finalUV).b * mixCoeff;
+                    }
+
+                    aoRoughnessMetallic.b *= materialMetallicFactor;
+                }
             }
         }
 
@@ -432,30 +492,40 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
                 normalMapColor += texture(sgmat_normalsSamplers[i], finalUV).rgb * mixCoeff;
             }
 
-            normalMapColor = normalize(vsIn.TBN * (normalMapColor * 2.0 - 1.0));
+            finalNormal = normalize(vsIn.TBN * (normalMapColor * 2.0 - 1.0));
         }
         else
         {
-            normalMapColor = normalizedNormal;
+            finalNormal = normalizedNormal;
         }
 
-        float shadowCoeff = 1.0;
+        // ===============================================================================================
+        // ===============================================================================================
+        // ===============================================================================================
+
+        float shadowCoeff = 0.0;
+
+        // TODO: MOVE TO LIGHT COMPONENT
+        const float lightIntensity = 80.0;
 
         for (int i = 0; i < SHADOWS_CASTERS_MAX_COUNT && i < sgmat_shadowMapSamplers_COUNT; ++i)
         {
-            float calculatedShadowCoeff = 1.0 - calculateShadow(
+            vec3 lightDir = normalize(shadowsCasters[i].position - vsIn.fragPos);
+            float distance = length(shadowsCasters[i].position - vsIn.fragPos);
+            float attenuation = 1.0 / (distance * distance);
+
+            float NdotL = saturate(dot(finalNormal, lightDir));
+
+            shadowCoeff += calculateShadow(
+                sgmat_shadowMapSamplers_COUNT,
                 shadowsCasters[i].shadowsCasterSpace * vec4(vsIn.fragPos, 1.0),
                 vsIn.fragPos,
-                normalMapColor,
+                finalNormal,
                 sgmat_shadowMapSamplers[i],
                 i
-            );
-
-            if(!gl_FrontFacing) shadowCoeff += calculatedShadowCoeff;
-            else shadowCoeff -= calculatedShadowCoeff;
+            ) * NdotL;
         }
 
-        // todo: fix multiple directional lights
         // TODO: make customizable with defines
         // PBR pipeline (using Cook-Torrance BRDF) --------------------
 
@@ -466,76 +536,110 @@ uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
         // colorFromRoughness.b = METALNESS
 
         vec3 albedo =       diffuseColor.rgb;
-        float ao =          diffuseRoughnessColor.r;
-        float metalness =   diffuseRoughnessColor.b * materialMetallicFactor;
-        float roughness =   diffuseRoughnessColor.g * materialRoughnessFactor;
+        float ao =          aoRoughnessMetallic.r;
+        float roughness =   aoRoughnessMetallic.g;
+        float metalness =   aoRoughnessMetallic.b;
 
         // для формулы Шлика-Френеля
-        vec3 F0 = vec3(0.1);
+        vec3 F0 = vec3(0.04);
         F0 = mix(F0, albedo, metalness);
 
         //float geomRoughness = ((colorFromRoughness.g + 1.0) * (colorFromRoughness.g + 1.0)) / 8.0;
 
-        // TODO: MOVE TO LIGHT COMPONENT
-        const float lightIntensity = 300.0;
-
         vec3 lo = vec3(0.0);
         for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
         {
-            vec3 lightDir = normalize(directionalLights[i].position - vsIn.fragPos);
-            vec3 halfWayDir = normalize(lightDir + viewDir);
+            vec3 lightDir = normalize(directionalLights[i].position - vsIn.fragPos);  // TRUE
+            vec3 halfWayDir = normalize(lightDir + viewDir);  // TRUE
 
-            float distance = length(directionalLights[i].position - vsIn.fragPos);
-            float attenuation = 1.0 / (distance * distance);
-            vec3 radiance = directionalLights[i].color.rgb * attenuation * lightIntensity;
+            float distance = length(directionalLights[i].position - vsIn.fragPos);  // TRUE
+            float attenuation = 1.0 / (distance * distance);  // TRUE
+            vec3 radiance = directionalLights[i].color.rgb * attenuation * 2000;  // TRUE
             //vec3 radiance = directionalLights[i].color.rgb;
 
             // energy brightness coeff (коэфф. энергетической яркости)
-            float NdotL = max(dot(normalMapColor, lightDir), 0.0);
-            float NdotVD = max(dot(normalMapColor, viewDir), 0.0);
-
-            // shadowCoeff += NdotL * attenuation * lightIntensity;
+            float NdotL = max(dot(finalNormal, lightDir), 0.0);
+            float NdotVD = max(dot(finalNormal, viewDir), 0.0);
 
             // cooktorrance func: DFG /
 
             // NDF (normal distribution func)
             float D = GGXTR(
-                normalMapColor,
+                finalNormal,
                 halfWayDir,
                 roughness
-            );
+            );  // TRUE
 
             float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
 
-            vec3 F = SchlickFresnel(cosTheta, F0);
+            // это по сути зеркальная часть (kS)
+            vec3 F = SchlickFresnel(cosTheta, F0); // kS
             // geometry function
-            float G = GeometrySmith(normalMapColor, cosTheta, NdotVD, NdotL, roughness);
+            float G = GeometrySmith(finalNormal, NdotVD, NdotL, roughness); // TRUE
 
             vec3 diffuse = vec3(1.0) - F;
-            diffuse *= (1.0 - metalness) * materialDiffuseCol.rgb;
+            diffuse *= (1.0 - metalness); // check diffuse color higher
             //diffuse *= max((1.0 - metalness) * materialDiffuseCol.rgb, vec3(115.0 / 255.0, 133.0 / 255.0, 179.0 / 255.0) / 2.0);
 
             vec3 ctNumerator = D * F * G;
             float ctDenominator = 4.0 * NdotVD * NdotL;
-            vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb * 2.0;
+            vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
             lo += (diffuse * albedo.rgb / PI + specular) * radiance * NdotL;
-
-            // shadowCoeff *= NdotL / attenuation * lightIntensity;
-            // shadowCoeff *= (1.0 - NdotL);
         }
 
-        shadowCoeff = saturate(shadowCoeff);
+        /*vec3 resultPhong = vec3(0.0);
+        vec3 resultDiffuse = vec3(0.0);
+        vec3 resultSpecular = vec3(0.0);
 
-        vec3 ambient = vec3(0.05) * albedo.rgb * ao;
+        for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
+        {
+            vec3 lightDir = normalize(directionalLights[i].position - vsIn.fragPos);
+            float diff = max(dot(finalNormal, lightDir), 0.0);
+            vec3 diffuse = vec3(diff);
+
+            // Specular
+            float specularStrength = 0.5f;
+            vec3 reflectDir = reflect(-lightDir, finalNormal);
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+            vec3 specular = vec3(specularStrength * spec);
+
+            // diffuse += vec3(shadowCoeff);
+
+            // shadowCoeff *= diff * 1000.0;
+
+            resultDiffuse += diffuse;
+            resultSpecular += specular;
+            // resultPhong += (diffuse + specular);
+        }
+
+        // resultDiffuse += vec3(shadowCoeff);
+        resultDiffuse = saturate(resultDiffuse);
+        resultPhong = resultDiffuse + resultSpecular;*/
+
+        vec3 ambient = vec3(0.22) * albedo.rgb * ao;
         vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
+
+        float exposure = 1.3;
 
         // HDR standard tonemapper
         finalCol = finalCol / (finalCol + vec3(1.0));
-        finalCol = pow(finalCol, vec3(1.0 / 2.2));
+        finalCol = pow(finalCol, vec3(1.0 / exposure));
+        //finalCol = ACESFilm(finalCol);
+
+        /*float exposure = 2.2;
+        finalCol.rgb = vec3(1.0) - exp(-exposure * finalCol.rgb);*/
 
         fragColor.a = diffuseColor.a;
         fragColor.rgb = finalCol * shadowCoeff;
+
+        // DEBUG ==================================
+        // base color
+        // fragColor.rgb = albedo; // PASSED
+        // fragColor.rgb = vec3(metalness); // PASSED
+        // fragColor.rgb = vec3(roughness); // PASSED
+        // fragColor.rgb = normalMapColor; // PASSED
+        // fragColor.rgb = vec3(ao); // PASSED
 
         // shadows apply ---------------------------------------
     }

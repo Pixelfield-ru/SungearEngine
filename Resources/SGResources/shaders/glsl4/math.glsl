@@ -1,7 +1,7 @@
 #ifndef MATH_GLSL
 #define MATH_GLSL
 
-#define PI 3.1415926
+#define PI 3.14159265359
 
 float mad(const in float mval, const in float aval, const in float bval)
 {

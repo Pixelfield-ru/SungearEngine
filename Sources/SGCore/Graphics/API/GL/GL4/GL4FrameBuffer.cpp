@@ -69,8 +69,9 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachments
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachment
 (const SGFrameBufferAttachmentType& attachmentType, const std::uint8_t& textureBlock)
 {
+    GLenum glAttachmentType = !m_attachments[attachmentType].m_useMultisampling ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
     glActiveTexture(GL_TEXTURE0 + textureBlock);
-    glBindTexture(GL_TEXTURE_2D, m_attachments[attachmentType].m_handler);
+    glBindTexture(glAttachmentType, m_attachments[attachmentType].m_handler);
 
     return shared_from_this();
 }
@@ -187,12 +188,13 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::clear()
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IFrameBuffer>
-SGCore::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType& attachmentType,
-                                              const SGGColorFormat& format,
-                                              const SGGColorInternalFormat& internalFormat,
-                                              const int& mipLevel,
-                                              const int& layer)
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType,
+                                                                            SGGColorFormat format,
+                                                                            SGGColorInternalFormat internalFormat,
+                                                                            const int& mipLevel,
+                                                                            const int& layer,
+                                                                            bool useMultisampling,
+                                                                            std::uint8_t multisamplingSamplesCount)
 {
     if(m_attachments.find(attachmentType) != m_attachments.end())
     {
@@ -208,6 +210,8 @@ SGCore::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType& attachm
     newAttachment.m_internalFormat = internalFormat;
     newAttachment.m_mipLevel = mipLevel;
     newAttachment.m_layer = layer;
+    newAttachment.m_useMultisampling = useMultisampling;
+    newAttachment.m_multisamplingSamplesCount = multisamplingSamplesCount;
 
     // TODO: MAKE VERIFY INTERNAL FORMAT
     // TODO: MAKE VERIFY SIZE TYPE
@@ -278,25 +282,40 @@ SGCore::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType& attachm
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        glGenTextures(1, &newAttachment.m_handler);
-        glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
+        GLenum glType = !useMultisampling ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
 
-        glTexImage2D(GL_TEXTURE_2D,
-                     mipLevel,
-                     GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
-                     m_width, m_height,
-                     0,
-                     GLGraphicsTypesCaster::sggFormatToGL(format),
-                     GL_UNSIGNED_BYTE,
-                     nullptr);
+        glGenTextures(1, &newAttachment.m_handler);
+        glBindTexture(glType, newAttachment.m_handler);
+
+        if(!useMultisampling)
+        {
+            glTexImage2D(glType,
+                         mipLevel,
+                         GLGraphicsTypesCaster::sggInternalFormatToGL(internalFormat),
+                         m_width, m_height,
+                         0,
+                         GLGraphicsTypesCaster::sggFormatToGL(format),
+                         GL_UNSIGNED_BYTE,
+                         nullptr
+            );
+        }
+        else
+        {
+            glTexImage2DMultisample(glType,
+                                    multisamplingSamplesCount,
+                                    GLGraphicsTypesCaster::sggFormatToGL(format),
+                                    m_width, m_height,
+                                    GL_FALSE
+            );
+        }
 
         // TODO: make it customizable
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(glType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glFramebufferTexture2D(GL_FRAMEBUFFER,
                                GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0),
-                               GL_TEXTURE_2D, newAttachment.m_handler, mipLevel);
+                               glType, newAttachment.m_handler, mipLevel);
     }
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
@@ -312,6 +331,16 @@ SGCore::GL4FrameBuffer::addAttachment(const SGFrameBufferAttachmentType& attachm
     }
 
     return shared_from_this();
+}
+
+std::shared_ptr<SGCore::IFrameBuffer>
+SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType,
+                                      SGGColorFormat format,
+                                      SGGColorInternalFormat internalFormat,
+                                      const int& mipLevel,
+                                      const int& layer)
+{
+    return addAttachment(attachmentType, format, internalFormat, mipLevel, layer, false, 8);
 }
 
 void SGCore::GL4FrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,

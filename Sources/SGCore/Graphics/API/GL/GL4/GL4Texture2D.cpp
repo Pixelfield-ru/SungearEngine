@@ -46,8 +46,6 @@ void SGCore::GL4Texture2D::create(Weak<Texture2DAsset> asset) noexcept
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glGenerateMipmap(GL_TEXTURE_2D);
-
     glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -66,6 +64,8 @@ void SGCore::GL4Texture2D::create(Weak<Texture2DAsset> asset) noexcept
                     m_glFormat,
                     GL_UNSIGNED_BYTE,
                     assetSharedPtr->getData().get());
+
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     /*glBindTexture(GL_TEXTURE_CUBE_MAP, m_handler);
 
