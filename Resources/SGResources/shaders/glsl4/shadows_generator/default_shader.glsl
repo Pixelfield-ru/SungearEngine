@@ -12,7 +12,7 @@
     {
         vs_UVAttribute = UVAttribute;
 
-        gl_Position = projectionMatrix * viewMatrix * objectModelMatrix * vec4(positionsAttribute, 1.0);
+        gl_Position = camera.spaceMatrix * objectModelMatrix * vec4(positionsAttribute, 1.0);
     }
 #endif
 

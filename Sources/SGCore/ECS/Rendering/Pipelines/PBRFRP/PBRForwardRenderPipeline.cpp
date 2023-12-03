@@ -13,8 +13,6 @@
 #include "SGCore/ECS/Rendering/MeshesCollector.h"
 #include "SGCore/ECS/Transformations/TransformationsUpdater.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCastersCollector.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 #include "SGCore/ECS/Rendering/SkyboxesCollector.h"
 #include "SGCore/ECS/Rendering/Gizmos/LinesGizmosCollector.h"
 #include "SGCore/ECS/Rendering/Gizmos/ComplexGizmosCollector.h"
@@ -22,7 +20,6 @@
 #include "SGCore/ECS/Rendering/Gizmos/IComplexGizmo.h"
 #include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPSkyboxesPass.h"
 #include "SGCore/ECS/Rendering/CamerasCollector.h"
-#include "PBRFRPShadowsPass.h"
 #include "PBRFRPGeometryPass.h"
 #include "SGCore/ECS/Rendering/Pipelines/PostProcessFXPass.h"
 #include "SGCore/ECS/Rendering/Pipelines/ComplexGizmosPass.h"
@@ -33,14 +30,6 @@
 SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 {
     auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
-
-    // -----------------------------
-
-    {
-        auto directionalLightsPass = MakeRef<PBRFRPDirectionalLightsPass>();
-
-        m_renderPasses.push_back(directionalLightsPass);
-    }
 
     // configure render passes --------
     {
@@ -64,23 +53,23 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
     }
 
     {
-        auto shadowsPass = MakeRef<PBRFRPShadowsPass>();
+        auto directionalLightsPass = MakeRef<PBRFRPDirectionalLightsPass>();
 
-        shadowsPass->m_shader = Ref<IShader>(
+        directionalLightsPass->m_shader = Ref<IShader>(
                 CoreMain::getRenderer().createShader(
                         shadersPaths["ShadowsGeneration"]["DefaultShader"]
                 )
         );
 
-        shadowsPass->m_shaderMarkup.addTexturesBlockDeclaration(
+        directionalLightsPass->m_shaderMarkup.addTexturesBlockDeclaration(
                 SGTextureType::SGTP_DIFFUSE,
                 sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
                 1
         );
 
-        shadowsPass->m_shaderMarkup.calculateBlocksOffsets();
+        directionalLightsPass->m_shaderMarkup.calculateBlocksOffsets();
 
-        m_renderPasses.push_back(shadowsPass);
+        m_renderPasses.push_back(directionalLightsPass);
     }
 
     {
@@ -164,7 +153,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
 void SGCore::PBRForwardRenderPipeline::useScene(const SGCore::Ref<SGCore::Scene>& scene)
 {
     auto& cameras = scene->getSystem<CamerasCollector>()->m_componentsCollector.m_cachedEntities;
-    auto& shadowsCasters = scene->getSystem<ShadowsCastersCollector>()->m_componentsCollector.m_cachedEntities;
 
     auto& meshes = scene->getSystem<MeshesCollector>()->m_componentsCollector.m_cachedEntities;
 
@@ -174,7 +162,9 @@ void SGCore::PBRForwardRenderPipeline::useScene(const SGCore::Ref<SGCore::Scene>
 
     auto& skyboxes = scene->getSystem<SkyboxesCollector>()->m_componentsCollector.m_cachedEntities;
 
-    m_prepareFunc = [&, cameras, shadowsCasters]()
+    auto& dirLights = scene->getSystem<DirectionalLightsCollector>()->m_componentsCollector.m_cachedEntities;
+
+    m_prepareFunc = [&, cameras]()
     {
         SG_BEGIN_ITERATE_CACHED_ENTITIES(
                 *cameras,
@@ -190,13 +180,13 @@ void SGCore::PBRForwardRenderPipeline::useScene(const SGCore::Ref<SGCore::Scene>
         SG_END_ITERATE_CACHED_ENTITIES
     };
 
+    auto directionalLightsPass = getRenderPass<PBRFRPDirectionalLightsPass>();
+    directionalLightsPass->m_componentsToRenderIn = dirLights;
+    directionalLightsPass->m_componentsToRender = meshes;
+
     auto skyboxesPass = getRenderPass<PBRFRPSkyboxesPass>();
     skyboxesPass->m_componentsToRenderIn = cameras;
     skyboxesPass->m_componentsToRender = skyboxes;
-
-    auto shadowsPass = getRenderPass<PBRFRPShadowsPass>();
-    shadowsPass->m_componentsToRenderIn = shadowsCasters;
-    shadowsPass->m_componentsToRender = meshes;
 
     auto geometryPass = getRenderPass<PBRFRPGeometryPass>();
     geometryPass->m_componentsToRenderIn = cameras;

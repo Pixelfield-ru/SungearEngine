@@ -24,7 +24,6 @@
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/Camera.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
 #include "SGCore/ECS/Rendering/Skybox.h"
 #include "SGCore/Memory/Assets/CubemapAsset.h"
@@ -422,9 +421,7 @@ void init()
     shadowsCasterTransform->m_position.z = 5.0;
     shadowsCasterTransform->m_position.x = -5.0;
     shadowsCasterTransform->m_rotation.x = 50;
-    auto shadowCasterComponent = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster->addComponent(shadowsCasterTransform);
-    testShadowsCaster->addComponent(shadowCasterComponent);
     auto directionalLight = SGCore::MakeRef<SGCore::DirectionalLight>();
     // directionalLight->m_color.r = 10.0f / 255.0f;
     // directionalLight->m_color.g = 129.0f / 255.0f;
@@ -441,9 +438,7 @@ void init()
     shadowsCasterTransform1->m_position.y = 10;
     shadowsCasterTransform1->m_position.z = -50.0;
     shadowsCasterTransform1->m_rotation.y = 180;
-    auto shadowCasterComponent1 = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
-    testShadowsCaster1->addComponent(shadowCasterComponent1);
     auto directionalLight1 = SGCore::MakeRef<SGCore::DirectionalLight>();
     directionalLight1->m_color.r = 139.0f / 255.0f;
     directionalLight1->m_color.g = 184.0f / 255.0f;
@@ -458,9 +453,7 @@ void init()
     shadowsCasterTransform2->m_position.y = 10;
     shadowsCasterTransform2->m_position.z = -50.0;
     shadowsCasterTransform2->m_rotation.y = 180;
-    auto shadowCasterComponent2 = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster2->addComponent(shadowsCasterTransform2);
-    testShadowsCaster2->addComponent(shadowCasterComponent2);
     auto directionalLight2 = SGCore::MakeRef<SGCore::DirectionalLight>();
     directionalLight2->m_color.r = 20.0f / 255.0f;
     directionalLight2->m_color.g = 184.0f / 255.0f;
@@ -475,9 +468,7 @@ void init()
     shadowsCasterTransform3->m_position.y = 5;
     shadowsCasterTransform3->m_position.z = -20.0;
     shadowsCasterTransform3->m_rotation.y = 90;
-    auto shadowCasterComponent3 = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster3->addComponent(shadowsCasterTransform3);
-    testShadowsCaster3->addComponent(shadowCasterComponent3);
     auto directionalLight3 = SGCore::MakeRef<SGCore::DirectionalLight>();
     directionalLight3->m_color.r = 139.0f / 255.0f;
     directionalLight3->m_color.g = 15.0f / 255.0f;
@@ -492,9 +483,7 @@ void init()
     shadowsCasterTransform4->m_position.y = 5;
     shadowsCasterTransform4->m_position.z = -20.0;
     shadowsCasterTransform4->m_rotation.y = -90;
-    auto shadowCasterComponent4 = SGCore::MakeRef<SGCore::ShadowsCaster>();
     testShadowsCaster4->addComponent(shadowsCasterTransform4);
-    testShadowsCaster4->addComponent(shadowCasterComponent4);
     auto directionalLight4 = SGCore::MakeRef<SGCore::DirectionalLight>();
     directionalLight4->m_color.r = 139.0f / 255.0f;
     directionalLight4->m_color.g = 50.0f / 255.0f;

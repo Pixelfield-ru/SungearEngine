@@ -9,7 +9,6 @@
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/Camera.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 #include "SGCore/ECS/Rendering/Skybox.h"
 
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
@@ -57,12 +56,18 @@ void SGCore::GL4Renderer::init() noexcept
     // TODO: make defines for uniforms names
 
     m_viewMatricesBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
-    m_viewMatricesBuffer->m_blockName = "ViewMatrices";
+    m_viewMatricesBuffer->m_blockName = "CameraData";
     m_viewMatricesBuffer->putUniforms({
-        IShaderUniform("projectionMatrix", SGGDataType::SGG_MAT4),
-        IShaderUniform("viewMatrix", SGGDataType::SGG_MAT4),
-        IShaderUniform("viewDirection", SGGDataType::SGG_FLOAT3)
+                                              IShaderUniform("camera.projectionMatrix", SGGDataType::SGG_MAT4),
+                                              IShaderUniform("camera.viewMatrix", SGGDataType::SGG_MAT4),
+                                              IShaderUniform("camera.spaceMatrix", SGGDataType::SGG_MAT4),
+                                              IShaderUniform("camera.position", SGGDataType::SGG_FLOAT3),
+                                              IShaderUniform("camera.rotation", SGGDataType::SGG_FLOAT3),
+                                              IShaderUniform("camera.scale", SGGDataType::SGG_FLOAT3)
                                         });
+    m_viewMatricesBuffer->putData<float>({ });
+    m_viewMatricesBuffer->putData<float>({ });
+    m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->putData<float>({ });
@@ -153,14 +158,16 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<IRenderingComponent>& 
 
     if(renderingComponent)
     {
-        m_viewMatricesBuffer->subData("viewMatrix",
-                                      glm::value_ptr(renderingComponent->m_viewMatrix), 16);
-        m_viewMatricesBuffer->subData("projectionMatrix",
+        m_viewMatricesBuffer->subData("camera.spaceMatrix",
+                                      glm::value_ptr(renderingComponent->m_spaceMatrix), 16);
+        m_viewMatricesBuffer->subData("camera.projectionMatrix",
                                       glm::value_ptr(renderingComponent->m_projectionMatrix), 16);
+        m_viewMatricesBuffer->subData("camera.viewMatrix",
+                                      glm::value_ptr(renderingComponent->m_viewMatrix), 16);
     }
     if(transformComponent)
     {
-        m_viewMatricesBuffer->subData("viewDirection",
+        m_viewMatricesBuffer->subData("camera.position",
                                       glm::value_ptr(transformComponent->m_position), 3);
     }
 

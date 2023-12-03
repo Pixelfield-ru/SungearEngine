@@ -5,18 +5,23 @@
 #ifndef SUNGEARENGINE_ILIGHTCOMPONENT_H
 #define SUNGEARENGINE_ILIGHTCOMPONENT_H
 
-#include "SGCore/ECS/IComponent.h"
 #include "GLM/glm/glm.hpp"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
+#include "SGCore/ECS/Rendering/IRenderingComponent.h"
 
 namespace SGCore
 {
-    class ILight : public IComponent
+    class ILight : public IRenderingComponent
     {
         friend class DirectionalLightsCollector;
 
     public:
+        Ref<IFrameBuffer> m_shadowMap;
+
         glm::vec4 m_color { 1.0, 1.0, 1.0, 1.0 };
         float m_intensity = 1.0f;
+
+        std::uint8_t m_samplesCount = 16;
 
     private:
         glm::vec4 m_lastColor { 0.0, 0.0, 0.0, 0.0 };

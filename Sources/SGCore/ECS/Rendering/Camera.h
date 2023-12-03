@@ -35,6 +35,7 @@ namespace SGCore
     public:
         Camera();
 
+        // todo: move in transform
         bool m_blockRotation = false;
         bool m_blockTranslation = false;
 

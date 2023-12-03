@@ -11,7 +11,6 @@
 #include "SGCore/ECS/Rendering/RenderingComponentsUpdater.h"
 #include "SGCore/ECS/Rendering/Gizmos/GizmosMeshesRebuilder.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCastersCollector.h"
 #include "SGCore/ECS/Transformations/CameraMovement3DSystem.h"
 #include "SGCore/ECS/Rendering/SkyboxesCollector.h"
 #include "SGCore/ECS/Rendering/Gizmos/LinesGizmosCollector.h"
@@ -48,8 +47,6 @@ void SGCore::Scene::createDefaultSystems()
 
     auto directionalLightsSystem = std::make_shared<DirectionalLightsCollector>();
 
-    auto shadowsCasterSystem = std::make_shared<ShadowsCastersCollector>();
-
     auto camera3DMovementSystem = std::make_shared<CameraMovement3DSystem>();
 
     auto skyboxesCollectorSystem = std::make_shared<SkyboxesCollector>();
@@ -69,7 +66,6 @@ void SGCore::Scene::createDefaultSystems()
     m_systems.emplace(primitivesUpdaterSystem);
     // directional light system must be always before shadows caster system
     m_systems.emplace(directionalLightsSystem);
-    m_systems.emplace(shadowsCasterSystem);
     m_systems.emplace(camera3DMovementSystem);
     m_systems.emplace(skyboxesCollectorSystem);
 

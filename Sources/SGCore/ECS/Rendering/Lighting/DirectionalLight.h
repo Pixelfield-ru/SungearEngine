@@ -9,8 +9,10 @@
 
 namespace SGCore
 {
-    class DirectionalLight : public ILight
+    struct DirectionalLight : public ILight
     {
+        DirectionalLight() noexcept;
+
     private:
         void init() noexcept final { }
     };

@@ -5,7 +5,6 @@
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/Camera.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 
 bool SGCore::GL46Renderer::confirmSupport() noexcept
 {

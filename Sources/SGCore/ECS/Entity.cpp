@@ -4,7 +4,6 @@
 
 #include "Entity.h"
 
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 #include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
 #include "Scene.h"
 

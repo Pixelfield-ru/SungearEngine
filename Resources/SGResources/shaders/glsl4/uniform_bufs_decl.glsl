@@ -2,31 +2,12 @@
 #define UNIFORM_BUFS_DECL_GLSL
 
 #include "defines.glsl"
-
-/*layout(std140) uniform ObjectTransformationData
-{
-    mat4 objectModelMatrix;
-    vec3 objectPosition;
-    vec3 objectRotation;
-    vec3 objectScale;
-};*/
+#include "rendering_structs_decl.glsl"
 
 uniform mat4 objectModelMatrix;
 uniform vec3 objectPosition;
 uniform vec3 objectRotation;
 uniform vec3 objectScale;
-
-/*layout(std140) uniform MaterialData
-{
-    vec4 materialDiffuseCol;
-    vec4 materialSpecularCol;
-    vec4 materialAmbientCol;
-    vec4 materialEmissionCol;
-    vec4 materialTransparentCol;
-    float materialShininess;
-    float materialMetallicFactor;
-    float materialRoughnessFactor;
-};*/
 
 uniform vec4 materialDiffuseCol;
 uniform vec4 materialSpecularCol;
@@ -52,11 +33,9 @@ struct FrameBuffer
     sampler2D renderAttachments[1];
 };
 
-layout(std140) uniform ViewMatrices
+layout(std140) uniform CameraData
 {
-    mat4 projectionMatrix;
-    mat4 viewMatrix;
-    vec3 viewDirection;
+    IRenderingComponent camera;
 };
 
 layout(std140) uniform ProgramData

@@ -7,38 +7,11 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ECS/Rendering/Camera.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
-#include "PBRFRPShadowsPass.h"
-#include "SGCore/ECS/Rendering/Lighting/ShadowsCaster.h"
 
 void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
-    Ref<PBRFRPShadowsPass> shadowsPass = renderPipeline->getRenderPass<PBRFRPShadowsPass>();
-
     m_shader->bind();
     m_shader->useShaderMarkup(m_shaderMarkup);
-
-    if(shadowsPass || !shadowsPass->m_active)
-    {
-        const auto& shadowsMapsTexturesBlock =
-                m_shaderMarkup.m_texturesBlocks[SGTextureType::SGTP_SHADOW_MAP];
-
-        std::uint8_t currentShadowsCaster = 0;
-
-        SG_BEGIN_ITERATE_CACHED_ENTITIES(*shadowsPass->m_componentsToRenderIn, shadowsCastersLayer,
-                                         shadowsCasterEntity)
-                // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
-                auto shadowsCaster = shadowsCasterEntity.getComponent<ShadowsCaster>();
-
-                if(!shadowsCaster) continue;
-
-                shadowsCaster->m_frameBuffer->bindAttachment(
-                        SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
-                        shadowsMapsTexturesBlock.m_offset + currentShadowsCaster
-                );
-
-                currentShadowsCaster++;
-        SG_END_ITERATE_CACHED_ENTITIES
-    }
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
             auto cameraTransformComponent = cameraEntity.getComponent<Transform>();

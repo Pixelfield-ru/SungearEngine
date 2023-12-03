@@ -18,7 +18,6 @@ namespace SGCore
     class Camera;
     class Mesh;
     class Transform;
-    class ShadowsCaster;
     class Skybox;
     class IRenderingComponent;
     class IGizmo;

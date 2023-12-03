@@ -108,7 +108,7 @@ vec3 atmosphere(vec3 r, vec3 ro,
     {
         vs_UVAttribute = positionsAttribute;
 
-        gl_Position = projectionMatrix * mat4(mat3(viewMatrix)) * objectModelMatrix * vec4(positionsAttribute, 1.0);
+        gl_Position = camera.projectionMatrix * mat4(mat3(camera.viewMatrix)) * objectModelMatrix * vec4(positionsAttribute, 1.0);
         //vec4 pos = projectionMatrix * mat4(mat3(viewMatrix)) * vec4(positionsAttribute, 1.0);
         //gl_Position = vec4(pos.xy, pos.w, pos.w);
     }
