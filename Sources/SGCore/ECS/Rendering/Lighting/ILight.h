@@ -19,7 +19,7 @@ namespace SGCore
         Ref<IFrameBuffer> m_shadowMap;
 
         glm::vec4 m_color { 1.0, 1.0, 1.0, 1.0 };
-        float m_intensity = 1.0f;
+        float m_intensity = 1000.0f;
 
         std::uint8_t m_samplesCount = 16;
 

@@ -11,9 +11,8 @@
 
 namespace SGCore
 {
-    class GLShadersPreprocessor
+    struct GLShadersPreprocessor
     {
-    public:
         /**
          * @param shaderPath - Path to shader
          * @param inputCode - Input code of shader

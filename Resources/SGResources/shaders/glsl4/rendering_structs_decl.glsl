@@ -1,7 +1,7 @@
 #ifndef RENDERING_STRUCTS_DECL_GLSL
 #define RENDERING_STRUCTS_DECL_GLSL
 
-#define DIRECTIONAL_LIGHTS_MAX_COUNT    10
+#define DIRECTIONAL_LIGHTS_MAX_COUNT    5
 
 struct IRenderingComponent
 {
@@ -24,11 +24,13 @@ struct ILight
 struct DirectionalLight
 {
     ILight lightPart;
-    sampler2D shadowMap;
     // todo: make for dir light
 };
 
-uniform int DIRECTIONAL_LIGHTS_COUNT;
-uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
+#ifndef SG_NOT_INCLUDE_LIGHTS
+    uniform int DIRECTIONAL_LIGHTS_COUNT;
+    uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
+    uniform sampler2D directionalLightsShadowMaps[DIRECTIONAL_LIGHTS_MAX_COUNT];
+#endif // SG_INCLUDE_DIR_LIGHTS
 
 #endif // RENDERING_STRUCTS_DECL_GLSL

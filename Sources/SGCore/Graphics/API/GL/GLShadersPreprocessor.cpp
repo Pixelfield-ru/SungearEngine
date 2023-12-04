@@ -30,10 +30,12 @@ std::string SGCore::GLShadersPreprocessor::processShader(const std::string& shad
 
     size_t curLine = 1;
 
+    const std::string gridChar = "#";
+
     while(std::getline(codeStream, line))
     {
         // process #sg_include directive
-        if(line.starts_with(std::string("#") + SG_SHADER_INCLUDE_KEYWORD))
+        if(line.starts_with(gridChar + SG_SHADER_INCLUDE_KEYWORD))
         {
             const auto pathsBegin = std::sregex_token_iterator(line.begin(), line.end(), pathsRegex);
 
@@ -65,9 +67,6 @@ std::string SGCore::GLShadersPreprocessor::processShader(const std::string& shad
                 }
                 else // if path valid and file exists
                 {
-                    /*SGCF_SUCCESS(("Included shader path for shader '" + shaderPath + "' is: ").append(includedPath),
-                                 SG_LOG_CURRENT_SESSION_FILE);*/
-
                     // loading code of included shader
                     auto includedShaderFile =
                             AssetManager::loadAsset<FileAsset>(includedPath);

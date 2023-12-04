@@ -33,6 +33,10 @@ void SGCore::GL4Renderer::init() noexcept
     printInfo();
     SGCF_INFO("-----------------------------------", SG_LOG_CURRENT_SESSION_FILE);
 
+    GLint maxTextureImageUnits;
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureImageUnits);
+    SGCF_INFO("Max texture image units: " + std::to_string(maxTextureImageUnits), SG_LOG_GAPI_FILE);
+
     // -------------------------------------
 
     if(!confirmSupport())

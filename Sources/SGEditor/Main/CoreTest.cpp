@@ -426,6 +426,7 @@ void init()
     // directionalLight->m_color.r = 10.0f / 255.0f;
     // directionalLight->m_color.g = 129.0f / 255.0f;
     // directionalLight->m_color.b = 100.0f / 255.0f;
+    directionalLight->m_intensity = 2000.0;
     testShadowsCaster->addComponent(directionalLight);
     testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
@@ -443,6 +444,7 @@ void init()
     directionalLight1->m_color.r = 139.0f / 255.0f;
     directionalLight1->m_color.g = 184.0f / 255.0f;
     directionalLight1->m_color.b = 241.0f / 255.0f;
+    directionalLight1->m_intensity = 700.0;
     testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
@@ -458,6 +460,7 @@ void init()
     directionalLight2->m_color.r = 20.0f / 255.0f;
     directionalLight2->m_color.g = 184.0f / 255.0f;
     directionalLight2->m_color.b = 241.0f / 255.0f;
+    directionalLight2->m_intensity = 500.0;
     testShadowsCaster2->addComponent(directionalLight2);
     testShadowsCaster2->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
@@ -474,6 +477,7 @@ void init()
     directionalLight3->m_color.g = 15.0f / 255.0f;
     directionalLight3->m_color.b = 5.0f / 255.0f;
     testShadowsCaster3->addComponent(directionalLight3);
+    directionalLight3->m_intensity = 100.0;
     testShadowsCaster3->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
     auto testShadowsCaster4 = SGCore::MakeRef<SGCore::Entity>();
@@ -488,6 +492,7 @@ void init()
     directionalLight4->m_color.r = 139.0f / 255.0f;
     directionalLight4->m_color.g = 50.0f / 255.0f;
     directionalLight4->m_color.b = 241.0f / 255.0f;
+    directionalLight4->m_intensity = 200.0;
     testShadowsCaster4->addComponent(directionalLight4);
     testShadowsCaster4->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
@@ -503,9 +508,9 @@ void init()
     zLineGizmo->m_meshData->setVertexPosition(1, 0, 0, 10);
     zLineGizmo->m_color = { 0.0, 0.0, 1.0, 1.0 };
 
-    //testShadowsCaster1->addComponent(xLineGizmo);
-    //testShadowsCaster1->addComponent(yLineGizmo);
-    //testShadowsCaster1->addComponent(zLineGizmo);
+    /*testShadowsCaster1->addComponent(xLineGizmo);
+    testShadowsCaster1->addComponent(yLineGizmo);
+    testShadowsCaster1->addComponent(zLineGizmo);*/
 
     /// -----------------------------------------
 
@@ -522,10 +527,11 @@ int framesCnt = 0;
 
 void fixedUpdate()
 {
-    //boxComponent->m_size.z += sin(framesCnt / 75.0) / 10.0;
-    //testShadowsCaster->getComponent<Core::ECS::TransformComponent>()->m_rotation.x += sin(framesCnt / 75.0) / 2.0;
+    double angle = framesCnt / 75.0;
 
-    //testShadowsCaster->getComponent<SGCore::Transform>()->m_position.y += sin(framesCnt / 75.0) / 10.0;
+    auto transform0 = testShadowsCaster->getComponent<SGCore::Transform>();
+
+    transform0->m_position.y += sin(framesCnt / 30.0) / 2.5;
 
     SGCore::Scene::getCurrentScene()->fixedUpdate();
 

@@ -12,6 +12,8 @@
 
 void SGCore::CoreMain::start()
 {
+    Log::init();
+
     // todo: move
     system("chcp 65001");
     setlocale(LC_ALL, "Russian");
@@ -27,7 +29,6 @@ void SGCore::CoreMain::start()
     SGSingleton::getSharedPtrInstance<ShadersPaths>()->createDefaultPaths();
     InputManager::init();
     AssetManager::init();
-    Log::init();
     // ----------------------------------
 
     std::shared_ptr<TimerCallback> globalTimerCallback = std::make_shared<TimerCallback>();

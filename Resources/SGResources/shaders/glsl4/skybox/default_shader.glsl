@@ -1,6 +1,8 @@
-#include "../uniform_bufs_decl.glsl"
+#define SG_NOT_INCLUDE_LIGHTS
+
 #include "../ray_intersections.glsl"
 #include "../defines.glsl"
+#include "../uniform_bufs_decl.glsl"
 
 #define PI 3.141592
 #define iSteps 16
@@ -115,7 +117,6 @@ vec3 atmosphere(vec3 r, vec3 ro,
 #endif
 
 #ifdef FRAGMENT_SHADER
-
     const vec3 sunPos = vec3(0.0, 1.0, -1.0);
 
     out vec4 fragColor;
@@ -141,6 +142,7 @@ vec3 atmosphere(vec3 r, vec3 ro,
             0.958                          // Mie preferred scattering direction
         );
 
+        fragColor = vec4(1.0);
         // vec3 atmosphereCol = vec3(1.0);
         if(sgmat_skyboxSamplers_COUNT > 0)
         {
@@ -148,7 +150,7 @@ vec3 atmosphere(vec3 r, vec3 ro,
             vec4 skyboxCol = vec4(0.0);
             for (int i = 0; i < sgmat_skyboxSamplers_COUNT; i++)
             {
-                skyboxCol += texture(sgmat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
+                skyboxCol += textureCube(sgmat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
             }
 
             fragColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);

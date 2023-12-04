@@ -233,7 +233,6 @@ float ambient = 0.1;
         // ===============================================================================================
 
         // TODO: MOVE TO LIGHT COMPONENT
-        const float lightIntensity = 80.0;
 
         // shadowCoeff = clamp(shadowCoeff, 0.0, 1.5);
 
@@ -255,7 +254,7 @@ float ambient = 0.1;
         vec3 F0 = vec3(0.04);
         F0 = mix(F0, albedo, metalness);
 
-        //float geomRoughness = ((colorFromRoughness.g + 1.0) * (colorFromRoughness.g + 1.0)) / 8.0;
+        vec3 dirLightsShadowCoeff = vec3(0.0);
 
         vec3 lo = vec3(0.0);
         for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
@@ -267,8 +266,8 @@ float ambient = 0.1;
             vec3 halfWayDir = normalize(lightDir + viewDir);  // TRUE
 
             float distance = length(renderingPart.position - vsIn.fragPos);  // TRUE
-            float attenuation = 1.0 / (distance * distance);  // TRUE
-            vec3 radiance = lightPart.color.rgb * attenuation * 2000;  // TRUE
+            float attenuation = (1.0 / (distance * distance));  // TRUE
+            vec3 radiance = lightPart.color.rgb * attenuation * lightPart.intensity;  // TRUE
             //vec3 radiance = directionalLights[i].color.rgb;
 
             // energy brightness coeff (коэфф. энергетической яркости)
@@ -277,11 +276,12 @@ float ambient = 0.1;
 
             // ===================        shadows calc        =====================
 
-            float shadowCoeff = calcDirLightShadow(
-                directionalLights[i],
-                vsIn.fragPos,
-                finalNormal
-            );
+            dirLightsShadowCoeff += calcDirLightShadow(
+                    directionalLights[i],
+                    vsIn.fragPos,
+                    finalNormal,
+                    directionalLightsShadowMaps[i]
+                ) * NdotL * radiance + radiance * 0.04;
 
             // ====================================================================
 
@@ -303,14 +303,15 @@ float ambient = 0.1;
 
             vec3 diffuse = vec3(1.0) - F;
             diffuse *= (1.0 - metalness); // check diffuse color higher
-            //diffuse *= max((1.0 - metalness) * materialDiffuseCol.rgb, vec3(115.0 / 255.0, 133.0 / 255.0, 179.0 / 255.0) / 2.0);
 
             vec3 ctNumerator = D * F * G;
             float ctDenominator = 4.0 * NdotVD * NdotL;
             vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
-            lo += (diffuse * albedo.rgb / PI + specular) * radiance * shadowCoeff * NdotL;
+            lo += (diffuse * albedo.rgb / PI + specular) * radiance;
         }
+
+        dirLightsShadowCoeff /= DIRECTIONAL_LIGHTS_COUNT;
 
         /*vec3 resultPhong = vec3(0.0);
         vec3 resultDiffuse = vec3(0.0);
@@ -343,16 +344,13 @@ float ambient = 0.1;
 
         vec3 ambient = vec3(0.22) * albedo.rgb * ao;
         vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
-
         float exposure = 1.3;
+
+        finalCol *= dirLightsShadowCoeff;
 
         // HDR standard tonemapper
         finalCol = finalCol / (finalCol + vec3(1.0));
         finalCol = pow(finalCol, vec3(1.0 / exposure));
-        //finalCol = ACESFilm(finalCol);
-
-        /*float exposure = 2.2;
-        finalCol.rgb = vec3(1.0) - exp(-exposure * finalCol.rgb);*/
 
         fragColor.a = diffuseColor.a;
         fragColor.rgb = finalCol;

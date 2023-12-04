@@ -53,7 +53,7 @@ namespace SGCore
         // second - pair of location and value vec
         std::unordered_map<std::string, std::pair<GLint, glm::mat4>> m_cachedMat4;
 
-        GLuint createShaderPart(const GLenum&, const std::string&) noexcept;
+        GLuint createShaderPart(const GLenum& type, const std::string& finalShaderCode) noexcept;
     };
 }
 

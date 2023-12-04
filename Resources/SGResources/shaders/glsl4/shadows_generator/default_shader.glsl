@@ -1,3 +1,5 @@
+#define SG_NOT_INCLUDE_LIHTS
+
 #include "../uniform_bufs_decl.glsl"
 #include "../defines.glsl"
 

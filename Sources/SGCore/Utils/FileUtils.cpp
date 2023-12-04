@@ -10,7 +10,7 @@ std::string SGCore::FileUtils::readFile(const std::string_view& path)
 {
     try
     {
-        constexpr auto read_size = std::size_t(4096);
+        constexpr size_t read_size = 4096;
         auto stream = std::ifstream(path.data());
         stream.exceptions(std::ios_base::badbit);
 
@@ -39,12 +39,12 @@ std::string SGCore::FileUtils::readFile(const std::string_view& path)
     return "";
 }
 
-void SGCore::FileUtils::writeToFile(const std::string_view& path, std::string& text, const bool& append)
+void SGCore::FileUtils::writeToFile(const std::string_view& path, const std::string& text, const bool& append)
 {
     try
     {
         std::ofstream fileStream;
-        fileStream.open(path.data(),  append ? std::ios::app : std::ios::trunc);
+        fileStream.open(path.data(),  (append ? std::ios::app : std::ios::trunc) | std::ios::out | std::ios::in);
 
         fileStream << text;
     }

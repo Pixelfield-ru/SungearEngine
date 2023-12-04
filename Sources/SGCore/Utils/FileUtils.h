@@ -11,7 +11,7 @@ namespace SGCore::FileUtils
 {
     std::string readFile(const std::string_view&);
 
-    void writeToFile(const std::string_view&, std::string&, const bool&);
+    void writeToFile(const std::string_view& path, const std::string& text, const bool& append);
 }
 
 #endif // SUNGEARENGINE_FILEUTILS_H

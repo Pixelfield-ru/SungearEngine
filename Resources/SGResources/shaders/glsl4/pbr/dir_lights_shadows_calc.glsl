@@ -10,7 +10,8 @@ float calcPoissonShadow(
     const in DirectionalLight dirLight,
     const in vec3 projCoords,
     const in vec3 fragPos,
-    const in vec3 normal
+    const in vec3 normal,
+    const in sampler2D shadowMap
 )
 {
     const float shadowsBias = 0.000025;
@@ -28,7 +29,7 @@ float calcPoissonShadow(
 
     for(int i = 0; i < lightPart.shadowSamplesCount; i++)
     {
-        if(texture(dirLight.shadowMap, projCoords.xy + rotate(poissonDisk[i], rotTrig) / 750.0).z < projCoords.z - shadowsBias)
+        if(texture(shadowMap, projCoords.xy + rotate(poissonDisk[i], rotTrig) / 750.0).z < projCoords.z - shadowsBias)
         {
             fragmentVisibility -= downstep;
         }
@@ -40,7 +41,8 @@ float calcPoissonShadow(
 float calcDirLightShadow(
     const in DirectionalLight dirLight,
     const in vec3 fragPos,
-    const in vec3 normal
+    const in vec3 normal,
+    const in sampler2D shadowMap
 )
 {
     IRenderingComponent renderingPart = dirLight.lightPart.renderingPart;
@@ -54,7 +56,7 @@ float calcDirLightShadow(
         return 1.0;
     }
 
-    return calcPoissonShadow(dirLight, projCoords, fragPos, normal);
+    return calcPoissonShadow(dirLight, projCoords, fragPos, normal, shadowMap);
 }
 
 #endif // DIR_LIGHTS_SHADOWS_CALC

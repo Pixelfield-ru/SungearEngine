@@ -20,8 +20,6 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
 
                                                  if(geometryPass || !geometryPass->m_active)
                                                  {
-                                                     std::uint8_t currentShadowsCaster = 0;
-
                                                      const auto& shadowsMapsTexturesBlock =
                                                              geometryPass->m_shaderMarkup.m_texturesBlocks[SGTextureType::SGTP_SHADOW_MAP];
 
@@ -61,7 +59,7 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                                          directionalLightComponent->m_intensity
                                                                  );
 
-                                                                 geometryPass->m_shader->useFloat(
+                                                                 geometryPass->m_shader->useInteger(
                                                                          lightPartString + ".shadowSamplesCount",
                                                                          directionalLightComponent->m_samplesCount
                                                                  );
@@ -79,15 +77,10 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                                  );
 
                                                                  geometryPass->m_shader->useInteger(
-                                                                         directionalLightString + ".shadowMap",
+                                                                         "directionalLightsShadowMaps[" +
+                                                                         std::to_string(directionalLightsCount) + "]",
                                                                          shadowsMapsTexturesBlock.m_offset +
-                                                                         currentShadowsCaster
-                                                                 );
-
-                                                                 directionalLightComponent->m_shadowMap->bindAttachment(
-                                                                         SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
-                                                                         shadowsMapsTexturesBlock.m_offset +
-                                                                         currentShadowsCaster
+                                                                                 directionalLightsCount
                                                                  );
 
                                                                  m_shader->bind();

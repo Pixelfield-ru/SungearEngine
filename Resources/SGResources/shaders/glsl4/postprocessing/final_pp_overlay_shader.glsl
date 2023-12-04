@@ -1,8 +1,8 @@
+#define SG_NOT_INCLUDE_LIGHTS
+
 #include "../uniform_bufs_decl.glsl"
 #include "../color_correction/aces.glsl"
 #include "../defines.glsl"
-
-#define MAX_FB_COUNT 5
 
 #ifdef VERTEX_SHADER
     const vec2 verticesPositions[] = vec2[]
@@ -35,7 +35,7 @@
 
 #ifdef FRAGMENT_SHADER
     uniform int FBCount;
-    uniform FrameBuffer allFB[MAX_FB_COUNT];
+    uniform FrameBuffer allFB[MAX_PP_FB_COUNT];
 
     in vec2 vs_UVAttribute;
 

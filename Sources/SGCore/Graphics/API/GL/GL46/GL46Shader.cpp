@@ -199,7 +199,8 @@ void SGCore::GL46Shader::compile(Ref<FileAsset> asset) noexcept
 
         destroy();
 
-        SGC_ERROR(std::string(infoLog.data()));
+        SGC_ERROR("Error in shader by path: " + m_fileAsset.lock()->getPath().string() + "\n" +
+                  std::string(infoLog.data()));
     }
 
     for(const GLuint shaderHandler : m_shaderPartsHandlers)
