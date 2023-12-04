@@ -150,7 +150,7 @@ vec3 atmosphere(vec3 r, vec3 ro,
             vec4 skyboxCol = vec4(0.0);
             for (int i = 0; i < sgmat_skyboxSamplers_COUNT; i++)
             {
-                skyboxCol += textureCube(sgmat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
+                skyboxCol += texture(sgmat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
             }
 
             fragColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);

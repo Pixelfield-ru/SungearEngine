@@ -266,8 +266,8 @@ float ambient = 0.1;
             vec3 halfWayDir = normalize(lightDir + viewDir);  // TRUE
 
             float distance = length(renderingPart.position - vsIn.fragPos);  // TRUE
-            float attenuation = (1.0 / (distance * distance));  // TRUE
-            vec3 radiance = lightPart.color.rgb * attenuation * lightPart.intensity;  // TRUE
+            float attenuation = (1.0 / (distance * distance)) * lightPart.intensity;  // TRUE
+            vec3 radiance = lightPart.color.rgb * attenuation;  // TRUE
             //vec3 radiance = directionalLights[i].color.rgb;
 
             // energy brightness coeff (коэфф. энергетической яркости)
