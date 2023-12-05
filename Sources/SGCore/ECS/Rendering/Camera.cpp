@@ -11,20 +11,6 @@ SGCore::Camera::Camera()
 {
     auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
 
-    m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
-
-    m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
-
-    m_postProcessQuad->m_indices.push_back(0);
-    m_postProcessQuad->m_indices.push_back(2);
-    m_postProcessQuad->m_indices.push_back(1);
-
-    m_postProcessQuad->m_indices.push_back(0);
-    m_postProcessQuad->m_indices.push_back(3);
-    m_postProcessQuad->m_indices.push_back(2);
-
-    m_postProcessQuad->prepare();
-
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
@@ -40,12 +26,6 @@ SGCore::Camera::Camera()
                                     0,
                                     0)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // for FX apply
                                     SGGColorFormat::SGG_RGB,
                                     SGGColorInternalFormat::SGG_RGB8,
                                     0,
@@ -68,7 +48,7 @@ SGCore::Camera::Camera()
 
     // ---------------------------------------
 
-    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration("allFB[0]", 1, 0, 2, 0);
+    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration("allFB[0]", 1, 0, 5, 0);
     m_postProcessShadersMarkup.calculateBlocksOffsets();
 
     // ----------------------------------------
@@ -96,26 +76,28 @@ SGCore::Camera::Camera()
     m_defaultPostProcessShader->useInteger("FBCount", m_postProcessLayers.size() + 1);
 }
 
-void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
-                                            const Ref<Layer>& layer,
-                                            const std::uint16_t& fbWidth,
-                                            const std::uint16_t& fbHeight)
+SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
+                                                              const Ref<Layer>& layer,
+                                                              const std::uint16_t& fbWidth,
+                                                              const std::uint16_t& fbHeight)
 {
     auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
 
-    if(m_postProcessLayers.find(layer) != m_postProcessLayers.end())
+    const auto& foundPPLayer = m_postProcessLayers.find(layer);
+
+    if(foundPPLayer != m_postProcessLayers.cend())
     {
         SGCF_ERROR("Error: can not add a new post-process layer to the camera. This layer already exists.", SG_LOG_CURRENT_SESSION_FILE);
-        return;
+        return foundPPLayer->second;
     }
 
-    for(const auto& ppLayer : m_postProcessLayers)
+    for(auto& ppLayer : m_postProcessLayers)
     {
         if(ppLayer.second.m_name == ppLayerName)
         {
             SGCF_ERROR("Error: can not add a new post-process layer to the camera. Layer with name '" + ppLayerName + "' already exists.", SG_LOG_CURRENT_SESSION_FILE);
 
-            return;
+            return ppLayer.second;
         }
     }
 
@@ -138,12 +120,6 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
                             0,
                             0
             )
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // for FX apply
-                            SGGColorFormat::SGG_RGB,
-                            SGGColorInternalFormat::SGG_RGB8,
-                            0,
-                            0
-            )
             ->unbind();
 
     newPPLayer.m_shader = Ref<IShader>(
@@ -160,7 +136,7 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
 
     // ----------------------------------
 
-    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 2, 0);
+    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 5, 0);
     m_postProcessShadersMarkup.calculateBlocksOffsets();
 
     // ----------------------------------
@@ -190,17 +166,19 @@ void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
         newPPLayer.m_shader->bind();
         newPPLayer.m_shader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
     }
+
+    return newPPLayer;
 }
 
-void SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
-                                            const Ref<Layer>& layer)
+SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
+                                                              const Ref<Layer>& layer)
 {
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    addPostProcessLayer(ppLayerName, layer, primaryMonitorWidth, primaryMonitorHeight);
+    return addPostProcessLayer(ppLayerName, layer, primaryMonitorWidth, primaryMonitorHeight);
 }
 
 void SGCore::Camera::setPostProcessLayerShader(const Ref<Layer>& layer,

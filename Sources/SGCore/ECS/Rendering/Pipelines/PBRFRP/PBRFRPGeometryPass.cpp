@@ -20,7 +20,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
     if(dirLightsPass || !dirLightsPass->m_active)
     {
         const auto& shadowsMapsTexturesBlock =
-                m_shaderMarkup.m_texturesBlocks[SGTextureType::SGTP_SHADOW_MAP];
+                m_shaderMarkup.m_texturesBlocks[SGTextureType::SGTP_SHADOW_MAP2D];
 
         std::uint8_t currentShadowsCaster = 0;
 

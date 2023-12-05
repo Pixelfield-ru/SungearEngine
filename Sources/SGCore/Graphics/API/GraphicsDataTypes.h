@@ -156,7 +156,7 @@ enum SGTextureType
     SGTP_TRANSMISSION,
     SGTP_SKYBOX,
 
-    SGTP_SHADOW_MAP
+    SGTP_SHADOW_MAP2D
 };
 
 static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterialTextureType)
@@ -185,11 +185,7 @@ static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterial
         case SGTP_TRANSMISSION: return "sgmat_transmissionSamplers";
         case SGTP_SKYBOX: return "sgmat_skyboxSamplers";
 
-        case SGTP_SHADOW_MAP: return "sgmat_shadowMapSamplers";
-        /*case SGTP_FRAMEBUFFER_DEPTH_ATTACHMENT: return "sgmat_frameBufferDepthAttachmentSamplers";
-        case SGTP_FRAMEBUFFER_DEPTH_STENCIL_ATTACHMENT: return "sgmat_frameBufferDepthStencilAttachment";
-        case SGTP_FRAMEBUFFER_COLOR_ATTACHMENT: return "sgmat_frameBufferColorAttachmentSamplers";
-        case SGTP_FRAMEBUFFER_RENDER_ATTACHMENT: return "sgmat_frameBufferRenderAttachmentSamplers";*/
+        case SGTP_SHADOW_MAP2D: return "sgmat_shadowMap2DSamplers";
     }
 
     return "";

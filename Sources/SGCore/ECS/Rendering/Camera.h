@@ -2,16 +2,19 @@
 #define SUNGEARENGINE_CAMERACOMPONENT_H
 
 #include "SGCore/ECS/Transformations/CameraMovement3DSystem.h"
-#include "SGCore/ImportedScenesArch/IMeshData.h"
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 
 #include "IRenderingComponent.h"
+#include "SGCore/ECS/Rendering/Pipelines/PostProcessFXSubPass.h"
 
 namespace SGCore
 {
+    class IFrameBuffer;
+
     struct PostProcessLayer
     {
         friend class Camera;
+
+        std::vector<PostProcessFXSubPass> m_subPasses;
 
         Ref<IFrameBuffer> m_frameBuffer;
 
@@ -21,6 +24,8 @@ namespace SGCore
         std::string m_name = "default";
 
         std::uint16_t m_index = 0;
+
+        SGFrameBufferAttachmentType m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
 
     private:
         // technical name
@@ -41,15 +46,14 @@ namespace SGCore
 
         ShaderMarkup m_postProcessShadersMarkup;
 
-        MeshDataRenderInfo m_postProcessQuadRenderInfo;
-        Ref<IMeshData> m_postProcessQuad;
-
         // passes
         Ref<IShader> m_defaultPostProcessShader;
-        Ref<IShader> m_finalPostProcessOverlayShader;
-
         // default frame buffer for layers that does not have post-processing
         Ref<IFrameBuffer> m_defaultLayersFrameBuffer;
+
+        SGFrameBufferAttachmentType m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
+
+        Ref<IShader> m_finalPostProcessOverlayShader;
         // final frame buffer with all post-processing
         Ref<IFrameBuffer> m_finalFrameBuffer;
 
@@ -58,13 +62,13 @@ namespace SGCore
 
         Ref<IFrameBuffer> getPostProcessLayerFrameBuffer(const Ref<Layer>& layer) noexcept;
 
-        void addPostProcessLayer(const std::string& ppLayerName,
-                                 const Ref<Layer>& layer,
-                                 const std::uint16_t& fbWidth,
-                                 const std::uint16_t& fbHeight);
+        PostProcessLayer& addPostProcessLayer(const std::string& ppLayerName,
+                                              const Ref<Layer>& layer,
+                                              const std::uint16_t& fbWidth,
+                                              const std::uint16_t& fbHeight);
 
-        void addPostProcessLayer(const std::string& ppLayerName,
-                                 const Ref<Layer>& layer);
+        PostProcessLayer& addPostProcessLayer(const std::string& ppLayerName,
+                                              const Ref<Layer>& layer);
 
         void setPostProcessLayerShader(const Ref<Layer>& layer,
                                        const Ref<IShader>& shader) noexcept;

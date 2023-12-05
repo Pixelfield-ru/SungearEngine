@@ -18,11 +18,8 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                              {
                                                  auto geometryPass = renderPipeline->getRenderPass<PBRFRPGeometryPass>();
 
-                                                 if(geometryPass || !geometryPass->m_active)
+                                                 if (geometryPass || !geometryPass->m_active)
                                                  {
-                                                     const auto& shadowsMapsTexturesBlock =
-                                                             geometryPass->m_shaderMarkup.m_texturesBlocks[SGTextureType::SGTP_SHADOW_MAP];
-
                                                      // ------ updating all lights in geom shader -------------
 
                                                      size_t directionalLightsCount = 0;
@@ -37,17 +34,19 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                              auto directionalLightTransform =
                                                                      directionalLightEntity.getComponent<Transform>();
 
-                                                             if(!directionalLightTransform) continue;
+                                                             if (!directionalLightTransform) continue;
 
-                                                             for(const auto& directionalLightComponent: directionalLightComponents)
+                                                             for (const auto& directionalLightComponent: directionalLightComponents)
                                                              {
                                                                  geometryPass->m_shader->bind();
 
                                                                  std::string directionalLightString =
                                                                          "directionalLights[" +
                                                                          std::to_string(directionalLightsCount) + "]";
-                                                                 std::string lightPartString = directionalLightString + ".lightPart";
-                                                                 std::string renderingPartString = lightPartString + ".renderingPart";
+                                                                 std::string lightPartString =
+                                                                         directionalLightString + ".lightPart";
+                                                                 std::string renderingPartString =
+                                                                         lightPartString + ".renderingPart";
 
                                                                  geometryPass->m_shader->useVectorf(
                                                                          lightPartString + ".color",
@@ -76,13 +75,6 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                                          directionalLightComponent->m_spaceMatrix
                                                                  );
 
-                                                                 geometryPass->m_shader->useInteger(
-                                                                         "directionalLightsShadowMaps[" +
-                                                                         std::to_string(directionalLightsCount) + "]",
-                                                                         shadowsMapsTexturesBlock.m_offset +
-                                                                                 directionalLightsCount
-                                                                 );
-
                                                                  m_shader->bind();
                                                                  m_shader->useShaderMarkup(m_shaderMarkup);
                                                                  directionalLightComponent->m_shadowMap->bind()->clear();
@@ -95,15 +87,16 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                                  );
 
                                                                  SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRender,
-                                                                                                  meshesLayer, meshesEntity)
+                                                                                                  meshesLayer,
+                                                                                                  meshesEntity)
                                                                          Ref<Transform> transformComponent = meshesEntity.getComponent<Transform>();
 
-                                                                         if(!transformComponent) continue;
+                                                                         if (!transformComponent) continue;
 
                                                                          auto meshComponents =
                                                                                  meshesEntity.getComponents<Mesh>();
 
-                                                                         for(const auto& meshComponent: meshComponents)
+                                                                         for (const auto& meshComponent: meshComponents)
                                                                          {
                                                                              meshComponent->m_meshData->m_material->bind(
                                                                                      m_shader, m_shaderMarkup

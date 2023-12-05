@@ -30,7 +30,8 @@ struct DirectionalLight
 #ifndef SG_NOT_INCLUDE_LIGHTS
     uniform int DIRECTIONAL_LIGHTS_COUNT;
     uniform DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
-    uniform sampler2D directionalLightsShadowMaps[DIRECTIONAL_LIGHTS_MAX_COUNT];
+    // Suitable only for one-way (directional) light sources!
+    uniform sampler2D sgmat_shadowMap2DSamplers[DIRECTIONAL_LIGHTS_MAX_COUNT];
 #endif // SG_INCLUDE_DIR_LIGHTS
 
 #endif // RENDERING_STRUCTS_DECL_GLSL

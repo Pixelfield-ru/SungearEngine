@@ -29,8 +29,10 @@ struct FrameBuffer
 
     sampler2D depthAttachments[1];
     sampler2D depthStencilAttachments[1];
-    sampler2D colorAttachments[3];
+    sampler2D colorAttachments[5];
     sampler2D renderAttachments[1];
+
+    int colorAttachmentToRenderIdx;
 };
 
 layout(std140) uniform CameraData

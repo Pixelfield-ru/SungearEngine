@@ -176,7 +176,7 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+    sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
                                       [](const SGCore::Ref<SGCore::Entity>& entity)
                                       {
                                           auto meshComponent = entity->getComponent<SGCore::Mesh>();
@@ -239,7 +239,7 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+    model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
                                    [](const SGCore::Ref<SGCore::Entity>& entity)
     {
         auto transformComponent = entity->getComponent<SGCore::Transform>();
@@ -400,16 +400,82 @@ void init()
 
     SGCore::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    camera->addPostProcessLayer("blurPPLayer",
-                                testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
-                                primaryMonitorWidth,
-                                primaryMonitorHeight
+    // =================================================================================
+    // ================ POST PROCESS SETUP
+    // =================================================================================
+
+    auto& ppLayer = camera->addPostProcessLayer("blurPPLayer",
+                                                testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
+                                                primaryMonitorWidth,
+                                                primaryMonitorHeight
     );
+
+    ppLayer.m_frameBuffer
+            ->bind()
+            ->setSize(primaryMonitorWidth, primaryMonitorHeight)
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            ->unbind();
+
+    SGCore::PostProcessFXSubPass blurLayerDirectionalSubPass;
+    blurLayerDirectionalSubPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
+    blurLayerDirectionalSubPass.m_index = 0;
+
+    SGCore::PostProcessFXSubPass blurLayerTemporalSubPass;
+    blurLayerTemporalSubPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
+    blurLayerTemporalSubPass.m_index = 1;
+
+    blurLayerDirectionalSubPass.m_prepareFunction = [](const SGCore::Ref<SGCore::IShader>& ppLayerShader)
+    {
+        ppLayerShader->useInteger("isFirstBlurPass", true);
+        ppLayerShader->useInteger("isHorizontalPass", true);
+    };
+    // first horizontal pass (blur of color attachment 0)
+    ppLayer.m_subPasses.push_back(blurLayerDirectionalSubPass);
+    blurLayerDirectionalSubPass.m_prepareFunction = [](const SGCore::Ref<SGCore::IShader>& ppLayerShader)
+    {
+        ppLayerShader->useInteger("isFirstBlurPass", false);
+    };
+    ppLayer.m_subPasses.push_back(blurLayerTemporalSubPass);
+    ppLayer.m_subPasses.push_back(blurLayerDirectionalSubPass);
+    ppLayer.m_subPasses.push_back(blurLayerTemporalSubPass);
+    ppLayer.m_subPasses.push_back(blurLayerDirectionalSubPass);
+
+    blurLayerTemporalSubPass.m_prepareFunction = [](const SGCore::Ref<SGCore::IShader>& ppLayerShader)
+    {
+        ppLayerShader->useInteger("isHorizontalPass", false);
+    };
+    // first vertical pass (blur of horizontal
+    ppLayer.m_subPasses.push_back(blurLayerTemporalSubPass);
+    ppLayer.m_subPasses.push_back(blurLayerDirectionalSubPass);
+    ppLayer.m_subPasses.push_back(blurLayerTemporalSubPass);
+    ppLayer.m_subPasses.push_back(blurLayerDirectionalSubPass);
+    blurLayerTemporalSubPass.m_prepareFunction = [](const SGCore::Ref<SGCore::IShader>& ppLayerShader)
+    {
+        ppLayerShader->useInteger("isFinalPass", true);
+    };
+    ppLayer.m_subPasses.push_back(blurLayerTemporalSubPass);
+
+    ppLayer.m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
 
     camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
                                       SGCore::Ref<SGCore::IShader>(
                                               SGCore::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/test_pp_layer.glsl")
             ));
+
+    // =================================================================================
+    // =================================================================================
+    // =================================================================================
 
     testScene->addEntity(testCameraEntity); /// PASSED
 

@@ -34,7 +34,7 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-    uniform bool depthTestPass;
+    uniform bool isDepthTestPass;
 
     uniform int currentFBIndex;
     uniform int FBCount;
@@ -50,7 +50,7 @@
             finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
-        if(depthTestPass)
+        if(isDepthTestPass)
         {
             // depth test pass -------------------------------------------
 
@@ -89,18 +89,13 @@
             return;
         }
 
-        // else FX apply
+        // else FX apply ----------------------------
 
-        float mixCoeff = 1.0 / (allFB[currentFBIndex].colorAttachmentsCount - 1);
-
-        vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
+        /*vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
 
         // first is depth test attachment
-        for (int i = 1; i < allFB[currentFBIndex].colorAttachmentsCount; i++)
-        {
-            currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV).rgb * mixCoeff;
-        }
+        currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV).rgb;
 
-        gl_FragColor = currentFBColor;
+        gl_FragColor = currentFBColor;*/
     }
 #endif

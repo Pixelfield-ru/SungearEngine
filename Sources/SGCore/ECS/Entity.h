@@ -12,7 +12,6 @@
 #include <string>
 #include <tsl/robin_map.h>
 
-#include "IComponent.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Main/CoreGlobals.h"
 

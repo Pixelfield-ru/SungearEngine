@@ -107,8 +107,8 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 1
         );
         geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_SHADOW_MAP,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP),
+                SGTextureType::SGTP_SHADOW_MAP2D,
+                sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP2D),
                 5,
                 false
         );

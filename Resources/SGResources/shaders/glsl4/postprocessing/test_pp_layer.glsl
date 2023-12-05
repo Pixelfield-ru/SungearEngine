@@ -37,13 +37,20 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-    uniform bool depthTestPass;
+    uniform bool isDepthTestPass;
+    uniform bool isFirstBlurPass;
+    uniform bool isHorizontalPass;
+    uniform bool isFinalPass;
 
     uniform int currentFBIndex;
+    uniform int currentSubPass_Idx;
+    uniform int currentSubPass_Repeat;
     uniform int FBCount;
     uniform FrameBuffer allFB[MAX_PP_FB_COUNT];
 
     in vec2 vs_UVAttribute;
+
+    float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
     void main()
     {
@@ -53,7 +60,7 @@
         finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
-        if(depthTestPass)
+        if(isDepthTestPass)
         {
             // depth test pass -------------------------------------------
 
@@ -89,67 +96,101 @@
                 }
             }
 
-            // ----------------------------------------------------
-            // applying color (if depth test passed) --------------
-
-            // then if depth of current frame buffer is closest we render pixel of this frame buffer
-
-            /*vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
-            mixCoeff = 1.0 / allFB[currentFBIndex].colorAttachmentsCount;
-
-            //for (int i = 0; i < allFB[currentFBIndex].colorAttachmentsCount; i++)
-            {
-                currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV).rgb * mixCoeff;
-            }
-
-            gl_FragColor = currentFBColor;*/
-
-            // -----------------------------------------------------
-
             return;
         }
 
         // else FX apply
 
-        float mixCoeff = 1.0 / (allFB[currentFBIndex].colorAttachmentsCount - 1);
-
         vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-        for (int i = 1; i < allFB[currentFBIndex].colorAttachmentsCount; i++)
+        /*const int samplesNum = 32;
+
+        float rand = random(finalUV.xy);
+        // rand = mad(rand, 2.0, -1.0);
+        float rotAngle = rand * PI;
+        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
+
+        for(int i = 0; i < samplesNum; i++)
         {
-            int s = 0;
-
-            /*for(int x = -4; x < 4; ++x)
-            {
-                for(int y = -4; y < 4; ++y)
-                {
-                    vec2 fUV = finalUV + vec2(x, y) * 0.003;
-
-                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], fUV).rgb * mixCoeff;
-
-                    ++s;
-                }
-            }*/
-
-            const float shadowsMinCoeff = 0.55;
-            const int samplesNum = 32;
-
-            float visibility = 1.0;
-            const float downstep = (1.0 - shadowsMinCoeff) / samplesNum;
-
-            float rand = random(finalUV.xy);
-            // rand = mad(rand, 2.0, -1.0);
-            float rotAngle = rand * PI;
-            vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
-
-            for(int i = 0; i < samplesNum; i++)
-            {
-                currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV.xy + rotate(poissonDisk[i], rotTrig) / 100.0).rgb;
-            }
-
-            currentFBColor.rgb /= samplesNum;
+            currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV.xy + rotate(poissonDisk[i], rotTrig) / 100.0).rgb;
         }
 
-        gl_FragColor = currentFBColor * 100.0;
+        currentFBColor.rgb /= samplesNum;
+
+        gl_FragColor = currentFBColor * 100.0;*/
+
+        float brightnessBarrier = 0.001;
+
+        int attachmentIdx = 0;
+
+        vec2 texOffset = 1.0 / textureSize(allFB[currentFBIndex].colorAttachments[attachmentIdx], 0);
+
+        float multiplier = 0.7;
+
+        if(currentSubPass_Idx == 0) // DIRECTIONAL PASS
+        {
+            if(!isFirstBlurPass)
+            {
+                attachmentIdx = 2;
+            }
+
+            if(isHorizontalPass)
+            {
+                for (int i = 1; i < 5; ++i)
+                {
+                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[attachmentIdx], finalUV.xy + vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[attachmentIdx], finalUV.xy - vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+                }
+            }
+            else
+            {
+                for (int i = 1; i < 5; ++i)
+                {
+                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[attachmentIdx], finalUV.xy + vec2(0.0, texOffset.y * i)).rgb * weight[i];
+                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[attachmentIdx], finalUV.xy - vec2(0.0, texOffset.y * i)).rgb * weight[i];
+                }
+            }
+
+            gl_FragColor = currentFBColor * multiplier;
+        }
+        else if(currentSubPass_Idx == 1) // TEMPORAL PASS
+        {
+            if(isHorizontalPass)
+            {
+                for (int i = 1; i < 5; ++i)
+                {
+                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[1], finalUV.xy + vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[1], finalUV.xy - vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+                }
+            }
+            else
+            {
+                for (int i = 1; i < 5; ++i)
+                {
+                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[1], finalUV.xy + vec2(0.0, texOffset.y * i)).rgb * weight[i];
+                    currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[1], finalUV.xy - vec2(0.0, texOffset.y * i)).rgb * weight[i];
+                }
+            }
+
+            if(isFinalPass)
+            {
+                vec3 baseCol = texture(allFB[currentFBIndex].colorAttachments[0], finalUV.xy).rgb;
+                vec3 finalBloomCol = currentFBColor.rgb * multiplier;
+
+                float brightness = dot(finalBloomCol, vec3(0.2126, 0.7152, 0.0722));
+                if(brightness > brightnessBarrier)
+                {
+                    gl_FragColor = vec4(baseCol + finalBloomCol, 1.0);
+
+                    return;
+                }
+
+                gl_FragColor = vec4(baseCol, 1.0);
+            }
+            else
+            {
+                gl_FragColor = currentFBColor * multiplier;
+            }
+        }
     }
 #endif

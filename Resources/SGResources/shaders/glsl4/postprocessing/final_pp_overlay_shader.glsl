@@ -48,18 +48,11 @@
         #endif
 
         vec4 finalColor = vec4(0.0, 0.0, 0.0, 1.0);
-        float mixCoeff = 0.0;
 
         for(int i = 0; i < FBCount; ++i)
         {
-            mixCoeff = 1.0 / (allFB[i].colorAttachmentsCount - 1);
-
-            // first is depth test attachment
-            for (int k = 1; k < allFB[i].colorAttachmentsCount; ++k)
-            {
-                // finalColor.rgb += vec3(1.0);
-                finalColor.rgb += texture(allFB[i].colorAttachments[k], finalUV).rgb * mixCoeff;
-            }
+            int colorAttachmentToRenderIdx = allFB[i].colorAttachmentToRenderIdx;
+            finalColor.rgb += texture(allFB[i].colorAttachments[colorAttachmentToRenderIdx], finalUV).rgb;
         }
 
         gl_FragColor = finalColor;

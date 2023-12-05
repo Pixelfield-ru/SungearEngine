@@ -1,0 +1,2 @@
+- сделать класс PostProcessFXSubPass, который будет в себе хранить номера аттачментов (см. далее) фреймбуфера у PostProcessFXPass.
+- каждый PostProcessFXSubPass будет брать информацию по дефолту из SG_COLOR_ATTACHMENT0 (но можно изменить выбор) и рендерить в кастомный SG_COLOR_ATTACHMENT
