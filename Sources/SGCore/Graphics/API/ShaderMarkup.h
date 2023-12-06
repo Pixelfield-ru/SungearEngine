@@ -38,6 +38,18 @@ namespace SGCore
 
     struct ShaderMarkup
     {
+        friend class IShader;
+
+        // GBUFFER IS ALWAYS BOUND AT THE VERY END
+        std::uint8_t m_gBufferAttachmentsCount = 5;
+
+        // Blocks of textures that correspond to a specific type of texture
+        std::unordered_map<SGTextureType, MarkedTexturesBlock> m_texturesBlocks;
+
+        // FRAME BUFFER ATTACHMENTS UNITS ARE ALWAYS AFTER SIMPLE TEXTURES. SO YOU NEED TO KEEP IN MIND THAT TEXTURES + ATTACHMENTS < MAX GAPI SAMPLERS IN ONE SHADER
+        // first - block name
+        std::unordered_map<std::string, MarkedFrameBufferAttachmentsBlock> m_frameBuffersAttachmentsBlocks;
+
         void addTexturesBlockDeclaration(const SGTextureType& blockType,
                                          const std::string& blockTypeName,
                                          const std::uint8_t& maxTextures) noexcept;
@@ -57,12 +69,11 @@ namespace SGCore
 
         void calculateBlocksOffsets() noexcept;
 
-        // Blocks of textures that correspond to a specific type of texture
-        std::unordered_map<SGTextureType, MarkedTexturesBlock> m_texturesBlocks;
+        std::uint8_t getGBufferAttachmentsOffset() const noexcept;
 
-        // FRAME BUFFER ATTACHMENTS UNITS ARE ALWAYS AFTER SIMPLE TEXTURES. SO YOU NEED TO KEEP IN MIND THAT TEXTURES + ATTACHMENTS < MAX GAPI SAMPLERS IN ONE SHADER
-        // first - block name
-        std::unordered_map<std::string, MarkedFrameBufferAttachmentsBlock> m_frameBuffersAttachmentsBlocks;
+    private:
+        // GBUFFER IS ALWAYS BOUND AT THE VERY END
+        std::uint8_t m_gBufferAttachmentsOffset = 0;
     };
 }
 

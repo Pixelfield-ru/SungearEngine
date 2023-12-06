@@ -57,6 +57,8 @@ namespace SGCore
         // final frame buffer with all post-processing
         Ref<IFrameBuffer> m_finalFrameBuffer;
 
+        Ref<IFrameBuffer> m_gBuffer;
+
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;
 

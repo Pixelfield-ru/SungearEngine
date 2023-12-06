@@ -16,6 +16,47 @@ SGCore::Camera::Camera()
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
+    m_gBuffer =
+            Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
+                    ->create()
+                    ->setSize(primaryMonitorWidth, primaryMonitorHeight)
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
+                                    SGGColorFormat::SGG_DEPTH_COMPONENT,
+                                    SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
+                                    0,
+                                    0)
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB16_FLOAT,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
+                                    SGGColorFormat::SGG_RGBA,
+                                    SGGColorInternalFormat::SGG_RGBA8,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4,
+                                    SGGColorFormat::SGG_RGBA,
+                                    SGGColorInternalFormat::SGG_RGBA8,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5,
+                                    SGGColorFormat::SGG_RGBA,
+                                    SGGColorInternalFormat::SGG_RGBA8,
+                                    0,
+                                    0
+                    )
+                    ->unbind();
+
     m_defaultLayersFrameBuffer =
             Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()

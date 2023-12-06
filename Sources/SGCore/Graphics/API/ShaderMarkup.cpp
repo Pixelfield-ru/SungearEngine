@@ -39,6 +39,8 @@ void SGCore::ShaderMarkup::calculateBlocksOffsets() noexcept
                   block.second.m_maxColorAttachments +
                   block.second.m_maxRenderAttachments;
     }
+
+    m_gBufferAttachmentsOffset = offset;
 }
 
 void SGCore::ShaderMarkup::addFrameBufferBlockDeclaration(const std::string& blockName,
@@ -58,4 +60,9 @@ void SGCore::ShaderMarkup::addFrameBufferBlockDeclaration(const std::string& blo
 void SGCore::ShaderMarkup::addFrameBufferBlockDeclaration(const std::string& blockName) noexcept
 {
     addFrameBufferBlockDeclaration(blockName, 1, 1, 1, 1);
+}
+
+std::uint8_t SGCore::ShaderMarkup::getGBufferAttachmentsOffset() const noexcept
+{
+    return m_gBufferAttachmentsOffset;
 }

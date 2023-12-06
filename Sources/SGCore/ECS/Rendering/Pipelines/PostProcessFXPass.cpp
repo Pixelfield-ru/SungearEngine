@@ -162,15 +162,17 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
                 ++currentPPLayerIdx;
             }
 
+            std::uint8_t gBufferAttachmentsOffset = cameraComponent->m_postProcessShadersMarkup.getGBufferAttachmentsOffset();
+            for(std::uint8_t blockIdx = 0; blockIdx < cameraComponent->m_postProcessShadersMarkup.m_gBufferAttachmentsCount; ++blockIdx)
+            {
+                auto resAttachment = (SGFrameBufferAttachmentType) ((std::uint8_t) SGG_COLOR_ATTACHMENT1 + blockIdx);
+                cameraComponent->m_gBuffer->bindAttachment(resAttachment, gBufferAttachmentsOffset + blockIdx);
+            }
+
             CoreMain::getRenderer().renderMeshData(
                     m_postProcessQuad,
                     m_postProcessQuadRenderInfo
             );
-
-            if(cameraComponent->m_useFinalFrameBuffer)
-            {
-                cameraComponent->m_finalFrameBuffer->unbind();
-            }
 
             // -------------------------------------
     SG_END_ITERATE_CACHED_ENTITIES

@@ -49,7 +49,12 @@ float ambient = 0.1;
 #endif
 
 #ifdef FRAGMENT_SHADER
-    out vec4 fragColor;
+    layout(location = 0) out vec4 fragColor;
+    layout(location = 1) out vec3 gFragPos;
+    layout(location = 2) out vec3 gNormal;
+    layout(location = 3) out vec4 gAlbedoSpec;
+
+    uniform bool isGBufferPass;
 
     uniform int sgmat_diffuseSamplers_COUNT = 0;
 
@@ -228,87 +233,96 @@ float ambient = 0.1;
             finalNormal = normalizedNormal;
         }
 
-        // ===============================================================================================
-        // ===============================================================================================
-        // ===============================================================================================
-
-        // TODO: make customizable with defines
-        // PBR pipeline (using Cook-Torrance BRDF) --------------------
-
-        vec3 viewDir = normalize(camera.position - vsIn.fragPos);
-
-        // colorFromRoughness.r = AO MAP
-        // colorFromRoughness.g = ROUGHNESS
-        // colorFromRoughness.b = METALNESS
-
-        vec3 albedo =       diffuseColor.rgb;
-        float ao =          aoRoughnessMetallic.r;
-        float roughness =   aoRoughnessMetallic.g;
-        float metalness =   aoRoughnessMetallic.b;
-
-        // для формулы Шлика-Френеля
-        vec3 F0 = vec3(0.04);
-        F0 = mix(F0, albedo, metalness);
-
-        vec3 dirLightsShadowCoeff = vec3(0.0);
-
-        vec3 lo = vec3(0.0);
-        for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
+        if(isGBufferPass)
         {
-            ILight lightPart = directionalLights[i].lightPart;
-            IRenderingComponent renderingPart = lightPart.renderingPart;
+            gFragPos = vsIn.fragPos;
+            gNormal = finalNormal;
+            gAlbedoSpec = vec4(diffuseColor.rgb, 1.0);
+        }
 
-            vec3 lightDir = normalize(renderingPart.position - vsIn.fragPos);  // TRUE
-            vec3 halfWayDir = normalize(lightDir + viewDir);  // TRUE
+        // ===============================================================================================
+        // ===============================================================================================
+        // ===============================================================================================
 
-            float distance = length(renderingPart.position - vsIn.fragPos);  // TRUE
-            float attenuation = (1.0 / (distance * distance)) * lightPart.intensity;  // TRUE
-            vec3 radiance = lightPart.color.rgb * attenuation;  // TRUE
+        else
+        {
+            // TODO: make customizable with defines
+            // PBR pipeline (using Cook-Torrance BRDF) --------------------
 
-            // energy brightness coeff (коэфф. энергетической яркости)
-            float NdotL = max(dot(finalNormal, lightDir), 0.0);
-            float NdotVD = max(dot(finalNormal, viewDir), 0.0);
+            vec3 viewDir = normalize(camera.position - vsIn.fragPos);
 
-            // ===================        shadows calc        =====================
+            // colorFromRoughness.r = AO MAP
+            // colorFromRoughness.g = ROUGHNESS
+            // colorFromRoughness.b = METALNESS
 
-            dirLightsShadowCoeff += calcDirLightShadow(
-                    directionalLights[i],
-                    vsIn.fragPos,
-                    finalNormal,
-                    sgmat_shadowMap2DSamplers[i]
+            vec3 albedo =       diffuseColor.rgb;
+            float ao =          aoRoughnessMetallic.r;
+            float roughness =   aoRoughnessMetallic.g;
+            float metalness =   aoRoughnessMetallic.b;
+
+            // для формулы Шлика-Френеля
+            vec3 F0 = vec3(0.04);
+            F0 = mix(F0, albedo, metalness);
+
+            vec3 dirLightsShadowCoeff = vec3(0.0);
+
+            vec3 lo = vec3(0.0);
+            for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
+            {
+                ILight lightPart = directionalLights[i].lightPart;
+                IRenderingComponent renderingPart = lightPart.renderingPart;
+
+                vec3 lightDir = normalize(renderingPart.position - vsIn.fragPos);// TRUE
+                vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
+
+                float distance = length(renderingPart.position - vsIn.fragPos);// TRUE
+                float attenuation = (1.0 / (distance * distance)) * lightPart.intensity;// TRUE
+                vec3 radiance = lightPart.color.rgb * attenuation;// TRUE
+
+                // energy brightness coeff (коэфф. энергетической яркости)
+                float NdotL = max(dot(finalNormal, lightDir), 0.0);
+                float NdotVD = max(dot(finalNormal, viewDir), 0.0);
+
+                // ===================        shadows calc        =====================
+
+                dirLightsShadowCoeff += calcDirLightShadow(
+                directionalLights[i],
+                vsIn.fragPos,
+                finalNormal,
+                sgmat_shadowMap2DSamplers[i]
                 ) * NdotL * radiance + radiance * 0.04;
 
-            // ====================================================================
+                // ====================================================================
 
-            // cooktorrance func: DFG /
+                // cooktorrance func: DFG /
 
-            // NDF (normal distribution func)
-            float D = GGXTR(
+                // NDF (normal distribution func)
+                float D = GGXTR(
                 finalNormal,
                 halfWayDir,
                 roughness
-            );  // TRUE
+                );// TRUE
 
-            float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
+                float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
 
-            // это по сути зеркальная часть (kS)
-            vec3 F = SchlickFresnel(cosTheta, F0); // kS
-            // geometry function
-            float G = GeometrySmith(finalNormal, NdotVD, NdotL, roughness); // TRUE
+                // это по сути зеркальная часть (kS)
+                vec3 F = SchlickFresnel(cosTheta, F0);// kS
+                // geometry function
+                float G = GeometrySmith(finalNormal, NdotVD, NdotL, roughness);// TRUE
 
-            vec3 diffuse = vec3(1.0) - F;
-            diffuse *= (1.0 - metalness); // check diffuse color higher
+                vec3 diffuse = vec3(1.0) - F;
+                diffuse *= (1.0 - metalness);// check diffuse color higher
 
-            vec3 ctNumerator = D * F * G;
-            float ctDenominator = 4.0 * NdotVD * NdotL;
-            vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
+                vec3 ctNumerator = D * F * G;
+                float ctDenominator = 4.0 * NdotVD * NdotL;
+                vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
-            lo += (diffuse * albedo.rgb / PI + specular) * radiance;
-        }
+                lo += (diffuse * albedo.rgb / PI + specular) * radiance;
+            }
 
-        dirLightsShadowCoeff /= DIRECTIONAL_LIGHTS_COUNT;
+            dirLightsShadowCoeff /= DIRECTIONAL_LIGHTS_COUNT;
 
-        /*vec3 resultPhong = vec3(0.0);
+            /*vec3 resultPhong = vec3(0.0);
         vec3 resultDiffuse = vec3(0.0);
         vec3 resultSpecular = vec3(0.0);
 
@@ -337,27 +351,26 @@ float ambient = 0.1;
         resultDiffuse = saturate(resultDiffuse);
         resultPhong = resultDiffuse + resultSpecular;*/
 
-        vec3 ambient = vec3(0.22) * albedo.rgb * ao;
-        vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
-        float exposure = 1.3;
+            vec3 ambient = vec3(0.22) * albedo.rgb * ao;
+            vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
+            float exposure = 1.3;
 
-        finalCol *= dirLightsShadowCoeff;
+            finalCol *= dirLightsShadowCoeff;
 
-        // HDR standard tonemapper
-        finalCol = finalCol / (finalCol + vec3(1.0));
-        finalCol = pow(finalCol, vec3(1.0 / exposure));
+            // HDR standard tonemapper
+            finalCol = finalCol / (finalCol + vec3(1.0));
+            finalCol = pow(finalCol, vec3(1.0 / exposure));
 
-        fragColor.a = diffuseColor.a;
-        fragColor.rgb = finalCol;
+            fragColor.a = diffuseColor.a;
+            fragColor.rgb = finalCol;
 
-        // DEBUG ==================================
-        // base color
-        // fragColor.rgb = albedo; // PASSED
-        // fragColor.rgb = vec3(metalness); // PASSED
-        // fragColor.rgb = vec3(roughness); // PASSED
-        // fragColor.rgb = normalMapColor; // PASSED
-        // fragColor.rgb = vec3(ao); // PASSED
-
-        // shadows apply ---------------------------------------
+            // DEBUG ==================================
+            // base color
+            // fragColor.rgb = albedo; // PASSED
+            // fragColor.rgb = vec3(metalness); // PASSED
+            // fragColor.rgb = vec3(roughness); // PASSED
+            // fragColor.rgb = normalMapColor; // PASSED
+            // fragColor.rgb = vec3(ao); // PASSED
+        }
     }
 #endif

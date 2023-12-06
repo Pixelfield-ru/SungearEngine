@@ -62,6 +62,21 @@ void SGCore::IShader::useShaderMarkup(const SGCore::ShaderMarkup& shaderMarkup)
             );
         }
     }
+
+    std::uint8_t gBufferOffset = shaderMarkup.getGBufferAttachmentsOffset();
+
+    for (std::uint8_t blockIdx = 0;
+         blockIdx < shaderMarkup.m_gBufferAttachmentsCount; ++blockIdx)
+    {
+        useInteger("gBuffer[" + std::to_string(blockIdx) + "]",
+                   gBufferOffset + blockIdx
+        );
+
+
+        /*useInteger("gBuffer_" + std::to_string(blockIdx),
+                   gBufferOffset + blockIdx
+        );*/
+    }
 }
 
 void SGCore::IShader::updateFrameBufferAttachmentsCount(const Ref<IFrameBuffer>& frameBuffer,
