@@ -11,11 +11,29 @@ SGCore::Camera::Camera()
 {
     auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
 
+    // adding default pp layer
+    addPostProcessLayer("defaultPPLayer", m_technicalLayer);
+    m_currentPPFrameBufferToBind = getDefaultPostProcessLayer().m_frameBuffer;
+
+    m_depthPassShader = Ref<IShader>(
+            CoreMain::getRenderer().createShader(
+                    shadersPaths["PostProcessing"]["DepthPassShader"]
+            )
+    );
+
     m_gBufferCombiningShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["AttachmentsCombiningShader"]
             )
     );
+
+    m_finalPostProcessFXShader = Ref<IShader>(
+            CoreMain::getRenderer().createShader(
+                    shadersPaths["PostProcessing"]["FinalOverlayShader"]
+            )
+    );
+
+    // ==================================================================
 
     int primaryMonitorWidth;
     int primaryMonitorHeight;
@@ -64,57 +82,9 @@ SGCore::Camera::Camera()
                     )
                     ->unbind();
 
-    m_defaultLayersFrameBuffer =
-            Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
-                    ->create()
-                    ->setSize(primaryMonitorWidth, primaryMonitorHeight)
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
-                                    SGGColorFormat::SGG_DEPTH_COMPONENT,
-                                    SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
-                                    0,
-                                    0)
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    // GBUFFER ATTACHMENTS
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT27,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT28,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT29,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT30,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->unbind();
-
     // m_defaultLayersFrameBuffer->m_bgColor.a = 0.0;
 
-    m_finalFrameBuffer =
+    m_finalFrameFXFrameBuffer =
             Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
@@ -126,33 +96,6 @@ SGCore::Camera::Camera()
                     ->unbind();
 
     // ---------------------------------------
-
-    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration("allFB[0]", 1, 0, 5, 0);
-    m_postProcessShadersMarkup.calculateBlocksOffsets();
-
-    // ----------------------------------------
-
-    m_finalPostProcessOverlayShader = Ref<IShader>(
-            CoreMain::getRenderer().createShader(
-                    shadersPaths["PostProcessing"]["FinalOverlayShader"]
-            )
-    );
-
-    m_finalPostProcessOverlayShader->bind();
-    m_finalPostProcessOverlayShader->updateFrameBufferAttachmentsCount(m_defaultLayersFrameBuffer, "allFB[0]");
-    m_finalPostProcessOverlayShader->useInteger("FBCount", m_postProcessLayers.size() + 1);
-
-    // -----------------------------------------
-
-    m_defaultPostProcessShader = Ref<IShader>(
-            CoreMain::getRenderer().createShader(
-                    shadersPaths["PostProcessing"]["DefaultLayerShader"]
-            )
-    );
-
-    m_defaultPostProcessShader->bind();
-    m_defaultPostProcessShader->updateFrameBufferAttachmentsCount(m_defaultLayersFrameBuffer, "allFB[0]");
-    m_defaultPostProcessShader->useInteger("FBCount", m_postProcessLayers.size() + 1);
 }
 
 SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
@@ -200,31 +143,31 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
                             0
             )
             // GBUFFER ATTACHMENTS
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT27,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT28,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT29,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT30,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4,
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5,
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
@@ -232,7 +175,7 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
             )
             ->unbind();
 
-    newPPLayer.m_shader = Ref<IShader>(
+    newPPLayer.m_FXShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["DefaultLayerShader"]
             )
@@ -240,7 +183,7 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
 
     // ----------------------------------
 
-    std::string layerNameInShaders = "allFB[" + std::to_string(newPPLayer.m_index) + "]";
+    std::string layerNameInShaders = SG_PP_LAYER_FB_NAME(newPPLayer.m_index);
 
     newPPLayer.m_nameInShader = layerNameInShaders;
 
@@ -254,27 +197,19 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
 
     std::uint16_t ppFBCount = m_postProcessLayers.size() + 1;
 
-    m_finalPostProcessOverlayShader->bind();
-    m_finalPostProcessOverlayShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
-    m_finalPostProcessOverlayShader->useInteger("FBCount", ppFBCount);
+    m_finalPostProcessFXShader->bind();
+    m_finalPostProcessFXShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
 
-    m_defaultPostProcessShader->bind();
-    m_defaultPostProcessShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
-    m_defaultPostProcessShader->useInteger("FBCount", ppFBCount);
-
-    newPPLayer.m_shader->bind();
-    newPPLayer.m_shader->updateFrameBufferAttachmentsCount(m_defaultLayersFrameBuffer, "allFB[0]");
-    newPPLayer.m_shader->useInteger("FBCount", ppFBCount);
 
     for(const auto& ppLayer : m_postProcessLayers)
     {
-        ppLayer.second.m_shader->bind();
-        ppLayer.second.m_shader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
+        ppLayer.second.m_FXShader->bind();
+        ppLayer.second.m_FXShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
 
         // ------------------------------
 
-        newPPLayer.m_shader->bind();
-        newPPLayer.m_shader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
+        newPPLayer.m_FXShader->bind();
+        newPPLayer.m_FXShader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
     }
 
     return newPPLayer;
@@ -301,23 +236,17 @@ void SGCore::Camera::setPostProcessLayerShader(const Ref<Layer>& layer,
     }
 
     shader->bind();
-    shader->updateFrameBufferAttachmentsCount(m_defaultLayersFrameBuffer, "allFB[0]");
-    shader->useInteger("FBCount", m_postProcessLayers.size() + 1);
 
     for(const auto& ppLayer : m_postProcessLayers)
     {
         shader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
     }
 
-    m_postProcessLayers[layer].m_shader = shader;
+    m_postProcessLayers[layer].m_FXShader = shader;
 }
 
 void SGCore::Camera::bindPostProcessLayers() noexcept
 {
-    m_defaultLayersFrameBuffer->bindAttachments(
-            m_postProcessShadersMarkup.m_frameBuffersAttachmentsBlocks["allFB[0]"]
-    );
-
     for(const auto& ppLayer : m_postProcessLayers)
     {
         ppLayer.second.m_frameBuffer->bindAttachments(
@@ -345,7 +274,8 @@ void SGCore::Camera::bindPostProcessFrameBuffer
     }
     else
     {
-        m_currentPPFrameBufferToBind = m_defaultLayersFrameBuffer;
+        // It is assumed that the technical layer always exists
+        m_currentPPFrameBufferToBind = getPostProcessLayerFrameBuffer(m_technicalLayer);
     }
 
     m_currentPPFrameBufferToBind->bind();
@@ -367,8 +297,13 @@ void SGCore::Camera::clearPostProcessFrameBuffers() const noexcept
         ppLayer.second.m_frameBuffer->bind()->clear();
     }
 
-    m_defaultLayersFrameBuffer->bind()->clear();
-    m_finalFrameBuffer->bind()->clear()->unbind();
+    m_finalFrameFXFrameBuffer->bind()->clear()->unbind();
+}
+
+SGCore::PostProcessLayer& SGCore::Camera::getDefaultPostProcessLayer() noexcept
+{
+    // It is assumed that the technical layer always exists
+    return m_postProcessLayers.find(m_technicalLayer)->second;
 }
 
 

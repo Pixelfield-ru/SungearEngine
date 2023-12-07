@@ -33,29 +33,31 @@ ShadersPaths& ShadersPaths::operator[](const std::string& path) noexcept
 
 void ShadersPaths::createDefaultPaths() noexcept
 {
-    operator[]("PBR")["DefaultShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/pbr/default_shader.glsl";
+    (*this)["PBR"]["DefaultShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/pbr/default_shader.glsl";
 
     // -------------------------------------
 
-    operator[]("PostProcessing")["FinalOverlayShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/final_pp_overlay_shader.glsl";
+    (*this)["PostProcessing"]["DepthPassShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/layer_depth_pass.glsl";
 
-    operator[]("PostProcessing")["DefaultLayerShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/pp_layer_shader.glsl";
+    (*this)["PostProcessing"]["FinalOverlayShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/final_pp_fx_shader.glsl";
 
-    operator[]("PostProcessing")["AttachmentsCombiningShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/attachments_combining.glsl";
+    (*this)["PostProcessing"]["DefaultLayerShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/pp_layer_fx_shader.glsl";
 
-    // -------------------------------------
-
-    operator[]("Gizmos")["ComplexGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
-
-    operator[]("Gizmos")["LinesGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/lines_shader.glsl";
+    (*this)["PostProcessing"]["AttachmentsCombiningShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/attachments_combining.glsl";
 
     // -------------------------------------
 
-    operator[]("ShadowsGeneration")["DefaultShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/shadows_generator/default_shader.glsl";
+    (*this)["Gizmos"]["ComplexGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
+
+    (*this)["Gizmos"]["LinesGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/lines_shader.glsl";
 
     // -------------------------------------
 
-    operator[]("Skybox")["DefaultShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/skybox/default_shader.glsl";
+    (*this)["ShadowsGeneration"]["DefaultShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/shadows_generator/default_shader.glsl";
+
+    // -------------------------------------
+
+    (*this)["Skybox"]["DefaultShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/skybox/default_shader.glsl";
 
     // -------------------------------------
 }

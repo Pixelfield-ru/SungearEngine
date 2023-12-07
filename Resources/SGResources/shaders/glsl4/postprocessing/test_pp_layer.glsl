@@ -22,16 +22,21 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
+    // VALID
     uniform bool isDepthTestPass;
+    // VALID
     uniform bool isFirstBlurPass;
+    // VALID
     uniform bool isHorizontalPass;
+    // VALID
     uniform bool isFinalPass;
 
+    // VALID
     uniform int currentFBIndex;
+    // VALID
     uniform int currentSubPass_Idx;
-    uniform int currentSubPass_Repeat;
+    // VALID
     uniform int FBCount;
-    uniform FrameBuffer allFB[MAX_PP_FB_COUNT];
 
     in vec2 vs_UVAttribute;
 
@@ -42,51 +47,13 @@
         vec2 finalUV = vs_UVAttribute.xy;
 
         #ifdef FLIP_TEXTURES_Y
-        finalUV.y = 1.0 - vs_UVAttribute.y;
+            finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
-
-        if(isDepthTestPass)
-        {
-            // depth test pass -------------------------------------------
-
-            // first - sampling depth from current frame buffer
-            float mixCoeff = 1.0 / allFB[currentFBIndex].depthAttachmentsCount;
-            float currentFBDepth = 0.0;
-
-            for (int i = 0; i < allFB[currentFBIndex].depthAttachmentsCount; i++)
-            {
-                currentFBDepth += texture(allFB[currentFBIndex].depthAttachments[i], finalUV).r * mixCoeff;
-            }
-
-            // then sampling depth from other frame buffers and if we have closer depth then discard fragment
-            for (int i = 0; i < FBCount; i++)
-            {
-                if (currentFBIndex == i) continue;
-
-                mixCoeff = 1.0 / allFB[i].depthAttachmentsCount;
-
-                float otherDepth = 0.0;
-
-                for (int k = 0; k < allFB[i].depthAttachmentsCount; k++)
-                {
-                    otherDepth += texture(allFB[i].depthAttachments[k], finalUV).r * mixCoeff;
-                }
-
-                // discard fragment
-                if (otherDepth < currentFBDepth)
-                {
-                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-
-                    return;
-                }
-            }
-
-            return;
-        }
 
         // else FX apply
 
-        vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
+        // todo: fix
+        /*vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
 
         float brightnessBarrier = 0.001;
 
@@ -160,6 +127,6 @@
             {
                 gl_FragColor = currentFBColor * multiplier;
             }
-        }
+        }*/
     }
 #endif

@@ -49,13 +49,13 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
             CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
             m_shader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
-            cameraComponent->m_gBuffer->bind()->clear();
-
             // todo: make less bindings
 
             for(auto& meshesLayer : *m_componentsToRender)
             {
                 const auto& layer = meshesLayer.first;
+
+                cameraComponent->bindPostProcessFrameBuffer(layer,SGG_COLOR_ATTACHMENT0);
 
                 for(auto& meshesEntity: meshesLayer.second)
                 {
@@ -72,21 +72,6 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
                         m_shader->useMatrix("objectModelMatrix",
                                             transformComponent->m_modelMatrix
                         );
-
-                        cameraComponent->bindPostProcessFrameBuffer(layer,SGG_COLOR_ATTACHMENT0);
-
-                        m_shader->useInteger("isGBufferPass", false);
-
-                        CoreMain::getRenderer().renderMeshData(
-                                meshComponent->m_meshData,
-                                meshComponent->m_meshDataRenderInfo
-                        );
-
-                        // ============= gbuffer pass ====================================
-
-                        cameraComponent->m_gBuffer->bind();
-
-                        m_shader->useInteger("isGBufferPass", true);
 
                         CoreMain::getRenderer().renderMeshData(
                                 meshComponent->m_meshData,

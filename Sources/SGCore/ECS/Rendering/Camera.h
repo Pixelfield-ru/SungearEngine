@@ -6,6 +6,8 @@
 #include "IRenderingComponent.h"
 #include "SGCore/ECS/Rendering/Pipelines/PostProcessFXSubPass.h"
 
+#define SG_PP_LAYER_FB_NAME(idx)  "frameBuffer" + std::to_string(idx)
+
 namespace SGCore
 {
     class IFrameBuffer;
@@ -18,7 +20,7 @@ namespace SGCore
 
         Ref<IFrameBuffer> m_frameBuffer;
 
-        Ref<IShader> m_shader;
+        Ref<IShader> m_FXShader;
 
         // name just for user. for convenience
         std::string m_name = "default";
@@ -26,6 +28,22 @@ namespace SGCore
         std::uint16_t m_index = 0;
 
         SGFrameBufferAttachmentType m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
+
+        // attachments that will pass the depth test
+        std::vector<SGFrameBufferAttachmentType> m_attachmentsToDepthTest { SGG_COLOR_ATTACHMENT0,
+                                                                            SGG_COLOR_ATTACHMENT1,
+                                                                            SGG_COLOR_ATTACHMENT2,
+                                                                            SGG_COLOR_ATTACHMENT3,
+                                                                            SGG_COLOR_ATTACHMENT4,
+                                                                            SGG_COLOR_ATTACHMENT5 };
+
+        // attachments that the scene will be rendered into
+        std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0,
+                                                                           SGG_COLOR_ATTACHMENT1,
+                                                                           SGG_COLOR_ATTACHMENT2,
+                                                                           SGG_COLOR_ATTACHMENT3,
+                                                                           SGG_COLOR_ATTACHMENT4,
+                                                                           SGG_COLOR_ATTACHMENT5 };
 
     private:
         // technical name
@@ -46,19 +64,14 @@ namespace SGCore
 
         ShaderMarkup m_postProcessShadersMarkup;
 
+        Ref<IShader> m_depthPassShader;
         Ref<IShader> m_gBufferCombiningShader;
+        Ref<IShader> m_finalPostProcessFXShader;
+
         Ref<IFrameBuffer> m_combinedGBuffer;
 
-        // passes
-        Ref<IShader> m_defaultPostProcessShader;
-        // default frame buffer for layers that does not have post-processing
-        Ref<IFrameBuffer> m_defaultLayersFrameBuffer;
-
-        SGFrameBufferAttachmentType m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
-
-        Ref<IShader> m_finalPostProcessOverlayShader;
         // final frame buffer with all post-processing
-        Ref<IFrameBuffer> m_finalFrameBuffer;
+        Ref<IFrameBuffer> m_finalFrameFXFrameBuffer;
 
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;
@@ -90,12 +103,17 @@ namespace SGCore
 
         void clearPostProcessFrameBuffers() const noexcept;
 
+        PostProcessLayer& getDefaultPostProcessLayer() noexcept;
+
         // todo: make rename pp layer function
 
     private:
+        // uses only for default PP layer
+        Ref<Layer> m_technicalLayer = MakeRef<Layer>();
+
         std::unordered_map<Ref<Layer>, PostProcessLayer> m_postProcessLayers;
 
-        Ref<IFrameBuffer> m_currentPPFrameBufferToBind = m_defaultLayersFrameBuffer;
+        Ref<IFrameBuffer> m_currentPPFrameBufferToBind;
 
         void init() noexcept final { }
     };
