@@ -18,23 +18,6 @@ uniform float materialShininess;
 uniform float materialMetallicFactor;
 uniform float materialRoughnessFactor;
 
-struct FrameBuffer
-{
-    //int index;
-
-    int depthAttachmentsCount;
-    int depthStencilAttachmentsCount;
-    int colorAttachmentsCount;
-    int renderAttachmentsCount;
-
-    sampler2D depthAttachments[1];
-    sampler2D depthStencilAttachments[1];
-    sampler2D colorAttachments[3];
-    sampler2D renderAttachments[1];
-
-    int colorAttachmentToRenderIdx;
-};
-
 layout(std140) uniform CameraData
 {
     IRenderingComponent camera;

@@ -11,23 +11,30 @@ SGCore::Camera::Camera()
 {
     auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
 
+    m_gBufferCombiningShader = Ref<IShader>(
+            CoreMain::getRenderer().createShader(
+                    shadersPaths["PostProcessing"]["AttachmentsCombiningShader"]
+            )
+    );
+
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    m_gBuffer =
+    m_combinedGBuffer =
             Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
-                                    SGGColorFormat::SGG_DEPTH_COMPONENT,
-                                    SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // FOR COMBINED COLOR
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
                                     0,
-                                    0)
+                                    0
+                    )
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
                                     SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB16_FLOAT,
+                                    SGGColorInternalFormat::SGG_RGB8,
                                     0,
                                     0
                     )
@@ -38,20 +45,20 @@ SGCore::Camera::Camera()
                                     0
                     )
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA8,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
                                     0,
                                     0
                     )
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4,
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA8,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
                                     0,
                                     0
                     )
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5,
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA8,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
                                     0,
                                     0
                     )
@@ -67,6 +74,37 @@ SGCore::Camera::Camera()
                                     0,
                                     0)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
+                                    0,
+                                    0
+                    )
+                    // GBUFFER ATTACHMENTS
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT27,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT28,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT29,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT30,
+                                    SGGColorFormat::SGG_RGB,
+                                    SGGColorInternalFormat::SGG_RGB8,
+                                    0,
+                                    0
+                    )
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31,
                                     SGGColorFormat::SGG_RGB,
                                     SGGColorInternalFormat::SGG_RGB8,
                                     0,
@@ -156,6 +194,37 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
                             0,
                             0)
             ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            // GBUFFER ATTACHMENTS
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT27,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT28,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT29,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT30,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31,
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,

@@ -46,6 +46,9 @@ namespace SGCore
 
         ShaderMarkup m_postProcessShadersMarkup;
 
+        Ref<IShader> m_gBufferCombiningShader;
+        Ref<IFrameBuffer> m_combinedGBuffer;
+
         // passes
         Ref<IShader> m_defaultPostProcessShader;
         // default frame buffer for layers that does not have post-processing
@@ -56,8 +59,6 @@ namespace SGCore
         Ref<IShader> m_finalPostProcessOverlayShader;
         // final frame buffer with all post-processing
         Ref<IFrameBuffer> m_finalFrameBuffer;
-
-        Ref<IFrameBuffer> m_gBuffer;
 
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;

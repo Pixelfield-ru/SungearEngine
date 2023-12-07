@@ -6,31 +6,16 @@
 #include "../random.glsl"
 #include "../disks.glsl"
 #include "../math.glsl"
+#include "../primitives.glsl"
 
 #ifdef VERTEX_SHADER
-    const vec2 verticesPositions[] = vec2[]
-    (
-        vec2(-1.0, -1.0),
-        vec2(-1.0, 1.0),
-        vec2(1.0, 1.0),
-        vec2(1.0, -1.0)
-    );
-
-    const vec2 uvs[] = vec2[]
-    (
-        vec2(0.0, 0.0),
-        vec2(0.0, 1.0),
-        vec2(1.0, 1.0),
-        vec2(1.0, 0.0)
-    );
-
     out vec2 vs_UVAttribute;
 
     void main()
     {
-        vec2 pos = verticesPositions[gl_VertexID].xy;
+        vec2 pos = quad2DVerticesPositions[gl_VertexID].xy;
 
-        vs_UVAttribute = uvs[gl_VertexID];
+        vs_UVAttribute = quad2DUVs[gl_VertexID];
 
         gl_Position = vec4(pos, 0.0, 1.0);
     }
@@ -102,22 +87,6 @@
         // else FX apply
 
         vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
-
-        /*const int samplesNum = 32;
-
-        float rand = random(finalUV.xy);
-        // rand = mad(rand, 2.0, -1.0);
-        float rotAngle = rand * PI;
-        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
-
-        for(int i = 0; i < samplesNum; i++)
-        {
-            currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV.xy + rotate(poissonDisk[i], rotTrig) / 100.0).rgb;
-        }
-
-        currentFBColor.rgb /= samplesNum;
-
-        gl_FragColor = currentFBColor * 100.0;*/
 
         float brightnessBarrier = 0.001;
 

@@ -41,6 +41,8 @@ void ShadersPaths::createDefaultPaths() noexcept
 
     operator[]("PostProcessing")["DefaultLayerShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/pp_layer_shader.glsl";
 
+    operator[]("PostProcessing")["AttachmentsCombiningShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/attachments_combining.glsl";
+
     // -------------------------------------
 
     operator[]("Gizmos")["ComplexGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
