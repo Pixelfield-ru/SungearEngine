@@ -70,6 +70,13 @@ namespace SGCore
 
         Ref<IFrameBuffer> m_combinedGBuffer;
 
+        std::vector<SGFrameBufferAttachmentType> m_attachmentsToCombine { SGG_COLOR_ATTACHMENT0,
+                                                                          SGG_COLOR_ATTACHMENT1,
+                                                                          SGG_COLOR_ATTACHMENT2,
+                                                                          SGG_COLOR_ATTACHMENT3,
+                                                                          SGG_COLOR_ATTACHMENT4,
+                                                                          SGG_COLOR_ATTACHMENT5 };
+
         // final frame buffer with all post-processing
         Ref<IFrameBuffer> m_finalFrameFXFrameBuffer;
 

@@ -253,10 +253,36 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera
     }
 }
 
-// TODO::
+// DONE
 void SGCore::PostProcessFXPass::GBufferCombiningPass(const SGCore::Ref<SGCore::Camera>& camera)
 {
+    camera->m_gBufferCombiningShader->bind();
+    camera->m_combinedGBuffer->bind();
 
+    for(const auto& attachmentType : camera->m_attachmentsToCombine)
+    {
+        camera->m_combinedGBuffer->bindAttachmentToDraw(attachmentType);
+
+        std::uint8_t attachmentIdx = 0;
+
+        for(const auto& ppLayerPair : camera->getPostProcessLayers())
+        {
+            const auto& ppLayer = ppLayerPair.second;
+
+            // todo:
+            camera->m_gBufferCombiningShader->useInteger("layersAttachmentN[" + std::to_string(attachmentIdx) + "]", attachmentIdx);
+            ppLayer.m_frameBuffer->bindAttachment(attachmentType, attachmentIdx);
+
+            ++attachmentIdx;
+        }
+
+        camera->m_gBufferCombiningShader->useInteger("layersAttachmentNCount", attachmentIdx);
+
+        CoreMain::getRenderer().renderMeshData(
+                m_postProcessQuad,
+                m_postProcessQuadRenderInfo
+        );
+    }
 }
 
 // TODO::

@@ -19,10 +19,7 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-    #define GBUFFER_ATTACHMENTS_MAX_COUNT 6
 
-    // combined gbuffer
-    uniform sampler2D gBufferAttachments[GBUFFER_ATTACHMENTS_MAX_COUNT];
 
     in vec2 vs_UVAttribute;
 

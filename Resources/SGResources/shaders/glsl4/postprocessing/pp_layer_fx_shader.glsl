@@ -19,6 +19,7 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
+    // valid
     uniform int currentSubPass_Idx;
     // valid
     uniform int currentFBIndex;

@@ -50,9 +50,9 @@ float ambient = 0.1;
 
 #ifdef FRAGMENT_SHADER
     layout(location = 0) out vec4 fragColor;
-    layout(location = 27) out vec3 gFragPos;
-    layout(location = 28) out vec3 gNormal;
-    layout(location = 29) out vec4 gAlbedoSpec;
+    layout(location = 1) out vec3 gFragPos;
+    layout(location = 2) out vec3 gNormal;
+    layout(location = 3) out vec4 gAlbedoSpec;
 
     uniform int sgmat_diffuseSamplers_COUNT = 0;
 

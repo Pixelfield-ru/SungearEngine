@@ -14,6 +14,7 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
+    uniform layersAttachmentNCount;
     // 32 is max count of layers
     uniform sampler2D layersAttachmentN[32];
 
@@ -29,7 +30,7 @@
             finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
-        for(int i = 0; i < 32; ++i)
+        for(int i = 0; i < layersAttachmentNCount; ++i)
         {
             combinedAttachment += texture(layersAttachmentN[i], finalUV);
         }
