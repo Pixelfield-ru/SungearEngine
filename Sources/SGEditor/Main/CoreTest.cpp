@@ -239,7 +239,7 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
+    model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
                                    [](const SGCore::Ref<SGCore::Entity>& entity)
     {
         auto transformComponent = entity->getComponent<SGCore::Transform>();

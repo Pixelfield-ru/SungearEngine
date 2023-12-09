@@ -69,22 +69,6 @@
 
         float multiplier = 1.5;
 
-        /*const int samplesNum = 32;
-
-        float rand = random(finalUV.xy);
-        // rand = mad(rand, 2.0, -1.0);
-        float rotAngle = rand * PI;
-        vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
-
-        vec2 texOffset = 1.0 / textureSize(frameBuffer2_colorAttachments[attachmentIdx], 0);
-
-        for(int i = 0; i < samplesNum; i++)
-        {
-            currentFBColor.rgb += texture(frameBuffer2_colorAttachments[0], finalUV.xy + rotate(poissonDisk[i], rotTrig) * texOffset * 15.0).rgb;
-        }
-
-        gl_FragColor = currentFBColor;*/
-
         float texCoeff = 3.0;
 
         if(currentSubPass_Idx == 0) // DIRECTIONAL PASS

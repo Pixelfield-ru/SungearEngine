@@ -47,7 +47,7 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 }
 
 // DONE
-void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& camera)
+void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& camera) const noexcept
 {
     camera->m_depthPassShader->bind();
     camera->m_depthPassShader
@@ -77,7 +77,7 @@ void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& cam
 }
 
 // DONE
-void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera)
+void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera) const noexcept
 {
     for(const auto& ppLayerPair: camera->getPostProcessLayers())
     {
@@ -114,7 +114,7 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera
 }
 
 // DONE
-void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<Camera>& camera)
+void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<Camera>& camera) const noexcept
 {
     camera->m_attachmentsForCombining.clear();
 
@@ -170,7 +170,7 @@ void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<Camera>& camera)
 }
 
 // DONE
-void SGCore::PostProcessFXPass::finalFrameFXPass(const SGCore::Ref<SGCore::Camera>& camera)
+void SGCore::PostProcessFXPass::finalFrameFXPass(const SGCore::Ref<SGCore::Camera>& camera) const
 {
     camera->m_finalPostProcessFXShader->bind();
 
