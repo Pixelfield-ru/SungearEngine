@@ -19,7 +19,8 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-
+    uniform int combinedBufferAttachmentsCount;
+    uniform sampler2D combinedBuffer[32];
 
     in vec2 vs_UVAttribute;
 
@@ -39,7 +40,7 @@
             finalColor.rgb += texture(allFB[i].colorAttachments[colorAttachmentToRenderIdx], finalUV).rgb;
         }*/
 
-        finalColor.rgb = texture(gBufferAttachments[0], finalUV);
+        finalColor.rgb = texture(combinedBuffer[0], finalUV).rgb;
 
         gl_FragColor = finalColor;
         // gl_FragColor = finalColor;

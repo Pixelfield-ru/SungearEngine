@@ -14,11 +14,9 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-    uniform layersAttachmentNCount;
+    uniform int layersAttachmentNCount;
     // 32 is max count of layers
     uniform sampler2D layersAttachmentN[32];
-
-    out vec4 combinedAttachment;
 
     in vec2 vs_UVAttribute;
 
@@ -30,9 +28,13 @@
             finalUV.y = 1.0 - vs_UVAttribute.y;
         #endif
 
+        vec4 combinedColor = vec4(0.0, 0.0, 0.0, 1.0);
+
         for(int i = 0; i < layersAttachmentNCount; ++i)
         {
-            combinedAttachment += texture(layersAttachmentN[i], finalUV);
+            combinedColor.rgb += texture(layersAttachmentN[i], finalUV).rgb;
         }
+
+        gl_FragColor = combinedColor;
     }
 #endif

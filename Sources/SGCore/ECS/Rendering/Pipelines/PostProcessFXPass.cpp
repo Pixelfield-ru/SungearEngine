@@ -38,13 +38,13 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 
             depthPass(cameraComponent);
             FXPass(cameraComponent);
-            GBufferCombiningPass(cameraComponent);
+            layersCombiningPass(cameraComponent);
             finalFrameFXPass(cameraComponent);
 
             // ====================================================================
             // first - discard not visible fragments in every frame buffer of layer and apply PP FX for each PP layer
 
-            cameraComponent->m_defaultPostProcessFXShader->bind();
+            /*cameraComponent->m_defaultPostProcessFXShader->bind();
             cameraComponent->m_defaultPostProcessFXShader
                     ->useShaderMarkup(cameraComponent->m_postProcessShadersMarkup);
 
@@ -70,15 +70,6 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 
                 // todo: make subpasses
                 // second pass - FX pass --------------------------------------------
-
-                /*cameraComponent->m_defaultLayersFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT1);
-
-                cameraComponent->m_defaultPostProcessShader->useInteger("isDepthTestPass", false);
-
-                CoreMain::getRenderer().renderMeshData(
-                        cameraComponent->m_postProcessQuad,
-                        cameraComponent->m_postProcessQuadRenderInfo
-                );*/
             }
 
             cameraComponent->m_defaultLayersFrameBuffer->unbind();
@@ -177,7 +168,7 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
             CoreMain::getRenderer().renderMeshData(
                     m_postProcessQuad,
                     m_postProcessQuadRenderInfo
-            );
+            );*/
 
             // -------------------------------------
     SG_END_ITERATE_CACHED_ENTITIES
@@ -200,9 +191,10 @@ void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& cam
         camera->m_depthPassShader->useInteger("currentFBIndex", layerIdx);
 
         ppLayer.m_frameBuffer->bind();
-
+        
         for(std::uint8_t attachmentIdx = 0; attachmentIdx < ppLayer.m_attachmentsToDepthTest.size(); ++attachmentIdx)
         {
+            ppLayer.m_frameBuffer->bindAttachments(camera->m_postProcessShadersMarkup.m_frameBuffersAttachmentsBlocks[ppLayer.getNameInShader()]);
             ppLayer.m_frameBuffer->bindAttachmentToDraw(ppLayer.m_attachmentsToDepthTest[attachmentIdx]);
 
             CoreMain::getRenderer().renderMeshData(
@@ -248,20 +240,33 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera
             );
         }
 
-
         ppLayer.m_frameBuffer->unbind();
     }
 }
 
 // DONE
-void SGCore::PostProcessFXPass::GBufferCombiningPass(const SGCore::Ref<SGCore::Camera>& camera)
+void SGCore::PostProcessFXPass::layersCombiningPass(const Ref <Camera>& camera)
 {
-    camera->m_gBufferCombiningShader->bind();
-    camera->m_combinedGBuffer->bind();
+    camera->m_attachmentsForCombining.clear();
 
-    for(const auto& attachmentType : camera->m_attachmentsToCombine)
+    camera->m_ppLayersCombiningShader->bind();
+    camera->m_ppLayersCombinedBuffer->bind();
+
+    // collecting all attachment to render in
+    for(const auto& ppLayerPair : camera->getPostProcessLayers())
     {
-        camera->m_combinedGBuffer->bindAttachmentToDraw(attachmentType);
+        const auto& ppLayer = ppLayerPair.second;
+
+        for(const auto& attachmentsPair : ppLayer.m_attachmentsForCombining)
+        {
+            camera->m_attachmentsForCombining.push_back(attachmentsPair.first);
+        }
+    }
+
+    // combining all attachments
+    for(const auto& attachmentToRenderIn : camera->m_attachmentsForCombining)
+    {
+        camera->m_ppLayersCombinedBuffer->bindAttachmentToDraw(attachmentToRenderIn);
 
         std::uint8_t attachmentIdx = 0;
 
@@ -269,24 +274,47 @@ void SGCore::PostProcessFXPass::GBufferCombiningPass(const SGCore::Ref<SGCore::C
         {
             const auto& ppLayer = ppLayerPair.second;
 
-            // todo:
-            camera->m_gBufferCombiningShader->useInteger("layersAttachmentN[" + std::to_string(attachmentIdx) + "]", attachmentIdx);
-            ppLayer.m_frameBuffer->bindAttachment(attachmentType, attachmentIdx);
+            const auto& foundAttachment = ppLayer.m_attachmentsForCombining.find(attachmentToRenderIn);
 
-            ++attachmentIdx;
+            if(foundAttachment != ppLayer.m_attachmentsForCombining.cend())
+            {
+                camera->m_ppLayersCombiningShader->useInteger("layersAttachmentN[" + std::to_string(attachmentIdx) + "]",
+                                                              attachmentIdx
+                );
+                ppLayer.m_frameBuffer->bindAttachment(foundAttachment->second, attachmentIdx);
+
+                ++attachmentIdx;
+            }
         }
 
-        camera->m_gBufferCombiningShader->useInteger("layersAttachmentNCount", attachmentIdx);
+        camera->m_ppLayersCombiningShader->useInteger("layersAttachmentNCount", attachmentIdx);
 
         CoreMain::getRenderer().renderMeshData(
                 m_postProcessQuad,
                 m_postProcessQuadRenderInfo
         );
     }
+
+    camera->m_ppLayersCombinedBuffer->unbind();
 }
 
-// TODO::
+// DONE
 void SGCore::PostProcessFXPass::finalFrameFXPass(const SGCore::Ref<SGCore::Camera>& camera)
 {
+    camera->m_ppLayersCombiningShader->bind();
 
+    std::uint8_t attachmentIdx = 0;
+    for(const auto& attachmentType : camera->m_attachmentsForCombining)
+    {
+        camera->m_ppLayersCombinedBuffer->bindAttachment(attachmentType, attachmentIdx);
+        camera->m_ppLayersCombiningShader->useInteger("combinedBuffer[" + std::to_string(attachmentIdx) + "]", attachmentIdx);
+        ++attachmentIdx;
+    }
+
+    camera->m_ppLayersCombiningShader->useInteger("combinedBufferAttachmentsCount", attachmentIdx);
+
+    CoreMain::getRenderer().renderMeshData(
+            m_postProcessQuad,
+            m_postProcessQuadRenderInfo
+    );
 }

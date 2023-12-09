@@ -36,6 +36,7 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
 
                                                              if (!directionalLightTransform) continue;
 
+                                                             // TODO: OPTIMIZE
                                                              for (const auto& directionalLightComponent: directionalLightComponents)
                                                              {
                                                                  geometryPass->m_shader->bind();

@@ -410,7 +410,7 @@ void init()
                                                 primaryMonitorHeight
     );
 
-    ppLayer.m_frameBuffer
+    /*ppLayer.m_frameBuffer
             ->bind()
             ->setSize(primaryMonitorWidth, primaryMonitorHeight)
             ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
@@ -466,7 +466,7 @@ void init()
     };
     ppLayer.m_subPasses.push_back(blurLayerTemporalSubPass);
 
-    ppLayer.m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
+    ppLayer.m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;*/
 
     camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
                                       SGCore::Ref<SGCore::IShader>(

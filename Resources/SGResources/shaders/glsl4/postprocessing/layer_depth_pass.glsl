@@ -26,8 +26,16 @@
     // as all layers depths
     uniform sampler2D allFrameBuffersDepthAttachments[32];
 
+    in vec2 vs_UVAttribute;
+
     void main()
     {
+        vec2 finalUV = vs_UVAttribute.xy;
+
+        #ifdef FLIP_TEXTURES_Y
+            finalUV.y = 1.0 - vs_UVAttribute.y;
+        #endif
+
         // depth test pass -------------------------------------------
 
         // first - sampling depth from current frame buffer
@@ -49,6 +57,7 @@
             }
         }
 
-        return;
+        // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        // return;
     }
 #endif

@@ -11,17 +11,13 @@ SGCore::Camera::Camera()
 {
     auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
 
-    // adding default pp layer
-    addPostProcessLayer("defaultPPLayer", m_technicalLayer);
-    m_currentPPFrameBufferToBind = getDefaultPostProcessLayer().m_frameBuffer;
-
     m_depthPassShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["DepthPassShader"]
             )
     );
 
-    m_gBufferCombiningShader = Ref<IShader>(
+    m_ppLayersCombiningShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["AttachmentsCombiningShader"]
             )
@@ -40,7 +36,7 @@ SGCore::Camera::Camera()
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    m_combinedGBuffer =
+    m_ppLayersCombinedBuffer =
             Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
@@ -96,6 +92,10 @@ SGCore::Camera::Camera()
                     ->unbind();
 
     // ---------------------------------------
+
+    // adding default pp layer
+    addPostProcessLayer("defaultPPLayer", m_technicalLayer);
+    m_currentPPFrameBufferToBind = getDefaultPostProcessLayer().m_frameBuffer;
 }
 
 SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,

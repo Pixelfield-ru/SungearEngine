@@ -45,6 +45,21 @@ namespace SGCore
                                                                            SGG_COLOR_ATTACHMENT4,
                                                                            SGG_COLOR_ATTACHMENT5 };
 
+        // first - to which attachment of the output buffer will the data from the attachment "second" be copied
+        // second - the attachment to be copied
+        std::unordered_map<SGFrameBufferAttachmentType, SGFrameBufferAttachmentType> m_attachmentsForCombining {
+                { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT0 },
+                { SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT1 },
+                { SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT2 },
+                { SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT3 },
+                { SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT4 },
+        };
+
+        std::string getNameInShader() const noexcept
+        {
+            return m_nameInShader;
+        }
+
     private:
         // technical name
         std::string m_nameInShader = "allFB[0]";
@@ -65,23 +80,18 @@ namespace SGCore
         ShaderMarkup m_postProcessShadersMarkup;
 
         Ref<IShader> m_depthPassShader;
-        Ref<IShader> m_gBufferCombiningShader;
+        Ref<IShader> m_ppLayersCombiningShader;
         Ref<IShader> m_finalPostProcessFXShader;
 
-        Ref<IFrameBuffer> m_combinedGBuffer;
-
-        std::vector<SGFrameBufferAttachmentType> m_attachmentsToCombine { SGG_COLOR_ATTACHMENT0,
-                                                                          SGG_COLOR_ATTACHMENT1,
-                                                                          SGG_COLOR_ATTACHMENT2,
-                                                                          SGG_COLOR_ATTACHMENT3,
-                                                                          SGG_COLOR_ATTACHMENT4,
-                                                                          SGG_COLOR_ATTACHMENT5 };
+        Ref<IFrameBuffer> m_ppLayersCombinedBuffer;
 
         // final frame buffer with all post-processing
         Ref<IFrameBuffer> m_finalFrameFXFrameBuffer;
 
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;
+
+        std::vector<SGFrameBufferAttachmentType> m_attachmentsForCombining;
 
         Ref<IFrameBuffer> getPostProcessLayerFrameBuffer(const Ref<Layer>& layer) noexcept;
 

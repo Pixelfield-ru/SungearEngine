@@ -26,7 +26,7 @@ namespace SGCore
     private:
         void depthPass(const Ref<Camera>& camera);
         void FXPass(const Ref<Camera>&);
-        void GBufferCombiningPass(const Ref<Camera>& camera);
+        void layersCombiningPass(const Ref<Camera>& camera);
         void finalFrameFXPass(const Ref<Camera>& camera);
     };
 }
