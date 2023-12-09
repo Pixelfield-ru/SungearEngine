@@ -40,12 +40,18 @@ SGCore::Camera::Camera()
             Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // FOR COMBINED COLOR
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
+                                    SGGColorFormat::SGG_DEPTH_COMPONENT,
+                                    SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
+                                    0,
+                                    0)
+                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH PASS
+                                    SGGColorFormat::SGG_RGBA,
+                                    SGGColorInternalFormat::SGG_RGBA8,
                                     0,
                                     0
                     )
+                            // GBUFFER ATTACHMENTS
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
                                     SGGColorFormat::SGG_RGB,
                                     SGGColorInternalFormat::SGG_RGB8,
@@ -59,8 +65,8 @@ SGCore::Camera::Camera()
                                     0
                     )
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
+                                    SGGColorFormat::SGG_RGBA,
+                                    SGGColorInternalFormat::SGG_RGBA8,
                                     0,
                                     0
                     )
@@ -136,9 +142,9 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
                             SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                             0,
                             0)
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH TEST
-                            SGGColorFormat::SGG_RGB,
-                            SGGColorInternalFormat::SGG_RGB8,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH PASS
+                            SGGColorFormat::SGG_RGBA,
+                            SGGColorInternalFormat::SGG_RGBA8,
                             0,
                             0
             )
@@ -156,8 +162,8 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
                             0
             )
             ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
-                            SGGColorFormat::SGG_RGB,
-                            SGGColorInternalFormat::SGG_RGB8,
+                            SGGColorFormat::SGG_RGBA,
+                            SGGColorInternalFormat::SGG_RGBA8,
                             0,
                             0
             )
@@ -189,7 +195,7 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
 
     // ----------------------------------
 
-    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 5, 0);
+    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 8, 0);
     m_postProcessShadersMarkup.calculateBlocksOffsets();
 
     // ----------------------------------
@@ -255,31 +261,22 @@ void SGCore::Camera::bindPostProcessLayers() noexcept
     }
 }
 
-SGCore::Ref<SGCore::IFrameBuffer>
-SGCore::Camera::getPostProcessLayerFrameBuffer(const Ref<Layer>& layer) noexcept
+SGCore::PostProcessLayer& SGCore::Camera::getPostProcessLayer(const Ref<Layer>& layer) noexcept
 {
     const auto& foundPPLayer = m_postProcessLayers.find(layer);
 
-    return foundPPLayer != m_postProcessLayers.cend() ? foundPPLayer->second.m_frameBuffer : nullptr;
+    return foundPPLayer != m_postProcessLayers.cend() ? foundPPLayer->second : getDefaultPostProcessLayer();
 }
 
 void SGCore::Camera::bindPostProcessFrameBuffer
-(const Ref<Layer>& layer, const SGFrameBufferAttachmentType& attachmentToDrawType) noexcept
+(const Ref<Layer>& layer) noexcept
 {
-    auto foundFrameBuffer = getPostProcessLayerFrameBuffer(layer);
+    auto foundPPLayer = getPostProcessLayer(layer);
 
-    if(foundFrameBuffer)
-    {
-        m_currentPPFrameBufferToBind = foundFrameBuffer;
-    }
-    else
-    {
-        // It is assumed that the technical layer always exists
-        m_currentPPFrameBufferToBind = getPostProcessLayerFrameBuffer(m_technicalLayer);
-    }
+    m_currentPPFrameBufferToBind = foundPPLayer.m_frameBuffer;
 
     m_currentPPFrameBufferToBind->bind();
-    m_currentPPFrameBufferToBind->bindAttachmentToDraw(attachmentToDrawType);
+    m_currentPPFrameBufferToBind->bindAttachmentsToDraw(foundPPLayer.m_attachmentsToRenderIn);
 }
 
 void SGCore::Camera::unbindPostProcessFrameBuffer() const noexcept
@@ -294,8 +291,11 @@ void SGCore::Camera::clearPostProcessFrameBuffers() const noexcept
 {
     for(const auto& ppLayer : m_postProcessLayers)
     {
-        ppLayer.second.m_frameBuffer->bind()->clear();
+        // ppLayer.second.m_frameBuffer->bind()->clear();
+        ppLayer.second.m_frameBuffer->bind()->bindAttachmentsToDraw(std::vector<SGFrameBufferAttachmentType> { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT6, SGG_COLOR_ATTACHMENT7 })->clear();
     }
+
+    m_ppLayersCombinedBuffer->bind()->bindAttachmentsToDraw(m_attachmentsForCombining)->clear();
 
     m_finalFrameFXFrameBuffer->bind()->clear()->unbind();
 }

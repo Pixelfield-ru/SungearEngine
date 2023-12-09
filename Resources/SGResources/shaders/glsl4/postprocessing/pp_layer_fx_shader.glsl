@@ -46,14 +46,5 @@
         #endif
 
         // just do nothing
-
-        // else FX apply ----------------------------
-
-        /*vec4 currentFBColor = vec4(0.0, 0.0, 0.0, 1.0);
-
-        // first is depth test attachment
-        currentFBColor.rgb += texture(allFB[currentFBIndex].colorAttachments[0], finalUV).rgb;
-
-        gl_FragColor = currentFBColor;*/
     }
 #endif

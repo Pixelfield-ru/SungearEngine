@@ -27,8 +27,7 @@ void SGCore::PBRFRPSkyboxesPass::render(const Ref<Scene>& scene, const Ref<IRend
             {
                 const auto& layer = skyboxesLayerPair.first;
 
-                cameraComponent->bindPostProcessFrameBuffer(layer,
-                                                            SGG_COLOR_ATTACHMENT0);
+                cameraComponent->bindPostProcessFrameBuffer(layer);
 
                 for(auto& skyboxEntityPair : skyboxesLayerPair.second)
                 {

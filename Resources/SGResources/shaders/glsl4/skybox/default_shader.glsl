@@ -117,9 +117,14 @@ vec3 atmosphere(vec3 r, vec3 ro,
 #endif
 
 #ifdef FRAGMENT_SHADER
-    const vec3 sunPos = vec3(0.0, 1.0, -1.0);
+    layout(location = 0) out vec4 fragColor;
+    // layout(location = 1) out vec3 gFragPos;
+    // layout(location = 2) out vec3 gNormal;
+    // layout(location = 3) out vec4 gAlbedoSpec;
+    // layout(location = 4) out vec3 unknownAttachment0;
+    // layout(location = 5) out vec3 unknownAttachment1;
 
-    out vec4 fragColor;
+    const vec3 sunPos = vec3(0.0, 1.0, -1.0);
 
     uniform int sgmat_skyboxSamplers_COUNT;
     uniform samplerCube sgmat_skyboxSamplers[SGMAT_SAMPLERS_OF_TYPE_MAX];
@@ -128,6 +133,12 @@ vec3 atmosphere(vec3 r, vec3 ro,
 
     void main()
     {
+        // gFragPos = vec3(1.0);
+        // gNormal = vec3(1.0);
+        // gAlbedoSpec = vec4(1.0);
+        // unknownAttachment0 = vec3(1.0);
+        // unknownAttachment1 = vec3(1.0);
+
         vec3 atmosphereCol = atmosphere(
             vs_UVAttribute,           // normalized ray direction
             vec3(0, 6372e3, 0),               // ray origin
@@ -142,7 +153,6 @@ vec3 atmosphere(vec3 r, vec3 ro,
             0.958                          // Mie preferred scattering direction
         );
 
-        fragColor = vec4(1.0);
         // vec3 atmosphereCol = vec3(1.0);
         if(sgmat_skyboxSamplers_COUNT > 0)
         {

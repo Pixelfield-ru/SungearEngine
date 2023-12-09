@@ -50,9 +50,11 @@ float ambient = 0.1;
 
 #ifdef FRAGMENT_SHADER
     layout(location = 0) out vec4 fragColor;
-    layout(location = 1) out vec3 gFragPos;
-    layout(location = 2) out vec3 gNormal;
+    layout(location = 1) out vec4 gFragPos;
+    layout(location = 2) out vec4 gNormal;
     layout(location = 3) out vec4 gAlbedoSpec;
+    // layout(location = 4) out vec3 unknownAttachment0;
+    // layout(location = 5) out vec3 unknownAttachment1;
 
     uniform int sgmat_diffuseSamplers_COUNT = 0;
 
@@ -231,9 +233,12 @@ float ambient = 0.1;
             finalNormal = normalizedNormal;
         }
 
-        gFragPos = vsIn.fragPos;
-        gNormal = finalNormal;
+        gFragPos = vec4(vsIn.fragPos, 1.0);
+        gNormal = vec4(finalNormal, 1.0);
         gAlbedoSpec = vec4(diffuseColor.rgb, 1.0);
+
+        //unknownAttachment0 = vec3(1.0);
+        //unknownAttachment1 = vec3(1.0);
 
         // ===============================================================================================
         // ===============================================================================================
@@ -248,10 +253,10 @@ float ambient = 0.1;
         // colorFromRoughness.g = ROUGHNESS
         // colorFromRoughness.b = METALNESS
 
-        vec3 albedo =       diffuseColor.rgb;
-        float ao =          aoRoughnessMetallic.r;
-        float roughness =   aoRoughnessMetallic.g;
-        float metalness =   aoRoughnessMetallic.b;
+        vec3 albedo         = diffuseColor.rgb;
+        float ao            = aoRoughnessMetallic.r;
+        float roughness     = aoRoughnessMetallic.g;
+        float metalness     = aoRoughnessMetallic.b;
 
         // для формулы Шлика-Френеля
         vec3 F0 = vec3(0.04);
@@ -279,10 +284,10 @@ float ambient = 0.1;
             // ===================        shadows calc        =====================
 
             dirLightsShadowCoeff += calcDirLightShadow(
-            directionalLights[i],
-            vsIn.fragPos,
-            finalNormal,
-            sgmat_shadowMap2DSamplers[i]
+                directionalLights[i],
+                vsIn.fragPos,
+                finalNormal,
+                sgmat_shadowMap2DSamplers[i]
             ) * NdotL * radiance + radiance * 0.04;
 
             // ====================================================================
@@ -291,9 +296,9 @@ float ambient = 0.1;
 
             // NDF (normal distribution func)
             float D = GGXTR(
-            finalNormal,
-            halfWayDir,
-            roughness
+                finalNormal,
+                halfWayDir,
+                roughness
             );// TRUE
 
             float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
@@ -356,6 +361,7 @@ float ambient = 0.1;
 
         fragColor.a = diffuseColor.a;
         fragColor.rgb = finalCol;
+        // fragColor = vec4(1.0);
 
         // DEBUG ==================================
         // base color

@@ -1,6 +1,6 @@
 #define SG_NOT_INCLUDE_LIGHTS
 
-#include "../uniform_bufs_decl.glsl"
+// #include "../uniform_bufs_decl.glsl"
 #include "../color_correction/aces.glsl"
 #include "../defines.glsl"
 #include "../primitives.glsl"
@@ -34,18 +34,9 @@
 
         vec4 finalColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-        /*for(int i = 0; i < GBUFFER_ATTACHMENTS_MAX_COUNT; ++i)
-        {
-            int colorAttachmentToRenderIdx = allFB[i].colorAttachmentToRenderIdx;
-            finalColor.rgb += texture(allFB[i].colorAttachments[colorAttachmentToRenderIdx], finalUV).rgb;
-        }*/
-
         finalColor.rgb = texture(combinedBuffer[0], finalUV).rgb;
 
         gl_FragColor = finalColor;
-        // gl_FragColor = finalColor;
-        // gl_FragColor = vec4(texture(gBuffer[2], finalUV).rgb, 1.0);
-        // gl_FragColor = vec4(ACESFilm(finalColor.rgb), finalColor.a);
 
         // -----------------------------------------------------
     }

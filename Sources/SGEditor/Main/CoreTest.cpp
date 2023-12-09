@@ -410,17 +410,17 @@ void init()
                                                 primaryMonitorHeight
     );
 
-    /*ppLayer.m_frameBuffer
+    ppLayer.m_frameBuffer
             ->bind()
             ->setSize(primaryMonitorWidth, primaryMonitorHeight)
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
-                            SGGColorFormat::SGG_RGB,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6,
+                            SGGColorFormat::SGG_RGBA,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
-                            SGGColorFormat::SGG_RGB,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7,
+                            SGGColorFormat::SGG_RGBA,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
@@ -428,11 +428,11 @@ void init()
             ->unbind();
 
     SGCore::PostProcessFXSubPass blurLayerDirectionalSubPass;
-    blurLayerDirectionalSubPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
+    blurLayerDirectionalSubPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6;
     blurLayerDirectionalSubPass.m_index = 0;
 
     SGCore::PostProcessFXSubPass blurLayerTemporalSubPass;
-    blurLayerTemporalSubPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
+    blurLayerTemporalSubPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7;
     blurLayerTemporalSubPass.m_index = 1;
 
     blurLayerDirectionalSubPass.m_prepareFunction = [](const SGCore::Ref<SGCore::IShader>& ppLayerShader)
@@ -466,7 +466,7 @@ void init()
     };
     ppLayer.m_subPasses.push_back(blurLayerTemporalSubPass);
 
-    ppLayer.m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;*/
+    ppLayer.m_attachmentsForCombining[SGG_COLOR_ATTACHMENT0] = SGG_COLOR_ATTACHMENT7;
 
     camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
                                       SGCore::Ref<SGCore::IShader>(

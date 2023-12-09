@@ -229,7 +229,7 @@ void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
 SGCore::GL46Shader* SGCore::GL4Renderer::createShader()
 {
     auto* shader = new GL46Shader;
-    shader->m_version = "400";
+    shader->m_version = "400 core";
 
     return shader;
 }

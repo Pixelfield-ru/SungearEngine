@@ -41,136 +41,6 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
             layersCombiningPass(cameraComponent);
             finalFrameFXPass(cameraComponent);
 
-            // ====================================================================
-            // first - discard not visible fragments in every frame buffer of layer and apply PP FX for each PP layer
-
-            /*cameraComponent->m_defaultPostProcessFXShader->bind();
-            cameraComponent->m_defaultPostProcessFXShader
-                    ->useShaderMarkup(cameraComponent->m_postProcessShadersMarkup);
-
-            // ====================================================================
-            // first depth test for pixels in default FB
-
-            cameraComponent->m_defaultPostProcessFXShader->useInteger("currentFBIndex", 0);
-
-            cameraComponent->m_defaultLayersFrameBuffer->bind();
-
-            {
-                // YOU DO NOT NEED TO CHANGE DEPTH PASS IN 99% OF CASES
-                // first pass - depth pass ------------------------------------------
-
-                cameraComponent->m_defaultLayersFrameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
-
-                cameraComponent->m_defaultPostProcessFXShader->useInteger("isDepthTestPass", true);
-
-                CoreMain::getRenderer().renderMeshData(
-                        m_postProcessQuad,
-                        m_postProcessQuadRenderInfo
-                );
-
-                // todo: make subpasses
-                // second pass - FX pass --------------------------------------------
-            }
-
-            cameraComponent->m_defaultLayersFrameBuffer->unbind();
-
-            // ---------------------------------
-            // ====================================================================
-
-            // and then depth test for PP Layers
-
-            for(const auto& ppLayer: cameraComponent->getPostProcessLayers())
-            {
-                auto& layerShader = ppLayer.second.m_FXShader;
-
-                layerShader->bind();
-                layerShader->useShaderMarkup(cameraComponent->m_postProcessShadersMarkup);
-
-                layerShader->useInteger("currentFBIndex", ppLayer.second.m_index);
-
-                ppLayer.second.m_frameBuffer->bind();
-
-                {
-                    // YOU DO NOT NEED TO CHANGE DEPTH PASS IN 99% OF CASES
-                    // first pass - depth pass ------------------------------------------
-
-                    ppLayer.second.m_frameBuffer->bindAttachmentToDraw(SGG_COLOR_ATTACHMENT0);
-
-                    layerShader->useInteger("isDepthTestPass", true);
-
-                    CoreMain::getRenderer().renderMeshData(
-                            m_postProcessQuad,
-                            m_postProcessQuadRenderInfo
-                    );
-
-                    // second pass - FX pass --------------------------------------------
-
-                    layerShader->useInteger("isDepthTestPass", false);
-
-                    for(const auto& ppFXSubPass : ppLayer.second.m_subPasses)
-                    {
-                        layerShader->useInteger("currentSubPass_Idx", ppFXSubPass.m_index);
-
-                        if(ppFXSubPass.m_prepareFunction)
-                        {
-                            ppFXSubPass.m_prepareFunction(layerShader);
-                        }
-
-                        ppLayer.second.m_frameBuffer->bindAttachmentToDraw(ppFXSubPass.m_attachmentRenderTo);
-
-                        CoreMain::getRenderer().renderMeshData(
-                                m_postProcessQuad,
-                                m_postProcessQuadRenderInfo
-                        );
-                    }
-                }
-
-                ppLayer.second.m_frameBuffer->unbind();
-            }
-
-            // --------------------------------------------------------------------
-
-            // --------------------------------------------------------------------
-
-            // render post-process quad -------------------------------------------
-
-            if(cameraComponent->m_useFinalFrameBuffer)
-            {
-                cameraComponent->m_finalFrameFXFrameBuffer->bind()->clear();
-            }
-
-            cameraComponent->m_finalPostProcessFXShader->bind();
-            cameraComponent->m_finalPostProcessFXShader
-                    ->useShaderMarkup(cameraComponent->m_postProcessShadersMarkup);
-
-
-            cameraComponent->m_finalPostProcessFXShader->useInteger("allFB[0].colorAttachmentToRenderIdx",
-                                                                         cameraComponent->m_attachmentToUseInFinalOverlay -
-                                                                         SGG_COLOR_ATTACHMENT0);
-
-            std::uint16_t currentPPLayerIdx = 1;
-            for(const auto& ppLayer: cameraComponent->getPostProcessLayers())
-            {
-                cameraComponent->m_finalPostProcessFXShader->useInteger(
-                        "allFB[" + std::to_string(currentPPLayerIdx) + "].colorAttachmentToRenderIdx",
-                        ppLayer.second.m_attachmentToUseInFinalOverlay - SGG_COLOR_ATTACHMENT0);
-
-                ++currentPPLayerIdx;
-            }
-
-            std::uint8_t gBufferAttachmentsOffset = cameraComponent->m_postProcessShadersMarkup.getGBufferAttachmentsOffset();
-            for(std::uint8_t blockIdx = 0; blockIdx < cameraComponent->m_postProcessShadersMarkup.m_gBufferAttachmentsCount; ++blockIdx)
-            {
-                auto resAttachment = (SGFrameBufferAttachmentType) ((std::uint8_t) SGG_COLOR_ATTACHMENT1 + blockIdx);
-                cameraComponent->m_gBuffer->bindAttachment(resAttachment, gBufferAttachmentsOffset + blockIdx);
-            }
-
-            CoreMain::getRenderer().renderMeshData(
-                    m_postProcessQuad,
-                    m_postProcessQuadRenderInfo
-            );*/
-
-            // -------------------------------------
     SG_END_ITERATE_CACHED_ENTITIES
 
     CoreMain::getRenderer().setDepthTestingEnabled(true);
@@ -191,11 +61,10 @@ void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& cam
         camera->m_depthPassShader->useInteger("currentFBIndex", layerIdx);
 
         ppLayer.m_frameBuffer->bind();
-        
-        for(std::uint8_t attachmentIdx = 0; attachmentIdx < ppLayer.m_attachmentsToDepthTest.size(); ++attachmentIdx)
+
+        for(const auto& attachmentType : ppLayer.m_attachmentsToDepthTest)
         {
-            ppLayer.m_frameBuffer->bindAttachments(camera->m_postProcessShadersMarkup.m_frameBuffersAttachmentsBlocks[ppLayer.getNameInShader()]);
-            ppLayer.m_frameBuffer->bindAttachmentToDraw(ppLayer.m_attachmentsToDepthTest[attachmentIdx]);
+            ppLayer.m_frameBuffer->bindAttachmentToDraw(attachmentType);
 
             CoreMain::getRenderer().renderMeshData(
                     m_postProcessQuad,
@@ -245,7 +114,7 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera
 }
 
 // DONE
-void SGCore::PostProcessFXPass::layersCombiningPass(const Ref <Camera>& camera)
+void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<Camera>& camera)
 {
     camera->m_attachmentsForCombining.clear();
 
@@ -259,7 +128,7 @@ void SGCore::PostProcessFXPass::layersCombiningPass(const Ref <Camera>& camera)
 
         for(const auto& attachmentsPair : ppLayer.m_attachmentsForCombining)
         {
-            camera->m_attachmentsForCombining.push_back(attachmentsPair.first);
+            camera->m_attachmentsForCombining.insert(attachmentsPair.first);
         }
     }
 
@@ -274,14 +143,16 @@ void SGCore::PostProcessFXPass::layersCombiningPass(const Ref <Camera>& camera)
         {
             const auto& ppLayer = ppLayerPair.second;
 
-            const auto& foundAttachment = ppLayer.m_attachmentsForCombining.find(attachmentToRenderIn);
+            const auto& foundAttachmentIter = ppLayer.m_attachmentsForCombining.find(attachmentToRenderIn);
 
-            if(foundAttachment != ppLayer.m_attachmentsForCombining.cend())
+            if(foundAttachmentIter != ppLayer.m_attachmentsForCombining.cend())
             {
+                auto foundAttachment = foundAttachmentIter->second;
+
                 camera->m_ppLayersCombiningShader->useInteger("layersAttachmentN[" + std::to_string(attachmentIdx) + "]",
                                                               attachmentIdx
                 );
-                ppLayer.m_frameBuffer->bindAttachment(foundAttachment->second, attachmentIdx);
+                ppLayer.m_frameBuffer->bindAttachment(foundAttachment, attachmentIdx);
 
                 ++attachmentIdx;
             }
@@ -301,17 +172,18 @@ void SGCore::PostProcessFXPass::layersCombiningPass(const Ref <Camera>& camera)
 // DONE
 void SGCore::PostProcessFXPass::finalFrameFXPass(const SGCore::Ref<SGCore::Camera>& camera)
 {
-    camera->m_ppLayersCombiningShader->bind();
+    camera->m_finalPostProcessFXShader->bind();
 
     std::uint8_t attachmentIdx = 0;
     for(const auto& attachmentType : camera->m_attachmentsForCombining)
     {
         camera->m_ppLayersCombinedBuffer->bindAttachment(attachmentType, attachmentIdx);
-        camera->m_ppLayersCombiningShader->useInteger("combinedBuffer[" + std::to_string(attachmentIdx) + "]", attachmentIdx);
+        camera->m_finalPostProcessFXShader->useInteger("combinedBuffer[" + std::to_string(attachmentIdx) + "]", attachmentIdx);
+
         ++attachmentIdx;
     }
 
-    camera->m_ppLayersCombiningShader->useInteger("combinedBufferAttachmentsCount", attachmentIdx);
+    camera->m_finalPostProcessFXShader->useInteger("combinedBufferAttachmentsCount", attachmentIdx);
 
     CoreMain::getRenderer().renderMeshData(
             m_postProcessQuad,

@@ -6,7 +6,7 @@
 #include "IRenderingComponent.h"
 #include "SGCore/ECS/Rendering/Pipelines/PostProcessFXSubPass.h"
 
-#define SG_PP_LAYER_FB_NAME(idx)  "frameBuffer" + std::to_string(idx)
+#define SG_PP_LAYER_FB_NAME(idx)  ("frameBuffer" + std::to_string(idx))
 
 namespace SGCore
 {
@@ -26,8 +26,6 @@ namespace SGCore
         std::string m_name = "default";
 
         std::uint16_t m_index = 0;
-
-        SGFrameBufferAttachmentType m_attachmentToUseInFinalOverlay = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
 
         // attachments that will pass the depth test
         std::vector<SGFrameBufferAttachmentType> m_attachmentsToDepthTest { SGG_COLOR_ATTACHMENT0,
@@ -53,6 +51,7 @@ namespace SGCore
                 { SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT2 },
                 { SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT3 },
                 { SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT4 },
+                { SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT5 }
         };
 
         std::string getNameInShader() const noexcept
@@ -62,7 +61,7 @@ namespace SGCore
 
     private:
         // technical name
-        std::string m_nameInShader = "allFB[0]";
+        std::string m_nameInShader = SG_PP_LAYER_FB_NAME(0);
     };
 
     // todo: make change for default PP shader
@@ -91,9 +90,9 @@ namespace SGCore
         // can be helpful for ImGUI
         bool m_useFinalFrameBuffer = false;
 
-        std::vector<SGFrameBufferAttachmentType> m_attachmentsForCombining;
+        std::set<SGFrameBufferAttachmentType> m_attachmentsForCombining;
 
-        Ref<IFrameBuffer> getPostProcessLayerFrameBuffer(const Ref<Layer>& layer) noexcept;
+        PostProcessLayer& getPostProcessLayer(const Ref<Layer>& layer) noexcept;
 
         PostProcessLayer& addPostProcessLayer(const std::string& ppLayerName,
                                               const Ref<Layer>& layer,
@@ -113,8 +112,7 @@ namespace SGCore
             return m_postProcessLayers;
         }
 
-        void bindPostProcessFrameBuffer(const Ref<Layer>& layer,
-                                        const SGFrameBufferAttachmentType& attachmentToDrawType) noexcept;
+        void bindPostProcessFrameBuffer(const Ref<Layer>& layer) noexcept;
 
         void unbindPostProcessFrameBuffer() const noexcept;
 

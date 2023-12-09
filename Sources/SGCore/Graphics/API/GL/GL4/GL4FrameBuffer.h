@@ -38,8 +38,9 @@ namespace SGCore
          * @param attachmentsTypes
          * @return
          */
-        std::shared_ptr<IFrameBuffer> bindAttachmentsToRead(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes) override;
-        std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes) override;
+        std::shared_ptr<IFrameBuffer> bindAttachmentsToRead(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) override;
+        std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) override;
+        std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::set<SGFrameBufferAttachmentType>& attachmentsTypes) override;
 
         std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() override;
         std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() override;

@@ -14,6 +14,8 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
+    // out vec4 fragColor;
+
     uniform int layersAttachmentNCount;
     // 32 is max count of layers
     uniform sampler2D layersAttachmentN[32];
@@ -36,5 +38,7 @@
         }
 
         gl_FragColor = combinedColor;
+        // fragColor = combinedColor;
+        // gl_FragData[1] = combinedColor;
     }
 #endif

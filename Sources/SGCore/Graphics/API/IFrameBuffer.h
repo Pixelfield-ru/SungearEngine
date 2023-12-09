@@ -11,6 +11,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <initializer_list>
+#include <set>
 
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"
@@ -43,8 +44,9 @@ namespace SGCore
         virtual std::shared_ptr<IFrameBuffer> bindAttachmentToRead(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
         virtual std::shared_ptr<IFrameBuffer> bindAttachmentToDraw(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
 
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToRead(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::initializer_list<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToRead(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
+        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::set<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
 
         virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() { return shared_from_this(); }
         virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() { return shared_from_this(); }

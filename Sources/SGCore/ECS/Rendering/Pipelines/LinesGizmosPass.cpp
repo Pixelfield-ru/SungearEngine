@@ -26,7 +26,7 @@ void SGCore::LinesGizmosPass::render(const Ref<Scene>& scene, const SGCore::Ref<
             {
                 const auto& layer = cachedPrimitivesLayer.first;
 
-                cameraComponent->bindPostProcessFrameBuffer(layer,SGG_COLOR_ATTACHMENT0);
+                cameraComponent->bindPostProcessFrameBuffer(layer);
 
                 for(auto& cachedGizmo : cachedPrimitivesLayer.second)
                 {

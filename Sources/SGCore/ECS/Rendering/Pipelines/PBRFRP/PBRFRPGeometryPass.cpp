@@ -17,7 +17,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
     m_shader->bind();
     m_shader->useShaderMarkup(m_shaderMarkup);
 
-    if(dirLightsPass || !dirLightsPass->m_active)
+    if(dirLightsPass && dirLightsPass->m_active)
     {
         const auto& shadowsMapsTexturesBlock =
                 m_shaderMarkup.m_texturesBlocks[SGTextureType::SGTP_SHADOW_MAP2D];
@@ -55,7 +55,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
             {
                 const auto& layer = meshesLayer.first;
 
-                cameraComponent->bindPostProcessFrameBuffer(layer,SGG_COLOR_ATTACHMENT0);
+                cameraComponent->bindPostProcessFrameBuffer(layer);
 
                 for(auto& meshesEntity: meshesLayer.second)
                 {
@@ -79,6 +79,8 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
                         );
                     }
                 }
+
+                // cameraComponent->unbindPostProcessFrameBuffer();
             }
 
     SG_END_ITERATE_CACHED_ENTITIES
