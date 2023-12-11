@@ -90,7 +90,7 @@ void init()
             //"../SGResources/models/test/wooden_table/scene.gltf"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
-            "../SGResources/models/test/vss/scene.gltf"
+            // "../SGResources/models/test/vss/scene.gltf"
             //"../SGResources/models/test/vsk94/scene.gltf"
             //"../SGResources/models/test/helicopter/scene.gltf"
             //"../SGResources/models/test/metal_door/scene.gltf"
@@ -104,7 +104,7 @@ void init()
             //"../SGResources/models/test/stierlitz/scene.gltf"
             //"../SGResources/models/test/panelka/scene.gltf"
             //"../SGResources/models/test/t55a/scene.gltf"
-            //"../SGResources/models/test/rpg7/scene.gltf"
+            "../SGResources/models/test/rpg7/scene.gltf"
             //"../SGResources/models/test/zucchini/scene.gltf"
             //"../SGResources/models/test/lenin/scene.gltf"
     );
@@ -260,9 +260,14 @@ void init()
             transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
 
             // vss
-            transformComponent->m_position = { 0, 2.91, -20 };
+            /*transformComponent->m_position = { 0, 2.91, -20 };
             transformComponent->m_rotation = { 0, 0, 0 };
-            transformComponent->m_scale = { 0.7, 0.7, 0.7 };
+            transformComponent->m_scale = { 0.7, 0.7, 0.7 };*/
+
+            // yamato
+            transformComponent->m_position = { 1, 3.7, -20 };
+            transformComponent->m_rotation = { 90, 0, 90 };
+            transformComponent->m_scale = { 0.1, 0.1, 0.1 };
 
             // sponza old model
             /*transformComponent->m_position = { 3, 2.91, -20 };
@@ -483,16 +488,16 @@ void init()
     testShadowsCaster = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster);
     auto shadowsCasterTransform = SGCore::MakeRef<SGCore::Transform>();
-    shadowsCasterTransform->m_position.y = 25;
-    shadowsCasterTransform->m_position.z = 5.0;
+    shadowsCasterTransform->m_position.y = 10;
+    shadowsCasterTransform->m_position.z = 15.0;
     shadowsCasterTransform->m_position.x = -5.0;
-    shadowsCasterTransform->m_rotation.x = 50;
+    //shadowsCasterTransform->m_rotation.x = 50;
     testShadowsCaster->addComponent(shadowsCasterTransform);
     auto directionalLight = SGCore::MakeRef<SGCore::DirectionalLight>();
     // directionalLight->m_color.r = 10.0f / 255.0f;
     // directionalLight->m_color.g = 129.0f / 255.0f;
     // directionalLight->m_color.b = 100.0f / 255.0f;
-    directionalLight->m_intensity = 2000.0;
+    directionalLight->m_intensity = 1000.0;
     testShadowsCaster->addComponent(directionalLight);
     testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
@@ -510,7 +515,7 @@ void init()
     directionalLight1->m_color.r = 139.0f / 255.0f;
     directionalLight1->m_color.g = 184.0f / 255.0f;
     directionalLight1->m_color.b = 241.0f / 255.0f;
-    directionalLight1->m_intensity = 700.0;
+    directionalLight1->m_intensity = 1000.0;
     testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 

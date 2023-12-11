@@ -67,7 +67,7 @@
 
         int attachmentIdx = 0;
 
-        float multiplier = 1.5;
+        float multiplier = 1.75;
 
         float texCoeff = 3.0;
 
