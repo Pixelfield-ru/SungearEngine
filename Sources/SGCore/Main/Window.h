@@ -88,6 +88,8 @@ namespace SGCore
         bool m_hideAndCentralizeCursor = false;
         // --------------------------------------------------------
 
+        bool m_fullsreen = false;
+
     public:
         WindowConfig() noexcept = default;
     };
@@ -110,6 +112,7 @@ namespace SGCore
         }
 
         void create();
+        void recreate();
 
         void swapBuffers();
         void pollEvents();
@@ -138,6 +141,9 @@ namespace SGCore
         void setShouldClose(const bool&) noexcept;
 
         void setCursorPosition(const double&, const double&) noexcept;
+
+        void setFullscreen(bool fullscreen) noexcept;
+        bool isFullscreen() const noexcept;
 
         void setConfig(WindowConfig&& config) noexcept;
 

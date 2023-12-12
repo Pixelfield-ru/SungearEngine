@@ -49,10 +49,11 @@ float ambient = 0.1;
 #endif
 
 #ifdef FRAGMENT_SHADER
-    layout(location = 0) out vec4 fragColor;
-    layout(location = 1) out vec4 gFragPos;
-    layout(location = 2) out vec4 gNormal;
-    layout(location = 3) out vec4 gAlbedoSpec;
+    layout(location = 0) out vec4 fragColor0;
+    layout(location = 1) out vec4 fragColor1;
+    layout(location = 2) out vec4 gFragPos;
+    layout(location = 3) out vec4 gNormal;
+    layout(location = 4) out vec4 gAlbedoSpec;
     // layout(location = 4) out vec3 unknownAttachment0;
     // layout(location = 5) out vec3 unknownAttachment1;
 
@@ -234,7 +235,8 @@ float ambient = 0.1;
         }
 
         gFragPos = vec4(vsIn.fragPos, 1.0);
-        gNormal = vec4(finalNormal, 1.0);
+        // gNormal = vec4(finalNormal, 1.0);
+        gNormal = vec4(normalMapColor.rg, 0.0, 1.0);
         gAlbedoSpec = vec4(diffuseColor.rgb, 1.0);
 
         //unknownAttachment0 = vec3(1.0);
@@ -359,8 +361,10 @@ float ambient = 0.1;
         finalCol = finalCol / (finalCol + vec3(1.0));
         finalCol = pow(finalCol, vec3(1.0 / exposure));
 
-        fragColor.a = diffuseColor.a;
-        fragColor.rgb = finalCol;
+        fragColor0.a = diffuseColor.a;
+        fragColor0.rgb = finalCol;
+
+        fragColor1 = vec4(finalCol, diffuseColor.a);
         // fragColor = vec4(1.0);
 
         // DEBUG ==================================

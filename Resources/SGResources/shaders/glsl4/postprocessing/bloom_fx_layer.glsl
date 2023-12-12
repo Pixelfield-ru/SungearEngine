@@ -1,6 +1,3 @@
-#define SG_NOT_INCLUDE_LIGHTS
-
-#include "../uniform_bufs_decl.glsl"
 #include "../color_correction/aces.glsl"
 #include "../defines.glsl"
 #include "../random.glsl"
@@ -44,7 +41,6 @@
     uniform int frameBuffer1_colorAttachmentsCount;
     // layer 1 (valid)
     uniform sampler2D frameBuffer1_colorAttachments[8];
-    uniform sampler2D frameBuffer2_colorAttachments[8];
 
     in vec2 vs_UVAttribute;
 
@@ -65,7 +61,7 @@
 
         float brightnessBarrier = 0.8;
 
-        int attachmentIdx = 0;
+        int attachmentIdx = 1;
 
         float multiplier = 1.75;
 
@@ -73,27 +69,27 @@
 
         if(currentSubPass_Idx == 0) // DIRECTIONAL PASS
         {
-            vec2 texOffset = (1.0 / textureSize(frameBuffer2_colorAttachments[attachmentIdx], 0)) * texCoeff;
+            vec2 texOffset = (1.0 / textureSize(frameBuffer1_colorAttachments[attachmentIdx], 0)) * texCoeff;
 
             if(!isFirstBlurPass)
             {
-                attachmentIdx = 7;
+                attachmentIdx = 8;
             }
 
             if(isHorizontalPass)
             {
                 for (int i = 1; i < 5; ++i)
                 {
-                    currentFBColor.rgb += texture(frameBuffer2_colorAttachments[attachmentIdx], finalUV.xy + vec2(texOffset.x * i, 0.0)).rgb * weight[i];
-                    currentFBColor.rgb += texture(frameBuffer2_colorAttachments[attachmentIdx], finalUV.xy - vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+                    currentFBColor.rgb += texture(frameBuffer1_colorAttachments[attachmentIdx], finalUV.xy + vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+                    currentFBColor.rgb += texture(frameBuffer1_colorAttachments[attachmentIdx], finalUV.xy - vec2(texOffset.x * i, 0.0)).rgb * weight[i];
                 }
             }
             else
             {
                 for (int i = 1; i < 5; ++i)
                 {
-                    currentFBColor.rgb += texture(frameBuffer2_colorAttachments[attachmentIdx], finalUV.xy + vec2(0.0, texOffset.y * i)).rgb * weight[i];
-                    currentFBColor.rgb += texture(frameBuffer2_colorAttachments[attachmentIdx], finalUV.xy - vec2(0.0, texOffset.y * i)).rgb * weight[i];
+                    currentFBColor.rgb += texture(frameBuffer1_colorAttachments[attachmentIdx], finalUV.xy + vec2(0.0, texOffset.y * i)).rgb * weight[i];
+                    currentFBColor.rgb += texture(frameBuffer1_colorAttachments[attachmentIdx], finalUV.xy - vec2(0.0, texOffset.y * i)).rgb * weight[i];
                 }
             }
 
@@ -101,30 +97,30 @@
         }
         else if(currentSubPass_Idx == 1) // TEMPORAL PASS
         {
-            attachmentIdx = 6;
+            attachmentIdx = 7;
 
-            vec2 texOffset = (1.0 / textureSize(frameBuffer2_colorAttachments[attachmentIdx], 0)) * texCoeff;
+            vec2 texOffset = (1.0 / textureSize(frameBuffer1_colorAttachments[attachmentIdx], 0)) * texCoeff;
 
             if(isHorizontalPass)
             {
                 for (int i = 1; i < 5; ++i)
                 {
-                    currentFBColor.rgb += texture(frameBuffer2_colorAttachments[attachmentIdx], finalUV.xy + vec2(texOffset.x * i, 0.0)).rgb * weight[i];
-                    currentFBColor.rgb += texture(frameBuffer2_colorAttachments[attachmentIdx], finalUV.xy - vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+                    currentFBColor.rgb += texture(frameBuffer1_colorAttachments[attachmentIdx], finalUV.xy + vec2(texOffset.x * i, 0.0)).rgb * weight[i];
+                    currentFBColor.rgb += texture(frameBuffer1_colorAttachments[attachmentIdx], finalUV.xy - vec2(texOffset.x * i, 0.0)).rgb * weight[i];
                 }
             }
             else
             {
                 for (int i = 1; i < 5; ++i)
                 {
-                    currentFBColor.rgb += texture(frameBuffer2_colorAttachments[attachmentIdx], finalUV.xy + vec2(0.0, texOffset.y * i)).rgb * weight[i];
-                    currentFBColor.rgb += texture(frameBuffer2_colorAttachments[attachmentIdx], finalUV.xy - vec2(0.0, texOffset.y * i)).rgb * weight[i];
+                    currentFBColor.rgb += texture(frameBuffer1_colorAttachments[attachmentIdx], finalUV.xy + vec2(0.0, texOffset.y * i)).rgb * weight[i];
+                    currentFBColor.rgb += texture(frameBuffer1_colorAttachments[attachmentIdx], finalUV.xy - vec2(0.0, texOffset.y * i)).rgb * weight[i];
                 }
             }
 
             if(isFinalPass)
             {
-                vec3 baseCol = texture(frameBuffer2_colorAttachments[0], finalUV.xy).rgb;
+                vec3 baseCol = texture(frameBuffer1_colorAttachments[0], finalUV.xy).rgb;
                 vec3 finalBloomCol = currentFBColor.rgb * multiplier;
 
                 float brightness = dot(finalBloomCol, vec3(0.2126, 0.7152, 0.0722));

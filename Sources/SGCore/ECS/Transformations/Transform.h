@@ -16,21 +16,15 @@
 namespace SGCore
 {
     // todo: make quaternion transformations
-    class Transform : public IComponent
+    struct Transform : public IComponent
     {
         friend class TransformationsUpdater;
         friend class DirectionalLightsCollector;
 
-    private:
-        void init() noexcept final { }
+        bool m_blockTranslation = false;
+        bool m_blockRotation = false;
+        bool m_blockScale = false;
 
-        glm::vec3 m_lastPosition { 0.0 };
-        glm::vec3 m_lastRotation { 0.0 };
-        glm::vec3 m_lastScale = glm::vec3(0);
-
-        glm::vec3 m_lastCenter { 0.0 };
-
-    public:
         glm::vec3 m_position { 0.0 };
         glm::vec3 m_rotation { 0.0 };
         glm::vec3 m_scale { 1.0 };
@@ -48,6 +42,15 @@ namespace SGCore
         bool m_scaleChanged = false;
 
         glm::mat4 m_modelMatrix = glm::mat4(1);
+
+    private:
+        void init() noexcept final { }
+
+        glm::vec3 m_lastPosition { 0.0 };
+        glm::vec3 m_lastRotation { 0.0 };
+        glm::vec3 m_lastScale = glm::vec3(0);
+
+        glm::vec3 m_lastCenter { 0.0 };
     };
 }
 

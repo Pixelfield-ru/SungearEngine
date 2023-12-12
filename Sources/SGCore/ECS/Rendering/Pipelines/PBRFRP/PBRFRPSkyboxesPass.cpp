@@ -54,7 +54,7 @@ void SGCore::PBRFRPSkyboxesPass::render(const Ref<Scene>& scene, const Ref<IRend
                     }
                 }
 
-                cameraComponent->unbindPostProcessFrameBuffer();
+                // cameraComponent->unbindPostProcessFrameBuffer();
             }
 
     SG_END_ITERATE_CACHED_ENTITIES

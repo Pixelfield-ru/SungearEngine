@@ -27,7 +27,7 @@ void SGCore::Window::create()
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     }
 
-    m_handler = glfwCreateWindow(this->m_config.m_sizeX, this->m_config.m_sizeY, this->m_config.m_title.c_str(), nullptr, nullptr);
+    m_handler = glfwCreateWindow(this->m_config.m_sizeX, this->m_config.m_sizeY, this->m_config.m_title.c_str(), m_config.m_fullsreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
 
     if(!m_handler)
     {
@@ -70,6 +70,14 @@ void SGCore::Window::create()
         setPosition((primaryVideoMode->width - wndSizeX) / 2, (primaryVideoMode->height - wndSizeY) / 2);
     }
     // -------------------------
+}
+
+void SGCore::Window::recreate()
+{
+    glfwMakeContextCurrent(nullptr);
+    glfwDestroyWindow(m_handler);
+
+    create();
 }
 
 void SGCore::Window::makeCurrent() noexcept
@@ -217,4 +225,34 @@ void SGCore::Window::swapBuffers()
 void SGCore::Window::pollEvents()
 {
     glfwPollEvents();
+}
+
+// todo: MAKE
+void SGCore::Window::setFullscreen(bool fullscreen) noexcept
+{
+    m_config.m_fullsreen = fullscreen;
+
+    int sizeX, sizeY;
+    getPrimaryMonitorSize(sizeX, sizeY);
+
+    if(fullscreen)
+    {
+        // Set window size for "fullscreen windowed" mode to the desktop resolution.
+        glfwSetWindowSize(m_handler, sizeX, sizeY);
+        // Move window to the upper left corner.
+        glfwSetWindowPos(m_handler, 0, 0);
+    }
+    else
+    {
+        // Use start-up values for "windowed" mode.
+        glfwSetWindowSize(m_handler, m_config.m_sizeX, m_config.m_sizeY);
+        // todo:
+        // glfwSetWindowPos(originalPosX, originalPosY);
+    }
+    // recreate();
+}
+
+bool SGCore::Window::isFullscreen() const noexcept
+{
+    return m_config.m_fullsreen;
 }

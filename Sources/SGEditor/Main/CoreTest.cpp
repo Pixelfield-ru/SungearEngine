@@ -90,7 +90,7 @@ void init()
             //"../SGResources/models/test/wooden_table/scene.gltf"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
-            // "../SGResources/models/test/vss/scene.gltf"
+            //"../SGResources/models/test/vss/scene.gltf"
             //"../SGResources/models/test/vsk94/scene.gltf"
             //"../SGResources/models/test/helicopter/scene.gltf"
             //"../SGResources/models/test/metal_door/scene.gltf"
@@ -239,7 +239,7 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+    model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
                                    [](const SGCore::Ref<SGCore::Entity>& entity)
     {
         auto transformComponent = entity->getComponent<SGCore::Transform>();
@@ -264,7 +264,7 @@ void init()
             transformComponent->m_rotation = { 0, 0, 0 };
             transformComponent->m_scale = { 0.7, 0.7, 0.7 };*/
 
-            // yamato
+            // RPG
             transformComponent->m_position = { 1, 3.7, -20 };
             transformComponent->m_rotation = { 90, 0, 90 };
             transformComponent->m_scale = { 0.1, 0.1, 0.1 };
@@ -406,8 +406,23 @@ void init()
     SGCore::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
     // =================================================================================
-    // ================ POST PROCESS SETUP
+    // ================ POST PROCESS SETUP =============================================
     // =================================================================================
+    // auto& defaultLayer = camera->getPostProcessLayer(testScene->getLayers().find(SG_LAYER_OPAQUE_NAME)->second);
+/*    auto& defaultLayer = camera->getDefaultPostProcessLayer();
+
+    defaultLayer.m_attachmentsToRenderIn.push_back(SGG_COLOR_ATTACHMENT6);
+
+    defaultLayer.m_frameBuffer
+            ->bind()
+            ->setSize(primaryMonitorWidth, primaryMonitorHeight)
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            ->unbind();*/
 
     auto& ppLayer = camera->addPostProcessLayer("blurPPLayer",
                                                 testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
@@ -418,14 +433,40 @@ void init()
     ppLayer.m_frameBuffer
             ->bind()
             ->setSize(primaryMonitorWidth, primaryMonitorHeight)
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            ->unbind();
+
+    SGCore::PostProcessFXSubPass depthSubPass;
+    depthSubPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7;
+    depthSubPass.m_index = 0;
+
+    ppLayer.m_subPasses.push_back(depthSubPass);
+
+    ppLayer.m_attachmentsForCombining[SGG_COLOR_ATTACHMENT0] = SGG_COLOR_ATTACHMENT7;
+
+    camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
+                                      SGCore::Ref<SGCore::IShader>(
+                                              SGCore::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/distortion_fx_layer.glsl")
+                                      ));
+
+
+    // =========== BLOOM SETUP =======================================
+    /*ppLayer.m_frameBuffer
+            ->bind()
+            ->setSize(primaryMonitorWidth, primaryMonitorHeight)
             ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6,
-                            SGGColorFormat::SGG_RGBA,
+                            SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
             ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7,
-                            SGGColorFormat::SGG_RGBA,
+                            SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
@@ -475,8 +516,8 @@ void init()
 
     camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
                                       SGCore::Ref<SGCore::IShader>(
-                                              SGCore::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/test_pp_layer.glsl")
-            ));
+                                              SGCore::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/bloom_fx_layer.glsl")
+            ));*/
 
     // =================================================================================
     // =================================================================================
@@ -519,7 +560,7 @@ void init()
     testShadowsCaster1->addComponent(directionalLight1);
     testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
-    /*auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
+    auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster2);
     auto shadowsCasterTransform2 = SGCore::MakeRef<SGCore::Transform>();
     shadowsCasterTransform2->m_position.x = 10;
@@ -565,7 +606,7 @@ void init()
     directionalLight4->m_color.b = 241.0f / 255.0f;
     directionalLight4->m_intensity = 200.0;
     testShadowsCaster4->addComponent(directionalLight4);
-    testShadowsCaster4->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());*/
+    testShadowsCaster4->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
     auto xLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
     xLineGizmo->m_meshData->setVertexPosition(1, 10, 0, 0);
@@ -614,6 +655,12 @@ auto testCollapsingHeader = std::make_shared<SGCore::ImGuiWrap::CollapsingHeader
 
 void update()
 {
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F11))
+    {
+        std::cout << "pressed f11" << std::endl;
+        SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
+    }
+
     SGCore::ImGuiWrap::ImGuiLayer::beginFrame();
 
     ImGui::Begin("ECS Systems Stats");

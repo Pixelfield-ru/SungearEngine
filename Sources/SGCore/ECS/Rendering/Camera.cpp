@@ -131,7 +131,7 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
 
     auto& newPPLayer = m_postProcessLayers[layer];
     // without - 1 because 0 is always default FB
-    newPPLayer.m_index = m_postProcessLayers.size();
+    newPPLayer.m_index = m_postProcessLayers.size() - 1;
 
     newPPLayer.m_name = ppLayerName;
     newPPLayer.m_frameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
@@ -142,19 +142,19 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
                             SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                             0,
                             0)
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH PASS
-                            SGGColorFormat::SGG_RGBA,
-                            SGGColorInternalFormat::SGG_RGBA8,
-                            0,
-                            0
-            )
-            // GBUFFER ATTACHMENTS
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // ATTACHMENT WITHOUT DEPTH PASS
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // ATTACHMENT WITH DEPTH PASS
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
+            // GBUFFER ATTACHMENTS
             ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
@@ -179,6 +179,12 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
                             0,
                             0
             )
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6,
+                            SGGColorFormat::SGG_RGB,
+                            SGGColorInternalFormat::SGG_RGB8,
+                            0,
+                            0
+            )
             ->unbind();
 
     newPPLayer.m_FXShader = Ref<IShader>(
@@ -195,7 +201,7 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
 
     // ----------------------------------
 
-    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 8, 0);
+    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 9, 0);
     m_postProcessShadersMarkup.calculateBlocksOffsets();
 
     // ----------------------------------
@@ -205,7 +211,6 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
 
     m_finalPostProcessFXShader->bind();
     m_finalPostProcessFXShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
-
 
     for(const auto& ppLayer : m_postProcessLayers)
     {

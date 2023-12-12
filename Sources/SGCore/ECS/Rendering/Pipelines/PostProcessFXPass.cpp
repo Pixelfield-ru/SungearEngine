@@ -88,11 +88,13 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera
         layerShader->bind();
         layerShader->useShaderMarkup(camera->m_postProcessShadersMarkup);
 
+        layerShader->useUniformBuffer(CoreMain::getRenderer().m_programDataBuffer);
+
         layerShader->useInteger("currentFBIndex", ppLayer.m_index);
 
         ppLayer.m_frameBuffer->bind();
 
-        for (const auto& ppFXSubPass: ppLayer.m_subPasses)
+        for (const auto& ppFXSubPass : ppLayer.m_subPasses)
         {
             layerShader->useInteger("currentSubPass_Idx", ppFXSubPass.m_index);
 

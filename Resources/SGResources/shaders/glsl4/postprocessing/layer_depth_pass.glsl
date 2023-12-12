@@ -38,7 +38,6 @@
 
         // depth test pass -------------------------------------------
 
-        // first - sampling depth from current frame buffer
         float currentFBDepth = texture(allFrameBuffersDepthAttachments[currentFBIndex], finalUV).r;
 
         // then sampling depth from other frame buffers and if we have closer depth then discard fragment
@@ -56,7 +55,5 @@
                 return;
             }
         }
-
-        // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
 #endif

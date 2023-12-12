@@ -27,7 +27,7 @@ void SGCore::CameraMovement3DSystem::fixedUpdate
             if(!transformComponent || !cameraComponent) return;
 
             // rotate camera by mouse
-            if(!cameraComponent->m_blockRotation)
+            if(!transformComponent->m_blockRotation)
             {
                 transformComponent->m_rotation.x +=
                         (float) InputManager::getMainInputListener()->getCursorPositionDeltaY() *
@@ -103,7 +103,7 @@ void SGCore::CameraMovement3DSystem::fixedUpdate
                 CoreMain::getWindow().setHideAndCentralizeCursor(
                         !CoreMain::getWindow().isHideAndCentralizeCursor());
 
-                cameraComponent->m_blockRotation = !CoreMain::getWindow().isHideAndCentralizeCursor();
+                transformComponent->m_blockRotation = !CoreMain::getWindow().isHideAndCentralizeCursor();
             }
     SG_END_ITERATE_CACHED_ENTITIES
 }

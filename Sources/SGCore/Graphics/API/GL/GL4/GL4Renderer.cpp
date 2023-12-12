@@ -81,8 +81,10 @@ void SGCore::GL4Renderer::init() noexcept
     m_programDataBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
     m_programDataBuffer->m_blockName = "ProgramData";
     m_programDataBuffer->putUniforms({
-                                             IShaderUniform("windowSize", SGGDataType::SGG_MAT4)
+                                             IShaderUniform("windowSize", SGGDataType::SGG_FLOAT2),
+                                             IShaderUniform("currentTime", SGGDataType::SGG_FLOAT)
                                        });
+    m_programDataBuffer->putData<float>({ });
     m_programDataBuffer->putData<float>({ });
     m_programDataBuffer->setLayoutLocation(3);
     m_programDataBuffer->prepare();
@@ -181,6 +183,7 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<IRenderingComponent>& 
     CoreMain::getWindow().getSize(windowWidth, windowHeight);
     // todo: перенести обновление в класс окна
     m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
+    m_programDataBuffer->subData("currentTime", { (float) glfwGetTime() });
 }
 
 void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,

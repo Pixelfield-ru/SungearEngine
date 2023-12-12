@@ -28,12 +28,12 @@ namespace SGCore
         std::uint16_t m_index = 0;
 
         // attachments that will pass the depth test
-        std::vector<SGFrameBufferAttachmentType> m_attachmentsToDepthTest { SGG_COLOR_ATTACHMENT0,
-                                                                            SGG_COLOR_ATTACHMENT1,
+        std::vector<SGFrameBufferAttachmentType> m_attachmentsToDepthTest { SGG_COLOR_ATTACHMENT1,
                                                                             SGG_COLOR_ATTACHMENT2,
                                                                             SGG_COLOR_ATTACHMENT3,
                                                                             SGG_COLOR_ATTACHMENT4,
-                                                                            SGG_COLOR_ATTACHMENT5 };
+                                                                            SGG_COLOR_ATTACHMENT5,
+                                                                            SGG_COLOR_ATTACHMENT6 };
 
         // attachments that the scene will be rendered into
         std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0,
@@ -41,17 +41,18 @@ namespace SGCore
                                                                            SGG_COLOR_ATTACHMENT2,
                                                                            SGG_COLOR_ATTACHMENT3,
                                                                            SGG_COLOR_ATTACHMENT4,
-                                                                           SGG_COLOR_ATTACHMENT5 };
+                                                                           SGG_COLOR_ATTACHMENT5,
+                                                                           SGG_COLOR_ATTACHMENT6 };
 
         // first - to which attachment of the output buffer will the data from the attachment "second" be copied
         // second - the attachment to be copied
         std::unordered_map<SGFrameBufferAttachmentType, SGFrameBufferAttachmentType> m_attachmentsForCombining {
-                { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT0 },
-                { SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT1 },
-                { SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT2 },
-                { SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT3 },
-                { SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT4 },
-                { SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT5 }
+                { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1 },
+                { SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT2 },
+                { SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT3 },
+                { SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT4 },
+                { SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5 },
+                { SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT6 }
         };
 
         std::string getNameInShader() const noexcept
@@ -71,10 +72,6 @@ namespace SGCore
 
     public:
         Camera();
-
-        // todo: move in transform
-        bool m_blockRotation = false;
-        bool m_blockTranslation = false;
 
         ShaderMarkup m_postProcessShadersMarkup;
 

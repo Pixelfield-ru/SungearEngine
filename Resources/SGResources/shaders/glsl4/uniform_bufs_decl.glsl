@@ -26,6 +26,7 @@ layout(std140) uniform CameraData
 layout(std140) uniform ProgramData
 {
     vec2 windowSize;
+    float currentTime;
 };
 
 #endif // UNIFORM_BUFS_DECL_GLSL
