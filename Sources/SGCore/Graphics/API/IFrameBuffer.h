@@ -81,14 +81,24 @@ namespace SGCore
         int getWidth() const noexcept;
         int getHeight() const noexcept;
 
-        virtual void getAttachmentsCount(std::uint16_t& depthAttachmentsCount,
-                                         std::uint16_t& depthStencilAttachmentsCount,
-                                         std::uint16_t& colorAttachmentsCount,
-                                         std::uint16_t& renderAttachmentsCount) const noexcept = 0;
+        void getAttachmentsCount(std::uint16_t& depthAttachmentsCount,
+                                 std::uint16_t& depthStencilAttachmentsCount,
+                                 std::uint16_t& colorAttachmentsCount,
+                                 std::uint16_t& renderAttachmentsCount) const noexcept;
+
+        std::uint16_t getDepthAttachmentsCount() const noexcept;
+        std::uint16_t getDepthStencilAttachmentsCount() const noexcept;
+        std::uint16_t getColorAttachmentsCount() const noexcept;
+        std::uint16_t getRenderAttachmentsCount() const noexcept;
 
     protected:
         int m_width = 0;
         int m_height = 0;
+
+        std::uint16_t m_depthAttachmentsCount = 0;
+        std::uint16_t m_depthStencilAttachmentsCount = 0;
+        std::uint16_t m_colorAttachmentsCount = 0;
+        std::uint16_t m_renderAttachmentsCount = 0;
     };
 }
 

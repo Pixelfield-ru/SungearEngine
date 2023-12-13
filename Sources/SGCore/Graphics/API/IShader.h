@@ -94,6 +94,9 @@ namespace SGCore
 
         virtual void useFloat(const std::string& uniformName, const float& f) { };
         virtual void useInteger(const std::string& uniformName, const size_t& i) { };
+        virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
+
+        Scope<IUniformBuffer> m_uniformBuffer;
 
         #pragma endregion
 
@@ -104,6 +107,8 @@ namespace SGCore
         Weak<FileAsset> m_fileAsset;
 
     protected:
+        std::unordered_map<std::string, IShaderUniform> m_uniforms;
+
         std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
 
     };

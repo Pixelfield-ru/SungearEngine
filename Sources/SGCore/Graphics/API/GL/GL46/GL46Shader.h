@@ -42,16 +42,13 @@ namespace SGCore
 
         void useFloat(const std::string& uniformName, const float& f) override;
         void useInteger(const std::string& uniformName, const size_t& i) override;
+        void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) override;
 
     private:
         GLuint m_programHandler = 0;
 
         // vertex, fragment, geometry, compute, tesselation control and tesselation evaluation shaders
         std::vector<GLuint> m_shaderPartsHandlers;
-
-        // first - name
-        // second - pair of location and value vec
-        std::unordered_map<std::string, std::pair<GLint, glm::mat4>> m_cachedMat4;
 
         GLuint createShaderPart(const GLenum& type, const std::string& finalShaderCode) noexcept;
     };

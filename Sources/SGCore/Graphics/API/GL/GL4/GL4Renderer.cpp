@@ -4,8 +4,6 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include <thread>
-
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/Camera.h"
@@ -15,6 +13,8 @@
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/ECS/Rendering/Gizmos/IGizmo.h"
+
+#include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
 
 void SGCore::GL4Renderer::init() noexcept
 {
@@ -33,11 +33,9 @@ void SGCore::GL4Renderer::init() noexcept
     printInfo();
     SGCF_INFO("-----------------------------------", SG_LOG_CURRENT_SESSION_FILE);
 
-    GLint maxTextureImageUnits;
-    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureImageUnits);
-    SGCF_INFO("Max texture image units: " + std::to_string(maxTextureImageUnits), SG_LOG_GAPI_FILE);
-
     // -------------------------------------
+
+    DeviceGLInfo::prepareInfo();
 
     if(!confirmSupport())
     {
@@ -69,12 +67,6 @@ void SGCore::GL4Renderer::init() noexcept
                                               IShaderUniform("camera.rotation", SGGDataType::SGG_FLOAT3),
                                               IShaderUniform("camera.scale", SGGDataType::SGG_FLOAT3)
                                         });
-    m_viewMatricesBuffer->putData<float>({ });
-    m_viewMatricesBuffer->putData<float>({ });
-    m_viewMatricesBuffer->putData<float>({ });
-    m_viewMatricesBuffer->putData<float>({ });
-    m_viewMatricesBuffer->putData<float>({ });
-    m_viewMatricesBuffer->putData<float>({ });
     m_viewMatricesBuffer->setLayoutLocation(1);
     m_viewMatricesBuffer->prepare();
 
@@ -84,19 +76,15 @@ void SGCore::GL4Renderer::init() noexcept
                                              IShaderUniform("windowSize", SGGDataType::SGG_FLOAT2),
                                              IShaderUniform("currentTime", SGGDataType::SGG_FLOAT)
                                        });
-    m_programDataBuffer->putData<float>({ });
-    m_programDataBuffer->putData<float>({ });
     m_programDataBuffer->setLayoutLocation(3);
     m_programDataBuffer->prepare();
 }
 
 bool SGCore::GL4Renderer::confirmSupport() noexcept
 {
-    std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-
     // because gl version always has this pattern
-    int glMajorVersion = glVersion[0] - '0';
-    int glMinorVersion = glVersion[2] - '0';
+    int glMajorVersion = DeviceGLInfo::getVersion()[0] - '0';
+    int glMinorVersion = DeviceGLInfo::getVersion()[2] - '0';
 
     if(glMajorVersion < 4)
     {
@@ -135,9 +123,7 @@ void SGCore::GL4Renderer::checkForErrors(const std::source_location& location) n
 
 void SGCore::GL4Renderer::printInfo() noexcept
 {
-    SGCF_INFO("GLRenderer info:", SG_LOG_CURRENT_SESSION_FILE);
-    SGCF_INFO("OpenGL version is " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))), SG_LOG_CURRENT_SESSION_FILE);
-    SGF_INFO("Supporting extensions: ", SG_GL_SUPPORTING_EXTENSIONS_FILE);
+    SGF_INFO("OpenGL supporting extensions: ", SG_GL_SUPPORTING_EXTENSIONS_FILE);
 
     GLint extensionsNum = 0;
     glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
@@ -159,6 +145,8 @@ void SGCore::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
 void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<IRenderingComponent>& renderingComponent,
                                                         const Ref<Transform>& transformComponent)
 {
+    // double t0 = glfwGetTime();
+
     m_viewMatricesBuffer->bind();
     m_programDataBuffer->bind();
 
@@ -173,7 +161,7 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<IRenderingComponent>& 
     }
     if(transformComponent)
     {
-        m_viewMatricesBuffer->subData("camera.position",
+        m_viewMatricesBuffer->subData<float>("camera.position",
                                       glm::value_ptr(transformComponent->m_position), 3);
     }
 
@@ -184,6 +172,11 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<IRenderingComponent>& 
     // todo: перенести обновление в класс окна
     m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
     m_programDataBuffer->subData("currentTime", { (float) glfwGetTime() });
+
+    // double t1 = glfwGetTime();
+
+    // 0.004 ms average
+    // std::cout << "time for subdata: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
 void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,

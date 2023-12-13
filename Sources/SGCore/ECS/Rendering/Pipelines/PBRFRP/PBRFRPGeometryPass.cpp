@@ -79,8 +79,6 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
                         );
                     }
                 }
-
-                // cameraComponent->unbindPostProcessFrameBuffer();
             }
 
     SG_END_ITERATE_CACHED_ENTITIES

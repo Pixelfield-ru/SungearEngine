@@ -22,16 +22,10 @@ namespace SGCore
         // buffer of scalar values
         char* m_buffer = nullptr;
 
-        // buffer layout needed for pointers to values in buffer
-        std::list<char*> m_bufferLayout;
-        std::list<char*>::iterator m_currentLayoutPosition = m_bufferLayout.begin();
-
         std::uint64_t m_bufferSize = 0;
-        // the number of uniforms that (scalar data) have been added to the buffer
-        std::uint16_t m_filledUniformsNum = 0;
 
         // uniforms are just description of data
-        std::list<IShaderUniform> m_uniforms;
+        std::vector<IShaderUniform> m_uniforms;
 
         // location in shader
         std::uint16_t m_layoutLocation = 0;
@@ -43,52 +37,65 @@ namespace SGCore
 
         IUniformBuffer() = default;
 
-        explicit IUniformBuffer(const std::list<IShaderUniform>& uniforms);
+        template<typename ShaderUniform = IShaderUniform>
+        explicit IUniformBuffer(std::vector<IShaderUniform>&& uniforms)
+        {
+            putUniforms(std::forward<ShaderUniform>(uniforms));
+        }
 
         virtual ~IUniformBuffer();
 
-        void putUniforms(const std::list<IShaderUniform>& uniforms) noexcept;
-
-         /**
-         * This method puts ONE uniform`s scalars to buffer\n
-         * You need to put data strictly in accordance with UNIFORMS TYPES YOU PASSED TO
-         * putUniforms (or constructor) (except SGG_STRUCT_START and SGG_STRUCT_END).\n
-         * You can put zero scalars (just { }). This will give extra speed.\n
-         * \n
-         * For example: you can put data with more than zero scalars for constant uniforms or for uniforms with a long update time interval.
-         * And for dynamically changing uniforms, you can put zero scalars.\n
-         * \n
-         * After put data you need to call prepare method and then you can use this buffer.\n
-         * \n
-         * This method recommended to use this method only after calling putUniforms.\n
-         * This method is faster than subData, but you cannot use putData instead of subData.\n
-         * \n
-         * Notice, that your data is copying to buffer.\n
-         *
-         * @tparam Scalar - Scalars type
-         * @param scalars - Uniform scalars
-         * @return This (shared_ptr)
-         */
-        template<typename Scalar>
-        requires(std::is_scalar_v<Scalar>)
-        std::shared_ptr<IUniformBuffer> putData(const std::initializer_list<Scalar>& scalars)
+        template<typename ShaderUniform = IShaderUniform>
+        void putUniforms(std::vector<ShaderUniform>&& uniforms) noexcept
         {
-            // local position between two uniforms to put current uniform`s scalar
-            char* localPositionPtr = *m_currentLayoutPosition;
-
-            for(auto& scalar : scalars)
+            for(auto& uniform : uniforms)
             {
-                // copying scalar to current position (localPtr)
-                std::memcpy(localPositionPtr, &scalar, sizeof(scalar));
-                localPositionPtr += sizeof(scalar);
+                m_uniforms.emplace_back(std::forward<ShaderUniform>(uniform));
             }
 
-            // increment iterator
-            m_currentLayoutPosition++;
-            // increment number of filled uniforms
-            m_filledUniformsNum++;
+            std::uint64_t lastBufferSize = m_bufferSize;
+            m_bufferSize = 0;
+            // first iteration - prepare
+            for(auto& uniform : m_uniforms)
+            {
+                uniform.m_dataSizeInUniformBuffer = getSGGDataTypeAlignedSizeInBytes(uniform.m_dataType);
+                uniform.m_offsetInUniformBuffer = m_bufferSize;
 
-            return shared_from_this();
+                m_bufferSize += uniform.m_dataSizeInUniformBuffer;
+            }
+
+            //TODO: (possible) to add more memory allocation so as not to allocate frequently. allow only when there is not enough space
+
+            // if buffer is not allocated (first put)
+            if(!m_buffer)
+            {
+                // allocating buffer
+                m_buffer = static_cast<char*>(malloc(m_bufferSize));
+
+                char* curPtr = m_buffer;
+                for(auto& uniform: m_uniforms)
+                {
+                    curPtr += uniform.m_dataSizeInUniformBuffer;
+                }
+            }
+            else // if buffer already allocated (second etc. allocations)
+            {
+                char* newBuffer = static_cast<char*>(malloc(m_bufferSize));
+                // copy last buffer to new buffer
+                memcpy(newBuffer, m_buffer, lastBufferSize);
+                // delete last buffer
+                delete m_buffer;
+                m_buffer = newBuffer;
+
+                // updating buffer layout
+                char* curPtr = m_buffer;
+                for(auto& uniform: m_uniforms)
+                {
+                    curPtr += uniform.m_dataSizeInUniformBuffer;
+                }
+            }
+
+            SGCF_INFO("uniforms buffer size: " + std::to_string(m_bufferSize), SG_LOG_CURRENT_SESSION_FILE);
         }
 
         /**
@@ -108,52 +115,29 @@ namespace SGCore
         requires(std::is_scalar_v<Scalar>)
         std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
         {
-            // bool to mark whether a uniform has been found
-            bool uniformFound = false;
-            // pointer to uniform in buffer
-            char* uniformPtr = m_buffer;
-
-            // aligned byte size of found uniform
-            int uniformAlignedByteSize = 0;
-
-            for(auto& uniform : m_uniforms)
-            {
-                // when the uniform was found
-                if(uniform.m_name == uniformName)
-                {
-                    uniformAlignedByteSize = getSGGDataTypeAlignedSizeInBytes(uniform.m_dataType);
-                    uniformFound = true;
-
-                    break;
-                }
-                else
-                {
-                    // adding offset until we reach the uniform
-                    uniformPtr += getSGGDataTypeAlignedSizeInBytes(uniform.m_dataType);
-                }
-            }
-
-            // if not found then error
-            if(!uniformFound)
+            const auto& foundUniformIter = std::find_if(m_uniforms.begin(), m_uniforms.end(), [&uniformName](const auto& shaderUniform) { return shaderUniform.m_name == uniformName; });
+            /*if(foundUniformIter == m_uniforms.end())
             {
                 SGCF_ERROR("Unable to subData for uniform \"" + uniformName + "\" in the uniform buffer. Uniform with that name was not found.", SG_LOG_CURRENT_SESSION_FILE);
-
-                return shared_from_this();
-            }
-
-            // uniform-local pointer to put scalars
-            char* uniformScalarPtr = uniformPtr;
-
-            for(int i = 0; i < scalarsNum; i++)
+            }*/
+            if(foundUniformIter != m_uniforms.end())
             {
-                // copying scalar to current position (uniformScalarPtr)
-                std::memcpy(uniformScalarPtr, &scalars[i], sizeof(scalars[i]));
-                // offset
-                uniformScalarPtr += sizeof(scalars[i]);
-            }
+                const auto& uniform = *foundUniformIter;
 
-            // updating data on graphics api side
-            subDataOnGAPISide(uniformPtr - m_buffer, uniformAlignedByteSize);
+                // uniform-local pointer to put scalars
+                char* uniformScalarPtr = m_buffer + uniform.m_offsetInUniformBuffer;
+
+                for(int i = 0; i < scalarsNum; i++)
+                {
+                    // copying scalar to current position (uniformScalarPtr)
+                    std::memcpy(uniformScalarPtr, &scalars[i], sizeof(scalars[i]));
+                    // offset
+                    uniformScalarPtr += sizeof(scalars[i]);
+                }
+
+                // updating data on graphics api side
+                subDataOnGAPISide((m_buffer + uniform.m_offsetInUniformBuffer) - m_buffer, uniform.m_dataSizeInUniformBuffer);
+            }
 
             return shared_from_this();
         }

@@ -9,6 +9,7 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
 #include "SGCore/Utils/ShadersPaths.h"
+#include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
 
 void SGCore::CoreMain::start()
 {
@@ -25,11 +26,9 @@ void SGCore::CoreMain::start()
 
     m_renderer->init();
 
-    // core components init -------------
     SGSingleton::getSharedPtrInstance<ShadersPaths>()->createDefaultPaths();
     InputManager::init();
     AssetManager::init();
-    // ----------------------------------
 
     std::shared_ptr<TimerCallback> globalTimerCallback = std::make_shared<TimerCallback>();
 

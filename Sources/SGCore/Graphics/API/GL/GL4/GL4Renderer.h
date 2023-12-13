@@ -22,13 +22,10 @@
 #include "GL4CubemapTexture.h"
 #include "GL4UniformBuffer.h"
 
-namespace Core::Main
-{
-    class CoreMain;
-}
-
 namespace SGCore
 {
+    class CoreMain;
+
     class GL4Renderer : public IRenderer
     {
     protected:

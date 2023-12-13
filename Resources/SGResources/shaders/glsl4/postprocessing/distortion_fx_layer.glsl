@@ -115,7 +115,7 @@
                 vec4 col = texture(iChannel0, 0.5 - halfWidth + uv / zoom);*/
 
                 // finalUV.y += sin(finalUV.x * currentTime * 5.0) * 0.01;
-                currentFBColor.rgb = texture(frameBuffer0_colorAttachments[0], distortionUV).rgb + baseCol;
+                currentFBColor.rgb = texture(frameBuffer0_colorAttachments[0], distortionUV).rgb;
             }
 
             gl_FragColor = currentFBColor;

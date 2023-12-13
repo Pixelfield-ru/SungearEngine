@@ -18,8 +18,6 @@ namespace SGCore
     class GL4FrameBuffer : public IFrameBuffer
     {
     private:
-        static inline GLint maxColorAttachments = 0;
-
         GLuint m_handler = 0;
         // first - name
         std::unordered_map<SGFrameBufferAttachmentType, GLFrameBufferAttachment> m_attachments;
@@ -66,11 +64,6 @@ namespace SGCore
                                                     const int& layer,
                                                     bool useMultisampling,
                                                     std::uint8_t multisamplingSamplesCount) override;
-
-        void getAttachmentsCount(std::uint16_t& depthAttachmentsCount,
-                                 std::uint16_t& depthStencilAttachmentsCount,
-                                 std::uint16_t& colorAttachmentsCount,
-                                 std::uint16_t& renderAttachmentsCount) const noexcept override;
     };
 }
 

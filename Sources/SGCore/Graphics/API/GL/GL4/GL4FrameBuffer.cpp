@@ -10,6 +10,7 @@
 #include "GL4Texture2D.h"
 
 #include "SGCore/Graphics/API/ShaderMarkup.h"
+#include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
 
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachments
 (const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock)
@@ -186,12 +187,6 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::unbind()
 
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::create()
 {
-    static bool staticInit = []() {
-        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
-        SGCF_INFO("OpenGL max color attachments: " + std::to_string(maxColorAttachments), SG_LOG_GAPI_FILE);
-        return true;
-    }();
-
     glGenFramebuffers(1, &m_handler);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
@@ -271,6 +266,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
                                GL_DEPTH_ATTACHMENT,
                                GL_TEXTURE_2D, newAttachment.m_handler, mipLevel
         );
+
+        ++m_depthAttachmentsCount;
     }
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
@@ -302,10 +299,22 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
         glFramebufferTexture2D(GL_FRAMEBUFFER,
                                GL_DEPTH_STENCIL_ATTACHMENT,
                                GL_TEXTURE_2D, newAttachment.m_handler, mipLevel);
+
+        ++m_depthStencilAttachmentsCount;
     }
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
+        if(m_colorAttachmentsCount >= DeviceGLInfo::getMaxFBColorAttachments())
+        {
+            SGCF_ERROR(
+                    "It is not possible to add more color attachments for framebuffer. Current color attachments count: " +
+                    std::to_string(m_colorAttachmentsCount) + ". Max color attachments count: " +
+                    std::to_string(DeviceGLInfo::getMaxFBColorAttachments()), SG_LOG_GAPI_FILE);
+
+            return shared_from_this();
+        }
+
         GLenum glType = !useMultisampling ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
 
         glGenTextures(1, &newAttachment.m_handler);
@@ -340,11 +349,15 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
         glFramebufferTexture2D(GL_FRAMEBUFFER,
                                GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0),
                                glType, newAttachment.m_handler, mipLevel);
+
+        ++m_colorAttachmentsCount;
     }
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
     {
         // todo: make
+
+        ++m_renderAttachmentsCount;
     }
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -365,39 +378,4 @@ SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType
                                       const int& layer)
 {
     return addAttachment(attachmentType, format, internalFormat, mipLevel, layer, false, 8);
-}
-
-void SGCore::GL4FrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,
-                                                         uint16_t& depthStencilAttachmentsCount,
-                                                         uint16_t& colorAttachmentsCount,
-                                                         uint16_t& renderAttachmentsCount) const noexcept
-{
-    depthAttachmentsCount = 0;
-    depthStencilAttachmentsCount = 0;
-    colorAttachmentsCount = 0;
-    renderAttachmentsCount = 0;
-
-    for(const auto& attachment : m_attachments)
-    {
-        if(attachment.first >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
-           attachment.first <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
-        {
-            ++depthAttachmentsCount;
-        }
-        else if(attachment.first >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
-                attachment.first <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
-        {
-            ++depthStencilAttachmentsCount;
-        }
-        else if(attachment.first >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
-                attachment.first <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
-        {
-            ++colorAttachmentsCount;
-        }
-        else if(attachment.first >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
-                attachment.first <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
-        {
-            ++renderAttachmentsCount;
-        }
-    }
 }

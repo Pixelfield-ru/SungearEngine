@@ -81,6 +81,8 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 )
         );
 
+        geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
+
         geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
                 SGTextureType::SGTP_DIFFUSE,
                 sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),

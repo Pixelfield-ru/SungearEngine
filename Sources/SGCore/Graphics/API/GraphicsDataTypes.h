@@ -125,11 +125,7 @@ enum SGGDataType
     SGG_MAT3,
     SGG_MAT4,
 
-    SGG_BOOL,
-
-    // struct marking
-    SGG_STRUCT_BEGIN,
-    SGG_STRUCT_END
+    SGG_BOOL
 };
 
 enum SGTextureType
@@ -215,9 +211,6 @@ static std::uint16_t getSGGDataTypeSizeInBytes(const SGGDataType& dataType) noex
 
         case SGG_BOOL: size = 4; break;
 
-        case SGG_STRUCT_BEGIN: size = 0; break;
-        case SGG_STRUCT_END: size = 0; break;
-
         default: size = 0; break;
     }
 
@@ -251,9 +244,6 @@ static std::uint16_t getSGGDataTypeAlignedSizeInBytes(const SGGDataType& dataTyp
         case SGG_MAT4: size = 4 * 4 * 4; break;
 
         case SGG_BOOL: size = 4; break;
-
-        case SGG_STRUCT_BEGIN: size = 0; break;
-        case SGG_STRUCT_END: size = 0; break;
 
         default: size = 0; break;
     }
