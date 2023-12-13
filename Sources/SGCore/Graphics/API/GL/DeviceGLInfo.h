@@ -21,6 +21,7 @@ namespace SGCore
             glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &MAX_FB_COLOR_ATTACHMENTS);
             glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &MAX_UNIFORM_BUFFER_BINDINGS);
             glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MAX_TEXTURE_IMAGE_UNITS);
+            glGetIntegerv(GL_MAX_UNIFORM_LOCATIONS, &MAX_UNIFORMS);
 
             SGCF_INFO("============== DEVICE OPENGL INFO ==============", SG_LOG_GAPI_FILE);
 
@@ -29,6 +30,7 @@ namespace SGCore
             SGCF_INFO("GL_MAX_COLOR_ATTACHMENTS: " + std::to_string(MAX_FB_COLOR_ATTACHMENTS), SG_LOG_GAPI_FILE);
             SGCF_INFO("GL_MAX_UNIFORM_BUFFER_BINDINGS: " + std::to_string(MAX_UNIFORM_BUFFER_BINDINGS), SG_LOG_GAPI_FILE);
             SGCF_INFO("GL_MAX_TEXTURE_IMAGE_UNITS: " + std::to_string(MAX_TEXTURE_IMAGE_UNITS), SG_LOG_GAPI_FILE);
+            SGCF_INFO("GL_MAX_UNIFORM_LOCATIONS: " + std::to_string(MAX_UNIFORMS), SG_LOG_GAPI_FILE);
 
             SGCF_INFO("================================================", SG_LOG_GAPI_FILE);
         }
@@ -53,10 +55,16 @@ namespace SGCore
             return VERSION;
         }
 
+        [[maybe_unused]] [[nodiscard]] static auto getMaxUniforms() noexcept
+        {
+            return MAX_UNIFORMS;
+        }
+
     private:
         static inline int MAX_FB_COLOR_ATTACHMENTS = 0;
         static inline int MAX_UNIFORM_BUFFER_BINDINGS = 0;
         static inline int MAX_TEXTURE_IMAGE_UNITS = 0;
+        static inline int MAX_UNIFORMS = 0;
 
         static inline std::string VERSION;
     };

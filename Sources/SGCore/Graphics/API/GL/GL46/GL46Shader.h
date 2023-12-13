@@ -26,7 +26,7 @@ namespace SGCore
         std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept override;
 
         void useUniformBuffer(const Ref<IUniformBuffer>&) override;
-        void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) final;
+        void useTextureBlock(const std::string& uniformName, const uint8_t& texBlock) final;
 
         void useMatrix(const std::string& uniformName, const glm::mat4& matrix) final;
 
@@ -42,7 +42,6 @@ namespace SGCore
 
         void useFloat(const std::string& uniformName, const float& f) override;
         void useInteger(const std::string& uniformName, const size_t& i) override;
-        void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) override;
 
     private:
         GLuint m_programHandler = 0;

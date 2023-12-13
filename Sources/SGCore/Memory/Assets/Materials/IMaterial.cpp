@@ -3,12 +3,11 @@
 #include "SGCore/Graphics/API/ShaderMarkup.h"
 
 std::shared_ptr<SGCore::IMaterial>
-SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader,
-                                      const ShaderMarkup& shaderMarkup)
+SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader)
 {
     std::uint8_t currentTexBlockOfType = 0;
 
-    for(const auto& markedTextureBlock : shaderMarkup.m_texturesBlocks)
+    /*for(const auto& markedTextureBlock : shaderMarkup.m_texturesBlocks)
     {
         std::string texBlockTypeStr = markedTextureBlock.second.m_name;
 
@@ -28,6 +27,18 @@ SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader,
         }
 
         currentTexBlockOfType = 0;
+    }*/
+
+    std::uint16_t currentTexBlock = 0;
+
+
+
+    if(shader->m_bindFrameBuffers)
+    {
+        if(shader->m_bindEveryFrameBufferAttachmentsSeparately)
+        {
+            for()
+        }
     }
 
     shader->useVectorf("materialDiffuseCol",

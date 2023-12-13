@@ -31,6 +31,17 @@ namespace SGCore
     public:
         std::string m_version;
 
+        Scope<IUniformBuffer> m_uniformBuffer;
+
+        Weak<FileAsset> m_fileAsset;
+
+        bool m_useMaterialSettings = false;
+        bool m_bindFrameBuffers = true;
+        // if true then attachments in shader will be bound as 'allColorAttachments[]' (for example)
+        bool m_bindFrameBuffersAttachmentsAsGroup = false;
+        // if true then attachments in shader will be bound as 'frameBuffer0_colorAttachments[]' (for example)
+        bool m_bindEveryFrameBufferAttachmentsSeparately = true;
+
         virtual ~IShader() = default;
 
         virtual void destroy() = 0;
@@ -45,6 +56,7 @@ namespace SGCore
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) const = 0;
 
+        // TODO: CLEAR THIS
         void addDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
         void emplaceDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
 
@@ -78,7 +90,7 @@ namespace SGCore
         #pragma region Uniforms use
 
         virtual void useUniformBuffer(const Ref<IUniformBuffer>&) { };
-        virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
+        virtual void useTextureBlock(const std::string& uniformName, const uint8_t& texBlock) { };
 
         virtual void useMatrix(const std::string& uniformName, const glm::mat4& matrix) { };
 
@@ -94,17 +106,12 @@ namespace SGCore
 
         virtual void useFloat(const std::string& uniformName, const float& f) { };
         virtual void useInteger(const std::string& uniformName, const size_t& i) { };
-        virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
-
-        Scope<IUniformBuffer> m_uniformBuffer;
 
         #pragma endregion
 
         #pragma region Operators
         IShader& operator=(const IShader&) noexcept;
         #pragma endregion
-
-        Weak<FileAsset> m_fileAsset;
 
     protected:
         std::unordered_map<std::string, IShaderUniform> m_uniforms;

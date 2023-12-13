@@ -283,10 +283,10 @@ void SGCore::GL46Shader::useUniformBuffer(const Ref<IUniformBuffer>& uniformBuff
                           uniformBuffer->getLayoutLocation());
 }
 
-void SGCore::GL46Shader::useTexture(const std::string& uniformName, const uint8_t& texBlock)
+void SGCore::GL46Shader::useTextureBlock(const std::string& uniformName, const uint8_t& texBlock)
 {
-    int texLoc = getShaderUniformLocation(uniformName);
-    glUniform1i(texLoc, texBlock);
+    int texBlockLoc = getShaderUniformLocation(uniformName);
+    glUniform1i(texBlockLoc, texBlock);
 }
 
 void SGCore::GL46Shader::useMatrix(const std::string& uniformName, const glm::mat4& matrix)
@@ -342,12 +342,6 @@ void SGCore::GL46Shader::useInteger(const std::string& uniformName, const size_t
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, i);
-}
-
-void SGCore::GL46Shader::useTextureBlock(const std::string& uniformName, const size_t& textureBlock)
-{
-    int iLoc = getShaderUniformLocation(uniformName);
-    glUniform1i(iLoc, textureBlock);
 }
 
 
