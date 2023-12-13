@@ -31,12 +31,10 @@ namespace SGCore
 
         /**
          * Binds all frame buffer attachments based on the layout of the blocks of the material.
-         * @param material - The material from which the markup will be taken.
-         * @param frameBufferIndex - Framebuffer index in the material.
+         * @param texBlockOffset - Offset for binding all attachments.
          * @return This.
          */
-        virtual std::shared_ptr<IFrameBuffer> bindAttachments(const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock)
-        { return shared_from_this(); }
+        virtual std::uint8_t bindAttachments(std::uint8_t texBlockOffset) { return 0; }
 
         virtual std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                              const std::uint8_t& textureBlock) { return shared_from_this(); };
@@ -91,7 +89,14 @@ namespace SGCore
         std::uint16_t getColorAttachmentsCount() const noexcept;
         std::uint16_t getRenderAttachmentsCount() const noexcept;
 
+        const auto& getAttachments() const noexcept
+        {
+            return m_attachments;
+        }
+
     protected:
+        std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_attachments;
+
         int m_width = 0;
         int m_height = 0;
 

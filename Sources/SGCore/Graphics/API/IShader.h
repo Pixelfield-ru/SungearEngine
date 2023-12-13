@@ -37,10 +37,6 @@ namespace SGCore
 
         bool m_useMaterialSettings = false;
         bool m_bindFrameBuffers = true;
-        // if true then attachments in shader will be bound as 'allColorAttachments[]' (for example)
-        bool m_bindFrameBuffersAttachmentsAsGroup = false;
-        // if true then attachments in shader will be bound as 'frameBuffer0_colorAttachments[]' (for example)
-        bool m_bindEveryFrameBufferAttachmentsSeparately = true;
 
         virtual ~IShader() = default;
 

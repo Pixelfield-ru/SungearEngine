@@ -29,15 +29,127 @@ SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader)
         currentTexBlockOfType = 0;
     }*/
 
-    std::uint16_t currentTexBlock = 0;
+    std::uint32_t curTexBlock = 0;
 
+    std::uint16_t curDepthAttachment_Separately = 0;
+    std::uint16_t curDepthStencilAttachment_Separately = 0;
+    std::uint16_t curColorAttachment_Separately = 0;
+    std::uint16_t curRenderAttachment_Separately = 0;
 
+    std::uint16_t curDepthAttachment_Group = 0;
+    std::uint16_t curDepthStencilAttachment_Group = 0;
+    std::uint16_t curColorAttachment_Group = 0;
+    std::uint16_t curRenderAttachment_Group = 0;
 
     if(shader->m_bindFrameBuffers)
     {
-        if(shader->m_bindEveryFrameBufferAttachmentsSeparately)
+        std::uint16_t curFB = 0;
+
+        for (const auto& materialFrameBuffer: m_frameBuffers)
         {
-            for()
+            auto frameBuffer = materialFrameBuffer.m_frameBuffer.lock();
+
+            if(frameBuffer)
+            {
+                for (const auto& attachmentPair: frameBuffer->getAttachments())
+                {
+                    const auto& attachmentType = attachmentPair.first;
+
+                    frameBuffer->bindAttachment(attachmentType, curTexBlock);
+
+                    if (isDepthAttachment(attachmentType))
+                    {
+                        if(bindFBAttachmentSeparately)
+                        {
+                            shader->useTextureBlock(
+                                    "frameBuffer" + std::to_string(curFB) + "_depthAttachments[" +
+                                    std::to_string(curDepthAttachment_Separately) + "]", curTexBlock);
+
+                            ++curTexBlock;
+                            ++curDepthAttachment_Separately;
+                        }
+
+                        if(bindFBAttachmentAsGroup)
+                        {
+                            shader->useTextureBlock(
+                                    "allFBDepthAttachments[" + std::to_string(curDepthAttachment_Group) +
+                                    "]", curTexBlock);
+
+                            ++curTexBlock;
+                            ++curDepthAttachment_Group;
+                        }
+                    }
+                    else if (isDepthStencilAttachment(attachmentType))
+                    {
+                        if(bindFBAttachmentSeparately)
+                        {
+                            shader->useTextureBlock(
+                                    "frameBuffer" + std::to_string(curFB) + "_depthStencilAttachments[" +
+                                    std::to_string(curDepthStencilAttachment_Separately) + "]", curTexBlock);
+
+                            ++curTexBlock;
+                            ++curDepthStencilAttachment_Separately;
+                        }
+
+                        if(bindFBAttachmentAsGroup)
+                        {
+                            shader->useTextureBlock(
+                                    "allFBDepthStencilAttachments[" + std::to_string(curDepthStencilAttachment_Group) +
+                                    "]", curTexBlock);
+
+                            ++curTexBlock;
+                            ++curDepthStencilAttachment_Group;
+                        }
+                    }
+                    else if (isColorAttachment(attachmentType))
+                    {
+                        if(bindFBAttachmentSeparately)
+                        {
+                            shader->useTextureBlock(
+                                    "frameBuffer" + std::to_string(curFB) + "_colorAttachments[" +
+                                    std::to_string(curColorAttachment_Separately) + "]", curTexBlock);
+
+                            ++curTexBlock;
+                            ++curColorAttachment_Separately;
+                        }
+
+                        if(bindFBAttachmentAsGroup)
+                        {
+                            shader->useTextureBlock(
+                                    "allFBColorAttachments[" + std::to_string(curColorAttachment_Group) + "]", curTexBlock);
+
+                            ++curTexBlock;
+                            ++curColorAttachment_Group;
+                        }
+                    }
+                    else if (isRenderAttachment(attachmentType))
+                    {
+                        if(bindFBAttachmentSeparately)
+                        {
+                            shader->useTextureBlock(
+                                    "frameBuffer" + std::to_string(curFB) + "_renderAttachments[" +
+                                    std::to_string(curRenderAttachment_Separately) + "]", curTexBlock);
+
+                            ++curTexBlock;
+                            ++curRenderAttachment_Separately;
+                        }
+
+                        if(bindFBAttachmentAsGroup)
+                        {
+                            shader->useTextureBlock(
+                                    "allFBRenderAttachments[" + std::to_string(curRenderAttachment_Group) + "]", curTexBlock);
+
+                            ++curTexBlock;
+                            ++curRenderAttachment_Group;
+                        }
+                    }
+                }
+            }
+
+            curDepthAttachment_Separately = 0;
+            curDepthStencilAttachment_Separately = 0;
+            curColorAttachment_Separately = 0;
+            curRenderAttachment_Separately = 0;
         }
     }
 
