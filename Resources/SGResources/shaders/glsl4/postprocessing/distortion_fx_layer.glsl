@@ -39,9 +39,9 @@
     uniform int FBCount;
 
     // valid
-    uniform int frameBuffer0_colorAttachments_COUNT;
+    uniform int frameBuffer0_colorAttachmentsCount;
     // valid
-    uniform int frameBuffer1_colorAttachments_COUNT;
+    uniform int frameBuffer1_colorAttachmentsCount;
     // layer 1 (valid)
     uniform sampler2D frameBuffer0_colorAttachments[1];
     uniform sampler2D frameBuffer1_colorAttachments[9];

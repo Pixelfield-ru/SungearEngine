@@ -19,6 +19,7 @@ namespace SGCore
         bool m_active = true;
 
         Ref<IShader> m_shader;
+        ShaderMarkup m_shaderMarkup;
 
         // components, that use to render in
         Ref<CollectorCachedEntities> m_componentsToRenderIn;

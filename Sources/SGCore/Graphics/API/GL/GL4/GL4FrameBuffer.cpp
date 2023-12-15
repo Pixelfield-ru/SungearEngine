@@ -12,30 +12,67 @@
 #include "SGCore/Graphics/API/ShaderMarkup.h"
 #include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
 
-std::uint8_t SGCore::GL4FrameBuffer::bindAttachments(std::uint8_t texBlockOffset)
+std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachments
+(const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock)
 {
-    std::uint8_t curOffset = texBlockOffset;
+    // depth
+    const auto& maxDAttachments = markedFrameBufferAttachmentsBlock.m_maxDepthAttachments;
+    // depth-stencil
+    const auto& maxDSAttachments = markedFrameBufferAttachmentsBlock.m_maxDepthStencilAttachments;
+    // color
+    const auto& maxCAttachments = markedFrameBufferAttachmentsBlock.m_maxColorAttachments;
+    // render
+    const auto& maxRAttachments = markedFrameBufferAttachmentsBlock.m_maxRenderAttachments;
 
-    for(const auto& attachmentPair : m_attachments)
+    const auto& blockOffset = markedFrameBufferAttachmentsBlock.m_offset;
+
+    std::uint8_t curOffset = blockOffset;
+
+    for(std::uint8_t i = curOffset; i < curOffset + maxDAttachments; ++i)
     {
-        auto attachmentType = attachmentPair.first;
-
-        bindAttachment(attachmentType, curOffset);
-
-        ++curOffset;
+        bindAttachment((SGFrameBufferAttachmentType) ((std::uint8_t) SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 + (i - curOffset)),
+                       i);
     }
 
-    return curOffset;
+    curOffset += maxDAttachments;
+
+    // -------------------------
+
+    for(std::uint8_t i = curOffset; i < curOffset + maxDSAttachments; ++i)
+    {
+        bindAttachment((SGFrameBufferAttachmentType) ((std::uint8_t) SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 + (i - curOffset)),
+                       i);
+    }
+
+    curOffset += maxDSAttachments;
+
+    // -------------------------
+
+    for(std::uint8_t i = curOffset; i < curOffset + maxCAttachments; ++i)
+    {
+        bindAttachment((SGFrameBufferAttachmentType) ((std::uint8_t) SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 + (i - curOffset)),
+                       i); /// verified
+    }
+
+    curOffset += maxCAttachments;
+
+    // -------------------------
+
+    for(std::uint8_t i = curOffset; i < curOffset + maxRAttachments; ++i)
+    {
+        bindAttachment((SGFrameBufferAttachmentType) ((std::uint8_t) SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 + (i - curOffset)),
+                       i);
+    }
+
+    return shared_from_this();
 }
 
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachment
 (const SGFrameBufferAttachmentType& attachmentType, const std::uint8_t& textureBlock)
 {
-    const auto& attachment = m_attachments[attachmentType];
-
-    GLenum glAttachmentType = !attachment.m_useMultisampling ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
+    GLenum glAttachmentType = !m_attachments[attachmentType].m_useMultisampling ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
     glActiveTexture(GL_TEXTURE0 + textureBlock);
-    glBindTexture(glAttachmentType, attachment.m_handler);
+    glBindTexture(glAttachmentType, m_attachments[attachmentType].m_handler);
 
     return shared_from_this();
 }
@@ -43,7 +80,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachment
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentToRead
 (const SGFrameBufferAttachmentType& attachmentType)
 {
-    if(isColorAttachment(attachmentType))
+    if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+       attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
         glReadBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
     }
@@ -54,7 +92,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentToRe
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentToDraw
 (const SGFrameBufferAttachmentType& attachmentType)
 {
-    if(isColorAttachment(attachmentType))
+    if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+       attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
         glDrawBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
     }
@@ -76,7 +115,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToD
     std::uint8_t curAttachment = 0;
     for(const auto& type: attachmentsTypes)
     {
-        if(isColorAttachment(type))
+        if(type >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+           type <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
         {
             attachmentsToBind[curAttachment] = GL_COLOR_ATTACHMENT0 + (type - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
         }
@@ -97,7 +137,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToD
     std::uint8_t curAttachment = 0;
     for(const auto& type: attachmentsTypes)
     {
-        if(isColorAttachment(type))
+        if(type >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+           type <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
         {
             attachmentsToBind[curAttachment] = GL_COLOR_ATTACHMENT0 + (type - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
         }
@@ -194,7 +235,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
     // TODO: MAKE VERIFY INTERNAL FORMAT
     // TODO: MAKE VERIFY SIZE TYPE
 
-    if(isDepthAttachment(attachmentType))
+    if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
+       attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
     {
         glGenTextures(1, &newAttachment.m_handler);
         glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
@@ -227,7 +269,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
 
         ++m_depthAttachmentsCount;
     }
-    else if(isDepthStencilAttachment(attachmentType))
+    else if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
+            attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
     {
         glGenTextures(1, &newAttachment.m_handler);
         glBindTexture(GL_TEXTURE_2D, newAttachment.m_handler);
@@ -259,7 +302,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
 
         ++m_depthStencilAttachmentsCount;
     }
-    else if(isColorAttachment(attachmentType))
+    else if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+            attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
         if(m_colorAttachmentsCount >= DeviceGLInfo::getMaxFBColorAttachments())
         {
@@ -308,7 +352,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
 
         ++m_colorAttachmentsCount;
     }
-    else if(isRenderAttachment(attachmentType))
+    else if(attachmentType >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
+            attachmentType <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9)
     {
         // todo: make
 

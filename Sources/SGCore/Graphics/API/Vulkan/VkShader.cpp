@@ -29,7 +29,7 @@ void SGCore::VkShader::destroy() noexcept
 
 }
 
-std::int32_t SGCore::VkShader::getShaderUniformLocation(const std::string& uniformName) const noexcept
+std::int32_t SGCore::VkShader::getShaderUniformLocation(const std::string& uniformName) noexcept
 {
     return 0;
 }

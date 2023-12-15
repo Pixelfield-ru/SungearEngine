@@ -24,12 +24,6 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::VkUniformBuffer::prepare() noexc
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IUniformBuffer> SGCore::VkUniformBuffer::updateLocations
-(const SGCore::IShader& fromShader) noexcept
-{
-    return shared_from_this();
-}
-
 void SGCore::VkUniformBuffer::setLayoutLocation(const uint16_t& location) noexcept
 {
 

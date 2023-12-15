@@ -107,26 +107,6 @@ enum SGFrameBufferAttachmentType
     SGG_RENDER_ATTACHMENT9
 };
 
-static bool isDepthAttachment(const SGFrameBufferAttachmentType& attachmentType)
-{
-    return attachmentType >= SGG_DEPTH_ATTACHMENT0 && attachmentType <= SGG_DEPTH_ATTACHMENT9;
-}
-
-static bool isDepthStencilAttachment(const SGFrameBufferAttachmentType& attachmentType)
-{
-    return attachmentType >= SGG_DEPTH_STENCIL_ATTACHMENT0 && attachmentType <= SGG_DEPTH_STENCIL_ATTACHMENT9;
-}
-
-static bool isColorAttachment(const SGFrameBufferAttachmentType& attachmentType)
-{
-    return attachmentType >= SGG_COLOR_ATTACHMENT0 && attachmentType <= SGG_COLOR_ATTACHMENT31;
-}
-
-static bool isRenderAttachment(const SGFrameBufferAttachmentType& attachmentType)
-{
-    return attachmentType >= SGG_RENDER_ATTACHMENT0 && attachmentType <= SGG_RENDER_ATTACHMENT9;
-}
-
 enum SGGDataType
 {
     SGG_NONE,

@@ -12,10 +12,12 @@ void SGCore::IRenderPipeline::update(const SGCore::Ref<SGCore::Scene>& scene) no
         m_prepareFunc();
     }
 
+    auto thisShared = shared_from_this();
+
     for(auto& renderPass : m_renderPasses)
     {
         if(!renderPass->m_active) continue;
 
-        renderPass->render(scene, shared_from_this());
+        renderPass->render(scene, thisShared);
     }
 }

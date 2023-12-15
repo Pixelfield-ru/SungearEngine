@@ -31,13 +31,6 @@ namespace SGCore
     public:
         std::string m_version;
 
-        Scope<IUniformBuffer> m_uniformBuffer;
-
-        Weak<FileAsset> m_fileAsset;
-
-        bool m_useMaterialSettings = true;
-        bool m_bindFrameBuffers = true;
-
         virtual ~IShader() = default;
 
         virtual void destroy() = 0;
@@ -46,9 +39,12 @@ namespace SGCore
 
         virtual void compile(Ref<FileAsset> asset) = 0;
 
+        virtual void useShaderMarkup(const ShaderMarkup& shaderMarkup);
+        virtual void updateFrameBufferAttachmentsCount(const Ref<IFrameBuffer>& frameBuffer,
+                                                       const std::string& frameBufferNameInShader);
+
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
 
-        // TODO: CLEAR THIS
         void addDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
         void emplaceDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
 
@@ -79,8 +75,10 @@ namespace SGCore
          */
         void onAssetPathChanged() override;
 
+        #pragma region Uniforms use
+
         virtual void useUniformBuffer(const Ref<IUniformBuffer>&) { };
-        virtual void useTextureBlock(const std::string& uniformName, const uint8_t& texBlock) { };
+        virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
 
         virtual void useMatrix(const std::string& uniformName, const glm::mat4& matrix) { };
 
@@ -96,10 +94,17 @@ namespace SGCore
 
         virtual void useFloat(const std::string& uniformName, const float& f) { };
         virtual void useInteger(const std::string& uniformName, const size_t& i) { };
+        virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
 
-        virtual bool isUniformExists(const std::string& uniformName) { return false; }
+        Scope<IUniformBuffer> m_uniformBuffer;
 
+        #pragma endregion
+
+        #pragma region Operators
         IShader& operator=(const IShader&) noexcept;
+        #pragma endregion
+
+        Weak<FileAsset> m_fileAsset;
 
     protected:
         std::unordered_map<std::string, IShaderUniform> m_uniforms;

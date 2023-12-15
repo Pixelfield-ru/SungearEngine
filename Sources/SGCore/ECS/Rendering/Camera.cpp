@@ -6,7 +6,6 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Utils/ShadersPaths.h"
-#include "SGCore/ImportedScenesArch/IMeshData.h"
 
 SGCore::Camera::Camera()
 {
@@ -202,6 +201,28 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
 
     // ----------------------------------
 
+    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 9, 0);
+    m_postProcessShadersMarkup.calculateBlocksOffsets();
+
+    // ----------------------------------
+    // updating all frame buffers in all shaders
+
+    std::uint16_t ppFBCount = m_postProcessLayers.size() + 1;
+
+    m_finalPostProcessFXShader->bind();
+    m_finalPostProcessFXShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
+
+    for(const auto& ppLayer : m_postProcessLayers)
+    {
+        ppLayer.second.m_FXShader->bind();
+        ppLayer.second.m_FXShader->updateFrameBufferAttachmentsCount(newPPLayer.m_frameBuffer, newPPLayer.m_nameInShader);
+
+        // ------------------------------
+
+        newPPLayer.m_FXShader->bind();
+        newPPLayer.m_FXShader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
+    }
+
     return newPPLayer;
 }
 
@@ -225,7 +246,24 @@ void SGCore::Camera::setPostProcessLayerShader(const Ref<Layer>& layer,
         return;
     }
 
+    shader->bind();
+
+    for(const auto& ppLayer : m_postProcessLayers)
+    {
+        shader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
+    }
+
     m_postProcessLayers[layer].m_FXShader = shader;
+}
+
+void SGCore::Camera::bindPostProcessLayers() noexcept
+{
+    for(const auto& ppLayer : m_postProcessLayers)
+    {
+        ppLayer.second.m_frameBuffer->bindAttachments(
+                m_postProcessShadersMarkup.m_frameBuffersAttachmentsBlocks[ppLayer.second.m_nameInShader]
+        );
+    }
 }
 
 SGCore::PostProcessLayer& SGCore::Camera::getPostProcessLayer(const Ref<Layer>& layer) noexcept

@@ -166,13 +166,6 @@ namespace SGCore
          */
         virtual std::shared_ptr<IUniformBuffer> prepare() = 0;
 
-        /**
-         * Updates the locations of all uniforms of the shader
-         * @param fromShader - The shader from which all locations will be updated
-         * @return This
-         */
-        virtual std::shared_ptr<IUniformBuffer> updateLocations(const IShader& fromShader) = 0;
-
         std::uint16_t getLayoutLocation() const noexcept;
         /**
          * SET LOCATION ONLY BEFORE FIRST PREPARE

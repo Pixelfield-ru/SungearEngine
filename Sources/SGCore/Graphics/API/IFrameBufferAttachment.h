@@ -19,8 +19,6 @@ namespace SGCore
 
         bool m_useMultisampling = false;
         std::uint8_t m_multisamplingSamplesCount = 8;
-
-        std::uint32_t m_handler = 0;
     };
 }
 

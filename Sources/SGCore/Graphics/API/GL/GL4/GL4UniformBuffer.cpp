@@ -147,17 +147,6 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::prepare() noex
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::updateLocations(
-        const SGCore::IShader& fromShader) noexcept
-{
-    for(auto& uniform : m_uniforms)
-    {
-        uniform.m_location = fromShader.getShaderUniformLocation(uniform.m_name);
-    }
-
-    return shared_from_this();
-}
-
 void SGCore::GL4UniformBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);

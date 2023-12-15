@@ -20,8 +20,6 @@ namespace SGCore
 
         std::shared_ptr<IUniformBuffer> prepare() noexcept final;
 
-        std::shared_ptr<IUniformBuffer> updateLocations(const IShader& fromShader) noexcept final;
-
         void setLayoutLocation(const std::uint16_t& location) noexcept final;
 
         void destroy() noexcept final;

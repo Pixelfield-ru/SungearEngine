@@ -23,7 +23,7 @@ namespace SGCore
 
         void destroy() noexcept final;
 
-        std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept final;
+        std::int32_t getShaderUniformLocation(const std::string& uniformName) noexcept final;
     };
 }
 

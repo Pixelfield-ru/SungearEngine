@@ -19,9 +19,8 @@
 #endif
 
 #ifdef FRAGMENT_SHADER
-    uniform int frameBuffer0_colorAttachments_COUNT;
-    // combined frame buffer
-    uniform sampler2D frameBuffer0_colorAttachments[32];
+    uniform int combinedBufferAttachmentsCount;
+    uniform sampler2D combinedBuffer[32];
 
     in vec2 vs_UVAttribute;
 
@@ -35,7 +34,7 @@
 
         vec4 finalColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-        finalColor.rgb = texture(frameBuffer0_colorAttachments[0], finalUV).rgb;
+        finalColor.rgb = texture(combinedBuffer[0], finalUV).rgb;
 
         gl_FragColor = finalColor;
 
