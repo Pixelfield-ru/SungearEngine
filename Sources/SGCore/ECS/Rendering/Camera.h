@@ -73,8 +73,6 @@ namespace SGCore
     public:
         Camera();
 
-        ShaderMarkup m_postProcessShadersMarkup;
-
         Ref<IShader> m_depthPassShader;
         Ref<IShader> m_ppLayersCombiningShader;
         Ref<IShader> m_finalPostProcessFXShader;
@@ -101,8 +99,6 @@ namespace SGCore
 
         void setPostProcessLayerShader(const Ref<Layer>& layer,
                                        const Ref<IShader>& shader) noexcept;
-
-        void bindPostProcessLayers() noexcept;
 
         const auto& getPostProcessLayers() const noexcept
         {

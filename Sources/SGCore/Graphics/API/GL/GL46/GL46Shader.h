@@ -23,7 +23,7 @@ namespace SGCore
 
         void destroy() noexcept final;
 
-        std::int32_t getShaderUniformLocation(const std::string& uniformName) const noexcept override;
+        std::int32_t getShaderUniformLocation(const std::string& uniformName) noexcept override;
 
         void useUniformBuffer(const Ref<IUniformBuffer>&) override;
         void useTextureBlock(const std::string& uniformName, const uint8_t& texBlock) final;
@@ -43,8 +43,12 @@ namespace SGCore
         void useFloat(const std::string& uniformName, const float& f) override;
         void useInteger(const std::string& uniformName, const size_t& i) override;
 
+        bool isUniformExists(const std::string& uniformName) override;
+
     private:
         GLuint m_programHandler = 0;
+
+        std::unordered_map<std::string, GLuint> m_cachedUniformsLocations;
 
         // vertex, fragment, geometry, compute, tesselation control and tesselation evaluation shaders
         std::vector<GLuint> m_shaderPartsHandlers;

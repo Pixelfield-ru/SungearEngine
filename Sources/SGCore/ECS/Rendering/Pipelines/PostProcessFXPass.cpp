@@ -34,12 +34,20 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 
             if(!cameraComponent) continue;
 
-            cameraComponent->bindPostProcessLayers();
+            // collecting all frame buffer
+            for(const auto& ppLayerPair : cameraComponent->getPostProcessLayers())
+            {
+                const auto& ppLayer = ppLayerPair.second;
+
+                m_layersFrameBuffersMaterial->m_frameBuffers.push_back(ppLayer.m_frameBuffer);
+            }
 
             depthPass(cameraComponent);
             FXPass(cameraComponent);
             layersCombiningPass(cameraComponent);
             finalFrameFXPass(cameraComponent);
+
+            m_layersFrameBuffersMaterial->m_frameBuffers.clear();
 
     SG_END_ITERATE_CACHED_ENTITIES
 
@@ -50,8 +58,8 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& camera) const noexcept
 {
     camera->m_depthPassShader->bind();
-    camera->m_depthPassShader
-            ->useShaderMarkup(camera->m_postProcessShadersMarkup);
+
+    m_layersFrameBuffersMaterial->bind(camera->m_depthPassShader);
 
     std::uint8_t layerIdx = 0;
     for(const auto& ppLayerPair : camera->getPostProcessLayers())
@@ -74,6 +82,7 @@ void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& cam
 
         ++layerIdx;
     }
+
 }
 
 // DONE
@@ -86,7 +95,7 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera
         auto& layerShader = ppLayer.m_FXShader;
 
         layerShader->bind();
-        layerShader->useShaderMarkup(camera->m_postProcessShadersMarkup);
+        m_layersFrameBuffersMaterial->bind(layerShader);
 
         layerShader->useUniformBuffer(CoreMain::getRenderer().m_programDataBuffer);
 
@@ -151,7 +160,7 @@ void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<Camera>& camera) c
             {
                 auto foundAttachment = foundAttachmentIter->second;
 
-                camera->m_ppLayersCombiningShader->useInteger("layersAttachmentN[" + std::to_string(attachmentIdx) + "]",
+                camera->m_ppLayersCombiningShader->useInteger("outputLayersAttachmentN[" + std::to_string(attachmentIdx) + "]",
                                                               attachmentIdx
                 );
                 ppLayer.m_frameBuffer->bindAttachment(foundAttachment, attachmentIdx);
@@ -160,7 +169,7 @@ void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<Camera>& camera) c
             }
         }
 
-        camera->m_ppLayersCombiningShader->useInteger("layersAttachmentNCount", attachmentIdx);
+        camera->m_ppLayersCombiningShader->useInteger("outputLayersAttachmentN_COUNT", attachmentIdx);
 
         CoreMain::getRenderer().renderMeshData(
                 m_postProcessQuad,

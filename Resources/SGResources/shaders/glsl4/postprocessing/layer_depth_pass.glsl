@@ -22,9 +22,9 @@
     uniform int currentFBIndex;
 
     // as layers count
-    uniform int allFrameBuffersDepthAttachmentCount;
+    uniform int allFBDepthAttachments_COUNT;
     // as all layers depths
-    uniform sampler2D allFrameBuffersDepthAttachments[32];
+    uniform sampler2D allFBDepthAttachments[32];
 
     in vec2 vs_UVAttribute;
 
@@ -38,14 +38,14 @@
 
         // depth test pass -------------------------------------------
 
-        float currentFBDepth = texture(allFrameBuffersDepthAttachments[currentFBIndex], finalUV).r;
+        float currentFBDepth = texture(allFBDepthAttachments[currentFBIndex], finalUV).r;
 
         // then sampling depth from other frame buffers and if we have closer depth then discard fragment
-        for (int i = 0; i < allFrameBuffersDepthAttachmentCount; i++)
+        for (int i = 0; i < allFBDepthAttachments_COUNT; i++)
         {
             if (currentFBIndex == i) continue;
 
-            float otherDepth = texture(allFrameBuffersDepthAttachments[i], finalUV).r;
+            float otherDepth = texture(allFBDepthAttachments[i], finalUV).r;
 
             // discard fragment
             if (otherDepth < currentFBDepth)

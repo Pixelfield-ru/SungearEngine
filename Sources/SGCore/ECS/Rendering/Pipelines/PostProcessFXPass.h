@@ -24,6 +24,8 @@ namespace SGCore
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
 
     private:
+        Ref<IMaterial> m_layersFrameBuffersMaterial = MakeRef<IMaterial>();
+
         void depthPass(const Ref<Camera>& camera) const noexcept;
         void FXPass(const Ref<Camera>&) const noexcept;
         void layersCombiningPass(const Ref<Camera>& camera) const noexcept;

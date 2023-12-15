@@ -271,9 +271,17 @@ void SGCore::GL46Shader::destroy() noexcept
     m_shaderPartsHandlers.clear();
 }
 
-std::int32_t SGCore::GL46Shader::getShaderUniformLocation(const std::string& uniformName) const noexcept
+std::int32_t SGCore::GL46Shader::getShaderUniformLocation(const std::string& uniformName) noexcept
 {
-    return glGetUniformLocation(m_programHandler, uniformName.c_str());
+    const auto& foundLocation = m_cachedUniformsLocations.find(uniformName);
+    if(foundLocation == m_cachedUniformsLocations.cend())
+    {
+        std::int32_t location = glGetUniformLocation(m_programHandler, uniformName.c_str());
+        m_cachedUniformsLocations[uniformName] = location;
+        return location;
+    }
+
+    return foundLocation->second;
 }
 
 void SGCore::GL46Shader::useUniformBuffer(const Ref<IUniformBuffer>& uniformBuffer)
@@ -342,6 +350,11 @@ void SGCore::GL46Shader::useInteger(const std::string& uniformName, const size_t
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, i);
+}
+
+bool SGCore::GL46Shader::isUniformExists(const std::string& uniformName)
+{
+    return getShaderUniformLocation(uniformName) != -1;
 }
 
 

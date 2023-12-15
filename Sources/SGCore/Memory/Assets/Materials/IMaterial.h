@@ -17,8 +17,6 @@ namespace SGCore
 {
     class IShader;
 
-    class ShaderMarkup;
-
     class MarkedTexturesBlock;
 
     struct MaterialTexture
@@ -28,13 +26,6 @@ namespace SGCore
         Ref<ITexture2D> m_texture;
     };
 
-    struct MaterialFrameBuffer
-    {
-        std::vector<std::string> m_shaderOtherAliases;
-
-        Weak<IFrameBuffer> m_frameBuffer;
-    };
-
     // TODO: make remove texture
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
@@ -42,7 +33,7 @@ namespace SGCore
         std::string m_name;
 
         std::vector<MaterialTexture> m_textures;
-        std::vector<MaterialFrameBuffer> m_frameBuffers;
+        std::vector<Weak<IFrameBuffer>> m_frameBuffers;
 
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
         glm::vec4 m_specularColor       = glm::vec4(1.0f);
@@ -53,21 +44,21 @@ namespace SGCore
         float m_metallicFactor          = 1.0f;
         float m_roughnessFactor         = 1.0f;
 
-        std::shared_ptr<IMaterial> bind(const std::shared_ptr<IShader>& shader);
+        Ref<IMaterial> bind(const Ref<IShader>& shader);
 
         // TODO: impl
-        std::shared_ptr<IAsset> load(const std::string& path) override;
+        Ref<IAsset> load(const std::string& path) override;
 
         /**
-        * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.
+        * Adds texture2D. This method is looking for texture asset by path.
         * @param type - Material type of texture
         * @param texture2DAsset - Texture asset
         * @return this
         */
-        std::shared_ptr<Texture2DAsset> findAndAddTexture2D(const SGTextureType& textureType,
-                                                            const std::string& path);
+        Ref<Texture2DAsset> findAndAddTexture2D(const SGTextureType& textureType,
+                                                const std::string& path);
 
-        void copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept;
+        void copyTextures(const Ref<IMaterial>& to) const noexcept;
 
         /**
          * Copies all texture assets (textures data is not copied) to another material.\n
@@ -79,6 +70,7 @@ namespace SGCore
 
     protected:
 
+        std::unordered_map<SGTextureType, std::uint16_t> m_texturesOfTypeCount;
         // first - shader name
         // std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;
         // std::shared_ptr<Graphics::IShader> m_currentShader;
