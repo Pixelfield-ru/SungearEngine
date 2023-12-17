@@ -6,7 +6,6 @@
 #define SUNGEARENGINE_IPIPELINESYSTEM_H
 
 #include "SGCore/ECS/ISystem.h"
-#include "SGCore/Graphics/API/ShaderMarkup.h"
 
 namespace SGCore
 {

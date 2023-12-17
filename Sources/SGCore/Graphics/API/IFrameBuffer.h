@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <initializer_list>
 #include <set>
+#include <unordered_map>
 
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"
@@ -28,15 +29,6 @@ namespace SGCore
     {
     public:
         glm::vec4 m_bgColor { 0.0, 0.0, 0.0, 1.0 };
-
-        /**
-         * Binds all frame buffer attachments based on the layout of the blocks of the material.
-         * @param material - The material from which the markup will be taken.
-         * @param frameBufferIndex - Framebuffer index in the material.
-         * @return This.
-         */
-        virtual std::shared_ptr<IFrameBuffer> bindAttachments(const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock)
-        { return shared_from_this(); }
 
         virtual std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                              const std::uint8_t& textureBlock) { return shared_from_this(); };
@@ -81,24 +73,39 @@ namespace SGCore
         int getWidth() const noexcept;
         int getHeight() const noexcept;
 
-        void getAttachmentsCount(std::uint16_t& depthAttachmentsCount,
-                                 std::uint16_t& depthStencilAttachmentsCount,
-                                 std::uint16_t& colorAttachmentsCount,
-                                 std::uint16_t& renderAttachmentsCount) const noexcept;
-
         std::uint16_t getDepthAttachmentsCount() const noexcept;
         std::uint16_t getDepthStencilAttachmentsCount() const noexcept;
         std::uint16_t getColorAttachmentsCount() const noexcept;
         std::uint16_t getRenderAttachmentsCount() const noexcept;
 
+        const auto& getDepthAttachments() const noexcept
+        {
+            return m_depthAttachments;
+        }
+
+        const auto& getDepthStencilAttachments() const noexcept
+        {
+            return m_depthStencilAttachments;
+        }
+
+        const auto& getColorAttachments() const noexcept
+        {
+            return m_colorAttachments;
+        }
+
+        const auto& getRenderAttachments() const noexcept
+        {
+            return m_renderAttachments;
+        }
+
     protected:
+         std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_depthAttachments;
+         std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_depthStencilAttachments;
+         std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_colorAttachments;
+         std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_renderAttachments;
+
         int m_width = 0;
         int m_height = 0;
-
-        std::uint16_t m_depthAttachmentsCount = 0;
-        std::uint16_t m_depthStencilAttachmentsCount = 0;
-        std::uint16_t m_colorAttachmentsCount = 0;
-        std::uint16_t m_renderAttachmentsCount = 0;
     };
 }
 

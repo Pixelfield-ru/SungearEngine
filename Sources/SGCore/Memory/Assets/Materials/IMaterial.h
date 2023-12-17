@@ -1,11 +1,10 @@
-#pragma once
-
 #ifndef SUNGEARENGINE_IMATERIAL_H
 #define SUNGEARENGINE_IMATERIAL_H
 
 #include <map>
 #include <string>
 #include <tsl/robin_map.h>
+#include <unordered_map>
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/IShader.h"
@@ -13,21 +12,9 @@
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 
-#define SGMAT_STANDARD_SHADER_NAME      "standardShader"
-#define SGMAT_SHADOW_GEN_SHADER_NAME    "shadowGenShader"
-
 namespace SGCore
 {
     class IShader;
-    class ShaderMarkup;
-    class MarkedTexturesBlock;
-
-    struct MaterialTexture
-    {
-        SGTextureType m_type = SGTextureType::SGTP_DIFFUSE;
-
-        std::shared_ptr<ITexture2D> m_texture;
-    };
 
     // TODO: make remove texture
     // TODO: make function addBlockDeclaration
@@ -36,7 +23,7 @@ namespace SGCore
     public:
         std::string m_name;
 
-        std::vector<MaterialTexture> m_textures;
+        std::unordered_map<SGTextureType, std::vector<Ref<ITexture2D>>> m_textures;
 
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
         glm::vec4 m_specularColor       = glm::vec4(1.0f);
@@ -47,9 +34,7 @@ namespace SGCore
         float m_metallicFactor          = 1.0f;
         float m_roughnessFactor         = 1.0f;
 
-
-        std::shared_ptr<IMaterial> bind(const std::shared_ptr<IShader>& shader,
-                                        const ShaderMarkup& shaderMarkup);
+        std::shared_ptr<IMaterial> bind(const std::shared_ptr<IShader>& shader);
 
         // TODO: impl
         std::shared_ptr<IAsset> load(const std::string& path) override;

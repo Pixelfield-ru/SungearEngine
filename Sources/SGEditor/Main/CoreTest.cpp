@@ -345,8 +345,7 @@ void init()
                                               if(meshComponent)
                                               {
                                                   meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
-                                                  meshComponent->m_meshData->m_material->m_textures.emplace_back(
-                                                          SGTextureType::SGTP_SKYBOX,
+                                                  meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTP_SKYBOX].push_back(
                                                           standardCubemap->getTexture2D()
                                                   );
                                               }
@@ -377,8 +376,7 @@ void init()
 
                                            if(meshComponent)
                                            {
-                                               meshComponent->m_meshData->m_material->m_textures.emplace_back(
-                                                       SGTextureType::SGTP_DIFFUSE,
+                                               meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTP_DIFFUSE].push_back(
                                                        geniusJPG->m_texture2D
                                                );
                                            }

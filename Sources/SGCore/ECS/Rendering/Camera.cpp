@@ -102,6 +102,14 @@ SGCore::Camera::Camera()
     // adding default pp layer
     addPostProcessLayer("defaultPPLayer", m_technicalLayer);
     m_currentPPFrameBufferToBind = getDefaultPostProcessLayer().m_frameBuffer;
+
+    // preparing uniforms in some shaders ======================
+    m_depthPassShader->bind();
+
+    for(std::uint8_t i = 0; i < 32; ++i)
+    {
+        m_depthPassShader->useInteger("allFrameBuffersDepthAttachments[" + std::to_string(i) + "]", i);
+    }
 }
 
 SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
@@ -200,11 +208,6 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
     newPPLayer.m_nameInShader = layerNameInShaders;
 
     // ----------------------------------
-
-    m_postProcessShadersMarkup.addFrameBufferBlockDeclaration(layerNameInShaders, 1, 0, 9, 0);
-    m_postProcessShadersMarkup.calculateBlocksOffsets();
-
-    // ----------------------------------
     // updating all frame buffers in all shaders
 
     std::uint16_t ppFBCount = m_postProcessLayers.size() + 1;
@@ -222,6 +225,12 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
         newPPLayer.m_FXShader->bind();
         newPPLayer.m_FXShader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
     }
+
+    // updating uniforms in shader ====================================
+
+    m_depthPassShader->bind();
+
+    m_depthPassShader->useInteger("allFrameBuffersDepthAttachmentCount", m_postProcessLayers.size());
 
     return newPPLayer;
 }
@@ -254,16 +263,6 @@ void SGCore::Camera::setPostProcessLayerShader(const Ref<Layer>& layer,
     }
 
     m_postProcessLayers[layer].m_FXShader = shader;
-}
-
-void SGCore::Camera::bindPostProcessLayers() noexcept
-{
-    for(const auto& ppLayer : m_postProcessLayers)
-    {
-        ppLayer.second.m_frameBuffer->bindAttachments(
-                m_postProcessShadersMarkup.m_frameBuffersAttachmentsBlocks[ppLayer.second.m_nameInShader]
-        );
-    }
 }
 
 SGCore::PostProcessLayer& SGCore::Camera::getPostProcessLayer(const Ref<Layer>& layer) noexcept
@@ -311,4 +310,17 @@ SGCore::PostProcessLayer& SGCore::Camera::getDefaultPostProcessLayer() noexcept
     return m_postProcessLayers.find(m_technicalLayer)->second;
 }
 
+void SGCore::Camera::updateLayersFrameBuffersMarkup() noexcept
+{
+    for(auto& ppLayerPair : m_postProcessLayers)
+    {
+        auto& ppLayer = ppLayerPair.second;
+
+        ppLayer.m_frameBuffersBindMarkup.clear();
+
+        ppLayer.m_FXShader->bind();
+
+        // todo: make
+    }
+}
 

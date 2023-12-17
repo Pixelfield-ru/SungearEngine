@@ -8,7 +8,6 @@
 #include <list>
 
 #include "Entity.h"
-#include "SGCore/Graphics/API/ShaderMarkup.h"
 
 // STANDARD LAYERS DEFINES
 
@@ -28,7 +27,6 @@ namespace SGCore
         std::string m_name;
 
         bool m_isOpaque = true;
-        bool m_useCustomShader = false;
 
     private:
         size_t m_index = 0;

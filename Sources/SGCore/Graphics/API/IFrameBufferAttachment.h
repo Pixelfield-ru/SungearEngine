@@ -11,6 +11,9 @@ namespace SGCore
 {
     struct IFrameBufferAttachment
     {
+        // USE ONLY FOR OPENGL
+        std::uint32_t m_handler = 0;
+
         SGGColorFormat m_format = SGGColorFormat::SGG_RGB;
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGB8;
 

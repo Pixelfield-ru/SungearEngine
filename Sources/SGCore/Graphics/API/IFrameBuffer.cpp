@@ -32,33 +32,22 @@ int SGCore::IFrameBuffer::getHeight() const noexcept
     return m_height;
 }
 
-void SGCore::IFrameBuffer::getAttachmentsCount(uint16_t& depthAttachmentsCount,
-                                               uint16_t& depthStencilAttachmentsCount,
-                                               uint16_t& colorAttachmentsCount,
-                                               uint16_t& renderAttachmentsCount) const noexcept
-{
-    depthAttachmentsCount = m_depthAttachmentsCount;
-    depthStencilAttachmentsCount = m_depthStencilAttachmentsCount;
-    colorAttachmentsCount = m_colorAttachmentsCount;
-    renderAttachmentsCount = m_renderAttachmentsCount;
-}
-
 std::uint16_t SGCore::IFrameBuffer::getDepthAttachmentsCount() const noexcept
 {
-    return m_depthAttachmentsCount;
+    return m_depthAttachments.size();
 }
 
 std::uint16_t SGCore::IFrameBuffer::getDepthStencilAttachmentsCount() const noexcept
 {
-    return m_depthStencilAttachmentsCount;
+    return m_depthStencilAttachments.size();
 }
 
 std::uint16_t SGCore::IFrameBuffer::getColorAttachmentsCount() const noexcept
 {
-    return m_colorAttachmentsCount;
+    return m_colorAttachments.size();
 }
 
 std::uint16_t SGCore::IFrameBuffer::getRenderAttachmentsCount() const noexcept
 {
-    return m_renderAttachmentsCount;
+    return m_renderAttachments.size();
 }

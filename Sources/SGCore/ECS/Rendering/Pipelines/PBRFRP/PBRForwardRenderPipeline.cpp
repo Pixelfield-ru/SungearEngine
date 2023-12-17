@@ -40,15 +40,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                         shadersPaths["Skybox"]["DefaultShader"]
                 )
         );
-
-        skyboxesPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_SKYBOX,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_SKYBOX),
-                1
-        );
-
-        skyboxesPass->m_shaderMarkup.calculateBlocksOffsets();
-
         m_renderPasses.push_back(skyboxesPass);
     }
 
@@ -60,14 +51,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                         shadersPaths["ShadowsGeneration"]["DefaultShader"]
                 )
         );
-
-        directionalLightsPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_DIFFUSE,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
-                1
-        );
-
-        directionalLightsPass->m_shaderMarkup.calculateBlocksOffsets();
 
         m_renderPasses.push_back(directionalLightsPass);
     }
@@ -82,40 +65,6 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
         );
 
         geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
-
-        geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_DIFFUSE,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE),
-                1
-        );
-        geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_DIFFUSE_ROUGHNESS),
-                1
-        );
-        geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_NORMALS,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_NORMALS),
-                1
-        );
-        geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_METALNESS,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_METALNESS),
-                1
-        );
-        geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_LIGHTMAP,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_LIGHTMAP),
-                1
-        );
-        geometryPass->m_shaderMarkup.addTexturesBlockDeclaration(
-                SGTextureType::SGTP_SHADOW_MAP2D,
-                sgStandardTextureTypeToString(SGTextureType::SGTP_SHADOW_MAP2D),
-                5,
-                false
-        );
-
-        geometryPass->m_shaderMarkup.calculateBlocksOffsets();
 
         m_renderPasses.push_back(geometryPass);
     }

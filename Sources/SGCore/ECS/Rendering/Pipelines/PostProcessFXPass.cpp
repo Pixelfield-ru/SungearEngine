@@ -2,6 +2,7 @@
 // Created by stuka on 26.11.2023.
 //
 
+#include <format>
 #include "PostProcessFXPass.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ECS/ECSUtils.h"
@@ -34,8 +35,6 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 
             if(!cameraComponent) continue;
 
-            cameraComponent->bindPostProcessLayers();
-
             depthPass(cameraComponent);
             FXPass(cameraComponent);
             layersCombiningPass(cameraComponent);
@@ -50,10 +49,24 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& camera) const noexcept
 {
     camera->m_depthPassShader->bind();
-    camera->m_depthPassShader
-            ->useShaderMarkup(camera->m_postProcessShadersMarkup);
 
     std::uint8_t layerIdx = 0;
+
+    // todo:
+    for(const auto& ppLayerPair : camera->getPostProcessLayers())
+    {
+        const auto& ppLayer = ppLayerPair.second;
+
+        for(const auto& depthAttachment : ppLayer.m_frameBuffer->getDepthAttachments())
+        {
+            ppLayer.m_frameBuffer->bindAttachment(depthAttachment.first, layerIdx);
+
+            ++layerIdx;
+        }
+    }
+
+    layerIdx = 0;
+
     for(const auto& ppLayerPair : camera->getPostProcessLayers())
     {
         const auto& ppLayer = ppLayerPair.second;
@@ -83,10 +96,9 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera
     {
         const auto& ppLayer = ppLayerPair.second;
 
-        auto& layerShader = ppLayer.m_FXShader;
+        auto layerShader = ppLayer.getFXShader();
 
         layerShader->bind();
-        layerShader->useShaderMarkup(camera->m_postProcessShadersMarkup);
 
         layerShader->useUniformBuffer(CoreMain::getRenderer().m_programDataBuffer);
 

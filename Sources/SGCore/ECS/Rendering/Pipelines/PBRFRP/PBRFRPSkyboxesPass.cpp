@@ -12,7 +12,6 @@
 void SGCore::PBRFRPSkyboxesPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     m_shader->bind();
-    m_shader->useShaderMarkup(m_shaderMarkup);
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
             auto cameraComponent = cameraEntity.getComponent<Camera>();
@@ -42,7 +41,7 @@ void SGCore::PBRFRPSkyboxesPass::render(const Ref<Scene>& scene, const Ref<IRend
 
                     for(const auto& meshComponent: meshComponents)
                     {
-                        meshComponent->m_meshData->m_material->bind(m_shader, m_shaderMarkup);
+                        meshComponent->m_meshData->m_material->bind(m_shader);
                         m_shader->useMatrix("objectModelMatrix",
                                           transformComponent->m_modelMatrix
                         );

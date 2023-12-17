@@ -16,12 +16,8 @@
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
-#include "ShaderMarkup.h"
-
 namespace SGCore
 {
-    class MaterialTexture;
-
     class IUniformBuffer;
     class IFrameBuffer;
 
@@ -39,12 +35,12 @@ namespace SGCore
 
         virtual void compile(Ref<FileAsset> asset) = 0;
 
-        virtual void useShaderMarkup(const ShaderMarkup& shaderMarkup);
-        virtual void updateFrameBufferAttachmentsCount(const Ref<IFrameBuffer>& frameBuffer,
-                                                       const std::string& frameBufferNameInShader);
+        void updateFrameBufferAttachmentsCount(const Ref <SGCore::IFrameBuffer>& frameBuffer,
+                                               const std::string& frameBufferNameInShader) noexcept;
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
 
+        // TODO: wtf is this. clear code
         void addDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
         void emplaceDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
 
@@ -110,7 +106,6 @@ namespace SGCore
         std::unordered_map<std::string, IShaderUniform> m_uniforms;
 
         std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
-
     };
     //class IUniformType
 }

@@ -10,7 +10,6 @@
 #include <map>
 
 #include "SGCore/Graphics/API/IFrameBuffer.h"
-#include "SGCore/Graphics/API/GL/GLFrameBufferAttachment.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
 namespace SGCore
@@ -19,12 +18,8 @@ namespace SGCore
     {
     private:
         GLuint m_handler = 0;
-        // first - name
-        std::unordered_map<SGFrameBufferAttachmentType, GLFrameBufferAttachment> m_attachments;
 
     public:
-        std::shared_ptr<IFrameBuffer> bindAttachments(const MarkedFrameBufferAttachmentsBlock& markedFrameBufferAttachmentsBlock) override;
-
         std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                      const std::uint8_t& textureBlock) override;
 

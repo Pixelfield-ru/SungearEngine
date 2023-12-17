@@ -12,6 +12,11 @@ namespace SGCore
 {
     class IFrameBuffer;
 
+    struct FrameBufferAttachmentWithBlock
+    {
+        SGFrameBufferAttachmentType m_frameBufferAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
+    };
+
     struct PostProcessLayer
     {
         friend class Camera;
@@ -20,10 +25,10 @@ namespace SGCore
 
         Ref<IFrameBuffer> m_frameBuffer;
 
-        Ref<IShader> m_FXShader;
-
         // name just for user. for convenience
         std::string m_name = "default";
+
+        Ref<IShader> m_FXShader;
 
         std::uint16_t m_index = 0;
 
@@ -61,6 +66,8 @@ namespace SGCore
         }
 
     private:
+        std::unordered_map<PostProcessLayer*, std::vector<FrameBufferAttachmentWithBlock>> m_frameBuffersBindMarkup;
+
         // technical name
         std::string m_nameInShader = SG_PP_LAYER_FB_NAME(0);
     };
@@ -72,8 +79,6 @@ namespace SGCore
 
     public:
         Camera();
-
-        ShaderMarkup m_postProcessShadersMarkup;
 
         Ref<IShader> m_depthPassShader;
         Ref<IShader> m_ppLayersCombiningShader;
@@ -102,8 +107,6 @@ namespace SGCore
         void setPostProcessLayerShader(const Ref<Layer>& layer,
                                        const Ref<IShader>& shader) noexcept;
 
-        void bindPostProcessLayers() noexcept;
-
         const auto& getPostProcessLayers() const noexcept
         {
             return m_postProcessLayers;
@@ -116,6 +119,8 @@ namespace SGCore
         void clearPostProcessFrameBuffers() const noexcept;
 
         PostProcessLayer& getDefaultPostProcessLayer() noexcept;
+
+        void updateLayersFrameBuffersMarkup() noexcept;
 
         // todo: make rename pp layer function
 

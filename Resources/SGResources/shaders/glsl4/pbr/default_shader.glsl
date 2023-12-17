@@ -285,12 +285,12 @@ float ambient = 0.1;
 
             // ===================        shadows calc        =====================
 
-            dirLightsShadowCoeff += calcDirLightShadow(
+            /*dirLightsShadowCoeff += calcDirLightShadow(
                 directionalLights[i],
                 vsIn.fragPos,
                 finalNormal,
                 sgmat_shadowMap2DSamplers[i]
-            ) * NdotL * radiance + radiance * 0.04;
+            ) * NdotL * radiance + radiance * 0.04;*/
 
             // ====================================================================
 
@@ -320,7 +320,7 @@ float ambient = 0.1;
             lo += (diffuse * albedo.rgb / PI + specular) * radiance;
         }
 
-        dirLightsShadowCoeff /= DIRECTIONAL_LIGHTS_COUNT;
+        // dirLightsShadowCoeff /= DIRECTIONAL_LIGHTS_COUNT;
 
         /*vec3 resultPhong = vec3(0.0);
         vec3 resultDiffuse = vec3(0.0);
@@ -355,7 +355,7 @@ float ambient = 0.1;
         vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
         float exposure = 1.3;
 
-        finalCol *= dirLightsShadowCoeff;
+        // finalCol *= dirLightsShadowCoeff;
 
         // HDR standard tonemapper
         finalCol = finalCol / (finalCol + vec3(1.0));

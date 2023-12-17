@@ -128,8 +128,7 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::bind() noexcep
     return shared_from_this();
 }
 
-void SGCore::GL4UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
-                                                                         const int& size) noexcept
+void SGCore::GL4UniformBuffer::subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, m_buffer + offset);

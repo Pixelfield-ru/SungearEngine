@@ -208,6 +208,8 @@ void SGCore::GL46Shader::compile(Ref<FileAsset> asset) noexcept
     {
         glDetachShader(m_programHandler, shaderHandler);
     }
+
+    m_cachedLocations.clear();
 }
 
 void SGCore::GL46Shader::bind() noexcept

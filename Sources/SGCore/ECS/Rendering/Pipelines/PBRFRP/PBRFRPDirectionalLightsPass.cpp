@@ -77,7 +77,6 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                                  );
 
                                                                  m_shader->bind();
-                                                                 m_shader->useShaderMarkup(m_shaderMarkup);
                                                                  directionalLightComponent->m_shadowMap->bind()->clear();
 
                                                                  CoreMain::getRenderer().prepareUniformBuffers(
@@ -99,9 +98,7 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
 
                                                                          for (const auto& meshComponent: meshComponents)
                                                                          {
-                                                                             meshComponent->m_meshData->m_material->bind(
-                                                                                     m_shader, m_shaderMarkup
-                                                                             );
+                                                                             meshComponent->m_meshData->m_material->bind(m_shader);
                                                                              m_shader->useMatrix("objectModelMatrix",
                                                                                                  transformComponent->m_modelMatrix
                                                                              );

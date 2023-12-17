@@ -15,9 +15,8 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
     Ref<PBRFRPDirectionalLightsPass> dirLightsPass = renderPipeline->getRenderPass<PBRFRPDirectionalLightsPass>();
 
     m_shader->bind();
-    m_shader->useShaderMarkup(m_shaderMarkup);
 
-    if(dirLightsPass && dirLightsPass->m_active)
+    /*if(dirLightsPass && dirLightsPass->m_active)
     {
         const auto& shadowsMapsTexturesBlock =
                 m_shaderMarkup.m_texturesBlocks[SGTextureType::SGTP_SHADOW_MAP2D];
@@ -38,7 +37,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
 
                 currentShadowsCaster++;
         SG_END_ITERATE_CACHED_ENTITIES
-    }
+    }*/
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
             auto cameraTransformComponent = cameraEntity.getComponent<Transform>();
@@ -68,7 +67,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
 
                     for(const auto& meshComponent: meshComponents)
                     {
-                        meshComponent->m_meshData->m_material->bind(m_shader, m_shaderMarkup);
+                        meshComponent->m_meshData->m_material->bind(m_shader);
                         m_shader->useMatrix("objectModelMatrix",
                                             transformComponent->m_modelMatrix
                         );

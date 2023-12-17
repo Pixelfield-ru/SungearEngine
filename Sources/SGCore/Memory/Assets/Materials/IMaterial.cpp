@@ -1,33 +1,38 @@
 #include "IMaterial.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Graphics/API/ShaderMarkup.h"
 
 std::shared_ptr<SGCore::IMaterial>
-SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader,
-                                      const ShaderMarkup& shaderMarkup)
+SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader)
 {
-    std::uint8_t currentTexBlockOfType = 0;
+    std::uint8_t curTexBlock = 0;
+    std::uint16_t currentTextureOfType = 0;
+    std::string texturesTypeStr;
 
-    for(const auto& markedTextureBlock : shaderMarkup.m_texturesBlocks)
+    for(std::uint16_t texType = SGTextureType::SGTP_EMISSIVE; texType <= SGTextureType::SGTP_SHADOW_MAP2D; ++texType)
     {
-        std::string texBlockTypeStr = markedTextureBlock.second.m_name;
+        auto texturesType = (SGTextureType) texType;
 
-        for(const auto& texture : m_textures)
+        texturesTypeStr = sgStandardTextureTypeToString(texturesType);
+
+        const auto& foundTypedTextures = m_textures.find(texturesType);
+
+        if(foundTypedTextures != m_textures.cend())
         {
-            if(texture.m_type == markedTextureBlock.second.m_type)
+            for(const auto& texture : foundTypedTextures->second)
             {
-                texture.m_texture->bind(markedTextureBlock.second.m_offset + currentTexBlockOfType);
+                texture->bind(curTexBlock);
+                shader->useTextureBlock(texturesTypeStr + "[" + std::to_string(currentTextureOfType) + "]",
+                                        curTexBlock
+                );
 
-                currentTexBlockOfType++;
+                ++curTexBlock;
+                ++currentTextureOfType;
             }
         }
 
-        if(markedTextureBlock.second.m_autoSamplersCount)
-        {
-            shader->useInteger(texBlockTypeStr + "_COUNT", currentTexBlockOfType);
-        }
+        shader->useTextureBlock(texturesTypeStr + "_COUNT", currentTextureOfType);
 
-        currentTexBlockOfType = 0;
+        currentTextureOfType = 0;
     }
 
     shader->useVectorf("materialDiffuseCol",
@@ -70,18 +75,14 @@ SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
     auto foundTex =
             AssetManager::loadAsset<Texture2DAsset>(path);
 
-    m_textures.emplace_back(textureType, foundTex->m_texture2D);
+    m_textures[textureType].push_back(foundTex->m_texture2D);
 
     return foundTex;
 }
 
 void SGCore::IMaterial::copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept
 {
-    // adding all textures
-    for(auto& texture : m_textures)
-    {
-        to->m_textures.push_back(texture);
-    }
+    to->m_textures = m_textures;
 }
 
 SGCore::IMaterial&
