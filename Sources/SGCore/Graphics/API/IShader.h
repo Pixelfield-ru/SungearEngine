@@ -40,7 +40,7 @@ namespace SGCore
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
 
-        // TODO: wtf is this. clear code
+        // TODO: wtf is this. clean code
         void addDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
         void emplaceDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
 
