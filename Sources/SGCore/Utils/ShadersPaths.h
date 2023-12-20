@@ -9,6 +9,7 @@
 #include <string>
 
 #include "SGCore/Patterns/Singleton.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 struct ShadersPaths
 {
@@ -34,7 +35,7 @@ struct ShadersPaths
     // ---------------
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<ShadersPaths>> m_paths;
+    std::unordered_map<std::string, SGCore::Ref<ShadersPaths>> m_paths;
 
     SG_FULL_SINGLETON(ShadersPaths)
 };
