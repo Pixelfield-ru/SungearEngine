@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Utils/UniqueNamesManager.h"
 
 namespace SGCore
 {
@@ -19,14 +20,16 @@ namespace SGCore
     class GPUObjectsStorage
     {
     public:
-        void addShader(const Ref<IShader>& shader) noexcept;
-        void addTexture2D(const Ref<ITexture2D>& texture2D) noexcept;
-        void addFramebuffer(const Ref<IFrameBuffer>& frameBuffer) noexcept;
+        static void addShader(const Ref<IShader>& shader) noexcept;
+        static void addTexture2D(const Ref<ITexture2D>& texture2D) noexcept;
+        static void addFramebuffer(const Ref<IFrameBuffer>& frameBuffer) noexcept;
 
     private:
-        std::unordered_map<std::string, Weak<IShader>> m_shaders;
-        std::unordered_map<std::string, Weak<ITexture2D>> m_textures2D;
-        std::unordered_map<std::string, Weak<IFrameBuffer>> m_frameBuffers;
+        static inline std::unordered_map<std::string, Weak<IShader>> m_shaders;
+        static inline std::unordered_map<std::string, Weak<ITexture2D>> m_textures2D;
+        static inline std::unordered_map<std::string, Weak<IFrameBuffer>> m_frameBuffers;
+
+        static inline UniqueNamesManager m_uniqueNamesManager;
     };
 }
 

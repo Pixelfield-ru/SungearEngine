@@ -28,6 +28,7 @@ add_subdirectory(GLFW)
 add_subdirectory(OpenGL)
 add_subdirectory(GLM)
 add_subdirectory(imgui)
+add_subdirectory(fmt)
 
 add_subdirectory(bullet3)
 

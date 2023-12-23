@@ -15,19 +15,19 @@ SGCore::Camera::Camera()
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["DepthPassShader"]
             )
-    );
+    )->addToGlobalStorage();
 
     m_ppLayersCombiningShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["AttachmentsCombiningShader"]
             )
-    );
+    )->addToGlobalStorage();
 
     m_finalPostProcessFXShader = Ref<IShader>(
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["FinalOverlayShader"]
             )
-    );
+    )->addToGlobalStorage();
 
     // ==================================================================
 
@@ -199,7 +199,7 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["DefaultLayerShader"]
             )
-    );
+    )->addToGlobalStorage();
 
     // ----------------------------------
 

@@ -43,7 +43,7 @@ std::shared_ptr<SGCore::IAsset> SGCore::Texture2DAsset::load(const std::string& 
 
     auto sharedPtr = shared_from_this();
 
-    m_texture2D = std::shared_ptr<ITexture2D>(CoreMain::getRenderer().createTexture2D());
+    m_texture2D = Ref<ITexture2D>(CoreMain::getRenderer().createTexture2D())->addToGlobalStorage();
     m_texture2D->create(sharedPtr);
 
     SGC_INFO("Loaded texture. Width: " + std::to_string(m_width) + ", height: " + std::to_string(m_height)

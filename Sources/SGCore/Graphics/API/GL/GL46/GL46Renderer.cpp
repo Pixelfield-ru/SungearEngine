@@ -5,6 +5,7 @@
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/Graphics/GPUObjectsStorage.h"
 
 bool SGCore::GL46Renderer::confirmSupport() noexcept
 {
@@ -23,6 +24,10 @@ SGCore::GL46Shader* SGCore::GL46Renderer::createShader()
 {
     auto* shader = new GL46Shader;
     shader->m_version = "460";
+
+    shader->setRawName("SGUnknownShader");
+
+    //GPUObjectsStorage::addShader(shader->weak_from_this());
 
     return shader;
 }

@@ -29,6 +29,7 @@
          ${Vulkan_INCLUDE_DIR}
          ${CMAKE_SOURCE_DIR}/Sources
          ${CMAKE_SOURCE_DIR}/Externals/robin_map/include
+         ${CMAKE_SOURCE_DIR}/Externals/fmt/include
          #${BULLET_INCLUDE_DIR}
 
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
@@ -54,6 +55,8 @@
          ImGui
 
          tsl::robin_map
+
+         fmt
          )
 
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)

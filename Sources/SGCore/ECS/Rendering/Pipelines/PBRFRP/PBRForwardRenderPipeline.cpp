@@ -39,7 +39,8 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 CoreMain::getRenderer().createShader(
                         shadersPaths["Skybox"]["DefaultShader"]
                 )
-        );
+        )->addToGlobalStorage();
+
         m_renderPasses.push_back(skyboxesPass);
     }
 
@@ -50,7 +51,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 CoreMain::getRenderer().createShader(
                         shadersPaths["ShadowsGeneration"]["DefaultShader"]
                 )
-        );
+        )->addToGlobalStorage();
 
         m_renderPasses.push_back(directionalLightsPass);
     }
@@ -62,7 +63,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 CoreMain::getRenderer().createShader(
                         shadersPaths["PBR"]["DefaultShader"]
                 )
-        );
+        )->addToGlobalStorage();
 
         geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
 
@@ -76,7 +77,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 CoreMain::getRenderer().createShader(
                         shadersPaths["Gizmos"]["LinesGizmosShader"]
                 )
-        );
+        )->addToGlobalStorage();
 
         m_renderPasses.push_back(linesGizmosPass);
     }
@@ -88,7 +89,7 @@ SGCore::PBRForwardRenderPipeline::PBRForwardRenderPipeline()
                 CoreMain::getRenderer().createShader(
                         shadersPaths["Gizmos"]["ComplexGizmosShader"]
                 )
-        );
+        )->addToGlobalStorage();
 
         m_renderPasses.push_back(complexGizmosPass);
     }

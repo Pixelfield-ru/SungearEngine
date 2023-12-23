@@ -20,11 +20,22 @@ std::string SGCore::UniqueName::getName() const noexcept
     return m_name;
 }
 
-template<typename Str>
-void SGCore::UniqueName::setRawName(Str&& rawName) noexcept
+void SGCore::UniqueName::setRawName(const std::string& rawName) noexcept
 {
     if(auto lockedParent = m_parentUniqueNamesManager.lock())
     {
-        lockedParent->setUniqueNameRawName(*this, std::forward<Str>(rawName));
+        lockedParent->setUniqueNameRawName(*this, rawName);
     }
+    else
+    {
+        m_rawName = rawName;
+    }
+}
+
+void SGCore::UniqueName::attachToManager(const SGCore::Weak<SGCore::UniqueNamesManager>& manager) noexcept
+{
+    m_parentUniqueNamesManager = manager;
+
+    // update the name
+    setRawName(m_rawName);
 }

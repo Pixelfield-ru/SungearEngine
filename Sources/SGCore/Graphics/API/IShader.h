@@ -15,17 +15,52 @@
 #include "ShaderDefine.h"
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Utils/UniqueName.h"
 
 namespace SGCore
 {
     class IUniformBuffer;
     class IFrameBuffer;
 
-    // todo: add various types of defines like material textures block define e.t.c.
-    class IShader : public IAssetObserver
+    struct ShaderTexturesFromGlobalStorageBlock
     {
+        friend class GLShadersPreprocessor;
+
+        std::string m_uniformName;
+
+        bool m_isSingleTextureBlock = false;
+
+        void addTexture(const Ref<ITexture2D>& texture2D) noexcept;
+        void removeTexture(const Ref<ITexture2D>& texture2D) noexcept;
+        void clearTextures() noexcept;
+
+        [[nodiscard]] const auto& getTextures() const noexcept
+        {
+            return m_textures;
+        }
+
+        bool operator==(const ShaderTexturesFromGlobalStorageBlock& other) const noexcept;
+        bool operator!=(const ShaderTexturesFromGlobalStorageBlock& other) const noexcept;
+
+    private:
+        Weak<IShader> m_parentShader;
+
+        std::list<Weak<ITexture2D>> m_textures;
+
+        std::list<std::string> m_requiredTexturesNames;
+    };
+
+    // todo: add various types of defines like material textures block define e.t.c.
+    class IShader : public IAssetObserver, public UniqueNameWrapper, public std::enable_shared_from_this<IShader>
+    {
+        friend struct ShaderTexturesFromGlobalStorageBlock;
+
     public:
         std::string m_version;
+
+        Scope<IUniformBuffer> m_uniformBuffer;
+
+        Weak<FileAsset> m_fileAsset;
 
         virtual ~IShader() = default;
 
@@ -71,8 +106,6 @@ namespace SGCore
          */
         void onAssetPathChanged() override;
 
-        #pragma region Uniforms use
-
         virtual void useUniformBuffer(const Ref<IUniformBuffer>&) { };
         virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
 
@@ -92,17 +125,30 @@ namespace SGCore
         virtual void useInteger(const std::string& uniformName, const size_t& i) { };
         virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
 
-        Scope<IUniformBuffer> m_uniformBuffer;
+        Ref<IShader> addToGlobalStorage() noexcept;
 
-        #pragma endregion
+        template<typename Block = ShaderTexturesFromGlobalStorageBlock>
+        void addTexturesFromGlobalStorageBlock(Block&& block) noexcept
+        {
+            if(std::find(m_texturesFromGlobalStorageBlocks.begin(), m_texturesFromGlobalStorageBlocks.end(), block) ==
+                m_texturesFromGlobalStorageBlocks.end())
+            {
+                m_texturesFromGlobalStorageBlocks.emplace_back(std::forward<Block>(block));
+                block.m_parentShader = shared_from_this();
+            }
+        }
 
-        #pragma region Operators
+        void removeTexturesFromGlobalStorageBlock(const ShaderTexturesFromGlobalStorageBlock& block) noexcept;
+
+        void clearTexturesFromGlobalStorageBlocks() noexcept;
+
         IShader& operator=(const IShader&) noexcept;
-        #pragma endregion
-
-        Weak<FileAsset> m_fileAsset;
 
     protected:
+        void onTexturesCountChanged() noexcept;
+
+        std::vector<ShaderTexturesFromGlobalStorageBlock> m_texturesFromGlobalStorageBlocks;
+
         std::unordered_map<std::string, IShaderUniform> m_uniforms;
 
         std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;

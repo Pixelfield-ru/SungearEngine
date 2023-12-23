@@ -43,8 +43,7 @@ namespace SGCore
             return newUniqueName;
         }
 
-        template<typename Str = std::string>
-        void setUniqueNameRawName(UniqueName& uniqueName, Str&& newRawName)
+        void setUniqueNameRawName(UniqueName& uniqueName, const std::string& newRawName)
         {
             auto& uniqueNamesCounter = m_uniqueNamesCounters[newRawName];
 

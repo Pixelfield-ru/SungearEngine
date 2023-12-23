@@ -8,17 +8,20 @@
 #include "API/ITexture2D.h"
 #include "API/IFrameBuffer.h"
 
-void SGCore::GPUObjectsStorage::addShader(const SGCore::Ref<SGCore::IShader>& shader) noexcept
+void SGCore::GPUObjectsStorage::addShader(const Ref<IShader>& shader) noexcept
 {
-    m_shaders[shader.getName()] = shader;
+    shader->attachToUniqueNamesManager(m_uniqueNamesManager.weak_from_this());
+    m_shaders[shader->getName()] = shader;
 }
 
-void SGCore::GPUObjectsStorage::addTexture2D(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
+void SGCore::GPUObjectsStorage::addTexture2D(const Ref<ITexture2D>& texture2D) noexcept
 {
-
+    texture2D->attachToUniqueNamesManager(m_uniqueNamesManager.weak_from_this());
+    m_textures2D[texture2D->getName()] = texture2D;
 }
 
-void SGCore::GPUObjectsStorage::addFramebuffer(const SGCore::Ref<SGCore::IFrameBuffer>& frameBuffer) noexcept
+void SGCore::GPUObjectsStorage::addFramebuffer(const Ref<IFrameBuffer>& frameBuffer) noexcept
 {
-
+    frameBuffer->attachToUniqueNamesManager(m_uniqueNamesManager.weak_from_this());
+    m_frameBuffers[frameBuffer->getName()] = frameBuffer;
 }

@@ -2,7 +2,7 @@
 // Created by stuka on 26.11.2023.
 //
 
-#include <format>
+#include <fmt/core.h>
 #include "PostProcessFXPass.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ECS/ECSUtils.h"
@@ -96,7 +96,7 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera
     {
         const auto& ppLayer = ppLayerPair.second;
 
-        auto layerShader = ppLayer.getFXShader();
+        auto layerShader = ppLayer.m_FXShader;
 
         layerShader->bind();
 

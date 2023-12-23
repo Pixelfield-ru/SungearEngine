@@ -17,18 +17,19 @@ namespace SGCore
     {
         friend class UniqueNamesManager;
 
-        Weak<UniqueNamesManager> m_parentUniqueNamesManager;
-
         [[nodiscard]] std::string getRawName() const noexcept;
 
         [[nodiscard]] size_t getUniqueID() const noexcept;
 
         [[nodiscard]] std::string getName() const noexcept;
 
-        template<typename Str = std::string>
-        void setRawName(Str&& rawName) noexcept;
+        void setRawName(const std::string& rawName) noexcept;
+
+        void attachToManager(const Weak<UniqueNamesManager>& manager) noexcept;
 
     private:
+        Weak<UniqueNamesManager> m_parentUniqueNamesManager;
+
         std::string m_rawName;
         size_t m_uniqueID = 0;
         // m_rawName + m_uniqueID
@@ -38,6 +39,7 @@ namespace SGCore
     // wrapper class for unique name for inheritance
     class UniqueNameWrapper
     {
+    public:
         [[nodiscard]] auto getRawName() const noexcept
         {
             return m_uniqueName.getRawName();
@@ -53,10 +55,14 @@ namespace SGCore
             return m_uniqueName.getName();
         }
 
-        template<typename Str = std::string>
-        void setRawName(Str&& rawName) noexcept
+        void setRawName(const std::string& rawName) noexcept
         {
-            m_uniqueName.setRawName(std::forward<Str>(rawName));
+            m_uniqueName.setRawName(rawName);
+        }
+
+        void attachToUniqueNamesManager(const Weak<UniqueNamesManager>& manager) noexcept
+        {
+            m_uniqueName.attachToManager(manager);
         }
 
     private:

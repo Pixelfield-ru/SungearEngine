@@ -57,6 +57,21 @@ float ambient = 0.1;
     // layout(location = 4) out vec3 unknownAttachment0;
     // layout(location = 5) out vec3 unknownAttachment1;
 
+    /*
+        SGUSampler2D diffuseSamplers[] = SGCollectFromMaterial(SGTT_DIFFUSE);
+        раскладывается в
+        uniform sampler2D diffuseSamplers[КОЛ_ВО_НАЙДЕННЫХ_ТЕКСТУР_У_МАТЕРИАЛА];
+        uniform int diffuseSamplers_COUNT;
+
+        SGUSampler2D catTex = SGGetTexture("cat");
+        раскладывается в
+        uniform sampler2D catTex;
+
+        SGUSampler2D catsTex[] = SGGetTextures("cat0", "cat1", "cat2");
+        раскладывается в
+        uniform sampler2D catsTex[3];
+        uniform int catsTex_COUNT;
+    */
     uniform int sgmat_diffuseSamplers_COUNT = 0;
 
     uniform int sgmat_lightmapSamplers_COUNT = 0;

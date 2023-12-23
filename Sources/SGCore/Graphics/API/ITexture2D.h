@@ -6,15 +6,17 @@
 #define NATIVECORE_ITEXTURE2D_H
 
 #include <iostream>
+
 #include "GraphicsDataTypes.h"
 #include "SGCore/Memory/Assets/Texture2DAsset.h"
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Utils/UniqueName.h"
 
 namespace SGCore
 {
     class Texture2DAsset;
 
-    class ITexture2D : public IAssetObserver, public std::enable_shared_from_this<ITexture2D>
+    class ITexture2D : public IAssetObserver,  public UniqueNameWrapper, public std::enable_shared_from_this<ITexture2D>
     {
     public:
         virtual void create(Weak<Texture2DAsset>) { };
@@ -24,6 +26,8 @@ namespace SGCore
 
         // todo:: WTH BRUH. MUST RETURN LOCKED WEAK
         Weak<Texture2DAsset> getAsset() noexcept;
+
+        Ref<ITexture2D> addToGlobalStorage() noexcept;
 
         virtual ITexture2D& operator=(const Ref<ITexture2D>& other) = 0;
         //virtual operator=(std::shared_ptr<ITexture2D> other);

@@ -12,7 +12,7 @@
 
 namespace SGCore
 {
-    class GL46Shader : public IShader, public std::enable_shared_from_this<GL46Shader>
+    class GL46Shader : public IShader
     {
     public:
         ~GL46Shader() noexcept override;

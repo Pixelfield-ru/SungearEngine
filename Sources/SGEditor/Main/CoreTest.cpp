@@ -450,7 +450,7 @@ void init()
     camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
                                       SGCore::Ref<SGCore::IShader>(
                                               SGCore::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/distortion_fx_layer.glsl")
-                                      ));
+                                      )->addToGlobalStorage());
 
 
     // =========== BLOOM SETUP =======================================

@@ -103,7 +103,7 @@ void SGCore::GL46Shader::compile(Ref<FileAsset> asset) noexcept
 {
     destroy();
 
-    auto thisWeak = weak_from_this();
+    auto thisWeak = this->weak_from_this();
 
     Ref<FileAsset> fileAssetShared = m_fileAsset.lock();
 
