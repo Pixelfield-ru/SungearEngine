@@ -7,7 +7,6 @@
 #include <unordered_map>
 
 #include "SGCore/Graphics/API/ITexture2D.h"
-#include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
@@ -21,23 +20,19 @@ namespace SGCore
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
     public:
+
+        IMaterial() noexcept;
+
         std::string m_name;
 
         std::unordered_map<SGTextureType, std::vector<Ref<ITexture2D>>> m_textures;
 
-        glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
-        glm::vec4 m_specularColor       = glm::vec4(1.0f);
-        glm::vec4 m_ambientColor        = glm::vec4(0.0f);
-        glm::vec4 m_emissionColor       = glm::vec4(1.0f);
-        glm::vec4 m_transparentColor    = glm::vec4(1.0f);
-        float m_shininess               = 32.0f;
-        float m_metallicFactor          = 1.0f;
-        float m_roughnessFactor         = 1.0f;
+        Ref<IMaterial> bind(const Ref<IShader>& shader);
 
-        std::shared_ptr<IMaterial> bind(const std::shared_ptr<IShader>& shader);
+        Ref<IMaterial> bind();
 
         // TODO: impl
-        std::shared_ptr<IAsset> load(const std::string& path) override;
+        Ref<IAsset> load(const std::string& path) override;
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.
@@ -45,10 +40,51 @@ namespace SGCore
         * @param texture2DAsset - Texture asset
         * @return this
         */
-        std::shared_ptr<Texture2DAsset> findAndAddTexture2D(const SGTextureType& textureType,
+        Ref<Texture2DAsset> findAndAddTexture2D(const SGTextureType& textureType,
                                                             const std::string& path);
 
-        void copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept;
+        void copyTextures(const Ref<IMaterial>& to) const noexcept;
+
+        void setShader(const Ref<IShader>& shader) noexcept;
+
+        Ref<IShader> getShader() const noexcept;
+
+        void setDiffuseColor(const glm::vec4& col) noexcept;
+
+        auto getDiffuseColor() const noexcept
+        { return m_diffuseColor; }
+
+        void setSpecularColor(const glm::vec4& col) noexcept;
+
+        auto getSpecularColor() const noexcept
+        { return m_specularColor; }
+
+        void setAmbientColor(const glm::vec4& col) noexcept;
+
+        auto getAmbientColor() const noexcept
+        { return m_ambientColor; }
+
+        void setEmissionColor(const glm::vec4& col) noexcept;
+
+        auto getEmissionColor() const noexcept
+        { return m_emissionColor; }
+
+        void setTransparentColor(const glm::vec4& col) noexcept;
+
+        auto getTransparentColor() const noexcept
+        { return m_transparentColor; }
+
+        void setShininess(const float& shininess) noexcept;
+
+        float getShininess() const noexcept { return m_shininess; }
+
+        void setMetallicFactor(const float& metallicFactor) noexcept;
+
+        float getMetallicFactor() const noexcept { return m_metallicFactor; }
+
+        void setRoughnessFactor(const float& roughnessFactor) noexcept;
+
+        float getRoughnessFactor() const noexcept { return m_roughnessFactor; }
 
         /**
          * Copies all texture assets (textures data is not copied) to another material.\n
@@ -59,6 +95,16 @@ namespace SGCore
         IMaterial& operator=(const IMaterial& other) noexcept;
 
     protected:
+        Ref<IShader> m_shader;
+
+        glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
+        glm::vec4 m_specularColor       = glm::vec4(1.0f);
+        glm::vec4 m_ambientColor        = glm::vec4(0.0f);
+        glm::vec4 m_emissionColor       = glm::vec4(1.0f);
+        glm::vec4 m_transparentColor    = glm::vec4(1.0f);
+        float m_shininess               = 32.0f;
+        float m_metallicFactor          = 1.0f;
+        float m_roughnessFactor         = 1.0f;
 
         // first - shader name
         // std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;

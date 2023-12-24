@@ -26,7 +26,7 @@ SGCore::Ref<SGCore::Entity> SGCore::Node::addOnScene(const SGCore::Ref<Scene>& s
 
     nodeEntity->addComponent(nodeTransform);
 
-    nodeEntity->m_name = m_name;
+    nodeEntity->setRawName(m_name);
 
     if(rootAdd)
     {
@@ -34,7 +34,7 @@ SGCore::Ref<SGCore::Entity> SGCore::Node::addOnScene(const SGCore::Ref<Scene>& s
     }
     else
     {
-        nodeEntity->m_scene = scene;
+        nodeEntity->setParentScene(scene);
         nodeEntity->m_layer = layer;
     }
 
@@ -53,9 +53,8 @@ SGCore::Ref<SGCore::Entity> SGCore::Node::addOnScene(const SGCore::Ref<Scene>& s
         meshedEntity->addComponent(meshedEntityTransformComponent);
         meshedEntity->addComponent(meshComponent);
 
-        meshedEntity->m_scene = scene;
         meshedEntity->m_layer = layer;
-        nodeEntity->m_children.insert(meshedEntity);
+        nodeEntity->addChild(meshedEntity);
 
         scene->recacheEntity(meshedEntity);
 
@@ -66,7 +65,7 @@ SGCore::Ref<SGCore::Entity> SGCore::Node::addOnScene(const SGCore::Ref<Scene>& s
     for(auto& childNode : m_children)
     {
         auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
-        nodeEntity->m_children.insert(childNodeEntity);
+        nodeEntity->addChild(childNodeEntity);
     }
 
     return nodeEntity;

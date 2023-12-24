@@ -14,6 +14,7 @@
 
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Utils/UniqueName.h"
 
 namespace SGCore
 {
@@ -21,16 +22,12 @@ namespace SGCore
     class Layer;
     class Scene;
 
-    class Entity : public std::enable_shared_from_this<Entity>
+    class Entity : public UniqueNameWrapper, public std::enable_shared_from_this<Entity>
     {
         friend class Scene;
         friend class Node;
 
     public:
-        std::string m_name = "SGEntity";
-
-        std::set<Ref<Entity>> m_children;
-
         void addComponent(const Ref<IComponent>&) noexcept;
 
         /**
@@ -77,21 +74,27 @@ namespace SGCore
 
         Ref<Layer> getLayer() const noexcept;
 
-        size_t getCountOfEntities(const std::string& entitiesNames) const noexcept;
+        void setParentScene(const Ref<Scene>& scene) noexcept;
 
-        size_t getSceneSameNameIndex() const noexcept;
+        const auto& getChildren() const noexcept
+        {
+            return m_children;
+        }
+
+        void addChild(const Ref<Entity>& child) noexcept;
+        void removeChild(const Ref<Entity>& child) noexcept;
+        void clearChildren() noexcept;
 
         // todo: make remove component and remove components of type
 
     private:
-        // what index of same name in scene has this entity
-        size_t m_sceneSameNameIndex = 0;
-
         std::list<Ref<IComponent>> m_components;
+
+        std::set<Ref<Entity>> m_children;
 
         // todo: make only index of layer.
         Weak<Layer> m_layer;
-        Weak<Scene> m_scene;
+        Weak<Scene> m_parentScene;
     };
 }
 

@@ -189,22 +189,22 @@ void init()
                                           }
                                           if(meshComponent)
                                           {
-                                              meshComponent->m_meshData->m_material->m_metallicFactor = 1;
-                                              meshComponent->m_meshData->m_material->m_roughnessFactor = 1;
+                                              meshComponent->m_meshData->m_material->setMetallicFactor(1);
+                                              meshComponent->m_meshData->m_material->setRoughnessFactor(1);
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_DIFFUSE,
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE,
                                                                                                          "../SGResources/textures/spotted_rust/spotted-rust_albedo.png");
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_LIGHTMAP,
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_LIGHTMAP,
                                                                                                          "../SGResources/textures/spotted_rust/spotted-rust_ao.png");
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_METALNESS,
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_METALNESS,
                                                                                                          "../SGResources/textures/spotted_rust/spotted-rust_metallic.png");
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_NORMALS,
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_NORMALS,
                                                                                                          "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png");
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_DIFFUSE_ROUGHNESS,
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS,
                                                                                                          "../SGResources/textures/spotted_rust/spotted-rust_roughness.png");
                                           }
                                       }
@@ -222,7 +222,7 @@ void init()
                                           if(meshComponent)
                                           {
                                               meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTP_DIFFUSE, "../SGResources/textures/chess.jpg");
+                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE, "../SGResources/textures/chess.jpg");
                                               meshComponent->m_meshData->setVertexUV(0, 200, 0, 0);
                                               meshComponent->m_meshData->setVertexUV(1, 0, 200, 0);
                                               meshComponent->m_meshData->setVertexUV(2, 200, 200, 0);
@@ -345,7 +345,7 @@ void init()
                                               if(meshComponent)
                                               {
                                                   meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
-                                                  meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTP_SKYBOX].push_back(
+                                                  meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTT_SKYBOX].push_back(
                                                           standardCubemap->getTexture2D()
                                                   );
                                               }
@@ -376,7 +376,7 @@ void init()
 
                                            if(meshComponent)
                                            {
-                                               meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTP_DIFFUSE].push_back(
+                                               meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTT_DIFFUSE].push_back(
                                                        geniusJPG->m_texture2D
                                                );
                                            }
@@ -388,7 +388,7 @@ void init()
     // ==========================================================================================
 
     testCameraEntity = SGCore::MakeRef<SGCore::Entity>();
-    testCameraEntity->m_name = "SGMainCamera";
+    testCameraEntity->setRawName("SGMainCamera");
     auto cameraTransformComponent = SGCore::MakeRef<SGCore::Transform>();
     cameraTransformComponent->m_position.y = -3;
     cameraTransformComponent->m_position.z = 2;

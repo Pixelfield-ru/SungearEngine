@@ -4,72 +4,7 @@
 
 #include "IShader.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
-
-void SGCore::ShaderTexturesFromGlobalStorageBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
-{
-    // if texture with this name requires
-    if (std::find(m_requiredTexturesNames.begin(), m_requiredTexturesNames.end(), texture2D->getName()) !=
-        m_requiredTexturesNames.end())
-    {
-        m_requiredTexturesNames.remove(texture2D->getName());
-
-        m_textures.push_back(texture2D);
-
-        if(auto lockedShader = m_parentShader.lock())
-        {
-            lockedShader->onTexturesCountChanged();
-        }
-    }
-}
-
-void SGCore::ShaderTexturesFromGlobalStorageBlock::removeTexture
-(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
-{
-    size_t removedCnt = m_textures.remove_if([&texture2D](auto otherTexture2D) {
-        return !(otherTexture2D.owner_before(texture2D) || texture2D.owner_before(otherTexture2D));
-    });
-
-    if(removedCnt > 0)
-    {
-        m_requiredTexturesNames.push_back(texture2D->getName());
-
-        if(auto lockedShader = m_parentShader.lock())
-        {
-            lockedShader->onTexturesCountChanged();
-        }
-    }
-}
-
-void SGCore::ShaderTexturesFromGlobalStorageBlock::clearTextures() noexcept
-{
-    auto currIter = m_textures.begin();
-    while(currIter != m_textures.end())
-    {
-        m_requiredTexturesNames.push_back(currIter->lock()->getName());
-        currIter = m_textures.erase(currIter);
-    }
-
-    if(auto lockedShader = m_parentShader.lock())
-    {
-        lockedShader->onTexturesCountChanged();
-    }
-}
-
-bool SGCore::ShaderTexturesFromGlobalStorageBlock::operator==(
-        const SGCore::ShaderTexturesFromGlobalStorageBlock& other) const noexcept
-{
-    return other.m_uniformName == m_uniformName;
-}
-
-bool SGCore::ShaderTexturesFromGlobalStorageBlock::operator!=(
-        const SGCore::ShaderTexturesFromGlobalStorageBlock& other) const noexcept
-{
-    return !(*this == other);
-}
-
-// ================================================================
-// ================================================================
-// ================================================================
+#include "IFrameBuffer.h"
 
 void SGCore::IShader::updateFrameBufferAttachmentsCount(const Ref<IFrameBuffer>& frameBuffer,
                                                         const std::string& frameBufferNameInShader) noexcept
@@ -279,15 +214,50 @@ SGCore::Ref<SGCore::IShader> SGCore::IShader::addToGlobalStorage() noexcept
     return thisShared;
 }
 
-void SGCore::IShader::removeTexturesFromGlobalStorageBlock(
-        const SGCore::ShaderTexturesFromGlobalStorageBlock& block) noexcept
+void SGCore::IShader::addTexturesBlock(const SGCore::Ref<SGCore::ShaderTexturesBlock>& block) noexcept
 {
-    std::remove(m_texturesFromGlobalStorageBlocks.begin(), m_texturesFromGlobalStorageBlocks.end(), block);
+    if(std::find(m_texturesBlocks.begin(), m_texturesBlocks.end(), block) ==
+       m_texturesBlocks.end())
+    {
+        m_texturesBlocks.push_back(block);
+        block->setParentShader(shared_from_this());
+    }
 }
 
-void SGCore::IShader::clearTexturesFromGlobalStorageBlocks() noexcept
+void SGCore::IShader::removeTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept
 {
-    m_texturesFromGlobalStorageBlocks.clear();
+    m_texturesBlocks.erase(
+            std::remove(m_texturesBlocks.begin(), m_texturesBlocks.end(), block),
+            m_texturesBlocks.end());
+}
+
+void SGCore::IShader::clearTexturesBlocks() noexcept
+{
+    m_texturesBlocks.clear();
+}
+
+void SGCore::IShader::addTexture(const Ref<ITexture2D>& texture2D) noexcept
+{
+    for(auto& texturesBlock : m_texturesBlocks)
+    {
+        texturesBlock->addTexture(texture2D);
+    }
+}
+
+void SGCore::IShader::removeTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
+{
+    for(auto& texturesBlock : m_texturesBlocks)
+    {
+        texturesBlock->removeTexture(texture2D);
+    }
+}
+
+void SGCore::IShader::collectTexturesFromMaterial(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
+{
+    for(auto& texturesBlock : m_texturesBlocks)
+    {
+        texturesBlock->collectTexturesFromMaterial(material);
+    }
 }
 
 void SGCore::IShader::onTexturesCountChanged() noexcept
@@ -298,19 +268,19 @@ void SGCore::IShader::onTexturesCountChanged() noexcept
 
     std::uint8_t curTexture = 0;
 
-    for(const auto& texturesFromGlobalStorageBlock : m_texturesFromGlobalStorageBlocks)
+    for(const auto& texturesFromGlobalStorageBlock : m_texturesBlocks)
     {
-        if(texturesFromGlobalStorageBlock.m_isSingleTextureBlock)
+        if(texturesFromGlobalStorageBlock->m_isSingleTextureBlock)
         {
-            useTextureBlock(texturesFromGlobalStorageBlock.m_uniformName, texBlock);
+            useTextureBlock(texturesFromGlobalStorageBlock->m_uniformName, texBlock);
 
             ++texBlock;
         }
         else
         {
-            for(std::uint8_t i = 0; i < texturesFromGlobalStorageBlock.getTextures().size(); ++i)
+            for(std::uint8_t i = 0; i < texturesFromGlobalStorageBlock->getTextures().size(); ++i)
             {
-                useTextureBlock(texturesFromGlobalStorageBlock.m_uniformName + "[" + std::to_string(curTexture) + "]",
+                useTextureBlock(texturesFromGlobalStorageBlock->m_uniformName + "[" + std::to_string(curTexture) + "]",
                                 texBlock);
 
                 ++curTexture;
@@ -318,7 +288,7 @@ void SGCore::IShader::onTexturesCountChanged() noexcept
             }
         }
 
-        useInteger(texturesFromGlobalStorageBlock.m_uniformName + "_COUNT", curTexture);
+        useInteger(texturesFromGlobalStorageBlock->m_uniformName + "_COUNT", curTexture);
 
         curTexture = 0;
     }

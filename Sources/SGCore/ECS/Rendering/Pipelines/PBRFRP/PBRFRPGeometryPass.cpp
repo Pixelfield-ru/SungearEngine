@@ -14,7 +14,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
 {
     Ref<PBRFRPDirectionalLightsPass> dirLightsPass = renderPipeline->getRenderPass<PBRFRPDirectionalLightsPass>();
 
-    m_shader->bind();
+    // m_shader->bind();
 
     /*if(dirLightsPass && dirLightsPass->m_active)
     {
@@ -46,7 +46,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
             if(!cameraComponent) continue;
 
             CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
-            m_shader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
+            // m_shader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
             // todo: make less bindings
 
@@ -67,8 +67,9 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
 
                     for(const auto& meshComponent: meshComponents)
                     {
-                        meshComponent->m_meshData->m_material->bind(m_shader);
-                        m_shader->useMatrix("objectModelMatrix",
+                        meshComponent->m_meshData->m_material->bind();
+                        meshComponent->m_meshData->m_material->getShader()->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
+                        meshComponent->m_meshData->m_material->getShader()->useMatrix("objectModelMatrix",
                                             transformComponent->m_modelMatrix
                         );
 

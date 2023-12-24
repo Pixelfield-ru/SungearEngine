@@ -12,7 +12,7 @@ SGCore::Ref<SGCore::ITexture2D> SGCore::ITexture2D::addToGlobalStorage() noexcep
 {
     auto thisShared = shared_from_this();
 
-    GPUObjectsStorage::addTexture2D(shared_from_this());
+    GPUObjectsStorage::addTexture(shared_from_this());
 
     return thisShared;
 }

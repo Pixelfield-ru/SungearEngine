@@ -10,18 +10,28 @@
 
 void SGCore::GPUObjectsStorage::addShader(const Ref<IShader>& shader) noexcept
 {
-    shader->attachToUniqueNamesManager(m_uniqueNamesManager.weak_from_this());
+    shader->attachToUniqueNamesManager(m_uniqueNamesManager);
     m_shaders[shader->getName()] = shader;
 }
 
-void SGCore::GPUObjectsStorage::addTexture2D(const Ref<ITexture2D>& texture2D) noexcept
+void SGCore::GPUObjectsStorage::addTexture(const Ref<ITexture2D>& texture2D) noexcept
 {
-    texture2D->attachToUniqueNamesManager(m_uniqueNamesManager.weak_from_this());
+    texture2D->attachToUniqueNamesManager(m_uniqueNamesManager);
     m_textures2D[texture2D->getName()] = texture2D;
+
+    for(auto& shaderPair : m_shaders)
+    {
+        auto& shader = shaderPair.second;
+
+        if(auto lockedShader = shader.lock())
+        {
+            lockedShader->addTexture(texture2D);
+        }
+    }
 }
 
 void SGCore::GPUObjectsStorage::addFramebuffer(const Ref<IFrameBuffer>& frameBuffer) noexcept
 {
-    frameBuffer->attachToUniqueNamesManager(m_uniqueNamesManager.weak_from_this());
+    frameBuffer->attachToUniqueNamesManager(m_uniqueNamesManager);
     m_frameBuffers[frameBuffer->getName()] = frameBuffer;
 }

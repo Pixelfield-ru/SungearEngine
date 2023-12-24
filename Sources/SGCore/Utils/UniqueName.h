@@ -25,13 +25,14 @@ namespace SGCore
 
         void setRawName(const std::string& rawName) noexcept;
 
-        void attachToManager(const Weak<UniqueNamesManager>& manager) noexcept;
+        void attachToManager(const Ref<UniqueNamesManager>& manager) noexcept;
 
     private:
         Weak<UniqueNamesManager> m_parentUniqueNamesManager;
 
         std::string m_rawName;
-        size_t m_uniqueID = 0;
+        // -1 IS NOT TYPO
+        size_t m_uniqueID = -1;
         // m_rawName + m_uniqueID
         std::string m_name;
     };
@@ -60,7 +61,7 @@ namespace SGCore
             m_uniqueName.setRawName(rawName);
         }
 
-        void attachToUniqueNamesManager(const Weak<UniqueNamesManager>& manager) noexcept
+        void attachToUniqueNamesManager(const Ref<UniqueNamesManager>& manager) noexcept
         {
             m_uniqueName.attachToManager(manager);
         }

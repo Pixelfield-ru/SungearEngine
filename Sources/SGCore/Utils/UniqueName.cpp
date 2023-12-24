@@ -32,7 +32,7 @@ void SGCore::UniqueName::setRawName(const std::string& rawName) noexcept
     }
 }
 
-void SGCore::UniqueName::attachToManager(const SGCore::Weak<SGCore::UniqueNamesManager>& manager) noexcept
+void SGCore::UniqueName::attachToManager(const Ref<SGCore::UniqueNamesManager>& manager) noexcept
 {
     m_parentUniqueNamesManager = manager;
 

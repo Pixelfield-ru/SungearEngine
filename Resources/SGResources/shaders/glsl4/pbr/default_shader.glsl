@@ -57,10 +57,11 @@ float ambient = 0.1;
     // layout(location = 4) out vec3 unknownAttachment0;
     // layout(location = 5) out vec3 unknownAttachment1;
 
+// todo:
     /*
-        SGUSampler2D diffuseSamplers[] = SGCollectFromMaterial(SGTT_DIFFUSE);
+        SGUSampler2D diffuseSamplers[3] = SGCollectFromMaterial(SGTT_DIFFUSE);
         раскладывается в
-        uniform sampler2D diffuseSamplers[КОЛ_ВО_НАЙДЕННЫХ_ТЕКСТУР_У_МАТЕРИАЛА];
+        uniform sampler2D diffuseSamplers[3];
         uniform int diffuseSamplers_COUNT;
 
         SGUSampler2D catTex = SGGetTexture("cat");
@@ -71,6 +72,21 @@ float ambient = 0.1;
         раскладывается в
         uniform sampler2D catsTex[3];
         uniform int catsTex_COUNT;
+
+        также сабпассы и сабшейдеры:
+
+        SGSubPass(PBRFRPGeometryPass)
+        {
+            SGSubShader(FragmentShader)
+            {
+
+            }
+
+            SGSubShader(VertexShader)
+            {
+
+            }
+        }
     */
     uniform int sgmat_diffuseSamplers_COUNT = 0;
 

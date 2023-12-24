@@ -266,7 +266,10 @@ SGCore::GLIndexBuffer* SGCore::GL4Renderer::createIndexBuffer()
 
 SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D()
 {
-    return new GL4Texture2D;
+    auto* tex = new GL4Texture2D;
+    tex->setRawName("SGUnknownTexture2D");
+
+    return tex;
 }
 
 SGCore::GL4CubemapTexture* SGCore::GL4Renderer::createCubemapTexture()
@@ -281,7 +284,10 @@ SGCore::GL4UniformBuffer* SGCore::GL4Renderer::createUniformBuffer()
 
 SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer()
 {
-    return new GL4FrameBuffer;
+    auto* fb = new GL4FrameBuffer;
+    fb->setRawName("SGUnknownFrameBuffer");
+
+    return fb;
 }
 
 SGCore::GL3MeshData* SGCore::GL4Renderer::createMeshData()

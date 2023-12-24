@@ -11,7 +11,7 @@ void SGCore::Entity::addComponent(const Ref<IComponent>& component) noexcept
 {
     m_components.push_back(component);
 
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = m_parentScene.lock();
 
     if(lockedScene)
     {
@@ -24,24 +24,31 @@ SGCore::Ref<SGCore::Layer> SGCore::Entity::getLayer() const noexcept
     return m_layer.lock();
 }
 
-size_t SGCore::Entity::getCountOfEntities(const std::string& entitiesNames) const noexcept
+void SGCore::Entity::setParentScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
 {
-    size_t count = 0;
+    m_parentScene = scene;
+
+    attachToUniqueNamesManager(scene->getUniqueNamesManager());
 
     for(const auto& child : m_children)
     {
-        if(child->m_name == entitiesNames)
-        {
-            ++count;
-        }
-
-        count += child->getCountOfEntities(entitiesNames);
+        child->setParentScene(scene);
     }
-
-    return count;
 }
 
-size_t SGCore::Entity::getSceneSameNameIndex() const noexcept
+void SGCore::Entity::addChild(const SGCore::Ref<SGCore::Entity>& child) noexcept
 {
-    return m_sceneSameNameIndex;
+    m_children.insert(child);
+
+    child->setParentScene(m_parentScene.lock());
+}
+
+void SGCore::Entity::removeChild(const SGCore::Ref<SGCore::Entity>& child) noexcept
+{
+    m_children.erase(child);
+}
+
+void SGCore::Entity::clearChildren() noexcept
+{
+    m_children.clear();
 }

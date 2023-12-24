@@ -21,7 +21,7 @@ namespace SGCore
     {
     public:
         static void addShader(const Ref<IShader>& shader) noexcept;
-        static void addTexture2D(const Ref<ITexture2D>& texture2D) noexcept;
+        static void addTexture(const Ref<ITexture2D>& texture2D) noexcept;
         static void addFramebuffer(const Ref<IFrameBuffer>& frameBuffer) noexcept;
 
     private:
@@ -29,7 +29,7 @@ namespace SGCore
         static inline std::unordered_map<std::string, Weak<ITexture2D>> m_textures2D;
         static inline std::unordered_map<std::string, Weak<IFrameBuffer>> m_frameBuffers;
 
-        static inline UniqueNamesManager m_uniqueNamesManager;
+        static inline Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
     };
 }
 

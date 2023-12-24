@@ -92,36 +92,30 @@ void SGCore::Scene::addLayer(std::string&& layerName) noexcept
 
 void SGCore::Scene::addEntity(const Ref<Entity>& entity) noexcept
 {
-    entity->m_sceneSameNameIndex = getCountOfEntities(entity->m_name);
-
     entity->m_layer = m_layers[SG_LAYER_OPAQUE_NAME];
     m_entities.push_back(entity);
 
-    entity->m_scene = shared_from_this();
+    entity->setParentScene(shared_from_this());
 
     recacheEntity(entity);
 }
 
 void SGCore::Scene::addEntity(const Ref<Entity>& entity, const std::string& layerName) noexcept
 {
-    entity->m_sceneSameNameIndex = getCountOfEntities(entity->m_name);
-
     entity->m_layer = m_layers[layerName];
     m_entities.push_back(entity);
 
-    entity->m_scene = shared_from_this();
+    entity->setParentScene(shared_from_this());
 
     recacheEntity(entity);
 }
 
 void SGCore::Scene::addEntity(const Ref<Entity>& entity, const Ref<Layer>& layer) noexcept
 {
-    entity->m_sceneSameNameIndex = getCountOfEntities(entity->m_name);
-
     entity->m_layer = layer;
     m_entities.push_back(entity);
 
-    entity->m_scene = shared_from_this();
+    entity->setParentScene(shared_from_this());
 
     recacheEntity(entity);
 }
@@ -253,21 +247,4 @@ void SGCore::Scene::recacheEntity(const SGCore::Ref<SGCore::Entity>& entity)
 std::set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getSystems() noexcept
 {
     return m_systems;
-}
-
-size_t SGCore::Scene::getCountOfEntities(const std::string& entitiesNames) const noexcept
-{
-    size_t count = 0;
-
-    for(const auto& root : m_entities)
-    {
-        if(root->m_name == entitiesNames)
-        {
-            ++count;
-        }
-
-        count += root->getCountOfEntities(entitiesNames);
-    }
-
-    return count;
 }

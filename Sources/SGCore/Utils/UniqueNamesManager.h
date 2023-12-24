@@ -8,9 +8,12 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <iostream>
+#include <unordered_set>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "UniqueName.h"
+#include "SGCore/Logging/Log.h"
 
 namespace SGCore
 {
@@ -21,6 +24,7 @@ namespace SGCore
         std::string m_rawName;
         // count of unique names with this raw name
         size_t m_count = 0;
+        std::unordered_set<std::string> m_names;
     };
 
     class UniqueNamesManager : public std::enable_shared_from_this<UniqueNamesManager>
@@ -47,11 +51,15 @@ namespace SGCore
         {
             auto& uniqueNamesCounter = m_uniqueNamesCounters[newRawName];
 
-            uniqueName.m_rawName = uniqueName.m_rawName;
+            if(uniqueNamesCounter.m_names.contains(uniqueName.m_rawName + " (" + std::to_string( uniqueName.m_uniqueID) + ")")) return;
+
+            uniqueName.m_rawName = newRawName;
             uniqueName.m_uniqueID = uniqueNamesCounter.m_count;
             uniqueName.m_name = uniqueNamesCounter.m_count == 0 ?
                                 uniqueName.m_rawName :
                                 uniqueName.m_rawName + " (" + std::to_string(uniqueNamesCounter.m_count) + ")";
+
+            uniqueNamesCounter.m_names.insert(uniqueName.m_rawName + " (" + std::to_string( uniqueName.m_uniqueID) + ")");
 
             ++uniqueNamesCounter.m_count;
         }

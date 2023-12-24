@@ -35,12 +35,9 @@ void SGEditor::SceneHierarchy::end() noexcept
 
 void SGEditor::SceneHierarchy::renderEntity(const SGCore::Ref<SGCore::Entity>& entity) noexcept
 {
-    size_t sameNameIdx = entity->getSceneSameNameIndex();
-    std::string finalEntityName = entity->m_name + (sameNameIdx > 0 ? " (" + std::to_string(sameNameIdx) + ") " : "");
-
-    if(ImGui::TreeNode(finalEntityName.c_str()))
+    if(ImGui::TreeNode(entity->getName().c_str()))
     {
-        for(const auto& child : entity->m_children)
+        for(const auto& child : entity->getChildren())
         {
             renderEntity(child);
         }

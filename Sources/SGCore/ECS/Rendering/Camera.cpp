@@ -6,6 +6,7 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Utils/ShadersPaths.h"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
 
 SGCore::Camera::Camera()
 {

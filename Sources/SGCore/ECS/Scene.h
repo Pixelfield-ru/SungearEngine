@@ -11,6 +11,7 @@
 #include "Layer.h"
 #include "ISystem.h"
 #include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/UniqueNamesManager.h"
 
 namespace SGCore
 {
@@ -79,10 +80,15 @@ namespace SGCore
 
         std::set<Ref<ISystem>>& getSystems() noexcept;
 
-        size_t getCountOfEntities(const std::string& entitiesNames) const noexcept;
+        auto getUniqueNamesManager() const noexcept
+        {
+            return m_uniqueNamesManager;
+        }
 
     private:
         static inline Ref<Scene> m_currentScene;
+
+        Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 
         std::set<Ref<ISystem>> m_systems;
 

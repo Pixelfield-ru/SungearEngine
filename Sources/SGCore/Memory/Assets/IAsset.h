@@ -12,6 +12,7 @@
 #include <filesystem>
 
 #include "IAssetObserver.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
@@ -38,7 +39,7 @@ namespace SGCore
     protected:
         long m_lastModified = -1;
         std::filesystem::path m_path;
-        std::list<std::shared_ptr<IAssetObserver>> m_observers;
+        std::list<Weak<IAssetObserver>> m_observers;
     };
 }
 

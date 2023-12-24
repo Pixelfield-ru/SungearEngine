@@ -150,58 +150,60 @@ enum SGGDataType
 
 enum SGTextureType
 {
-    SGTP_EMISSIVE,
-    SGTP_AMBIENT_OCCLUSION,
-    SGTP_AMBIENT,
-    SGTP_DIFFUSE_ROUGHNESS,
-    SGTP_DIFFUSE,
-    SGTP_DISPLACEMENT,
-    SGTP_HEIGHT,
-    SGTP_NORMALS,
-    SGTP_BASE_COLOR,
-    SGTP_CLEARCOAT,
-    SGTP_EMISSION_COLOR,
-    SGTP_LIGHTMAP,
-    SGTP_METALNESS,
-    SGTP_NORMAL_CAMERA,
-    SGTP_OPACITY,
-    SGTP_REFLECTION,
-    SGTP_SHEEN,
-    SGTP_SHININESS,
-    SGTP_SPECULAR,
-    SGTP_TRANSMISSION,
-    SGTP_SKYBOX,
+    SGTT_EMISSIVE,
+    SGTT_AMBIENT_OCCLUSION,
+    SGTT_AMBIENT,
+    SGTT_DIFFUSE_ROUGHNESS,
+    SGTT_DIFFUSE,
+    SGTT_DISPLACEMENT,
+    SGTT_HEIGHT,
+    SGTT_NORMALS,
+    SGTT_BASE_COLOR,
+    SGTT_CLEARCOAT,
+    SGTT_EMISSION_COLOR,
+    SGTT_LIGHTMAP,
+    SGTT_METALNESS,
+    SGTT_NORMAL_CAMERA,
+    SGTT_OPACITY,
+    SGTT_REFLECTION,
+    SGTT_SHEEN,
+    SGTT_SHININESS,
+    SGTT_SPECULAR,
+    SGTT_TRANSMISSION,
+    SGTT_SKYBOX,
 
-    SGTP_SHADOW_MAP2D
+    SGTT_SHADOW_MAP2D,
+
+    SGTT_NONE
 };
 
 static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterialTextureType)
 {
     switch(sgMaterialTextureType)
     {
-        case SGTP_EMISSIVE: return "sgmat_emissiveSamplers";
-        case SGTP_AMBIENT_OCCLUSION: return "sgmat_ambientOcclusionSamplers";
-        case SGTP_AMBIENT: return "sgmat_ambientSamplers";
-        case SGTP_DIFFUSE_ROUGHNESS: return "sgmat_diffuseRoughnessSamplers";
-        case SGTP_DIFFUSE: return "sgmat_diffuseSamplers";
-        case SGTP_DISPLACEMENT: return "sgmat_displacementSamplers";
-        case SGTP_HEIGHT: return "sgmat_heightSamplers";
-        case SGTP_NORMALS: return "sgmat_normalsSamplers";
-        case SGTP_BASE_COLOR: return "sgmat_baseColorSamplers";
-        case SGTP_CLEARCOAT: return "sgmat_clearcoatSamplers";
-        case SGTP_EMISSION_COLOR: return "sgmat_emissionColorSamplers";
-        case SGTP_LIGHTMAP: return "sgmat_lightmapSamplers";
-        case SGTP_METALNESS: return "sgmat_metalnessSamplers";
-        case SGTP_NORMAL_CAMERA: return "sgmat_normalCameraSamplers";
-        case SGTP_OPACITY: return "sgmat_opacitySamplers";
-        case SGTP_REFLECTION: return "sgmat_relfectionSamplers";
-        case SGTP_SHEEN: return "sgmat_sheenSamplers";
-        case SGTP_SHININESS: return "sgmat_shininessSamplers";
-        case SGTP_SPECULAR: return "sgmat_specularSamplers";
-        case SGTP_TRANSMISSION: return "sgmat_transmissionSamplers";
-        case SGTP_SKYBOX: return "sgmat_skyboxSamplers";
+        case SGTT_EMISSIVE: return "sgmat_emissiveSamplers";
+        case SGTT_AMBIENT_OCCLUSION: return "sgmat_ambientOcclusionSamplers";
+        case SGTT_AMBIENT: return "sgmat_ambientSamplers";
+        case SGTT_DIFFUSE_ROUGHNESS: return "sgmat_diffuseRoughnessSamplers";
+        case SGTT_DIFFUSE: return "sgmat_diffuseSamplers";
+        case SGTT_DISPLACEMENT: return "sgmat_displacementSamplers";
+        case SGTT_HEIGHT: return "sgmat_heightSamplers";
+        case SGTT_NORMALS: return "sgmat_normalsSamplers";
+        case SGTT_BASE_COLOR: return "sgmat_baseColorSamplers";
+        case SGTT_CLEARCOAT: return "sgmat_clearcoatSamplers";
+        case SGTT_EMISSION_COLOR: return "sgmat_emissionColorSamplers";
+        case SGTT_LIGHTMAP: return "sgmat_lightmapSamplers";
+        case SGTT_METALNESS: return "sgmat_metalnessSamplers";
+        case SGTT_NORMAL_CAMERA: return "sgmat_normalCameraSamplers";
+        case SGTT_OPACITY: return "sgmat_opacitySamplers";
+        case SGTT_REFLECTION: return "sgmat_relfectionSamplers";
+        case SGTT_SHEEN: return "sgmat_sheenSamplers";
+        case SGTT_SHININESS: return "sgmat_shininessSamplers";
+        case SGTT_SPECULAR: return "sgmat_specularSamplers";
+        case SGTT_TRANSMISSION: return "sgmat_transmissionSamplers";
+        case SGTT_SKYBOX: return "sgmat_skyboxSamplers";
 
-        case SGTP_SHADOW_MAP2D: return "sgmat_shadowMap2DSamplers";
+        case SGTT_SHADOW_MAP2D: return "sgmat_shadowMap2DSamplers";
     }
 
     return "";

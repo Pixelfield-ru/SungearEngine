@@ -14,47 +14,21 @@
 #include "ITexture2D.h"
 #include "ShaderDefine.h"
 
-#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Utils/UniqueName.h"
+
+#include "SGCore/Graphics/ShaderTexturesFromGlobalStorageBlock.h"
+#include "SGCore/Graphics/ShaderTexturesFromMaterialBlock.h"
 
 namespace SGCore
 {
     class IUniformBuffer;
     class IFrameBuffer;
+    class IMaterial;
 
-    struct ShaderTexturesFromGlobalStorageBlock
-    {
-        friend class GLShadersPreprocessor;
-
-        std::string m_uniformName;
-
-        bool m_isSingleTextureBlock = false;
-
-        void addTexture(const Ref<ITexture2D>& texture2D) noexcept;
-        void removeTexture(const Ref<ITexture2D>& texture2D) noexcept;
-        void clearTextures() noexcept;
-
-        [[nodiscard]] const auto& getTextures() const noexcept
-        {
-            return m_textures;
-        }
-
-        bool operator==(const ShaderTexturesFromGlobalStorageBlock& other) const noexcept;
-        bool operator!=(const ShaderTexturesFromGlobalStorageBlock& other) const noexcept;
-
-    private:
-        Weak<IShader> m_parentShader;
-
-        std::list<Weak<ITexture2D>> m_textures;
-
-        std::list<std::string> m_requiredTexturesNames;
-    };
-
+    // todo: add subshaders and add preprocess for it
     // todo: add various types of defines like material textures block define e.t.c.
     class IShader : public IAssetObserver, public UniqueNameWrapper, public std::enable_shared_from_this<IShader>
     {
-        friend struct ShaderTexturesFromGlobalStorageBlock;
-
     public:
         std::string m_version;
 
@@ -127,33 +101,31 @@ namespace SGCore
 
         Ref<IShader> addToGlobalStorage() noexcept;
 
-        template<typename Block = ShaderTexturesFromGlobalStorageBlock>
-        void addTexturesFromGlobalStorageBlock(Block&& block) noexcept
-        {
-            if(std::find(m_texturesFromGlobalStorageBlocks.begin(), m_texturesFromGlobalStorageBlocks.end(), block) ==
-                m_texturesFromGlobalStorageBlocks.end())
-            {
-                m_texturesFromGlobalStorageBlocks.emplace_back(std::forward<Block>(block));
-                block.m_parentShader = shared_from_this();
-            }
-        }
+        // ==========================================
 
-        void removeTexturesFromGlobalStorageBlock(const ShaderTexturesFromGlobalStorageBlock& block) noexcept;
+        void addTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept;
 
-        void clearTexturesFromGlobalStorageBlocks() noexcept;
+        void removeTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept;
 
-        IShader& operator=(const IShader&) noexcept;
+        void clearTexturesBlocks() noexcept;
 
-    protected:
+        // ==========================================
+
+        void addTexture(const Ref<ITexture2D>& texture2D) noexcept;
+        void removeTexture(const Ref<ITexture2D>& texture2D) noexcept;
+
+        void collectTexturesFromMaterial(const Ref<IMaterial>& material) noexcept;
+
         void onTexturesCountChanged() noexcept;
 
-        std::vector<ShaderTexturesFromGlobalStorageBlock> m_texturesFromGlobalStorageBlocks;
+        IShader& operator=(const IShader&) noexcept;
+    protected:
+        std::vector<Ref<ShaderTexturesBlock>> m_texturesBlocks;
 
         std::unordered_map<std::string, IShaderUniform> m_uniforms;
 
         std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
     };
-    //class IUniformType
 }
 
 #endif //NATIVECORE_ISHADER_H

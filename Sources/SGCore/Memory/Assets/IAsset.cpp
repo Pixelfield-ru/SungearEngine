@@ -11,44 +11,82 @@ long SGCore::IAsset::getLastModified() noexcept
 
 void SGCore::IAsset::onModified()
 {
-    for(const auto& observer : m_observers)
+    auto it = m_observers.begin();
+    while(it != m_observers.end())
     {
-        observer->onAssetModified();
+        if(auto lockedObserver = it->lock())
+        {
+            lockedObserver->onAssetModified();
+            ++it;
+        }
+        else
+        {
+            it = m_observers.erase(it);
+        }
     }
 }
 
 void SGCore::IAsset::onPathChanged()
 {
-    for(const auto& observer : m_observers)
+    auto it = m_observers.begin();
+    while(it != m_observers.end())
     {
-        observer->onAssetPathChanged();
+        if(auto lockedObserver = it->lock())
+        {
+            lockedObserver->onAssetPathChanged();
+            ++it;
+        }
+        else
+        {
+            it = m_observers.erase(it);
+        }
     }
 }
 
 void SGCore::IAsset::onDeleted()
 {
-    for(const auto& observer : m_observers)
+    auto it = m_observers.begin();
+    while(it != m_observers.end())
     {
-        observer->onAssetDeleted();
+        if(auto lockedObserver = it->lock())
+        {
+            lockedObserver->onAssetDeleted();
+            ++it;
+        }
+        else
+        {
+            it = m_observers.erase(it);
+        }
     }
 }
 
 void SGCore::IAsset::onRestored()
 {
-    for(const auto& observer : m_observers)
+    auto it = m_observers.begin();
+    while(it != m_observers.end())
     {
-        observer->onAssetRestored();
+        if(auto lockedObserver = it->lock())
+        {
+            lockedObserver->onAssetRestored();
+            ++it;
+        }
+        else
+        {
+            it = m_observers.erase(it);
+        }
     }
 }
 
-void SGCore::IAsset::addObserver(const std::shared_ptr<IAssetObserver>& observer) noexcept
+void SGCore::IAsset::addObserver(const Ref<IAssetObserver>& observer) noexcept
 {
     m_observers.push_back(observer);
 }
 
-void SGCore::IAsset::removeObserver(const std::shared_ptr<IAssetObserver>& observer) noexcept
+void SGCore::IAsset::removeObserver(const Ref<IAssetObserver>& observer) noexcept
 {
-    m_observers.remove(observer);
+    m_observers.remove_if([&observer](auto otherObserver) {
+        return !(otherObserver.owner_before(observer) || observer.owner_before(otherObserver));
+    });
 }
 
 std::filesystem::path SGCore::IAsset::getPath() const noexcept
