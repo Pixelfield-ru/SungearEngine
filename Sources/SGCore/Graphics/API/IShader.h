@@ -1,74 +1,35 @@
 //
-// Created by stuka on 13.05.2023.
+// Created by stuka on 29.12.2023.
 //
-#ifndef NATIVECORE_ISHADER_H
-#define NATIVECORE_ISHADER_H
 
-#include <list>
-#include <glm/matrix.hpp>
+#ifndef SUNGEARENGINE_ISHADER_H
+#define SUNGEARENGINE_ISHADER_H
 
-#include "SGCore/Memory/Assets/FileAsset.h"
+#include <unordered_map>
+#include <string>
 #include "SGCore/Memory/Assets/IAssetObserver.h"
-
-#include "IUniformBuffer.h"
-#include "ITexture2D.h"
-#include "ShaderDefine.h"
-
-#include "SGCore/Utils/UniqueName.h"
-
-#include "SGCore/Graphics/ShaderTexturesFromGlobalStorageBlock.h"
-#include "SGCore/Graphics/ShaderTexturesFromMaterialBlock.h"
+#include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
+#include "SGCore/Memory/Assets/FileAsset.h"
+#include "GraphicsDataTypes.h"
 
 namespace SGCore
 {
-    class IUniformBuffer;
-    class IFrameBuffer;
+    class ISubPassShader;
     class IMaterial;
+    class ITexture2D;
 
-    // todo: add subshaders and add preprocess for it
-    // todo: add various types of defines like material textures block define e.t.c.
-    class IShader : public IAssetObserver, public UniqueNameWrapper, public std::enable_shared_from_this<IShader>
+    class IShader : public IAssetObserver
     {
     public:
-        std::string m_version;
-
-        Scope<IUniformBuffer> m_uniformBuffer;
+        ShaderAnalyzedFile m_shaderAnalyzedFile;
 
         Weak<FileAsset> m_fileAsset;
 
-        virtual ~IShader() = default;
+        void addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept;
 
-        virtual void destroy() = 0;
+        void setSubPassShader(const Ref<IShader>& from, const std::string& subPassName) noexcept;
 
-        virtual void bind() = 0;
-
-        virtual void compile(Ref<FileAsset> asset) = 0;
-
-        void updateFrameBufferAttachmentsCount(const Ref <SGCore::IFrameBuffer>& frameBuffer,
-                                               const std::string& frameBufferNameInShader) noexcept;
-
-        [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
-
-        // TODO: wtf is this. clean code
-        void addDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
-        void emplaceDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
-
-        void addDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
-        void emplaceDefine(const SGShaderDefineType& shaderDefineType, ShaderDefine&& shaderDefine);
-
-        void removeDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
-        void removeDefine(const SGShaderDefineType& shaderDefineType, const std::string& shaderDefineName);
-
-        void updateDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
-        void emplaceUpdateDefine(const SGShaderDefineType& shaderDefineType, ShaderDefine&& shaderDefine);
-
-        void updateDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
-        void emplaceUpdateDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
-
-        void replaceDefines(const SGShaderDefineType& shaderDefineType, const std::list<ShaderDefine>& otherDefines) noexcept;
-        void replaceDefines(const SGShaderDefineType& shaderDefineType, Ref<IShader> otherShader) noexcept;
-
-        void clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept;
+        Ref<ISubPassShader> getSubPassShader(const std::string& subPassName) noexcept;
 
         /**
          * Calls recompile of shader program.
@@ -80,52 +41,21 @@ namespace SGCore
          */
         void onAssetPathChanged() override;
 
-        virtual void useUniformBuffer(const Ref<IUniformBuffer>&) { };
-        virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
+        void collectTextureFromMaterial(const Ref<ITexture2D>& texture, SGTextureType textureType) noexcept;
 
-        virtual void useMatrix(const std::string& uniformName, const glm::mat4& matrix) { };
+        void setParentMaterial(const Ref<IMaterial>& material) noexcept;
+        Weak<IMaterial> getParentMaterial() const noexcept;
 
-        virtual void useVectorf(const std::string& uniformName, const float& x, const float& y) { };
-        virtual void useVectorf(const std::string& uniformName,
-                                const float& x, const float& y, const float& z) { };
-        virtual void useVectorf(const std::string& uniformName,
-                                const float& x, const float& y, const float& z, const float& w) { };
+        const auto& getSubPassesShaders() const noexcept
+        {
+            return m_subPassesShaders;
+        }
 
-        virtual void useVectorf(const std::string& uniformName, const glm::vec2& vec) { };
-        virtual void useVectorf(const std::string& uniformName, const glm::vec3& vec) { };
-        virtual void useVectorf(const std::string& uniformName, const glm::vec4& vec) { };
+    private:
+        std::unordered_map<std::string, Ref<ISubPassShader>> m_subPassesShaders;
 
-        virtual void useFloat(const std::string& uniformName, const float& f) { };
-        virtual void useInteger(const std::string& uniformName, const size_t& i) { };
-        virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
-
-        Ref<IShader> addToGlobalStorage() noexcept;
-
-        // ==========================================
-
-        void addTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept;
-
-        void removeTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept;
-
-        void clearTexturesBlocks() noexcept;
-
-        // ==========================================
-
-        void addTexture(const Ref<ITexture2D>& texture2D) noexcept;
-        void removeTexture(const Ref<ITexture2D>& texture2D) noexcept;
-
-        void collectTexturesFromMaterial(const Ref<IMaterial>& material) noexcept;
-
-        void onTexturesCountChanged() noexcept;
-
-        IShader& operator=(const IShader&) noexcept;
-    protected:
-        std::vector<Ref<ShaderTexturesBlock>> m_texturesBlocks;
-
-        std::unordered_map<std::string, IShaderUniform> m_uniforms;
-
-        std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
+        Weak<IMaterial> m_parentMaterial;
     };
 }
 
-#endif //NATIVECORE_ISHADER_H
+#endif //SUNGEARENGINE_ISHADER_H

@@ -6,7 +6,6 @@
 #include <tsl/robin_map.h>
 #include <unordered_map>
 
-#include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
@@ -14,22 +13,18 @@
 namespace SGCore
 {
     class IShader;
+    class ITexture2D;
 
     // TODO: make remove texture
     // TODO: make function addBlockDeclaration
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
     public:
-
-        IMaterial() noexcept;
+        static Ref<IMaterial> create() noexcept;
 
         std::string m_name;
 
         std::unordered_map<SGTextureType, std::vector<Ref<ITexture2D>>> m_textures;
-
-        Ref<IMaterial> bind(const Ref<IShader>& shader);
-
-        Ref<IMaterial> bind();
 
         // TODO: impl
         Ref<IAsset> load(const std::string& path) override;
@@ -40,8 +35,8 @@ namespace SGCore
         * @param texture2DAsset - Texture asset
         * @return this
         */
-        Ref<Texture2DAsset> findAndAddTexture2D(const SGTextureType& textureType,
-                                                            const std::string& path);
+        Ref<ITexture2D> findAndAddTexture2D(const SGTextureType& textureType,
+                                              const std::string& path);
 
         void copyTextures(const Ref<IMaterial>& to) const noexcept;
 
@@ -95,6 +90,8 @@ namespace SGCore
         IMaterial& operator=(const IMaterial& other) noexcept;
 
     protected:
+        IMaterial() noexcept;
+
         Ref<IShader> m_shader;
 
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);

@@ -177,33 +177,133 @@ enum SGTextureType
     SGTT_NONE
 };
 
+static SGTextureType sgStandardTextureFromString(const std::string& textureType)
+{
+    if(textureType == "SGTT_EMISSIVE")
+    {
+        return SGTT_EMISSIVE;
+    }
+    else if(textureType == "SGTT_AMBIENT_OCCLUSION")
+    {
+        return SGTT_AMBIENT_OCCLUSION;
+    }
+    else if(textureType == "SGTT_AMBIENT")
+    {
+        return SGTT_AMBIENT;
+    }
+    else if(textureType == "SGTT_DIFFUSE_ROUGHNESS")
+    {
+        return SGTT_DIFFUSE_ROUGHNESS;
+    }
+    else if(textureType == "SGTT_DIFFUSE")
+    {
+        return SGTT_DIFFUSE;
+    }
+    else if(textureType == "SGTT_DISPLACEMENT")
+    {
+        return SGTT_DISPLACEMENT;
+    }
+    else if(textureType == "SGTT_HEIGHT")
+    {
+        return SGTT_HEIGHT;
+    }
+    else if(textureType == "SGTT_NORMALS")
+    {
+        return SGTT_NORMALS;
+    }
+    else if(textureType == "SGTT_BASE_COLOR")
+    {
+        return SGTT_BASE_COLOR;
+    }
+    else if(textureType == "SGTT_CLEARCOAT")
+    {
+        return SGTT_CLEARCOAT;
+    }
+    else if(textureType == "SGTT_EMISSION_COLOR")
+    {
+        return SGTT_EMISSION_COLOR;
+    }
+    else if(textureType == "SGTT_LIGHTMAP")
+    {
+        return SGTT_LIGHTMAP;
+    }
+    else if(textureType == "SGTT_METALNESS")
+    {
+        return SGTT_METALNESS;
+    }
+    else if(textureType == "SGTT_NORMAL_CAMERA")
+    {
+        return SGTT_NORMAL_CAMERA;
+    }
+    else if(textureType == "SGTT_OPACITY")
+    {
+        return SGTT_OPACITY;
+    }
+    else if(textureType == "SGTT_REFLECTION")
+    {
+        return SGTT_REFLECTION;
+    }
+    else if(textureType == "SGTT_SHEEN")
+    {
+        return SGTT_SHEEN;
+    }
+    else if(textureType == "SGTT_SHININESS")
+    {
+        return SGTT_SHININESS;
+    }
+    else if(textureType == "SGTT_SPECULAR")
+    {
+        return SGTT_SPECULAR;
+    }
+    else if(textureType == "SGTT_TRANSMISSION")
+    {
+        return SGTT_TRANSMISSION;
+    }
+    else if(textureType == "SGTT_SKYBOX")
+    {
+        return SGTT_SKYBOX;
+    }
+    else if(textureType == "SGTT_SHADOW_MAP2D")
+    {
+        return SGTT_SHADOW_MAP2D;
+    }
+    else if(textureType == "SGTT_NONE")
+    {
+        return SGTT_NONE;
+    }
+
+    return SGTT_NONE;
+}
+
 static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterialTextureType)
 {
     switch(sgMaterialTextureType)
     {
-        case SGTT_EMISSIVE: return "sgmat_emissiveSamplers";
-        case SGTT_AMBIENT_OCCLUSION: return "sgmat_ambientOcclusionSamplers";
-        case SGTT_AMBIENT: return "sgmat_ambientSamplers";
-        case SGTT_DIFFUSE_ROUGHNESS: return "sgmat_diffuseRoughnessSamplers";
-        case SGTT_DIFFUSE: return "sgmat_diffuseSamplers";
-        case SGTT_DISPLACEMENT: return "sgmat_displacementSamplers";
-        case SGTT_HEIGHT: return "sgmat_heightSamplers";
-        case SGTT_NORMALS: return "sgmat_normalsSamplers";
-        case SGTT_BASE_COLOR: return "sgmat_baseColorSamplers";
-        case SGTT_CLEARCOAT: return "sgmat_clearcoatSamplers";
-        case SGTT_EMISSION_COLOR: return "sgmat_emissionColorSamplers";
-        case SGTT_LIGHTMAP: return "sgmat_lightmapSamplers";
-        case SGTT_METALNESS: return "sgmat_metalnessSamplers";
-        case SGTT_NORMAL_CAMERA: return "sgmat_normalCameraSamplers";
-        case SGTT_OPACITY: return "sgmat_opacitySamplers";
-        case SGTT_REFLECTION: return "sgmat_relfectionSamplers";
-        case SGTT_SHEEN: return "sgmat_sheenSamplers";
-        case SGTT_SHININESS: return "sgmat_shininessSamplers";
-        case SGTT_SPECULAR: return "sgmat_specularSamplers";
-        case SGTT_TRANSMISSION: return "sgmat_transmissionSamplers";
-        case SGTT_SKYBOX: return "sgmat_skyboxSamplers";
+        case SGTT_EMISSIVE: return "SGTT_EMISSIVE";
+        case SGTT_AMBIENT_OCCLUSION: return "SGTT_AMBIENT_OCCLUSION";
+        case SGTT_AMBIENT: return "SGTT_AMBIENT";
+        case SGTT_DIFFUSE_ROUGHNESS: return "SGTT_DIFFUSE_ROUGHNESS";
+        case SGTT_DIFFUSE: return "SGTT_DIFFUSE";
+        case SGTT_DISPLACEMENT: return "SGTT_DISPLACEMENT";
+        case SGTT_HEIGHT: return "SGTT_HEIGHT";
+        case SGTT_NORMALS: return "SGTT_NORMALS";
+        case SGTT_BASE_COLOR: return "SGTT_BASE_COLOR";
+        case SGTT_CLEARCOAT: return "SGTT_CLEARCOAT";
+        case SGTT_EMISSION_COLOR: return "SGTT_EMISSION_COLOR";
+        case SGTT_LIGHTMAP: return "SGTT_LIGHTMAP";
+        case SGTT_METALNESS: return "SGTT_METALNESS";
+        case SGTT_NORMAL_CAMERA: return "SGTT_NORMAL_CAMERA";
+        case SGTT_OPACITY: return "SGTT_OPACITY";
+        case SGTT_REFLECTION: return "SGTT_REFLECTION";
+        case SGTT_SHEEN: return "SGTT_SHEEN";
+        case SGTT_SHININESS: return "SGTT_SHININESS";
+        case SGTT_SPECULAR: return "SGTT_SPECULAR";
+        case SGTT_TRANSMISSION: return "SGTT_TRANSMISSION";
+        case SGTT_SKYBOX: return "SGTT_SKYBOX";
 
-        case SGTT_SHADOW_MAP2D: return "sgmat_shadowMap2DSamplers";
+        case SGTT_SHADOW_MAP2D: return "SGTT_SHADOW_MAP2D";
+
+        case SGTT_NONE: return "SGTT_NONE";
     }
 
     return "";

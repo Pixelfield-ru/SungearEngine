@@ -14,18 +14,18 @@
 namespace SGCore
 {
     class IFrameBuffer;
-    class IShader;
+    class ISubPassShader;
     class ITexture2D;
 
     class GPUObjectsStorage
     {
     public:
-        static void addShader(const Ref<IShader>& shader) noexcept;
+        static void addShader(const Ref<ISubPassShader>& shader) noexcept;
         static void addTexture(const Ref<ITexture2D>& texture2D) noexcept;
         static void addFramebuffer(const Ref<IFrameBuffer>& frameBuffer) noexcept;
 
     private:
-        static inline std::unordered_map<std::string, Weak<IShader>> m_shaders;
+        static inline std::unordered_map<std::string, Weak<ISubPassShader>> m_shaders;
         static inline std::unordered_map<std::string, Weak<ITexture2D>> m_textures2D;
         static inline std::unordered_map<std::string, Weak<IFrameBuffer>> m_frameBuffers;
 

@@ -1,5 +1,5 @@
-#ifndef DISKS_GLSL
-#define DISKS_GLSL
+#sg_ifndef DISKS_GLSL
+#sg_define DISKS_GLSL
 
 /**const vec2 poissonDisk[32] = vec2[] (
     vec2(0.06407013, 0.05409927),
@@ -168,4 +168,4 @@ vec2 vogelDiskSample(int sampleIndex, int samplesCount, float phi)
     return vec2(r * cosine, r * sine);
 }
 
-#endif // DISKS_GLSL
+#sg_endif // DISKS_GLSL

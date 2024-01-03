@@ -5,8 +5,6 @@
 
 SGCore::LineGizmo::LineGizmo() noexcept
 {
-    m_meshData = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
-
     m_meshData->m_useIndices = false;
 
     // first point

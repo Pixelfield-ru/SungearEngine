@@ -4,7 +4,7 @@
 
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/ICamera.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 
 bool SGCore::GL46Renderer::confirmSupport() noexcept
@@ -20,9 +20,9 @@ bool SGCore::GL46Renderer::confirmSupport() noexcept
     return true;
 }
 
-SGCore::GL46Shader* SGCore::GL46Renderer::createShader()
+SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader()
 {
-    auto* shader = new GL46Shader;
+    auto* shader = new GL46SubPassShader;
     shader->m_version = "460";
 
     shader->setRawName("SGUnknownShader");
@@ -32,7 +32,7 @@ SGCore::GL46Shader* SGCore::GL46Renderer::createShader()
     return shader;
 }
 
-SGCore::GL46Shader* SGCore::GL46Renderer::createShader(const std::string& path)
+SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader(const std::string& path)
 {
     auto* shader = createShader();
     shader->compile(

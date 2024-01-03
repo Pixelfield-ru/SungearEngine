@@ -4,7 +4,7 @@
 
 #include "VkCubemapTexture.h"
 
-void SGCore::VkCubemapTexture::create(Weak<CubemapAsset> cubemapAsset)
+void SGCore::VkCubemapTexture::create()
 {
 
 }

@@ -4,7 +4,6 @@
 
 #include "Entity.h"
 
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
 #include "Scene.h"
 
 void SGCore::Entity::addComponent(const Ref<IComponent>& component) noexcept

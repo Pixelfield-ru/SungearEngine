@@ -6,7 +6,7 @@
 
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/ICamera.h"
 #include "SGCore/ECS/Rendering/Skybox.h"
 
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
@@ -223,9 +223,9 @@ void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
     }
 }
 
-SGCore::GL46Shader* SGCore::GL4Renderer::createShader()
+SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader()
 {
-    auto* shader = new GL46Shader;
+    auto* shader = new GL46SubPassShader;
     shader->m_version = "400 core";
 
     shader->setRawName("SGUnknownShader");
@@ -233,7 +233,7 @@ SGCore::GL46Shader* SGCore::GL4Renderer::createShader()
     return shader;
 }
 
-SGCore::GL46Shader* SGCore::GL4Renderer::createShader(const std::string& path)
+SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader(const std::string& path)
 {
     auto* shader = createShader();
 

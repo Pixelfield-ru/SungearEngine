@@ -32,7 +32,7 @@ namespace SGCore
         Ref<IIndexBuffer> m_indicesBuffer;
 
     public:
-        // IMesh() noexcept;
+        // Mesh() noexcept;
         virtual ~IMeshData() = default;
 
         std::string m_name;
@@ -57,7 +57,7 @@ namespace SGCore
         // bitangents array
         std::vector<float> m_bitangents;
 
-        Ref<IMaterial> m_material = MakeRef<IMaterial>();
+        Ref<IMaterial> m_material = IMaterial::create();
 
         // ----------------
         virtual void prepare() = 0;

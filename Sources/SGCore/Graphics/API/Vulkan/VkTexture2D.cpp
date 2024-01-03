@@ -9,32 +9,12 @@ SGCore::VkTexture2D::~VkTexture2D() noexcept
     destroy();
 }
 
-void SGCore::VkTexture2D::create(Weak<Texture2DAsset>) noexcept
+void SGCore::VkTexture2D::create()
 {
 
 }
 
 void SGCore::VkTexture2D::destroy() noexcept
-{
-
-}
-
-void SGCore::VkTexture2D::onAssetModified() noexcept
-{
-
-}
-
-void SGCore::VkTexture2D::onAssetPathChanged() noexcept
-{
-
-}
-
-void SGCore::VkTexture2D::onAssetDeleted() noexcept
-{
-
-}
-
-void SGCore::VkTexture2D::onAssetRestored() noexcept
 {
 
 }

@@ -13,6 +13,12 @@
 #define SG_NO_COPY(cls) cls(const cls&) = delete;
 #define SG_NO_MOVE(cls) cls(cls&& cls) noexcept = delete;
 
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <sstream>
+
 namespace SGCore
 {
     class Utils
@@ -39,6 +45,41 @@ namespace SGCore
         static bool instanceof(const T* ptr)
         {
             return dynamic_cast<const Base*>(ptr) != nullptr;
+        }
+
+        static void splitString(const std::string& str, char delim, std::vector<std::string>& words) noexcept
+        {
+            std::stringstream ss(str);
+            std::string word;
+            while(std::getline(ss, word, delim)) {
+                words.push_back(word);
+            }
+        }
+
+        static std::string replaceAll(const std::string& str, const std::string& from, const std::string& to) noexcept
+        {
+            std::string resString = str;
+
+            size_t start_pos = 0;
+            while((start_pos = resString.find(from, start_pos)) != std::string::npos) {
+                resString.replace(start_pos, from.length(), to);
+                start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+            }
+
+            return resString;
+        }
+
+        static std::string replaceFirst(const std::string& str, const std::string& from, const std::string& to) noexcept
+        {
+            std::string resString = str;
+
+            size_t start_pos = 0;
+            start_pos = resString.find(from, start_pos);
+            if(start_pos != std::string::npos) {
+                resString.replace(start_pos, from.length(), to);
+            }
+
+            return resString;
         }
     };
 }

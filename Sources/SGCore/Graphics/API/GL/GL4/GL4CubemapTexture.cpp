@@ -6,42 +6,22 @@
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 
 // todo: impl 
-void SGCore::GL4CubemapTexture::create(Weak<CubemapAsset> cubemapAsset)
+void SGCore::GL4CubemapTexture::create()
 {
-    auto thisWeak = weak_from_this();
-
-    auto lockedCubemap = m_cubemapAsset.lock();
-
-    if(lockedCubemap)
-    {
-        lockedCubemap->removeObserver(thisWeak.lock());
-    }
-
-    m_cubemapAsset = cubemapAsset;
-
-    lockedCubemap = m_cubemapAsset.lock();
-
-    if(lockedCubemap)
-    {
-        lockedCubemap->addObserver(thisWeak.lock());
-    }
-
-    const auto& cubemapParts = lockedCubemap->getParts();
-
     glGenTextures(1, &m_handler);
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_handler);
 
     std::uint8_t currentPartId = 0;
-    for(const auto& part : cubemapParts)
+    for(const auto& part : m_parts)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + currentPartId,
                      0,
-                     GLGraphicsTypesCaster::sggInternalFormatToGL(part->getInternalFormat()),
-                     part->getWidth(),
-                     part->getHeight(),
+                     GLGraphicsTypesCaster::sggInternalFormatToGL(part->m_internalFormat),
+                     part->m_width,
+                     part->m_height,
                      0,
-                     GLGraphicsTypesCaster::sggFormatToGL(part->getFormat()),
+                     GLGraphicsTypesCaster::sggFormatToGL(part->m_format),
                      GL_UNSIGNED_BYTE,
                      part->getData().get()
         );

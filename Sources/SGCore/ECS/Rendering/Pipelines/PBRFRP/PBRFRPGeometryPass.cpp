@@ -5,10 +5,9 @@
 #include "PBRFRPGeometryPass.h"
 #include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/ICamera.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "PBRFRPDirectionalLightsPass.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
 
 void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
@@ -26,7 +25,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
         SG_BEGIN_ITERATE_CACHED_ENTITIES(*dirLightsPass->m_componentsToRenderIn, shadowsCastersLayer,
                                          shadowsCasterEntity)
                 // todo: make process all ShadowsCasterComponent (cachedEntities.second->getComponents)
-                auto shadowsCaster = shadowsCasterEntity.getComponent<DirectionalLight>();
+                auto shadowsCaster = shadowsCasterEntity.getComponent<PBRFRPDirectionalLight>();
 
                 if(!shadowsCaster) continue;
 
@@ -42,11 +41,13 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
     SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
             auto cameraTransformComponent = cameraEntity.getComponent<Transform>();
             if(!cameraTransformComponent) continue;
-            auto cameraComponent = cameraEntity.getComponent<Camera>();
+            auto cameraComponent = cameraEntity.getComponent<ICamera>();
             if(!cameraComponent) continue;
 
             CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
             // m_shader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
+
+            cameraComponent->registerRenderPipelineIfNotRegistered(renderPipeline);
 
             // todo: make less bindings
 
@@ -54,7 +55,7 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
             {
                 const auto& layer = meshesLayer.first;
 
-                cameraComponent->bindPostProcessFrameBuffer(layer);
+                // cameraComponent->bindPostProcessFrameBuffer(layer);
 
                 for(auto& meshesEntity: meshesLayer.second)
                 {
@@ -67,10 +68,16 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
 
                     for(const auto& meshComponent: meshComponents)
                     {
-                        meshComponent->m_meshData->m_material->bind();
-                        meshComponent->m_meshData->m_material->getShader()->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
-                        meshComponent->m_meshData->m_material->getShader()->useMatrix("objectModelMatrix",
-                                            transformComponent->m_modelMatrix
+                        meshComponent->registerRenderPipelineIfNotRegistered(renderPipeline);
+
+                        auto meshGeometryShader = meshComponent->m_meshData->m_material->getShader()->getSubPassShader("PBRFRPGeometryPass");
+
+                        if(!meshGeometryShader) continue;
+
+                        meshGeometryShader->bind();
+                        meshGeometryShader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
+                        meshGeometryShader->useMatrix("objectModelMatrix",
+                                                      transformComponent->m_modelMatrix
                         );
 
                         CoreMain::getRenderer().renderMeshData(

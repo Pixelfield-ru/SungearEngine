@@ -1,4 +1,4 @@
-#include "../uniform_bufs_decl.glsl"
+#sg_include "../uniform_bufs_decl.glsl"
 
 #ifdef VERTEX_SHADER
     uniform vec3 u_offset;

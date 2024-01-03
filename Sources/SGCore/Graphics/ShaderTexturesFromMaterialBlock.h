@@ -14,13 +14,12 @@ namespace SGCore
 
     struct ShaderTexturesFromMaterialBlock : ShaderTexturesBlock
     {
-        void addTexture(const Ref<ITexture2D>& texture2D) noexcept final;
+        void addTexture(const Ref<ITexture2D>& texture2D, SGTextureType textureType) noexcept final;
         void removeTexture(const Ref<ITexture2D>& texture2D) noexcept final;
         void clearTextures() noexcept final;
 
         void collectTexturesFromMaterial(const Ref<IMaterial>& material) noexcept final;
 
-    private:
         SGTextureType m_typeToCollect = SGTextureType::SGTT_NONE;
     };
 }

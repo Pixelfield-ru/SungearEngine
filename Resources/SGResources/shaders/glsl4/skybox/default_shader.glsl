@@ -1,8 +1,8 @@
 #define SG_NOT_INCLUDE_LIGHTS
 
-#include "../ray_intersections.glsl"
-#include "../defines.glsl"
-#include "../uniform_bufs_decl.glsl"
+#sg_include "../ray_intersections.glsl"
+#sg_include "../defines.glsl"
+#sg_include "../uniform_bufs_decl.glsl"
 
 #define PI 3.141592
 #define iSteps 16
@@ -118,11 +118,6 @@ vec3 atmosphere(vec3 r, vec3 ro,
 
 #ifdef FRAGMENT_SHADER
     layout(location = 0) out vec4 fragColor;
-    // layout(location = 1) out vec3 gFragPos;
-    // layout(location = 2) out vec3 gNormal;
-    // layout(location = 3) out vec4 gAlbedoSpec;
-    // layout(location = 4) out vec3 unknownAttachment0;
-    // layout(location = 5) out vec3 unknownAttachment1;
 
     const vec3 sunPos = vec3(0.0, 1.0, -1.0);
 

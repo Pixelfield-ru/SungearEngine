@@ -5,8 +5,6 @@
 
 SGCore::BoxGizmo::BoxGizmo()
 {
-    m_meshData = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
-
     build();
 }
 

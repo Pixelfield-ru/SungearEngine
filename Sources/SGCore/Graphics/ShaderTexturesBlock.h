@@ -9,11 +9,12 @@
 #include <list>
 
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Graphics/API/GraphicsDataTypes.h"
 
 namespace SGCore
 {
     class ITexture2D;
-    class IShader;
+    class ISubPassShader;
     class IMaterial;
 
     struct ShaderTexturesBlock
@@ -24,7 +25,8 @@ namespace SGCore
 
         bool m_isSingleTextureBlock = false;
 
-        virtual void addTexture(const Ref<ITexture2D>& texture2D) noexcept = 0;
+        virtual void addTexture(const Ref<ITexture2D>& texture2D) noexcept { };
+        virtual void addTexture(const Ref<ITexture2D>& texture2D, SGTextureType textureType) noexcept { };
         virtual void removeTexture(const Ref<ITexture2D>& texture2D) noexcept = 0;
         virtual void clearTextures() noexcept = 0;
 
@@ -38,10 +40,12 @@ namespace SGCore
         bool operator==(const ShaderTexturesBlock& other) const noexcept;
         bool operator!=(const ShaderTexturesBlock& other) const noexcept;
 
-        void setParentShader(const Ref<IShader>& shader) noexcept;
+        void setParentShader(const Ref<ISubPassShader>& shader) noexcept;
+
+        std::list<Weak<ITexture2D>>::const_iterator eraseTexture(const std::list<Weak<ITexture2D>>::const_iterator& iter) noexcept;
 
     protected:
-        Weak<IShader> m_parentShader;
+        Weak<ISubPassShader> m_parentShader;
 
         std::list<Weak<ITexture2D>> m_textures;
     };

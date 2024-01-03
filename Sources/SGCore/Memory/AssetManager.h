@@ -32,7 +32,7 @@ namespace SGCore
         */
         template<typename AssetT, typename... Args>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        static std::shared_ptr<AssetT> loadAsset(const std::string& path, const Args&... args)
+        static std::shared_ptr<AssetT> loadAsset(const std::string& path)
         {
             auto foundAssetPair = m_assets.find(path);
 
@@ -41,7 +41,7 @@ namespace SGCore
                 return std::static_pointer_cast<AssetT>(foundAssetPair->second);
             }
 
-            std::shared_ptr<AssetT> newAsset = std::make_shared<AssetT>(args...);
+            Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
 
             newAsset->load(path);
 
@@ -52,7 +52,7 @@ namespace SGCore
 
         template<typename AssetT, typename... Args>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        static std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias, const std::string& path, const Args&... args)
+        static std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias, const std::string& path)
         {
             auto foundAssetPair = m_assets.find(alias);
 
@@ -61,13 +61,33 @@ namespace SGCore
                 return std::static_pointer_cast<AssetT>(foundAssetPair->second);
             }
 
-            std::shared_ptr<AssetT> newAsset = std::make_shared<AssetT>(args...);
+            Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
 
             newAsset->load(path);
 
             m_assets.emplace(alias, newAsset);
 
             return newAsset;
+        }
+
+        static void addAsset(const std::string& alias, const Ref<IAsset>& asset)
+        {
+            auto foundAssetPair = m_assets.find(alias);
+
+            if(foundAssetPair == m_assets.end())
+            {
+                m_assets[alias] = asset;
+            }
+        }
+
+        static void addAsset(const Ref<IAsset>& asset)
+        {
+            auto foundAssetPair = m_assets.find(asset->getPath().string());
+
+            if(foundAssetPair == m_assets.end())
+            {
+                m_assets[asset->getPath().string()] = asset;
+            }
         }
 
         /**

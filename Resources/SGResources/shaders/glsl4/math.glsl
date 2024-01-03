@@ -1,5 +1,5 @@
-#ifndef MATH_GLSL
-#define MATH_GLSL
+#sg_ifndef MATH_GLSL
+#sg_define MATH_GLSL
 
 #define PI 3.14159265359
 
@@ -13,4 +13,4 @@ vec2 rotate(const in vec2 pos, const in vec2 rotTrig)
     return vec2(pos.x * rotTrig.x - pos.y * rotTrig.y, pos.y * rotTrig.x + pos.x * rotTrig.y);
 }
 
-#endif // MATH_GLSL
+#sg_endif // MATH_GLSL

@@ -15,7 +15,7 @@
 
 namespace SGCore
 {
-    class Camera;
+    class ICamera;
     class Mesh;
     class Transform;
     class Skybox;
@@ -32,7 +32,7 @@ namespace SGCore
     class IVertexBuffer;
     class IFrameBuffer;
     class ITexture2D;
-    class IShader;
+    class ISubPassShader;
 
     // todo: make description of funcs
     class IRenderer
@@ -79,10 +79,10 @@ namespace SGCore
 
         virtual void checkForErrors(const std::source_location& = std::source_location::current()) noexcept { }
 
-        [[nodiscard]] virtual IShader* createShader() = 0;
-        [[nodiscard]] virtual IShader* createShader(const std::string& path) = 0;
+        [[nodiscard]] virtual ISubPassShader* createShader() = 0;
+        [[nodiscard]] virtual ISubPassShader* createShader(const std::string& path) = 0;
 
-        [[nodiscard]] IShader* createShader(const ShadersPaths& shadersPaths)
+        [[nodiscard]] ISubPassShader* createShader(const ShadersPaths& shadersPaths)
         {
             return createShader(shadersPaths.getCurrentRealization());
         };

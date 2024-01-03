@@ -10,7 +10,6 @@
 #include <map>
 
 #include "SGCore/Graphics/API/IFrameBuffer.h"
-#include "SGCore/Graphics/API/ITexture2D.h"
 
 namespace SGCore
 {

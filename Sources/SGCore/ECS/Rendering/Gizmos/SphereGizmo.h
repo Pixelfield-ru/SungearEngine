@@ -12,8 +12,6 @@ namespace SGCore
         float m_radius = 5.0;
         float m_angleIncrement = 18.0;
 
-        SphereGizmo();
-
     private:
         float m_lastRadius = 0.0;
         float m_lastAngleIncrement = 0.0;

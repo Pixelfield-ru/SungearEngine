@@ -1,295 +1,117 @@
 //
-// Created by stuka on 13.05.2023.
+// Created by stuka on 29.12.2023.
 //
 
 #include "IShader.h"
-#include "SGCore/Graphics/GPUObjectsStorage.h"
-#include "IFrameBuffer.h"
 
-void SGCore::IShader::updateFrameBufferAttachmentsCount(const Ref<IFrameBuffer>& frameBuffer,
-                                                        const std::string& frameBufferNameInShader) noexcept
+#include <utility>
+
+#include "SGCore/Utils/SGSL/GLSLShadersPreprocessor.h"
+#include "SGCore/Main/CoreMain.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
+
+void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
 {
-    std::uint16_t depthAttachmentsCount = frameBuffer->getDepthAttachmentsCount();
-    std::uint16_t depthStencilAttachmentsCount = frameBuffer->getDepthStencilAttachmentsCount();
-    std::uint16_t colorAttachmentsCount = frameBuffer->getColorAttachmentsCount();
-    std::uint16_t renderAttachmentsCount = frameBuffer->getRenderAttachmentsCount();
+    if(!asset) return;
 
-    // todo: names below are constant. mb make as defines
-    useInteger(frameBufferNameInShader + "_depthAttachmentsCount", depthAttachmentsCount);
-    useInteger(frameBufferNameInShader + "_depthStencilAttachmentsCount", depthStencilAttachmentsCount);
-    useInteger(frameBufferNameInShader + "_colorAttachmentsCount", colorAttachmentsCount);
-    useInteger(frameBufferNameInShader + "_renderAttachmentsCount", renderAttachmentsCount);
-}
+    GLSLShadersPreprocessor preprocessor;
+    m_shaderAnalyzedFile = GLSLShadersPreprocessor::processCode(asset->getPath().string(), asset->getData(), preprocessor);
 
-void SGCore::IShader::addDefines(const SGShaderDefineType& shaderDefineType,
-                                         const std::vector<ShaderDefine>& shaderDefines)
-{
-    auto& shaderTypedDefines = m_defines[shaderDefineType];
-
-    for(auto& shaderDefine : shaderDefines)
+    for(const auto& subPassIter : m_shaderAnalyzedFile.m_subPasses)
     {
-        // if define with name shaderDefine already exists then wont add new shader define
-        if(std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
-            != shaderTypedDefines.end())
+        const auto& subPass = subPassIter.second;
+
+        auto subPassShader = Ref<ISubPassShader>(SGCore::CoreMain::getRenderer().createShader());
+
+        for(const auto& subShaderIter : subPass.m_subShaders)
         {
-            return;
+            auto subShaderType = subShaderIter.first;
+
+            if(subPass.isSubShaderExists(subShaderType))
+            {
+                subPassShader->m_subShadersCodes[subShaderType] = m_shaderAnalyzedFile.getSubShaderCode(subPass.m_name, subShaderType);
+            }
         }
 
-        shaderTypedDefines.push_back(shaderDefine);
-    }
-
-    if(m_assetModifiedChecking) onAssetModified();
-}
-
-void SGCore::IShader::emplaceDefines(const SGShaderDefineType& shaderDefineType,
-                                             std::vector<ShaderDefine>& shaderDefines)
-{
-    auto& shaderTypedDefines = m_defines[shaderDefineType];
-
-    for(auto& shaderDefine : shaderDefines)
-    {
-        // if define with name shaderDefine already exists then wont add new shader define
-        if(std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
-           != shaderTypedDefines.end())
+        for(const auto& variable : subPass.m_variables)
         {
-            return;
+            if(variable.m_rsideFunction == "SGGetTexturesFromMaterial")
+            {
+                Ref<ShaderTexturesFromMaterialBlock> fromMaterialBlock = MakeRef<ShaderTexturesFromMaterialBlock>();
+                fromMaterialBlock->m_uniformName = variable.m_name;
+                fromMaterialBlock->m_isSingleTextureBlock = !variable.m_isArray;
+                fromMaterialBlock->m_typeToCollect = sgStandardTextureFromString(variable.m_rsideFunctionArgs[0]);
+
+                subPassShader->addTexturesBlock(fromMaterialBlock);
+            }
         }
 
-        shaderTypedDefines.emplace_back(std::move(shaderDefine));
-    }
+        if(auto lockedMaterial = m_parentMaterial.lock())
+        {
+            subPassShader->collectTexturesFromMaterial(lockedMaterial);
+        }
 
-    if(m_assetModifiedChecking) onAssetModified();
+        subPassShader->compile(asset);
+        subPassShader->addToGlobalStorage();
+
+        m_subPassesShaders[subPassIter.first] = subPassShader;
+    }
 }
 
-void SGCore::IShader::addDefine(const SGShaderDefineType& shaderDefineType,
-                                        const ShaderDefine& shaderDefine)
+void SGCore::IShader::setSubPassShader
+(const SGCore::Ref<SGCore::IShader>& from, const std::string& subPassName) noexcept
 {
-    auto& shaderTypedDefines = m_defines[shaderDefineType];
-    // if define with name shaderDefine already exists then wont add new shader define
-    if (std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
-        != shaderTypedDefines.end())
+    auto foundFrom = from->m_subPassesShaders.find(subPassName);
+    if(foundFrom != from->m_subPassesShaders.end())
     {
-        return;
+        m_subPassesShaders[subPassName] = foundFrom->second;
     }
-
-    shaderTypedDefines.push_back(shaderDefine);
 }
 
-void SGCore::IShader::emplaceDefine(const SGShaderDefineType& shaderDefineType,
-                                            ShaderDefine&& shaderDefine)
+SGCore::Ref<SGCore::ISubPassShader> SGCore::IShader::getSubPassShader(const std::string& subPassName) noexcept
 {
-    auto& shaderTypedDefines = m_defines[shaderDefineType];
-    // if define with name shaderDefine already exists then wont add new shader define
-    if (std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
-        != shaderTypedDefines.end())
-    {
-        return;
-    }
-
-    shaderTypedDefines.emplace_back(std::move(shaderDefine));
-}
-
-void SGCore::IShader::removeDefine(const SGShaderDefineType& shaderDefineType,
-                                           const ShaderDefine& shaderDefine)
-{
-    m_defines[shaderDefineType].remove(shaderDefine);
-
-    if(m_assetModifiedChecking) onAssetModified();
-}
-
-void SGCore::IShader::removeDefine(const SGShaderDefineType& shaderDefineType,
-                                           const std::string& shaderDefineName)
-{
-    m_defines[shaderDefineType].remove(ShaderDefine(shaderDefineName, ""));
-
-    if(m_assetModifiedChecking) onAssetModified();
-}
-
-void SGCore::IShader::updateDefine(const SGShaderDefineType& shaderDefineType,
-                                           const SGCore::ShaderDefine& shaderDefine)
-{
-    setAssetModifiedChecking(false);
-
-    removeDefine(shaderDefineType, shaderDefine.m_name);
-    addDefine(shaderDefineType, shaderDefine);
-
-    setAssetModifiedChecking(true);
-}
-
-void SGCore::IShader::emplaceUpdateDefine(const SGShaderDefineType& shaderDefineType,
-                                                  SGCore::ShaderDefine&& shaderDefine)
-{
-    setAssetModifiedChecking(false);
-
-    removeDefine(shaderDefineType, shaderDefine.m_name);
-    emplaceDefine(shaderDefineType, std::move(shaderDefine));
-
-    setAssetModifiedChecking(true);
-}
-
-void SGCore::IShader::updateDefines(const SGShaderDefineType& shaderDefineType,
-                                            const std::vector<ShaderDefine>& shaderDefines)
-{
-    setAssetModifiedChecking(false);
-    for(auto& shaderDefine : shaderDefines)
-    {
-        removeDefine(shaderDefineType, shaderDefine.m_name);
-        addDefine(shaderDefineType, shaderDefine);
-    }
-    setAssetModifiedChecking(true);
-}
-
-void SGCore::IShader::emplaceUpdateDefines(const SGShaderDefineType& shaderDefineType,
-                                                   std::vector<ShaderDefine>& shaderDefines)
-{
-    setAssetModifiedChecking(false);
-    for(auto& shaderDefine : shaderDefines)
-    {
-        removeDefine(shaderDefineType, shaderDefine.m_name);
-        emplaceDefine(shaderDefineType, std::move(shaderDefine));
-    }
-    setAssetModifiedChecking(true);
-}
-
-void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
-                                             const std::list<ShaderDefine>& otherDefines) noexcept
-{
-    auto& shaderTypedDefines = m_defines[shaderDefineType];
-
-    shaderTypedDefines.clear();
-    shaderTypedDefines.insert(shaderTypedDefines.end(), otherDefines.begin(), otherDefines.end());
-
-    if(m_assetModifiedChecking) onAssetModified();
-}
-
-void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
-                                             Ref<IShader> otherShader) noexcept
-{
-    auto& shaderTypedDefines = m_defines[shaderDefineType];
-    auto& otherShaderTypedDefines = otherShader->m_defines[shaderDefineType];
-
-    shaderTypedDefines.clear();
-    shaderTypedDefines.insert(shaderTypedDefines.end(), otherShaderTypedDefines.begin(), otherShaderTypedDefines.end());
-
-    if(m_assetModifiedChecking) onAssetModified();
-}
-
-void SGCore::IShader::clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept
-{
-    m_defines[shaderDefineType].clear();
-
-    if(m_assetModifiedChecking) onAssetModified();
+    return m_subPassesShaders[subPassName];
 }
 
 void SGCore::IShader::onAssetModified()
 {
-    compile(m_fileAsset.lock());
+    m_subPassesShaders.clear();
+    addSubPassShadersAndCompile(m_fileAsset.lock());
 }
 
 void SGCore::IShader::onAssetPathChanged()
 {
-    compile(m_fileAsset.lock());
+    m_subPassesShaders.clear();
+    addSubPassShadersAndCompile(m_fileAsset.lock());
 }
 
-SGCore::IShader& SGCore::IShader::operator=(const SGCore::IShader& other) noexcept
+void SGCore::IShader::setParentMaterial(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
 {
-    assert(this != std::addressof(other));
+    if(!material) return;
 
-    for(const auto& shaderDefinesPair : m_defines)
+    m_parentMaterial = material;
+
+    for(auto& subPassShaderPair : m_subPassesShaders)
     {
-        replaceDefines(shaderDefinesPair.first, shaderDefinesPair.second);
-    }
+        auto& subPassShader = subPassShaderPair.second;
 
-    m_fileAsset = other.m_fileAsset;
+        subPassShader->clearTexturesBlocksOfType<ShaderTexturesFromMaterialBlock>();
 
-    return *this;
-}
-
-SGCore::Ref<SGCore::IShader> SGCore::IShader::addToGlobalStorage() noexcept
-{
-    auto thisShared = shared_from_this();
-
-    GPUObjectsStorage::addShader(thisShared);
-
-    return thisShared;
-}
-
-void SGCore::IShader::addTexturesBlock(const SGCore::Ref<SGCore::ShaderTexturesBlock>& block) noexcept
-{
-    if(std::find(m_texturesBlocks.begin(), m_texturesBlocks.end(), block) ==
-       m_texturesBlocks.end())
-    {
-        m_texturesBlocks.push_back(block);
-        block->setParentShader(shared_from_this());
+        subPassShader->collectTexturesFromMaterial(material);
     }
 }
 
-void SGCore::IShader::removeTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept
+SGCore::Weak<SGCore::IMaterial> SGCore::IShader::getParentMaterial() const noexcept
 {
-    m_texturesBlocks.erase(
-            std::remove(m_texturesBlocks.begin(), m_texturesBlocks.end(), block),
-            m_texturesBlocks.end());
+    return m_parentMaterial;
 }
 
-void SGCore::IShader::clearTexturesBlocks() noexcept
+void SGCore::IShader::collectTextureFromMaterial(const Ref<ITexture2D>& texture, SGTextureType textureType) noexcept
 {
-    m_texturesBlocks.clear();
-}
-
-void SGCore::IShader::addTexture(const Ref<ITexture2D>& texture2D) noexcept
-{
-    for(auto& texturesBlock : m_texturesBlocks)
+    for(auto& subPassShaderPair : m_subPassesShaders)
     {
-        texturesBlock->addTexture(texture2D);
-    }
-}
+        auto& subPassShader = subPassShaderPair.second;
 
-void SGCore::IShader::removeTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
-{
-    for(auto& texturesBlock : m_texturesBlocks)
-    {
-        texturesBlock->removeTexture(texture2D);
-    }
-}
-
-void SGCore::IShader::collectTexturesFromMaterial(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
-{
-    for(auto& texturesBlock : m_texturesBlocks)
-    {
-        texturesBlock->collectTexturesFromMaterial(material);
-    }
-}
-
-void SGCore::IShader::onTexturesCountChanged() noexcept
-{
-    // todo: make pass all textures to shader!!
-
-    std::uint8_t texBlock = 0;
-
-    std::uint8_t curTexture = 0;
-
-    for(const auto& texturesFromGlobalStorageBlock : m_texturesBlocks)
-    {
-        if(texturesFromGlobalStorageBlock->m_isSingleTextureBlock)
-        {
-            useTextureBlock(texturesFromGlobalStorageBlock->m_uniformName, texBlock);
-
-            ++texBlock;
-        }
-        else
-        {
-            for(std::uint8_t i = 0; i < texturesFromGlobalStorageBlock->getTextures().size(); ++i)
-            {
-                useTextureBlock(texturesFromGlobalStorageBlock->m_uniformName + "[" + std::to_string(curTexture) + "]",
-                                texBlock);
-
-                ++curTexture;
-                ++texBlock;
-            }
-        }
-
-        useInteger(texturesFromGlobalStorageBlock->m_uniformName + "_COUNT", curTexture);
-
-        curTexture = 0;
+        subPassShader->addTexture(texture, textureType);
     }
 }

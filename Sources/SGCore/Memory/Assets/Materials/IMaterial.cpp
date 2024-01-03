@@ -1,57 +1,21 @@
 #include "IMaterial.h"
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/IShader.h"
+
+SGCore::Ref<SGCore::IMaterial> SGCore::IMaterial::create() noexcept
+{
+    Ref<IMaterial> material(new IMaterial);
+
+    material->m_shader->setParentMaterial(material);
+
+    return material;
+}
 
 SGCore::IMaterial::IMaterial() noexcept
 {
-    auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
-
-    m_shader = Ref<IShader>(
-            CoreMain::getRenderer().createShader(
-                    shadersPaths["PBR"]["DefaultShader"]
-            )
-    )->addToGlobalStorage();
-}
-
-std::shared_ptr<SGCore::IMaterial>
-SGCore::IMaterial::bind(const std::shared_ptr<IShader>& shader)
-{
-    shader->useVectorf("materialDiffuseCol",
-                       m_diffuseColor
-    );
-    shader->useVectorf("materialSpecularCol",
-                       m_specularColor
-    );
-    shader->useVectorf("materialAmbientCol",
-                       m_ambientColor
-    );
-    shader->useVectorf("materialEmissionCol",
-                       m_emissionColor
-    );
-    shader->useVectorf("materialTransparentCol",
-                       m_transparentColor
-    );
-    shader->useFloat("materialShininess",
-                     m_shininess
-    );
-    shader->useFloat("materialMetallicFactor",
-                     m_metallicFactor
-    );
-    shader->useFloat("materialRoughnessFactor",
-                     m_roughnessFactor
-    );
-
-    return shared_from_this();
-}
-
-SGCore::Ref<SGCore::IMaterial> SGCore::IMaterial::bind()
-{
-    if(m_shader)
-    {
-        m_shader->bind();
-    }
-
-    return shared_from_this();
+    m_shader = MakeRef<IShader>();
+    // m_shader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(shadersPaths["PBR"]["DefaultShader"].getCurrentRealization()));
 }
 
 std::shared_ptr<SGCore::IAsset> SGCore::IMaterial::load(const std::string& path)
@@ -59,19 +23,19 @@ std::shared_ptr<SGCore::IAsset> SGCore::IMaterial::load(const std::string& path)
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::Texture2DAsset>
+std::shared_ptr<SGCore::ITexture2D>
 SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
                                                      const std::string& path)
 {
     auto foundTex =
-            AssetManager::loadAsset<Texture2DAsset>(path);
+            AssetManager::loadAsset<ITexture2D>(path);
 
-    m_textures[textureType].push_back(foundTex->m_texture2D);
+    m_textures[textureType].push_back(foundTex);
 
     // todo:
     if(m_shader)
     {
-        m_shader->collectTexturesFromMaterial(shared_from_this());
+        m_shader->collectTextureFromMaterial(foundTex, textureType);
     }
 
     return foundTex;
@@ -86,30 +50,35 @@ void SGCore::IMaterial::setShader(const SGCore::Ref<SGCore::IShader>& shader) no
 {
     m_shader = shader;
 
-    shader->useVectorf("materialDiffuseCol",
-                       m_diffuseColor
-    );
-    shader->useVectorf("materialSpecularCol",
-                       m_specularColor
-    );
-    shader->useVectorf("materialAmbientCol",
-                       m_ambientColor
-    );
-    shader->useVectorf("materialEmissionCol",
-                       m_emissionColor
-    );
-    shader->useVectorf("materialTransparentCol",
-                       m_transparentColor
-    );
-    shader->useFloat("materialShininess",
-                     m_shininess
-    );
-    shader->useFloat("materialMetallicFactor",
-                     m_metallicFactor
-    );
-    shader->useFloat("materialRoughnessFactor",
-                     m_roughnessFactor
-    );
+    for(const auto& subPassShaderPair : m_shader->getSubPassesShaders())
+    {
+        const auto& subPassShader = subPassShaderPair.second;
+
+        subPassShader->useVectorf("materialDiffuseCol",
+                                  m_diffuseColor
+        );
+        subPassShader->useVectorf("materialSpecularCol",
+                                  m_specularColor
+        );
+        subPassShader->useVectorf("materialAmbientCol",
+                                  m_ambientColor
+        );
+        subPassShader->useVectorf("materialEmissionCol",
+                                  m_emissionColor
+        );
+        subPassShader->useVectorf("materialTransparentCol",
+                                  m_transparentColor
+        );
+        subPassShader->useFloat("materialShininess",
+                                m_shininess
+        );
+        subPassShader->useFloat("materialMetallicFactor",
+                                m_metallicFactor
+        );
+        subPassShader->useFloat("materialRoughnessFactor",
+                                m_roughnessFactor
+        );
+    }
 }
 
 SGCore::Ref<SGCore::IShader> SGCore::IMaterial::getShader() const noexcept
@@ -123,11 +92,16 @@ void SGCore::IMaterial::setDiffuseColor(const glm::vec4& col) noexcept
 
     if(m_shader)
     {
-        m_shader->bind();
+        for(const auto& subPassShaderPair : m_shader->getSubPassesShaders())
+        {
+            const auto& subPassShader = subPassShaderPair.second;
 
-        m_shader->useVectorf("materialDiffuseCol",
-                             m_diffuseColor
-        );
+            subPassShader->bind();
+
+            subPassShader->useVectorf("materialDiffuseCol",
+                                      m_diffuseColor
+            );
+        }
     }
 }
 
@@ -137,11 +111,16 @@ void SGCore::IMaterial::setSpecularColor(const glm::vec4& col) noexcept
 
     if(m_shader)
     {
-        m_shader->bind();
+        for(const auto& subPassShaderPair : m_shader->getSubPassesShaders())
+        {
+            const auto& subPassShader = subPassShaderPair.second;
 
-        m_shader->useVectorf("materialSpecularCol",
-                             m_specularColor
-        );
+            subPassShader->bind();
+
+            subPassShader->useVectorf("materialSpecularCol",
+                                      m_specularColor
+            );
+        }
     }
 }
 
@@ -151,11 +130,16 @@ void SGCore::IMaterial::setAmbientColor(const glm::vec4& col) noexcept
 
     if(m_shader)
     {
-        m_shader->bind();
+        for(const auto& subPassShaderPair: m_shader->getSubPassesShaders())
+        {
+            const auto& subPassShader = subPassShaderPair.second;
 
-        m_shader->useVectorf("materialAmbientCol",
-                             m_ambientColor
-        );
+            subPassShader->bind();
+
+            subPassShader->useVectorf("materialAmbientCol",
+                                      m_ambientColor
+            );
+        }
     }
 }
 
@@ -165,11 +149,16 @@ void SGCore::IMaterial::setEmissionColor(const glm::vec4& col) noexcept
 
     if(m_shader)
     {
-        m_shader->bind();
+        for(const auto& subPassShaderPair : m_shader->getSubPassesShaders())
+        {
+            const auto& subPassShader = subPassShaderPair.second;
 
-        m_shader->useVectorf("materialEmissionCol",
-                             m_emissionColor
-        );
+            subPassShader->bind();
+
+            subPassShader->useVectorf("materialEmissionCol",
+                                      m_emissionColor
+            );
+        }
     }
 }
 
@@ -179,11 +168,16 @@ void SGCore::IMaterial::setTransparentColor(const glm::vec4& col) noexcept
 
     if(m_shader)
     {
-        m_shader->bind();
+        for(const auto& subPassShaderPair : m_shader->getSubPassesShaders())
+        {
+            const auto& subPassShader = subPassShaderPair.second;
 
-        m_shader->useVectorf("materialTransparentCol",
-                             m_transparentColor
-        );
+            subPassShader->bind();
+
+            subPassShader->useVectorf("materialTransparentCol",
+                                      m_transparentColor
+            );
+        }
     }
 }
 
@@ -193,11 +187,16 @@ void SGCore::IMaterial::setShininess(const float& shininess) noexcept
 
     if(m_shader)
     {
-        m_shader->bind();
+        for(const auto& subPassShaderPair : m_shader->getSubPassesShaders())
+        {
+            const auto& subPassShader = subPassShaderPair.second;
 
-        m_shader->useFloat("materialShininess",
-                           m_shininess
-        );
+            subPassShader->bind();
+
+            subPassShader->useFloat("materialShininess",
+                                    m_shininess
+            );
+        }
     }
 }
 
@@ -207,11 +206,16 @@ void SGCore::IMaterial::setMetallicFactor(const float& metallicFactor) noexcept
 
     if(m_shader)
     {
-        m_shader->bind();
+        for(const auto& subPassShaderPair : m_shader->getSubPassesShaders())
+        {
+            const auto& subPassShader = subPassShaderPair.second;
 
-        m_shader->useFloat("materialMetallicFactor",
-                           m_metallicFactor
-        );
+            subPassShader->bind();
+
+            subPassShader->useFloat("materialMetallicFactor",
+                                    m_metallicFactor
+            );
+        }
     }
 }
 
@@ -221,11 +225,16 @@ void SGCore::IMaterial::setRoughnessFactor(const float& roughnessFactor) noexcep
 
     if(m_shader)
     {
-        m_shader->bind();
+        for(const auto& subPassShaderPair : m_shader->getSubPassesShaders())
+        {
+            const auto& subPassShader = subPassShaderPair.second;
 
-        m_shader->useFloat("materialRoughnessFactor",
-                           m_roughnessFactor
-        );
+            subPassShader->bind();
+
+            subPassShader->useFloat("materialRoughnessFactor",
+                                    m_roughnessFactor
+            );
+        }
     }
 }
 

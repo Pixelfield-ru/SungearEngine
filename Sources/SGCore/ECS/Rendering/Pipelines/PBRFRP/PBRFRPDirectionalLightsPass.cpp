@@ -7,8 +7,9 @@
 #include "PBRFRPGeometryPass.h"
 #include "SGCore/ECS/Scene.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"
 #include "SGCore/Main/CoreMain.h"
+#include "PBRFRPDirectionalLight.h"
+#include "SGCore/Graphics/API/IShader.h"
 
 void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
@@ -29,7 +30,7 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                              dirLightsLayer, directionalLightEntity)
 
                                                              auto directionalLightComponents =
-                                                                     directionalLightEntity.getComponents<DirectionalLight>();
+                                                                     directionalLightEntity.getComponents<PBRFRPDirectionalLight>();
 
                                                              auto directionalLightTransform =
                                                                      directionalLightEntity.getComponent<Transform>();
@@ -39,7 +40,8 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                              // TODO: OPTIMIZE
                                                              for (const auto& directionalLightComponent: directionalLightComponents)
                                                              {
-                                                                 geometryPass->m_shader->bind();
+                                                                 // TODO: MOVE
+                                                                 /*geometryPass->m_shader->bind();
 
                                                                  std::string directionalLightString =
                                                                          "directionalLights[" +
@@ -65,7 +67,6 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                                  );
 
 
-                                                                 // todo: take into account the type of transformation and the direction of rotation
                                                                  geometryPass->m_shader->useVectorf(
                                                                          renderingPartString + ".position",
                                                                          directionalLightTransform->m_position
@@ -74,16 +75,12 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                                  geometryPass->m_shader->useMatrix(
                                                                          renderingPartString + ".spaceMatrix",
                                                                          directionalLightComponent->m_spaceMatrix
-                                                                 );
+                                                                 );*/
 
-                                                                 m_shader->bind();
                                                                  directionalLightComponent->m_shadowMap->bind()->clear();
 
                                                                  CoreMain::getRenderer().prepareUniformBuffers(
                                                                          directionalLightComponent, nullptr
-                                                                 );
-                                                                 m_shader->useUniformBuffer(
-                                                                         CoreMain::getRenderer().m_viewMatricesBuffer
                                                                  );
 
                                                                  SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRender,
@@ -98,9 +95,17 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
 
                                                                          for (const auto& meshComponent: meshComponents)
                                                                          {
-                                                                             meshComponent->m_meshData->m_material->bind(m_shader);
-                                                                             m_shader->useMatrix("objectModelMatrix",
+                                                                             auto meshSubPassShader = meshComponent->m_meshData->m_material->getShader()->getSubPassShader("PBRFRPDirectionalLightsPass");
+
+                                                                             if(!meshSubPassShader) continue;
+
+                                                                             meshSubPassShader->bind();
+                                                                             meshSubPassShader->useMatrix("objectModelMatrix",
                                                                                                  transformComponent->m_modelMatrix
+                                                                             );
+
+                                                                             meshSubPassShader->useUniformBuffer(
+                                                                                     CoreMain::getRenderer().m_viewMatricesBuffer
                                                                              );
 
                                                                              CoreMain::getRenderer().renderMeshData(
@@ -116,11 +121,11 @@ void SGCore::PBRFRPDirectionalLightsPass::render(const Ref<Scene>& scene, const 
                                                              }
                                                      SG_END_ITERATE_CACHED_ENTITIES
 
-                                                     geometryPass->m_shader->bind();
-                                                     // todo: make name as define
+                                                     // TODO: MOVE
+                                                     /*geometryPass->m_shader->bind();
                                                      geometryPass->m_shader->useInteger("DIRECTIONAL_LIGHTS_COUNT",
                                                                                         directionalLightsCount
-                                                     );
+                                                     );*/
                                                  }
                                              }
     );

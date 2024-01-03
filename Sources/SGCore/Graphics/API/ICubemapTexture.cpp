@@ -4,7 +4,3 @@
 
 #include "ICubemapTexture.h"
 
-SGCore::Weak<SGCore::CubemapAsset> SGCore::ICubemapTexture::getAsset() noexcept
-{
-    return m_cubemapAsset;
-}

@@ -7,7 +7,7 @@
 
 #include "IRenderPipeline.h"
 #include "SGCore/ECS/ComponentsCollector.h"
-#include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGCore/Utils/Timer.h"
 
 namespace SGCore
@@ -17,8 +17,6 @@ namespace SGCore
     struct IRenderPass
     {
         bool m_active = true;
-
-        Ref<IShader> m_shader;
 
         // components, that use to render in
         Ref<CollectorCachedEntities> m_componentsToRenderIn;

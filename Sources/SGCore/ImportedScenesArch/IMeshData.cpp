@@ -2,7 +2,7 @@
 
 #include "SGCore/Main/CoreMain.h"
 
-/*SGCore::IMesh::IMesh() noexcept
+/*SGCore::Mesh::Mesh() noexcept
 {
     m_material = Ref<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createPBRMaterial());
 }*/

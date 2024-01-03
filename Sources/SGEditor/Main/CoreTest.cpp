@@ -6,7 +6,7 @@
 #include "SGCore/Main/CoreMain.h"
 
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGCore/Graphics/API/ShaderDefine.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Graphics/API/IShaderUniform.h"
@@ -23,10 +23,8 @@
 
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/Rendering/Camera.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLight.h"
+#include "SGCore/ECS/Rendering/ICamera.h"
 #include "SGCore/ECS/Rendering/Skybox.h"
-#include "SGCore/Memory/Assets/CubemapAsset.h"
 #include "SGCore/ECS/Rendering/Gizmos/BoxGizmo.h"
 
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
@@ -35,6 +33,11 @@
 #include "SGCore/ImGuiWrap/Views/Base/Window.h"
 #include "SGCore/ImGuiWrap/Views/Base/CollapsingHeader.h"
 #include "SGCore/ImGuiWrap/ViewsInjector.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPDirectionalLight.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPCamera.h"
+
+#include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Graphics/API/ICubemapTexture.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -305,29 +308,32 @@ void init()
 
     // adding skybox
     {
-        auto standardCubemap = SGCore::AssetManager::loadAsset<SGCore::CubemapAsset>(
-                "standard_skybox0",
-                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
-                ),
-                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-                ),
+        auto standardCubemap = SGCore::ICubemapTexture::createRefInstance<SGCore::ICubemapTexture>();
 
-                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-                ),
-                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
-                ),
+        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+        ));
+        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
+        ));
 
-                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
-                ),
-                SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
-                        "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
-                )
-        );
+        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
+        ));
+        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+        ));
+
+        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+        ));
+        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+        ));
+
+        standardCubemap->create();
+
+        SGCore::AssetManager::addAsset("standard_skybox0", standardCubemap);
 
         cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
                                           [standardCubemap](const SGCore::Ref<SGCore::Entity>& entity)
@@ -346,7 +352,7 @@ void init()
                                               {
                                                   meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
                                                   meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTT_SKYBOX].push_back(
-                                                          standardCubemap->getTexture2D()
+                                                          standardCubemap
                                                   );
                                               }
                                           }
@@ -357,7 +363,7 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    auto geniusJPG = SGCore::AssetManager::loadAsset<SGCore::Texture2DAsset>(
+    auto geniusJPG = SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/genius.jpg"
     );
 
@@ -377,7 +383,7 @@ void init()
                                            if(meshComponent)
                                            {
                                                meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTT_DIFFUSE].push_back(
-                                                       geniusJPG->m_texture2D
+                                                       geniusJPG
                                                );
                                            }
                                        }
@@ -395,7 +401,7 @@ void init()
     cameraTransformComponent->m_rotation.x = -30;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
-    auto camera = SGCore::MakeRef<SGCore::Camera>();
+    auto camera = SGCore::MakeRef<SGCore::PBRFRPCamera>();
     testCameraEntity->addComponent(camera);
 
     int primaryMonitorWidth;
@@ -406,23 +412,8 @@ void init()
     // =================================================================================
     // ================ POST PROCESS SETUP =============================================
     // =================================================================================
-    // auto& defaultLayer = camera->getPostProcessLayer(testScene->getLayers().find(SG_LAYER_OPAQUE_NAME)->second);
-/*    auto& defaultLayer = camera->getDefaultPostProcessLayer();
 
-    defaultLayer.m_attachmentsToRenderIn.push_back(SGG_COLOR_ATTACHMENT6);
-
-    defaultLayer.m_frameBuffer
-            ->bind()
-            ->setSize(primaryMonitorWidth, primaryMonitorHeight)
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT6,
-                            SGGColorFormat::SGG_RGB,
-                            SGGColorInternalFormat::SGG_RGB8,
-                            0,
-                            0
-            )
-            ->unbind();*/
-
-    auto& ppLayer = camera->addPostProcessLayer("blurPPLayer",
+    /*auto& ppLayer = camera->addPostProcessLayer("blurPPLayer",
                                                 testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
                                                 primaryMonitorWidth,
                                                 primaryMonitorHeight
@@ -448,9 +439,9 @@ void init()
     ppLayer.m_attachmentsForCombining[SGG_COLOR_ATTACHMENT0] = SGG_COLOR_ATTACHMENT7;
 
     camera->setPostProcessLayerShader(testScene->getLayers().find(SG_LAYER_TRANSPARENT_NAME)->second,
-                                      SGCore::Ref<SGCore::IShader>(
+                                      SGCore::Ref<SGCore::ISubPassShader>(
                                               SGCore::CoreMain::getRenderer().createShader("../SGResources/shaders/glsl4/postprocessing/distortion_fx_layer.glsl")
-                                      )->addToGlobalStorage());
+                                      )->addToGlobalStorage());*/
 
 
     // =========== BLOOM SETUP =======================================
@@ -532,7 +523,7 @@ void init()
     shadowsCasterTransform->m_position.x = -5.0;
     //shadowsCasterTransform->m_rotation.x = 50;
     testShadowsCaster->addComponent(shadowsCasterTransform);
-    auto directionalLight = SGCore::MakeRef<SGCore::DirectionalLight>();
+    auto directionalLight = SGCore::MakeRef<SGCore::PBRFRPDirectionalLight>();
     // directionalLight->m_color.r = 10.0f / 255.0f;
     // directionalLight->m_color.g = 129.0f / 255.0f;
     // directionalLight->m_color.b = 100.0f / 255.0f;
@@ -550,7 +541,7 @@ void init()
     shadowsCasterTransform1->m_position.z = -50.0;
     shadowsCasterTransform1->m_rotation.y = 180;
     testShadowsCaster1->addComponent(shadowsCasterTransform1);
-    auto directionalLight1 = SGCore::MakeRef<SGCore::DirectionalLight>();
+    auto directionalLight1 = SGCore::MakeRef<SGCore::PBRFRPDirectionalLight>();
     directionalLight1->m_color.r = 139.0f / 255.0f;
     directionalLight1->m_color.g = 184.0f / 255.0f;
     directionalLight1->m_color.b = 241.0f / 255.0f;
@@ -566,7 +557,7 @@ void init()
     shadowsCasterTransform2->m_position.z = -50.0;
     shadowsCasterTransform2->m_rotation.y = 180;
     testShadowsCaster2->addComponent(shadowsCasterTransform2);
-    auto directionalLight2 = SGCore::MakeRef<SGCore::DirectionalLight>();
+    auto directionalLight2 = SGCore::MakeRef<SGCore::PBRFRPDirectionalLight>();
     directionalLight2->m_color.r = 20.0f / 255.0f;
     directionalLight2->m_color.g = 184.0f / 255.0f;
     directionalLight2->m_color.b = 241.0f / 255.0f;
@@ -582,7 +573,7 @@ void init()
     shadowsCasterTransform3->m_position.z = -20.0;
     shadowsCasterTransform3->m_rotation.y = 90;
     testShadowsCaster3->addComponent(shadowsCasterTransform3);
-    auto directionalLight3 = SGCore::MakeRef<SGCore::DirectionalLight>();
+    auto directionalLight3 = SGCore::MakeRef<SGCore::PBRFRPDirectionalLight>();
     directionalLight3->m_color.r = 139.0f / 255.0f;
     directionalLight3->m_color.g = 15.0f / 255.0f;
     directionalLight3->m_color.b = 5.0f / 255.0f;
@@ -598,7 +589,7 @@ void init()
     shadowsCasterTransform4->m_position.z = -20.0;
     shadowsCasterTransform4->m_rotation.y = -90;
     testShadowsCaster4->addComponent(shadowsCasterTransform4);
-    auto directionalLight4 = SGCore::MakeRef<SGCore::DirectionalLight>();
+    auto directionalLight4 = SGCore::MakeRef<SGCore::PBRFRPDirectionalLight>();
     directionalLight4->m_color.r = 139.0f / 255.0f;
     directionalLight4->m_color.g = 50.0f / 255.0f;
     directionalLight4->m_color.b = 241.0f / 255.0f;

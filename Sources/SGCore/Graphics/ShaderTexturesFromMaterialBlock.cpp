@@ -4,19 +4,36 @@
 
 #include "ShaderTexturesFromMaterialBlock.h"
 
-#include "API/IShader.h"
+#include "API/ISubPassShader.h"
 #include "API/ITexture2D.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
-void SGCore::ShaderTexturesFromMaterialBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
+void SGCore::ShaderTexturesFromMaterialBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture, SGTextureType textureType) noexcept
 {
-    m_textures.push_back(texture2D);
+    // m_textures.push_back(texture2D);
+
+    if(textureType != m_typeToCollect) return;
+
+    // if texture does not exist
+    if(std::find_if(m_textures.begin(), m_textures.end(), [&texture](auto otherTexture)
+                    {
+                        return !(otherTexture.owner_before(texture) || texture.owner_before(otherTexture));
+                    }
+    ) == m_textures.end())
+    {
+        m_textures.push_back(texture);
+    }
+
+    if(auto lockedShader = m_parentShader.lock())
+    {
+        lockedShader->onTexturesCountChanged();
+    }
 }
 
-void SGCore::ShaderTexturesFromMaterialBlock::removeTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
+void SGCore::ShaderTexturesFromMaterialBlock::removeTexture(const SGCore::Ref<SGCore::ITexture2D>& texture) noexcept
 {
-    size_t removedCnt = m_textures.remove_if([&texture2D](auto otherTexture) {
-        return !(otherTexture.owner_before(texture2D) || texture2D.owner_before(otherTexture));
+    size_t removedCnt = m_textures.remove_if([&texture](auto otherTexture) {
+        return !(otherTexture.owner_before(texture) || texture.owner_before(otherTexture));
     });
 
     if(removedCnt > 0)

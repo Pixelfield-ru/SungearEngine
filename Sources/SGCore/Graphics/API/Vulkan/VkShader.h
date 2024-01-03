@@ -5,12 +5,12 @@
 #ifndef SUNGEARENGINE_VKSHADER_H
 #define SUNGEARENGINE_VKSHADER_H
 
-#include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Graphics/API/ISubPassShader.h"
 
 namespace SGCore
 {
     // TODO: impl VkShader
-    class VkShader : public IShader
+    class VkShader : public ISubPassShader
     {
     public:
         ~VkShader() noexcept override;

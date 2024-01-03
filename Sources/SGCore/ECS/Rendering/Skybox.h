@@ -7,18 +7,18 @@
 
 #include "SGCore/ECS/IComponent.h"
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/Defines.h"
-#include "SGCore/Memory/Assets/ShaderAsset.h"
+#include "SGCore/Memory/Assets/ShaderFileAsset.h"
 #include "SGCore/Utils/ShadersPaths.h"
+#include "Mesh.h"
 
 namespace SGCore
 {
-    class Skybox : public IComponent
+    class Skybox : public Mesh
     {
-    private:
-        void init() noexcept final { }
+        void registerRenderPipelineIfNotRegistered(const Ref<IRenderPipeline>& pipeline) noexcept override;
     };
 }
 

@@ -30,6 +30,8 @@ namespace SGCore
 
         float m_linesWidth = 3.0f;
 
+        void registerRenderPipelineIfNotRegistered(const Ref<IRenderPipeline>& pipeline) noexcept override;
+
     protected:
         glm::bvec3 m_lastFollowEntityTRS = glm::vec3 { false, false, false };
 

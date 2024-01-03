@@ -1,7 +1,7 @@
 #define SG_NOT_INCLUDE_LIHTS
 
-#include "../uniform_bufs_decl.glsl"
-#include "../defines.glsl"
+#sg_include "../uniform_bufs_decl.glsl"
+#sg_include "../defines.glsl"
 
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;

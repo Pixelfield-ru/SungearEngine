@@ -10,14 +10,11 @@
 #include "SGCore/ECS/Rendering/MeshesCollector.h"
 #include "SGCore/ECS/Rendering/RenderingComponentsUpdater.h"
 #include "SGCore/ECS/Rendering/Gizmos/GizmosMeshesRebuilder.h"
-#include "SGCore/ECS/Rendering/Lighting/DirectionalLightsCollector.h"
 #include "SGCore/ECS/Transformations/CameraMovement3DSystem.h"
-#include "SGCore/ECS/Rendering/SkyboxesCollector.h"
-#include "SGCore/ECS/Rendering/Gizmos/LinesGizmosCollector.h"
-#include "SGCore/ECS/Rendering/Gizmos/ComplexGizmosCollector.h"
-#include "SGCore/ECS/Rendering/CamerasCollector.h"
 #include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRForwardRenderPipeline.h"
 #include "SGCore/Logging/Log.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPCamerasCollector.h"
+#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPDirectionalLightsCollector.h"
 
 SGCore::Scene::Scene() noexcept
 {
@@ -45,17 +42,10 @@ void SGCore::Scene::createDefaultSystems()
 
     auto primitivesUpdaterSystem = std::make_shared<GizmosMeshesRebuilder>();
 
-    auto directionalLightsSystem = std::make_shared<DirectionalLightsCollector>();
-
     auto camera3DMovementSystem = std::make_shared<CameraMovement3DSystem>();
 
-    auto skyboxesCollectorSystem = std::make_shared<SkyboxesCollector>();
-
-    auto linesCollectorSystem = std::make_shared<LinesGizmosCollector>();
-
-    auto complexPrimitivesCollectorSystem = std::make_shared<ComplexGizmosCollector>();
-
-    auto camerasCollectorSystem = std::make_shared<CamerasCollector>();
+    auto pbrfrpCamerasCollector = std::make_shared<PBRFRPCamerasCollector>();
+    auto pbrfrpDirectionalLightsCollector = std::make_shared<PBRFRPDirectionalLightsCollector>();
 
     auto pipelineSystem = std::make_shared<PBRForwardRenderPipeline>();
 
@@ -65,14 +55,10 @@ void SGCore::Scene::createDefaultSystems()
     m_systems.emplace(renderingComponentsSystem);
     m_systems.emplace(primitivesUpdaterSystem);
     // directional light system must be always before shadows caster system
-    m_systems.emplace(directionalLightsSystem);
     m_systems.emplace(camera3DMovementSystem);
-    m_systems.emplace(skyboxesCollectorSystem);
 
-    m_systems.emplace(linesCollectorSystem);
-    m_systems.emplace(complexPrimitivesCollectorSystem);
-
-    m_systems.emplace(camerasCollectorSystem);
+    m_systems.emplace(pbrfrpCamerasCollector);
+    m_systems.emplace(pbrfrpDirectionalLightsCollector);
 
     m_systems.emplace(pipelineSystem);
 

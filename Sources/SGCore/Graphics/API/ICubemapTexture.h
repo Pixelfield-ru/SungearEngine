@@ -7,22 +7,22 @@
 
 #include "ITexture2D.h"
 
-#include "SGCore/Memory/Assets/CubemapAsset.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
-    class CubemapAsset;
-
-    class ICubemapTexture : public ITexture2D
+    struct ICubemapTexture : public ITexture2D
     {
-    protected:
-        Weak<CubemapAsset> m_cubemapAsset;
+        friend class AssetManager;
 
-    public:
-        virtual void create(Weak<CubemapAsset> cubemapAsset) = 0;
+        std::vector<Ref<ITexture2D>> m_parts;
 
-        Weak<CubemapAsset> getAsset() noexcept;
+        template<typename InstanceT>
+        requires(std::is_same_v<ICubemapTexture, InstanceT>)
+        static Ref<InstanceT> createRefInstance() noexcept
+        {
+            return Ref<InstanceT>(CoreMain::getRenderer().createCubemapTexture());
+        }
     };
 }
 

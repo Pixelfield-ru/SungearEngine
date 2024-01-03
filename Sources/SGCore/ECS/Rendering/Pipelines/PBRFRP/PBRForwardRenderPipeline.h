@@ -17,6 +17,8 @@ namespace SGCore
         SG_COPY_CTOR(PBRForwardRenderPipeline);
         SG_MOVE_CTOR(PBRForwardRenderPipeline);
 
+        void update(const Ref<Scene>& scene) noexcept override;
+
         void useScene(const Ref<Scene>& scene) override;
     };
 }

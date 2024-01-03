@@ -36,8 +36,6 @@ struct ShadersPaths
 
 private:
     std::unordered_map<std::string, SGCore::Ref<ShadersPaths>> m_paths;
-
-    SG_FULL_SINGLETON(ShadersPaths)
 };
 
 #endif // SUNGEARENGINE_SHADERSPATHS_H

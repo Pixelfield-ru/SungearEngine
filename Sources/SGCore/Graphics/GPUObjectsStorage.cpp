@@ -4,11 +4,11 @@
 
 #include "GPUObjectsStorage.h"
 
-#include "API/IShader.h"
+#include "API/ISubPassShader.h"
 #include "API/ITexture2D.h"
 #include "API/IFrameBuffer.h"
 
-void SGCore::GPUObjectsStorage::addShader(const Ref<IShader>& shader) noexcept
+void SGCore::GPUObjectsStorage::addShader(const Ref<ISubPassShader>& shader) noexcept
 {
     shader->attachToUniqueNamesManager(m_uniqueNamesManager);
     m_shaders[shader->getName()] = shader;

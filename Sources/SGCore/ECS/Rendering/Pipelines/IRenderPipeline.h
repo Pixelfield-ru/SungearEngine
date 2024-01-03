@@ -6,15 +6,16 @@
 #define SUNGEARENGINE_IPIPELINESYSTEM_H
 
 #include "SGCore/ECS/ISystem.h"
+#include "SGCore/Utils/ShadersPaths.h"
 
 namespace SGCore
 {
-    class IShader;
+    class ISubPassShader;
     struct IRenderPass;
 
     struct IRenderPipeline : public ISystem, public std::enable_shared_from_this<IRenderPipeline>
     {
-        void update(const Ref<Scene>& scene) noexcept override;
+        ShadersPaths m_shadersPaths;
 
         std::vector<Ref<IRenderPass>> m_renderPasses;
 

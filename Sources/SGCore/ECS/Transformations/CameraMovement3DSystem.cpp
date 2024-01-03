@@ -5,7 +5,7 @@
 #include "glm/gtx/rotate_vector.hpp"
 
 #include "CameraMovement3DSystem.h"
-#include "SGCore/ECS/Rendering/Camera.h"
+#include "SGCore/ECS/Rendering/ICamera.h"
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/Input/InputManager.h"
 #include "SGCore/Main/CoreMain.h"
@@ -14,14 +14,14 @@
 
 SGCore::CameraMovement3DSystem::CameraMovement3DSystem()
 {
-    m_componentsCollector.configureCachingFunction<Camera, Transform>();
+    m_componentsCollector.configureCachingFunction<ICamera, Transform>();
 }
 
 void SGCore::CameraMovement3DSystem::fixedUpdate
 (const Ref<Scene>& scene)
 {
     SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsCollector.m_cachedEntities, layer, cachedEntity)
-            Ref<Camera> cameraComponent = cachedEntity.getComponent<Camera>();
+            Ref<ICamera> cameraComponent = cachedEntity.getComponent<ICamera>();
             Ref<Transform> transformComponent = cachedEntity.getComponent<Transform>();
 
             if(!transformComponent || !cameraComponent) return;

@@ -1,7 +1,7 @@
-#ifndef DEFINES_GLSL
-#define DEFINES_GLSL
+#sg_ifndef DEFINES_GLSL
+#sg_define DEFINES_GLSL
 
 #define SGMAT_SAMPLERS_OF_TYPE_MAX      4
 #define MAX_PP_FB_COUNT                 4
 
-#endif // DEFINES_GLSL
+#sg_endif // DEFINES_GLSL

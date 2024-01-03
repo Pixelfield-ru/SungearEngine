@@ -19,7 +19,7 @@ namespace SGCore
     struct Transform : public IComponent
     {
         friend class TransformationsUpdater;
-        friend class DirectionalLightsCollector;
+        friend class PBRFRPDirectionalLightsCollector;
 
         bool m_blockTranslation = false;
         bool m_blockRotation = false;

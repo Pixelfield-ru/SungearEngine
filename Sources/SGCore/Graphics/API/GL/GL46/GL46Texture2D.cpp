@@ -14,28 +14,10 @@ SGCore::GL46Texture2D::~GL46Texture2D() noexcept
 }
 
 // migrate to gl46
-void SGCore::GL46Texture2D::create(Weak<Texture2DAsset> asset) noexcept
+void SGCore::GL46Texture2D::create() noexcept
 {
-    auto thisWeak = weak_from_this();
-
-    auto originalSharedPtr = m_texture2DAsset.lock();
-
-    if(originalSharedPtr)
-    {
-        originalSharedPtr->removeObserver(thisWeak.lock());
-    }
-
-    m_texture2DAsset = asset;
-
-    originalSharedPtr = m_texture2DAsset.lock();
-
-    if(originalSharedPtr)
-    {
-        originalSharedPtr->addObserver(thisWeak.lock());
-    }
-
-    m_glInternalFormat = GLGraphicsTypesCaster::sggInternalFormatToGL(originalSharedPtr->getInternalFormat());
-    m_glFormat = GLGraphicsTypesCaster::sggFormatToGL(originalSharedPtr->getFormat());
+    m_glInternalFormat = GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat);
+    m_glFormat = GLGraphicsTypesCaster::sggFormatToGL(m_format);
 
     glCreateTextures(GL_TEXTURE_2D, 1, &m_handler);
 
@@ -51,16 +33,16 @@ void SGCore::GL46Texture2D::create(Weak<Texture2DAsset> asset) noexcept
     glTextureParameteri(m_handler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTextureParameteri(m_handler, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-    glTextureStorage2D(m_handler, 1, m_glInternalFormat, originalSharedPtr->getWidth(), originalSharedPtr->getHeight());
+    glTextureStorage2D(m_handler, 1, m_glInternalFormat, m_width, m_height);
     glTextureSubImage2D(m_handler,
                         0,
                         0,
                         0,
-                        originalSharedPtr->getWidth(),
-                        originalSharedPtr->getHeight(),
+                        m_width,
+                        m_height,
                         m_glFormat,
                         GL_UNSIGNED_BYTE,
-                        reinterpret_cast<const void*>(originalSharedPtr->getData().get()));
+                        m_textureData.get());
 
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();
@@ -79,30 +61,9 @@ void SGCore::GL46Texture2D::bind(const std::uint8_t& textureUnit) noexcept
     //glBindTexture(GL_TEXTURE_2D, m_handler);
 }
 
-void SGCore::GL46Texture2D::onAssetModified() noexcept
-{
-
-}
-
-void SGCore::GL46Texture2D::onAssetPathChanged() noexcept
-{
-
-}
-
-void SGCore::GL46Texture2D::onAssetDeleted() noexcept
-{
-
-}
-
-void SGCore::GL46Texture2D::onAssetRestored() noexcept
-{
-
-}
-
 SGCore::GL46Texture2D& SGCore::GL46Texture2D::operator=
         (const Ref<ITexture2D>& other)
 {
-    create(other->getAsset());
 
     return *this;
 }

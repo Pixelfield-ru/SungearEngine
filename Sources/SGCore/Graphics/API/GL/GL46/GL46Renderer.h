@@ -7,7 +7,7 @@
 
 #include "SGCore/Logging/Log.h"
 
-#include "SGCore/Graphics/API/GL/GL46/GL46Shader.h"
+#include "SGCore/Graphics/API/GL/GL46/GL46SubPassShader.h"
 #include "SGCore/Graphics/API/GL/GLVertexArray.h"
 #include "SGCore/Graphics/API/GL/GLVertexBuffer.h"
 #include "SGCore/Graphics/API/GL/GLVertexBufferLayout.h"
@@ -43,8 +43,8 @@ namespace SGCore
 
         bool confirmSupport() noexcept override;
 
-        [[nodiscard]] GL46Shader* createShader() override;
-        [[nodiscard]] GL46Shader* createShader(const std::string& path) override;
+        [[nodiscard]] GL46SubPassShader* createShader() override;
+        [[nodiscard]] GL46SubPassShader* createShader(const std::string& path) override;
 
         [[nodiscard]] GL46Texture2D* createTexture2D() final;
 

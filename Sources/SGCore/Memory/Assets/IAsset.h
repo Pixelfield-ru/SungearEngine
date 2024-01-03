@@ -20,6 +20,8 @@ namespace SGCore
 
     class IAsset
     {
+        friend class AssetManager;
+
     public:
         std::string m_name;
 
@@ -40,6 +42,14 @@ namespace SGCore
         long m_lastModified = -1;
         std::filesystem::path m_path;
         std::list<Weak<IAssetObserver>> m_observers;
+
+    private:
+        template<typename InstanceT>
+        requires(std::is_base_of_v<IAsset, InstanceT>)
+        static Ref<InstanceT> createRefInstance() noexcept
+        {
+            return MakeRef<InstanceT>();
+        }
     };
 }
 

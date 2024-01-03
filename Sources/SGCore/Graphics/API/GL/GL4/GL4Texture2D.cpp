@@ -14,28 +14,10 @@ SGCore::GL4Texture2D::~GL4Texture2D() noexcept
 }
 
 // migrate to gl46
-void SGCore::GL4Texture2D::create(Weak<Texture2DAsset> asset) noexcept
+void SGCore::GL4Texture2D::create() noexcept
 {
-    auto thisWeak = weak_from_this();
-
-    Ref<Texture2DAsset> assetSharedPtr = m_texture2DAsset.lock();
-
-    if(assetSharedPtr)
-    {
-        assetSharedPtr->removeObserver(thisWeak.lock());
-    }
-
-    m_texture2DAsset = asset;
-
-    assetSharedPtr = m_texture2DAsset.lock();
-
-    if(assetSharedPtr)
-    {
-        assetSharedPtr->addObserver(thisWeak.lock());
-    }
-
-    m_glInternalFormat = GLGraphicsTypesCaster::sggInternalFormatToGL(assetSharedPtr->getInternalFormat());
-    m_glFormat = GLGraphicsTypesCaster::sggFormatToGL(assetSharedPtr->getFormat());
+    m_glInternalFormat = GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat);
+    m_glFormat = GLGraphicsTypesCaster::sggFormatToGL(m_format);
 
     glGenTextures(1, &m_handler);
 
@@ -52,18 +34,18 @@ void SGCore::GL4Texture2D::create(Weak<Texture2DAsset> asset) noexcept
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glTexStorage2D(GL_TEXTURE_2D, 1, m_glInternalFormat,
-                   assetSharedPtr->getWidth(), assetSharedPtr->getHeight());
+                   m_width, m_height);
 
     // gl_unsigned_byte may produce SIGSEGV
     glTexSubImage2D(GL_TEXTURE_2D,
                     0,
                     0,
                     0,
-                    assetSharedPtr->getWidth(),
-                    assetSharedPtr->getHeight(),
+                    m_width,
+                    m_height,
                     m_glFormat,
                     GL_UNSIGNED_BYTE,
-                    assetSharedPtr->getData().get());
+                    m_textureData.get());
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -123,30 +105,8 @@ void SGCore::GL4Texture2D::bind(const std::uint8_t& textureUnit) noexcept
     glBindTexture(GL_TEXTURE_2D, m_handler);
 }
 
-void SGCore::GL4Texture2D::onAssetModified() noexcept
-{
-
-}
-
-void SGCore::GL4Texture2D::onAssetPathChanged() noexcept
-{
-
-}
-
-void SGCore::GL4Texture2D::onAssetDeleted() noexcept
-{
-
-}
-
-void SGCore::GL4Texture2D::onAssetRestored() noexcept
-{
-
-}
-
 SGCore::GL4Texture2D& SGCore::GL4Texture2D::operator=
         (const Ref<ITexture2D>& other)
 {
-    create(other->getAsset());
-
     return *this;
 }

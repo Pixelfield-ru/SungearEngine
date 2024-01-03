@@ -1,8 +1,8 @@
-#ifndef UNIFORM_BUFS_DECL_GLSL
-#define UNIFORM_BUFS_DECL_GLSL
+#sg_ifndef UNIFORM_BUFS_DECL_GLSL
+#sg_define UNIFORM_BUFS_DECL_GLSL
 
-#include "defines.glsl"
-#include "rendering_structs_decl.glsl"
+#sg_include "defines.glsl"
+#sg_include "rendering_structs_decl.glsl"
 
 uniform mat4 objectModelMatrix;
 uniform vec3 objectPosition;
@@ -29,4 +29,4 @@ layout(std140) uniform ProgramData
     float currentTime;
 };
 
-#endif // UNIFORM_BUFS_DECL_GLSL
+#sg_endif // UNIFORM_BUFS_DECL_GLSL

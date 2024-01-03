@@ -1,4 +1,4 @@
-#include "../uniform_bufs_decl.glsl"
+#sg_include "../uniform_bufs_decl.glsl"
 
 #ifdef VERTEX_SHADER
     layout (location = 0) in vec3 positionsAttribute;

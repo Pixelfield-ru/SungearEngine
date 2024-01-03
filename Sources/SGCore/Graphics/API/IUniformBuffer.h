@@ -10,11 +10,11 @@
 
 #include "IShaderUniform.h"
 #include "SGCore/Logging/Log.h"
-#include "IShader.h"
+#include "ISubPassShader.h"
 
 namespace SGCore
 {
-    class IShader;
+    class ISubPassShader;
 
     class IUniformBuffer : public std::enable_shared_from_this<IUniformBuffer>
     {

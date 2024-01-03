@@ -14,7 +14,7 @@ namespace SGCore
     class GL4CubemapTexture : public ICubemapTexture
     {
     public:
-        void create(Weak<CubemapAsset> cubemapAsset) override;
+        void create() override;
         void destroy() override;
 
         void bind(const std::uint8_t& textureUnit) override;

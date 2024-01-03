@@ -4,7 +4,7 @@
 
 #include "ShaderTexturesFromGlobalStorageBlock.h"
 
-#include "API/IShader.h"
+#include "API/ISubPassShader.h"
 #include "API/ITexture2D.h"
 
 void SGCore::ShaderTexturesFromGlobalStorageBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept

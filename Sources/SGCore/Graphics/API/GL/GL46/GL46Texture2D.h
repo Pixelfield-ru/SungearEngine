@@ -14,13 +14,8 @@ namespace SGCore
     public:
         ~GL46Texture2D() noexcept;
 
-        void create(Weak<Texture2DAsset>) noexcept final;
+        void create() noexcept final;
         void destroy() noexcept final;
-
-        void onAssetModified() noexcept final;
-        void onAssetPathChanged() noexcept final;
-        void onAssetDeleted() noexcept final;
-        void onAssetRestored() noexcept final;
 
         void bind(const std::uint8_t& textureUnit) noexcept final;
 

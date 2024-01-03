@@ -1,5 +1,5 @@
-#ifndef RAY_INTERSECTIONS_GLSL
-#define RAY_INTERSECTIONS_GLSL
+#sg_ifndef RAY_INTERSECTIONS_GLSL
+#sg_define RAY_INTERSECTIONS_GLSL
 
 vec2 raySphereIntersection(const in vec3 ro, const in vec3 rd, const in float sr)
 {
@@ -11,4 +11,4 @@ vec2 raySphereIntersection(const in vec3 ro, const in vec3 rd, const in float sr
     return vec2(-b - h, -b + h);
 }
 
-#endif // RAY_INTERSECTIONS_GLSL
+#sg_endif // RAY_INTERSECTIONS_GLSL
