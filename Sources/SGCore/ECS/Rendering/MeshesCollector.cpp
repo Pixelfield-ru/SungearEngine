@@ -10,19 +10,5 @@
 
 SGCore::MeshesCollector::MeshesCollector()
 {
-    m_componentsCollector.configureCachingFunction<Mesh, Transform>([](const Ref<Entity>& entity)
-                                                                    {
-                                                                        if(entity->getComponent<Skybox>())
-                                                                        {
-                                                                            return false;
-                                                                        }
-
-                                                                        return true;
-                                                                    }, [](const Ref<Entity>& entity,
-                                                                          const Ref<IComponent>& component)
-                                                                    {
-                                                                        // we wont cache mesh component if it is gizmo, because gizmo renderings in different way
-                                                                        return !SG_INSTANCEOF(component.get(), IGizmo);
-                                                                    }
-    );
+    m_componentsCollector.configureCachingFunction<Mesh, Transform>();
 }

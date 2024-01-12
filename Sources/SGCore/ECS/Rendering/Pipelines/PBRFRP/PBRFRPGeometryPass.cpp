@@ -47,8 +47,6 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
             CoreMain::getRenderer().prepareUniformBuffers(cameraComponent, cameraTransformComponent);
             // m_shader->useUniformBuffer(CoreMain::getRenderer().m_viewMatricesBuffer);
 
-            cameraComponent->registerRenderPipelineIfNotRegistered(renderPipeline);
-
             // todo: make less bindings
 
             for(auto& meshesLayer : *m_componentsToRender)
@@ -68,8 +66,6 @@ void SGCore::PBRFRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::R
 
                     for(const auto& meshComponent: meshComponents)
                     {
-                        meshComponent->registerRenderPipelineIfNotRegistered(renderPipeline);
-
                         auto meshGeometryShader = meshComponent->m_meshData->m_material->getShader()->getSubPassShader("PBRFRPGeometryPass");
 
                         if(!meshGeometryShader) continue;

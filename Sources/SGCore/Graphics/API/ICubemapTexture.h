@@ -17,6 +17,7 @@ namespace SGCore
 
         std::vector<Ref<ITexture2D>> m_parts;
 
+    private:
         template<typename InstanceT>
         requires(std::is_same_v<ICubemapTexture, InstanceT>)
         static Ref<InstanceT> createRefInstance() noexcept

@@ -16,9 +16,6 @@ SGCore::GL46Texture2D::~GL46Texture2D() noexcept
 // migrate to gl46
 void SGCore::GL46Texture2D::create() noexcept
 {
-    m_glInternalFormat = GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat);
-    m_glFormat = GLGraphicsTypesCaster::sggFormatToGL(m_format);
-
     glCreateTextures(GL_TEXTURE_2D, 1, &m_handler);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -33,14 +30,14 @@ void SGCore::GL46Texture2D::create() noexcept
     glTextureParameteri(m_handler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTextureParameteri(m_handler, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-    glTextureStorage2D(m_handler, 1, m_glInternalFormat, m_width, m_height);
+    glTextureStorage2D(m_handler, 1, GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat), m_width, m_height);
     glTextureSubImage2D(m_handler,
                         0,
                         0,
                         0,
                         m_width,
                         m_height,
-                        m_glFormat,
+                        GLGraphicsTypesCaster::sggFormatToGL(m_format),
                         GL_UNSIGNED_BYTE,
                         m_textureData.get());
 

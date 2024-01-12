@@ -16,9 +16,10 @@
 
 namespace SGCore
 {
-    class Skybox : public Mesh
+    class Skybox : public IComponent
     {
-        void registerRenderPipelineIfNotRegistered(const Ref<IRenderPipeline>& pipeline) noexcept override;
+    private:
+        void init() noexcept override { }
     };
 }
 

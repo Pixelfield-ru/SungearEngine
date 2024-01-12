@@ -14,6 +14,12 @@ void SGCore::VkTexture2D::create()
 
 }
 
+void SGCore::VkTexture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCore::IFrameBuffer>& parentFrameBuffer,
+                                                        SGFrameBufferAttachmentType attachmentType)
+{
+
+}
+
 void SGCore::VkTexture2D::destroy() noexcept
 {
 

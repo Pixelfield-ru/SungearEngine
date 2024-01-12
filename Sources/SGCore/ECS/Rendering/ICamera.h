@@ -6,7 +6,6 @@
 #include "IRenderingComponent.h"
 #include "SGCore/ECS/Rendering/Pipelines/PostProcessFXSubPass.h"
 #include "SGCore/Graphics/API/IShader.h"
-#include "IPipelineRegistrar.h"
 
 #define SG_PP_LAYER_FB_NAME(idx)  ("frameBuffer" + std::to_string(idx))
 
@@ -75,7 +74,7 @@ namespace SGCore
     };
 
     // todo: make change for default PP shader
-    class ICamera : public IRenderingComponent, public IPipelineRegistrar
+    class ICamera : public IRenderingComponent
     {
         friend class CameraMovement3DSystem;
 
@@ -121,8 +120,6 @@ namespace SGCore
         PostProcessLayer& getDefaultPostProcessLayer() noexcept;
 
         void updateLayersFrameBuffersMarkup() noexcept;
-
-        void registerRenderPipelineIfNotRegistered(const Ref<IRenderPipeline>& pipeline) noexcept override;
 
         // todo: make rename pp layer function
 

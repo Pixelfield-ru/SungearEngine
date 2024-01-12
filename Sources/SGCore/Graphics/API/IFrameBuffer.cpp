@@ -31,23 +31,3 @@ int SGCore::IFrameBuffer::getHeight() const noexcept
 {
     return m_height;
 }
-
-std::uint16_t SGCore::IFrameBuffer::getDepthAttachmentsCount() const noexcept
-{
-    return m_depthAttachments.size();
-}
-
-std::uint16_t SGCore::IFrameBuffer::getDepthStencilAttachmentsCount() const noexcept
-{
-    return m_depthStencilAttachments.size();
-}
-
-std::uint16_t SGCore::IFrameBuffer::getColorAttachmentsCount() const noexcept
-{
-    return m_colorAttachments.size();
-}
-
-std::uint16_t SGCore::IFrameBuffer::getRenderAttachmentsCount() const noexcept
-{
-    return m_renderAttachments.size();
-}

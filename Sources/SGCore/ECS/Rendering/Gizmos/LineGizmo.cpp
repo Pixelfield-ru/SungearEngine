@@ -3,8 +3,10 @@
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Main/CoreMain.h"
 
-SGCore::LineGizmo::LineGizmo() noexcept
+SGCore::LineGizmo::LineGizmo(const Ref<IRenderPipeline>& pipeline) noexcept
 {
+    loadShader(pipeline, "Gizmos/LinesGizmosShader");
+
     m_meshData->m_useIndices = false;
 
     // first point

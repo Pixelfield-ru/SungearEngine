@@ -43,11 +43,8 @@ namespace SGCore
 
         [[nodiscard]] Ref<IAsset> load(const std::string& path) override;
 
-        /*virtual void create(SGGColorFormat format,
-                            SGGColorInternalFormat internalFormat,
-                            )*/
-
         virtual void create() = 0;
+        virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
 
         virtual void destroy() = 0;
 
@@ -63,7 +60,7 @@ namespace SGCore
     protected:
         Ref<std::uint8_t[]> m_textureData;
 
-    public:
+    private:
         template<typename InstanceT>
         requires(std::is_same_v<ITexture2D, InstanceT>)
         static Ref<InstanceT> createRefInstance() noexcept

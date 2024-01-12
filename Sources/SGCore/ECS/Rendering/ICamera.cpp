@@ -12,7 +12,7 @@
 
 SGCore::ICamera::ICamera()
 {
-    auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
+    // addRequiredShaderPath("PostProcessingShader");
 
     m_shader = MakeRef<IShader>();
 
@@ -43,8 +43,9 @@ SGCore::ICamera::ICamera()
 
     m_ppLayersCombinedBuffer =
             Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
-                    ->create()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
+                    ->create()
+                    ->bind()
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
                                     SGGColorFormat::SGG_DEPTH_COMPONENT,
                                     SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
@@ -94,6 +95,7 @@ SGCore::ICamera::ICamera()
     m_finalFrameFXFrameBuffer =
             Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
                     ->create()
+                    ->bind()
                     ->setSize(primaryMonitorWidth, primaryMonitorHeight)
                     ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
                                     SGGColorFormat::SGG_RGB,
@@ -151,6 +153,7 @@ SGCore::PostProcessLayer& SGCore::ICamera::addPostProcessLayer(const std::string
     newPPLayer.m_name = ppLayerName;
     newPPLayer.m_frameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
             ->create()
+            ->bind()
             ->setSize(fbWidth, fbHeight)
             ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
                             SGGColorFormat::SGG_DEPTH_COMPONENT,
@@ -265,13 +268,6 @@ void SGCore::ICamera::setPostProcessLayerShader(const Ref<Layer>& layer,
         return;
     }
 
-    shader->bind();
-
-    for(const auto& ppLayer : m_postProcessLayers)
-    {
-        shader->updateFrameBufferAttachmentsCount(ppLayer.second.m_frameBuffer, ppLayer.second.m_nameInShader);
-    }
-
     m_postProcessLayers[layer].m_FXShader = shader;
 }
 
@@ -333,15 +329,3 @@ void SGCore::ICamera::updateLayersFrameBuffersMarkup() noexcept
         // todo: make
     }
 }
-
-void SGCore::ICamera::registerRenderPipelineIfNotRegistered(const Ref <IRenderPipeline>& pipeline) noexcept
-{
-    if(m_registeredPipelines.contains(pipeline.get())) return;
-
-    m_shader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(
-            pipeline->m_shadersPaths["PostProcessingShader"].getCurrentRealization())
-    );
-
-    m_registeredPipelines.insert(pipeline.get());
-}
-

@@ -53,9 +53,6 @@ namespace SGCore
 
         void bindTexturesBlocks() const noexcept;
 
-        void updateFrameBufferAttachmentsCount(const Ref <SGCore::IFrameBuffer>& frameBuffer,
-                                               const std::string& frameBufferNameInShader) noexcept;
-
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
 
         // TODO: wtf is this. clean code

@@ -47,7 +47,7 @@ void SGCore::Scene::createDefaultSystems()
     auto pbrfrpCamerasCollector = std::make_shared<PBRFRPCamerasCollector>();
     auto pbrfrpDirectionalLightsCollector = std::make_shared<PBRFRPDirectionalLightsCollector>();
 
-    auto pipelineSystem = std::make_shared<PBRForwardRenderPipeline>();
+    m_renderPipeline = std::make_shared<PBRForwardRenderPipeline>();
 
     // -------------------------------
     m_systems.emplace(transformationsSystem);
@@ -60,12 +60,15 @@ void SGCore::Scene::createDefaultSystems()
     m_systems.emplace(pbrfrpCamerasCollector);
     m_systems.emplace(pbrfrpDirectionalLightsCollector);
 
-    m_systems.emplace(pipelineSystem);
+
+    // m_systems.emplace(pipelineSystem);
 
     for(auto& system : m_systems)
     {
         system->useScene(shared_from_this());
     }
+
+    m_renderPipeline->useScene(shared_from_this());
 }
 
 void SGCore::Scene::addLayer(std::string&& layerName) noexcept

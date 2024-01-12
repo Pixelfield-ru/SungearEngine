@@ -21,6 +21,7 @@
 namespace SGCore
 {
     class IMaterial;
+    class ITexture2D;
 
     // todo: make read and draw bindings
     class IFrameBuffer : public UniqueNameWrapper, public std::enable_shared_from_this<IFrameBuffer>
@@ -71,36 +72,8 @@ namespace SGCore
         int getWidth() const noexcept;
         int getHeight() const noexcept;
 
-        std::uint16_t getDepthAttachmentsCount() const noexcept;
-        std::uint16_t getDepthStencilAttachmentsCount() const noexcept;
-        std::uint16_t getColorAttachmentsCount() const noexcept;
-        std::uint16_t getRenderAttachmentsCount() const noexcept;
-
-        const auto& getDepthAttachments() const noexcept
-        {
-            return m_depthAttachments;
-        }
-
-        const auto& getDepthStencilAttachments() const noexcept
-        {
-            return m_depthStencilAttachments;
-        }
-
-        const auto& getColorAttachments() const noexcept
-        {
-            return m_colorAttachments;
-        }
-
-        const auto& getRenderAttachments() const noexcept
-        {
-            return m_renderAttachments;
-        }
-
     protected:
-         std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_depthAttachments;
-         std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_depthStencilAttachments;
-         std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_colorAttachments;
-         std::unordered_map<SGFrameBufferAttachmentType, IFrameBufferAttachment> m_renderAttachments;
+        std::unordered_map<SGFrameBufferAttachmentType, Ref<ITexture2D>> m_attachments;
 
         int m_width = 0;
         int m_height = 0;

@@ -115,3 +115,21 @@ void SGCore::IShader::collectTextureFromMaterial(const Ref<ITexture2D>& texture,
         subPassShader->addTexture(texture, textureType);
     }
 }
+
+void SGCore::IShader::removeAllSubPassShadersByPath(const std::string& path) noexcept
+{
+    auto curIter = m_subPassesShaders.begin();
+    while(curIter != m_subPassesShaders.end())
+    {
+        if(auto lockedFileAsset = curIter->second->m_fileAsset.lock())
+        {
+            if(lockedFileAsset->getPath() == path)
+            {
+                curIter = m_subPassesShaders.erase(curIter);
+                continue;
+            }
+        }
+
+        ++curIter;
+    }
+}

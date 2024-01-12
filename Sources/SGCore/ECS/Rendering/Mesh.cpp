@@ -5,17 +5,13 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "Pipelines/IRenderPipeline.h"
 
-void SGCore::Mesh::registerRenderPipelineIfNotRegistered(const Ref<IRenderPipeline>& pipeline) noexcept
+SGCore::Mesh::Mesh(const SGCore::Ref<SGCore::IRenderPipeline>& pipeline) noexcept
 {
-    if(m_registeredPipelines.contains(pipeline.get())) return;
-
-    m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
-            AssetManager::loadAsset<FileAsset>(pipeline->m_shadersPaths["GeometryShader"].getCurrentRealization())
-    );
-    m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
-            AssetManager::loadAsset<FileAsset>(pipeline->m_shadersPaths["ShadowsGenerationShader"].getCurrentRealization())
-    );
-
-    m_registeredPipelines.insert(pipeline.get());
+    loadShader(pipeline, "StandardMeshShader");
 }
 
+void SGCore::Mesh::loadShader(const SGCore::Ref<SGCore::IRenderPipeline>& pipeline, const std::string& shaderPath) noexcept
+{
+    m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
+            AssetManager::loadAsset<FileAsset>(pipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization()));
+}

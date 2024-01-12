@@ -16,13 +16,11 @@ namespace SGCore
     protected:
         GLuint m_handler = 0;
 
-        GLint m_glInternalFormat = GL_RGB8;
-        GLenum m_glFormat = GL_RGB;
-
     public:
         ~GL4Texture2D() noexcept;
 
         void create() noexcept override;
+        void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) override;
         void destroy() noexcept override;
 
         void bind(const std::uint8_t& textureUnit) noexcept override;

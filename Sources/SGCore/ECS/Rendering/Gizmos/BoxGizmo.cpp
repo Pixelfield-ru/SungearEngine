@@ -3,7 +3,7 @@
 #include "SGCore/Graphics/Defines.h"
 #include "SGCore/Main/CoreMain.h"
 
-SGCore::BoxGizmo::BoxGizmo()
+SGCore::BoxGizmo::BoxGizmo(const Ref<IRenderPipeline>& pipeline) noexcept : IComplexGizmo(pipeline)
 {
     build();
 }

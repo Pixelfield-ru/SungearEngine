@@ -36,6 +36,12 @@ void SGCore::GL4CubemapTexture::create()
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
+void SGCore::GL4CubemapTexture::createAsFrameBufferAttachment
+(const SGCore::Ref<SGCore::IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType)
+{
+
+}
+
 void SGCore::GL4CubemapTexture::destroy()
 {
     glDeleteTextures(1, &m_handler);

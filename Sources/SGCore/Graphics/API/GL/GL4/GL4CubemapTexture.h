@@ -15,6 +15,7 @@ namespace SGCore
     {
     public:
         void create() override;
+        void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) override;
         void destroy() override;
 
         void bind(const std::uint8_t& textureUnit) override;

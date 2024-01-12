@@ -2,6 +2,8 @@
 // Created by stuka on 19.11.2023.
 //
 #include "ShadersPaths.h"
+
+#include <memory>
 #include "SGCore/Main/CoreMain.h"
 
 ShadersPaths& ShadersPaths::operator[](const std::string& path) noexcept
@@ -17,7 +19,7 @@ ShadersPaths& ShadersPaths::operator[](const std::string& path) noexcept
 
     if(foundShadersPaths == m_paths.end())
     {
-        auto newShadersPaths = std::shared_ptr<ShadersPaths>(new ShadersPaths);
+        auto newShadersPaths = SGCore::MakeRef<ShadersPaths>();
 
         m_paths[path] = newShadersPaths;
 
@@ -30,6 +32,21 @@ ShadersPaths& ShadersPaths::operator[](const std::string& path) noexcept
 
     return *foundShadersPaths->second;
 }
+
+ShadersPaths& ShadersPaths::getByVirtualPath(const std::string& virtualPath) noexcept
+{
+    std::sregex_iterator iter(virtualPath.begin(), virtualPath.end(), s_pathsDividerRegex);
+    ShadersPaths* curShadersPaths = this;
+    while(iter != end)
+    {
+        curShadersPaths = &(*curShadersPaths)[(*iter)[0]];
+
+        ++iter;
+    }
+
+    return *curShadersPaths;
+}
+
 
 void ShadersPaths::createDefaultPaths() noexcept
 {
@@ -58,4 +75,9 @@ std::string ShadersPaths::getCurrentRealization() const noexcept
 
         default: return "";
     }
+}
+
+bool ShadersPaths::isSubPathExists(const std::string& subPath) const noexcept
+{
+    return m_paths.find(subPath) != m_paths.end();
 }

@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <regex>
 
 #include "SGCore/Patterns/Singleton.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -22,6 +23,8 @@ struct ShadersPaths
 
     ShadersPaths& operator[](const std::string& path) noexcept;
 
+    ShadersPaths& getByVirtualPath(const std::string& virtualPath) noexcept;
+
     // ---------------
 
     void createDefaultPaths() noexcept;
@@ -34,7 +37,13 @@ struct ShadersPaths
 
     // ---------------
 
+    bool isSubPathExists(const std::string& subPath) const noexcept;
+
 private:
+    // todo: make divider by / or \\ or both
+    static inline const std::regex s_pathsDividerRegex = std::regex(R"([a-zA-Z]+)");
+    static inline const std::sregex_iterator end;
+
     std::unordered_map<std::string, SGCore::Ref<ShadersPaths>> m_paths;
 };
 

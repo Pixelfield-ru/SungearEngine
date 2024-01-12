@@ -9,6 +9,12 @@ void SGCore::VkCubemapTexture::create()
 
 }
 
+void SGCore::VkCubemapTexture::createAsFrameBufferAttachment(const SGCore::Ref<SGCore::IFrameBuffer>& parentFrameBuffer,
+                                                             SGFrameBufferAttachmentType attachmentType)
+{
+
+}
+
 void SGCore::VkCubemapTexture::bind(const uint8_t& textureUnit)
 {
 

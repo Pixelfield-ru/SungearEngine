@@ -9,6 +9,7 @@ SGCore::IDirectionalLight::IDirectionalLight() noexcept
 {
     m_shadowMap = Ref<IFrameBuffer>(CoreMain::getRenderer().createFrameBuffer())
             ->create()
+            ->bind()
             ->setSize(1024 * 2, 1024 * 2)
             ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
                             SGGColorFormat::SGG_DEPTH_COMPONENT,

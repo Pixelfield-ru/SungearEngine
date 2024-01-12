@@ -5,14 +5,7 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/ECS/Rendering/Pipelines/IRenderPipeline.h"
 
-SGCore::IComplexGizmo::IComplexGizmo() noexcept
+SGCore::IComplexGizmo::IComplexGizmo(const Ref<IRenderPipeline>& pipeline) noexcept
 {
-    auto& shadersPaths = *SGSingleton::getSharedPtrInstance<ShadersPaths>();
-    m_meshData->m_material->getShader()->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(shadersPaths["Gizmos"]["ComplexGizmosShader"].getCurrentRealization()));
+    loadShader(pipeline, "Gizmos/ComplexGizmosShader");
 }
-
-void SGCore::IComplexGizmo::registerRenderPipelineIfNotRegistered(const Ref<IRenderPipeline>& pipeline) noexcept
-{
-
-}
-

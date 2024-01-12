@@ -5,10 +5,3 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "Pipelines/IRenderPipeline.h"
 
-void SGCore::Skybox::registerRenderPipelineIfNotRegistered(const Ref<IRenderPipeline>& pipeline) noexcept
-{
-    m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
-            AssetManager::loadAsset<FileAsset>(pipeline->m_shadersPaths["GeometryShader"].getCurrentRealization())
-    );
-}
-

@@ -11,7 +11,7 @@ namespace SGCore
 
         glm::vec3 m_size { 5.0, 5.0, 5.0 };
 
-        BoxGizmo();
+        BoxGizmo(const Ref<IRenderPipeline>& pipeline) noexcept;
 
     private:
         glm::vec3 m_lastSize { 5.0, 5.0, 5.0 };

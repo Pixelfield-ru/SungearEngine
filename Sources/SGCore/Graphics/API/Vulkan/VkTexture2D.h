@@ -16,6 +16,7 @@ namespace SGCore
         ~VkTexture2D() noexcept;
 
         void create() final;
+        void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) override;
         void destroy() noexcept final;
 
         void bind(const std::uint8_t& textureUnit) noexcept final;

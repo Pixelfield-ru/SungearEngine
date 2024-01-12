@@ -54,21 +54,6 @@ void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::ICamera>& ca
 
     std::uint8_t layerIdx = 0;
 
-    // todo:
-    for(const auto& ppLayerPair : camera->getPostProcessLayers())
-    {
-        const auto& ppLayer = ppLayerPair.second;
-
-        for(const auto& depthAttachment : ppLayer.m_frameBuffer->getDepthAttachments())
-        {
-            ppLayer.m_frameBuffer->bindAttachment(depthAttachment.first, layerIdx);
-
-            ++layerIdx;
-        }
-    }
-
-    layerIdx = 0;
-
     for(const auto& ppLayerPair : camera->getPostProcessLayers())
     {
         const auto& ppLayer = ppLayerPair.second;

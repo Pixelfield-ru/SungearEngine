@@ -12,28 +12,17 @@
 #include "ISystem.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/UniqueNamesManager.h"
+#include "SGCore/ECS/Rendering/Pipelines/IRenderPipeline.h"
 
 namespace SGCore
 {
     class Entity;
 
-    struct LayerKey
-    {
-        std::string m_name;
-        size_t m_index = 0;
-    };
-
-    struct LayerKeyComparator
-    {
-        bool operator()(const LayerKey& lk0, const LayerKey& lk1) const
-        {
-            return lk0.m_index < lk1.m_index;
-        }
-    };
-
     class Scene : public std::enable_shared_from_this<Scene>
     {
     public:
+        Ref<IRenderPipeline> m_renderPipeline;
+
         std::list<Ref<Entity>> m_entities;
 
         std::string name;

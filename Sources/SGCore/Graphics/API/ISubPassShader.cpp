@@ -13,21 +13,6 @@ void SGCore::ISubPassShader::recompile() noexcept
     compile(m_fileAsset.lock());
 }
 
-void SGCore::ISubPassShader::updateFrameBufferAttachmentsCount(const Ref<IFrameBuffer>& frameBuffer,
-                                                               const std::string& frameBufferNameInShader) noexcept
-{
-    std::uint16_t depthAttachmentsCount = frameBuffer->getDepthAttachmentsCount();
-    std::uint16_t depthStencilAttachmentsCount = frameBuffer->getDepthStencilAttachmentsCount();
-    std::uint16_t colorAttachmentsCount = frameBuffer->getColorAttachmentsCount();
-    std::uint16_t renderAttachmentsCount = frameBuffer->getRenderAttachmentsCount();
-
-    // todo: names below are constant. mb make as defines
-    useInteger(frameBufferNameInShader + "_depthAttachmentsCount", depthAttachmentsCount);
-    useInteger(frameBufferNameInShader + "_depthStencilAttachmentsCount", depthStencilAttachmentsCount);
-    useInteger(frameBufferNameInShader + "_colorAttachmentsCount", colorAttachmentsCount);
-    useInteger(frameBufferNameInShader + "_renderAttachmentsCount", renderAttachmentsCount);
-}
-
 void SGCore::ISubPassShader::addDefines(const SGShaderDefineType& shaderDefineType,
                                         const std::vector<ShaderDefine>& shaderDefines)
 {

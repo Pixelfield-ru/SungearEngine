@@ -306,66 +306,64 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
+    auto standardCubemap = SGCore::Ref<SGCore::ICubemapTexture>(SGCore::CoreMain::getRenderer().createCubemapTexture());
+
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+            "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+    ));
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+            "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
+    ));
+
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+            "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
+    ));
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+            "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+    ));
+
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+            "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+    ));
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+            "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+    ));
+
+    standardCubemap->create();
+
+    SGCore::AssetManager::addAsset("standard_skybox0", standardCubemap);
+
+    auto geniusJPG = SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+            "../SGResources/textures/genius.jpg"
+    );
+
     // adding skybox
     {
-        auto standardCubemap = SGCore::ICubemapTexture::createRefInstance<SGCore::ICubemapTexture>();
+        std::vector<SGCore::Ref<SGCore::Entity>> skyboxEntities;
+        cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
+            skyboxEntities.push_back(entity);
+        });
 
-        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
-        ));
-        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-        ));
-
-        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-        ));
-        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
-        ));
-
-        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
-        ));
-        standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
-        ));
-
-        standardCubemap->create();
-
-        SGCore::AssetManager::addAsset("standard_skybox0", standardCubemap);
-
-        cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                          [standardCubemap](const SGCore::Ref<SGCore::Entity>& entity)
-                                          {
-                                              entity->addComponent(SGCore::MakeRef<SGCore::Skybox>());
-
-                                              auto transformComponent = entity->getComponent<SGCore::Transform>();
-                                              auto meshComponent = entity->getComponent<SGCore::Mesh>();
-
-                                              if(transformComponent)
-                                              {
-                                                  transformComponent->m_scale = {1000, 1000, 1000 };
-                                              }
-
-                                              if(meshComponent)
-                                              {
-                                                  meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
-                                                  meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTT_SKYBOX].push_back(
-                                                          standardCubemap
-                                                  );
-                                              }
-                                          }
+        auto skyboxComponent = SGCore::MakeRef<SGCore::Skybox>();
+        auto skyboxMesh = skyboxEntities[2]->getComponent<SGCore::Mesh>();
+        skyboxMesh->m_meshData->m_material->m_textures[SGTextureType::SGTT_SKYBOX].push_back(
+                standardCubemap
         );
+        /*skyboxMesh->removeRequiredShaderPath(skyboxMesh->m_meshData->m_material->getShader(), "GeometryShader");
+        skyboxMesh->addRequiredShaderPath("SkyboxShader");*/
+        skyboxEntities[2]->addComponent(skyboxComponent);
+
+        auto transformComponent = skyboxEntities[2]->getComponent<SGCore::Transform>();
+
+        if(transformComponent)
+        {
+            transformComponent->m_scale = {1, 1, 1};
+        }
     }
 
     // ==========================================================================================
     // ==========================================================================================
     // ==========================================================================================
-
-    auto geniusJPG = SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
-            "../SGResources/textures/genius.jpg"
-    );
 
     cubeModel1->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
                                        [geniusJPG](const SGCore::Ref<SGCore::Entity>& entity)
@@ -529,7 +527,7 @@ void init()
     // directionalLight->m_color.b = 100.0f / 255.0f;
     directionalLight->m_intensity = 1000.0;
     testShadowsCaster->addComponent(directionalLight);
-    testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+    testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
 
     std::cout << "bam bam bam mi" << std::endl;
 
@@ -547,7 +545,7 @@ void init()
     directionalLight1->m_color.b = 241.0f / 255.0f;
     directionalLight1->m_intensity = 1000.0;
     testShadowsCaster1->addComponent(directionalLight1);
-    testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+    testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
 
     auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster2);
@@ -563,7 +561,7 @@ void init()
     directionalLight2->m_color.b = 241.0f / 255.0f;
     directionalLight2->m_intensity = 500.0;
     testShadowsCaster2->addComponent(directionalLight2);
-    testShadowsCaster2->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+    testShadowsCaster2->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
 
     auto testShadowsCaster3 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster3);
@@ -579,7 +577,7 @@ void init()
     directionalLight3->m_color.b = 5.0f / 255.0f;
     testShadowsCaster3->addComponent(directionalLight3);
     directionalLight3->m_intensity = 100.0;
-    testShadowsCaster3->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+    testShadowsCaster3->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
 
     auto testShadowsCaster4 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster4);
@@ -595,17 +593,17 @@ void init()
     directionalLight4->m_color.b = 241.0f / 255.0f;
     directionalLight4->m_intensity = 200.0;
     testShadowsCaster4->addComponent(directionalLight4);
-    testShadowsCaster4->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
+    testShadowsCaster4->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
 
-    auto xLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
+    auto xLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>(testScene->m_renderPipeline);
     xLineGizmo->m_meshData->setVertexPosition(1, 10, 0, 0);
     xLineGizmo->m_color = { 1.0, 0.0, 0.0, 1.0 };
 
-    auto yLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
+    auto yLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>(testScene->m_renderPipeline);
     yLineGizmo->m_meshData->setVertexPosition(1, 0, 10, 0);
     yLineGizmo->m_color = { 0.0, 1.0, 0.0, 1.0 };
 
-    auto zLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
+    auto zLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>(testScene->m_renderPipeline);
     zLineGizmo->m_meshData->setVertexPosition(1, 0, 0, 10);
     zLineGizmo->m_color = { 0.0, 0.0, 1.0, 1.0 };
 

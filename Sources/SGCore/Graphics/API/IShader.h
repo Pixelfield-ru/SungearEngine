@@ -51,7 +51,10 @@ namespace SGCore
             return m_subPassesShaders;
         }
 
+        void removeAllSubPassShadersByPath(const std::string& path) noexcept;
+
     private:
+        // first - sub pass name
         std::unordered_map<std::string, Ref<ISubPassShader>> m_subPassesShaders;
 
         Weak<IMaterial> m_parentMaterial;
