@@ -9,10 +9,13 @@
 #include "SGCore/Utils/SGSL/GLSLShadersPreprocessor.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Graphics/API/IRenderer.h"
 
 void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
 {
     if(!asset) return;
+
+    m_fileAsset = asset;
 
     GLSLShadersPreprocessor preprocessor;
     m_shaderAnalyzedFile = GLSLShadersPreprocessor::processCode(asset->getPath().string(), asset->getData(), preprocessor);
@@ -21,7 +24,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
     {
         const auto& subPass = subPassIter.second;
 
-        auto subPassShader = Ref<ISubPassShader>(SGCore::CoreMain::getRenderer().createShader());
+        auto subPassShader = Ref<ISubPassShader>(SGCore::CoreMain::getRenderer()->createShader());
 
         for(const auto& subShaderIter : subPass.m_subShaders)
         {
@@ -70,7 +73,14 @@ void SGCore::IShader::setSubPassShader
 
 SGCore::Ref<SGCore::ISubPassShader> SGCore::IShader::getSubPassShader(const std::string& subPassName) noexcept
 {
-    return m_subPassesShaders[subPassName];
+    auto foundIter = m_subPassesShaders.find(subPassName);
+    if(foundIter != m_subPassesShaders.end())
+    {
+        return foundIter->second;
+    }
+
+    return nullptr;
+    // return m_subPassesShaders[subPassName];
 }
 
 void SGCore::IShader::onAssetModified()

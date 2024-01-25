@@ -1,11 +1,10 @@
 #include "LineGizmo.h"
 
-#include "SGCore/Graphics/Defines.h"
 #include "SGCore/Main/CoreMain.h"
 
-SGCore::LineGizmo::LineGizmo(const Ref<IRenderPipeline>& pipeline) noexcept
+SGCore::LineGizmo::LineGizmo() noexcept
 {
-    loadShader(pipeline, "Gizmos/LinesGizmosShader");
+    onMeshCreated("Gizmos/LinesGizmosShader");
 
     m_meshData->m_useIndices = false;
 

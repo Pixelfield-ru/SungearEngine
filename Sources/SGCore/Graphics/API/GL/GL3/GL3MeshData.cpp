@@ -3,19 +3,24 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IVertexBufferLayout.h"
 
+#include "SGCore/Graphics/API/IVertexArray.h"
+#include "SGCore/Graphics/API/IVertexBuffer.h"
+#include "SGCore/Graphics/API/IIndexBuffer.h"
+#include "SGCore/Graphics/API/IRenderer.h"
+
 // todo: define names
 void SGCore::GL3MeshData::prepare()
 {
-    m_vertexArray = std::shared_ptr<IVertexArray>(CoreMain::getRenderer().createVertexArray());
+    m_vertexArray = std::shared_ptr<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
     m_vertexArray->create()->bind();
 
     // ---------------- preparing positions -------
     m_positionsBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer().createVertexBuffer()
+            CoreMain::getRenderer()->createVertexBuffer()
             );
     m_positionsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_positions);
 
-    std::shared_ptr<IVertexBufferLayout> bufferLayout = std::shared_ptr<IVertexBufferLayout>(CoreMain::getRenderer().createVertexBufferLayout());
+    std::shared_ptr<IVertexBufferLayout> bufferLayout = std::shared_ptr<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
     bufferLayout
             ->addAttribute(std::shared_ptr<IVertexAttribute>(
                     bufferLayout->createVertexAttribute(0,
@@ -27,7 +32,7 @@ void SGCore::GL3MeshData::prepare()
 
     // ----- preparing uv -------------------------
     m_uvBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer().createVertexBuffer()
+            CoreMain::getRenderer()->createVertexBuffer()
             );
     m_uvBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_uv);
 
@@ -43,7 +48,7 @@ void SGCore::GL3MeshData::prepare()
 
     // ---------- preparing normals ---------------
     m_normalsBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer().createVertexBuffer()
+            CoreMain::getRenderer()->createVertexBuffer()
             );
     m_normalsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_normals);
 
@@ -59,7 +64,7 @@ void SGCore::GL3MeshData::prepare()
 
     // ---------- preparing tangents ---------------
     m_tangentsBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer().createVertexBuffer()
+            CoreMain::getRenderer()->createVertexBuffer()
     );
     m_tangentsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_tangents);
 
@@ -75,7 +80,7 @@ void SGCore::GL3MeshData::prepare()
 
     // ---------- preparing bitangents ---------------
     m_bitangentsBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer().createVertexBuffer()
+            CoreMain::getRenderer()->createVertexBuffer()
     );
     m_bitangentsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_bitangents);
 
@@ -90,7 +95,7 @@ void SGCore::GL3MeshData::prepare()
     // --------------------------------------------
 
     // ------ preparing indices -------------------
-    m_indicesBuffer = std::shared_ptr<IIndexBuffer>(CoreMain::getRenderer().createIndexBuffer());
+    m_indicesBuffer = std::shared_ptr<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
     m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_indices);
     // --------------------------------------------
 }

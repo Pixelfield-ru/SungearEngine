@@ -17,7 +17,7 @@ namespace SGCore
 {
     class ICamera;
     class Mesh;
-    class Transform;
+    struct Transform;
     class Skybox;
     class IRenderingComponent;
     class IGizmo;
@@ -26,7 +26,7 @@ namespace SGCore
     struct MeshDataRenderInfo;
 
     class IVertexBufferLayout;
-    class ICubemapTexture;
+    struct ICubemapTexture;
     class IIndexBuffer;
     class IVertexArray;
     class IVertexBuffer;
@@ -79,24 +79,24 @@ namespace SGCore
 
         virtual void checkForErrors(const std::source_location& = std::source_location::current()) noexcept { }
 
-        [[nodiscard]] virtual ISubPassShader* createShader() = 0;
-        [[nodiscard]] virtual ISubPassShader* createShader(const std::string& path) = 0;
+        [[nodiscard]] virtual ISubPassShader* createShader() const = 0;
+        [[nodiscard]] virtual ISubPassShader* createShader(const std::string& path) const = 0;
 
-        [[nodiscard]] ISubPassShader* createShader(const ShadersPaths& shadersPaths)
+        [[nodiscard]] ISubPassShader* createShader(const ShadersPaths& shadersPaths) const
         {
             return createShader(shadersPaths.getCurrentRealization());
         };
 
-        [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() = 0;
-        [[nodiscard]] virtual IVertexArray* createVertexArray() = 0;
-        [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() = 0;
-        [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() = 0;
-        [[nodiscard]] virtual ITexture2D* createTexture2D() = 0;
-        [[nodiscard]] virtual ICubemapTexture* createCubemapTexture() = 0;
-        [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() = 0;
-        [[nodiscard]] virtual IFrameBuffer* createFrameBuffer() = 0;
+        [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() const = 0;
+        [[nodiscard]] virtual IVertexArray* createVertexArray() const = 0;
+        [[nodiscard]] virtual IVertexBufferLayout* createVertexBufferLayout() const = 0;
+        [[nodiscard]] virtual IIndexBuffer* createIndexBuffer() const = 0;
+        [[nodiscard]] virtual ITexture2D* createTexture2D() const = 0;
+        [[nodiscard]] virtual ICubemapTexture* createCubemapTexture() const = 0;
+        [[nodiscard]] virtual IUniformBuffer* createUniformBuffer() const = 0;
+        [[nodiscard]] virtual IFrameBuffer* createFrameBuffer() const = 0;
 
-        [[nodiscard]] virtual IMeshData* createMeshData() = 0;
+        [[nodiscard]] virtual IMeshData* createMeshData() const = 0;
 
         // ------------- some settings for renderer ---------
         virtual void setDepthTestingEnabled(const bool& enabled) const noexcept { }

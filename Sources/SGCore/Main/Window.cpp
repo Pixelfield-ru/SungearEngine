@@ -1,6 +1,11 @@
+#include <spdlog/spdlog.h>
+
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "Window.h"
 #include "CoreMain.h"
+
+#include "SGCore/Input/InputManager.h"
+#include "SGCore/ImGuiWrap/ImGuiLayer.h"
 
 void SGCore::Window::create()
 {
@@ -8,21 +13,22 @@ void SGCore::Window::create()
 
     if(!glfwInit())
     {
-        SGC_ERROR("Failed to initialize GLFW!");
+        spdlog::error("Failed to initialize GLFW!\n{0}", SG_CURRENT_LOCATION_STR);
     }
 
-    SGC_INFO("-----------------------------------");
-    SGC_INFO("GLFW info:");
-    SGC_INFO("GLFW version is " + std::to_string(GLFW_VERSION_MAJOR) + "." +
-             std::to_string(GLFW_VERSION_MINOR) + "." +
-             std::to_string(GLFW_VERSION_REVISION));
-    SGC_INFO("-----------------------------------");
+    spdlog::info("-----------------------------------");
+    spdlog::info("GLFW info:");
+    spdlog::info("GLFW version is {0}.{1}.{2}",
+                 GLFW_VERSION_MAJOR,
+                 GLFW_VERSION_MINOR,
+                 GLFW_VERSION_REVISION);
+    spdlog::info("-----------------------------------");
 
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // OpenGL is the default API for GLFW, so it's not here
-    if(CoreMain::getRenderer().getGAPIType() == GAPIType::SG_API_TYPE_VULKAN)
+    if(CoreMain::getRenderer()->getGAPIType() == GAPIType::SG_API_TYPE_VULKAN)
     {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     }
@@ -31,7 +37,7 @@ void SGCore::Window::create()
 
     if(!m_handler)
     {
-        SGC_ERROR("Failed to initialize GLFW Window!");
+        spdlog::error("Failed to initialize GLFW Window!\n{0}", SG_CURRENT_LOCATION_STR);
     }
 
     glfwSetWindowCloseCallback(m_handler, windowCloseCallback);
@@ -82,7 +88,7 @@ void SGCore::Window::recreate()
 
 void SGCore::Window::makeCurrent() noexcept
 {
-    GAPIType apiType = CoreMain::getRenderer().getGAPIType();
+    GAPIType apiType = CoreMain::getRenderer()->getGAPIType();
     if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
     {
         glfwMakeContextCurrent(m_handler);
@@ -129,7 +135,7 @@ void SGCore::Window::setSwapInterval(const bool& swapInterval) noexcept
 {
     m_config.m_swapInterval = swapInterval;
 
-    GAPIType apiType = CoreMain::getRenderer().getGAPIType();
+    GAPIType apiType = CoreMain::getRenderer()->getGAPIType();
     if(apiType >= GAPIType::SG_API_TYPE_GL4 && apiType <= GAPIType::SG_API_TYPE_GLES3)
     {
         glfwSwapInterval(swapInterval);
@@ -202,19 +208,19 @@ void SGCore::Window::windowCloseCallback(GLFWwindow* window)
 {
     sgCallWindowCloseCallback(window);
 
-    SGC_INFO("GLFW window closed.");
+    spdlog::info("GLFW window closed.");
 }
 
 void SGCore::Window::windowIconifyCallback(GLFWwindow* window, int iconified)
 {
     sgCallWindowIconifyCallback(window, iconified);
 
-    SGC_INFO("GLFW window iconified.");
+    spdlog::info("GLFW window iconified.");
 }
 
 void SGCore::Window::errorCallback(int errCode, const char* err_msg)
 {
-    SGC_ERROR("GLFW error (code " + std::to_string(errCode) + "): " + err_msg);
+    spdlog::error("GLFW error (code {0}): {1}\n{2}", errCode, err_msg, SG_CURRENT_LOCATION_STR);
 }
 
 void SGCore::Window::swapBuffers()
@@ -227,7 +233,6 @@ void SGCore::Window::pollEvents()
     glfwPollEvents();
 }
 
-// todo: MAKE
 void SGCore::Window::setFullscreen(bool fullscreen) noexcept
 {
     m_config.m_fullsreen = fullscreen;
@@ -237,19 +242,12 @@ void SGCore::Window::setFullscreen(bool fullscreen) noexcept
 
     if(fullscreen)
     {
-        // Set window size for "fullscreen windowed" mode to the desktop resolution.
-        glfwSetWindowSize(m_handler, sizeX, sizeY);
-        // Move window to the upper left corner.
-        glfwSetWindowPos(m_handler, 0, 0);
+        glfwSetWindowMonitor(m_handler, glfwGetPrimaryMonitor(), 0, 0, sizeX, sizeY, glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
     }
     else
     {
-        // Use start-up values for "windowed" mode.
-        glfwSetWindowSize(m_handler, m_config.m_sizeX, m_config.m_sizeY);
-        // todo:
-        // glfwSetWindowPos(originalPosX, originalPosY);
+        glfwSetWindowMonitor(m_handler, nullptr, 0, 0, sizeX, sizeY, glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
     }
-    // recreate();
 }
 
 bool SGCore::Window::isFullscreen() const noexcept

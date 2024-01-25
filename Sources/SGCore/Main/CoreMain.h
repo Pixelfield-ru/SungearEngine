@@ -1,11 +1,10 @@
 #ifndef NATIVECORE_COREMAIN_H
 #define NATIVECORE_COREMAIN_H
 
-#include "SGCore/Logging/Log.h"
 #include "Window.h"
-#include "SGCore/Utils/Timer.h"
+#include "SGUtils/Timer.h"
 
-#include "SGCore/Graphics/API/IRenderer.h"
+#include "CoreGlobals.h"
 
 /*namespace Core::Graphics
 {
@@ -14,14 +13,16 @@
 
 namespace SGCore
 {
+    class IRenderer;
+
     class CoreMain
     {
     private:
         static inline Window m_window {};
-        static inline std::shared_ptr<IRenderer> m_renderer;
+        static inline Ref<IRenderer> m_renderer;
 
-        static inline Timer m_renderTimer { true, 1.0 };
-        static inline Timer m_fixedTimer { true, 0.01666 };
+        static inline SGUtils::Timer m_renderTimer { true, 1.0 };
+        static inline SGUtils::Timer m_fixedTimer { true, 0.01666 };
 
     public:
         CoreMain() = delete;
@@ -33,10 +34,10 @@ namespace SGCore
 
         static Window& getWindow() noexcept;
 
-        static IRenderer& getRenderer() noexcept;
+        static Ref<IRenderer> getRenderer() noexcept;
 
-        static Timer& getRenderTimer() noexcept;
-        static Timer& getFixedTimer() noexcept;
+        static SGUtils::Timer& getRenderTimer() noexcept;
+        static SGUtils::Timer& getFixedTimer() noexcept;
     };
 }
 

@@ -2,6 +2,7 @@
 // Created by stuka on 29.12.2023.
 //
 
+#include <spdlog/spdlog.h>
 #include "GLSLShadersPreprocessor.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/FileAsset.h"
@@ -70,11 +71,11 @@ SGCore::ShaderAnalyzedFile SGCore::GLSLShadersPreprocessor::processCode(const st
 
         if((useSemicolonDelim && curChar == ';') || endOfFile)
         {
-            line = Utils::replaceAll(line, "//", "");
-            line = Utils::replaceAll(line, "/*", "");
+            line = SGUtils::Utils::replaceAll(line, "//", "");
+            line = SGUtils::Utils::replaceAll(line, "/*", "");
 
             // without
-            std::string lineWOSpaces = Utils::replaceAll(line, " ", "");
+            std::string lineWOSpaces = SGUtils::Utils::replaceAll(line, " ", "");
 
             if(shaderAnalyzedFile.m_currentIfDefDirectivePassed)
             {
@@ -91,18 +92,18 @@ SGCore::ShaderAnalyzedFile SGCore::GLSLShadersPreprocessor::processCode(const st
         }
         else if((!useSemicolonDelim && curChar == '\n') || endOfFile)
         { // todo: make subpasses and subshader process here
-            line = Utils::replaceAll(line, "//", "");
-            line = Utils::replaceAll(line, "/*", "");
+            line = SGUtils::Utils::replaceAll(line, "//", "");
+            line = SGUtils::Utils::replaceAll(line, "/*", "");
 
             // without
-            std::string lineWOSpaces = Utils::replaceAll(line, " ", "");
+            std::string lineWOSpaces = SGUtils::Utils::replaceAll(line, " ", "");
 
             if(lineWOSpaces.starts_with("SGUniformsDeclaration{") && shaderAnalyzedFile.m_currentIfDefDirectivePassed)
             {
                 preprocessor.m_sgslUniformsDeclaration = true;
 
-                line = Utils::replaceAll(line, "SGUniformsDeclaration", "");
-                line = Utils::replaceFirst(line, "{", "");
+                line = SGUtils::Utils::replaceAll(line, "SGUniformsDeclaration", "");
+                line = SGUtils::Utils::replaceFirst(line, "{", "");
             }
 
             // SGSL BLOCKS DECL
@@ -134,20 +135,25 @@ SGCore::ShaderAnalyzedFile SGCore::GLSLShadersPreprocessor::processCode(const st
                 {
                     if(blockArgs.size() != 1)
                     {
-                        SGCF_ERROR(
-                                "SGSLInterpreter: Error: required 1 argument but " + std::to_string(blockArgs.size()) +
-                                " arguments was provided. Line: "
-                                + std::to_string(linesRawCount) + ". Path: " + shaderFilePath,
-                                SG_LOG_CURRENT_SESSION_FILE);
+                        spdlog::error(
+                                "SGSLInterpreter: Error: required 1 argument but {0} "
+                                "arguments was provided. Line: {1}. Path: {2}\n{3}",
+                                linesRawCount,
+                                shaderFilePath,
+                                blockArgs.size(),
+                                SG_CURRENT_LOCATION_STR
+                        );
                     }
                     else
                     {
                         if(shaderAnalyzedFile.m_subPassesToAppendCode.empty())
                         {
-                            SGCF_ERROR("SGSLInterpreter: Error: the subshader '" + blockArgs[0] +
-                                       "' block was started, but the subpass was not started. Line: "
-                                       + std::to_string(linesRawCount) + ". Path: " + shaderFilePath,
-                                       SG_LOG_CURRENT_SESSION_FILE);
+                            spdlog::error("SGSLInterpreter: Error: the subshader '{0}"
+                                       "' block was started, but the subpass was not started. Line: {1}. Path: {2}\n{3}",
+                                       blockArgs[0],
+                                       linesRawCount,
+                                       shaderFilePath,
+                                       SG_CURRENT_LOCATION_STR);
                         }
 
                         SGSLSubShaderType shaderType = SGSLSubShaderType::SST_NONE;
@@ -178,10 +184,13 @@ SGCore::ShaderAnalyzedFile SGCore::GLSLShadersPreprocessor::processCode(const st
                         }
                         else
                         {
-                            SGCF_ERROR("SGSLInterpreter: Error: unknown subshader type '" + blockArgs[0]
-                                       + "'. Line: "
-                                       + std::to_string(linesRawCount) + ". Path: " + shaderFilePath,
-                                       SG_LOG_CURRENT_SESSION_FILE);
+                            spdlog::error("SGSLInterpreter: Error: unknown subshader type '{0}'"
+                                          "'. Line: {1} Path: {2}\n{3}",
+                                          blockArgs[0],
+                                          linesRawCount,
+                                          shaderFilePath,
+                                          SG_CURRENT_LOCATION_STR
+                            );
                         }
 
                         shaderAnalyzedFile.m_subShaderTypeToAppendCode = shaderType;
@@ -231,7 +240,7 @@ SGCore::ShaderAnalyzedFile SGCore::GLSLShadersPreprocessor::processCode(const st
             {
                 if(preprocessor.m_sgslUniformsDeclaration)
                 {
-                    line = Utils::replaceFirst(line, "}", "");
+                    line = SGUtils::Utils::replaceFirst(line, "}", "");
                 }
                 preprocessor.m_sgslUniformsDeclaration = false;
 
@@ -244,7 +253,7 @@ SGCore::ShaderAnalyzedFile SGCore::GLSLShadersPreprocessor::processCode(const st
                     {
                         bracketsListener->m_onBlockEnd();
                         bracketsListenersIter = shaderAnalyzedFile.m_bracketsListeners.erase(bracketsListenersIter);
-                        line = Utils::replaceFirst(line, "}", "");
+                        line = SGUtils::Utils::replaceFirst(line, "}", "");
                     }
                     else
                     {
@@ -254,19 +263,19 @@ SGCore::ShaderAnalyzedFile SGCore::GLSLShadersPreprocessor::processCode(const st
             }
 
             std::vector<std::string> words;
-            Utils::splitString(line, ' ', words);
+            SGUtils::Utils::splitString(line, ' ', words);
 
             words.erase(std::remove_if(words.begin(), words.end(), [](const std::string& word) { return word.empty(); }), words.end());
 
             if(!words.empty())
             {
-                const auto& firstWord = Utils::replaceAll(words[0], "\n", "");
+                const auto& firstWord = SGUtils::Utils::replaceAll(words[0], "\n", "");
 
                 if(firstWord == "#sg_include")
                 {
                     if(!shaderAnalyzedFile.m_currentIfDefDirectivePassed) break;
 
-                    const auto& includePath = Utils::replaceAll(words[1], "\n", "");
+                    const auto& includePath = SGUtils::Utils::replaceAll(words[1], "\n", "");
 
                     if(includePath.starts_with("\"") && includePath.ends_with("\""))
                     {
@@ -427,9 +436,12 @@ void SGCore::GLSLShadersPreprocessor::checkAndCompileSGSLExpr(std::string& line,
                         { return var.m_name == variableName; }
         ) != preprocessor.m_declaredVariables.end())
         {
-            SGCF_ERROR("SGSLInterpreter: Redeclaration of variable '" + variableName + "'. Line: "
-                       + std::to_string(currentLineIdx) + ". Path: " + shaderAnalyzedFile.m_path,
-                       SG_LOG_CURRENT_SESSION_FILE);
+            spdlog::error("SGSLInterpreter: Redeclaration of variable '{0}'. Line: {1}. Path: {2}\n{3}",
+                          variableName,
+                          currentLineIdx,
+                          shaderAnalyzedFile.m_path,
+                          SG_CURRENT_LOCATION_STR
+            );
         }
 
         SGSLVariable sgslVariable;
@@ -449,9 +461,11 @@ void SGCore::GLSLShadersPreprocessor::checkAndCompileSGSLExpr(std::string& line,
 
         if(isArraySizeGiven && arraySize < funcArgs.size())
         {
-            SGCF_ERROR("SGSLInterpreter: Array size is less then return size! Line: "
-                       + std::to_string(currentLineIdx) + ". Path: " + shaderAnalyzedFile.m_path,
-                       SG_LOG_CURRENT_SESSION_FILE);
+            spdlog::error("SGSLInterpreter: Array size is less then return size! Line: {0}. Path: {1}\n{2}",
+                          currentLineIdx,
+                          shaderAnalyzedFile.m_path,
+                          SG_CURRENT_LOCATION_STR
+            );
         }
         else if(!isArraySizeGiven && m_arraySizeNotRequiredFunctions.contains(funcName))
         {
@@ -459,9 +473,13 @@ void SGCore::GLSLShadersPreprocessor::checkAndCompileSGSLExpr(std::string& line,
         }
         if(!isArraySizeGiven && m_arraySizeRequiredFunctions.contains(funcName))
         {
-            SGCF_ERROR("SGSLInterpreter: You must give size for lvalue array for rvalue function '"
-                       + funcName + "'. Line: " + std::to_string(currentLineIdx) + ". Path: "
-                       + shaderAnalyzedFile.m_path, SG_LOG_CURRENT_SESSION_FILE);
+            spdlog::error(
+                    "SGSLInterpreter: You must give size for lvalue array for rvalue function '{0}'. Line: {1}. Path: {2}\n{3}",
+                    funcName,
+                    currentLineIdx,
+                    shaderAnalyzedFile.m_path,
+                    SG_CURRENT_LOCATION_STR
+            );
         }
 
         // is glsl shader
@@ -498,9 +516,11 @@ void SGCore::GLSLShadersPreprocessor::checkAndCompileSGSLExpr(std::string& line,
                         { return var.m_name == varName; }
         ) == preprocessor.m_declaredVariables.end())
         {
-            SGCF_ERROR("SGSLInterpreter: Variable '" + varName + "' Does not exist. Line: "
-                       + std::to_string(currentLineIdx) + ". Path: " + shaderAnalyzedFile.m_path,
-                       SG_LOG_CURRENT_SESSION_FILE);
+            spdlog::error("SGSLInterpreter: Variable '{0}' does not exist. Line: {1} Path: {2}\n{3}",
+                          varName,
+                          currentLineIdx,
+                          shaderAnalyzedFile.m_path,
+                          SG_CURRENT_LOCATION_STR);
         }
 
         std::string replaceExpr;
@@ -510,7 +530,7 @@ void SGCore::GLSLShadersPreprocessor::checkAndCompileSGSLExpr(std::string& line,
             replaceExpr = varName + "_COUNT";
         }
 
-        line = Utils::replaceFirst(line, varName + "." + funcName, replaceExpr);
+        line = SGUtils::Utils::replaceFirst(line, varName + "." + funcName, replaceExpr);
     }
 }
 

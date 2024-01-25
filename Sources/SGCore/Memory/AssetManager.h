@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "Assets/IAsset.h"
-#include "SGCore/Logging/Log.h"
 
 namespace SGCore
 {

@@ -9,8 +9,8 @@
 #include <string>
 #include <memory>
 
-#include "SGCore/Patterns/UUID.h"
-#include "SGCore/Patterns/Event.h"
+#include "SGUtils/UUID.h"
+#include "SGUtils/Event.h"
 
 namespace SGCore::ImGuiWrap
 {
@@ -22,9 +22,9 @@ namespace SGCore::ImGuiWrap
 
         bool m_active = true;
 
-        std::shared_ptr<Event<void()>> m_onRenderEvent = std::make_shared<Event<void()>>();
+        std::shared_ptr<SGUtils::Event<void()>> m_onRenderEvent = std::make_shared<SGUtils::Event<void()>>();
 
-        std::string m_name = UUID::generateNew();
+        std::string m_name = SGUtils::UUID::generateNew();
 
         virtual bool begin() = 0;
         virtual void renderBody() = 0;

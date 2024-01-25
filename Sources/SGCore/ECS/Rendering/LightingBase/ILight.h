@@ -5,12 +5,14 @@
 #ifndef SUNGEARENGINE_ILIGHTCOMPONENT_H
 #define SUNGEARENGINE_ILIGHTCOMPONENT_H
 
-#include "GLM/glm/glm.hpp"
-#include "SGCore/Graphics/API/IFrameBuffer.h"
+#include <glm/glm.hpp>
+#include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/ECS/Rendering/IRenderingComponent.h"
 
 namespace SGCore
 {
+    class IFrameBuffer;
+
     class ILight : public IRenderingComponent
     {
         friend class PBRFRPDirectionalLightsCollector;

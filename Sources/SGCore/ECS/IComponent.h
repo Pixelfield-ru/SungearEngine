@@ -7,21 +7,14 @@
 
 #include <memory>
 
-#include "Entity.h"
-#include "SGCore/Patterns/UUID.h"
-#include "SGCore/Main/CoreGlobals.h"
-
 namespace SGCore
 {
     class Entity;
 
-    class IComponent : public UUID
+    class IComponent
     {
         // just for polymorphism
         virtual void init() = 0;
-
-    protected:
-        Ref<Entity> entity;
     };
 }
 

@@ -7,7 +7,11 @@
 
 #include <vector>
 #include <memory>
+#include <list>
+
+#include "SGCore/Main/CoreGlobals.h"
 #include "IComponent.h"
+#include "SGUtils/Utils.h"
 
 namespace SGCore
 {

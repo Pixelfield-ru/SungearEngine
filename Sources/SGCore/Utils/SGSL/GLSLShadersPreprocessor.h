@@ -15,7 +15,7 @@
 #include <utility>
 #include <unordered_map>
 
-#include "SGCore/Utils/Utils.h"
+#include "SGUtils/Utils.h"
 #include "ShaderAnalyzedFile.h"
 #include "SGSLSubPass.h"
 #include "SGSLSubShader.h"

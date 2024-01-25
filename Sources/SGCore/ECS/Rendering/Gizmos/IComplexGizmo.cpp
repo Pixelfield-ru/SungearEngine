@@ -5,7 +5,7 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/ECS/Rendering/Pipelines/IRenderPipeline.h"
 
-SGCore::IComplexGizmo::IComplexGizmo(const Ref<IRenderPipeline>& pipeline) noexcept
+SGCore::IComplexGizmo::IComplexGizmo() noexcept
 {
-    loadShader(pipeline, "Gizmos/ComplexGizmosShader");
+    onMeshCreated("Gizmos/ComplexGizmosShader");
 }

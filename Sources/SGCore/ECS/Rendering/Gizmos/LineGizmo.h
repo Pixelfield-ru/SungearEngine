@@ -7,7 +7,7 @@ namespace SGCore
 {
     struct LineGizmo : public IGizmo
     {
-        explicit LineGizmo(const Ref<IRenderPipeline>& pipeline) noexcept;
+        explicit LineGizmo() noexcept;
     };
 }
 

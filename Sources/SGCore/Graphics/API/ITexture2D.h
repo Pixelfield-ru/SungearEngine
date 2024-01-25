@@ -9,19 +9,22 @@
 
 #include "GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/UniqueName.h"
+#include "SGUtils/UniqueName.h"
+#include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/Graphics/API/IRenderer.h"
 
 namespace SGCore
 {
     class TextureAsset;
+    class IFrameBuffer;
 
     struct TextureDataDeleter
     {
         void operator()(std::uint8_t* data);
     };
 
-    class ITexture2D : public IAsset, public UniqueNameWrapper, public std::enable_shared_from_this<ITexture2D>
+    class ITexture2D : public IAsset, public SGUtils::UniqueNameWrapper, public std::enable_shared_from_this<ITexture2D>
     {
         friend class IFrameBuffer;
         friend class TextureAsset;
@@ -65,7 +68,7 @@ namespace SGCore
         requires(std::is_same_v<ITexture2D, InstanceT>)
         static Ref<InstanceT> createRefInstance() noexcept
         {
-            return Ref<InstanceT>(CoreMain::getRenderer().createTexture2D());
+            return Ref<InstanceT>(CoreMain::getRenderer()->createTexture2D());
         }
     };
 }

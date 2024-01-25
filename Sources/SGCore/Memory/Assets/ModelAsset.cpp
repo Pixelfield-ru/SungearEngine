@@ -4,9 +4,13 @@
 
 #include "ModelAsset.h"
 
+#include <spdlog/spdlog.h>
+
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Utils/AssimpUtils.h"
+#include "SGUtils/AssimpUtils.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Graphics/API/IRenderer.h"
 
 size_t polygonsNumber = 0;
 
@@ -23,7 +27,9 @@ SGCore::Ref<SGCore::IAsset> SGCore::ModelAsset::load(const std::string& path)
 
     if(!aiImportedScene || aiImportedScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiImportedScene->mRootNode)
     {
-        SGC_ERROR("Assimp error (while importing scene): " + std::string(importer.GetErrorString()));
+        spdlog::error("Assimp error (while importing scene): {0}\n{1}",
+                      importer.GetErrorString(),
+                      SG_CURRENT_LOCATION_STR);
         return shared_from_this();
     }
 
@@ -31,7 +37,7 @@ SGCore::Ref<SGCore::IAsset> SGCore::ModelAsset::load(const std::string& path)
 
     m_nodes.push_back(processNode(aiImportedScene->mRootNode, aiImportedScene));
 
-    SGC_SUCCESS("Loaded model '" + m_name + "'. Nodes count: " + std::to_string(m_nodes.size()));
+    spdlog::info("Loaded model '{0}'. Nodes count: {1}", m_name, m_nodes.size());
 
     return shared_from_this();
 }
@@ -68,7 +74,7 @@ SGCore::Ref<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, 
 
 SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
-    Ref<IMeshData> sgMeshData(CoreMain::getRenderer().createMeshData());
+    Ref<IMeshData> sgMeshData(CoreMain::getRenderer()->createMeshData());
     sgMeshData->m_positions.reserve(aiMesh->mNumVertices * 3);
     sgMeshData->m_normals.reserve(aiMesh->mNumVertices * 3);
     sgMeshData->m_tangents.reserve(aiMesh->mNumVertices * 3);
@@ -146,22 +152,22 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->setDiffuseColor(AssimpUtils::aiVectorToGLM(diffuseColor));
+            sgMeshData->m_material->setDiffuseColor(SGUtils::AssimpUtils::aiVectorToGLM(diffuseColor));
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_SPECULAR_FACTOR, &specularColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->setSpecularColor(AssimpUtils::aiVectorToGLM(specularColor));
+            sgMeshData->m_material->setSpecularColor(SGUtils::AssimpUtils::aiVectorToGLM(specularColor));
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_AMBIENT, &ambientColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->setAmbientColor(AssimpUtils::aiVectorToGLM(ambientColor));
+            sgMeshData->m_material->setAmbientColor(SGUtils::AssimpUtils::aiVectorToGLM(ambientColor));
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissionColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->setEmissionColor(AssimpUtils::aiVectorToGLM(emissionColor));
+            sgMeshData->m_material->setEmissionColor(SGUtils::AssimpUtils::aiVectorToGLM(emissionColor));
         }
 
         if(aiGetMaterialFloat(aiMat, AI_MATKEY_SHININESS, &shininess) == AI_SUCCESS)
@@ -225,7 +231,8 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
 
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 
-        SGC_SUCCESS("Loaded material`s '" + std::string(aiMat->GetName().data) + "' texture. Raw type name: '" +
-                            sgStandardTextureTypeToString(sgMaterialTextureType) + "', path: " + std::string(finalPath));
+        spdlog::info("Loaded material`s '{0}' texture. Raw type name: '{1}', path: {2}", aiMat->GetName().data,
+                     sgStandardTextureTypeToString(sgMaterialTextureType), finalPath
+        );
     }
 }

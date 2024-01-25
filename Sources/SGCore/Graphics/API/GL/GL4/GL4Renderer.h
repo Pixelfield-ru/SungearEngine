@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_GL4RENDERER_H
 #define SUNGEARENGINE_GL4RENDERER_H
 
-#include "SGCore/Logging/Log.h"
-
 #include "SGCore/Graphics/API/GL/GL46/GL46SubPassShader.h"
 #include "SGCore/Graphics/API/GL/GLVertexArray.h"
 #include "SGCore/Graphics/API/GL/GLVertexBuffer.h"
@@ -58,19 +56,19 @@ namespace SGCore
         void checkForErrors(const std::source_location& location = std::source_location::current()) noexcept override;
 
         // TODO: create docs
-        [[nodiscard]] GL46SubPassShader* createShader() override;
-        [[nodiscard]] GL46SubPassShader* createShader(const std::string& path) override;
+        [[nodiscard]] GL46SubPassShader* createShader() const override;
+        [[nodiscard]] GL46SubPassShader* createShader(const std::string& path) const override;
 
-        [[nodiscard]] GLVertexArray* createVertexArray() override;
-        [[nodiscard]] GLVertexBuffer* createVertexBuffer() override;
-        [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() override;
-        [[nodiscard]] GLIndexBuffer* createIndexBuffer() override;
-        [[nodiscard]] GL4Texture2D* createTexture2D() override;
-        [[nodiscard]] GL4CubemapTexture* createCubemapTexture() override;
-        [[nodiscard]] GL4UniformBuffer* createUniformBuffer() override;
-        [[nodiscard]] GL4FrameBuffer* createFrameBuffer() override;
+        [[nodiscard]] GLVertexArray* createVertexArray() const override;
+        [[nodiscard]] GLVertexBuffer* createVertexBuffer() const override;
+        [[nodiscard]] GLVertexBufferLayout* createVertexBufferLayout() const override;
+        [[nodiscard]] GLIndexBuffer* createIndexBuffer() const override;
+        [[nodiscard]] GL4Texture2D* createTexture2D() const override;
+        [[nodiscard]] GL4CubemapTexture* createCubemapTexture() const override;
+        [[nodiscard]] GL4UniformBuffer* createUniformBuffer() const override;
+        [[nodiscard]] GL4FrameBuffer* createFrameBuffer() const override;
 
-        [[nodiscard]] GL3MeshData* createMeshData() override;
+        [[nodiscard]] GL3MeshData* createMeshData() const override;
 
         // ------------- some settings for renderer ---------
         void setDepthTestingEnabled(const bool& enabled) const noexcept override;

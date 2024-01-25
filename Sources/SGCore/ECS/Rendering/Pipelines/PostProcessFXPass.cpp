@@ -2,18 +2,19 @@
 // Created by stuka on 26.11.2023.
 //
 
-#include <fmt/core.h>
 #include "PostProcessFXPass.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/ECS/Rendering/ICamera.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
+#include "SGCore/Graphics/API/IFrameBuffer.h"
+#include "SGCore/Graphics/API/IRenderer.h"
 
 SGCore::PostProcessFXPass::PostProcessFXPass()
 {
     m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
 
-    m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer().createMeshData());
+    m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
 
     m_postProcessQuad->m_indices.push_back(0);
     m_postProcessQuad->m_indices.push_back(2);
@@ -28,7 +29,7 @@ SGCore::PostProcessFXPass::PostProcessFXPass()
 
 void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
-    CoreMain::getRenderer().setDepthTestingEnabled(false);
+    CoreMain::getRenderer()->setDepthTestingEnabled(false);
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
             auto cameraComponent = cameraEntity.getComponent<ICamera>();
@@ -42,7 +43,7 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 
     SG_END_ITERATE_CACHED_ENTITIES
 
-    CoreMain::getRenderer().setDepthTestingEnabled(true);
+    CoreMain::getRenderer()->setDepthTestingEnabled(true);
 }
 
 // DONE
@@ -66,7 +67,7 @@ void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::ICamera>& ca
         {
             ppLayer.m_frameBuffer->bindAttachmentToDraw(attachmentType);
 
-            CoreMain::getRenderer().renderMeshData(
+            CoreMain::getRenderer()->renderMeshData(
                     m_postProcessQuad,
                     m_postProcessQuadRenderInfo
             );
@@ -87,7 +88,7 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::ICamera>& camer
 
         layerShader->bind();
 
-        layerShader->useUniformBuffer(CoreMain::getRenderer().m_programDataBuffer);
+        layerShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
         layerShader->useInteger("currentFBIndex", ppLayer.m_index);
 
@@ -104,7 +105,7 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::ICamera>& camer
 
             ppLayer.m_frameBuffer->bindAttachmentToDraw(ppFXSubPass.m_attachmentRenderTo);
 
-            CoreMain::getRenderer().renderMeshData(
+            CoreMain::getRenderer()->renderMeshData(
                     m_postProcessQuad,
                     m_postProcessQuadRenderInfo
             );
@@ -163,7 +164,7 @@ void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<ICamera>& camera) 
 
         ppLayerCombiningShader->useInteger("layersAttachmentNCount", attachmentIdx);
 
-        CoreMain::getRenderer().renderMeshData(
+        CoreMain::getRenderer()->renderMeshData(
                 m_postProcessQuad,
                 m_postProcessQuadRenderInfo
         );
@@ -190,7 +191,7 @@ void SGCore::PostProcessFXPass::finalFrameFXPass(const SGCore::Ref<SGCore::ICame
 
     ppFinalFxShader->useInteger("combinedBufferAttachmentsCount", attachmentIdx);
 
-    CoreMain::getRenderer().renderMeshData(
+    CoreMain::getRenderer()->renderMeshData(
             m_postProcessQuad,
             m_postProcessQuadRenderInfo
     );

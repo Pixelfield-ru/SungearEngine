@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/UniqueNamesManager.h"
+#include "SGUtils/UniqueNamesManager.h"
 
 namespace SGCore
 {
@@ -29,7 +29,7 @@ namespace SGCore
         static inline std::unordered_map<std::string, Weak<ITexture2D>> m_textures2D;
         static inline std::unordered_map<std::string, Weak<IFrameBuffer>> m_frameBuffers;
 
-        static inline Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
+        static inline Ref<SGUtils::UniqueNamesManager> m_uniqueNamesManager = MakeRef<SGUtils::UniqueNamesManager>();
     };
 }
 

@@ -9,42 +9,46 @@
 #include <string>
 #include <regex>
 
-#include "SGCore/Patterns/Singleton.h"
+#include "SGUtils/Singleton.h"
 #include "SGCore/Main/CoreGlobals.h"
 
-struct ShadersPaths
+namespace SGCore
 {
-    std::string m_virtualPath;
+    struct ShadersPaths
+    {
+        std::string m_virtualPath;
 
-    std::string m_GLSL4RealizationPath;
-    std::string m_GLSL46RealizationPath;
+        std::string m_GLSL4RealizationPath;
+        std::string m_GLSL46RealizationPath;
 
-    std::string m_HLSLRealizationPath;
+        std::string m_HLSLRealizationPath;
 
-    ShadersPaths& operator[](const std::string& path) noexcept;
+        ShadersPaths& operator[](const std::string& path) noexcept;
 
-    ShadersPaths& getByVirtualPath(const std::string& virtualPath) noexcept;
+        ShadersPaths& getByVirtualPath(const std::string& virtualPath) noexcept;
 
-    // ---------------
+        // ---------------
 
-    void createDefaultPaths() noexcept;
+        void createDefaultPaths() noexcept;
 
-    [[nodiscard]] std::string getCurrentRealization() const noexcept;
+        [[nodiscard]] std::string getCurrentRealization() const noexcept;
 
-    // ---------------
+        // ---------------
 
-    auto& getPaths() noexcept { return m_paths; }
+        auto& getPaths() noexcept
+        { return m_paths; }
 
-    // ---------------
+        // ---------------
 
-    bool isSubPathExists(const std::string& subPath) const noexcept;
+        bool isSubPathExists(const std::string& subPath) const noexcept;
 
-private:
-    // todo: make divider by / or \\ or both
-    static inline const std::regex s_pathsDividerRegex = std::regex(R"([a-zA-Z]+)");
-    static inline const std::sregex_iterator end;
+    private:
+        // todo: make divider by / or \\ or both
+        static inline const std::regex s_pathsDividerRegex = std::regex(R"([a-zA-Z]+)");
+        static inline const std::sregex_iterator end;
 
-    std::unordered_map<std::string, SGCore::Ref<ShadersPaths>> m_paths;
-};
+        std::unordered_map<std::string, Ref<ShadersPaths>> m_paths;
+    };
+}
 
 #endif // SUNGEARENGINE_SHADERSPATHS_H

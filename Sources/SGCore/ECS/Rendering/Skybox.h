@@ -9,7 +9,6 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Graphics/Defines.h"
 #include "SGCore/Memory/Assets/ShaderFileAsset.h"
 #include "SGCore/Utils/ShadersPaths.h"
 #include "Mesh.h"

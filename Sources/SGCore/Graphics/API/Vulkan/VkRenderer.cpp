@@ -60,57 +60,57 @@ void SGCore::VkRenderer::checkForErrors(const std::source_location& location) no
 
 }
 
-SGCore::VkShader* SGCore::VkRenderer::createShader()
+SGCore::VkShader* SGCore::VkRenderer::createShader() const
 {
     return new VkShader;
 }
 
-SGCore::VkShader* SGCore::VkRenderer::createShader(const std::string& path)
+SGCore::VkShader* SGCore::VkRenderer::createShader(const std::string& path) const
 {
     return new VkShader;
 }
 
-SGCore::VkVertexArray* SGCore::VkRenderer::createVertexArray()
+SGCore::VkVertexArray* SGCore::VkRenderer::createVertexArray() const
 {
     return new VkVertexArray;
 }
 
-SGCore::VkVertexBuffer* SGCore::VkRenderer::createVertexBuffer()
+SGCore::VkVertexBuffer* SGCore::VkRenderer::createVertexBuffer() const
 {
     return new VkVertexBuffer;
 }
 
-SGCore::VkVertexBufferLayout* SGCore::VkRenderer::createVertexBufferLayout()
+SGCore::VkVertexBufferLayout* SGCore::VkRenderer::createVertexBufferLayout() const
 {
     return new VkVertexBufferLayout;
 }
 
-SGCore::VkIndexBuffer* SGCore::VkRenderer::createIndexBuffer()
+SGCore::VkIndexBuffer* SGCore::VkRenderer::createIndexBuffer() const
 {
     return new VkIndexBuffer;
 }
 
-SGCore::VkTexture2D* SGCore::VkRenderer::createTexture2D()
+SGCore::VkTexture2D* SGCore::VkRenderer::createTexture2D() const
 {
     return new VkTexture2D;
 }
 
-SGCore::VkCubemapTexture* SGCore::VkRenderer::createCubemapTexture()
+SGCore::VkCubemapTexture* SGCore::VkRenderer::createCubemapTexture() const
 {
     return new VkCubemapTexture;
 }
 
-SGCore::VkUniformBuffer* SGCore::VkRenderer::createUniformBuffer()
+SGCore::VkUniformBuffer* SGCore::VkRenderer::createUniformBuffer() const
 {
     return new VkUniformBuffer;
 }
 
-SGCore::VkFrameBuffer* SGCore::VkRenderer::createFrameBuffer()
+SGCore::VkFrameBuffer* SGCore::VkRenderer::createFrameBuffer() const
 {
     return new VkFrameBuffer;
 }
 
-SGCore::VkMeshData* SGCore::VkRenderer::createMeshData()
+SGCore::VkMeshData* SGCore::VkRenderer::createMeshData() const
 {
     return new VkMeshData;
 }

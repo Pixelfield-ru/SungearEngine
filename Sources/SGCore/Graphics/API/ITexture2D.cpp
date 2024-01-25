@@ -1,5 +1,6 @@
 #include "ITexture2D.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
+#include "spdlog/spdlog.h"
 
 #include <stb/stb_image.h>
 
@@ -38,9 +39,12 @@ SGCore::Ref<SGCore::IAsset> SGCore::ITexture2D::load(const std::string& path)
     create();
     // create(sharedPtr);
 
-    SGC_INFO("Loaded texture. Width: " + std::to_string(m_width) + ", height: " + std::to_string(m_height)
-             + ", MB size: " + std::to_string(m_width * m_height * m_channelsCount / 1024.0 / 1024.0) + ", channels: " +
-             std::to_string(m_channelsCount) + ", path: " + m_path.string());
+    spdlog::info("Loaded texture. Width: {0}, height: {1}, MB size: {2}, channels: {3}, path: {4}",
+                  m_width,
+                  m_height,
+                 m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
+                 m_channelsCount,
+                 m_path.string());
 
     return shared_from_this();
 }

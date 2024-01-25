@@ -46,9 +46,8 @@ SGCore::Ref<SGCore::Entity> SGCore::Node::addOnScene(const SGCore::Ref<Scene>& s
     {
         Ref<Transform> meshedEntityTransformComponent = MakeRef<Transform>();
 
-        Ref<Mesh> meshComponent = SGCore::MakeRef<Mesh>(scene->m_renderPipeline);
-        // todo: make
-        meshComponent->m_meshData = mesh;
+        Ref<Mesh> meshComponent = SGCore::MakeRef<Mesh>();
+        meshComponent->m_meshData->setData(mesh);
         // meshComponent->addRequiredShaderPath("GeometryShader");
 
         Ref<Entity> meshedEntity = MakeRef<Entity>();

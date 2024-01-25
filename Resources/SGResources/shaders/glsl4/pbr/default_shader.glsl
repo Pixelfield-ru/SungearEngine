@@ -258,7 +258,7 @@ SGSubPass(PBRFRPGeometryPass)
             vec3 dirLightsShadowCoeff = vec3(0.0);
 
             vec3 lo = vec3(0.0);
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 0; i++)
             {
                 ILight lightPart = directionalLights[i].lightPart;
                 IRenderingComponent renderingPart = lightPart.renderingPart;
@@ -323,6 +323,7 @@ SGSubPass(PBRFRPGeometryPass)
 
             fragColor0.a = diffuseColor.a;
             fragColor0.rgb = finalCol;
+            // fragColor0.rgb = vec3(1.0);
 
             fragColor1 = vec4(finalCol, diffuseColor.a);
             // fragColor0 = vec4(1.0);

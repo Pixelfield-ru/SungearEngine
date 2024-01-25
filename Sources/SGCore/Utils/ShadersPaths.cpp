@@ -2,11 +2,13 @@
 // Created by stuka on 19.11.2023.
 //
 #include "ShadersPaths.h"
+#include "SGCore/Main/CoreMain.h"
+#include "SGCore/Graphics/API/GAPIType.h"
+#include "SGCore/Graphics/API/IRenderer.h"
 
 #include <memory>
-#include "SGCore/Main/CoreMain.h"
 
-ShadersPaths& ShadersPaths::operator[](const std::string& path) noexcept
+SGCore::ShadersPaths& SGCore::ShadersPaths::operator[](const std::string& path) noexcept
 {
     /*auto& paths = m_paths[path];
     if(!paths)
@@ -33,7 +35,7 @@ ShadersPaths& ShadersPaths::operator[](const std::string& path) noexcept
     return *foundShadersPaths->second;
 }
 
-ShadersPaths& ShadersPaths::getByVirtualPath(const std::string& virtualPath) noexcept
+SGCore::ShadersPaths& SGCore::ShadersPaths::getByVirtualPath(const std::string& virtualPath) noexcept
 {
     std::sregex_iterator iter(virtualPath.begin(), virtualPath.end(), s_pathsDividerRegex);
     ShadersPaths* curShadersPaths = this;
@@ -48,7 +50,7 @@ ShadersPaths& ShadersPaths::getByVirtualPath(const std::string& virtualPath) noe
 }
 
 
-void ShadersPaths::createDefaultPaths() noexcept
+void SGCore::ShadersPaths::createDefaultPaths() noexcept
 {
     // COMMON SHADERS
     // -------------------------------------
@@ -60,9 +62,9 @@ void ShadersPaths::createDefaultPaths() noexcept
     // -------------------------------------
 }
 
-std::string ShadersPaths::getCurrentRealization() const noexcept
+std::string SGCore::ShadersPaths::getCurrentRealization() const noexcept
 {
-    auto gapiType = SGCore::CoreMain::getRenderer().getGAPIType();
+    auto gapiType = SGCore::CoreMain::getRenderer()->getGAPIType();
 
     switch(gapiType)
     {
@@ -77,7 +79,7 @@ std::string ShadersPaths::getCurrentRealization() const noexcept
     }
 }
 
-bool ShadersPaths::isSubPathExists(const std::string& subPath) const noexcept
+bool SGCore::ShadersPaths::isSubPathExists(const std::string& subPath) const noexcept
 {
     return m_paths.find(subPath) != m_paths.end();
 }

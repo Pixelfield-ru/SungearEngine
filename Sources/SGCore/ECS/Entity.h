@@ -10,11 +10,10 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <tsl/robin_map.h>
 
-#include "SGCore/Utils/Utils.h"
+#include "SGUtils/Utils.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGCore/Utils/UniqueName.h"
+#include "SGUtils/UniqueName.h"
 
 namespace SGCore
 {
@@ -22,7 +21,7 @@ namespace SGCore
     class Layer;
     class Scene;
 
-    class Entity : public UniqueNameWrapper, public std::enable_shared_from_this<Entity>
+    class Entity : public SGUtils::UniqueNameWrapper, public std::enable_shared_from_this<Entity>
     {
         friend class Scene;
         friend class Node;

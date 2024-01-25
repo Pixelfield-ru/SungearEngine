@@ -6,8 +6,6 @@
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "../GLGraphicsTypesCaster.h"
 
-#include "SGCore/Logging/Log.h"
-
 SGCore::GL4Texture2D::~GL4Texture2D() noexcept
 {
     destroy();

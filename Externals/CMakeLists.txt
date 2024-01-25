@@ -28,11 +28,13 @@ add_subdirectory(GLFW)
 add_subdirectory(OpenGL)
 add_subdirectory(GLM)
 add_subdirectory(imgui)
-add_subdirectory(fmt)
+#add_subdirectory(fmt)
 
 add_subdirectory(bullet3)
 
-add_subdirectory(robin_map)
+add_subdirectory(spdlog)
+
+add_subdirectory(sparse_map)
 
 SET(BULLET_LINEAR_MATH_DLL ${CMAKE_BINARY_DIR}/lib/libLinearMathd.dll)
 SET(BULLET_COLLISION_DLL ${CMAKE_BINARY_DIR}/lib/libBulletCollisiond.dll)
@@ -60,7 +62,7 @@ add_custom_command(TARGET ${EXTERNALS_DLLS_PROJ} POST_BUILD
         ${SG_PHYS_TEST_BIN}
 )]]
 
-IF(EXISTS ${BULLET_LINEAR_MATH_DLL})
+#[[IF(EXISTS ${BULLET_LINEAR_MATH_DLL})
     file(COPY ${BULLET_LINEAR_MATH_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
     file(COPY ${BULLET_LINEAR_MATH_DLL} DESTINATION ${SG_EDITOR_BIN})
 ENDIF()
@@ -93,5 +95,5 @@ ENDIF()
 IF(EXISTS ${BULLET_SOFT_BODY_DLL})
     file(COPY ${BULLET_SOFT_BODY_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
     file(COPY ${BULLET_SOFT_BODY_DLL} DESTINATION ${SG_EDITOR_BIN})
-ENDIF()
+ENDIF()]]
 # -------------------------------

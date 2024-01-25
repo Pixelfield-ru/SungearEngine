@@ -2,10 +2,21 @@
 
 #include "SGCore/Main/CoreMain.h"
 
+#include "SGCore/Graphics/API/IVertexArray.h"
+#include "SGCore/Graphics/API/IVertexBuffer.h"
+#include "SGCore/Graphics/API/IIndexBuffer.h"
+
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
+
 /*SGCore::Mesh::Mesh() noexcept
 {
     m_material = Ref<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createPBRMaterial());
 }*/
+
+SGCore::IMeshData::IMeshData()
+{
+    m_material = IMaterial::create();;
+}
 
 void SGCore::IMeshData::setVertexPosition
 (const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept
@@ -72,6 +83,30 @@ void SGCore::IMeshData::getFaceIndices(const std::uint64_t& faceIdx, std::uint64
 SGCore::Ref<SGCore::IVertexArray> SGCore::IMeshData::getVertexArray() noexcept
 {
     return m_vertexArray;
+}
+
+void SGCore::IMeshData::setData(const SGCore::Ref<SGCore::IMeshData>& other) noexcept
+{
+    if(m_vertexArray) m_vertexArray->destroy();
+
+    if(m_positionsBuffer) m_positionsBuffer->destroy();
+    if(m_uvBuffer) m_uvBuffer->destroy();
+    if(m_normalsBuffer) m_normalsBuffer->destroy();
+    if(m_tangentsBuffer) m_tangentsBuffer->destroy();
+    if(m_bitangentsBuffer) m_bitangentsBuffer->destroy();
+
+    if(m_indicesBuffer) m_indicesBuffer->destroy();
+
+    m_indices = other->m_indices;
+    m_positions = other->m_positions;
+    m_uv = other->m_uv;
+    m_normals = other->m_normals;
+    m_tangents = other->m_tangents;
+    m_bitangents = other->m_tangents;
+
+    prepare();
+
+    other->m_material->copyTextures(m_material);
 }
 
 void SGCore::IMeshData::migrateAndSetNewMaterial

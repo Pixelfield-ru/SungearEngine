@@ -1,18 +1,21 @@
 #include "GL46Renderer.h"
 
 #include <thread>
+#include <spdlog/spdlog.h>
 
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/ICamera.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
+#include "SGCore/Memory/AssetManager.h"
+#include "SGCore/Memory/Assets/FileAsset.h"
 
 bool SGCore::GL46Renderer::confirmSupport() noexcept
 {
     std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     if(!glVersion.starts_with("4.6"))
     {
-        SGCF_ERROR("OpengGL 4.6 is not supported!", SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::info("OpenGL 4.6 is not supported!\n{0}", SG_CURRENT_LOCATION_STR);
 
         return false;
     }
@@ -20,7 +23,7 @@ bool SGCore::GL46Renderer::confirmSupport() noexcept
     return true;
 }
 
-SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader()
+SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader() const
 {
     auto* shader = new GL46SubPassShader;
     shader->m_version = "460";
@@ -32,7 +35,7 @@ SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader()
     return shader;
 }
 
-SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader(const std::string& path)
+SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader(const std::string& path) const
 {
     auto* shader = createShader();
     shader->compile(
@@ -42,7 +45,7 @@ SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader(const std::string&
     return shader;
 }
 
-SGCore::GL46Texture2D* SGCore::GL46Renderer::createTexture2D()
+SGCore::GL46Texture2D* SGCore::GL46Renderer::createTexture2D() const
 {
     return new GL46Texture2D;
 }

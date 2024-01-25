@@ -2,29 +2,26 @@
 
 #include <cstdlib>
 
+#include "SGCore/dummy_header.h"
+
 #include "CoreTest.h"
 #include "SGCore/Main/CoreMain.h"
 
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGCore/Graphics/API/ShaderDefine.h"
-#include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Graphics/API/IShaderUniform.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 #include "SGCore/ECS/Transformations/TransformationsUpdater.h"
-
-#include "glm/gtx/euler_angles.hpp"
 
 #include "SGCore/Main/Callbacks.h"
 
 #include "SGCore/ECS/Scene.h"
-#include "SGCore/ECS/ECSUtils.h"
 
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/ICamera.h"
-#include "SGCore/ECS/Rendering/Skybox.h"
 #include "SGCore/ECS/Rendering/Gizmos/BoxGizmo.h"
 
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
@@ -34,10 +31,11 @@
 #include "SGCore/ImGuiWrap/Views/Base/CollapsingHeader.h"
 #include "SGCore/ImGuiWrap/ViewsInjector.h"
 #include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPDirectionalLight.h"
-#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPCamera.h"
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/ICubemapTexture.h"
+
+#include "SGCore/Input/InputManager.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -306,7 +304,7 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    auto standardCubemap = SGCore::Ref<SGCore::ICubemapTexture>(SGCore::CoreMain::getRenderer().createCubemapTexture());
+    auto standardCubemap = SGCore::Ref<SGCore::ICubemapTexture>(SGCore::CoreMain::getRenderer()->createCubemapTexture());
 
     standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
@@ -338,7 +336,7 @@ void init()
     );
 
     // adding skybox
-    {
+   /* {
         std::vector<SGCore::Ref<SGCore::Entity>> skyboxEntities;
         cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
             skyboxEntities.push_back(entity);
@@ -349,8 +347,8 @@ void init()
         skyboxMesh->m_meshData->m_material->m_textures[SGTextureType::SGTT_SKYBOX].push_back(
                 standardCubemap
         );
-        /*skyboxMesh->removeRequiredShaderPath(skyboxMesh->m_meshData->m_material->getShader(), "GeometryShader");
-        skyboxMesh->addRequiredShaderPath("SkyboxShader");*/
+        *//*skyboxMesh->removeRequiredShaderPath(skyboxMesh->m_meshData->m_material->getShader(), "GeometryShader");
+        skyboxMesh->addRequiredShaderPath("SkyboxShader");*//*
         skyboxEntities[2]->addComponent(skyboxComponent);
 
         auto transformComponent = skyboxEntities[2]->getComponent<SGCore::Transform>();
@@ -359,7 +357,7 @@ void init()
         {
             transformComponent->m_scale = {1, 1, 1};
         }
-    }
+    }*/
 
     // ==========================================================================================
     // ==========================================================================================
@@ -399,7 +397,7 @@ void init()
     cameraTransformComponent->m_rotation.x = -30;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
-    auto camera = SGCore::MakeRef<SGCore::PBRFRPCamera>();
+    auto camera = SGCore::MakeRef<SGCore::ICamera>();
     testCameraEntity->addComponent(camera);
 
     int primaryMonitorWidth;
@@ -527,7 +525,7 @@ void init()
     // directionalLight->m_color.b = 100.0f / 255.0f;
     directionalLight->m_intensity = 1000.0;
     testShadowsCaster->addComponent(directionalLight);
-    testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
+    testShadowsCaster->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
     std::cout << "bam bam bam mi" << std::endl;
 
@@ -545,7 +543,7 @@ void init()
     directionalLight1->m_color.b = 241.0f / 255.0f;
     directionalLight1->m_intensity = 1000.0;
     testShadowsCaster1->addComponent(directionalLight1);
-    testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
+    testShadowsCaster1->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
     auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster2);
@@ -561,7 +559,7 @@ void init()
     directionalLight2->m_color.b = 241.0f / 255.0f;
     directionalLight2->m_intensity = 500.0;
     testShadowsCaster2->addComponent(directionalLight2);
-    testShadowsCaster2->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
+    testShadowsCaster2->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
     auto testShadowsCaster3 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster3);
@@ -577,7 +575,7 @@ void init()
     directionalLight3->m_color.b = 5.0f / 255.0f;
     testShadowsCaster3->addComponent(directionalLight3);
     directionalLight3->m_intensity = 100.0;
-    testShadowsCaster3->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
+    testShadowsCaster3->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
     auto testShadowsCaster4 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster4);
@@ -593,17 +591,17 @@ void init()
     directionalLight4->m_color.b = 241.0f / 255.0f;
     directionalLight4->m_intensity = 200.0;
     testShadowsCaster4->addComponent(directionalLight4);
-    testShadowsCaster4->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>(testScene->m_renderPipeline));
+    testShadowsCaster4->addComponent(SGCore::MakeRef<SGCore::BoxGizmo>());
 
-    auto xLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>(testScene->m_renderPipeline);
+    auto xLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
     xLineGizmo->m_meshData->setVertexPosition(1, 10, 0, 0);
     xLineGizmo->m_color = { 1.0, 0.0, 0.0, 1.0 };
 
-    auto yLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>(testScene->m_renderPipeline);
+    auto yLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
     yLineGizmo->m_meshData->setVertexPosition(1, 0, 10, 0);
     yLineGizmo->m_color = { 0.0, 1.0, 0.0, 1.0 };
 
-    auto zLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>(testScene->m_renderPipeline);
+    auto zLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
     zLineGizmo->m_meshData->setVertexPosition(1, 0, 0, 10);
     zLineGizmo->m_color = { 0.0, 0.0, 1.0, 1.0 };
 
@@ -687,7 +685,7 @@ void update()
 
     SGCore::Scene::getCurrentScene()->update();
 
-    auto& viewsInjector = *SGSingleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
+    auto& viewsInjector = *SGUtils::Singleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
     viewsInjector.renderViews();
 
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
@@ -699,18 +697,18 @@ int main()
 {
     SGEditor::EditorMain::start();
 
-    auto& viewsInjector = *SGSingleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
+    auto& viewsInjector = *SGUtils::Singleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
     viewsInjector["TestWindow"].m_rootView = testWindow;
     viewsInjector["TestWindow"].m_childrenViews.push_back(testCollapsingHeader);
     //viewsInjector["Scene hierarchy"]["TestCollapsingHeader"].m_rootView = testCollapsingHeader;
 
-    auto* testWindowOverdraw = new SGCore::EventListenerHolder<void()> {[]()
+    auto* testWindowOverdraw = new SGUtils::EventListenerHolder<void()> {[]()
                                                                         {
                                                                             ImGui::Text("hi.");
                                                                         }};
 
     int* dragInt = new int(0);
-    auto* testCollapsingHeaderOverdraw = new SGCore::EventListenerHolder<void()> {[dragInt]()
+    auto* testCollapsingHeaderOverdraw = new SGUtils::EventListenerHolder<void()> {[dragInt]()
                                                                                   {
                                                                                       ImGui::DragInt("Drag this int!", dragInt);
                                                                                       ImGui::Text("hi!!");

@@ -7,8 +7,7 @@
 
 #include <cstddef>
 #include <glad/glad.h>
-
-#include "SGCore/Logging/Log.h"
+#include <spdlog/spdlog.h>
 
 namespace SGCore
 {
@@ -22,15 +21,15 @@ namespace SGCore
             glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &MAX_UNIFORM_BUFFER_BINDINGS);
             glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MAX_TEXTURE_IMAGE_UNITS);
 
-            SGCF_INFO("============== DEVICE OPENGL INFO ==============", SG_LOG_GAPI_FILE);
+            spdlog::info("============== DEVICE OPENGL INFO ==============");
 
-            SGCF_INFO("GL_VERSION: " + VERSION + "\n", SG_LOG_GAPI_FILE);
+            spdlog::info("GL_VERSION: {0}\n", VERSION);
 
-            SGCF_INFO("GL_MAX_COLOR_ATTACHMENTS: " + std::to_string(MAX_FB_COLOR_ATTACHMENTS), SG_LOG_GAPI_FILE);
-            SGCF_INFO("GL_MAX_UNIFORM_BUFFER_BINDINGS: " + std::to_string(MAX_UNIFORM_BUFFER_BINDINGS), SG_LOG_GAPI_FILE);
-            SGCF_INFO("GL_MAX_TEXTURE_IMAGE_UNITS: " + std::to_string(MAX_TEXTURE_IMAGE_UNITS), SG_LOG_GAPI_FILE);
+            spdlog::info("GL_MAX_COLOR_ATTACHMENTS: {0}", MAX_FB_COLOR_ATTACHMENTS);
+            spdlog::info("GL_MAX_UNIFORM_BUFFER_BINDINGS: {0}", MAX_UNIFORM_BUFFER_BINDINGS);
+            spdlog::info("GL_MAX_TEXTURE_IMAGE_UNITS: {0}", MAX_TEXTURE_IMAGE_UNITS);
 
-            SGCF_INFO("================================================", SG_LOG_GAPI_FILE);
+            spdlog::info("================================================");
         }
 
         [[maybe_unused]] [[nodiscard]] static auto getMaxFBColorAttachments() noexcept

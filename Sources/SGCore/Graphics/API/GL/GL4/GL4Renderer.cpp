@@ -3,6 +3,7 @@
 #include "SGCore/Main/CoreMain.h"
 
 #include <glm/gtc/type_ptr.hpp>
+#include <spdlog/spdlog.h>
 
 #include "SGCore/ECS/Transformations/Transform.h"
 #include "SGCore/ECS/Rendering/Mesh.h"
@@ -19,20 +20,20 @@
 
 void SGCore::GL4Renderer::init() noexcept
 {
-    SGCF_INFO("-----------------------------------", SG_LOG_CURRENT_SESSION_FILE);
-    SGCF_INFO("GLRenderer initializing...", SG_LOG_CURRENT_SESSION_FILE);
+    spdlog::info("-----------------------------------");
+    spdlog::info("GLRenderer initializing...");
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        SGCF_ERROR("Failed to initialize GLRenderer.", SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::info("Failed to initialize GLRenderer.");
     }
     else
     {
-        SGCF_INFO("GLRenderer initialized!", SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::info("GLRenderer initialized!");
     }
 
     printInfo();
-    SGCF_INFO("-----------------------------------", SG_LOG_CURRENT_SESSION_FILE);
+    spdlog::info("-----------------------------------");
 
     // -------------------------------------
 
@@ -89,7 +90,7 @@ bool SGCore::GL4Renderer::confirmSupport() noexcept
 
     if(glMajorVersion < 4)
     {
-        SGCF_ERROR("OpengGL 4.0 is not supported!", SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::error("OpengGL 4.0 is not supported!\n{0}", SG_CURRENT_LOCATION_STR);
 
         return false;
     }
@@ -118,20 +119,20 @@ void SGCore::GL4Renderer::checkForErrors(const std::source_location& location) n
 
     if(errCode != 0)
     {
-        SGC_ERROR_SL("OpenGL error (code: " + std::to_string(errCode) + "): " + errStr, location);
+        spdlog::error("OpenGL error (code: {0}): {1}", errCode, errStr);
     }
 }
 
 void SGCore::GL4Renderer::printInfo() noexcept
 {
-    SGF_INFO("OpenGL supporting extensions: ", SG_GL_SUPPORTING_EXTENSIONS_FILE);
+    spdlog::info("OpenGL supporting extensions: {0}");
 
     GLint extensionsNum = 0;
     glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
 
     for(int i = 0; i < extensionsNum; i++)
     {
-        SGF_INFO(std::string(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i))), SG_GL_SUPPORTING_EXTENSIONS_FILE);
+        spdlog::info(std::string(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i))));
     }
 }
 
@@ -195,6 +196,7 @@ void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
     {
         glDisable(GL_CULL_FACE);
     }
+
     if(meshData->getVertexArray())
     {
         meshData->getVertexArray()->bind();
@@ -214,7 +216,7 @@ void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
 
     if(!meshData->m_useIndices)
     {
-        glDrawArrays(GL_LINES, 0, meshData->m_positions.size() / 3);
+        glDrawArrays(drawMode, 0, meshData->m_positions.size() / 3);
     }
     else
     {
@@ -223,7 +225,7 @@ void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
     }
 }
 
-SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader()
+SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader() const
 {
     auto* shader = new GL46SubPassShader;
     shader->m_version = "400 core";
@@ -233,7 +235,7 @@ SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader()
     return shader;
 }
 
-SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader(const std::string& path)
+SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader(const std::string& path) const
 {
     auto* shader = createShader();
 
@@ -244,27 +246,27 @@ SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader(const std::string& 
     return shader;
 }
 
-SGCore::GLVertexArray* SGCore::GL4Renderer::createVertexArray()
+SGCore::GLVertexArray* SGCore::GL4Renderer::createVertexArray() const
 {
     return new GLVertexArray;
 }
 
-SGCore::GLVertexBuffer* SGCore::GL4Renderer::createVertexBuffer()
+SGCore::GLVertexBuffer* SGCore::GL4Renderer::createVertexBuffer() const
 {
     return new GLVertexBuffer;
 }
 
-SGCore::GLVertexBufferLayout* SGCore::GL4Renderer::createVertexBufferLayout()
+SGCore::GLVertexBufferLayout* SGCore::GL4Renderer::createVertexBufferLayout() const
 {
     return new GLVertexBufferLayout;
 }
 
-SGCore::GLIndexBuffer* SGCore::GL4Renderer::createIndexBuffer()
+SGCore::GLIndexBuffer* SGCore::GL4Renderer::createIndexBuffer() const
 {
     return new GLIndexBuffer;
 }
 
-SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D()
+SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D() const
 {
     auto* tex = new GL4Texture2D;
     tex->setRawName("SGUnknownTexture2D");
@@ -272,17 +274,17 @@ SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D()
     return tex;
 }
 
-SGCore::GL4CubemapTexture* SGCore::GL4Renderer::createCubemapTexture()
+SGCore::GL4CubemapTexture* SGCore::GL4Renderer::createCubemapTexture() const
 {
     return new GL4CubemapTexture;
 }
 
-SGCore::GL4UniformBuffer* SGCore::GL4Renderer::createUniformBuffer()
+SGCore::GL4UniformBuffer* SGCore::GL4Renderer::createUniformBuffer() const
 {
     return new GL4UniformBuffer;
 }
 
-SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer()
+SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer() const
 {
     auto* fb = new GL4FrameBuffer;
     fb->setRawName("SGUnknownFrameBuffer");
@@ -290,7 +292,7 @@ SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer()
     return fb;
 }
 
-SGCore::GL3MeshData* SGCore::GL4Renderer::createMeshData()
+SGCore::GL3MeshData* SGCore::GL4Renderer::createMeshData() const
 {
     return new GL3MeshData;
 }

@@ -1,6 +1,0 @@
-#include <string>
-
-#ifndef SUNGEARENGINE_DEFINES_H
-#define SUNGEARENGINE_DEFINES_H
-
-#endif // SUNGEARENGINE_DEFINES_H

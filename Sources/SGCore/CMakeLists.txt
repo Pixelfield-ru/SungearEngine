@@ -2,7 +2,7 @@
  project(${SG_CORE_PROJ})
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")
-     #SET(CMAKE_STATIC_LIBRARY_SUFFIX "")
+ #SET(CMAKE_STATIC_LIBRARY_SUFFIX "")
 
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
 
@@ -28,8 +28,8 @@
          ${CMAKE_SOURCE_DIR}/Externals/bullet3/src
          ${Vulkan_INCLUDE_DIR}
          ${CMAKE_SOURCE_DIR}/Sources
-         ${CMAKE_SOURCE_DIR}/Externals/robin_map/include
          ${CMAKE_SOURCE_DIR}/Externals/fmt/include
+         ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
          #${BULLET_INCLUDE_DIR}
 
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
@@ -41,31 +41,29 @@
          glfw
          glm::glm
          gl46
-         ${Vulkan_LIBRARIES}
+         #${Vulkan_LIBRARIES}
          assimp
 
          gl46
          #LinearMath
          #Bullet3Common
-         #BulletDynamics 
+         #BulletDynamics
          #BulletCollision
          #BulletInverseDynamics
          #BulletSoftBody
 
          ImGui
 
-         tsl::robin_map
-
-         fmt
+         ${SG_ECS_PROJ}
          )
 
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)
 
- if(WIN32)
+ IF(WIN32)
      target_link_libraries(${PROJECT_NAME} PUBLIC
              wsock32
              ws2_32)
- endif()
+ ENDIF()
 
 #[[ target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Externals/Vulkan/Lib)
 
@@ -83,16 +81,11 @@ endif()]]
          ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ}
          )
 
- if(${SG_BUILD_TESTS})
+ IF(${SG_BUILD_TESTS})
      add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
              COMMAND ${CMAKE_COMMAND} -E copy
              ${SG_CORE_DLL}
              ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ}
              )
- endif()
- endif()
-
- #[[IF(EXISTS ${SG_CORE_DLL})
-    file(COPY ${SG_CORE_DLL} DESTINATION ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
-    file(COPY ${SG_CORE_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
- ENDIF ()]]
+ ENDIF()
+ ENDIF()

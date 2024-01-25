@@ -4,8 +4,8 @@
 #include <sstream>
 
 #include <glm/gtc/type_ptr.hpp>
+#include <spdlog/spdlog.h>
 
-#include "SGCore/Logging/Log.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Main/CoreMain.h"
 
@@ -20,13 +20,13 @@ void SGCore::GL46SubPassShader::compile(Ref<FileAsset> fileAsset)
 {
     if(!fileAsset)
     {
-        SGCF_ERROR("Can not compile subpass shader! File asset is nullptr.", SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::error("Can not compile subpass shader! File asset is nullptr.\n{0}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
     if(m_subShadersCodes.empty())
     {
-        SGCF_ERROR("No sub shaders to compile! Shader path: " + fileAsset->getPath().string(), SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::error("No sub shaders to compile! Shader path: {0}\n{1}", fileAsset->getPath().string(), SG_CURRENT_LOCATION_STR);
         return;
     }
 
@@ -71,8 +71,9 @@ void SGCore::GL46SubPassShader::compile(Ref<FileAsset> fileAsset)
 
         destroy();
 
-        SGC_ERROR("Error in shader by path: " + m_fileAsset.lock()->getPath().string() + "\n" +
-                  std::string(infoLog.data()));
+        spdlog::error("Error in shader by path: {0}\n{1}",
+                      m_fileAsset.lock()->getPath().string(),
+                      infoLog.data());
     }
 
     for(const GLuint shaderHandler : m_subShadersHandlers)
@@ -131,7 +132,7 @@ GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLSubShaderType sha
 
     if(glShaderType == -1)
     {
-        SGCF_ERROR("Error while compiling subshader! Unknown type of subshader.", SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::error("Error while compiling subshader! Unknown type of subshader.\n{0}", SG_CURRENT_LOCATION_STR);
 
         return -1;
     }
@@ -157,8 +158,9 @@ GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLSubShaderType sha
 
         glDeleteShader(shaderPartHandler);
 
-        SGC_ERROR("Error in shader by path: " + m_fileAsset.lock()->getPath().string() + "\n" +
-                  std::string(infoLog.data()));
+        spdlog::error("Error in shader by path: {0}\n{1}",
+                      m_fileAsset.lock()->getPath().string(),
+                      infoLog.data());
 
         return -1;
     }

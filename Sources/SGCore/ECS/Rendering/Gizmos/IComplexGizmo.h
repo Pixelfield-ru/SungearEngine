@@ -11,7 +11,7 @@ namespace SGCore
 {
     struct IComplexGizmo : public IGizmo
     {
-        IComplexGizmo(const Ref<IRenderPipeline>& pipeline) noexcept;
+        IComplexGizmo() noexcept;
     };
 }
 

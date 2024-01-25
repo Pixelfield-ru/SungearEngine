@@ -4,12 +4,12 @@
 
 #include "GL4FrameBuffer.h"
 
-#include "SGCore/Logging/Log.h"
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 #include "SGCore/Main/CoreMain.h"
 #include "GL4Texture2D.h"
 
 #include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
+#include "spdlog/spdlog.h"
 
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachment
 (const SGFrameBufferAttachmentType& attachmentType, const std::uint8_t& textureBlock)
@@ -175,25 +175,27 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
 
         if(colorAttachments >= DeviceGLInfo::getMaxFBColorAttachments())
         {
-            SGCF_ERROR(
-                    "It is not possible to add more color attachments for framebuffer. Current color attachments count: " +
-                    std::to_string(colorAttachments) + ". Max color attachments count: " +
-                    std::to_string(DeviceGLInfo::getMaxFBColorAttachments()), SG_LOG_GAPI_FILE);
+            spdlog::error(
+                    "It is not possible to add more color attachments for framebuffer. Current color attachments count: {0}. Max color attachments count: {1}.\n{2}",
+                    colorAttachments,
+                    DeviceGLInfo::getMaxFBColorAttachments(),
+                    SGUtils::Utils::sourceLocationToString(std::source_location::current()));
 
             return shared_from_this();
         }
 
         if(curAttachmentType == attachmentType)
         {
-            SGCF_ERROR("Error when adding an attachment to the framebuffer: "
-                       "an attachment with this type already exists.", SG_LOG_GAPI_FILE);
+            spdlog::error("Error when adding an attachment to the framebuffer: "
+                       "an attachment with this type already exists.\n{0}",
+                       SGUtils::Utils::sourceLocationToString(std::source_location::current()));
 
             return shared_from_this();
         }
     }
 
     auto& newAttachment = m_attachments[attachmentType];
-    newAttachment = Ref<ITexture2D>(CoreMain::getRenderer().createTexture2D());
+    newAttachment = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
 
     newAttachment->m_width = m_width;
     newAttachment->m_height = m_height;
@@ -214,39 +216,47 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::addAttachment(SGFr
         {
             case GL_FRAMEBUFFER_UNDEFINED:
                 // Обработка ошибки: Фреймбуфер не определен
-                SGCF_ERROR("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNDEFINED.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNDEFINED.\n{0}",
+                              SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
                 // Обработка ошибки: Неполное прикрепление
-                SGCF_ERROR("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT.\n{0}",
+                              SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
                 // Обработка ошибки: Отсутствует прикрепление
-                SGCF_ERROR("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT.\n{0}",
+                              SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
                 // Обработка ошибки: Неправильный буфер рисования
-                SGCF_ERROR("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER.\n{0}",
+                              SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
                 // Обработка ошибки: Неправильный буфер чтения
-                SGCF_ERROR("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER.\n{0}",
+                              SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_UNSUPPORTED:
                 // Обработка ошибки: Неподдерживаемый формат фреймбуфера
-                SGCF_ERROR("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNSUPPORTED.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNSUPPORTED.\n{0}",
+                              SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
                 // Обработка ошибки: Неправильное мультисэмплирование
-                SGCF_ERROR("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE.\n{0}",
+                              SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
                 // Обработка ошибки: Неправильные цели слоя
-                SGCF_ERROR("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS.\n{0}",
+                              SG_CURRENT_LOCATION_STR);
                 break;
             default:
                 // Обработка ошибки: Неизвестная ошибка
-                SGCF_ERROR("Error when adding attachment to framebuffer: unknown error.", SG_LOG_GAPI_FILE);
+                spdlog::error("Error when adding attachment to framebuffer: unknown error.", SG_CURRENT_LOCATION_STR);
                 break;
         }
 

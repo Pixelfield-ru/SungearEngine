@@ -16,7 +16,8 @@
 
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"
-#include "SGCore/Utils/UniqueName.h"
+#include "SGUtils/UniqueName.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
@@ -24,28 +25,28 @@ namespace SGCore
     class ITexture2D;
 
     // todo: make read and draw bindings
-    class IFrameBuffer : public UniqueNameWrapper, public std::enable_shared_from_this<IFrameBuffer>
+    class IFrameBuffer : public SGUtils::UniqueNameWrapper, public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
         glm::vec4 m_bgColor { 0.0, 0.0, 0.0, 1.0 };
 
-        virtual std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
-                                                             const std::uint8_t& textureBlock) { return shared_from_this(); };
+        virtual Ref<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
+                                                 const std::uint8_t& textureBlock) { return shared_from_this(); };
 
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToRead(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentToDraw(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
+        virtual Ref<IFrameBuffer> bindAttachmentToRead(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
+        virtual Ref<IFrameBuffer> bindAttachmentToDraw(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
 
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToRead(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
-        virtual std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::set<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
+        virtual Ref<IFrameBuffer> bindAttachmentsToRead(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
+        virtual Ref<IFrameBuffer> bindAttachmentsToDraw(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
+        virtual Ref<IFrameBuffer> bindAttachmentsToDraw(const std::set<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
 
-        virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() { return shared_from_this(); }
-        virtual std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() { return shared_from_this(); }
+        virtual Ref<IFrameBuffer> unbindAttachmentToRead() { return shared_from_this(); }
+        virtual Ref<IFrameBuffer> unbindAttachmentToDraw() { return shared_from_this(); }
 
-        virtual std::shared_ptr<IFrameBuffer> bind() = 0;
-        virtual std::shared_ptr<IFrameBuffer> unbind() = 0;
+        virtual Ref<IFrameBuffer> bind() = 0;
+        virtual Ref<IFrameBuffer> unbind() = 0;
 
-        virtual std::shared_ptr<IFrameBuffer> create() = 0;
+        virtual Ref<IFrameBuffer> create() = 0;
         virtual void destroy() = 0;
 
         virtual std::shared_ptr<IFrameBuffer> clear() { return shared_from_this(); };

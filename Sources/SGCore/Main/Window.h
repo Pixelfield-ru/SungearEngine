@@ -10,9 +10,6 @@
 #include <iostream>
 #include <utility>
 
-#include "SGCore/Input/InputManager.h"
-#include "SGCore/ImGuiWrap/ImGuiLayer.h"
-
 #include "Callbacks.h"
 
 namespace SGCore
@@ -93,6 +90,11 @@ namespace SGCore
     public:
         WindowConfig() noexcept = default;
     };
+
+    namespace ImGuiWrap
+    {
+        class ImGuiLayer;
+    }
 
     class Window
     {

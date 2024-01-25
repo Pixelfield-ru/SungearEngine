@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "Views/IView.h"
-#include "SGCore/Patterns/Singleton.h"
+#include "SGUtils/Singleton.h"
 
 namespace SGCore::ImGuiWrap
 {

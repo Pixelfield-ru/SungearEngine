@@ -13,12 +13,12 @@
 #include "IUniformBuffer.h"
 #include "ShaderDefine.h"
 
-#include "SGCore/Utils/UniqueName.h"
+#include "SGUtils/UniqueName.h"
 
 #include "SGCore/Graphics/ShaderTexturesFromGlobalStorageBlock.h"
 #include "SGCore/Graphics/ShaderTexturesFromMaterialBlock.h"
 #include "SGCore/Utils/SGSL/SGSLSubShaderType.h"
-#include "SGCore/Utils/Utils.h"
+#include "SGUtils/Utils.h"
 
 namespace SGCore
 {
@@ -29,7 +29,7 @@ namespace SGCore
 
     // todo: add subshaders and add preprocess for it
     // todo: add various types of defines like material textures block define e.t.c.
-    class ISubPassShader : public UniqueNameWrapper, public std::enable_shared_from_this<ISubPassShader>
+    class ISubPassShader : public SGUtils::UniqueNameWrapper, public std::enable_shared_from_this<ISubPassShader>
     {
     public:
         std::string m_version;

@@ -1,7 +1,6 @@
 #include "IUniformBuffer.h"
 
-#include "SGCore/Logging/Log.h"
-#include "SGCore/Utils/MemoryUtils.h"
+#include "SGUtils/MemoryUtils.h"
 
 SGCore::IUniformBuffer::~IUniformBuffer()
 {

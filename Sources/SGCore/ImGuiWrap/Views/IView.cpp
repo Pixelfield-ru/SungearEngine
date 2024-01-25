@@ -18,5 +18,5 @@ std::string SGCore::ImGuiWrap::IView::getUniquePathPart() const noexcept
 void SGCore::ImGuiWrap::IView::inject() noexcept
 {
     //auto f = weak_from_this();
-    (*SGSingleton::getSharedPtrInstance<ViewsInjector>())["DefaultView"].m_childrenViews.push_back(weak_from_this());
+    (*SGUtils::Singleton::getSharedPtrInstance<ViewsInjector>())["DefaultView"].m_childrenViews.push_back(weak_from_this());
 }

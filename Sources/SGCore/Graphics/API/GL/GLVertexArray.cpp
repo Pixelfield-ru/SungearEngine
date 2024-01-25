@@ -41,7 +41,7 @@ std::shared_ptr<SGCore::IVertexArray> SGCore::GLVertexArray::bind() noexcept
 {
     glBindVertexArray(m_handler);
 
-    CoreMain::getRenderer().m_currentBoundVertexArray = this;
+    // CoreMain::getRenderer()->m_currentBoundVertexArray = this;
 
     return shared_from_this();
 }

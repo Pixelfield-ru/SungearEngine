@@ -1,9 +1,10 @@
 // TODO: make for linux and mac
 
+#include <spdlog/spdlog.h>
 #include "Server.h"
 
 #include <iostream>
-#include "SGCore/Logging/Log.h"
+#include "SGUtils/Utils.h"
 
 SGCore::Server::Server
 (const SGCore::ConnectionType& connectionType, const std::string& ip, const std::uint16_t& port) noexcept
@@ -19,12 +20,12 @@ SGCore::Server::Server
 
     if(WSAStartup(sockVersion, &WSAData) != 0)
     {
-        SGCF_ERROR("Can not initialize WSA for server. Error: " + std::to_string(WSAGetLastError()), SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::error("Can not initialize WSA for server. Error: {0}\n{1}", WSAGetLastError(), SG_CURRENT_LOCATION_STR);
         return;
     }
     else
     {
-        SGCF_SUCCESS("Server WSA initialized!", SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::info("Server WSA initialized!");
     }
 
     // AF_INET is IPv4
@@ -34,7 +35,7 @@ SGCore::Server::Server
 
     if(m_socket == INVALID_SOCKET)
     {
-        SGCF_ERROR("Can not initialize socket. Error: " + std::to_string(WSAGetLastError()), SG_LOG_CURRENT_SESSION_FILE);
+        spdlog::error("Can not initialize socket. Error: {0}\n{1}", WSAGetLastError(), SG_CURRENT_LOCATION_STR);
 
         closesocket(m_socket);
         WSACleanup();

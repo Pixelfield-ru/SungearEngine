@@ -15,7 +15,6 @@ SGCore::Ref<SGCore::IMaterial> SGCore::IMaterial::create() noexcept
 SGCore::IMaterial::IMaterial() noexcept
 {
     m_shader = MakeRef<IShader>();
-    // m_shader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(shadersPaths["PBR"]["DefaultShader"].getCurrentRealization()));
 }
 
 std::shared_ptr<SGCore::IAsset> SGCore::IMaterial::load(const std::string& path)
@@ -44,6 +43,17 @@ SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
 void SGCore::IMaterial::copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept
 {
     to->m_textures = m_textures;
+
+    if(to->m_shader)
+    {
+        for(const auto& texIter : to->m_textures)
+        {
+            for(const auto& tex : texIter.second)
+            {
+                to->m_shader->collectTextureFromMaterial(tex, texIter.first);
+            }
+        }
+    }
 }
 
 void SGCore::IMaterial::setShader(const SGCore::Ref<SGCore::IShader>& shader) noexcept

@@ -1,23 +1,29 @@
 #include "CoreMain.h"
 
 #include <locale>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
-#include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
-#include "SGCore/Graphics/API/Vulkan/VkRenderer.h"
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
 #include "SGCore/Utils/ShadersPaths.h"
-#include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
+
+#include "SGCore/Input/InputManager.h"
+
+#include "SGCore/Graphics/API/IRenderer.h"
 
 void SGCore::CoreMain::start()
 {
-    Log::init();
+    const auto now = std::chrono::system_clock::now();
+
+    auto currentSessionLogger = spdlog::basic_logger_mt("current_session", "logs/sg_log_" + std::format("{:%Y_%m_%d_%H_%M_%S}", now) + ".txt");
+    spdlog::set_default_logger(currentSessionLogger);
 
     // todo: move
-    system("chcp 65001");
-    setlocale(LC_ALL, "Russian");
+    /*system("chcp 65001");
+    setlocale(LC_ALL, "Russian");*/
 
     m_renderer = GL4Renderer::getInstance();
     //m_renderer = VkRenderer::getInstance();
@@ -26,11 +32,11 @@ void SGCore::CoreMain::start()
 
     m_renderer->init();
 
-    SGSingleton::getSharedPtrInstance<ShadersPaths>()->createDefaultPaths();
+    SGUtils::Singleton::getSharedPtrInstance<ShadersPaths>()->createDefaultPaths();
     InputManager::init();
     AssetManager::init();
 
-    std::shared_ptr<TimerCallback> globalTimerCallback = std::make_shared<TimerCallback>();
+    std::shared_ptr<SGUtils::TimerCallback> globalTimerCallback = std::make_shared<SGUtils::TimerCallback>();
 
     // delta update
     //globalTimerCallback->setDeltaUpdateFunction([](const double& deltaTime) { deltaUpdate(deltaTime); });
@@ -52,7 +58,7 @@ void SGCore::CoreMain::start()
 
     // -----------------
 
-    std::shared_ptr<TimerCallback> fixedTimerCallback = std::make_shared<TimerCallback>();
+    std::shared_ptr<SGUtils::TimerCallback> fixedTimerCallback = std::make_shared<SGUtils::TimerCallback>();
 
     fixedTimerCallback->setFixedUpdateFunction([]()
                                                 {
@@ -97,17 +103,17 @@ SGCore::Window& SGCore::CoreMain::getWindow() noexcept
     return m_window;
 }
 
-SGCore::IRenderer& SGCore::CoreMain::getRenderer() noexcept
+SGCore::Ref<SGCore::IRenderer> SGCore::CoreMain::getRenderer() noexcept
 {
-    return *m_renderer;
+    return m_renderer;
 }
 
-SGCore::Timer& SGCore::CoreMain::getRenderTimer() noexcept
+SGUtils::Timer& SGCore::CoreMain::getRenderTimer() noexcept
 {
     return m_renderTimer;
 }
 
-SGCore::Timer& SGCore::CoreMain::getFixedTimer() noexcept
+SGUtils::Timer& SGCore::CoreMain::getFixedTimer() noexcept
 {
     return m_fixedTimer;
 }

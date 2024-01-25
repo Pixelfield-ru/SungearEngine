@@ -4,7 +4,6 @@
 #include "SphereGizmo.h"
 #include "glm/gtx/rotate_vector.hpp"
 #include "BoxGizmo.h"
-#include "SGCore/Graphics/Defines.h"
 #include "SGCore/ECS/ECSUtils.h"
 
 // todo: make optimization

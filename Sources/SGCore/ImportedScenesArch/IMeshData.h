@@ -8,16 +8,19 @@
 #define SUNGEARENGINE_IMESH_H
 
 #include <memory>
-#include <list>
+#include <vector>
+#include <cstdint>
 
-#include "SGCore/Graphics/API/IVertexArray.h"
-#include "SGCore/Graphics/API/IVertexBuffer.h"
-#include "SGCore/Graphics/API/IIndexBuffer.h"
-
-#include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
+    class IVertexBuffer;
+    class IVertexArray;
+    class IIndexBuffer;
+
+    class IMaterial;
+
     class IMeshData
     {
     protected:
@@ -34,6 +37,10 @@ namespace SGCore
     public:
         // Mesh() noexcept;
         virtual ~IMeshData() = default;
+
+        IMeshData();
+        IMeshData(const IMeshData&) = default;
+        IMeshData(IMeshData&&) noexcept = default;
 
         std::string m_name;
 
@@ -57,7 +64,7 @@ namespace SGCore
         // bitangents array
         std::vector<float> m_bitangents;
 
-        Ref<IMaterial> m_material = IMaterial::create();
+        Ref<IMaterial> m_material;
 
         // ----------------
         virtual void prepare() = 0;
@@ -73,6 +80,8 @@ namespace SGCore
 
         void setIndex(const std::uint64_t& faceIdx, const std::uint64_t& indexIdx, const std::uint64_t& value) noexcept;
         void getFaceIndices(const std::uint64_t& faceIdx, std::uint64_t& outIdx0, std::uint64_t& outIdx1, std::uint64_t& outIdx2) noexcept;
+
+        void setData(const Ref<IMeshData>& other) noexcept;
 
         /**
          * Moves all textures of the current material to the new material and sets the new material as the current one.

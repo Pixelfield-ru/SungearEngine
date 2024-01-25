@@ -4,17 +4,17 @@
 #include "SGCore/ECS/IComponent.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "GizmosMeshesRebuilder.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
+#include "SGCore/ECS/Rendering/MeshBase.h"
 
 #include <glm/vec3.hpp>
 
 namespace SGCore
 {
-    struct IGizmo : public Mesh
+    struct IGizmo : public MeshBase, public IComponent
     {
-        IGizmo() noexcept;
-
         friend class GizmosMeshesRebuilder;
+
+        IGizmo() noexcept;
 
         // will primitive component follow entity`s translation, rotation and scale
         // x - follow translation
@@ -36,6 +36,9 @@ namespace SGCore
         glm::vec4 m_lastColor { 0.0 };
 
         glm::vec3 m_lastOffset { 0.0 };
+
+    private:
+        void init() noexcept override { }
     };
 }
 

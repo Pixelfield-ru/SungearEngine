@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_MESHEDENTITIESCOLLECTORSYSTEM_H
 
 #include "SGCore/ECS/ISystem.h"
-#include "SGCore/Patterns/Singleton.h"
+#include "SGUtils/Singleton.h"
 
 namespace SGCore
 {

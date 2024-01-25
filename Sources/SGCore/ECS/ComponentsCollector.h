@@ -12,7 +12,7 @@
 #include "Entity.h"
 #include "ComponentsCollection.h"
 #include "Layer.h"
-#include "SGCore/Utils/Utils.h"
+#include "SGUtils/Utils.h"
 
 namespace SGCore
 {
@@ -91,7 +91,7 @@ namespace SGCore
 
             // is components of all ComponentsT... exists
             bool componentsSetExistsInEntity = true;
-            Utils::Utils::forTypes<ComponentsT...>([&entity, &componentsSetExistsInEntity](auto t)
+            SGUtils::Utils::Utils::forTypes<ComponentsT...>([&entity, &componentsSetExistsInEntity](auto t)
                                                    {
                                                        using type = typename decltype(t)::type;
 
@@ -107,7 +107,7 @@ namespace SGCore
 
             auto& foundComponentsCollection = (*m_cachedEntities)[entityLayer][entity];
 
-            Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection, &willCacheComponentPredicate](auto t)
+            SGUtils::Utils::Utils::forTypes<ComponentsT...>([&entity, &foundComponentsCollection, &willCacheComponentPredicate](auto t)
                                                    {
                                                        using type = typename decltype(t)::type;
 

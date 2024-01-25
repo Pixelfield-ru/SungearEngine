@@ -9,7 +9,6 @@
 #include <cstring>
 
 #include "IShaderUniform.h"
-#include "SGCore/Logging/Log.h"
 #include "ISubPassShader.h"
 
 namespace SGCore
@@ -94,8 +93,6 @@ namespace SGCore
                     curPtr += uniform.m_dataSizeInUniformBuffer;
                 }
             }
-
-            SGCF_INFO("uniforms buffer size: " + std::to_string(m_bufferSize), SG_LOG_CURRENT_SESSION_FILE);
         }
 
         /**

@@ -1,4 +1,4 @@
-project(SGEditor)
+project(${SG_EDITOR_PROJ})
 
 file(GLOB_RECURSE SGEDITOR_SOURCES ../SGEditor/*.cpp ../SGEditor/*.h)
 
@@ -12,6 +12,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
         ${CMAKE_SOURCE_DIR}/Externals/stb
         ${CMAKE_SOURCE_DIR}/Externals/GLM
+        ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
         )
 
 target_link_libraries(${PROJECT_NAME}
