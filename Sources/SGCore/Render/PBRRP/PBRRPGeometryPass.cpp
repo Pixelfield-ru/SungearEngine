@@ -2,15 +2,19 @@
 // Created by stuka on 25.11.2023.
 //
 
+#include <entt/entt.hpp>
+
 #include "PBRRPGeometryPass.h"
-#include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Render/ICamera.h"
+#include "SGCore/Render/Camera.h"
 #include "SGCore/Render/Mesh.h"
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Render/IRenderPipeline.h"
+#include "SGCore/Scene/Scene.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Transformations/Transform.h"
 
 void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
@@ -41,12 +45,36 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         SG_END_ITERATE_CACHED_ENTITIES
     }*/
 
+    // scene->getECSRegistry();
+    auto camerasView = scene->getECSRegistry().view<RenderingBase, Camera, Transform>();
+    auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Transform>();
 
+    camerasView.each([&meshesView](RenderingBase& cameraRenderingBase, Camera& camera, Transform& cameraTransform) {
+        CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
 
-    SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
-            auto cameraTransformComponent = cameraEntity.getComponent<Transform>();
+        meshesView.each([](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
+            auto meshGeometryShader = mesh.m_base.m_meshData->m_material->getShader()->getSubPassShader("PBRRPGeometryPass");
+
+            if(meshGeometryShader)
+            {
+                meshGeometryShader->bind();
+                meshGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+                meshGeometryShader->useMatrix("objectModelMatrix",
+                                              meshTransform.m_finalTransform.m_modelMatrix
+                );
+
+                CoreMain::getRenderer()->renderMeshData(
+                        mesh.m_base.m_meshData,
+                        mesh.m_base.m_meshDataRenderInfo
+                );
+            }
+        });
+    });
+
+    /*SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
+            auto cameraTransformComponent = cameraEntity.getComponent<TransformBase>();
             if(!cameraTransformComponent) continue;
-            auto cameraComponent = cameraEntity.getComponent<ICamera>();
+            auto cameraComponent = cameraEntity.getComponent<Camera>();
             if(!cameraComponent) continue;
 
             CoreMain::getRenderer()->prepareUniformBuffers(cameraComponent, cameraTransformComponent);
@@ -62,7 +90,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
 
                 for(auto& meshesEntity: meshesLayer.second)
                 {
-                    Ref<Transform> transformComponent = meshesEntity.second.getComponent<Transform>();
+                    Ref<TransformBase> transformComponent = meshesEntity.second.getComponent<TransformBase>();
 
                     if(!transformComponent) continue;
 
@@ -89,5 +117,5 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                 }
             }
 
-    SG_END_ITERATE_CACHED_ENTITIES
+    SG_END_ITERATE_CACHED_ENTITIES*/
 }

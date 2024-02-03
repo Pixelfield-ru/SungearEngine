@@ -5,19 +5,13 @@
 #include "PBRRenderPipeline.h"
 #include "SGCore/Main/CoreMain.h"
 
-#include "SGCore/ECS/Transformations/Transform.h"
-#include "SGCore/ECS/Rendering/ICamera.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/ECS/Rendering/Skybox.h"
 #include "SGCore/ECS/ECSUtils.h"
 #include "SGCore/ECS/Rendering/MeshesCollector.h"
-#include "SGCore/ECS/Transformations/TransformationsUpdater.h"
 #include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
 #include "SGCore/ECS/Rendering/Gizmos/IComplexGizmo.h"
 #include "SGCore/ECS/Rendering/Pipelines/PostProcessFXPass.h"
-#include "SGCore/ECS/Scene.h"
 #include "SGCore/ECS/Rendering/CamerasCollector.h"
-#include "PBRFRPDirectionalLightsCollector.h"
 #include "PBRRPDirectionalLightsPass.h"
 #include "PBRRPGeometryPass.h"
 
@@ -54,55 +48,3 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     }*/
 }
 
-void SGCore::PBRRenderPipeline::update(const SGCore::Ref<SGCore::Scene>& scene) noexcept
-{
-    if(m_prepareFunc)
-    {
-        m_prepareFunc();
-    }
-
-    auto thisShared = shared_from_this();
-
-    for(auto& renderPass : m_renderPasses)
-    {
-        if(!renderPass->m_active) continue;
-
-        renderPass->render(scene, thisShared);
-    }
-}
-
-void SGCore::PBRRenderPipeline::useScene(const SGCore::Ref<SGCore::Scene>& scene)
-{
-    auto& cameras = scene->getSystem<CamerasCollector>()->m_componentsCollector.m_cachedEntities;
-
-    auto& meshes = scene->getSystem<MeshesCollector>()->m_componentsCollector.m_cachedEntities;
-
-    auto& dirLights = scene->getSystem<PBRFRPDirectionalLightsCollector>()->m_componentsCollector.m_cachedEntities;
-
-    m_prepareFunc = [&, cameras]()
-    {
-        SG_BEGIN_ITERATE_CACHED_ENTITIES(
-                *cameras,
-                camerasLayer,
-                cameraEntity)
-
-                auto camera = cameraEntity.getComponent<ICamera>();
-
-                if(camera)
-                {
-                    camera->clearPostProcessFrameBuffers();
-                }
-        SG_END_ITERATE_CACHED_ENTITIES
-    };
-
-    /*auto directionalLightsPass = getRenderPass<PBRRPDirectionalLightsPass>();
-    directionalLightsPass->m_componentsToRenderIn = dirLights;
-    directionalLightsPass->m_componentsToRender = meshes;*/
-
-    auto geometryPass = getRenderPass<PBRRPGeometryPass>();
-    geometryPass->m_componentsToRenderIn = cameras;
-    geometryPass->m_componentsToRender = meshes;
-
-    /*auto ppFXPass = getRenderPass<PostProcessFXPass>();
-    ppFXPass->m_componentsToRenderIn = cameras;*/
-}

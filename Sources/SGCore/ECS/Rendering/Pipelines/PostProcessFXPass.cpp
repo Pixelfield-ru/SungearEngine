@@ -32,7 +32,7 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
     CoreMain::getRenderer()->setDepthTestingEnabled(false);
 
     SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
-            auto cameraComponent = cameraEntity.getComponent<ICamera>();
+            auto cameraComponent = cameraEntity.getComponent<Camera>();
 
             if(!cameraComponent) continue;
 
@@ -47,7 +47,7 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const SGCore::Re
 }
 
 // DONE
-void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::ICamera>& camera) const noexcept
+void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::Camera>& camera) const noexcept
 {
     auto depthPassShader = camera->m_shader->getSubPassShader("PostProcessLayerDepthPass");
 
@@ -78,7 +78,7 @@ void SGCore::PostProcessFXPass::depthPass(const SGCore::Ref<SGCore::ICamera>& ca
 }
 
 // DONE
-void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::ICamera>& camera) const noexcept
+void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::Camera>& camera) const noexcept
 {
     for(const auto& ppLayerPair: camera->getPostProcessLayers())
     {
@@ -116,7 +116,7 @@ void SGCore::PostProcessFXPass::FXPass(const SGCore::Ref<SGCore::ICamera>& camer
 }
 
 // DONE
-void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<ICamera>& camera) const noexcept
+void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<Camera>& camera) const noexcept
 {
     auto ppLayerCombiningShader = camera->m_shader->getSubPassShader("PostProcessAttachmentsCombiningPass");
 
@@ -174,7 +174,7 @@ void SGCore::PostProcessFXPass::layersCombiningPass(const Ref<ICamera>& camera) 
 }
 
 // DONE
-void SGCore::PostProcessFXPass::finalFrameFXPass(const SGCore::Ref<SGCore::ICamera>& camera) const
+void SGCore::PostProcessFXPass::finalFrameFXPass(const SGCore::Ref<SGCore::Camera>& camera) const
 {
     auto ppFinalFxShader = camera->m_shader->getSubPassShader("PostProcessFinalFXPass");
 

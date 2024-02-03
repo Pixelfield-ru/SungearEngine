@@ -41,8 +41,8 @@ namespace SGCore
 
         void prepareFrame(const glm::ivec2& windowSize) override;
 
-        void prepareUniformBuffers(const Ref<IRenderingComponent>& renderingComponent,
-                                   const Ref<Transform>& transformComponent) override;
+        void prepareUniformBuffers(const RenderingBase& renderingComponent,
+                                   const Transform& transformComponent) override;
 
         void renderMeshData(const Ref<IMeshData>& meshData,
                                     const MeshDataRenderInfo& meshDataRenderInfo) override;

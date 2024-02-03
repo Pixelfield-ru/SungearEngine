@@ -5,10 +5,7 @@
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/ECS/ECSUtils.h"
 #include "PBRRPGeometryPass.h"
-#include "SGCore/ECS/Scene.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
 #include "SGCore/Main/CoreMain.h"
-#include "PBRRPDirectionalLight.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
@@ -18,7 +15,7 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
 {
     m_renderTimer.startFrame();
 
-    m_renderTimerCallback->setUpdateFunction([&, renderPipeline]()
+    /*m_renderTimerCallback->setUpdateFunction([&, renderPipeline]()
                                              {
                                                  auto geometryPass = renderPipeline->getRenderPass<PBRRPGeometryPass>();
 
@@ -36,7 +33,7 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
                                                                      directionalLightEntity.getComponents<PBRRPDirectionalLight>();
 
                                                              auto directionalLightTransform =
-                                                                     directionalLightEntity.getComponent<Transform>();
+                                                                     directionalLightEntity.getComponent<TransformBase>();
 
                                                              if (!directionalLightTransform) continue;
 
@@ -44,7 +41,7 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
                                                              for (const auto& directionalLightComponent: directionalLightComponents)
                                                              {
                                                                  // TODO: MOVE
-                                                                 /*geometryPass->m_shader->bind();
+                                                                 *//*geometryPass->m_shader->bind();
 
                                                                  std::string directionalLightString =
                                                                          "directionalLights[" +
@@ -78,7 +75,7 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
                                                                  geometryPass->m_shader->useMatrix(
                                                                          renderingPartString + ".spaceMatrix",
                                                                          directionalLightComponent->m_spaceMatrix
-                                                                 );*/
+                                                                 );*//*
 
                                                                  directionalLightComponent->m_shadowMap->bind()->clear();
 
@@ -89,7 +86,7 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
                                                                  SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRender,
                                                                                                   meshesLayer,
                                                                                                   meshesEntity)
-                                                                         Ref<Transform> transformComponent = meshesEntity.getComponent<Transform>();
+                                                                         Ref<TransformBase> transformComponent = meshesEntity.getComponent<TransformBase>();
 
                                                                          if (!transformComponent) continue;
 
@@ -125,11 +122,11 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
                                                      SG_END_ITERATE_CACHED_ENTITIES
 
                                                      // TODO: MOVE
-                                                     /*geometryPass->m_shader->bind();
+                                                     *//*geometryPass->m_shader->bind();
                                                      geometryPass->m_shader->useInteger("DIRECTIONAL_LIGHTS_COUNT",
                                                                                         directionalLightsCount
-                                                     );*/
+                                                     );*//*
                                                  }
                                              }
-    );
+    );*/
 }

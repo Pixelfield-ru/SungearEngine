@@ -3,8 +3,9 @@
 //
 #include "Mesh.h"
 #include "SGCore/Graphics/API/IShader.h"
+#include "MeshesUtils.h"
 
 SGCore::Mesh::Mesh() noexcept
 {
-    onMeshCreated("StandardMeshShader");
+    MeshesUtils::loadMeshShader(m_base, "StandardMeshShader");
 }

@@ -12,14 +12,15 @@
 #include "GAPIType.h"
 #include "IUniformBuffer.h"
 #include "SGCore/Utils/ShadersPaths.h"
+#include "SGCore/Transformations/Transform.h"
 
 namespace SGCore
 {
-    class ICamera;
+    class Camera;
     class Mesh;
-    struct Transform;
+    struct TransformBase;
     class Skybox;
-    class IRenderingComponent;
+    class RenderingBase;
     class IGizmo;
 
     class IMeshData;
@@ -66,8 +67,8 @@ namespace SGCore
          * @param renderingComponent - The component that will be used as a "camera" for rendering entities.
          * @param transformComponent - The transform component of this "camera".
          */
-        virtual void prepareUniformBuffers(const Ref<IRenderingComponent>& renderingComponent,
-                                           const Ref<Transform>& transformComponent) { }
+        virtual void prepareUniformBuffers(const RenderingBase& renderingBase,
+                                           const Transform& transform) { }
 
         virtual void renderMeshData(const Ref<IMeshData>& meshData,
                                     const MeshDataRenderInfo& meshDataRenderInfo) { }

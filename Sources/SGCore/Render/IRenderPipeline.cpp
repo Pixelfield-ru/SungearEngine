@@ -8,6 +8,8 @@ void SGCore::IRenderPipeline::render(SGCore::Ref<SGCore::Scene> scene) noexcept
 {
     for(auto& renderPass : m_renderPasses)
     {
+        if(!renderPass->m_active) continue;
+
         renderPass->render(scene, shared_from_this());
     }
 }

@@ -1,54 +1,26 @@
 //
-// Created by stuka on 02.05.2023.
+// Created by stuka on 03.02.2024.
 //
 
-#pragma once
+#ifndef SUNGEARENGINE_TRANSFORM_H
+#define SUNGEARENGINE_TRANSFORM_H
 
-#ifndef NATIVECORE_TRANSFORMCOMPONENT_H
-#define NATIVECORE_TRANSFORMCOMPONENT_H
-
-#include <glm/glm.hpp>
-
-#include "SGCore/ECS/IComponent.h"
-#include "SGUtils/Math.h"
-#include "SGUtils/Utils.h"
+#include "TransformBase.h"
 
 namespace SGCore
 {
-    // todo: make quaternion transformations
     struct Transform
     {
-        friend struct TransformationsUpdater;
+        TransformBase m_finalTransform;
+        TransformBase m_ownTransform;
 
-        bool m_blockTranslation = false;
-        bool m_blockRotation = false;
-        bool m_blockScale = false;
-
-        glm::vec3 m_position { 0.0 };
-        glm::vec3 m_rotation { 0.0 };
-        glm::vec3 m_scale { 1.0 };
-
-        glm::vec3 m_left = SGUtils::MathUtils::left3;
-        glm::vec3 m_forward = SGUtils::MathUtils::forward3;
-        glm::vec3 m_up = SGUtils::MathUtils::up3;
-
-        glm::mat4 m_translationMatrix   = glm::mat4(1);
-        glm::mat4 m_rotationMatrix = glm::mat4(1);
-        glm::mat4 m_scaleMatrix = glm::mat4(1);
-
-        bool m_positionChanged = false;
-        bool m_rotationChanged = false;
-        bool m_scaleChanged = false;
-
-        glm::mat4 m_modelMatrix = glm::mat4(1);
-
-    private:
-        glm::vec3 m_lastPosition { 0.0 };
-        glm::vec3 m_lastRotation { 0.0 };
-        glm::vec3 m_lastScale = glm::vec3(0);
-
-        glm::vec3 m_lastCenter { 0.0 };
+        // will transform follow parent entity`s translation, rotation and scale
+        // x - follow translation
+        // y - follow rotation
+        // z - follow scale
+        glm::bvec3 m_followParentTRS { true };
+        // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
     };
 }
 
-#endif //NATIVECORE_TRANSFORMCOMPONENT_H
+#endif //SUNGEARENGINE_TRANSFORM_H

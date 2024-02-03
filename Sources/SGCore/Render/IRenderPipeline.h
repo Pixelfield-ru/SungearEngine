@@ -10,6 +10,7 @@
 
 namespace SGCore
 {
+    class Scene;
     class ISubPassShader;
     struct IRenderPass;
 
@@ -17,11 +18,9 @@ namespace SGCore
     {
         ShadersPaths m_shadersPaths;
 
-        void render(Ref<Scene> scene) noexcept;
+        virtual void render(Ref<Scene> scene) noexcept;
 
         std::vector<Ref<IRenderPass>> m_renderPasses;
-
-        std::function<void()> m_prepareFunc;
 
         template<typename RenderPassT>
         requires(std::is_base_of_v<IRenderPass, RenderPassT>)

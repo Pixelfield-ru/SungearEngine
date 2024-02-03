@@ -7,6 +7,7 @@
 #include <map>
 #include <variant>
 #include <type_traits>
+#include <entt/entt.hpp>
 
 #include "Layer.h"
 #include "ISystem.h"
@@ -14,7 +15,6 @@
 #include "SGUtils/UniqueNamesManager.h"
 #include "SGUtils/Event.h"
 #include "SGUtils/EventListenerHolder.h"
-#include "SGECS/Registry.h"
 
 namespace SGCore
 {
@@ -68,7 +68,7 @@ namespace SGCore
         Layer createLayer(const std::string& name) noexcept;
 
     private:
-        Scope<SGECS::Registry> m_ecsRegistry = MakeScope<SGECS::Registry>();
+        entt::registry m_ecsRegistry;
 
         static inline Ref<Scene> m_currentScene;
 

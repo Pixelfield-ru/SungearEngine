@@ -44,9 +44,6 @@ namespace SGCore
         double getUpdateFunctionExecutionTime() const noexcept;
         double getFixedUpdateFunctionExecutionTime() const noexcept;
 
-        // this function realization must clear cached components and set up system for scene
-        virtual void attachToScene(const Ref<Scene>& scene) = 0;
-
     protected:
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;

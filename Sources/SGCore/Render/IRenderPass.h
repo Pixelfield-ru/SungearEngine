@@ -5,15 +5,14 @@
 #ifndef SUNGEARENGINE_IRENDERPASS_H
 #define SUNGEARENGINE_IRENDERPASS_H
 
-#include "SGCore/ECS/ComponentsCollector.h"
 #include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGUtils/Timer.h"
-#include "SGECS/RegistryView.h"
-#include "ICamera.h"
+#include "Camera.h"
 
 namespace SGCore
 {
     struct IRenderPipeline;
+    class Scene;
 
     struct IRenderPass
     {

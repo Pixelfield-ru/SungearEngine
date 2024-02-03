@@ -30,6 +30,7 @@
          ${CMAKE_SOURCE_DIR}/Sources
          ${CMAKE_SOURCE_DIR}/Externals/fmt/include
          ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
+
          #${BULLET_INCLUDE_DIR}
 
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
@@ -54,7 +55,7 @@
 
          ImGui
 
-         ${SG_ECS_PROJ}
+         EnTT::EnTT
          )
 
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)

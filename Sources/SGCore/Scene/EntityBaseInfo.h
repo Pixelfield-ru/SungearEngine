@@ -15,7 +15,7 @@ namespace SGCore
 
     struct EntityBaseInfo : public SGUtils::UniqueNameWrapper
     {
-        std::set<size_t> m_children;
+        entt::entity m_parent = entt::null;
 
         Weak<Layer> m_layer;
     };

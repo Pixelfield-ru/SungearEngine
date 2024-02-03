@@ -181,7 +181,7 @@ void init()
                                       [](const SGCore::Ref<SGCore::Entity>& entity)
                                       {
                                           auto meshComponent = entity->getComponent<SGCore::Mesh>();
-                                          auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                          auto transformComponent = entity->getComponent<SGCore::TransformBase>();
                                           if(transformComponent)
                                           {
                                               transformComponent->m_position = { 0, 6.0, -20 };
@@ -219,7 +219,7 @@ void init()
                                       [](const SGCore::Ref<SGCore::Entity>& entity)
                                       {
                                           auto meshComponent = entity->getComponent<SGCore::Mesh>();
-                                          auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                          auto transformComponent = entity->getComponent<SGCore::TransformBase>();
                                           if(meshComponent)
                                           {
                                               meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
@@ -243,7 +243,7 @@ void init()
     model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
                                    [](const SGCore::Ref<SGCore::Entity>& entity)
     {
-        auto transformComponent = entity->getComponent<SGCore::Transform>();
+        auto transformComponent = entity->getComponent<SGCore::TransformBase>();
         if(transformComponent)
         {
             /*transformComponent->m_position = { -8, 0.1, -20 };
@@ -289,7 +289,7 @@ void init()
     model1->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
                                       [](const SGCore::Ref<SGCore::Entity>& entity)
                                       {
-                                          auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                          auto transformComponent = entity->getComponent<SGCore::TransformBase>();
                                           if(transformComponent)
                                           {
                                               // wooden table
@@ -351,7 +351,7 @@ void init()
         skyboxMesh->addRequiredShaderPath("SkyboxShader");*//*
         skyboxEntities[2]->addComponent(skyboxComponent);
 
-        auto transformComponent = skyboxEntities[2]->getComponent<SGCore::Transform>();
+        auto transformComponent = skyboxEntities[2]->getComponent<SGCore::TransformBase>();
 
         if(transformComponent)
         {
@@ -366,7 +366,7 @@ void init()
     cubeModel1->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
                                        [geniusJPG](const SGCore::Ref<SGCore::Entity>& entity)
                                        {
-                                           auto transformComponent = entity->getComponent<SGCore::Transform>();
+                                           auto transformComponent = entity->getComponent<SGCore::TransformBase>();
                                            auto meshComponent = entity->getComponent<SGCore::Mesh>();
 
                                            if(transformComponent)
@@ -391,13 +391,13 @@ void init()
 
     testCameraEntity = SGCore::MakeRef<SGCore::Entity>();
     testCameraEntity->setRawName("SGMainCamera");
-    auto cameraTransformComponent = SGCore::MakeRef<SGCore::Transform>();
+    auto cameraTransformComponent = SGCore::MakeRef<SGCore::TransformBase>();
     cameraTransformComponent->m_position.y = -3;
     cameraTransformComponent->m_position.z = 2;
     cameraTransformComponent->m_rotation.x = -30;
     //cameraTransformComponent->m_position.x = -5;
     testCameraEntity->addComponent(cameraTransformComponent);
-    auto camera = SGCore::MakeRef<SGCore::ICamera>();
+    auto camera = SGCore::MakeRef<SGCore::Camera>();
     testCameraEntity->addComponent(camera);
 
     int primaryMonitorWidth;
@@ -513,7 +513,7 @@ void init()
     /// THIS CODE CLEARS CACHED COMPONENTS WTF
     testShadowsCaster = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster);
-    auto shadowsCasterTransform = SGCore::MakeRef<SGCore::Transform>();
+    auto shadowsCasterTransform = SGCore::MakeRef<SGCore::TransformBase>();
     shadowsCasterTransform->m_position.y = 10;
     shadowsCasterTransform->m_position.z = 15.0;
     shadowsCasterTransform->m_position.x = -5.0;
@@ -531,7 +531,7 @@ void init()
 
     auto testShadowsCaster1 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster1);
-    auto shadowsCasterTransform1 = SGCore::MakeRef<SGCore::Transform>();
+    auto shadowsCasterTransform1 = SGCore::MakeRef<SGCore::TransformBase>();
     shadowsCasterTransform1->m_position.x = -10;
     shadowsCasterTransform1->m_position.y = 10;
     shadowsCasterTransform1->m_position.z = -50.0;
@@ -547,7 +547,7 @@ void init()
 
     auto testShadowsCaster2 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster2);
-    auto shadowsCasterTransform2 = SGCore::MakeRef<SGCore::Transform>();
+    auto shadowsCasterTransform2 = SGCore::MakeRef<SGCore::TransformBase>();
     shadowsCasterTransform2->m_position.x = 10;
     shadowsCasterTransform2->m_position.y = 10;
     shadowsCasterTransform2->m_position.z = -50.0;
@@ -563,7 +563,7 @@ void init()
 
     auto testShadowsCaster3 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster3);
-    auto shadowsCasterTransform3 = SGCore::MakeRef<SGCore::Transform>();
+    auto shadowsCasterTransform3 = SGCore::MakeRef<SGCore::TransformBase>();
     shadowsCasterTransform3->m_position.x = -20;
     shadowsCasterTransform3->m_position.y = 5;
     shadowsCasterTransform3->m_position.z = -20.0;
@@ -579,7 +579,7 @@ void init()
 
     auto testShadowsCaster4 = SGCore::MakeRef<SGCore::Entity>();
     testScene->addEntity(testShadowsCaster4);
-    auto shadowsCasterTransform4 = SGCore::MakeRef<SGCore::Transform>();
+    auto shadowsCasterTransform4 = SGCore::MakeRef<SGCore::TransformBase>();
     shadowsCasterTransform4->m_position.x = 20;
     shadowsCasterTransform4->m_position.y = 5;
     shadowsCasterTransform4->m_position.z = -20.0;
@@ -626,7 +626,7 @@ void fixedUpdate()
 {
     double angle = framesCnt / 75.0;
 
-    auto transform0 = testShadowsCaster->getComponent<SGCore::Transform>();
+    auto transform0 = testShadowsCaster->getComponent<SGCore::TransformBase>();
 
     // transform0->m_position.y += sin(framesCnt / 30.0) / 2.5;
 

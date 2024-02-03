@@ -5,18 +5,16 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <spdlog/spdlog.h>
 
-#include "SGCore/ECS/Transformations/Transform.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/Rendering/ICamera.h"
-#include "SGCore/ECS/Rendering/Skybox.h"
+#include "SGCore/Render/RenderingBase.h"
+#include "SGCore/Transformations/TransformBase.h"
 
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
-#include "SGCore/ECS/Rendering/Gizmos/IGizmo.h"
 
 #include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
+#include "SGCore/Memory/AssetManager.h"
 
 void SGCore::GL4Renderer::init() noexcept
 {
@@ -144,36 +142,36 @@ void SGCore::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<IRenderingComponent>& renderingComponent,
-                                                        const Ref<Transform>& transformComponent)
+void SGCore::GL4Renderer::prepareUniformBuffers(const RenderingBase& renderingBase,
+                                                const Transform& transform)
 {
     // double t0 = glfwGetTime();
 
     m_viewMatricesBuffer->bind();
     m_programDataBuffer->bind();
 
-    if(renderingComponent)
-    {
-        m_viewMatricesBuffer->subData("camera.spaceMatrix",
-                                      glm::value_ptr(renderingComponent->m_spaceMatrix), 16);
-        m_viewMatricesBuffer->subData("camera.projectionMatrix",
-                                      glm::value_ptr(renderingComponent->m_projectionMatrix), 16);
-        m_viewMatricesBuffer->subData("camera.viewMatrix",
-                                      glm::value_ptr(renderingComponent->m_viewMatrix), 16);
-    }
-    if(transformComponent)
-    {
-        m_viewMatricesBuffer->subData<float>("camera.position",
-                                      glm::value_ptr(transformComponent->m_position), 3);
-    }
+    m_viewMatricesBuffer->subData("camera.spaceMatrix",
+                                  glm::value_ptr(renderingBase.m_spaceMatrix), 16
+    );
+    m_viewMatricesBuffer->subData("camera.projectionMatrix",
+                                  glm::value_ptr(renderingBase.m_projectionMatrix), 16
+    );
+    m_viewMatricesBuffer->subData("camera.viewMatrix",
+                                  glm::value_ptr(renderingBase.m_viewMatrix), 16
+    );
+
+    // todo: make to final transform
+    m_viewMatricesBuffer->subData<float>("camera.position",
+                                         glm::value_ptr(transform.m_ownTransform.m_position), 3
+    );
 
     int windowWidth;
     int windowHeight;
 
     CoreMain::getWindow().getSize(windowWidth, windowHeight);
     // todo: перенести обновление в класс окна
-    m_programDataBuffer->subData("windowSize", { windowWidth, windowHeight });
-    m_programDataBuffer->subData("currentTime", { (float) glfwGetTime() });
+    m_programDataBuffer->subData("windowSize", {windowWidth, windowHeight});
+    m_programDataBuffer->subData("currentTime", {(float) glfwGetTime()});
 
     // double t1 = glfwGetTime();
 

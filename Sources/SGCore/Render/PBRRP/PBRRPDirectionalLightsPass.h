@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H
 #define SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H
 
-#include "SGCore/ECS/Rendering/Pipelines/IRenderPass.h"
+#include "SGCore/Render/IRenderPass.h"
 
 namespace SGCore
 {
