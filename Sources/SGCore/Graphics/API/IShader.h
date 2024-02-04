@@ -51,7 +51,8 @@ namespace SGCore
             return m_subPassesShaders;
         }
 
-        void removeAllSubPassShadersByPath(const std::string& path) noexcept;
+        void removeAllSubPassShadersByDiskPath(const std::string& path) noexcept;
+        void removeSubPass(const std::string& virtualPath) noexcept;
 
     private:
         // first - sub pass name

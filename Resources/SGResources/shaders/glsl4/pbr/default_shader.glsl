@@ -9,7 +9,7 @@
 
 float ambient = 0.1;
 
-SGSubPass(PBRFRPGeometryPass)
+SGSubPass(GeometryPass)
 {
     SGSubShader(Vertex)
     {
@@ -57,6 +57,8 @@ SGSubPass(PBRFRPGeometryPass)
 
         SGUniformsDeclaration
         {
+            // thats fucking works!!!!!!
+            // SGUSampler2D diffuseSamplers[1] = SGGetTextures("GeniusTexture");
             SGUSampler2D diffuseSamplers[3] = SGGetTexturesFromMaterial("SGTT_DIFFUSE");
             SGUSampler2D metalnessSamplers[1] = SGGetTexturesFromMaterial("SGTT_METALNESS");
             SGUSampler2D normalsSamplers[1] = SGGetTexturesFromMaterial("SGTT_NORMALS");

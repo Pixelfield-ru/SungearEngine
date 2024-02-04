@@ -274,6 +274,9 @@ SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D() const
 
 SGCore::GL4CubemapTexture* SGCore::GL4Renderer::createCubemapTexture() const
 {
+    auto* tex = new GL4CubemapTexture;
+    tex->setRawName("SGUnknownCubemapTexture");
+
     return new GL4CubemapTexture;
 }
 

@@ -8,7 +8,7 @@
 #include <string>
 #include <memory>
 
-namespace SGUtils
+namespace SGCore
 {
     class UniqueNamesManager;
 

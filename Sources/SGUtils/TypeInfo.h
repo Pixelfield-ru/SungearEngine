@@ -18,124 +18,46 @@ private: \
                 return true; \
             }(); \
 
+#if defined _MSC_VER
+#   define GENERATOR_PRETTY_FUNCTION __FUNCSIG__
+#elif defined __clang__ || (defined __GNUC__)
+#   define GENERATOR_PRETTY_FUNCTION __PRETTY_FUNCTION__
+#endif
+
 namespace SGUtils
 {
-    class TypesCounter
-    {//
-    public:
-        static void increase() noexcept
-        {
-            ++s_typesCount;
-        }
+    unsigned constexpr constexprHash(char const* input) {
+        return *input ?
+               static_cast<unsigned int>(*input) + 33 * constexprHash(input + 1) :
+               5381;
+    }
 
-        static size_t getComponentsTypesCount() noexcept
+    struct TypesCounter
+    {
+        static size_t next() noexcept
         {
-            return s_typesCount;
+            return m_typesCount++;
         }
 
     private:
-        static inline size_t s_typesCount = 0;
+        static inline size_t m_typesCount = 0;
     };
 
-    template<typename>
+    template<typename Type>
     struct TypeID
     {
-        TypeID()
+#ifdef GENERATOR_PRETTY_FUNCTION
+        static constexpr std::size_t id()
         {
-            m_id = TypesCounter::getComponentsTypesCount();
-            TypesCounter::increase();
+            constexpr auto value = constexprHash(GENERATOR_PRETTY_FUNCTION);
+            return value;
         }
-
-        [[nodiscard]] size_t getID() const noexcept
-        {
-            return m_id;
+#else
+        static std::size_t id() {
+            static const std::size_t value = TypesCounter::next();
+            return value;
         }
-
-    private:
-        size_t m_id = 0;
-    };
-
-    class TypeInfo
-    {
-        friend struct TypeInfoUtils;
-
-    public:
-        TypeInfo() = default;
-        TypeInfo(const TypeInfo&) = delete;
-        TypeInfo(TypeInfo&&) = delete;
-
-        [[nodiscard]] size_t getID() const noexcept
-        {
-            return m_id;
-        }
-
-        [[nodiscard]] const std::set<size_t>& getDerivedTypes() const noexcept
-        {
-            return m_derivedTypes;
-        }
-
-        [[nodiscard]] const std::set<size_t>& getBaseTypes() const noexcept
-        {
-            return m_baseTypes;
-        }
-
-    private:
-        size_t m_id = 0;
-
-        std::set<size_t> m_derivedTypes;
-        std::set<size_t> m_baseTypes;
-    };
-
-    struct TypeInfoUtils
-    {
-        template<typename ComponentT>
-        static TypeInfo& getTypeInfo()
-        {
-            static TypeID<ComponentT> s_typeID;
-
-            TypeInfo& typeInfo = m_typeInfos[s_typeID.getID()];
-            typeInfo.m_id = s_typeID.getID();
-
-            return typeInfo;
-        }
-
-        static TypeInfo& getTypeInfo(const size_t& typeID)
-        {
-            return m_typeInfos[typeID];
-        }
-
-        template<typename BaseT, typename DerivedT>
-        static void addBaseAndDerived()
-        {
-            auto& baseTypeInfo = getTypeInfo<BaseT>();
-            auto& derivedTypeInfo = getTypeInfo<DerivedT>();
-
-            baseTypeInfo.m_derivedTypes.insert(derivedTypeInfo.getID());
-            derivedTypeInfo.m_baseTypes.insert(baseTypeInfo.getID());
-        }
-
-        static void inheritAllBases(const size_t& baseType, const size_t& derivedType)
-        {
-            auto& baseTypeInfo = getTypeInfo(baseType);
-            auto& derivedTypeInfo = getTypeInfo(derivedType);
-
-            baseTypeInfo.m_derivedTypes.insert(derivedType);
-            derivedTypeInfo.m_baseTypes.insert(baseType);
-
-            for(auto baseBaseType : baseTypeInfo.getBaseTypes())
-            {
-                inheritAllBases(baseBaseType, derivedType);
-            }
-        }
-
-        template<typename BaseT, typename DerivedT>
-        static bool isBaseOf()
-        {
-            return getTypeInfo<BaseT>().m_derivedTypes.contains(getTypeInfo<DerivedT>().getID());
-        }
-
-    private:
-        static inline std::map<size_t, TypeInfo> m_typeInfos;
+#endif
     };
 }
 

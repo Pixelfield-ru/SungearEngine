@@ -2,8 +2,8 @@
 // Created by stuka on 24.12.2023.
 //
 
-#ifndef SUNGEARENGINE_SHADERTEXTURESBLOCK_H
-#define SUNGEARENGINE_SHADERTEXTURESBLOCK_H
+#ifndef SUNGEARENGINE_TEXTURESBLOCK_H
+#define SUNGEARENGINE_TEXTURESBLOCK_H
 
 #include <string>
 #include <list>
@@ -17,7 +17,7 @@ namespace SGCore
     class ISubPassShader;
     class IMaterial;
 
-    struct ShaderTexturesBlock
+    struct TexturesBlock
     {
         friend class GLShadersPreprocessor;
 
@@ -37,8 +37,8 @@ namespace SGCore
             return m_textures;
         }
 
-        bool operator==(const ShaderTexturesBlock& other) const noexcept;
-        bool operator!=(const ShaderTexturesBlock& other) const noexcept;
+        bool operator==(const TexturesBlock& other) const noexcept;
+        bool operator!=(const TexturesBlock& other) const noexcept;
 
         void setParentShader(const Ref<ISubPassShader>& shader) noexcept;
 
@@ -51,4 +51,4 @@ namespace SGCore
     };
 }
 
-#endif //SUNGEARENGINE_SHADERTEXTURESBLOCK_H
+#endif //SUNGEARENGINE_TEXTURESBLOCK_H

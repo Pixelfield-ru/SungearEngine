@@ -10,6 +10,7 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Graphics/GPUObjectsStorage.h"
 
 void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
 {
@@ -22,6 +23,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
 
     for(const auto& subPassIter : m_shaderAnalyzedFile.m_subPasses)
     {
+        const auto subPassName = subPassIter.first;
         const auto& subPass = subPassIter.second;
 
         auto subPassShader = Ref<ISubPassShader>(SGCore::CoreMain::getRenderer()->createShader());
@@ -40,12 +42,24 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
         {
             if(variable.m_rsideFunction == "SGGetTexturesFromMaterial")
             {
-                Ref<ShaderTexturesFromMaterialBlock> fromMaterialBlock = MakeRef<ShaderTexturesFromMaterialBlock>();
+                Ref<TexturesFromMaterialBlock> fromMaterialBlock = MakeRef<TexturesFromMaterialBlock>();
                 fromMaterialBlock->m_uniformName = variable.m_name;
                 fromMaterialBlock->m_isSingleTextureBlock = !variable.m_isArray;
                 fromMaterialBlock->m_typeToCollect = sgStandardTextureFromString(variable.m_rsideFunctionArgs[0]);
 
                 subPassShader->addTexturesBlock(fromMaterialBlock);
+            }
+            else if(variable.m_rsideFunction == "SGGetTextures")
+            {
+                Ref<TexturesFromGlobalStorageBlock> texturesFromGlobalStorageListener = MakeRef<TexturesFromGlobalStorageBlock>();
+                texturesFromGlobalStorageListener->m_uniformName = variable.m_name;
+                texturesFromGlobalStorageListener->m_isSingleTextureBlock = !variable.m_isArray;
+                for(const auto& arg : variable.m_rsideFunctionArgs)
+                {
+                    texturesFromGlobalStorageListener->m_requiredTexturesNames.push_back(arg);
+                }
+
+                subPassShader->addTexturesBlock(texturesFromGlobalStorageListener);
             }
         }
 
@@ -57,7 +71,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
         subPassShader->compile(asset);
         subPassShader->addToGlobalStorage();
 
-        m_subPassesShaders[subPassIter.first] = subPassShader;
+        m_subPassesShaders[subPassName] = subPassShader;
     }
 }
 
@@ -105,7 +119,7 @@ void SGCore::IShader::setParentMaterial(const SGCore::Ref<SGCore::IMaterial>& ma
     {
         auto& subPassShader = subPassShaderPair.second;
 
-        subPassShader->clearTexturesBlocksOfType<ShaderTexturesFromMaterialBlock>();
+        subPassShader->clearTexturesBlocksOfType<TexturesFromMaterialBlock>();
 
         subPassShader->collectTexturesFromMaterial(material);
     }
@@ -126,7 +140,7 @@ void SGCore::IShader::collectTextureFromMaterial(const Ref<ITexture2D>& texture,
     }
 }
 
-void SGCore::IShader::removeAllSubPassShadersByPath(const std::string& path) noexcept
+void SGCore::IShader::removeAllSubPassShadersByDiskPath(const std::string& path) noexcept
 {
     auto curIter = m_subPassesShaders.begin();
     while(curIter != m_subPassesShaders.end())
@@ -142,4 +156,9 @@ void SGCore::IShader::removeAllSubPassShadersByPath(const std::string& path) noe
 
         ++curIter;
     }
+}
+
+void SGCore::IShader::removeSubPass(const std::string& subPassName) noexcept
+{
+    m_subPassesShaders.erase(subPassName);
 }

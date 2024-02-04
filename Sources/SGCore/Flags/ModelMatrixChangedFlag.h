@@ -1,0 +1,13 @@
+//
+// Created by stuka on 04.02.2024.
+//
+
+#ifndef SUNGEARENGINE_MODELMATRIXCHANGEDFLAG_H
+#define SUNGEARENGINE_MODELMATRIXCHANGEDFLAG_H
+
+namespace SGCore
+{
+    struct ModelMatrixChangedFlag { };
+}
+
+#endif //SUNGEARENGINE_MODELMATRIXCHANGEDFLAG_H

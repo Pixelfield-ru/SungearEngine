@@ -5,22 +5,22 @@
 #include "UniqueName.h"
 #include "UniqueNamesManager.h"
 
-std::string SGUtils::UniqueName::getRawName() const noexcept
+std::string SGCore::UniqueName::getRawName() const noexcept
 {
     return m_rawName;
 }
 
-size_t SGUtils::UniqueName::getUniqueID() const noexcept
+size_t SGCore::UniqueName::getUniqueID() const noexcept
 {
     return m_uniqueID;
 }
 
-std::string SGUtils::UniqueName::getName() const noexcept
+std::string SGCore::UniqueName::getName() const noexcept
 {
     return m_name;
 }
 
-void SGUtils::UniqueName::setRawName(const std::string& rawName) noexcept
+void SGCore::UniqueName::setRawName(const std::string& rawName) noexcept
 {
     if(auto lockedParent = m_parentUniqueNamesManager.lock())
     {
@@ -32,7 +32,7 @@ void SGUtils::UniqueName::setRawName(const std::string& rawName) noexcept
     }
 }
 
-void SGUtils::UniqueName::attachToManager(const std::shared_ptr<UniqueNamesManager>& manager) noexcept
+void SGCore::UniqueName::attachToManager(const std::shared_ptr<UniqueNamesManager>& manager) noexcept
 {
     m_parentUniqueNamesManager = manager;
 

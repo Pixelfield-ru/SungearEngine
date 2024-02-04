@@ -23,19 +23,25 @@ namespace SGCore
 
         std::string m_name;
 
-        std::unordered_map<SGTextureType, std::vector<Ref<ITexture2D>>> m_textures;
-
         // TODO: impl
         Ref<IAsset> load(const std::string& path) override;
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.
         * @param type - Material type of texture
-        * @param texture2DAsset - Texture asset
+        * @param path - Path to texture.
         * @return this
         */
         Ref<ITexture2D> findAndAddTexture2D(const SGTextureType& textureType,
                                               const std::string& path);
+
+        /**
+         * Adds texture2D.
+         * @param textureType - Material type of texture
+         * @param tex - Texture to add.
+         */
+        void addTexture2D(const SGTextureType& textureType,
+                                     const Ref<ITexture2D>& tex);
 
         void copyTextures(const Ref<IMaterial>& to) const noexcept;
 
@@ -88,8 +94,15 @@ namespace SGCore
          */
         IMaterial& operator=(const IMaterial& other) noexcept;
 
+        const auto& getTextures() const noexcept
+        {
+            return m_textures;
+        }
+
     protected:
         IMaterial() noexcept;
+
+        std::unordered_map<SGTextureType, std::vector<Ref<ITexture2D>>> m_textures;
 
         Ref<IShader> m_shader;
 

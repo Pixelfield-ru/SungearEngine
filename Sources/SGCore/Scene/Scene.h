@@ -15,6 +15,7 @@
 #include "SGUtils/UniqueNamesManager.h"
 #include "SGUtils/Event.h"
 #include "SGUtils/EventListener.h"
+#include "SGUtils/TypeInfo.h"
 
 namespace SGCore
 {
@@ -63,6 +64,25 @@ namespace SGCore
             return m_ecsRegistry;
         }
 
+        template<typename FlagType>
+        void addFlagObserverSystem(const Ref<ISystem>& system)
+        {
+            m_flagsObserverSystems[SGUtils::TypeID<FlagType>::id()].push_back(system);
+        }
+
+        template<typename FlagType>
+        void invokeFlagObserverSystems(const entt::entity& flagOwner)
+        {
+            constexpr size_t flagTypeID = SGUtils::TypeID<FlagType>::id();
+
+            auto& systemsVec = m_flagsObserverSystems[flagTypeID];
+
+            for(auto& system : systemsVec)
+            {
+                system->onFlagChanged(shared_from_this(), flagOwner, flagTypeID);
+            }
+        }
+
         Layer createLayer(const std::string& name) noexcept;
 
     private:
@@ -70,9 +90,10 @@ namespace SGCore
 
         static inline Ref<Scene> m_currentScene;
 
-        Ref<SGUtils::UniqueNamesManager> m_uniqueNamesManager = MakeRef<SGUtils::UniqueNamesManager>();
+        Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 
         std::set<Ref<ISystem>> m_systems;
+        std::map<size_t, std::vector<Ref<ISystem>>> m_flagsObserverSystems;
         std::unordered_map<std::string, Layer> m_layers;
 
         size_t m_maxLayersCount = 0;

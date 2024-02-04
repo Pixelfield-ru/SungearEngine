@@ -54,15 +54,12 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
 
         meshesView.each([](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
-            auto meshGeometryShader = mesh.m_base.m_meshData->m_material->getShader()->getSubPassShader("PBRFRPGeometryPass");
+            auto meshGeometryShader = mesh.m_base.m_meshData->m_material->getShader()->getSubPassShader("GeometryPass");
 
             if(meshGeometryShader)
             {
                 meshGeometryShader->bind();
                 meshGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
-                meshGeometryShader->useMatrix("objectModelMatrix",
-                                              meshTransform.m_finalTransform.m_modelMatrix
-                );
 
                 CoreMain::getRenderer()->renderMeshData(
                         mesh.m_base.m_meshData,

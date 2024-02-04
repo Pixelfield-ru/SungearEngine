@@ -25,7 +25,7 @@ namespace SGCore
     class ITexture2D;
 
     // todo: make read and draw bindings
-    class IFrameBuffer : public SGUtils::UniqueNameWrapper, public std::enable_shared_from_this<IFrameBuffer>
+    class IFrameBuffer : public UniqueNameWrapper, public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
         glm::vec4 m_bgColor { 0.0, 0.0, 0.0, 1.0 };

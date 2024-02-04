@@ -12,8 +12,10 @@
 #include <unordered_set>
 
 #include "UniqueName.h"
+#include "Event.h"
+#include "EventListener.h"
 
-namespace SGUtils
+namespace SGCore
 {
     class UniqueNamesCounter
     {
@@ -60,9 +62,18 @@ namespace SGUtils
             uniqueNamesCounter.m_names.insert(uniqueName.m_rawName + " (" + std::to_string( uniqueName.m_uniqueID) + ")");
 
             ++uniqueNamesCounter.m_count;
+
+            (*m_someNameChangedEvent)(uniqueName.m_name);
+        }
+
+        void subscribeToSomeNameChangedEvent(const EventListener<void(const std::string&)>& eventListener)
+        {
+            (*m_someNameChangedEvent) += eventListener;
         }
 
     private:
+        Event<void(const std::string& newName)> m_someNameChangedEvent = MakeEvent<void(const std::string& newName)>();
+
         std::unordered_map<std::string, UniqueNamesCounter> m_uniqueNamesCounters;
     };
 }

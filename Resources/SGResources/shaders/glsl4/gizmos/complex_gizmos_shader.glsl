@@ -1,6 +1,6 @@
 #sg_include "../uniform_bufs_decl.glsl"
 
-SGSubPass(PBRFRPGeometryPass)
+SGSubPass(GeometryPass)
 {
     SGSubShader(Vertex)
     {

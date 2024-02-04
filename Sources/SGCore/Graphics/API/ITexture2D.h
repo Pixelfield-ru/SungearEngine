@@ -13,6 +13,7 @@
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Graphics/GPUObject.h"
 
 namespace SGCore
 {
@@ -24,7 +25,7 @@ namespace SGCore
         void operator()(std::uint8_t* data);
     };
 
-    class ITexture2D : public IAsset, public SGUtils::UniqueNameWrapper, public std::enable_shared_from_this<ITexture2D>
+    class ITexture2D : public IAsset, public UniqueNameWrapper, public std::enable_shared_from_this<ITexture2D>, public GPUObject
     {
         friend class IFrameBuffer;
         friend class TextureAsset;
@@ -53,7 +54,7 @@ namespace SGCore
 
         virtual void bind(const std::uint8_t& textureUnit) = 0;
 
-        Ref<ITexture2D> addToGlobalStorage() noexcept;
+        void addToGlobalStorage() noexcept final;
 
         virtual ITexture2D& operator=(const Ref<ITexture2D>& other) = 0;
         //virtual operator=(std::shared_ptr<ITexture2D> other);
@@ -68,7 +69,11 @@ namespace SGCore
         requires(std::is_same_v<ITexture2D, InstanceT>)
         static Ref<InstanceT> createRefInstance() noexcept
         {
-            return Ref<InstanceT>(CoreMain::getRenderer()->createTexture2D());
+            auto tex = Ref<InstanceT>(CoreMain::getRenderer()->createTexture2D());
+
+            tex->addToGlobalStorage();
+
+            return tex;
         }
     };
 }

@@ -14,6 +14,8 @@
 #include "SGCore/Render/Gizmos/LineGizmosUpdater.h"
 #include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
+#include "SGCore/Flags/ObserverSystems/ModelMatrixChangedObserver.h"
+#include "SGCore/Flags/ModelMatrixChangedFlag.h"
 
 SGCore::Scene::Scene()
 {
@@ -50,6 +52,9 @@ void SGCore::Scene::createDefaultSystems()
     auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();
     m_systems.emplace(sphereGizmosUpdater);
 
+    auto modelMatrixChangedObserver = MakeRef<ModelMatrixChangedObserver>();
+    addFlagObserverSystem<ModelMatrixChangedFlag>(modelMatrixChangedObserver);
+
     // -------------
 
     // m_systems.emplace(pipelineSystem);
@@ -79,21 +84,6 @@ void SGCore::Scene::fixedUpdate()
     {
         if(!system->m_active) continue;
 
-        auto updateFuncsQueryIter = system->m_fixedUpdateFunctionsQuery.begin();
-        while(updateFuncsQueryIter != system->m_fixedUpdateFunctionsQuery.end())
-        {
-            bool funcDone = updateFuncsQueryIter->second();
-
-            if(funcDone)
-            {
-                system->m_fixedUpdateFunctionsQuery.erase(updateFuncsQueryIter++);
-            }
-            else
-            {
-                updateFuncsQueryIter++;
-            }
-        }
-
         double before = glfwGetTime();
         system->fixedUpdate(shared_from_this());
         double after = glfwGetTime();
@@ -109,22 +99,6 @@ void SGCore::Scene::update()
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
-
-        // todo:: fix infinite adding to query
-        auto updateFuncsQueryIter = system->m_updateFunctionsQuery.begin();
-        while(updateFuncsQueryIter != system->m_updateFunctionsQuery.end())
-        {
-            bool funcDone = updateFuncsQueryIter->second();
-
-            if(funcDone)
-            {
-                system->m_updateFunctionsQuery.erase(updateFuncsQueryIter++);
-            }
-            else
-            {
-                updateFuncsQueryIter++;
-            }
-        }
 
         double before = glfwGetTime();
         system->update(shared_from_this());

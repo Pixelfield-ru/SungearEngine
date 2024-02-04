@@ -22,7 +22,11 @@ namespace SGCore
         requires(std::is_same_v<ICubemapTexture, InstanceT>)
         static Ref<InstanceT> createRefInstance() noexcept
         {
-            return Ref<InstanceT>(CoreMain::getRenderer()->createCubemapTexture());
+            auto tex = Ref<InstanceT>(CoreMain::getRenderer()->createCubemapTexture());
+
+            tex->addToGlobalStorage();
+
+            return tex;
         }
     };
 }

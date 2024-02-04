@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_TRANSFORMATIONSUTILS_H
 #define SUNGEARENGINE_TRANSFORMATIONSUTILS_H
 
+#include <entt/entity/entity.hpp>
+
 #include "Transform.h"
 
 namespace SGCore
@@ -21,25 +23,25 @@ namespace SGCore
          * @param transform - Transform tuo update.
          * @param parent - Parent transform. May be nullptr.
          */
-        static void updateRotationMatrix(Transform& transform, Transform* paren) noexcept;
+        static void updateRotationMatrix(Transform& transform, Transform* parent) noexcept;
 
         /**
          * @param transform - Transform tuo update.
          * @param parent - Parent transform. May be nullptr.
          */
-        static void updateScaleMatrix(Transform& transform, Transform* paren) noexcept;
+        static void updateScaleMatrix(Transform& transform, Transform* parent) noexcept;
 
         /**
          * @param transform - Transform tuo update.
          * @param parent - Parent transform. May be nullptr.
          */
-        static void updateModelMatrix(Transform& transform, Transform* paren) noexcept;
+        static void updateModelMatrix(Transform& transform, Transform* parent) noexcept;
 
         /**
          * @param transform - Transform tuo update.
          * @param parent - Parent transform. May be nullptr.
          */
-        static void updateTransform(Transform& transform, Transform* paren) noexcept;
+        static void updateTransform(Transform& transform, Transform* parent) noexcept;
     };
 }
 

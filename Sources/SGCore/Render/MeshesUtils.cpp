@@ -16,7 +16,7 @@ void SGCore::MeshesUtils::loadMeshShader(MeshBase& meshBase, const std::string& 
 
     if(renderPipeline)
     {
-        std::cout << "loaded shader: " << renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization() << std::endl;
+        // std::cout << "loaded shader: " << renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization() << std::endl;
         meshBase.m_shaderPath = shaderPath;
         meshBase.m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
                 AssetManager::loadAsset<FileAsset>(
@@ -26,7 +26,7 @@ void SGCore::MeshesUtils::loadMeshShader(MeshBase& meshBase, const std::string& 
 
 void SGCore::MeshesUtils::onRenderPipelineSet(MeshBase& meshBase) noexcept
 {
-    meshBase.m_meshData->m_material->getShader()->removeAllSubPassShadersByPath(meshBase.m_shaderPath);
+    meshBase.m_meshData->m_material->getShader()->removeAllSubPassShadersByDiskPath(meshBase.m_shaderPath);
 
     auto renderPipeline = RenderPipelinesManager::getRenderPipeline();
 

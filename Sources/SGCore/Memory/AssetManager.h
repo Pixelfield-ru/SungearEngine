@@ -9,14 +9,13 @@
 #include <memory>
 
 #include "Assets/IAsset.h"
+#include "SGUtils/Utils.h"
+#include "SGCore/Graphics/GPUObject.h"
 
 namespace SGCore
 {
     class AssetManager
     {
-    private:
-        static inline std::unordered_map<std::string, std::shared_ptr<IAsset>> m_assets;
-
     public:
         AssetManager() = delete;
 
@@ -40,6 +39,7 @@ namespace SGCore
                 return std::static_pointer_cast<AssetT>(foundAssetPair->second);
             }
 
+            // sfinae just for GPU objects as assets
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
 
             newAsset->load(path);
@@ -60,6 +60,7 @@ namespace SGCore
                 return std::static_pointer_cast<AssetT>(foundAssetPair->second);
             }
 
+            // sfinae just for GPU objects as assets
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
 
             newAsset->load(path);
@@ -76,6 +77,11 @@ namespace SGCore
             if(foundAssetPair == m_assets.end())
             {
                 m_assets[alias] = asset;
+
+                if(SG_INSTANCEOF(asset.get(), GPUObject))
+                {
+                    std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
+                }
             }
         }
 
@@ -86,6 +92,11 @@ namespace SGCore
             if(foundAssetPair == m_assets.end())
             {
                 m_assets[asset->getPath().string()] = asset;
+
+                if(SG_INSTANCEOF(asset.get(), GPUObject))
+                {
+                    std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
+                }
             }
         }
 
@@ -113,6 +124,10 @@ namespace SGCore
 
             return newAsset;
         }
+
+    private:
+        // todo: replace unordered map by vector because of first (std::string)
+        static inline std::unordered_map<std::string, std::shared_ptr<IAsset>> m_assets;
     };
 }
 

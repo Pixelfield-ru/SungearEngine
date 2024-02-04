@@ -40,8 +40,8 @@ SGCore::Ref<SGCore::IAsset> SGCore::ITexture2D::load(const std::string& path)
     // create(sharedPtr);
 
     spdlog::info("Loaded texture. Width: {0}, height: {1}, MB size: {2}, channels: {3}, path: {4}",
-                  m_width,
-                  m_height,
+                 m_width,
+                 m_height,
                  m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
                  m_channelsCount,
                  m_path.string());
@@ -49,13 +49,9 @@ SGCore::Ref<SGCore::IAsset> SGCore::ITexture2D::load(const std::string& path)
     return shared_from_this();
 }
 
-SGCore::Ref<SGCore::ITexture2D> SGCore::ITexture2D::addToGlobalStorage() noexcept
+void SGCore::ITexture2D::addToGlobalStorage() noexcept
 {
-    auto thisShared = shared_from_this();
-
     GPUObjectsStorage::addTexture(shared_from_this());
-
-    return thisShared;
 }
 
 SGCore::Ref<uint8_t[]> SGCore::ITexture2D::getData() noexcept

@@ -2,13 +2,13 @@
 // Created by stuka on 24.12.2023.
 //
 
-#include "ShaderTexturesFromMaterialBlock.h"
+#include "TexturesFromMaterialBlock.h"
 
 #include "API/ISubPassShader.h"
 #include "API/ITexture2D.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
-void SGCore::ShaderTexturesFromMaterialBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture, SGTextureType textureType) noexcept
+void SGCore::TexturesFromMaterialBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture, SGTextureType textureType) noexcept
 {
     // m_textures.push_back(texture2D);
 
@@ -30,7 +30,7 @@ void SGCore::ShaderTexturesFromMaterialBlock::addTexture(const SGCore::Ref<SGCor
     }
 }
 
-void SGCore::ShaderTexturesFromMaterialBlock::removeTexture(const SGCore::Ref<SGCore::ITexture2D>& texture) noexcept
+void SGCore::TexturesFromMaterialBlock::removeTexture(const SGCore::Ref<SGCore::ITexture2D>& texture) noexcept
 {
     size_t removedCnt = m_textures.remove_if([&texture](auto otherTexture) {
         return !(otherTexture.owner_before(texture) || texture.owner_before(otherTexture));
@@ -45,7 +45,7 @@ void SGCore::ShaderTexturesFromMaterialBlock::removeTexture(const SGCore::Ref<SG
     }
 }
 
-void SGCore::ShaderTexturesFromMaterialBlock::clearTextures() noexcept
+void SGCore::TexturesFromMaterialBlock::clearTextures() noexcept
 {
     m_textures.clear();
 
@@ -55,10 +55,10 @@ void SGCore::ShaderTexturesFromMaterialBlock::clearTextures() noexcept
     }
 }
 
-void SGCore::ShaderTexturesFromMaterialBlock::collectTexturesFromMaterial
+void SGCore::TexturesFromMaterialBlock::collectTexturesFromMaterial
 (const SGCore::Ref<SGCore::IMaterial>& material) noexcept
 {
-    for(const auto& typesPair : material->m_textures)
+    for(const auto& typesPair : material->getTextures())
     {
         if(typesPair.first != m_typeToCollect) continue;
 

@@ -49,8 +49,6 @@ namespace SGCore
         glm::vec3 m_lastScale = glm::vec3(0);
 
         glm::vec3 m_lastCenter { 0.0 };
-
-        Event<void()> m_onModelMatrixChanged = MakeEvent<void()>();
     };
 }
 

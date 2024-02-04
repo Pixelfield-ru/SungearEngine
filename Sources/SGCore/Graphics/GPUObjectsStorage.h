@@ -7,6 +7,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/UniqueNamesManager.h"
@@ -25,11 +26,28 @@ namespace SGCore
         static void addFramebuffer(const Ref<IFrameBuffer>& frameBuffer) noexcept;
 
     private:
-        static inline std::unordered_map<std::string, Weak<ISubPassShader>> m_shaders;
-        static inline std::unordered_map<std::string, Weak<ITexture2D>> m_textures2D;
-        static inline std::unordered_map<std::string, Weak<IFrameBuffer>> m_frameBuffers;
+        static void onSomeObjectNameChanged(const std::string& newName) noexcept;
 
-        static inline Ref<SGUtils::UniqueNamesManager> m_uniqueNamesManager = MakeRef<SGUtils::UniqueNamesManager>();
+        static inline std::vector<Weak<ISubPassShader>> m_shaders;
+        static inline std::vector<Weak<ITexture2D>> m_textures2D;
+        static inline std::vector<Weak<IFrameBuffer>> m_frameBuffers;
+
+        static inline Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
+
+        static inline EventListener<void(const std::string&)> m_someNameChangedListener = MakeEventListener<void(
+                const std::string&)>([](const std::string& newName)
+                                     {
+                                         GPUObjectsStorage::onSomeObjectNameChanged(newName);
+                                     }
+        );
+
+        [[maybe_unused]] static inline bool s_staticInit = []() {
+            GPUObjectsStorage::m_uniqueNamesManager->subscribeToSomeNameChangedEvent(
+                    GPUObjectsStorage::m_someNameChangedListener
+            );
+
+            return true;
+        }();
     };
 }
 

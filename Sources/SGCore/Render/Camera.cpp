@@ -214,7 +214,8 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
             CoreMain::getRenderer()->createShader(
                     shadersPaths["PostProcessing"]["DefaultLayerShader"]
             )
-    )->addToGlobalStorage();
+    );
+    newPPLayer.m_FXShader->addToGlobalStorage();
 
     // ----------------------------------
 

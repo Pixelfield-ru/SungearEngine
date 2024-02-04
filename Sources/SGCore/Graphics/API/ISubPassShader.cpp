@@ -191,16 +191,12 @@ SGCore::ISubPassShader& SGCore::ISubPassShader::operator=(const SGCore::ISubPass
     return *this;
 }
 
-SGCore::Ref<SGCore::ISubPassShader> SGCore::ISubPassShader::addToGlobalStorage() noexcept
+void SGCore::ISubPassShader::addToGlobalStorage() noexcept
 {
-    auto thisShared = shared_from_this();
-
-    GPUObjectsStorage::addShader(thisShared);
-
-    return thisShared;
+    GPUObjectsStorage::addShader(shared_from_this());
 }
 
-void SGCore::ISubPassShader::addTexturesBlock(const SGCore::Ref<SGCore::ShaderTexturesBlock>& block) noexcept
+void SGCore::ISubPassShader::addTexturesBlock(const SGCore::Ref<SGCore::TexturesBlock>& block) noexcept
 {
     if(std::find(m_texturesBlocks.begin(), m_texturesBlocks.end(), block) ==
        m_texturesBlocks.end())
@@ -210,7 +206,7 @@ void SGCore::ISubPassShader::addTexturesBlock(const SGCore::Ref<SGCore::ShaderTe
     }
 }
 
-void SGCore::ISubPassShader::removeTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept
+void SGCore::ISubPassShader::removeTexturesBlock(const Ref<TexturesBlock>& block) noexcept
 {
     m_texturesBlocks.erase(
             std::remove(m_texturesBlocks.begin(), m_texturesBlocks.end(), block),

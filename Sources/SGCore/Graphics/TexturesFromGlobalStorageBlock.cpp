@@ -2,12 +2,12 @@
 // Created by stuka on 24.12.2023.
 //
 
-#include "ShaderTexturesFromGlobalStorageBlock.h"
+#include "TexturesFromGlobalStorageBlock.h"
 
 #include "API/ISubPassShader.h"
 #include "API/ITexture2D.h"
 
-void SGCore::ShaderTexturesFromGlobalStorageBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
+void SGCore::TexturesFromGlobalStorageBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
 {
     // if texture with this name requires
     if (std::find(m_requiredTexturesNames.begin(), m_requiredTexturesNames.end(), texture2D->getName()) !=
@@ -24,7 +24,7 @@ void SGCore::ShaderTexturesFromGlobalStorageBlock::addTexture(const SGCore::Ref<
     }
 }
 
-void SGCore::ShaderTexturesFromGlobalStorageBlock::removeTexture
+void SGCore::TexturesFromGlobalStorageBlock::removeTexture
         (const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
 {
     size_t removedCnt = m_textures.remove_if([&texture2D](auto otherTexture2D) {
@@ -42,7 +42,7 @@ void SGCore::ShaderTexturesFromGlobalStorageBlock::removeTexture
     }
 }
 
-void SGCore::ShaderTexturesFromGlobalStorageBlock::clearTextures() noexcept
+void SGCore::TexturesFromGlobalStorageBlock::clearTextures() noexcept
 {
     auto currIter = m_textures.begin();
     while(currIter != m_textures.end())

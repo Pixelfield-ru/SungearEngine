@@ -15,10 +15,11 @@
 
 #include "SGUtils/UniqueName.h"
 
-#include "SGCore/Graphics/ShaderTexturesFromGlobalStorageBlock.h"
-#include "SGCore/Graphics/ShaderTexturesFromMaterialBlock.h"
+#include "SGCore/Graphics/TexturesFromGlobalStorageBlock.h"
+#include "SGCore/Graphics/TexturesFromMaterialBlock.h"
 #include "SGCore/Utils/SGSL/SGSLSubShaderType.h"
 #include "SGUtils/Utils.h"
+#include "SGCore/Graphics/GPUObject.h"
 
 namespace SGCore
 {
@@ -29,7 +30,7 @@ namespace SGCore
 
     // todo: add subshaders and add preprocess for it
     // todo: add various types of defines like material textures block define e.t.c.
-    class ISubPassShader : public SGUtils::UniqueNameWrapper, public std::enable_shared_from_this<ISubPassShader>
+    class ISubPassShader : public UniqueNameWrapper, public std::enable_shared_from_this<ISubPassShader>, public GPUObject
     {
     public:
         std::string m_version;
@@ -95,13 +96,13 @@ namespace SGCore
         virtual void useInteger(const std::string& uniformName, const size_t& i) { };
         virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
 
-        Ref<ISubPassShader> addToGlobalStorage() noexcept;
+        void addToGlobalStorage() noexcept final;
 
         // ==========================================
 
-        void addTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept;
+        void addTexturesBlock(const Ref<TexturesBlock>& block) noexcept;
 
-        void removeTexturesBlock(const Ref<ShaderTexturesBlock>& block) noexcept;
+        void removeTexturesBlock(const Ref<TexturesBlock>& block) noexcept;
 
         void clearTexturesBlocks() noexcept;
 
@@ -129,7 +130,7 @@ namespace SGCore
 
         ISubPassShader& operator=(const ISubPassShader&) noexcept;
     protected:
-        std::vector<Ref<ShaderTexturesBlock>> m_texturesBlocks;
+        std::vector<Ref<TexturesBlock>> m_texturesBlocks;
 
         std::unordered_map<std::string, IShaderUniform> m_uniforms;
 

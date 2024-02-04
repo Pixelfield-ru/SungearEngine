@@ -40,6 +40,18 @@ SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
     return foundTex;
 }
 
+void
+SGCore::IMaterial::addTexture2D(const SGTextureType& textureType, const SGCore::Ref<SGCore::ITexture2D>& tex)
+{
+    m_textures[textureType].push_back(tex);
+
+    // todo:
+    if(m_shader)
+    {
+        m_shader->collectTextureFromMaterial(tex, textureType);
+    }
+}
+
 void SGCore::IMaterial::copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept
 {
     to->m_textures = m_textures;
@@ -257,4 +269,3 @@ SGCore::IMaterial& SGCore::IMaterial::operator=
 
     return *this;
 }
-

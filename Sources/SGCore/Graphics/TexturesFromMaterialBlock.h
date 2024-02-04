@@ -2,17 +2,17 @@
 // Created by stuka on 24.12.2023.
 //
 
-#ifndef SUNGEARENGINE_SHADERTEXTURESFROMMATERIALBLOCK_H
-#define SUNGEARENGINE_SHADERTEXTURESFROMMATERIALBLOCK_H
+#ifndef SUNGEARENGINE_TEXTURESFROMMATERIALBLOCK_H
+#define SUNGEARENGINE_TEXTURESFROMMATERIALBLOCK_H
 
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
-#include "ShaderTexturesBlock.h"
+#include "TexturesBlock.h"
 
 namespace SGCore
 {
     class IMaterial;
 
-    struct ShaderTexturesFromMaterialBlock : ShaderTexturesBlock
+    struct TexturesFromMaterialBlock : TexturesBlock
     {
         void addTexture(const Ref<ITexture2D>& texture2D, SGTextureType textureType) noexcept final;
         void removeTexture(const Ref<ITexture2D>& texture2D) noexcept final;
@@ -24,4 +24,4 @@ namespace SGCore
     };
 }
 
-#endif //SUNGEARENGINE_SHADERTEXTURESFROMMATERIALBLOCK_H
+#endif //SUNGEARENGINE_TEXTURESFROMMATERIALBLOCK_H

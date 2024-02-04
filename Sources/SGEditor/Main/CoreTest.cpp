@@ -57,7 +57,7 @@ void init()
     );
 
     auto model0 = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
-            //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
+            // "../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/t62/scene.gltf"
             //"../SGResources/models/test/stalk_bagger/bagger.fbx"
@@ -74,16 +74,16 @@ void init()
             //"../SGResources/models/test/stalk_bunk/bunker.fbx"
             //"../SGResources/models/test/Duty Exoskeleton/Duty Exoskeleton.obj"
             //"../SGResources/models/test/room/room.obj"
-            //"../SGResources/models/test/sponza/sponza.obj"
+            // "../SGResources/models/test/sponza/sponza.obj"
             //"../SGResources/models/test/stalker/mercenary_exo/Mercenary Exoskeleton.obj"
             //"../SGResources/models/test/stalker/agroprom/agro_fbx.fbx"
-            //"../SGResources/models/test/uaz/scene.gltf"
             //"../SGResources/models/test/zis_sport/scene.gltf"
             //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
             //"../SGResources/models/test/wooden_table/scene.gltf"
-            //"../SGResources/models/test/svd/scene.gltf"
+            //"../SGResource
+            //"../SGResources/models/test/uaz/scene.gltf"s/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/vss/scene.gltf"
             //"../SGResources/models/test/vsk94/scene.gltf"
@@ -331,6 +331,8 @@ void init()
             "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
     ));
 
+    standardCubemap->setRawName("standard_skybox0");
+
     standardCubemap->create();
 
     SGCore::AssetManager::addAsset("standard_skybox0", standardCubemap);
@@ -339,6 +341,10 @@ void init()
             "../SGResources/textures/genius.jpg"
     );
 
+    geniusJPG->setRawName("GeniusTexture");
+
+    geniusJPG->create();
+
     // adding skybox
     {
         std::vector<entt::entity> skyboxEntities;
@@ -346,18 +352,19 @@ void init()
             skyboxEntities.push_back(entity);
         });
 
-        SGCore::Skybox& skybox = testScene->getECSRegistry().emplace<SGCore::Skybox>(skyboxEntities[2]);
-        skybox.m_base.m_meshData->m_material->m_textures[SGTextureType::SGTT_SKYBOX].push_back(
+        SGCore::Mesh& skyboxMesh = testScene->getECSRegistry().get<SGCore::Mesh>(skyboxEntities[2]);
+        skyboxMesh.m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_SKYBOX,
                 standardCubemap
         );
-        SGCore::Mesh& skyboxMesh = testScene->getECSRegistry().get<SGCore::Mesh>(skyboxEntities[2]);
-        skybox.m_base.m_meshData->setData(skyboxMesh.m_base.m_meshData);
-        testScene->getECSRegistry().erase<SGCore::Mesh>(skyboxEntities[2]);
+        // это топ пж
+        skyboxMesh.m_base.m_meshData->m_material->getShader()->removeSubPass("GeometryPass");
+        SGCore::MeshesUtils::loadMeshShader(skyboxMesh.m_base, "SkyboxShader");
+        skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
 
         SGCore::Transform& skyboxTransform = testScene->getECSRegistry().get<SGCore::Transform>(skyboxEntities[2]);
         // auto transformComponent = skyboxEntities[2]->getComponent<SGCore::Transform>();
 
-        skyboxTransform.m_ownTransform.m_scale = { 10, 10, 10 };
+        skyboxTransform.m_ownTransform.m_scale = { 1150, 1150, 1150 };
     }
 
     // ==========================================================================================
@@ -379,9 +386,10 @@ void init()
 
                                            if(mesh)
                                            {
-                                               mesh->m_base.m_meshData->m_material->m_textures[SGTextureType::SGTT_DIFFUSE].push_back(
-                                                       geniusJPG
-                                               );
+                                               mesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, geniusJPG);
+                                               /*mesh->m_base.m_meshData->m_material->m_textures[SGTextureType::SGTT_DIFFUSE].push_back(
+                                                       geniusJPG // нупачиму
+                                               );*/
                                            }
                                        }
     );
