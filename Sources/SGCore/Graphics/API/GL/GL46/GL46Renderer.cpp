@@ -3,9 +3,6 @@
 #include <thread>
 #include <spdlog/spdlog.h>
 
-#include "SGCore/ECS/Transformations/Transform.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/Rendering/ICamera.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/FileAsset.h"

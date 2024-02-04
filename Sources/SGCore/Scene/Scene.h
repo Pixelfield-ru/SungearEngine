@@ -14,12 +14,10 @@
 #include "SGUtils/Utils.h"
 #include "SGUtils/UniqueNamesManager.h"
 #include "SGUtils/Event.h"
-#include "SGUtils/EventListenerHolder.h"
+#include "SGUtils/EventListener.h"
 
 namespace SGCore
 {
-    class Entity;
-
     class Scene : public std::enable_shared_from_this<Scene>
     {
     public:
@@ -58,7 +56,7 @@ namespace SGCore
             return m_uniqueNamesManager;
         }
 
-        size_t createBaseEntity() noexcept;
+        // size_t createBaseEntity() noexcept;
 
         auto& getECSRegistry() noexcept
         {

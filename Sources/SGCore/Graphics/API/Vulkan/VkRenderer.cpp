@@ -8,10 +8,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "SGCore/ECS/Transformations/Transform.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/Rendering/ICamera.h"
-
 void SGCore::VkRenderer::init() noexcept
 {
     /*m_applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;

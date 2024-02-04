@@ -4,8 +4,6 @@
 
 #include "LineGizmosUpdater.h"
 #include "SGCore/Scene/Scene.h"
-#include "SGCore/Transformations/TransformationsUtils.h"
-#include "GizmoUtils.h"
 #include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/MeshBuilder.h"
 #include "LineGizmo.h"

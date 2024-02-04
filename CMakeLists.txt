@@ -74,7 +74,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
 set(SG_BUILD_TESTS OFF)
 
 set(SG_RESOURCES_COPY_MODELS OFF)
-set(SG_RESOURCES_COPY_SHADERS OFF)
+set(SG_RESOURCES_COPY_SHADERS ON)
 set(SG_RESOURCES_COPY_TEXTURES OFF)
 
 # ----------------------------------

@@ -1,24 +1,26 @@
 #ifndef SUNGEARENGINE_NODE_H
 #define SUNGEARENGINE_NODE_H
 
+#include <entt/entt.hpp>
+
 #include "IMeshData.h"
 #include "glm/detail/type_quat.hpp"
-#include "SGCore/ECS/Scene.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
+#include "SGCore/Scene/Scene.h"
+#include "glm/fwd.hpp"
 
 namespace SGCore
 {
     class Node
     {
     private:
-        using MeshFunc = std::function<void(const Ref<Entity>& nodeEntity, const Ref<Entity>& meshEntity)>;
-        using EachEntityFunc = std::function<void(const Ref<Entity>& nodeEntity)>;
+        using MeshFunc = std::function<void(const entt::entity& parentEntity, const entt::entity& meshEntity)>;
+        using EachEntityFunc = std::function<void(const entt::entity& parentEntity)>;
 
-        Ref<Entity> addOnScene(const Ref<Scene>& scene,
-                               const std::string& layerName,
-                               const EachEntityFunc& eachEntityFunc,
-                               const MeshFunc& meshFunc,
-                               const bool& rootAdd) noexcept;
+        entt::entity addOnScene(const Ref<Scene>& scene,
+                                const std::string& layerName,
+                                const EachEntityFunc& eachEntityFunc,
+                                const MeshFunc& meshFunc,
+                                const bool& rootAdd) noexcept;
 
     public:
         std::string m_name;

@@ -1,15 +1,15 @@
 #ifndef SUNGEARENGINE_CAMERACOMPONENT_H
 #define SUNGEARENGINE_CAMERACOMPONENT_H
 
-#include "SGCore/ECS/Rendering/Pipelines/PostProcessFXSubPass.h"
 #include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Render/Postprocess/PostProcessFXSubPass.h"
+#include "SGCore/Scene/Layer.h"
 
 #define SG_PP_LAYER_FB_NAME(idx)  ("frameBuffer" + std::to_string(idx))
 
 namespace SGCore
 {
     class IFrameBuffer;
-    class Layer;
 
     struct FrameBufferAttachmentWithBlock
     {

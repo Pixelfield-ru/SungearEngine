@@ -13,6 +13,6 @@ namespace SGCore
     {
         void fixedUpdate(const Ref<Scene>& scene) final;
     };
-}}
+}
 
 #endif //SUNGEARENGINE_LINEGIZMOSUPDATER_H

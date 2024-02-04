@@ -15,6 +15,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Transform.h"
+#include "SGCore/Render/RenderingBase.h"
 
 void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
@@ -53,7 +54,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
 
         meshesView.each([](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
-            auto meshGeometryShader = mesh.m_base.m_meshData->m_material->getShader()->getSubPassShader("PBRRPGeometryPass");
+            auto meshGeometryShader = mesh.m_base.m_meshData->m_material->getShader()->getSubPassShader("PBRFRPGeometryPass");
 
             if(meshGeometryShader)
             {

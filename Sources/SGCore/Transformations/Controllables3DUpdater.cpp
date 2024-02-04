@@ -36,6 +36,8 @@ void SGCore::Controllables3DUpdater::fixedUpdate
         {
             ownTransform.m_rotation.x = ownTransform.m_rotation.y = ownTransform.m_rotation.z =
             ownTransform.m_position.x = ownTransform.m_position.y = ownTransform.m_position.z = 0.0f;
+
+            // ownTransform.m_translationMatrix = ownTransform.m_rotationMatrix = ownTransform.m_scaleMatrix = ownTransform.m_modelMatrix = glm::identity<glm::mat4>();
         }
 
         glm::vec3 rotatedForward = SGUtils::MathUtils::forward3;

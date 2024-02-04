@@ -8,7 +8,7 @@
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGUtils/EventListenerHolder.h"
+#include "SGUtils/EventListener.h"
 #include "MeshesUtils.h"
 
 namespace SGCore
@@ -24,7 +24,7 @@ namespace SGCore
 
         std::string m_shaderPath;
 
-        Scope<SGUtils::EventListenerHolder<void()>> m_onRenderPipelineSet = MakeScope<SGUtils::EventListenerHolder<void()>>([]() { MeshesUtils::onRenderPipelineSet(); });
+        EventListener<void()> m_onRenderPipelineSet = MakeEventListener<void()>([this]() { MeshesUtils::onRenderPipelineSet(*this); });
     };
 }
 

@@ -5,14 +5,6 @@
 #include "PBRRenderPipeline.h"
 #include "SGCore/Main/CoreMain.h"
 
-#include "SGCore/ECS/Rendering/Skybox.h"
-#include "SGCore/ECS/ECSUtils.h"
-#include "SGCore/ECS/Rendering/MeshesCollector.h"
-#include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
-#include "SGCore/ECS/Rendering/Gizmos/IComplexGizmo.h"
-#include "SGCore/ECS/Rendering/Pipelines/PostProcessFXPass.h"
-#include "SGCore/ECS/Rendering/CamerasCollector.h"
-#include "PBRRPDirectionalLightsPass.h"
 #include "PBRRPGeometryPass.h"
 
 SGCore::PBRRenderPipeline::PBRRenderPipeline()

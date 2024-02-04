@@ -5,8 +5,8 @@
 #ifndef SUNGEARENGINE_SCENEHIERARCHY_H
 #define SUNGEARENGINE_SCENEHIERARCHY_H
 
-#include "SGCore/ECS/Entity.h"
 #include "SGCore/ImGuiWrap/Views/IView.h"
+#include <entt/entity/entity.hpp>
 
 namespace SGEditor
 {
@@ -17,7 +17,7 @@ namespace SGEditor
         void end() noexcept final;
 
     private:
-        void renderEntity(const SGCore::Ref<SGCore::Entity>& entity) noexcept;
+        void renderEntity(const entt::entity& entity) noexcept;
     };
 }
 

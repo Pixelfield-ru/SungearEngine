@@ -8,6 +8,7 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Scene/Scene.h"
+#include "MeshBase.h"
 
 void SGCore::MeshesUtils::loadMeshShader(MeshBase& meshBase, const std::string& shaderPath) noexcept
 {
@@ -15,6 +16,7 @@ void SGCore::MeshesUtils::loadMeshShader(MeshBase& meshBase, const std::string& 
 
     if(renderPipeline)
     {
+        std::cout << "loaded shader: " << renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization() << std::endl;
         meshBase.m_shaderPath = shaderPath;
         meshBase.m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
                 AssetManager::loadAsset<FileAsset>(

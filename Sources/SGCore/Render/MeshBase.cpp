@@ -3,7 +3,6 @@
 //
 
 #include "MeshBase.h"
-#include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "RenderPipelinesManager.h"

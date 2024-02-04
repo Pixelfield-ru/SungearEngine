@@ -7,26 +7,26 @@
 
 #include <list>
 #include <functional>
-#include "EventListenerHolder.h"
+#include "EventListener.h"
 
 #include "UUID.h"
 
-namespace SGUtils
+namespace SGCore
 {
     template <typename Signature>
-    struct EventListenerHolder;
+    struct EventImpl;
 
-    template <typename Signature>
-    struct Event;
+    template<typename Return>
+    struct EventImpl;
 
-    template<typename... Args>
-    struct Event<void(Args...)> : public std::enable_shared_from_this<Event<void(Args...)>>
+    template<typename Return, typename... Args>
+    struct EventImpl<Return(Args...)> : public std::enable_shared_from_this<EventImpl<Return(Args...)>>
     {
     private:
-        using HolderT = EventListenerHolder<void(Args...)>;
+        using HolderT = EventListenerImpl<Return(Args...)>;
 
     public:
-        Event& operator+=(HolderT* eventHolder)
+        EventImpl& operator+=(HolderT* eventHolder)
         {
             m_callbacks.emplace_back(eventHolder);
             eventHolder->m_unsubscribeFunc = [eventHolder]()
@@ -41,14 +41,14 @@ namespace SGUtils
             return *this;
         }
 
-        Event& operator-=(HolderT* eventHolder)
+        EventImpl& operator-=(HolderT* eventHolder)
         {
             m_callbacks.remove(eventHolder);
 
             return *this;
         }
 
-        Event& operator+=(const std::unique_ptr<HolderT>& eventHolder)
+        EventImpl& operator+=(const std::unique_ptr<HolderT>& eventHolder)
         {
             auto* rawHolder = eventHolder.get();
 
@@ -65,7 +65,7 @@ namespace SGUtils
             return *this;
         }
 
-        Event& operator-=(const std::unique_ptr<HolderT>& eventHolder)
+        EventImpl& operator-=(const std::unique_ptr<HolderT>& eventHolder)
         {
             m_callbacks.remove(eventHolder.get());
 
@@ -83,6 +83,15 @@ namespace SGUtils
     private:
         std::list<HolderT*> m_callbacks;
     };
+
+    template <typename T>
+    using Event = std::shared_ptr<EventImpl<T>>;
+
+    template<typename T>
+    constexpr Event<T> MakeEvent()
+    {
+        return std::make_shared<EventImpl<T>>();
+    }
 }
 
 #endif //SUNGEARENGINE_EVENT_H

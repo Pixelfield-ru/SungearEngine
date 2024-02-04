@@ -3,7 +3,6 @@
 //
 
 #include "PBRRPDirectionalLightsPass.h"
-#include "SGCore/ECS/ECSUtils.h"
 #include "PBRRPGeometryPass.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"

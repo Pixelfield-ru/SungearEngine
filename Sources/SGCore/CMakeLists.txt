@@ -56,6 +56,7 @@
          ImGui
 
          EnTT::EnTT
+         SGUtils
          )
 
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)

@@ -18,7 +18,7 @@ namespace SGCore
         // x - follow translation
         // y - follow rotation
         // z - follow scale
-        glm::bvec3 m_followParentTRS { true };
+        glm::bvec3 m_followParentTRS { true, true, true };
         // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
     };
 }

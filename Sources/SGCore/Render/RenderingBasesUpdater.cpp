@@ -23,7 +23,7 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>
                                  ownTransform.m_scaleChanged;
 
         glm::quat rotationQuat;
-        if(viewMatrixChanged)
+        // if(viewMatrixChanged)
         {
             rotationQuat = glm::angleAxis(
                     glm::radians(ownTransform.m_rotation.x),
@@ -44,7 +44,7 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>
         bool projectionMatrixChanged = false;
 
         // TODO: make checking for lastTransformation != current transformation
-        if(viewMatrixChanged)
+        // if(viewMatrixChanged)
         {
             renderingBase.m_viewMatrix = glm::toMat4(rotationQuat);
             renderingBase.m_viewMatrix = glm::translate(renderingBase.m_viewMatrix,
@@ -75,7 +75,7 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>
             projectionMatrixChanged = true;
         }
 
-        if(viewMatrixChanged || projectionMatrixChanged)
+        // if(viewMatrixChanged || projectionMatrixChanged)
         {
             renderingBase.m_spaceMatrix =
                     renderingBase.m_projectionMatrix * renderingBase.m_viewMatrix;

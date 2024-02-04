@@ -5,12 +5,13 @@
 #ifndef SUNGEARENGINE_MESHESUTILS_H
 #define SUNGEARENGINE_MESHESUTILS_H
 
-#include "SGUtils/EventListenerHolder.h"
+#include "SGUtils/EventListener.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "Mesh.h"
 
 namespace SGCore
 {
+    struct MeshBase;
+
     struct MeshesUtils
     {
         static void loadMeshShader(MeshBase& meshBase, const std::string& shaderPath) noexcept;

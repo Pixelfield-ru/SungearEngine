@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 
 #include "SGUtils/Event.h"
-#include "SGUtils/EventListenerHolder.h"
+#include "SGUtils/EventListener.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "IRenderPipeline.h"
 
@@ -15,7 +15,7 @@ namespace SGCore
     class RenderPipelinesManager
     {
     public:
-        static void subscribeToRenderPipelineSetEvent(const Scope<SGUtils::EventListenerHolder<void()>>& holder)
+        static void subscribeToRenderPipelineSetEvent(const EventListener<void()>& holder)
         {
             (*m_renderPipelineSetEvent) += holder;
         }
@@ -35,7 +35,7 @@ namespace SGCore
     private:
         static inline Ref<IRenderPipeline> m_renderPipeline;
 
-        static inline Ref<SGUtils::Event<void()>> m_renderPipelineSetEvent = MakeRef<SGUtils::Event<void()>>();
+        static inline Event<void()> m_renderPipelineSetEvent = MakeEvent<void()>();
     };
 }
 

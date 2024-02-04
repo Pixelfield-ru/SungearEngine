@@ -10,6 +10,7 @@
 #include "GLFW/glfw3.h"
 #include "TransformationsUtils.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Render/RenderingBase.h"
 
 /*double curT = 0.0;
 double accum = 0.0;

@@ -4,72 +4,74 @@
 
 #include "Node.h"
 
-#include "SGCore/ECS/Transformations/Transform.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
 #include "glm/gtc/quaternion.hpp"
+#include "SGCore/Transformations/Transform.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Render/Mesh.h"
 
-SGCore::Ref<SGCore::Entity> SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene, const std::string& layerName,
-                                                     const SGCore::Node::EachEntityFunc& eachEntityFunc,
-                                                     const SGCore::Node::MeshFunc& meshFunc,
-                                                     const bool& rootAdd) noexcept
+entt::entity SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
+                                      const std::string& layerName,
+                                      const SGCore::Node::EachEntityFunc& eachEntityFunc,
+                                      const SGCore::Node::MeshFunc& meshFunc,
+                                      const bool& rootAdd) noexcept
 {
-    auto layer = scene->getLayers().find(layerName)->second;
+    // todo: make layers
+    // auto layer = scene->getLayers().find(layerName)->second;
 
-    if(!layer) return nullptr;
+    // if(!layer) return entt::null;
 
-    Ref<Entity> nodeEntity = MakeRef<Entity>();
+    entt::registry& registry = scene->getECSRegistry();
 
-    auto nodeTransform = MakeRef<Transform>();
-    nodeTransform->m_position = m_position;
-    nodeTransform->m_rotation = glm::eulerAngles(m_rotationQuaternion);
-    nodeTransform->m_scale = m_scale;
+    entt::entity parentEntity = registry.create();
 
-    nodeEntity->addComponent(nodeTransform);
+    EntityBaseInfo& nodeBaseInfo = registry.emplace<EntityBaseInfo>(parentEntity);
+    Transform& nodeTransform = registry.emplace<Transform>(parentEntity);
+    nodeTransform.m_ownTransform.m_position = m_position;
+    nodeTransform.m_ownTransform.m_rotation = glm::eulerAngles(m_rotationQuaternion);
+    nodeTransform.m_ownTransform.m_scale = m_scale;
 
-    nodeEntity->setRawName(m_name);
+    nodeBaseInfo.setRawName(m_name);
 
     if(rootAdd)
     {
-        scene->addEntity(nodeEntity, layerName);
+        // scene->addEntity(parentEntity, layerName);
     }
     else
     {
-        nodeEntity->setParentScene(scene);
-        nodeEntity->m_layer = layer;
+        // parentEntity->setParentScene(scene);
+        // parentEntity->m_layer = layer;
     }
 
-    scene->recacheEntity(nodeEntity);
-
-    eachEntityFunc(nodeEntity);
+    eachEntityFunc(parentEntity);
 
     for(auto& mesh : m_meshesData)
     {
-        Ref<Transform> meshedEntityTransformComponent = MakeRef<Transform>();
+        entt::entity meshEntity = registry.create();
 
-        Ref<Mesh> meshComponent = SGCore::MakeRef<Mesh>();
-        meshComponent->m_meshData->setData(mesh);
+        EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
+        Transform& meshTransform = registry.emplace<Transform>(meshEntity);
+        Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
+        meshEntityMesh.m_base.m_meshData->setData(mesh);
+
         // meshComponent->addRequiredShaderPath("GeometryShader");
 
-        Ref<Entity> meshedEntity = MakeRef<Entity>();
-        meshedEntity->addComponent(meshedEntityTransformComponent);
-        meshedEntity->addComponent(meshComponent);
+        // meshEntityBaseInfo.m_layer = layer;
 
-        meshedEntity->m_layer = layer;
-        nodeEntity->addChild(meshedEntity);
+        meshEntityBaseInfo.m_parent = parentEntity;
 
-        scene->recacheEntity(meshedEntity);
-
-        meshFunc(nodeEntity, meshedEntity);
-        eachEntityFunc(meshedEntity);
+        meshFunc(parentEntity, meshEntity);
+        eachEntityFunc(meshEntity);
     }
 
     for(auto& childNode : m_children)
     {
         auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
-        nodeEntity->addChild(childNodeEntity);
+        EntityBaseInfo& childEntityBaseInfo = registry.get<EntityBaseInfo>(childNodeEntity);
+        childEntityBaseInfo.m_parent = parentEntity;
+        // parentEntity->addChild(childNodeEntity);
     }
 
-    return nodeEntity;
+    return parentEntity;
 }
 
 void SGCore::Node::addOnScene(const Ref<Scene>& scene,
@@ -83,7 +85,7 @@ void SGCore::Node::addOnScene(const Ref<Scene>& scene,
 void SGCore::Node::addOnScene
 (const Ref<Scene>& scene, const std::string& layerName, const Node::EachEntityFunc& eachEntityFunc) noexcept
 {
-    addOnScene(scene, layerName, eachEntityFunc, [](const Ref<Entity>&, const Ref<Entity>&)
+    addOnScene(scene, layerName, eachEntityFunc, [](const entt::entity&, const entt::entity&)
                {}
     );
 }
@@ -91,7 +93,7 @@ void SGCore::Node::addOnScene
 void SGCore::Node::addOnScene
 (const Ref<Scene>& scene, const std::string& layerName, const Node::MeshFunc& meshFunc) noexcept
 {
-    addOnScene(scene, layerName, [](const Ref<Entity>&)
+    addOnScene(scene, layerName, [](const entt::entity&)
                {}, meshFunc
     );
 }
@@ -99,9 +101,9 @@ void SGCore::Node::addOnScene
 void SGCore::Node::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
 {
     addOnScene(scene, layerName,
-               [](const Ref<Entity>&)
+               [](const entt::entity&)
                {},
-               [](const Ref<Entity>&, const Ref<Entity>&)
+               [](const entt::entity&, const entt::entity&)
                {}
     );
 }

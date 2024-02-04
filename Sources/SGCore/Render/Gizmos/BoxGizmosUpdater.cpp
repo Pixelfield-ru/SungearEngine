@@ -7,9 +7,6 @@
 #include "BoxGizmosUpdater.h"
 #include "SGCore/Scene/Scene.h"
 #include "BoxGizmo.h"
-#include "SGCore/Transformations/TransformationsUtils.h"
-#include "GizmoUtils.h"
-#include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/MeshBuilder.h"
 
 void SGCore::BoxGizmosUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>& scene)

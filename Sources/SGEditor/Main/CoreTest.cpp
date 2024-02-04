@@ -2,8 +2,6 @@
 
 #include <cstdlib>
 
-#include "SGCore/dummy_header.h"
-
 #include "CoreTest.h"
 #include "SGCore/Main/CoreMain.h"
 
@@ -13,38 +11,34 @@
 #include "SGCore/Memory/Assets/ModelAsset.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
-#include "SGCore/ECS/Transformations/TransformationsUpdater.h"
-
 #include "SGCore/Main/Callbacks.h"
 
-#include "SGCore/ECS/Scene.h"
-
-#include "SGCore/ECS/Transformations/Transform.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
-#include "SGCore/ECS/Rendering/ICamera.h"
-#include "SGCore/ECS/Rendering/Gizmos/BoxGizmo.h"
-
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
-#include "SGCore/ECS/Rendering/Gizmos/LineGizmo.h"
 #include "EditorMain.h"
 #include "SGCore/ImGuiWrap/Views/Base/Window.h"
 #include "SGCore/ImGuiWrap/Views/Base/CollapsingHeader.h"
 #include "SGCore/ImGuiWrap/ViewsInjector.h"
-#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPDirectionalLight.h"
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/ICubemapTexture.h"
 
 #include "SGCore/Input/InputManager.h"
 
+#include "SGCore/Render/Mesh.h"
+#include "SGCore/Render/Camera.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Transformations/Controllable3D.h"
+#include "SGCore/Render/RenderingBase.h"
+#include "SGCore/Render/Skybox.h"
+
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
-SGCore::Ref<SGCore::Entity> testCameraEntity;
+entt::entity testCameraEntity = entt::null;
 SGCore::Ref<SGCore::Scene> testScene;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
-SGCore::Ref<SGCore::Entity> testShadowsCaster;
+entt::entity testShadowsCaster = entt::null;
 
 void init()
 {
@@ -178,35 +172,45 @@ void init()
     // ==========================================================================================
 
     sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                      [](const SGCore::Ref<SGCore::Entity>& entity)
+                                      [](const entt::entity& entity)
                                       {
-                                          auto meshComponent = entity->getComponent<SGCore::Mesh>();
-                                          auto transformComponent = entity->getComponent<SGCore::TransformBase>();
-                                          if(transformComponent)
+                                          auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(entity);
+                                          auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
+                                          if(transform)
                                           {
-                                              transformComponent->m_position = { 0, 6.0, -20 };
-                                              transformComponent->m_rotation = { 0, 0, 0 };
-                                              transformComponent->m_scale = { 0.5, 0.5, 0.5 };
+                                              transform->m_ownTransform.m_position = { 0, 6.0, -20 };
+                                              transform->m_ownTransform.m_rotation = { 0, 0, 0 };
+                                              transform->m_ownTransform.m_scale = { 1.0, 1.0, 1.0 };
                                           }
-                                          if(meshComponent)
+                                          if(mesh)
                                           {
-                                              meshComponent->m_meshData->m_material->setMetallicFactor(1);
-                                              meshComponent->m_meshData->m_material->setRoughnessFactor(1);
+                                              mesh->m_base.m_meshData->m_material->setMetallicFactor(1);
+                                              mesh->m_base.m_meshData->m_material->setRoughnessFactor(1);
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE,
-                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_albedo.png");
+                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+                                                      SGTextureType::SGTT_DIFFUSE,
+                                                      "../SGResources/textures/spotted_rust/spotted-rust_albedo.png"
+                                              );
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_LIGHTMAP,
-                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_ao.png");
+                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+                                                      SGTextureType::SGTT_LIGHTMAP,
+                                                      "../SGResources/textures/spotted_rust/spotted-rust_ao.png"
+                                              );
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_METALNESS,
-                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_metallic.png");
+                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+                                                      SGTextureType::SGTT_METALNESS,
+                                                      "../SGResources/textures/spotted_rust/spotted-rust_metallic.png"
+                                              );
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_NORMALS,
-                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png");
+                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+                                                      SGTextureType::SGTT_NORMALS,
+                                                      "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png"
+                                              );
 
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE_ROUGHNESS,
-                                                                                                         "../SGResources/textures/spotted_rust/spotted-rust_roughness.png");
+                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+                                                      SGTextureType::SGTT_DIFFUSE_ROUGHNESS,
+                                                      "../SGResources/textures/spotted_rust/spotted-rust_roughness.png"
+                                              );
                                           }
                                       }
     );
@@ -216,22 +220,22 @@ void init()
     // ==========================================================================================
 
     testModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                      [](const SGCore::Ref<SGCore::Entity>& entity)
+                                      [](const entt::entity& entity)
                                       {
-                                          auto meshComponent = entity->getComponent<SGCore::Mesh>();
-                                          auto transformComponent = entity->getComponent<SGCore::TransformBase>();
-                                          if(meshComponent)
+                                          auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(entity);
+                                          auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
+                                          if(mesh)
                                           {
-                                              meshComponent->m_meshDataRenderInfo.m_enableFacesCulling = false;
-                                              meshComponent->m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE, "../SGResources/textures/chess.jpg");
-                                              meshComponent->m_meshData->setVertexUV(0, 200, 0, 0);
-                                              meshComponent->m_meshData->setVertexUV(1, 0, 200, 0);
-                                              meshComponent->m_meshData->setVertexUV(2, 200, 200, 0);
-                                              meshComponent->m_meshData->prepare();
+                                              mesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
+                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE, "../SGResources/textures/chess.jpg");
+                                              mesh->m_base.m_meshData->setVertexUV(0, 200, 0, 0);
+                                              mesh->m_base.m_meshData->setVertexUV(1, 0, 200, 0);
+                                              mesh->m_base.m_meshData->setVertexUV(2, 200, 200, 0);
+                                              mesh->m_base.m_meshData->prepare();
                                           }
-                                          if(transformComponent)
+                                          if(transform)
                                           {
-                                              transformComponent->m_scale = { 400.0, 400.0, 400.0 };
+                                              transform->m_ownTransform.m_scale = { 10.0, 10.0, 10.0 };
                                           }
                                       }
     );
@@ -241,10 +245,10 @@ void init()
     // ==========================================================================================
 
     model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                   [](const SGCore::Ref<SGCore::Entity>& entity)
+                                   [](const entt::entity& entity)
     {
-        auto transformComponent = entity->getComponent<SGCore::TransformBase>();
-        if(transformComponent)
+        auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
+        if(transform)
         {
             /*transformComponent->m_position = { -8, 0.1, -20 };
             transformComponent->m_rotation = { 90, 0, 0 };
@@ -266,9 +270,9 @@ void init()
             transformComponent->m_scale = { 0.7, 0.7, 0.7 };*/
 
             // RPG
-            transformComponent->m_position = { 1, 3.7, -20 };
-            transformComponent->m_rotation = { 90, 0, 90 };
-            transformComponent->m_scale = { 0.1, 0.1, 0.1 };
+            transform->m_ownTransform.m_position = { 1, 20.0, -20 };
+            transform->m_ownTransform.m_rotation = { 90, 0, 90 };
+            transform->m_ownTransform.m_scale = { 0.8, 0.8, 0.8 };
 
             // sponza old model
             /*transformComponent->m_position = { 3, 2.91, -20 };
@@ -287,15 +291,15 @@ void init()
     // ==========================================================================================
 
     model1->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                      [](const SGCore::Ref<SGCore::Entity>& entity)
+                                      [](const entt::entity& entity)
                                       {
-                                          auto transformComponent = entity->getComponent<SGCore::TransformBase>();
-                                          if(transformComponent)
+                                          auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
+                                          if(transform)
                                           {
                                               // wooden table
-                                              transformComponent->m_position = { 0, 1.4, -20 };
-                                              transformComponent->m_rotation = { 0, 90, 0 };
-                                              transformComponent->m_scale = { 0.1, 0.1, 0.1 };
+                                              transform->m_ownTransform.m_position = { 0, 1.30, -20 };
+                                              transform->m_ownTransform.m_rotation = { 0, 90, 0 };
+                                              transform->m_ownTransform.m_scale = { 0.8, 0.8, 0.8 };
                                           }
                                       }
     );
@@ -336,49 +340,46 @@ void init()
     );
 
     // adding skybox
-   /* {
-        std::vector<SGCore::Ref<SGCore::Entity>> skyboxEntities;
+    {
+        std::vector<entt::entity> skyboxEntities;
         cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
             skyboxEntities.push_back(entity);
         });
 
-        auto skyboxComponent = SGCore::MakeRef<SGCore::Skybox>();
-        auto skyboxMesh = skyboxEntities[2]->getComponent<SGCore::Mesh>();
-        skyboxMesh->m_meshData->m_material->m_textures[SGTextureType::SGTT_SKYBOX].push_back(
+        SGCore::Skybox& skybox = testScene->getECSRegistry().emplace<SGCore::Skybox>(skyboxEntities[2]);
+        skybox.m_base.m_meshData->m_material->m_textures[SGTextureType::SGTT_SKYBOX].push_back(
                 standardCubemap
         );
-        *//*skyboxMesh->removeRequiredShaderPath(skyboxMesh->m_meshData->m_material->getShader(), "GeometryShader");
-        skyboxMesh->addRequiredShaderPath("SkyboxShader");*//*
-        skyboxEntities[2]->addComponent(skyboxComponent);
+        SGCore::Mesh& skyboxMesh = testScene->getECSRegistry().get<SGCore::Mesh>(skyboxEntities[2]);
+        skybox.m_base.m_meshData->setData(skyboxMesh.m_base.m_meshData);
+        testScene->getECSRegistry().erase<SGCore::Mesh>(skyboxEntities[2]);
 
-        auto transformComponent = skyboxEntities[2]->getComponent<SGCore::TransformBase>();
+        SGCore::Transform& skyboxTransform = testScene->getECSRegistry().get<SGCore::Transform>(skyboxEntities[2]);
+        // auto transformComponent = skyboxEntities[2]->getComponent<SGCore::Transform>();
 
-        if(transformComponent)
-        {
-            transformComponent->m_scale = {1, 1, 1};
-        }
-    }*/
+        skyboxTransform.m_ownTransform.m_scale = { 10, 10, 10 };
+    }
 
     // ==========================================================================================
     // ==========================================================================================
     // ==========================================================================================
 
     cubeModel1->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                       [geniusJPG](const SGCore::Ref<SGCore::Entity>& entity)
+                                       [geniusJPG](const entt::entity& entity)
                                        {
-                                           auto transformComponent = entity->getComponent<SGCore::TransformBase>();
-                                           auto meshComponent = entity->getComponent<SGCore::Mesh>();
+                                           auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(entity);
+                                           auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
 
-                                           if(transformComponent)
+                                           if(transform)
                                            {
-                                               transformComponent->m_position = { -5, 3, -30 };
-                                               transformComponent->m_rotation = { 0, 0, 0 };
-                                               transformComponent->m_scale = {0.1 * 10.0, 0.4 * 10.0, 0.1 * 10.0 };
+                                               transform->m_ownTransform.m_position = { -5, 3, -30 };
+                                               transform->m_ownTransform.m_rotation = { 0, 0, 0 };
+                                               transform->m_ownTransform.m_scale = {0.1 * 10.0, 0.2 * 10.0, 0.1 * 10.0 };
                                            }
 
-                                           if(meshComponent)
+                                           if(mesh)
                                            {
-                                               meshComponent->m_meshData->m_material->m_textures[SGTextureType::SGTT_DIFFUSE].push_back(
+                                               mesh->m_base.m_meshData->m_material->m_textures[SGTextureType::SGTT_DIFFUSE].push_back(
                                                        geniusJPG
                                                );
                                            }
@@ -389,16 +390,22 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    testCameraEntity = SGCore::MakeRef<SGCore::Entity>();
-    testCameraEntity->setRawName("SGMainCamera");
-    auto cameraTransformComponent = SGCore::MakeRef<SGCore::TransformBase>();
-    cameraTransformComponent->m_position.y = -3;
-    cameraTransformComponent->m_position.z = 2;
-    cameraTransformComponent->m_rotation.x = -30;
-    //cameraTransformComponent->m_position.x = -5;
-    testCameraEntity->addComponent(cameraTransformComponent);
-    auto camera = SGCore::MakeRef<SGCore::Camera>();
-    testCameraEntity->addComponent(camera);
+    // --- camera ---------------
+
+    testCameraEntity = testScene->getECSRegistry().create();
+    SGCore::EntityBaseInfo& cameraBaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(testCameraEntity);
+    cameraBaseInfo.setRawName("SGMainCamera");
+
+    SGCore::Transform& cameraTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(testCameraEntity);
+    cameraTransform.m_ownTransform.m_position.y = -3;
+    cameraTransform.m_ownTransform.m_position.z = 2;
+    cameraTransform.m_ownTransform.m_rotation.x = -30;
+
+    SGCore::Camera& cameraEntityCamera = testScene->getECSRegistry().emplace<SGCore::Camera>(testCameraEntity);
+    SGCore::Controllable3D& cameraEntityControllable = testScene->getECSRegistry().emplace<SGCore::Controllable3D>(testCameraEntity);
+    SGCore::RenderingBase& cameraRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(testCameraEntity);
+
+    // ===============================
 
     int primaryMonitorWidth;
     int primaryMonitorHeight;
@@ -508,7 +515,7 @@ void init()
     // =================================================================================
     // =================================================================================
 
-    testScene->addEntity(testCameraEntity); /// PASSED
+    /*testScene->addEntity(testCameraEntity); /// PASSED
 
     /// THIS CODE CLEARS CACHED COMPONENTS WTF
     testShadowsCaster = SGCore::MakeRef<SGCore::Entity>();
@@ -603,13 +610,13 @@ void init()
 
     auto zLineGizmo = SGCore::MakeRef<SGCore::LineGizmo>();
     zLineGizmo->m_meshData->setVertexPosition(1, 0, 0, 10);
-    zLineGizmo->m_color = { 0.0, 0.0, 1.0, 1.0 };
+    zLineGizmo->m_color = { 0.0, 0.0, 1.0, 1.0 };*/
 
     /*testShadowsCaster1->addComponent(xLineGizmo);
     testShadowsCaster1->addComponent(yLineGizmo);
     testShadowsCaster1->addComponent(zLineGizmo);*/
 
-    /// -----------------------------------------
+    // -----------------------------------------
 
     // IMGUI DEBUG -----------------------------------------------------------
 
@@ -626,7 +633,7 @@ void fixedUpdate()
 {
     double angle = framesCnt / 75.0;
 
-    auto transform0 = testShadowsCaster->getComponent<SGCore::TransformBase>();
+    // auto transform0 = testShadowsCaster->getComponent<SGCore::TransformBase>();
 
     // transform0->m_position.y += sin(framesCnt / 30.0) / 2.5;
 
@@ -702,17 +709,17 @@ int main()
     viewsInjector["TestWindow"].m_childrenViews.push_back(testCollapsingHeader);
     //viewsInjector["Scene hierarchy"]["TestCollapsingHeader"].m_rootView = testCollapsingHeader;
 
-    auto* testWindowOverdraw = new SGUtils::EventListenerHolder<void()> {[]()
+    auto testWindowOverdraw = SGCore::MakeEventListener<void()> ([]()
                                                                         {
                                                                             ImGui::Text("hi.");
-                                                                        }};
+                                                                        });
 
     int* dragInt = new int(0);
-    auto* testCollapsingHeaderOverdraw = new SGUtils::EventListenerHolder<void()> {[dragInt]()
+    auto testCollapsingHeaderOverdraw = SGCore::MakeEventListener<void()>([dragInt]()
                                                                                   {
                                                                                       ImGui::DragInt("Drag this int!", dragInt);
                                                                                       ImGui::Text("hi!!");
-                                                                                  }};
+                                                                                  });
 
     (*testWindow->m_onRenderEvent) += testWindowOverdraw;
     (*testCollapsingHeader->m_onRenderEvent) += testCollapsingHeaderOverdraw;

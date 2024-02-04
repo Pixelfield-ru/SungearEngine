@@ -4,18 +4,16 @@
 
 #include "Scene.h"
 
-#include "SGCore/ECS/Transformations/TransformationsUpdater.h"
-#include "SGCore/ECS/Rendering/MeshesCollector.h"
-#include "SGCore/ECS/Rendering/RenderingComponentsUpdater.h"
-#include "SGCore/ECS/Rendering/Gizmos/GizmosMeshesRebuilder.h"
-#include "SGCore/ECS/Transformations/CameraMovement3DSystem.h"
-#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRForwardRenderPipeline.h"
-#include "SGCore/ECS/Rendering/CamerasCollector.h"
-#include "SGCore/ECS/Rendering/Pipelines/PBRFRP/PBRFRPDirectionalLightsCollector.h"
 #include "GLFW/glfw3.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
-#include "BaseEntityInfo.h"
 #include "EntityBaseInfo.h"
+#include "SGCore/Transformations/TransformationsUpdater.h"
+#include "SGCore/Transformations/Controllables3DUpdater.h"
+#include "SGCore/Render/RenderingBasesUpdater.h"
+#include "SGCore/Render/Gizmos/BoxGizmosUpdater.h"
+#include "SGCore/Render/Gizmos/LineGizmosUpdater.h"
+#include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
+#include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
 
 SGCore::Scene::Scene()
 {
@@ -24,39 +22,37 @@ SGCore::Scene::Scene()
 
 void SGCore::Scene::createDefaultSystems()
 {
-    auto transformationsSystem = std::make_shared<TransformationsUpdater>();
+    // transformations
 
-    auto meshedEntitiesCollectorSystem = std::make_shared<MeshesCollector>();
+    auto transformationsUpdater = MakeRef<TransformationsUpdater>();
+    m_systems.emplace(transformationsUpdater);
 
-    auto renderingComponentsSystem = std::make_shared<RenderingComponentsUpdater>();
+    auto controllables3DUpdater = MakeRef<Controllables3DUpdater>();
+    m_systems.emplace(controllables3DUpdater);
 
-    auto primitivesUpdaterSystem = std::make_shared<GizmosMeshesRebuilder>();
+    // -------------
+    // rendering
 
-    auto camera3DMovementSystem = std::make_shared<CameraMovement3DSystem>();
+    auto renderingBasesUpdater = MakeRef<RenderingBasesUpdater>();
+    m_systems.emplace(renderingBasesUpdater);
 
-    auto pbrfrpCamerasCollector = std::make_shared<CamerasCollector>();
-    auto pbrfrpDirectionalLightsCollector = std::make_shared<PBRFRPDirectionalLightsCollector>();
+    RenderPipelinesManager::setRenderPipeline(MakeRef<PBRRenderPipeline>());
 
-    setRenderPipeline(MakeRef<PBRForwardRenderPipeline>());
+    // -------------
+    // gizmos
 
-    // -------------------------------
-    m_systems.emplace(transformationsSystem);
-    m_systems.emplace(meshedEntitiesCollectorSystem);
-    m_systems.emplace(renderingComponentsSystem);
-    m_systems.emplace(primitivesUpdaterSystem);
-    // directional light system must be always before shadows caster system
-    m_systems.emplace(camera3DMovementSystem);
+    auto boxGizmosUpdater = MakeRef<BoxGizmosUpdater>();
+    m_systems.emplace(boxGizmosUpdater);
 
-    m_systems.emplace(pbrfrpCamerasCollector);
-    m_systems.emplace(pbrfrpDirectionalLightsCollector);
+    auto lineGizmosUpdater = MakeRef<LineGizmosUpdater>();
+    m_systems.emplace(lineGizmosUpdater);
 
+    auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();
+    m_systems.emplace(sphereGizmosUpdater);
+
+    // -------------
 
     // m_systems.emplace(pipelineSystem);
-
-    for(auto& system : m_systems)
-    {
-        system->useScene(shared_from_this());
-    }
 }
 
 // ----------------
@@ -148,13 +144,13 @@ std::set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getSystems() noexcept
     return m_systems;
 }
 
-size_t SGCore::Scene::createBaseEntity() noexcept
+/*size_t SGCore::Scene::createBaseEntity() noexcept
 {
     size_t entity = m_ecsRegistry->createEntity();
     auto* baseEntityInfo = m_ecsRegistry->emplace<EntityBaseInfo>(entity);
 
     return entity;
-}
+}*/
 
 SGCore::Layer SGCore::Scene::createLayer(const std::string& name) noexcept
 {

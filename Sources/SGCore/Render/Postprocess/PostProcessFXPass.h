@@ -5,14 +5,16 @@
 #ifndef SUNGEARENGINE_POSTPROCESSFXPASS_H
 #define SUNGEARENGINE_POSTPROCESSFXPASS_H
 
-#include "SGCore/ECS/Rendering/Pipelines/IRenderPass.h"
 #include "PostProcessFXSubPass.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/Render/IRenderPass.h"
 
 namespace SGCore
 {
     class IMeshData;
     class Camera;
+    struct IRenderPipeline;
+    class Scene;
 
     struct PostProcessFXPass : public IRenderPass
     {
@@ -24,10 +26,10 @@ namespace SGCore
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
 
     private:
-        void depthPass(const Ref<Camera>& camera) const noexcept;
-        void FXPass(const Ref<Camera>&) const noexcept;
-        void layersCombiningPass(const Ref<Camera>& camera) const noexcept;
-        void finalFrameFXPass(const Ref<Camera>& camera) const;
+        void depthPass(Camera& camera) const noexcept;
+        void FXPass(Camera& camera) const noexcept;
+        void layersCombiningPass(Camera& camera) const noexcept;
+        void finalFrameFXPass(Camera& camera) const;
     };
 }
 

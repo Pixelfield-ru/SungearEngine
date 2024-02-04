@@ -2,19 +2,16 @@
 // Created by stuka on 07.05.2023.
 //
 
-#pragma once
-
 #ifndef NATIVECORE_MODELASSET_H
 #define NATIVECORE_MODELASSET_H
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
 
 #include "IAsset.h"
 
 #include "SGCore/ImportedScenesArch/Node.h"
-
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "SGCore/ECS/Scene.h"
-#include "SGCore/ECS/Rendering/Mesh.h"
+#include "SGCore/Graphics/API/GraphicsDataTypes.h"
 
 namespace SGCore
 {
