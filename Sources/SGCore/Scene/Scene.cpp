@@ -14,8 +14,10 @@
 #include "SGCore/Render/Gizmos/LineGizmosUpdater.h"
 #include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
-#include "SGCore/Flags/ObserverSystems/ModelMatrixChangedObserver.h"
-#include "SGCore/Flags/ModelMatrixChangedFlag.h"
+#include "SGCore/ECSObservers/Flags/ModelMatrixChangedFlag.h"
+#include "SGCore/Render/Mesh.h"
+#include "SGCore/ECSObservers/Observers/MeshShaderUpdateObserver.h"
+#include "SGCore/ECSObservers/Observers/ModelMatrixChangedObserver.h"
 
 SGCore::Scene::Scene()
 {
@@ -54,6 +56,8 @@ void SGCore::Scene::createDefaultSystems()
 
     auto modelMatrixChangedObserver = MakeRef<ModelMatrixChangedObserver>();
     addFlagObserverSystem<ModelMatrixChangedFlag>(modelMatrixChangedObserver);
+
+    m_ecsRegistry.on_construct<Mesh>().connect<&MeshShaderUpdateObserver::meshCreate>();
 
     // -------------
 

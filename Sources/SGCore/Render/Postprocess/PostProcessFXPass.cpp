@@ -40,18 +40,6 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const Ref<IRende
         finalFrameFXPass(camera);
     });
 
-    /*SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
-            auto cameraComponent = cameraEntity.getComponent<Camera>();
-
-            if(!cameraComponent) continue;
-
-            depthPass(cameraComponent);
-            FXPass(cameraComponent);
-            layersCombiningPass(cameraComponent);
-            finalFrameFXPass(cameraComponent);
-
-    SG_END_ITERATE_CACHED_ENTITIES*/
-
     CoreMain::getRenderer()->setDepthTestingEnabled(true);
 }
 

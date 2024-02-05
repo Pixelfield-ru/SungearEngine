@@ -9,10 +9,25 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Scene/Scene.h"
+#include "SGCore/Render/Lighting/DirectionalLight.h"
+#include "SGCore/Render/Mesh.h"
 
 void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_renderTimer.startFrame();
+
+    m_renderTimerCallback->setUpdateFunction([&]() {
+        auto directionalLightsView = scene->getECSRegistry().view<DirectionalLight, RenderingBase, Transform>();
+        auto meshes = scene->getECSRegistry().view<Mesh, Transform>();
+
+        size_t currentLightIdx = 0;
+        directionalLightsView.each([&currentLightIdx](DirectionalLight& directionalLight, RenderingBase& renderingBase, Transform& transform) {
+
+
+            ++currentLightIdx;
+        });
+    });
 
     /*m_renderTimerCallback->setUpdateFunction([&, renderPipeline]()
                                              {

@@ -7,6 +7,8 @@
 
 #include <unordered_map>
 #include <string>
+#include <glm/glm.hpp>
+
 #include "SGCore/Memory/Assets/IAssetObserver.h"
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 #include "SGCore/Memory/Assets/FileAsset.h"
@@ -53,6 +55,30 @@ namespace SGCore
 
         void removeAllSubPassShadersByDiskPath(const std::string& path) noexcept;
         void removeSubPass(const std::string& virtualPath) noexcept;
+
+        /*static void useTextureGlobal(const std::string& uniformName, const std::uint8_t& texBlock) noexcept;
+
+        static void useMatrixGlobal(const std::string& uniformName, const glm::mat4& matrix) noexcept;
+
+        static void useVectorfGlobal(const std::string& uniformName, const float& x, const float& y) noexcept;
+
+        static void useVectorfGlobal(const std::string& uniformName,
+                                     const float& x, const float& y, const float& z) noexcept;
+
+        static void useVectorfGlobal(const std::string& uniformName,
+                                     const float& x, const float& y, const float& z, const float& w) noexcept;
+
+        static void useVectorfGlobal(const std::string& uniformName, const glm::vec2& vec) noexcept;
+
+        static void useVectorfGlobal(const std::string& uniformName, const glm::vec3& vec) noexcept;
+
+        static void useVectorfGlobal(const std::string& uniformName, const glm::vec4& vec) noexcept;
+
+        static void useFloatGlobal(const std::string& uniformName, const float& f) noexcept;
+
+        static void useIntegerGlobal(const std::string& uniformName, const size_t& i) noexcept;
+
+        static void useTextureBlockGlobal(const std::string& uniformName, const size_t& textureBlock) noexcept;*/
 
     private:
         // first - sub pass name

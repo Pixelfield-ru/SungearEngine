@@ -39,10 +39,13 @@ namespace SGCore
                 return std::static_pointer_cast<AssetT>(foundAssetPair->second);
             }
 
+            std::filesystem::path p(path);
+
             // sfinae just for GPU objects as assets
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
 
             newAsset->load(path);
+            newAsset->setRawName(p.stem().string());
 
             m_assets.emplace(path, newAsset);
 
@@ -64,6 +67,7 @@ namespace SGCore
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
 
             newAsset->load(path);
+            newAsset->setRawName(alias);
 
             m_assets.emplace(alias, newAsset);
 
@@ -77,6 +81,7 @@ namespace SGCore
             if(foundAssetPair == m_assets.end())
             {
                 m_assets[alias] = asset;
+                asset->setRawName(alias);
 
                 if(SG_INSTANCEOF(asset.get(), GPUObject))
                 {

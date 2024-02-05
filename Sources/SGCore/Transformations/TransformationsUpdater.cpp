@@ -11,7 +11,7 @@
 #include "TransformationsUtils.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Flags/ModelMatrixChangedFlag.h"
+#include "SGCore/ECSObservers/Flags/ModelMatrixChangedFlag.h"
 
 /*double curT = 0.0;
 double accum = 0.0;

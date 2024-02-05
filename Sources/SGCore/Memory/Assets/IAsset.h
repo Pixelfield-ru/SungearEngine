@@ -13,12 +13,13 @@
 
 #include "IAssetObserver.h"
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGUtils/UniqueName.h"
 
 namespace SGCore
 {
     class IAssetObserver;
 
-    class IAsset
+    class IAsset : public UniqueNameWrapper
     {
         friend class AssetManager;
 

@@ -25,7 +25,7 @@ namespace SGCore
         void operator()(std::uint8_t* data);
     };
 
-    class ITexture2D : public IAsset, public UniqueNameWrapper, public std::enable_shared_from_this<ITexture2D>, public GPUObject
+    class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>, public GPUObject
     {
         friend class IFrameBuffer;
         friend class TextureAsset;

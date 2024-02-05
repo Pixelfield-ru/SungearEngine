@@ -20,6 +20,8 @@ namespace SGCore
 
     class GPUObjectsStorage
     {
+        friend class IShader;
+
     public:
         static void addShader(const Ref<ISubPassShader>& shader) noexcept;
         static void addTexture(const Ref<ITexture2D>& texture2D) noexcept;

@@ -59,6 +59,7 @@ SGSubPass(GeometryPass)
         {
             // thats fucking works!!!!!!
             // SGUSampler2D diffuseSamplers[1] = SGGetTextures("GeniusTexture");
+            // SGUSampler2D diffuseSamplers[1] = SGGetTextures("standard_skybox0_xleft");
             SGUSampler2D diffuseSamplers[3] = SGGetTexturesFromMaterial("SGTT_DIFFUSE");
             SGUSampler2D metalnessSamplers[1] = SGGetTexturesFromMaterial("SGTT_METALNESS");
             SGUSampler2D normalsSamplers[1] = SGGetTexturesFromMaterial("SGTT_NORMALS");
@@ -260,7 +261,7 @@ SGSubPass(GeometryPass)
             vec3 dirLightsShadowCoeff = vec3(0.0);
 
             vec3 lo = vec3(0.0);
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
             {
                 ILight lightPart = directionalLights[i].lightPart;
                 IRenderingComponent renderingPart = lightPart.renderingPart;

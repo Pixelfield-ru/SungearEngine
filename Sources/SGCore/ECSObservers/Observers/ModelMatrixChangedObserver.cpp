@@ -10,7 +10,7 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGCore/Transformations/Transform.h"
-#include "SGCore/Flags/ModelMatrixChangedFlag.h"
+#include "SGCore/ECSObservers/Flags/ModelMatrixChangedFlag.h"
 
 void SGCore::ModelMatrixChangedObserver::onFlagChanged(const SGCore::Ref<SGCore::Scene>& scene,
                                                        const entt::entity& flagOwner,
@@ -28,8 +28,6 @@ void SGCore::ModelMatrixChangedObserver::onFlagChanged(const SGCore::Ref<SGCore:
             Ref<ISubPassShader> geomPassShader = mesh->m_base.m_meshData->m_material->getShader()->getSubPassShader("GeometryPass");
             if(geomPassShader)
             {
-                std::cout << "updated" << std::endl;
-
                 geomPassShader->bind();
                 geomPassShader->useMatrix("objectModelMatrix", transform->m_finalTransform.m_modelMatrix);
             }

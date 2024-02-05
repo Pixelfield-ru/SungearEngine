@@ -19,6 +19,7 @@
 
 namespace SGCore
 {
+    // todo: make scenes list
     class Scene : public std::enable_shared_from_this<Scene>
     {
     public:

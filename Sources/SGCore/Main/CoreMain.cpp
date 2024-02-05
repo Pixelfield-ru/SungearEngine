@@ -5,6 +5,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
+#include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
@@ -17,8 +18,12 @@
 void SGCore::CoreMain::start()
 {
     const auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-    auto currentSessionLogger = spdlog::basic_logger_mt("current_session", "logs/sg_log_" + std::format("{:%Y_%m_%d_%H_%M_%S}", now) + ".txt");
+    std::ostringstream timeStringStream;
+    timeStringStream << std::put_time(std::localtime(&in_time_t), "%Y_%m_%d_%H_%M_%S");
+
+    auto currentSessionLogger = spdlog::basic_logger_mt("current_session", "logs/sg_log_" + timeStringStream.str() + ".txt");
     spdlog::set_default_logger(currentSessionLogger);
 
     // todo: move
@@ -26,6 +31,7 @@ void SGCore::CoreMain::start()
     setlocale(LC_ALL, "Russian");*/
 
     m_renderer = GL4Renderer::getInstance();
+    // m_renderer = GL46Renderer::getInstance();
     //m_renderer = VkRenderer::getInstance();
 
     m_window.create();

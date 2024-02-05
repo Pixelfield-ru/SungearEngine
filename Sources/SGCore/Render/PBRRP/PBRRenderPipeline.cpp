@@ -6,6 +6,7 @@
 #include "SGCore/Main/CoreMain.h"
 
 #include "PBRRPGeometryPass.h"
+#include "SGCore/Render/PostProcess/PostProcessFXPass.h"
 
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
