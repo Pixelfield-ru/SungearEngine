@@ -7,6 +7,7 @@
 
 #include "PBRRPGeometryPass.h"
 #include "SGCore/Render/PostProcess/PostProcessFXPass.h"
+#include "PBRRPDirectionalLightsPass.h"
 
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
@@ -31,6 +32,12 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         // geometryPass->m_shader->m_uniformBuffer = Scope<IUniformBuffer>(CoreMain::getRenderer().createUniformBuffer());
 
         m_renderPasses.push_back(geometryPass);
+    }
+
+    {
+        auto directionalLightsPass = MakeRef<PBRRPDirectionalLightsPass>();
+
+        m_renderPasses.push_back(directionalLightsPass);
     }
 
     // WARNING! PostProcessFXPass ALWAYS AFTER OTHER PASSES

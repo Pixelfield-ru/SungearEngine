@@ -16,7 +16,6 @@
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
 #include "SGCore/ECSObservers/Flags/ModelMatrixChangedFlag.h"
 #include "SGCore/Render/Mesh.h"
-#include "SGCore/ECSObservers/Observers/MeshShaderUpdateObserver.h"
 #include "SGCore/ECSObservers/Observers/ModelMatrixChangedObserver.h"
 
 SGCore::Scene::Scene()
@@ -56,8 +55,6 @@ void SGCore::Scene::createDefaultSystems()
 
     auto modelMatrixChangedObserver = MakeRef<ModelMatrixChangedObserver>();
     addFlagObserverSystem<ModelMatrixChangedFlag>(modelMatrixChangedObserver);
-
-    m_ecsRegistry.on_construct<Mesh>().connect<&MeshShaderUpdateObserver::meshCreate>();
 
     // -------------
 
@@ -117,7 +114,7 @@ void SGCore::Scene::update()
     }
 }
 
-std::set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getSystems() noexcept
+std::set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() noexcept
 {
     return m_systems;
 }

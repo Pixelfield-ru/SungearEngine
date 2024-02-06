@@ -5,20 +5,14 @@
 #ifndef SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H
 #define SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H
 
-#include "SGCore/Render/IRenderPass.h"
+#include "SGCore/Render/ILightPass.h"
 
 namespace SGCore
 {
-    struct PBRRPDirectionalLightsPass : public IRenderPass
+    struct PBRRPDirectionalLightsPass : public ILightPass
     {
         // todo: сделать рендер пассы с настройкой времени выполнения. то же самое сделать с системами
-        PBRRPDirectionalLightsPass()
-        {
-            m_renderTimer.m_useFixedUpdateCatchUp = false;
-            m_renderTimer.m_targetFrameRate = 24;
-
-            m_renderTimer.addCallback(m_renderTimerCallback);
-        }
+        PBRRPDirectionalLightsPass() noexcept;
 
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
 

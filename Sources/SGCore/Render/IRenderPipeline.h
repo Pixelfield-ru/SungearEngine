@@ -36,6 +36,23 @@ namespace SGCore
 
             return nullptr;
         }
+
+        template<typename RenderPassT>
+        requires(std::is_base_of_v<IRenderPass, RenderPassT>)
+        std::vector<Ref<RenderPassT>> getRenderPasses()
+        {
+            std::vector<Ref<RenderPassT>> foundRenderPasses;
+
+            for(auto& renderPass : m_renderPasses)
+            {
+                if(SG_INSTANCEOF(renderPass.get(), RenderPassT))
+                {
+                    foundRenderPasses.push_back(std::static_pointer_cast<RenderPassT>(renderPass));
+                }
+            }
+
+            return foundRenderPasses;
+        }
     };
 }
 

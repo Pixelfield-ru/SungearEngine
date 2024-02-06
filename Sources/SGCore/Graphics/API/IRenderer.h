@@ -44,11 +44,6 @@ namespace SGCore
         // Buffer for storing matrices of the program.
         Ref<IUniformBuffer> m_programDataBuffer;
 
-        // check usages in IVertexArray implementations and IIndexBuffer implementations
-        // TODO: UB IS HERE
-        IIndexBuffer* m_currentBoundIndexBuffer = nullptr;
-        IVertexArray* m_currentBoundVertexArray = nullptr;
-
         virtual void init() { }
 
         /**

@@ -50,16 +50,23 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     auto camerasView = scene->getECSRegistry().view<RenderingBase, Camera, Transform>();
     auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Transform>();
 
-    camerasView.each([&meshesView](RenderingBase& cameraRenderingBase, Camera& camera, Transform& cameraTransform) {
+    camerasView.each([&meshesView, &renderPipeline](RenderingBase& cameraRenderingBase, Camera& camera, Transform& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
 
-        meshesView.each([](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
+        meshesView.each([&renderPipeline](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
             auto meshGeometryShader = mesh.m_base.m_meshData->m_material->getShader()->getSubPassShader("GeometryPass");
 
             if(meshGeometryShader)
             {
                 meshGeometryShader->bind();
                 meshGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+
+                std::vector<Ref<ILightPass>> lightPasses = renderPipeline->getRenderPasses<ILightPass>();
+                for(auto& lightPass : lightPasses)
+                {
+                    // lightPass->m_lightsUniformBuffer->bind();
+                    meshGeometryShader->useUniformBuffer(lightPass->m_lightsUniformBuffer);
+                }
 
                 CoreMain::getRenderer()->renderMeshData(
                         mesh.m_base.m_meshData,

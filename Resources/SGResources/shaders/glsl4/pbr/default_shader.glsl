@@ -261,7 +261,7 @@ SGSubPass(GeometryPass)
             vec3 dirLightsShadowCoeff = vec3(0.0);
 
             vec3 lo = vec3(0.0);
-            for (int i = 0; i < DIRECTIONAL_LIGHTS_COUNT; i++)
+            for (int i = 0; i < directionalLightsCount; ++i)
             {
                 ILight lightPart = directionalLights[i].lightPart;
                 IRenderingComponent renderingPart = lightPart.renderingPart;
@@ -312,6 +312,7 @@ SGSubPass(GeometryPass)
                 vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
                 lo += (diffuse * albedo.rgb / PI + specular) * radiance;
+                // lo = vec3(1.0);
             }
 
             vec3 ambient = vec3(0.22) * albedo.rgb * ao;

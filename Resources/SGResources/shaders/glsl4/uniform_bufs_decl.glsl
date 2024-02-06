@@ -29,4 +29,15 @@ layout(std140) uniform ProgramData
     float currentTime;
 };
 
+#ifndef SG_NOT_INCLUDE_LIGHTS
+    layout(std140) uniform DirectionalLightsBlock
+    {
+        int directionalLightsCount;
+        DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
+    };
+
+    // Suitable only for one-way (directional) light sources!
+    uniform sampler2D sgmat_shadowMap2DSamplers[DIRECTIONAL_LIGHTS_MAX_COUNT];
+#endif
+
 #sg_endif // UNIFORM_BUFS_DECL_GLSL

@@ -30,6 +30,7 @@
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Skybox.h"
+#include "SGCore/Render/Lighting/DirectionalLight.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -624,6 +625,14 @@ void init()
     testShadowsCaster1->addComponent(yLineGizmo);
     testShadowsCaster1->addComponent(zLineGizmo);*/
 
+    entt::entity testShadowsCaster1 = testScene->getECSRegistry().create();
+    SGCore::Transform& testShadowsCaster1Transform = testScene->getECSRegistry().emplace<SGCore::Transform>(testShadowsCaster1);
+    SGCore::DirectionalLight& testShadowsCaster1DirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(testShadowsCaster1);
+    testShadowsCaster1DirLight.m_base.m_color = { 0.0f / 255.0f, 50.0f / 255.0f, 241.0f / 255.0f, 1.0f };
+    testShadowsCaster1DirLight.m_base.m_intensity = 200.0f;
+    SGCore::RenderingBase& testShadowsCaster1RenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(testShadowsCaster1);
+    SGCore::EntityBaseInfo& testShadowsCaster1BaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(testShadowsCaster1);
+
     // -----------------------------------------
 
     // IMGUI DEBUG -----------------------------------------------------------
@@ -675,7 +684,7 @@ void update()
             ImGui::Text("fixedUpdate");
             ImGui::TableNextColumn();
 
-            for(const auto& system : SGCore::Scene::getCurrentScene()->getSystems())
+            for(const auto& system : SGCore::Scene::getCurrentScene()->getAllSystems())
             {
                 std::string systemName = std::string(typeid(*(system)).name());
                 ImGui::Text(systemName.c_str());

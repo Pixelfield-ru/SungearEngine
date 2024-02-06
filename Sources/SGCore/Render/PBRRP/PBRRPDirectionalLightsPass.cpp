@@ -2,6 +2,8 @@
 // Created by stuka on 26.11.2023.
 //
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "PBRRPDirectionalLightsPass.h"
 #include "PBRRPGeometryPass.h"
 #include "SGCore/Main/CoreMain.h"
@@ -11,22 +13,79 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/Lighting/DirectionalLight.h"
+#include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Render/Mesh.h"
+
+SGCore::PBRRPDirectionalLightsPass::PBRRPDirectionalLightsPass() noexcept
+{
+    m_lightsUniformBuffer = Ref<IUniformBuffer>(CoreMain::getRenderer()->createUniformBuffer());
+    m_lightsUniformBuffer->m_blockName = "DirectionalLightsBlock";
+    m_lightsUniformBuffer->putUniforms({
+        IShaderUniform("directionalLightsCount", SGGDataType::SGG_INT)
+    });
+    // todo: 5 is max directional lights count for forward render. do a constant setting
+    for(size_t i = 0; i < 5; ++i)
+    {
+        std::string currentDirLight = "directionalLights[" + std::to_string(i) + "]";
+
+        m_lightsUniformBuffer->putUniforms({
+            IShaderUniform(currentDirLight + ".lightPart.renderingPart.projectionMatrix", SGGDataType::SGG_MAT4),
+            IShaderUniform(currentDirLight + ".lightPart.renderingPart.viewMatrix", SGGDataType::SGG_MAT4),
+            IShaderUniform(currentDirLight + ".lightPart.renderingPart.spaceMatrix", SGGDataType::SGG_MAT4),
+            IShaderUniform(currentDirLight + ".lightPart.renderingPart.position", SGGDataType::SGG_FLOAT3),
+            IShaderUniform(currentDirLight + ".lightPart.renderingPart.rotation", SGGDataType::SGG_FLOAT3),
+            IShaderUniform(currentDirLight + ".lightPart.renderingPart.scale", SGGDataType::SGG_FLOAT3),
+            IShaderUniform(currentDirLight + ".lightPart.color", SGGDataType::SGG_FLOAT4),
+            IShaderUniform(currentDirLight + ".lightPart.intensity", SGGDataType::SGG_FLOAT),
+            IShaderUniform(currentDirLight + ".lightPart.shadowSamplesCount", SGGDataType::SGG_INT)
+        });
+    }
+    m_lightsUniformBuffer->setLayoutLocation(3);
+    m_lightsUniformBuffer->prepare();
+
+    m_renderTimer.m_useFixedUpdateCatchUp = false;
+    m_renderTimer.m_targetFrameRate = 24;
+
+    m_renderTimer.addCallback(m_renderTimerCallback);
+}
 
 void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_renderTimer.startFrame();
 
     m_renderTimerCallback->setUpdateFunction([&]() {
+        m_lightsUniformBuffer->bind();
+
         auto directionalLightsView = scene->getECSRegistry().view<DirectionalLight, RenderingBase, Transform>();
-        auto meshes = scene->getECSRegistry().view<Mesh, Transform>();
-
         size_t currentLightIdx = 0;
-        directionalLightsView.each([&currentLightIdx](DirectionalLight& directionalLight, RenderingBase& renderingBase, Transform& transform) {
 
+        directionalLightsView.each([&currentLightIdx, this](DirectionalLight& directionalLight, RenderingBase& renderingBase, Transform& transform) {
+            if(currentLightIdx < 5)
+            {
+                std::string currentDirLight = "directionalLights[" + std::to_string(currentLightIdx) + "]";
 
-            ++currentLightIdx;
+                if(directionalLight.m_base.m_color != directionalLight.m_base.m_lastColor)
+                {
+                    m_lightsUniformBuffer->subData(currentDirLight + ".lightPart.color", glm::value_ptr(directionalLight.m_base.m_color), 4);
+
+                    directionalLight.m_base.m_lastColor = directionalLight.m_base.m_color;
+                }
+
+                if(directionalLight.m_base.m_intensity != directionalLight.m_base.m_lastIntensity)
+                {
+                    m_lightsUniformBuffer->subData(currentDirLight + ".lightPart.intensity", { directionalLight.m_base.m_lastIntensity } );
+
+                    directionalLight.m_base.m_lastIntensity = directionalLight.m_base.m_intensity;
+                }
+
+                // todo make observer
+                m_lightsUniformBuffer->subData(currentDirLight + ".lightPart.renderingPart.position", glm::value_ptr(transform.m_ownTransform.m_position), 3);
+
+                ++currentLightIdx;
+            }
         });
+
+        m_lightsUniformBuffer->subData("directionalLightsCount", { currentLightIdx });
     });
 
     /*m_renderTimerCallback->setUpdateFunction([&, renderPipeline]()

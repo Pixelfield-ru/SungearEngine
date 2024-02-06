@@ -76,7 +76,7 @@ void SGCore::GL4Renderer::init() noexcept
                                              IShaderUniform("windowSize", SGGDataType::SGG_FLOAT2),
                                              IShaderUniform("currentTime", SGGDataType::SGG_FLOAT)
                                        });
-    m_programDataBuffer->setLayoutLocation(3);
+    m_programDataBuffer->setLayoutLocation(2);
     m_programDataBuffer->prepare();
 }
 

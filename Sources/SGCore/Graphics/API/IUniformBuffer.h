@@ -113,10 +113,11 @@ namespace SGCore
         std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
         {
             const auto& foundUniformIter = std::find_if(m_uniforms.begin(), m_uniforms.end(), [&uniformName](const auto& shaderUniform) { return shaderUniform.m_name == uniformName; });
-            /*if(foundUniformIter == m_uniforms.end())
+            if(foundUniformIter == m_uniforms.end())
             {
-                SGCF_ERROR("Unable to subData for uniform \"" + uniformName + "\" in the uniform buffer. Uniform with that name was not found.", SG_LOG_CURRENT_SESSION_FILE);
-            }*/
+                std::cout << "can not find uniform with name " << uniformName << std::endl; 
+                // SGCF_ERROR("Unable to subData for uniform \"" + uniformName + "\" in the uniform buffer. Uniform with that name was not found.", SG_LOG_CURRENT_SESSION_FILE);
+            }
             if(foundUniformIter != m_uniforms.end())
             {
                 const auto& uniform = *foundUniformIter;
@@ -175,6 +176,7 @@ namespace SGCore
         /**
          * Destroys GPU object
          */
+         // todo: rename to destroyHandler
         virtual void destroy() = 0;
     };
 }

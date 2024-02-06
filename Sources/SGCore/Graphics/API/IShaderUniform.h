@@ -23,22 +23,22 @@ namespace SGCore
 
         IShaderUniform() noexcept = default;
 
-        IShaderUniform(std::string&& name, std::int32_t location, SGGUsage usage, SGGDataType dataType)
+        IShaderUniform(const std::string& name, std::int32_t location, SGGUsage usage, SGGDataType dataType)
         {
-            m_name = std::move(name);
+            m_name = name;
             m_location = location;
             m_usage = usage;
             m_dataType = dataType;
         }
 
-        IShaderUniform(std::string&& name, SGGUsage usage, SGGDataType dataType)
+        IShaderUniform(const std::string& name, SGGUsage usage, SGGDataType dataType)
         {
-            m_name = std::move(name);
+            m_name = name;
             m_usage = usage;
             m_dataType = dataType;
         }
 
-        IShaderUniform(std::string&& name, SGGDataType dataType)
+        IShaderUniform(const std::string& name, SGGDataType dataType)
         {
             m_name = std::move(name);
             m_dataType = dataType;

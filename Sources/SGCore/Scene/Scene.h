@@ -51,7 +51,7 @@ namespace SGCore
             return nullptr;
         }
 
-        std::set<Ref<ISystem>>& getSystems() noexcept;
+        std::set<Ref<ISystem>>& getAllSystems() noexcept;
 
         auto getUniqueNamesManager() const noexcept
         {
