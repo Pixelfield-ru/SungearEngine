@@ -261,7 +261,7 @@ SGSubPass(GeometryPass)
             vec3 dirLightsShadowCoeff = vec3(0.0);
 
             vec3 lo = vec3(0.0);
-            for (int i = 0; i < directionalLightsCount; ++i)
+            for (int i = 0; i < 0; ++i)
             {
                 ILight lightPart = directionalLights[i].lightPart;
                 IRenderingComponent renderingPart = lightPart.renderingPart;

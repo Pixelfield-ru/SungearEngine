@@ -655,7 +655,7 @@ static GL3WglProc get_proc(const char *proc)
     return res;
 }
 #else
-#date <dlfcn.h>
+#include <dlfcn.h>
 
 static void *libgl;
 static GL3WglProc (*glx_get_proc_address)(const GLubyte *);
