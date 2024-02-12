@@ -1,6 +1,5 @@
 #sg_include "../defines.glsl"
 #sg_include "../uniform_bufs_decl.glsl"
-#sg_include "atmosphere_scattering.glsl"
 
 SGSubPass(GeometryPass)
 {
@@ -25,16 +24,16 @@ SGSubPass(GeometryPass)
 
     SGSubShader(Fragment)
     {
+        #sg_include "atmosphere_scattering.glsl"
+
         layout(location = 0) out vec4 fragColor;
 
         const vec3 sunPos = vec3(0.0, 1.0, -1.0);
 
-        SGUniformsDeclaration
-        {
-            // SGUSamplerCube skyboxSamplers[1] = SGGetTextures("GeniusTexture");
-            // SGUSamplerCube skyboxSamplers[1] = SGGetTextures("standard_skybox0");
-            SGUSamplerCube skyboxSamplers[1] = SGGetTexturesFromMaterial("SGTT_SKYBOX");
-        }
+        // SGUSamplerCube skyboxSamplers[1] = SGGetTextures("GeniusTexture");
+        // SGUSamplerCube skyboxSamplers[1] = SGGetTextures("standard_skybox0");
+        SGSamplerCube skyboxSamplers[1];
+        skyboxSamplers[0] = SGGetTexturesFromMaterial("SGTT_SKYBOX");
 
         in vec3 vs_UVAttribute;
 

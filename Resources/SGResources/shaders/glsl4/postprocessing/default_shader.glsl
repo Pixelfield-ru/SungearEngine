@@ -1,6 +1,6 @@
 #sg_include "vertex_base.glsl"
 
-#sg_define SG_NOT_INCLUDE_LIGHTS
+#define SG_NOT_INCLUDE_LIGHTS
 
 #sg_include "../uniform_bufs_decl.glsl"
 #sg_include "../color_correction/aces.glsl"

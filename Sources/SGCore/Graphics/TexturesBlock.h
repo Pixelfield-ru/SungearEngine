@@ -21,7 +21,10 @@ namespace SGCore
     {
         friend class GLShadersPreprocessor;
 
+        // this uniform name can be diffuseSamplers[0] for example (element of array)
         std::string m_uniformName;
+        // this uniform name is diffuseSamplers for example
+        std::string m_uniformRawName;
 
         bool m_isSingleTextureBlock = false;
 

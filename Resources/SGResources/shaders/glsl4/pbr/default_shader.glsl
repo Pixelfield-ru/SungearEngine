@@ -55,17 +55,19 @@ SGSubPass(GeometryPass)
         layout(location = 3) out vec4 gNormal;
         layout(location = 4) out vec4 gAlbedoSpec;
 
-        SGUniformsDeclaration
-        {
-            // thats fucking works!!!!!!
-            // SGUSampler2D diffuseSamplers[1] = SGGetTextures("GeniusTexture");
-            // SGUSampler2D diffuseSamplers[1] = SGGetTextures("standard_skybox0_xleft");
-            SGUSampler2D diffuseSamplers[3] = SGGetTexturesFromMaterial("SGTT_DIFFUSE");
-            SGUSampler2D metalnessSamplers[1] = SGGetTexturesFromMaterial("SGTT_METALNESS");
-            SGUSampler2D normalsSamplers[1] = SGGetTexturesFromMaterial("SGTT_NORMALS");
-            SGUSampler2D lightmapSamplers[1] = SGGetTexturesFromMaterial("SGTT_LIGHTMAP");
-            SGUSampler2D diffuseRoughnessSamplers[1] = SGGetTexturesFromMaterial("SGTT_DIFFUSE_ROUGHNESS");
-        }
+        // thats fucking works!!!!!!
+        // SGUSampler2D diffuseSamplers[1] = SGGetTextures("GeniusTexture");
+        // SGUSampler2D diffuseSamplers[1] = SGGetTextures("standard_skybox0_xleft");
+        SGSampler2D diffuseSamplers[3];
+        diffuseSamplers[0..2] = SGGetTexturesFromMaterial("SGTT_DIFFUSE");
+        SGSampler2D metalnessSamplers[1];
+        metalnessSamplers[0] = SGGetTexturesFromMaterial("SGTT_METALNESS");
+        SGSampler2D normalsSamplers[1];
+        normalsSamplers[0] = SGGetTexturesFromMaterial("SGTT_NORMALS");
+        SGSampler2D lightmapSamplers[1];
+        lightmapSamplers[0] = SGGetTexturesFromMaterial("SGTT_LIGHTMAP");
+        SGSampler2D diffuseRoughnessSamplers[1];
+        diffuseRoughnessSamplers[0] = SGGetTexturesFromMaterial("SGTT_DIFFUSE_ROUGHNESS");
 
         in VSOut
         {

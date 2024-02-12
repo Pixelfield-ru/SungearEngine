@@ -1,5 +1,4 @@
-#sg_ifndef ACES_GLSL
-#sg_define ACES_GLSL
+#sg_pragma once
 
 float saturate(const in float a) { return clamp(a, 0.0, 1.0); }
 vec3 saturate(const in vec3 a) { return clamp(a, vec3(0), vec3(1)); }
@@ -14,5 +13,3 @@ vec3 ACESFilm(const in vec3 x)
 
     return saturate((x * (a * x + b)) / (x * (c * x + d) + e));
 }
-
-#sg_endif // ACES_GLSL

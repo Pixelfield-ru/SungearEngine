@@ -2,6 +2,7 @@
 // Created by stuka on 11.05.2023.
 //
 #include <fstream>
+#include <filesystem>
 
 #include "FileUtils.h"
 #include "spdlog/spdlog.h"
@@ -33,25 +34,36 @@ std::string SGUtils::FileUtils::readFile(const std::string_view& path)
     }
     catch(const std::ios_base::failure& e)
     {
-        //todo:
         spdlog::error("Read file error: {0}. Path: {1}", e.what(), path);
     }
 
     return "";
 }
 
-void SGUtils::FileUtils::writeToFile(const std::string_view& path, const std::string& text, const bool& append)
+void SGUtils::FileUtils::writeToFile(const std::string_view& path, const std::string& text, bool append, bool createDirectories)
 {
+    if(createDirectories)
+    {
+        std::filesystem::path fPath(path);
+        std::filesystem::create_directories(fPath.parent_path().string());
+    }
+
     try
     {
         std::ofstream fileStream;
-        fileStream.open(path.data(),  (append ? std::ios::app : std::ios::trunc) | std::ios::out | std::ios::in);
+        fileStream.open(path.data(),  (append ? std::ios::app : std::ios::trunc) | std::ios::out | std::ios::in | std::ios::binary);
 
         fileStream << text;
     }
     catch(const std::ios_base::failure& e)
     {
-        // todo:
         spdlog::error("Write to file error: {0}. Path: {1}", e.what(), path);
     }
+}
+
+void SGUtils::FileUtils::createDirectory(const std::string_view& path, bool createNew) noexcept
+{
+    if(std::filesystem::exists(path) && createNew) return;
+
+    std::filesystem::create_directories(path);
 }

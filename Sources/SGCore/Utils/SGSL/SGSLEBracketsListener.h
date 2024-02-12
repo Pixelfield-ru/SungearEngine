@@ -10,7 +10,7 @@
 
 namespace SGCore
 {
-    struct SGSLBracketsListener
+    struct SGSLEBracketsListener
     {
         size_t m_openedBracketsCount = 0;
 

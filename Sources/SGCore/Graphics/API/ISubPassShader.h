@@ -17,7 +17,7 @@
 
 #include "SGCore/Graphics/TexturesFromGlobalStorageBlock.h"
 #include "SGCore/Graphics/TexturesFromMaterialBlock.h"
-#include "SGCore/Utils/SGSL/SGSLSubShaderType.h"
+#include "SGCore/Utils/SGSL/SGSLESubShaderType.h"
 #include "SGUtils/Utils.h"
 #include "SGCore/Graphics/GPUObject.h"
 
@@ -39,7 +39,7 @@ namespace SGCore
 
         Scope<IUniformBuffer> m_uniformBuffer;
 
-        std::unordered_map<SGSLSubShaderType, std::string> m_subShadersCodes;
+        std::unordered_map<SGSLESubShaderType, std::string> m_subShadersCodes;
 
         Weak<FileAsset> m_fileAsset;
 

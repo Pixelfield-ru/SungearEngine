@@ -1,5 +1,4 @@
-#sg_ifndef PP_VERTEX_BASE
-#sg_define PP_VERTEX_BASE
+#sg_pragma once
 
 #sg_include "../primitives.glsl"
 
@@ -19,5 +18,3 @@ SGSubPass(PostProcessLayerDepthPass, PostProcessLayerFXPass, PostProcessAttachme
         }
     }
 }
-
-#sg_endif

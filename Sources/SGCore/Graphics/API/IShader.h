@@ -23,7 +23,7 @@ namespace SGCore
     class IShader : public IAssetObserver
     {
     public:
-        ShaderAnalyzedFile m_shaderAnalyzedFile;
+        Ref<ShaderAnalyzedFile> m_shaderAnalyzedFile;
 
         Weak<FileAsset> m_fileAsset;
 

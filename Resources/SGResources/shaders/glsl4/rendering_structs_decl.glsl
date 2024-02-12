@@ -1,5 +1,4 @@
-#sg_ifndef RENDERING_STRUCTS_DECL_GLSL
-#sg_define RENDERING_STRUCTS_DECL_GLSL
+#sg_pragma once
 
 #define DIRECTIONAL_LIGHTS_MAX_COUNT    5
 
@@ -26,5 +25,3 @@ struct DirectionalLight
     ILight lightPart;
     // todo: make for dir light
 };
-
-#sg_endif // RENDERING_STRUCTS_DECL_GLSL

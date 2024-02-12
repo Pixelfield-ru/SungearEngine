@@ -1,5 +1,4 @@
-#sg_ifndef RANDOM_GLSL
-#sg_define RANDOM_GLSL
+#sg_pragma once
 
 float interleavedGradientNoise(const in vec2 position_screen)
 {
@@ -11,5 +10,3 @@ float random(const in vec2 uv)
 {
     return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453123);
 }
-
-#sg_endif // RANDOM_GLSL

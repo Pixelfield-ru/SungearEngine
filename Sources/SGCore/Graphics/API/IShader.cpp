@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "SGCore/Utils/SGSL/GLSLShadersPreprocessor.h"
+#include "SGCore/Utils/SGSL/SGSLETranslator.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
@@ -18,10 +18,10 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
 
     m_fileAsset = asset;
 
-    GLSLShadersPreprocessor preprocessor;
-    m_shaderAnalyzedFile = GLSLShadersPreprocessor::processCode(asset->getPath().string(), asset->getData(), preprocessor);
+    SGSLETranslator sgsleTranslator;
+    m_shaderAnalyzedFile = sgsleTranslator.processCode(asset->getPath().string(), asset->getData());
 
-    for(const auto& subPassIter : m_shaderAnalyzedFile.m_subPasses)
+    for(const auto& subPassIter : m_shaderAnalyzedFile->m_subPasses)
     {
         const auto subPassName = subPassIter.first;
         const auto& subPass = subPassIter.second;
@@ -34,32 +34,46 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
 
             if(subPass.isSubShaderExists(subShaderType))
             {
-                subPassShader->m_subShadersCodes[subShaderType] = m_shaderAnalyzedFile.getSubShaderCode(subPass.m_name, subShaderType);
+                subPassShader->m_subShadersCodes[subShaderType] = m_shaderAnalyzedFile->getSubShaderCode(subPass.m_name, subShaderType);
             }
-        }
 
-        for(const auto& variable : subPass.m_variables)
-        {
-            if(variable.m_rsideFunction == "SGGetTexturesFromMaterial")
+            for(const auto& sgsleSubShader : subPass.m_subShaders)
             {
-                Ref<TexturesFromMaterialBlock> fromMaterialBlock = MakeRef<TexturesFromMaterialBlock>();
-                fromMaterialBlock->m_uniformName = variable.m_name;
-                fromMaterialBlock->m_isSingleTextureBlock = !variable.m_isArray;
-                fromMaterialBlock->m_typeToCollect = sgStandardTextureFromString(variable.m_rsideFunctionArgs[0]);
-
-                subPassShader->addTexturesBlock(fromMaterialBlock);
-            }
-            else if(variable.m_rsideFunction == "SGGetTextures")
-            {
-                Ref<TexturesFromGlobalStorageBlock> texturesFromGlobalStorageListener = MakeRef<TexturesFromGlobalStorageBlock>();
-                texturesFromGlobalStorageListener->m_uniformName = variable.m_name;
-                texturesFromGlobalStorageListener->m_isSingleTextureBlock = !variable.m_isArray;
-                for(const auto& arg : variable.m_rsideFunctionArgs)
+                for(const auto& variable : sgsleSubShader.second.m_variables)
                 {
-                    texturesFromGlobalStorageListener->m_requiredTexturesNames.push_back(arg);
-                }
+                    for(const auto& variableAssignExpr : variable.m_assignExpressions)
+                    {
+                        for(const auto& arrIdx : variableAssignExpr.m_arrayIndices)
+                        {
+                            std::string uniformName = variable.m_lValueVarName + "[" + std::to_string(arrIdx) + "]";
 
-                subPassShader->addTexturesBlock(texturesFromGlobalStorageListener);
+                            if (variableAssignExpr.m_rvalueFunctionName == "SGGetTexturesFromMaterial")
+                            {
+                                Ref<TexturesFromMaterialBlock> texBlock = MakeRef<TexturesFromMaterialBlock>();
+                                texBlock->m_uniformName = uniformName;
+                                texBlock->m_uniformRawName = variable.m_lValueVarName;
+                                texBlock->m_isSingleTextureBlock = !variable.m_isLValueArray;
+                                texBlock->m_typeToCollect = sgStandardTextureFromString(
+                                        variableAssignExpr.m_rvalueFunctionArgs[0]);
+
+                                subPassShader->addTexturesBlock(texBlock);
+                            }
+                            else if (variableAssignExpr.m_rvalueFunctionName == "SGGetTextures")
+                            {
+                                Ref<TexturesFromGlobalStorageBlock> texBlock = MakeRef<TexturesFromGlobalStorageBlock>();
+                                texBlock->m_uniformName = uniformName;
+                                texBlock->m_uniformRawName = variable.m_lValueVarName;
+                                texBlock->m_isSingleTextureBlock = !variable.m_isLValueArray;
+                                for(const auto& arg : variableAssignExpr.m_rvalueFunctionArgs)
+                                {
+                                    texBlock->m_requiredTexturesNames.push_back(arg);
+                                }
+
+                                subPassShader->addTexturesBlock(texBlock);
+                            }
+                        }
+                    }
+                }
             }
         }
 

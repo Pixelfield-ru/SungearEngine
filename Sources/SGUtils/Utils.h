@@ -86,6 +86,65 @@ namespace SGUtils
             return resString;
         }
 
+        static std::string trim(const std::string& str,
+                                const std::string& whitespace = " \t")
+        {
+            const auto strBegin = str.find_first_not_of(whitespace);
+            if(strBegin == std::string::npos)
+            {
+                return ""; // no content
+            }
+            const auto strEnd = str.find_last_not_of(whitespace);
+            const auto strRange = strEnd - strBegin + 1;
+            return str.substr(strBegin, strRange);
+        }
+
+        static std::string reduce(const std::string& str,
+                                  const std::string& fill = " ",
+                                  const std::string& whitespace = " \t")
+        {
+            // trim first
+            auto result = trim(str, whitespace);
+            // replace sub ranges
+            auto beginSpace = result.find_first_of(whitespace);
+            while (beginSpace != std::string::npos)
+            {
+                const auto endSpace = result.find_first_not_of(whitespace, beginSpace);
+                const auto range = endSpace - beginSpace;
+                result.replace(beginSpace, range, fill);
+                const auto newStart = beginSpace + fill.length();
+                beginSpace = result.find_first_of(whitespace, newStart);
+            }
+            return result;
+        }
+
+        static std::string toString(const std::vector<std::string>& vec) noexcept
+        {
+            std::string str;
+
+            for(auto& s : vec)
+            {
+                str += s;
+            }
+
+            return str;
+        }
+
+        static std::string toString(const std::vector<std::string>::iterator& begin, const std::vector<std::string>::iterator& end) noexcept
+        {
+            std::string str;
+
+            auto it = begin;
+
+            while(it != end)
+            {
+                str += *it;
+                ++it;
+            }
+
+            return str;
+        }
+
         static std::string sourceLocationToString(const std::source_location& location) noexcept
         {
             return "\tFile: " + std::string(location.file_name()) + "\n"

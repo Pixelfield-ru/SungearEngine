@@ -45,7 +45,7 @@ namespace SGCore
         void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) override;
 
     private:
-        GLuint compileSubShader(SGSLSubShaderType shaderType, const std::string& code);
+        GLuint compileSubShader(SGSLESubShaderType shaderType, const std::string& code);
 
         GLuint m_programHandler = 0;
 

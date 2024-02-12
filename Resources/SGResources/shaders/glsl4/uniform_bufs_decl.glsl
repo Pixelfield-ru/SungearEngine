@@ -1,5 +1,4 @@
-#sg_ifndef UNIFORM_BUFS_DECL_GLSL
-#sg_define UNIFORM_BUFS_DECL_GLSL
+#sg_pragma once
 
 #sg_include "defines.glsl"
 #sg_include "rendering_structs_decl.glsl"
@@ -39,5 +38,3 @@ layout(std140) uniform ProgramData
     // Suitable only for one-way (directional) light sources!
     uniform sampler2D sgmat_shadowMap2DSamplers[DIRECTIONAL_LIGHTS_MAX_COUNT];
 #endif
-
-#sg_endif // UNIFORM_BUFS_DECL_GLSL

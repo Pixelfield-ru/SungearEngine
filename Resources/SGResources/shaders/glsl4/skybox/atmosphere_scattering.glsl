@@ -1,5 +1,4 @@
-#sg_ifndef ATMOSPHERE_SCATTERING
-#sg_define ATMOSPHERE_SCATTERING
+#sg_pragma once
 
 #sg_include "../ray_intersections.glsl"
 
@@ -97,5 +96,3 @@ vec3 atmosphere(vec3 r, vec3 ro,
     // Calculate and return the final color.
     return iSun * (pRlh * kRlh * totalRlh + pMie * kMie * totalMie);
 }
-
-#sg_endif ATMOSPHERE_SCATTERING

@@ -1,5 +1,4 @@
-#sg_ifndef DIR_LIGHTS_SHADOWS_CALC
-#sg_define DIR_LIGHTS_SHADOWS_CALC
+#sg_pragma once
 
 #sg_include "../rendering_structs_decl.glsl"
 #sg_include "../math.glsl"
@@ -58,5 +57,3 @@ float calcDirLightShadow(
 
     return calcPoissonShadow(dirLight, projCoords, fragPos, normal, shadowMap);
 }
-
-#sg_endif // DIR_LIGHTS_SHADOWS_CALC

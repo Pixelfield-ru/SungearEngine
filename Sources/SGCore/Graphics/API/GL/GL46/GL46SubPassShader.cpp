@@ -111,7 +111,7 @@ void SGCore::GL46SubPassShader::destroy() noexcept
     m_subShadersHandlers.clear();
 }
 
-GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLSubShaderType shaderType, const std::string& code)
+GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLESubShaderType shaderType, const std::string& code)
 {
     std::string additionalShaderInfo =
             "#version " + m_version + "\n";
