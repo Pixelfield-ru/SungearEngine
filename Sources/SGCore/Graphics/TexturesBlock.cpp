@@ -8,7 +8,7 @@
 bool SGCore::TexturesBlock::operator==(
         const SGCore::TexturesBlock& other) const noexcept
 {
-    return other.m_uniformName == m_uniformName;
+    return other.m_uniformRawName == m_uniformRawName;
 }
 
 bool SGCore::TexturesBlock::operator!=(

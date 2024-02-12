@@ -9,6 +9,8 @@
 
 void SGCore::TexturesFromGlobalStorageBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
 {
+    if(m_textures.size() >= m_texturesArrayIndices.size()) return;
+
     // if texture with this name requires
     if (std::find(m_requiredTexturesNames.begin(), m_requiredTexturesNames.end(), texture2D->getName()) !=
         m_requiredTexturesNames.end())

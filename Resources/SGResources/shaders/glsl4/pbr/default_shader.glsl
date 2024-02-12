@@ -263,17 +263,16 @@ SGSubPass(GeometryPass)
             vec3 dirLightsShadowCoeff = vec3(0.0);
 
             vec3 lo = vec3(0.0);
-            for (int i = 0; i < 0; ++i)
+            for (int i = 0; i < 1; ++i)
             {
-                ILight lightPart = directionalLights[i].lightPart;
-                IRenderingComponent renderingPart = lightPart.renderingPart;
+                DirectionalLight dirLight = directionalLights[i];
 
-                vec3 lightDir = normalize(renderingPart.position - vsIn.fragPos);// TRUE
+                vec3 lightDir = normalize(dirLight.position - vsIn.fragPos);// TRUE
                 vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
 
-                float distance = length(renderingPart.position - vsIn.fragPos);// TRUE
-                float attenuation = (1.0 / (distance * distance)) * lightPart.intensity;// TRUE
-                vec3 radiance = lightPart.color.rgb * attenuation;// TRUE
+                float distance = length(dirLight.position - vsIn.fragPos);// TRUE
+                float attenuation = (1.0 / (distance * distance)) * dirLight.intensity;// TRUE
+                vec3 radiance = dirLight.color.rgb * attenuation;// TRUE
 
                 // energy brightness coeff (коэфф. энергетической яркости)
                 float NdotL = max(dot(finalNormal, lightDir), 0.0);
@@ -294,9 +293,9 @@ SGSubPass(GeometryPass)
 
                 // NDF (normal distribution func)
                 float D = GGXTR(
-                finalNormal,
-                halfWayDir,
-                roughness
+                    finalNormal,
+                    halfWayDir,
+                    roughness
                 );// TRUE
 
                 float cosTheta = max(dot(halfWayDir, viewDir), 0.0);

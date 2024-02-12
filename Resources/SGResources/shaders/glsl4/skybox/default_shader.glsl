@@ -30,8 +30,10 @@ SGSubPass(GeometryPass)
 
         const vec3 sunPos = vec3(0.0, 1.0, -1.0);
 
-        // SGUSamplerCube skyboxSamplers[1] = SGGetTextures("GeniusTexture");
-        // SGUSamplerCube skyboxSamplers[1] = SGGetTextures("standard_skybox0");
+        /*SGSamplerCube skyboxSamplers[1];
+        skyboxSamplers[0] = SGGetTextures("GeniusTexture");*/
+        /*SGSamplerCube skyboxSamplers[1];
+        skyboxSamplers[0] = SGGetTextures("standard_skybox0");*/
         SGSamplerCube skyboxSamplers[1];
         skyboxSamplers[0] = SGGetTexturesFromMaterial("SGTT_SKYBOX");
 

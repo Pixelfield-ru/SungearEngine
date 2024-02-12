@@ -43,34 +43,40 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
                 {
                     for(const auto& variableAssignExpr : variable.m_assignExpressions)
                     {
+                        Ref<TexturesBlock> newTexBlock;
+
+                        if (variableAssignExpr.m_rvalueFunctionName == "SGGetTexturesFromMaterial")
+                        {
+                            Ref<TexturesFromMaterialBlock> texBlock = MakeRef<TexturesFromMaterialBlock>();
+                            texBlock->m_uniformRawName = variable.m_lValueVarName;
+                            texBlock->m_isSingleTextureBlock = !variable.m_isLValueArray;
+                            texBlock->m_typeToCollect = sgStandardTextureFromString(
+                                    variableAssignExpr.m_rvalueFunctionArgs[0]);
+
+                            newTexBlock = texBlock;
+
+                            subPassShader->addTexturesBlock(texBlock);
+                        }
+                        else if (variableAssignExpr.m_rvalueFunctionName == "SGGetTextures")
+                        {
+                            Ref<TexturesFromGlobalStorageBlock> texBlock = MakeRef<TexturesFromGlobalStorageBlock>();
+                            texBlock->m_uniformRawName = variable.m_lValueVarName;
+                            texBlock->m_isSingleTextureBlock = !variable.m_isLValueArray;
+                            for(const auto& arg : variableAssignExpr.m_rvalueFunctionArgs)
+                            {
+                                texBlock->m_requiredTexturesNames.push_back(arg);
+                            }
+
+                            newTexBlock = texBlock;
+
+                            subPassShader->addTexturesBlock(texBlock);
+                        }
+
                         for(const auto& arrIdx : variableAssignExpr.m_arrayIndices)
                         {
-                            std::string uniformName = variable.m_lValueVarName + "[" + std::to_string(arrIdx) + "]";
+                            // std::string uniformName = variable.m_lValueVarName + "[" + std::to_string(arrIdx) + "]";
 
-                            if (variableAssignExpr.m_rvalueFunctionName == "SGGetTexturesFromMaterial")
-                            {
-                                Ref<TexturesFromMaterialBlock> texBlock = MakeRef<TexturesFromMaterialBlock>();
-                                texBlock->m_uniformName = uniformName;
-                                texBlock->m_uniformRawName = variable.m_lValueVarName;
-                                texBlock->m_isSingleTextureBlock = !variable.m_isLValueArray;
-                                texBlock->m_typeToCollect = sgStandardTextureFromString(
-                                        variableAssignExpr.m_rvalueFunctionArgs[0]);
-
-                                subPassShader->addTexturesBlock(texBlock);
-                            }
-                            else if (variableAssignExpr.m_rvalueFunctionName == "SGGetTextures")
-                            {
-                                Ref<TexturesFromGlobalStorageBlock> texBlock = MakeRef<TexturesFromGlobalStorageBlock>();
-                                texBlock->m_uniformName = uniformName;
-                                texBlock->m_uniformRawName = variable.m_lValueVarName;
-                                texBlock->m_isSingleTextureBlock = !variable.m_isLValueArray;
-                                for(const auto& arg : variableAssignExpr.m_rvalueFunctionArgs)
-                                {
-                                    texBlock->m_requiredTexturesNames.push_back(arg);
-                                }
-
-                                subPassShader->addTexturesBlock(texBlock);
-                            }
+                            newTexBlock->m_texturesArrayIndices.push_back(arrIdx);
                         }
                     }
                 }

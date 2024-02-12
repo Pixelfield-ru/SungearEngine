@@ -377,7 +377,11 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
             SGUtils::Utils::splitString(subShader.m_code, '\n', lines);
             
             subShader.m_code = "";
-            
+
+            std::string lastLine;
+
+            int currentIntent = 0;
+
             size_t curLineIdx = 0;
             for(auto& line : lines)
             {
@@ -580,7 +584,21 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                         continue;
                     }
                 }
-                
+
+                lastLine = line;
+                line = currentIntent <= 0 ? line : std::string(currentIntent, '\t') + line;
+
+                if(line.ends_with("{"))
+                {
+                    std::cout << "lastline{ : " << line << std::endl;
+                    ++currentIntent;
+                }
+                else if(line.ends_with("}"))
+                {
+                    std::cout << "lastline} : " << line << std::endl;
+                    --currentIntent;
+                }
+
                 subShader.m_code += line + '\n';
                 
                 ++curLineIdx;

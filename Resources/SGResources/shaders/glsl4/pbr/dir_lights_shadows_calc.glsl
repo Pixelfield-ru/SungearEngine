@@ -15,18 +15,16 @@ float calcPoissonShadow(
 {
     const float shadowsBias = 0.000025;
 
-    ILight lightPart = dirLight.lightPart;
-
     const float shadowsMinCoeff = 0.0;
 
     float fragmentVisibility = 1.0;
-    float downstep = (1.0 - shadowsMinCoeff) / lightPart.shadowSamplesCount;
+    float downstep = (1.0 - shadowsMinCoeff) / dirLight.shadowSamplesCount;
 
     float rand = random(projCoords.xy);
     float rotAngle = rand * PI;
     vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
 
-    for(int i = 0; i < lightPart.shadowSamplesCount; i++)
+    for(int i = 0; i < dirLight.shadowSamplesCount; i++)
     {
         if(texture(shadowMap, projCoords.xy + rotate(poissonDisk[i], rotTrig) / 750.0).z < projCoords.z - shadowsBias)
         {
@@ -44,8 +42,7 @@ float calcDirLightShadow(
     const in sampler2D shadowMap
 )
 {
-    IRenderingComponent renderingPart = dirLight.lightPart.renderingPart;
-    vec4 lightSpaceFragPos = renderingPart.spaceMatrix * vec4(fragPos, 1.0);
+    vec4 lightSpaceFragPos = dirLight.spaceMatrix * vec4(fragPos, 1.0);
 
     vec3 projCoords = lightSpaceFragPos.xyz / lightSpaceFragPos.w;
     projCoords = projCoords * 0.5 + 0.5;

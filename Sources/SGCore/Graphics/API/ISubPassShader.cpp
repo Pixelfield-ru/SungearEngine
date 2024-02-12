@@ -259,15 +259,24 @@ void SGCore::ISubPassShader::onTexturesCountChanged() noexcept
 
     std::uint8_t texBlock = 0;
 
-    std::uint8_t curTexture = 0;
-
     for(const auto& texturesBlock : m_texturesBlocks)
     {
-        if(texturesBlock->m_isSingleTextureBlock)
+        size_t a = 0;
+        for(std::uint8_t i = 0; i < texturesBlock->getTextures().size(); ++i)
+        {
+            useTextureBlock(texturesBlock->m_uniformRawName + "[" + std::to_string(texturesBlock->m_texturesArrayIndices[i]) + "]",
+                            texBlock);
+
+            ++texBlock;
+            ++a;
+        }
+
+        useInteger(texturesBlock->m_uniformRawName + "_CURRENT_COUNT", a);
+
+        /*if(texturesBlock->m_isSingleTextureBlock)
         {
             useTextureBlock(texturesBlock->m_uniformName, texBlock);
 
-            ++curTexture;
             ++texBlock;
         }
         else
@@ -277,14 +286,11 @@ void SGCore::ISubPassShader::onTexturesCountChanged() noexcept
                 useTextureBlock(texturesBlock->m_uniformName,
                                 texBlock);
 
-                ++curTexture;
+                ++counts[texturesBlock->m_uniformRawName];
+
                 ++texBlock;
             }
-        }
-
-        useInteger(texturesBlock->m_uniformRawName + "_CURRENT_COUNT", curTexture);
-
-        curTexture = 0;
+        }*/
     }
 }
 

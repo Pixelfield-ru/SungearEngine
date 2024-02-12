@@ -10,6 +10,8 @@
 
 void SGCore::TexturesFromMaterialBlock::addTexture(const SGCore::Ref<SGCore::ITexture2D>& texture, SGTextureType textureType) noexcept
 {
+    if(m_textures.size() >= m_texturesArrayIndices.size()) return;
+
     // m_textures.push_back(texture2D);
 
     if(textureType != m_typeToCollect) return;
@@ -64,6 +66,8 @@ void SGCore::TexturesFromMaterialBlock::collectTexturesFromMaterial
 
         for(const auto& texture : typesPair.second)
         {
+            if(m_textures.size() >= m_texturesArrayIndices.size()) return;
+
             // if texture does not exist
             if(std::find_if(m_textures.begin(), m_textures.end(), [&texture](auto otherTexture) {
                 return !(otherTexture.owner_before(texture) || texture.owner_before(otherTexture));

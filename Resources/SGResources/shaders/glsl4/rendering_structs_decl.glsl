@@ -8,20 +8,21 @@ struct IRenderingComponent
     mat4 viewMatrix; // can be unused
     mat4 spaceMatrix;
     vec3 position;
+    // float p0;
     vec3 rotation; // can be unused
+    // float p1;
     vec3 scale; // can be unused
+    // float p2;
 };
 
-struct ILight
+struct ILight extends IRenderingComponent
 {
-    IRenderingComponent renderingPart;
     vec4 color;
     float intensity;
     int shadowSamplesCount;
 };
 
-struct DirectionalLight
+struct DirectionalLight extends ILight
 {
-    ILight lightPart;
     // todo: make for dir light
 };

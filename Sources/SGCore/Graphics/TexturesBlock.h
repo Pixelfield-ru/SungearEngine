@@ -7,6 +7,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
@@ -21,8 +22,8 @@ namespace SGCore
     {
         friend class GLShadersPreprocessor;
 
-        // this uniform name can be diffuseSamplers[0] for example (element of array)
-        std::string m_uniformName;
+        std::vector<size_t> m_texturesArrayIndices;
+
         // this uniform name is diffuseSamplers for example
         std::string m_uniformRawName;
 

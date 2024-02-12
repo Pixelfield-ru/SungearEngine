@@ -161,7 +161,7 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const RenderingBase& renderingBa
     );
 
     // todo: make to final transform
-    m_viewMatricesBuffer->subData<float>("camera.position",
+    m_viewMatricesBuffer->subData("camera.position",
                                          glm::value_ptr(transform.m_ownTransform.m_position), 3
     );
 

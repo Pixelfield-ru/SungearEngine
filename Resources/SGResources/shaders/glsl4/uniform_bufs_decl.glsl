@@ -8,14 +8,15 @@ uniform vec3 objectPosition;
 uniform vec3 objectRotation;
 uniform vec3 objectScale;
 
-uniform vec4 materialDiffuseCol;
-uniform vec4 materialSpecularCol;
-uniform vec4 materialAmbientCol;
-uniform vec4 materialEmissionCol;
-uniform vec4 materialTransparentCol;
-uniform float materialShininess;
-uniform float materialMetallicFactor;
-uniform float materialRoughnessFactor;
+// todo: return
+/*uniform*/ vec4 materialDiffuseCol = vec4(1.0);
+/*uniform*/ vec4 materialSpecularCol = vec4(1.0);
+/*uniform*/ vec4 materialAmbientCol = vec4(0.0);
+/*uniform*/ vec4 materialEmissionCol = vec4(1.0);
+/*uniform*/ vec4 materialTransparentCol = vec4(1.0);
+/*uniform*/ float materialShininess = 32.0;
+/*uniform*/ float materialMetallicFactor = 1.0;
+/*uniform*/ float materialRoughnessFactor = 1.0;
 
 layout(std140) uniform CameraData
 {
@@ -31,7 +32,7 @@ layout(std140) uniform ProgramData
 #ifndef SG_NOT_INCLUDE_LIGHTS
     layout(std140) uniform DirectionalLightsBlock
     {
-        int directionalLightsCount;
+        // int directionalLightsCount;
         DirectionalLight directionalLights[DIRECTIONAL_LIGHTS_MAX_COUNT];
     };
 

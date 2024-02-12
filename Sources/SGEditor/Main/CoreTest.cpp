@@ -628,8 +628,8 @@ void init()
     entt::entity testShadowsCaster1 = testScene->getECSRegistry().create();
     SGCore::Transform& testShadowsCaster1Transform = testScene->getECSRegistry().emplace<SGCore::Transform>(testShadowsCaster1);
     SGCore::DirectionalLight& testShadowsCaster1DirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(testShadowsCaster1);
-    testShadowsCaster1DirLight.m_base.m_color = { 0.0f / 255.0f, 50.0f / 255.0f, 241.0f / 255.0f, 1.0f };
-    testShadowsCaster1DirLight.m_base.m_intensity = 200.0f;
+    testShadowsCaster1DirLight.m_base.m_color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    testShadowsCaster1DirLight.m_base.m_intensity = 400.0f;
     SGCore::RenderingBase& testShadowsCaster1RenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(testShadowsCaster1);
     SGCore::EntityBaseInfo& testShadowsCaster1BaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(testShadowsCaster1);
 
