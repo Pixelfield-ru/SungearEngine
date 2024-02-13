@@ -12,7 +12,7 @@
 
 std::shared_ptr<SGCore::ShaderAnalyzedFile>
 SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code,
-                                     SGCore::SGSLETranslator& translator, bool isRootShader)
+                                     SGCore::SGSLETranslator& translator, bool isRootShader) noexcept
 {
     std::string replacedPath = SGUtils::Utils::replaceAll(path, "/", "_");
     replacedPath = SGUtils::Utils::replaceAll(replacedPath, "\\", "_");
@@ -24,7 +24,7 @@ SGCore::SGSLETranslator::processCode(const std::string& path, const std::string&
     
     std::string correctedCode = sgsleCodeCorrector(code);
     std::shared_ptr<ShaderAnalyzedFile> preProcessedCode = sgslePreprocessor(path, correctedCode);
-    std::shared_ptr<ShaderAnalyzedFile> analyzedFile = sgsleMainProcessor(preProcessedCode);
+    std::shared_ptr<ShaderAnalyzedFile> analyzedFile = sgsleMainProcessor(preProcessedCode, translator);
     
     if(translator.m_config.m_useOutputDebug && isRootShader)
     {
@@ -36,13 +36,13 @@ SGCore::SGSLETranslator::processCode(const std::string& path, const std::string&
 }
 
 std::shared_ptr<SGCore::ShaderAnalyzedFile>
-SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code, SGSLETranslator& translator)
+SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code, SGSLETranslator& translator) noexcept
 {
     return processCode(path, code, translator, true);
 }
 
 std::shared_ptr<SGCore::ShaderAnalyzedFile>
-SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code)
+SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code) noexcept
 {
     return processCode(path, code, *this);
 }
@@ -168,7 +168,7 @@ std::string SGCore::SGSLETranslator::sgsleCodeCorrector(const std::string& code)
 
 std::shared_ptr<SGCore::ShaderAnalyzedFile>
 SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::string& code,
-                                           SGSLETranslator& translator)
+                                           SGSLETranslator& translator) noexcept
 {
     std::stringstream codeStream(code);
     
@@ -288,7 +288,8 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
             {
                 ++subShader.second->m_openedBracketsCount;
             }
-        } else if(line.ends_with("}"))
+        }
+        else if(line.ends_with("}"))
         {
             auto subPassesIt = translator.m_currentSubPasses.begin();
             while(subPassesIt != translator.m_currentSubPasses.end())
@@ -357,13 +358,13 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
 }
 
 std::shared_ptr<SGCore::ShaderAnalyzedFile>
-SGCore::SGSLETranslator::sgslePreprocessor(const std::string& path, const std::string& code)
+SGCore::SGSLETranslator::sgslePreprocessor(const std::string& path, const std::string& code) noexcept
 {
     return sgslePreProcessor(path, code, *this);
 }
 
 std::shared_ptr<SGCore::ShaderAnalyzedFile>
-SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile)
+SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile, SGSLETranslator& translator) noexcept
 {
     for(auto& subPass : analyzedFile->m_subPasses)
     {
@@ -371,16 +372,10 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
         {
             SGSLESubShader& subShader = subShaderIter.second;
             
-            std::stringstream codeStream(subShader.m_code);
-            
             std::vector<std::string> lines;
             SGUtils::Utils::splitString(subShader.m_code, '\n', lines);
             
             subShader.m_code = "";
-
-            std::string lastLine;
-
-            int currentIntent = 0;
 
             size_t curLineIdx = 0;
             for(auto& line : lines)
@@ -585,26 +580,45 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                     }
                 }
 
-                lastLine = line;
-                line = currentIntent <= 0 ? line : std::string(currentIntent, '\t') + line;
-
-                if(line.ends_with("{"))
-                {
-                    std::cout << "lastline{ : " << line << std::endl;
-                    ++currentIntent;
-                }
-                else if(line.ends_with("}"))
-                {
-                    std::cout << "lastline} : " << line << std::endl;
-                    --currentIntent;
-                }
-
                 subShader.m_code += line + '\n';
                 
                 ++curLineIdx;
+            }
+            
+            if(translator.m_config.m_useOutputDebug)
+            {
+                sgsleMakeSubShaderCodePretty(subShader);
             }
         }
     }
     
     return analyzedFile;
+}
+
+void SGCore::SGSLETranslator::sgsleMakeSubShaderCodePretty(SGCore::SGSLESubShader& subShader) const noexcept
+{
+    std::stringstream codeStream(subShader.m_code);
+    subShader.m_code = "";
+    
+    char lastLineChar = ' ';
+    int currentIntent = 0;
+    std::string line;
+    
+    while(std::getline(codeStream, line))
+    {
+        if(lastLineChar == '{')
+        {
+            ++currentIntent;
+        }
+        else if(line.ends_with('}'))
+        {
+            --currentIntent;
+        }
+        
+        lastLineChar = *line.rbegin();
+        
+        line = currentIntent <= 0 ? line : std::string(currentIntent, '\t') + line;
+        
+        subShader.m_code += line + '\n';
+    }
 }
