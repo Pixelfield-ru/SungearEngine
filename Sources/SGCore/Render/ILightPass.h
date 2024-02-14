@@ -12,6 +12,8 @@ namespace SGCore
     struct ILightPass : public IRenderPass
     {
         Ref<IUniformBuffer> m_lightsUniformBuffer;
+        
+        int m_maxLightsCount = 5;
     };
 }
 

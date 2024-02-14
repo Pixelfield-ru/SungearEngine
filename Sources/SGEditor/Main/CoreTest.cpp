@@ -31,6 +31,7 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Skybox.h"
 #include "SGCore/Render/Lighting/DirectionalLight.h"
+#include "SGCore/Render/Gizmos/BoxGizmo.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -38,8 +39,6 @@ entt::entity testCameraEntity = entt::null;
 SGCore::Ref<SGCore::Scene> testScene;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
-
-entt::entity testShadowsCaster = entt::null;
 
 void init()
 {
@@ -86,7 +85,7 @@ void init()
             //"../SGResource
             //"../SGResources/models/test/uaz/scene.gltf"s/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
-            //"../SGResources/models/test/vss/scene.gltf"
+            "../SGResources/models/test/vss/scene.gltf"
             //"../SGResources/models/test/vsk94/scene.gltf"
             //"../SGResources/models/test/helicopter/scene.gltf"
             //"../SGResources/models/test/metal_door/scene.gltf"
@@ -100,7 +99,7 @@ void init()
             //"../SGResources/models/test/stierlitz/scene.gltf"
             //"../SGResources/models/test/panelka/scene.gltf"
             //"../SGResources/models/test/t55a/scene.gltf"
-            "../SGResources/models/test/rpg7/scene.gltf"
+            //"../SGResources/models/test/rpg7/scene.gltf"
             //"../SGResources/models/test/zucchini/scene.gltf"
             //"../SGResources/models/test/lenin/scene.gltf"
     );
@@ -266,14 +265,14 @@ void init()
             transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
 
             // vss
-            /*transformComponent->m_position = { 0, 2.91, -20 };
-            transformComponent->m_rotation = { 0, 0, 0 };
-            transformComponent->m_scale = { 0.7, 0.7, 0.7 };*/
+            transform->m_ownTransform.m_position = { 0, 2.5, -5 };
+            transform->m_ownTransform.m_rotation = { 0, 0, 0 };
+            transform->m_ownTransform.m_scale = { 1.2, 1.2, 1.2 };
 
             // RPG
-            transform->m_ownTransform.m_position = { 1, 20.0, -20 };
+            /*transform->m_ownTransform.m_position = { 1, 20.0, -20 };
             transform->m_ownTransform.m_rotation = { 90, 0, 90 };
-            transform->m_ownTransform.m_scale = { 0.8, 0.8, 0.8 };
+            transform->m_ownTransform.m_scale = { 0.8, 0.8, 0.8 };*/
 
             // sponza old model
             /*transformComponent->m_position = { 3, 2.91, -20 };
@@ -624,15 +623,70 @@ void init()
     /*testShadowsCaster1->addComponent(xLineGizmo);
     testShadowsCaster1->addComponent(yLineGizmo);
     testShadowsCaster1->addComponent(zLineGizmo);*/
-
-    entt::entity testShadowsCaster1 = testScene->getECSRegistry().create();
-    SGCore::Transform& testShadowsCaster1Transform = testScene->getECSRegistry().emplace<SGCore::Transform>(testShadowsCaster1);
-    SGCore::DirectionalLight& testShadowsCaster1DirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(testShadowsCaster1);
-    testShadowsCaster1DirLight.m_base.m_color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    testShadowsCaster1DirLight.m_base.m_intensity = 400.0f;
-    SGCore::RenderingBase& testShadowsCaster1RenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(testShadowsCaster1);
-    SGCore::EntityBaseInfo& testShadowsCaster1BaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(testShadowsCaster1);
-
+    
+    {
+        entt::entity testShadowsCaster = testScene->getECSRegistry().create();
+        SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
+                testShadowsCaster);
+        SGCore::DirectionalLight& testShadowsCasterDirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(
+                testShadowsCaster);
+        testShadowsCasterDirLight.m_base.m_color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        testShadowsCasterDirLight.m_base.m_intensity = 1200.0f;
+        testShadowsCasterTransform.m_ownTransform.m_position = { 0.0, 20.0, -20.0 };
+        SGCore::RenderingBase& testShadowsCasterRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(
+                testShadowsCaster);
+        SGCore::EntityBaseInfo& testShadowsCasterBaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(
+                testShadowsCaster);
+    }
+    
+    {
+        entt::entity testShadowsCaster = testScene->getECSRegistry().create();
+        SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
+                testShadowsCaster);
+        SGCore::DirectionalLight& testShadowsCasterDirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(
+                testShadowsCaster);
+        testShadowsCasterDirLight.m_base.m_color = { 1.0f, 0.0f, 0.0f, 1.0f };
+        testShadowsCasterDirLight.m_base.m_intensity = 1200.0f;
+        testShadowsCasterTransform.m_ownTransform.m_position = { -20.0, 20.0, -20.0 };
+        SGCore::RenderingBase& testShadowsCasterRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(
+                testShadowsCaster);
+        SGCore::EntityBaseInfo& testShadowsCasterBaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(
+                testShadowsCaster);
+    }
+    
+    {
+        entt::entity testShadowsCaster = testScene->getECSRegistry().create();
+        SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
+                testShadowsCaster);
+        SGCore::DirectionalLight& testShadowsCasterDirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(
+                testShadowsCaster);
+        SGCore::BoxGizmo& testShadowsCasterBoxGizmo = testScene->getECSRegistry().emplace<SGCore::BoxGizmo>(
+                testShadowsCaster);
+        testShadowsCasterBoxGizmo.m_size = { 50.0, 50.0, 50.0 };
+        testShadowsCasterBoxGizmo.m_base.m_color = { 1.0, 1.0, 1.0, 1.0 };
+        testShadowsCasterDirLight.m_base.m_color = { 0.0f, 1.0f, 0.0f, 1.0f };
+        testShadowsCasterDirLight.m_base.m_intensity = 1200.0f;
+        testShadowsCasterTransform.m_ownTransform.m_position = { -20.0, 20.0, 20.0 };
+        SGCore::RenderingBase& testShadowsCasterRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(
+                testShadowsCaster);
+        SGCore::EntityBaseInfo& testShadowsCasterBaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(
+                testShadowsCaster);
+    }
+    
+    {
+        entt::entity testShadowsCaster = testScene->getECSRegistry().create();
+        SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
+                testShadowsCaster);
+        SGCore::DirectionalLight& testShadowsCasterDirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(
+                testShadowsCaster);
+        testShadowsCasterDirLight.m_base.m_color = { 0.0f, 0.0f, 1.0f, 1.0f };
+        testShadowsCasterDirLight.m_base.m_intensity = 20000.0f;
+        testShadowsCasterTransform.m_ownTransform.m_position = { -20.0, 100.0, -20.0 };
+        SGCore::RenderingBase& testShadowsCasterRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(
+                testShadowsCaster);
+        SGCore::EntityBaseInfo& testShadowsCasterBaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(
+                testShadowsCaster);
+    }
     // -----------------------------------------
 
     // IMGUI DEBUG -----------------------------------------------------------

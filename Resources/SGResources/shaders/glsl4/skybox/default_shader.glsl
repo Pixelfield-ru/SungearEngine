@@ -55,11 +55,11 @@ SGSubPass(GeometryPass)
                         0.958                          // Mie preferred scattering direction
             );
 
-            if(skyboxSamplers.length() > 0)
+            if(skyboxSamplers.sg_length() > 0)
             {
-                float mixCoeff = 1.0 / skyboxSamplers.length();
+                float mixCoeff = 1.0 / skyboxSamplers.sg_length();
                 vec4 skyboxCol = vec4(0.0);
-                for (int i = 0; i < skyboxSamplers.length(); i++)
+                for (int i = 0; i < skyboxSamplers.sg_length(); i++)
                 {
                     skyboxCol += texture(skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
                 }

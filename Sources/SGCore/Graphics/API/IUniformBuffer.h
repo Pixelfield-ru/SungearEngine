@@ -21,7 +21,7 @@ namespace SGCore
         // buffer of scalar values
         char* m_buffer = nullptr;
 
-        std::uint64_t m_bufferSize = 0;
+        size_t m_bufferSize = 0;
 
         // uniforms are just description of data
         std::vector<IShaderUniform> m_uniforms;
@@ -70,12 +70,6 @@ namespace SGCore
             {
                 // allocating buffer
                 m_buffer = static_cast<char*>(malloc(m_bufferSize));
-
-                char* curPtr = m_buffer;
-                for(auto& uniform: m_uniforms)
-                {
-                    curPtr += uniform.m_dataSizeInUniformBuffer;
-                }
             }
             else // if buffer already allocated (second etc. allocations)
             {
@@ -85,13 +79,6 @@ namespace SGCore
                 // delete last buffer
                 delete m_buffer;
                 m_buffer = newBuffer;
-
-                // updating buffer layout
-                char* curPtr = m_buffer;
-                for(auto& uniform: m_uniforms)
-                {
-                    curPtr += uniform.m_dataSizeInUniformBuffer;
-                }
             }
         }
 
@@ -109,14 +96,13 @@ namespace SGCore
          * @return This
          */
         template<typename Scalar>
-        requires(std::is_scalar_v<Scalar>)
+        requires(std::is_scalar_v<Scalar> && sizeof(Scalar) == 4)
         std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
         {
             const auto& foundUniformIter = std::find_if(m_uniforms.begin(), m_uniforms.end(), [&uniformName](const auto& shaderUniform) { return shaderUniform.m_name == uniformName; });
             if(foundUniformIter == m_uniforms.end())
             {
-                std::cout << "can not find uniform with name " << uniformName << std::endl; 
-                // SGCF_ERROR("Unable to subData for uniform \"" + uniformName + "\" in the uniform buffer. Uniform with that name was not found.", SG_LOG_CURRENT_SESSION_FILE);
+                std::cout << "can not find uniform with name " << uniformName << std::endl;
             }
             if(foundUniformIter != m_uniforms.end())
             {
@@ -124,17 +110,23 @@ namespace SGCore
 
                 // uniform-local pointer to put scalars
                 char* uniformScalarPtr = m_buffer + uniform.m_offsetInUniformBuffer;
+                
+                // std::cout << "offset : " << uniform.m_offsetInUniformBuffer << ", scalars count : " << scalarsNum << std::endl;
+                
+                constexpr const size_t scalarSize = sizeof(Scalar);
+                
+                // std::cout << "scalar size: " << scalarSize << std::endl;
 
-                for(int i = 0; i < scalarsNum; i++)
+                for(int i = 0; i < scalarsNum; ++i)
                 {
                     // copying scalar to current position (uniformScalarPtr)
-                    std::memcpy(uniformScalarPtr, &scalars[i], sizeof(scalars[i]));
+                    std::memcpy(uniformScalarPtr, &scalars[i], scalarSize);
                     // offset
-                    uniformScalarPtr += sizeof(scalars[i]);
+                    uniformScalarPtr += scalarSize;
                 }
 
                 // updating data on graphics api side
-                subDataOnGAPISide((m_buffer + uniform.m_offsetInUniformBuffer) - m_buffer, uniform.m_dataSizeInUniformBuffer);
+                subDataOnGAPISide(uniform.m_offsetInUniformBuffer, uniform.m_dataSizeInUniformBuffer);
             }
 
             return shared_from_this();
@@ -149,10 +141,26 @@ namespace SGCore
          * @return This
          */
         template<typename Scalar>
-        requires(std::is_scalar_v<Scalar>)
+        requires(std::is_scalar_v<Scalar> && sizeof(Scalar) == 4)
         std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const std::initializer_list<Scalar>& scalars)
         {
-            return subData(uniformName, data(scalars), scalars.size());
+            return subData(uniformName, std::data(scalars), scalars.size());
+        }
+        
+        char* getUniform(const std::string& uniformName) const noexcept
+        {
+            const auto& foundUniformIter = std::find_if(m_uniforms.begin(), m_uniforms.end(), [&uniformName](const auto& shaderUniform) { return shaderUniform.m_name == uniformName; });
+            if(foundUniformIter == m_uniforms.end())
+            {
+                std::cout << "can not find uniform with name " << uniformName << std::endl;
+                return nullptr;
+            }
+            if(foundUniformIter != m_uniforms.end())
+            {
+                const auto& uniform = *foundUniformIter;
+                
+                return m_buffer + uniform.m_offsetInUniformBuffer;
+            }
         }
 
         virtual std::shared_ptr<IUniformBuffer> bind() = 0;

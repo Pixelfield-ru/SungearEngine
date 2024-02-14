@@ -131,7 +131,9 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::bind() noexcep
 void SGCore::GL4UniformBuffer::subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
+    // glBindBufferBase(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler);
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, m_buffer + offset);
+    // glBufferData(GL_UNIFORM_BUFFER, (GLsizeiptr) m_bufferSize, m_buffer, GL_STATIC_DRAW);
 }
 
 std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::prepare() noexcept
@@ -140,7 +142,8 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::prepare() noex
 
     glGenBuffers(1, &m_handler);
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
-    glBufferData(GL_UNIFORM_BUFFER, (GLsizeiptr) m_bufferSize, m_buffer, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, m_bufferSize, m_buffer, GL_STATIC_DRAW);
+    // glBindBufferRange(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler, 0, m_bufferSize);
     glBindBufferBase(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler);
 
     return shared_from_this();

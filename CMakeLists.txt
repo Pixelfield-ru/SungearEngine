@@ -28,7 +28,7 @@ add_compile_options(-fPIC)
 # set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-implicit-fallthrough -Wno-ignored-qualifiers")
-set(CMAKE_CXX_FLAGS_DEBUG "-O1")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 #[[set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")

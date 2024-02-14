@@ -355,7 +355,7 @@ static std::uint16_t getSGGDataTypeAlignedSizeInBytes(const SGGDataType& dataTyp
 
         case SGG_FLOAT: size = 4; break;
         case SGG_FLOAT2: size = 4 * 2; break;
-        case SGG_FLOAT3: size = 4 * 4; break;
+        case SGG_FLOAT3: size = 4 * 3; break;
         case SGG_FLOAT4: size = 4 * 4; break;
 
         // 32

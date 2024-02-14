@@ -153,13 +153,13 @@ SGSubPass(GeometryPass)
             // ===============================================================================================
 
             {
-                if(diffuseSamplers.length() > 0)
+                if(diffuseSamplers.sg_length() > 0)
                 {
-                    float mixCoeff = 1.0 / diffuseSamplers.length();
+                    float mixCoeff = 1.0 / diffuseSamplers.sg_length();
 
                     diffuseColor.rgb = vec3(0.0, 0.0, 0.0);
 
-                    for (int i = 0; i < diffuseSamplers.length(); ++i)
+                    for (int i = 0; i < diffuseSamplers.sg_length(); ++i)
                     {
                         diffuseColor += texture(diffuseSamplers[i], finalUV) * mixCoeff;
                     }
@@ -168,13 +168,13 @@ SGSubPass(GeometryPass)
 
             {
                 {
-                    if(lightmapSamplers.length() > 0)
+                    if(lightmapSamplers.sg_length() > 0)
                     {
-                        float mixCoeff = 1.0 / lightmapSamplers.length();
+                        float mixCoeff = 1.0 / lightmapSamplers.sg_length();
 
                         aoRoughnessMetallic.r = 0.0;
 
-                        for (int i = 0; i < lightmapSamplers.length(); ++i)
+                        for (int i = 0; i < lightmapSamplers.sg_length(); ++i)
                         {
                             aoRoughnessMetallic.r += texture(lightmapSamplers[i], finalUV).r * mixCoeff;
                         }
@@ -182,13 +182,13 @@ SGSubPass(GeometryPass)
                 }
 
                 {
-                    if(diffuseRoughnessSamplers.length() > 0)
+                    if(diffuseRoughnessSamplers.sg_length() > 0)
                     {
-                        float mixCoeff = 1.0 / diffuseRoughnessSamplers.length();
+                        float mixCoeff = 1.0 / diffuseRoughnessSamplers.sg_length();
 
                         aoRoughnessMetallic.g = 0.0;
 
-                        for (int i = 0; i < diffuseRoughnessSamplers.length(); ++i)
+                        for (int i = 0; i < diffuseRoughnessSamplers.sg_length(); ++i)
                         {
                             aoRoughnessMetallic.g += texture(diffuseRoughnessSamplers[i], finalUV).g * mixCoeff;
                         }
@@ -198,13 +198,13 @@ SGSubPass(GeometryPass)
                 }
 
                 {
-                    if(metalnessSamplers.length() > 0)
+                    if(metalnessSamplers.sg_length() > 0)
                     {
-                        float mixCoeff = 1.0 / metalnessSamplers.length();
+                        float mixCoeff = 1.0 / metalnessSamplers.sg_length();
 
                         aoRoughnessMetallic.b = 0.0;
 
-                        for (int i = 0; i < metalnessSamplers.length(); ++i)
+                        for (int i = 0; i < metalnessSamplers.sg_length(); ++i)
                         {
                             aoRoughnessMetallic.b += texture(metalnessSamplers[i], finalUV).b * mixCoeff;
                         }
@@ -214,11 +214,11 @@ SGSubPass(GeometryPass)
                 }
             }
 
-            if(normalsSamplers.length() > 0)
+            if(normalsSamplers.sg_length() > 0)
             {
-                float mixCoeff = 1.0 / normalsSamplers.length();
+                float mixCoeff = 1.0 / normalsSamplers.sg_length();
 
-                for (int i = 0; i < normalsSamplers.length(); ++i)
+                for (int i = 0; i < normalsSamplers.sg_length(); ++i)
                 {
                     normalMapColor += texture(normalsSamplers[i], finalUV).rgb * mixCoeff;
                 }
@@ -263,7 +263,7 @@ SGSubPass(GeometryPass)
             vec3 dirLightsShadowCoeff = vec3(0.0);
 
             vec3 lo = vec3(0.0);
-            for (int i = 0; i < 1; ++i)
+            for (int i = 0; i < directionalLightsCount; i++)
             {
                 DirectionalLight dirLight = directionalLights[i];
 
@@ -278,6 +278,8 @@ SGSubPass(GeometryPass)
                 float NdotL = max(dot(finalNormal, lightDir), 0.0);
                 float NdotVD = max(dot(finalNormal, viewDir), 0.0);
 
+                vec3 finalRadiance = NdotL * radiance + radiance * 0.04;
+
                 // ===================        shadows calc        =====================
 
                 /*dirLightsShadowCoeff += calcDirLightShadow(
@@ -285,7 +287,7 @@ SGSubPass(GeometryPass)
                     vsIn.fragPos,
                     finalNormal,
                     sgmat_shadowMap2DSamplers[i]
-                ) * NdotL * radiance + radiance * 0.04;*/
+                ) * finalRadiance;*/
 
                 // ====================================================================
 
@@ -312,11 +314,11 @@ SGSubPass(GeometryPass)
                 float ctDenominator = 4.0 * NdotVD * NdotL;
                 vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
-                lo += (diffuse * albedo.rgb / PI + specular) * radiance;
+                lo += (diffuse * albedo.rgb / PI + specular) * radiance * NdotL;
                 // lo = vec3(1.0);
             }
 
-            vec3 ambient = vec3(0.22) * albedo.rgb * ao;
+            vec3 ambient = vec3(0.01) * albedo.rgb * ao;
             vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
             float exposure = 1.3;
 

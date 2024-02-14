@@ -396,7 +396,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                     std::string fullMatch = variableName + "." + variableFunction;
                     
                     // todo:
-                    if(variableFunction == "length()")
+                    if(variableFunction == "sg_length()")
                     {
                         line = SGUtils::Utils::replaceAll(line, fullMatch, variableName + "_CURRENT_COUNT");
                     }
@@ -436,6 +436,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                                     sgsleStruct.m_variables.push_back(variable);
                                     line += variable + '\n';
                                 }
+                                // line = std::string(line.begin(), line.end() - 1);
                             }
                         }
                         
