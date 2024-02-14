@@ -29,7 +29,7 @@
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Render/Skybox.h"
+#include "SGCore/Render/Atmosphere/AtmosphereScattering.h"
 #include "SGCore/Render/Lighting/DirectionalLight.h"
 #include "SGCore/Render/Gizmos/BoxGizmo.h"
 
@@ -37,6 +37,8 @@ SGCore::Ref<SGCore::ModelAsset> testModel;
 
 entt::entity testCameraEntity = entt::null;
 SGCore::Ref<SGCore::Scene> testScene;
+
+SGCore::AtmosphereScattering* _atmosphereScattering = nullptr;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -353,6 +355,9 @@ void init()
         });
 
         SGCore::Mesh& skyboxMesh = testScene->getECSRegistry().get<SGCore::Mesh>(skyboxEntities[2]);
+        SGCore::AtmosphereScattering& atmosphereScattering = testScene->getECSRegistry().emplace<SGCore::AtmosphereScattering>(skyboxEntities[2]);
+        _atmosphereScattering = &atmosphereScattering;
+        // atmosphereScattering.m_sunRotation.z = 90.0;
         skyboxMesh.m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_SKYBOX,
                 standardCubemap
         );
@@ -624,7 +629,7 @@ void init()
     testShadowsCaster1->addComponent(yLineGizmo);
     testShadowsCaster1->addComponent(zLineGizmo);*/
     
-    {
+    /*{
         entt::entity testShadowsCaster = testScene->getECSRegistry().create();
         SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
                 testShadowsCaster);
@@ -686,7 +691,7 @@ void init()
                 testShadowsCaster);
         SGCore::EntityBaseInfo& testShadowsCasterBaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(
                 testShadowsCaster);
-    }
+    }*/
     // -----------------------------------------
 
     // IMGUI DEBUG -----------------------------------------------------------
@@ -703,6 +708,11 @@ int framesCnt = 0;
 void fixedUpdate()
 {
     double angle = framesCnt / 75.0;
+    
+    if(_atmosphereScattering)
+    {
+        _atmosphereScattering->m_sunRotation.x += 0.2f;
+    }
 
     // auto transform0 = testShadowsCaster->getComponent<SGCore::TransformBase>();
 

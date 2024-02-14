@@ -318,6 +318,58 @@ SGSubPass(GeometryPass)
                 // lo = vec3(1.0);
             }
 
+            // calculating sun
+            {
+                vec3 normalizedFragPos = normalize(vsIn.fragPos);
+                vec3 normalizedSunPos = normalize(sunPosition);
+
+                vec3 lightDir = normalize(normalizedSunPos - normalizedFragPos);// TRUE
+                vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
+
+                // energy brightness coeff (коэфф. энергетической яркости)
+                float NdotL = max(dot(finalNormal, lightDir), 0.0);
+                float NdotVD = max(dot(finalNormal, viewDir), 0.0);
+
+                // vec3 finalRadiance = NdotL * radiance + radiance * 0.04;
+
+                // ===================        shadows calc        =====================
+
+                /*dirLightsShadowCoeff += calcDirLightShadow(
+                    directionalLights[i],
+                    vsIn.fragPos,
+                    finalNormal,
+                    sgmat_shadowMap2DSamplers[i]
+                ) * finalRadiance;*/
+
+                // ====================================================================
+
+                // cooktorrance func: DFG /
+
+                // NDF (normal distribution func)
+                float D = GGXTR(
+                finalNormal,
+                halfWayDir,
+                roughness
+                );// TRUE
+
+                float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
+
+                // это по сути зеркальная часть (kS)
+                vec3 F = SchlickFresnel(cosTheta, F0);// kS
+                // geometry function
+                float G = GeometrySmith(finalNormal, NdotVD, NdotL, roughness);// TRUE
+
+                vec3 diffuse = vec3(1.0) - F;
+                diffuse *= (1.0 - metalness);// check diffuse color higher
+
+                vec3 ctNumerator = D * F * G;
+                float ctDenominator = 4.0 * NdotVD * NdotL;
+                vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
+
+                lo += (diffuse * albedo.rgb / PI + specular) * sunColor.rgb * NdotL * 3.0;
+            }
+
+
             vec3 ambient = vec3(0.01) * albedo.rgb * ao;
             vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
             float exposure = 1.3;

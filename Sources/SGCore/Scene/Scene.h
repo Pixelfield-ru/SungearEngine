@@ -37,7 +37,7 @@ namespace SGCore
         void update();
 
         template<typename SystemT>
-        requires(std::is_base_of_v<ISystem, SystemT>)
+        // requires(std::is_base_of_v<ISystem, SystemT>)
         Ref<SystemT> getSystem()
         {
             for(auto& system : m_systems)
@@ -49,6 +49,23 @@ namespace SGCore
             }
 
             return nullptr;
+        }
+        
+        template<typename SystemT>
+        // requires(std::is_base_of_v<SystemT, ISystem>)
+        std::vector<Ref<SystemT>> getSystems()
+        {
+            std::vector<Ref<SystemT>> foundSystems;
+            
+            for(auto& system : m_systems)
+            {
+                if(SG_INSTANCEOF(system.get(), SystemT))
+                {
+                    foundSystems.push_back(std::static_pointer_cast<SystemT>(system));
+                }
+            }
+            
+            return foundSystems;
         }
 
         std::set<Ref<ISystem>>& getAllSystems() noexcept;

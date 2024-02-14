@@ -28,8 +28,6 @@ SGSubPass(GeometryPass)
 
         layout(location = 0) out vec4 fragColor;
 
-        const vec3 sunPos = vec3(0.0, 1.0, -1.0);
-
         /*SGSamplerCube skyboxSamplers[1];
         skyboxSamplers[0] = SGGetTextures("GeniusTexture");*/
         /*SGSamplerCube skyboxSamplers[1];
@@ -44,12 +42,12 @@ SGSubPass(GeometryPass)
             vec3 atmosphereCol = atmosphere(
                         vs_UVAttribute,           // normalized ray direction
                         vec3(0, 6372e3, 0),               // ray origin
-                        sunPos,                        // position of the sun
+                        sunPosition,                        // position of the sun
                         30.0,                           // intensity of the sun
                         6371e3,                         // radius of the planet in meters
                         6471e3,                         // radius of the atmosphere in meters
-                        vec3(14.5e-6, 15.0e-6, 17.4e-6), // Rayleigh scattering coefficient
-                        20e-6,                          // Mie scattering coefficient
+                        vec3(14.5e-6, 15.0e-6, 25.4e-6), // Rayleigh scattering coefficient
+                        5e-6,                          // Mie scattering coefficient
                         8e3,                            // Rayleigh scale height
                         1.0e3,                          // Mie scale height
                         0.958                          // Mie preferred scattering direction
@@ -64,7 +62,7 @@ SGSubPass(GeometryPass)
                     skyboxCol += texture(skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
                 }
 
-                fragColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);
+                fragColor = vec4(atmosphereCol, skyboxCol.a);
             }
             else
             {

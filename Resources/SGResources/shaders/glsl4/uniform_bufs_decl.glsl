@@ -38,6 +38,14 @@ layout(std140) uniform ProgramData
     float currentTime;
 };
 
+layout(std140) uniform SunBlock
+{
+    vec4 sunColor;
+    vec3 sunPosition;
+    float p0;
+    float sunColors[128];
+};
+
 #ifndef SG_NOT_INCLUDE_LIGHTS
     layout(std140) uniform DirectionalLightsBlock
     {

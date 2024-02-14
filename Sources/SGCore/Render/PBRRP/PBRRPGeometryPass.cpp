@@ -50,10 +50,10 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     auto camerasView = scene->getECSRegistry().view<RenderingBase, Camera, Transform>();
     auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Transform>();
 
-    camerasView.each([&meshesView, &renderPipeline](RenderingBase& cameraRenderingBase, Camera& camera, Transform& cameraTransform) {
+    camerasView.each([&meshesView, &renderPipeline, this](RenderingBase& cameraRenderingBase, Camera& camera, Transform& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
 
-        meshesView.each([&renderPipeline](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
+        meshesView.each([&renderPipeline, this](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
             auto meshGeometryShader = mesh.m_base.m_meshData->m_material->getShader()->getSubPassShader("GeometryPass");
 
             if(meshGeometryShader)
@@ -61,11 +61,19 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                 meshGeometryShader->bind();
                 meshGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
-                std::vector<Ref<ILightPass>> lightPasses = renderPipeline->getRenderPasses<ILightPass>();
-                for(auto& lightPass : lightPasses)
+                auto uniformBuffsIt = m_uniformBuffersToUse.begin();
+                while(uniformBuffsIt != m_uniformBuffersToUse.end())
                 {
-                    // lightPass->m_lightsUniformBuffer->bind();
-                    meshGeometryShader->useUniformBuffer(lightPass->m_lightsUniformBuffer);
+                    if(auto lockedUniformBuf = uniformBuffsIt->lock())
+                    {
+                        meshGeometryShader->useUniformBuffer(lockedUniformBuf);
+                        
+                        ++uniformBuffsIt;
+                    }
+                    else
+                    {
+                        uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
+                    }
                 }
 
                 CoreMain::getRenderer()->renderMeshData(

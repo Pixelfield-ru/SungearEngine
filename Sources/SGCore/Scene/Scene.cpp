@@ -17,6 +17,8 @@
 #include "SGCore/ECSObservers/Flags/ModelMatrixChangedFlag.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/ECSObservers/Observers/ModelMatrixChangedObserver.h"
+#include "SGCore/Render/Atmosphere/AtmosphereScatteringUpdater.h"
+#include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
 
 SGCore::Scene::Scene()
 {
@@ -25,6 +27,22 @@ SGCore::Scene::Scene()
 
 void SGCore::Scene::createDefaultSystems()
 {
+    // -------------
+    // rendering
+    
+    RenderPipelinesManager::setRenderPipeline(MakeRef<PBRRenderPipeline>());
+    
+    auto renderingBasesUpdater = MakeRef<RenderingBasesUpdater>();
+    m_systems.emplace(renderingBasesUpdater);
+    
+    auto atmosphereScatteringUpdater = MakeRef<AtmosphereScatteringUpdater>();
+    m_systems.emplace(atmosphereScatteringUpdater);
+    
+    auto directionalLightsUpdater = MakeRef<DirectionalLightsUpdater>();
+    m_systems.emplace(directionalLightsUpdater);
+    
+    // -------------
+    
     // transformations
 
     auto transformationsUpdater = MakeRef<TransformationsUpdater>();
@@ -32,16 +50,7 @@ void SGCore::Scene::createDefaultSystems()
 
     auto controllables3DUpdater = MakeRef<Controllables3DUpdater>();
     m_systems.emplace(controllables3DUpdater);
-
-    // -------------
-    // rendering
-
-    auto renderingBasesUpdater = MakeRef<RenderingBasesUpdater>();
-    m_systems.emplace(renderingBasesUpdater);
-
-    RenderPipelinesManager::setRenderPipeline(MakeRef<PBRRenderPipeline>());
-
-    // -------------
+    
     // gizmos
 
     auto boxGizmosUpdater = MakeRef<BoxGizmosUpdater>();

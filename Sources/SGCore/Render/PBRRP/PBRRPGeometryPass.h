@@ -7,12 +7,13 @@
 
 #include "SGCore/Render/IRenderPass.h"
 #include "SGCore/Transformations/TransformBase.h"
+#include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 
 namespace SGCore
 {
     struct Mesh;
 
-    struct PBRRPGeometryPass : public IRenderPass
+    struct PBRRPGeometryPass : public IRenderPass, IGeometryPass
     {
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
     };

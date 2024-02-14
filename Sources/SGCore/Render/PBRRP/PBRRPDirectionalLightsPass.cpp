@@ -18,39 +18,6 @@
 
 SGCore::PBRRPDirectionalLightsPass::PBRRPDirectionalLightsPass() noexcept
 {
-    m_maxLightsCount = 5;
-    
-    m_lightsUniformBuffer = Ref<IUniformBuffer>(CoreMain::getRenderer()->createUniformBuffer());
-    m_lightsUniformBuffer->m_blockName = "DirectionalLightsBlock";
-    for(int i = 0; i < m_maxLightsCount; ++i)
-    {
-        std::string currentDirLight = "directionalLights[" + std::to_string(i) + "]";
-
-        m_lightsUniformBuffer->putUniforms({
-            IShaderUniform(currentDirLight + ".projectionMatrix", SGGDataType::SGG_MAT4),
-            IShaderUniform(currentDirLight + ".viewMatrix", SGGDataType::SGG_MAT4),
-            IShaderUniform(currentDirLight + ".spaceMatrix", SGGDataType::SGG_MAT4),
-            IShaderUniform(currentDirLight + ".position", SGGDataType::SGG_FLOAT3),
-            IShaderUniform(currentDirLight + ".p0", SGGDataType::SGG_FLOAT),
-            IShaderUniform(currentDirLight + ".rotation", SGGDataType::SGG_FLOAT3),
-            IShaderUniform(currentDirLight + ".p1", SGGDataType::SGG_FLOAT),
-            IShaderUniform(currentDirLight + ".scale", SGGDataType::SGG_FLOAT3),
-            IShaderUniform(currentDirLight + ".p2", SGGDataType::SGG_FLOAT),
-            IShaderUniform(currentDirLight + ".color", SGGDataType::SGG_FLOAT4),
-            IShaderUniform(currentDirLight + ".intensity", SGGDataType::SGG_FLOAT),
-            IShaderUniform(currentDirLight + ".shadowSamplesCount", SGGDataType::SGG_INT),
-            IShaderUniform(currentDirLight + ".p3", SGGDataType::SGG_FLOAT),
-            IShaderUniform(currentDirLight + ".p4", SGGDataType::SGG_FLOAT)
-        });
-    }
-    
-    m_lightsUniformBuffer->putUniforms({
-        IShaderUniform("directionalLightsCount", SGGDataType::SGG_INT)
-    });
-    
-    m_lightsUniformBuffer->setLayoutLocation(3);
-    m_lightsUniformBuffer->prepare();
-
     m_renderTimer.m_useFixedUpdateCatchUp = false;
     m_renderTimer.m_targetFrameRate = 24;
 
@@ -62,49 +29,7 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
     m_renderTimer.startFrame();
 
     m_renderTimerCallback->setUpdateFunction([&]() {
-        m_lightsUniformBuffer->bind();
-
-        auto directionalLightsView = scene->getECSRegistry().view<DirectionalLight, RenderingBase, Transform>();
-
-        // std::cout << "upd : " << std::endl;
-        
-        int currenLightIdx = 0;
-        
-        directionalLightsView.each([&currenLightIdx, this](DirectionalLight& directionalLight, RenderingBase& renderingBase, Transform& transform) {
-            if(currenLightIdx < m_maxLightsCount)
-            {
-                std::string currentDirLight = "directionalLights[" + std::to_string(currenLightIdx) + "]";
-
-                if(directionalLight.m_base.m_color != directionalLight.m_base.m_lastColor)
-                {
-                    std::cout << "currentDirLight : " << currentDirLight << ", col : " << directionalLight.m_base.m_color.r << ", " << directionalLight.m_base.m_color.g << ", " << directionalLight.m_base.m_color.b << std::endl;
-                    
-                    m_lightsUniformBuffer->subData(currentDirLight + ".color", glm::value_ptr(directionalLight.m_base.m_color), 4);
-                    
-                    // char* col = m_lightsUniformBuffer->getUniform(currentDirLight + ".color");
-                    
-                    // std::cout << "col : " << *(float*) col << ", " << *(float*) (col + 4) << ", " << *(float*) (col + 8) << ", " << *(float*) (col + 12) << std::endl;
-                    
-                    directionalLight.m_base.m_lastColor = directionalLight.m_base.m_color;
-                }
-
-                if(directionalLight.m_base.m_intensity != directionalLight.m_base.m_lastIntensity)
-                {
-                    m_lightsUniformBuffer->subData(currentDirLight + ".intensity", { directionalLight.m_base.m_intensity } );
-
-                    directionalLight.m_base.m_lastIntensity = directionalLight.m_base.m_intensity;
-                }
-
-                // todo make observer
-                m_lightsUniformBuffer->subData(currentDirLight + ".position", glm::value_ptr(transform.m_ownTransform.m_position), 3);
-                
-                ++currenLightIdx;
-            }
-            
-            m_lightsUniformBuffer->subData("directionalLightsCount", { currenLightIdx });
-        });
-
-        // m_lightsUniformBuffer->subData("directionalLightsCount", { currentLightIdx });
+        // todo: shadows
         
         // std::cout << "endupd : " << std::endl;
     });

@@ -5,11 +5,11 @@
 #ifndef SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H
 #define SUNGEARENGINE_PBRRPDIRECTIONALLIGHTSPASS_H
 
-#include "SGCore/Render/ILightPass.h"
+#include "SGCore/Render/IRenderPass.h"
 
 namespace SGCore
 {
-    struct PBRRPDirectionalLightsPass : public ILightPass
+    struct PBRRPDirectionalLightsPass : public IRenderPass
     {
         // todo: сделать рендер пассы с настройкой времени выполнения. то же самое сделать с системами
         PBRRPDirectionalLightsPass() noexcept;
