@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_ATMOSPHEREUTILS_H
 
 #include "SGUtils/MathUtils.h"
+#include "Atmosphere.h"
 
 namespace SGCore
 {
@@ -16,6 +17,8 @@ namespace SGCore
                                                 float rPlanet, float rAtmos, const glm::vec3& kRlh, float kMie,
                                                 float shRlh,
                                                 float shMie, float g, int iSteps, int jSteps) noexcept;
+
+        static glm::vec3 calculateSunColor(const Atmosphere& atmosphere) noexcept;
     };
 }
 

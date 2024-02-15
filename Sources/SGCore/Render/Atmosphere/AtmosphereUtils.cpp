@@ -98,3 +98,22 @@ SGCore::AtmosphereUtils::rayleighMieAtmosphere(glm::vec3 r, const glm::vec3& ro,
     // Calculate and return the final color.
     return iSun * (pRlh * kRlh * totalRlh + pMie * kMie * totalMie);
 }
+
+glm::vec3 SGCore::AtmosphereUtils::calculateSunColor(const SGCore::Atmosphere& atmosphere) noexcept
+{
+    return AtmosphereUtils::rayleighMieAtmosphere(
+            atmosphere.m_sunPosition,                                // normalized ray direction
+            atmosphere.m_rayOrigin,                                  // ray origin
+            atmosphere.m_sunPosition,                             // position of the sun
+            atmosphere.m_sunIntensity,                             // intensity of the sun
+            atmosphere.m_planetRadius,                           // radius of the planet in meters
+            atmosphere.m_atmosphereRadius,                        // radius of the atmosphere in meters
+            atmosphere.m_rayleighScatteringCoeff,                   // Rayleigh scattering coefficient
+            atmosphere.m_mieScatteringCoeff,                        // Mie scattering coefficient
+            atmosphere.m_rayleighScaleHeight,                       // Rayleigh scale height
+            atmosphere.m_mieScaleHeight,                           // Mie scale height
+            atmosphere.m_miePreferredScatteringDirection,              // Mie preferred scattering direction,
+            16,                                                     // i steps
+            8                                                       // j steps
+    );
+}

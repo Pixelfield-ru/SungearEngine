@@ -2,8 +2,8 @@
 // Created by ilya on 14.02.24.
 //
 
-#ifndef SUNGEARENGINE_ATMOSPHERESCATTERINGUPDATER_H
-#define SUNGEARENGINE_ATMOSPHERESCATTERINGUPDATER_H
+#ifndef SUNGEARENGINE_ATMOSPHEREUPDATER_H
+#define SUNGEARENGINE_ATMOSPHEREUPDATER_H
 
 #include "SGCore/Scene/ISystem.h"
 
@@ -11,9 +11,9 @@ namespace SGCore
 {
     class IUniformBuffer;
     
-    struct AtmosphereScatteringUpdater : public ISystem
+    struct AtmosphereUpdater : public ISystem
     {
-        AtmosphereScatteringUpdater() noexcept;
+        AtmosphereUpdater() noexcept;
         
         void fixedUpdate(const Ref<Scene>& scene) final;
         
@@ -22,4 +22,4 @@ namespace SGCore
     };
 }
 
-#endif //SUNGEARENGINE_ATMOSPHERESCATTERINGUPDATER_H
+#endif //SUNGEARENGINE_ATMOSPHEREUPDATER_H

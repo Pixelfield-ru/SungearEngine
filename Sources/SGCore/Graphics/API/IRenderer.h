@@ -19,7 +19,7 @@ namespace SGCore
     class Camera;
     class Mesh;
     struct TransformBase;
-    struct AtmosphereScattering;
+    struct Atmosphere;
     class RenderingBase;
     class IGizmo;
 

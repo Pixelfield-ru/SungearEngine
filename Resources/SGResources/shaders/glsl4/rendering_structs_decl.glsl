@@ -30,3 +30,24 @@ struct DirectionalLight extends ILight
     float p4;
     // todo: make for dir light
 };
+
+struct Atmosphere
+{
+    vec3 sunPosition;
+    float p0;
+
+    vec3 sunColor;
+    float rayleighScaleHeight;
+
+    vec3 rayleighScatteringCoeff;
+    float mieScatteringCoeff;
+
+    float mieScaleHeight;
+    float sunIntensity;
+
+    float planetRadius;
+    float atmosphereRadius;
+
+    vec3 rayOrigin;
+    float miePreferredScatteringDirection;
+};

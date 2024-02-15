@@ -17,7 +17,7 @@
 #include "SGCore/ECSObservers/Flags/ModelMatrixChangedFlag.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/ECSObservers/Observers/ModelMatrixChangedObserver.h"
-#include "SGCore/Render/Atmosphere/AtmosphereScatteringUpdater.h"
+#include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 #include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
 
 SGCore::Scene::Scene()
@@ -35,7 +35,7 @@ void SGCore::Scene::createDefaultSystems()
     auto renderingBasesUpdater = MakeRef<RenderingBasesUpdater>();
     m_systems.emplace(renderingBasesUpdater);
     
-    auto atmosphereScatteringUpdater = MakeRef<AtmosphereScatteringUpdater>();
+    auto atmosphereScatteringUpdater = MakeRef<AtmosphereUpdater>();
     m_systems.emplace(atmosphereScatteringUpdater);
     
     auto directionalLightsUpdater = MakeRef<DirectionalLightsUpdater>();

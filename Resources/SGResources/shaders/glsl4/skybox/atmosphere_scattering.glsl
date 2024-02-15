@@ -6,9 +6,9 @@
 #define iSteps 16
 #define jSteps 8
 
-vec3 atmosphere(vec3 r, vec3 ro,
-                vec3 pSun, float iSun,
-                float rPlanet, float rAtmos, vec3 kRlh, float kMie, float shRlh, float shMie, float g) {
+vec3 atmosphereScattering(vec3 r, vec3 ro,
+                          vec3 pSun, float iSun,
+                          float rPlanet, float rAtmos, vec3 kRlh, float kMie, float shRlh, float shMie, float g) {
     // Normalize the sun and view directions.
     pSun = normalize(pSun);
     r = normalize(r);

@@ -39,18 +39,18 @@ SGSubPass(GeometryPass)
 
         void main()
         {
-            vec3 atmosphereCol = atmosphere(
-                        vs_UVAttribute,           // normalized ray direction
-                        vec3(0, 6372e3, 0),               // ray origin
-                        sunPosition,                        // position of the sun
-                        30.0,                           // intensity of the sun
-                        6371e3,                         // radius of the planet in meters
-                        6471e3,                         // radius of the atmosphere in meters
-                        vec3(14.5e-6, 15.0e-6, 25.4e-6), // Rayleigh scattering coefficient
-                        5e-6,                          // Mie scattering coefficient
-                        8e3,                            // Rayleigh scale height
-                        1.0e3,                          // Mie scale height
-                        0.958                          // Mie preferred scattering direction
+            vec3 atmosphereCol = atmosphereScattering(
+                        vs_UVAttribute,                                     // normalized ray direction
+                        atmosphere.rayOrigin,                               // ray origin
+                        atmosphere.sunPosition,                             // position of the sun
+                        atmosphere.sunIntensity,                            // intensity of the sun
+                        atmosphere.planetRadius,                            // radius of the planet in meters
+                        atmosphere.atmosphereRadius,                        // radius of the atmosphere in meters
+                        atmosphere.rayleighScatteringCoeff,                 // Rayleigh scattering coefficient
+                        atmosphere.mieScatteringCoeff,                      // Mie scattering coefficient
+                        atmosphere.rayleighScaleHeight,                     // Rayleigh scale height
+                        atmosphere.mieScaleHeight,                          // Mie scale height
+                        atmosphere.miePreferredScatteringDirection          // Mie preferred scattering direction
             );
 
             if(skyboxSamplers.sg_length() > 0)

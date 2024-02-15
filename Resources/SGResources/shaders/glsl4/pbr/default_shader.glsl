@@ -320,10 +320,7 @@ SGSubPass(GeometryPass)
 
             // calculating sun
             {
-                vec3 normalizedFragPos = normalize(vsIn.fragPos);
-                vec3 normalizedSunPos = normalize(sunPosition);
-
-                vec3 lightDir = normalize(normalizedSunPos - normalizedFragPos);// TRUE
+                vec3 lightDir = normalize(atmosphere.sunPosition);// TRUE
                 vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
 
                 // energy brightness coeff (коэфф. энергетической яркости)
@@ -347,9 +344,9 @@ SGSubPass(GeometryPass)
 
                 // NDF (normal distribution func)
                 float D = GGXTR(
-                finalNormal,
-                halfWayDir,
-                roughness
+                    finalNormal,
+                    halfWayDir,
+                    roughness
                 );// TRUE
 
                 float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
@@ -366,7 +363,7 @@ SGSubPass(GeometryPass)
                 float ctDenominator = 4.0 * NdotVD * NdotL;
                 vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
-                lo += (diffuse * albedo.rgb / PI + specular) * sunColor.rgb * NdotL * 3.0;
+                lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 3.0;
             }
 
 

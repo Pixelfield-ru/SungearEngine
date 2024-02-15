@@ -29,7 +29,7 @@
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Render/Atmosphere/AtmosphereScattering.h"
+#include "SGCore/Render/Atmosphere/Atmosphere.h"
 #include "SGCore/Render/Lighting/DirectionalLight.h"
 #include "SGCore/Render/Gizmos/BoxGizmo.h"
 
@@ -38,7 +38,7 @@ SGCore::Ref<SGCore::ModelAsset> testModel;
 entt::entity testCameraEntity = entt::null;
 SGCore::Ref<SGCore::Scene> testScene;
 
-SGCore::AtmosphereScattering* _atmosphereScattering = nullptr;
+SGCore::Atmosphere* _atmosphereScattering = nullptr;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -269,7 +269,7 @@ void init()
             // vss
             transform->m_ownTransform.m_position = { 0, 2.5, -5 };
             transform->m_ownTransform.m_rotation = { 0, 0, 0 };
-            transform->m_ownTransform.m_scale = { 1.2, 1.2, 1.2 };
+            transform->m_ownTransform.m_scale = { 1.3, 1.3, 1.3 };
 
             // RPG
             /*transform->m_ownTransform.m_position = { 1, 20.0, -20 };
@@ -355,7 +355,7 @@ void init()
         });
 
         SGCore::Mesh& skyboxMesh = testScene->getECSRegistry().get<SGCore::Mesh>(skyboxEntities[2]);
-        SGCore::AtmosphereScattering& atmosphereScattering = testScene->getECSRegistry().emplace<SGCore::AtmosphereScattering>(skyboxEntities[2]);
+        SGCore::Atmosphere& atmosphereScattering = testScene->getECSRegistry().emplace<SGCore::Atmosphere>(skyboxEntities[2]);
         _atmosphereScattering = &atmosphereScattering;
         // atmosphereScattering.m_sunRotation.z = 90.0;
         skyboxMesh.m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_SKYBOX,
@@ -708,10 +708,19 @@ int framesCnt = 0;
 void fixedUpdate()
 {
     double angle = framesCnt / 75.0;
-    
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_1))
+    {
+        _atmosphereScattering->m_sunRotation.x += 0.5f;
+    }
+    else if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_2))
+    {
+        _atmosphereScattering->m_sunRotation.x -= 0.5f;
+    }
+
     if(_atmosphereScattering)
     {
-        _atmosphereScattering->m_sunRotation.x += 0.2f;
+        // _atmosphereScattering->m_sunRotation.x += 0.01f;
     }
 
     // auto transform0 = testShadowsCaster->getComponent<SGCore::TransformBase>();
