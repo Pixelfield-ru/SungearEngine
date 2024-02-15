@@ -12,7 +12,6 @@
 
 namespace SGCore
 {
-    template<size_t PermutationTableSz>
     struct PerlinNoise
     {
         SingleArrayMatrix<float> m_map;
@@ -26,7 +25,7 @@ namespace SGCore
             std::uniform_int_distribution<std::mt19937::result_type> dist(std::numeric_limits<unsigned char>::min(),
                                                                           std::numeric_limits<unsigned char>::max());
 
-            for(size_t i = 0; i < PermutationTableSz; ++i)
+            for(size_t i = 0; i < s_permutationTableSz; ++i)
             {
                 m_permutationTable[i] = dist(gen);
             }
@@ -135,9 +134,11 @@ namespace SGCore
         }
 
     private:
+        static constexpr const inline size_t s_permutationTableSz = 1024;
+        
         glm::ivec2 m_currentMapSize { };
 
-        std::uint8_t m_permutationTable[PermutationTableSz] { };
+        std::uint8_t m_permutationTable[s_permutationTableSz] { };
 
         size_t m_seed = 0;
     };

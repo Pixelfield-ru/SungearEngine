@@ -825,9 +825,11 @@ int main()
     sgSetFixedUpdateCallback(fixedUpdate);
     sgSetUpdateCallback(update);
 
-    SGCore::PerlinNoise<1024> perlinNoise;
-
-    perlinNoise.generateMap({ 10, 10 });
+    SGCore::PerlinNoise perlinNoise;
+    perlinNoise.setSeed();
+    
+    // perlinNoise.generateMap({ 256, 256 });
+    perlinNoise.generateMap({ 16, 16 });
 
     auto perlinMapSize = perlinNoise.getCurrentMapSize();
 
