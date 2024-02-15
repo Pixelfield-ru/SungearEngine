@@ -7,7 +7,7 @@
 #include "Controllables3DUpdater.h"
 #include "SGCore/Input/InputManager.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGUtils/Math.h"
+#include "SGUtils/MathUtils.h"
 #include "SGCore/Scene/Scene.h"
 #include "Transform.h"
 #include "SGCore/Render/RenderingBase.h"
@@ -40,8 +40,8 @@ void SGCore::Controllables3DUpdater::fixedUpdate
             // ownTransform.m_translationMatrix = ownTransform.m_rotationMatrix = ownTransform.m_scaleMatrix = ownTransform.m_modelMatrix = glm::identity<glm::mat4>();
         }
 
-        glm::vec3 rotatedForward = SGUtils::MathUtils::forward3;
-        glm::vec3 rotatedLeft = SGUtils::MathUtils::left3;
+        glm::vec3 rotatedForward = MathUtils::forward3;
+        glm::vec3 rotatedLeft = MathUtils::left3;
 
         if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W) ||
            InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))

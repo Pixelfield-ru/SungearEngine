@@ -10,6 +10,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
         ${CMAKE_SOURCE_DIR}/Externals/GLM
         ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
+        ${CMAKE_SOURCE_DIR}/Sources
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC

@@ -1,6 +1,10 @@
-//#define SUNGEAR_DEBUG
+// #define SUNGEAR_DEBUG
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include <cstdlib>
+#include <stb/stb_image_write.h>
 
 #include "CoreTest.h"
 #include "SGCore/Main/CoreMain.h"
@@ -32,6 +36,7 @@
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
 #include "SGCore/Render/Lighting/DirectionalLight.h"
 #include "SGCore/Render/Gizmos/BoxGizmo.h"
+#include "SGUtils/Noise/PerlinNoise.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -819,6 +824,15 @@ int main()
     sgSetCoreInitCallback(init);
     sgSetFixedUpdateCallback(fixedUpdate);
     sgSetUpdateCallback(update);
+
+    SGCore::PerlinNoise<1024> perlinNoise;
+
+    perlinNoise.generateMap({ 10, 10 });
+
+    auto perlinMapSize = perlinNoise.getCurrentMapSize();
+
+    stbi_write_png("perlin_noise_test.png", perlinMapSize.x, perlinMapSize.y, 4,
+                   (perlinNoise.m_map.data()), 4 * perlinMapSize.x);
 
     SGCore::CoreMain::start();
 
