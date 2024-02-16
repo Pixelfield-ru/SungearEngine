@@ -27,7 +27,8 @@ entt::entity SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     EntityBaseInfo& nodeBaseInfo = registry.emplace<EntityBaseInfo>(parentEntity);
     Transform& nodeTransform = registry.emplace<Transform>(parentEntity);
     nodeTransform.m_ownTransform.m_position = m_position;
-    nodeTransform.m_ownTransform.m_rotation = glm::eulerAngles(m_rotationQuaternion);
+    // auto eulerRot = glm::eulerAngles(m_rotationQuaternion);
+    nodeTransform.m_ownTransform.m_rotation = glm::degrees(glm::eulerAngles(m_rotationQuaternion));
     nodeTransform.m_ownTransform.m_scale = m_scale;
 
     nodeBaseInfo.setRawName(m_name);

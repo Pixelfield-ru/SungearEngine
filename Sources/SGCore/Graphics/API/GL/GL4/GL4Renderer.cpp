@@ -123,15 +123,7 @@ void SGCore::GL4Renderer::checkForErrors(const std::source_location& location) n
 
 void SGCore::GL4Renderer::printInfo() noexcept
 {
-    spdlog::info("OpenGL supporting extensions: {0}");
 
-    GLint extensionsNum = 0;
-    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
-
-    for(int i = 0; i < extensionsNum; i++)
-    {
-        spdlog::info(std::string(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i))));
-    }
 }
 
 void SGCore::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)

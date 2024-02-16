@@ -15,6 +15,8 @@
 
 #define SG_CURRENT_LOCATION_STR SGUtils::Utils::sourceLocationToString(std::source_location::current())
 
+#define SG_STRINGIFY(n) #n
+
 #include <string>
 #include <fstream>
 #include <iostream>

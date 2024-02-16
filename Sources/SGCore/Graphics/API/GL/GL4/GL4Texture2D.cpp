@@ -5,6 +5,7 @@
 #include "GL4Texture2D.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "../GLGraphicsTypesCaster.h"
+#include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
 
 SGCore::GL4Texture2D::~GL4Texture2D() noexcept
 {
@@ -19,30 +20,34 @@ void SGCore::GL4Texture2D::create() noexcept
     glBindTexture(GL_TEXTURE_2D, m_handler);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
+    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexStorage2D(GL_TEXTURE_2D, 1, GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
-                   m_width, m_height);
-
-    // gl_unsigned_byte may produce SIGSEGV
-    glTexSubImage2D(GL_TEXTURE_2D,
-                    0,
-                    0,
-                    0,
-                    m_width,
-                    m_height,
-                    GLGraphicsTypesCaster::sggFormatToGL(m_format),
-                    GL_UNSIGNED_BYTE,
-                    m_textureData.get());
-
+    
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
+                 m_width,
+                 m_height,
+                 0,
+                 GLGraphicsTypesCaster::sggFormatToGL(m_format),
+                 GL_UNSIGNED_BYTE,
+                 m_textureData.get());
+    
+    // glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
     glGenerateMipmap(GL_TEXTURE_2D);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0);
+    
+    if(DeviceGLInfo::getSupportingExtensions().contains(SG_STRINGIFY(GL_EXT_texture_filter_anisotropic)))
+    {
+        float amount = std::min(4.0f, DeviceGLInfo::getMaxTextureMaxAnisotropy());
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+    }
+    
+    //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
     #ifdef SUNGEAR_DEBUG
         GL4Renderer::getInstance()->checkForErrors();

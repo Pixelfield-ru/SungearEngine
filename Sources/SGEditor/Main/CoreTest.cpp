@@ -90,7 +90,8 @@ void init()
             //"../SGResources/models/test/realistic_tree/scene.gltf"
             //"../SGResources/models/test/wooden_table/scene.gltf"
             //"../SGResource
-            //"../SGResources/models/test/uaz/scene.gltf"s/models/test/svd/scene.gltf"
+            //"../SGResources/models/test/uaz/scene.gltf"
+            //s/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             "../SGResources/models/test/vss/scene.gltf"
             //"../SGResources/models/test/vsk94/scene.gltf"
@@ -251,47 +252,54 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
+    std::vector<entt::entity> model0Entities;
+    
     model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                   [](const entt::entity& entity)
+                                   [&model0Entities](const entt::entity& entity)
     {
-        auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
+        model0Entities.push_back(entity);
+    });
+    
+    {
+        auto e = testScene->getECSRegistry().try_get<SGCore::EntityBaseInfo>(model0Entities[0]);
+        auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(model0Entities[0]);
         if(transform)
         {
-            /*transformComponent->m_position = { -8, 0.1, -20 };
-            transformComponent->m_rotation = { 90, 0, 0 };
-            transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
-
+            /*transform->m_ownTransform.m_position = { -8, 20, -2 };
+            transform->m_ownTransform.m_rotation = { -90, 0, 0 };
+            transform->m_ownTransform.m_scale = { 10, 10, 10 };*/
+            
             // svd
             /*transformComponent->m_position = { 3, -1, -20 };
             transformComponent->m_rotation = { 0, 90, 0 };
             transformComponent->m_scale = { 0.2, 0.2, 0.2 };*/
-
+            
             // vsk94
             /*transformComponent->m_position = { 3, 4, -20 };
             transformComponent->m_rotation = { 90, 0, 0 };
             transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
-
+            
             // vss
-            transform->m_ownTransform.m_position = { 0, 2.5, -5 };
+            transform->m_ownTransform.m_position = { 3, 9.2, -13 };
             transform->m_ownTransform.m_rotation = { 0, 0, 0 };
-            transform->m_ownTransform.m_scale = { 1.3, 1.3, 1.3 };
-
+            transform->m_ownTransform.m_scale = { 1.7, 1.7, 1.7 };
+            
             // RPG
             /*transform->m_ownTransform.m_position = { 1, 20.0, -20 };
             transform->m_ownTransform.m_rotation = { 90, 0, 90 };
             transform->m_ownTransform.m_scale = { 0.8, 0.8, 0.8 };*/
-
+            
             // sponza old model
             /*transformComponent->m_position = { 3, 2.91, -20 };
             transformComponent->m_rotation = { 0, 0, 0 };
             transformComponent->m_scale = { 0.07, 0.07, 0.07 };*/
-
+            
             // old building
             /*transformComponent->m_position = { 3, 1, -20 };
             transformComponent->m_rotation = { 90, 0, 0 };
             transformComponent->m_scale = { 0.007, 0.007, 0.007 };*/
         }
-    });
+    }
 
     // ==========================================================================================
     // ==========================================================================================

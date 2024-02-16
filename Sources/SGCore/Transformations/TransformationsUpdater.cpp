@@ -159,19 +159,22 @@ void SGCore::TransformationsUpdater::fixedUpdate
         }
         else
         {
-            if(modelMatrixChanged) finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
+            if(modelMatrixChanged)
+            {
+                finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
+            }
         }
-
+        
+        if(registry.all_of<ModelMatrixChangedFlag>(entity))
+        {
+            registry.erase<ModelMatrixChangedFlag>(entity);
+        }
+        
         if(finalModelMatrixChanged && !registry.all_of<ModelMatrixChangedFlag>(entity))
         {
             registry.emplace<ModelMatrixChangedFlag>(entity);
         }
-
-        if(parentModelMatrixChanged)
-        {
-            registry.erase<ModelMatrixChangedFlag>(entityBaseInfo->m_parent);
-        }
-
+        
         if(finalModelMatrixChanged)
         {
             scene->invokeFlagObserverSystems<ModelMatrixChangedFlag>(entity);
