@@ -1,4 +1,4 @@
- project(${SG_CONSOLE_API_PROJ})
+ project(SGConsoleAPI)
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")
 

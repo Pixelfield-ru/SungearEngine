@@ -1,4 +1,4 @@
-project(${SG_UTILS_PROJ})
+project(SGUtils)
 
 SET(CMAKE_SHARED_LIBRARY_PREFIX "")
 

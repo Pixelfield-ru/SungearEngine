@@ -1,4 +1,4 @@
-project(${SG_CONSOLE_PROJ})
+project(SGConsole)
 
 add_subdirectory(API)
 add_subdirectory(App)

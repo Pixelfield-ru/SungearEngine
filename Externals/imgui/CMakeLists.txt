@@ -11,7 +11,7 @@ set(IMGUI_SOURCES
         imgui_draw.cpp
         imgui_widgets.cpp
         imgui_tables.cpp
-        )
+)
 
 add_library(${PROJECT_NAME} SHARED ${IMGUI_SOURCES})
 

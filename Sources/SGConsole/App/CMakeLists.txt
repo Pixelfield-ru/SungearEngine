@@ -1,4 +1,4 @@
- project(${SG_CONSOLE_APP_PROJ})
+ project(SGConsoleApp)
 
  file(GLOB_RECURSE SGCONSOLEAPP_SOURCES ../App/*.cpp ../App/*.h)
 
@@ -17,10 +17,4 @@
 
  target_link_libraries(${PROJECT_NAME}
          ${SG_CONSOLE_API_PROJ}
-         )
-
- add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-         COMMAND ${CMAKE_COMMAND} -E copy
-         $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.exe
-         $<TARGET_FILE_DIR:SGEditor>
          )

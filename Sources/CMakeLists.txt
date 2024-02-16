@@ -1,6 +1,6 @@
 add_definitions(-DSTB_IMAGE_IMPLEMENTATION)
 
-add_subdirectory(${SG_UTILS_PROJ})
-add_subdirectory(${SG_CORE_PROJ})
-add_subdirectory(${SG_CONSOLE_PROJ})
-add_subdirectory(${SG_EDITOR_PROJ})
+add_subdirectory(SGUtils)
+add_subdirectory(SGCore)
+add_subdirectory(SGConsole)
+add_subdirectory(SGEditor)

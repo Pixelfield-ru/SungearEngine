@@ -3,36 +3,18 @@ cmake_minimum_required(VERSION 3.22)
 project(SungearEngine)
 
 add_definitions(-DSUNGEAR_DEBUG)
-#add_link_options("-fuse-ld=lld")
 
 set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-#find_package(LLVM REQUIRED CONFIG)
-
-
-#set(CMAKE_LINKER "C:\\Program Files\\LLVM\\bin\\lld-link.exe")
-#set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
-
-#set(CMAKE_LINKER lld-link CACHE STRING "C:\\Program Files\\LLVM\\bin\\lld.exe")
-#set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> /out:<TARGET>" CACHE STRING "")
-
 message("ToolChain CMAKE_CXX_LINK_EXECUTABLE: ${CMAKE_CXX_LINK_EXECUTABLE}")
 
-#SET(CMAKE_CXX_LINK_EXECUTABLE "C:\\Program Files\\LLVM\\bin\\lld.exe")
-
-#set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ ${CMAKE_CXX_STANDARD_LIBRARIES}")
-
 add_compile_options(-fPIC)
-# set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-
-#[[set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")]]
 
 if(MSVC)
     set(MSVC_RUNTIME "dynamic")
@@ -66,23 +48,17 @@ set(SG_EDITOR_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
 
 # multiple definition because of bullet library
 set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
-# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
-
-# FOR LINUX
-#set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition")
 
 # options --------------------------
 
 # TODO: make SG_BUILD_EDITOR
 set(SG_BUILD_TESTS OFF)
 
-set(SG_RESOURCES_COPY_MODELS OFF)
+set(SG_RESOURCES_COPY_MODELS ON)
 set(SG_RESOURCES_COPY_SHADERS ON)
-set(SG_RESOURCES_COPY_TEXTURES OFF)
+set(SG_RESOURCES_COPY_TEXTURES ON)
 
 # ----------------------------------
-
-#include_directories(${JNI_INCLUDE_DIRS} ${_classDir} ${_stubDir})
 
 add_subdirectory(syslibs)
 add_subdirectory(Externals)
@@ -90,7 +66,6 @@ add_subdirectory(Sources)
 if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)
 endif()
-add_subdirectory(Resources)
 
 # move all necessary dlls to target exes ------------------
 
