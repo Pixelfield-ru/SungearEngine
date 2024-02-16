@@ -17,18 +17,22 @@ namespace SGCore
     class SGSLETranslator
     {
     public:
-        std::shared_ptr<ShaderAnalyzedFile> processCode(const std::string& path, const std::string& code, SGSLETranslator& translator) noexcept;
-        std::shared_ptr<ShaderAnalyzedFile> processCode(const std::string& path, const std::string& code) noexcept;
+        void processCode(const std::string& path, const std::string& code, SGSLETranslator& translator, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
+        void processCode(const std::string& path, const std::string& code, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
 
         SGSLETranslatorConfiguration m_config;
 
     private:
-        std::shared_ptr<ShaderAnalyzedFile> processCode(const std::string& path, const std::string& code, SGSLETranslator& translator, bool isRootShader) noexcept;
+        void processCode(const std::string& path,
+                         const std::string& code,
+                         SGSLETranslator& translator,
+                         bool isRootShader,
+                         const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
 
         std::string sgsleCodeCorrector(const std::string& code);
-        std::shared_ptr<ShaderAnalyzedFile> sgslePreprocessor(const std::string& path, const std::string& code) noexcept;
-        std::shared_ptr<ShaderAnalyzedFile> sgslePreProcessor(const std::string& path, const std::string& code, SGSLETranslator& translator) noexcept;
-        std::shared_ptr<ShaderAnalyzedFile> sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzedFile>& code, SGSLETranslator& translator) noexcept;
+        void sgslePreprocessor(const std::string& path, const std::string& code, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
+        void sgslePreProcessor(const std::string& path, const std::string& code, SGSLETranslator& translator, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
+        void sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile, SGSLETranslator& translator) noexcept;
         
         void sgsleMakeSubShaderCodePretty(SGSLESubShader& subShader) const noexcept;
         

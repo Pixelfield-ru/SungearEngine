@@ -53,6 +53,11 @@ namespace SGCore
 
             return foundRenderPasses;
         }
+        
+        double getRenderPassesExecutionTime() const noexcept;
+        
+    private:
+        double m_renderPassesExecutionTime = 0.0;
     };
 }
 

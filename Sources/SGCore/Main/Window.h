@@ -121,8 +121,6 @@ namespace SGCore
 
         void makeCurrent() noexcept;
 
-        #pragma region Setters
-
         void setSize(const int& sizeX, const int& sizeY) noexcept;
 
         void setSizeLimits(const int& sizeMinLimitX, const int& sizeMinLimitY, const int& sizeMaxLimitX, const int& sizeMaxLimitY) noexcept;
@@ -148,23 +146,21 @@ namespace SGCore
         bool isFullscreen() const noexcept;
 
         void setConfig(WindowConfig&& config) noexcept;
-
-        #pragma endregion
-
-        #pragma region Getters
-
+        
         bool shouldClose() noexcept;
 
         WindowConfig& getConfig() noexcept;
 
         void getSize(int& sizeX, int& sizeY) noexcept;
 
+        [[nodiscard]] double getSwapBuffersExecutionTime() const noexcept;
+        
         static void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept;
-
-        #pragma endregion
 
     private:
         WindowConfig m_config;
+        
+        double m_swapBuffersExecutionTime = 0.0;
 
         static void windowCloseCallback(GLFWwindow* window);
 

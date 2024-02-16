@@ -24,7 +24,7 @@ namespace SGCore
         std::string m_name;
 
         // TODO: impl
-        Ref<IAsset> load(const std::string& path) override;
+        void load(const std::string& path) override;
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.

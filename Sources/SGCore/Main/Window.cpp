@@ -225,7 +225,11 @@ void SGCore::Window::errorCallback(int errCode, const char* err_msg)
 
 void SGCore::Window::swapBuffers()
 {
+    auto t0 = glfwGetTime();
     glfwSwapBuffers(m_handler);
+    auto t1 = glfwGetTime();
+    
+    m_swapBuffersExecutionTime = (t1 - t0) * 1000.0;
 }
 
 void SGCore::Window::pollEvents()
@@ -253,4 +257,9 @@ void SGCore::Window::setFullscreen(bool fullscreen) noexcept
 bool SGCore::Window::isFullscreen() const noexcept
 {
     return m_config.m_fullsreen;
+}
+
+double SGCore::Window::getSwapBuffersExecutionTime() const noexcept
+{
+    return m_swapBuffersExecutionTime;
 }

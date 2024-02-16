@@ -1,6 +1,5 @@
 // #define SUNGEAR_DEBUG
 
-#define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include <cstdlib>
@@ -93,6 +92,8 @@ void init()
             //"../SGResources/models/test/uaz/scene.gltf"
             //s/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
+            //"../SGResources/models/test/ak47_m/scene.gltf"
+            //"../SGResources/models/test/mig21/scene.gltf"
             "../SGResources/models/test/vss/scene.gltf"
             //"../SGResources/models/test/vsk94/scene.gltf"
             //"../SGResources/models/test/helicopter/scene.gltf"
@@ -283,6 +284,11 @@ void init()
             transform->m_ownTransform.m_position = { 3, 9.2, -13 };
             transform->m_ownTransform.m_rotation = { 0, 0, 0 };
             transform->m_ownTransform.m_scale = { 1.7, 1.7, 1.7 };
+            
+            // ak47_m
+            /*transform->m_ownTransform.m_position = { 3, 9.2, -13 };
+            transform->m_ownTransform.m_rotation = { 0, 0, 0 };
+            transform->m_ownTransform.m_scale = { 1.7 / 20.0f, 1.7 / 20.0f, 1.7 / 20.0f };*/
             
             // RPG
             /*transform->m_ownTransform.m_position = { 1, 20.0, -20 };

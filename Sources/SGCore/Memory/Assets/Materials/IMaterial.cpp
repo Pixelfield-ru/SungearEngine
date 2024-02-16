@@ -17,9 +17,9 @@ SGCore::IMaterial::IMaterial() noexcept
     m_shader = MakeRef<IShader>();
 }
 
-std::shared_ptr<SGCore::IAsset> SGCore::IMaterial::load(const std::string& path)
+void SGCore::IMaterial::load(const std::string& path)
 {
-    return shared_from_this();
+
 }
 
 std::shared_ptr<SGCore::ITexture2D>

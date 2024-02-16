@@ -18,8 +18,8 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
 
     m_fileAsset = asset;
 
-    SGSLETranslator sgsleTranslator;
-    m_shaderAnalyzedFile = sgsleTranslator.processCode(asset->getPath().string(), asset->getData());
+    std::string assetPath = asset->getPath().string();
+    m_shaderAnalyzedFile = AssetManager::loadAsset<ShaderAnalyzedFile>(assetPath);
 
     for(const auto& subPassIter : m_shaderAnalyzedFile->m_subPasses)
     {

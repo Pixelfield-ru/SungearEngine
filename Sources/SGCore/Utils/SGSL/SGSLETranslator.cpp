@@ -10,10 +10,13 @@
 #include "SGUtils/Utils.h"
 #include "SGUtils/FileUtils.h"
 
-std::shared_ptr<SGCore::ShaderAnalyzedFile>
+void
 SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code,
-                                     SGCore::SGSLETranslator& translator, bool isRootShader) noexcept
+                                     SGCore::SGSLETranslator& translator, bool isRootShader,
+                                     const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
+    // std::cout << "loading shader: " << path << std::endl;
+    
     std::string replacedPath = SGUtils::Utils::replaceAll(path, "/", "_");
     replacedPath = SGUtils::Utils::replaceAll(replacedPath, "\\", "_");
     
@@ -23,28 +26,26 @@ SGCore::SGSLETranslator::processCode(const std::string& path, const std::string&
     }
     
     std::string correctedCode = sgsleCodeCorrector(code);
-    std::shared_ptr<ShaderAnalyzedFile> preProcessedCode = sgslePreprocessor(path, correctedCode);
-    std::shared_ptr<ShaderAnalyzedFile> analyzedFile = sgsleMainProcessor(preProcessedCode, translator);
+    sgslePreprocessor(path, correctedCode, analyzedFile);
+    sgsleMainProcessor(analyzedFile, translator);
     
     if(translator.m_config.m_useOutputDebug && isRootShader)
     {
         SGUtils::FileUtils::writeToFile(translator.m_config.m_outputDebugDirectoryPath + "/" + replacedPath + ".txt",
                                         analyzedFile->getAllCode(), false, true);
     }
-    
-    return analyzedFile;
 }
 
-std::shared_ptr<SGCore::ShaderAnalyzedFile>
-SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code, SGSLETranslator& translator) noexcept
+void
+SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code, SGSLETranslator& translator, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
-    return processCode(path, code, translator, true);
+    processCode(path, code, translator, true, analyzedFile);
 }
 
-std::shared_ptr<SGCore::ShaderAnalyzedFile>
-SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code) noexcept
+void
+SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
-    return processCode(path, code, *this);
+    processCode(path, code, *this, analyzedFile);
 }
 
 std::string SGCore::SGSLETranslator::sgsleCodeCorrector(const std::string& code)
@@ -166,15 +167,14 @@ std::string SGCore::SGSLETranslator::sgsleCodeCorrector(const std::string& code)
     return outputStr;
 }
 
-std::shared_ptr<SGCore::ShaderAnalyzedFile>
+void
 SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::string& code,
-                                           SGSLETranslator& translator) noexcept
+                                           SGSLETranslator& translator,
+                                           const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
     std::stringstream codeStream(code);
     
     std::string line;
-    
-    std::shared_ptr<ShaderAnalyzedFile> analyzedFile = std::make_shared<ShaderAnalyzedFile>();
     
     size_t lineIdx = 0;
     
@@ -208,11 +208,16 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
                 finalIncludedFilePath.erase(finalIncludedFilePath.begin());
             }
             
+            // finalIncludedFilePath = realpath(std::filesystem::path(finalIncludedFilePath)).string();
+            
             if(!m_includedFiles.contains(finalIncludedFilePath))
             {
-                analyzedFile->includeFile(
-                        processCode(finalIncludedFilePath, SGUtils::FileUtils::readFile(finalIncludedFilePath),
-                                    *this, false));
+                auto includedAnalyzedFile = MakeRef<ShaderAnalyzedFile>();
+                
+                processCode(finalIncludedFilePath, SGUtils::FileUtils::readFile(finalIncludedFilePath),
+                            *this, false, includedAnalyzedFile);
+                
+                analyzedFile->includeFile(includedAnalyzedFile);
             }
             
             append = false;
@@ -353,17 +358,15 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
             ++lineIdx;
         }
     }
-    
-    return analyzedFile;
 }
 
-std::shared_ptr<SGCore::ShaderAnalyzedFile>
-SGCore::SGSLETranslator::sgslePreprocessor(const std::string& path, const std::string& code) noexcept
+void
+SGCore::SGSLETranslator::sgslePreprocessor(const std::string& path, const std::string& code, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
-    return sgslePreProcessor(path, code, *this);
+    sgslePreProcessor(path, code, *this, analyzedFile);
 }
 
-std::shared_ptr<SGCore::ShaderAnalyzedFile>
+void
 SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile, SGSLETranslator& translator) noexcept
 {
     for(auto& subPass : analyzedFile->m_subPasses)
@@ -480,8 +483,6 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                         
                         subShader.m_variables.push_back(variable);
                         
-                        std::cout << "varname : " << variable.m_lValueVarName << std::endl;
-                        
                         std::string defineName = "__" + variable.m_lValueVarName + "_MAX_COUNT__";
                         
                         line = "";
@@ -518,7 +519,6 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                                 for(const auto& arg : sgFuncArgsDividerRegexMatch)
                                 {
                                     sgFuncArgs.push_back(arg);
-                                    std::cout << "arg: " << arg << std::endl;
                                 }
                             }
                         }
@@ -543,8 +543,6 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                             
                             assignExpression.m_rvalueFunctionName = sgFuncName;
                             assignExpression.m_rvalueFunctionArgs = sgFuncArgs;
-                            
-                            std::cout << "cnt : " << variableAssignRegexMatch.size() << std::endl;
                             
                             size_t startIdx = std::atoi(variableAssignRegexMatch[2].str().c_str());
                             if(variableAssignRegexMatch.size() == 4 && !variableAssignRegexMatch[3].str().empty())
@@ -592,8 +590,6 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
             }
         }
     }
-    
-    return analyzedFile;
 }
 
 void SGCore::SGSLETranslator::sgsleMakeSubShaderCodePretty(SGCore::SGSLESubShader& subShader) const noexcept

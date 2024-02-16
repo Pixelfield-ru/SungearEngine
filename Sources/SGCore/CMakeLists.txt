@@ -7,7 +7,8 @@
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
 
  # STATIC FOR LINUX
- add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
+ add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES}
+         Utils/SGSL/ShaderAnalyzedFile.cpp)
 
  include(GenerateExportHeader)
  #generate_export_header(${PROJECT_NAME})

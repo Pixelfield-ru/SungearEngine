@@ -11,10 +11,10 @@
 
 namespace SGCore
 {
-    class ShaderFileAsset : public IAsset, public std::enable_shared_from_this<ShaderFileAsset>
+    class ShaderFileAsset : public IAsset
     {
     public:
-        [[nodiscard]] std::shared_ptr<IAsset> load(const std::string& path) override;
+        [[nodiscard]] void load(const std::string& path) override;
     };
 }
 

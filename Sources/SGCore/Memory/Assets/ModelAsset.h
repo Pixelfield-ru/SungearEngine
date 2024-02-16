@@ -15,12 +15,12 @@
 
 namespace SGCore
 {
-    class ModelAsset : public IAsset, public std::enable_shared_from_this<ModelAsset>
+    class ModelAsset : public IAsset
     {
     public:
         std::vector<std::shared_ptr<Node>> m_nodes;
 
-        std::shared_ptr<IAsset> load(const std::string&) override;
+        void load(const std::string&) override;
 
     private:
         // local import flags

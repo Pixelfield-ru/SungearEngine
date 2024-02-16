@@ -102,10 +102,14 @@ void SGCore::Scene::fixedUpdate()
     }
 
     double t1 = glfwGetTime();
+    
+    m_fixedUpdate_executionTime = (t1 - t0) * 1000.0f;
 }
 
 void SGCore::Scene::update()
 {
+    double t0 = glfwGetTime();
+    
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
@@ -116,7 +120,11 @@ void SGCore::Scene::update()
 
         system->m_update_executionTime = (after - before) * 1000.0;
     }
-
+    
+    double t1 = glfwGetTime();
+    
+    m_update_executionTime = (t1 - t0) * 1000.0f;
+    
     if(RenderPipelinesManager::getRenderPipeline())
     {
         RenderPipelinesManager::getRenderPipeline()->render(shared_from_this());
@@ -141,4 +149,14 @@ SGCore::Layer SGCore::Scene::createLayer(const std::string& name) noexcept
     Layer layer = m_layers[name];
     layer.m_index = m_maxLayersCount++;
     return layer;
+}
+
+double SGCore::Scene::getUpdateFunctionExecutionTime() const noexcept
+{
+    return m_update_executionTime;
+}
+
+double SGCore::Scene::getFixedUpdateFunctionExecutionTime() const noexcept
+{
+    return m_fixedUpdate_executionTime;
 }

@@ -26,7 +26,7 @@ namespace SGCore
     public:
         std::string m_name;
 
-        [[nodiscard]] virtual std::shared_ptr<IAsset> load(const std::string& path) = 0;
+        virtual void load(const std::string& path) = 0;
 
         void addObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
         void removeObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
@@ -45,6 +45,8 @@ namespace SGCore
         std::list<Weak<IAssetObserver>> m_observers;
 
     private:
+        size_t m_assetTypeID = 0;
+        
         template<typename InstanceT>
         requires(std::is_base_of_v<IAsset, InstanceT>)
         static Ref<InstanceT> createRefInstance() noexcept

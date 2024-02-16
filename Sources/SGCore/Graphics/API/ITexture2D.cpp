@@ -11,7 +11,7 @@ void SGCore::TextureDataDeleter::operator()(std::uint8_t* data)
 
 // ----------------------------------
 
-SGCore::Ref<SGCore::IAsset> SGCore::ITexture2D::load(const std::string& path)
+void SGCore::ITexture2D::load(const std::string& path)
 {
     int channelsDesired = 0;
 
@@ -39,14 +39,14 @@ SGCore::Ref<SGCore::IAsset> SGCore::ITexture2D::load(const std::string& path)
     create();
     // create(sharedPtr);
 
+    addToGlobalStorage();
+    
     spdlog::info("Loaded texture. Width: {0}, height: {1}, MB size: {2}, channels: {3}, path: {4}",
                  m_width,
                  m_height,
                  m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
                  m_channelsCount,
                  m_path.string());
-
-    return shared_from_this();
 }
 
 void SGCore::ITexture2D::addToGlobalStorage() noexcept

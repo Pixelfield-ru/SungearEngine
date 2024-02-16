@@ -1,0 +1,11 @@
+Model Information:
+* title:	MiG-21 Soviet Jet
+* source:	https://sketchfab.com/3d-models/mig-21-soviet-jet-62b7807d2e9041a3b7644e21f39d8051
+* author:	Savy (https://sketchfab.com/SavyTheCreator)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "MiG-21 Soviet Jet" (https://sketchfab.com/3d-models/mig-21-soviet-jet-62b7807d2e9041a3b7644e21f39d8051) by Savy (https://sketchfab.com/SavyTheCreator) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

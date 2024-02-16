@@ -45,7 +45,7 @@ namespace SGCore
         bool m_useMultisampling = false;
         std::uint8_t m_multisamplingSamplesCount = 8;
 
-        [[nodiscard]] Ref<IAsset> load(const std::string& path) override;
+        void load(const std::string& path) override;
 
         virtual void create() = 0;
         virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;

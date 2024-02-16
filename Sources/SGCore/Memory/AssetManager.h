@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <memory>
+#include <spdlog/spdlog.h>
 
 #include "Assets/IAsset.h"
 #include "SGUtils/Utils.h"
@@ -32,13 +33,19 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> loadAsset(const std::string& path)
         {
-            auto foundAssetPair = m_assets.find(path);
+            auto foundAssetsPair = m_assets.find(path);
 
-            if(foundAssetPair != m_assets.end())
+            if(foundAssetsPair != m_assets.end())
             {
-                return std::static_pointer_cast<AssetT>(foundAssetPair->second);
+                for(auto& a : foundAssetsPair->second)
+                {
+                    if(typeid(*a) == typeid(AssetT))
+                    {
+                        return std::static_pointer_cast<AssetT>(a);
+                    }
+                }
             }
-
+            
             std::filesystem::path p(path);
 
             // sfinae just for GPU objects as assets
@@ -46,8 +53,10 @@ namespace SGCore
 
             newAsset->load(path);
             newAsset->setRawName(p.stem().string());
-
-            m_assets.emplace(path, newAsset);
+            
+            m_assets[path].push_back(newAsset);
+            
+            spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
 
             return newAsset;
         }
@@ -56,52 +65,78 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias, const std::string& path)
         {
-            auto foundAssetPair = m_assets.find(alias);
-
-            if(foundAssetPair != m_assets.end())
+            auto foundAssetsPair = m_assets.find(path);
+            
+            if(foundAssetsPair != m_assets.end())
             {
-                return std::static_pointer_cast<AssetT>(foundAssetPair->second);
+                for(auto& a : foundAssetsPair->second)
+                {
+                    if(typeid(*a) == typeid(AssetT))
+                    {
+                        return std::static_pointer_cast<AssetT>(a);
+                    }
+                }
             }
-
+            
             // sfinae just for GPU objects as assets
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
 
             newAsset->load(path);
             newAsset->setRawName(alias);
 
-            m_assets.emplace(alias, newAsset);
+            m_assets[alias].push_back(newAsset);
+            
+            spdlog::info("Loaded new asset: {0}", path);
 
             return newAsset;
         }
 
         static void addAsset(const std::string& alias, const Ref<IAsset>& asset)
         {
-            auto foundAssetPair = m_assets.find(alias);
-
-            if(foundAssetPair == m_assets.end())
+            auto foundAssetsPair = m_assets.find(alias);
+            
+            if(foundAssetsPair != m_assets.end())
             {
-                m_assets[alias] = asset;
-                asset->setRawName(alias);
-
-                if(SG_INSTANCEOF(asset.get(), GPUObject))
+                for(auto& a : foundAssetsPair->second)
                 {
-                    std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
+                    if(typeid(*a) == typeid(*asset))
+                    {
+                        return;
+                    }
                 }
+            }
+            
+            m_assets[alias].push_back(asset);
+            asset->setRawName(alias);
+            
+            if(SG_INSTANCEOF(asset.get(), GPUObject))
+            {
+                std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
             }
         }
 
         static void addAsset(const Ref<IAsset>& asset)
         {
-            auto foundAssetPair = m_assets.find(asset->getPath().string());
-
-            if(foundAssetPair == m_assets.end())
+            const std::string& assetPath = asset->getPath().string();
+            
+            auto foundAssetsPair = m_assets.find(asset->getPath().string());
+            
+            if(foundAssetsPair != m_assets.end())
             {
-                m_assets[asset->getPath().string()] = asset;
-
-                if(SG_INSTANCEOF(asset.get(), GPUObject))
+                for(auto& a : foundAssetsPair->second)
                 {
-                    std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
+                    if(typeid(*a) == typeid(*asset))
+                    {
+                        return;
+                    }
                 }
+            }
+            
+            m_assets[assetPath].push_back(asset);
+            
+            if(SG_INSTANCEOF(asset.get(), GPUObject))
+            {
+                std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
             }
         }
 
@@ -132,7 +167,7 @@ namespace SGCore
 
     private:
         // todo: replace unordered map by vector because of first (std::string)
-        static inline std::unordered_map<std::string, std::shared_ptr<IAsset>> m_assets;
+        static inline std::unordered_map<std::string, std::vector<std::shared_ptr<IAsset>>> m_assets;
     };
 }
 

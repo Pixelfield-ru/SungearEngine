@@ -102,8 +102,14 @@ namespace SGCore
         }
 
         Layer createLayer(const std::string& name) noexcept;
+        
+        double getUpdateFunctionExecutionTime() const noexcept;
+        double getFixedUpdateFunctionExecutionTime() const noexcept;
 
     private:
+        double m_update_executionTime = 0.0;
+        double m_fixedUpdate_executionTime = 0.0;
+        
         entt::registry m_ecsRegistry;
 
         static inline Ref<Scene> m_currentScene;
