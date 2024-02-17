@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <entt/entity/entity.hpp>
 
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -21,7 +22,9 @@ namespace SGCore
 
     class IMaterial;
 
-    class IMeshData
+    class Scene;
+    
+    class IMeshData : public std::enable_shared_from_this<IMeshData>
     {
     protected:
         Ref<IVertexArray> m_vertexArray;
@@ -82,6 +85,9 @@ namespace SGCore
         void getFaceIndices(const std::uint64_t& faceIdx, std::uint64_t& outIdx0, std::uint64_t& outIdx1, std::uint64_t& outIdx2) noexcept;
 
         void setData(const Ref<IMeshData>& other) noexcept;
+        
+        entt::entity addOnScene(const Ref<Scene>& scene,
+                                const std::string& layerName) noexcept;
 
         /**
          * Moves all textures of the current material to the new material and sets the new material as the current one.

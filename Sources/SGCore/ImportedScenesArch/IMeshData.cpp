@@ -1,3 +1,8 @@
+#include <SGCore/Scene/Scene.h>
+#include <SGCore/Scene/EntityBaseInfo.h>
+#include <SGCore/Transformations/Transform.h>
+#include <SGCore/Render/Mesh.h>
+
 #include "IMeshData.h"
 
 #include "SGCore/Main/CoreMain.h"
@@ -114,4 +119,18 @@ void SGCore::IMeshData::migrateAndSetNewMaterial
 {
     m_material->copyTextures(newMaterial);
     m_material = newMaterial;
+}
+
+entt::entity SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
+{
+    auto& registry = scene->getECSRegistry();
+    
+    entt::entity meshEntity = registry.create();
+    
+    EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
+    Transform& meshTransform = registry.emplace<Transform>(meshEntity);
+    Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
+    meshEntityMesh.m_base.m_meshData->setData(shared_from_this());
+    
+    return meshEntity;
 }

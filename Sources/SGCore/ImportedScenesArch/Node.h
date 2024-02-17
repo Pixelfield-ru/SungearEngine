@@ -25,8 +25,8 @@ namespace SGCore
     public:
         std::string m_name;
 
-        std::list<Ref<Node>> m_children;
-        std::list<Ref<IMeshData>> m_meshesData;
+        std::vector<Ref<Node>> m_children;
+        std::vector<Ref<IMeshData>> m_meshesData;
 
         glm::vec3 m_position { 1.0 };
         glm::quat m_rotationQuaternion = glm::identity<glm::quat>();

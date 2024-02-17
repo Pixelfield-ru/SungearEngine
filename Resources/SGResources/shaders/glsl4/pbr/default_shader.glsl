@@ -367,7 +367,7 @@ SGSubPass(GeometryPass)
             }
 
 
-            vec3 ambient = vec3(0.01) * albedo.rgb * ao;
+            vec3 ambient = vec3(0.025) * albedo.rgb * ao;
             vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
             float exposure = 1.3;
 
