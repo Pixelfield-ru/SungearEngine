@@ -11,9 +11,12 @@
 #include "glm/ext/quaternion_trigonometric.hpp"
 #include "glm/gtx/quaternion.hpp"
 
-void SGCore::RenderingBasesUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>& scene)
+void SGCore::RenderingBasesUpdater::fixedUpdate()
 {
-    auto renderingBasesView = scene->getECSRegistry().view<RenderingBase, Transform>();
+    auto lockedScene = m_scene.lock();
+    if(!lockedScene) return;
+    
+    auto renderingBasesView = lockedScene->getECSRegistry().view<RenderingBase, Transform>();
 
     renderingBasesView.each([](RenderingBase& renderingBase, Transform& transform) {
         TransformBase& ownTransform = transform.m_ownTransform;

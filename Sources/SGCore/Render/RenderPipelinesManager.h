@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 #define SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 
+#include <spdlog/spdlog.h>
+
 #include "SGUtils/Event.h"
 #include "SGUtils/EventListener.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -20,20 +22,65 @@ namespace SGCore
             (*m_renderPipelineSetEvent) += holder;
         }
 
-        static void setRenderPipeline(const Ref<IRenderPipeline>& renderPipeline) noexcept
+        template<typename PipelineT>
+        static void setCurrentRenderPipeline() noexcept
         {
-            m_renderPipeline = renderPipeline;
-
+            auto renderPipeline = getRenderPipeline<PipelineT>();
+            
+            if(!renderPipeline)
+            {
+                spdlog::error("Cannot set render pipeline with type '{0}'. It is not exists.", typeid(PipelineT).name());
+                
+                return;
+            }
+            
+            m_currentRenderPipeline = renderPipeline;
+            
             (*m_renderPipelineSetEvent)();
         }
 
-        static Ref<IRenderPipeline> getRenderPipeline() noexcept
+        static Ref<IRenderPipeline> getCurrentRenderPipeline() noexcept
         {
-            return m_renderPipeline;
+            return m_currentRenderPipeline;
+        }
+        
+        template<typename PipelineT>
+        requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
+        static void registerRenderPipeline(const Ref<PipelineT>& renderPipeline) noexcept
+        {
+            if(getRenderPipeline<PipelineT>())
+            {
+                spdlog::error("Cannot register render pipeline with type '{0}'. It is already exists.", typeid(PipelineT).name());
+                
+                return;
+            }
+            
+            for(const auto& renderPass : renderPipeline->m_renderPasses)
+            {
+                renderPass->create(renderPipeline);
+                
+                m_renderPipelines.push_back(renderPipeline);
+            }
+        }
+        
+        template<typename PipelineT>
+        requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
+        static Ref<PipelineT> getRenderPipeline() noexcept
+        {
+            for(const auto& renderPipeline : m_renderPipelines)
+            {
+                if(SG_INSTANCEOF(renderPipeline.get(), PipelineT))
+                {
+                    return std::static_pointer_cast<PipelineT>(renderPipeline);
+                }
+            }
+            
+            return nullptr;
         }
 
     private:
-        static inline Ref<IRenderPipeline> m_renderPipeline;
+        static inline std::vector<Ref<IRenderPipeline>> m_renderPipelines;
+        static inline Ref<IRenderPipeline> m_currentRenderPipeline;
 
         static inline Event<void()> m_renderPipelineSetEvent = MakeEvent<void()>();
     };

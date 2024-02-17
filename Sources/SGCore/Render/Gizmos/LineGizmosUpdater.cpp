@@ -8,9 +8,12 @@
 #include "SGCore/Render/MeshBuilder.h"
 #include "LineGizmo.h"
 
-void SGCore::LineGizmosUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>& scene)
+void SGCore::LineGizmosUpdater::fixedUpdate()
 {
-    auto lineGizmosView = scene->getECSRegistry().view<LineGizmo>();
+    auto lockedScene = m_scene.lock();
+    if(!lockedScene) return;
+    
+    auto lineGizmosView = lockedScene->getECSRegistry().view<LineGizmo>();
 
     lineGizmosView.each([](LineGizmo& gizmo) {
         if(gizmo.m_start != gizmo.m_lastStart || gizmo.m_end != gizmo.m_lastEnd)

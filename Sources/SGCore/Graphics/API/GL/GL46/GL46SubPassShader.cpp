@@ -8,6 +8,7 @@
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/Utils/SGSL/SGSLESubShader.h"
 
 SGCore::GL46SubPassShader::~GL46SubPassShader() noexcept
 {
@@ -24,7 +25,7 @@ void SGCore::GL46SubPassShader::compile(Ref<FileAsset> fileAsset)
         return;
     }
 
-    if(m_subShadersCodes.empty())
+    if(m_subShaders.empty())
     {
         spdlog::error("No sub shaders to compile! Shader path: {0}\n{1}", fileAsset->getPath().string(), SG_CURRENT_LOCATION_STR);
         return;
@@ -42,9 +43,9 @@ void SGCore::GL46SubPassShader::compile(Ref<FileAsset> fileAsset)
         }
     }
 
-    for(const auto& codesIter : m_subShadersCodes)
+    for(const auto& subShadersIter : m_subShaders)
     {
-        m_subShadersHandlers.push_back(compileSubShader(codesIter.first, definesCode + "\n" + codesIter.second));
+        m_subShadersHandlers.push_back(compileSubShader(subShadersIter.first, definesCode + "\n" + subShadersIter.second->m_code));
     }
 
     // -----------------------------------------------
@@ -79,6 +80,7 @@ void SGCore::GL46SubPassShader::compile(Ref<FileAsset> fileAsset)
     for(const GLuint shaderHandler : m_subShadersHandlers)
     {
         glDetachShader(m_programHandler, shaderHandler);
+        glDeleteShader(shaderHandler);
     }
 
     m_cachedLocations.clear();

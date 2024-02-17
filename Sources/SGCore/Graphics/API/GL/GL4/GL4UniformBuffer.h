@@ -9,7 +9,7 @@ namespace SGCore
 {
     class GL4UniformBuffer : public IUniformBuffer
     {
-    private:
+    public:
         std::uint32_t m_handler = 0;
 
         void subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept final;

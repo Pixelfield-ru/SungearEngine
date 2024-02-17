@@ -3,11 +3,6 @@
 #sg_include "defines.glsl"
 #sg_include "rendering_structs_decl.glsl"
 
-uniform mat4 objectModelMatrix;
-uniform vec3 objectPosition;
-uniform vec3 objectRotation;
-uniform vec3 objectScale;
-
 // todo: return
 vec4 materialDiffuseCol = vec4(1.0);
 vec4 materialSpecularCol = vec4(1.0);
@@ -42,6 +37,13 @@ layout(std140) uniform AtmosphereBlock
 {
     Atmosphere atmosphere;
 };
+
+/*layout(std140) uniform ObjectTransformBlock
+{
+    ObjectTransform objectTransform;
+};*/
+
+uniform ObjectTransform objectTransform;
 
 #ifndef SG_NOT_INCLUDE_LIGHTS
     layout(std140) uniform DirectionalLightsBlock

@@ -34,7 +34,7 @@ namespace SGCore
         void sgslePreProcessor(const std::string& path, const std::string& code, SGSLETranslator& translator, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
         void sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile, SGSLETranslator& translator) noexcept;
         
-        void sgsleMakeSubShaderCodePretty(SGSLESubShader& subShader) const noexcept;
+        void sgsleMakeSubShaderCodePretty(const Ref<SGCore::SGSLESubShader>& subShader) const noexcept;
         
         static inline const std::regex s_rSideOfAssignExprRegex = std::regex(R"(\s*(\w+)\s*\(([^)]*)\);)");
         static inline const std::regex m_sgslFuncWithArgsCallRegex = std::regex(R"(\s*(\w+)\s*\(([^)]*)\))");

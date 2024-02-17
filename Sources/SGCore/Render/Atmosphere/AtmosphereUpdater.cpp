@@ -47,7 +47,7 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     m_uniformBuffer->setLayoutLocation(4);
     m_uniformBuffer->prepare();
     
-    auto renderPipeline = RenderPipelinesManager::getRenderPipeline();
+    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
     if(renderPipeline)
     {
         auto geomPass = renderPipeline->getRenderPass<IGeometryPass>();
@@ -58,17 +58,21 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     }
 }
 
-void SGCore::AtmosphereUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>& scene)
+void SGCore::AtmosphereUpdater::fixedUpdate()
 {
-    auto atmosphereScatteringsView = scene->getECSRegistry().view<Atmosphere>();
+    auto lockedScene = m_scene.lock();
+    if(!lockedScene) return;
     
-    atmosphereScatteringsView.each([&scene, this](const entt::entity& entity, Atmosphere& atmosphere) {
+    auto atmosphereScatteringsView = lockedScene->getECSRegistry().view<Atmosphere>();
+    
+    atmosphereScatteringsView.each([&lockedScene, this](const entt::entity& entity, Atmosphere& atmosphere) {
         size_t hashedSunPos = MathUtils::hashVector(atmosphere.m_sunPosition);
 
-        Mesh* atmosphereScatteringMesh = scene->getECSRegistry().try_get<Mesh>(entity);
+        Mesh* atmosphereScatteringMesh = lockedScene->getECSRegistry().try_get<Mesh>(entity);
         if(atmosphereScatteringMesh)
         {
-            auto geomPassShader = atmosphereScatteringMesh->m_base.m_meshData->m_material->getShader()->getSubPassShader("GeometryPass");
+            auto meshShader = atmosphereScatteringMesh->m_base.m_meshData->m_material->getShader();
+            auto geomPassShader = meshShader ? meshShader->getSubPassShader("GeometryPass") : nullptr;
             if(geomPassShader)
             {
                 geomPassShader->bind();

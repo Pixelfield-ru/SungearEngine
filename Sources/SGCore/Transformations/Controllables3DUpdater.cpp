@@ -13,10 +13,12 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "Controllable3D.h"
 
-void SGCore::Controllables3DUpdater::fixedUpdate
-(const Ref<Scene>& scene)
+void SGCore::Controllables3DUpdater::fixedUpdate()
 {
-    auto controllablesView = scene->getECSRegistry().view<Transform, Controllable3D>();
+    auto lockedScene = m_scene.lock();
+    if(!lockedScene) return;
+    
+    auto controllablesView = lockedScene->getECSRegistry().view<Transform, Controllable3D>();
 
     controllablesView.each([](Transform& transform, Controllable3D& controllable3D) {
         TransformBase& ownTransform = transform.m_ownTransform;

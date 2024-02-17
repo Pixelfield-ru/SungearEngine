@@ -7,5 +7,5 @@
 
 SGCore::Mesh::Mesh() noexcept
 {
-    MeshesUtils::loadMeshShader(m_base, "StandardMeshShader");
+    // MeshesUtils::loadMeshShader(m_base, "StandardMeshShader");
 }

@@ -16,6 +16,8 @@ namespace SGCore
 
     struct IRenderPass
     {
+        virtual void create(const Ref<IRenderPipeline>& parentRenderPipeline) = 0;
+        
         bool m_active = true;
 
         // components, that use to render in
@@ -23,6 +25,8 @@ namespace SGCore
         // collector for components to render
         // Ref<CollectorCachedEntities> m_componentsToRender;
 
+        Ref<IShader> m_shader;
+        
         virtual void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) = 0;
     };
 }

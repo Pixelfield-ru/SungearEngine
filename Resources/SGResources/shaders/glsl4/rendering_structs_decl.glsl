@@ -2,6 +2,17 @@
 
 #define DIRECTIONAL_LIGHTS_MAX_COUNT    5
 
+struct ObjectTransform
+{
+    mat4 modelMatrix;
+    vec3 position;
+    float p0;
+    vec3 rotation;
+    float p1;
+    vec3 scale;
+    float p2;
+};
+
 struct IRenderingComponent
 {
     mat4 projectionMatrix; // can be unused

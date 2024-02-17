@@ -16,11 +16,11 @@
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Render/Mesh.h"
 
-SGCore::PBRRPDirectionalLightsPass::PBRRPDirectionalLightsPass() noexcept
+void SGCore::PBRRPDirectionalLightsPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
     m_renderTimer.m_useFixedUpdateCatchUp = false;
     m_renderTimer.m_targetFrameRate = 24;
-
+    
     m_renderTimer.addCallback(m_renderTimerCallback);
 }
 

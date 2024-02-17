@@ -192,7 +192,7 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
         
         if(words.size() >= 2 && words[0] == "#sg_pragma" && words[1] == "once")
         {
-            m_includedFiles.insert(path);
+            translator.m_includedFiles.insert(path);
             
             append = false;
         }
@@ -210,7 +210,7 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
             
             // finalIncludedFilePath = realpath(std::filesystem::path(finalIncludedFilePath)).string();
             
-            if(!m_includedFiles.contains(finalIncludedFilePath))
+            if(!translator.m_includedFiles.contains(finalIncludedFilePath))
             {
                 auto includedAnalyzedFile = MakeRef<ShaderAnalyzedFile>();
                 
@@ -265,7 +265,7 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
                     {
                         SGSLESubShaderType shaderType = stringToSGSLESubShaderType(subShaderName);
                         
-                        SGSLESubShader* subShader = &analyzedFile->addOrGetSubShader(subPass->m_name, shaderType);
+                        SGSLESubShader* subShader = &*analyzedFile->addOrGetSubShader(subPass->m_name, shaderType);
                         
                         subShader->m_type = shaderType;
                         subShader->m_onBlockEnd = [&translator, &subShader, &subPass]() {
@@ -338,7 +338,7 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
                     {
                         if(subShaderPair.first->m_name == subPass->m_name)
                         {
-                            analyzedFile->addOrGetSubShader(subPass->m_name, subShaderPair.second->m_type).m_code +=
+                            analyzedFile->addOrGetSubShader(subPass->m_name, subShaderPair.second->m_type)->m_code +=
                                     line + "\n";
                             ++currentSubPassSubShadersCnt;
                         }
@@ -373,12 +373,12 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
     {
         for(auto& subShaderIter : subPass.second.m_subShaders)
         {
-            SGSLESubShader& subShader = subShaderIter.second;
+            Ref<SGSLESubShader> subShader = subShaderIter.second;
             
             std::vector<std::string> lines;
-            SGUtils::Utils::splitString(subShader.m_code, '\n', lines);
+            SGUtils::Utils::splitString(subShader->m_code, '\n', lines);
             
-            subShader.m_code = "";
+            subShader->m_code = "";
 
             size_t curLineIdx = 0;
             for(auto& line : lines)
@@ -422,7 +422,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                                 line = SGUtils::Utils::replaceAll(line, "extends " + clearBaseName, "");
                                 line = SGUtils::Utils::reduce(line);
                                 
-                                SGSLEStruct* baseStruct = subShader.tryGetStruct(clearBaseName);
+                                SGSLEStruct* baseStruct = subShader->tryGetStruct(clearBaseName);
                                 
                                 if(!baseStruct)
                                 {
@@ -448,7 +448,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                             sgsleStruct.m_variables.push_back(lines[i]);
                         }
                         
-                        subShader.m_structs.push_back(sgsleStruct);
+                        subShader->m_structs.push_back(sgsleStruct);
                     }
                     
                     // processing declare
@@ -481,7 +481,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                             variable.m_lValueArraySize = variableArraySize.empty() ? 0 : std::atoi(variableArraySize.c_str());
                         }
                         
-                        subShader.m_variables.push_back(variable);
+                        subShader->m_variables.push_back(variable);
                         
                         std::string defineName = "__" + variable.m_lValueVarName + "_MAX_COUNT__";
                         
@@ -531,7 +531,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                         {
                             std::string variableName = variableAssignRegexMatch[1];
                             
-                            SGSLEVariable* subShaderVar = subShader.tryGetVariable(variableName);
+                            SGSLEVariable* subShaderVar = subShader->tryGetVariable(variableName);
                             
                             if(!subShaderVar)
                             {
@@ -579,7 +579,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                     }
                 }
 
-                subShader.m_code += line + '\n';
+                subShader->m_code += line + '\n';
                 
                 ++curLineIdx;
             }
@@ -592,10 +592,10 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
     }
 }
 
-void SGCore::SGSLETranslator::sgsleMakeSubShaderCodePretty(SGCore::SGSLESubShader& subShader) const noexcept
+void SGCore::SGSLETranslator::sgsleMakeSubShaderCodePretty(const Ref<SGCore::SGSLESubShader>& subShader) const noexcept
 {
-    std::stringstream codeStream(subShader.m_code);
-    subShader.m_code = "";
+    std::stringstream codeStream(subShader->m_code);
+    subShader->m_code = "";
     
     char lastLineChar = ' ';
     int currentIntent = 0;
@@ -616,6 +616,6 @@ void SGCore::SGSLETranslator::sgsleMakeSubShaderCodePretty(SGCore::SGSLESubShade
         
         line = currentIntent <= 0 ? line : std::string(currentIntent, '\t') + line;
         
-        subShader.m_code += line + '\n';
+        subShader->m_code += line + '\n';
     }
 }

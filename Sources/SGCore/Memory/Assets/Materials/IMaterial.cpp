@@ -3,18 +3,11 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/IShader.h"
 
-SGCore::Ref<SGCore::IMaterial> SGCore::IMaterial::create() noexcept
-{
-    Ref<IMaterial> material(new IMaterial);
-
-    material->m_shader->setParentMaterial(material);
-
-    return material;
-}
-
-SGCore::IMaterial::IMaterial() noexcept
+void SGCore::IMaterial::createShader() noexcept
 {
     m_shader = MakeRef<IShader>();
+    
+    m_shader->setParentMaterial(shared_from_this());
 }
 
 void SGCore::IMaterial::load(const std::string& path)

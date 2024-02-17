@@ -13,6 +13,7 @@ namespace SGCore
 {
     struct Layer;
 
+    // sizeof
     struct EntityBaseInfo : public UniqueNameWrapper
     {
         entt::entity m_parent = entt::null;

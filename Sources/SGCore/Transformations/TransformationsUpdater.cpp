@@ -2,6 +2,7 @@
 // Created by stuka on 02.05.2023.
 //
 
+#include <glm/gtc/type_ptr.hpp>
 #include "TransformationsUpdater.h"
 #include "TransformBase.h"
 #include "glm/ext/matrix_transform.hpp"
@@ -11,20 +12,22 @@
 #include "TransformationsUtils.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/ECSObservers/Flags/ModelMatrixChangedFlag.h"
+#include "SGCore/Graphics/API/IUniformBuffer.h"
 
 /*double curT = 0.0;
 double accum = 0.0;
 size_t fps = 0;*/
 
-void SGCore::TransformationsUpdater::fixedUpdate
-(const Ref<Scene>& scene)
+void SGCore::TransformationsUpdater::fixedUpdate()
 {
-    auto transformsView = scene->getECSRegistry().view<Transform>();
+    auto lockedScene = m_scene.lock();
+    if(!lockedScene) return;
+    
+    entt::registry& registry = lockedScene->getECSRegistry();
+    
+    auto transformsView = lockedScene->getECSRegistry().view<Transform>();
 
-    transformsView.each([&scene](const entt::entity& entity, Transform& transform) {
-        entt::registry& registry = scene->getECSRegistry();
-
+    transformsView.each([&registry](const entt::entity& entity, Transform& transform) {
         EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
         Transform* parentTransform = nullptr;
 
@@ -138,46 +141,54 @@ void SGCore::TransformationsUpdater::fixedUpdate
         }
 
         // model matrix =================================================
-
+        
         bool modelMatrixChanged = translationChanged || rotationChanged || scaleChanged;
-        bool parentModelMatrixChanged = entityBaseInfo && registry.all_of<ModelMatrixChangedFlag>(entityBaseInfo->m_parent);
-        bool finalModelMatrixChanged = parentModelMatrixChanged || modelMatrixChanged;
-
-        if(modelMatrixChanged)
+        
+        transform.m_transformChanged = modelMatrixChanged;
+        bool isTransformNeedsPatch = modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged);
+        
+        if(isTransformNeedsPatch)
         {
+            registry.patch<Transform>(entity);
+        }
+    });
+
+    m_observer.each([&registry, this](const entt::entity& entity) {
+        Transform* entityTransform = registry.try_get<Transform>(entity);
+        EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
+        Transform* entityParentTransform = nullptr;
+        
+        if(entityBaseInfo)
+        {
+            entityParentTransform = registry.try_get<Transform>(entityBaseInfo->m_parent);
+        }
+        
+        if(entityTransform)
+        {
+            TransformBase& ownTransform = entityTransform->m_ownTransform;
+            TransformBase& finalTransform = entityTransform->m_finalTransform;
+            
             ownTransform.m_modelMatrix =
                     ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
-        }
-
-        if(parentTransform)
-        {
-            if(finalModelMatrixChanged)
+            
+            if(entityParentTransform)
             {
                 finalTransform.m_modelMatrix =
-                        parentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
+                        entityParentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
             }
-        }
-        else
-        {
-            if(modelMatrixChanged)
+            else
             {
                 finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
             }
         }
-        
-        if(registry.all_of<ModelMatrixChangedFlag>(entity))
-        {
-            registry.erase<ModelMatrixChangedFlag>(entity);
-        }
-        
-        if(finalModelMatrixChanged && !registry.all_of<ModelMatrixChangedFlag>(entity))
-        {
-            registry.emplace<ModelMatrixChangedFlag>(entity);
-        }
-        
-        if(finalModelMatrixChanged)
-        {
-            scene->invokeFlagObserverSystems<ModelMatrixChangedFlag>(entity);
-        }
     });
+    
+    m_observer.clear();
+}
+
+void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+{
+    m_scene = scene;
+    
+    m_observer.connect(scene->getECSRegistry(), entt::basic_collector<>::update<Transform>());
 }

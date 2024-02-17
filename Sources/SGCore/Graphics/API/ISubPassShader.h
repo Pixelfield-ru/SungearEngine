@@ -27,6 +27,7 @@ namespace SGCore
     class IFrameBuffer;
     class IMaterial;
     class ITexture2D;
+    struct SGSLESubShader;
 
     // todo: add subshaders and add preprocess for it
     // todo: add various types of defines like material textures block define e.t.c.
@@ -39,7 +40,7 @@ namespace SGCore
 
         Scope<IUniformBuffer> m_uniformBuffer;
 
-        std::unordered_map<SGSLESubShaderType, std::string> m_subShadersCodes;
+        std::unordered_map<SGSLESubShaderType, Ref<SGSLESubShader>> m_subShaders;
 
         Weak<FileAsset> m_fileAsset;
 

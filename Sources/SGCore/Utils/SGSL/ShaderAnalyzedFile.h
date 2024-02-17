@@ -32,21 +32,21 @@ namespace SGCore
             
             for(const auto& subPassPair : analyzedFile->m_subPasses)
             {
-                const auto& subPassName = subPassPair.first;
+                const auto& otherSubPassName = subPassPair.first;
                 const auto& otherSubPass = subPassPair.second;
                 
-                auto& thisSubPass = m_subPasses[subPassName];
+                auto& thisSubPass = m_subPasses[otherSubPassName];
                 
                 thisSubPass.m_globalCode += otherSubPass.m_globalCode + "\n";
                 
-                for(const auto& subShaderPair : otherSubPass.m_subShaders)
+                for(const auto& otherSubShaderPair : otherSubPass.m_subShaders)
                 {
-                    auto subShaderType = subShaderPair.first;
-                    const auto& subShader = subShaderPair.second;
+                    auto otherSubShaderType = otherSubShaderPair.first;
+                    const auto& otherSubShader = otherSubShaderPair.second;
                     
-                    auto& thisSubShader = thisSubPass.m_subShaders[subShaderType];
+                    Ref<SGSLESubShader> thisSubShader = addOrGetSubShader(otherSubPassName, otherSubShaderType);
                     
-                    thisSubShader.m_code = subShader.m_code + "\n" + thisSubShader.m_code;
+                    thisSubShader->m_code = otherSubShader->m_code + "\n" + thisSubShader->m_code;
                 }
             }
             
@@ -54,13 +54,14 @@ namespace SGCore
             m_includedFiles.push_back(analyzedFile);
         }
         
-        SGSLESubShader& addOrGetSubShader(const std::string& subPassName, SGSLESubShaderType subShaderType)
+        Ref<SGSLESubShader> addOrGetSubShader(const std::string& subPassName, SGSLESubShaderType subShaderType)
         {
             auto& subPass = m_subPasses[subPassName];
             if(subPass.m_subShaders.find(subShaderType) == subPass.m_subShaders.end())
             {
-                auto& newSubShader = subPass.m_subShaders[subShaderType];
-                newSubShader.m_code = m_globalCode + "\n" + subPass.m_globalCode;
+                Ref<SGSLESubShader> newSubShader = MakeRef<SGSLESubShader>();
+                subPass.m_subShaders[subShaderType] = newSubShader;
+                newSubShader->m_code = m_globalCode + "\n" + subPass.m_globalCode;
                 
                 return newSubShader;
             }
@@ -82,7 +83,7 @@ namespace SGCore
         
         std::string getSubShaderCode(const std::string& subPassName, SGSLESubShaderType subShaderType) noexcept
         {
-            return m_subPasses[subPassName].m_subShaders[subShaderType].m_code;
+            return m_subPasses[subPassName].m_subShaders[subShaderType]->m_code;
         }
         
         std::string getAllCode() const noexcept
@@ -97,7 +98,7 @@ namespace SGCore
                 {
                     allCode += "// SubShader: " + sgsleSubShaderTypeToString(subShaderIter.first) + "\n";
                     
-                    allCode += subShaderIter.second.m_code;
+                    allCode += subShaderIter.second->m_code;
                     
                     allCode += "\n";
                 }

@@ -12,7 +12,8 @@ namespace SGCore
     struct PBRRPDirectionalLightsPass : public IRenderPass
     {
         // todo: сделать рендер пассы с настройкой времени выполнения. то же самое сделать с системами
-        PBRRPDirectionalLightsPass() noexcept;
+        
+        void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
 
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
 

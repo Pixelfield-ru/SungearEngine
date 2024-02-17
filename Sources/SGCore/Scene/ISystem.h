@@ -25,14 +25,17 @@ namespace SGCore
     public:
         bool m_active = true;
 
-        virtual void fixedUpdate(const Ref<Scene>& scene) { }
-        virtual void update(const Ref<Scene>& scene) { }
-        virtual void onFlagChanged(const Ref<Scene>& scene, const entt::entity& flagOwner, const size_t& flagTypeID) { }
+        virtual void fixedUpdate() { }
+        virtual void update() { }
 
+        virtual void setScene(const Ref<Scene>& scene) noexcept;
+        
         double getUpdateFunctionExecutionTime() const noexcept;
         double getFixedUpdateFunctionExecutionTime() const noexcept;
 
     protected:
+        Weak<Scene> m_scene;
+        
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;
     };

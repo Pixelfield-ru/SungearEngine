@@ -17,6 +17,13 @@
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Render/RenderingBase.h"
 
+void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
+{
+    m_shader = MakeRef<IShader>();
+    m_shader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(
+            parentRenderPipeline->m_shadersPaths.getByVirtualPath("StandardMeshShader").getCurrentRealization()));
+}
+
 void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     Ref<PBRRPDirectionalLightsPass> dirLightsPass = renderPipeline->getRenderPass<PBRRPDirectionalLightsPass>();
@@ -49,24 +56,52 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     // scene->getECSRegistry();
     auto camerasView = scene->getECSRegistry().view<RenderingBase, Camera, Transform>();
     auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Transform>();
-
-    camerasView.each([&meshesView, &renderPipeline, this](RenderingBase& cameraRenderingBase, Camera& camera, Transform& cameraTransform) {
+    
+    Ref<ISubPassShader> standardGeometryShader;
+    if(m_shader)
+    {
+        standardGeometryShader = m_shader->getSubPassShader("GeometryPass");
+    }
+    
+    if(standardGeometryShader)
+    {
+        standardGeometryShader->bind();
+    }
+    
+    camerasView.each([&meshesView, &renderPipeline, this, &standardGeometryShader](RenderingBase& cameraRenderingBase, Camera& camera, Transform& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
+        
+        if(standardGeometryShader)
+        {
+            standardGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+        }
 
-        meshesView.each([&renderPipeline, this](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
-            auto meshGeometryShader = mesh.m_base.m_meshData->m_material->getShader()->getSubPassShader("GeometryPass");
-
-            if(meshGeometryShader)
+        meshesView.each([&renderPipeline, this, &standardGeometryShader](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
+            auto meshShader = mesh.m_base.m_meshData->m_material->getShader();
+            auto meshGeomShader = meshShader ? meshShader->getSubPassShader("GeometryPass") : nullptr;
+            auto shaderToUse = meshGeomShader ? meshGeomShader : standardGeometryShader;
+            
+            if(shaderToUse)
             {
-                meshGeometryShader->bind();
-                meshGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
-
+                if(shaderToUse == meshGeomShader)
+                {
+                    shaderToUse->bind();
+                    shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+                }
+                
+                {
+                    shaderToUse->useMatrix("objectTransform.modelMatrix", meshTransform.m_finalTransform.m_modelMatrix);
+                    shaderToUse->useVectorf("objectTransform.position", meshTransform.m_finalTransform.m_position);
+                }
+                
+                // standardGeometryShader.
+                
                 auto uniformBuffsIt = m_uniformBuffersToUse.begin();
                 while(uniformBuffsIt != m_uniformBuffersToUse.end())
                 {
                     if(auto lockedUniformBuf = uniformBuffsIt->lock())
                     {
-                        meshGeometryShader->useUniformBuffer(lockedUniformBuf);
+                        shaderToUse->useUniformBuffer(lockedUniformBuf);
                         
                         ++uniformBuffsIt;
                     }
@@ -75,11 +110,19 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                         uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
                     }
                 }
-
+                
                 CoreMain::getRenderer()->renderMeshData(
                         mesh.m_base.m_meshData,
                         mesh.m_base.m_meshDataRenderInfo
                 );
+                
+                if(shaderToUse == meshGeomShader)
+                {
+                    if(standardGeometryShader)
+                    {
+                        standardGeometryShader->bind();
+                    }
+                }
             }
         });
     });

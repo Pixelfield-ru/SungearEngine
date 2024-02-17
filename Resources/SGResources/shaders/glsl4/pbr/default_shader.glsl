@@ -35,11 +35,11 @@ SGSubPass(GeometryPass)
             vsOut.normal = normalsAttribute;
 
             vsOut.vertexPos = positionsAttribute;
-            vsOut.fragPos = vec3(objectModelMatrix * vec4(positionsAttribute, 1.0));
+            vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute, 1.0));
 
-            vec3 T = normalize(vec3(objectModelMatrix * vec4(tangentsAttribute, 0.0)));
-            vec3 B = normalize(vec3(objectModelMatrix * vec4(bitangentsAttribute, 0.0)));
-            vec3 N = normalize(vec3(objectModelMatrix * vec4(normalsAttribute, 0.0)));
+            vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tangentsAttribute, 0.0)));
+            vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(bitangentsAttribute, 0.0)));
+            vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(normalsAttribute, 0.0)));
             vsOut.TBN = mat3(T, B, N);
 
             gl_Position = camera.spaceMatrix * vec4(vsOut.fragPos, 1.0);
@@ -58,8 +58,10 @@ SGSubPass(GeometryPass)
         // thats fucking works!!!!!!
         // SGUSampler2D diffuseSamplers[1] = SGGetTextures("GeniusTexture");
         // SGUSampler2D diffuseSamplers[1] = SGGetTextures("standard_skybox0_xleft");
+        /*SGSampler2D diffuseSamplers[3];
+        diffuseSamplers[0..2] = SGGetTexturesFromMaterial("SGTT_DIFFUSE");*/
         SGSampler2D diffuseSamplers[3];
-        diffuseSamplers[0..2] = SGGetTexturesFromMaterial("SGTT_DIFFUSE");
+        diffuseSamplers[0..2] = SGGetTextures("GeniusTexture");
         SGSampler2D metalnessSamplers[1];
         metalnessSamplers[0] = SGGetTexturesFromMaterial("SGTT_METALNESS");
         SGSampler2D normalsSamplers[1];
@@ -379,7 +381,7 @@ SGSubPass(GeometryPass)
 
             fragColor0.a = diffuseColor.a;
             fragColor0.rgb = finalCol;
-            // fragColor0.rgb = vec3(1.0);
+            // fragColor0.rgba = vec4(1.0);
 
             fragColor1 = vec4(finalCol, diffuseColor.a);
             // fragColor0 = vec4(1.0);

@@ -4,9 +4,9 @@
 
 #pragma once
 
-#ifndef NATIVECORE_TRANSFORMATIONSSYSTEM_H
-#define NATIVECORE_TRANSFORMATIONSSYSTEM_H
-
+#include <entt/entity/observer.hpp>
+#include <entt/entity/registry.hpp>
+#include <entt/entity/entity.hpp>
 #include "SGCore/Scene/ISystem.h"
 #include "SGUtils/Utils.h"
 
@@ -18,8 +18,11 @@ namespace SGCore
 
     struct TransformationsUpdater : public ISystem
     {
-        void fixedUpdate(const Ref<Scene>& scene) final;
+        void fixedUpdate() final;
+     
+        void setScene(const Ref<Scene>& scene) noexcept final;
+        
+    private:
+        entt::observer m_observer;
     };
 }
-
-#endif //NATIVECORE_TRANSFORMATIONSSYSTEM_H

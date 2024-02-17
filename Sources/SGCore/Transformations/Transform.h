@@ -6,9 +6,11 @@
 #define SUNGEARENGINE_TRANSFORM_H
 
 #include "TransformBase.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
+    // sizeof(Transform) = 767
     struct Transform
     {
         TransformBase m_finalTransform;
@@ -20,6 +22,8 @@ namespace SGCore
         // z - follow scale
         glm::bvec3 m_followParentTRS { true, true, true };
         // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
+        
+        bool m_transformChanged = false;
     };
 }
 

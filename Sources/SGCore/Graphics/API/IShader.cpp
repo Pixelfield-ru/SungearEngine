@@ -34,12 +34,12 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
 
             if(subPass.isSubShaderExists(subShaderType))
             {
-                subPassShader->m_subShadersCodes[subShaderType] = m_shaderAnalyzedFile->getSubShaderCode(subPass.m_name, subShaderType);
+                subPassShader->m_subShaders[subShaderType] = m_shaderAnalyzedFile->m_subPasses[subPass.m_name].m_subShaders[subShaderType];
             }
 
             for(const auto& sgsleSubShader : subPass.m_subShaders)
             {
-                for(const auto& variable : sgsleSubShader.second.m_variables)
+                for(const auto& variable : sgsleSubShader.second->m_variables)
                 {
                     for(const auto& variableAssignExpr : variable.m_assignExpressions)
                     {

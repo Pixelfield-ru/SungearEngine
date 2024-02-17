@@ -6,6 +6,7 @@
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "IFrameBuffer.h"
 #include "ITexture2D.h"
+#include "SGCore/Utils/SGSL/SGSLESubShader.h"
 
 void SGCore::ISubPassShader::recompile() noexcept
 {

@@ -12,7 +12,7 @@
 
 void SGCore::MeshesUtils::loadMeshShader(MeshBase& meshBase, const std::string& shaderPath) noexcept
 {
-    auto renderPipeline = RenderPipelinesManager::getRenderPipeline();
+    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
 
     if(renderPipeline)
     {
@@ -26,15 +26,18 @@ void SGCore::MeshesUtils::loadMeshShader(MeshBase& meshBase, const std::string& 
 
 void SGCore::MeshesUtils::onRenderPipelineSet(MeshBase& meshBase) noexcept
 {
-    meshBase.m_meshData->m_material->getShader()->removeAllSubPassShadersByDiskPath(meshBase.m_shaderPath);
-
-    auto renderPipeline = RenderPipelinesManager::getRenderPipeline();
-
-    if(renderPipeline)
+    if(meshBase.m_meshData->m_material->getShader())
     {
-        meshBase.m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
-                AssetManager::loadAsset<FileAsset>(
-                        renderPipeline->m_shadersPaths.getByVirtualPath(meshBase.m_shaderPath
-                        ).getCurrentRealization()));
+        meshBase.m_meshData->m_material->getShader()->removeAllSubPassShadersByDiskPath(meshBase.m_shaderPath);
+        
+        auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+        
+        if(renderPipeline)
+        {
+            meshBase.m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
+                    AssetManager::loadAsset<FileAsset>(
+                            renderPipeline->m_shadersPaths.getByVirtualPath(meshBase.m_shaderPath
+                            ).getCurrentRealization()));
+        }
     }
 }

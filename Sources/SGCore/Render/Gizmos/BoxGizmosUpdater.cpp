@@ -9,9 +9,12 @@
 #include "BoxGizmo.h"
 #include "SGCore/Render/MeshBuilder.h"
 
-void SGCore::BoxGizmosUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>& scene)
+void SGCore::BoxGizmosUpdater::fixedUpdate()
 {
-    auto boxGizmosView = scene->getECSRegistry().view<BoxGizmo>();
+    auto lockedScene = m_scene.lock();
+    if(!lockedScene) return;
+    
+    auto boxGizmosView = lockedScene->getECSRegistry().view<BoxGizmo>();
 
     boxGizmosView.each([](BoxGizmo& gizmo) {
         if(gizmo.m_size != gizmo.m_lastSize)

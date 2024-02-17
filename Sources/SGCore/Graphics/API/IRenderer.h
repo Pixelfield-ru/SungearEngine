@@ -17,10 +17,10 @@
 namespace SGCore
 {
     class Camera;
-    class Mesh;
+    struct Mesh;
     struct TransformBase;
     struct Atmosphere;
-    class RenderingBase;
+    struct RenderingBase;
     class IGizmo;
 
     class IMeshData;

@@ -48,7 +48,7 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
     m_uniformBuffer->setLayoutLocation(3);
     m_uniformBuffer->prepare();
     
-    auto renderPipeline = RenderPipelinesManager::getRenderPipeline();
+    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
     if(renderPipeline)
     {
         auto geomPass = renderPipeline->getRenderPass<IGeometryPass>();
@@ -59,9 +59,12 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
     }
 }
 
-void SGCore::DirectionalLightsUpdater::fixedUpdate(const SGCore::Ref<SGCore::Scene>& scene)
+void SGCore::DirectionalLightsUpdater::fixedUpdate()
 {
-    auto directionalLightsView = scene->getECSRegistry().view<DirectionalLight, RenderingBase, Transform>();
+    auto lockedScene = m_scene.lock();
+    if(!lockedScene) return;
+    
+    auto directionalLightsView = lockedScene->getECSRegistry().view<DirectionalLight, RenderingBase, Transform>();
     
     int currenLightIdx = 0;
     

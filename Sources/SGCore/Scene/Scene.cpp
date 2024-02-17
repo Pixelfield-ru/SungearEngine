@@ -14,9 +14,7 @@
 #include "SGCore/Render/Gizmos/LineGizmosUpdater.h"
 #include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
-#include "SGCore/ECSObservers/Flags/ModelMatrixChangedFlag.h"
 #include "SGCore/Render/Mesh.h"
-#include "SGCore/ECSObservers/Observers/ModelMatrixChangedObserver.h"
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 #include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
 
@@ -30,7 +28,7 @@ void SGCore::Scene::createDefaultSystems()
     // -------------
     // rendering
     
-    RenderPipelinesManager::setRenderPipeline(MakeRef<PBRRenderPipeline>());
+    auto thisShared = shared_from_this();
     
     auto renderingBasesUpdater = MakeRef<RenderingBasesUpdater>();
     m_systems.emplace(renderingBasesUpdater);
@@ -61,11 +59,14 @@ void SGCore::Scene::createDefaultSystems()
 
     auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();
     m_systems.emplace(sphereGizmosUpdater);
-
-    auto modelMatrixChangedObserver = MakeRef<ModelMatrixChangedObserver>();
-    addFlagObserverSystem<ModelMatrixChangedFlag>(modelMatrixChangedObserver);
+    
 
     // -------------
+    
+    for(auto& system : m_systems)
+    {
+        system->setScene(thisShared);
+    }
 
     // m_systems.emplace(pipelineSystem);
 }
@@ -95,7 +96,7 @@ void SGCore::Scene::fixedUpdate()
         if(!system->m_active) continue;
 
         double before = glfwGetTime();
-        system->fixedUpdate(shared_from_this());
+        system->fixedUpdate();
         double after = glfwGetTime();
 
         system->m_fixedUpdate_executionTime = (after - before) * 1000.0;
@@ -115,7 +116,7 @@ void SGCore::Scene::update()
         if(!system->m_active) continue;
 
         double before = glfwGetTime();
-        system->update(shared_from_this());
+        system->update();
         double after = glfwGetTime();
 
         system->m_update_executionTime = (after - before) * 1000.0;
@@ -125,9 +126,9 @@ void SGCore::Scene::update()
     
     m_update_executionTime = (t1 - t0) * 1000.0f;
     
-    if(RenderPipelinesManager::getRenderPipeline())
+    if(RenderPipelinesManager::getCurrentRenderPipeline())
     {
-        RenderPipelinesManager::getRenderPipeline()->render(shared_from_this());
+        RenderPipelinesManager::getCurrentRenderPipeline()->render(shared_from_this());
     }
 }
 

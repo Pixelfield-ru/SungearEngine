@@ -17,7 +17,7 @@ namespace SGCore
     {
         std::string m_name;
         std::string m_globalCode;
-        std::unordered_map<SGSLESubShaderType, SGSLESubShader> m_subShaders;
+        std::unordered_map<SGSLESubShaderType, Ref<SGSLESubShader>> m_subShaders;
         
         bool isSubShaderExists(SGSLESubShaderType subShaderType) const noexcept
         {

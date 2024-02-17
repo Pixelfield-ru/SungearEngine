@@ -11,7 +11,7 @@ namespace SGCore
 {
     struct Controllables3DUpdater : public ISystem
     {
-        void fixedUpdate(const Ref<Scene>& scene) final;
+        void fixedUpdate() final;
     };
 }
 

@@ -3,6 +3,12 @@
 //
 
 #include "ISystem.h"
+#include "SGCore/Scene/Scene.h"
+
+void SGCore::ISystem::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+{
+    m_scene = scene;
+}
 
 double SGCore::ISystem::getUpdateFunctionExecutionTime() const noexcept
 {

@@ -20,7 +20,7 @@
 
 SGCore::IMeshData::IMeshData()
 {
-    m_material = IMaterial::create();;
+    m_material = MakeRef<IMaterial>();
 }
 
 void SGCore::IMeshData::setVertexPosition
@@ -130,7 +130,10 @@ entt::entity SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::s
     EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
     Transform& meshTransform = registry.emplace<Transform>(meshEntity);
     Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
+    // maybe can load the ram
     meshEntityMesh.m_base.m_meshData->setData(shared_from_this());
+    
+    // meshEntityMesh.m_base.m_meshData = shared_from_this();
     
     return meshEntity;
 }

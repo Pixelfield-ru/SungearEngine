@@ -19,7 +19,7 @@ namespace SGCore
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
     public:
-        static Ref<IMaterial> create() noexcept;
+        void createShader() noexcept;
 
         std::string m_name;
 
@@ -100,8 +100,6 @@ namespace SGCore
         }
 
     protected:
-        IMaterial() noexcept;
-
         std::unordered_map<SGTextureType, std::vector<Ref<ITexture2D>>> m_textures;
 
         Ref<IShader> m_shader;
