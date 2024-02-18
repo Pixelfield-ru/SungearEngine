@@ -204,13 +204,59 @@ void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
         glPointSize(meshDataRenderInfo.m_pointsSize);
     }
 
-    if(!meshData->m_useIndices)
+    if(!meshDataRenderInfo.m_useIndices)
     {
         glDrawArrays(drawMode, 0, meshData->m_positions.size() / 3);
     }
     else
     {
         glDrawElements(drawMode, meshData->m_indices.size(),
+                       GL_UNSIGNED_INT, nullptr);
+    }
+}
+
+void SGCore::GL4Renderer::renderArray(const SGCore::Ref<SGCore::IVertexArray>& vertexArray,
+                                      const SGCore::MeshDataRenderInfo& meshDataRenderInfo,
+                                      const size_t& verticesCount,
+                                      const size_t& indicesCount)
+{
+    if(meshDataRenderInfo.m_enableFacesCulling)
+    {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshDataRenderInfo.m_facesCullingFaceType));
+        glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
+                meshDataRenderInfo.m_facesCullingPolygonsOrder)
+        );
+    }
+    else
+    {
+        glDisable(GL_CULL_FACE);
+    }
+    
+    if(vertexArray)
+    {
+        vertexArray->bind();
+    }
+    
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshDataRenderInfo.m_drawMode);
+    
+    if(drawMode == GL_LINES)
+    {
+        glLineWidth(meshDataRenderInfo.m_linesWidth);
+    }
+    
+    if(drawMode == GL_POINTS)
+    {
+        glPointSize(meshDataRenderInfo.m_pointsSize);
+    }
+    
+    if(!meshDataRenderInfo.m_useIndices)
+    {
+        glDrawArrays(drawMode, 0, verticesCount);
+    }
+    else
+    {
+        glDrawElements(drawMode, indicesCount,
                        GL_UNSIGNED_INT, nullptr);
     }
 }

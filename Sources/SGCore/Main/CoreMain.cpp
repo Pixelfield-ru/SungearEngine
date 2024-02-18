@@ -14,6 +14,7 @@
 #include "SGCore/Input/InputManager.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Physics/Physics.h"
 
 void SGCore::CoreMain::start()
 {
@@ -41,6 +42,7 @@ void SGCore::CoreMain::start()
     SGUtils::Singleton::getSharedPtrInstance<ShadersPaths>()->createDefaultPaths();
     InputManager::init();
     AssetManager::init();
+    Physics::init();
 
     std::shared_ptr<SGUtils::TimerCallback> globalTimerCallback = std::make_shared<SGUtils::TimerCallback>();
 

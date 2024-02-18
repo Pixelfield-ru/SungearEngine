@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <glm/glm.hpp>
 #include <entt/entity/entity.hpp>
 
 #include "SGCore/Main/CoreGlobals.h"
@@ -49,8 +50,6 @@ namespace SGCore
         IMeshData(IMeshData&&) noexcept = default;
 
         std::string m_name;
-
-        bool m_useIndices = true;
 
         // indices array
         std::vector<std::uint32_t> m_indices;

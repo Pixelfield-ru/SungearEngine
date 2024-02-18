@@ -78,11 +78,6 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::getCurrentScene() noexcept
     return m_currentScene;
 }
 
-void SGCore::Scene::setCurrentScene(const Ref<Scene>& newCurrentScene) noexcept
-{
-    m_currentScene = newCurrentScene;
-}
-
 // ==================================================================
 
 void SGCore::Scene::fixedUpdate()
@@ -160,4 +155,43 @@ double SGCore::Scene::getUpdateFunctionExecutionTime() const noexcept
 double SGCore::Scene::getFixedUpdateFunctionExecutionTime() const noexcept
 {
     return m_fixedUpdate_executionTime;
+}
+
+void SGCore::Scene::addScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+{
+    auto foundIt = std::find_if(m_scenes.begin(), m_scenes.end(), [&scene](const Ref<Scene>& s) {
+        return s->m_name == scene->m_name;
+    });
+    
+    if(foundIt != m_scenes.end())
+    {
+        return;
+    }
+    
+    m_scenes.push_back(scene);
+}
+
+SGCore::Ref<SGCore::Scene> SGCore::Scene::getScene(const std::string& sceneName) noexcept
+{
+    auto foundIt = std::find_if(m_scenes.begin(), m_scenes.end(), [&sceneName](const Ref<Scene>& s) {
+        return s->m_name == sceneName;
+    });
+    
+    return foundIt == m_scenes.end() ? nullptr : *foundIt;
+}
+
+void SGCore::Scene::setCurrentScene(const std::string& sceneName) noexcept
+{
+    auto foundIt = std::find_if(m_scenes.begin(), m_scenes.end(), [&sceneName](const Ref<Scene>& s) {
+        return s->m_name == sceneName;
+    });
+    
+    if(foundIt != m_scenes.end())
+    {
+        m_currentScene = *foundIt;
+    }
+    else
+    {
+        spdlog::error("Cannot set scene '{0}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
+    }
 }

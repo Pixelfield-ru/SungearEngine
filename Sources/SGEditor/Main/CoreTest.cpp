@@ -1,9 +1,11 @@
 // #define SUNGEAR_DEBUG
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#define BULLET_IMPLEMENTATION
 
 #include <cstdlib>
 #include <stb/stb_image_write.h>
+#include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 
 #include "CoreTest.h"
 #include "SGCore/Main/CoreMain.h"
@@ -38,6 +40,10 @@
 #include "SGUtils/Noise/PerlinNoise.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
+#include "SGCore/Physics/Physics.h"
+#include "SGCore/Physics/PhysicsDebugDraw.h"
+
+btDefaultCollisionConfiguration* m_pCollisionConfiguration = new btDefaultCollisionConfiguration;
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -54,8 +60,10 @@ void init()
     SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
     
     testScene = SGCore::MakeRef<SGCore::Scene>();
+    testScene->m_name = "TestScene";
     testScene->createDefaultSystems();
-    SGCore::Scene::setCurrentScene(testScene);
+    SGCore::Scene::addScene(testScene);
+    SGCore::Scene::setCurrentScene("TestScene");
 
     // найс это работает. TODO: убрать! просто ради теста ---------------------
     int windowWidth;
@@ -761,6 +769,9 @@ auto testCollapsingHeader = std::make_shared<SGCore::ImGuiWrap::CollapsingHeader
 
 void update()
 {
+    ((SGCore::PhysicsDebugDraw*) (SGCore::Physics::getDebugDraw().get()))->drawAll();
+    ((SGCore::PhysicsDebugDraw*) (SGCore::Physics::getDebugDraw().get()))->cleanup();
+    
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F11))
     {
         std::cout << "pressed f11" << std::endl;

@@ -8,6 +8,6 @@
 SGCore::LineGizmo::LineGizmo() noexcept
 {
     MeshesUtils::loadMeshShader(m_base.m_meshBase, "Gizmos/LinesGizmosShader");
-
-    m_base.m_meshBase.m_meshData->m_useIndices = false;
+    
+    m_base.m_meshBase.m_meshDataRenderInfo.m_useIndices = false;
 }

@@ -36,7 +36,7 @@ void SGCore::GLVertexBuffer::destroy() noexcept
 std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::putData
 (const std::vector<float>& data) noexcept
 {
-    if(data.size() == 0) return shared_from_this();
+    if(data.empty()) return shared_from_this();
 
     m_data.insert(m_data.end(), data.begin(), data.end());
 
@@ -53,7 +53,7 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::putData
 std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::subData
 (const std::vector<float>& data, const size_t& offset) noexcept
 {
-    if(data.size() == 0) return shared_from_this();
+    if(data.empty()) return shared_from_this();
 
     m_data.insert(m_data.begin() + offset, data.begin(), data.end());
 

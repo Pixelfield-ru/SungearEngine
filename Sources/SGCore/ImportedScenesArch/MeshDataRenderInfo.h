@@ -11,6 +11,8 @@ namespace SGCore
 {
     struct MeshDataRenderInfo
     {
+        bool m_useIndices = true;
+        
         bool m_enableFacesCulling = true;
         SGFaceType m_facesCullingFaceType = SGFaceType::SGG_BACK_FACE;
         SGPolygonsOrder m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;

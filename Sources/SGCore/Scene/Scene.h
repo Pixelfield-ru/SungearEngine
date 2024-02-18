@@ -30,7 +30,6 @@ namespace SGCore
         void createDefaultSystems();
 
         static Ref<Scene> getCurrentScene() noexcept;
-        static void setCurrentScene(const Ref<Scene>& newCurrentScene) noexcept;
 
         void fixedUpdate();
 
@@ -81,7 +80,16 @@ namespace SGCore
         {
             return m_ecsRegistry;
         }
-
+        
+        static void addScene(const Ref<Scene>& scene) noexcept;
+        static Ref<Scene> getScene(const std::string& sceneName) noexcept;
+        static void setCurrentScene(const std::string& sceneName) noexcept;
+        
+        static const auto& getScenes() noexcept
+        {
+            return m_scenes;
+        }
+        
         Layer createLayer(const std::string& name) noexcept;
         
         double getUpdateFunctionExecutionTime() const noexcept;
@@ -94,6 +102,8 @@ namespace SGCore
         entt::registry m_ecsRegistry;
 
         static inline Ref<Scene> m_currentScene;
+        
+        static inline  std::vector<Ref<Scene>> m_scenes;
 
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 

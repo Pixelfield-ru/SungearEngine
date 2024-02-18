@@ -30,6 +30,7 @@
          ${CMAKE_SOURCE_DIR}/Sources
          ${CMAKE_SOURCE_DIR}/Externals/fmt/include
          ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
+         ${BULLET_INCLUDE_DIR}
 
          #${BULLET_INCLUDE_DIR}
 
@@ -52,6 +53,10 @@
          #BulletCollision
          #BulletInverseDynamics
          #BulletSoftBody
+
+         ${BULLET_COLLISION_LIBRARY}
+         ${BULLET_DYNAMICS_LIBRARY}
+         ${BULLET_MATH_LIBRARY}
 
          ImGui
 

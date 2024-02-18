@@ -30,8 +30,7 @@ add_subdirectory(GLM)
 add_subdirectory(imgui)
 add_subdirectory(entt)
 #add_subdirectory(fmt)
-
-add_subdirectory(bullet3)
+find_package(Bullet REQUIRED)
 
 add_subdirectory(spdlog)
 

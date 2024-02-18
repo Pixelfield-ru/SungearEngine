@@ -59,13 +59,15 @@ set(SG_RESOURCES_COPY_SHADERS ON)
 set(SG_RESOURCES_COPY_TEXTURES ON)
 
 # ----------------------------------
-
 add_subdirectory(syslibs)
 add_subdirectory(Externals)
 add_subdirectory(Sources)
 if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)
 endif()
+
+message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
+message("Bullet Libraries: " ${BULLET_COLLISION_LIBRARY} ", " ${BULLET_DYNAMICS_LIBRARY} ", " ${BULLET_MATH_LIBRARY})
 
 # move all necessary dlls to target exes ------------------
 
