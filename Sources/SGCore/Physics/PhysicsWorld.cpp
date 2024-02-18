@@ -43,3 +43,11 @@ void SGCore::PhysicsWorld::update() noexcept
         m_debugDraw->drawAll(lockedScene);
     }
 }
+
+void SGCore::PhysicsWorld::onAddToScene()
+{
+    auto lockedScene = m_scene.lock();
+    if(!lockedScene) return;
+    
+    
+}

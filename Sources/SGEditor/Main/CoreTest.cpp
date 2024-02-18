@@ -42,6 +42,7 @@
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
 #include "SGCore/Physics/PhysicsWorld.h"
 #include "SGCore/Physics/PhysicsDebugDraw.h"
+#include "SGCore/Physics/Rigidbody3D.h"
 
 btDefaultCollisionConfiguration* m_pCollisionConfiguration = new btDefaultCollisionConfiguration;
 
@@ -193,50 +194,53 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
+    std::vector<entt::entity> sphereEntities;
     sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                      [](const entt::entity& entity)
+                                      [&sphereEntities](const entt::entity& entity)
                                       {
+                                          sphereEntities.push_back(entity);
                                           auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(entity);
                                           auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
-                                          if(transform)
-                                          {
-                                              transform->m_ownTransform.m_position = { 0, 6.0, -20 };
-                                              transform->m_ownTransform.m_rotation = { 0, 0, 0 };
-                                              transform->m_ownTransform.m_scale = { 1.0, 1.0, 1.0 };
-                                          }
-                                          if(mesh)
-                                          {
-                                              mesh->m_base.m_meshData->m_material->setMetallicFactor(1);
-                                              mesh->m_base.m_meshData->m_material->setRoughnessFactor(1);
-
-                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
-                                                      SGTextureType::SGTT_DIFFUSE,
-                                                      "../SGResources/textures/spotted_rust/spotted-rust_albedo.png"
-                                              );
-
-                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
-                                                      SGTextureType::SGTT_LIGHTMAP,
-                                                      "../SGResources/textures/spotted_rust/spotted-rust_ao.png"
-                                              );
-
-                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
-                                                      SGTextureType::SGTT_METALNESS,
-                                                      "../SGResources/textures/spotted_rust/spotted-rust_metallic.png"
-                                              );
-
-                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
-                                                      SGTextureType::SGTT_NORMALS,
-                                                      "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png"
-                                              );
-
-                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(
-                                                      SGTextureType::SGTT_DIFFUSE_ROUGHNESS,
-                                                      "../SGResources/textures/spotted_rust/spotted-rust_roughness.png"
-                                              );
-                                          }
                                       }
     );
-
+    
+    SGCore::Transform* sphereTransform = testScene->getECSRegistry().try_get<SGCore::Transform>(sphereEntities[0]);
+    sphereTransform->m_ownTransform.m_position = { 0, 6.0, -20 };
+    sphereTransform->m_ownTransform.m_rotation = { 0, 0, 0 };
+    sphereTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1.0 };
+    
+    SGCore::Rigidbody3D sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[0], testScene->getSystem<SGCore::PhysicsWorld>());
+    testScene->getECSRegistry().remove<SGCore::Rigidbody3D>(sphereEntities[0]);
+    
+    SGCore::Mesh* sphereMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(sphereEntities[2]);
+    sphereMesh->m_base.m_meshData->m_material->setMetallicFactor(1);
+    sphereMesh->m_base.m_meshData->m_material->setRoughnessFactor(1);
+    
+    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+            SGTextureType::SGTT_DIFFUSE,
+            "../SGResources/textures/spotted_rust/spotted-rust_albedo.png"
+    );
+    
+    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+            SGTextureType::SGTT_LIGHTMAP,
+            "../SGResources/textures/spotted_rust/spotted-rust_ao.png"
+    );
+    
+    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+            SGTextureType::SGTT_METALNESS,
+            "../SGResources/textures/spotted_rust/spotted-rust_metallic.png"
+    );
+    
+    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+            SGTextureType::SGTT_NORMALS,
+            "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png"
+    );
+    
+    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+            SGTextureType::SGTT_DIFFUSE_ROUGHNESS,
+            "../SGResources/textures/spotted_rust/spotted-rust_roughness.png"
+    );
+    
     // ==========================================================================================
     // ==========================================================================================
     // ==========================================================================================

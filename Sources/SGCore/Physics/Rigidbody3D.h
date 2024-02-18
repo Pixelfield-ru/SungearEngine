@@ -6,12 +6,23 @@
 #define SUNGEARENGINE_RIGIDBODY3D_H
 
 #include <BulletDynamics/Dynamics/btRigidBody.h>
+#include <LinearMath/btDefaultMotionState.h>
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
+    class PhysicsWorld;
+    
     struct Rigidbody3D
     {
-        btRigidBody m_rigidBody;
+        Rigidbody3D(const Ref<PhysicsWorld>& physicsWorld);
+        ~Rigidbody3D();
+        
+        btMotionState* m_motionState = nullptr;
+        btRigidBody* m_rigidBody = nullptr;
+        
+    private:
+        Weak<PhysicsWorld> m_parentPhysicsWorld;
     };
 }
 

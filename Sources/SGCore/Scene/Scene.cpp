@@ -32,41 +32,41 @@ void SGCore::Scene::createDefaultSystems()
     auto thisShared = shared_from_this();
     
     auto renderingBasesUpdater = MakeRef<RenderingBasesUpdater>();
-    m_systems.emplace(renderingBasesUpdater);
+    addSystem(renderingBasesUpdater);
     
     auto atmosphereScatteringUpdater = MakeRef<AtmosphereUpdater>();
-    m_systems.emplace(atmosphereScatteringUpdater);
+    addSystem(atmosphereScatteringUpdater);
     
     auto directionalLightsUpdater = MakeRef<DirectionalLightsUpdater>();
-    m_systems.emplace(directionalLightsUpdater);
+    addSystem(directionalLightsUpdater);
     
     // -------------
     
     // transformations
 
     auto transformationsUpdater = MakeRef<TransformationsUpdater>();
-    m_systems.emplace(transformationsUpdater);
+    addSystem(transformationsUpdater);
 
     auto controllables3DUpdater = MakeRef<Controllables3DUpdater>();
-    m_systems.emplace(controllables3DUpdater);
+    addSystem(controllables3DUpdater);
     
     // gizmos
 
     auto boxGizmosUpdater = MakeRef<BoxGizmosUpdater>();
-    m_systems.emplace(boxGizmosUpdater);
+    addSystem(boxGizmosUpdater);
 
     auto lineGizmosUpdater = MakeRef<LineGizmosUpdater>();
-    m_systems.emplace(lineGizmosUpdater);
+    addSystem(lineGizmosUpdater);
 
     auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();
-    m_systems.emplace(sphereGizmosUpdater);
+    addSystem(sphereGizmosUpdater);
 
     // -------------
     
     // physics
     
     auto physicsWorld = MakeRef<PhysicsWorld>();
-    m_systems.emplace(physicsWorld);
+    addSystem(physicsWorld);
     
     // -------------
     
@@ -134,7 +134,14 @@ void SGCore::Scene::update()
     }
 }
 
-std::set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() noexcept
+void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
+{
+    system->m_scene = shared_from_this();
+    system->onAddToScene();
+    m_systems.emplace(system);
+}
+
+const std::set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() noexcept
 {
     return m_systems;
 }

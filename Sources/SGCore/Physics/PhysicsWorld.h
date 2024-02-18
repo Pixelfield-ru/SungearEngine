@@ -27,6 +27,7 @@ namespace SGCore
         ~PhysicsWorld();
         
         void update() noexcept override;
+        void onAddToScene() override;
         
         auto* getCollisionConfig() noexcept
         {

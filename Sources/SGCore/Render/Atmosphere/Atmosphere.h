@@ -18,7 +18,7 @@ namespace SGCore
         Atmosphere() noexcept;
         Atmosphere(const Atmosphere&) noexcept = default;
         Atmosphere(Atmosphere&& atmosphere) noexcept = default;
-
+        
         glm::vec3 m_sunPosition { 0.0, 0.0, 0.0 };
         glm::vec3 m_sunRotation { 0.0, 0.0, 0.0 };
         glm::vec3 m_lastSunRotation { -1.0, 0.0, 0.0 };
@@ -53,6 +53,8 @@ namespace SGCore
 
         glm::vec3 m_rayOrigin { };
         glm::vec3 m_lastRayOrigin { 0, 0, 0 };
+        
+        int* fdf = new int;
 
         // ----
         

@@ -27,7 +27,8 @@ namespace SGCore
 
         virtual void fixedUpdate() { }
         virtual void update() { }
-
+        virtual void onAddToScene() { }
+        
         virtual void setScene(const Ref<Scene>& scene) noexcept;
         
         double getUpdateFunctionExecutionTime() const noexcept;
