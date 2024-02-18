@@ -94,7 +94,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                     shaderToUse->useVectorf("objectTransform.position", meshTransform.m_finalTransform.m_position);
                 }
                 
-                // standardGeometryShader.
+                size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.m_meshData->m_material);
+                shaderToUse->bindTextureBindings(offset0);
                 
                 auto uniformBuffsIt = m_uniformBuffersToUse.begin();
                 while(uniformBuffsIt != m_uniformBuffersToUse.end())
@@ -115,6 +116,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                         mesh.m_base.m_meshData,
                         mesh.m_base.m_meshDataRenderInfo
                 );
+                
+                shaderToUse->unbindMaterialTextures(mesh.m_base.m_meshData->m_material);
                 
                 if(shaderToUse == meshGeomShader)
                 {

@@ -7,6 +7,7 @@
 #include "IFrameBuffer.h"
 #include "ITexture2D.h"
 #include "SGCore/Utils/SGSL/SGSLESubShader.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 void SGCore::ISubPassShader::recompile() noexcept
 {
@@ -197,123 +198,89 @@ void SGCore::ISubPassShader::addToGlobalStorage() noexcept
     GPUObjectsStorage::addShader(shared_from_this());
 }
 
-void SGCore::ISubPassShader::addTexturesBlock(const SGCore::Ref<SGCore::TexturesBlock>& block) noexcept
+size_t SGCore::ISubPassShader::bindMaterialTextures(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
 {
-    if(std::find(m_texturesBlocks.begin(), m_texturesBlocks.end(), block) ==
-       m_texturesBlocks.end())
+    size_t offset = 0;
+    
+    std::string preallocUniformName;
+    preallocUniformName.resize(48);
+    
+    for(const auto& texPair : material->getTextures())
     {
-        m_texturesBlocks.push_back(block);
-        block->setParentShader(shared_from_this());
-    }
-}
-
-void SGCore::ISubPassShader::removeTexturesBlock(const Ref<TexturesBlock>& block) noexcept
-{
-    m_texturesBlocks.erase(
-            std::remove(m_texturesBlocks.begin(), m_texturesBlocks.end(), block),
-            m_texturesBlocks.end());
-}
-
-void SGCore::ISubPassShader::clearTexturesBlocks() noexcept
-{
-    m_texturesBlocks.clear();
-}
-
-void SGCore::ISubPassShader::addTexture(const Ref<ITexture2D>& texture2D) noexcept
-{
-    for(auto& texturesBlock : m_texturesBlocks)
-    {
-        texturesBlock->addTexture(texture2D);
-    }
-}
-
-void SGCore::ISubPassShader::addTexture
-(const SGCore::Ref<SGCore::ITexture2D>& texture2D, SGTextureType textureType) noexcept
-{
-    for(auto& texturesBlock : m_texturesBlocks)
-    {
-        texturesBlock->addTexture(texture2D, textureType);
-    }
-}
-
-void SGCore::ISubPassShader::removeTexture(const SGCore::Ref<SGCore::ITexture2D>& texture2D) noexcept
-{
-    for(auto& texturesBlock : m_texturesBlocks)
-    {
-        texturesBlock->removeTexture(texture2D);
-    }
-}
-
-void SGCore::ISubPassShader::collectTexturesFromMaterial(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
-{
-    for(auto& texturesBlock : m_texturesBlocks)
-    {
-        texturesBlock->collectTexturesFromMaterial(material);
-    }
-}
-
-void SGCore::ISubPassShader::onTexturesCountChanged() noexcept
-{
-    bind();
-
-    // todo: make pass all textures to shader!!
-
-    std::uint8_t texBlock = 0;
-
-    for(const auto& texturesBlock : m_texturesBlocks)
-    {
-        size_t a = 0;
-        for(std::uint8_t i = 0; i < texturesBlock->getTextures().size(); ++i)
+        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName(texPair.first);
+        size_t firstSize = preallocUniformName.size();
+        preallocUniformName += "[0]";
+        
+        if(!isUniformExists(preallocUniformName)) continue;
+        
+        preallocUniformName.erase(preallocUniformName.size() - 3, 3);
+        
+        size_t arrayIdx = 0;
+        
+        for(const auto& tex : texPair.second)
         {
-            useTextureBlock(texturesBlock->m_uniformRawName + "[" + std::to_string(texturesBlock->m_texturesArrayIndices[i]) + "]",
-                            texBlock);
-
-            ++texBlock;
-            ++a;
+            preallocUniformName += '[';
+            preallocUniformName += std::to_string(arrayIdx);
+            preallocUniformName += ']';
+            
+            // out of uniform samplers array bounds
+            if(!isUniformExists(preallocUniformName)) break;
+            
+            useTextureBlock(preallocUniformName, offset);
+            tex->bind(offset);
+            
+            ++arrayIdx;
+            ++offset;
         }
+        
+        size_t secondSize = preallocUniformName.size();
+        
+        size_t difference = secondSize - firstSize;
+        
+        preallocUniformName.erase(preallocUniformName.size() - difference, difference);
+        preallocUniformName += "_CURRENT_COUNT";
+        
+        useInteger(preallocUniformName, arrayIdx);
+    }
+    
+    return offset;
+}
 
-        useInteger(texturesBlock->m_uniformRawName + "_CURRENT_COUNT", a);
+void SGCore::ISubPassShader::unbindMaterialTextures(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
+{
+    std::string preallocUniformName;
+    preallocUniformName.resize(48);
+    
+    for(const auto& texPair : material->getTextures())
+    {
+        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName(texPair.first);
+        preallocUniformName += "_CURRENT_COUNT";
+        
+        useInteger(preallocUniformName, 0);
+    }
+}
 
-        /*if(texturesBlock->m_isSingleTextureBlock)
+size_t SGCore::ISubPassShader::bindTextureBindings(const size_t& samplersOffset) noexcept
+{
+    size_t offset = samplersOffset;
+    
+    auto it = m_textureBindings.begin();
+    while(it != m_textureBindings.end())
+    {
+        if(auto lockedTexture = it->m_texture.lock())
         {
-            useTextureBlock(texturesBlock->m_uniformName, texBlock);
-
-            ++texBlock;
+            lockedTexture->bind(offset);
+            useTextureBlock(it->m_bindingName, offset);
+            
+            ++it;
         }
         else
         {
-            for(std::uint8_t i = 0; i < texturesBlock->getTextures().size(); ++i)
-            {
-                useTextureBlock(texturesBlock->m_uniformName,
-                                texBlock);
-
-                ++counts[texturesBlock->m_uniformRawName];
-
-                ++texBlock;
-            }
-        }*/
-    }
-}
-
-void SGCore::ISubPassShader::bindTexturesBlocks() const noexcept
-{
-    std::uint8_t curTexBlock = 0;
-    for(const auto& texturesBlock : m_texturesBlocks)
-    {
-        auto curIter = texturesBlock->getTextures().begin();
-        while(curIter != texturesBlock->getTextures().end())
-        {
-            if(auto lockedTexture = curIter->lock())
-            {
-                lockedTexture->bind(curTexBlock);
-
-                ++curIter;
-                ++curTexBlock;
-            }
-            else
-            {
-                curIter = texturesBlock->eraseTexture(curIter);
-            }
+            it = m_textureBindings.erase(it);
         }
+        
+        ++offset;
     }
+    
+    return offset;
 }

@@ -43,6 +43,8 @@ namespace SGCore
         void useFloat(const std::string& uniformName, const float& f) override;
         void useInteger(const std::string& uniformName, const size_t& i) override;
         void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) override;
+        
+        bool isUniformExists(const std::string& uniformName) const noexcept;
 
     private:
         GLuint compileSubShader(SGSLESubShaderType shaderType, const std::string& code);

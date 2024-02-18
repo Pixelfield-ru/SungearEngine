@@ -16,7 +16,7 @@ SGSubPass(GeometryPass)
             vs_UVAttribute = positionsAttribute;
 
             // gl_Position = camera.spaceMatrix * objectModelMatrix * vec4(positionsAttribute, 1.0);
-            gl_Position = camera.projectionMatrix * mat4(mat3(camera.viewMatrix)) * objectModelMatrix * vec4(positionsAttribute, 1.0);
+            gl_Position = camera.projectionMatrix * mat4(mat3(camera.viewMatrix)) * objectTransform.modelMatrix * vec4(positionsAttribute, 1.0);
             //vec4 pos = projectionMatrix * mat4(mat3(viewMatrix)) * vec4(positionsAttribute, 1.0);
             //gl_Position = vec4(pos.xy, pos.w, pos.w);
         }
@@ -32,8 +32,8 @@ SGSubPass(GeometryPass)
         skyboxSamplers[0] = SGGetTextures("GeniusTexture");*/
         /*SGSamplerCube skyboxSamplers[1];
         skyboxSamplers[0] = SGGetTextures("standard_skybox0");*/
-        SGSamplerCube skyboxSamplers[1];
-        skyboxSamplers[0] = SGGetTexturesFromMaterial("SGTT_SKYBOX");
+        SGSamplerCube mat_skyboxSamplers[1];
+        // skyboxSamplers[0] = SGGetTexturesFromMaterial("SGTT_SKYBOX");
 
         in vec3 vs_UVAttribute;
 
@@ -53,13 +53,13 @@ SGSubPass(GeometryPass)
                         atmosphere.miePreferredScatteringDirection          // Mie preferred scattering direction
             );
 
-            if(skyboxSamplers.sg_length() > 0)
+            if(mat_skyboxSamplers.sg_length() > 0)
             {
-                float mixCoeff = 1.0 / skyboxSamplers.sg_length();
+                float mixCoeff = 1.0 / mat_skyboxSamplers.sg_length();
                 vec4 skyboxCol = vec4(0.0);
-                for (int i = 0; i < skyboxSamplers.sg_length(); i++)
+                for (int i = 0; i < mat_skyboxSamplers.sg_length(); i++)
                 {
-                    skyboxCol += texture(skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
+                    skyboxCol += texture(mat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
                 }
 
                 fragColor = vec4(atmosphereCol, skyboxCol.a);

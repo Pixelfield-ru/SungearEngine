@@ -309,6 +309,40 @@ static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterial
     return "";
 }
 
+static const char* sgStandardTextureTypeNameToStandardUniformName(const SGTextureType& sgMaterialTextureType) noexcept
+{
+    switch(sgMaterialTextureType)
+    {
+        case SGTT_EMISSIVE: return "mat_emissiveSamplers";
+        case SGTT_AMBIENT_OCCLUSION: return "mat_ambientOcclusionSamplers";
+        case SGTT_AMBIENT: return "mat_ambientSamplers";
+        case SGTT_DIFFUSE_ROUGHNESS: return "mat_diffuseRoughnessSamplers";
+        case SGTT_DIFFUSE: return "mat_diffuseSamplers";
+        case SGTT_DISPLACEMENT: return "mat_displacementSamplers";
+        case SGTT_HEIGHT: return "mat_heightSamplers";
+        case SGTT_NORMALS: return "mat_normalsSamplers";
+        case SGTT_BASE_COLOR: return "mat_baseColorSamplers";
+        case SGTT_CLEARCOAT: return "mat_clearCoatSamplers";
+        case SGTT_EMISSION_COLOR: return "mat_emissionColorSamplers";
+        case SGTT_LIGHTMAP: return "mat_lightmapSamplers";
+        case SGTT_METALNESS: return "mat_metalnessSamplers";
+        case SGTT_NORMAL_CAMERA: return "mat_normalCameraSamplers";
+        case SGTT_OPACITY: return "mat_opacitySamplers";
+        case SGTT_REFLECTION: return "mat_reflectionSamplers";
+        case SGTT_SHEEN: return "mat_sheenSamplers";
+        case SGTT_SHININESS: return "mat_shininessSamplers";
+        case SGTT_SPECULAR: return "mat_specularSamplers";
+        case SGTT_TRANSMISSION: return "mat_transmissionSamplers";
+        case SGTT_SKYBOX: return "mat_skyboxSamplers";
+        
+        case SGTT_SHADOW_MAP2D: return "mat_shadowMap2DSamplers";
+        
+        case SGTT_NONE: return "noneSamplers";
+    }
+    
+    return "noneSamplers";
+}
+
 static std::uint16_t getSGGDataTypeSizeInBytes(const SGGDataType& dataType) noexcept
 {
     int size;

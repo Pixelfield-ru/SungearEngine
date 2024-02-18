@@ -36,6 +36,8 @@
 #include "SGCore/Render/Lighting/DirectionalLight.h"
 #include "SGCore/Render/Gizmos/BoxGizmo.h"
 #include "SGUtils/Noise/PerlinNoise.h"
+#include "SGCore/Render/RenderPipelinesManager.h"
+#include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -48,6 +50,9 @@ SGCore::Atmosphere* _atmosphereScattering = nullptr;
 
 void init()
 {
+    SGCore::RenderPipelinesManager::registerRenderPipeline(SGCore::MakeRef<SGCore::PBRRenderPipeline>());
+    SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
+    
     testScene = SGCore::MakeRef<SGCore::Scene>();
     testScene->createDefaultSystems();
     SGCore::Scene::setCurrentScene(testScene);
@@ -381,7 +386,7 @@ void init()
                 standardCubemap
         );
         // это топ пж
-        skyboxMesh.m_base.m_meshData->m_material->getShader()->removeSubPass("GeometryPass");
+        skyboxMesh.m_base.m_meshData->m_material->setShader(SGCore::MakeRef<SGCore::IShader>());
         SGCore::MeshesUtils::loadMeshShader(skyboxMesh.m_base, "SkyboxShader");
         skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
 
@@ -794,6 +799,19 @@ void update()
 
             ImGui::EndTable();
         }
+        
+        double t0 = SGCore::Scene::getCurrentScene()->getUpdateFunctionExecutionTime();
+        double t1 = SGCore::Scene::getCurrentScene()->getFixedUpdateFunctionExecutionTime();
+        double t2 = SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPassesExecutionTime();
+        double t3 = SGCore::CoreMain::getWindow().getSwapBuffersExecutionTime();
+        
+        ImGui::Text("Scene update execution: %f", t0);
+        ImGui::Text("Scene fixed update execution: %f", t1);
+        ImGui::Text("Scene total execution: %f", t0 + t1);
+        ImGui::Text("Render pipeline execution: %f", t2);
+        ImGui::Text("Swap buffers execution: %f", t3);
+        ImGui::Text("Render total execution: %f", t2 + t3);
+        ImGui::Text("Total frame time: %f", t0 + t1 + t2 + t3);
     }
     ImGui::End();
 

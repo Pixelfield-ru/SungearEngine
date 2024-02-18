@@ -43,8 +43,6 @@ namespace SGCore
          */
         void onAssetPathChanged() override;
 
-        void collectTextureFromMaterial(const Ref<ITexture2D>& texture, SGTextureType textureType) noexcept;
-
         void setParentMaterial(const Ref<IMaterial>& material) noexcept;
         Weak<IMaterial> getParentMaterial() const noexcept;
 

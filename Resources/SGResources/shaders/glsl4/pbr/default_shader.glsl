@@ -58,18 +58,18 @@ SGSubPass(GeometryPass)
         // thats fucking works!!!!!!
         // SGUSampler2D diffuseSamplers[1] = SGGetTextures("GeniusTexture");
         // SGUSampler2D diffuseSamplers[1] = SGGetTextures("standard_skybox0_xleft");
+        SGSampler2D mat_diffuseSamplers[3];
+        // diffuseSamplers[0..2] = SGGetTexturesFromMaterial("SGTT_DIFFUSE");
         /*SGSampler2D diffuseSamplers[3];
-        diffuseSamplers[0..2] = SGGetTexturesFromMaterial("SGTT_DIFFUSE");*/
-        SGSampler2D diffuseSamplers[3];
-        diffuseSamplers[0..2] = SGGetTextures("GeniusTexture");
-        SGSampler2D metalnessSamplers[1];
-        metalnessSamplers[0] = SGGetTexturesFromMaterial("SGTT_METALNESS");
-        SGSampler2D normalsSamplers[1];
-        normalsSamplers[0] = SGGetTexturesFromMaterial("SGTT_NORMALS");
-        SGSampler2D lightmapSamplers[1];
-        lightmapSamplers[0] = SGGetTexturesFromMaterial("SGTT_LIGHTMAP");
-        SGSampler2D diffuseRoughnessSamplers[1];
-        diffuseRoughnessSamplers[0] = SGGetTexturesFromMaterial("SGTT_DIFFUSE_ROUGHNESS");
+        diffuseSamplers[0..2] = SGGetTextures("GeniusTexture");*/
+        SGSampler2D mat_metalnessSamplers[1];
+        // metalnessSamplers[0] = SGGetTexturesFromMaterial("SGTT_METALNESS");
+        SGSampler2D mat_normalsSamplers[1];
+        // normalsSamplers[0] = SGGetTexturesFromMaterial("SGTT_NORMALS");
+        SGSampler2D mat_lightmapSamplers[1];
+        // lightmapSamplers[0] = SGGetTexturesFromMaterial("SGTT_LIGHTMAP");
+        SGSampler2D mat_diffuseRoughnessSamplers[1];
+        // diffuseRoughnessSamplers[0] = SGGetTexturesFromMaterial("SGTT_DIFFUSE_ROUGHNESS");
 
         in VSOut
         {
@@ -155,44 +155,44 @@ SGSubPass(GeometryPass)
             // ===============================================================================================
 
             {
-                if(diffuseSamplers.sg_length() > 0)
+                if(mat_diffuseSamplers.sg_length() > 0)
                 {
-                    float mixCoeff = 1.0 / diffuseSamplers.sg_length();
+                    float mixCoeff = 1.0 / mat_diffuseSamplers.sg_length();
 
                     diffuseColor.rgb = vec3(0.0, 0.0, 0.0);
 
-                    for (int i = 0; i < diffuseSamplers.sg_length(); ++i)
+                    for (int i = 0; i < mat_diffuseSamplers.sg_length(); ++i)
                     {
-                        diffuseColor += texture(diffuseSamplers[i], finalUV) * mixCoeff;
+                        diffuseColor += texture(mat_diffuseSamplers[i], finalUV) * mixCoeff;
                     }
                 }
             }
 
             {
                 {
-                    if(lightmapSamplers.sg_length() > 0)
+                    if(mat_lightmapSamplers.sg_length() > 0)
                     {
-                        float mixCoeff = 1.0 / lightmapSamplers.sg_length();
+                        float mixCoeff = 1.0 / mat_lightmapSamplers.sg_length();
 
                         aoRoughnessMetallic.r = 0.0;
 
-                        for (int i = 0; i < lightmapSamplers.sg_length(); ++i)
+                        for (int i = 0; i < mat_lightmapSamplers.sg_length(); ++i)
                         {
-                            aoRoughnessMetallic.r += texture(lightmapSamplers[i], finalUV).r * mixCoeff;
+                            aoRoughnessMetallic.r += texture(mat_lightmapSamplers[i], finalUV).r * mixCoeff;
                         }
                     }
                 }
 
                 {
-                    if(diffuseRoughnessSamplers.sg_length() > 0)
+                    if(mat_diffuseRoughnessSamplers.sg_length() > 0)
                     {
-                        float mixCoeff = 1.0 / diffuseRoughnessSamplers.sg_length();
+                        float mixCoeff = 1.0 / mat_diffuseRoughnessSamplers.sg_length();
 
                         aoRoughnessMetallic.g = 0.0;
 
-                        for (int i = 0; i < diffuseRoughnessSamplers.sg_length(); ++i)
+                        for (int i = 0; i < mat_diffuseRoughnessSamplers.sg_length(); ++i)
                         {
-                            aoRoughnessMetallic.g += texture(diffuseRoughnessSamplers[i], finalUV).g * mixCoeff;
+                            aoRoughnessMetallic.g += texture(mat_diffuseRoughnessSamplers[i], finalUV).g * mixCoeff;
                         }
 
                         aoRoughnessMetallic.g *= 1.0;
@@ -200,15 +200,15 @@ SGSubPass(GeometryPass)
                 }
 
                 {
-                    if(metalnessSamplers.sg_length() > 0)
+                    if(mat_metalnessSamplers.sg_length() > 0)
                     {
-                        float mixCoeff = 1.0 / metalnessSamplers.sg_length();
+                        float mixCoeff = 1.0 / mat_metalnessSamplers.sg_length();
 
                         aoRoughnessMetallic.b = 0.0;
 
-                        for (int i = 0; i < metalnessSamplers.sg_length(); ++i)
+                        for (int i = 0; i < mat_metalnessSamplers.sg_length(); ++i)
                         {
-                            aoRoughnessMetallic.b += texture(metalnessSamplers[i], finalUV).b * mixCoeff;
+                            aoRoughnessMetallic.b += texture(mat_metalnessSamplers[i], finalUV).b * mixCoeff;
                         }
 
                         aoRoughnessMetallic.b *= 1.0;
@@ -216,13 +216,13 @@ SGSubPass(GeometryPass)
                 }
             }
 
-            if(normalsSamplers.sg_length() > 0)
+            if(mat_normalsSamplers.sg_length() > 0)
             {
-                float mixCoeff = 1.0 / normalsSamplers.sg_length();
+                float mixCoeff = 1.0 / mat_normalsSamplers.sg_length();
 
-                for (int i = 0; i < normalsSamplers.sg_length(); ++i)
+                for (int i = 0; i < mat_normalsSamplers.sg_length(); ++i)
                 {
-                    normalMapColor += texture(normalsSamplers[i], finalUV).rgb * mixCoeff;
+                    normalMapColor += texture(mat_normalsSamplers[i], finalUV).rgb * mixCoeff;
                 }
 
                 finalNormal = normalize(vsIn.TBN * (normalMapColor * 2.0 - 1.0));

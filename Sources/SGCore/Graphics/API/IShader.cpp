@@ -36,56 +36,6 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
             {
                 subPassShader->m_subShaders[subShaderType] = m_shaderAnalyzedFile->m_subPasses[subPass.m_name].m_subShaders[subShaderType];
             }
-
-            for(const auto& sgsleSubShader : subPass.m_subShaders)
-            {
-                for(const auto& variable : sgsleSubShader.second->m_variables)
-                {
-                    for(const auto& variableAssignExpr : variable.m_assignExpressions)
-                    {
-                        Ref<TexturesBlock> newTexBlock;
-
-                        if (variableAssignExpr.m_rvalueFunctionName == "SGGetTexturesFromMaterial")
-                        {
-                            Ref<TexturesFromMaterialBlock> texBlock = MakeRef<TexturesFromMaterialBlock>();
-                            texBlock->m_uniformRawName = variable.m_lValueVarName;
-                            texBlock->m_isSingleTextureBlock = !variable.m_isLValueArray;
-                            texBlock->m_typeToCollect = sgStandardTextureFromString(
-                                    variableAssignExpr.m_rvalueFunctionArgs[0]);
-
-                            newTexBlock = texBlock;
-
-                            subPassShader->addTexturesBlock(texBlock);
-                        }
-                        else if (variableAssignExpr.m_rvalueFunctionName == "SGGetTextures")
-                        {
-                            Ref<TexturesFromGlobalStorageBlock> texBlock = MakeRef<TexturesFromGlobalStorageBlock>();
-                            texBlock->m_uniformRawName = variable.m_lValueVarName;
-                            texBlock->m_isSingleTextureBlock = !variable.m_isLValueArray;
-                            for(const auto& arg : variableAssignExpr.m_rvalueFunctionArgs)
-                            {
-                                texBlock->m_requiredTexturesNames.push_back(arg);
-                            }
-
-                            newTexBlock = texBlock;
-
-                            subPassShader->addTexturesBlock(texBlock);
-                        }
-
-                        for(const auto& arrIdx : variableAssignExpr.m_arrayIndices)
-                        {
-                            // std::string uniformName = variable.m_lValueVarName + "[" + std::to_string(arrIdx) + "]";
-
-                            newTexBlock->m_texturesArrayIndices.push_back(arrIdx);
-                        }
-                    }
-                }
-            }
-        }
-
-        if(auto lockedMaterial = m_parentMaterial.lock())
-        {
-            subPassShader->collectTexturesFromMaterial(lockedMaterial);
         }
 
         subPassShader->compile(asset);
@@ -134,30 +84,11 @@ void SGCore::IShader::setParentMaterial(const SGCore::Ref<SGCore::IMaterial>& ma
     if(!material) return;
 
     m_parentMaterial = material;
-
-    for(auto& subPassShaderPair : m_subPassesShaders)
-    {
-        auto& subPassShader = subPassShaderPair.second;
-
-        subPassShader->clearTexturesBlocksOfType<TexturesFromMaterialBlock>();
-
-        subPassShader->collectTexturesFromMaterial(material);
-    }
 }
 
 SGCore::Weak<SGCore::IMaterial> SGCore::IShader::getParentMaterial() const noexcept
 {
     return m_parentMaterial;
-}
-
-void SGCore::IShader::collectTextureFromMaterial(const Ref<ITexture2D>& texture, SGTextureType textureType) noexcept
-{
-    for(auto& subPassShaderPair : m_subPassesShaders)
-    {
-        auto& subPassShader = subPassShaderPair.second;
-
-        subPassShader->addTexture(texture, textureType);
-    }
 }
 
 void SGCore::IShader::removeAllSubPassShadersByDiskPath(const std::string& path) noexcept

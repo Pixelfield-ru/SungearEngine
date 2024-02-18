@@ -81,6 +81,9 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
     sgMeshData->m_uv.reserve(aiMesh->mNumVertices * 3);
 
     sgMeshData->m_name = aiMesh->mName.data;
+    
+    sgMeshData->m_aabbMin = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mAABB.mMin);
+    sgMeshData->m_aabbMax = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mAABB.mMax);
 
     polygonsNumber += aiMesh->mNumVertices / 3;
     std::cout << "current polygons num: " << std::to_string(polygonsNumber) << std::endl;

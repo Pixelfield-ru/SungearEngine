@@ -6,6 +6,7 @@
 
 #include <list>
 #include <glm/matrix.hpp>
+#include <SGCore/Graphics/ShaderTextureBinding.h>
 
 #include "SGCore/Memory/Assets/FileAsset.h"
 #include "SGCore/Memory/Assets/IAssetObserver.h"
@@ -15,8 +16,6 @@
 
 #include "SGUtils/UniqueName.h"
 
-#include "SGCore/Graphics/TexturesFromGlobalStorageBlock.h"
-#include "SGCore/Graphics/TexturesFromMaterialBlock.h"
 #include "SGCore/Utils/SGSL/SGSLESubShaderType.h"
 #include "SGUtils/Utils.h"
 #include "SGCore/Graphics/GPUObject.h"
@@ -52,8 +51,6 @@ namespace SGCore
         virtual void destroy() = 0;
 
         virtual void bind() = 0;
-
-        void bindTexturesBlocks() const noexcept;
 
         [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
 
@@ -96,43 +93,45 @@ namespace SGCore
         virtual void useFloat(const std::string& uniformName, const float& f) { };
         virtual void useInteger(const std::string& uniformName, const size_t& i) { };
         virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
+        
+        virtual bool isUniformExists(const std::string& uniformName) const noexcept { };
 
         void addToGlobalStorage() noexcept final;
 
         // ==========================================
-
-        void addTexturesBlock(const Ref<TexturesBlock>& block) noexcept;
-
-        void removeTexturesBlock(const Ref<TexturesBlock>& block) noexcept;
-
-        void clearTexturesBlocks() noexcept;
-
-        template<typename TexturesBlockType>
-        void clearTexturesBlocksOfType() noexcept
-        {
-            for(auto& textureBlock : m_texturesBlocks)
-            {
-                if(SG_INSTANCEOF(textureBlock.get(), TexturesBlockType))
-                {
-                    textureBlock->clearTextures();
-                }
-            }
-        }
-
+        
+        /**
+         * @param material - Material to bind textures.
+         * @return Offset of samplers.
+         */
+        size_t bindMaterialTextures(const Ref<IMaterial>& material) noexcept;
+        
+        void unbindMaterialTextures(const Ref<IMaterial>& material) noexcept;
+        
+        /**
+         * Bind all vector of m_textureBindings.
+         * @param samplersOffset - Offset to start bind texture bindings.
+         * @return Offset after bind.
+         */
+        size_t bindTextureBindings(const size_t& samplersOffset) noexcept;
+        
         // ==========================================
-
-        void addTexture(const Ref<ITexture2D>& texture2D) noexcept;
-        void addTexture(const Ref<ITexture2D>& texture2D, SGTextureType textureType) noexcept;
-        void removeTexture(const Ref<ITexture2D>& texture2D) noexcept;
-
-        void collectTexturesFromMaterial(const Ref<IMaterial>& material) noexcept;
-
-        void onTexturesCountChanged() noexcept;
-
+        
+        /*size_t getTexturesCount() const noexcept
+        {
+            size_t cnt = 0;
+            for(const auto& block : m_texturesBlocks)
+            {
+                cnt += block->getTextures().size();
+            }
+            
+            return cnt;
+        }*/
+        
+        std::vector<ShaderTextureBinding> m_textureBindings;
+        
         ISubPassShader& operator=(const ISubPassShader&) noexcept;
     protected:
-        std::vector<Ref<TexturesBlock>> m_texturesBlocks;
-
         std::unordered_map<std::string, IShaderUniform> m_uniforms;
 
         std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;

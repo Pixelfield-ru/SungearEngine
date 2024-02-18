@@ -84,15 +84,11 @@ void SGCore::GL46SubPassShader::compile(Ref<FileAsset> fileAsset)
     }
 
     m_cachedLocations.clear();
-
-    onTexturesCountChanged();
 }
 
 void SGCore::GL46SubPassShader::bind() noexcept
 {
     glUseProgram(m_programHandler);
-
-    bindTexturesBlocks();
 }
 
 // TODO: watch SGP1
@@ -259,6 +255,11 @@ void SGCore::GL46SubPassShader::useTextureBlock(const std::string& uniformName, 
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, textureBlock);
+}
+
+bool SGCore::GL46SubPassShader::isUniformExists(const std::string& uniformName) const noexcept
+{
+    return glGetUniformLocation(m_programHandler, uniformName.c_str()) != -1;
 }
 
 /*
