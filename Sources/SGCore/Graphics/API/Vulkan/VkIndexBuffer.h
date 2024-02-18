@@ -20,7 +20,7 @@ namespace SGCore
         void destroy() noexcept final;
 
         std::shared_ptr<IIndexBuffer> putData(std::vector<std::uint32_t> data) noexcept final;
-        std::shared_ptr<IIndexBuffer> subData(std::vector<std::uint32_t> data, const int& offset) noexcept final;
+        void subData(std::vector<std::uint32_t> data, const int& offset) noexcept final;
         std::shared_ptr<IIndexBuffer> bind() noexcept final;
 
         std::shared_ptr<IIndexBuffer> setUsage(SGGUsage) noexcept final;

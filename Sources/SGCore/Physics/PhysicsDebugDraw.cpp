@@ -6,21 +6,23 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IVertexArray.h"
 #include "SGCore/Graphics/API/IVertexBuffer.h"
+#include "SGCore/Graphics/API/IIndexBuffer.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Graphics/API/IVertexBufferLayout.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
-#include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Camera.h"
 #include "SGCore/Transformations/Transform.h"
+#include "SGCore/Scene/Scene.h"
 
 SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
 {
     m_linesPositions.resize(m_maxLines * 6);
     m_linesColors.resize(m_maxLines * 6);
+    m_linesIndices.resize(m_maxLines * 2);
     
     m_linesVertexArray = std::shared_ptr<IVertexArray>(CoreMain::getRenderer()->createVertexArray());
     m_linesVertexArray->create()->bind();
@@ -61,42 +63,74 @@ SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
     
     // ==============================================
     
+    for(std::uint32_t i = 0; i < m_maxLines; i += 2)
+    {
+        m_linesIndices[i] = i;
+        m_linesIndices[i + 1] = i + 1;
+    }
+    
+    m_linesIndexBuffer = Ref<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
+    m_linesIndexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_linesIndices);
+    
+    // ==============================================
+    
     RenderPipelinesManager::subscribeToRenderPipelineSetEvent(m_onRenderPipelineSetEventListener);
     
     // ==============================================
     
-    m_renderInfo.m_useIndices = false;
-    m_renderInfo.m_drawMode = SGDrawMode::SGG_LINES;
+    m_linesRenderInfo.m_useIndices = true;
+    m_linesRenderInfo.m_drawMode = SGDrawMode::SGG_LINES;
+    
+    if(RenderPipelinesManager::getCurrentRenderPipeline())
+    {
+        m_linesShader = MakeRef<IShader>();
+        m_linesShader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(
+                RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths.getByVirtualPath("PhysicsLinesDebugDrawShader").getCurrentRealization()));
+    }
 }
 
 void SGCore::PhysicsDebugDraw::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
 {
     size_t lineStartIdx = m_currentDrawingLine * 6;
     
-    m_linesPositions[lineStartIdx] = from.getX();
-    m_linesPositions[lineStartIdx + 1] = from.getY();
-    m_linesPositions[lineStartIdx + 2] = from.getZ();
+    if(m_linesPositions[lineStartIdx] != from.getX() ||
+       m_linesPositions[lineStartIdx + 1] != from.getY() ||
+       m_linesPositions[lineStartIdx + 2] != from.getZ() ||
+       m_linesPositions[lineStartIdx + 3] != to.getX() ||
+       m_linesPositions[lineStartIdx + 4] != to.getY() ||
+       m_linesPositions[lineStartIdx + 5] != to.getZ())
+    {
+        m_linesPositions[lineStartIdx] = from.getX();
+        m_linesPositions[lineStartIdx + 1] = from.getY();
+        m_linesPositions[lineStartIdx + 2] = from.getZ();
+        
+        m_linesPositions[lineStartIdx + 3] = to.getX();
+        m_linesPositions[lineStartIdx + 4] = to.getY();
+        m_linesPositions[lineStartIdx + 5] = to.getZ();
+        
+        m_linesPositionsVertexBuffer->bind();
+        m_linesPositionsVertexBuffer->subData(
+                { from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ() },
+                lineStartIdx);
+    }
     
-    m_linesPositions[lineStartIdx + 3] = to.getX();
-    m_linesPositions[lineStartIdx + 4] = to.getY();
-    m_linesPositions[lineStartIdx + 5] = to.getZ();
-    
-    m_linesPositionsVertexBuffer->bind();
-    m_linesPositionsVertexBuffer->subData({ from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ() },
-                                          lineStartIdx);
-    
-    m_linesColors[lineStartIdx] = color.getX();
-    m_linesColors[lineStartIdx + 1] = color.getY();
-    m_linesColors[lineStartIdx + 2] = color.getZ();
-    
-    m_linesColors[lineStartIdx + 3] = color.getX();
-    m_linesColors[lineStartIdx + 4] = color.getY();
-    m_linesColors[lineStartIdx + 5] = color.getZ();
-    
-    m_linesColorsVertexBuffer->bind();
-    m_linesColorsVertexBuffer->subData(
-            { color.getX(), color.getY(), color.getZ(), color.getX(), color.getY(), color.getZ() },
-            lineStartIdx);
+    if(m_linesColors[lineStartIdx] != color.getX() ||
+       m_linesColors[lineStartIdx + 1] != color.getY() ||
+       m_linesColors[lineStartIdx + 2] != color.getZ())
+    {
+        m_linesColors[lineStartIdx] = color.getX();
+        m_linesColors[lineStartIdx + 1] = color.getY();
+        m_linesColors[lineStartIdx + 2] = color.getZ();
+        
+        m_linesColors[lineStartIdx + 3] = color.getX();
+        m_linesColors[lineStartIdx + 4] = color.getY();
+        m_linesColors[lineStartIdx + 5] = color.getZ();
+        
+        m_linesColorsVertexBuffer->bind();
+        m_linesColorsVertexBuffer->subData(
+                { color.getX(), color.getY(), color.getZ(), color.getX(), color.getY(), color.getZ() },
+                lineStartIdx);
+    }
     
     ++m_currentDrawingLine;
 }
@@ -127,28 +161,23 @@ int SGCore::PhysicsDebugDraw::getDebugMode() const
     return m_debugMode;
 }
 
-void SGCore::PhysicsDebugDraw::drawAll()
+void SGCore::PhysicsDebugDraw::drawAll(const Ref<Scene>& scene)
 {
     auto subPassShader = m_linesShader->getSubPassShader("PhysicsLinesDebugPass");
     
     if(!subPassShader) return;
     
     subPassShader->bind();
-
-    for(const auto& scene : Scene::getScenes())
-    {
-        auto camerasView = scene->getECSRegistry().view<RenderingBase, Camera, Transform>();
+    
+    auto camerasView = scene->getECSRegistry().view<RenderingBase, Camera, Transform>();
+    
+    camerasView.each([this, &subPassShader](RenderingBase& renderingBase, Camera& camera, Transform& transform) {
+        CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
+        subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
         
-        camerasView.each([this](RenderingBase& renderingBase, Camera& camera, Transform& transform) {
-            CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
-            
-            CoreMain::getRenderer()->renderArray(m_linesVertexArray, m_renderInfo, m_maxLines * 6, m_maxLines * 6);
-        });
-    }
-}
-
-void SGCore::PhysicsDebugDraw::cleanup()
-{
+        CoreMain::getRenderer()->renderArray(m_linesVertexArray, m_linesRenderInfo, m_currentDrawingLine * 6, m_currentDrawingLine * 2);
+    });
+    
     m_currentDrawingLine = 0;
 }
 

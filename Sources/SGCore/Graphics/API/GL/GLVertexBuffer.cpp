@@ -50,21 +50,19 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::putData
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::subData
+void SGCore::GLVertexBuffer::subData
 (const std::vector<float>& data, const size_t& offset) noexcept
 {
-    if(data.empty()) return shared_from_this();
+    if(data.empty()) return;
 
-    m_data.insert(m_data.begin() + offset, data.begin(), data.end());
+    // m_data.insert(m_data.begin() + offset, data.begin(), data.end());
 
-    glBufferSubData(GL_ARRAY_BUFFER, offset, (GLsizeiptr) (m_data.size() * sizeof(m_data[0])),
-                    &m_data[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (data.size() * sizeof(data[0])),
+                    &data[0]);
 
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();
     #endif
-
-    return shared_from_this();
 }
 
 std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::bind() noexcept

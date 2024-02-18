@@ -27,7 +27,7 @@ namespace SGCore
         void destroy() noexcept override;
 
         std::shared_ptr<IVertexBuffer> putData(const std::vector<float>& data) noexcept override;
-        std::shared_ptr<IVertexBuffer> subData(const std::vector<float>& data, const size_t& offset) noexcept override;
+        void subData(const std::vector<float>& data, const size_t& offset) noexcept override;
         std::shared_ptr<IVertexBuffer> bind() noexcept override;
 
         std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) noexcept override;

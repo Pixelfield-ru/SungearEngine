@@ -24,10 +24,10 @@ std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::putData(std::vector
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::subData
+void SGCore::VkIndexBuffer::subData
 (std::vector<std::uint32_t> data, const int& offset) noexcept
 {
-    return shared_from_this();
+
 }
 
 std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::bind() noexcept

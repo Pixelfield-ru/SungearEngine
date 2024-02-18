@@ -17,14 +17,20 @@ namespace SGCore
     class IVertexArray;
     class IVertexBuffer;
     class IShader;
+    class IIndexBuffer;
+    class Scene;
     
     struct PhysicsDebugDraw : btIDebugDraw
     {
     private:
         int m_debugMode = 0;
         
-        size_t m_maxLines = 3000;
-        size_t m_currentDrawingLine = 0;
+        std::uint32_t m_maxLines = 24000;
+        std::uint32_t m_currentDrawingLine = 0;
+        
+        std::vector<float> m_linesPositions;
+        std::vector<float> m_linesColors;
+        std::vector<std::uint32_t> m_linesIndices;
         
         EventListener<void()> m_onRenderPipelineSetEventListener = MakeEventListener<void()>([this]() {
             onRenderPipelineSet();
@@ -34,37 +40,13 @@ namespace SGCore
     public:
         PhysicsDebugDraw();
         
-        struct PhysicsDebugLine
-        {
-            btVector3 m_from;
-            btVector3 m_to;
-            
-            PhysicsDebugLine(btVector3 f, btVector3 t)
-            {
-                m_from = f;
-                m_to = t;
-            }
-        };
-        
-        std::vector<float> m_linesPositions;
-        std::vector<float> m_linesColors;
-        
-        struct PhysicsDebugColor
-        {
-            btVector3 m_color;
-            
-            PhysicsDebugColor(btVector3 c)
-            {
-                m_color = c;
-            }
-        };
-        
         Ref<IVertexArray> m_linesVertexArray;
         Ref<IVertexBuffer> m_linesPositionsVertexBuffer;
         Ref<IVertexBuffer> m_linesColorsVertexBuffer;
+        Ref<IIndexBuffer> m_linesIndexBuffer;
         Ref<IShader> m_linesShader;
         
-        MeshDataRenderInfo m_renderInfo;
+        MeshDataRenderInfo m_linesRenderInfo;
         
         void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override;
         
@@ -78,8 +60,7 @@ namespace SGCore
         
         int getDebugMode() const override;
         
-        void drawAll();
-        void cleanup();
+        void drawAll(const Ref<Scene>& scene);
     };
 }
 

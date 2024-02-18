@@ -40,7 +40,7 @@
 #include "SGUtils/Noise/PerlinNoise.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
-#include "SGCore/Physics/Physics.h"
+#include "SGCore/Physics/PhysicsWorld.h"
 #include "SGCore/Physics/PhysicsDebugDraw.h"
 
 btDefaultCollisionConfiguration* m_pCollisionConfiguration = new btDefaultCollisionConfiguration;
@@ -769,8 +769,27 @@ auto testCollapsingHeader = std::make_shared<SGCore::ImGuiWrap::CollapsingHeader
 
 void update()
 {
-    ((SGCore::PhysicsDebugDraw*) (SGCore::Physics::getDebugDraw().get()))->drawAll();
-    ((SGCore::PhysicsDebugDraw*) (SGCore::Physics::getDebugDraw().get()))->cleanup();
+    /*auto physicsWorld = testScene->getSystem<SGCore::PhysicsWorld>();
+    auto d0 = glfwGetTime();
+    for(size_t i = 0; i < 12000; ++i)
+    {
+        physicsWorld->getDebugDraw()->drawLine({ 0, 0, 0 }, { i / 100.0, i / 100.0, 0 }, { i / 3000.0, 0.0, 0.0 });
+    }
+    auto d1 = glfwGetTime();
+    std::cout << (d1 - d0) * 1000.0 << std::endl;*/
+    
+    /*auto d0 = glfwGetTime();
+    SGCore::PhysicsWorld::getDebugDraw()->drawLine({ 0, 10, 0 }, { 0, 20, 0 }, { 1.0, 0.0, 0.0 });
+    auto d1 = glfwGetTime();
+    
+    std::cout << (d1 - d0) * 1000.0 << std::endl;*/
+    
+    // testScene->getSystem<SGCore::PhysicsWorld>()->getDebugDraw()->drawLine({ 0, 10, 0 }, { 0, 20, 0 }, { 1.0, 0.0, 0.0 });
+    
+    /*SGCore::PhysicsWorld::getDebugDraw()->drawLine({ 0, 10, 0 }, { 0, 20, 0 }, { 1.0, 0.0, 0.0 });
+    SGCore::PhysicsWorld::getDebugDraw()->drawLine({ 0, 20, 0 }, { 10, 20, 0 }, { 0.0, 1.0, 0.0 });
+    SGCore::PhysicsWorld::getDebugDraw()->drawLine({ 10, 20, 0 }, { 10, 10, 0 }, { 0.0, 0.0, 1.0 });
+    SGCore::PhysicsWorld::getDebugDraw()->drawLine({ 10, 10, 0 }, { 0, 10, 0 }, { 1.0, 0.0, 1.0 });*/
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F11))
     {

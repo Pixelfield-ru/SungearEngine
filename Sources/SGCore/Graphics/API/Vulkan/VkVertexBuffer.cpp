@@ -24,10 +24,10 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::putData(const std
     return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IVertexBuffer>
+void
 SGCore::VkVertexBuffer::subData(const std::vector<float>& data, const size_t& offset) noexcept
 {
-    return shared_from_this();
+
 }
 
 std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::bind() noexcept

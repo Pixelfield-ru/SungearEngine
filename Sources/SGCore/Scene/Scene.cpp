@@ -17,6 +17,7 @@
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 #include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
+#include "SGCore/Physics/PhysicsWorld.h"
 
 SGCore::Scene::Scene()
 {
@@ -59,8 +60,14 @@ void SGCore::Scene::createDefaultSystems()
 
     auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();
     m_systems.emplace(sphereGizmosUpdater);
-    
 
+    // -------------
+    
+    // physics
+    
+    auto physicsWorld = MakeRef<PhysicsWorld>();
+    m_systems.emplace(physicsWorld);
+    
     // -------------
     
     for(auto& system : m_systems)

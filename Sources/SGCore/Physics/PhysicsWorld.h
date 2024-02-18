@@ -2,10 +2,8 @@
 // Created by ilya on 18.02.24.
 //
 
-#ifndef SUNGEARENGINE_PHYSICS_H
-#define SUNGEARENGINE_PHYSICS_H
-
-#include "SGCore/Main/CoreGlobals.h"
+#ifndef SUNGEARENGINE_PHYSICSWORLD_H
+#define SUNGEARENGINE_PHYSICSWORLD_H
 
 #include <BulletCollision/CollisionDispatch/btCollisionConfiguration.h>
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
@@ -17,50 +15,57 @@
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <LinearMath/btIDebugDraw.h>
 
+#include "SGCore/Scene/Scene.h"
+#include "SGCore/Main/CoreGlobals.h"
+#include "PhysicsDebugDraw.h"
+
 namespace SGCore
 {
-    struct Physics
+    struct PhysicsWorld : public ISystem
     {
-        static void init() noexcept;
+        PhysicsWorld();
+        ~PhysicsWorld();
         
-        static auto& getCollisionConfig() noexcept
+        void update() noexcept override;
+        
+        auto* getCollisionConfig() noexcept
         {
             return m_collisionConfig;
         }
         
-        static auto& getCollisionDispatcher() noexcept
+        auto* getCollisionDispatcher() noexcept
         {
             return m_collisionDispatcher;
         }
         
-        static auto& getOverlappingPairCache() noexcept
+        auto* getOverlappingPairCache() noexcept
         {
             return m_overlappingPairCache;
         }
         
-        static auto& getSequentialImpulseConstraintSolver() noexcept
+        auto* getSequentialImpulseConstraintSolver() noexcept
         {
             return m_sequentialImpulseConstraintSolver;
         }
         
-        static auto& getDiscreteDynamicsWorld() noexcept
+        auto* getDiscreteDynamicsWorld() noexcept
         {
             return m_discreteDynamicsWorld;
         }
         
-        static auto& getDebugDraw() noexcept
+        auto& getDebugDraw() noexcept
         {
             return m_debugDraw;
         }
     
     private:
-        static inline Scope<btCollisionConfiguration> m_collisionConfig;
-        static inline Scope<btCollisionDispatcher> m_collisionDispatcher;
-        static inline Scope<btBroadphaseInterface> m_overlappingPairCache;
-        static inline Scope<btSequentialImpulseConstraintSolver> m_sequentialImpulseConstraintSolver;
-        static inline Scope<btDiscreteDynamicsWorld> m_discreteDynamicsWorld;
-        static inline Scope<btIDebugDraw> m_debugDraw;
+        btCollisionConfiguration* m_collisionConfig = nullptr;
+        btCollisionDispatcher* m_collisionDispatcher = nullptr;
+        btBroadphaseInterface* m_overlappingPairCache = nullptr;
+        btSequentialImpulseConstraintSolver* m_sequentialImpulseConstraintSolver = nullptr;
+        btDiscreteDynamicsWorld* m_discreteDynamicsWorld = nullptr;
+        PhysicsDebugDraw* m_debugDraw = nullptr;
     };
 }
 
-#endif // SUNGEARENGINE_PHYSICS_H
+#endif // SUNGEARENGINE_PHYSICSWORLD_H
