@@ -17,7 +17,7 @@
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 #include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
-#include "SGCore/Physics/PhysicsWorld.h"
+#include "SGCore/Physics/PhysicsWorld3D.h"
 
 SGCore::Scene::Scene()
 {
@@ -65,7 +65,7 @@ void SGCore::Scene::createDefaultSystems()
     
     // physics
     
-    auto physicsWorld = MakeRef<PhysicsWorld>();
+    auto physicsWorld = MakeRef<PhysicsWorld3D>();
     addSystem(physicsWorld);
     
     // -------------

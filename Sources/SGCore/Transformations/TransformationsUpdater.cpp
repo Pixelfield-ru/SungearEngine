@@ -5,18 +5,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "TransformationsUpdater.h"
 #include "TransformBase.h"
-#include "glm/ext/matrix_transform.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 #include "SGCore/Scene/Scene.h"
-#include "GLFW/glfw3.h"
 #include "TransformationsUtils.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
-#include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
-
-/*double curT = 0.0;
-double accum = 0.0;
-size_t fps = 0;*/
+#include "SGCore/Physics/Rigidbody3D.h"
+#include "SGCore/Physics/PhysicsWorld3D.h"
 
 void SGCore::TransformationsUpdater::fixedUpdate()
 {
@@ -36,15 +31,13 @@ void SGCore::TransformationsUpdater::fixedUpdate()
             parentTransform = registry.try_get<Transform>(entityBaseInfo->m_parent);
         }
 
-        //TransformationsUtils::updateTransform(transform, parentTransform);
-
         bool translationChanged = false;
         bool rotationChanged = false;
         bool scaleChanged = false;
 
         TransformBase& ownTransform = transform.m_ownTransform;
         TransformBase& finalTransform = transform.m_finalTransform;
-
+        
         // translation ==============================================
 
         if(ownTransform.m_lastPosition != ownTransform.m_position)
@@ -146,14 +139,22 @@ void SGCore::TransformationsUpdater::fixedUpdate()
         
         transform.m_transformChanged = modelMatrixChanged;
         bool isTransformNeedsPatch = modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged);
+        // transform.m_transformChanged = isTransformNeedsPatch;
         
         if(isTransformNeedsPatch)
         {
             registry.patch<Transform>(entity);
         }
+        else
+        {
+            if(registry.any_of<Rigidbody3D>(entity))
+            {
+                registry.patch<Rigidbody3D>(entity);
+            }
+        }
     });
 
-    m_observer.each([&registry, this](const entt::entity& entity) {
+    m_transformUpdateObserver.each([&registry, this](const entt::entity& entity) {
         Transform* entityTransform = registry.try_get<Transform>(entity);
         EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
         Transform* entityParentTransform = nullptr;
@@ -180,15 +181,110 @@ void SGCore::TransformationsUpdater::fixedUpdate()
             {
                 finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
             }
+            
+            Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+            if(rigidbody3D)
+            {
+                btTransform initialTransform;
+                initialTransform.setIdentity();
+                initialTransform.setFromOpenGLMatrix((float*) &finalTransform.m_modelMatrix[0]);
+                rigidbody3D->m_body->setWorldTransform(initialTransform);
+            }
         }
     });
     
-    m_observer.clear();
+    m_transformUpdateObserver.clear();
+    
+    m_rigidbody3DUpdateObserver.each([&registry, this](const entt::entity& entity) {
+        Transform* entityTransform = registry.try_get<Transform>(entity);
+        EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
+        Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+        Transform* entityParentTransform = nullptr;
+        
+        if(entityBaseInfo)
+        {
+            entityParentTransform = registry.try_get<Transform>(entityBaseInfo->m_parent);
+        }
+        
+        if(rigidbody3D && entityTransform)
+        {
+            btTransform& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
+            TransformBase& ownTransform = entityTransform->m_ownTransform;
+            TransformBase& finalTransform = entityTransform->m_finalTransform;
+            
+            // ============================
+            
+            ownTransform.m_position = { rigidbody3DTransform.getOrigin().x(), rigidbody3DTransform.getOrigin().y(), rigidbody3DTransform.getOrigin().z() };
+            rigidbody3DTransform.getRotation().getEulerZYX(ownTransform.m_rotation.z, ownTransform.m_rotation.y, ownTransform.m_rotation.x);
+            
+            bool changed = false;
+            
+            if(ownTransform.m_position != ownTransform.m_lastPosition)
+            {
+                ownTransform.m_translationMatrix = glm::translate(ownTransform.m_translationMatrix,
+                                                                  ownTransform.m_position -
+                                                                  ownTransform.m_lastPosition
+                );
+                
+                ownTransform.m_lastPosition = ownTransform.m_position;
+                
+                changed = true;
+            }
+            
+            if(ownTransform.m_rotation != ownTransform.m_lastRotation)
+            {
+                const float rotDifX = ownTransform.m_rotation.x - ownTransform.m_lastRotation.x;
+                const float rotDifY = ownTransform.m_rotation.y - ownTransform.m_lastRotation.y;
+                const float rotDifZ = ownTransform.m_rotation.z - ownTransform.m_lastRotation.z;
+                
+                ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
+                                                            -glm::radians(rotDifX),
+                                                            glm::vec3(1, 0, 0));
+                
+                ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
+                                                            -glm::radians(rotDifY),
+                                                            glm::vec3(0, 1, 0));
+                ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
+                                                            -glm::radians(rotDifZ),
+                                                            glm::vec3(0, 0, 1));
+                
+                ownTransform.m_lastRotation = ownTransform.m_rotation;
+                
+                changed = true;
+            }
+            
+            // if(entityTransform->m_transformChanged)
+            
+            {
+                ownTransform.m_modelMatrix =
+                        ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
+            }
+            
+            if(entityParentTransform)
+            {
+                // if(entityTransform->m_transformChanged || entityParentTransform->m_transformChanged)
+                {
+                    finalTransform.m_modelMatrix =
+                            entityParentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
+                }
+            }
+            else
+            {
+                // if(entityTransform->m_transformChanged)
+                {
+                    finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
+                }
+            }
+        }
+    });
+    
+    m_rigidbody3DUpdateObserver.clear();
 }
 
 void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
 {
     m_scene = scene;
     
-    m_observer.connect(scene->getECSRegistry(), entt::basic_collector<>::update<Transform>());
+    m_transformUpdateObserver.connect(scene->getECSRegistry(), entt::basic_collector<>::update<Transform>());
+    m_rigidbody3DUpdateObserver.connect(scene->getECSRegistry(), entt::basic_collector<>::update<Rigidbody3D>());
 }

@@ -3,7 +3,7 @@
 //
 
 #ifndef SUNGEARENGINE_PHYSICSWORLD_H
-#define SUNGEARENGINE_PHYSICSWORLD_H
+#define SUNGEARENGINE_PHYSICSWORLD3D_H
 
 #include <BulletCollision/CollisionDispatch/btCollisionConfiguration.h>
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
@@ -21,37 +21,40 @@
 
 namespace SGCore
 {
-    struct PhysicsWorld : public ISystem
+    struct PhysicsWorld3D : public ISystem
     {
-        PhysicsWorld();
-        ~PhysicsWorld();
+        PhysicsWorld3D();
+        // ~PhysicsWorld();
+        
+        void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
         
         void update() noexcept override;
+        void fixedUpdate() noexcept override;
         void onAddToScene() override;
         
-        auto* getCollisionConfig() noexcept
+        auto& getCollisionConfig() noexcept
         {
             return m_collisionConfig;
         }
         
-        auto* getCollisionDispatcher() noexcept
+        auto& getCollisionDispatcher() noexcept
         {
             return m_collisionDispatcher;
         }
         
-        auto* getOverlappingPairCache() noexcept
+        auto& getOverlappingPairCache() noexcept
         {
             return m_overlappingPairCache;
         }
         
-        auto* getSequentialImpulseConstraintSolver() noexcept
+        auto& getSequentialImpulseConstraintSolver() noexcept
         {
             return m_sequentialImpulseConstraintSolver;
         }
         
-        auto* getDiscreteDynamicsWorld() noexcept
+        auto& getDynamicsWorld() noexcept
         {
-            return m_discreteDynamicsWorld;
+            return m_dynamicsWorld;
         }
         
         auto& getDebugDraw() noexcept
@@ -60,12 +63,12 @@ namespace SGCore
         }
     
     private:
-        btCollisionConfiguration* m_collisionConfig = nullptr;
-        btCollisionDispatcher* m_collisionDispatcher = nullptr;
-        btBroadphaseInterface* m_overlappingPairCache = nullptr;
-        btSequentialImpulseConstraintSolver* m_sequentialImpulseConstraintSolver = nullptr;
-        btDiscreteDynamicsWorld* m_discreteDynamicsWorld = nullptr;
-        PhysicsDebugDraw* m_debugDraw = nullptr;
+        Scope<btCollisionConfiguration> m_collisionConfig;
+        Scope<btCollisionDispatcher> m_collisionDispatcher;
+        Scope<btBroadphaseInterface> m_overlappingPairCache;
+        Scope<btSequentialImpulseConstraintSolver> m_sequentialImpulseConstraintSolver;
+        Scope<btDynamicsWorld> m_dynamicsWorld;
+        Scope<PhysicsDebugDraw> m_debugDraw;
     };
 }
 

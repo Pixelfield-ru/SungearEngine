@@ -19,10 +19,10 @@ namespace SGCore
     struct TransformationsUpdater : public ISystem
     {
         void fixedUpdate() final;
-     
-        void setScene(const Ref<Scene>& scene) noexcept final;
         
+        void setScene(const Ref<Scene>& scene) noexcept final;
     private:
-        entt::observer m_observer;
+        entt::observer m_transformUpdateObserver;
+        entt::observer m_rigidbody3DUpdateObserver;
     };
 }

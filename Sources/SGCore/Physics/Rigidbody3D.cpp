@@ -2,43 +2,39 @@
 // Created by ilya on 19.02.24.
 //
 #include "Rigidbody3D.h"
-#include "PhysicsWorld.h"
+#include "PhysicsWorld3D.h"
 #include "BulletCollision/btBulletCollisionCommon.h"
 
-SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<SGCore::PhysicsWorld>& physicsWorld)
+SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<SGCore::PhysicsWorld3D>& physicsWorld)
 {
     m_parentPhysicsWorld = physicsWorld;
     
-    m_motionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
-    btRigidBody::btRigidBodyConstructionInfo m_constructionInfo =
-            btRigidBody::btRigidBodyConstructionInfo(5, m_motionState, nullptr, btVector3(0, 0, 0));
-    m_rigidBody = new btRigidBody(m_constructionInfo);
-    // m_rigidBody->setMassProps(btScalar(0.),btVector3(btScalar(0.),btScalar(0.),btScalar(0.)));
+    m_state = MakeRef<btDefaultMotionState>(btTransform());
+    m_shape = MakeRef<btSphereShape>(0.5f);
+    m_shape->setUnscaledRadius(5);
+    btRigidBody::btRigidBodyConstructionInfo constructionInfo =
+            btRigidBody::btRigidBodyConstructionInfo(25, m_state.get(), m_shape.get(), btVector3(0, 0, 0));
+    m_body = MakeRef<btRigidBody>(constructionInfo);
+    m_body->setFlags(m_body->getFlags() | btCollisionObject::CF_DYNAMIC_OBJECT);
     
-    physicsWorld->getDiscreteDynamicsWorld()->addRigidBody(m_rigidBody);
+    physicsWorld->getDynamicsWorld()->addRigidBody(m_body.get());
+    // m_body->activate(true);
+    
+    std::cout << "created" << std::endl;
 }
 
 SGCore::Rigidbody3D::~Rigidbody3D()
 {
-    auto lockedPhysicsWorld = m_parentPhysicsWorld.lock();
-    
-    if(m_rigidBody)
+    if(auto lockedWorld = m_parentPhysicsWorld.lock())
     {
-        if(lockedPhysicsWorld)
+        if(m_body.use_count() == 1)
         {
-            /*int num = m_rigidBody->getNumConstraintRefs();
-            for(int j = 0;j < num; ++j)
-            {
-                lockedPhysicsWorld->getDiscreteDynamicsWorld()->removeConstraint(m_rigidBody->getConstraintRef(0));
-            }*/
-            lockedPhysicsWorld->getDiscreteDynamicsWorld()->removeRigidBody(m_rigidBody);
+            lockedWorld->removeBody(m_body);
         }
-        
-        
-        // delete m_rigidBody->getMotionState();
-        // delete m_rigidBody->getCollisionShape();
-        //
-        // delete m_rigidBody;
     }
 }
 
+SGCore::Weak<SGCore::PhysicsWorld3D> SGCore::Rigidbody3D::getParentPhysicsWorld() const noexcept
+{
+    return m_parentPhysicsWorld;
+}

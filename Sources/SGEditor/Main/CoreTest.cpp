@@ -40,7 +40,7 @@
 #include "SGUtils/Noise/PerlinNoise.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
-#include "SGCore/Physics/PhysicsWorld.h"
+#include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/Physics/PhysicsDebugDraw.h"
 #include "SGCore/Physics/Rigidbody3D.h"
 
@@ -209,9 +209,9 @@ void init()
     sphereTransform->m_ownTransform.m_rotation = { 0, 0, 0 };
     sphereTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1.0 };
     
-    SGCore::Rigidbody3D sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[0], testScene->getSystem<SGCore::PhysicsWorld>());
-    testScene->getECSRegistry().remove<SGCore::Rigidbody3D>(sphereEntities[0]);
-    
+    SGCore::Rigidbody3D& sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
+    // testScene->getECSRegistry().remove<SGCore::Rigidbody3D>(sphereEntities[0]);
+
     SGCore::Mesh* sphereMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(sphereEntities[2]);
     sphereMesh->m_base.m_meshData->m_material->setMetallicFactor(1);
     sphereMesh->m_base.m_meshData->m_material->setRoughnessFactor(1);

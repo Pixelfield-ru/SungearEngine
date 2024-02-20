@@ -14,7 +14,7 @@
 #include "SGCore/Input/InputManager.h"
 
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "SGCore/Physics/PhysicsWorld.h"
+#include "SGCore/Physics/PhysicsWorld3D.h"
 
 void SGCore::CoreMain::start()
 {
