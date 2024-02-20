@@ -209,7 +209,7 @@ void init()
     sphereTransform->m_ownTransform.m_rotation = { 0, 0, 0 };
     sphereTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1.0 };
     
-    SGCore::Rigidbody3D& sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
+    SGCore::Rigidbody3D& sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[1], testScene->getSystem<SGCore::PhysicsWorld3D>());
     // testScene->getECSRegistry().remove<SGCore::Rigidbody3D>(sphereEntities[0]);
 
     SGCore::Mesh* sphereMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(sphereEntities[2]);
