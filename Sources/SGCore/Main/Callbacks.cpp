@@ -8,7 +8,7 @@ struct SGCallbacks
     SGWindowKeyCallback c_keyCallback;
     SGWindowMouseButtonCallback c_mouseButtonCallback;
     SGFixedUpdateCallback c_fixedUpdate;
-    SGFixedUpdateCallback c_update;
+    SGUpdateCallback c_update;
 };
 
 SGCallbacks sgCallbacks;
@@ -90,18 +90,18 @@ void sgCallWindowMouseButtonCallback(GLFWwindow* wnd, int key, int scanCode, int
     }
 }
 
-void sgCallFixedUpdateCallback()
+void sgCallFixedUpdateCallback(const double& dt, const double& fixedDt)
 {
     if(sgCallbacks.c_fixedUpdate)
     {
-        sgCallbacks.c_fixedUpdate();
+        sgCallbacks.c_fixedUpdate(dt, fixedDt);
     }
 }
 
-void sgCallUpdateCallback()
+void sgCallUpdateCallback(const double& dt)
 {
     if(sgCallbacks.c_update)
     {
-        sgCallbacks.c_update();
+        sgCallbacks.c_update(dt);
     }
 }

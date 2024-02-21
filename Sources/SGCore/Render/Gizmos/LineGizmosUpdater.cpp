@@ -8,7 +8,7 @@
 #include "SGCore/Render/MeshBuilder.h"
 #include "LineGizmo.h"
 
-void SGCore::LineGizmosUpdater::fixedUpdate()
+void SGCore::LineGizmosUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;

@@ -13,14 +13,17 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "Controllable3D.h"
 
-void SGCore::Controllables3DUpdater::fixedUpdate()
+void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
+    float finalDt = dt * 300.0f;
+    // finalDt = 1.0f;
+    
     auto controllablesView = lockedScene->getECSRegistry().view<Transform, Controllable3D>();
 
-    controllablesView.each([](Transform& transform, Controllable3D& controllable3D) {
+    controllablesView.each([&finalDt](Transform& transform, Controllable3D& controllable3D) {
         TransformBase& ownTransform = transform.m_ownTransform;
 
         if(!ownTransform.m_blockRotation)
@@ -81,19 +84,19 @@ void SGCore::Controllables3DUpdater::fixedUpdate()
 
         if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_W))
         {
-            ownTransform.m_position -= rotatedForward * finalCameraSpeed;
+            ownTransform.m_position -= rotatedForward * finalCameraSpeed * finalDt;
         }
         if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_S))
         {
-            ownTransform.m_position += rotatedForward * finalCameraSpeed;
+            ownTransform.m_position += rotatedForward * finalCameraSpeed * finalDt;
         }
         if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_A))
         {
-            ownTransform.m_position += rotatedLeft * finalCameraSpeed;
+            ownTransform.m_position += rotatedLeft * finalCameraSpeed * finalDt;
         }
         if(InputManager::getMainInputListener()->keyboardKeyDown(KEY_D))
         {
-            ownTransform.m_position -= rotatedLeft * finalCameraSpeed;
+            ownTransform.m_position -= rotatedLeft * finalCameraSpeed * finalDt;
         }
 
         if(InputManager::getMainInputListener()->keyboardKeyReleased(KEY_ESCAPE))

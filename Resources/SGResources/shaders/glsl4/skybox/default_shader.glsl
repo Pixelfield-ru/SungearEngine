@@ -1,3 +1,5 @@
+#sg_pragma once
+
 #sg_include "../defines.glsl"
 #sg_include "../uniform_bufs_decl.glsl"
 

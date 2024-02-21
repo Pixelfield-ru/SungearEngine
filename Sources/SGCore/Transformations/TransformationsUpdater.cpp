@@ -13,8 +13,9 @@
 #include "SGCore/Physics/Rigidbody3D.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "glm/gtx/matrix_decompose.hpp"
+#include "glm/gtx/quaternion.hpp"
 
-void SGCore::TransformationsUpdater::fixedUpdate()
+void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
@@ -76,6 +77,7 @@ void SGCore::TransformationsUpdater::fixedUpdate()
             ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
                                                         -glm::radians(rotDifY),
                                                         glm::vec3(0, 1, 0));
+            
             ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
                                                         -glm::radians(rotDifZ),
                                                         glm::vec3(0, 0, 1));
@@ -143,8 +145,6 @@ void SGCore::TransformationsUpdater::fixedUpdate()
         
         if(transform.m_transformChanged)
         {
-            std::cout << "e : " << (std::uint32_t) (entity) << std::endl;
-            
             registry.patch<Transform>(entity);
         }
         else
@@ -187,10 +187,22 @@ void SGCore::TransformationsUpdater::fixedUpdate()
             Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
             if(rigidbody3D)
             {
+                glm::vec3 scale;
+                glm::quat rotation;
+                glm::vec3 translation;
+                glm::vec3 skew;
+                glm::vec4 perspective;
+                
+                glm::decompose(finalTransform.m_modelMatrix, scale, rotation, translation, skew, perspective);
+                
                 btTransform initialTransform;
                 initialTransform.setIdentity();
-                initialTransform.setFromOpenGLMatrix((float*) &finalTransform.m_modelMatrix[0]);
+                initialTransform.setOrigin({ translation.x, translation.y, translation.z });
+                initialTransform.setRotation({ rotation.x, rotation.y, rotation.z, rotation.w });
+                // initialTransform.setFromOpenGLMatrix((float*) &finalTransform.m_modelMatrix[0]);
                 rigidbody3D->m_body->setWorldTransform(initialTransform);
+                
+                // rigidbody3D->m_body->getCollisionShape()->setLocalScaling({ scale.x, scale.y, scale.z });
             }
         }
     });
@@ -223,7 +235,11 @@ void SGCore::TransformationsUpdater::fixedUpdate()
             
             if(entityParentTransform)
             {
-                glmRigidbody3DOwnModelMatrix /= entityParentTransform->m_finalTransform.m_modelMatrix;
+                glmRigidbody3DOwnModelMatrix /= entityParentTransform->m_finalTransform.m_translationMatrix * entityParentTransform->m_finalTransform.m_rotationMatrix;
+            }
+            else
+            {
+                glmRigidbody3DOwnModelMatrix /= ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix;
             }
             
             glm::vec3 scale;
@@ -234,21 +250,16 @@ void SGCore::TransformationsUpdater::fixedUpdate()
             
             glm::decompose(glmRigidbody3DOwnModelMatrix, scale, rotation, translation, skew, perspective);
             
-            // glm::decompose()
-            
             ownTransform.m_position = translation;
-            ownTransform.m_rotation = glm::eulerAngles(rotation);
-            // rigidbody3DTransform.getRotation().getEulerZYX(ownTransform.m_rotation.z, ownTransform.m_rotation.y, ownTransform.m_rotation.x);
+            ownTransform.m_rotation = glm::degrees(glm::eulerAngles(rotation));
+            // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
             
             bool translationChanged = false;
             bool rotationChanged = false;
             
             if(ownTransform.m_position != ownTransform.m_lastPosition)
             {
-                ownTransform.m_translationMatrix = glm::translate(ownTransform.m_translationMatrix,
-                                                                  ownTransform.m_position -
-                                                                  ownTransform.m_lastPosition
-                );
+                ownTransform.m_translationMatrix = glm::translate(glm::mat4(1.0), ownTransform.m_position);
                 
                 ownTransform.m_lastPosition = ownTransform.m_position;
                 
@@ -261,6 +272,8 @@ void SGCore::TransformationsUpdater::fixedUpdate()
                 const float rotDifY = ownTransform.m_rotation.y - ownTransform.m_lastRotation.y;
                 const float rotDifZ = ownTransform.m_rotation.z - ownTransform.m_lastRotation.z;
                 
+                // ownTransform.m_rotationMatrix = glm::toMat4(rotation);
+                
                 ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
                                                             -glm::radians(rotDifX),
                                                             glm::vec3(1, 0, 0));
@@ -268,6 +281,7 @@ void SGCore::TransformationsUpdater::fixedUpdate()
                 ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
                                                             -glm::radians(rotDifY),
                                                             glm::vec3(0, 1, 0));
+                
                 ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
                                                             -glm::radians(rotDifZ),
                                                             glm::vec3(0, 0, 1));
@@ -292,7 +306,7 @@ void SGCore::TransformationsUpdater::fixedUpdate()
                 
                 rotationChanged = true;
             }
-            
+
             entityTransform->m_transformChanged =
                     entityTransform->m_transformChanged || translationChanged || rotationChanged;
             

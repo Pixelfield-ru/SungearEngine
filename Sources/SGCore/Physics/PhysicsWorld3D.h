@@ -28,8 +28,8 @@ namespace SGCore
         
         void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
         
-        void update() noexcept override;
-        void fixedUpdate() noexcept override;
+        void update(const double& dt) noexcept override;
+        void fixedUpdate(const double& dt, const double& fixedDt) noexcept override;
         void onAddToScene() override;
         
         auto& getCollisionConfig() noexcept

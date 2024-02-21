@@ -87,40 +87,18 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::getCurrentScene() noexcept
 
 // ==================================================================
 
-void SGCore::Scene::fixedUpdate()
-{
-    double t0 = glfwGetTime();
-
-    // const auto& f = m_cachedComponentsCollections;
-
-    for(auto& system : m_systems)
-    {
-        if(!system->m_active) continue;
-
-        double before = glfwGetTime();
-        system->fixedUpdate();
-        double after = glfwGetTime();
-
-        system->m_fixedUpdate_executionTime = (after - before) * 1000.0;
-    }
-
-    double t1 = glfwGetTime();
-    
-    m_fixedUpdate_executionTime = (t1 - t0) * 1000.0f;
-}
-
-void SGCore::Scene::update()
+void SGCore::Scene::update(const double& dt)
 {
     double t0 = glfwGetTime();
     
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
-
+        
         double before = glfwGetTime();
-        system->update();
+        system->update(dt);
         double after = glfwGetTime();
-
+        
         system->m_update_executionTime = (after - before) * 1000.0;
     }
     
@@ -132,6 +110,28 @@ void SGCore::Scene::update()
     {
         RenderPipelinesManager::getCurrentRenderPipeline()->render(shared_from_this());
     }
+}
+
+void SGCore::Scene::fixedUpdate(const double& dt, const double& fixedDt)
+{
+    double t0 = glfwGetTime();
+
+    // const auto& f = m_cachedComponentsCollections;
+
+    for(auto& system : m_systems)
+    {
+        if(!system->m_active) continue;
+
+        double before = glfwGetTime();
+        system->fixedUpdate(dt, fixedDt);
+        double after = glfwGetTime();
+
+        system->m_fixedUpdate_executionTime = (after - before) * 1000.0;
+    }
+
+    double t1 = glfwGetTime();
+    
+    m_fixedUpdate_executionTime = (t1 - t0) * 1000.0f;
 }
 
 void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept

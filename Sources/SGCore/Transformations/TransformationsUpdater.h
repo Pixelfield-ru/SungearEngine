@@ -18,7 +18,7 @@ namespace SGCore
 
     struct TransformationsUpdater : public ISystem
     {
-        void fixedUpdate() final;
+        void fixedUpdate(const double& dt, const double& fixedDt) final;
         
         void setScene(const Ref<Scene>& scene) noexcept final;
     private:

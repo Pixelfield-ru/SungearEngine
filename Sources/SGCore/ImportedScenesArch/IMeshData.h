@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <entt/entity/entity.hpp>
+#include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -70,6 +71,8 @@ namespace SGCore
         std::vector<float> m_bitangents;
 
         Ref<IMaterial> m_material;
+        
+        Ref<btTriangleMesh> m_physicalMesh;
 
         // ----------------
         virtual void prepare() = 0;
@@ -97,6 +100,8 @@ namespace SGCore
          * @param[in] newMaterial The material to which the textures will be moved and which will be set as the current one.
          */
         void migrateAndSetNewMaterial(const Ref<IMaterial>& newMaterial) noexcept;
+        
+        void generatePhysicalMesh() noexcept;
 
         Ref<IVertexArray> getVertexArray() noexcept;
     };

@@ -9,7 +9,7 @@
 #include "BoxGizmo.h"
 #include "SGCore/Render/MeshBuilder.h"
 
-void SGCore::BoxGizmosUpdater::fixedUpdate()
+void SGCore::BoxGizmosUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;

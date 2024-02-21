@@ -9,6 +9,7 @@
 #include <LinearMath/btDefaultMotionState.h>
 #include <BulletCollision/CollisionShapes/btSphereShape.h>
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGUtils/Marker.h"
 
 namespace SGCore
 {
@@ -23,15 +24,31 @@ namespace SGCore
         ~Rigidbody3D();
         
         Ref<btMotionState> m_state;
-        Ref<btSphereShape> m_shape;
         Ref<btRigidBody> m_body;
+        Marker<int> m_bodyFlags;
+        
+        void setShape(const Ref<btCollisionShape>& shape) noexcept;
+        
+        [[nodiscard]] Ref<btCollisionShape> getShape() const noexcept;
+        
+        template<typename ShapeT>
+        requires(std::is_base_of_v<btCollisionShape, ShapeT>)
+        [[nodiscard]] Ref<ShapeT> getShapeAs() const noexcept
+        {
+            return std::dynamic_pointer_cast<ShapeT>(m_shape);
+        }
+        
+        [[nodiscard]] Weak<PhysicsWorld3D> getParentPhysicsWorld() const noexcept;
+        
+        void updateFlags() noexcept;
+        
+        void reAddToWorld() const noexcept;
         
         Rigidbody3D& operator=(const Rigidbody3D& other) noexcept = default;
         Rigidbody3D& operator=(Rigidbody3D&& other) noexcept = default;
         
-        Weak<PhysicsWorld3D> getParentPhysicsWorld() const noexcept;
-        
     private:
+        Ref<btCollisionShape> m_shape;
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;
     };
 }

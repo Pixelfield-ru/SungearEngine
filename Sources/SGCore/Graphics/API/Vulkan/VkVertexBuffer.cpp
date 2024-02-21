@@ -30,6 +30,11 @@ SGCore::VkVertexBuffer::subData(const std::vector<float>& data, const size_t& of
 
 }
 
+void SGCore::VkVertexBuffer::subData(float* data, const size_t& elementsCount, const size_t& offset) noexcept
+{
+
+}
+
 std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::bind() noexcept
 {
     return shared_from_this();

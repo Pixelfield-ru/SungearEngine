@@ -2,6 +2,7 @@
 #include <SGCore/Scene/EntityBaseInfo.h>
 #include <SGCore/Transformations/Transform.h>
 #include <SGCore/Render/Mesh.h>
+#include <LinearMath/btVector3.h>
 
 #include "IMeshData.h"
 
@@ -114,13 +115,6 @@ void SGCore::IMeshData::setData(const SGCore::Ref<SGCore::IMeshData>& other) noe
     other->m_material->copyTextures(m_material);
 }
 
-void SGCore::IMeshData::migrateAndSetNewMaterial
-(const Ref<IMaterial>& newMaterial) noexcept
-{
-    m_material->copyTextures(newMaterial);
-    m_material = newMaterial;
-}
-
 entt::entity SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
 {
     auto& registry = scene->getECSRegistry();
@@ -136,4 +130,27 @@ entt::entity SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::s
     // meshEntityMesh.m_base.m_meshData = shared_from_this();
     
     return meshEntity;
+}
+
+void SGCore::IMeshData::migrateAndSetNewMaterial
+        (const Ref<IMaterial>& newMaterial) noexcept
+{
+    m_material->copyTextures(newMaterial);
+    m_material = newMaterial;
+}
+
+void SGCore::IMeshData::generatePhysicalMesh() noexcept
+{
+    m_physicalMesh = MakeRef<btTriangleMesh>();
+    
+    for(size_t i = 0; i < m_indices.size(); ++i)
+    {
+        size_t ti0 = m_indices[i] * 3;
+        size_t ti1 = m_indices[i + 1] * 3;
+        size_t ti2 = m_indices[i + 2] * 3;
+        
+        m_physicalMesh->addTriangle(btVector3(m_positions[ti0], m_positions[ti0 + 1], m_positions[ti0 + 2]),
+                                    btVector3(m_positions[ti1], m_positions[ti1 + 1], m_positions[ti1 + 2]),
+                                    btVector3(m_positions[ti2], m_positions[ti2 + 1], m_positions[ti2 + 2]));
+    }
 }

@@ -19,13 +19,18 @@ void SGCore::VkIndexBuffer::destroy() noexcept
 
 }
 
-std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::putData(std::vector<std::uint32_t> data) noexcept
+std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::putData(const std::vector<std::uint32_t>& data) noexcept
 {
     return shared_from_this();
 }
 
 void SGCore::VkIndexBuffer::subData
 (std::vector<std::uint32_t> data, const int& offset) noexcept
+{
+
+}
+
+void SGCore::VkIndexBuffer::subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) noexcept
 {
 
 }

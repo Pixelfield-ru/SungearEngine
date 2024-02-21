@@ -59,7 +59,7 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
     }
 }
 
-void SGCore::DirectionalLightsUpdater::fixedUpdate()
+void SGCore::DirectionalLightsUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;

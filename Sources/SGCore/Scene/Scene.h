@@ -30,10 +30,9 @@ namespace SGCore
         void createDefaultSystems();
 
         static Ref<Scene> getCurrentScene() noexcept;
-
-        void fixedUpdate();
-
-        void update();
+        
+        void update(const double& dt);
+        void fixedUpdate(const double& dt, const double& fixedDt);
 
         template<typename SystemT>
         // requires(std::is_base_of_v<ISystem, SystemT>)

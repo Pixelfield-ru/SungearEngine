@@ -1,3 +1,5 @@
+#sg_pragma once
+
 #sg_include "vertex_base.glsl"
 
 #define SG_NOT_INCLUDE_LIGHTS

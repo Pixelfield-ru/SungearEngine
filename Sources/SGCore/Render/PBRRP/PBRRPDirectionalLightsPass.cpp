@@ -28,7 +28,7 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
 {
     m_renderTimer.startFrame();
 
-    m_renderTimerCallback->setUpdateFunction([&]() {
+    m_renderTimerCallback->setUpdateFunction([&](const double& dt) {
         // todo: shadows
         
         // std::cout << "endupd : " << std::endl;

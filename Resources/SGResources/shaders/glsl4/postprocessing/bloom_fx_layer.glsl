@@ -1,3 +1,5 @@
+#sg_pragma once
+
 #sg_include "../color_correction/aces.glsl"
 #sg_include "../defines.glsl"
 #sg_include "../random.glsl"

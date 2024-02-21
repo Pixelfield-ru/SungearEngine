@@ -41,7 +41,7 @@ void SGUtils::Timer::startFrame()
     {
         for(const auto& callback: m_callbacks)
         {
-            callback->callUpdateFunction();
+            callback->callUpdateFunction(m_elapsedTimeForUpdate);
         }
 
         m_elapsedTimeForUpdate = 0.0;
@@ -49,36 +49,42 @@ void SGUtils::Timer::startFrame()
     }
 
     m_elapsedTime = m_current - m_startTime;
-
-    if(m_elapsedTime >= m_target)
+    
+    if(m_elapsedTime >= m_targetFrameTime)
     {
         if(m_useFixedUpdateCatchUp)
         {
-            while(m_elapsedTime >= m_target)
+            while(m_elapsedTime >= m_targetFrameTime)
             {
                 if(!m_active) break;
 
+                m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
+                m_currentFixedUpdateCallTime = glfwGetTime();
+                m_fixedUpdateCallDeltaTime = m_currentFixedUpdateCallTime - m_lastFixedUpdateCallTime;
+                
                 for(const auto& callback: m_callbacks)
                 {
-                    callback->callFixedUpdateFunction();
+                    callback->callFixedUpdateFunction(m_fixedUpdateCallDeltaTime, m_targetFrameTime);
                 }
 
-                m_elapsedTime -= m_target;
+                m_elapsedTime -= m_targetFrameTime;
             }
         }
         else
         {
+            m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
+            m_currentFixedUpdateCallTime = glfwGetTime();
+            m_fixedUpdateCallDeltaTime = m_currentFixedUpdateCallTime - m_lastFixedUpdateCallTime;
+            
             for(const auto& callback: m_callbacks)
             {
-                callback->callFixedUpdateFunction();
+                callback->callFixedUpdateFunction(m_fixedUpdateCallDeltaTime, m_targetFrameTime);
             }
         }
 
         reset();
 
         m_active = m_cyclic;
-
-        m_elapsedTime = 0.0;
     }
 }
 
@@ -86,6 +92,8 @@ void SGUtils::Timer::reset() noexcept
 {
     m_elapsedTime = 0;
     m_startTime = glfwGetTime();
+    m_currentFixedUpdateCallTime = glfwGetTime();
+    m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
     m_framesPerTarget = 0;
 }
 
@@ -110,7 +118,7 @@ void SGUtils::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callba
     m_callbacks.remove(callback);
 }
 
-uint16_t SGUtils::Timer::getFramesPerDestination() const noexcept
+uint16_t SGUtils::Timer::getFramesPerTarget() const noexcept
 {
     return m_framesPerTarget;
 }

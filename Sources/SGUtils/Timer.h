@@ -24,15 +24,20 @@ namespace SGUtils
         bool m_cyclic = false;
         bool m_useFixedUpdateCatchUp = true;
 
-        double m_target = 0;
-
         double m_targetFrameRate = 120.0;
-
+        
+        double m_targetFrameTime = 1 / m_targetFrameRate;
+        
         // ------------------------------------
 
         Timer() noexcept = default;
         explicit Timer(const bool& cyclic) noexcept : m_cyclic(cyclic) { }
-        Timer(const bool& cyclic, const double& destination) noexcept : m_cyclic(cyclic), m_target(destination) { }
+        Timer(const bool& cyclic, const double& frameRate) noexcept
+        {
+            m_cyclic = cyclic;
+            m_targetFrameRate = frameRate;
+            m_targetFrameTime = 1.0 / m_targetFrameRate;
+        }
 
         void startFrame();
         //void endFrame();
@@ -44,10 +49,19 @@ namespace SGUtils
         void addCallback(std::shared_ptr<TimerCallback> callback);
         void removeCallback(const std::shared_ptr<TimerCallback>& callback);
 
-        [[nodiscard]] std::uint16_t getFramesPerDestination() const noexcept;
+        [[nodiscard]] std::uint16_t getFramesPerTarget() const noexcept;
         [[nodiscard]] double getRawDeltaTime() const noexcept;
+        
+        [[nodiscard]] double getFixedUpdateCallDeltaTime() const noexcept
+        {
+            return m_fixedUpdateCallDeltaTime;
+        }
 
     private:
+        double m_currentFixedUpdateCallTime = 0.0;
+        double m_lastFixedUpdateCallTime = 0.0;
+        double m_fixedUpdateCallDeltaTime = 0.0;
+        
         double m_current = 0;
         double m_startTime = 0;
 

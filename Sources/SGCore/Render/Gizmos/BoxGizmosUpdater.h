@@ -11,7 +11,7 @@ namespace SGCore
 {
     class BoxGizmosUpdater : public ISystem
     {
-        void fixedUpdate() final;
+        void fixedUpdate(const double& dt, const double& fixedDt) final;
     };
 }
 

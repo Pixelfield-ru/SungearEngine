@@ -38,9 +38,7 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::putData
 {
     if(data.empty()) return shared_from_this();
 
-    m_data.insert(m_data.end(), data.begin(), data.end());
-
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(m_data[0])), &m_data[0],
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (data.size() * sizeof(data[0])), &data[0],
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
 
     #ifdef SUNGEAR_DEBUG
@@ -60,6 +58,18 @@ void SGCore::GLVertexBuffer::subData
     glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (data.size() * sizeof(data[0])),
                     &data[0]);
 
+    #ifdef SUNGEAR_DEBUG
+    GL4Renderer::getInstance()->checkForErrors();
+    #endif
+}
+
+void SGCore::GLVertexBuffer::subData(float* data, const size_t& elementsCount, const size_t& offset) noexcept
+{
+    if(elementsCount == 0) return;
+    
+    glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (elementsCount * sizeof(data[0])),
+                    data);
+    
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();
     #endif

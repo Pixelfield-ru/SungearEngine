@@ -15,7 +15,7 @@ namespace SGCore
     {
         AtmosphereUpdater() noexcept;
         
-        void fixedUpdate() final;
+        void fixedUpdate(const double& dt, const double& fixedDt) final;
         
     private:
         Ref<IUniformBuffer> m_uniformBuffer;

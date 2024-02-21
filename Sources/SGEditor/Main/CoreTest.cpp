@@ -6,6 +6,11 @@
 #include <cstdlib>
 #include <stb/stb_image_write.h>
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
+#include <BulletCollision/CollisionShapes/btStaticPlaneShape.h>
+#include <BulletCollision/CollisionShapes/btBox2dShape.h>
+#include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+#include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
 #include "CoreTest.h"
 #include "SGCore/Main/CoreMain.h"
@@ -52,6 +57,8 @@ entt::entity testCameraEntity = entt::null;
 SGCore::Ref<SGCore::Scene> testScene;
 
 SGCore::Atmosphere* _atmosphereScattering = nullptr;
+
+std::vector<entt::entity> model1Entities;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -209,7 +216,16 @@ void init()
     sphereTransform->m_ownTransform.m_rotation = { 0, 0, 0 };
     sphereTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1.0 };
     
-    SGCore::Rigidbody3D& sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[1], testScene->getSystem<SGCore::PhysicsWorld3D>());
+    SGCore::Rigidbody3D& sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[2], testScene->getSystem<SGCore::PhysicsWorld3D>());
+    SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
+    sphereRigidbody3D.setShape(sphereRigidbody3DShape);
+    sphereRigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+    sphereRigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+    sphereRigidbody3D.m_body->setRestitution(1.1);
+    //sphereRigidbody3D.m_body->setDamping(0.001, 0.6);
+    sphereRigidbody3D.updateFlags();
+    sphereRigidbody3D.reAddToWorld();
+    // sphereRigidbody3D.getParentPhysicsWorld().lock()->getDynamicsWorld()->updateSingleAabb(sphereRigidbody3D.m_body.get());
     // testScene->getECSRegistry().remove<SGCore::Rigidbody3D>(sphereEntities[0]);
 
     SGCore::Mesh* sphereMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(sphereEntities[2]);
@@ -245,26 +261,38 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
+    std::vector<entt::entity> floorEntities;
     testModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                      [](const entt::entity& entity)
+                                      [&floorEntities](const entt::entity& entity)
                                       {
-                                          auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(entity);
-                                          auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
-                                          if(mesh)
-                                          {
-                                              mesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
-                                              mesh->m_base.m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE, "../SGResources/textures/chess.jpg");
-                                              mesh->m_base.m_meshData->setVertexUV(0, 200, 0, 0);
-                                              mesh->m_base.m_meshData->setVertexUV(1, 0, 200, 0);
-                                              mesh->m_base.m_meshData->setVertexUV(2, 200, 200, 0);
-                                              mesh->m_base.m_meshData->prepare();
-                                          }
-                                          if(transform)
-                                          {
-                                              transform->m_ownTransform.m_scale = { 10.0, 10.0, 10.0 };
-                                          }
+                                          floorEntities.push_back(entity);
                                       }
     );
+    
+    auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(floorEntities[2]);
+    auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(floorEntities[0]);
+    if(mesh)
+    {
+        mesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
+        mesh->m_base.m_meshData->m_material->findAndAddTexture2D(SGTextureType::SGTT_DIFFUSE, "../SGResources/textures/chess.jpg");
+        mesh->m_base.m_meshData->setVertexUV(0, 200, 0, 0);
+        mesh->m_base.m_meshData->setVertexUV(1, 0, 200, 0);
+        mesh->m_base.m_meshData->setVertexUV(2, 200, 200, 0);
+        mesh->m_base.m_meshData->prepare();
+    }
+    if(transform)
+    {
+        transform->m_ownTransform.m_scale = { 1000.0, 1000.0, 1000.0 };
+    }
+    
+    SGCore::Rigidbody3D& floorRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(floorEntities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
+    SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(200 / 2.0, 1 / 2.0, 200.0 / 2.0));
+    floorRigidbody3D.setShape(floorRigidbody3DShape);
+    floorRigidbody3D.m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
+    floorRigidbody3D.m_body->setRestitution(0.9);
+    floorRigidbody3D.reAddToWorld();
+    // floorRigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_STATIC_OBJECT);
+    // floorRigidbody3D.updateFlags();
 
     // ==========================================================================================
     // ==========================================================================================
@@ -280,7 +308,7 @@ void init()
     
     {
         auto e = testScene->getECSRegistry().try_get<SGCore::EntityBaseInfo>(model0Entities[0]);
-        auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(model0Entities[0]);
+        auto model0Transform = testScene->getECSRegistry().try_get<SGCore::Transform>(model0Entities[0]);
         if(transform)
         {
             /*transform->m_ownTransform.m_position = { -8, 20, -2 };
@@ -298,9 +326,9 @@ void init()
             transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
             
             // vss
-            transform->m_ownTransform.m_position = { 3, 9.2, -13 };
-            transform->m_ownTransform.m_rotation = { 0, 0, 0 };
-            transform->m_ownTransform.m_scale = { 1.7, 1.7, 1.7 };
+            model0Transform->m_ownTransform.m_position = { 3, 10.2, -13 };
+            model0Transform->m_ownTransform.m_rotation = { 0, 0, 45 };
+            model0Transform->m_ownTransform.m_scale = { 1.7, 1.7, 1.7 };
             
             // ak47_m
             /*transform->m_ownTransform.m_position = { 3, 9.2, -13 };
@@ -322,25 +350,93 @@ void init()
             transformComponent->m_rotation = { 90, 0, 0 };
             transformComponent->m_scale = { 0.007, 0.007, 0.007 };*/
         }
+        
+        /*for(size_t i = 0; i < model0Entities.size(); ++i)
+        {
+            std::cout << "model0 idx: " << i << ", has mesh?: " << testScene->getECSRegistry().try_get<SGCore::Mesh>(model0Entities[i]) << std::endl;
+        }*/
+        
+        /*{
+            SGCore::Rigidbody3D& model0Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(
+                    model0Entities[3], testScene->getSystem<SGCore::PhysicsWorld3D>());
+            SGCore::Mesh* model0Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model0Entities[3]);
+            model0Mesh0->m_base.m_meshData->generatePhysicalMesh();
+            SGCore::Ref<btBvhTriangleMeshShape> model0Rigidbody3DShape = SGCore::MakeRef<btBvhTriangleMeshShape>(
+                    model0Mesh0->m_base.m_meshData->m_physicalMesh.get(), false);
+            // SGCore::Ref<btBoxShape> model0Rigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1 / 2.0, 1 / 2.0, 1.0 / 2.0));
+            model0Rigidbody3D.setShape(model0Rigidbody3DShape);
+            model0Rigidbody3D.m_body->setMassProps(1000.0, btVector3(0, 0, 0));
+            model0Rigidbody3D.m_body->setRestitution(0.9);
+            model0Rigidbody3D.m_body->getCollisionShape()->setLocalScaling({ 1.7f, 1.7f, 1.7f });
+            *//*model0Rigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+            model0Rigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+            model0Rigidbody3D.updateFlags();
+            model0Rigidbody3D.reAddToWorld();*//*
+        }*/
+        
+        /*{
+            SGCore::Rigidbody3D& model0Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(
+                    model0Entities[5], testScene->getSystem<SGCore::PhysicsWorld3D>());
+            SGCore::Mesh* model0Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model0Entities[5]);
+            model0Mesh0->m_base.m_meshData->generatePhysicalMesh();
+            SGCore::Ref<btBvhTriangleMeshShape> model0Rigidbody3DShape = SGCore::MakeRef<btBvhTriangleMeshShape>(
+                    model0Mesh0->m_base.m_meshData->m_physicalMesh.get(), false);
+            // SGCore::Ref<btBoxShape> model0Rigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1 / 2.0, 1 / 2.0, 1.0 / 2.0));
+            model0Rigidbody3D.setShape(model0Rigidbody3DShape);
+            model0Rigidbody3D.m_body->setMassProps(1000.0, btVector3(0, 0, 0));
+            model0Rigidbody3D.m_body->setRestitution(0.9);
+            model0Rigidbody3D.m_body->getCollisionShape()->setLocalScaling({ 1.7f, 1.7f, 1.7f });
+            *//*model0Rigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+            model0Rigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+            model0Rigidbody3D.updateFlags();
+            model0Rigidbody3D.reAddToWorld();*//*
+        }*/
+        /*model0Rigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+        model0Rigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+        model0Rigidbody3D.m_body->setRestitution(1.1);
+        model0Rigidbody3D.updateFlags();
+        model0Rigidbody3D.reAddToWorld();*/
     }
 
     // ==========================================================================================
     // ==========================================================================================
     // ==========================================================================================
-
+    
     model1->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
                                       [](const entt::entity& entity)
                                       {
-                                          auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
-                                          if(transform)
-                                          {
-                                              // wooden table
-                                              transform->m_ownTransform.m_position = { 0, 1.30, -20 };
-                                              transform->m_ownTransform.m_rotation = { 0, 90, 0 };
-                                              transform->m_ownTransform.m_scale = { 0.8, 0.8, 0.8 };
-                                          }
+                                          model1Entities.push_back(entity);
                                       }
     );
+    
+    {
+        SGCore::Transform* model1Transform = testScene->getECSRegistry().try_get<SGCore::Transform>(model1Entities[0]);
+        model1Transform->m_ownTransform.m_position = { 0, 40.30, -20 };
+        model1Transform->m_ownTransform.m_rotation = { 0, 0, 30 };
+        model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
+    }
+    
+    for(size_t i = 0; i < model1Entities.size(); ++i)
+    {
+        std::cout << "model1 idx: " << i << ", has mesh?: " << testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[i]) << std::endl;
+    }
+    
+    {
+        SGCore::Rigidbody3D& model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(model1Entities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
+        SGCore::Mesh* model1Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[4]);
+        model1Mesh0->m_base.m_meshData->generatePhysicalMesh();
+        SGCore::Ref<btBvhTriangleMeshShape> model1Rigidbody3DShape = SGCore::MakeRef<btBvhTriangleMeshShape>(
+                model1Mesh0->m_base.m_meshData->m_physicalMesh.get(), false);
+        // SGCore::Ref<btBoxShape> model0Rigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1 / 2.0, 1 / 2.0, 1.0 / 2.0));
+        model1Rigidbody3D.setShape(model1Rigidbody3DShape);
+        model1Rigidbody3D.m_body->setMassProps(1000.0, btVector3(0, 0, 0));
+        model1Rigidbody3D.m_body->setRestitution(1.1);
+        model1Rigidbody3D.m_body->getCollisionShape()->setLocalScaling({ 0.4f, 0.4f, 0.4f });
+        /*model1Rigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+        model1Rigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+        model1Rigidbody3D.updateFlags();
+        model1Rigidbody3D.reAddToWorld();*/
+    }
 
     // ==========================================================================================
     // ==========================================================================================
@@ -741,7 +837,7 @@ void init()
 
 int framesCnt = 0;
 
-void fixedUpdate()
+void fixedUpdate(const double& dt, const double& fixedDt)
 {
     double angle = framesCnt / 75.0;
 
@@ -763,7 +859,13 @@ void fixedUpdate()
 
     // transform0->m_position.y += sin(framesCnt / 30.0) / 2.5;
 
-    SGCore::Scene::getCurrentScene()->fixedUpdate();
+    SGCore::Transform& tr0 = testScene->getECSRegistry().get<SGCore::Transform>(model1Entities[4]);
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_3))
+    {
+        tr0.m_ownTransform.m_position.y += 0.1f;
+    }
+    
+    SGCore::Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
 
     framesCnt++;
 }
@@ -771,7 +873,7 @@ void fixedUpdate()
 auto testWindow = std::make_shared<SGCore::ImGuiWrap::Window>();
 auto testCollapsingHeader = std::make_shared<SGCore::ImGuiWrap::CollapsingHeader>();
 
-void update()
+void update(const double& dt)
 {
     /*auto physicsWorld = testScene->getSystem<SGCore::PhysicsWorld>();
     auto d0 = glfwGetTime();
@@ -799,6 +901,19 @@ void update()
     {
         std::cout << "pressed f11" << std::endl;
         SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
+    }
+    
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F12))
+    {
+        auto& physicsWorld3DDebug = testScene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw();
+        if(physicsWorld3DDebug->getDebugMode() == btIDebugDraw::DBG_NoDebug)
+        {
+            physicsWorld3DDebug->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+        }
+        else
+        {
+            physicsWorld3DDebug->setDebugMode(btIDebugDraw::DBG_NoDebug);
+        }
     }
 
     SGCore::ImGuiWrap::ImGuiLayer::beginFrame();
@@ -851,7 +966,7 @@ void update()
 
     //ImGui::ShowDemoWindow();
 
-    SGCore::Scene::getCurrentScene()->update();
+    SGCore::Scene::getCurrentScene()->update(dt);
 
     auto& viewsInjector = *SGUtils::Singleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
     viewsInjector.renderViews();

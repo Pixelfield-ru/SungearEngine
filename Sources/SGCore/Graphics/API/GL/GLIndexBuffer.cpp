@@ -37,11 +37,9 @@ void SGCore::GLIndexBuffer::destroy() noexcept
     #endif
 }
 
-std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::putData(std::vector<std::uint32_t> data) noexcept
+std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::putData(const std::vector<std::uint32_t>& data) noexcept
 {
-    m_data = std::move(data);
-
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (m_data.size() * sizeof(m_data[0])), &m_data[0],
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (data.size() * sizeof(data[0])), &data[0],
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
 
     /*if(CoreMain::getRenderer()->m_currentBoundVertexArray)
@@ -67,6 +65,18 @@ void SGCore::GLIndexBuffer::subData
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (data.size() * sizeof(data[0])),
                     &data[0]);
 
+    #ifdef SUNGEAR_DEBUG
+    GL4Renderer::getInstance()->checkForErrors();
+    #endif
+}
+
+void SGCore::GLIndexBuffer::subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) noexcept
+{
+    if(elementsCount == 0) return;
+    
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (elementsCount * sizeof(data[0])),
+                    data);
+    
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();
     #endif

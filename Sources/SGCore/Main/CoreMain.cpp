@@ -49,14 +49,14 @@ void SGCore::CoreMain::start()
     //globalTimerCallback->setDeltaUpdateFunction([](const double& deltaTime) { deltaUpdate(deltaTime); });
 
     // update
-    globalTimerCallback->setUpdateFunction([]()
+    globalTimerCallback->setUpdateFunction([](const double& dt)
                                                 {
-                                                    update();
+                                                    update(dt);
                                                 });
 
     // when reached destination (in the case of this timer, 1 second) second
-    globalTimerCallback->setFixedUpdateFunction([]() {
-        m_window.setTitle("Sungear Engine. FPS: " + std::to_string(m_renderTimer.getFramesPerDestination()));
+    globalTimerCallback->setFixedUpdateFunction([](const double& dt, const double& fixedDt) {
+        m_window.setTitle("Sungear Engine. FPS: " + std::to_string(m_renderTimer.getFramesPerTarget()));
     });
 
     m_renderTimer.addCallback(globalTimerCallback);
@@ -67,9 +67,9 @@ void SGCore::CoreMain::start()
 
     std::shared_ptr<SGUtils::TimerCallback> fixedTimerCallback = std::make_shared<SGUtils::TimerCallback>();
 
-    fixedTimerCallback->setFixedUpdateFunction([]()
+    fixedTimerCallback->setFixedUpdateFunction([](const double& dt, const double& fixedDt)
                                                 {
-                                                    fixedUpdate();
+                                                    fixedUpdate(dt, fixedDt);
                                                 });
 
     m_fixedTimer.addCallback(fixedTimerCallback);
@@ -85,20 +85,20 @@ void SGCore::CoreMain::start()
     }
 }
 
-void SGCore::CoreMain::fixedUpdate()
+void SGCore::CoreMain::fixedUpdate(const double& dt, const double& fixedDt)
 {
     InputManager::startFrame();
 
-    sgCallFixedUpdateCallback();
+    sgCallFixedUpdateCallback(dt, fixedDt);
 }
 
-void SGCore::CoreMain::update()
+void SGCore::CoreMain::update(const double& dt)
 {
     glm::ivec2 windowSize;
     m_window.getSize(windowSize.x, windowSize.y);
     m_renderer->prepareFrame(windowSize);
 
-    sgCallUpdateCallback();
+    sgCallUpdateCallback(dt);
 
     m_window.swapBuffers();
 

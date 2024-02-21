@@ -210,12 +210,23 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
             
             // finalIncludedFilePath = realpath(std::filesystem::path(finalIncludedFilePath)).string();
             
-            if(!translator.m_includedFiles.contains(finalIncludedFilePath))
+            bool alreadyIncluded = false;
+            for(const auto& p : translator.m_includedFiles)
+            {
+                std::filesystem::path rp(p);
+                if(rp == std::filesystem::path(finalIncludedFilePath))
+                {
+                    alreadyIncluded = true;
+                    break;
+                }
+            }
+            
+            if(!alreadyIncluded)
             {
                 auto includedAnalyzedFile = MakeRef<ShaderAnalyzedFile>();
                 
-                processCode(finalIncludedFilePath, SGUtils::FileUtils::readFile(finalIncludedFilePath),
-                            *this, false, includedAnalyzedFile);
+                translator.processCode(finalIncludedFilePath, SGUtils::FileUtils::readFile(finalIncludedFilePath),
+                            translator, false, includedAnalyzedFile);
                 
                 analyzedFile->includeFile(includedAnalyzedFile);
             }
@@ -257,7 +268,8 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
                     translator.m_currentSubPasses.push_back(subPass);
                 }
                 append = false;
-            } else if(blockName == "SGSubShader")
+            }
+            else if(blockName == "SGSubShader")
             {
                 for(const auto& subPass : translator.m_currentSubPasses)
                 {

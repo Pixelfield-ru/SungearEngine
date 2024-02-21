@@ -15,7 +15,7 @@ namespace SGCore
     {
         DirectionalLightsUpdater() noexcept;
         
-        void fixedUpdate() final;
+        void fixedUpdate(const double& dt, const double& fixedDt) final;
         
         // uniform buffer for directional lights
         Ref<IUniformBuffer> m_uniformBuffer;

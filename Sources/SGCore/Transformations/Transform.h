@@ -24,7 +24,6 @@ namespace SGCore
         // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
         
         bool m_transformChanged = false;
-        bool m_isChangedFromRigidbody3D = false;
     };
 }
 

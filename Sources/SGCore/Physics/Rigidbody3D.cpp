@@ -9,15 +9,18 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<SGCore::PhysicsWorld3D>& phys
 {
     m_parentPhysicsWorld = physicsWorld;
     
-    m_state = MakeRef<btDefaultMotionState>(btTransform());
-    m_shape = MakeRef<btSphereShape>(0.5f);
-    m_shape->setUnscaledRadius(5);
+    btTransform initialTransform;
+    initialTransform.setIdentity();
+    m_state = MakeRef<btDefaultMotionState>(initialTransform);
+    m_shape = MakeRef<btEmptyShape>();
     btRigidBody::btRigidBodyConstructionInfo constructionInfo =
-            btRigidBody::btRigidBodyConstructionInfo(25, m_state.get(), m_shape.get(), btVector3(0, 0, 0));
+            btRigidBody::btRigidBodyConstructionInfo(250, m_state.get(), m_shape.get(), btVector3(0, 0, 0));
     m_body = MakeRef<btRigidBody>(constructionInfo);
-    m_body->setFlags(m_body->getFlags() | btCollisionObject::CF_DYNAMIC_OBJECT);
+    m_body->setFlags(m_body->getFlags() |  btCollisionObject::CF_STATIC_OBJECT);
     
     physicsWorld->getDynamicsWorld()->addRigidBody(m_body.get());
+    
+    m_bodyFlags.m_flags |= m_body->getFlags();
     // m_body->activate(true);
     
     std::cout << "created" << std::endl;
@@ -34,7 +37,33 @@ SGCore::Rigidbody3D::~Rigidbody3D()
     }
 }
 
+void SGCore::Rigidbody3D::setShape(const SGCore::Ref<btCollisionShape>& shape) noexcept
+{
+    m_shape = shape;
+    
+    m_body->setCollisionShape(m_shape.get());
+}
+
+SGCore::Ref<btCollisionShape> SGCore::Rigidbody3D::getShape() const noexcept
+{
+    return m_shape;
+}
+
 SGCore::Weak<SGCore::PhysicsWorld3D> SGCore::Rigidbody3D::getParentPhysicsWorld() const noexcept
 {
     return m_parentPhysicsWorld;
+}
+
+void SGCore::Rigidbody3D::updateFlags() noexcept
+{
+    m_body->setFlags(m_bodyFlags.m_flags);
+}
+
+void SGCore::Rigidbody3D::reAddToWorld() const noexcept
+{
+    if(auto lockedWorld = m_parentPhysicsWorld.lock())
+    {
+        lockedWorld->removeBody(m_body);
+        lockedWorld->getDynamicsWorld()->addRigidBody(m_body.get());
+    }
 }

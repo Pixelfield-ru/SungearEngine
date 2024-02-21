@@ -24,7 +24,7 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_debugDraw->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     m_dynamicsWorld->setDebugDrawer(m_debugDraw.get());
     
-    m_dynamicsWorld->setGravity({ 0, -10, 0 });
+    m_dynamicsWorld->setGravity({ 0, -65.0, 0 });
 }
 
 void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexcept
@@ -37,7 +37,7 @@ void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexc
     m_dynamicsWorld->removeRigidBody(rigidBody.get());
 }
 
-void SGCore::PhysicsWorld3D::update() noexcept
+void SGCore::PhysicsWorld3D::update(const double& dt) noexcept
 {
     auto lockedScene = m_scene.lock();
     if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
@@ -47,11 +47,9 @@ void SGCore::PhysicsWorld3D::update() noexcept
     }
 }
 
-void SGCore::PhysicsWorld3D::fixedUpdate() noexcept
+void SGCore::PhysicsWorld3D::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    double dt = 1.0 / CoreMain::getFixedTimer().m_targetFrameRate;
-    
-    m_dynamicsWorld->stepSimulation(dt, 6, dt);
+    m_dynamicsWorld->stepSimulation(dt, 6);
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene()

@@ -14,7 +14,6 @@ namespace SGCore
     {
     private:
         GLuint m_handler = 0;
-        std::vector<std::uint32_t> m_data = std::vector<std::uint32_t>();
 
     public:
         ~GLIndexBuffer() noexcept override;
@@ -23,8 +22,9 @@ namespace SGCore
 
         void destroy() noexcept final;
 
-        std::shared_ptr<IIndexBuffer> putData(std::vector<std::uint32_t> data) noexcept override;
+        std::shared_ptr<IIndexBuffer> putData(const std::vector<std::uint32_t>& data) noexcept override;
         void subData(std::vector<std::uint32_t> data, const int& offset) noexcept override;
+        void subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) noexcept override;
         std::shared_ptr<IIndexBuffer> bind() noexcept override;
 
         std::shared_ptr<IIndexBuffer> setUsage(SGGUsage) noexcept override;

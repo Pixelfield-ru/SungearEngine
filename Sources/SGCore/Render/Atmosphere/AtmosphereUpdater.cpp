@@ -58,7 +58,7 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     }
 }
 
-void SGCore::AtmosphereUpdater::fixedUpdate()
+void SGCore::AtmosphereUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;

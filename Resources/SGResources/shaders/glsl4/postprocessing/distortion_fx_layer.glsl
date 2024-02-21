@@ -1,3 +1,5 @@
+#sg_pragma once
+
 #define SG_NOT_INCLUDE_LIGHTS
 
 #sg_include "../uniform_bufs_decl.glsl"
