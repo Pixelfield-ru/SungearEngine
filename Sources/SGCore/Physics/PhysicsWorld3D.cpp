@@ -49,7 +49,7 @@ void SGCore::PhysicsWorld3D::update(const double& dt) noexcept
 
 void SGCore::PhysicsWorld3D::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    m_dynamicsWorld->stepSimulation(dt, 6);
+    m_dynamicsWorld->stepSimulation(dt, 12);
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene()

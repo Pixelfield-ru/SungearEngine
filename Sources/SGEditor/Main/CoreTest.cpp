@@ -11,6 +11,7 @@
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include <BulletCollision/CollisionShapes/btConvexTriangleMeshShape.h>
 
 #include "CoreTest.h"
 #include "SGCore/Main/CoreMain.h"
@@ -412,8 +413,16 @@ void init()
     {
         SGCore::Transform* model1Transform = testScene->getECSRegistry().try_get<SGCore::Transform>(model1Entities[0]);
         model1Transform->m_ownTransform.m_position = { 0, 40.30, -20 };
-        model1Transform->m_ownTransform.m_rotation = { 0, 0, 30 };
+        model1Transform->m_ownTransform.m_rotation = { 90, 90, 45 };
         model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
+        
+        for(size_t i = 1; i < model1Entities.size(); ++i)
+        {
+            SGCore::Transform* model1Transform0 = testScene->getECSRegistry().try_get<SGCore::Transform>(model1Entities[i]);
+            model1Transform0->m_ownTransform.m_position = { 0, 0, 0 };
+            model1Transform0->m_ownTransform.m_rotation = { 0, 0, 0 };
+            model1Transform0->m_ownTransform.m_scale = { 1, 1, 1 };
+        }
     }
     
     for(size_t i = 0; i < model1Entities.size(); ++i)
@@ -425,17 +434,20 @@ void init()
         SGCore::Rigidbody3D& model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(model1Entities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
         SGCore::Mesh* model1Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[4]);
         model1Mesh0->m_base.m_meshData->generatePhysicalMesh();
-        SGCore::Ref<btBvhTriangleMeshShape> model1Rigidbody3DShape = SGCore::MakeRef<btBvhTriangleMeshShape>(
-                model1Mesh0->m_base.m_meshData->m_physicalMesh.get(), false);
+        SGCore::Ref<btConvexTriangleMeshShape> model1Rigidbody3DShape = SGCore::MakeRef<btConvexTriangleMeshShape>(
+                model1Mesh0->m_base.m_meshData->m_physicalMesh.get(), true);
         // SGCore::Ref<btBoxShape> model0Rigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1 / 2.0, 1 / 2.0, 1.0 / 2.0));
         model1Rigidbody3D.setShape(model1Rigidbody3DShape);
-        model1Rigidbody3D.m_body->setMassProps(1000.0, btVector3(0, 0, 0));
         model1Rigidbody3D.m_body->setRestitution(1.1);
         model1Rigidbody3D.m_body->getCollisionShape()->setLocalScaling({ 0.4f, 0.4f, 0.4f });
-        /*model1Rigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+        model1Rigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
         model1Rigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+        btScalar mass = 10.0f;
+        btVector3 inertia(1, 0, 0);
+        model1Rigidbody3D.m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+        model1Rigidbody3D.m_body->setMassProps(mass, inertia);
         model1Rigidbody3D.updateFlags();
-        model1Rigidbody3D.reAddToWorld();*/
+        model1Rigidbody3D.reAddToWorld();
     }
 
     // ==========================================================================================

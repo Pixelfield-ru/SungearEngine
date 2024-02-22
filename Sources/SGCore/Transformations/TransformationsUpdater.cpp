@@ -69,18 +69,26 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             const float rotDifX = ownTransform.m_rotation.x - ownTransform.m_lastRotation.x;
             const float rotDifY = ownTransform.m_rotation.y - ownTransform.m_lastRotation.y;
             const float rotDifZ = ownTransform.m_rotation.z - ownTransform.m_lastRotation.z;
-
-            ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
-                                                        -glm::radians(rotDifX),
+            
+            auto q = glm::identity<glm::quat>();
+            
+            q = glm::rotate(q, glm::radians(ownTransform.m_rotation.z), { 0, 0, 1 });
+            q = glm::rotate(q, glm::radians(ownTransform.m_rotation.y), { 0, 1, 0 });
+            q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), { 1, 0, 0 });
+            
+            ownTransform.m_rotationMatrix = glm::toMat4(q);
+            
+            /*ownTransform.m_rotationMatrix = glm::rotate(glm::mat4(1.0),
+                                                        -glm::radians(ownTransform.m_rotation.x),
                                                         glm::vec3(1, 0, 0));
 
             ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
-                                                        -glm::radians(rotDifY),
+                                                        -glm::radians(ownTransform.m_rotation.y),
                                                         glm::vec3(0, 1, 0));
             
             ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
-                                                        -glm::radians(rotDifZ),
-                                                        glm::vec3(0, 0, 1));
+                                                        -glm::radians(ownTransform.m_rotation.z),
+                                                        glm::vec3(0, 0, 1));*/
 
             // rotating directions vectors
             ownTransform.m_left = glm::rotate(ownTransform.m_left,
@@ -237,10 +245,10 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             {
                 glmRigidbody3DOwnModelMatrix /= entityParentTransform->m_finalTransform.m_translationMatrix * entityParentTransform->m_finalTransform.m_rotationMatrix;
             }
-            else
+            /*else
             {
                 glmRigidbody3DOwnModelMatrix /= ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix;
-            }
+            }*/
             
             glm::vec3 scale;
             glm::quat rotation;
@@ -274,17 +282,15 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 
                 // ownTransform.m_rotationMatrix = glm::toMat4(rotation);
                 
-                ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
-                                                            -glm::radians(rotDifX),
-                                                            glm::vec3(1, 0, 0));
+                auto q = glm::identity<glm::quat>();
                 
-                ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
-                                                            -glm::radians(rotDifY),
-                                                            glm::vec3(0, 1, 0));
+                // q = glm::quat(glm::radians(ownTransform.m_rotation));
                 
-                ownTransform.m_rotationMatrix = glm::rotate(ownTransform.m_rotationMatrix,
-                                                            -glm::radians(rotDifZ),
-                                                            glm::vec3(0, 0, 1));
+                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.z), { 0, 0, 1 });
+                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.y), { 0, 1, 0 });
+                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), { 1, 0, 0 });
+                
+                ownTransform.m_rotationMatrix = glm::toMat4(q);
                 
                 // rotating directions vectors
                 ownTransform.m_left = glm::rotate(ownTransform.m_left,
