@@ -14,7 +14,7 @@
 
 #include "TimerCallback.h"
 
-namespace SGUtils
+namespace SGCore
 {
     // TODO: documentation
     class Timer
@@ -63,7 +63,6 @@ namespace SGUtils
         double m_fixedUpdateCallDeltaTime = 0.0;
         
         double m_current = 0;
-        double m_startTime = 0;
 
         double m_elapsedTime = 0;
 

@@ -9,7 +9,7 @@
 #include <iostream>
 #include <functional>
 
-namespace SGUtils
+namespace SGCore
 {
     class TimerCallback
     {

@@ -18,7 +18,7 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
-    float finalDt = dt * 300.0f;
+    float finalDt = fixedDt * 300.0f;
     // finalDt = 1.0f;
     
     auto controllablesView = lockedScene->getECSRegistry().view<Transform, Controllable3D>();

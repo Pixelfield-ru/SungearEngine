@@ -18,8 +18,8 @@ namespace SGCore
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
 
     private:
-        Ref<SGUtils::TimerCallback> m_renderTimerCallback = MakeRef<SGUtils::TimerCallback>();
-        SGUtils::Timer m_renderTimer { true };
+        Ref<TimerCallback> m_renderTimerCallback = MakeRef<TimerCallback>();
+        Timer m_renderTimer { true };
     };
 }
 

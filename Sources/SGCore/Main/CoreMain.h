@@ -21,8 +21,8 @@ namespace SGCore
         static inline Window m_window {};
         static inline Ref<IRenderer> m_renderer;
 
-        static inline SGUtils::Timer m_renderTimer { true, 1.0 };
-        static inline SGUtils::Timer m_fixedTimer { true, 100.0 };
+        static inline Timer m_renderTimer { true, 1.0 };
+        static inline Timer m_fixedTimer { true, 100.0 };
 
     public:
         CoreMain() = delete;
@@ -36,8 +36,8 @@ namespace SGCore
 
         static Ref<IRenderer> getRenderer() noexcept;
 
-        static SGUtils::Timer& getRenderTimer() noexcept;
-        static SGUtils::Timer& getFixedTimer() noexcept;
+        static Timer& getRenderTimer() noexcept;
+        static Timer& getFixedTimer() noexcept;
     };
 }
 

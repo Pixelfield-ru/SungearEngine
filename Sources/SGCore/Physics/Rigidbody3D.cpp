@@ -21,9 +21,6 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<SGCore::PhysicsWorld3D>& phys
     physicsWorld->getDynamicsWorld()->addRigidBody(m_body.get());
     
     m_bodyFlags.m_flags |= m_body->getFlags();
-    // m_body->activate(true);
-    
-    std::cout << "created" << std::endl;
 }
 
 SGCore::Rigidbody3D::~Rigidbody3D()

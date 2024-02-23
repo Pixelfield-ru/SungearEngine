@@ -43,7 +43,7 @@ void SGCore::CoreMain::start()
     InputManager::init();
     AssetManager::init();
 
-    std::shared_ptr<SGUtils::TimerCallback> globalTimerCallback = std::make_shared<SGUtils::TimerCallback>();
+    std::shared_ptr<TimerCallback> globalTimerCallback = std::make_shared<TimerCallback>();
 
     // delta update
     //globalTimerCallback->setDeltaUpdateFunction([](const double& deltaTime) { deltaUpdate(deltaTime); });
@@ -64,8 +64,8 @@ void SGCore::CoreMain::start()
     m_renderTimer.m_useFixedUpdateCatchUp = false;
 
     // -----------------
-
-    std::shared_ptr<SGUtils::TimerCallback> fixedTimerCallback = std::make_shared<SGUtils::TimerCallback>();
+    
+    std::shared_ptr<TimerCallback> fixedTimerCallback = std::make_shared<TimerCallback>();
 
     fixedTimerCallback->setFixedUpdateFunction([](const double& dt, const double& fixedDt)
                                                 {
@@ -77,6 +77,9 @@ void SGCore::CoreMain::start()
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
 
     sgCallCoreInitCallback();
+    
+    m_fixedTimer.reset();
+    m_renderTimer.reset();
 
     while(!m_window.shouldClose())
     {
@@ -115,12 +118,12 @@ SGCore::Ref<SGCore::IRenderer> SGCore::CoreMain::getRenderer() noexcept
     return m_renderer;
 }
 
-SGUtils::Timer& SGCore::CoreMain::getRenderTimer() noexcept
+SGCore::Timer& SGCore::CoreMain::getRenderTimer() noexcept
 {
     return m_renderTimer;
 }
 
-SGUtils::Timer& SGCore::CoreMain::getFixedTimer() noexcept
+SGCore::Timer& SGCore::CoreMain::getFixedTimer() noexcept
 {
     return m_fixedTimer;
 }

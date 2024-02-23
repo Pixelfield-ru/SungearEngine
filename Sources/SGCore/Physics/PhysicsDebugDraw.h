@@ -22,22 +22,6 @@ namespace SGCore
     
     struct PhysicsDebugDraw : btIDebugDraw
     {
-    private:
-        int m_debugMode = 0;
-        
-        std::uint32_t m_maxLines = 1'000'000;
-        std::uint32_t m_currentDrawingLine = 0;
-        
-        std::vector<float> m_linesPositions;
-        std::vector<float> m_linesColors;
-        std::vector<std::uint32_t> m_linesIndices;
-        
-        EventListener<void()> m_onRenderPipelineSetEventListener = MakeEventListener<void()>([this]() {
-            onRenderPipelineSet();
-        });
-        
-        void onRenderPipelineSet() noexcept;
-    public:
         PhysicsDebugDraw();
         
         Ref<IVertexArray> m_linesVertexArray;
@@ -61,6 +45,22 @@ namespace SGCore
         int getDebugMode() const override;
         
         void drawAll(const Ref<Scene>& scene);
+    
+    private:
+        int m_debugMode = 0;
+        
+        std::uint32_t m_maxLines = 1'000'000;
+        std::uint32_t m_currentDrawingLine = 0;
+        
+        std::vector<float> m_linesPositions;
+        std::vector<float> m_linesColors;
+        std::vector<std::uint32_t> m_linesIndices;
+        
+        EventListener<void()> m_onRenderPipelineSetEventListener = MakeEventListener<void()>([this]() {
+            onRenderPipelineSet();
+        });
+        
+        void onRenderPipelineSet() noexcept;
     };
 }
 

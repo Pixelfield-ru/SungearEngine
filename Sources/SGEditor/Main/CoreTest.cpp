@@ -63,6 +63,37 @@ std::vector<entt::entity> model1Entities;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
+void createBallAndApplyImpulse(const glm::vec3& spherePos,
+                               const glm::vec3& impulse) noexcept
+{
+    auto sphereModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>("ball0");
+    
+    std::vector<entt::entity> sphereEntities;
+    sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
+                                        [&sphereEntities](const entt::entity& entity)
+                                        {
+                                            sphereEntities.push_back(entity);
+                                        }
+    );
+    
+    SGCore::Rigidbody3D& sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[2], testScene->getSystem<SGCore::PhysicsWorld3D>());
+    SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
+    sphereRigidbody3D.setShape(sphereRigidbody3DShape);
+    sphereRigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+    sphereRigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+    sphereRigidbody3D.m_body->setRestitution(0.9);
+    btScalar mass = 100.0f;
+    btVector3 inertia(0, 0, 0);
+    sphereRigidbody3D.m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+    sphereRigidbody3D.m_body->setMassProps(mass, inertia);
+    sphereRigidbody3D.m_body->applyCentralImpulse({ impulse.x, impulse.y, impulse.z });
+    sphereRigidbody3D.updateFlags();
+    sphereRigidbody3D.reAddToWorld();
+    
+    SGCore::Transform& sphereTransform = testScene->getECSRegistry().get<SGCore::Transform>(sphereEntities[2]);
+    sphereTransform.m_ownTransform.m_position = spherePos;
+}
+
 void init()
 {
     SGCore::RenderPipelinesManager::registerRenderPipeline(SGCore::MakeRef<SGCore::PBRRenderPipeline>());
@@ -194,7 +225,8 @@ void init()
             cubePath
     );
 
-    auto sphereModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+    auto sphereModel = SGCore::AssetManager::loadAssetWithAlias<SGCore::ModelAsset>(
+            "ball0",
             "../SGResources/models/standard/sphere.obj"
     );
 
@@ -202,58 +234,45 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    std::vector<entt::entity> sphereEntities;
+    /*std::vector<entt::entity> sphereEntities;
     sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
                                       [&sphereEntities](const entt::entity& entity)
                                       {
                                           sphereEntities.push_back(entity);
-                                          auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(entity);
-                                          auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
                                       }
     );
     
     SGCore::Transform* sphereTransform = testScene->getECSRegistry().try_get<SGCore::Transform>(sphereEntities[0]);
     sphereTransform->m_ownTransform.m_position = { 0, 6.0, -20 };
     sphereTransform->m_ownTransform.m_rotation = { 0, 0, 0 };
-    sphereTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1.0 };
+    sphereTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1.0 };*/
     
-    SGCore::Rigidbody3D& sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(sphereEntities[2], testScene->getSystem<SGCore::PhysicsWorld3D>());
-    SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
-    sphereRigidbody3D.setShape(sphereRigidbody3DShape);
-    sphereRigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
-    sphereRigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
-    sphereRigidbody3D.m_body->setRestitution(1.1);
-    //sphereRigidbody3D.m_body->setDamping(0.001, 0.6);
-    sphereRigidbody3D.updateFlags();
-    sphereRigidbody3D.reAddToWorld();
-    // sphereRigidbody3D.getParentPhysicsWorld().lock()->getDynamicsWorld()->updateSingleAabb(sphereRigidbody3D.m_body.get());
-    // testScene->getECSRegistry().remove<SGCore::Rigidbody3D>(sphereEntities[0]);
-
-    SGCore::Mesh* sphereMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(sphereEntities[2]);
-    sphereMesh->m_base.m_meshData->m_material->setMetallicFactor(1);
-    sphereMesh->m_base.m_meshData->m_material->setRoughnessFactor(1);
+    auto sphereMeshData = sphereModel->m_nodes[0]->m_children[0]->m_meshesData[0];
     
-    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+    sphereMeshData->m_material->setMetallicFactor(1);
+    sphereMeshData->m_material->setRoughnessFactor(1);
+    
+    sphereMeshData->m_material->findAndAddTexture2D(
             SGTextureType::SGTT_DIFFUSE,
             "../SGResources/textures/spotted_rust/spotted-rust_albedo.png"
     );
     
-    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+    sphereMeshData->m_material->findAndAddTexture2D(
             SGTextureType::SGTT_LIGHTMAP,
             "../SGResources/textures/spotted_rust/spotted-rust_ao.png"
     );
     
-    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+    sphereMeshData->m_material->findAndAddTexture2D(
             SGTextureType::SGTT_METALNESS,
             "../SGResources/textures/spotted_rust/spotted-rust_metallic.png"
     );
     
-    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+    sphereMeshData->m_material->findAndAddTexture2D(
             SGTextureType::SGTT_NORMALS,
             "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png"
     );
     
-    sphereMesh->m_base.m_meshData->m_material->findAndAddTexture2D(
+    sphereMeshData->m_material->findAndAddTexture2D(
             SGTextureType::SGTT_DIFFUSE_ROUGHNESS,
             "../SGResources/textures/spotted_rust/spotted-rust_roughness.png"
     );
@@ -287,7 +306,7 @@ void init()
     }
     
     SGCore::Rigidbody3D& floorRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(floorEntities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
-    SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(200 / 2.0, 1 / 2.0, 200.0 / 2.0));
+    SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(500 / 2.0, 1 / 2.0, 500.0 / 2.0));
     floorRigidbody3D.setShape(floorRigidbody3DShape);
     floorRigidbody3D.m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
     floorRigidbody3D.m_body->setRestitution(0.9);
@@ -412,7 +431,7 @@ void init()
     
     {
         SGCore::Transform* model1Transform = testScene->getECSRegistry().try_get<SGCore::Transform>(model1Entities[0]);
-        model1Transform->m_ownTransform.m_position = { 0, 40.30, -20 };
+        model1Transform->m_ownTransform.m_position = { 0, 120.30, -20 };
         model1Transform->m_ownTransform.m_rotation = { 90, 90, 45 };
         model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
         
@@ -442,7 +461,7 @@ void init()
         model1Rigidbody3D.m_body->getCollisionShape()->setLocalScaling({ 0.4f, 0.4f, 0.4f });
         model1Rigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
         model1Rigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
-        btScalar mass = 10.0f;
+        btScalar mass = 1000.0f;
         btVector3 inertia(1, 0, 0);
         model1Rigidbody3D.m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
         model1Rigidbody3D.m_body->setMassProps(mass, inertia);
@@ -875,6 +894,17 @@ void fixedUpdate(const double& dt, const double& fixedDt)
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_3))
     {
         tr0.m_ownTransform.m_position.y += 0.1f;
+    }
+    
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_4))
+    {
+        SGCore::Transform& cameraTransform = testScene->getECSRegistry().get<SGCore::Transform>(testCameraEntity);
+        createBallAndApplyImpulse(cameraTransform.m_ownTransform.m_position, cameraTransform.m_ownTransform.m_forward * 200000.0f / 10.0f);
+    }
+    
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_5))
+    {
+        testScene->getECSRegistry().clear<SGCore::Rigidbody3D>();
     }
     
     SGCore::Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);

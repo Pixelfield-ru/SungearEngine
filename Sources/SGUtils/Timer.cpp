@@ -14,7 +14,7 @@
 // some code...
 // timer.startFrame();
 // timer.getRawDeltaTime() == glfwGetTime() ! NOT CORRECT !
-void SGUtils::Timer::startFrame()
+void SGCore::Timer::startFrame()
 {
     if(!m_active) return;
 
@@ -48,7 +48,7 @@ void SGUtils::Timer::startFrame()
         m_framesPerTarget++;
     }
 
-    m_elapsedTime = m_current - m_startTime;
+    m_elapsedTime += m_rawDeltaTime;
     
     if(m_elapsedTime >= m_targetFrameTime)
     {
@@ -88,19 +88,19 @@ void SGUtils::Timer::startFrame()
     }
 }
 
-void SGUtils::Timer::reset() noexcept
+void SGCore::Timer::reset() noexcept
 {
     m_elapsedTime = 0;
-    m_startTime = glfwGetTime();
     m_currentFixedUpdateCallTime = glfwGetTime();
     m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
     m_framesPerTarget = 0;
+    m_current = glfwGetTime();
 }
 
-void SGUtils::Timer::firstTimeStart()
+void SGCore::Timer::firstTimeStart()
 {
-    m_startTime = glfwGetTime();
     //m_current = m_startTime;
+    m_current = glfwGetTime();
 
     for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
     {
@@ -108,22 +108,22 @@ void SGUtils::Timer::firstTimeStart()
     }
 }
 
-void SGUtils::Timer::addCallback(std::shared_ptr<TimerCallback> callback)
+void SGCore::Timer::addCallback(std::shared_ptr<TimerCallback> callback)
 {
     m_callbacks.push_back(std::move(callback));
 }
 
-void SGUtils::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
+void SGCore::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
 {
     m_callbacks.remove(callback);
 }
 
-uint16_t SGUtils::Timer::getFramesPerTarget() const noexcept
+uint16_t SGCore::Timer::getFramesPerTarget() const noexcept
 {
     return m_framesPerTarget;
 }
 
-double SGUtils::Timer::getRawDeltaTime() const noexcept
+double SGCore::Timer::getRawDeltaTime() const noexcept
 {
     return m_rawDeltaTime;
 }

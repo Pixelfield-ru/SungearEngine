@@ -34,7 +34,7 @@ namespace SGCore
         glm::vec3 m_forward = MathUtils::forward3;
         glm::vec3 m_up = MathUtils::up3;
 
-        glm::mat4 m_translationMatrix   = glm::mat4(1);
+        glm::mat4 m_translationMatrix = glm::mat4(1);
         glm::mat4 m_rotationMatrix = glm::mat4(1);
         glm::mat4 m_scaleMatrix = glm::mat4(1);
 

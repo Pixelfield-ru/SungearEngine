@@ -24,7 +24,7 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_debugDraw->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     m_dynamicsWorld->setDebugDrawer(m_debugDraw.get());
     
-    m_dynamicsWorld->setGravity({ 0, -65.0, 0 });
+    m_dynamicsWorld->setGravity({ 0, -120.0, 0 });
 }
 
 void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexcept
@@ -49,7 +49,7 @@ void SGCore::PhysicsWorld3D::update(const double& dt) noexcept
 
 void SGCore::PhysicsWorld3D::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    m_dynamicsWorld->stepSimulation(dt, 12);
+    m_dynamicsWorld->stepSimulation(fixedDt, 12, 1 / 100.0f);
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene()
