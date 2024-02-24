@@ -31,7 +31,6 @@ add_subdirectory(imgui)
 add_subdirectory(entt)
 #add_subdirectory(fmt)
 find_package(Bullet REQUIRED)
-
 add_subdirectory(spdlog)
 
 add_subdirectory(sparse_map)

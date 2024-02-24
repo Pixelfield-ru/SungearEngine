@@ -18,6 +18,10 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     m_shadersPaths["Gizmos"]["ComplexGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
     m_shadersPaths["Gizmos"]["LinesGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/lines_shader.glsl";
     m_shadersPaths["PhysicsLinesDebugDrawShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/debug/physics_lines_debug_shader.glsl";
+    
+    // ============================== ui
+    
+    m_shadersPaths["TestTextShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/ui/text_shader.glsl";
 
     // configure render passes --------
 

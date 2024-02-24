@@ -4,9 +4,14 @@
 
 #include <stb/stb_image.h>
 
-void SGCore::TextureDataDeleter::operator()(std::uint8_t* data)
+void SGCore::STBITextureDataDeleter::operator()(void* data)
 {
     stbi_image_free(data);
+}
+
+void SGCore::VoidDataDeleter::operator()(void* data)
+{
+    free(data);
 }
 
 // ----------------------------------
@@ -19,11 +24,11 @@ void SGCore::ITexture2D::load(const std::string& path)
 
     m_path = path;
 
-    m_textureData = std::shared_ptr<std::uint8_t[]>(
+    m_textureData = Ref<std::uint8_t[]>(
             stbi_load(m_path.string().data(),
                       &m_width, &m_height,
                       &m_channelsCount, channelsDesired),
-            TextureDataDeleter { });
+            STBITextureDataDeleter { });
 
     if(m_channelsCount == 4)
     {
@@ -49,12 +54,42 @@ void SGCore::ITexture2D::load(const std::string& path)
                  m_path.string());
 }
 
+void SGCore::ITexture2D::create
+        (std::uint8_t* data,
+         const size_t& width,
+         const size_t& height,
+         const int& channelsCount,
+         SGGColorInternalFormat internalFormat,
+         SGGColorFormat format)
+{
+    size_t byteSize = width * height;
+    
+    m_width = width;
+    m_height = height;
+    m_channelsCount = channelsCount;
+    m_internalFormat = internalFormat;
+    m_format = format;
+    
+    m_textureData = Ref<std::uint8_t[]>(data);
+    
+    // std::memcpy(m_textureData.get(), data, byteSize);
+    
+    create();
+    
+    addToGlobalStorage();
+}
+
 void SGCore::ITexture2D::addToGlobalStorage() noexcept
 {
     GPUObjectsStorage::addTexture(shared_from_this());
 }
 
-SGCore::Ref<uint8_t[]> SGCore::ITexture2D::getData() noexcept
+SGCore::Ref<std::uint8_t[]> SGCore::ITexture2D::getData() noexcept
 {
     return m_textureData;
+}
+
+SGCore::ITexture2D::~ITexture2D()
+{
+
 }

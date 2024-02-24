@@ -18,6 +18,8 @@
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 #include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
+#include "SGCore/UI/UIElement.h"
+#include "SGCore/Memory/Assets/XMLDocument.h"
 
 SGCore::Scene::Scene()
 {
@@ -207,5 +209,25 @@ void SGCore::Scene::setCurrentScene(const std::string& sceneName) noexcept
     else
     {
         spdlog::error("Cannot set scene '{0}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
+    }
+}
+
+void SGCore::Scene::setUIXMLDocument(const SGCore::Ref<SGCore::XMLDocument>& xmlDocument) noexcept
+{
+    m_UIXMLDocument = xmlDocument;
+}
+
+SGCore::Weak<SGCore::XMLDocument> SGCore::Scene::getUIXMLDocument() const noexcept
+{
+    return m_UIXMLDocument;
+}
+
+void SGCore::Scene::reloadUI() noexcept
+{
+    m_ecsRegistry.clear<UIElement>();
+    
+    if(auto lockedUIDocument = m_UIXMLDocument.lock())
+    {
+        
     }
 }

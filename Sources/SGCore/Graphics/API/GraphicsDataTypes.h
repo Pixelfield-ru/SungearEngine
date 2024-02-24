@@ -415,6 +415,8 @@ enum SGGUsage
 
 enum SGGColorInternalFormat
 {
+    SGG_RED,
+    
     SGG_R8,
     SGG_R8_SIGNED_NORMALIZED,
 

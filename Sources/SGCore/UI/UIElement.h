@@ -6,12 +6,14 @@
 #define SUNGEARENGINE_UIELEMENT_H
 
 #include "SGCore/Main/CoreMain.h"
+#include <entt/entity/entity.hpp>
+#include <pugixml.hpp>
 
 namespace SGCore
 {
     struct UIElement
     {
-        std::vector<Ref<UIElement>> m_children;
+        std::vector<entt::entity> m_children;
     };
 }
 

@@ -19,6 +19,8 @@
 
 namespace SGCore
 {
+    struct XMLDocument;
+    
     // todo: make scenes list
     class Scene : public std::enable_shared_from_this<Scene>
     {
@@ -92,6 +94,10 @@ namespace SGCore
         
         Layer createLayer(const std::string& name) noexcept;
         
+        void setUIXMLDocument(const Ref<XMLDocument>& xmlDocument) noexcept;
+        Weak<XMLDocument> getUIXMLDocument() const noexcept;
+        void reloadUI() noexcept;
+        
         double getUpdateFunctionExecutionTime() const noexcept;
         double getFixedUpdateFunctionExecutionTime() const noexcept;
 
@@ -101,16 +107,17 @@ namespace SGCore
         
         entt::registry m_ecsRegistry;
 
-        static inline Ref<Scene> m_currentScene;
-        
-        static inline  std::vector<Ref<Scene>> m_scenes;
-
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 
         std::set<Ref<ISystem>> m_systems;
         std::unordered_map<std::string, Layer> m_layers;
 
         size_t m_maxLayersCount = 0;
+        
+        Weak<XMLDocument> m_UIXMLDocument;
+        
+        static inline Ref<Scene> m_currentScene;
+        static inline  std::vector<Ref<Scene>> m_scenes;
     };
 }
 

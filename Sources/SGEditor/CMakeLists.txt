@@ -20,19 +20,41 @@ target_link_libraries(${PROJECT_NAME}
         )
 
 if (${SG_RESOURCES_COPY_MODELS})
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        add_custom_target(SGEditorModelCopy ALL
                 COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_SOURCE_DIR}/Resources/SGResources/models ${CMAKE_BINARY_DIR}/Sources/SGResources/models)
+
+        add_dependencies(${PROJECT_NAME} SGEditorModelCopy)
 endif ()
 
 if (${SG_RESOURCES_COPY_SHADERS})
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        add_custom_target(SGEditorShadersCopy ALL
                 COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_SOURCE_DIR}/Resources/SGResources/shaders ${CMAKE_BINARY_DIR}/Sources/SGResources/shaders)
+
+        add_dependencies(${PROJECT_NAME} SGEditorShadersCopy)
 endif ()
 
 if (${SG_RESOURCES_COPY_TEXTURES})
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        add_custom_target(SGEditorTexturesCopy ALL
                 COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_SOURCE_DIR}/Resources/SGResources/textures ${CMAKE_BINARY_DIR}/Sources/SGResources/textures)
+
+        add_dependencies(${PROJECT_NAME} SGEditorTexturesCopy)
+endif ()
+
+if (${SG_RESOURCES_COPY_UI})
+        add_custom_target(SGEditorUICopy ALL
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/Resources/SGResources/ui ${CMAKE_BINARY_DIR}/Sources/SGResources/ui)
+
+        add_dependencies(${PROJECT_NAME} SGEditorUICopy)
+endif ()
+
+if (${SG_RESOURCES_COPY_FONTS})
+        add_custom_target(SGEditorFontsCopy ALL
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/Resources/SGResources/fonts ${CMAKE_BINARY_DIR}/Sources/SGResources/fonts)
+
+        add_dependencies(${PROJECT_NAME} SGEditorFontsCopy)
 endif ()

@@ -20,11 +20,16 @@ namespace SGCore
     class TextureAsset;
     class IFrameBuffer;
 
-    struct TextureDataDeleter
+    struct STBITextureDataDeleter
     {
-        void operator()(std::uint8_t* data);
+        void operator()(void* data);
     };
-
+    
+    struct VoidDataDeleter
+    {
+        void operator()(void* data);
+    };
+    
     class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>, public GPUObject
     {
         friend class IFrameBuffer;
@@ -32,12 +37,14 @@ namespace SGCore
         friend class AssetManager;
 
     public:
+        virtual ~ITexture2D();
+        
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
         SGGColorFormat m_format = SGGColorFormat::SGG_RGBA;
 
         int m_width = 0;
         int m_height = 0;
-        int m_channelsCount = 0;
+        int m_channelsCount = 1;
 
         int m_mipLevel = 0;
         int m_layer = 0;
@@ -48,6 +55,12 @@ namespace SGCore
         void load(const std::string& path) override;
 
         virtual void create() = 0;
+        virtual void create(std::uint8_t* data,
+                            const size_t& width,
+                            const size_t& height,
+                            const int& channelsCount,
+                            SGGColorInternalFormat internalFormat,
+                            SGGColorFormat format);
         virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
 
         virtual void destroy() = 0;

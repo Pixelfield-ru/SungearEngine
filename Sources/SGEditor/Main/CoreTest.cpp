@@ -49,6 +49,7 @@
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/Physics/PhysicsDebugDraw.h"
 #include "SGCore/Physics/Rigidbody3D.h"
+#include "SGCore/Memory/Assets/Font.h"
 
 btDefaultCollisionConfiguration* m_pCollisionConfiguration = new btDefaultCollisionConfiguration;
 
@@ -539,28 +540,48 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
+    std::vector<entt::entity> geniusEntities;
+    
     cubeModel1->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                       [geniusJPG](const entt::entity& entity)
+                                       [&geniusEntities](const entt::entity& entity)
                                        {
-                                           auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(entity);
-                                           auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(entity);
-
-                                           if(transform)
-                                           {
-                                               transform->m_ownTransform.m_position = { -5, 3, -30 };
-                                               transform->m_ownTransform.m_rotation = { 0, 0, 0 };
-                                               transform->m_ownTransform.m_scale = {0.1 * 10.0, 0.2 * 10.0, 0.1 * 10.0 };
-                                           }
-
-                                           if(mesh)
-                                           {
-                                               mesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, geniusJPG);
-                                               /*mesh->m_base.m_meshData->m_material->m_textures[SGTextureType::SGTT_DIFFUSE].push_back(
-                                                       geniusJPG // нупачиму
-                                               );*/
-                                           }
+                                           geniusEntities.push_back(entity);
                                        }
     );
+    
+    // ==========================================================================================
+    // ==========================================================================================
+    // ==========================================================================================
+    
+    // fonts test
+    
+    SGCore::Ref<SGCore::Font> timesNewRomanFont = SGCore::AssetManager::loadAssetWithAlias<SGCore::Font>(
+            "font_times_new_roman",
+            "../SGResources/fonts/timesnewromanpsmt.ttf"
+    );
+    
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomantFont_height12 = timesNewRomanFont->getSpecialization({ 12 });
+    
+    {
+        auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
+        auto geniusTransform = testScene->getECSRegistry().try_get<SGCore::Transform>(geniusEntities[2]);
+        
+        if(geniusTransform)
+        {
+            geniusTransform->m_ownTransform.m_position = { -5, 3, -30 };
+            geniusTransform->m_ownTransform.m_rotation = { 0, 0, 0 };
+            geniusTransform->m_ownTransform.m_scale = { 0.1 * 10.0, 0.2 * 10.0, 0.1 * 10.0 };
+        }
+        
+        if(geniusMesh)
+        {
+            geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomantFont_height12->m_atlas);
+            
+            geniusMesh->m_base.m_meshData->m_material->setShader(SGCore::MakeRef<SGCore::IShader>());
+            SGCore::MeshesUtils::loadMeshShader(geniusMesh->m_base, "TestTextShader");
+            geniusMesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
+        }
+    }
 
     // ==========================================================================================
     // ==========================================================================================

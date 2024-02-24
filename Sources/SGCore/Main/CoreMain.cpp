@@ -15,6 +15,7 @@
 
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
+#include "SGCore/UI/FontsManager.h"
 
 void SGCore::CoreMain::start()
 {
@@ -42,6 +43,7 @@ void SGCore::CoreMain::start()
     SGUtils::Singleton::getSharedPtrInstance<ShadersPaths>()->createDefaultPaths();
     InputManager::init();
     AssetManager::init();
+    FontsManager::init();
 
     std::shared_ptr<TimerCallback> globalTimerCallback = std::make_shared<TimerCallback>();
 

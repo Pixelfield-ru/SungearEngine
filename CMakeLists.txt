@@ -16,6 +16,8 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-implicit-fallthrough -Wno-ignored-qualif
 set(CMAKE_CXX_FLAGS_DEBUG "-O1")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+set(BUILD_SHARED_LIBS TRUE)
+
 if(MSVC)
     set(MSVC_RUNTIME "dynamic")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
@@ -57,6 +59,8 @@ set(SG_BUILD_TESTS OFF)
 set(SG_RESOURCES_COPY_MODELS ON)
 set(SG_RESOURCES_COPY_SHADERS ON)
 set(SG_RESOURCES_COPY_TEXTURES ON)
+set(SG_RESOURCES_COPY_UI ON)
+set(SG_RESOURCES_COPY_FONTS ON)
 
 # ----------------------------------
 add_subdirectory(syslibs)

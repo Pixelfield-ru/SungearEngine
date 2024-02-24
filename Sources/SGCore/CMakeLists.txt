@@ -18,6 +18,16 @@
     EXPORT_FILE_NAME ${SGCORE_SOURCES}
     STATIC_DEFINE SHARED_EXPORTS_BUILT_AS_STATIC)]]
 
+ find_package(pugixml CONFIG REQUIRED)
+
+ find_path(PUGIXML_INCLUDE_DIR pugixml.hpp)
+ message("PUGIXML_INCLUDE_DIR: " ${PUGIXML_INCLUDE_DIR})
+
+ find_package(Freetype CONFIG REQUIRED)
+ message("FREETYPE_FOUND: " ${FREETYPE_FOUND})
+ message("FREETYPE_INCLUDE_DIRS: " ${FREETYPE_INCLUDE_DIRS})
+ message("FREETYPE_LIBRARIES: " ${FREETYPE_LIBRARIES})
+
  target_include_directories(${PROJECT_NAME} PUBLIC
          ${CMAKE_SOURCE_DIR}/Externals
          ${CMAKE_SOURCE_DIR}/Externals/GLM
@@ -31,6 +41,8 @@
          ${CMAKE_SOURCE_DIR}/Externals/fmt/include
          ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
          ${BULLET_INCLUDE_DIR}
+         ${PUGIXML_INCLUDE_DIR}
+         ${FREETYPE_INCLUDE_DIRS}
 
          #${BULLET_INCLUDE_DIR}
 
@@ -38,7 +50,7 @@
          #"C:/VulkanSDK/1.3.250.1/Include"
          )
 
- # TODO: make for linux and mЫac
+ # TODO: make for linux and mac
  target_link_libraries(${PROJECT_NAME} PUBLIC
          glfw
          glm::glm
@@ -59,6 +71,10 @@
          ${BULLET_MATH_LIBRARY}
 
          ImGui
+
+         pugixml
+
+         ${FREETYPE_LIBRARIES}
 
          EnTT::EnTT
          SGUtils
