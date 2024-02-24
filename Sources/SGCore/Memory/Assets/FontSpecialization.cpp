@@ -83,6 +83,8 @@ void SGCore::FontSpecialization::build(const std::string& path)
             maxGlyphWidth = bitmapWidth;
         }
         
+        delete[] buffer;
+        
         buffer = new std::uint8_t[currentBufferSize];
         std::memcpy(buffer, tmpBuf, lastBufferSize);
         std::memcpy(buffer + lastBufferSize, m_face->glyph->bitmap.buffer, bitmapWidth * bitmapHeight);
@@ -102,7 +104,7 @@ void SGCore::FontSpecialization::build(const std::string& path)
     
     m_atlas->create(buffer,
                     currentAtlasWidth,
-                    1,
+                    maxGlyphHeight,
                     1,
                     SGGColorInternalFormat::SGG_R8,
                     SGGColorFormat::SGG_R);
