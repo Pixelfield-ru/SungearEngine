@@ -55,7 +55,7 @@ void SGCore::ITexture2D::load(const std::string& path)
 }
 
 void SGCore::ITexture2D::create
-        (std::uint8_t* data,
+        (const std::uint8_t* data,
          const size_t& width,
          const size_t& height,
          const int& channelsCount,
@@ -70,9 +70,9 @@ void SGCore::ITexture2D::create
     m_internalFormat = internalFormat;
     m_format = format;
     
-    m_textureData = Ref<std::uint8_t[]>(data);
+    m_textureData = Ref<std::uint8_t[]>(new std::uint8_t[byteSize]);
     
-    // std::memcpy(m_textureData.get(), data, byteSize);
+    std::memcpy(m_textureData.get(), data, byteSize);
     
     create();
     

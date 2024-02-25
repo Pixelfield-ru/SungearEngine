@@ -31,6 +31,20 @@ SGCore::VkVertexAttribute* SGCore::VkVertexBufferLayout::createVertexAttribute
     return nullptr;
 }
 
+SGCore::VkVertexAttribute*
+SGCore::VkVertexBufferLayout::createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
+                                                    bool normalized, const size_t& divisor) noexcept
+{
+    return nullptr;
+}
+
+SGCore::VkVertexAttribute*
+SGCore::VkVertexBufferLayout::createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
+                                                    const size_t& divisor) noexcept
+{
+    return nullptr;
+}
+
 SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::VkVertexBufferLayout::enableAttribute
 (const Ref<IVertexAttribute>&) noexcept
 {

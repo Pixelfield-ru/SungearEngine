@@ -55,7 +55,7 @@ namespace SGCore
         void load(const std::string& path) override;
 
         virtual void create() = 0;
-        virtual void create(std::uint8_t* data,
+        virtual void create(const std::uint8_t* data,
                             const size_t& width,
                             const size_t& height,
                             const int& channelsCount,

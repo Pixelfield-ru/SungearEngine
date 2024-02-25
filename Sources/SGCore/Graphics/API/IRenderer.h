@@ -72,6 +72,13 @@ namespace SGCore
                                  const MeshDataRenderInfo& meshDataRenderInfo,
                                  const size_t& verticesCount,
                                  const size_t& indicesCount) { }
+        
+        virtual void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
+                                          const MeshDataRenderInfo& meshDataRenderInfo,
+                                          const size_t& verticesCount,
+                                          const size_t& indicesCount,
+                                          const size_t& instancesCount)
+        {}
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.

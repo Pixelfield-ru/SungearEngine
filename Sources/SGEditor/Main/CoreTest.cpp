@@ -50,6 +50,8 @@
 #include "SGCore/Physics/PhysicsDebugDraw.h"
 #include "SGCore/Physics/Rigidbody3D.h"
 #include "SGCore/Memory/Assets/Font.h"
+#include "SGCore/UI/FontSpecializationRenderer.h"
+#include "SGCore/UI/Text.h"
 
 btDefaultCollisionConfiguration* m_pCollisionConfiguration = new btDefaultCollisionConfiguration;
 
@@ -61,6 +63,10 @@ SGCore::Ref<SGCore::Scene> testScene;
 SGCore::Atmosphere* _atmosphereScattering = nullptr;
 
 std::vector<entt::entity> model1Entities;
+
+SGCore::Ref<SGCore::FontSpecializationRenderer> timesNewRomanFont_height12Spec_renderer;
+SGCore::Text* helloWorldUIText = nullptr;
+SGCore::Transform* helloWorldUITextTransform = nullptr;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -560,7 +566,21 @@ void init()
             "../SGResources/fonts/timesnewromanpsmt.ttf"
     );
     
-    SGCore::Ref<SGCore::FontSpecialization> timesNewRomantFont_height12 = timesNewRomanFont->getSpecialization({ 12 });
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height12 = timesNewRomanFont->getSpecialization({ 12 });
+    
+    timesNewRomanFont_height12->saveTextAsTexture("font_spec_text_test.png", u"Hi there! Это русский текст. Текст собран из сгенерированного атласа!");
+    
+    timesNewRomanFont_height12Spec_renderer = SGCore::MakeRef<SGCore::FontSpecializationRenderer>();
+    timesNewRomanFont_height12Spec_renderer->m_parentSpecialization = timesNewRomanFont_height12;
+    
+    entt::entity textEntity = testScene->getECSRegistry().create();
+    helloWorldUIText = &testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
+    helloWorldUITextTransform = &testScene->getECSRegistry().emplace<SGCore::Transform>(textEntity);
+    helloWorldUITextTransform->m_ownTransform.m_scale = { 0.1, 0.1, 1 };
+    helloWorldUITextTransform->m_ownTransform.m_position = { 0.1, 0.1, -1 };
+    
+    helloWorldUIText->m_text = u"H";
+    helloWorldUIText->m_color = { 1.0, 0.0, 0.0, 1.0 };
     
     {
         auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
@@ -570,12 +590,12 @@ void init()
         {
             geniusTransform->m_ownTransform.m_position = { -5, 3, -30 };
             geniusTransform->m_ownTransform.m_rotation = { 0, 0, 0 };
-            geniusTransform->m_ownTransform.m_scale = { 0.1 * 10.0, 0.2 * 10.0, 0.1 * 10.0 };
+            geniusTransform->m_ownTransform.m_scale = { 3 * 10.0, 0.1 * 10.0, 0.1 * 10.0 };
         }
         
         if(geniusMesh)
         {
-            geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomantFont_height12->m_atlas);
+            geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomanFont_height12->m_atlas);
             
             geniusMesh->m_base.m_meshData->m_material->setShader(SGCore::MakeRef<SGCore::IShader>());
             SGCore::MeshesUtils::loadMeshShader(geniusMesh->m_base, "TestTextShader");
@@ -851,7 +871,7 @@ void init()
                 testShadowsCaster);
         SGCore::BoxGizmo& testShadowsCasterBoxGizmo = testScene->getECSRegistry().emplace<SGCore::BoxGizmo>(
                 testShadowsCaster);
-        testShadowsCasterBoxGizmo.m_size = { 50.0, 50.0, 50.0 };
+        testShadowsCasterBoxGizmo.m_realSize = { 50.0, 50.0, 50.0 };
         testShadowsCasterBoxGizmo.m_base.m_color = { 1.0, 1.0, 1.0, 1.0 };
         testShadowsCasterDirLight.m_base.m_color = { 0.0f, 1.0f, 0.0f, 1.0f };
         testShadowsCasterDirLight.m_base.m_intensity = 1200.0f;
@@ -1035,6 +1055,9 @@ void update(const double& dt)
     viewsInjector.renderViews();
 
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
+    
+    timesNewRomanFont_height12Spec_renderer->drawText(*helloWorldUIText, *helloWorldUITextTransform);
+    timesNewRomanFont_height12Spec_renderer->drawAll();
 }
 
 // --------------------------------------------

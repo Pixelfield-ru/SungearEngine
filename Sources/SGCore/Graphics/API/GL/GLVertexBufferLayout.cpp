@@ -12,7 +12,7 @@ SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::prepare()
     std::uint32_t offset = 0;
     m_stride = 0;
 
-    for(const Ref<IVertexAttribute>& attribute : m_attributes)
+    for(const auto& attribute : m_attributes)
     {
         attribute->m_offset = offset;
 
@@ -57,13 +57,39 @@ std::uint16_t SGCore::GLVertexBufferLayout::getVertexAttributeSizeInLayout
 SGCore::GLVertexAttribute* SGCore::GLVertexBufferLayout::createVertexAttribute
 (std::uint16_t ID, std::string name, SGGDataType dataType) noexcept
 {
-    return new GLVertexAttribute(ID, std::move(name), dataType, false);
+    auto* attrib = new GLVertexAttribute(ID, std::move(name), dataType, false, 1);
+    attrib->m_useDivisor = false;
+    
+    return attrib;
 }
 
 SGCore::GLVertexAttribute* SGCore::GLVertexBufferLayout::createVertexAttribute
 (std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) noexcept
 {
-    return new GLVertexAttribute(ID, std::move(name), dataType, normalized);
+    auto* attrib = new GLVertexAttribute(ID, std::move(name), dataType, normalized, 1);
+    attrib->m_useDivisor = false;
+    
+    return attrib;
+}
+
+SGCore::GLVertexAttribute*
+SGCore::GLVertexBufferLayout::createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
+                                                    bool normalized, const size_t& divisor) noexcept
+{
+    auto* attrib = new GLVertexAttribute(ID, std::move(name), dataType, normalized, divisor);
+    attrib->m_useDivisor = true;
+    
+    return attrib;
+}
+
+SGCore::GLVertexAttribute*
+SGCore::GLVertexBufferLayout::createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
+                                                    const size_t& divisor) noexcept
+{
+    auto* attrib = new GLVertexAttribute(ID, std::move(name), dataType, false, divisor);
+    attrib->m_useDivisor = true;
+    
+    return attrib;
 }
 
 SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::addAttribute
@@ -87,6 +113,11 @@ SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enableAtt
             (GLsizei) m_stride,
             (GLvoid*) attribute->m_offset
             );
+    
+    if(attribute->m_useDivisor)
+    {
+        glVertexAttribDivisor(attribute->m_ID, attribute->m_divisor);
+    }
 
     //glDisableVertexAttribArray(attribute->m_ID);
 

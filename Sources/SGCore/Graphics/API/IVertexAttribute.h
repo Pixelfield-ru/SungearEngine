@@ -28,12 +28,23 @@ namespace SGCore
         std::uint32_t m_ID = 0;
         std::string m_name;
         SGGDataType m_dataType = SGGDataType::SGG_NONE;
+        
+        bool m_useDivisor = false;
+        size_t m_divisor = 1;
 
         IVertexAttribute() = delete;
-
-        IVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) : m_ID(ID), m_name(std::move(name)), m_dataType(dataType), m_normalized(normalized)
+        
+        IVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) : m_normalized(
+                normalized), m_ID(ID), m_name(std::move(name)), m_dataType(dataType)
         {
-
+        
+        }
+        
+        IVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized,
+                         const size_t& divisor) : m_normalized(normalized), m_ID(ID), m_name(std::move(name)),
+                                                  m_dataType(dataType), m_useDivisor(true), m_divisor(divisor)
+        {
+        
         }
 
         //virtual int getAttributeSize() = 0;

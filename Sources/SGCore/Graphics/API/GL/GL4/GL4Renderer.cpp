@@ -34,8 +34,8 @@ void SGCore::GL4Renderer::init() noexcept
     spdlog::info("-----------------------------------");
 
     // -------------------------------------
-
-    DeviceGLInfo::prepareInfo();
+    
+    DeviceGLInfo::init();
 
     if(!confirmSupport())
     {
@@ -258,6 +258,52 @@ void SGCore::GL4Renderer::renderArray(const SGCore::Ref<SGCore::IVertexArray>& v
     {
         glDrawElements(drawMode, indicesCount,
                        GL_UNSIGNED_INT, nullptr);
+    }
+}
+
+void SGCore::GL4Renderer::renderArrayInstanced(const SGCore::Ref<SGCore::IVertexArray>& vertexArray,
+                                               const SGCore::MeshDataRenderInfo& meshDataRenderInfo,
+                                               const size_t& verticesCount, const size_t& indicesCount,
+                                               const size_t& instancesCount)
+{
+    if(meshDataRenderInfo.m_enableFacesCulling)
+    {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshDataRenderInfo.m_facesCullingFaceType));
+        glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
+                meshDataRenderInfo.m_facesCullingPolygonsOrder)
+        );
+    }
+    else
+    {
+        glDisable(GL_CULL_FACE);
+    }
+    
+    if(vertexArray)
+    {
+        vertexArray->bind();
+    }
+    
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshDataRenderInfo.m_drawMode);
+    
+    if(drawMode == GL_LINES)
+    {
+        glLineWidth(meshDataRenderInfo.m_linesWidth);
+    }
+    
+    if(drawMode == GL_POINTS)
+    {
+        glPointSize(meshDataRenderInfo.m_pointsSize);
+    }
+    
+    if(!meshDataRenderInfo.m_useIndices)
+    {
+        glDrawArraysInstanced(drawMode, 0, verticesCount, instancesCount);
+    }
+    else
+    {
+        glDrawElementsInstanced(drawMode, indicesCount,
+                                GL_UNSIGNED_INT, nullptr, instancesCount);
     }
 }
 

@@ -51,6 +51,12 @@ namespace SGCore
                          const MeshDataRenderInfo& meshDataRenderInfo,
                          const size_t& verticesCount,
                          const size_t& indicesCount) override;
+        
+        void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
+                                  const MeshDataRenderInfo& meshDataRenderInfo,
+                                  const size_t& verticesCount,
+                                  const size_t& indicesCount,
+                                  const size_t& instancesCount) override;
 
         void printInfo() noexcept override;
 
