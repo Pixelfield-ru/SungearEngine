@@ -8,6 +8,7 @@
 #include "PBRRPGeometryPass.h"
 #include "SGCore/Render/PostProcess/PostProcessFXPass.h"
 #include "PBRRPDirectionalLightsPass.h"
+#include "SGCore/Render/TextRenderPass.h"
 
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
@@ -43,6 +44,12 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
         auto directionalLightsPass = MakeRef<PBRRPDirectionalLightsPass>();
 
         m_renderPasses.push_back(directionalLightsPass);
+    }
+    
+    {
+        auto textRenderPass = MakeRef<TextRenderPass>();
+        
+        m_renderPasses.push_back(textRenderPass);
     }
 
     // WARNING! PostProcessFXPass ALWAYS AFTER OTHER PASSES

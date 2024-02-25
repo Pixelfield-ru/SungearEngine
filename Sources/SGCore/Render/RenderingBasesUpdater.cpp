@@ -42,7 +42,7 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
             );
         }
 
-        renderingBase.m_spaceMatrixChanged = false;
+        renderingBase.m_projectionSpaceMatrixChanged = false;
 
         bool projectionMatrixChanged = false;
 
@@ -80,9 +80,24 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
 
         // if(viewMatrixChanged || projectionMatrixChanged)
         {
-            renderingBase.m_spaceMatrix =
+            renderingBase.m_projectionSpaceMatrix =
                     renderingBase.m_projectionMatrix * renderingBase.m_viewMatrix;
-            renderingBase.m_spaceMatrixChanged = true;
+            renderingBase.m_projectionSpaceMatrixChanged = true;
+        }
+        
+        if(renderingBase.m_left != renderingBase.m_lastLeft ||
+           renderingBase.m_right != renderingBase.m_lastRight ||
+           renderingBase.m_bottom != renderingBase.m_lastRight ||
+           renderingBase.m_top != renderingBase.m_lastTop)
+        {
+            renderingBase.m_orthographicMatrix = glm::ortho<float>(renderingBase.m_left, renderingBase.m_right,
+                                                                   renderingBase.m_bottom, renderingBase.m_top);
+        }
+        
+        {
+            renderingBase.m_orthographicSpaceMatrix =
+                    renderingBase.m_orthographicMatrix * renderingBase.m_viewMatrix;
+            renderingBase.m_projectionSpaceMatrixChanged = true;
         }
     });
 }

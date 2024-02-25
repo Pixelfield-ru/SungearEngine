@@ -64,7 +64,7 @@ SGSubPass(GeometryPass)
                     skyboxCol += texture(mat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
                 }
 
-                fragColor = vec4(atmosphereCol, skyboxCol.a);
+                fragColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);
             }
             else
             {

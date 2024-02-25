@@ -23,10 +23,6 @@ namespace SGCore
         bool m_active = true;
         bool m_cyclic = false;
         bool m_useFixedUpdateCatchUp = true;
-
-        double m_targetFrameRate = 120.0;
-        
-        double m_targetFrameTime = 1 / m_targetFrameRate;
         
         // ------------------------------------
 
@@ -42,15 +38,20 @@ namespace SGCore
         void startFrame();
         //void endFrame();
 
-        void reset() noexcept;
+        void resetTimer() noexcept;
 
         void firstTimeStart();
 
         void addCallback(std::shared_ptr<TimerCallback> callback);
         void removeCallback(const std::shared_ptr<TimerCallback>& callback);
 
-        [[nodiscard]] std::uint16_t getFramesPerTarget() const noexcept;
+        [[nodiscard]] std::uint16_t getFramesPerSecond() const noexcept;
         [[nodiscard]] double getRawDeltaTime() const noexcept;
+        
+        [[nodiscard]] double getTargetFrameRate() const noexcept;
+        void setTargetFrameRate(const double& frameRate) noexcept;
+        
+        [[nodiscard]] double getTargetFrameTime() const noexcept;
         
         [[nodiscard]] double getFixedUpdateCallDeltaTime() const noexcept
         {
@@ -58,11 +59,17 @@ namespace SGCore
         }
 
     private:
+        double m_FPSDeltaTimeAccum = 0.0;
+        
+        double m_targetFrameRate = 120.0;
+        
+        double m_targetFrameTime = 1 / m_targetFrameRate;
+        
         double m_currentFixedUpdateCallTime = 0.0;
         double m_lastFixedUpdateCallTime = 0.0;
         double m_fixedUpdateCallDeltaTime = 0.0;
         
-        double m_current = 0;
+        double m_currentTime = 0;
 
         double m_elapsedTime = 0;
 
@@ -73,7 +80,8 @@ namespace SGCore
 
         bool m_firstTime = true;
 
-        uint16_t m_framesPerTarget = 0;
+        uint16_t m_framesPerSecond = 0;
+        uint16_t m_framesPerSecondAccum = 0;
 
         std::list<std::shared_ptr<TimerCallback>> m_callbacks;
     };

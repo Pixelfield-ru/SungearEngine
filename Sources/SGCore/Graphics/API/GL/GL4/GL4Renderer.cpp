@@ -56,16 +56,21 @@ void SGCore::GL4Renderer::init() noexcept
     // -------------------------------------
 
     // TODO: make defines for uniforms names
-
+    
     m_viewMatricesBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
     m_viewMatricesBuffer->m_blockName = "CameraData";
     m_viewMatricesBuffer->putUniforms({
+                                              IShaderUniform("camera.projectionSpaceMatrix", SGGDataType::SGG_MAT4),
+                                              IShaderUniform("camera.orthographicSpaceMatrix", SGGDataType::SGG_MAT4),
+                                              IShaderUniform("camera.orthographicMatrix", SGGDataType::SGG_MAT4),
                                               IShaderUniform("camera.projectionMatrix", SGGDataType::SGG_MAT4),
                                               IShaderUniform("camera.viewMatrix", SGGDataType::SGG_MAT4),
-                                              IShaderUniform("camera.spaceMatrix", SGGDataType::SGG_MAT4),
                                               IShaderUniform("camera.position", SGGDataType::SGG_FLOAT3),
+                                              IShaderUniform("camera.p0", SGGDataType::SGG_FLOAT),
                                               IShaderUniform("camera.rotation", SGGDataType::SGG_FLOAT3),
-                                              IShaderUniform("camera.scale", SGGDataType::SGG_FLOAT3)
+                                              IShaderUniform("camera.p1", SGGDataType::SGG_FLOAT),
+                                              IShaderUniform("camera.scale", SGGDataType::SGG_FLOAT3),
+                                              IShaderUniform("camera.p2", SGGDataType::SGG_FLOAT)
                                         });
     m_viewMatricesBuffer->setLayoutLocation(1);
     m_viewMatricesBuffer->prepare();
@@ -142,8 +147,14 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const RenderingBase& renderingBa
     m_viewMatricesBuffer->bind();
     m_programDataBuffer->bind();
 
-    m_viewMatricesBuffer->subData("camera.spaceMatrix",
-                                  glm::value_ptr(renderingBase.m_spaceMatrix), 16
+    m_viewMatricesBuffer->subData("camera.projectionSpaceMatrix",
+                                  glm::value_ptr(renderingBase.m_projectionSpaceMatrix), 16
+    );
+    m_viewMatricesBuffer->subData("camera.orthographicSpaceMatrix",
+                                  glm::value_ptr(renderingBase.m_orthographicSpaceMatrix), 16
+    );
+    m_viewMatricesBuffer->subData("camera.orthographicMatrix",
+                                  glm::value_ptr(renderingBase.m_orthographicMatrix), 16
     );
     m_viewMatricesBuffer->subData("camera.projectionMatrix",
                                   glm::value_ptr(renderingBase.m_projectionMatrix), 16

@@ -223,7 +223,7 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, SGCore::Tr
             curOffsetX += 0.02f;
             continue;
         }
-        
+
         const FontGlyph* glyph = lockedSpec->tryGetGlyph(c);
         
         if(glyph)
@@ -265,9 +265,6 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, SGCore::Tr
             // uvs =====================================================
             size_t uvsOffset = m_currentDrawingCharacter * 8;
             
-            /*std::cout << "min: " << glyph->m_uvMin.x << ", " << glyph->m_uvMin.y << std::endl;
-            std::cout << "max: " << glyph->m_uvMax.x << ", " << glyph->m_uvMax.y << std::endl;*/
-            
             m_charactersUVs[uvsOffset] = glyph->m_uvMin.x;
             m_charactersUVs[uvsOffset + 1] = glyph->m_uvMax.y;
             
@@ -308,14 +305,17 @@ void SGCore::FontSpecializationRenderer::drawAll() noexcept
     m_charactersUVsVertexBuffer->subData(m_charactersUVs.data(), vCnt * 8, 0);
     
     subPassShader->bind();
+    subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
     
-    // AssetManager::loadAsset<ITexture2D>("../SGResources/textures/genius.jpg")->bind(0);
     lockedParentSpec->m_atlas->bind(0);
     
     // todo: do for each camera
     CoreMain::getRenderer()->renderArrayInstanced(m_charactersVertexArray, m_textRenderInfo, 6, 6,
                                                   m_currentDrawingCharacter);
-    
+}
+
+void SGCore::FontSpecializationRenderer::resetRenderer() noexcept
+{
     m_currentDrawingCharacter = 0;
 }
 

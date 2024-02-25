@@ -4,6 +4,8 @@ SGSubPass(TextRenderPass)
 {
     SGSubShader(Vertex)
     {
+        #sg_include "../uniform_bufs_decl.glsl"
+
         layout (location = 0) in mat4 characterModelMatrix;
         layout (location = 4) in vec4 characterColor;
         layout (location = 5) in vec2 characterUV[4];
@@ -17,7 +19,7 @@ SGSubPass(TextRenderPass)
             vs_UVAttribute = characterUV[gl_VertexID];
             vs_characterColor = characterColor;
 
-            gl_Position = characterModelMatrix * vec4(characterVertexPosition, 1.0);
+            gl_Position = camera.orthographicSpaceMatrix * characterModelMatrix * vec4(characterVertexPosition, 1.0);
         }
     }
 

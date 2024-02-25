@@ -280,7 +280,7 @@ void PbrtExporter::WriteCamera(int i) {
     auto camera = mScene->mCameras[i];
     bool cameraActive = i == 0;
 
-    mOutput << "# - Camera " << i+1 <<  ": "
+    mOutput << "# - PostProcessFrameReceiver " << i+1 <<  ": "
         << camera->mName.C_Str() << "\n";
 
     // Get camera aspect ratio
@@ -318,7 +318,7 @@ void PbrtExporter::WriteCamera(int i) {
     // Get camera transform
     aiMatrix4x4 worldFromCamera = GetNodeTransform(camera->mName);
 
-    // Print Camera LookAt
+    // Print PostProcessFrameReceiver LookAt
     auto position = worldFromCamera * camera->mPosition;
     auto lookAt = worldFromCamera * (camera->mPosition + camera->mLookAt);
     aiMatrix3x3 worldFromCamera3(worldFromCamera);
@@ -344,7 +344,7 @@ void PbrtExporter::WriteCamera(int i) {
     // Print camera descriptor
     if (!cameraActive)
         mOutput << "# ";
-    mOutput << "Camera \"perspective\" \"float fov\" " << "[" << fov << "]\n\n";
+    mOutput << "PostProcessFrameReceiver \"perspective\" \"float fov\" " << "[" << fov << "]\n\n";
 }
 
 void PbrtExporter::WriteWorldDefinition() {

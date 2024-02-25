@@ -137,7 +137,7 @@ const Object* LazyObject::Get(bool dieOnError) {
             }
         }
         else if (!strncmp(obtype,"NodeAttribute",length)) {
-            if (!strcmp(classtag.c_str(),"Camera")) {
+            if (!strcmp(classtag.c_str(),"PostProcessFrameReceiver")) {
                 object.reset(new Camera(id,element,doc,name));
             }
             else if (!strcmp(classtag.c_str(),"CameraSwitcher")) {

@@ -881,7 +881,7 @@ void DNA::RegisterConverters() {
     converters["Scene"] = DNA::FactoryPair(&Structure::Allocate<Scene>, &Structure::Convert<Scene>);
     converters["Library"] = DNA::FactoryPair(&Structure::Allocate<Library>, &Structure::Convert<Library>);
     converters["Tex"] = DNA::FactoryPair(&Structure::Allocate<Tex>, &Structure::Convert<Tex>);
-    converters["Camera"] = DNA::FactoryPair(&Structure::Allocate<Camera>, &Structure::Convert<Camera>);
+    converters["PostProcessFrameReceiver"] = DNA::FactoryPair(&Structure::Allocate<Camera>, &Structure::Convert<Camera>);
     converters["MirrorModifierData"] = DNA::FactoryPair(&Structure::Allocate<MirrorModifierData>, &Structure::Convert<MirrorModifierData>);
     converters["Image"] = DNA::FactoryPair(&Structure::Allocate<Image>, &Structure::Convert<Image>);
     converters["CustomData"] = DNA::FactoryPair(&Structure::Allocate<CustomData>, &Structure::Convert<CustomData>);

@@ -294,7 +294,7 @@ protected:
     using LightLibrary = std::map<std::string, Collada::Light> ;
     LightLibrary mLightLibrary;
 
-    /** Camera library: surface material by ID */
+    /** PostProcessFrameReceiver library: surface material by ID */
     using CameraLibrary = std::map<std::string, Collada::Camera> ;
     CameraLibrary mCameraLibrary;
 

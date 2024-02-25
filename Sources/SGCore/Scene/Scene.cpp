@@ -28,7 +28,15 @@ SGCore::Scene::Scene()
 
 void SGCore::Scene::createDefaultSystems()
 {
-    // -------------
+    // physics ===================
+    
+    // ALWAYS BEFORE TRANSFORMATIONS UPDATER
+    auto physicsWorld = MakeRef<PhysicsWorld3D>();
+    addSystem(physicsWorld);
+    
+    // ===================
+    
+    // ===================
     // rendering
     
     auto thisShared = shared_from_this();
@@ -42,9 +50,9 @@ void SGCore::Scene::createDefaultSystems()
     auto directionalLightsUpdater = MakeRef<DirectionalLightsUpdater>();
     addSystem(directionalLightsUpdater);
     
-    // -------------
+    // ===================
     
-    // transformations
+    // transformations ===================
 
     auto transformationsUpdater = MakeRef<TransformationsUpdater>();
     addSystem(transformationsUpdater);
@@ -52,7 +60,7 @@ void SGCore::Scene::createDefaultSystems()
     auto controllables3DUpdater = MakeRef<Controllables3DUpdater>();
     addSystem(controllables3DUpdater);
     
-    // gizmos
+    // gizmos ===================
 
     auto boxGizmosUpdater = MakeRef<BoxGizmosUpdater>();
     addSystem(boxGizmosUpdater);
@@ -63,14 +71,7 @@ void SGCore::Scene::createDefaultSystems()
     auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();
     addSystem(sphereGizmosUpdater);
 
-    // -------------
-    
-    // physics
-    
-    auto physicsWorld = MakeRef<PhysicsWorld3D>();
-    addSystem(physicsWorld);
-    
-    // -------------
+    // ===================
     
     for(auto& system : m_systems)
     {
@@ -143,7 +144,7 @@ void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
     m_systems.emplace(system);
 }
 
-const std::set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() noexcept
+const std::unordered_set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() noexcept
 {
     return m_systems;
 }

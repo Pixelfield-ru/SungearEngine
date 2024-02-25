@@ -12,7 +12,7 @@
 namespace SGCore
 {
     class IMeshData;
-    class Camera;
+    class PostProcessFrameReceiver;
     struct IRenderPipeline;
     class Scene;
 
@@ -26,10 +26,10 @@ namespace SGCore
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
 
     private:
-        void depthPass(Camera& camera) const noexcept;
-        void FXPass(Camera& camera) const noexcept;
-        void layersCombiningPass(Camera& camera) const noexcept;
-        void finalFrameFXPass(Camera& camera) const;
+        void depthPass(PostProcessFrameReceiver& camera) const noexcept;
+        void FXPass(PostProcessFrameReceiver& camera) const noexcept;
+        void layersCombiningPass(PostProcessFrameReceiver& camera) const noexcept;
+        void finalFrameFXPass(PostProcessFrameReceiver& camera) const;
     };
 }
 

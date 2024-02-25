@@ -14,9 +14,10 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Render/Camera.h"
+#include "SGCore/Render/PostProcessFrameReceiver.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Scene/Scene.h"
+#include "SGCore/Render/Camera3D.h"
 
 SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
 {
@@ -181,15 +182,22 @@ void SGCore::PhysicsDebugDraw::drawAll(const Ref<Scene>& scene)
     
     subPassShader->bind();
     
-    auto camerasView = scene->getECSRegistry().view<RenderingBase, Camera, Transform>();
+    auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Transform>();
     
-    camerasView.each([this, &subPassShader, &vCnt, &iCnt](RenderingBase& renderingBase, Camera& camera, Transform& transform) {
+    camerasView.each([this, &subPassShader, &vCnt, &iCnt](Camera3D& camera3D, RenderingBase& renderingBase, Transform& transform) {
+        // todo: make get receiver (postprocess or default) and render in them
+        
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
         subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
         
         CoreMain::getRenderer()->renderArray(m_linesVertexArray, m_linesRenderInfo, vCnt, iCnt);
     });
     
+    m_currentDrawingLine = 0;
+}
+
+void SGCore::PhysicsDebugDraw::resetRenderer() noexcept
+{
     m_currentDrawingLine = 0;
 }
 

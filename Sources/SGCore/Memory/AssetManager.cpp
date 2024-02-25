@@ -22,3 +22,8 @@ void SGCore::AssetManager::init()
 
     spdlog::info("-----------------------------------");
 }
+
+entt::registry& SGCore::AssetManager::getRegistry() noexcept
+{
+    return m_registry;
+}

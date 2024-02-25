@@ -20,7 +20,7 @@ namespace SGCore
 
     struct PostProcessLayer
     {
-        friend class Camera;
+        friend class PostProcessFrameReceiver;
 
         std::vector<PostProcessFXSubPass> m_subPasses;
 
@@ -74,13 +74,13 @@ namespace SGCore
     };
 
     // todo: make change for default PP shader
-    class Camera
+    class PostProcessFrameReceiver
     {
         friend struct Controllables3DUpdater;
 
     public:
-        Camera();
-
+        PostProcessFrameReceiver();
+        
         Ref<IShader> m_shader;
 
         Ref<IFrameBuffer> m_ppLayersCombinedBuffer;

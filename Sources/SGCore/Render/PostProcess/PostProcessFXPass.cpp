@@ -31,9 +31,9 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const Ref<IRende
 {
     CoreMain::getRenderer()->setDepthTestingEnabled(false);
 
-    auto camerasView = scene->getECSRegistry().view<Camera>();
+    auto receiversView = scene->getECSRegistry().view<PostProcessFrameReceiver>();
 
-    camerasView.each([this](Camera& camera) {
+    receiversView.each([this](PostProcessFrameReceiver& camera) {
         depthPass(camera);
         FXPass(camera);
         layersCombiningPass(camera);
@@ -44,7 +44,7 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const Ref<IRende
 }
 
 // DONE
-void SGCore::PostProcessFXPass::depthPass(Camera& camera) const noexcept
+void SGCore::PostProcessFXPass::depthPass(PostProcessFrameReceiver& camera) const noexcept
 {
     auto depthPassShader = camera.m_shader->getSubPassShader("PostProcessLayerDepthPass");
 
@@ -75,7 +75,7 @@ void SGCore::PostProcessFXPass::depthPass(Camera& camera) const noexcept
 }
 
 // DONE
-void SGCore::PostProcessFXPass::FXPass(SGCore::Camera& camera) const noexcept
+void SGCore::PostProcessFXPass::FXPass(SGCore::PostProcessFrameReceiver& camera) const noexcept
 {
     for(const auto& ppLayerPair: camera.getPostProcessLayers())
     {
@@ -113,7 +113,7 @@ void SGCore::PostProcessFXPass::FXPass(SGCore::Camera& camera) const noexcept
 }
 
 // DONE
-void SGCore::PostProcessFXPass::layersCombiningPass(Camera& camera) const noexcept
+void SGCore::PostProcessFXPass::layersCombiningPass(PostProcessFrameReceiver& camera) const noexcept
 {
     auto ppLayerCombiningShader = camera.m_shader->getSubPassShader("PostProcessAttachmentsCombiningPass");
 
@@ -171,7 +171,7 @@ void SGCore::PostProcessFXPass::layersCombiningPass(Camera& camera) const noexce
 }
 
 // DONE
-void SGCore::PostProcessFXPass::finalFrameFXPass(Camera& camera) const
+void SGCore::PostProcessFXPass::finalFrameFXPass(PostProcessFrameReceiver& camera) const
 {
     auto ppFinalFxShader = camera.m_shader->getSubPassShader("PostProcessFinalFXPass");
 

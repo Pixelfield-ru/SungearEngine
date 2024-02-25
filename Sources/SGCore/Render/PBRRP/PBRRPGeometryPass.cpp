@@ -6,7 +6,7 @@
 
 #include "PBRRPGeometryPass.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Render/Camera.h"
+#include "SGCore/Render/PostProcessFrameReceiver.h"
 #include "SGCore/Render/Mesh.h"
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
@@ -16,6 +16,7 @@
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Render/RenderingBase.h"
+#include "SGCore/Render/Camera3D.h"
 
 void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
@@ -54,7 +55,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     }*/
 
     // scene->getECSRegistry();
-    auto camerasView = scene->getECSRegistry().view<RenderingBase, Camera, Transform>();
+    auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Transform>();
     auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Transform>();
     
     Ref<ISubPassShader> standardGeometryShader;
@@ -68,13 +69,15 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         standardGeometryShader->bind();
     }
     
-    camerasView.each([&meshesView, &renderPipeline, this, &standardGeometryShader](RenderingBase& cameraRenderingBase, Camera& camera, Transform& cameraTransform) {
+    camerasView.each([&meshesView, &renderPipeline, this, &standardGeometryShader](Camera3D& camera3D, RenderingBase& cameraRenderingBase, Transform& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
         if(standardGeometryShader)
         {
             standardGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
         }
+        
+        // todo: make get receiver (postprocess or default) and render in them
 
         meshesView.each([&renderPipeline, this, &standardGeometryShader](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
             auto meshShader = mesh.m_base.m_meshData->m_material->getShader();
@@ -133,7 +136,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     /*SG_BEGIN_ITERATE_CACHED_ENTITIES(*m_componentsToRenderIn, camerasLayer, cameraEntity)
             auto cameraTransformComponent = cameraEntity.getComponent<TransformBase>();
             if(!cameraTransformComponent) continue;
-            auto cameraComponent = cameraEntity.getComponent<Camera>();
+            auto cameraComponent = cameraEntity.getComponent<PostProcessFrameReceiver>();
             if(!cameraComponent) continue;
 
             CoreMain::getRenderer()->prepareUniformBuffers(cameraComponent, cameraTransformComponent);

@@ -21,7 +21,7 @@ namespace SGCore
         static inline Window m_window {};
         static inline Ref<IRenderer> m_renderer;
 
-        static inline Timer m_renderTimer { true, 1.0 };
+        static inline Timer m_renderTimer { true, 1200};
         static inline Timer m_fixedTimer { true, 100.0 };
 
     public:
@@ -38,6 +38,8 @@ namespace SGCore
 
         static Timer& getRenderTimer() noexcept;
         static Timer& getFixedTimer() noexcept;
+        
+        static std::uint16_t getFPS() noexcept;
     };
 }
 

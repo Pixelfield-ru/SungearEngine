@@ -1277,7 +1277,7 @@ aiNode *BlenderImporter::ConvertNode(const Scene &in, const Object *obj, Convers
             }
         } break;
         case Object ::Type_CAMERA: {
-            CheckActualType(obj->data.get(), "Camera");
+            CheckActualType(obj->data.get(), "PostProcessFrameReceiver");
             aiCamera *mesh = ConvertCamera(in, obj, static_cast<const Camera *>(obj->data.get()), conv_data);
 
             if (mesh) {

@@ -194,7 +194,7 @@ struct Light : public Node
 };
 
 // ------------------
-/** COB Camera data structure */
+/** COB PostProcessFrameReceiver data structure */
 struct Camera : public Node
 {
     using ChunkInfo::operator=;

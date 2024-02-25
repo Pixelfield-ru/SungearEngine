@@ -13,8 +13,8 @@ void SGCore::Font::load(const std::string& path)
     m_path = path;
 }
 
-SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
-(const SGCore::FontSpecializationSettings& fontSpecializationSettings)
+SGCore::Ref<SGCore::FontSpecialization>
+SGCore::Font::addOrGetSpecialization(const SGCore::FontSpecializationSettings& fontSpecializationSettings)
 {
     Ref<FontSpecialization> specialization;
     auto foundSpecIter = m_specializations.find(fontSpecializationSettings);
@@ -33,4 +33,18 @@ SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
     }
     
     return specialization;
+}
+
+SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
+(const SGCore::FontSpecializationSettings& fontSpecializationSettings)
+{
+    auto foundSpecIter = m_specializations.find(fontSpecializationSettings);
+    if(foundSpecIter == m_specializations.end())
+    {
+        return nullptr;
+    }
+    else
+    {
+        return foundSpecIter->second;
+    }
 }

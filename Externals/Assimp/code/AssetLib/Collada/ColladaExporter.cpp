@@ -1515,7 +1515,7 @@ void ColladaExporter::WriteNode(const aiNode *pNode) {
     // TODO: (thom) decompose into scale - rot - quad to allow addressing it by animations afterwards
     aiMatrix4x4 mat = pNode->mTransformation;
 
-    // If this node is a Camera node, the camera coordinate system needs to be multiplied in.
+    // If this node is a PostProcessFrameReceiver node, the camera coordinate system needs to be multiplied in.
     // When importing from Collada, the mLookAt is set to 0, 0, -1, and the node transform is unchanged.
     // When importing from a different format, mLookAt is set to 0, 0, 1. Therefore, the local camera
     // coordinate system must be changed to matche the Collada specification.

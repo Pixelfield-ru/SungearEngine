@@ -42,10 +42,12 @@ namespace SGCore
         
         void drawAll() noexcept;
         
+        void resetRenderer() noexcept;
+        
     private:
         void updateUniforms() noexcept;
         
-        std::uint32_t m_maxCharactersCount = 1'000;
+        std::uint32_t m_maxCharactersCount = 1000;
         std::uint32_t m_currentDrawingCharacter = 0;
         
         // big buffers

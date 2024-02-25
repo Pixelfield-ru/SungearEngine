@@ -1259,7 +1259,7 @@ void IRRImporter::InternReadFile(const std::string &pFile, aiScene *pScene, IOSy
 		if (cam->mAspect) {
 			cam->mHorizontalFOV *= cam->mAspect;
 		} else {
-			ASSIMP_LOG_WARN("IRR: Camera aspect is not given, can't compute horizontal FOV");
+			ASSIMP_LOG_WARN("IRR: PostProcessFrameReceiver aspect is not given, can't compute horizontal FOV");
 		}
 	}
 

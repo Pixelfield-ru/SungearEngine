@@ -58,9 +58,9 @@ namespace SGCore
             for(const auto& renderPass : renderPipeline->m_renderPasses)
             {
                 renderPass->create(renderPipeline);
-                
-                m_renderPipelines.push_back(renderPipeline);
             }
+            
+            m_renderPipelines.push_back(renderPipeline);
         }
         
         template<typename PipelineT>

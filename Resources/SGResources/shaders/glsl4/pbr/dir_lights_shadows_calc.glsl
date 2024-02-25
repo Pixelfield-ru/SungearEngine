@@ -42,7 +42,7 @@ float calcDirLightShadow(
     const in sampler2D shadowMap
 )
 {
-    vec4 lightSpaceFragPos = dirLight.spaceMatrix * vec4(fragPos, 1.0);
+    vec4 lightSpaceFragPos = dirLight.projectionSpaceMatrix * vec4(fragPos, 1.0);
 
     vec3 projCoords = lightSpaceFragPos.xyz / lightSpaceFragPos.w;
     projCoords = projCoords * 0.5 + 0.5;

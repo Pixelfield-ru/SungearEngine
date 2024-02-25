@@ -19,7 +19,7 @@
 void SGCore::PBRRPDirectionalLightsPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
     m_renderTimer.m_useFixedUpdateCatchUp = false;
-    m_renderTimer.m_targetFrameRate = 24;
+    m_renderTimer.setTargetFrameRate(24);
     
     m_renderTimer.addCallback(m_renderTimerCallback);
 }
@@ -93,7 +93,7 @@ void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const S
 
                                                                  geometryPass->m_shader->useMatrix(
                                                                          renderingPartString + ".spaceMatrix",
-                                                                         directionalLightComponent->m_spaceMatrix
+                                                                         directionalLightComponent->m_projectionSpaceMatrix
                                                                  );*//*
 
                                                                  directionalLightComponent->m_shadowMap->bind()->clear();

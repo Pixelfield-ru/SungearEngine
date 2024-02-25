@@ -828,7 +828,7 @@ void Parser::ParseLV1ObjectBlock(ASE::BaseNode &node) {
                     continue;
                 }
             } else if (node.mType == BaseNode::Camera) {
-                // Camera settings
+                // PostProcessFrameReceiver settings
                 if (TokenMatch(filePtr, "CAMERA_SETTINGS", 15)) {
                     ParseLV2CameraSettingsBlock((ASE::Camera &)node);
                     continue;

@@ -15,7 +15,7 @@ SGSubPass(PhysicsLinesDebugPass)
         {
             fs_lineCol = vec4(linesColorsAttribute, 1.0);
 
-            gl_Position = camera.projectionMatrix * camera.viewMatrix * vec4(linesPositionsAttribute, 1.0);
+            gl_Position = camera.projectionSpaceMatrix * vec4(linesPositionsAttribute, 1.0);
         }
     }
 

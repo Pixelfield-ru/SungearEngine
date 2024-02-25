@@ -18,7 +18,13 @@ namespace SGCore
     {
         void load(const std::string& path) override;
         
+        Ref<FontSpecialization> addOrGetSpecialization(const SGCore::FontSpecializationSettings& fontSpecializationSettings);
         Ref<FontSpecialization> getSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
+        
+        const auto& getSpecializations() const noexcept
+        {
+            return m_specializations;
+        }
         
     private:
         std::unordered_map<FontSpecializationSettings, Ref<FontSpecialization>> m_specializations;

@@ -659,7 +659,7 @@ void LWSImporter::InternReadFile(const std::string &pFile, aiScene *pScene, IOSy
                                         (*it).tokens[0] == "LightMotion")) {
 
             if (nodes.empty())
-                ASSIMP_LOG_ERROR("LWS: Unexpected keyword: \'<Light|Object|Camera>Motion\'");
+                ASSIMP_LOG_ERROR("LWS: Unexpected keyword: \'<Light|Object|PostProcessFrameReceiver>Motion\'");
             else {
                 ReadEnvelope_Old(it, root.children.end(), nodes.back(), version);
             }

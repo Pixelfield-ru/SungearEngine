@@ -44,11 +44,10 @@ SGSubPass(GeometryPass)
             vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(normalsAttribute, 0.0)));
             vsOut.TBN = mat3(T, B, N);
 
-            gl_Position = camera.spaceMatrix * vec4(vsOut.fragPos, 1.0);
+            gl_Position = camera.projectionSpaceMatrix * vec4(vsOut.fragPos, 1.0);
         }
     }
-
-
+    
     SGSubShader(Fragment)
     {
         layout(location = 0) out vec4 fragColor0;

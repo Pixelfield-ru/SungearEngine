@@ -13,7 +13,7 @@ SGSubPass(GeometryPass)
 
         void main()
         {
-            gl_Position = camera.spaceMatrix * u_primitiveModelMatrix * vec4(u_offset + u_verticesPositions[gl_VertexID], 1.0);
+            gl_Position = camera.projectionSpaceMatrix * u_primitiveModelMatrix * vec4(u_offset + u_verticesPositions[gl_VertexID], 1.0);
         }
     }
 

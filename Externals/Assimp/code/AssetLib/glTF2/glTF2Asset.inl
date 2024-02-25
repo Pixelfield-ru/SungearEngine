@@ -1528,7 +1528,7 @@ inline void Camera::Read(Value &obj, Asset & /*r*/) {
     const char *subobjId = (type == Camera::Orthographic) ? "orthographic" : "perspective";
 
     Value *it = FindObject(obj, subobjId);
-    if (!it) throw DeadlyImportError("GLTF: Camera missing its parameters");
+    if (!it) throw DeadlyImportError("GLTF: PostProcessFrameReceiver missing its parameters");
 
     if (type == Camera::Perspective) {
         cameraProperties.perspective.aspectRatio = MemberOrDefault(*it, "aspectRatio", 0.f);

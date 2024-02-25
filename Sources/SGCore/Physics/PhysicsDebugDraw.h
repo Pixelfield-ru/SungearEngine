@@ -45,6 +45,8 @@ namespace SGCore
         int getDebugMode() const override;
         
         void drawAll(const Ref<Scene>& scene);
+        
+        void resetRenderer() noexcept;
     
     private:
         int m_debugMode = 0;

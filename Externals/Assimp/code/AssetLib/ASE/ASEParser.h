@@ -452,7 +452,7 @@ private:
 
     // -------------------------------------------------------------------
     //! Parse a *CAMERA_SETTINGS block in a file
-    //! \param cam Camera object to be filled
+    //! \param cam PostProcessFrameReceiver object to be filled
     void ParseLV2CameraSettingsBlock(Camera &cam);
 
     // -------------------------------------------------------------------

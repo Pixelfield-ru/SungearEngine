@@ -3,7 +3,7 @@
 //
 #include <spdlog/spdlog.h>
 
-#include "Camera.h"
+#include "PostProcessFrameReceiver.h"
 
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/ShadersPaths.h"
@@ -12,7 +12,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Scene/Layer.h"
 
-SGCore::Camera::Camera()
+SGCore::PostProcessFrameReceiver::PostProcessFrameReceiver()
 {
     // addRequiredShaderPath("PostProcessingShader");
 
@@ -123,10 +123,10 @@ SGCore::Camera::Camera()
     }*/
 }
 
-SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
-                                                              const Ref<Layer>& layer,
-                                                              const std::uint16_t& fbWidth,
-                                                              const std::uint16_t& fbHeight)
+SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::addPostProcessLayer(const std::string& ppLayerName,
+                                                                                const Ref<Layer>& layer,
+                                                                                const std::uint16_t& fbWidth,
+                                                                                const std::uint16_t& fbHeight)
 {
     auto& shadersPaths = *SGUtils::Singleton::getSharedPtrInstance<ShadersPaths>();
 
@@ -254,8 +254,8 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
     return newPPLayer;
 }
 
-SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string& ppLayerName,
-                                                              const Ref<Layer>& layer)
+SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::addPostProcessLayer(const std::string& ppLayerName,
+                                                                                const Ref<Layer>& layer)
 {
     int primaryMonitorWidth;
     int primaryMonitorHeight;
@@ -265,8 +265,8 @@ SGCore::PostProcessLayer& SGCore::Camera::addPostProcessLayer(const std::string&
     return addPostProcessLayer(ppLayerName, layer, primaryMonitorWidth, primaryMonitorHeight);
 }
 
-void SGCore::Camera::setPostProcessLayerShader(const Ref<Layer>& layer,
-                                               const Ref<ISubPassShader>& shader) noexcept
+void SGCore::PostProcessFrameReceiver::setPostProcessLayerShader(const Ref<Layer>& layer,
+                                                                 const Ref<ISubPassShader>& shader) noexcept
 {
     if(m_postProcessLayers.find(layer) == m_postProcessLayers.end())
     {
@@ -278,14 +278,14 @@ void SGCore::Camera::setPostProcessLayerShader(const Ref<Layer>& layer,
     m_postProcessLayers[layer].m_FXShader = shader;
 }
 
-SGCore::PostProcessLayer& SGCore::Camera::getPostProcessLayer(const Ref<Layer>& layer) noexcept
+SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::getPostProcessLayer(const Ref<Layer>& layer) noexcept
 {
     const auto& foundPPLayer = m_postProcessLayers.find(layer);
 
     return foundPPLayer != m_postProcessLayers.cend() ? foundPPLayer->second : getDefaultPostProcessLayer();
 }
 
-void SGCore::Camera::bindPostProcessFrameBuffer
+void SGCore::PostProcessFrameReceiver::bindPostProcessFrameBuffer
 (const Ref<Layer>& layer) noexcept
 {
     auto foundPPLayer = getPostProcessLayer(layer);
@@ -296,7 +296,7 @@ void SGCore::Camera::bindPostProcessFrameBuffer
     m_currentPPFrameBufferToBind->bindAttachmentsToDraw(foundPPLayer.m_attachmentsToRenderIn);
 }
 
-void SGCore::Camera::unbindPostProcessFrameBuffer() const noexcept
+void SGCore::PostProcessFrameReceiver::unbindPostProcessFrameBuffer() const noexcept
 {
     if(m_currentPPFrameBufferToBind)
     {
@@ -304,7 +304,7 @@ void SGCore::Camera::unbindPostProcessFrameBuffer() const noexcept
     }
 }
 
-void SGCore::Camera::clearPostProcessFrameBuffers() const noexcept
+void SGCore::PostProcessFrameReceiver::clearPostProcessFrameBuffers() const noexcept
 {
     for(const auto& ppLayer : m_postProcessLayers)
     {
@@ -317,13 +317,13 @@ void SGCore::Camera::clearPostProcessFrameBuffers() const noexcept
     m_finalFrameFXFrameBuffer->bind()->clear()->unbind();
 }
 
-SGCore::PostProcessLayer& SGCore::Camera::getDefaultPostProcessLayer() noexcept
+SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::getDefaultPostProcessLayer() noexcept
 {
     // It is assumed that the technical layer always exists
     return m_postProcessLayers.find(m_technicalLayer)->second;
 }
 
-void SGCore::Camera::updateLayersFrameBuffersMarkup() noexcept
+void SGCore::PostProcessFrameReceiver::updateLayersFrameBuffersMarkup() noexcept
 {
     for(auto& ppLayerPair : m_postProcessLayers)
     {

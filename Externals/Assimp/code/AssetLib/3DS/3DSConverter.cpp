@@ -537,7 +537,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene *pcSOut, aiNode *pcOut,
         if (pcIn->aCameraRollKeys.size() > 1) {
             ASSIMP_LOG_VERBOSE_DEBUG("3DS: Converting camera roll track ...");
 
-            // Camera roll keys - in fact they're just rotations
+            // PostProcessFrameReceiver roll keys - in fact they're just rotations
             // around the camera's z axis. The angles are given
             // in degrees (and they're clockwise).
             pcIn->aRotationKeys.resize(pcIn->aCameraRollKeys.size());
@@ -556,7 +556,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene *pcSOut, aiNode *pcOut,
         {
             ASSIMP_LOG_VERBOSE_DEBUG("3DS: Converting target track ...");
 
-            // Camera or spot light - need to convert the separate
+            // PostProcessFrameReceiver or spot light - need to convert the separate
             // target position channel to our representation
             TargetAnimationHelper helper;
 

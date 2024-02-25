@@ -46,10 +46,13 @@ namespace SGCore
         bool operator!=(const FontSpecializationSettings& other) const noexcept;
     };
     
-    struct FontSpecialization
+    struct FontSpecializationRenderer;
+    
+    struct FontSpecialization : public std::enable_shared_from_this<FontSpecialization>
     {
         friend struct Font;
         
+        FontSpecialization();
         ~FontSpecialization();
         
         void prepareToBuild(const std::string& path);
@@ -67,8 +70,12 @@ namespace SGCore
         void createAtlas() noexcept;
         
         const FontGlyph* tryGetGlyph(const char16_t& c) const noexcept;
-    
+        
+        Ref<FontSpecializationRenderer> getRenderer() noexcept;
+        
+        std::unordered_map<char16_t, FontGlyph> m_glyphs;
     private:
+        Ref<FontSpecializationRenderer> m_renderer;
         
         FontSpecializationSettings m_settings;
         
@@ -76,8 +83,6 @@ namespace SGCore
         
         size_t m_maxAtlasWidth = 0;
         size_t m_maxAtlasHeight = 0;
-        
-        std::unordered_map<char16_t, FontGlyph> m_glyphs;
     };
 }
 

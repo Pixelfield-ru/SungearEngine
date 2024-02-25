@@ -12,6 +12,7 @@
 #include "Assets/IAsset.h"
 #include "SGUtils/Utils.h"
 #include "SGCore/Graphics/GPUObject.h"
+#include "entt/entity/registry.hpp"
 
 namespace SGCore
 {
@@ -33,31 +34,36 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> loadAsset(const std::string& path)
         {
-            auto foundAssetsPair = m_assets.find(path);
-
-            if(foundAssetsPair != m_assets.end())
+            entt::entity entity;
+            
+            auto foundEntity = m_entities.find(path);
+            if(foundEntity != m_entities.end())
             {
-                for(auto& a : foundAssetsPair->second)
-                {
-                    if(typeid(*a) == typeid(AssetT))
-                    {
-                        return std::static_pointer_cast<AssetT>(a);
-                    }
-                }
+                entity = foundEntity->second;
+            }
+            else
+            {
+                entity = m_registry.create();
+                m_entities[path] = entity;
             }
             
+            Ref<AssetT>* asset = m_registry.try_get<Ref<AssetT>>(entity);
+            // asset found
+            if(asset)
+            {
+                return *asset;
+            }
+            
+            Ref<AssetT> newAsset = m_registry.emplace<Ref<AssetT>>(entity,
+                                                                   AssetT::template createRefInstance<AssetT>());
+            
             std::filesystem::path p(path);
-
-            // sfinae just for GPU objects as assets
-            Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
-
+            
             newAsset->load(path);
             newAsset->setRawName(p.stem().string());
             
-            m_assets[path].push_back(newAsset);
-            
             spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
-
+            
             return newAsset;
         }
 
@@ -65,48 +71,64 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias, const std::string& path)
         {
-            auto foundAssetsPair = m_assets.find(path);
+            entt::entity entity;
             
-            if(foundAssetsPair != m_assets.end())
+            auto foundEntity = m_entities.find(alias);
+            if(foundEntity != m_entities.end())
             {
-                for(auto& a : foundAssetsPair->second)
-                {
-                    if(typeid(*a) == typeid(AssetT))
-                    {
-                        return std::static_pointer_cast<AssetT>(a);
-                    }
-                }
+                entity = foundEntity->second;
+            }
+            else
+            {
+                entity = m_registry.create();
+                m_entities[alias] = entity;
             }
             
-            // sfinae just for GPU objects as assets
-            Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>();
-
+            Ref<AssetT>* asset = m_registry.try_get<Ref<AssetT>>(entity);
+            // asset found
+            if(asset)
+            {
+                return *asset;
+            }
+            
+            Ref<AssetT> newAsset = m_registry.emplace<Ref<AssetT>>(entity,
+                                                                   AssetT::template createRefInstance<AssetT>());
+            
+            std::filesystem::path p(path);
+            
             newAsset->load(path);
             newAsset->setRawName(alias);
-
-            m_assets[alias].push_back(newAsset);
             
-            spdlog::info("Loaded new asset: {0}", path);
-
+            spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
+            
             return newAsset;
         }
-
-        static void addAsset(const std::string& alias, const Ref<IAsset>& asset)
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        static void addAsset(const std::string& alias, const Ref<AssetT>& asset)
         {
-            auto foundAssetsPair = m_assets.find(alias);
+            entt::entity entity;
             
-            if(foundAssetsPair != m_assets.end())
+            auto foundEntity = m_entities.find(alias);
+            if(foundEntity != m_entities.end())
             {
-                for(auto& a : foundAssetsPair->second)
-                {
-                    if(typeid(*a) == typeid(*asset))
-                    {
-                        return;
-                    }
-                }
+                entity = foundEntity->second;
+            }
+            else
+            {
+                entity = m_registry.create();
+                m_entities[alias] = entity;
             }
             
-            m_assets[alias].push_back(asset);
+            Ref<AssetT>* foundAsset = m_registry.try_get<Ref<AssetT>>(entity);
+            // asset already exists
+            if(foundAsset)
+            {
+                return;
+            }
+            
+            m_registry.emplace<Ref<AssetT>>(entity, asset);
             asset->setRawName(alias);
             
             if(SG_INSTANCEOF(asset.get(), GPUObject))
@@ -114,60 +136,46 @@ namespace SGCore
                 std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
             }
         }
-
-        static void addAsset(const Ref<IAsset>& asset)
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        static void addAsset(const Ref<AssetT>& asset)
         {
             const std::string& assetPath = asset->getPath().string();
             
-            auto foundAssetsPair = m_assets.find(asset->getPath().string());
+            entt::entity entity;
             
-            if(foundAssetsPair != m_assets.end())
+            auto foundEntity = m_entities.find(assetPath);
+            if(foundEntity != m_entities.end())
             {
-                for(auto& a : foundAssetsPair->second)
-                {
-                    if(typeid(*a) == typeid(*asset))
-                    {
-                        return;
-                    }
-                }
+                entity = foundEntity->second;
+            }
+            else
+            {
+                entity = m_registry.create();
+                m_entities[assetPath] = entity;
             }
             
-            m_assets[assetPath].push_back(asset);
+            Ref<AssetT>* foundAsset = m_registry.try_get<Ref<AssetT>>(entity);
+            // asset already exists
+            if(foundAsset)
+            {
+                return;
+            }
+            
+            m_registry.emplace<Ref<AssetT>>(entity, asset);
             
             if(SG_INSTANCEOF(asset.get(), GPUObject))
             {
                 std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
             }
         }
-
-        /**
-         * Creates asset without loading by path.
-         * If asset already exists then return found asset.
-         * @tparam AssetT - Type of asset
-         * @param path - Asset pseudonym
-         * @return Created or found asset
-         */
-        template<typename AssetT, typename... Args>
-        requires(std::is_base_of_v<IAsset, AssetT>)
-        static std::shared_ptr<AssetT> createAsset(const std::string& path, const Args&... args)
-        {
-            auto foundAssetPair = m_assets.find(path);
-
-            if(foundAssetPair != m_assets.end())
-            {
-                return std::static_pointer_cast<AssetT>(foundAssetPair->second);
-            }
-
-            std::shared_ptr<AssetT> newAsset = std::make_shared<AssetT>(args...);
-
-            m_assets.emplace(path, newAsset);
-
-            return newAsset;
-        }
+        
+        static entt::registry& getRegistry() noexcept;
 
     private:
-        // todo: replace unordered map by vector because of first (std::string)
-        static inline std::unordered_map<std::string, std::vector<std::shared_ptr<IAsset>>> m_assets;
+        static inline entt::registry m_registry;
+        static inline std::unordered_map<std::string, entt::entity> m_entities;
     };
 }
 

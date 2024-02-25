@@ -21,6 +21,11 @@ bool SGCore::FontSpecializationSettings::operator!=(const SGCore::FontSpecializa
     return !(*this == other);
 }
 
+SGCore::FontSpecialization::FontSpecialization()
+{
+    m_renderer = MakeRef<FontSpecializationRenderer>();
+}
+
 SGCore::FontSpecialization::~FontSpecialization()
 {
     if(m_face)
@@ -101,9 +106,8 @@ void SGCore::FontSpecialization::saveAtlasAsTexture(const std::string& path) con
 const SGCore::FontGlyph* SGCore::FontSpecialization::tryGetGlyph(const char16_t& c) const noexcept
 {
     auto foundGlyph = m_glyphs.find(c);
-    auto qGlyph = m_glyphs.find(u'?');
     
-    return foundGlyph == m_glyphs.end() ? (qGlyph == m_glyphs.end() ? nullptr : &qGlyph->second) : &foundGlyph->second;
+    return foundGlyph == m_glyphs.end() ? nullptr : &m_glyphs.at(c);
 }
 
 void SGCore::FontSpecialization::parse(const char16_t& from, const char16_t& to) noexcept
@@ -237,9 +241,6 @@ void SGCore::FontSpecialization::createAtlas() noexcept
     
     std::cout << "buffer size: " << unsortedBuffer.size() << std::endl;
     
-    /*stbi_write_png("font_spec_test.png", m_maxAtlasWidth, m_maxAtlasHeight, 1,
-                   sortedBuffer.data(), 1 * m_maxAtlasWidth);*/
-    
     m_atlas = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     
     m_atlas->create(sortedBuffer.data(),
@@ -250,4 +251,11 @@ void SGCore::FontSpecialization::createAtlas() noexcept
                     SGGColorFormat::SGG_R);
     
     destroyFace();
+}
+
+SGCore::Ref<SGCore::FontSpecializationRenderer> SGCore::FontSpecialization::getRenderer() noexcept
+{
+    m_renderer->m_parentSpecialization = shared_from_this();
+    
+    return m_renderer;
 }

@@ -15,14 +15,16 @@ struct ObjectTransform
 
 struct IRenderingComponent
 {
-    mat4 projectionMatrix; // can be unused
-    mat4 viewMatrix; // can be unused
-    mat4 spaceMatrix;
+    mat4 projectionSpaceMatrix;
+    mat4 orthographicSpaceMatrix;
+    mat4 orthographicMatrix;
+    mat4 projectionMatrix;
+    mat4 viewMatrix;
     vec3 position;
     float p0;
-    vec3 rotation; // can be unused
+    vec3 rotation;
     float p1;
-    vec3 scale; // can be unused
+    vec3 scale;
     float p2;
 };
 

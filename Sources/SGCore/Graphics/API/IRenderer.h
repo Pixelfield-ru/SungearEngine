@@ -16,7 +16,7 @@
 
 namespace SGCore
 {
-    class Camera;
+    class PostProcessFrameReceiver;
     struct Mesh;
     struct TransformBase;
     struct Atmosphere;

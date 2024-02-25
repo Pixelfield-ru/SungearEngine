@@ -45,24 +45,18 @@ void SGCore::CoreMain::start()
     AssetManager::init();
     FontsManager::init();
 
-    std::shared_ptr<TimerCallback> globalTimerCallback = std::make_shared<TimerCallback>();
-
-    // delta update
-    //globalTimerCallback->setDeltaUpdateFunction([](const double& deltaTime) { deltaUpdate(deltaTime); });
+    Ref<TimerCallback> globalTimerCallback = MakeRef<TimerCallback>();
 
     // update
     globalTimerCallback->setUpdateFunction([](const double& dt)
                                                 {
                                                     update(dt);
                                                 });
-
-    // when reached destination (in the case of this timer, 1 second) second
-    globalTimerCallback->setFixedUpdateFunction([](const double& dt, const double& fixedDt) {
-        m_window.setTitle("Sungear Engine. FPS: " + std::to_string(m_renderTimer.getFramesPerTarget()));
-    });
-
+    
+    Ref<TimerCallback> fpsTimerCallback = MakeRef<TimerCallback>();
+    
     m_renderTimer.addCallback(globalTimerCallback);
-    m_renderTimer.m_targetFrameRate = 1200.0;
+    m_renderTimer.setTargetFrameRate(1200.0);
     m_renderTimer.m_useFixedUpdateCatchUp = false;
 
     // -----------------
@@ -80,9 +74,13 @@ void SGCore::CoreMain::start()
 
     sgCallCoreInitCallback();
     
-    m_fixedTimer.reset();
-    m_renderTimer.reset();
+    m_fixedTimer.resetTimer();
+    m_renderTimer.resetTimer();
 
+    double cur = glfwGetTime();
+    double t = 0;
+    int f = 0;
+    
     while(!m_window.shouldClose())
     {
         m_renderTimer.startFrame();
@@ -128,4 +126,9 @@ SGCore::Timer& SGCore::CoreMain::getRenderTimer() noexcept
 SGCore::Timer& SGCore::CoreMain::getFixedTimer() noexcept
 {
     return m_fixedTimer;
+}
+
+std::uint16_t SGCore::CoreMain::getFPS() noexcept
+{
+    return m_renderTimer.getFramesPerSecond();
 }

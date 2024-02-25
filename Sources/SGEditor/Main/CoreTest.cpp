@@ -36,7 +36,7 @@
 #include "SGCore/Input/InputManager.h"
 
 #include "SGCore/Render/Mesh.h"
-#include "SGCore/Render/Camera.h"
+#include "SGCore/Render/PostProcessFrameReceiver.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Render/RenderingBase.h"
@@ -52,8 +52,9 @@
 #include "SGCore/Memory/Assets/Font.h"
 #include "SGCore/UI/FontSpecializationRenderer.h"
 #include "SGCore/UI/Text.h"
-
-btDefaultCollisionConfiguration* m_pCollisionConfiguration = new btDefaultCollisionConfiguration;
+#include "SGCore/Render/DefaultFrameReceiver.h"
+#include "SGCore/Render/Camera3D.h"
+#include "SGCore/Render/UICamera.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -63,10 +64,6 @@ SGCore::Ref<SGCore::Scene> testScene;
 SGCore::Atmosphere* _atmosphereScattering = nullptr;
 
 std::vector<entt::entity> model1Entities;
-
-SGCore::Ref<SGCore::FontSpecializationRenderer> timesNewRomanFont_height12Spec_renderer;
-SGCore::Text* helloWorldUIText = nullptr;
-SGCore::Transform* helloWorldUITextTransform = nullptr;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -93,9 +90,11 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     btVector3 inertia(0, 0, 0);
     sphereRigidbody3D.m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
     sphereRigidbody3D.m_body->setMassProps(mass, inertia);
-    sphereRigidbody3D.m_body->applyCentralImpulse({ impulse.x, impulse.y, impulse.z });
     sphereRigidbody3D.updateFlags();
     sphereRigidbody3D.reAddToWorld();
+    
+    glm::vec3 finalImpulse = impulse;
+    sphereRigidbody3D.m_body->applyCentralImpulse({ finalImpulse.x, finalImpulse.y, finalImpulse.z });
     
     SGCore::Transform& sphereTransform = testScene->getECSRegistry().get<SGCore::Transform>(sphereEntities[2]);
     sphereTransform.m_ownTransform.m_position = spherePos;
@@ -566,13 +565,13 @@ void init()
             "../SGResources/fonts/timesnewromanpsmt.ttf"
     );
     
-    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_rus = timesNewRomanFont->getSpecialization({ 128, "rus" });
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_rus = timesNewRomanFont->addOrGetSpecialization({ 128, "rus" });
     timesNewRomanFont_height128_rus->parse(u'А', u'Я');
     timesNewRomanFont_height128_rus->parse(u'а', u'я');
     timesNewRomanFont_height128_rus->parse({ u'.', u'!', u'?', u')', u'ё', u'Ё'});
     timesNewRomanFont_height128_rus->createAtlas();
     
-    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->getSpecialization({ 128, "eng" });
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->addOrGetSpecialization({ 128, "eng" });
     // just example code
     timesNewRomanFont_height128_eng->parse(u'A', u'Z');
     timesNewRomanFont_height128_eng->parse(u'a', u'z');
@@ -585,17 +584,22 @@ void init()
     timesNewRomanFont_height128_rus->saveAtlasAsTexture("font_spec_test_rus.png");
     timesNewRomanFont_height128_eng->saveAtlasAsTexture("font_spec_test_eng.png");
     
-    timesNewRomanFont_height12Spec_renderer = SGCore::MakeRef<SGCore::FontSpecializationRenderer>();
-    timesNewRomanFont_height12Spec_renderer->m_parentSpecialization = timesNewRomanFont_height128_rus;
-    
     entt::entity textEntity = testScene->getECSRegistry().create();
-    helloWorldUIText = &testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
-    helloWorldUITextTransform = &testScene->getECSRegistry().emplace<SGCore::Transform>(textEntity);
-    helloWorldUITextTransform->m_ownTransform.m_scale = { 0.01, 0.025, 1 };
-    helloWorldUITextTransform->m_ownTransform.m_position = { 0.0, 0.0, 0 };
+    SGCore::Text& helloWorldUIText = testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
+    SGCore::Transform& helloWorldUITextTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(textEntity);
+    helloWorldUITextTransform.m_ownTransform.m_scale = { 0.01, 0.025, 1 };
+    helloWorldUITextTransform.m_ownTransform.m_position = { 0.0, 0.0, 0 };
     
-    helloWorldUIText->m_text = u"Привет!";
+    helloWorldUIText.m_text = u"Привет!";
+    helloWorldUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
+    helloWorldUIText.m_fontSettings.m_height = 128;
+    helloWorldUIText.m_fontSettings.m_name = "rus";
     // helloWorldUIText->m_color = { 1.0, 0.0, 0.0, 1.0 };
+    
+    entt::entity uiCameraEntity = testScene->getECSRegistry().create();
+    SGCore::UICamera& uiCameraEntityCamera = testScene->getECSRegistry().emplace<SGCore::UICamera>(uiCameraEntity);
+    SGCore::Transform& uiCameraEntityTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(uiCameraEntity);
+    SGCore::RenderingBase& uiCameraEntityRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(uiCameraEntity);
     
     {
         auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
@@ -633,7 +637,8 @@ void init()
     cameraTransform.m_ownTransform.m_position.z = 2;
     cameraTransform.m_ownTransform.m_rotation.x = -30;
 
-    SGCore::Camera& cameraEntityCamera = testScene->getECSRegistry().emplace<SGCore::Camera>(testCameraEntity);
+    SGCore::Camera3D& cameraEntityCamera3D = testScene->getECSRegistry().emplace<SGCore::Camera3D>(testCameraEntity);
+    // SGCore::DefaultFrameReceiver& cameraEntityReceiver = testScene->getECSRegistry().emplace<SGCore::DefaultFrameReceiver>(testCameraEntity);
     SGCore::Controllable3D& cameraEntityControllable = testScene->getECSRegistry().emplace<SGCore::Controllable3D>(testCameraEntity);
     SGCore::RenderingBase& cameraRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(testCameraEntity);
 
@@ -952,7 +957,7 @@ void fixedUpdate(const double& dt, const double& fixedDt)
         tr0.m_ownTransform.m_position.y += 0.1f;
     }
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_4))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_4))
     {
         SGCore::Transform& cameraTransform = testScene->getECSRegistry().get<SGCore::Transform>(testCameraEntity);
         createBallAndApplyImpulse(cameraTransform.m_ownTransform.m_position, cameraTransform.m_ownTransform.m_forward * 200000.0f / 10.0f);
@@ -973,6 +978,7 @@ auto testCollapsingHeader = std::make_shared<SGCore::ImGuiWrap::CollapsingHeader
 
 void update(const double& dt)
 {
+    SGCore::CoreMain::getWindow().setTitle("Sungear Engine. FPS: " + std::to_string(SGCore::CoreMain::getFPS()));
     /*auto physicsWorld = testScene->getSystem<SGCore::PhysicsWorld>();
     auto d0 = glfwGetTime();
     for(size_t i = 0; i < 12000; ++i)
@@ -1070,9 +1076,6 @@ void update(const double& dt)
     viewsInjector.renderViews();
 
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
-    
-    timesNewRomanFont_height12Spec_renderer->drawText(*helloWorldUIText, *helloWorldUITextTransform);
-    timesNewRomanFont_height12Spec_renderer->drawAll();
 }
 
 // --------------------------------------------
