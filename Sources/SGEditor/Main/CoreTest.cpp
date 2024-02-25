@@ -566,21 +566,36 @@ void init()
             "../SGResources/fonts/timesnewromanpsmt.ttf"
     );
     
-    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height12 = timesNewRomanFont->getSpecialization({ 12 });
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_rus = timesNewRomanFont->getSpecialization({ 128, "rus" });
+    timesNewRomanFont_height128_rus->parse(u'А', u'Я');
+    timesNewRomanFont_height128_rus->parse(u'а', u'я');
+    timesNewRomanFont_height128_rus->parse({ u'.', u'!', u'?', u')', u'ё', u'Ё'});
+    timesNewRomanFont_height128_rus->createAtlas();
     
-    timesNewRomanFont_height12->saveTextAsTexture("font_spec_text_test.png", u"Hi there! Это русский текст. Текст собран из сгенерированного атласа!");
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->getSpecialization({ 128, "eng" });
+    // just example code
+    timesNewRomanFont_height128_eng->parse(u'A', u'Z');
+    timesNewRomanFont_height128_eng->parse(u'a', u'z');
+    timesNewRomanFont_height128_eng->parse({ u'.', u'!', u'?', u')' });
+    timesNewRomanFont_height128_eng->createAtlas();
+    
+    timesNewRomanFont_height128_rus->saveTextAsTexture("font_spec_text_test_rus.png", u"Здравствуйте.");
+    timesNewRomanFont_height128_eng->saveTextAsTexture("font_spec_text_test_eng.png", u"Hi there!!!???))");
+    
+    timesNewRomanFont_height128_rus->saveAtlasAsTexture("font_spec_test_rus.png");
+    timesNewRomanFont_height128_eng->saveAtlasAsTexture("font_spec_test_eng.png");
     
     timesNewRomanFont_height12Spec_renderer = SGCore::MakeRef<SGCore::FontSpecializationRenderer>();
-    timesNewRomanFont_height12Spec_renderer->m_parentSpecialization = timesNewRomanFont_height12;
+    timesNewRomanFont_height12Spec_renderer->m_parentSpecialization = timesNewRomanFont_height128_rus;
     
     entt::entity textEntity = testScene->getECSRegistry().create();
     helloWorldUIText = &testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
     helloWorldUITextTransform = &testScene->getECSRegistry().emplace<SGCore::Transform>(textEntity);
-    helloWorldUITextTransform->m_ownTransform.m_scale = { 0.1, 0.1, 1 };
-    helloWorldUITextTransform->m_ownTransform.m_position = { 0.1, 0.1, -1 };
+    helloWorldUITextTransform->m_ownTransform.m_scale = { 0.01, 0.025, 1 };
+    helloWorldUITextTransform->m_ownTransform.m_position = { 0.0, 0.0, 0 };
     
-    helloWorldUIText->m_text = u"H";
-    helloWorldUIText->m_color = { 1.0, 0.0, 0.0, 1.0 };
+    helloWorldUIText->m_text = u"Привет!";
+    // helloWorldUIText->m_color = { 1.0, 0.0, 0.0, 1.0 };
     
     {
         auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
@@ -595,7 +610,7 @@ void init()
         
         if(geniusMesh)
         {
-            geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomanFont_height12->m_atlas);
+            geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomanFont_height128_eng->m_atlas);
             
             geniusMesh->m_base.m_meshData->m_material->setShader(SGCore::MakeRef<SGCore::IShader>());
             SGCore::MeshesUtils::loadMeshShader(geniusMesh->m_base, "TestTextShader");

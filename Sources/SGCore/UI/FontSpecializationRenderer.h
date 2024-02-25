@@ -45,7 +45,7 @@ namespace SGCore
     private:
         void updateUniforms() noexcept;
         
-        std::uint32_t m_maxCharactersCount = 2;
+        std::uint32_t m_maxCharactersCount = 1'000;
         std::uint32_t m_currentDrawingCharacter = 0;
         
         // big buffers
