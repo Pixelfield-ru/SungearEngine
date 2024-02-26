@@ -70,7 +70,7 @@ void SGCore::FontSpecialization::saveTextAsTexture(const std::string& path, cons
     
     size_t finalTextWidth = 0;
     
-    for(size_t y = 0; y < m_maxAtlasHeight; ++y)
+    for(size_t y = 0; y < m_maxCharacterSize.y; ++y)
     {
         for(char16_t c : text)
         {
@@ -93,13 +93,13 @@ void SGCore::FontSpecialization::saveTextAsTexture(const std::string& path, cons
         }
     }
     
-    stbi_write_png(path.c_str(), finalTextWidth, m_maxAtlasHeight, 1,
+    stbi_write_png(path.c_str(), finalTextWidth, m_maxCharacterSize.y, 1,
                    textBuf.data(), 1 * finalTextWidth);
 }
 
 void SGCore::FontSpecialization::saveAtlasAsTexture(const std::string& path) const noexcept
 {
-    stbi_write_png(path.c_str(), m_maxAtlasWidth, m_maxAtlasHeight, 1,
+    stbi_write_png(path.c_str(), m_maxAtlasWidth, m_maxCharacterSize.y, 1,
                    m_atlas->getData().get(), 1 * m_maxAtlasWidth);
 }
 
@@ -149,9 +149,33 @@ bool SGCore::FontSpecialization::parse(const uint16_t& character) noexcept
     
     m_maxAtlasWidth += bitmapWidth;
     
-    if(bitmapHeight > m_maxAtlasHeight)
+    if(bitmapHeight > m_maxCharacterSize.y)
     {
-        m_maxAtlasHeight = bitmapHeight;
+        m_maxCharacterSize.y = bitmapHeight;
+    }
+    if(bitmapWidth > m_maxCharacterSize.x)
+    {
+        m_maxCharacterSize.x = bitmapWidth;
+    }
+    
+    if(m_face->glyph->bitmap_left > m_maxCharacterBearing.x)
+    {
+        m_maxCharacterBearing.x = m_face->glyph->bitmap_left;
+
+    }
+    if(m_face->glyph->bitmap_top > m_maxCharacterBearing.y)
+    {
+        m_maxCharacterBearing.y = m_face->glyph->bitmap_top;
+    }
+    
+    if(m_face->glyph->advance.x > m_maxCharacterAdvance.x)
+    {
+        m_maxCharacterAdvance.x = m_face->glyph->advance.x;
+        
+    }
+    if(m_face->glyph->advance.y > m_maxCharacterAdvance.y)
+    {
+        m_maxCharacterAdvance.y = m_face->glyph->advance.y;
     }
     
     FontGlyph glyph {};
@@ -168,7 +192,8 @@ bool SGCore::FontSpecialization::parse(const uint16_t& character) noexcept
 void SGCore::FontSpecialization::createAtlas() noexcept
 {
     std::vector<std::uint8_t> unsortedBuffer;
-    unsortedBuffer.reserve(m_maxAtlasWidth * m_maxAtlasHeight);
+    std::cout << m_maxCharacterSize.y << std::endl;
+    unsortedBuffer.reserve(m_maxAtlasWidth * m_maxCharacterSize.y);
     
     for(auto& g : m_glyphs)
     {
@@ -181,7 +206,7 @@ void SGCore::FontSpecialization::createAtlas() noexcept
             continue;
         }
         
-        for(size_t i = 0; i < m_maxAtlasHeight * glyph.m_realSize.x; ++i)
+        for(size_t i = 0; i < m_maxCharacterSize.y * glyph.m_realSize.x; ++i)
         {
             if(i < glyph.m_realSize.x * glyph.m_realSize.y)
             {
@@ -203,9 +228,9 @@ void SGCore::FontSpecialization::createAtlas() noexcept
     }
     
     std::vector<std::uint8_t> sortedBuffer;
-    sortedBuffer.reserve(m_maxAtlasWidth * m_maxAtlasHeight);
+    sortedBuffer.reserve(m_maxAtlasWidth * m_maxCharacterSize.y);
     
-    for(size_t y = 0; y < m_maxAtlasHeight; ++y)
+    for(size_t y = 0; y < m_maxCharacterSize.y; ++y)
     {
         for(auto& g : m_glyphs)
         {
@@ -226,12 +251,12 @@ void SGCore::FontSpecialization::createAtlas() noexcept
         g.second.m_sortedDataOffset = curXOffset;
         
         g.second.m_uvMin = { (float) curXOffset / (float) m_maxAtlasWidth, 0 };
-        g.second.m_uvMax = { ((float) curXOffset + (float) g.second.m_realSize.x) / (float) m_maxAtlasWidth, g.second.m_realSize.y / (float) m_maxAtlasHeight };
+        g.second.m_uvMax = { ((float) curXOffset + (float) g.second.m_realSize.x) / (float) m_maxAtlasWidth, g.second.m_realSize.y / (float) m_maxCharacterSize.y };
         
         /*if(g.first == u'g')
         {
             std::cout << "glyph size: " << std::to_string(g.second.m_realSize.x) << ", " << std::to_string(g.second.m_realSize.y) << std::endl;
-            std::cout << "atlas size: " << std::to_string(m_maxAtlasWidth) << ", " << std::to_string(m_maxAtlasHeight) << std::endl;
+            std::cout << "atlas size: " << std::to_string(m_maxAtlasWidth) << ", " << std::to_string(m_maxCharacterHeight) << std::endl;
             std::cout << "min: " << std::to_string(g.second.m_uvMin.x) << ", " << std::to_string(g.second.m_uvMin.y) << std::endl;
             std::cout << "max: " << std::to_string(g.second.m_uvMax.x) << ", " << std::to_string(g.second.m_uvMax.y) << std::endl;
         }*/
@@ -245,7 +270,7 @@ void SGCore::FontSpecialization::createAtlas() noexcept
     
     m_atlas->create(sortedBuffer.data(),
                     m_maxAtlasWidth,
-                    m_maxAtlasHeight,
+                    m_maxCharacterSize.y,
                     1,
                     SGGColorInternalFormat::SGG_R8,
                     SGGColorFormat::SGG_R);
@@ -258,4 +283,24 @@ SGCore::Ref<SGCore::FontSpecializationRenderer> SGCore::FontSpecialization::getR
     m_renderer->m_parentSpecialization = shared_from_this();
     
     return m_renderer;
+}
+
+size_t SGCore::FontSpecialization::getMaxAtlasWidth() const noexcept
+{
+    return m_maxAtlasWidth;
+}
+
+glm::vec<2, size_t, glm::defaultp> SGCore::FontSpecialization::getMaxCharacterSize() const noexcept
+{
+    return m_maxCharacterSize;
+}
+
+glm::vec<2, size_t, glm::defaultp> SGCore::FontSpecialization::getMaxCharacterAdvance() const noexcept
+{
+    return m_maxCharacterAdvance;
+}
+
+glm::vec<2, size_t, glm::defaultp> SGCore::FontSpecialization::getMaxCharacterBearing() const noexcept
+{
+    return m_maxCharacterBearing;
 }

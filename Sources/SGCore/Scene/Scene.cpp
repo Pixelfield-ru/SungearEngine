@@ -119,8 +119,6 @@ void SGCore::Scene::fixedUpdate(const double& dt, const double& fixedDt)
 {
     double t0 = glfwGetTime();
 
-    // const auto& f = m_cachedComponentsCollections;
-
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;

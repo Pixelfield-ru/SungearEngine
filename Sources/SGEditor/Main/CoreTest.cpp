@@ -568,6 +568,7 @@ void init()
     SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_rus = timesNewRomanFont->addOrGetSpecialization({ 128, "rus" });
     timesNewRomanFont_height128_rus->parse(u'А', u'Я');
     timesNewRomanFont_height128_rus->parse(u'а', u'я');
+    timesNewRomanFont_height128_rus->parse(u'0', u'9');
     timesNewRomanFont_height128_rus->parse({ u'.', u'!', u'?', u')', u'ё', u'Ё'});
     timesNewRomanFont_height128_rus->createAtlas();
     
@@ -587,19 +588,34 @@ void init()
     entt::entity textEntity = testScene->getECSRegistry().create();
     SGCore::Text& helloWorldUIText = testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
     SGCore::Transform& helloWorldUITextTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(textEntity);
-    helloWorldUITextTransform.m_ownTransform.m_scale = { 0.01, 0.025, 1 };
-    helloWorldUITextTransform.m_ownTransform.m_position = { 0.0, 0.0, 0 };
+    helloWorldUITextTransform.m_ownTransform.m_scale = { 0.2, 0.2, 1 };
+    helloWorldUITextTransform.m_ownTransform.m_position = { 0.0, -128.0, 0 };
     
-    helloWorldUIText.m_text = u"Привет!";
+    helloWorldUIText.m_text = std::u16string(u"Здесь написан крутой текст.\nА тут вторая строка.\nДа и третья на месте!") + std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(std::to_string((long) &helloWorldUITextTransform));
     helloWorldUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
     helloWorldUIText.m_fontSettings.m_height = 128;
     helloWorldUIText.m_fontSettings.m_name = "rus";
+    helloWorldUIText.m_color = { 1.0, 0.5, 0.1, 1.0 };
+    helloWorldUIText.m_text += u"\n";
+    for(int i = 0; i < 30; ++i)
+    {
+        for(int j = 0; j < 100; ++j)
+        {
+            helloWorldUIText.m_text += u"а";
+        }
+        helloWorldUIText.m_text += u"\n";
+    }
     // helloWorldUIText->m_color = { 1.0, 0.0, 0.0, 1.0 };
-    
+
     entt::entity uiCameraEntity = testScene->getECSRegistry().create();
     SGCore::UICamera& uiCameraEntityCamera = testScene->getECSRegistry().emplace<SGCore::UICamera>(uiCameraEntity);
     SGCore::Transform& uiCameraEntityTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(uiCameraEntity);
     SGCore::RenderingBase& uiCameraEntityRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(uiCameraEntity);
+    
+    uiCameraEntityRenderingBase.m_left = 0;
+    uiCameraEntityRenderingBase.m_right = 2560;
+    uiCameraEntityRenderingBase.m_bottom = -1440;
+    uiCameraEntityRenderingBase.m_top = 0;
     
     {
         auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);

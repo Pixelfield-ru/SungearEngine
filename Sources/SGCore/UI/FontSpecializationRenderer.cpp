@@ -28,7 +28,7 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
     m_charactersUVs.resize(m_maxCharactersCount * 8);
     
     // 4 vertices * 3 (xyz)
-    m_charactersVerticesPositions.resize(12);
+    m_charactersVerticesPositions.resize(m_maxCharactersCount * 12);
     
     // 6 indices
     m_charactersVerticesIndices.resize(12);
@@ -41,26 +41,6 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
     m_charactersVerticesIndices[3] = 0;
     m_charactersVerticesIndices[4] = 3;
     m_charactersVerticesIndices[5] = 2;
-    
-    // zero vertex
-    m_charactersVerticesPositions[0] = -1.0f;
-    m_charactersVerticesPositions[1] = -1.0f;
-    m_charactersVerticesPositions[2] = 0.0f;
-    
-    // first vertex
-    m_charactersVerticesPositions[3] = -1.0f;
-    m_charactersVerticesPositions[4] = 1.0f;
-    m_charactersVerticesPositions[5] = 0.0f;
-    
-    // second vertex
-    m_charactersVerticesPositions[6] = 1.0f;
-    m_charactersVerticesPositions[7] = 1.0f;
-    m_charactersVerticesPositions[8] = 0.0f;
-    
-    // third vertex
-    m_charactersVerticesPositions[9] = 1.0f;
-    m_charactersVerticesPositions[10] = -1.0f;
-    m_charactersVerticesPositions[11] = 0.0f;
     
     // ==================================================================
     // creating buffers
@@ -174,9 +154,27 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
         bufferLayout
                 ->addAttribute(std::shared_ptr<IVertexAttribute>(
                         bufferLayout->createVertexAttribute(9,
-                                                            "characterVertexPosition",
+                                                            "characterVertexPosition[0]",
                                                             SGGDataType::SGG_FLOAT3,
-                                                            (size_t) 0))
+                                                            (size_t) 1))
+                )
+                ->addAttribute(std::shared_ptr<IVertexAttribute>(
+                        bufferLayout->createVertexAttribute(10,
+                                                            "characterVertexPosition[1]",
+                                                            SGGDataType::SGG_FLOAT3,
+                                                            (size_t) 1))
+                )
+                ->addAttribute(std::shared_ptr<IVertexAttribute>(
+                        bufferLayout->createVertexAttribute(11,
+                                                            "characterVertexPosition[2]",
+                                                            SGGDataType::SGG_FLOAT3,
+                                                            (size_t) 1))
+                )
+                ->addAttribute(std::shared_ptr<IVertexAttribute>(
+                        bufferLayout->createVertexAttribute(12,
+                                                            "characterVertexPosition[3]",
+                                                            SGGDataType::SGG_FLOAT3,
+                                                            (size_t) 1))
                 )
                 ->prepare()->enableAttributes();
         
@@ -212,16 +210,25 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, SGCore::Tr
 {
     Ref<FontSpecialization> lockedSpec = m_parentSpecialization.lock();
     
-    if(!lockedSpec || m_currentDrawingCharacter == m_maxCharactersCount - 1) return;
+    if(!lockedSpec) return;
     
-    float curOffsetX = 0.0f;
+    float curX = 0;
+    float curY = 0;
     
     for(const auto& c : text.m_text)
     {
+        if(m_currentDrawingCharacter >= m_maxCharactersCount - 1) return;
+        
         if(c == u' ')
         {
-            curOffsetX += 0.02f;
+            curX += lockedSpec->getMaxCharacterSize().x * 0.4f;
             continue;
+        }
+        
+        if(c == u'\n')
+        {
+            curY -= lockedSpec->getMaxCharacterSize().y * 1.0f;
+            curX = 0.0f;
         }
 
         const FontGlyph* glyph = lockedSpec->tryGetGlyph(c);
@@ -229,6 +236,12 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, SGCore::Tr
         if(glyph)
         {
             // todo:
+            
+            float xpos = curX + glyph->m_bearing.x;
+            float ypos = curY - (glyph->m_realSize.y - glyph->m_bearing.y);
+            
+            float w = (float) glyph->m_realSize.x;
+            float h = (float) glyph->m_realSize.y;
             
             size_t colorOrMatrixIdx = m_currentDrawingCharacter * 16;
             
@@ -254,12 +267,10 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, SGCore::Tr
             m_charactersColors[colorOrMatrixIdx + 15] = text.m_color.a;
             
             // matrices =====================================================
-            glm::mat4 characterModelMatrix = textTransform.m_finalTransform.m_modelMatrix;
-            characterModelMatrix = glm::translate(characterModelMatrix, { (float) curOffsetX / 30.0f, 0.0f, 0.0f });
             
             for(std::uint8_t i = 0; i < 16; ++i)
             {
-                m_charactersMatrices[colorOrMatrixIdx + i] = *(glm::value_ptr(characterModelMatrix) + i);
+                m_charactersMatrices[colorOrMatrixIdx + i] = *(glm::value_ptr(textTransform.m_finalTransform.m_modelMatrix) + i);
             }
             
             // uvs =====================================================
@@ -277,8 +288,27 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, SGCore::Tr
             m_charactersUVs[uvsOffset + 6] = glyph->m_uvMax.x;
             m_charactersUVs[uvsOffset + 7] = glyph->m_uvMax.y;
             
+            // positions =====================================================
+            size_t positionsOffset = m_currentDrawingCharacter * 12;
+            
+            m_charactersVerticesPositions[positionsOffset] = xpos;
+            m_charactersVerticesPositions[positionsOffset + 1] = ypos;
+            m_charactersVerticesPositions[positionsOffset + 2] = 0.0;
+            
+            m_charactersVerticesPositions[positionsOffset + 3] = xpos;
+            m_charactersVerticesPositions[positionsOffset + 4] = ypos + h;
+            m_charactersVerticesPositions[positionsOffset + 5] = 0.0f;
+            
+            m_charactersVerticesPositions[positionsOffset + 6] = xpos + w;
+            m_charactersVerticesPositions[positionsOffset + 7] = ypos + h;
+            m_charactersVerticesPositions[positionsOffset + 8] = 0.0f;
+            
+            m_charactersVerticesPositions[positionsOffset + 9] = xpos + w;
+            m_charactersVerticesPositions[positionsOffset + 10] = ypos;
+            m_charactersVerticesPositions[positionsOffset + 11] = 0.0f;
+            
             ++m_currentDrawingCharacter;
-            curOffsetX += glyph->m_realSize.x + glyph->m_advance.x / 70.0f;
+            curX += (float) (glyph->m_advance.x >> 6);
         }
     }
 }
@@ -304,6 +334,9 @@ void SGCore::FontSpecializationRenderer::drawAll() noexcept
     m_charactersUVsVertexBuffer->bind();
     m_charactersUVsVertexBuffer->subData(m_charactersUVs.data(), vCnt * 8, 0);
     
+    m_charactersPositionsBuffer->bind();
+    m_charactersPositionsBuffer->subData(m_charactersVerticesPositions.data(), vCnt * 12, 0);
+    
     subPassShader->bind();
     subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
     
@@ -311,7 +344,7 @@ void SGCore::FontSpecializationRenderer::drawAll() noexcept
     
     // todo: do for each camera
     CoreMain::getRenderer()->renderArrayInstanced(m_charactersVertexArray, m_textRenderInfo, 6, 6,
-                                                  m_currentDrawingCharacter);
+                                                  vCnt);
 }
 
 void SGCore::FontSpecializationRenderer::resetRenderer() noexcept

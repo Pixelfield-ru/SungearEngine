@@ -47,16 +47,16 @@ namespace SGCore
     private:
         void updateUniforms() noexcept;
         
-        std::uint32_t m_maxCharactersCount = 1000;
+        std::uint32_t m_maxCharactersCount = 3000;
         std::uint32_t m_currentDrawingCharacter = 0;
         
         // big buffers
         std::vector<float> m_charactersMatrices;
         std::vector<float> m_charactersColors;
         std::vector<float> m_charactersUVs;
+        std::vector<float> m_charactersVerticesPositions;
         // ------------------------------------
         
-        std::vector<float> m_charactersVerticesPositions;
         std::vector<std::uint32_t> m_charactersVerticesIndices;
         
         EventListener<void()> m_onRenderPipelineSetEventListener = MakeEventListener<void()>([this]() {

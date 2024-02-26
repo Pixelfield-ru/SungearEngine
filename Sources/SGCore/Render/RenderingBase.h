@@ -19,10 +19,10 @@ namespace SGCore
         float m_zNear = 0.1;
         float m_zFar = 2000.0;
 
-        float m_left = -1.0f;
-        float m_right = 1.0f;
-        float m_bottom = -1.0f;
-        float m_top = 1.0f;
+        float m_left = -1280.0f;
+        float m_right = 1280.0f;
+        float m_bottom = -720.0f;
+        float m_top = 720.0f;
 
         glm::mat4 m_projectionMatrix = glm::perspective<float>(glm::radians(m_fov), m_aspect, m_zNear, m_zFar);
         glm::mat4 m_orthographicMatrix = glm::ortho<float>(m_left, m_right, m_bottom, m_top);

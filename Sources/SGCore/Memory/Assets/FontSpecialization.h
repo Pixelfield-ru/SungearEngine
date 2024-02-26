@@ -73,7 +73,11 @@ namespace SGCore
         
         Ref<FontSpecializationRenderer> getRenderer() noexcept;
         
-        std::unordered_map<char16_t, FontGlyph> m_glyphs;
+        [[nodiscard]] size_t getMaxAtlasWidth() const noexcept;
+        [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterSize() const noexcept;
+        [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterAdvance() const noexcept;
+        [[nodiscard]] glm::vec<2, size_t, glm::defaultp> getMaxCharacterBearing() const noexcept;
+        
     private:
         Ref<FontSpecializationRenderer> m_renderer;
         
@@ -82,7 +86,11 @@ namespace SGCore
         FT_Face m_face = nullptr;
         
         size_t m_maxAtlasWidth = 0;
-        size_t m_maxAtlasHeight = 0;
+        glm::vec<2, size_t, glm::defaultp> m_maxCharacterSize { 0, 0 };
+        glm::vec<2, size_t, glm::defaultp> m_maxCharacterAdvance { 0, 0 };
+        glm::vec<2, size_t, glm::defaultp> m_maxCharacterBearing { 0, 0 };
+        
+        std::unordered_map<char16_t, FontGlyph> m_glyphs;
     };
 }
 
