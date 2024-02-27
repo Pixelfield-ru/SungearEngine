@@ -566,7 +566,7 @@ void init()
     
     SGCore::Ref<SGCore::Font> timesNewRomanFont = SGCore::AssetManager::loadAssetWithAlias<SGCore::Font>(
             "font_times_new_roman",
-            "../SGResources/fonts/timesnewromanpsmt.ttf"
+            "../SGResources/fonts/arialmt.ttf"
     );
     
     SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_rus = timesNewRomanFont->addOrGetSpecialization({ 256, "rus" });
@@ -576,7 +576,7 @@ void init()
     timesNewRomanFont_height128_rus->parse({ '.', '!', '?', ')', u'ё', u'Ё'});
     timesNewRomanFont_height128_rus->createAtlas();
     
-    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->addOrGetSpecialization({ 256, "eng" });
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->addOrGetSpecialization({ 34, "eng" });
     // just example code
     timesNewRomanFont_height128_eng->parse('A', 'Z');
     timesNewRomanFont_height128_eng->parse('a', 'z');
@@ -593,14 +593,14 @@ void init()
     entt::entity textEntity = testScene->getECSRegistry().create();
     SGCore::Text& helloWorldUIText = testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
     SGCore::Transform& helloWorldUITextTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(textEntity);
-    helloWorldUITextTransform.m_ownTransform.m_scale = { 0.15, 0.15, 1 };
-    helloWorldUITextTransform.m_ownTransform.m_position = { 0.0, -128.0, 0 };
+    helloWorldUITextTransform.m_ownTransform.m_scale = { 1.0, 1.0, 1 };
+    helloWorldUITextTransform.m_ownTransform.m_position = { 0.0, -50.0, 0 };
 
     std::string formattedVersion = spdlog::fmt_lib::format("{0}.{1}.{2}.{3}", SG_CORE_MAJOR_VERSION, SG_CORE_MINOR_VERSION, SG_CORE_PATCH_VERSION, SG_CORE_BUILD_VERSION);
     helloWorldUIText.m_text = std::u16string(u"Development build. v") +
             SGUtils::Utils::fromUTF8<char16_t>(formattedVersion);
     helloWorldUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
-    helloWorldUIText.m_fontSettings.m_height = 256;
+    helloWorldUIText.m_fontSettings.m_height = 34;
     helloWorldUIText.m_fontSettings.m_name = "eng";
     // helloWorldUIText.m_color = { 1.0, 0.5, 0.1, 1.0 };
     helloWorldUIText.m_text += u"\n";
