@@ -47,8 +47,9 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
     
     m_uniformBuffer->setLayoutLocation(3);
     m_uniformBuffer->prepare();
-    
+
     auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+
     if(renderPipeline)
     {
         auto geomPass = renderPipeline->getRenderPass<IGeometryPass>();

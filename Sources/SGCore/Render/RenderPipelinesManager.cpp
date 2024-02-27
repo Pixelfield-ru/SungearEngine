@@ -3,3 +3,8 @@
 //
 
 #include "RenderPipelinesManager.h"
+
+SGCore::Ref<SGCore::IRenderPipeline> SGCore::RenderPipelinesManager::getCurrentRenderPipeline() noexcept
+{
+    return m_currentRenderPipeline;
+}

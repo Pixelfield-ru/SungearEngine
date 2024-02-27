@@ -194,12 +194,14 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
     m_textRenderInfo.m_useIndices = true;
     m_textRenderInfo.m_enableFacesCulling = false;
     m_textRenderInfo.m_drawMode = SGDrawMode::SGG_TRIANGLES;
-    
-    if(RenderPipelinesManager::getCurrentRenderPipeline())
+
+    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+
+    if(renderPipeline)
     {
         m_textShader = MakeRef<IShader>();
         m_textShader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(
-                RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths.getByVirtualPath("StandardTextShader").getCurrentRealization()));
+                renderPipeline->m_shadersPaths.getByVirtualPath("StandardTextShader").getCurrentRealization()));
         
         // todo: pass uniforms
         updateUniforms();

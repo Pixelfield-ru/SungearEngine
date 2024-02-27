@@ -3,17 +3,12 @@
 //
 
 #include <chrono>
-#include <GLFW/glfw3.h>
 #include <numeric>
 
 #include "Timer.h"
 #include "TimerCallback.h"
+#include "Utils.h"
 
-// TODO:  FIX rawDeltaTime between two startFrame
-// timer.startFrame();
-// some code...
-// timer.startFrame();
-// timer.getRawDeltaTime() == glfwGetTime() ! NOT CORRECT !
 void SGCore::Timer::startFrame()
 {
     if(!m_active) return;
@@ -25,14 +20,17 @@ void SGCore::Timer::startFrame()
     }
     
     double lastTime = m_currentTime;
-    m_currentTime = glfwGetTime();
+    m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
     
-    m_rawDeltaTime = m_currentTime - lastTime;
+    m_rawDeltaTime = (m_currentTime - lastTime) / 1000.0;
     
     m_FPSDeltaTimeAccum += m_rawDeltaTime;
     
     m_elapsedTimeForUpdate += m_rawDeltaTime;
-    
+
+    /*std::cout << "m_currentTime: " << m_currentTime << ", last time : "<< lastTime << ", raw dt : " << m_rawDeltaTime << ", elapsed : "
+              << m_elapsedTimeForUpdate << ", target : " << m_targetFrameTime << std::endl;*/
+
     if(m_elapsedTimeForUpdate >= m_targetFrameTime)
     {
         for(const auto& callback : m_callbacks)
@@ -66,7 +64,7 @@ void SGCore::Timer::startFrame()
                 if(!m_active) break;
                 
                 m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
-                m_currentFixedUpdateCallTime = glfwGetTime();
+                m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
                 m_fixedUpdateCallDeltaTime = m_currentFixedUpdateCallTime - m_lastFixedUpdateCallTime;
                 
                 for(const auto& callback : m_callbacks)
@@ -80,7 +78,7 @@ void SGCore::Timer::startFrame()
         else
         {
             m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
-            m_currentFixedUpdateCallTime = glfwGetTime();
+            m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
             m_fixedUpdateCallDeltaTime = m_currentFixedUpdateCallTime - m_lastFixedUpdateCallTime;
             
             for(const auto& callback : m_callbacks)
@@ -91,7 +89,7 @@ void SGCore::Timer::startFrame()
         
         // reset();
         m_elapsedTime = 0;
-        m_currentFixedUpdateCallTime = glfwGetTime();
+        m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
         m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
         
         m_active = m_cyclic;
@@ -101,16 +99,16 @@ void SGCore::Timer::startFrame()
 void SGCore::Timer::resetTimer() noexcept
 {
     m_elapsedTime = 0;
-    m_currentFixedUpdateCallTime = glfwGetTime();
+    m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
     m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
     m_FPSDeltaTimeAccum = 0;
-    m_currentTime = glfwGetTime();
+    m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
 }
 
 void SGCore::Timer::firstTimeStart()
 {
     //m_currentTime = m_startTime;
-    m_currentTime = glfwGetTime();
+    m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
     
     for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
     {

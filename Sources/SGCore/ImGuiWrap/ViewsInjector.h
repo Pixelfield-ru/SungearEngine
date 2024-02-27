@@ -9,13 +9,14 @@
 #include <unordered_map>
 #include <memory>
 #include <vector>
+#include <sgcore_export.h>
 
 #include "Views/IView.h"
 #include "SGUtils/Singleton.h"
 
 namespace SGCore::ImGuiWrap
 {
-    struct ViewsInjector
+    struct SGCORE_EXPORT ViewsInjector
     {
         // in those children other views can not be injected
         std::vector<std::weak_ptr<IView>> m_childrenViews;

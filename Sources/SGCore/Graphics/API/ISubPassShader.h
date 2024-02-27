@@ -94,7 +94,7 @@ namespace SGCore
         virtual void useInteger(const std::string& uniformName, const size_t& i) { };
         virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
         
-        virtual bool isUniformExists(const std::string& uniformName) const noexcept { };
+        virtual bool isUniformExists(const std::string& uniformName) const noexcept { return false; };
 
         void addToGlobalStorage() noexcept final;
 

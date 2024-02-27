@@ -97,7 +97,7 @@ void SGCore::Scene::update(const double& dt)
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
-        
+
         double before = glfwGetTime();
         system->update(dt);
         double after = glfwGetTime();
@@ -108,10 +108,12 @@ void SGCore::Scene::update(const double& dt)
     double t1 = glfwGetTime();
     
     m_update_executionTime = (t1 - t0) * 1000.0f;
-    
-    if(RenderPipelinesManager::getCurrentRenderPipeline())
+
+    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+
+    if(renderPipeline)
     {
-        RenderPipelinesManager::getCurrentRenderPipeline()->render(shared_from_this());
+        renderPipeline->render(shared_from_this());
     }
 }
 

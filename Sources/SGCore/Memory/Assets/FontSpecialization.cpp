@@ -1,6 +1,8 @@
 //
 // Created by ilya on 24.02.24.
 //
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "FontSpecialization.h"
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
@@ -135,11 +137,6 @@ bool SGCore::FontSpecialization::parse(const uint16_t& character) noexcept
     {
         spdlog::error("Could not load glyph with index '{0}. FreeType error code: {1}", (char) c, loadGlyphErrCode);
         return false;
-    }
-    
-    if(c == u'А')
-    {
-        std::cout << "found rus" << std::endl;
     }
     
     const auto& bitmapWidth = m_face->glyph->bitmap.width;

@@ -46,7 +46,7 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
 
     m_uniformBuffer->setLayoutLocation(4);
     m_uniformBuffer->prepare();
-    
+
     auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
     if(renderPipeline)
     {

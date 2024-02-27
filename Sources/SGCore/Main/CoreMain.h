@@ -1,6 +1,8 @@
 #ifndef NATIVECORE_COREMAIN_H
 #define NATIVECORE_COREMAIN_H
 
+#include <sgcore_export.h>
+
 #include "Window.h"
 #include "SGUtils/Timer.h"
 
@@ -15,7 +17,7 @@ namespace SGCore
 {
     class IRenderer;
 
-    class CoreMain
+    class SGCORE_EXPORT CoreMain
     {
     private:
         static inline Window m_window {};

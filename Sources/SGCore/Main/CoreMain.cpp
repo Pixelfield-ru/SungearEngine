@@ -73,13 +73,9 @@ void SGCore::CoreMain::start()
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
 
     sgCallCoreInitCallback();
-    
+
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();
-
-    double cur = glfwGetTime();
-    double t = 0;
-    int f = 0;
     
     while(!m_window.shouldClose())
     {

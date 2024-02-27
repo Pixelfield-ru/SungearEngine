@@ -63,7 +63,7 @@ namespace SGCore
                                                             const int& mipLevel,
                                                             const int& layer,
                                                             bool useMultisampling,
-                                                            std::uint8_t multisamplingSamplesCount) { };
+                                                            std::uint8_t multisamplingSamplesCount) { return nullptr; };
 
         std::shared_ptr<IFrameBuffer> setWidth(const int& width) noexcept;
         std::shared_ptr<IFrameBuffer> setHeight(const int& height) noexcept;

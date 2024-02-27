@@ -22,6 +22,9 @@ if (JNI_FOUND)
 endif ()]]
 # -------------------------------
 
+#[[include_directories(${PUGIXML_INCLUDE_DIR})
+link_directories("F:/Pixelfield/SungearEngine/cmake-build-debug/vcpkg_installed/x64-windows/lib")]]
+
 # local externals ---------------
 add_subdirectory(Assimp)
 add_subdirectory(GLFW)

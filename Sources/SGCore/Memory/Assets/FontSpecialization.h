@@ -11,6 +11,7 @@
 #include <glm/vec2.hpp>
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 #include "SGCore/Main/CoreGlobals.h"
 

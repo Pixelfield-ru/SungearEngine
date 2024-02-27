@@ -6,22 +6,18 @@
 
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
 
- # STATIC FOR LINUX
- add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
-
- include(GenerateExportHeader)
- #generate_export_header(${PROJECT_NAME})
-
- #[[GENERATE_EXPORT_HEADER(${PROJECT_NAME}           
-    BASE_NAME ${PROJECT_NAME}
-    EXPORT_MACRO_NAME SGCORE_EXPORTS
-    EXPORT_FILE_NAME ${SGCORE_SOURCES}
-    STATIC_DEFINE SHARED_EXPORTS_BUILT_AS_STATIC)]]
+ #add_subdirectory(${CMAKE_SOURCE_DIR} Externals/Assimp)
 
  find_package(pugixml CONFIG REQUIRED)
 
  find_path(PUGIXML_INCLUDE_DIR pugixml.hpp)
  message("PUGIXML_INCLUDE_DIR: " ${PUGIXML_INCLUDE_DIR})
+
+ # STATIC FOR LINUX
+ add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
+
+ include(GenerateExportHeader)
+ generate_export_header(${PROJECT_NAME})
 
  find_package(Freetype CONFIG REQUIRED)
  message("FREETYPE_FOUND: " ${FREETYPE_FOUND})
@@ -43,8 +39,7 @@
          ${BULLET_INCLUDE_DIR}
          ${PUGIXML_INCLUDE_DIR}
          ${FREETYPE_INCLUDE_DIRS}
-
-         #${BULLET_INCLUDE_DIR}
+         ${CMAKE_CURRENT_BINARY_DIR}
 
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
          #"C:/VulkanSDK/1.3.250.1/Include"

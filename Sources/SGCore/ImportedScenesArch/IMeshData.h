@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <string>
 #include <glm/glm.hpp>
 #include <entt/entity/entity.hpp>
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>

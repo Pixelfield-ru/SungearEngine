@@ -81,12 +81,13 @@ SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
     
     m_linesRenderInfo.m_useIndices = true;
     m_linesRenderInfo.m_drawMode = SGDrawMode::SGG_LINES;
-    
-    if(RenderPipelinesManager::getCurrentRenderPipeline())
+
+    auto currentRenderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+    if(currentRenderPipeline)
     {
         m_linesShader = MakeRef<IShader>();
         m_linesShader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(
-                RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths.getByVirtualPath("PhysicsLinesDebugDrawShader").getCurrentRealization()));
+                currentRenderPipeline->m_shadersPaths.getByVirtualPath("PhysicsLinesDebugDrawShader").getCurrentRealization()));
     }
 }
 
@@ -167,6 +168,8 @@ int SGCore::PhysicsDebugDraw::getDebugMode() const
 
 void SGCore::PhysicsDebugDraw::drawAll(const Ref<Scene>& scene)
 {
+    if(!m_linesShader) return;
+
     auto subPassShader = m_linesShader->getSubPassShader("PhysicsLinesDebugPass");
     
     if(!subPassShader) return;

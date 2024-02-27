@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <sgcore_export.h>
 
 #include "Assets/IAsset.h"
 #include "SGUtils/Utils.h"
@@ -16,7 +17,7 @@
 
 namespace SGCore
 {
-    class AssetManager
+    class SGCORE_EXPORT AssetManager
     {
     public:
         AssetManager() = delete;

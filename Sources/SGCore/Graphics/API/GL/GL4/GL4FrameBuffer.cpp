@@ -59,7 +59,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToR
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToDraw
 (const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes)
 {
-    GLenum attachmentsToBind[attachmentsTypes.size()];
+    std::vector<GLenum> attachmentsToBind;
+    attachmentsToBind.resize(attachmentsTypes.size());
 
     std::uint8_t curAttachment = 0;
     for(const auto& type: attachmentsTypes)
@@ -73,7 +74,7 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToD
         ++curAttachment;
     }
 
-    glDrawBuffers(attachmentsTypes.size(), attachmentsToBind);
+    glDrawBuffers(attachmentsTypes.size(), attachmentsToBind.data());
 
     return shared_from_this();
 }
@@ -81,7 +82,8 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToD
 std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToDraw
 (const std::set<SGFrameBufferAttachmentType>& attachmentsTypes)
 {
-    GLenum attachmentsToBind[attachmentsTypes.size()];
+    std::vector<GLenum> attachmentsToBind;
+    attachmentsToBind.resize(attachmentsTypes.size());
 
     std::uint8_t curAttachment = 0;
     for(const auto& type: attachmentsTypes)
@@ -95,7 +97,7 @@ std::shared_ptr<SGCore::IFrameBuffer> SGCore::GL4FrameBuffer::bindAttachmentsToD
         ++curAttachment;
     }
 
-    glDrawBuffers(attachmentsTypes.size(), attachmentsToBind);
+    glDrawBuffers(attachmentsTypes.size(), attachmentsToBind.data());
 
     return shared_from_this();
 }

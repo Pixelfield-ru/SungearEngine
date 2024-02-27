@@ -1,7 +1,5 @@
 project(ImGui)
 
-set(IMGUI_DLL ${CMAKE_BINARY_DIR}/lib/lib${PROJECT_NAME}d.dll)
-
 set(IMGUI_SOURCES
         backends/imgui_impl_opengl3.cpp
         backends/imgui_impl_glfw.cpp
@@ -15,11 +13,14 @@ set(IMGUI_SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${IMGUI_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ../imgui ../imgui/backends ../GLFW/include)
+include(GenerateExportHeader)
+generate_export_header(${PROJECT_NAME})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+        ../imgui
+        ../imgui/backends
+        ../GLFW/include
+        ${CMAKE_CURRENT_BINARY_DIR}
+        )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
-
-if(EXISTS ${IMGUI_DLL})
-    file(COPY ${IMGUI_DLL} DESTINATION ${SG_PHYS_TEST_BIN})
-    file(COPY ${IMGUI_DLL} DESTINATION ${SG_EDITOR_BIN})
-endif()

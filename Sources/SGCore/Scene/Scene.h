@@ -8,6 +8,7 @@
 #include <variant>
 #include <type_traits>
 #include <entt/entt.hpp>
+#include <sgcore_export.h>
 
 #include "Layer.h"
 #include "ISystem.h"
@@ -20,9 +21,8 @@
 namespace SGCore
 {
     struct XMLDocument;
-    
-    // todo: make scenes list
-    class Scene : public std::enable_shared_from_this<Scene>
+
+    class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
     {
     public:
         Scene();
@@ -117,7 +117,7 @@ namespace SGCore
         Weak<XMLDocument> m_UIXMLDocument;
         
         static inline Ref<Scene> m_currentScene;
-        static inline  std::vector<Ref<Scene>> m_scenes;
+        static inline std::vector<Ref<Scene>> m_scenes;
     };
 }
 

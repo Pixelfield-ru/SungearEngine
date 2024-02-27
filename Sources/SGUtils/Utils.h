@@ -156,6 +156,16 @@ namespace SGUtils
                    std::to_string(location.column()) + "\n";
         }
 
+        static long long getTimeMilliseconds() noexcept
+        {
+            using namespace std::chrono;
+            auto timepoint = system_clock::now();
+            auto coarse = system_clock::to_time_t(timepoint);
+            auto fine = time_point_cast<std::chrono::milliseconds>(timepoint).time_since_epoch().count();
+
+            return fine;
+        }
+
         static long long getTimeMicros() noexcept
         {
             using namespace std::chrono;

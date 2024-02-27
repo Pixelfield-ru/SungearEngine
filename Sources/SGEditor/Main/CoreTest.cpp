@@ -55,6 +55,7 @@
 #include "SGCore/Render/DefaultFrameReceiver.h"
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/UICamera.h"
+#include "SGCore/Render/LWRP/LWRenderPipeline.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -102,9 +103,10 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
 
 void init()
 {
-    SGCore::RenderPipelinesManager::registerRenderPipeline(SGCore::MakeRef<SGCore::PBRRenderPipeline>());
+    auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
+    SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
     SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
-    
+
     testScene = SGCore::MakeRef<SGCore::Scene>();
     testScene->m_name = "TestScene";
     testScene->createDefaultSystems();
@@ -458,6 +460,7 @@ void init()
     {
         SGCore::Rigidbody3D& model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(model1Entities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
         SGCore::Mesh* model1Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[4]);
+        std::cout << "model1Mesh0->m_base.m_meshData: " << model1Mesh0->m_base.m_meshData.get() << std::endl;
         model1Mesh0->m_base.m_meshData->generatePhysicalMesh();
         SGCore::Ref<btConvexTriangleMeshShape> model1Rigidbody3DShape = SGCore::MakeRef<btConvexTriangleMeshShape>(
                 model1Mesh0->m_base.m_meshData->m_physicalMesh.get(), true);
@@ -553,7 +556,7 @@ void init()
                                            geniusEntities.push_back(entity);
                                        }
     );
-    
+
     // ==========================================================================================
     // ==========================================================================================
     // ==========================================================================================
@@ -565,18 +568,18 @@ void init()
             "../SGResources/fonts/timesnewromanpsmt.ttf"
     );
     
-    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_rus = timesNewRomanFont->addOrGetSpecialization({ 128, "rus" });
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_rus = timesNewRomanFont->addOrGetSpecialization({ 256, "rus" });
     timesNewRomanFont_height128_rus->parse(u'А', u'Я');
     timesNewRomanFont_height128_rus->parse(u'а', u'я');
-    timesNewRomanFont_height128_rus->parse(u'0', u'9');
-    timesNewRomanFont_height128_rus->parse({ u'.', u'!', u'?', u')', u'ё', u'Ё'});
+    timesNewRomanFont_height128_rus->parse('0', '9');
+    timesNewRomanFont_height128_rus->parse({ '.', '!', '?', ')', u'ё', u'Ё'});
     timesNewRomanFont_height128_rus->createAtlas();
     
     SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->addOrGetSpecialization({ 128, "eng" });
     // just example code
-    timesNewRomanFont_height128_eng->parse(u'A', u'Z');
-    timesNewRomanFont_height128_eng->parse(u'a', u'z');
-    timesNewRomanFont_height128_eng->parse({ u'.', u'!', u'?', u')' });
+    timesNewRomanFont_height128_eng->parse('A', 'Z');
+    timesNewRomanFont_height128_eng->parse('a', 'z');
+    timesNewRomanFont_height128_eng->parse({ '.', '!', '?', ')' });
     timesNewRomanFont_height128_eng->createAtlas();
     
     timesNewRomanFont_height128_rus->saveTextAsTexture("font_spec_text_test_rus.png", u"Здравствуйте.");
@@ -591,20 +594,20 @@ void init()
     helloWorldUITextTransform.m_ownTransform.m_scale = { 0.2, 0.2, 1 };
     helloWorldUITextTransform.m_ownTransform.m_position = { 0.0, -128.0, 0 };
     
-    helloWorldUIText.m_text = std::u16string(u"Здесь написан крутой текст.\nА тут вторая строка.\nДа и третья на месте!") + std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(std::to_string((long) &helloWorldUITextTransform));
+    helloWorldUIText.m_text = std::u16string(u"Здесь написан крутой текст.\nА тут вторая строка.\nДа и третья на месте!");
     helloWorldUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
-    helloWorldUIText.m_fontSettings.m_height = 128;
+    helloWorldUIText.m_fontSettings.m_height = 256;
     helloWorldUIText.m_fontSettings.m_name = "rus";
     helloWorldUIText.m_color = { 1.0, 0.5, 0.1, 1.0 };
     helloWorldUIText.m_text += u"\n";
-    for(int i = 0; i < 30; ++i)
+    /*for(int i = 0; i < 30; ++i)
     {
         for(int j = 0; j < 100; ++j)
         {
             helloWorldUIText.m_text += u"а";
         }
         helloWorldUIText.m_text += u"\n";
-    }
+    }*/
     // helloWorldUIText->m_color = { 1.0, 0.0, 0.0, 1.0 };
 
     entt::entity uiCameraEntity = testScene->getECSRegistry().create();
@@ -620,18 +623,18 @@ void init()
     {
         auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
         auto geniusTransform = testScene->getECSRegistry().try_get<SGCore::Transform>(geniusEntities[2]);
-        
+
         if(geniusTransform)
         {
             geniusTransform->m_ownTransform.m_position = { -5, 3, -30 };
             geniusTransform->m_ownTransform.m_rotation = { 0, 0, 0 };
             geniusTransform->m_ownTransform.m_scale = { 3 * 10.0, 0.1 * 10.0, 0.1 * 10.0 };
         }
-        
+
         if(geniusMesh)
         {
             geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomanFont_height128_eng->m_atlas);
-            
+
             geniusMesh->m_base.m_meshData->m_material->setShader(SGCore::MakeRef<SGCore::IShader>());
             SGCore::MeshesUtils::loadMeshShader(geniusMesh->m_base, "TestTextShader");
             geniusMesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
@@ -1136,6 +1139,8 @@ int main()
 
     stbi_write_png("perlin_noise_test.png", perlinMapSize.x, perlinMapSize.y, 4,
                    (perlinNoise.m_map.data()), 4 * perlinMapSize.x);
+
+    std::cout << "perlin generated" << std::endl;
 
     SGCore::CoreMain::start();
 

@@ -5,18 +5,20 @@
 #ifndef SUNGEARENGINE_IMGUILAYER_H
 #define SUNGEARENGINE_IMGUILAYER_H
 
-#include "imgui/backends/imgui_impl_opengl3.h"
-#include "imgui/backends/imgui_impl_glfw.h"
-#include "imgui/imgui.h"
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/imgui.h>
+#include <sgcore_export.h>
 
 namespace SGCore::ImGuiWrap
 {
     // TODO: ADD ON EXIT CLEAR
-    struct ImGuiLayer
+    struct SGCORE_EXPORT ImGuiLayer
     {
         static void initImGui() noexcept;
 
         static void beginFrame() noexcept;
+
         static void endFrame() noexcept;
     };
 }

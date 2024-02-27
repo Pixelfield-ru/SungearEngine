@@ -3,27 +3,41 @@ cmake_minimum_required(VERSION 3.22)
 project(SungearEngine)
 
 add_definitions(-DSUNGEAR_DEBUG)
+#add_definitions(-DCMAKE_TOOLCHAIN_FILE="C:\\Users\\Ilya\\.clion-vcpkg\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")
 
 set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+set(CMAKE_TOOLCHAIN_FILE "C:\\Users\\Ilya\\.clion-vcpkg\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")
+
 message("ToolChain CMAKE_CXX_LINK_EXECUTABLE: ${CMAKE_CXX_LINK_EXECUTABLE}")
 
-add_compile_options(-fPIC)
+IF(NOT MSVC)
+    add_compile_options(-fPIC)
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-implicit-fallthrough -Wno-ignored-qualifiers")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O1")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+else()
+    add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+    add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-implicit-fallthrough -Wno-ignored-qualifiers")
-set(CMAKE_CXX_FLAGS_DEBUG "-O1")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+    set(CompilerFlags
+            CMAKE_CXX_FLAGS
+            CMAKE_CXX_FLAGS_DEBUG
+            CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_C_FLAGS
+            CMAKE_C_FLAGS_DEBUG
+            CMAKE_C_FLAGS_RELEASE
+            )
+    foreach(CompilerFlag ${CompilerFlags})
+        string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+    endforeach()
 
-set(BUILD_SHARED_LIBS TRUE)
-
-if(MSVC)
     set(MSVC_RUNTIME "dynamic")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-    set(BUILD_SHARED_LIBS TRUE)
-endif()
-
+    set(BUILD_SHARED_LIBS FALSE)
+endif ()
 # projects --------------------
 set(SG_SOURCES_PROJ Sources)
 set(SG_CORE_PROJ SGCore)
@@ -56,11 +70,11 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
 # TODO: make SG_BUILD_EDITOR
 set(SG_BUILD_TESTS OFF)
 
-set(SG_RESOURCES_COPY_MODELS ON)
-set(SG_RESOURCES_COPY_SHADERS ON)
-set(SG_RESOURCES_COPY_TEXTURES ON)
-set(SG_RESOURCES_COPY_UI ON)
-set(SG_RESOURCES_COPY_FONTS ON)
+set(SG_RESOURCES_COPY_MODELS OFF)
+set(SG_RESOURCES_COPY_SHADERS OFF)
+set(SG_RESOURCES_COPY_TEXTURES OFF)
+set(SG_RESOURCES_COPY_UI OFF)
+set(SG_RESOURCES_COPY_FONTS OFF)
 
 # ----------------------------------
 add_subdirectory(syslibs)
@@ -88,4 +102,4 @@ endif()
 if(EXISTS ${CMAKE_BINARY_DIR}/lib/glfw3d.dll)
     file(COPY ${CMAKE_BINARY_DIR}/lib/glfw3d.dll DESTINATION ${SG_PHYS_TEST_BIN})
     file(COPY ${CMAKE_BINARY_DIR}/lib/glfw3d.dll DESTINATION ${SG_EDITOR_BIN})
-endif()
+endif ()

@@ -1,11 +1,8 @@
-//
-// Created by stuka on 25.01.2024.
-//
-
 #ifndef SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 #define SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 
 #include <spdlog/spdlog.h>
+#include <sgcore_export.h>
 
 #include "SGUtils/Event.h"
 #include "SGUtils/EventListener.h"
@@ -14,35 +11,39 @@
 
 namespace SGCore
 {
-    class RenderPipelinesManager
+    struct SGCORE_EXPORT RenderPipelinesManager
     {
-    public:
+        template<typename PipelineT>
+        requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
+        static Ref<PipelineT> createRenderPipeline() noexcept
+        {
+            return MakeRef<PipelineT>();
+        }
+
         static void subscribeToRenderPipelineSetEvent(const EventListener<void()>& holder)
         {
             (*m_renderPipelineSetEvent) += holder;
         }
 
         template<typename PipelineT>
+        requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
         static void setCurrentRenderPipeline() noexcept
         {
             auto renderPipeline = getRenderPipeline<PipelineT>();
-            
+
             if(!renderPipeline)
             {
                 spdlog::error("Cannot set render pipeline with type '{0}'. It is not exists.", typeid(PipelineT).name());
-                
+
                 return;
             }
-            
+
             m_currentRenderPipeline = renderPipeline;
-            
+
             (*m_renderPipelineSetEvent)();
         }
 
-        static Ref<IRenderPipeline> getCurrentRenderPipeline() noexcept
-        {
-            return m_currentRenderPipeline;
-        }
+        static Ref<IRenderPipeline> getCurrentRenderPipeline() noexcept;
         
         template<typename PipelineT>
         requires(std::is_base_of_v<IRenderPipeline, PipelineT>)
@@ -59,7 +60,7 @@ namespace SGCore
             {
                 renderPass->create(renderPipeline);
             }
-            
+
             m_renderPipelines.push_back(renderPipeline);
         }
         

@@ -6,10 +6,11 @@
 #define SUNGEARENGINE_FONTSMANAGER_H
 
 #include <freetype/freetype.h>
+#include <sgcore_export.h>
 
 namespace SGCore
 {
-    struct FontsManager
+    struct SGCORE_EXPORT FontsManager
     {
         static void init() noexcept;
         

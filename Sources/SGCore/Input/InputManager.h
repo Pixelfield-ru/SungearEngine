@@ -164,6 +164,7 @@
 #include <memory>
 #include <algorithm>
 #include <thread>
+#include <sgcore_export.h>
 
 #include "SGCore/Main/Callbacks.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -171,12 +172,12 @@
 
 namespace SGCore
 {
-    class InputManager
+    class SGCORE_EXPORT InputManager
     {
     private:
         static inline std::list<Ref<InputListener>> m_inputListeners;
         static inline std::mutex m_keysMutex;
-        const static inline Ref<InputListener> mainInputListener = MakeRef<InputListener>();
+        static const inline Ref<InputListener> mainInputListener = MakeRef<InputListener>();
 
     public:
         InputManager() = delete;
