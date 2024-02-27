@@ -24,6 +24,8 @@
 #include <sstream>
 #include <source_location>
 #include <chrono>
+#include <locale>
+#include <codecvt>
 
 namespace SGUtils
 {
@@ -154,6 +156,29 @@ namespace SGUtils
                    std::string(location.function_name()) + "\n" + "\tLine: " +
                    std::to_string(location.line()) + "\n" + "\tColumn: " +
                    std::to_string(location.column()) + "\n";
+        }
+        
+        template <typename T>
+        static std::string toUTF8(const std::basic_string<T, std::char_traits<T>, std::allocator<T>>& source)
+        {
+            std::string result;
+            std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
+            result = convertor.to_bytes(source);
+            return result;
+        }
+        
+        template <typename T>
+        static void fromUTF8(const std::string& source, std::basic_string<T, std::char_traits<T>, std::allocator<T>>& result)
+        {
+            std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
+            result = convertor.from_bytes(source);
+        }
+        
+        template <typename T>
+        static std::basic_string<T, std::char_traits<T>, std::allocator<T>> fromUTF8(const std::string& source)
+        {
+            std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
+            return convertor.from_bytes(source);
         }
 
         static long long getTimeMilliseconds() noexcept

@@ -56,6 +56,7 @@
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/UICamera.h"
 #include "SGCore/Render/LWRP/LWRenderPipeline.h"
+#include "SGCore/Main/CoreSettings.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -466,11 +467,11 @@ void init()
                 model1Mesh0->m_base.m_meshData->m_physicalMesh.get(), true);
         // SGCore::Ref<btBoxShape> model0Rigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1 / 2.0, 1 / 2.0, 1.0 / 2.0));
         model1Rigidbody3D.setShape(model1Rigidbody3DShape);
-        model1Rigidbody3D.m_body->setRestitution(1.1);
+        model1Rigidbody3D.m_body->setRestitution(0.3);
         model1Rigidbody3D.m_body->getCollisionShape()->setLocalScaling({ 0.4f, 0.4f, 0.4f });
         model1Rigidbody3D.m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
         model1Rigidbody3D.m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
-        btScalar mass = 1000.0f;
+        btScalar mass = 10000.0f;
         btVector3 inertia(1, 0, 0);
         model1Rigidbody3D.m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
         model1Rigidbody3D.m_body->setMassProps(mass, inertia);
@@ -575,10 +576,11 @@ void init()
     timesNewRomanFont_height128_rus->parse({ '.', '!', '?', ')', u'ё', u'Ё'});
     timesNewRomanFont_height128_rus->createAtlas();
     
-    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->addOrGetSpecialization({ 128, "eng" });
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->addOrGetSpecialization({ 256, "eng" });
     // just example code
     timesNewRomanFont_height128_eng->parse('A', 'Z');
     timesNewRomanFont_height128_eng->parse('a', 'z');
+    timesNewRomanFont_height128_eng->parse('0', '9');
     timesNewRomanFont_height128_eng->parse({ '.', '!', '?', ')' });
     timesNewRomanFont_height128_eng->createAtlas();
     
@@ -591,14 +593,16 @@ void init()
     entt::entity textEntity = testScene->getECSRegistry().create();
     SGCore::Text& helloWorldUIText = testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
     SGCore::Transform& helloWorldUITextTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(textEntity);
-    helloWorldUITextTransform.m_ownTransform.m_scale = { 0.2, 0.2, 1 };
+    helloWorldUITextTransform.m_ownTransform.m_scale = { 0.15, 0.15, 1 };
     helloWorldUITextTransform.m_ownTransform.m_position = { 0.0, -128.0, 0 };
-    
-    helloWorldUIText.m_text = std::u16string(u"Здесь написан крутой текст.\nА тут вторая строка.\nДа и третья на месте!");
+
+    std::string formattedVersion = spdlog::fmt_lib::format("{0}.{1}.{2}.{3}", SG_CORE_MAJOR_VERSION, SG_CORE_MINOR_VERSION, SG_CORE_PATCH_VERSION, SG_CORE_BUILD_VERSION);
+    helloWorldUIText.m_text = std::u16string(u"Development build. v") +
+            SGUtils::Utils::fromUTF8<char16_t>(formattedVersion);
     helloWorldUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
     helloWorldUIText.m_fontSettings.m_height = 256;
-    helloWorldUIText.m_fontSettings.m_name = "rus";
-    helloWorldUIText.m_color = { 1.0, 0.5, 0.1, 1.0 };
+    helloWorldUIText.m_fontSettings.m_name = "eng";
+    // helloWorldUIText.m_color = { 1.0, 0.5, 0.1, 1.0 };
     helloWorldUIText.m_text += u"\n";
     /*for(int i = 0; i < 30; ++i)
     {
