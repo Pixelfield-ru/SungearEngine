@@ -33,7 +33,11 @@ namespace SGCore
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) = 0;
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized, const size_t& divisor) = 0;
         virtual IVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, const size_t& divisor) = 0;
-
+        virtual IVertexAttribute*
+        createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
+                              const std::uint16_t& scalarsCount, bool normalized, const size_t& stride,
+                              const size_t& offset, const size_t& divisor) = 0;
+        
         // enable attributes (GRAPHICS API SIDE)
         virtual Ref<IVertexBufferLayout> enableAttribute(const Ref<IVertexAttribute>&) = 0;
         virtual Ref<IVertexBufferLayout> enableAttributes() = 0;

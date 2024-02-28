@@ -14,13 +14,9 @@
 
 namespace SGCore
 {
-    class GLVertexAttribute : public IVertexAttribute
+    struct GLVertexAttribute : public IVertexAttribute
     {
         friend class GLVertexBufferLayout;
-
-    public:
-        GLVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized,
-                          const size_t& divisor) : IVertexAttribute(ID, std::move(name), dataType, normalized, divisor) { }
     };
 }
 

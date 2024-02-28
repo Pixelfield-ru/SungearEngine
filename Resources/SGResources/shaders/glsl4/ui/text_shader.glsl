@@ -8,18 +8,18 @@ SGSubPass(TextRenderPass)
 
         layout (location = 0) in mat4 characterModelMatrix;
         layout (location = 4) in vec4 characterColor;
-        layout (location = 5) in vec2 characterUV[4];
-        layout (location = 9) in vec3 characterVertexPosition[4];
+        layout (location = 5) in vec2 characterUV;
+        layout (location = 6) in vec3 characterVertexPosition;
 
         out vec2 vs_UVAttribute;
         out vec4 vs_characterColor;
 
         void main()
         {
-            vs_UVAttribute = characterUV[gl_VertexID];
+            vs_UVAttribute = characterUV;
             vs_characterColor = characterColor;
 
-            gl_Position = camera.orthographicMatrix * characterModelMatrix * vec4(characterVertexPosition[gl_VertexID], 1.0);
+            gl_Position = camera.orthographicSpaceMatrix * characterModelMatrix * vec4(characterVertexPosition, 1.0);
         }
     }
 
@@ -45,7 +45,7 @@ SGSubPass(TextRenderPass)
 
             // fragColor = charCol;
             fragColor = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
-            // fragColor = vec4(1.0) * vec4(vs_UVAttribute, 1.0, 1.0);
+            // fragColor = vec4(1.0);
         }
     }
 }

@@ -22,12 +22,16 @@ namespace SGCore
 
         Ref<IVertexBufferLayout> reset() noexcept final;
 
-        std::uint16_t getVertexAttributeSizeInLayout(const SGGDataType&) noexcept;
+        static std::uint16_t getVertexAttributeScalarsCount(const SGGDataType& dataType) noexcept;
 
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType) noexcept override;
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) noexcept override;
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized, const size_t& divisor) noexcept override;
         GLVertexAttribute* createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, const size_t& divisor) noexcept override;
+        GLVertexAttribute*
+        createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
+                              const std::uint16_t& scalarsCount, bool normalized, const size_t& stride,
+                              const size_t& offset, const size_t& divisor) noexcept override;
 
         Ref<IVertexBufferLayout> enableAttribute(const Ref<IVertexAttribute>&) noexcept override;
         Ref<IVertexBufferLayout> enableAttributes() noexcept override;

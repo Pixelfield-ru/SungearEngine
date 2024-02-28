@@ -17,6 +17,7 @@
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Camera3D.h"
+#include "SGCore/Render/DisableMeshGeometryPass.h"
 
 void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
@@ -56,7 +57,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
 
     // scene->getECSRegistry();
     auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Transform>();
-    auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Transform>();
+    auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Transform>(entt::exclude<DisableMeshGeometryPass>);
     
     Ref<ISubPassShader> standardGeometryShader;
     if(m_shader)

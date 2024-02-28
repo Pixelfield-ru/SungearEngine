@@ -2,6 +2,7 @@
 // Created by stuka on 04.07.2023.
 //
 
+#include <SGCore/Render/Instancing/InstancingRenderer.h>
 #include "Scene.h"
 
 #include "GLFW/glfw3.h"
@@ -72,6 +73,9 @@ void SGCore::Scene::createDefaultSystems()
     addSystem(sphereGizmosUpdater);
 
     // ===================
+    
+    auto instancingRenderer = MakeRef<InstancingRenderer>();
+    addSystem(instancingRenderer);
     
     for(auto& system : m_systems)
     {

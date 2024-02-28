@@ -14,16 +14,28 @@ SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::prepare()
 
     for(const auto& attribute : m_attributes)
     {
-        attribute->m_offset = offset;
+        if(!attribute->m_useCustomMarkup)
+        {
+            attribute->m_offset = offset;
+            attribute->m_scalarsCount = getVertexAttributeScalarsCount(attribute->m_dataType);
+        }
 
         offset += attribute->m_size;
         m_stride += attribute->m_size;
+    }
+    
+    for(const auto& attribute : m_attributes)
+    {
+        if(!attribute->m_useCustomMarkup)
+        {
+            attribute->m_stride = m_stride;
+        }
     }
 
     return shared_from_this();
 }
 
-std::uint16_t SGCore::GLVertexBufferLayout::getVertexAttributeSizeInLayout
+std::uint16_t SGCore::GLVertexBufferLayout::getVertexAttributeScalarsCount
 (const SGGDataType& dataType) noexcept
 {
     int size;
@@ -57,8 +69,10 @@ std::uint16_t SGCore::GLVertexBufferLayout::getVertexAttributeSizeInLayout
 SGCore::GLVertexAttribute* SGCore::GLVertexBufferLayout::createVertexAttribute
 (std::uint16_t ID, std::string name, SGGDataType dataType) noexcept
 {
-    auto* attrib = new GLVertexAttribute(ID, std::move(name), dataType, false, 1);
-    attrib->m_useDivisor = false;
+    auto* attrib = new GLVertexAttribute;
+    attrib->m_ID = ID;
+    attrib->m_name = name;
+    attrib->m_dataType = dataType;
     
     return attrib;
 }
@@ -66,8 +80,11 @@ SGCore::GLVertexAttribute* SGCore::GLVertexBufferLayout::createVertexAttribute
 SGCore::GLVertexAttribute* SGCore::GLVertexBufferLayout::createVertexAttribute
 (std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized) noexcept
 {
-    auto* attrib = new GLVertexAttribute(ID, std::move(name), dataType, normalized, 1);
-    attrib->m_useDivisor = false;
+    auto* attrib = new GLVertexAttribute;
+    attrib->m_ID = ID;
+    attrib->m_name = name;
+    attrib->m_dataType = dataType;
+    attrib->m_normalized = normalized;
     
     return attrib;
 }
@@ -76,7 +93,12 @@ SGCore::GLVertexAttribute*
 SGCore::GLVertexBufferLayout::createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
                                                     bool normalized, const size_t& divisor) noexcept
 {
-    auto* attrib = new GLVertexAttribute(ID, std::move(name), dataType, normalized, divisor);
+    auto* attrib = new GLVertexAttribute;
+    attrib->m_ID = ID;
+    attrib->m_name = name;
+    attrib->m_dataType = dataType;
+    attrib->m_divisor = divisor;
+    attrib->m_normalized = normalized;
     attrib->m_useDivisor = true;
     
     return attrib;
@@ -86,8 +108,32 @@ SGCore::GLVertexAttribute*
 SGCore::GLVertexBufferLayout::createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
                                                     const size_t& divisor) noexcept
 {
-    auto* attrib = new GLVertexAttribute(ID, std::move(name), dataType, false, divisor);
+    auto* attrib = new GLVertexAttribute;
+    attrib->m_ID = ID;
+    attrib->m_name = name;
+    attrib->m_dataType = dataType;
+    attrib->m_divisor = divisor;
     attrib->m_useDivisor = true;
+    
+    return attrib;
+}
+
+SGCore::GLVertexAttribute*
+SGCore::GLVertexBufferLayout::createVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType,
+                                                    const uint16_t& scalarsCount, bool normalized, const size_t& stride,
+                                                    const size_t& offset, const size_t& divisor) noexcept
+{
+    auto* attrib = new GLVertexAttribute;
+    attrib->m_ID = ID;
+    attrib->m_name = name;
+    attrib->m_dataType = dataType;
+    attrib->m_divisor = divisor;
+    attrib->m_stride = stride;
+    attrib->m_offset = offset;
+    attrib->m_useDivisor = true;
+    attrib->m_useCustomMarkup = true;
+    attrib->m_normalized = normalized;
+    attrib->m_scalarsCount = scalarsCount;
     
     return attrib;
 }
@@ -107,10 +153,10 @@ SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enableAtt
     glEnableVertexAttribArray(attribute->m_ID);
     glVertexAttribPointer(
             attribute->m_ID,
-            getVertexAttributeSizeInLayout(attribute->m_dataType),
+            attribute->m_scalarsCount,
             GLGraphicsTypesCaster::sggDataTypeToGL(attribute->m_dataType),
             attribute->m_normalized,
-            (GLsizei) m_stride,
+            (GLsizei) attribute->m_stride,
             (GLvoid*) attribute->m_offset
             );
     
@@ -145,3 +191,4 @@ SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::reset() n
 
     return shared_from_this();
 }
+

@@ -12,11 +12,6 @@ namespace SGCore
     class VkVertexAttribute : public IVertexAttribute
     {
         friend class VkVertexBufferLayout;
-
-    public:
-        VkVertexAttribute(std::uint16_t ID, std::string name, SGGDataType dataType, bool normalized,
-                          const size_t& divisor) : IVertexAttribute(ID, std::move(name), dataType, normalized, divisor)
-        {}
     };
 }
 

@@ -53,13 +53,16 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             translationChanged = true;
         }
 
-        if(parentTransform && transform.m_followParentTRS.x)
+        if(parentTransform && transform.m_followParentTRS.x && parentTransform->m_transformChanged)
         {
             finalTransform.m_translationMatrix = parentTransform->m_finalTransform.m_translationMatrix * ownTransform.m_translationMatrix;
         }
         else
         {
-            finalTransform.m_translationMatrix = ownTransform.m_translationMatrix;
+            if(transform.m_transformChanged)
+            {
+                finalTransform.m_translationMatrix = ownTransform.m_translationMatrix;
+            }
         }
 
         // rotation ================================================
@@ -103,13 +106,16 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             rotationChanged = true;
         }
 
-        if(parentTransform && transform.m_followParentTRS.y)
+        if(parentTransform && transform.m_followParentTRS.y && parentTransform->m_transformChanged)
         {
             finalTransform.m_rotationMatrix = parentTransform->m_finalTransform.m_rotationMatrix * ownTransform.m_rotationMatrix;
         }
         else
         {
-            finalTransform.m_rotationMatrix = ownTransform.m_rotationMatrix;
+            if(transform.m_transformChanged)
+            {
+                finalTransform.m_rotationMatrix = ownTransform.m_rotationMatrix;
+            }
         }
 
         // scale ========================================================
@@ -125,13 +131,16 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             scaleChanged = true;
         }
 
-        if(parentTransform && transform.m_followParentTRS.z)
+        if(parentTransform && transform.m_followParentTRS.z && parentTransform->m_transformChanged)
         {
             finalTransform.m_scaleMatrix = parentTransform->m_finalTransform.m_scaleMatrix * ownTransform.m_scaleMatrix;
         }
         else
         {
-            finalTransform.m_scaleMatrix = ownTransform.m_scaleMatrix;
+            if(transform.m_transformChanged)
+            {
+                finalTransform.m_scaleMatrix = ownTransform.m_scaleMatrix;
+            }
         }
 
         // model matrix =================================================
