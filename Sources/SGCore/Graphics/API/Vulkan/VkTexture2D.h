@@ -17,6 +17,9 @@ namespace SGCore
 
         void create() final;
         void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) override;
+        
+        void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept override;
+        
         void destroy() noexcept final;
 
         void bind(const std::uint8_t& textureUnit) noexcept final;

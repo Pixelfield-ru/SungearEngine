@@ -19,18 +19,8 @@ void SGCore::VkVertexBuffer::destroy() noexcept
 
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::putData(const std::vector<float>& data) noexcept
-{
-    return shared_from_this();
-}
-
-void
-SGCore::VkVertexBuffer::subData(const std::vector<float>& data, const size_t& offset) noexcept
-{
-
-}
-
-void SGCore::VkVertexBuffer::subData(float* data, const size_t& elementsCount, const size_t& offset) noexcept
+void SGCore::VkVertexBuffer::subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset,
+                                               bool isPutData) noexcept
 {
 
 }

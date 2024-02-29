@@ -27,6 +27,8 @@ void SGCore::CoreMain::start()
 
     auto currentSessionLogger = spdlog::basic_logger_mt("current_session", "logs/sg_log_" + timeStringStream.str() + ".txt");
     spdlog::set_default_logger(currentSessionLogger);
+    
+    spdlog::flush_on(spdlog::level::info);
 
     // todo: move
     /*system("chcp 65001");

@@ -52,7 +52,7 @@ namespace SGCore
         }
 
         void removeAllSubPassShadersByDiskPath(const std::string& path) noexcept;
-        void removeSubPass(const std::string& virtualPath) noexcept;
+        void removeSubPass(const std::string& subPassName) noexcept;
 
         /*static void useTextureGlobal(const std::string& uniformName, const std::uint8_t& texBlock) noexcept;
 

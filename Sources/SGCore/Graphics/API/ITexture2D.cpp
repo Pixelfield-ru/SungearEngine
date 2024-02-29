@@ -9,11 +9,6 @@ void SGCore::STBITextureDataDeleter::operator()(void* data)
     stbi_image_free(data);
 }
 
-void SGCore::VoidDataDeleter::operator()(void* data)
-{
-    free(data);
-}
-
 // ----------------------------------
 
 void SGCore::ITexture2D::load(const std::string& path)
@@ -52,31 +47,6 @@ void SGCore::ITexture2D::load(const std::string& path)
                  m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
                  m_channelsCount,
                  m_path.string());
-}
-
-void SGCore::ITexture2D::create
-        (const std::uint8_t* data,
-         const size_t& width,
-         const size_t& height,
-         const int& channelsCount,
-         SGGColorInternalFormat internalFormat,
-         SGGColorFormat format)
-{
-    size_t byteSize = width * height;
-    
-    m_width = width;
-    m_height = height;
-    m_channelsCount = channelsCount;
-    m_internalFormat = internalFormat;
-    m_format = format;
-    
-    m_textureData = Ref<std::uint8_t[]>(new std::uint8_t[byteSize]);
-    
-    std::memcpy(m_textureData.get(), data, byteSize);
-    
-    create();
-    
-    addToGlobalStorage();
 }
 
 void SGCore::ITexture2D::addToGlobalStorage() noexcept

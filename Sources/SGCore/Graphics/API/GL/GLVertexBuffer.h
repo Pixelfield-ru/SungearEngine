@@ -22,15 +22,14 @@ namespace SGCore
         ~GLVertexBuffer() noexcept override;
 
         std::shared_ptr<IVertexBuffer> create() noexcept override;
-
         void destroy() noexcept override;
-
-        std::shared_ptr<IVertexBuffer> putData(const std::vector<float>& data) noexcept override;
-        void subData(const std::vector<float>& data, const size_t& offset) noexcept override;
-        void subData(float* data, const size_t& elementsCount, const size_t& offset) noexcept override;
+        
         std::shared_ptr<IVertexBuffer> bind() noexcept override;
 
         std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) noexcept override;
+        
+    protected:
+        void subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset, bool isPutData) noexcept override;
     };
 }
 

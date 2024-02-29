@@ -25,17 +25,36 @@ namespace SGCore
 
         virtual std::shared_ptr<IVertexBuffer> create() = 0;
         virtual void destroy() = 0;
-
-        virtual std::shared_ptr<IVertexBuffer> putData(const std::vector<float>& data) = 0;
-        /*
-         * TODO: задуматься над темплейтным методом для того, чтобы класть не только float, но и другие числовые типы.
-         * но тогда придётся отказаться от хранения копии / оригинала вектора
-        */
-        virtual void subData(const std::vector<float>& data, const size_t& offset) = 0;
-        virtual void subData(float* data, const size_t& elementsCount, const size_t& offset) = 0;
+        
+        template<typename DataType>
+        requires(std::is_scalar_v<DataType>)
+        std::shared_ptr<IVertexBuffer> putData(const std::vector<DataType>& data) noexcept
+        {
+            subDataOnGAPISide(data.data(), data.size() * sizeof(DataType), 0, true);
+            
+            return shared_from_this();
+        }
+        
+        template<typename DataType>
+        requires(std::is_scalar_v<DataType>)
+        void subData(const std::vector<DataType>& data, const size_t& elementsOffset) noexcept
+        {
+            subDataOnGAPISide(data.data(), data.size() * sizeof(DataType), elementsOffset * sizeof(DataType), false);
+        }
+        
+        template<typename DataType>
+        requires(std::is_scalar_v<DataType>)
+        void subData(const DataType* data, const size_t& elementsCount, const size_t& elementsOffset) noexcept
+        {
+            subDataOnGAPISide(data, elementsCount * sizeof(DataType), elementsOffset * sizeof(DataType), false);
+        }
+        
         virtual std::shared_ptr<IVertexBuffer> bind() = 0;
 
         virtual std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) = 0;
+        
+    protected:
+        virtual void subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset, bool isPutData) = 0;
     };
 }
 

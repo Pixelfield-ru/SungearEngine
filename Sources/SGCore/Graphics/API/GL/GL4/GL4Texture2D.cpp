@@ -15,36 +15,52 @@ SGCore::GL4Texture2D::~GL4Texture2D() noexcept
 // migrate to gl46
 void SGCore::GL4Texture2D::create() noexcept
 {
-    glGenTextures(1, &m_handler);
-
-    glBindTexture(GL_TEXTURE_2D, m_handler);
-
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
-                 m_width,
-                 m_height,
-                 0,
-                 GLGraphicsTypesCaster::sggFormatToGL(m_format),
-                 GL_UNSIGNED_BYTE,
-                 m_textureData.get());
-    
-    // glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0);
-    
-    if(DeviceGLInfo::getSupportingExtensions().contains(SG_STRINGIFY(GL_EXT_texture_filter_anisotropic)))
+    if(m_isTextureBuffer)
     {
-        float amount = std::min(4.0f, DeviceGLInfo::getMaxTextureMaxAnisotropy());
+        glGenBuffers(1, &m_textureBufferHandler);
+        glBindBuffer(GL_TEXTURE_BUFFER, m_textureBufferHandler);
+        glBufferData(GL_TEXTURE_BUFFER, m_width * m_height * getSGGDataTypeSizeInBytes(m_dataType), m_textureData.get(),
+                     GLGraphicsTypesCaster::sggBufferUsageToGL(m_textureBufferUsage));
         
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+        glGenTextures(1, &m_textureHandler);
+        glBindTexture(GL_TEXTURE_BUFFER, m_textureHandler);
+
+        glTexBuffer(GL_TEXTURE_BUFFER, GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat), m_textureBufferHandler);
+    }
+    else
+    {
+        glGenTextures(1, &m_textureHandler);
+
+        glBindTexture(GL_TEXTURE_2D, m_textureHandler);
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
+                     m_width,
+                     m_height,
+                     0,
+                     GLGraphicsTypesCaster::sggFormatToGL(m_format),
+                     GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
+                     m_textureData.get());
+
+        // glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0);
+
+        if(DeviceGLInfo::getSupportingExtensions().contains(SG_STRINGIFY(GL_EXT_texture_filter_anisotropic)))
+        {
+            float amount = std::min(4.0f, DeviceGLInfo::getMaxTextureMaxAnisotropy());
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+        }
     }
     
     //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
@@ -62,8 +78,8 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
 
     if(isDepthAttachment(attachmentType))
     {
-        glGenTextures(1, &m_handler);
-        glBindTexture(GL_TEXTURE_2D, m_handler);
+        glGenTextures(1, &m_textureHandler);
+        glBindTexture(GL_TEXTURE_2D, m_textureHandler);
 
         glTexImage2D(GL_TEXTURE_2D,
                      m_mipLevel,
@@ -83,14 +99,14 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
 
         glFramebufferTexture2D(GL_FRAMEBUFFER,
                                GL_DEPTH_ATTACHMENT,
-                               GL_TEXTURE_2D, m_handler, m_mipLevel
+                               GL_TEXTURE_2D, m_textureHandler, m_mipLevel
         );
     }
     else if(isDepthStencilAttachment(attachmentType))
     {
 
-        glGenTextures(1, &m_handler);
-        glBindTexture(GL_TEXTURE_2D, m_handler);
+        glGenTextures(1, &m_textureHandler);
+        glBindTexture(GL_TEXTURE_2D, m_textureHandler);
 
         glTexImage2D(GL_TEXTURE_2D,
                      m_mipLevel,
@@ -115,14 +131,14 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
 
         glFramebufferTexture2D(GL_FRAMEBUFFER,
                                GL_DEPTH_STENCIL_ATTACHMENT,
-                               GL_TEXTURE_2D, m_handler, m_mipLevel);
+                               GL_TEXTURE_2D, m_textureHandler, m_mipLevel);
     }
     else if(isColorAttachment(attachmentType))
     {
         GLenum glType = !m_useMultisampling ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
 
-        glGenTextures(1, &m_handler);
-        glBindTexture(glType, m_handler);
+        glGenTextures(1, &m_textureHandler);
+        glBindTexture(glType, m_textureHandler);
 
         if(!m_useMultisampling)
         {
@@ -152,7 +168,7 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
 
         glFramebufferTexture2D(GL_FRAMEBUFFER,
                                GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0),
-                               glType, m_handler, m_mipLevel);
+                               glType, m_textureHandler, m_mipLevel);
     }
     else if(isRenderAttachment(attachmentType))
     {
@@ -160,16 +176,38 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
     }
 }
 
+void SGCore::GL4Texture2D::subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept
+{
+    glBindBuffer(GL_TEXTURE_BUFFER, m_textureBufferHandler);
+    glBufferSubData(GL_TEXTURE_BUFFER, bytesOffset, bytesCount, m_textureData.get());
+}
+
+void SGCore::GL4Texture2D::subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept
+{
+    /*const size_t bytesWidth = m_width * getSGGDataTypeSizeInBytes(m_dataType);
+    
+    const size_t y = bytesOffset % bytesWidth;
+    const size_t x = bytesOffset - y * bytesWidth;
+    
+    glBindTexture(GL_TEXTURE_2D, m_textureHandler);
+    glTextureSubImage2D()*/
+}
+
 void SGCore::GL4Texture2D::destroy() noexcept
 {
-    glDeleteTextures(1, &m_handler);
+    glDeleteTextures(1, &m_textureHandler);
+    glDeleteBuffers(1, &m_textureBufferHandler);
 }
 
 void SGCore::GL4Texture2D::bind(const std::uint8_t& textureUnit) noexcept
 {
     //glBindTextureUnit(textureUnit, m_handler);
     glActiveTexture(GL_TEXTURE0 + textureUnit);
-    glBindTexture(GL_TEXTURE_2D, m_handler);
+    glBindTexture(GL_TEXTURE_2D, m_textureHandler);
+    if(m_isTextureBuffer)
+    {
+        glBindBuffer(GL_TEXTURE_BUFFER, m_textureBufferHandler);
+    }
 }
 
 SGCore::GL4Texture2D& SGCore::GL4Texture2D::operator=

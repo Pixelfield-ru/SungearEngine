@@ -14,13 +14,18 @@ namespace SGCore
     class GL4Texture2D : public ITexture2D
     {
     protected:
-        GLuint m_handler = 0;
+        GLuint m_textureHandler = 0;
+        GLuint m_textureBufferHandler = 0;
 
     public:
         ~GL4Texture2D() noexcept;
 
         void create() noexcept override;
         void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) override;
+        
+        void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept override;
+        void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept override;
+        
         void destroy() noexcept override;
 
         void bind(const std::uint8_t& textureUnit) noexcept override;

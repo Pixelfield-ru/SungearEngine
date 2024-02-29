@@ -54,6 +54,8 @@ namespace SGCore
             glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &MAX_FB_COLOR_ATTACHMENTS);
             glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &MAX_UNIFORM_BUFFER_BINDINGS);
             glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MAX_TEXTURE_IMAGE_UNITS);
+            glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &MAX_TEXTURE_BUFFER_SIZE);
+            glGetIntegerv(GL_MAX_TEXTURE_SIZE, &MAX_TEXTURE_SIZE);
             
             if(s_supportingExtensions.contains(SG_STRINGIFY(GL_EXT_texture_filter_anisotropic)))
             {
@@ -71,8 +73,9 @@ namespace SGCore
             spdlog::info("GL_MAX_COLOR_ATTACHMENTS: {0}", MAX_FB_COLOR_ATTACHMENTS);
             spdlog::info("GL_MAX_UNIFORM_BUFFER_BINDINGS: {0}", MAX_UNIFORM_BUFFER_BINDINGS);
             spdlog::info("GL_MAX_TEXTURE_IMAGE_UNITS: {0}", MAX_TEXTURE_IMAGE_UNITS);
-            
             spdlog::info("GL_MAX_TEXTURE_MAX_ANISOTROPY: {0}", MAX_TEXTURE_MAX_ANISOTROPY);
+            spdlog::info("GL_MAX_TEXTURE_BUFFER_SUZE: {0}", MAX_TEXTURE_BUFFER_SIZE);
+            spdlog::info("GL_MAX_TEXTURE_SIZE: {0}", MAX_TEXTURE_SIZE);
 
             spdlog::info("================================================");
         }
@@ -101,6 +104,16 @@ namespace SGCore
         {
             return MAX_TEXTURE_MAX_ANISOTROPY;
         }
+
+        [[maybe_unused]] [[nodiscard]] static auto getMaxTextureBufferSize() noexcept
+        {
+            return MAX_TEXTURE_BUFFER_SIZE;
+        }
+
+        [[maybe_unused]] [[nodiscard]] static auto getMaxTextureSize() noexcept
+        {
+            return MAX_TEXTURE_SIZE;
+        }
         
         static const auto& getSupportingExtensions() noexcept
         {
@@ -113,8 +126,9 @@ namespace SGCore
         static inline int MAX_FB_COLOR_ATTACHMENTS = 0;
         static inline int MAX_UNIFORM_BUFFER_BINDINGS = 0;
         static inline int MAX_TEXTURE_IMAGE_UNITS = 0;
-        
         static inline float MAX_TEXTURE_MAX_ANISOTROPY = 0.0f;
+        static inline int MAX_TEXTURE_BUFFER_SIZE = 0;
+        static inline int MAX_TEXTURE_SIZE = 0;
 
         static inline std::string VERSION;
     };

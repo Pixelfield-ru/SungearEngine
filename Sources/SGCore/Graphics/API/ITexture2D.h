@@ -25,11 +25,6 @@ namespace SGCore
         void operator()(void* data);
     };
     
-    struct VoidDataDeleter
-    {
-        void operator()(void* data);
-    };
-    
     class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>, public GPUObject
     {
         friend class IFrameBuffer;
@@ -49,24 +44,69 @@ namespace SGCore
         int m_mipLevel = 0;
         int m_layer = 0;
 
+        SGGDataType m_dataType = SGG_UNSIGNED_BYTE;
+
+        bool m_isTextureBuffer = false;
+        SGGUsage m_textureBufferUsage = SGGUsage::SGG_STATIC;
+
         bool m_useMultisampling = false;
         std::uint8_t m_multisamplingSamplesCount = 8;
 
         void load(const std::string& path) override;
 
         virtual void create() = 0;
-        virtual void create(const std::uint8_t* data,
+
+        template<typename DataType = std::uint8_t>
+        requires(std::is_scalar_v<DataType>)
+        void create(const DataType* data,
                             const size_t& width,
                             const size_t& height,
                             const int& channelsCount,
                             SGGColorInternalFormat internalFormat,
-                            SGGColorFormat format);
-        virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
+                            SGGColorFormat format)
+        {
+            size_t byteSize = width * height * sizeof(DataType);
 
+            m_width = width;
+            m_height = height;
+            m_channelsCount = channelsCount;
+            m_internalFormat = internalFormat;
+            m_format = format;
+            m_dataType = getSGDataTypeFromCPPType<DataType>();
+
+            m_textureData = Ref<std::uint8_t[]>(new std::uint8_t[byteSize]);
+            std::memcpy(m_textureData.get(), data, byteSize);
+
+            create();
+
+            addToGlobalStorage();
+        }
+
+        virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
+        
+        template<typename DataType = std::uint8_t>
+        requires(std::is_scalar_v<DataType>)
+        void subTextureBufferData(const DataType* data, const size_t& elementsCount, const size_t& elementsOffset)
+        {
+            std::memcpy(m_textureData.get() + elementsOffset * sizeof(DataType), data, elementsCount * sizeof(DataType));
+            
+            subTextureBufferDataOnGAPISide(elementsCount * sizeof(DataType), elementsOffset * sizeof(DataType));
+        }
+        
+        // todo:
+        template<typename DataType = std::uint8_t>
+        requires(std::is_scalar_v<DataType>)
+        void subTextureData(const DataType* data, const size_t& elementsCount, const size_t& elementsOffset)
+        {
+            /*std::memcpy(m_textureData.get() + elementsOffset * sizeof(DataType), data, elementsCount * sizeof(DataType));
+            
+            subTextureDataOnGAPISide(elementsCount * sizeof(DataType), elementsOffset * sizeof(DataType));*/
+        }
+        
         virtual void destroy() = 0;
 
         virtual void bind(const std::uint8_t& textureUnit) = 0;
-
+        
         void addToGlobalStorage() noexcept final;
 
         virtual ITexture2D& operator=(const Ref<ITexture2D>& other) = 0;
@@ -75,6 +115,9 @@ namespace SGCore
         [[nodiscard]] Ref<std::uint8_t[]> getData() noexcept;
 
     protected:
+        virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
+        virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;
+        
         Ref<std::uint8_t[]> m_textureData;
 
     private:

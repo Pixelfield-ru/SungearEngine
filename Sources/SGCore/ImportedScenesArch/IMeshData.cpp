@@ -91,7 +91,7 @@ SGCore::Ref<SGCore::IVertexArray> SGCore::IMeshData::getVertexArray() noexcept
     return m_vertexArray;
 }
 
-void SGCore::IMeshData::setData(const SGCore::Ref<SGCore::IMeshData>& other) noexcept
+void SGCore::IMeshData::setData(const Ref<IMeshData>& other) noexcept
 {
     if(m_vertexArray) m_vertexArray->destroy();
 

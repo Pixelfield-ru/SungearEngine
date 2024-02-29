@@ -33,42 +33,19 @@ void SGCore::GLVertexBuffer::destroy() noexcept
     #endif
 }
 
-std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::putData
-(const std::vector<float>& data) noexcept
+void SGCore::GLVertexBuffer::subDataOnGAPISide(const void* data, const size_t& bytesCount,
+                                               const size_t& bytesOffset,
+                                               bool isPutData) noexcept
 {
-    if(data.empty()) return shared_from_this();
-
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (data.size() * sizeof(data[0])), &data[0],
-                 GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
-
-    #ifdef SUNGEAR_DEBUG
-    GL4Renderer::getInstance()->checkForErrors();
-    #endif
-
-    return shared_from_this();
-}
-
-void SGCore::GLVertexBuffer::subData
-(const std::vector<float>& data, const size_t& offset) noexcept
-{
-    if(data.empty()) return;
-
-    // m_data.insert(m_data.begin() + offset, data.begin(), data.end());
-
-    glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (data.size() * sizeof(data[0])),
-                    &data[0]);
-
-    #ifdef SUNGEAR_DEBUG
-    GL4Renderer::getInstance()->checkForErrors();
-    #endif
-}
-
-void SGCore::GLVertexBuffer::subData(float* data, const size_t& elementsCount, const size_t& offset) noexcept
-{
-    if(elementsCount == 0) return;
-    
-    glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (elementsCount * sizeof(data[0])),
-                    data);
+    if(isPutData)
+    {
+        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) bytesCount, data,
+                     GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
+    }
+    else
+    {
+        glBufferSubData(GL_ARRAY_BUFFER, (GLsizeiptr) bytesOffset, (GLsizeiptr) bytesCount, data);
+    }
     
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();

@@ -184,7 +184,7 @@ public final class AiMesh {
     /**
      * Buffer for vertex position data.
      */
-    private ByteBuffer m_vertices = null;
+    private ByteBuffer m_verticesPositions = null;
         
     /**
      * Buffer for faces/ indices.
@@ -278,7 +278,7 @@ public final class AiMesh {
      * @return true if positions are available
      */
     public boolean hasPositions() {
-        return m_vertices != null;
+        return m_verticesPositions != null;
     }
     
     
@@ -524,11 +524,11 @@ public final class AiMesh {
      * @return a native-order direct buffer, or null if no data is available
      */
     public FloatBuffer getPositionBuffer() {
-        if (m_vertices == null) {
+        if (m_verticesPositions == null) {
             return null;
         }
         
-        return m_vertices.asFloatBuffer();
+        return m_verticesPositions.asFloatBuffer();
     }
     
     
@@ -712,7 +712,7 @@ public final class AiMesh {
         
         checkVertexIndexBounds(vertex);
         
-        return m_vertices.getFloat(vertex * 3 * SIZEOF_FLOAT);
+        return m_verticesPositions.getFloat(vertex * 3 * SIZEOF_FLOAT);
     }
     
     
@@ -729,7 +729,7 @@ public final class AiMesh {
         
         checkVertexIndexBounds(vertex);
         
-        return m_vertices.getFloat((vertex * 3 + 1) * SIZEOF_FLOAT);
+        return m_verticesPositions.getFloat((vertex * 3 + 1) * SIZEOF_FLOAT);
     }
     
     /**
@@ -745,7 +745,7 @@ public final class AiMesh {
         
         checkVertexIndexBounds(vertex);
         
-        return m_vertices.getFloat((vertex * 3 + 2) * SIZEOF_FLOAT);
+        return m_verticesPositions.getFloat((vertex * 3 + 2) * SIZEOF_FLOAT);
     }
     
     
@@ -1122,7 +1122,7 @@ public final class AiMesh {
         
         checkVertexIndexBounds(vertex);
         
-        return wrapperProvider.wrapVector3f(m_vertices, 
+        return wrapperProvider.wrapVector3f(m_verticesPositions,
                 vertex * 3 * SIZEOF_FLOAT, 3);
     }
     
@@ -1335,9 +1335,9 @@ public final class AiMesh {
         
         /* allocate for each vertex 3 floats */
         if (m_numVertices > 0) {
-            m_vertices = ByteBuffer.allocateDirect(numVertices * 3 * 
+            m_verticesPositions = ByteBuffer.allocateDirect(numVertices * 3 *
                     SIZEOF_FLOAT);
-            m_vertices.order(ByteOrder.nativeOrder());
+            m_verticesPositions.order(ByteOrder.nativeOrder());
         }
         
         

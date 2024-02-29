@@ -36,6 +36,16 @@ void SGCore::GL4CubemapTexture::create()
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
+void SGCore::GL4CubemapTexture::subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset)
+{
+    ITexture2D::subTextureBufferDataOnGAPISide(bytesCount, bytesOffset);
+}
+
+void SGCore::GL4CubemapTexture::subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset)
+{
+
+}
+
 void SGCore::GL4CubemapTexture::createAsFrameBufferAttachment
 (const SGCore::Ref<SGCore::IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType)
 {

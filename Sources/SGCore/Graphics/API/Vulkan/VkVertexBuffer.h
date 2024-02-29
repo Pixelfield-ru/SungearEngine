@@ -16,15 +16,14 @@ namespace SGCore
         ~VkVertexBuffer() noexcept override;
 
         std::shared_ptr<IVertexBuffer> create() noexcept final;
-
         void destroy() noexcept final;
-
-        std::shared_ptr<IVertexBuffer> putData(const std::vector<float>& data) noexcept final;
-        void subData(const std::vector<float>& data, const size_t& offset) noexcept final;
-        void subData(float* data, const size_t& elementsCount, const size_t& offset) noexcept final;
+        
         std::shared_ptr<IVertexBuffer> bind() noexcept final;
 
         std::shared_ptr<IVertexBuffer> setUsage(SGGUsage) noexcept final;
+    
+    protected:
+        void subDataOnGAPISide(const void* data, const size_t& bytesCount, const size_t& bytesOffset, bool isPutData) noexcept override;
     };
 }
 

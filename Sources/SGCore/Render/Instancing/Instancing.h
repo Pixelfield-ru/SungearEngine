@@ -2,8 +2,8 @@
 // Created by ilya on 28.02.24.
 //
 
-#ifndef OCEANSEDGE_INSTANCING_H
-#define OCEANSEDGE_INSTANCING_H
+#ifndef SUNGEARENGINE_INSTANCING_H
+#define SUNGEARENGINE_INSTANCING_H
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
@@ -61,6 +61,9 @@ namespace SGCore
         void fillArraysByExample() noexcept;
         
         void updateBuffersEntirely() noexcept;
+
+        void setIsNonInstancingSingleDrawCall(bool isNonInstancingSingleDrawCall) noexcept;
+        bool isNonInstancingSingleDrawCall() const noexcept;
         
     private:
         void updateUniforms() noexcept;
@@ -69,7 +72,9 @@ namespace SGCore
         Ref<IVertexBuffer> m_positionsBuffer;
         Ref<IVertexBuffer> m_matricesVertexBuffer;
         Ref<IVertexBuffer> m_UVsVertexBuffer;
+        Ref<IVertexBuffer> m_instancesIndicesVertexBuffer;
         Ref<IIndexBuffer> m_indicesBuffer;
+        Ref<ITexture2D> m_matricesTextureBuffer;
         
         Ref<IShader> m_shader;
         
@@ -83,30 +88,33 @@ namespace SGCore
         std::size_t m_exampleMeshIndicesCount = 0;
         // ------------------
         
-        SGCore::MeshDataRenderInfo m_renderInfo;
+        MeshDataRenderInfo m_renderInfo;
         
-        std::uint32_t m_maxMeshesCount = 50'000;
+        std::uint32_t m_maxMeshesCount = 1'000;
         std::uint32_t m_currentRenderedMeshesCount = 0;
         
-        // buffers
+        // vectors
         std::vector<float> m_matrices;
         std::vector<float> m_UVs;
         std::vector<float> m_verticesPositions;
         std::vector<std::uint32_t> m_indices;
+        std::vector<float> m_instancesIndices;
         // ------------------------------------
         
         InstancingBuffersMode m_buffersMode = InstancingBuffersMode::SG_USE_VERTICES_UNIQUE_USE_INDICES_UNIQUE;
         
         bool m_built = false;
-        
+
+        bool m_isNonInstancingSingleDrawCall = false;
+
         void checkExampleMeshForWarnings() const noexcept;
-        
+
+        void updateCurrentUsingShader() noexcept;
+
         EventListener<void()> m_onRenderPipelineSetEventListener = MakeEventListener<void()>([this]() {
-            onRenderPipelineSet();
+            updateCurrentUsingShader();
         });
-        
-        void onRenderPipelineSet() noexcept;
     };
 }
 
-#endif //OCEANSEDGE_INSTANCING_H
+#endif //SUNGEARENGINE_INSTANCING_H

@@ -131,6 +131,7 @@ enum SGGDataType
 {
     SGG_NONE,
 
+    SGG_UNSIGNED_INT,
     SGG_INT,
     SGG_INT2,
     SGG_INT3,
@@ -145,7 +146,10 @@ enum SGGDataType
     SGG_MAT3,
     SGG_MAT4,
 
-    SGG_BOOL
+    SGG_BOOL,
+
+    SGG_UNSIGNED_BYTE,
+    SGG_BYTE
 };
 
 enum SGTextureType
@@ -176,6 +180,34 @@ enum SGTextureType
 
     SGTT_NONE
 };
+
+template<typename DataType>
+requires(std::is_scalar_v<DataType>)
+static constexpr SGGDataType getSGDataTypeFromCPPType() noexcept
+{
+    if constexpr(std::is_same_v<DataType, float>)
+    {
+        return SGGDataType::SGG_FLOAT;
+    }
+    else if constexpr(std::is_same_v<DataType, unsigned char>)
+    {
+        return SGGDataType::SGG_UNSIGNED_BYTE;
+    }
+    else if constexpr(std::is_same_v<DataType, char>)
+    {
+        return SGGDataType::SGG_BYTE;
+    }
+    else if constexpr(std::is_same_v<DataType, unsigned int>)
+    {
+        return SGGDataType::SGG_UNSIGNED_INT;
+    }
+    else if constexpr(std::is_same_v<DataType, int>)
+    {
+        return SGGDataType::SGG_INT;
+    }
+
+    return SGGDataType::SGG_NONE;
+}
 
 static SGTextureType sgStandardTextureFromString(const std::string& textureType)
 {
@@ -350,8 +382,8 @@ static std::uint16_t getSGGDataTypeSizeInBytes(const SGGDataType& dataType) noex
     switch(dataType)
     {
         case SGG_NONE: size = 0; break;
-
-        case SGG_INT: size = 4; break;
+        
+        case SGG_UNSIGNED_INT: case SGG_INT: size = 4; break;
         case SGG_INT2: size = 4 * 2; break;
         case SGG_INT3: size = 4 * 3; break;
         case SGG_INT4: size = 4 * 4; break;
@@ -365,7 +397,9 @@ static std::uint16_t getSGGDataTypeSizeInBytes(const SGGDataType& dataType) noex
         case SGG_MAT3: size = 4 * 3 * 3; break;
         case SGG_MAT4: size = 4 * 4 * 4; break;
 
-        case SGG_BOOL: size = 4; break;
+        case SGG_UNSIGNED_BYTE: case SGG_BYTE: size = 1; break;
+        
+        case SGG_BOOL: size = 1; break;
 
         default: size = 0; break;
     }
@@ -549,7 +583,9 @@ enum SGGColorFormat
 
     SGG_DEPTH_COMPONENT,
 
-    SGG_DEPTH_STENCIL
+    SGG_DEPTH_STENCIL,
+    
+    SGG_COLOR_FORMAT_NONE
 };
 
 #endif //SUNGEARENGINE_GRAPHICSDATATYPES_H

@@ -329,7 +329,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
 void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
 {
     m_scene = scene;
-    
+
     m_transformUpdateObserver.connect(scene->getECSRegistry(), entt::basic_collector<>::update<Transform>());
     m_rigidbody3DUpdateObserver.connect(scene->getECSRegistry(), entt::basic_collector<>::update<Rigidbody3D>());
 }

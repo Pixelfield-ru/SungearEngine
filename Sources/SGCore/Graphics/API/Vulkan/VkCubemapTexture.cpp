@@ -15,6 +15,16 @@ void SGCore::VkCubemapTexture::createAsFrameBufferAttachment(const SGCore::Ref<S
 
 }
 
+void SGCore::VkCubemapTexture::subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset)
+{
+    ITexture2D::subTextureBufferDataOnGAPISide(bytesCount, bytesOffset);
+}
+
+void SGCore::VkCubemapTexture::subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset)
+{
+
+}
+
 void SGCore::VkCubemapTexture::bind(const uint8_t& textureUnit)
 {
 

@@ -214,6 +214,7 @@ namespace GLGraphicsTypesCaster
         {
             case SGG_NONE: return GL_NONE;
 
+            case SGG_UNSIGNED_INT: return GL_UNSIGNED_INT;
             case SGG_INT: return GL_INT;
             case SGG_INT2: return GL_INT;
             case SGG_INT3: return GL_INT;
@@ -227,6 +228,9 @@ namespace GLGraphicsTypesCaster
             case SGG_MAT2: return GL_FLOAT;
             case SGG_MAT3: return GL_FLOAT;
             case SGG_MAT4: return GL_FLOAT;
+
+            case SGG_UNSIGNED_BYTE: return GL_UNSIGNED_BYTE;
+            case SGG_BYTE: return GL_BYTE;
 
             case SGG_BOOL: return GL_BOOL;
 
