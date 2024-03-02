@@ -55,15 +55,12 @@ std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::putData(const std::
 }
 
 void SGCore::GLIndexBuffer::subData
-        (std::vector<std::uint32_t> data, const int& offset) noexcept
+        (const std::vector<std::uint32_t>& data, const int& offset) noexcept
 {
-    // TODO: make sub data in m_data
-    if(data.empty()) return;
-    
     // m_data.insert(m_data.begin() + offset, data.begin(), data.end());
     
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset * sizeof(data[0]), (GLsizeiptr) (data.size() * sizeof(data[0])),
-                    &data[0]);
+                    data.data());
 
     #ifdef SUNGEAR_DEBUG
     GL4Renderer::getInstance()->checkForErrors();

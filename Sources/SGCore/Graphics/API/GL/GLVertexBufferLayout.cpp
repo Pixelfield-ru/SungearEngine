@@ -151,14 +151,29 @@ SGCore::Ref<SGCore::IVertexBufferLayout> SGCore::GLVertexBufferLayout::enableAtt
 (const Ref<IVertexAttribute>& attribute) noexcept
 {
     glEnableVertexAttribArray(attribute->m_ID);
-    glVertexAttribPointer(
-            attribute->m_ID,
-            attribute->m_scalarsCount,
-            GLGraphicsTypesCaster::sggDataTypeToGL(attribute->m_dataType),
-            attribute->m_normalized,
-            (GLsizei) attribute->m_stride,
-            (GLvoid*) attribute->m_offset
-            );
+    if(attribute->m_dataType == SGGDataType::SGG_INT ||
+       attribute->m_dataType == SGGDataType::SGG_INT2 ||
+       attribute->m_dataType == SGGDataType::SGG_INT3 ||
+       attribute->m_dataType == SGGDataType::SGG_INT4 ||
+       attribute->m_dataType == SGGDataType::SGG_UNSIGNED_INT)
+    {
+        glVertexAttribIPointer(attribute->m_ID,
+                               attribute->m_scalarsCount,
+                               GLGraphicsTypesCaster::sggDataTypeToGL(attribute->m_dataType),
+                               (GLsizei) attribute->m_stride,
+                               (GLvoid*) attribute->m_offset);
+    }
+    else
+    {
+        glVertexAttribPointer(
+                attribute->m_ID,
+                attribute->m_scalarsCount,
+                GLGraphicsTypesCaster::sggDataTypeToGL(attribute->m_dataType),
+                attribute->m_normalized,
+                (GLsizei) attribute->m_stride,
+                (GLvoid*) attribute->m_offset
+        );
+    }
     
     if(attribute->m_useDivisor)
     {

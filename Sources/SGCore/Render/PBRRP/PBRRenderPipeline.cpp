@@ -21,7 +21,7 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     m_shadersPaths["PhysicsLinesDebugDrawShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/debug/physics_lines_debug_shader.glsl";
     m_shadersPaths["StandardTextShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/ui/text_shader.glsl";
     m_shadersPaths["InstancingShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/pbr/instancing.glsl";
-    m_shadersPaths["DynamicBatchingShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/pbr/single_draw_call.glsl";
+    m_shadersPaths["BatchingShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/pbr/batching.glsl";
     
     // configure render passes --------
 

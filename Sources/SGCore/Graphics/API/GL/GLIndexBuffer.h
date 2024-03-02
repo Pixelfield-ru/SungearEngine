@@ -23,7 +23,7 @@ namespace SGCore
         void destroy() noexcept final;
 
         std::shared_ptr<IIndexBuffer> putData(const std::vector<std::uint32_t>& data) noexcept override;
-        void subData(std::vector<std::uint32_t> data, const int& offset) noexcept override;
+        void subData(const std::vector<std::uint32_t>& data, const int& offset) noexcept override;
         void subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) noexcept override;
         std::shared_ptr<IIndexBuffer> bind() noexcept override;
 

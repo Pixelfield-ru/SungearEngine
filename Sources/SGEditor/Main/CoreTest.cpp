@@ -57,6 +57,8 @@
 #include "SGCore/Render/UICamera.h"
 #include "SGCore/Render/LWRP/LWRenderPipeline.h"
 #include "SGCore/Main/CoreSettings.h"
+#include "SGCore/Render/Batching/Batch.h"
+#include "SGCore/Render/DisableMeshGeometryPass.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -66,6 +68,8 @@ SGCore::Ref<SGCore::Scene> testScene;
 SGCore::Atmosphere* _atmosphereScattering = nullptr;
 
 std::vector<entt::entity> model1Entities;
+
+SGCore::Batch* globalBatch = nullptr;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -100,6 +104,10 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     
     SGCore::Transform& sphereTransform = testScene->getECSRegistry().get<SGCore::Transform>(sphereEntities[2]);
     sphereTransform.m_ownTransform.m_position = spherePos;
+    
+    testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
+    
+    globalBatch->addEntity(sphereEntities[2]);
 }
 
 void init()
@@ -114,6 +122,13 @@ void init()
     SGCore::Scene::addScene(testScene);
     SGCore::Scene::setCurrentScene("TestScene");
 
+    // BATCHING ==========================================
+    
+    entt::entity batchEntity = testScene->getECSRegistry().create();
+    globalBatch = &testScene->getECSRegistry().emplace<SGCore::Batch>(batchEntity, testScene);
+    
+    // ===================================================
+    
     // найс это работает. TODO: убрать! просто ради теста ---------------------
     int windowWidth;
     int windowHeight;
@@ -380,6 +395,14 @@ void init()
             transformComponent->m_scale = { 0.007, 0.007, 0.007 };*/
         }
         
+        {
+            // THATS FUCKING WORKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            /*testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(model0Entities[5]);
+            globalBatch->addEntity(model0Entities[5]);
+            globalBatch->removeEntity(model0Entities[5]);
+            globalBatch->addEntity(model0Entities[5]);*/
+        }
+        
         /*for(size_t i = 0; i < model0Entities.size(); ++i)
         {
             std::cout << "model0 idx: " << i << ", has mesh?: " << testScene->getECSRegistry().try_get<SGCore::Mesh>(model0Entities[i]) << std::endl;
@@ -477,6 +500,9 @@ void init()
         model1Rigidbody3D.m_body->setMassProps(mass, inertia);
         model1Rigidbody3D.updateFlags();
         model1Rigidbody3D.reAddToWorld();
+        
+        testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(model1Entities[4]);
+        globalBatch->addEntity(model1Entities[4]);
     }
 
     // ==========================================================================================

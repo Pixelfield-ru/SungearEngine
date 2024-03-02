@@ -25,7 +25,7 @@ std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::putData(const std::
 }
 
 void SGCore::VkIndexBuffer::subData
-(std::vector<std::uint32_t> data, const int& offset) noexcept
+(const std::vector<std::uint32_t>& data, const int& offset) noexcept
 {
 
 }

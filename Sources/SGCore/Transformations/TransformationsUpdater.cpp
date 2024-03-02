@@ -152,39 +152,13 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         
         if(transform.m_transformChanged)
         {
-            registry.patch<Transform>(entity);
-        }
-        else
-        {
-            if(registry.any_of<Rigidbody3D>(entity))
-            {
-                registry.patch<Rigidbody3D>(entity);
-            }
-        }
-    });
-
-    m_transformUpdateObserver.each([&registry, this](const entt::entity& entity) {
-        Transform* entityTransform = registry.try_get<Transform>(entity);
-        EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
-        Transform* entityParentTransform = nullptr;
-        
-        if(entityBaseInfo)
-        {
-            entityParentTransform = registry.try_get<Transform>(entityBaseInfo->m_parent);
-        }
-        
-        if(entityTransform)
-        {
-            TransformBase& ownTransform = entityTransform->m_ownTransform;
-            TransformBase& finalTransform = entityTransform->m_finalTransform;
-            
             ownTransform.m_modelMatrix =
                     ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
             
-            if(entityParentTransform)
+            if(parentTransform)
             {
                 finalTransform.m_modelMatrix =
-                        entityParentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
+                        parentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
             }
             else
             {
@@ -201,135 +175,122 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 
                 // rigidbody3D->m_body->getCollisionShape()->setLocalScaling({ scale.x, scale.y, scale.z });
             }
+            
+            registry.patch<Transform>(entity);
         }
-    });
-    
-    m_transformUpdateObserver.clear();
-    
-    m_rigidbody3DUpdateObserver.each([&registry, this](const entt::entity& entity) {
-        Transform* entityTransform = registry.try_get<Transform>(entity);
-        EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
-        Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
-        Transform* entityParentTransform = nullptr;
-        
-        if(entityBaseInfo)
+        else
         {
-            entityParentTransform = registry.try_get<Transform>(entityBaseInfo->m_parent);
-        }
-        
-        if(rigidbody3D && entityTransform)
-        {
-            btTransform& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
-            TransformBase& ownTransform = entityTransform->m_ownTransform;
-            TransformBase& finalTransform = entityTransform->m_finalTransform;
+            Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
             
-            // ============================
-            
-            float rigidbody3DMatrix[16];
-            rigidbody3DTransform.getOpenGLMatrix(rigidbody3DMatrix);
-            
-            glm::mat4 glmRigidbody3DOwnModelMatrix = glm::make_mat4(rigidbody3DMatrix);
-            
-            if(entityParentTransform)
+            if(rigidbody3D)
             {
-                glmRigidbody3DOwnModelMatrix /= entityParentTransform->m_finalTransform.m_translationMatrix * entityParentTransform->m_finalTransform.m_rotationMatrix;
-            }
-            /*else
-            {
-                glmRigidbody3DOwnModelMatrix /= ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix;
-            }*/
-            
-            glm::vec3 scale;
-            glm::quat rotation;
-            glm::vec3 translation;
-            glm::vec3 skew;
-            glm::vec4 perspective;
-            
-            glm::decompose(glmRigidbody3DOwnModelMatrix, scale, rotation, translation, skew, perspective);
-            
-            ownTransform.m_position = translation;
-            ownTransform.m_rotation = glm::degrees(glm::eulerAngles(rotation));
-            // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
-            
-            bool translationChanged = false;
-            bool rotationChanged = false;
-            
-            if(ownTransform.m_position != ownTransform.m_lastPosition)
-            {
-                ownTransform.m_translationMatrix = glm::translate(glm::mat4(1.0), ownTransform.m_position);
+                btTransform& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
                 
-                ownTransform.m_lastPosition = ownTransform.m_position;
+                // ============================
                 
-                translationChanged = true;
-            }
-            
-            if(ownTransform.m_rotation != ownTransform.m_lastRotation)
-            {
-                const float rotDifX = ownTransform.m_rotation.x - ownTransform.m_lastRotation.x;
-                const float rotDifY = ownTransform.m_rotation.y - ownTransform.m_lastRotation.y;
-                const float rotDifZ = ownTransform.m_rotation.z - ownTransform.m_lastRotation.z;
+                float rigidbody3DMatrix[16];
+                rigidbody3DTransform.getOpenGLMatrix(rigidbody3DMatrix);
                 
-                // ownTransform.m_rotationMatrix = glm::toMat4(rotation);
+                glm::mat4 glmRigidbody3DOwnModelMatrix = glm::make_mat4(rigidbody3DMatrix);
                 
-                auto q = glm::identity<glm::quat>();
-                
-                // q = glm::quat(glm::radians(ownTransform.m_rotation));
-                
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.z), { 0, 0, 1 });
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.y), { 0, 1, 0 });
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), { 1, 0, 0 });
-                
-                ownTransform.m_rotationMatrix = glm::toMat4(q);
-                
-                // rotating directions vectors
-                ownTransform.m_left = glm::rotate(ownTransform.m_left,
-                                                  -glm::radians(rotDifY), glm::vec3(0, 1, 0));
-                ownTransform.m_left = glm::rotate(ownTransform.m_left,
-                                                  -glm::radians(rotDifZ), glm::vec3(0, 0, 1));
-                
-                ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
-                                                     -glm::radians(rotDifX), glm::vec3(1, 0, 0));
-                ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
-                                                     -glm::radians(rotDifY), glm::vec3(0, 1, 0));
-                
-                ownTransform.m_up = glm::rotate(ownTransform.m_up,
-                                                -glm::radians(rotDifX), glm::vec3(1, 0, 0));
-                ownTransform.m_up = glm::rotate(ownTransform.m_up,
-                                                -glm::radians(rotDifZ), glm::vec3(0, 0, 1));
-                
-                ownTransform.m_lastRotation = ownTransform.m_rotation;
-                
-                rotationChanged = true;
-            }
-
-            entityTransform->m_transformChanged =
-                    entityTransform->m_transformChanged || translationChanged || rotationChanged;
-            
-            if(entityTransform->m_transformChanged)
-            {
-                ownTransform.m_modelMatrix =
-                        ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
-                
-                if(entityParentTransform)
+                if(parentTransform)
                 {
-                    finalTransform.m_modelMatrix =
-                            entityParentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
+                    glmRigidbody3DOwnModelMatrix /= parentTransform->m_finalTransform.m_translationMatrix * parentTransform->m_finalTransform.m_rotationMatrix;
                 }
-                else
+                /*else
                 {
-                    finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
+                    glmRigidbody3DOwnModelMatrix /= ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix;
+                }*/
+                
+                glm::vec3 scale;
+                glm::quat rotation;
+                glm::vec3 translation;
+                glm::vec3 skew;
+                glm::vec4 perspective;
+                
+                glm::decompose(glmRigidbody3DOwnModelMatrix, scale, rotation, translation, skew, perspective);
+                
+                ownTransform.m_position = translation;
+                ownTransform.m_rotation = glm::degrees(glm::eulerAngles(rotation));
+                // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
+                
+                translationChanged = false;
+                rotationChanged = false;
+                
+                if(ownTransform.m_position != ownTransform.m_lastPosition)
+                {
+                    ownTransform.m_translationMatrix = glm::translate(glm::mat4(1.0), ownTransform.m_position);
+                    
+                    ownTransform.m_lastPosition = ownTransform.m_position;
+                    
+                    translationChanged = true;
+                }
+                
+                if(ownTransform.m_rotation != ownTransform.m_lastRotation)
+                {
+                    const float rotDifX = ownTransform.m_rotation.x - ownTransform.m_lastRotation.x;
+                    const float rotDifY = ownTransform.m_rotation.y - ownTransform.m_lastRotation.y;
+                    const float rotDifZ = ownTransform.m_rotation.z - ownTransform.m_lastRotation.z;
+                    
+                    // ownTransform.m_rotationMatrix = glm::toMat4(rotation);
+                    
+                    auto q = glm::identity<glm::quat>();
+                    
+                    // q = glm::quat(glm::radians(ownTransform.m_rotation));
+                    
+                    q = glm::rotate(q, glm::radians(ownTransform.m_rotation.z), { 0, 0, 1 });
+                    q = glm::rotate(q, glm::radians(ownTransform.m_rotation.y), { 0, 1, 0 });
+                    q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), { 1, 0, 0 });
+                    
+                    ownTransform.m_rotationMatrix = glm::toMat4(q);
+                    
+                    // rotating directions vectors
+                    ownTransform.m_left = glm::rotate(ownTransform.m_left,
+                                                      -glm::radians(rotDifY), glm::vec3(0, 1, 0));
+                    ownTransform.m_left = glm::rotate(ownTransform.m_left,
+                                                      -glm::radians(rotDifZ), glm::vec3(0, 0, 1));
+                    
+                    ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
+                                                         -glm::radians(rotDifX), glm::vec3(1, 0, 0));
+                    ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
+                                                         -glm::radians(rotDifY), glm::vec3(0, 1, 0));
+                    
+                    ownTransform.m_up = glm::rotate(ownTransform.m_up,
+                                                    -glm::radians(rotDifX), glm::vec3(1, 0, 0));
+                    ownTransform.m_up = glm::rotate(ownTransform.m_up,
+                                                    -glm::radians(rotDifZ), glm::vec3(0, 0, 1));
+                    
+                    ownTransform.m_lastRotation = ownTransform.m_rotation;
+                    
+                    rotationChanged = true;
+                }
+                
+                transform.m_transformChanged =
+                        transform.m_transformChanged || translationChanged || rotationChanged;
+                
+                if(transform.m_transformChanged)
+                {
+                    ownTransform.m_modelMatrix =
+                            ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
+                    
+                    if(parentTransform)
+                    {
+                        finalTransform.m_modelMatrix =
+                                parentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
+                    }
+                    else
+                    {
+                        finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
+                    }
+                    
+                    registry.patch<Transform>(entity);
                 }
             }
         }
     });
-    
-    m_rigidbody3DUpdateObserver.clear();
 }
 
 void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
 {
     m_scene = scene;
-
-    m_transformUpdateObserver.connect(scene->getECSRegistry(), entt::basic_collector<>::update<Transform>());
-    m_rigidbody3DUpdateObserver.connect(scene->getECSRegistry(), entt::basic_collector<>::update<Rigidbody3D>());
 }

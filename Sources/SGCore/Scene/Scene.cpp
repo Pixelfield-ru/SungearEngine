@@ -3,6 +3,7 @@
 //
 
 #include <SGCore/Render/Instancing/InstancingRenderer.h>
+#include <SGCore/Render/Batching/BatchesRenderer.h>
 #include "Scene.h"
 
 #include "GLFW/glfw3.h"
@@ -76,6 +77,9 @@ void SGCore::Scene::createDefaultSystems()
     
     auto instancingRenderer = MakeRef<InstancingRenderer>();
     addSystem(instancingRenderer);
+    
+    auto batchesRenderer = MakeRef<BatchesRenderer>();
+    addSystem(batchesRenderer);
     
     for(auto& system : m_systems)
     {

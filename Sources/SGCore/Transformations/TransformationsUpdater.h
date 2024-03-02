@@ -21,8 +21,5 @@ namespace SGCore
         void fixedUpdate(const double& dt, const double& fixedDt) final;
         
         void setScene(const Ref<Scene>& scene) noexcept final;
-    private:
-        entt::observer m_transformUpdateObserver;
-        entt::observer m_rigidbody3DUpdateObserver;
     };
 }

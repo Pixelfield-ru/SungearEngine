@@ -26,7 +26,7 @@ namespace SGCore
         virtual void destroy() = 0;
 
         virtual std::shared_ptr<IIndexBuffer> putData(const std::vector<std::uint32_t>& data) = 0;
-        virtual void subData(std::vector<std::uint32_t> data, const int& offset) = 0;
+        virtual void subData(const std::vector<std::uint32_t>& data, const int& offset) = 0;
         virtual void subData(std::uint32_t* data, const size_t& elementsCount, const int& offset) = 0;
         virtual std::shared_ptr<IIndexBuffer> bind() = 0;
 
