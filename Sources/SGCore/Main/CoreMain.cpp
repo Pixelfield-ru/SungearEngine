@@ -71,6 +71,7 @@ void SGCore::CoreMain::start()
                                                 });
 
     m_fixedTimer.addCallback(fixedTimerCallback);
+    // m_fixedTimer.m_useFixedUpdateCatchUp = false;
 
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
 

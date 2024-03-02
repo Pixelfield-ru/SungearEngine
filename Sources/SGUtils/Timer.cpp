@@ -50,7 +50,9 @@ void SGCore::Timer::startFrame()
     }
     
     m_elapsedTime += m_rawDeltaTime;
-    
+
+    // std::cout << "elapsed time: " << m_elapsedTime << std::endl;
+
     if(m_elapsedTime >= m_targetFrameTime)
     {
         if(m_useFixedUpdateCatchUp)
@@ -74,6 +76,8 @@ void SGCore::Timer::startFrame()
                 
                 m_elapsedTime -= m_targetFrameTime;
             }
+
+            m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
         }
         else
         {

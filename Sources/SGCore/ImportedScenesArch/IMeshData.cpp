@@ -14,6 +14,8 @@
 
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
+#include "SGCore/Scene/Scene.h"
+
 /*SGCore::Mesh::Mesh() noexcept
 {
     m_material = Ref<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createPBRMaterial());
@@ -125,7 +127,8 @@ entt::entity SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::s
     Transform& meshTransform = registry.emplace<Transform>(meshEntity);
     Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
     // maybe can load the ram
-    meshEntityMesh.m_base.m_meshData->setData(shared_from_this());
+    // meshEntityMesh.m_base.m_meshData->setData(shared_from_this());
+    meshEntityMesh.m_base.m_meshData = shared_from_this();
     
     // meshEntityMesh.m_base.m_meshData = shared_from_this();
     

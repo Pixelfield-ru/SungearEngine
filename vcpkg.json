@@ -3,14 +3,13 @@
   "version-string" : "1.0.0",
   "builtin-baseline" : "37c3e63a1306562f7f59c4c3c8892ddd50fdf992",
   "dependencies" : [ {
-    "name" : "freetype",
-    "version>=" : "2.13.2"
-  }, {
-    "name" : "pugixml",
-    "version>=" : "1.14",
-    "$comment" : "  # this is heuristically generated, and may not be correct\n\n  find_package(pugixml CONFIG REQUIRED)\n\n  target_link_libraries(main PRIVATE pugixml::shared pugixml::pugixml)\n"
-  }, {
     "name" : "bullet3",
     "version>=" : "3.25#1"
+  }, {
+    "name" : "pugixml",
+    "version>=" : "1.14"
+  }, {
+    "name" : "freetype",
+    "version>=" : "2.13.2"
   } ]
 }

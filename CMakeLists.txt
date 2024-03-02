@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(CMAKE_TOOLCHAIN_FILE "C:\\Users\\Ilya\\.clion-vcpkg\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")
+#set(CMAKE_TOOLCHAIN_FILE "C:\\Users\\Ilya\\.clion-vcpkg\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")
 
 message("ToolChain CMAKE_CXX_LINK_EXECUTABLE: ${CMAKE_CXX_LINK_EXECUTABLE}")
 
@@ -70,11 +70,11 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
 # TODO: make SG_BUILD_EDITOR
 set(SG_BUILD_TESTS OFF)
 
-set(SG_RESOURCES_COPY_MODELS OFF)
+set(SG_RESOURCES_COPY_MODELS ON)
 set(SG_RESOURCES_COPY_SHADERS ON)
-set(SG_RESOURCES_COPY_TEXTURES OFF)
-set(SG_RESOURCES_COPY_UI OFF)
-set(SG_RESOURCES_COPY_FONTS OFF)
+set(SG_RESOURCES_COPY_TEXTURES ON)
+set(SG_RESOURCES_COPY_UI ON)
+set(SG_RESOURCES_COPY_FONTS ON)
 
 # ----------------------------------
 add_subdirectory(syslibs)

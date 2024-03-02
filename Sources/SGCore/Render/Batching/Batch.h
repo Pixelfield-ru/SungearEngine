@@ -36,7 +36,7 @@ namespace SGCore
         Weak<Scene> m_parentScene;
         
         size_t m_maxVerticesCount = 1024 * 1024 * 12;
-        size_t m_maxIndicesCount = 1024 * 1024 * 12;
+        size_t m_maxIndicesCount = 1024 * 1024 * 18;
         size_t m_maxInstancesCount = 1'000'000;
         
         size_t m_currentVerticesCountToRender = 0;
