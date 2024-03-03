@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINE_ATMOSPHEREUPDATER_H
 #define SUNGEARENGINE_ATMOSPHEREUPDATER_H
 
+#include <SGUtils/Timer.h>
 #include "SGCore/Scene/ISystem.h"
 
 namespace SGCore
@@ -15,9 +16,13 @@ namespace SGCore
     {
         AtmosphereUpdater() noexcept;
         
-        void fixedUpdate(const double& dt, const double& fixedDt) final;
+        void update(const double& dt) final;
+        
+        Timer m_atmosphereUpdateTimer;
         
     private:
+        void updateAtmosphere() noexcept;
+        
         Ref<IUniformBuffer> m_uniformBuffer;
     };
 }

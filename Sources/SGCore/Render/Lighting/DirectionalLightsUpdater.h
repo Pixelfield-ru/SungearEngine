@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINE_DIRECTIONALLIGHTSUPDATER_H
 #define SUNGEARENGINE_DIRECTIONALLIGHTSUPDATER_H
 
+#include "SGUtils/Timer.h"
 #include "SGCore/Scene/ISystem.h"
 
 namespace SGCore
@@ -15,12 +16,17 @@ namespace SGCore
     {
         DirectionalLightsUpdater() noexcept;
         
-        void fixedUpdate(const double& dt, const double& fixedDt) final;
+        void update(const double& dt) final;
         
         // uniform buffer for directional lights
         Ref<IUniformBuffer> m_uniformBuffer;
         
         int m_maxLightsCount = 5;
+        
+        Timer m_lightsUpdateTimer;
+        
+    private:
+        void updateLights() noexcept;
     };
 }
 

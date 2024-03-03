@@ -43,9 +43,6 @@ namespace SGCore
          */
         void onAssetPathChanged() override;
 
-        void setParentMaterial(const Ref<IMaterial>& material) noexcept;
-        Weak<IMaterial> getParentMaterial() const noexcept;
-
         const auto& getSubPassesShaders() const noexcept
         {
             return m_subPassesShaders;
@@ -81,8 +78,6 @@ namespace SGCore
     private:
         // first - sub pass name
         std::unordered_map<std::string, Ref<ISubPassShader>> m_subPassesShaders;
-
-        Weak<IMaterial> m_parentMaterial;
     };
 }
 

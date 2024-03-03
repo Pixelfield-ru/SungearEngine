@@ -10,7 +10,7 @@ namespace SGCore
     struct Controllable3D
     {
         float m_movementSpeed = 0.075f;
-        float m_rotationSensitive = 0.2f;
+        float m_rotationSensitive = 0.07f;
     };
 }
 

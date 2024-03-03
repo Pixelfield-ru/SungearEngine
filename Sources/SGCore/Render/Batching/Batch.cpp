@@ -276,13 +276,32 @@ void SGCore::Batch::addEntity(const entt::entity& entity) noexcept
     m_currentVerticesCountToRender += (newRanges.m_verticesRange.y - newRanges.m_verticesRange.x) / 3;
     m_currentIndicesCountToRender += (newRanges.m_indicesRange.y - newRanges.m_indicesRange.x);
     
-    ++m_currentRenderingInstancesCount;
+    const size_t vOffset = newRanges.m_verticesRange.x;
+    const size_t uvOffset = newRanges.m_UVsRange.x;
+    const size_t iOffset = newRanges.m_indicesRange.x;
     
-    m_positionsArrayChanged = true;
+    m_positionsBuffer->bind();
+    m_positionsBuffer->subData(m_verticesPositions.data() + vOffset, newRanges.m_verticesRange.y - vOffset, vOffset);
+    
+    m_UVsVertexBuffer->bind();
+    m_UVsVertexBuffer->subData(m_UVs.data() + uvOffset, newRanges.m_UVsRange.y - uvOffset, uvOffset);
+    
+    m_indicesBuffer->bind();
+    m_indicesBuffer->subData(m_indices.data() + iOffset, newRanges.m_indicesRange.y - iOffset, iOffset);
+    
+    m_instancesIndicesVertexBuffer->bind();
+    m_instancesIndicesVertexBuffer->subData(m_instancesIndices.data() + vOffset / 3, (newRanges.m_verticesRange.y - vOffset) / 3,  vOffset / 3);
+    
+    m_matricesTextureBuffer->bind(0);
+    m_matricesTextureBuffer->subTextureBufferData<float>(m_modelMatrices.data() + m_currentRenderingInstancesCount * 16, 16,
+                                                         m_currentRenderingInstancesCount * 16);
+    
+    ++m_currentRenderingInstancesCount;
+    /*m_positionsArrayChanged = true;
     m_UVsArrayChanged = true;
     m_indicesArrayChanged = true;
     m_modelMatricesArrayChanged = true;
-    m_instancesIndicesChanged = true;
+    m_instancesIndicesChanged = true;*/
 }
 
 void SGCore::Batch::removeEntity(const entt::entity& entity) noexcept

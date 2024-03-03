@@ -27,14 +27,14 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_dynamicsWorld->setGravity({ 0, -120.0, 0 });
 }
 
+void SGCore::PhysicsWorld3D::addBody(const SGCore::Ref<btRigidBody>& rigidBody) noexcept
+{
+    m_bodiesToAdd.insert(rigidBody);
+}
+
 void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexcept
 {
-    int num = rigidBody->getNumConstraintRefs();
-    for(int j = 0; j < num; ++j)
-    {
-        m_dynamicsWorld->removeConstraint(rigidBody->getConstraintRef(0));
-    }
-    m_dynamicsWorld->removeRigidBody(rigidBody.get());
+    m_bodiesToRemove.insert(rigidBody);
 }
 
 void SGCore::PhysicsWorld3D::update(const double& dt) noexcept
@@ -49,7 +49,29 @@ void SGCore::PhysicsWorld3D::update(const double& dt) noexcept
 
 void SGCore::PhysicsWorld3D::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    m_dynamicsWorld->stepSimulation(fixedDt, 12, 1 / 100.0f);
+    auto bodiesToRemoveIt = m_bodiesToRemove.begin();
+    while(bodiesToRemoveIt != m_bodiesToRemove.end())
+    {
+        const auto& bodyRef = (*bodiesToRemoveIt);
+        
+        int num = bodyRef->getNumConstraintRefs();
+        for(int j = 0; j < num; ++j)
+        {
+            m_dynamicsWorld->removeConstraint(bodyRef->getConstraintRef(0));
+        }
+        m_dynamicsWorld->removeRigidBody(bodyRef.get());
+        
+        bodiesToRemoveIt = m_bodiesToRemove.erase(bodiesToRemoveIt);
+    }
+    
+    auto bodiesToAddIt = m_bodiesToAdd.begin();
+    while(bodiesToAddIt != m_bodiesToAdd.end())
+    {
+        m_dynamicsWorld->addRigidBody(bodiesToAddIt->get());
+        bodiesToAddIt = m_bodiesToAdd.erase(bodiesToAddIt);
+    }
+    
+    m_dynamicsWorld->stepSimulation(fixedDt, 12, fixedDt);
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene()
@@ -60,6 +82,6 @@ void SGCore::PhysicsWorld3D::onAddToScene()
     auto rigidbodies3DView = lockedScene->getECSRegistry().view<Rigidbody3D>();
     
     rigidbodies3DView.each([this](Rigidbody3D& rigidbody3D) {
-        this->m_dynamicsWorld->addRigidBody(rigidbody3D.m_body.get());
+        this->addBody(rigidbody3D.m_body);
     });
 }

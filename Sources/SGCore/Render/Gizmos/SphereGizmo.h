@@ -11,8 +11,6 @@ namespace SGCore
 {
     struct SphereGizmo
     {
-        SphereGizmo() noexcept;
-
         GizmoBase m_base;
 
         float m_radius = 5.0;

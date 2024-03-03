@@ -30,10 +30,10 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
         {
             ownTransform.m_rotation.x +=
                     (float) InputManager::getMainInputListener()->getCursorPositionDeltaY() *
-                    controllable3D.m_rotationSensitive;
+                    controllable3D.m_rotationSensitive * finalDt;
             ownTransform.m_rotation.y +=
                     (float) InputManager::getMainInputListener()->getCursorPositionDeltaX() *
-                    controllable3D.m_rotationSensitive;
+                    controllable3D.m_rotationSensitive * finalDt;
         }
 
         // restore camera`s transformation

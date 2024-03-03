@@ -79,18 +79,6 @@ void SGCore::IShader::onAssetPathChanged()
     addSubPassShadersAndCompile(m_fileAsset.lock());
 }
 
-void SGCore::IShader::setParentMaterial(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
-{
-    if(!material) return;
-
-    m_parentMaterial = material;
-}
-
-SGCore::Weak<SGCore::IMaterial> SGCore::IShader::getParentMaterial() const noexcept
-{
-    return m_parentMaterial;
-}
-
 void SGCore::IShader::removeAllSubPassShadersByDiskPath(const std::string& path) noexcept
 {
     auto curIter = m_subPassesShaders.begin();

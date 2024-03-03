@@ -80,11 +80,21 @@ void SGCore::CoreMain::start()
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();
     
+    m_fixedTimerThread = std::thread([]() {
+        while(!m_window.shouldClose())
+        {
+            m_fixedTimer.startFrame();
+        }
+    });
+    
+    // m_fixedTimerThread.detach();
+    
     while(!m_window.shouldClose())
     {
         m_renderTimer.startFrame();
-        m_fixedTimer.startFrame();
     }
+    
+    m_fixedTimerThread.join();
 }
 
 void SGCore::CoreMain::fixedUpdate(const double& dt, const double& fixedDt)

@@ -8,9 +8,9 @@
 #define SUNGEARENGINE_CORESETTINGS_H
 
 #define SG_CORE_MAJOR_VERSION 0
-#define SG_CORE_MINOR_VERSION 1
+#define SG_CORE_MINOR_VERSION 11
 #define SG_CORE_PATCH_VERSION 0
-#define SG_CORE_BUILD_VERSION 2
+#define SG_CORE_BUILD_VERSION 3
 
 #include "assimp/postprocess.h"
 

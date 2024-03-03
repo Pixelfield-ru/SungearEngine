@@ -26,6 +26,7 @@ namespace SGCore
         PhysicsWorld3D();
         // ~PhysicsWorld();
         
+        void addBody(const Ref<btRigidBody>& rigidBody) noexcept;
         void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
         
         void update(const double& dt) noexcept override;
@@ -63,6 +64,9 @@ namespace SGCore
         }
     
     private:
+        std::unordered_set<Ref<btRigidBody>> m_bodiesToAdd;
+        std::unordered_set<Ref<btRigidBody>> m_bodiesToRemove;
+        
         Scope<btCollisionConfiguration> m_collisionConfig;
         Scope<btCollisionDispatcher> m_collisionDispatcher;
         Scope<btBroadphaseInterface> m_overlappingPairCache;

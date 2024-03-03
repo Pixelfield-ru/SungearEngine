@@ -2,41 +2,41 @@
 // Created by stuka on 02.02.2024.
 //
 
-#include "MeshesUtils.h"
+#include "ShadersUtils.h"
 #include "RenderPipelinesManager.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Scene/Scene.h"
-#include "MeshBase.h"
+#include "ShaderComponent.h"
 
-void SGCore::MeshesUtils::loadMeshShader(MeshBase& meshBase, const std::string& shaderPath) noexcept
+void SGCore::ShadersUtils::loadShader(ShaderComponent& shaderComponent, const std::string& shaderPath) noexcept
 {
     auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
 
     if(renderPipeline)
     {
         // std::cout << "loaded shader: " << renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization() << std::endl;
-        meshBase.m_shaderPath = shaderPath;
-        meshBase.m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
+        shaderComponent.m_shaderPath = shaderPath;
+        shaderComponent.m_shader->addSubPassShadersAndCompile(
                 AssetManager::loadAsset<FileAsset>(
                         renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization()));
     }
 }
 
-void SGCore::MeshesUtils::onRenderPipelineSet(MeshBase& meshBase) noexcept
+void SGCore::ShadersUtils::onRenderPipelineSet(ShaderComponent& shaderComponent) noexcept
 {
-    if(meshBase.m_meshData->m_material->getShader())
+    if(shaderComponent.m_shader)
     {
-        meshBase.m_meshData->m_material->getShader()->removeAllSubPassShadersByDiskPath(meshBase.m_shaderPath);
+        shaderComponent.m_shader->removeAllSubPassShadersByDiskPath(shaderComponent.m_shaderPath);
         
         auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
         
         if(renderPipeline)
         {
-            meshBase.m_meshData->m_material->getShader()->addSubPassShadersAndCompile(
+            shaderComponent.m_shader->addSubPassShadersAndCompile(
                     AssetManager::loadAsset<FileAsset>(
-                            renderPipeline->m_shadersPaths.getByVirtualPath(meshBase.m_shaderPath
+                            renderPipeline->m_shadersPaths.getByVirtualPath(shaderComponent.m_shaderPath
                             ).getCurrentRealization()));
         }
     }

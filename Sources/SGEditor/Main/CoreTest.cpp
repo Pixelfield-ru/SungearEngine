@@ -59,6 +59,7 @@
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Render/Batching/Batch.h"
 #include "SGCore/Render/DisableMeshGeometryPass.h"
+#include "SGCore/Render/ShaderComponent.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -554,6 +555,7 @@ void init()
         });
 
         SGCore::Mesh& skyboxMesh = testScene->getECSRegistry().get<SGCore::Mesh>(skyboxEntities[2]);
+        SGCore::ShaderComponent& skyboxShaderComponent = testScene->getECSRegistry().emplace<SGCore::ShaderComponent>(skyboxEntities[2]);
         SGCore::Atmosphere& atmosphereScattering = testScene->getECSRegistry().emplace<SGCore::Atmosphere>(skyboxEntities[2]);
         _atmosphereScattering = &atmosphereScattering;
         // atmosphereScattering.m_sunRotation.z = 90.0;
@@ -561,8 +563,7 @@ void init()
                 standardCubemap
         );
         // это топ пж
-        skyboxMesh.m_base.m_meshData->m_material->setShader(SGCore::MakeRef<SGCore::IShader>());
-        SGCore::MeshesUtils::loadMeshShader(skyboxMesh.m_base, "SkyboxShader");
+        SGCore::ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
         skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
 
         SGCore::Transform& skyboxTransform = testScene->getECSRegistry().get<SGCore::Transform>(skyboxEntities[2]);
@@ -653,6 +654,7 @@ void init()
     {
         auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
         auto geniusTransform = testScene->getECSRegistry().try_get<SGCore::Transform>(geniusEntities[2]);
+        SGCore::ShaderComponent& geniusMeshShader = testScene->getECSRegistry().emplace<SGCore::ShaderComponent>(geniusEntities[2]);
 
         if(geniusTransform)
         {
@@ -664,9 +666,8 @@ void init()
         if(geniusMesh)
         {
             geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomanFont_height128_eng->m_atlas);
-
-            geniusMesh->m_base.m_meshData->m_material->setShader(SGCore::MakeRef<SGCore::IShader>());
-            SGCore::MeshesUtils::loadMeshShader(geniusMesh->m_base, "TestTextShader");
+            
+            SGCore::ShadersUtils::loadShader(geniusMeshShader, "TestTextShader");
             geniusMesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
         }
     }
@@ -1006,12 +1007,6 @@ void fixedUpdate(const double& dt, const double& fixedDt)
         tr0.m_ownTransform.m_position.y += 0.1f;
     }
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_4))
-    {
-        SGCore::Transform& cameraTransform = testScene->getECSRegistry().get<SGCore::Transform>(testCameraEntity);
-        createBallAndApplyImpulse(cameraTransform.m_ownTransform.m_position, cameraTransform.m_ownTransform.m_forward * 200000.0f / 10.0f);
-    }
-    
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_5))
     {
         testScene->getECSRegistry().clear<SGCore::Rigidbody3D>();
@@ -1054,6 +1049,12 @@ void update(const double& dt)
     {
         std::cout << "pressed f11" << std::endl;
         SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
+    }
+    
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_4))
+    {
+        SGCore::Transform& cameraTransform = testScene->getECSRegistry().get<SGCore::Transform>(testCameraEntity);
+        createBallAndApplyImpulse(cameraTransform.m_ownTransform.m_position, cameraTransform.m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F12))

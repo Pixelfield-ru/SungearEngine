@@ -58,9 +58,24 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
             geomPass->m_uniformBuffersToUse.push_back(m_uniformBuffer);
         }
     }
+    
+    Ref<TimerCallback> callback = MakeRef<TimerCallback>();
+    callback->setUpdateFunction([this](const double& dt) {
+        updateLights();
+    });
+    
+    m_lightsUpdateTimer.setTargetFrameRate(30);
+    m_lightsUpdateTimer.addCallback(callback);
+    m_lightsUpdateTimer.m_useFixedUpdateCatchUp = false;
+    m_lightsUpdateTimer.m_cyclic = true;
 }
 
-void SGCore::DirectionalLightsUpdater::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::DirectionalLightsUpdater::update(const double& dt)
+{
+    m_lightsUpdateTimer.startFrame();
+}
+
+void SGCore::DirectionalLightsUpdater::updateLights() noexcept
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;

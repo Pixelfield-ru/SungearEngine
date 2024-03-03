@@ -18,7 +18,7 @@ SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<SGCore::PhysicsWorld3D>& phys
     m_body = MakeRef<btRigidBody>(constructionInfo);
     m_body->setFlags(m_body->getFlags() |  btCollisionObject::CF_STATIC_OBJECT);
     
-    physicsWorld->getDynamicsWorld()->addRigidBody(m_body.get());
+    physicsWorld->addBody(m_body);
     
     m_bodyFlags.m_flags |= m_body->getFlags();
 }
@@ -61,6 +61,6 @@ void SGCore::Rigidbody3D::reAddToWorld() const noexcept
     if(auto lockedWorld = m_parentPhysicsWorld.lock())
     {
         lockedWorld->removeBody(m_body);
-        lockedWorld->getDynamicsWorld()->addRigidBody(m_body.get());
+        lockedWorld->addBody(m_body);
     }
 }

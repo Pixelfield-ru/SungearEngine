@@ -2,6 +2,7 @@
 #define NATIVECORE_COREMAIN_H
 
 #include <sgcore_export.h>
+#include <thread>
 
 #include "Window.h"
 #include "SGUtils/Timer.h"
@@ -25,6 +26,8 @@ namespace SGCore
 
         static inline Timer m_renderTimer { true, 1200};
         static inline Timer m_fixedTimer { true, 100.0 };
+        
+        static inline std::thread m_fixedTimerThread;
 
     public:
         CoreMain() = delete;

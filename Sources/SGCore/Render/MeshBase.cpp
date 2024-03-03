@@ -10,6 +10,4 @@
 SGCore::MeshBase::MeshBase()
 {
     m_meshData = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
-
-    RenderPipelinesManager::subscribeToRenderPipelineSetEvent(m_onRenderPipelineSet);
 }

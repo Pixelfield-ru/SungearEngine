@@ -10,8 +10,6 @@ namespace SGCore
 {
     struct BoxGizmo
     {
-        BoxGizmo() noexcept;
-
         GizmoBase m_base;
 
         // todo: move in transform as AABB

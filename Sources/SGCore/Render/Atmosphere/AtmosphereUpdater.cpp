@@ -18,6 +18,7 @@
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 #include "AtmosphereUtils.h"
+#include "SGCore/Render/ShaderComponent.h"
 
 SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
 {
@@ -56,9 +57,23 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
             geomPass->m_uniformBuffersToUse.push_back(m_uniformBuffer);
         }
     }
+    
+    Ref<TimerCallback> callback = MakeRef<TimerCallback>();
+    callback->setUpdateFunction([this](const double& dt) {
+        updateAtmosphere();
+    });
+    
+    m_atmosphereUpdateTimer.setTargetFrameRate(60);
+    m_atmosphereUpdateTimer.addCallback(callback);
+    m_atmosphereUpdateTimer.m_cyclic = true;
 }
 
-void SGCore::AtmosphereUpdater::fixedUpdate(const double& dt, const double& fixedDt)
+void SGCore::AtmosphereUpdater::update(const double& dt)
+{
+    m_atmosphereUpdateTimer.startFrame();
+}
+
+void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
@@ -67,11 +82,11 @@ void SGCore::AtmosphereUpdater::fixedUpdate(const double& dt, const double& fixe
     
     atmosphereScatteringsView.each([&lockedScene, this](const entt::entity& entity, Atmosphere& atmosphere) {
         size_t hashedSunPos = MathUtils::hashVector(atmosphere.m_sunPosition);
-
-        Mesh* atmosphereScatteringMesh = lockedScene->getECSRegistry().try_get<Mesh>(entity);
-        if(atmosphereScatteringMesh)
+        
+        ShaderComponent* atmosphereScatteringShader = lockedScene->getECSRegistry().try_get<ShaderComponent>(entity);
+        if(atmosphereScatteringShader)
         {
-            auto meshShader = atmosphereScatteringMesh->m_base.m_meshData->m_material->getShader();
+            auto meshShader = atmosphereScatteringShader->m_shader;
             auto geomPassShader = meshShader ? meshShader->getSubPassShader("GeometryPass") : nullptr;
             if(geomPassShader)
             {
@@ -79,7 +94,7 @@ void SGCore::AtmosphereUpdater::fixedUpdate(const double& dt, const double& fixe
                 geomPassShader->useUniformBuffer(m_uniformBuffer);
             }
         }
-
+        
         if(atmosphere.m_sunRotation != atmosphere.m_lastSunRotation)
         {
             atmosphere.m_sunPosition = glm::rotateX(Atmosphere::getSunOrigin(), glm::radians(atmosphere.m_sunRotation.x));
@@ -93,89 +108,89 @@ void SGCore::AtmosphereUpdater::fixedUpdate(const double& dt, const double& fixe
             
             m_uniformBuffer->subData("atmosphere.sunPosition", glm::value_ptr(atmosphere.m_sunPosition), 3);
             m_uniformBuffer->subData("atmosphere.sunColor", glm::value_ptr(atmosphere.m_precalculatedSunColors[hashedSunPos]), 3);
-
+            
             atmosphere.m_lastSunRotation = atmosphere.m_sunRotation;
         }
-
+        
         if(atmosphere.m_rayleighScatteringCoeff != atmosphere.m_lastRayleighScatteringCoeff)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.rayleighScatteringCoeff",
                                      glm::value_ptr(atmosphere.m_rayleighScatteringCoeff), 3);
-
+            
             atmosphere.m_lastRayleighScatteringCoeff = atmosphere.m_rayleighScatteringCoeff;
         }
-
+        
         if(atmosphere.m_mieScatteringCoeff != atmosphere.m_lastMieScatteringCoeff)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.mieScatteringCoeff", { atmosphere.m_mieScatteringCoeff });
-
+            
             atmosphere.m_lastMieScatteringCoeff = atmosphere.m_mieScatteringCoeff;
         }
-
+        
         if(atmosphere.m_rayleighScaleHeight != atmosphere.m_lastRayleighScaleHeight)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.rayleighScaleHeight", { atmosphere.m_rayleighScaleHeight });
-
+            
             atmosphere.m_lastRayleighScaleHeight = atmosphere.m_rayleighScaleHeight;
         }
-
+        
         if(atmosphere.m_mieScaleHeight != atmosphere.m_lastMieScaleHeight)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.mieScaleHeight", { atmosphere.m_mieScaleHeight });
-
+            
             atmosphere.m_lastMieScaleHeight = atmosphere.m_mieScaleHeight;
         }
-
+        
         if(atmosphere.m_sunIntensity != atmosphere.m_lastSunIntensity)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.sunIntensity", { atmosphere.m_sunIntensity });
-
+            
             atmosphere.m_lastSunIntensity = atmosphere.m_sunIntensity;
         }
-
+        
         if(atmosphere.m_planetRadius != atmosphere.m_lastPlanetRadius)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.planetRadius", { atmosphere.m_planetRadius });
-
+            
             atmosphere.m_lastPlanetRadius = atmosphere.m_planetRadius;
         }
-
+        
         if(atmosphere.m_atmosphereRadius != atmosphere.m_lastAtmosphereRadius)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.atmosphereRadius", { atmosphere.m_atmosphereRadius });
-
+            
             atmosphere.m_lastAtmosphereRadius = atmosphere.m_atmosphereRadius;
         }
-
+        
         if(atmosphere.m_miePreferredScatteringDirection != atmosphere.m_lastMiePreferredScatteringDirection)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.miePreferredScatteringDirection", { atmosphere.m_miePreferredScatteringDirection });
-
+            
             atmosphere.m_lastMiePreferredScatteringDirection = atmosphere.m_miePreferredScatteringDirection;
         }
-
+        
         if(atmosphere.m_rayOrigin != atmosphere.m_lastRayOrigin)
         {
             atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
-
+            
             m_uniformBuffer->subData("atmosphere.rayOrigin", glm::value_ptr(atmosphere.m_rayOrigin), 3);
-
+            
             atmosphere.m_lastRayOrigin = atmosphere.m_rayOrigin;
         }
     });

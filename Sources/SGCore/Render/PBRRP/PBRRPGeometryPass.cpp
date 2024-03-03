@@ -18,6 +18,7 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/DisableMeshGeometryPass.h"
+#include "SGCore/Render/ShaderComponent.h"
 
 void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
@@ -70,7 +71,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         standardGeometryShader->bind();
     }
     
-    camerasView.each([&meshesView, &renderPipeline, this, &standardGeometryShader](Camera3D& camera3D, RenderingBase& cameraRenderingBase, Transform& cameraTransform) {
+    camerasView.each([&meshesView, &renderPipeline, this, &standardGeometryShader, &scene](Camera3D& camera3D, RenderingBase& cameraRenderingBase, Transform& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
         if(standardGeometryShader)
@@ -80,9 +81,10 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         
         // todo: make get receiver (postprocess or default) and render in them
 
-        meshesView.each([&renderPipeline, this, &standardGeometryShader](EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
-            auto meshShader = mesh.m_base.m_meshData->m_material->getShader();
-            auto meshGeomShader = meshShader ? meshShader->getSubPassShader("GeometryPass") : nullptr;
+        meshesView.each([&renderPipeline, this, &standardGeometryShader, &scene](const entt::entity& entity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
+            ShaderComponent* entityShader = scene->getECSRegistry().try_get<ShaderComponent>(entity);
+            
+            auto meshGeomShader = (entityShader && entityShader->m_shader) ? entityShader->m_shader->getSubPassShader("GeometryPass") : nullptr;
             auto shaderToUse = meshGeomShader ? meshGeomShader : standardGeometryShader;
             
             if(shaderToUse)

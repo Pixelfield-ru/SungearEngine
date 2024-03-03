@@ -2,7 +2,6 @@
 // Created by stuka on 04.07.2023.
 //
 
-#include <SGCore/Render/Instancing/InstancingRenderer.h>
 #include <SGCore/Render/Batching/BatchesRenderer.h>
 #include "Scene.h"
 
@@ -74,9 +73,6 @@ void SGCore::Scene::createDefaultSystems()
     addSystem(sphereGizmosUpdater);
 
     // ===================
-    
-    auto instancingRenderer = MakeRef<InstancingRenderer>();
-    addSystem(instancingRenderer);
     
     auto batchesRenderer = MakeRef<BatchesRenderer>();
     addSystem(batchesRenderer);

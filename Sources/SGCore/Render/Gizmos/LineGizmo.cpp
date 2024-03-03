@@ -3,11 +3,9 @@
 //
 
 #include "LineGizmo.h"
-#include "SGCore/Render/MeshesUtils.h"
+#include "SGCore/Render/ShadersUtils.h"
 
 SGCore::LineGizmo::LineGizmo() noexcept
 {
-    MeshesUtils::loadMeshShader(m_base.m_meshBase, "Gizmos/LinesGizmosShader");
-    
     m_base.m_meshBase.m_meshDataRenderInfo.m_useIndices = false;
 }

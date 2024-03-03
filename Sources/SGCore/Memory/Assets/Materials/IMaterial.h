@@ -19,8 +19,6 @@ namespace SGCore
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
     public:
-        void createShader() noexcept;
-
         std::string m_name;
 
         // TODO: impl
@@ -44,10 +42,6 @@ namespace SGCore
                                      const Ref<ITexture2D>& tex);
 
         void copyTextures(const Ref<IMaterial>& to) const noexcept;
-
-        void setShader(const Ref<IShader>& shader) noexcept;
-
-        Ref<IShader> getShader() const noexcept;
 
         void setDiffuseColor(const glm::vec4& col) noexcept;
 

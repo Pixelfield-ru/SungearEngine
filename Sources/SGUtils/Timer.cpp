@@ -50,20 +50,15 @@ void SGCore::Timer::startFrame()
     }
     
     m_elapsedTime += m_rawDeltaTime;
-
+    
     // std::cout << "elapsed time: " << m_elapsedTime << std::endl;
-
     if(m_elapsedTime >= m_targetFrameTime)
     {
         if(m_useFixedUpdateCatchUp)
         {
-            // normal value
-            /*std::cout << "m_elapsedTime: " << m_elapsedTime << ", m_targetFrameTime: " << m_targetFrameTime
-                      << std::endl;*/
-            
             while(m_elapsedTime >= m_targetFrameTime)
             {
-                if(!m_active) break;
+                // if(!m_active) break;
                 
                 m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
                 m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
@@ -77,22 +72,11 @@ void SGCore::Timer::startFrame()
                 m_elapsedTime -= m_targetFrameTime;
             }
 
-            m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
-        }
-        else
-        {
-            m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
-            m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
-            m_fixedUpdateCallDeltaTime = m_currentFixedUpdateCallTime - m_lastFixedUpdateCallTime;
-            
-            for(const auto& callback : m_callbacks)
-            {
-                callback->callFixedUpdateFunction(m_fixedUpdateCallDeltaTime, m_targetFrameTime);
-            }
+            // m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
         }
         
         // reset();
-        m_elapsedTime = 0;
+        // m_elapsedTime = 0;
         m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
         m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
         
