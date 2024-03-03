@@ -20,7 +20,6 @@ namespace SGCore
     struct TransformBase
     {
         friend struct TransformationsUpdater;
-        friend struct TransformationsUtils;
 
         bool m_blockTranslation = false;
         bool m_blockRotation = false;

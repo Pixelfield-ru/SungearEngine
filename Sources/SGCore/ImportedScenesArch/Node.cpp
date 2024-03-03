@@ -25,11 +25,11 @@ entt::entity SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     entt::entity parentEntity = registry.create();
 
     EntityBaseInfo& nodeBaseInfo = registry.emplace<EntityBaseInfo>(parentEntity);
-    Transform& nodeTransform = registry.emplace<Transform>(parentEntity);
-    nodeTransform.m_ownTransform.m_position = m_position;
+    Ref<Transform> nodeTransform = registry.emplace<Ref<Transform>>(parentEntity, MakeRef<Transform>());
+    nodeTransform->m_ownTransform.m_position = m_position;
     // auto eulerRot = glm::eulerAngles(m_rotationQuaternion);
-    nodeTransform.m_ownTransform.m_rotation = glm::degrees(glm::eulerAngles(m_rotationQuaternion));
-    nodeTransform.m_ownTransform.m_scale = m_scale;
+    nodeTransform->m_ownTransform.m_rotation = glm::degrees(glm::eulerAngles(m_rotationQuaternion));
+    nodeTransform->m_ownTransform.m_scale = m_scale;
 
     nodeBaseInfo.setRawName(m_name);
 
@@ -50,7 +50,7 @@ entt::entity SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
         entt::entity meshEntity = registry.create();
 
         EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
-        Transform& meshTransform = registry.emplace<Transform>(meshEntity);
+        Ref<Transform>& meshTransform = registry.emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
         Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
         meshEntityMesh.m_base.m_meshData->setData(mesh);
 

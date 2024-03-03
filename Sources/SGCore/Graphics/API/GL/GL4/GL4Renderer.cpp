@@ -140,7 +140,7 @@ void SGCore::GL4Renderer::prepareFrame(const glm::ivec2& windowSize)
 }
 
 void SGCore::GL4Renderer::prepareUniformBuffers(const RenderingBase& renderingBase,
-                                                const Transform& transform)
+                                                const Ref<SGCore::Transform>& transform)
 {
     // double t0 = glfwGetTime();
 
@@ -165,7 +165,7 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const RenderingBase& renderingBa
 
     // todo: make to final transform
     m_viewMatricesBuffer->subData("camera.position",
-                                         glm::value_ptr(transform.m_ownTransform.m_position), 3
+                                         glm::value_ptr(transform->m_ownTransform.m_position), 3
     );
 
     int windowWidth;

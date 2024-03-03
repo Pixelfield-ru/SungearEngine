@@ -30,6 +30,7 @@ namespace SGCore
         void setScene(const Ref<Scene>& scene) noexcept final;
         
     private:
+        Ref<Scene> m_sharedScene;
         bool m_isAlive = true;
         
         void updateTransformations(const double& dt, const double& fixedDt) noexcept;

@@ -22,10 +22,10 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene)
     m_parentScene = parentScene;
     
     parentScene->getECSRegistry().on_destroy<Mesh>().connect<&Batch::onMeshDestroyed>(*this);
-    parentScene->getECSRegistry().on_destroy<Transform>().connect<&Batch::onTransformDestroyed>(*this);
+    parentScene->getECSRegistry().on_destroy<Ref<Transform>>().connect<&Batch::onTransformDestroyed>(*this);
     
     parentScene->getECSRegistry().on_update<Mesh>().connect<&Batch::onMeshUpdate>(*this);
-    parentScene->getECSRegistry().on_update<Transform>().connect<&Batch::onTransformUpdate>(*this);
+    parentScene->getECSRegistry().on_update<Ref<Transform>>().connect<&Batch::onTransformUpdate>(*this);
     
     /*m_meshUpdateObserver.connect(parentScene->getECSRegistry(), entt::basic_collector<>::update<Mesh>());
     m_transformUpdateObserver.connect(parentScene->getECSRegistry(), entt::basic_collector<>::update<Transform>());*/
@@ -195,7 +195,7 @@ void SGCore::Batch::addEntity(const entt::entity& entity) noexcept
         return;
     }
     
-    if(!lockedScene->getECSRegistry().all_of<Mesh, Transform>(entity))
+    if(!lockedScene->getECSRegistry().all_of<Mesh, Ref<Transform>>(entity))
     {
         spdlog::error("Batching error: can not add entity. One of Mesh or Transform components is not set.");
         return;
@@ -361,7 +361,7 @@ void SGCore::Batch::updateArraysForEntity(const Ref<Scene>& lockedScene, const e
 {
     const size_t& entityIdx = m_entitiesIndices[entity];
     Mesh& entityMesh = lockedScene->getECSRegistry().get<Mesh>(entity);
-    Transform& entityTransform = lockedScene->getECSRegistry().get<Transform>(entity);
+    Ref<Transform>& entityTransform = lockedScene->getECSRegistry().get<Ref<Transform>>(entity);
     BatchEntityRanges& ranges = m_entitiesRanges[entityIdx];
     
     size_t positionsCount = entityMesh.m_base.m_meshData->m_positions.size();
@@ -415,7 +415,7 @@ void SGCore::Batch::updateArraysForEntity(const Ref<Scene>& lockedScene, const e
         }
     }
     
-    const float* matPtr = glm::value_ptr(entityTransform.m_finalTransform.m_modelMatrix);
+    const float* matPtr = glm::value_ptr(entityTransform->m_finalTransform.m_modelMatrix);
     
     const size_t matrixStartIdx = entityIdx * 16;
     const size_t matrixEndIdx = matrixStartIdx + 16;
@@ -491,8 +491,8 @@ void SGCore::Batch::onTransformUpdate(entt::registry& registry, entt::entity ent
     const size_t startIdx = entityIdx * 16;
     const size_t endIdx = startIdx + 16;
     
-    Transform& transform = registry.get<Transform>(entity);
-    const float* matPtr = glm::value_ptr(transform.m_finalTransform.m_modelMatrix);
+    Ref<Transform>& transform = registry.get<Ref<Transform>>(entity);
+    const float* matPtr = glm::value_ptr(transform->m_finalTransform.m_modelMatrix);
     
     for(size_t m = startIdx; m < endIdx; ++m)
     {

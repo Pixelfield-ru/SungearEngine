@@ -20,9 +20,9 @@ void SGCore::BatchesRenderer::update(const double& dt, const double& fixedDt) no
     if(!lockedScene) return;
     
     auto batchesView = lockedScene->getECSRegistry().view<Batch>();
-    auto camerasView = lockedScene->getECSRegistry().view<Camera3D, RenderingBase, Transform>();
+    auto camerasView = lockedScene->getECSRegistry().view<Camera3D, RenderingBase, Ref<Transform>>();
     
-    camerasView.each([&batchesView](Camera3D& camera3D, RenderingBase& renderingBase, Transform& transform) {
+    camerasView.each([&batchesView](Camera3D& camera3D, RenderingBase& renderingBase, Ref<Transform>& transform) {
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
         
         batchesView.each([](Batch& batch) {

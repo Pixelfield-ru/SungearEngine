@@ -38,7 +38,7 @@ namespace SGCore
         
         Weak<FontSpecialization> m_parentSpecialization;
         
-        void drawText(Text& text, Transform& textTransform) noexcept;
+        void drawText(Text& text, const Ref<Transform>& textTransform) noexcept;
         
         void drawAll() noexcept;
         

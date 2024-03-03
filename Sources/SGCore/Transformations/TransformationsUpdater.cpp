@@ -9,31 +9,32 @@
 #include "TransformBase.h"
 #include "glm/gtx/rotate_vector.hpp"
 #include "SGCore/Scene/Scene.h"
-#include "TransformationsUtils.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Physics/Rigidbody3D.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "glm/gtx/matrix_decompose.hpp"
 #include "glm/gtx/quaternion.hpp"
+#include "Transform.h"
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
     Ref<TimerCallback> callback = MakeRef<TimerCallback>();
-    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
-        updateTransformations(dt, fixedDt);
-    });
     
     m_updaterTimer.setTargetFrameRate(60);
     m_updaterTimer.m_cyclic = true;
     m_updaterTimer.addCallback(callback);
+
+    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
+        updateTransformations(dt, fixedDt);
+    });
     
-    m_updaterThread = std::thread([this]() {
+    m_updaterThread = std::thread([this, callback]() {
         while(m_isAlive)
         {
             if(m_active)
             {
-                m_updaterTimer.startFrame();
+               m_updaterTimer.startFrame();
             }
         }
     });
@@ -43,6 +44,7 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
 
 SGCore::TransformationsUpdater::~TransformationsUpdater()
 {
+    // m_scene;
     m_isAlive = false;
     m_updaterThread.join();
 }
@@ -50,33 +52,33 @@ SGCore::TransformationsUpdater::~TransformationsUpdater()
 void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
 {
     m_scene = scene;
+    m_sharedScene = scene;
 }
 
 void SGCore::TransformationsUpdater::updateTransformations(const double& dt, const double& fixedDt) noexcept
 {
-    auto lockedScene = m_scene.lock();
-    if(!lockedScene) return;
+    if(!m_sharedScene) return;
     
-    entt::registry& registry = lockedScene->getECSRegistry();
+    entt::registry& registry = m_sharedScene->getECSRegistry();
     
-    auto transformsView = lockedScene->getECSRegistry().view<Transform>();
+    auto transformsView = m_sharedScene->getECSRegistry().view<Ref<Transform>>();
     
-    for(const auto& [entity, transform] : transformsView.each())
-    {
-        EntityBaseInfo* entityBaseInfo = nullptr; /*registry.try_get<EntityBaseInfo>(entity);*/
-        Transform* parentTransform = nullptr;
+    transformsView.each([&registry](const auto& entity, Ref<Transform> transform) {
+        EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
+        Ref<Transform> parentTransform;
         
-        /*if(entityBaseInfo)
+        if(entityBaseInfo)
         {
-            parentTransform = registry.try_get<Transform>(entityBaseInfo->m_parent);
-        }*/
+            Ref<Transform>* tmp = registry.try_get<Ref<Transform>>(entityBaseInfo->m_parent);
+            parentTransform = tmp ? *tmp : nullptr;
+        }
         
         bool translationChanged = false;
         bool rotationChanged = false;
         bool scaleChanged = false;
         
-        TransformBase& ownTransform = transform.m_ownTransform;
-        TransformBase& finalTransform = transform.m_finalTransform;
+        TransformBase& ownTransform = transform->m_ownTransform;
+        TransformBase& finalTransform = transform->m_finalTransform;
         
         // translation ==============================================
         
@@ -91,15 +93,15 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
             translationChanged = true;
         }
         
-        if(parentTransform && transform.m_followParentTRS.x && parentTransform->m_transformChanged)
+        if(parentTransform && transform->m_followParentTRS.x && parentTransform->m_transformChanged)
         {
-            // finalTransform.m_translationMatrix = parentTransform->m_finalTransform.m_translationMatrix * ownTransform.m_translationMatrix;
+            finalTransform.m_translationMatrix = parentTransform->m_finalTransform.m_translationMatrix * ownTransform.m_translationMatrix;
         }
         else
         {
-            // if(transform.m_transformChanged)
+            if(transform->m_transformChanged)
             {
-                // finalTransform.m_translationMatrix = ownTransform.m_translationMatrix;
+                finalTransform.m_translationMatrix = ownTransform.m_translationMatrix;
             }
         }
         
@@ -144,15 +146,15 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
             rotationChanged = true;
         }
         
-        if(parentTransform && transform.m_followParentTRS.y && parentTransform->m_transformChanged)
+        if(parentTransform && transform->m_followParentTRS.y && parentTransform->m_transformChanged)
         {
-            // finalTransform.m_rotationMatrix = parentTransform->m_finalTransform.m_rotationMatrix * ownTransform.m_rotationMatrix;
+            finalTransform.m_rotationMatrix = parentTransform->m_finalTransform.m_rotationMatrix * ownTransform.m_rotationMatrix;
         }
         else
         {
-            // if(transform.m_transformChanged)
+            if(transform->m_transformChanged)
             {
-                // finalTransform.m_rotationMatrix = ownTransform.m_rotationMatrix;
+                finalTransform.m_rotationMatrix = ownTransform.m_rotationMatrix;
             }
         }
         
@@ -169,15 +171,15 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
             scaleChanged = true;
         }
         
-        if(parentTransform && transform.m_followParentTRS.z && parentTransform->m_transformChanged)
+        if(parentTransform && transform->m_followParentTRS.z && parentTransform->m_transformChanged)
         {
-            // finalTransform.m_scaleMatrix = parentTransform->m_finalTransform.m_scaleMatrix * ownTransform.m_scaleMatrix;
+            finalTransform.m_scaleMatrix = parentTransform->m_finalTransform.m_scaleMatrix * ownTransform.m_scaleMatrix;
         }
         else
         {
-            // if(transform.m_transformChanged)
+            if(transform->m_transformChanged)
             {
-                // finalTransform.m_scaleMatrix = ownTransform.m_scaleMatrix;
+                finalTransform.m_scaleMatrix = ownTransform.m_scaleMatrix;
             }
         }
         
@@ -186,11 +188,9 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
         bool modelMatrixChanged = translationChanged || rotationChanged || scaleChanged;
         
         // О ТАК ВЕРНО
-        transform.m_transformChanged = false || (parentTransform && parentTransform->m_transformChanged);
+        transform->m_transformChanged = modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged);
         
-        continue;
-        
-        if(transform.m_transformChanged)
+        if(transform->m_transformChanged)
         {
             ownTransform.m_modelMatrix =
                     ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
@@ -205,22 +205,30 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                 finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
             }
             
-            /*Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
-            if(rigidbody3D)
+            if(registry.valid(entity))
             {
-                btTransform initialTransform;
-                initialTransform.setIdentity();
-                initialTransform.setFromOpenGLMatrix((float*) &finalTransform.m_modelMatrix[0]);
-                rigidbody3D->m_body->setWorldTransform(initialTransform);
-                
-                // rigidbody3D->m_body->getCollisionShape()->setLocalScaling({ scale.x, scale.y, scale.z });
+                Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+                if(rigidbody3D)
+                {
+                    btTransform initialTransform;
+                    initialTransform.setIdentity();
+                    initialTransform.setFromOpenGLMatrix((float*) &finalTransform.m_modelMatrix[0]);
+                    rigidbody3D->m_body->setWorldTransform(initialTransform);
+                    
+                    // rigidbody3D->m_body->getCollisionShape()->setLocalScaling({ scale.x, scale.y, scale.z });
+                }
             }
-            */
-            // registry.patch<Transform>(entity);
+            
+            registry.patch<Ref<Transform>>(entity);
         }
-        /*else
+        else
         {
-            Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+            Rigidbody3D* rigidbody3D = nullptr;
+            
+            if(registry.valid(entity))
+            {
+                rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+            }
             
             if(rigidbody3D)
             {
@@ -237,10 +245,10 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                 {
                     glmRigidbody3DOwnModelMatrix /= parentTransform->m_finalTransform.m_translationMatrix * parentTransform->m_finalTransform.m_rotationMatrix;
                 }
-                *//*else
+                else
                 {
                     glmRigidbody3DOwnModelMatrix /= ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix;
-                }*//*
+                }
                 
                 glm::vec3 scale;
                 glm::quat rotation;
@@ -305,10 +313,10 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                     rotationChanged = true;
                 }
                 
-                transform.m_transformChanged =
-                        transform.m_transformChanged || translationChanged || rotationChanged;
+                transform->m_transformChanged =
+                        transform->m_transformChanged || translationChanged || rotationChanged;
                 
-                if(transform.m_transformChanged)
+                if(transform->m_transformChanged)
                 {
                     ownTransform.m_modelMatrix =
                             ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
@@ -323,15 +331,14 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                         finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
                     }
                     
-                    // registry.patch<Transform>(entity);
+                    registry.patch<Ref<Transform>>(entity);
                 }
             }
-        }*/
-    }
+        }
+    });
 }
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
     // updateTransformations(dt, fixedDt);
 }
-

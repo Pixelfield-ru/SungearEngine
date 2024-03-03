@@ -124,7 +124,7 @@ entt::entity SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::s
     entt::entity meshEntity = registry.create();
     
     EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
-    Transform& meshTransform = registry.emplace<Transform>(meshEntity);
+    Ref<Transform>& meshTransform = registry.emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
     Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
     // maybe can load the ram
     // meshEntityMesh.m_base.m_meshData->setData(shared_from_this());

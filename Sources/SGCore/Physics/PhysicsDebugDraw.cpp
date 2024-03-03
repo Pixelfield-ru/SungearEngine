@@ -185,9 +185,9 @@ void SGCore::PhysicsDebugDraw::drawAll(const Ref<Scene>& scene)
     
     subPassShader->bind();
     
-    auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Transform>();
+    auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Ref<Transform>>();
     
-    camerasView.each([this, &subPassShader, &vCnt, &iCnt](Camera3D& camera3D, RenderingBase& renderingBase, Transform& transform) {
+    camerasView.each([this, &subPassShader, &vCnt, &iCnt](Camera3D& camera3D, RenderingBase& renderingBase, Ref<SGCore::Transform>& transform) {
         // todo: make get receiver (postprocess or default) and render in them
         
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);

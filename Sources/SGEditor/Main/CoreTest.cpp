@@ -103,8 +103,8 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     glm::vec3 finalImpulse = impulse;
     sphereRigidbody3D.m_body->applyCentralImpulse({ finalImpulse.x, finalImpulse.y, finalImpulse.z });
     
-    SGCore::Transform& sphereTransform = testScene->getECSRegistry().get<SGCore::Transform>(sphereEntities[2]);
-    sphereTransform.m_ownTransform.m_position = spherePos;
+    SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(sphereEntities[2]);
+    sphereTransform->m_ownTransform.m_position = spherePos;
     
     testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
     
@@ -315,7 +315,7 @@ void init()
     );
     
     auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(floorEntities[2]);
-    auto transform = testScene->getECSRegistry().try_get<SGCore::Transform>(floorEntities[0]);
+    auto transform = testScene->getECSRegistry().try_get<SGCore::Ref<SGCore::Transform>>(floorEntities[0]);
     if(mesh)
     {
         mesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
@@ -327,7 +327,7 @@ void init()
     }
     if(transform)
     {
-        transform->m_ownTransform.m_scale = { 1000.0, 1000.0, 1000.0 };
+        (*transform)->m_ownTransform.m_scale = { 1000.0, 1000.0, 1000.0 };
     }
     
     SGCore::Rigidbody3D& floorRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(floorEntities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
@@ -353,7 +353,7 @@ void init()
     
     {
         auto e = testScene->getECSRegistry().try_get<SGCore::EntityBaseInfo>(model0Entities[0]);
-        auto model0Transform = testScene->getECSRegistry().try_get<SGCore::Transform>(model0Entities[0]);
+        auto model0Transform = testScene->getECSRegistry().try_get<SGCore::Ref<SGCore::Transform>>(model0Entities[0]);
         if(transform)
         {
             /*transform->m_ownTransform.m_position = { -8, 20, -2 };
@@ -371,9 +371,9 @@ void init()
             transformComponent->m_scale = { 0.002, 0.002, 0.002 };*/
             
             // vss
-            model0Transform->m_ownTransform.m_position = { 3, 10.2, -13 };
-            model0Transform->m_ownTransform.m_rotation = { 0, 0, 45 };
-            model0Transform->m_ownTransform.m_scale = { 1.7, 1.7, 1.7 };
+            (*model0Transform)->m_ownTransform.m_position = { 3, 10.2, -13 };
+            (*model0Transform)->m_ownTransform.m_rotation = { 0, 0, 45 };
+            (*model0Transform)->m_ownTransform.m_scale = { 1.7, 1.7, 1.7 };
             
             // ak47_m
             /*transform->m_ownTransform.m_position = { 3, 9.2, -13 };
@@ -463,14 +463,14 @@ void init()
     );
     
     {
-        SGCore::Transform* model1Transform = testScene->getECSRegistry().try_get<SGCore::Transform>(model1Entities[0]);
+        SGCore::Ref<SGCore::Transform> model1Transform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
         model1Transform->m_ownTransform.m_position = { 0, 120.30, -20 };
         model1Transform->m_ownTransform.m_rotation = { 90, 90, 45 };
         model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
         
         for(size_t i = 1; i < model1Entities.size(); ++i)
         {
-            SGCore::Transform* model1Transform0 = testScene->getECSRegistry().try_get<SGCore::Transform>(model1Entities[i]);
+            SGCore::Ref<SGCore::Transform> model1Transform0 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[i]);
             model1Transform0->m_ownTransform.m_position = { 0, 0, 0 };
             model1Transform0->m_ownTransform.m_rotation = { 0, 0, 0 };
             model1Transform0->m_ownTransform.m_scale = { 1, 1, 1 };
@@ -566,10 +566,10 @@ void init()
         SGCore::ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
         skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
 
-        SGCore::Transform& skyboxTransform = testScene->getECSRegistry().get<SGCore::Transform>(skyboxEntities[2]);
+        auto& skyboxTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(skyboxEntities[2]);
         // auto transformComponent = skyboxEntities[2]->getComponent<SGCore::Transform>();
 
-        skyboxTransform.m_ownTransform.m_scale = { 1150, 1150, 1150 };
+        skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
     }
 
     // ==========================================================================================
@@ -619,9 +619,9 @@ void init()
     
     entt::entity textEntity = testScene->getECSRegistry().create();
     SGCore::Text& helloWorldUIText = testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
-    SGCore::Transform& helloWorldUITextTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(textEntity);
-    helloWorldUITextTransform.m_ownTransform.m_scale = { 1.0, 1.0, 1 };
-    helloWorldUITextTransform.m_ownTransform.m_position = { 0.0, -50.0, 0 };
+    auto& helloWorldUITextTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(textEntity, SGCore::MakeRef<SGCore::Transform>());
+    helloWorldUITextTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1 };
+    helloWorldUITextTransform->m_ownTransform.m_position = { 0.0, -50.0, 0 };
 
     std::string formattedVersion = spdlog::fmt_lib::format("{0}.{1}.{2}.{3}", SG_CORE_MAJOR_VERSION, SG_CORE_MINOR_VERSION, SG_CORE_PATCH_VERSION, SG_CORE_BUILD_VERSION);
     helloWorldUIText.m_text = std::u16string(u"Development build. v") +
@@ -643,7 +643,7 @@ void init()
 
     entt::entity uiCameraEntity = testScene->getECSRegistry().create();
     SGCore::UICamera& uiCameraEntityCamera = testScene->getECSRegistry().emplace<SGCore::UICamera>(uiCameraEntity);
-    SGCore::Transform& uiCameraEntityTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(uiCameraEntity);
+    auto& uiCameraEntityTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(uiCameraEntity, SGCore::MakeRef<SGCore::Transform>());
     SGCore::RenderingBase& uiCameraEntityRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(uiCameraEntity);
     
     uiCameraEntityRenderingBase.m_left = 0;
@@ -682,10 +682,10 @@ void init()
     SGCore::EntityBaseInfo& cameraBaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(testCameraEntity);
     cameraBaseInfo.setRawName("SGMainCamera");
 
-    SGCore::Transform& cameraTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(testCameraEntity);
-    cameraTransform.m_ownTransform.m_position.y = -3;
-    cameraTransform.m_ownTransform.m_position.z = 2;
-    cameraTransform.m_ownTransform.m_rotation.x = -30;
+    auto& cameraTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(testCameraEntity, SGCore::MakeRef<SGCore::Transform>());
+    cameraTransform->m_ownTransform.m_position.y = -3;
+    cameraTransform->m_ownTransform.m_position.z = 2;
+    cameraTransform->m_ownTransform.m_rotation.x = -30;
 
     SGCore::Camera3D& cameraEntityCamera3D = testScene->getECSRegistry().emplace<SGCore::Camera3D>(testCameraEntity);
     // SGCore::DefaultFrameReceiver& cameraEntityReceiver = testScene->getECSRegistry().emplace<SGCore::DefaultFrameReceiver>(testCameraEntity);
@@ -1001,10 +1001,10 @@ void fixedUpdate(const double& dt, const double& fixedDt)
 
     // transform0->m_position.y += sin(framesCnt / 30.0) / 2.5;
 
-    SGCore::Transform& tr0 = testScene->getECSRegistry().get<SGCore::Transform>(model1Entities[4]);
+    auto& tr0 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[4]);
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_3))
     {
-        tr0.m_ownTransform.m_position.y += 0.1f;
+        tr0->m_ownTransform.m_position.y += 0.1f;
     }
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_5))
@@ -1053,8 +1053,8 @@ void update(const double& dt, const double& fixedDt)
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_4))
     {
-        SGCore::Transform& cameraTransform = testScene->getECSRegistry().get<SGCore::Transform>(testCameraEntity);
-        createBallAndApplyImpulse(cameraTransform.m_ownTransform.m_position, cameraTransform.m_ownTransform.m_forward * 200000.0f / 10.0f);
+        auto& cameraTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(testCameraEntity);
+        createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F12))

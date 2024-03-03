@@ -153,7 +153,7 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
     }
 }
 
-void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, SGCore::Transform& textTransform) noexcept
+void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, const Ref<Transform>& textTransform) noexcept
 {
     Ref<FontSpecialization> lockedSpec = m_parentSpecialization.lock();
     
@@ -229,7 +229,7 @@ void SGCore::FontSpecializationRenderer::drawText(SGCore::Text& text, SGCore::Tr
             
             for(std::uint8_t i = 0; i < 16; ++i)
             {
-                m_charactersMatrices[matrixIdx + i] = *(glm::value_ptr(textTransform.m_finalTransform.m_modelMatrix) + i);
+                m_charactersMatrices[matrixIdx + i] = *(glm::value_ptr(textTransform->m_finalTransform.m_modelMatrix) + i);
             }
             
             // uvs =====================================================

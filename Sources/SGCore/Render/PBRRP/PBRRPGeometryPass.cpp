@@ -57,8 +57,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     }*/
 
     // scene->getECSRegistry();
-    auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Transform>();
-    auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Transform>(entt::exclude<DisableMeshGeometryPass>);
+    auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Ref<Transform>>();
+    auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Ref<Transform>>(entt::exclude<DisableMeshGeometryPass>);
     
     Ref<ISubPassShader> standardGeometryShader;
     if(m_shader)
@@ -71,7 +71,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         standardGeometryShader->bind();
     }
     
-    camerasView.each([&meshesView, &renderPipeline, this, &standardGeometryShader, &scene](Camera3D& camera3D, RenderingBase& cameraRenderingBase, Transform& cameraTransform) {
+    camerasView.each([&meshesView, &renderPipeline, this, &standardGeometryShader, &scene](Camera3D& camera3D, RenderingBase& cameraRenderingBase, Ref<Transform>& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
         if(standardGeometryShader)
@@ -81,7 +81,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         
         // todo: make get receiver (postprocess or default) and render in them
 
-        meshesView.each([&renderPipeline, this, &standardGeometryShader, &scene](const entt::entity& entity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Transform& meshTransform) {
+        meshesView.each([&renderPipeline, this, &standardGeometryShader, &scene](const entt::entity& entity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
             ShaderComponent* entityShader = scene->getECSRegistry().try_get<ShaderComponent>(entity);
             
             auto meshGeomShader = (entityShader && entityShader->m_shader) ? entityShader->m_shader->getSubPassShader("GeometryPass") : nullptr;
@@ -96,8 +96,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                 }
                 
                 {
-                    shaderToUse->useMatrix("objectTransform.modelMatrix", meshTransform.m_finalTransform.m_modelMatrix);
-                    shaderToUse->useVectorf("objectTransform.position", meshTransform.m_finalTransform.m_position);
+                    shaderToUse->useMatrix("objectTransform.modelMatrix", meshTransform->m_finalTransform.m_modelMatrix);
+                    shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
                 }
                 
                 size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.m_meshData->m_material);
