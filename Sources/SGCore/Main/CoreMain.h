@@ -26,8 +26,6 @@ namespace SGCore
 
         static inline Timer m_renderTimer { true, 1200};
         static inline Timer m_fixedTimer { true, 100.0 };
-        
-        static inline std::thread m_fixedTimerThread;
 
     public:
         CoreMain() = delete;
@@ -35,7 +33,7 @@ namespace SGCore
         static void start();
 
         static void fixedUpdate(const double& dt, const double& fixedDt);
-        static void update(const double& dt);
+        static void update(const double& dt, const double& fixedDt);
 
         static Window& getWindow() noexcept;
 

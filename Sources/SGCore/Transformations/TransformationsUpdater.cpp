@@ -3,6 +3,8 @@
 //
 
 #include <glm/gtc/type_ptr.hpp>
+#include <execution>
+
 #include "TransformationsUpdater.h"
 #include "TransformBase.h"
 #include "glm/gtx/rotate_vector.hpp"
@@ -15,7 +17,42 @@
 #include "glm/gtx/matrix_decompose.hpp"
 #include "glm/gtx/quaternion.hpp"
 
-void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt)
+SGCore::TransformationsUpdater::TransformationsUpdater()
+{
+    Ref<TimerCallback> callback = MakeRef<TimerCallback>();
+    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
+        updateTransformations(dt, fixedDt);
+    });
+    
+    m_updaterTimer.setTargetFrameRate(60);
+    m_updaterTimer.m_cyclic = true;
+    m_updaterTimer.addCallback(callback);
+    
+    m_updaterThread = std::thread([this]() {
+        while(m_isAlive)
+        {
+            if(m_active)
+            {
+                m_updaterTimer.startFrame();
+            }
+        }
+    });
+    
+    // m_updaterThread.detach();
+}
+
+SGCore::TransformationsUpdater::~TransformationsUpdater()
+{
+    m_isAlive = false;
+    m_updaterThread.join();
+}
+
+void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+{
+    m_scene = scene;
+}
+
+void SGCore::TransformationsUpdater::updateTransformations(const double& dt, const double& fixedDt) noexcept
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
@@ -23,25 +60,26 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
     entt::registry& registry = lockedScene->getECSRegistry();
     
     auto transformsView = lockedScene->getECSRegistry().view<Transform>();
-
-    transformsView.each([&registry](const entt::entity& entity, Transform& transform) {
-        EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
+    
+    for(const auto& [entity, transform] : transformsView.each())
+    {
+        EntityBaseInfo* entityBaseInfo = nullptr; /*registry.try_get<EntityBaseInfo>(entity);*/
         Transform* parentTransform = nullptr;
-
-        if(entityBaseInfo)
+        
+        /*if(entityBaseInfo)
         {
             parentTransform = registry.try_get<Transform>(entityBaseInfo->m_parent);
-        }
-
+        }*/
+        
         bool translationChanged = false;
         bool rotationChanged = false;
         bool scaleChanged = false;
-
+        
         TransformBase& ownTransform = transform.m_ownTransform;
         TransformBase& finalTransform = transform.m_finalTransform;
         
         // translation ==============================================
-
+        
         if(ownTransform.m_lastPosition != ownTransform.m_position)
         {
             ownTransform.m_translationMatrix = glm::translate(ownTransform.m_translationMatrix,
@@ -49,24 +87,24 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                                                               ownTransform.m_lastPosition
             );
             ownTransform.m_lastPosition = ownTransform.m_position;
-
+            
             translationChanged = true;
         }
-
+        
         if(parentTransform && transform.m_followParentTRS.x && parentTransform->m_transformChanged)
         {
-            finalTransform.m_translationMatrix = parentTransform->m_finalTransform.m_translationMatrix * ownTransform.m_translationMatrix;
+            // finalTransform.m_translationMatrix = parentTransform->m_finalTransform.m_translationMatrix * ownTransform.m_translationMatrix;
         }
         else
         {
-            if(transform.m_transformChanged)
+            // if(transform.m_transformChanged)
             {
-                finalTransform.m_translationMatrix = ownTransform.m_translationMatrix;
+                // finalTransform.m_translationMatrix = ownTransform.m_translationMatrix;
             }
         }
-
+        
         // rotation ================================================
-
+        
         if(ownTransform.m_lastRotation != ownTransform.m_rotation)
         {
             auto q = glm::identity<glm::quat>();
@@ -76,7 +114,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), { 1, 0, 0 });
             
             ownTransform.m_rotationMatrix = glm::toMat4(q);
-
+            
             // rotating directions vectors
             ownTransform.m_left = glm::rotate(MathUtils::left3,
                                               glm::radians(-ownTransform.m_rotation.y), glm::vec3(0, 1, 0));
@@ -84,42 +122,42 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                                               glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
             
             ownTransform.m_left *= -1.0f;
-
+            
             ownTransform.m_forward = glm::rotate(MathUtils::forward3,
                                                  glm::radians(-ownTransform.m_rotation.x), glm::vec3(1, 0, 0));
             ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
                                                  glm::radians(-ownTransform.m_rotation.y), glm::vec3(0, 1, 0));
             
             ownTransform.m_forward *= -1.0f;
-
+            
             ownTransform.m_up = glm::rotate(MathUtils::up3,
                                             glm::radians(-ownTransform.m_rotation.x), glm::vec3(1, 0, 0));
             ownTransform.m_up = glm::rotate(ownTransform.m_up,
                                             glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
             
             ownTransform.m_up *= -1.0f;
-
+            
             //transformComponent->m_rotationMatrix = glm::toMat4(rotQuat);
-
+            
             ownTransform.m_lastRotation = ownTransform.m_rotation;
-
+            
             rotationChanged = true;
         }
-
+        
         if(parentTransform && transform.m_followParentTRS.y && parentTransform->m_transformChanged)
         {
-            finalTransform.m_rotationMatrix = parentTransform->m_finalTransform.m_rotationMatrix * ownTransform.m_rotationMatrix;
+            // finalTransform.m_rotationMatrix = parentTransform->m_finalTransform.m_rotationMatrix * ownTransform.m_rotationMatrix;
         }
         else
         {
-            if(transform.m_transformChanged)
+            // if(transform.m_transformChanged)
             {
-                finalTransform.m_rotationMatrix = ownTransform.m_rotationMatrix;
+                // finalTransform.m_rotationMatrix = ownTransform.m_rotationMatrix;
             }
         }
-
+        
         // scale ========================================================
-
+        
         if(ownTransform.m_lastScale != ownTransform.m_scale)
         {
             ownTransform.m_scaleMatrix = glm::scale(ownTransform.m_scaleMatrix,
@@ -127,28 +165,30 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                                                     ownTransform.m_lastScale
             );
             ownTransform.m_lastScale = ownTransform.m_scale;
-
+            
             scaleChanged = true;
         }
-
+        
         if(parentTransform && transform.m_followParentTRS.z && parentTransform->m_transformChanged)
         {
-            finalTransform.m_scaleMatrix = parentTransform->m_finalTransform.m_scaleMatrix * ownTransform.m_scaleMatrix;
+            // finalTransform.m_scaleMatrix = parentTransform->m_finalTransform.m_scaleMatrix * ownTransform.m_scaleMatrix;
         }
         else
         {
-            if(transform.m_transformChanged)
+            // if(transform.m_transformChanged)
             {
-                finalTransform.m_scaleMatrix = ownTransform.m_scaleMatrix;
+                // finalTransform.m_scaleMatrix = ownTransform.m_scaleMatrix;
             }
         }
-
+        
         // model matrix =================================================
         
         bool modelMatrixChanged = translationChanged || rotationChanged || scaleChanged;
         
         // О ТАК ВЕРНО
-        transform.m_transformChanged = modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged);
+        transform.m_transformChanged = false || (parentTransform && parentTransform->m_transformChanged);
+        
+        continue;
         
         if(transform.m_transformChanged)
         {
@@ -165,7 +205,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
             }
             
-            Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+            /*Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
             if(rigidbody3D)
             {
                 btTransform initialTransform;
@@ -175,10 +215,10 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 
                 // rigidbody3D->m_body->getCollisionShape()->setLocalScaling({ scale.x, scale.y, scale.z });
             }
-            
-            registry.patch<Transform>(entity);
+            */
+            // registry.patch<Transform>(entity);
         }
-        else
+        /*else
         {
             Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
             
@@ -197,10 +237,10 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 {
                     glmRigidbody3DOwnModelMatrix /= parentTransform->m_finalTransform.m_translationMatrix * parentTransform->m_finalTransform.m_rotationMatrix;
                 }
-                /*else
+                *//*else
                 {
                     glmRigidbody3DOwnModelMatrix /= ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix;
-                }*/
+                }*//*
                 
                 glm::vec3 scale;
                 glm::quat rotation;
@@ -283,14 +323,15 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                         finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
                     }
                     
-                    registry.patch<Transform>(entity);
+                    // registry.patch<Transform>(entity);
                 }
             }
-        }
-    });
+        }*/
+    }
 }
 
-void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    m_scene = scene;
+    // updateTransformations(dt, fixedDt);
 }
+

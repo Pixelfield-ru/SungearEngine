@@ -60,17 +60,16 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
     }
     
     Ref<TimerCallback> callback = MakeRef<TimerCallback>();
-    callback->setUpdateFunction([this](const double& dt) {
+    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
         updateLights();
     });
     
     m_lightsUpdateTimer.setTargetFrameRate(30);
     m_lightsUpdateTimer.addCallback(callback);
-    m_lightsUpdateTimer.m_useFixedUpdateCatchUp = false;
     m_lightsUpdateTimer.m_cyclic = true;
 }
 
-void SGCore::DirectionalLightsUpdater::update(const double& dt)
+void SGCore::DirectionalLightsUpdater::update(const double& dt, const double& fixedDt)
 {
     m_lightsUpdateTimer.startFrame();
 }

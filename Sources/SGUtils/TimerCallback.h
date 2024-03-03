@@ -15,17 +15,14 @@ namespace SGCore
     {
     public:
         void setStartFunction(std::function<void()>&& function) noexcept;
-        void setFixedUpdateFunction(std::function<void(const double& dt, const double& fixedDt)>&& function) noexcept;
-        void setUpdateFunction(std::function<void(const double& dt)>&& function) noexcept;
+        void setUpdateFunction(std::function<void(const double& dt, const double& fixedDt)>&& function) noexcept;
 
         void callStartFunction();
-        void callFixedUpdateFunction(const double& dt, const double& fixedDt);
-        void callUpdateFunction(const double& dt);
+        void callUpdateFunction(const double& dt, const double& fixedDt);
 
     private:
         std::function<void()> m_startFunction;
-        std::function<void(const double& dt, const double& fixedDt)> m_fixedUpdateFunction;
-        std::function<void(const double& dt)> m_updateFunction;
+        std::function<void(const double& dt, const double& fixedDt)> m_updateFunction;
     };
 }
 

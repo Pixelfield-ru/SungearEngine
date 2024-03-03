@@ -18,7 +18,7 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
-    float finalDt = fixedDt * 300.0f;
+    float finalDt = dt * 300.0f;
     // finalDt = 1.0f;
     
     auto controllablesView = lockedScene->getECSRegistry().view<Transform, Controllable3D>();
@@ -30,10 +30,10 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
         {
             ownTransform.m_rotation.x +=
                     (float) InputManager::getMainInputListener()->getCursorPositionDeltaY() *
-                    controllable3D.m_rotationSensitive * finalDt;
+                    controllable3D.m_rotationSensitive;
             ownTransform.m_rotation.y +=
                     (float) InputManager::getMainInputListener()->getCursorPositionDeltaX() *
-                    controllable3D.m_rotationSensitive * finalDt;
+                    controllable3D.m_rotationSensitive;
         }
 
         // restore camera`s transformation

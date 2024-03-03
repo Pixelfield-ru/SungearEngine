@@ -33,7 +33,7 @@ namespace SGCore
 
         static Ref<Scene> getCurrentScene() noexcept;
         
-        void update(const double& dt);
+        void update(const double& dt, const double& fixedDt);
         void fixedUpdate(const double& dt, const double& fixedDt);
 
         template<typename SystemT>

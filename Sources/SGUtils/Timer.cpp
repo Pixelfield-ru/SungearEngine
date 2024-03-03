@@ -35,7 +35,7 @@ void SGCore::Timer::startFrame()
     {
         for(const auto& callback : m_callbacks)
         {
-            callback->callUpdateFunction(m_elapsedTimeForUpdate);
+            callback->callUpdateFunction(m_elapsedTimeForUpdate, m_targetFrameTime);
         }
         
         m_elapsedTimeForUpdate = 0.0;
@@ -49,46 +49,11 @@ void SGCore::Timer::startFrame()
         m_FPSDeltaTimeAccum = 0.0;
     }
     
-    m_elapsedTime += m_rawDeltaTime;
-    
-    // std::cout << "elapsed time: " << m_elapsedTime << std::endl;
-    if(m_elapsedTime >= m_targetFrameTime)
-    {
-        if(m_useFixedUpdateCatchUp)
-        {
-            while(m_elapsedTime >= m_targetFrameTime)
-            {
-                // if(!m_active) break;
-                
-                m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
-                m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
-                m_fixedUpdateCallDeltaTime = m_currentFixedUpdateCallTime - m_lastFixedUpdateCallTime;
-                
-                for(const auto& callback : m_callbacks)
-                {
-                    callback->callFixedUpdateFunction(m_fixedUpdateCallDeltaTime, m_targetFrameTime);
-                }
-                
-                m_elapsedTime -= m_targetFrameTime;
-            }
-
-            // m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
-        }
-        
-        // reset();
-        // m_elapsedTime = 0;
-        m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
-        m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
-        
-        m_active = m_cyclic;
-    }
+    m_active = m_cyclic;
 }
 
 void SGCore::Timer::resetTimer() noexcept
 {
-    m_elapsedTime = 0;
-    m_currentFixedUpdateCallTime = (double) SGUtils::Utils::getTimeMilliseconds();
-    m_lastFixedUpdateCallTime = m_currentFixedUpdateCallTime;
     m_FPSDeltaTimeAccum = 0;
     m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
 }

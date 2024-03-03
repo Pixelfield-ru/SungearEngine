@@ -16,7 +16,7 @@ namespace SGCore
     {
         AtmosphereUpdater() noexcept;
         
-        void update(const double& dt) final;
+        void update(const double& dt, const double& fixedDt) final;
         
         Timer m_atmosphereUpdateTimer;
         

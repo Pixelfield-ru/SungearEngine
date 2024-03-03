@@ -22,7 +22,6 @@ namespace SGCore
     public:
         bool m_active = true;
         bool m_cyclic = false;
-        bool m_useFixedUpdateCatchUp = true;
         
         // ------------------------------------
 
@@ -64,14 +63,10 @@ namespace SGCore
         double m_targetFrameRate = 120.0;
         
         double m_targetFrameTime = 1 / m_targetFrameRate;
-        
-        double m_currentFixedUpdateCallTime = 0.0;
-        double m_lastFixedUpdateCallTime = 0.0;
+
         double m_fixedUpdateCallDeltaTime = 0.0;
         
         double m_currentTime = 0;
-
-        double m_elapsedTime = 0;
 
         double m_rawDeltaTime = 0;
 

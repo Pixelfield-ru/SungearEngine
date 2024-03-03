@@ -98,10 +98,10 @@ void sgCallFixedUpdateCallback(const double& dt, const double& fixedDt)
     }
 }
 
-void sgCallUpdateCallback(const double& dt)
+void sgCallUpdateCallback(const double& dt, const double& fixedDt)
 {
     if(sgCallbacks.c_update)
     {
-        sgCallbacks.c_update(dt);
+        sgCallbacks.c_update(dt, fixedDt);
     }
 }

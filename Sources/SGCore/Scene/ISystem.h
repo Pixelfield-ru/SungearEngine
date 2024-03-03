@@ -26,7 +26,7 @@ namespace SGCore
         bool m_active = true;
 
         virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
-        virtual void update(const double& dt) { }
+        virtual void update(const double& dt, const double& fixedDt) { }
         virtual void onAddToScene() { }
         
         virtual void setScene(const Ref<Scene>& scene) noexcept;

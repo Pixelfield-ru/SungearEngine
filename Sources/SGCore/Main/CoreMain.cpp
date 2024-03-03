@@ -50,22 +50,21 @@ void SGCore::CoreMain::start()
     Ref<TimerCallback> globalTimerCallback = MakeRef<TimerCallback>();
 
     // update
-    globalTimerCallback->setUpdateFunction([](const double& dt)
+    globalTimerCallback->setUpdateFunction([](const double& dt, const double& fixedDt)
                                                 {
-                                                    update(dt);
+                                                    update(dt, fixedDt);
                                                 });
     
     Ref<TimerCallback> fpsTimerCallback = MakeRef<TimerCallback>();
     
     m_renderTimer.addCallback(globalTimerCallback);
     m_renderTimer.setTargetFrameRate(1200.0);
-    m_renderTimer.m_useFixedUpdateCatchUp = false;
 
     // -----------------
     
     std::shared_ptr<TimerCallback> fixedTimerCallback = std::make_shared<TimerCallback>();
 
-    fixedTimerCallback->setFixedUpdateFunction([](const double& dt, const double& fixedDt)
+    fixedTimerCallback->setUpdateFunction([](const double& dt, const double& fixedDt)
                                                 {
                                                     fixedUpdate(dt, fixedDt);
                                                 });
@@ -80,21 +79,13 @@ void SGCore::CoreMain::start()
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();
     
-    m_fixedTimerThread = std::thread([]() {
-        while(!m_window.shouldClose())
-        {
-            m_fixedTimer.startFrame();
-        }
-    });
-    
     // m_fixedTimerThread.detach();
     
     while(!m_window.shouldClose())
     {
+        m_fixedTimer.startFrame();
         m_renderTimer.startFrame();
     }
-    
-    m_fixedTimerThread.join();
 }
 
 void SGCore::CoreMain::fixedUpdate(const double& dt, const double& fixedDt)
@@ -104,13 +95,13 @@ void SGCore::CoreMain::fixedUpdate(const double& dt, const double& fixedDt)
     sgCallFixedUpdateCallback(dt, fixedDt);
 }
 
-void SGCore::CoreMain::update(const double& dt)
+void SGCore::CoreMain::update(const double& dt, const double& fixedDt)
 {
     glm::ivec2 windowSize;
     m_window.getSize(windowSize.x, windowSize.y);
     m_renderer->prepareFrame(windowSize);
 
-    sgCallUpdateCallback(dt);
+    sgCallUpdateCallback(dt, fixedDt);
 
     m_window.swapBuffers();
 

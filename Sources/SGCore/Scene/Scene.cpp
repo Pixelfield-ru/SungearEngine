@@ -94,7 +94,7 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::getCurrentScene() noexcept
 
 // ==================================================================
 
-void SGCore::Scene::update(const double& dt)
+void SGCore::Scene::update(const double& dt, const double& fixedDt)
 {
     double t0 = glfwGetTime();
     
@@ -103,7 +103,7 @@ void SGCore::Scene::update(const double& dt)
         if(!system->m_active) continue;
 
         double before = glfwGetTime();
-        system->update(dt);
+        system->update(dt, fixedDt);
         double after = glfwGetTime();
         
         system->m_update_executionTime = (after - before) * 1000.0;

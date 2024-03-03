@@ -1020,7 +1020,7 @@ void fixedUpdate(const double& dt, const double& fixedDt)
 auto testWindow = std::make_shared<SGCore::ImGuiWrap::Window>();
 auto testCollapsingHeader = std::make_shared<SGCore::ImGuiWrap::CollapsingHeader>();
 
-void update(const double& dt)
+void update(const double& dt, const double& fixedDt)
 {
     SGCore::CoreMain::getWindow().setTitle("Sungear Engine. FPS: " + std::to_string(SGCore::CoreMain::getFPS()));
     /*auto physicsWorld = testScene->getSystem<SGCore::PhysicsWorld>();
@@ -1120,7 +1120,7 @@ void update(const double& dt)
 
     //ImGui::ShowDemoWindow();
 
-    SGCore::Scene::getCurrentScene()->update(dt);
+    SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
 
     auto& viewsInjector = *SGUtils::Singleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
     viewsInjector.renderViews();

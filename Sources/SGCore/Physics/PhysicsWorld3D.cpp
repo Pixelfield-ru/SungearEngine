@@ -25,6 +25,33 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_dynamicsWorld->setDebugDrawer(m_debugDraw.get());
     
     m_dynamicsWorld->setGravity({ 0, -120.0, 0 });
+    
+    Ref<TimerCallback> callback = MakeRef<TimerCallback>();
+    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
+        worldUpdate(dt, fixedDt);
+    });
+    
+    m_worldUpdateTimer.setTargetFrameRate(60);
+    m_worldUpdateTimer.m_cyclic = true;
+    m_worldUpdateTimer.addCallback(callback);
+    
+    m_physicsWorldThread = std::thread([this]() {
+        while(m_isAlive)
+        {
+            if(m_active)
+            {
+                m_worldUpdateTimer.startFrame();
+            }
+        }
+    });
+    
+    // m_physicsWorldThread.detach();
+}
+
+SGCore::PhysicsWorld3D::~PhysicsWorld3D()
+{
+    m_isAlive = false;
+    m_physicsWorldThread.join();
 }
 
 void SGCore::PhysicsWorld3D::addBody(const SGCore::Ref<btRigidBody>& rigidBody) noexcept
@@ -37,17 +64,7 @@ void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexc
     m_bodiesToRemove.insert(rigidBody);
 }
 
-void SGCore::PhysicsWorld3D::update(const double& dt) noexcept
-{
-    auto lockedScene = m_scene.lock();
-    if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
-    {
-        m_dynamicsWorld->debugDrawWorld();
-        m_debugDraw->drawAll(lockedScene);
-    }
-}
-
-void SGCore::PhysicsWorld3D::fixedUpdate(const double& dt, const double& fixedDt) noexcept
+void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt) noexcept
 {
     auto bodiesToRemoveIt = m_bodiesToRemove.begin();
     while(bodiesToRemoveIt != m_bodiesToRemove.end())
@@ -71,7 +88,20 @@ void SGCore::PhysicsWorld3D::fixedUpdate(const double& dt, const double& fixedDt
         bodiesToAddIt = m_bodiesToAdd.erase(bodiesToAddIt);
     }
     
-    m_dynamicsWorld->stepSimulation(fixedDt, 12, fixedDt);
+    m_dynamicsWorld->stepSimulation(dt, 12, dt);
+}
+
+void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
+{
+    auto lockedScene = m_scene.lock();
+    if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
+    {
+        if(m_bodiesToAdd.empty() && m_bodiesToRemove.empty())
+        {
+            m_dynamicsWorld->debugDrawWorld();
+        }
+        m_debugDraw->drawAll(lockedScene);
+    }
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene()

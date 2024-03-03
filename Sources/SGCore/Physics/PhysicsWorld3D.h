@@ -2,9 +2,10 @@
 // Created by ilya on 18.02.24.
 //
 
-#ifndef SUNGEARENGINE_PHYSICSWORLD_H
+#ifndef SUNGEARENGINE_PHYSICSWORLD3D_H
 #define SUNGEARENGINE_PHYSICSWORLD3D_H
 
+#include <thread>
 #include <BulletCollision/CollisionDispatch/btCollisionConfiguration.h>
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <BulletCollision/BroadphaseCollision/btDispatcher.h>
@@ -18,19 +19,21 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "PhysicsDebugDraw.h"
+#include "SGUtils/Timer.h"
 
 namespace SGCore
 {
     struct PhysicsWorld3D : public ISystem
     {
+        Timer m_worldUpdateTimer;
+        
         PhysicsWorld3D();
-        // ~PhysicsWorld();
+        ~PhysicsWorld3D();
         
         void addBody(const Ref<btRigidBody>& rigidBody) noexcept;
         void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
         
-        void update(const double& dt) noexcept override;
-        void fixedUpdate(const double& dt, const double& fixedDt) noexcept override;
+        void update(const double& dt, const double& fixedDt) noexcept override;
         void onAddToScene() override;
         
         auto& getCollisionConfig() noexcept
@@ -64,6 +67,10 @@ namespace SGCore
         }
     
     private:
+        void worldUpdate(const double& dt, const double& fixedDt) noexcept;
+        
+        bool m_isAlive = true;
+        
         std::unordered_set<Ref<btRigidBody>> m_bodiesToAdd;
         std::unordered_set<Ref<btRigidBody>> m_bodiesToRemove;
         
@@ -73,7 +80,9 @@ namespace SGCore
         Scope<btSequentialImpulseConstraintSolver> m_sequentialImpulseConstraintSolver;
         Scope<btDynamicsWorld> m_dynamicsWorld;
         Scope<PhysicsDebugDraw> m_debugDraw;
+        
+        std::thread m_physicsWorldThread;
     };
 }
 
-#endif // SUNGEARENGINE_PHYSICSWORLD_H
+#endif // SUNGEARENGINE_PHYSICSWORLD3D_H

@@ -59,7 +59,7 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     }
     
     Ref<TimerCallback> callback = MakeRef<TimerCallback>();
-    callback->setUpdateFunction([this](const double& dt) {
+    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
         updateAtmosphere();
     });
     
@@ -68,7 +68,7 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     m_atmosphereUpdateTimer.m_cyclic = true;
 }
 
-void SGCore::AtmosphereUpdater::update(const double& dt)
+void SGCore::AtmosphereUpdater::update(const double& dt, const double& fixedDt)
 {
     m_atmosphereUpdateTimer.startFrame();
 }

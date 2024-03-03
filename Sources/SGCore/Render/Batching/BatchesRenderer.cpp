@@ -14,7 +14,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "Batch.h"
 
-void SGCore::BatchesRenderer::update(const double& dt) noexcept
+void SGCore::BatchesRenderer::update(const double& dt, const double& fixedDt) noexcept
 {
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;

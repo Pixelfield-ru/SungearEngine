@@ -9,12 +9,7 @@ void SGCore::TimerCallback::setStartFunction(std::function<void()>&& function) n
     m_startFunction = function;
 }
 
-void SGCore::TimerCallback::setFixedUpdateFunction(std::function<void(const double& dt, const double& fixedDt)>&& function) noexcept
-{
-    m_fixedUpdateFunction = function;
-}
-
-void SGCore::TimerCallback::setUpdateFunction(std::function<void(const double& dt)>&& function) noexcept
+void SGCore::TimerCallback::setUpdateFunction(std::function<void(const double& dt, const double& fixedDt)>&& function) noexcept
 {
     m_updateFunction = function;
 }
@@ -29,18 +24,10 @@ void SGCore::TimerCallback::callStartFunction()
     }
 }
 
-void SGCore::TimerCallback::callFixedUpdateFunction(const double& dt, const double& fixedDt)
-{
-    if(m_fixedUpdateFunction)
-    {
-        m_fixedUpdateFunction(dt, fixedDt);
-    }
-}
-
-void SGCore::TimerCallback::callUpdateFunction(const double& dt)
+void SGCore::TimerCallback::callUpdateFunction(const double& dt, const double& fixedDt)
 {
     if(m_updateFunction)
     {
-        m_updateFunction(dt);
+        m_updateFunction(dt, fixedDt);
     }
 }
