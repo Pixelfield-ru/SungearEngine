@@ -11,6 +11,7 @@
 #include "SGCore/Scene/ISystem.h"
 #include "SGUtils/Utils.h"
 #include "SGUtils/Timer.h"
+#include "SGCore/Threading/SafeBuffer.h"
 
 namespace SGCore
 {
@@ -32,6 +33,9 @@ namespace SGCore
     private:
         Ref<Scene> m_sharedScene;
         bool m_isAlive = true;
+
+        SafeBuffer<glm::mat4> m_transformsMatricesBuffer;
+        SafeBuffer<glm::mat4> m_physicsMatricesBuffer;
         
         void updateTransformations(const double& dt, const double& fixedDt) noexcept;
         

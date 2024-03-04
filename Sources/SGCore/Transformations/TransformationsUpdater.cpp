@@ -57,7 +57,7 @@ void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& 
 
 void SGCore::TransformationsUpdater::updateTransformations(const double& dt, const double& fixedDt) noexcept
 {
-    if(!m_sharedScene) return;
+    if(!m_sharedScene || m_transformsMatricesBuffer.isLocked() || m_physicsMatricesBuffer.isLocked()) return;
     
     entt::registry& registry = m_sharedScene->getECSRegistry();
     
@@ -219,7 +219,7 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                 }
             }
             
-            registry.patch<Ref<Transform>>(entity);
+            // registry.patch<Ref<Transform>>(entity);
         }
         else
         {
@@ -331,11 +331,14 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                         finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
                     }
                     
-                    registry.patch<Ref<Transform>>(entity);
+                    // registry.patch<Ref<Transform>>(entity);
                 }
             }
         }
     });
+
+    m_transformsMatricesBuffer.lock();
+    m_physicsMatricesBuffer.lock();
 }
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
