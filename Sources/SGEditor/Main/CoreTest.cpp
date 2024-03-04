@@ -127,6 +127,8 @@ void init()
     
     entt::entity batchEntity = testScene->getECSRegistry().create();
     globalBatch = &testScene->getECSRegistry().emplace<SGCore::Batch>(batchEntity, testScene);
+
+    std::cout << "dfdfdf" << std::endl;
     
     // ===================================================
     

@@ -17,9 +17,13 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/Mesh.h"
 
-SGCore::Batch::Batch(const Ref<Scene>& parentScene)
+SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCount, const size_t& maxInstancesCount)
 {
     m_parentScene = parentScene;
+
+    m_maxVerticesCount = maxVerticesCount;
+    m_maxIndicesCount = m_maxVerticesCount * 3;
+    m_maxInstancesCount = maxInstancesCount;
     
     parentScene->getECSRegistry().on_destroy<Mesh>().connect<&Batch::onMeshDestroyed>(*this);
     parentScene->getECSRegistry().on_destroy<Ref<Transform>>().connect<&Batch::onTransformDestroyed>(*this);

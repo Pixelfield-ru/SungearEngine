@@ -25,7 +25,8 @@ namespace SGCore
     
     struct Batch
     {
-        Batch(const Ref<Scene>& parentScene);
+        Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCount, const size_t& maxInstancesCount);
+        Batch(const Ref<Scene>& parentScene) : Batch(parentScene, m_maxVerticesCount, m_maxInstancesCount) { }
         
         void renderAll() noexcept;
         
@@ -35,9 +36,9 @@ namespace SGCore
     private:
         Weak<Scene> m_parentScene;
         
-        size_t m_maxVerticesCount = 1024 * 1024 * 36;
+        size_t m_maxVerticesCount = 1024 * 1024 * 5;
         size_t m_maxIndicesCount = m_maxVerticesCount * 3;
-        size_t m_maxInstancesCount = 1'000'000;
+        size_t m_maxInstancesCount = 50'000;
         
         size_t m_currentVerticesCountToRender = 0;
         size_t m_currentIndicesCountToRender = 0;
