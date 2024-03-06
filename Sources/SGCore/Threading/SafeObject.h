@@ -2,16 +2,16 @@
 // Created by Ilya on 04.03.2024.
 //
 
-#ifndef SUNGEARENGINE_SAFEBUFFER_H
-#define SUNGEARENGINE_SAFEBUFFER_H
+#ifndef SUNGEARENGINE_SAFEOBJECT_H
+#define SUNGEARENGINE_SAFEOBJECT_H
 
 #include <atomic>
 #include <vector>
 
 namespace SGCore
 {
-    template<typename T>
-    struct SafeBuffer
+    template<typename ObjT>
+    struct SafeObject
     {
         inline void lock() noexcept
         {
@@ -22,27 +22,22 @@ namespace SGCore
         {
             m_isLocked.store(false);
         }
-
-        inline void clearBuffer() noexcept
+        
+        inline ObjT& getObject() noexcept
         {
-            m_buffer.clear();
+            return m_obj;
         }
 
-        inline std::vector<T>& getBuffer() noexcept
-        {
-            return m_buffer;
-        }
-
-        inline bool isLocked() const noexcept
+        [[nodiscard]] inline bool isLocked() const noexcept
         {
             return m_isLocked.load();
         }
 
     private:
         std::atomic<bool> m_isLocked;
-
-        std::vector<T> m_buffer;
+        
+        ObjT m_obj;
     };
 }
 
-#endif // SUNGEARENGINE_SAFEBUFFER_H
+#endif // SUNGEARENGINE_SAFEOBJECT_H

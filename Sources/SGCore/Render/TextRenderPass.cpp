@@ -36,7 +36,7 @@ void SGCore::TextRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
         }
     });
     
-    uiCamerasView.each([&fontsView](UICamera& uiCamera, RenderingBase& renderingBase, Ref<SGCore::Transform>& transform) {
+    uiCamerasView.each([&fontsView](UICamera& uiCamera, RenderingBase& renderingBase, Ref<Transform>& transform) {
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
         
         fontsView.each([](Ref<Font>& font) {

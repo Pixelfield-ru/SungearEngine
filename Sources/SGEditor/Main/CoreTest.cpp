@@ -103,12 +103,12 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     glm::vec3 finalImpulse = impulse;
     sphereRigidbody3D.m_body->applyCentralImpulse({ finalImpulse.x, finalImpulse.y, finalImpulse.z });
     
-    SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(sphereEntities[2]);
+    SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(sphereEntities[0]);
     sphereTransform->m_ownTransform.m_position = spherePos;
     
-    testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
+    // testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
     
-    globalBatch->addEntity(sphereEntities[2]);
+    // globalBatch->addEntity(sphereEntities[2]);
 }
 
 void init()
@@ -485,7 +485,7 @@ void init()
     }
     
     {
-        SGCore::Rigidbody3D& model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(model1Entities[0], testScene->getSystem<SGCore::PhysicsWorld3D>());
+        SGCore::Rigidbody3D& model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Rigidbody3D>(model1Entities[4], testScene->getSystem<SGCore::PhysicsWorld3D>());
         SGCore::Mesh* model1Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[4]);
         std::cout << "model1Mesh0->m_base.m_meshData: " << model1Mesh0->m_base.m_meshData.get() << std::endl;
         model1Mesh0->m_base.m_meshData->generatePhysicalMesh();
@@ -504,8 +504,8 @@ void init()
         model1Rigidbody3D.updateFlags();
         model1Rigidbody3D.reAddToWorld();
         
-        testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(model1Entities[4]);
-        globalBatch->addEntity(model1Entities[4]);
+        /*testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(model1Entities[4]);
+        globalBatch->addEntity(model1Entities[4]);*/
     }
 
     // ==========================================================================================
@@ -655,7 +655,7 @@ void init()
     
     {
         auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
-        auto geniusTransform = testScene->getECSRegistry().try_get<SGCore::Transform>(geniusEntities[2]);
+        auto geniusTransform = *testScene->getECSRegistry().try_get<SGCore::Ref<SGCore::Transform>>(geniusEntities[2]);
         SGCore::ShaderComponent& geniusMeshShader = testScene->getECSRegistry().emplace<SGCore::ShaderComponent>(geniusEntities[2]);
 
         if(geniusTransform)
@@ -1007,6 +1007,25 @@ void fixedUpdate(const double& dt, const double& fixedDt)
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_3))
     {
         tr0->m_ownTransform.m_position.y += 0.1f;
+    }
+    
+    auto& tr1 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_E))
+    {
+        tr1->m_ownTransform.m_rotation.x += 0.5f;
+    }
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_Q))
+    {
+        tr1->m_ownTransform.m_rotation.x -= 0.5f;
+    }
+    
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_C))
+    {
+        tr0->m_ownTransform.m_rotation.x += 0.5f;
+    }
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_V))
+    {
+        tr0->m_ownTransform.m_rotation.x -= 0.5f;
     }
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_5))

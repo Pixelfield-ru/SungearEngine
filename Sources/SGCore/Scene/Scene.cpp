@@ -145,10 +145,10 @@ void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
 {
     system->m_scene = shared_from_this();
     system->onAddToScene();
-    m_systems.emplace(system);
+    m_systems.push_back(system);
 }
 
-const std::unordered_set<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() noexcept
+const std::vector<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() noexcept
 {
     return m_systems;
 }

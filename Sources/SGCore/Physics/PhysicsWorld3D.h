@@ -15,16 +15,21 @@
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <LinearMath/btIDebugDraw.h>
+#include <glm/glm.hpp>
 
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "PhysicsDebugDraw.h"
 #include "SGUtils/Timer.h"
+#include "SGCore/Scene/EntityComponentMember.h"
+#include "SGCore/Threading/SafeObject.h"
 
 namespace SGCore
 {
     struct PhysicsWorld3D : public ISystem
     {
+        friend struct TransformationsUpdater;
+        
         Timer m_worldUpdateTimer;
         
         PhysicsWorld3D();
@@ -34,6 +39,7 @@ namespace SGCore
         void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
         
         void update(const double& dt, const double& fixedDt) noexcept override;
+        void fixedUpdate(const double& dt, const double& fixedDt) noexcept override;
         void onAddToScene() override;
         
         auto& getCollisionConfig() noexcept
@@ -71,8 +77,8 @@ namespace SGCore
         
         bool m_isAlive = true;
         
-        std::unordered_set<Ref<btRigidBody>> m_bodiesToAdd;
-        std::unordered_set<Ref<btRigidBody>> m_bodiesToRemove;
+        SafeObject<std::unordered_set<Ref<btRigidBody>>> m_bodiesToAdd;
+        SafeObject<std::unordered_set<Ref<btRigidBody>>> m_bodiesToRemove;
         
         Scope<btCollisionConfiguration> m_collisionConfig;
         Scope<btCollisionDispatcher> m_collisionDispatcher;
@@ -80,6 +86,8 @@ namespace SGCore
         Scope<btSequentialImpulseConstraintSolver> m_sequentialImpulseConstraintSolver;
         Scope<btDynamicsWorld> m_dynamicsWorld;
         Scope<PhysicsDebugDraw> m_debugDraw;
+        
+        SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_physicalMatricesVector;
         
         std::thread m_physicsWorldThread;
     };

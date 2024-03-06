@@ -16,6 +16,7 @@
 #include "SGCore/Graphics/API/IVertexAttribute.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/Mesh.h"
+#include "SGCore/Transformations/TransformationsUpdater.h"
 
 SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCount, const size_t& maxInstancesCount)
 {
@@ -30,6 +31,8 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
     
     parentScene->getECSRegistry().on_update<Mesh>().connect<&Batch::onMeshUpdate>(*this);
     parentScene->getECSRegistry().on_update<Ref<Transform>>().connect<&Batch::onTransformUpdate>(*this);
+    
+    // (*parentScene->getSystem<TransformationsUpdater>()->m_transformChangedEvent) += m_transformChangedListener;
     
     /*m_meshUpdateObserver.connect(parentScene->getECSRegistry(), entt::basic_collector<>::update<Mesh>());
     m_transformUpdateObserver.connect(parentScene->getECSRegistry(), entt::basic_collector<>::update<Transform>());*/

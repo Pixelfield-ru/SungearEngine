@@ -69,7 +69,7 @@ namespace SGCore
         }
 
         void addSystem(const Ref<ISystem>& system) noexcept;
-        const std::unordered_set<Ref<ISystem>>& getAllSystems() noexcept;
+        const std::vector<Ref<ISystem>>& getAllSystems() noexcept;
 
         auto getUniqueNamesManager() const noexcept
         {
@@ -109,7 +109,7 @@ namespace SGCore
 
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 
-        std::unordered_set<Ref<ISystem>> m_systems;
+        std::vector<Ref<ISystem>> m_systems;
         std::unordered_map<std::string, Layer> m_layers;
 
         size_t m_maxLayersCount = 0;

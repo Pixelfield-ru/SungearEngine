@@ -71,6 +71,11 @@ namespace SGCore
         
         Ref<IShader> m_shader;
         
+        EventListener<void(entt::registry&, const entt::entity&)> m_transformChangedListener = MakeEventListener<void(entt::registry&, const entt::entity&)>(
+                [this](entt::registry& registry, const entt::entity& entity) {
+            onTransformUpdate(registry, entity);
+        });
+        
         void updateArraysForEntity(const Ref<Scene>& lockedScene, const entt::entity& entity) noexcept;
         
         void recalculateRanges() noexcept;

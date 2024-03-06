@@ -11,7 +11,7 @@
 
 void SGCore::Timer::startFrame()
 {
-    if(!m_active) return;
+    if(!m_active || (!m_firstTime && !m_cyclic)) return;
     
     if(m_firstTime)
     {
@@ -49,13 +49,14 @@ void SGCore::Timer::startFrame()
         m_FPSDeltaTimeAccum = 0.0;
     }
     
-    m_active = m_cyclic;
+    // m_active = m_cyclic;
 }
 
 void SGCore::Timer::resetTimer() noexcept
 {
     m_FPSDeltaTimeAccum = 0;
     m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
+    m_elapsedTimeForUpdate = 0.0;
 }
 
 void SGCore::Timer::firstTimeStart()

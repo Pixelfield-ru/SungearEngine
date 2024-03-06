@@ -53,11 +53,11 @@ public final class AiQuaternion {
     /**
      * Wrapped buffer.
      */
-    private final ByteBuffer m_buffer;
+    private final ByteBuffer m_collection;
     
     
     /**
-     * Offset into m_buffer.
+     * Offset into m_collection.
      */
     private final int m_offset;
 
@@ -72,7 +72,7 @@ public final class AiQuaternion {
             throw new IllegalArgumentException("buffer may not be null");
         }
         
-        m_buffer = buffer;
+        m_collection = buffer;
         m_offset = offset;
     }
     
@@ -83,7 +83,7 @@ public final class AiQuaternion {
      * @return the x value
      */
     public float getX() {
-        return m_buffer.getFloat(m_offset + 4);
+        return m_collection.getFloat(m_offset + 4);
     }
     
     
@@ -93,7 +93,7 @@ public final class AiQuaternion {
      * @return the y value
      */
     public float getY() {
-        return m_buffer.getFloat(m_offset + 8);
+        return m_collection.getFloat(m_offset + 8);
     }
     
     
@@ -103,7 +103,7 @@ public final class AiQuaternion {
      * @return the z value
      */
     public float getZ() {
-        return m_buffer.getFloat(m_offset + 12);
+        return m_collection.getFloat(m_offset + 12);
     }
     
     
@@ -113,7 +113,7 @@ public final class AiQuaternion {
      * @return the w value
      */
     public float getW() {
-        return m_buffer.getFloat(m_offset);
+        return m_collection.getFloat(m_offset);
     }
     
     
@@ -123,7 +123,7 @@ public final class AiQuaternion {
      * @param x the new value
      */
     public void setX(float x) {
-        m_buffer.putFloat(m_offset + 4, x);
+        m_collection.putFloat(m_offset + 4, x);
     }
     
     
@@ -133,7 +133,7 @@ public final class AiQuaternion {
      * @param y the new value
      */
     public void setY(float y) {
-        m_buffer.putFloat(m_offset + 8, y);
+        m_collection.putFloat(m_offset + 8, y);
     }
     
     
@@ -143,7 +143,7 @@ public final class AiQuaternion {
      * @param z the new value
      */
     public void setZ(float z) {
-        m_buffer.putFloat(m_offset + 12, z);
+        m_collection.putFloat(m_offset + 12, z);
     }
     
     
@@ -153,7 +153,7 @@ public final class AiQuaternion {
      * @param w the new value
      */
     public void setW(float w) {
-        m_buffer.putFloat(m_offset, w);
+        m_collection.putFloat(m_offset, w);
     }
     
     

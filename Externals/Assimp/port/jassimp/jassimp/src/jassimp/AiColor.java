@@ -53,10 +53,10 @@ public final class AiColor {
     /**
      * Wrapped buffer.
      */
-    private final ByteBuffer m_buffer;
+    private final ByteBuffer m_collection;
         
     /**
-     * Offset into m_buffer. 
+     * Offset into m_collection.
      */
     private final int m_offset;
 
@@ -67,7 +67,7 @@ public final class AiColor {
      * @param offset offset into buffer
      */
     public AiColor(ByteBuffer buffer, int offset) {
-        m_buffer = buffer;
+        m_collection = buffer;
         m_offset = offset;
     }
     
@@ -78,7 +78,7 @@ public final class AiColor {
      * @return the red component
      */
     public float getRed() {
-        return m_buffer.getFloat(m_offset);
+        return m_collection.getFloat(m_offset);
     }
     
     
@@ -88,7 +88,7 @@ public final class AiColor {
      * @return the green component
      */
     public float getGreen() {
-        return m_buffer.getFloat(m_offset + 4);
+        return m_collection.getFloat(m_offset + 4);
     }
     
     
@@ -98,7 +98,7 @@ public final class AiColor {
      * @return the blue component
      */
     public float getBlue() {
-        return m_buffer.getFloat(m_offset + 8);
+        return m_collection.getFloat(m_offset + 8);
     }
     
     
@@ -108,7 +108,7 @@ public final class AiColor {
      * @return the alpha component
      */
     public float getAlpha() {
-        return m_buffer.getFloat(m_offset + 12);
+        return m_collection.getFloat(m_offset + 12);
     }
     
     
@@ -118,7 +118,7 @@ public final class AiColor {
      * @param red the new value
      */
     public void setRed(float red) {
-        m_buffer.putFloat(m_offset, red);
+        m_collection.putFloat(m_offset, red);
     }
     
     
@@ -128,7 +128,7 @@ public final class AiColor {
      * @param green the new value
      */
     public void setGreen(float green) {
-        m_buffer.putFloat(m_offset + 4, green);
+        m_collection.putFloat(m_offset + 4, green);
     }
     
     
@@ -138,7 +138,7 @@ public final class AiColor {
      * @param blue the new value
      */
     public void setBlue(float blue) {
-        m_buffer.putFloat(m_offset + 8, blue);
+        m_collection.putFloat(m_offset + 8, blue);
     }
     
     
@@ -148,7 +148,7 @@ public final class AiColor {
      * @param alpha the new value
      */
     public void setAlpha(float alpha) {
-        m_buffer.putFloat(m_offset + 12, alpha);
+        m_collection.putFloat(m_offset + 12, alpha);
     }
     
 
