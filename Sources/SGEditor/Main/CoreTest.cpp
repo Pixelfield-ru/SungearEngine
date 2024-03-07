@@ -1008,15 +1008,30 @@ void fixedUpdate(const double& dt, const double& fixedDt)
     {
         tr0->m_ownTransform.m_position.y += 0.1f;
     }
-    
+
+    auto& rb1 = testScene->getECSRegistry().get<SGCore::Rigidbody3D>(model1Entities[4]);
     auto& tr1 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_E))
     {
-        tr1->m_ownTransform.m_rotation.x += 0.5f;
+        auto curRot = rb1.m_body->getWorldTransform().getRotation();
+        float x;
+        float y;
+        float z;
+        curRot.getEulerZYX(z, y, x);
+        rb1.m_body->getWorldTransform().setRotation(btQuaternion(glm::radians(x + 0.5f), glm::radians(y),
+                                                                 glm::radians(z)));
+        // tr1->m_ownTransform.m_rotation.x += 0.5f;
     }
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_Q))
     {
-        tr1->m_ownTransform.m_rotation.x -= 0.5f;
+        auto curRot = rb1.m_body->getWorldTransform().getRotation();
+        float x;
+        float y;
+        float z;
+        curRot.getEulerZYX(z, y, x);
+        rb1.m_body->getWorldTransform().setRotation(btQuaternion(glm::radians(x - 0.5f), glm::radians(y),
+                                                                 glm::radians(z)));
+        // tr1->m_ownTransform.m_rotation.x -= 0.5f;
     }
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_C))

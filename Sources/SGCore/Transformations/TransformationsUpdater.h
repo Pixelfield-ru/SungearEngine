@@ -41,8 +41,6 @@ namespace SGCore
     private:
         Ref<Scene> m_sharedScene;
         bool m_isAlive = true;
-        
-        bool m_q = true;
 
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatricesForPhysics;

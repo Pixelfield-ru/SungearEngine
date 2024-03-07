@@ -91,19 +91,12 @@ else()
   target_link_libraries(${PROJECT_NAME} vulkan)
 endif()]]
 
- # TODO: DO THIS ONLY WHEN CORE BUILD TYPE IS DYNAMIC LIBRARY
- IF(EXISTS ${SG_CORE_DLL})
- add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-         COMMAND ${CMAKE_COMMAND} -E copy
-         ${SG_CORE_DLL}
-         ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ}
-         )
-
- IF(${SG_BUILD_TESTS})
-     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-             COMMAND ${CMAKE_COMMAND} -E copy
-             ${SG_CORE_DLL}
-             ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ}
-             )
- ENDIF()
- ENDIF()
+ if(MSVC)
+    if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/SGCore.dll)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/SGCore.dll
+            ${CMAKE_BINARY_DIR}/Sources/SGEditor
+            )
+    ENDIF()
+ endif()

@@ -25,18 +25,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         ${spdlog_lib}
 )
 
-IF(EXISTS ${SG_UTILS_DLL})
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            ${SG_UTILS_DLL}
-            ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ}
-    )
-
-    IF(${SG_BUILD_TESTS})
+if(MSVC)
+    if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/SGUtils.dll)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy
-                ${SG_UTILS_DLL}
-                ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ}
-        )
+                ${CMAKE_CURRENT_BINARY_DIR}/SGUtils.dll
+                ${CMAKE_BINARY_DIR}/Sources/SGEditor
+                )
     ENDIF()
-ENDIF()
+endif()

@@ -222,17 +222,14 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
             }
             
             Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
-            if(rigidbody3D && m_q)
+            if(rigidbody3D)
             {
                 btTransform initialTransform;
                 initialTransform.setIdentity();
-                const float* fm = glm::value_ptr(ownTransform.m_modelMatrix * (parentTransform ? parentTransform->m_finalTransform.m_modelMatrix : glm::mat4(1.0)));
                 initialTransform.setFromOpenGLMatrix(glm::value_ptr(finalTransform.m_modelMatrix));
-                // initialTransform.setFromOpenGLMatrix(fm);
                 rigidbody3D->m_body->setWorldTransform(initialTransform);
                 
                 // rigidbody3D->m_body->getCollisionShape()->setLocalScaling({ scale.x, scale.y, scale.z });
-                m_q = false;
             }
         }
         else
@@ -345,8 +342,6 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                     }
                 }
             }
-            
-            m_q = true;
         }
     });
     

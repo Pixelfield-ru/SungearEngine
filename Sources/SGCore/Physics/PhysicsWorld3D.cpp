@@ -129,6 +129,28 @@ void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt
     }
     */
     m_dynamicsWorld->stepSimulation(dt, 12, dt);
+
+    size_t manifoldsCnt = m_dynamicsWorld->getDispatcher()->getNumManifolds();
+    for(size_t m = 0; m < manifoldsCnt; ++m)
+    {
+        btPersistentManifold* contactManifold = m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(m);
+        const btCollisionObject* objA = contactManifold->getBody0();
+        const btCollisionObject* objB = contactManifold->getBody1();
+
+        size_t contactsCnt = contactManifold->getNumContacts();
+        for(size_t c = 0; c < contactsCnt; ++c)
+        {
+            btManifoldPoint& point = contactManifold->getContactPoint(c);
+            if(point.getDistance() < 0.0f)
+            {
+                // std::cout << "contacted" << std::endl;
+
+                const btVector3& posA = point.getPositionWorldOnA();
+                const btVector3& posB = point.getPositionWorldOnB();
+                const btVector3& normalOnB = point.m_normalWorldOnB;
+            }
+        }
+    }
     
     /*if(!lockedScene) return;
     
