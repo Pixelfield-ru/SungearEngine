@@ -30,7 +30,7 @@ SGCore::Scene::Scene()
 void SGCore::Scene::createDefaultSystems()
 {
     // physics ===================
-    
+
     // ALWAYS BEFORE TRANSFORMATIONS UPDATER
     auto physicsWorld = MakeRef<PhysicsWorld3D>();
     addSystem(physicsWorld);

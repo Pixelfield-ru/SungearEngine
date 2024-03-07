@@ -3,12 +3,18 @@
 //
 #include "PhysicsWorld3D.h"
 
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include "PhysicsDebugDraw.h"
 #include "Rigidbody3D.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Threading/SafeObject.h"
-#include "glm/gtc/type_ptr.hpp"
 #include "SGCore/Transformations/TransformationsUpdater.h"
+#include "SGCore/Transformations/Transform.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
 
 SGCore::PhysicsWorld3D::PhysicsWorld3D()
 {
@@ -38,7 +44,7 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_worldUpdateTimer.m_cyclic = true;
     m_worldUpdateTimer.addCallback(callback);
     
-    /*m_physicsWorldThread = std::thread([this]() {
+    m_physicsWorldThread = std::thread([this]() {
         while(m_isAlive)
         {
             if(m_active)
@@ -46,7 +52,7 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
                 m_worldUpdateTimer.startFrame();
             }
         }
-    });*/
+    });
     
     // m_physicsWorldThread.detach();
 }
@@ -102,9 +108,171 @@ void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt
     }
     
     auto lockedScene = m_scene.lock();
-    
+
+    entt::registry& registry = lockedScene->getECSRegistry();
+
     Ref<TransformationsUpdater> transformationsUpdater = lockedScene->getSystem<TransformationsUpdater>();
-    
+
+    if(transformationsUpdater->m_changedModelMatrices.isLocked())
+    {
+        for(const auto& val : transformationsUpdater->m_changedModelMatrices.getObject())
+        {
+            Rigidbody3D* rigidbody3D = lockedScene->getECSRegistry().try_get<Rigidbody3D>(val.m_owner);
+            if(rigidbody3D)
+            {
+                btTransform initialTransform;
+                initialTransform.setIdentity();
+                initialTransform.setFromOpenGLMatrix(glm::value_ptr(val.m_memberValue));
+                rigidbody3D->m_body->setWorldTransform(initialTransform);
+
+                // rigidbody3D->m_body->getCollisionShape()->setLocalScaling({ scale.x, scale.y, scale.z });
+            }
+        }
+
+        transformationsUpdater->m_changedModelMatrices.getObject().clear();
+        transformationsUpdater->m_changedModelMatrices.unlock();
+    }
+
+    if(transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.isLocked())
+    {
+        for(const auto& entity : transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getObject())
+        {
+            if (registry.any_of<Rigidbody3D>(entity))
+            {
+                Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+                Ref<Transform> transform;
+                {
+                    Ref<Transform>* tmpTransform = registry.try_get<Ref<Transform>>(entity);
+                    transform = (tmpTransform ? *tmpTransform : nullptr);
+                }
+
+                if (rigidbody3D && transform)
+                {
+                    TransformBase& ownTransform = transform->m_ownTransform;
+                    TransformBase& finalTransform = transform->m_finalTransform;
+
+                    EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
+                    Ref<Transform> parentTransform;
+
+                    if(entityBaseInfo)
+                    {
+                        auto* tmp = registry.try_get<Ref<Transform>>(entityBaseInfo->m_parent);
+                        parentTransform = (tmp ? *tmp : nullptr);
+                    }
+
+                    btTransform& rigidbody3DTransform = rigidbody3D->m_body->getWorldTransform();
+
+                    // ============================
+
+                    float rigidbody3DMatrix[16];
+                    rigidbody3DTransform.getOpenGLMatrix(rigidbody3DMatrix);
+
+                    glm::mat4 glmRigidbody3DOwnModelMatrix = glm::make_mat4(rigidbody3DMatrix);
+
+                    glm::mat4 inversedParentTranslationMatrix = glm::mat4(1.0);
+                    glm::mat4 inversedParentRotationMatrix = glm::mat4(1.0);
+                    glm::mat4 inversedParentScaleMatrix = glm::mat4(1.0);
+                    if (parentTransform)
+                    {
+                        inversedParentTranslationMatrix = glm::inverse(
+                                parentTransform->m_finalTransform.m_translationMatrix);
+                        inversedParentRotationMatrix = glm::inverse(parentTransform->m_finalTransform.m_rotationMatrix);
+                        inversedParentScaleMatrix = glm::inverse(parentTransform->m_finalTransform.m_scaleMatrix);
+                    }
+
+                    glmRigidbody3DOwnModelMatrix =
+                            inversedParentScaleMatrix * inversedParentRotationMatrix * inversedParentTranslationMatrix *
+                            glmRigidbody3DOwnModelMatrix;
+
+                    glm::vec3 scale;
+                    glm::quat rotation;
+                    glm::vec3 translation;
+                    glm::vec3 skew;
+                    glm::vec4 perspective;
+
+                    glm::decompose(glmRigidbody3DOwnModelMatrix, scale, rotation, translation, skew, perspective);
+
+                    ownTransform.m_position = translation;
+                    ownTransform.m_rotation = glm::degrees(glm::eulerAngles(rotation));
+                    // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
+
+                    bool translationChanged = false;
+                    bool rotationChanged = false;
+
+                    if (ownTransform.m_position != ownTransform.m_lastPosition)
+                    {
+                        ownTransform.m_translationMatrix = glm::translate(glm::mat4(1.0), ownTransform.m_position);
+
+                        ownTransform.m_lastPosition = ownTransform.m_position;
+
+                        translationChanged = true;
+                    }
+
+                    if (ownTransform.m_rotation != ownTransform.m_lastRotation)
+                    {
+                        auto q = glm::identity<glm::quat>();
+
+                        q = glm::rotate(q, glm::radians(ownTransform.m_rotation.z), {0, 0, 1});
+                        q = glm::rotate(q, glm::radians(ownTransform.m_rotation.y), {0, 1, 0});
+                        q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), {1, 0, 0});
+
+                        ownTransform.m_rotationMatrix = glm::toMat4(q);
+
+                        // rotating directions vectors
+                        ownTransform.m_left = glm::rotate(MathUtils::left3,
+                                                          glm::radians(-ownTransform.m_rotation.y), glm::vec3(0, 1, 0));
+                        ownTransform.m_left = glm::rotate(ownTransform.m_left,
+                                                          glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
+
+                        ownTransform.m_left *= -1.0f;
+
+                        ownTransform.m_forward = glm::rotate(MathUtils::forward3,
+                                                             glm::radians(-ownTransform.m_rotation.x),
+                                                             glm::vec3(1, 0, 0));
+                        ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
+                                                             glm::radians(-ownTransform.m_rotation.y),
+                                                             glm::vec3(0, 1, 0));
+
+                        ownTransform.m_forward *= -1.0f;
+
+                        ownTransform.m_up = glm::rotate(MathUtils::up3,
+                                                        glm::radians(-ownTransform.m_rotation.x), glm::vec3(1, 0, 0));
+                        ownTransform.m_up = glm::rotate(ownTransform.m_up,
+                                                        glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
+
+                        ownTransform.m_up *= -1.0f;
+
+                        ownTransform.m_lastRotation = ownTransform.m_rotation;
+
+                        rotationChanged = true;
+                    }
+
+                    transform->m_transformChanged =
+                            transform->m_transformChanged || translationChanged || rotationChanged;
+
+                    if (transform->m_transformChanged)
+                    {
+                        ownTransform.m_modelMatrix =
+                                ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix *
+                                ownTransform.m_scaleMatrix;
+
+                        if (parentTransform)
+                        {
+                            finalTransform.m_modelMatrix =
+                                    parentTransform->m_finalTransform.m_modelMatrix * ownTransform.m_modelMatrix;
+                        } else
+                        {
+                            finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
+                        }
+                    }
+                }
+            }
+        }
+
+        transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getObject().clear();
+        transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.unlock();
+    }
+
     /*if(transformationsUpdater->m_changedModelMatricesForPhysics.isLocked())
     {
         for(EntityComponentMember<glm::mat4>& matrix : transformationsUpdater->m_changedModelMatricesForPhysics.getObject())
@@ -130,7 +298,7 @@ void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt
     */
     m_dynamicsWorld->stepSimulation(dt, 12, dt);
 
-    size_t manifoldsCnt = m_dynamicsWorld->getDispatcher()->getNumManifolds();
+    /*size_t manifoldsCnt = m_dynamicsWorld->getDispatcher()->getNumManifolds();
     for(size_t m = 0; m < manifoldsCnt; ++m)
     {
         btPersistentManifold* contactManifold = m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(m);
@@ -148,9 +316,12 @@ void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt
                 const btVector3& posA = point.getPositionWorldOnA();
                 const btVector3& posB = point.getPositionWorldOnB();
                 const btVector3& normalOnB = point.m_normalWorldOnB;
+
+                std::cout << "posA: " << posA.x() << ", " << posA.y() << ", " << posA.z() <<
+                ", posB: " << posB.x() << ", " << posB.y() << ", " << posB.z() << std::endl;
             }
         }
-    }
+    }*/
     
     /*if(!lockedScene) return;
     
@@ -186,7 +357,7 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
 
 void SGCore::PhysicsWorld3D::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    worldUpdate(dt, fixedDt);
+    // worldUpdate(dt, fixedDt);
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene()

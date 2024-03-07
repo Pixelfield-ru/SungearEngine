@@ -43,8 +43,7 @@ namespace SGCore
         bool m_isAlive = true;
 
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;
-        SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatricesForPhysics;
-        SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_modelMatricesChangedByPhysics;
+        SafeObject<std::vector<entt::entity>> m_entitiesForPhysicsUpdateToCheck;
         
         entt::observer m_transformUpdateObserver;
         entt::observer m_rigidbody3DUpdateObserver;

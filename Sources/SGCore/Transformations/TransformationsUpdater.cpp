@@ -30,7 +30,7 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
         updateTransformations(dt, fixedDt);
     });
     
-    /*m_updaterThread = std::thread([this, callback]() {
+    m_updaterThread = std::thread([this, callback]() {
         while(m_isAlive)
         {
             if(m_active)
@@ -38,7 +38,7 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
                m_updaterTimer.startFrame();
             }
         }
-    });*/
+    });
     
     // m_updaterThread.detach();
 }
@@ -62,7 +62,9 @@ void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& 
 void SGCore::TransformationsUpdater::updateTransformations(const double& dt, const double& fixedDt) noexcept
 {
     if(!m_sharedScene) return;
-    
+
+    if(m_changedModelMatrices.isLocked() || m_entitiesForPhysicsUpdateToCheck.isLocked()) return;
+
     entt::registry& registry = m_sharedScene->getECSRegistry();
     
     auto transformsView = registry.view<Ref<Transform>>();
@@ -220,8 +222,10 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
             {
                 finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
             }
-            
-            Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+
+            m_changedModelMatrices.getObject().push_back({ entity, finalTransform.m_modelMatrix });
+
+            /*Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
             if(rigidbody3D)
             {
                 btTransform initialTransform;
@@ -230,13 +234,14 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                 rigidbody3D->m_body->setWorldTransform(initialTransform);
                 
                 // rigidbody3D->m_body->getCollisionShape()->setLocalScaling({ scale.x, scale.y, scale.z });
-            }
+            }*/
         }
         else
         {
-            if(registry.any_of<Rigidbody3D>(entity))
+            m_entitiesForPhysicsUpdateToCheck.getObject().push_back(entity);
+
+            /*if(registry.any_of<Rigidbody3D>(entity))
             {
-                // registry.patch<Rigidbody3D>(entity);
                 Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
                 if(rigidbody3D)
                 {
@@ -341,9 +346,12 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
                         }
                     }
                 }
-            }
+            }*/
         }
     });
+
+    m_changedModelMatrices.lock();
+    m_entitiesForPhysicsUpdateToCheck.lock();
     
     /*m_transformUpdateObserver.each([&registry, this](const entt::entity& entity) {
         Ref<Transform>* tmpEntityTransform = registry.try_get<Ref<Transform>>(entity);
@@ -515,7 +523,7 @@ void SGCore::TransformationsUpdater::updateTransformations(const double& dt, con
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    updateTransformations(dt, fixedDt);
+    // updateTransformations(dt, fixedDt);
     // dispatch transformations
     
     /*if(m_changedModelMatrices.isLocked())
