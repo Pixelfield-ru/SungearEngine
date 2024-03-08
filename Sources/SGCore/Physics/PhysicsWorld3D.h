@@ -23,9 +23,12 @@
 #include "SGUtils/Timer.h"
 #include "SGCore/Scene/EntityComponentMember.h"
 #include "SGCore/Threading/SafeObject.h"
+#include "SGCore/Threading/FixedVector.h"
 
 namespace SGCore
 {
+    struct Transform;
+    
     struct PhysicsWorld3D : public ISystem
     {
         friend struct TransformationsUpdater;
@@ -41,6 +44,7 @@ namespace SGCore
         void update(const double& dt, const double& fixedDt) noexcept override;
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept override;
         void onAddToScene() override;
+        void onRemoveFromScene() override;
         
         auto& getCollisionConfig() noexcept
         {

@@ -23,6 +23,8 @@ namespace SGCore
     class IIndexBuffer;
     class IShader;
     
+    struct Transform;
+    
     struct Batch
     {
         Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCount, const size_t& maxInstancesCount);
@@ -71,9 +73,9 @@ namespace SGCore
         
         Ref<IShader> m_shader;
         
-        EventListener<void(entt::registry&, const entt::entity&)> m_transformChangedListener = MakeEventListener<void(entt::registry&, const entt::entity&)>(
-                [this](entt::registry& registry, const entt::entity& entity) {
-            onTransformUpdate(registry, entity);
+        EventListener<void(entt::registry&, const entt::entity&, Ref<const Transform>)> m_transformChangedListener = MakeEventListener<void(entt::registry&, const entt::entity&, Ref<const Transform>)>(
+                [this](entt::registry& registry, const entt::entity& entity, Ref<const Transform> transform) {
+            onTransformUpdate(registry, entity, transform);
         });
         
         void updateArraysForEntity(const Ref<Scene>& lockedScene, const entt::entity& entity) noexcept;
@@ -84,7 +86,7 @@ namespace SGCore
         void onTransformDestroyed(entt::registry& registry, entt::entity entity) noexcept;
         
         void onMeshUpdate(entt::registry& registry, entt::entity entity) noexcept;
-        void onTransformUpdate(entt::registry& registry, entt::entity entity) noexcept;
+        void onTransformUpdate(entt::registry& registry, entt::entity entity, Ref<const Transform> transform) noexcept;
         
         void onRenderPipelineSet() noexcept;
         

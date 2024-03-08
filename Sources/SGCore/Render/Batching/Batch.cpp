@@ -30,9 +30,9 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
     parentScene->getECSRegistry().on_destroy<Ref<Transform>>().connect<&Batch::onTransformDestroyed>(*this);
     
     parentScene->getECSRegistry().on_update<Mesh>().connect<&Batch::onMeshUpdate>(*this);
-    parentScene->getECSRegistry().on_update<Ref<Transform>>().connect<&Batch::onTransformUpdate>(*this);
+    // parentScene->getECSRegistry().on_update<Ref<Transform>>().connect<&Batch::onTransformUpdate>(*this);
     
-    // (*parentScene->getSystem<TransformationsUpdater>()->m_transformChangedEvent) += m_transformChangedListener;
+    (*parentScene->getSystem<TransformationsUpdater>()->m_transformChangedEvent) += m_transformChangedListener;
     
     /*m_meshUpdateObserver.connect(parentScene->getECSRegistry(), entt::basic_collector<>::update<Mesh>());
     m_transformUpdateObserver.connect(parentScene->getECSRegistry(), entt::basic_collector<>::update<Transform>());*/
@@ -488,7 +488,7 @@ void SGCore::Batch::onMeshUpdate(entt::registry& registry, entt::entity entity) 
     // todo:
 }
 
-void SGCore::Batch::onTransformUpdate(entt::registry& registry, entt::entity entity) noexcept
+void SGCore::Batch::onTransformUpdate(entt::registry& registry, entt::entity entity, Ref<const Transform> transform) noexcept
 {
     auto it = m_entitiesIndices.find(entity);
     if(it == m_entitiesIndices.end()) return;
@@ -498,7 +498,6 @@ void SGCore::Batch::onTransformUpdate(entt::registry& registry, entt::entity ent
     const size_t startIdx = entityIdx * 16;
     const size_t endIdx = startIdx + 16;
     
-    Ref<Transform>& transform = registry.get<Ref<Transform>>(entity);
     const float* matPtr = glm::value_ptr(transform->m_finalTransform.m_modelMatrix);
     
     for(size_t m = startIdx; m < endIdx; ++m)

@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINE_TRANSFORM_H
 #define SUNGEARENGINE_TRANSFORM_H
 
+#include <atomic>
 #include "TransformBase.h"
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -20,7 +21,7 @@ namespace SGCore
         // x - follow translation
         // y - follow rotation
         // z - follow scale
-        glm::bvec3 m_followParentTRS { true, true, true };
+        glm::vec<3, bool, glm::highp> m_followParentTRS { true, true, true };
         // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
         
         bool m_transformChanged = false;

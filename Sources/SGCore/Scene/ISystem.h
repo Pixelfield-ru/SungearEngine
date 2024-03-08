@@ -28,6 +28,7 @@ namespace SGCore
         virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
         virtual void update(const double& dt, const double& fixedDt) { }
         virtual void onAddToScene() { }
+        virtual void onRemoveFromScene() { }
         
         virtual void setScene(const Ref<Scene>& scene) noexcept;
         

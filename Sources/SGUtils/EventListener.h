@@ -46,19 +46,22 @@ namespace SGCore
 
             return *this;
         }
-
-        void operator()(Args&&... args) const noexcept
+        
+        template<typename... Args0>
+        void operator()(Args0&&... args) const noexcept
         {
             if(m_func)
             {
-                m_func(std::forward<Args>(args)...);
+                m_func(std::forward<Args0>(args)...);
             }
         }
 
     private:
+        long m_hash = reinterpret_cast<long>(this);
         std::function<void(Args...)> m_func;
         std::function<void()> m_unsubscribeFunc;
         std::list<std::shared_ptr<EventImpl<Return(Args...)>>> m_listeningEvents;
+        bool m_isLambda = false;
     };
 
     template <typename T>

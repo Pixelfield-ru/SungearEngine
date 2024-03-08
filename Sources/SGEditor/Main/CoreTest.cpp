@@ -106,9 +106,8 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(sphereEntities[0]);
     sphereTransform->m_ownTransform.m_position = spherePos;
     
-    // testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
-    
-    // globalBatch->addEntity(sphereEntities[2]);
+    testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
+    globalBatch->addEntity(sphereEntities[2]);
 }
 
 void init()
@@ -1166,6 +1165,11 @@ void update(const double& dt, const double& fixedDt)
 
 // --------------------------------------------
 
+void testWindowOverdrawFun()
+{
+    ImGui::Text("testWindowOverdraw (2).");
+}
+
 int main()
 {
     SGEditor::EditorMain::start();
@@ -1177,7 +1181,7 @@ int main()
 
     auto testWindowOverdraw = SGCore::MakeEventListener<void()> ([]()
                                                                         {
-                                                                            ImGui::Text("hi.");
+                                                                            ImGui::Text("testWindowOverdraw (0).");
                                                                         });
 
     int* dragInt = new int(0);
@@ -1186,8 +1190,11 @@ int main()
                                                                                       ImGui::DragInt("Drag this int!", dragInt);
                                                                                       ImGui::Text("hi!!");
                                                                                   });
-
     (*testWindow->m_onRenderEvent) += testWindowOverdraw;
+    (*testWindow->m_onRenderEvent) += []() {
+        ImGui::Text("testWindowOverdraw (1).");
+    };
+    testWindow->m_onRenderEvent->connect<&testWindowOverdrawFun>();
     (*testCollapsingHeader->m_onRenderEvent) += testCollapsingHeaderOverdraw;
 
     //SGConsole::Console::start();

@@ -7,20 +7,30 @@
 
 #include <atomic>
 #include <vector>
+#include "SGUtils/Event.h"
+#include "SGUtils/EventListener.h"
 
 namespace SGCore
 {
     template<typename ObjT>
     struct SafeObject
     {
+        Event<void()> m_unlockEvent = MakeEvent<void()>();
+        
         inline void lock() noexcept
         {
+            m_currentLocksCount = m_subscribersCount;
             m_isLocked.store(true);
         }
 
         inline void unlock() noexcept
         {
-            m_isLocked.store(false);
+            --m_currentLocksCount;
+            if(m_currentLocksCount <= 0)
+            {
+                m_isLocked.store(false);
+                m_currentLocksCount = 0;
+            }
         }
         
         inline ObjT& getObject() noexcept
@@ -32,9 +42,38 @@ namespace SGCore
         {
             return m_isLocked.load();
         }
-
+        
+        inline void subscribe() noexcept
+        {
+            if(isLocked())
+            {
+                ++m_currentLocksCount;
+            }
+            ++m_subscribersCount;
+        }
+        
+        inline void unSubscribe() noexcept
+        {
+            if(isLocked())
+            {
+                --m_currentLocksCount;
+                if(m_currentLocksCount <= 0)
+                {
+                    unlock();
+                }
+            }
+            --m_subscribersCount;
+        }
+        
+        inline std::int64_t getSubscribersCount() noexcept
+        {
+            return m_subscribersCount;
+        }
+        
     private:
         std::atomic<bool> m_isLocked;
+        std::int64_t m_subscribersCount = 0;
+        std::int64_t m_currentLocksCount = 0;
         
         ObjT m_obj;
     };

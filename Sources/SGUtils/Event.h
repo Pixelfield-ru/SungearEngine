@@ -8,14 +8,12 @@
 #include <list>
 #include <functional>
 #include "EventListener.h"
+#include "SGUtils/TypeInfo.h"
 
 #include "UUID.h"
 
 namespace SGCore
 {
-    template <typename Signature>
-    struct EventImpl;
-
     template<typename Return>
     struct EventImpl;
 
@@ -26,62 +24,171 @@ namespace SGCore
         using HolderT = EventListenerImpl<Return(Args...)>;
 
     public:
-        EventImpl& operator+=(HolderT* eventHolder)
+        ~EventImpl()
         {
-            m_callbacks.emplace_back(eventHolder);
-            eventHolder->m_unsubscribeFunc = [eventHolder]()
+            for(auto& holder : m_callbacks)
             {
-                for(auto& listeningEvent : eventHolder->m_listeningEvents)
+                if(holder.second->m_isLambda)
                 {
-                    (listeningEvent)->m_callbacks.remove(eventHolder);
+                    delete holder.second;
+                }
+            }
+        }
+        
+        EventImpl& operator+=(HolderT* holder)
+        {
+            m_callbacks[holder->m_hash] = holder;
+            holder->m_unsubscribeFunc = [holder]()
+            {
+                for(auto& listeningEvent : holder->m_listeningEvents)
+                {
+                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
                 }
             };
-            eventHolder->m_listeningEvents.push_back(this->shared_from_this());
-
-            return *this;
-        }
-
-        EventImpl& operator-=(HolderT* eventHolder)
-        {
-            m_callbacks.remove(eventHolder);
+            holder->m_listeningEvents.push_back(this->shared_from_this());
 
             return *this;
         }
 
         EventImpl& operator+=(const std::unique_ptr<HolderT>& eventHolder)
         {
-            auto* rawHolder = eventHolder.get();
-
-            m_callbacks.emplace_back(rawHolder);
-            rawHolder->m_unsubscribeFunc = [rawHolder]()
+            auto* holder = eventHolder.get();
+            
+            m_callbacks[holder->m_hash] = holder;
+            
+            holder->m_unsubscribeFunc = [holder]()
             {
-                for(auto& listeningEvent : rawHolder->m_listeningEvents)
+                for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    (listeningEvent)->m_callbacks.remove(rawHolder);
+                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
                 }
             };
-            rawHolder->m_listeningEvents.push_back(this->shared_from_this());
+            holder->m_listeningEvents.push_back(this->shared_from_this());
 
             return *this;
         }
-
+        
+        EventImpl& operator+=(const HolderT* holder)
+        {
+            m_callbacks[holder->m_hash] = holder;
+            holder->m_unsubscribeFunc = [holder]()
+            {
+                for(auto& listeningEvent : holder->m_listeningEvents)
+                {
+                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                }
+            };
+            holder->m_listeningEvents.push_back(this->shared_from_this());
+            
+            return *this;
+        }
+        
+        template<typename Func>
+        requires(std::is_invocable_v<Func, Args...>)
+        EventImpl& operator+=(Func&& l)
+        {
+            auto* holder = new HolderT(l);
+            holder->m_isLambda = true;
+            std::cout << "hash : " << holder->m_hash << std::endl;
+            
+            m_callbacks[holder->m_hash] = holder;
+            holder->m_unsubscribeFunc = [holder]()
+            {
+                for(auto& listeningEvent : holder->m_listeningEvents)
+                {
+                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                }
+            };
+            holder->m_listeningEvents.push_back(this->shared_from_this());
+            
+            return *this;
+        }
+        
+        template<auto FuncPtr>
+        void connect(SGUtils::MemberFunctionTraits<decltype(FuncPtr)>::instance_type& obj)
+        {
+            auto* holder = new HolderT;
+            holder->m_hash = std::hash<const char*>()(typeid(FuncPtr).name()) ^ *reinterpret_cast<std::intptr_t*>(&obj);
+            holder->m_isLambda = true;
+            holder->m_unsubscribeFunc = [holder]()
+            {
+                for(auto& listeningEvent : holder->m_listeningEvents)
+                {
+                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                }
+            };
+            auto funcLambda = [&obj](Args&&... args) {
+                (obj.*FuncPtr)(std::forward<Args>(args)...);
+            };
+            (*holder) = funcLambda;
+            
+            m_callbacks[holder->m_hash] = holder;
+            holder->m_listeningEvents.push_back(this->shared_from_this());
+        }
+        
+        template<auto FuncPtr>
+        void connect()
+        {
+            auto* holder = new HolderT;
+            holder->m_hash = std::hash<const char*>()(typeid(FuncPtr).name());
+            holder->m_isLambda = true;
+            holder->m_unsubscribeFunc = [holder]()
+            {
+                for(auto& listeningEvent : holder->m_listeningEvents)
+                {
+                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                }
+            };
+            auto funcLambda = [](Args&&... args) {
+                (*FuncPtr)(std::forward<Args>(args)...);
+            };
+            (*holder) = funcLambda;
+            
+            m_callbacks[holder->m_hash] = holder;
+            holder->m_listeningEvents.push_back(this->shared_from_this());
+        }
+        
+        template<auto FuncPtr>
+        void disconnect(SGUtils::MemberFunctionTraits<decltype(FuncPtr)>::instance_type& obj)
+        {
+            const size_t hash = std::hash<const char*>()(typeid(FuncPtr).name()) ^ *reinterpret_cast<std::intptr_t*>(&obj);
+            
+            auto it = m_callbacks.find(hash);
+            if(it != m_callbacks.end())
+            {
+                if(it->second.m_isLambda)
+                {
+                    delete it->second;
+                }
+                m_callbacks.erase(it);
+            }
+        }
+        
         EventImpl& operator-=(const std::unique_ptr<HolderT>& eventHolder)
         {
-            m_callbacks.remove(eventHolder.get());
+            m_callbacks.erase(eventHolder->m_hash);
 
             return *this;
         }
-
-        void operator()(Args&&... args)
+        
+        EventImpl& operator-=(const HolderT* eventHolder)
         {
-            for(const auto& callback : m_callbacks)
+            m_callbacks.erase(eventHolder->m_hash);
+            
+            return *this;
+        }
+        
+        template<typename... Args0>
+        void operator()(Args0&&... args)
+        {
+            for(auto& callback : m_callbacks)
             {
-                (*callback)(std::forward<Args>(args)...);
+                (*(callback.second))(std::forward<Args0>(args)...);
             }
         }
 
     private:
-        std::list<HolderT*> m_callbacks;
+        std::unordered_map<long, HolderT*> m_callbacks;
     };
 
     template <typename T>

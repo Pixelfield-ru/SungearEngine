@@ -59,6 +59,32 @@ namespace SGUtils
         }
 #endif
     };
+    
+    template <typename> struct MemberFunctionTraits;
+    
+    template <typename Return, typename Object, typename... Args>
+    struct MemberFunctionTraits<Return(Object::*)(Args...)>
+    {
+        typedef Return return_type;
+        typedef Object instance_type;
+        typedef Object & instance_reference;
+        using function_type = Return(Object::*)(Args...);
+        
+        // Can mess with Args... if you need to, for example:
+        static constexpr size_t argument_count = sizeof...(Args);
+    };
+
+    template <typename Return, typename Object, typename... Args>
+    struct MemberFunctionTraits<Return(Object::*)(Args...) const>
+    {
+        typedef Return return_type;
+        typedef Object instance_type;
+        typedef Object const & instance_reference;
+        using function_type = Return(Object::*)(Args...);
+        
+        // Can mess with Args... if you need to, for example:
+        static constexpr size_t argument_count = sizeof...(Args);
+    };
 }
 
 #endif //ECS_TYPEMETA_H

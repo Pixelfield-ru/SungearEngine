@@ -8,19 +8,21 @@
 #include <entt/entity/registry.hpp>
 #include <entt/entity/entity.hpp>
 #include <thread>
+
 #include "SGCore/Scene/ISystem.h"
 #include "SGUtils/Utils.h"
 #include "SGUtils/Timer.h"
 #include "SGCore/Threading/SafeObject.h"
 #include "SGCore/Scene/EntityComponentMember.h"
 #include "SGUtils/Event.h"
+#include "Transform.h"
+#include "SGCore/Threading/FixedVector.h"
 
 namespace SGCore
 {
     class IMeshData;
 
     struct TransformBase;
-    
     
     struct TransformationsUpdater : public ISystem
     {
@@ -36,7 +38,7 @@ namespace SGCore
         
         void setScene(const Ref<Scene>& scene) noexcept final;
         
-        Event<void(entt::registry&, const entt::entity&)> m_transformChangedEvent = MakeEvent<void(entt::registry&, const entt::entity&)>();
+        Event<void(entt::registry&, const entt::entity&, Ref<const Transform>)> m_transformChangedEvent = MakeEvent<void(entt::registry&, const entt::entity&, Ref<const Transform>)>();
         
     private:
         Ref<Scene> m_sharedScene;
@@ -45,8 +47,8 @@ namespace SGCore
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;
         SafeObject<std::vector<entt::entity>> m_entitiesForPhysicsUpdateToCheck;
         
-        entt::observer m_transformUpdateObserver;
-        entt::observer m_rigidbody3DUpdateObserver;
+        SafeObject<FixedVector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;
+        SafeObject<FixedVector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntities;
         
         // thread 3
         void updateTransformations(const double& dt, const double& fixedDt) noexcept;
