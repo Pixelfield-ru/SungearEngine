@@ -1,8 +1,9 @@
 //
-// Created by ilya on 18.02.24.
+// Created by ilya on 08.03.24.
 //
 
-#include "PhysicsDebugDraw.h"
+#include "DebugDraw.h"
+
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IVertexArray.h"
 #include "SGCore/Graphics/API/IVertexBuffer.h"
@@ -19,7 +20,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/Camera3D.h"
 
-SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
+SGCore::DebugDraw::DebugDraw()
 {
     m_linesPositions.resize(m_maxLines * 6);
     m_linesColors.resize(m_maxLines * 8);
@@ -81,7 +82,7 @@ SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
     
     m_linesRenderInfo.m_useIndices = true;
     m_linesRenderInfo.m_drawMode = SGDrawMode::SGG_LINES;
-
+    
     auto currentRenderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
     if(currentRenderPipeline)
     {
@@ -91,35 +92,35 @@ SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
     }
 }
 
-void SGCore::PhysicsDebugDraw::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
+void SGCore::DebugDraw::drawLine(const glm::vec3& from, const glm::vec3& to, const glm::vec4& color) noexcept
 {
     const size_t linePosIdx = m_currentDrawingLine * 6;
     const size_t lineColorIdx = m_currentDrawingLine * 8;
     
     if(linePosIdx < m_maxLines * 6 && lineColorIdx < m_maxLines * 8)
     {
-        m_linesPositions[linePosIdx] = from.x();
-        m_linesPositions[linePosIdx + 1] = from.y();
-        m_linesPositions[linePosIdx + 2] = from.z();
+        m_linesPositions[linePosIdx] = from.x;
+        m_linesPositions[linePosIdx + 1] = from.y;
+        m_linesPositions[linePosIdx + 2] = from.z;
         
-        m_linesPositions[linePosIdx + 3] = to.x();
-        m_linesPositions[linePosIdx + 4] = to.y();
-        m_linesPositions[linePosIdx + 5] = to.z();
+        m_linesPositions[linePosIdx + 3] = to.x;
+        m_linesPositions[linePosIdx + 4] = to.y;
+        m_linesPositions[linePosIdx + 5] = to.z;
         
         /*m_linesPositionsVertexBuffer->bind();
         m_linesPositionsVertexBuffer->subData(
                 { from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ() },
                 lineStartIdx);*/
         
-        m_linesColors[lineColorIdx] = color.x();
-        m_linesColors[lineColorIdx + 1] = color.y();
-        m_linesColors[lineColorIdx + 2] = color.z();
-        m_linesColors[lineColorIdx + 3] = 1.0;
+        m_linesColors[lineColorIdx] = color.x;
+        m_linesColors[lineColorIdx + 1] = color.y;
+        m_linesColors[lineColorIdx + 2] = color.z;
+        m_linesColors[lineColorIdx + 3] = color.w;
         
-        m_linesColors[lineColorIdx + 4] = color.x();
-        m_linesColors[lineColorIdx + 5] = color.y();
-        m_linesColors[lineColorIdx + 6] = color.z();
-        m_linesColors[lineColorIdx + 7] = 1.0;
+        m_linesColors[lineColorIdx + 4] = color.x;
+        m_linesColors[lineColorIdx + 5] = color.y;
+        m_linesColors[lineColorIdx + 6] = color.z;
+        m_linesColors[lineColorIdx + 7] = color.w;
         
         /*m_linesColorsVertexBuffer->bind();
         m_linesColorsVertexBuffer->subData(
@@ -130,36 +131,35 @@ void SGCore::PhysicsDebugDraw::drawLine(const btVector3& from, const btVector3& 
     }
 }
 
-void SGCore::PhysicsDebugDraw::drawContactPoint(
-        const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color)
+void SGCore::DebugDraw::drawAABB(const glm::vec3& min, const glm::vec3& max, const glm::vec4& color) noexcept
 {
-    // todo: impl
+    // face
+    drawLine(min, { min.x, max.y, min.z }, color);
+    drawLine({ min.x, max.y, min.z }, { max.x, max.y, min.z }, color);
+    drawLine({ max.x, max.y, min.z }, { max.x, min.y, min.z }, color);
+    drawLine({ max.x, min.y, min.z }, min, color);
+    
+    // backface
+    drawLine({ min.x, min.y, max.z }, { min.x, max.y, max.z }, color);
+    drawLine({ min.x, max.y, max.z }, { max.x, max.y, max.z }, color);
+    drawLine({ max.x, max.y, max.z }, { max.x, min.y, max.z }, color);
+    drawLine({ max.x, min.y, max.z }, { min.x, min.y, max.z }, color);
+    
+    // left face
+    drawLine({ min.x, max.y, min.z }, { min.x, max.y, max.z }, color);
+    drawLine({ min.x, min.y, max.z }, { min.x, min.y, min.z }, color);
+    
+    // right face
+    drawLine({ max.x, max.y, min.z }, { max.x, max.y, max.z }, color);
+    drawLine({ max.x, min.y, max.z }, { max.x, min.y, min.z }, color);
 }
 
-void SGCore::PhysicsDebugDraw::reportErrorWarning(const char* warningString)
+void SGCore::DebugDraw::update(const double& dt, const double& fixedD)
 {
-    // todo: impl
-}
-
-void SGCore::PhysicsDebugDraw::draw3dText(const btVector3& location, const char* textString)
-{
-    // todo: impl
-}
-
-void SGCore::PhysicsDebugDraw::setDebugMode(int debugMode)
-{
-    m_debugMode = debugMode;
-}
-
-int SGCore::PhysicsDebugDraw::getDebugMode() const
-{
-    return m_debugMode;
-}
-
-void SGCore::PhysicsDebugDraw::drawAll(const Ref<Scene>& scene)
-{
-    if(!m_linesShader) return;
-
+    auto lockedScene = m_scene.lock();
+    
+    if(!m_linesShader || !lockedScene) return;
+    
     auto subPassShader = m_linesShader->getSubPassShader("BatchedLinesPass");
     
     if(!subPassShader) return;
@@ -176,7 +176,7 @@ void SGCore::PhysicsDebugDraw::drawAll(const Ref<Scene>& scene)
     
     subPassShader->bind();
     
-    auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Ref<Transform>>();
+    auto camerasView = lockedScene->getECSRegistry().view<Camera3D, RenderingBase, Ref<Transform>>();
     
     camerasView.each([this, &subPassShader, &vCnt, &iCnt](Camera3D& camera3D, RenderingBase& renderingBase, Ref<Transform>& transform) {
         // todo: make get receiver (postprocess or default) and render in them
@@ -190,12 +190,12 @@ void SGCore::PhysicsDebugDraw::drawAll(const Ref<Scene>& scene)
     m_currentDrawingLine = 0;
 }
 
-void SGCore::PhysicsDebugDraw::resetRenderer() noexcept
+void SGCore::DebugDraw::resetRenderer() noexcept
 {
     m_currentDrawingLine = 0;
 }
 
-void SGCore::PhysicsDebugDraw::onRenderPipelineSet() noexcept
+void SGCore::DebugDraw::onRenderPipelineSet() noexcept
 {
     m_linesShader = MakeRef<IShader>();
     m_linesShader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(

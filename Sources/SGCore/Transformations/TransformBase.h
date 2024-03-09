@@ -25,6 +25,9 @@ namespace SGCore
         bool m_blockRotation = false;
         bool m_blockScale = false;
 
+        glm::vec3 m_aabbMin { 0.0 };
+        glm::vec3 m_aabbMax { 0.0 };
+        
         glm::vec3 m_position { 0.0 };
         glm::vec3 m_rotation { 0.0 };
         glm::vec3 m_scale { 1.0 };

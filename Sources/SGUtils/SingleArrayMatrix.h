@@ -81,7 +81,17 @@ namespace SGCore
         {
             return m_buffer;
         }
-
+        
+        [[nodiscard]] size_t getRowsCount() const noexcept
+        {
+            return m_rowsCount;
+        }
+        
+        [[nodiscard]] size_t getColumnsCount() const noexcept
+        {
+            return m_columnsCount;
+        }
+        
     private:
         T* m_buffer = nullptr;
 

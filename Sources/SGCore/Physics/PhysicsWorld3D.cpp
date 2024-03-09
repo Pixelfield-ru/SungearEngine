@@ -65,47 +65,24 @@ SGCore::PhysicsWorld3D::~PhysicsWorld3D()
 
 void SGCore::PhysicsWorld3D::addBody(const SGCore::Ref<btRigidBody>& rigidBody) noexcept
 {
-    m_bodiesToAdd.lock();
-    m_bodiesToAdd.getObject().insert(rigidBody);
-    m_bodiesToAdd.unlock();
+    std::lock_guard guard(m_bodiesCountChangeMutex);
+    m_dynamicsWorld->addRigidBody(rigidBody.get());
 }
 
 void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexcept
 {
-    m_bodiesToRemove.lock();
-    m_bodiesToRemove.getObject().insert(rigidBody);
-    m_bodiesToRemove.unlock();
+    std::lock_guard guard(m_bodiesCountChangeMutex);
+    int num = rigidBody->getNumConstraintRefs();
+    for(int j = 0; j < num; ++j)
+    {
+        m_dynamicsWorld->removeConstraint(rigidBody->getConstraintRef(0));
+    }
+    m_dynamicsWorld->removeRigidBody(rigidBody.get());
 }
 
 void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    if(!m_bodiesToRemove.isLocked())
-    {
-        auto bodiesToRemoveIt = m_bodiesToRemove.getObject().begin();
-        while(bodiesToRemoveIt != m_bodiesToRemove.getObject().end())
-        {
-            const auto& bodyRef = (*bodiesToRemoveIt);
-            
-            int num = bodyRef->getNumConstraintRefs();
-            for(int j = 0; j < num; ++j)
-            {
-                m_dynamicsWorld->removeConstraint(bodyRef->getConstraintRef(0));
-            }
-            m_dynamicsWorld->removeRigidBody(bodyRef.get());
-            
-            bodiesToRemoveIt = m_bodiesToRemove.getObject().erase(bodiesToRemoveIt);
-        }
-    }
-    
-    if(!m_bodiesToAdd.isLocked())
-    {
-        auto bodiesToAddIt = m_bodiesToAdd.getObject().begin();
-        while(bodiesToAddIt != m_bodiesToAdd.getObject().end())
-        {
-            m_dynamicsWorld->addRigidBody(bodiesToAddIt->get());
-            bodiesToAddIt = m_bodiesToAdd.getObject().erase(bodiesToAddIt);
-        }
-    }
+    std::lock_guard guard(m_bodiesCountChangeMutex);
     
     auto lockedScene = m_scene.lock();
 
@@ -121,7 +98,9 @@ void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt
             {
                 for(const auto& val : transformationsUpdater->m_changedModelMatrices.getObject())
                 {
-                    Rigidbody3D* rigidbody3D = lockedScene->getECSRegistry().try_get<Rigidbody3D>(val.m_owner);
+                    Ref<Rigidbody3D>* tmpRigidbody3D = lockedScene->getECSRegistry().try_get<Ref<Rigidbody3D>>(val.m_owner);
+                    Ref<Rigidbody3D> rigidbody3D = (tmpRigidbody3D ? *tmpRigidbody3D : nullptr);
+                    
                     if(rigidbody3D)
                     {
                         btTransform initialTransform;
@@ -141,9 +120,9 @@ void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt
             {
                 for(const auto& entity : transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getObject())
                 {
-                    if(registry.any_of<Rigidbody3D>(entity))
+                    if(registry.any_of<Ref<Rigidbody3D>>(entity))
                     {
-                        Rigidbody3D* rigidbody3D = registry.try_get<Rigidbody3D>(entity);
+                        Ref<Rigidbody3D> rigidbody3D = registry.get<Ref<Rigidbody3D>>(entity);
                         Ref<Transform> transform;
                         {
                             Ref<Transform>* tmpTransform = registry.try_get<Ref<Transform>>(entity);
@@ -326,7 +305,7 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
     auto lockedScene = m_scene.lock();
     if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
     {
-        if(m_bodiesToAdd.getObject().empty() && m_bodiesToRemove.getObject().empty())
+        // if(m_bodiesToAdd.getObject().empty() && m_bodiesToRemove.getObject().empty())
         {
             m_dynamicsWorld->debugDrawWorld();
         }
@@ -344,10 +323,10 @@ void SGCore::PhysicsWorld3D::onAddToScene()
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
-    auto rigidbodies3DView = lockedScene->getECSRegistry().view<Rigidbody3D>();
+    auto rigidbodies3DView = lockedScene->getECSRegistry().view<Ref<Rigidbody3D>>();
     
-    rigidbodies3DView.each([this](Rigidbody3D& rigidbody3D) {
-        this->addBody(rigidbody3D.m_body);
+    rigidbodies3DView.each([this](Ref<Rigidbody3D> rigidbody3D) {
+        this->addBody(rigidbody3D->m_body);
     });
 }
 

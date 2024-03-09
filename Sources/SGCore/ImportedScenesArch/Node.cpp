@@ -52,7 +52,8 @@ entt::entity SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
         EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
         Ref<Transform>& meshTransform = registry.emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
         Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
-        meshEntityMesh.m_base.m_meshData->setData(mesh);
+        meshEntityMesh.m_base.m_meshData = mesh;
+        // meshEntityMesh.m_base.m_meshData->setData(mesh);
 
         // meshComponent->addRequiredShaderPath("GeometryShader");
 

@@ -17,6 +17,13 @@ namespace SGCore
 
     struct Rigidbody3D
     {
+    public:
+        Ref<btRigidBody> m_body;
+        
+    private:
+        Ref<btCollisionShape> m_shape;
+        
+    public:
         Rigidbody3D(const Ref<PhysicsWorld3D>& physicsWorld);
         Rigidbody3D(const Rigidbody3D& other) noexcept = default;
         Rigidbody3D(Rigidbody3D&& other) noexcept = default;
@@ -24,12 +31,11 @@ namespace SGCore
         ~Rigidbody3D();
         
         Ref<btMotionState> m_state;
-        Ref<btRigidBody> m_body;
         Marker<int> m_bodyFlags;
         
         void setShape(const Ref<btCollisionShape>& shape) noexcept;
         
-        [[nodiscard]] Ref<btCollisionShape> getShape() const noexcept;
+        [[nodiscard]] Ref<btCollisionShape>& getShape() noexcept;
         
         template<typename ShapeT>
         requires(std::is_base_of_v<btCollisionShape, ShapeT>)
@@ -38,6 +44,7 @@ namespace SGCore
             return std::dynamic_pointer_cast<ShapeT>(m_shape);
         }
         
+        void setParentWorld(const Ref<PhysicsWorld3D>& world) noexcept;
         [[nodiscard]] Weak<PhysicsWorld3D> getParentPhysicsWorld() const noexcept;
         
         void updateFlags() noexcept;
@@ -48,7 +55,6 @@ namespace SGCore
         Rigidbody3D& operator=(Rigidbody3D&& other) noexcept = default;
         
     private:
-        Ref<btCollisionShape> m_shape;
         Weak<PhysicsWorld3D> m_parentPhysicsWorld;
     };
 }

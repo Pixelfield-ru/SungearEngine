@@ -37,7 +37,6 @@ namespace SGCore
         
         EventImpl& operator+=(HolderT* holder)
         {
-            m_callbacks[holder->m_hash] = holder;
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
@@ -45,6 +44,8 @@ namespace SGCore
                     (listeningEvent)->m_callbacks.erase(holder->m_hash);
                 }
             };
+            disconnect(holder->m_hash);
+            m_callbacks[holder->m_hash] = holder;
             holder->m_listeningEvents.push_back(this->shared_from_this());
 
             return *this;
@@ -54,8 +55,6 @@ namespace SGCore
         {
             auto* holder = eventHolder.get();
             
-            m_callbacks[holder->m_hash] = holder;
-            
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
@@ -63,6 +62,8 @@ namespace SGCore
                     (listeningEvent)->m_callbacks.erase(holder->m_hash);
                 }
             };
+            disconnect(holder->m_hash);
+            m_callbacks[holder->m_hash] = holder;
             holder->m_listeningEvents.push_back(this->shared_from_this());
 
             return *this;
@@ -70,7 +71,7 @@ namespace SGCore
         
         EventImpl& operator+=(const HolderT* holder)
         {
-            m_callbacks[holder->m_hash] = holder;
+            // m_callbacks.contains(holder->m_hash)
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
@@ -78,6 +79,8 @@ namespace SGCore
                     (listeningEvent)->m_callbacks.erase(holder->m_hash);
                 }
             };
+            disconnect(holder->m_hash);
+            m_callbacks[holder->m_hash] = holder;
             holder->m_listeningEvents.push_back(this->shared_from_this());
             
             return *this;
@@ -91,7 +94,6 @@ namespace SGCore
             holder->m_isLambda = true;
             std::cout << "hash : " << holder->m_hash << std::endl;
             
-            m_callbacks[holder->m_hash] = holder;
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
@@ -99,6 +101,8 @@ namespace SGCore
                     (listeningEvent)->m_callbacks.erase(holder->m_hash);
                 }
             };
+            disconnect(holder->m_hash);
+            m_callbacks[holder->m_hash] = holder;
             holder->m_listeningEvents.push_back(this->shared_from_this());
             
             return *this;
@@ -122,6 +126,7 @@ namespace SGCore
             };
             (*holder) = funcLambda;
             
+            disconnect(holder->m_hash);
             m_callbacks[holder->m_hash] = holder;
             holder->m_listeningEvents.push_back(this->shared_from_this());
         }
@@ -144,6 +149,7 @@ namespace SGCore
             };
             (*holder) = funcLambda;
             
+            disconnect(holder->m_hash);
             m_callbacks[holder->m_hash] = holder;
             holder->m_listeningEvents.push_back(this->shared_from_this());
         }
@@ -153,10 +159,15 @@ namespace SGCore
         {
             const size_t hash = std::hash<const char*>()(typeid(FuncPtr).name()) ^ *reinterpret_cast<std::intptr_t*>(&obj);
             
-            auto it = m_callbacks.find(hash);
+            disconnect(hash);
+        }
+        
+        void disconnect(const size_t& funcHash)
+        {
+            auto it = m_callbacks.find(funcHash);
             if(it != m_callbacks.end())
             {
-                if(it->second.m_isLambda)
+                if(it->second->m_isLambda)
                 {
                     delete it->second;
                 }
@@ -166,14 +177,14 @@ namespace SGCore
         
         EventImpl& operator-=(const std::unique_ptr<HolderT>& eventHolder)
         {
-            m_callbacks.erase(eventHolder->m_hash);
+            disconnect(eventHolder->m_hash);
 
             return *this;
         }
         
         EventImpl& operator-=(const HolderT* eventHolder)
         {
-            m_callbacks.erase(eventHolder->m_hash);
+            disconnect(eventHolder->m_hash);
             
             return *this;
         }

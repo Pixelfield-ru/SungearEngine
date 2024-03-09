@@ -21,6 +21,7 @@
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/UIElement.h"
 #include "SGCore/Memory/Assets/XMLDocument.h"
+#include "SGCore/Render/DebugDraw.h"
 
 SGCore::Scene::Scene()
 {
@@ -71,6 +72,9 @@ void SGCore::Scene::createDefaultSystems()
 
     auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();
     addSystem(sphereGizmosUpdater);
+    
+    auto debugDraw = MakeRef<DebugDraw>();
+    addSystem(debugDraw);
 
     // ===================
     

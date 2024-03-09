@@ -81,15 +81,14 @@ namespace SGCore
         
         bool m_isAlive = true;
         
-        SafeObject<std::unordered_set<Ref<btRigidBody>>> m_bodiesToAdd;
-        SafeObject<std::unordered_set<Ref<btRigidBody>>> m_bodiesToRemove;
-        
         Scope<btCollisionConfiguration> m_collisionConfig;
         Scope<btCollisionDispatcher> m_collisionDispatcher;
         Scope<btBroadphaseInterface> m_overlappingPairCache;
         Scope<btSequentialImpulseConstraintSolver> m_sequentialImpulseConstraintSolver;
         Scope<btDynamicsWorld> m_dynamicsWorld;
         Scope<PhysicsDebugDraw> m_debugDraw;
+        
+        std::mutex m_bodiesCountChangeMutex;
         
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_physicalMatricesVector;
         

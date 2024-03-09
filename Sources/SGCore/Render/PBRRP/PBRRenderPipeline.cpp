@@ -18,7 +18,7 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     m_shadersPaths["SkyboxShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/skybox/default_shader.glsl";
     m_shadersPaths["Gizmos"]["ComplexGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
     m_shadersPaths["Gizmos"]["LinesGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/lines_shader.glsl";
-    m_shadersPaths["PhysicsLinesDebugDrawShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/debug/physics_lines_debug_shader.glsl";
+    m_shadersPaths["LinesDebugDrawShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/debug/lines_debug_shader.glsl";
     m_shadersPaths["StandardTextShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/ui/text_shader.glsl";
     m_shadersPaths["InstancingShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/pbr/instancing.glsl";
     m_shadersPaths["BatchingShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/pbr/batching.glsl";

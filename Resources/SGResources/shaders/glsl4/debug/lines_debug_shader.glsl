@@ -2,18 +2,18 @@
 
 #sg_include "../uniform_bufs_decl.glsl"
 
-SGSubPass(PhysicsLinesDebugPass)
+SGSubPass(BatchedLinesPass)
 {
     SGSubShader(Vertex)
     {
         layout (location = 0) in vec3 linesPositionsAttribute;
-        layout (location = 1) in vec3 linesColorsAttribute;
+        layout (location = 1) in vec4 linesColorsAttribute;
 
         out vec4 fs_lineCol;
 
         void main()
         {
-            fs_lineCol = vec4(linesColorsAttribute, 1.0);
+            fs_lineCol = linesColorsAttribute;
 
             gl_Position = camera.projectionSpaceMatrix * vec4(linesPositionsAttribute, 1.0);
         }

@@ -82,17 +82,51 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
 
     sgMeshData->m_name = aiMesh->mName.data;
     
-    sgMeshData->m_aabbMin = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mAABB.mMin);
-    sgMeshData->m_aabbMax = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mAABB.mMax);
+    /*sgMeshData->m_aabbMin = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mAABB.mMin);
+    sgMeshData->m_aabbMax = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mAABB.mMax);*/
 
     polygonsNumber += aiMesh->mNumVertices / 3;
     std::cout << "current polygons num: " << std::to_string(polygonsNumber) << std::endl;
+    
+    if(aiMesh->mNumVertices > 0)
+    {
+        sgMeshData->m_aabbMin = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
+        sgMeshData->m_aabbMax = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
+    }
 
     for(unsigned i = 0; i < aiMesh->mNumVertices; i++)
     {
-        sgMeshData->m_positions.push_back(aiMesh->mVertices[i].x);
-        sgMeshData->m_positions.push_back(aiMesh->mVertices[i].y);
-        sgMeshData->m_positions.push_back(aiMesh->mVertices[i].z);
+        const auto& vertex = aiMesh->mVertices[i];
+        
+        sgMeshData->m_positions.push_back(vertex.x);
+        sgMeshData->m_positions.push_back(vertex.y);
+        sgMeshData->m_positions.push_back(vertex.z);
+        
+        if(sgMeshData->m_aabbMin.x > vertex.x)
+        {
+            sgMeshData->m_aabbMin.x = vertex.x;
+        }
+        if(sgMeshData->m_aabbMin.y > vertex.y)
+        {
+            sgMeshData->m_aabbMin.y = vertex.y;
+        }
+        if(sgMeshData->m_aabbMin.z > vertex.z)
+        {
+            sgMeshData->m_aabbMin.z = vertex.z;
+        }
+        
+        if(sgMeshData->m_aabbMax.x < vertex.x)
+        {
+            sgMeshData->m_aabbMax.x = vertex.x;
+        }
+        if(sgMeshData->m_aabbMax.y < vertex.y)
+        {
+            sgMeshData->m_aabbMax.y = vertex.y;
+        }
+        if(sgMeshData->m_aabbMax.z < vertex.z)
+        {
+            sgMeshData->m_aabbMax.z = vertex.z;
+        }
 
         sgMeshData->m_normals.push_back(aiMesh->mNormals[i].x);
         sgMeshData->m_normals.push_back(aiMesh->mNormals[i].y);
@@ -127,7 +161,29 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
             sgMeshData->m_uv.push_back(0.0f);
         }
     }
-
+    
+    // todo: make 0.05 as not hardcoded minimal values of aabb
+    if(sgMeshData->m_aabbMax.x - sgMeshData->m_aabbMin.x == 0)
+    {
+        sgMeshData->m_aabbMax.x = 0.05;
+        sgMeshData->m_aabbMin.x = -0.05;
+    }
+    
+    if(sgMeshData->m_aabbMax.y - sgMeshData->m_aabbMin.y == 0)
+    {
+        sgMeshData->m_aabbMax.y = 0.05;
+        sgMeshData->m_aabbMin.y = -0.05;
+    }
+    
+    if(sgMeshData->m_aabbMax.z - sgMeshData->m_aabbMin.z == 0)
+    {
+        sgMeshData->m_aabbMax.z = 0.05;
+        sgMeshData->m_aabbMin.z = -0.05;
+    }
+    
+    std::cout << "name: " << sgMeshData->m_name << ", min: " << sgMeshData->m_aabbMin.x << ", " << sgMeshData->m_aabbMin.y << ", " << sgMeshData->m_aabbMin.z <<
+              ", max: " << sgMeshData->m_aabbMax.x << ", " << sgMeshData->m_aabbMax.y << ", " << sgMeshData->m_aabbMax.z << std::endl;
+    
     for(unsigned i = 0; i < aiMesh->mNumFaces; i++)
     {
         const auto& face = aiMesh->mFaces[i];
