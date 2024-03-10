@@ -15,6 +15,8 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 #include "SGCore/Scene/Scene.h"
+#include "SGCore/Render/SpacePartitioning/CullableMesh.h"
+#include "SGCore/Render/SpacePartitioning/CullableInfo.h"
 
 /*SGCore::Mesh::Mesh() noexcept
 {
@@ -126,6 +128,9 @@ entt::entity SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::s
     EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
     Ref<Transform>& meshTransform = registry.emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
     Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
+    auto cullableMesh = registry.emplace<Ref<CullableMesh>>(meshEntity, MakeRef<CullableMesh>());
+    auto cullableInfo = registry.emplace<Ref<CullableInfo>>(meshEntity, MakeRef<CullableInfo>());
+    (*cullableInfo->m_onNodeLeave) += cullableMesh->m_nodeLeaveListener;
     // maybe can load the ram
     meshEntityMesh.m_base.m_meshData = shared_from_this();
     

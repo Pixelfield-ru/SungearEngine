@@ -15,8 +15,9 @@
 namespace SGCore
 {
     struct Transform;
+    struct OctreeNode;
     
-    class OctreesSolver : public IParallelSystem
+    class OctreesSolver : public IParallelSystem<OctreesSolver>
     {
         void parallelUpdate(const double& dt, const double& fixedDt) noexcept final;
         

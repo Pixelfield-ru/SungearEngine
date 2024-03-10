@@ -79,13 +79,13 @@ void SGCore::DirectionalLightsUpdater::updateLights() noexcept
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
-    auto directionalLightsView = lockedScene->getECSRegistry().view<DirectionalLight, RenderingBase, Ref<Transform>>();
+    auto directionalLightsView = lockedScene->getECSRegistry().view<DirectionalLight, Ref<RenderingBase>, Ref<Transform>>();
     
     int currenLightIdx = 0;
     
     m_uniformBuffer->bind();
     
-    directionalLightsView.each([&currenLightIdx, this](DirectionalLight& directionalLight, RenderingBase& renderingBase, Ref<Transform>& transform) {
+    directionalLightsView.each([&currenLightIdx, this](DirectionalLight& directionalLight, Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
         if(currenLightIdx < m_maxLightsCount)
         {
             std::string currentDirLight = "directionalLights[" + std::to_string(currenLightIdx) + "]";

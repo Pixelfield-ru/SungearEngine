@@ -180,9 +180,9 @@ void SGCore::DebugDraw::update(const double& dt, const double& fixedDt)
     
     subPassShader->bind();
     
-    auto camerasView = lockedScene->getECSRegistry().view<Camera3D, RenderingBase, Ref<Transform>>();
+    auto camerasView = lockedScene->getECSRegistry().view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();
     
-    camerasView.each([this, &subPassShader, &vCnt, &iCnt](Camera3D& camera3D, RenderingBase& renderingBase, Ref<Transform>& transform) {
+    camerasView.each([this, &subPassShader, &vCnt, &iCnt](Ref<Camera3D>& camera3D, Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
         // todo: make get receiver (postprocess or default) and render in them
         
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);

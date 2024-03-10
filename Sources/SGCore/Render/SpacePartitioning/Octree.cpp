@@ -11,7 +11,7 @@ void SGCore::OctreeNode::draw(const SGCore::Ref<SGCore::DebugDraw>& debugDraw) n
     if(debugDraw->m_mode == DebugDrawMode::NO_DEBUG) return;
     
     debugDraw->drawAABB(m_aabb.m_min, m_aabb.m_max,
-                        (!m_entities.empty()) ? m_collidesDebugColor : m_notCollidesDebugColor);
+                        /*(!m_entities.empty()) ? m_collidesDebugColor :*/ m_notCollidesDebugColor);
 
     if(m_isSubdivided.load())
     {
@@ -20,6 +20,11 @@ void SGCore::OctreeNode::draw(const SGCore::Ref<SGCore::DebugDraw>& debugDraw) n
             m_children[i]->draw(debugDraw);
         }
     }
+}
+
+bool SGCore::OctreeNode::isSubdivided() const noexcept
+{
+    return m_isSubdivided;
 }
 
 bool SGCore::Octree::subdivide(Ref<OctreeNode> node) const noexcept
@@ -85,7 +90,7 @@ bool SGCore::Octree::subdivide(Ref<OctreeNode> node) const noexcept
     return true;
 }
 
-void SGCore::Octree::subdivideWhileCollidesWithAABB(const SGCore::AABB& aabb, Ref<OctreeNode> node, std::vector<Ref<OctreeNode>>& collidedNodes) const noexcept
+void SGCore::Octree::subdivideWhileCollidesWithAABB(const SGCore::AABB& aabb, Ref<OctreeNode> node, std::vector<Ref<OctreeNode>>& collidedNodes, std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept
 {
     if(!node) return;
     
@@ -99,10 +104,14 @@ void SGCore::Octree::subdivideWhileCollidesWithAABB(const SGCore::AABB& aabb, Re
             {
                 for(std::uint8_t i = 0; i < 8; ++i)
                 {
-                    subdivideWhileCollidesWithAABB(aabb, node->m_children[i], collidedNodes);
+                    subdivideWhileCollidesWithAABB(aabb, node->m_children[i], collidedNodes, notCollidedNodes);
                 }
             }
         }
+    }
+    else
+    {
+        notCollidedNodes.push_back(node);
     }
 }
 

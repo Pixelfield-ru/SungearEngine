@@ -62,8 +62,8 @@ namespace SGCore
          * @param renderingComponent - The component that will be used as a "camera" for rendering entities.
          * @param transformComponent - The transform component of this "camera".
          */
-        virtual void prepareUniformBuffers(const RenderingBase& renderingBase,
-                                           const Ref<SGCore::Transform>& transform) { }
+        virtual void prepareUniformBuffers(const Ref<RenderingBase>& renderingBase,
+                                           const Ref<Transform>& transform) { }
 
         virtual void renderMeshData(const Ref<IMeshData>& meshData,
                                     const MeshDataRenderInfo& meshDataRenderInfo) { }

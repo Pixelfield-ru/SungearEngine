@@ -10,6 +10,11 @@ void SGCore::ISystem::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
     m_scene = scene;
 }
 
+SGCore::Weak<SGCore::Scene> SGCore::ISystem::getScene() const noexcept
+{
+    return m_scene;
+}
+
 double SGCore::ISystem::getUpdateFunctionExecutionTime() const noexcept
 {
     return m_update_executionTime;

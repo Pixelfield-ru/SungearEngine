@@ -31,6 +31,7 @@ namespace SGCore
         virtual void onRemoveFromScene() { }
         
         virtual void setScene(const Ref<Scene>& scene) noexcept;
+        Weak<Scene> getScene() const noexcept;
         
         double getUpdateFunctionExecutionTime() const noexcept;
         double getFixedUpdateFunctionExecutionTime() const noexcept;

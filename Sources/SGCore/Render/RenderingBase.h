@@ -7,6 +7,7 @@
 
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
+#include "SGUtils/Math/Frustum.h"
 
 //#include "RenderingComponentsSystem.h"
 
@@ -41,6 +42,8 @@ namespace SGCore
         float m_lastTop = m_top;
         
         bool m_projectionSpaceMatrixChanged = false;
+        
+        Frustum m_frustum;
     };
 }
 

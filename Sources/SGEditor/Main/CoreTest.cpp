@@ -63,6 +63,9 @@
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/Octree.h"
 #include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
+#include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
+#include "SGCore/Render/SpacePartitioning/ObjectsCullingOctreesSolver.h"
+#include "SGCore/Render/SpacePartitioning/ObjectsCullingOctree.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -112,8 +115,8 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(sphereEntities[0]);
     sphereTransform->m_ownTransform.m_position = spherePos;
     
-    testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
-    globalBatch->addEntity(sphereEntities[2]);
+    /*testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
+    globalBatch->addEntity(sphereEntities[2]);*/
 }
 
 void init()
@@ -674,12 +677,12 @@ void init()
     entt::entity uiCameraEntity = testScene->getECSRegistry().create();
     SGCore::UICamera& uiCameraEntityCamera = testScene->getECSRegistry().emplace<SGCore::UICamera>(uiCameraEntity);
     auto& uiCameraEntityTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(uiCameraEntity, SGCore::MakeRef<SGCore::Transform>());
-    SGCore::RenderingBase& uiCameraEntityRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(uiCameraEntity);
+    auto& uiCameraEntityRenderingBase = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::RenderingBase>>(uiCameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
     
-    uiCameraEntityRenderingBase.m_left = 0;
-    uiCameraEntityRenderingBase.m_right = 2560;
-    uiCameraEntityRenderingBase.m_bottom = -1440;
-    uiCameraEntityRenderingBase.m_top = 0;
+    uiCameraEntityRenderingBase->m_left = 0;
+    uiCameraEntityRenderingBase->m_right = 2560;
+    uiCameraEntityRenderingBase->m_bottom = -1440;
+    uiCameraEntityRenderingBase->m_top = 0;
     
     {
         auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
@@ -717,10 +720,10 @@ void init()
     cameraTransform->m_ownTransform.m_position.z = 2;
     cameraTransform->m_ownTransform.m_rotation.x = -30;
 
-    SGCore::Camera3D& cameraEntityCamera3D = testScene->getECSRegistry().emplace<SGCore::Camera3D>(testCameraEntity);
+    auto& cameraEntityCamera3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Camera3D>>(testCameraEntity, SGCore::MakeRef<SGCore::Camera3D>());
     // SGCore::DefaultFrameReceiver& cameraEntityReceiver = testScene->getECSRegistry().emplace<SGCore::DefaultFrameReceiver>(testCameraEntity);
     SGCore::Controllable3D& cameraEntityControllable = testScene->getECSRegistry().emplace<SGCore::Controllable3D>(testCameraEntity);
-    SGCore::RenderingBase& cameraRenderingBase = testScene->getECSRegistry().emplace<SGCore::RenderingBase>(testCameraEntity);
+    auto& cameraRenderingBase = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::RenderingBase>>(testCameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
 
     // ===============================
 
@@ -736,11 +739,16 @@ void init()
     {
         auto octreeEntity = testScene->getECSRegistry().create();
         SGCore::Ref<SGCore::Octree>& octree = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Octree>>(octreeEntity, SGCore::MakeRef<SGCore::Octree>());
-        octree->m_nodeMinSize = { 10, 10, 10 };
+        testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::ObjectsCullingOctree>>(octreeEntity, SGCore::MakeRef<SGCore::ObjectsCullingOctree>());
+        octree->m_nodeMinSize = { 50, 50, 50 };
         octree->m_root->m_aabb.m_min = { -500, -500, -500 };
         octree->m_root->m_aabb.m_max = { 500, 500, 500 };
         globalOctree = octree;
         // octree->subdivide(octree->m_root);
+        
+        SGCore::Ref<SGCore::ObjectsCullingOctreesSolver> objectsCullingOctreesSolver = SGCore::MakeRef<SGCore::ObjectsCullingOctreesSolver>();
+        
+        testScene->getSystem<SGCore::OctreesSolver>()->addSubprocess(objectsCullingOctreesSolver);
     }
     
     /*

@@ -19,6 +19,8 @@
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/ShaderComponent.h"
+#include "SGCore/Render/SpacePartitioning/CullableMesh.h"
+#include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
 
 void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
@@ -57,8 +59,10 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     }*/
 
     // scene->getECSRegistry();
-    auto camerasView = scene->getECSRegistry().view<Camera3D, RenderingBase, Ref<Transform>>();
-    auto meshesView = scene->getECSRegistry().view<EntityBaseInfo, Mesh, Ref<Transform>>(entt::exclude<DisableMeshGeometryPass>);
+    auto& registry = scene->getECSRegistry();
+    
+    auto camerasView = registry.view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();
+    auto meshesView = registry.view<EntityBaseInfo, Mesh, Ref<Transform>>(entt::exclude<DisableMeshGeometryPass>);
     
     Ref<ISubPassShader> standardGeometryShader;
     if(m_shader)
@@ -71,7 +75,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         standardGeometryShader->bind();
     }
     
-    camerasView.each([&meshesView, &renderPipeline, this, &standardGeometryShader, &scene](Camera3D& camera3D, RenderingBase& cameraRenderingBase, Ref<Transform>& cameraTransform) {
+    camerasView.each([&meshesView, &renderPipeline, &standardGeometryShader, &scene, &registry, this]
+    (const entt::entity& cameraEntity, Ref<Camera3D>& camera3D, Ref<RenderingBase>& cameraRenderingBase, Ref<Transform>& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
         if(standardGeometryShader)
@@ -81,55 +86,66 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         
         // todo: make get receiver (postprocess or default) and render in them
 
-        meshesView.each([&renderPipeline, this, &standardGeometryShader, &scene](const entt::entity& entity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
-            ShaderComponent* entityShader = scene->getECSRegistry().try_get<ShaderComponent>(entity);
+        meshesView.each([&renderPipeline, &standardGeometryShader, &scene, &cameraEntity, &registry, this]
+        (const entt::entity& meshEntity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
+            auto* tmpCullableMesh = registry.try_get<Ref<CullableMesh>>(meshEntity);
+            Ref<CullableMesh> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
             
-            auto meshGeomShader = (entityShader && entityShader->m_shader) ? entityShader->m_shader->getSubPassShader("GeometryPass") : nullptr;
-            auto shaderToUse = meshGeomShader ? meshGeomShader : standardGeometryShader;
+            bool willRender = registry.try_get<IgnoreOctrees>(meshEntity) || !cullableMesh || cullableMesh->m_visibleCameras.contains(cameraEntity);
             
-            if(shaderToUse)
+            if(willRender)
             {
-                if(shaderToUse == meshGeomShader)
-                {
-                    shaderToUse->bind();
-                    shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
-                }
+                ShaderComponent* entityShader = scene->getECSRegistry().try_get<ShaderComponent>(meshEntity);
                 
-                {
-                    shaderToUse->useMatrix("objectTransform.modelMatrix", meshTransform->m_finalTransform.m_modelMatrix);
-                    shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
-                }
+                auto meshGeomShader = (entityShader && entityShader->m_shader)
+                                      ? entityShader->m_shader->getSubPassShader("GeometryPass") : nullptr;
+                auto shaderToUse = meshGeomShader ? meshGeomShader : standardGeometryShader;
                 
-                size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.m_meshData->m_material);
-                shaderToUse->bindTextureBindings(offset0);
-                
-                auto uniformBuffsIt = m_uniformBuffersToUse.begin();
-                while(uniformBuffsIt != m_uniformBuffersToUse.end())
+                if(shaderToUse)
                 {
-                    if(auto lockedUniformBuf = uniformBuffsIt->lock())
+                    if(shaderToUse == meshGeomShader)
                     {
-                        shaderToUse->useUniformBuffer(lockedUniformBuf);
-                        
-                        ++uniformBuffsIt;
+                        shaderToUse->bind();
+                        shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
                     }
-                    else
+                    
                     {
-                        uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
+                        shaderToUse->useMatrix("objectTransform.modelMatrix",
+                                               meshTransform->m_finalTransform.m_modelMatrix);
+                        shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
                     }
-                }
-                
-                CoreMain::getRenderer()->renderMeshData(
-                        mesh.m_base.m_meshData,
-                        mesh.m_base.m_meshDataRenderInfo
-                );
-                
-                shaderToUse->unbindMaterialTextures(mesh.m_base.m_meshData->m_material);
-                
-                if(shaderToUse == meshGeomShader)
-                {
-                    if(standardGeometryShader)
+                    
+                    size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.m_meshData->m_material);
+                    shaderToUse->bindTextureBindings(offset0);
+                    
+                    auto uniformBuffsIt = m_uniformBuffersToUse.begin();
+                    while(uniformBuffsIt != m_uniformBuffersToUse.end())
                     {
-                        standardGeometryShader->bind();
+                        if(auto lockedUniformBuf = uniformBuffsIt->lock())
+                        {
+                            shaderToUse->useUniformBuffer(lockedUniformBuf);
+                            
+                            ++uniformBuffsIt;
+                        }
+                        else
+                        {
+                            uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
+                        }
+                    }
+                    
+                    CoreMain::getRenderer()->renderMeshData(
+                            mesh.m_base.m_meshData,
+                            mesh.m_base.m_meshDataRenderInfo
+                    );
+                    
+                    shaderToUse->unbindMaterialTextures(mesh.m_base.m_meshData->m_material);
+                    
+                    if(shaderToUse == meshGeomShader)
+                    {
+                        if(standardGeometryShader)
+                        {
+                            standardGeometryShader->bind();
+                        }
                     }
                 }
             }

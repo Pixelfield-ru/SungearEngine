@@ -16,9 +16,9 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
-    auto renderingBasesView = lockedScene->getECSRegistry().view<RenderingBase, Ref<Transform>>();
+    auto renderingBasesView = lockedScene->getECSRegistry().view<Ref<RenderingBase>, Ref<Transform>>();
 
-    renderingBasesView.each([](RenderingBase& renderingBase, Ref<Transform>& transform) {
+    renderingBasesView.each([](Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
         TransformBase& ownTransform = transform->m_ownTransform;
 
         bool viewMatrixChanged = ownTransform.m_rotationChanged ||
@@ -42,67 +42,69 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
             );
         }
 
-        renderingBase.m_projectionSpaceMatrixChanged = false;
+        renderingBase->m_projectionSpaceMatrixChanged = false;
 
         bool projectionMatrixChanged = false;
 
         // TODO: make checking for lastTransformation != current transformation
         // if(viewMatrixChanged)
         {
-            renderingBase.m_viewMatrix = glm::toMat4(rotationQuat);
-            renderingBase.m_viewMatrix = glm::translate(renderingBase.m_viewMatrix,
+            renderingBase->m_viewMatrix = glm::toMat4(rotationQuat);
+            renderingBase->m_viewMatrix = glm::translate(renderingBase->m_viewMatrix,
                                                         -ownTransform.m_position
             );
-            renderingBase.m_viewMatrix =
-                    glm::scale(renderingBase.m_viewMatrix, ownTransform.m_scale);
+            renderingBase->m_viewMatrix =
+                    glm::scale(renderingBase->m_viewMatrix, ownTransform.m_scale);
         }
 
         // if some part of projection matrix of camera is changed
-        if(renderingBase.m_lastFov != renderingBase.m_fov ||
-           renderingBase.m_lastAspect != renderingBase.m_aspect ||
-           renderingBase.m_lastZNear != renderingBase.m_zNear ||
-           renderingBase.m_lastZFar != renderingBase.m_zFar)
+        if(renderingBase->m_lastFov != renderingBase->m_fov ||
+           renderingBase->m_lastAspect != renderingBase->m_aspect ||
+           renderingBase->m_lastZNear != renderingBase->m_zNear ||
+           renderingBase->m_lastZFar != renderingBase->m_zFar)
         {
-            renderingBase.m_projectionMatrix = glm::perspective<float>(
-                    glm::radians(renderingBase.m_fov),
-                    renderingBase.m_aspect,
-                    renderingBase.m_zNear,
-                    renderingBase.m_zFar
+            renderingBase->m_projectionMatrix = glm::perspective<float>(
+                    glm::radians(renderingBase->m_fov),
+                    renderingBase->m_aspect,
+                    renderingBase->m_zNear,
+                    renderingBase->m_zFar
             );
 
-            renderingBase.m_lastFov = renderingBase.m_fov;
-            renderingBase.m_lastAspect = renderingBase.m_aspect;
-            renderingBase.m_lastZNear = renderingBase.m_zNear;
-            renderingBase.m_lastZFar = renderingBase.m_zFar;
+            renderingBase->m_lastFov = renderingBase->m_fov;
+            renderingBase->m_lastAspect = renderingBase->m_aspect;
+            renderingBase->m_lastZNear = renderingBase->m_zNear;
+            renderingBase->m_lastZFar = renderingBase->m_zFar;
 
             projectionMatrixChanged = true;
         }
 
         // if(viewMatrixChanged || projectionMatrixChanged)
         {
-            renderingBase.m_projectionSpaceMatrix =
-                    renderingBase.m_projectionMatrix * renderingBase.m_viewMatrix;
-            renderingBase.m_projectionSpaceMatrixChanged = true;
+            renderingBase->m_projectionSpaceMatrix =
+                    renderingBase->m_projectionMatrix * renderingBase->m_viewMatrix;
+            renderingBase->m_projectionSpaceMatrixChanged = true;
         }
         
-        if(renderingBase.m_left != renderingBase.m_lastLeft ||
-           renderingBase.m_right != renderingBase.m_lastRight ||
-           renderingBase.m_bottom != renderingBase.m_lastRight ||
-           renderingBase.m_top != renderingBase.m_lastTop)
+        renderingBase->m_frustum = { renderingBase->m_projectionSpaceMatrix };
+        
+        if(renderingBase->m_left != renderingBase->m_lastLeft ||
+           renderingBase->m_right != renderingBase->m_lastRight ||
+           renderingBase->m_bottom != renderingBase->m_lastRight ||
+           renderingBase->m_top != renderingBase->m_lastTop)
         {
-            renderingBase.m_orthographicMatrix = glm::ortho<float>(renderingBase.m_left, renderingBase.m_right,
-                                                                   renderingBase.m_bottom, renderingBase.m_top);
+            renderingBase->m_orthographicMatrix = glm::ortho<float>(renderingBase->m_left, renderingBase->m_right,
+                                                                   renderingBase->m_bottom, renderingBase->m_top);
             
-            renderingBase.m_lastLeft = renderingBase.m_left;
-            renderingBase.m_lastRight = renderingBase.m_right;
-            renderingBase.m_lastBottom = renderingBase.m_bottom;
-            renderingBase.m_lastTop = renderingBase.m_top;
+            renderingBase->m_lastLeft = renderingBase->m_left;
+            renderingBase->m_lastRight = renderingBase->m_right;
+            renderingBase->m_lastBottom = renderingBase->m_bottom;
+            renderingBase->m_lastTop = renderingBase->m_top;
         }
         
         {
-            renderingBase.m_orthographicSpaceMatrix =
-                    renderingBase.m_orthographicMatrix * renderingBase.m_viewMatrix;
-            renderingBase.m_projectionSpaceMatrixChanged = true;
+            renderingBase->m_orthographicSpaceMatrix =
+                    renderingBase->m_orthographicMatrix * renderingBase->m_viewMatrix;
+            renderingBase->m_projectionSpaceMatrixChanged = true;
         }
     });
 }
