@@ -240,24 +240,6 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 auto& finalTransform = nonConstTransform->m_finalTransform;
                 auto& ownTransform = nonConstTransform->m_ownTransform;
                 
-                ownTransform.m_aabbMin = mesh->m_base.m_meshData->m_aabbMin;
-                ownTransform.m_aabbMax = mesh->m_base.m_meshData->m_aabbMax;
-                
-                glm::vec3& min = ownTransform.m_aabbMin;
-                glm::vec3& max = ownTransform.m_aabbMax;
-                
-                glm::vec3 points[8] = {
-                        { min },
-                        { min.x, min.y, max.z },
-                        { min.x, max.y, max.z },
-                        { min.x, max.y, min.z },
-                        
-                        { max.x, min.y, min.z },
-                        { max.x, max.y, min.z },
-                        { max },
-                        { max.x, min.y, max.z }
-                };
-                
                 glm::vec3 scale;
                 glm::quat rotation;
                 glm::vec3 translation;
@@ -267,49 +249,20 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 glm::decompose(finalTransform.m_modelMatrix, scale, rotation, translation, skew,
                                perspective);
                 
-                glm::vec3 eulerRot = glm::eulerAngles(rotation);
+                finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale, mesh->m_base.m_meshData->m_aabb);
                 
-                for(auto& point : points)
-                {
-                    point *= scale;
-                    point = rotation * glm::vec4(point, 1.0);
-                    point += translation;
-                }
+                glm::vec3 eulerRotation = glm::eulerAngles(rotation);
                 
-                min = points[0];
-                max = points[0];
+                finalTransform.m_position = translation;
+                finalTransform.m_lastPosition = translation;
                 
-                for(const auto& point : points)
-                {
-                    if(point.x < min.x)
-                    {
-                        min.x = point.x;
-                    }
-                    if(point.y < min.y)
-                    {
-                        min.y = point.y;
-                    }
-                    if(point.z < min.z)
-                    {
-                        min.z = point.z;
-                    }
-                }
+                finalTransform.m_rotation = eulerRotation;
+                finalTransform.m_lastRotation = eulerRotation;
                 
-                for(const auto& point : points)
-                {
-                    if(point.x > max.x)
-                    {
-                        max.x = point.x;
-                    }
-                    if(point.y > max.y)
-                    {
-                        max.y = point.y;
-                    }
-                    if(point.z > max.z)
-                    {
-                        max.z = point.z;
-                    }
-                }
+                finalTransform.m_scale = scale;
+                finalTransform.m_lastScale = scale;
+                
+                ownTransform.m_aabb = finalTransform.m_aabb;
             }
             
             (*m_transformChangedEvent)(m_sharedScene->getECSRegistry(), vec[i].m_owner, vec[i].m_memberValue);
@@ -334,24 +287,6 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 auto& finalTransform = nonConstTransform->m_finalTransform;
                 auto& ownTransform = nonConstTransform->m_ownTransform;
                 
-                ownTransform.m_aabbMin = mesh->m_base.m_meshData->m_aabbMin;
-                ownTransform.m_aabbMax = mesh->m_base.m_meshData->m_aabbMax;
-                
-                glm::vec3& min = ownTransform.m_aabbMin;
-                glm::vec3& max = ownTransform.m_aabbMax;
-                
-                glm::vec3 points[8] = {
-                        { min },
-                        { min.x, min.y, max.z },
-                        { min.x, max.y, max.z },
-                        { min.x, max.y, min.z },
-                        
-                        { max.x, min.y, min.z },
-                        { max.x, max.y, min.z },
-                        { max },
-                        { max.x, min.y, max.z }
-                };
-                
                 glm::vec3 scale;
                 glm::quat rotation;
                 glm::vec3 translation;
@@ -361,49 +296,20 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 glm::decompose(finalTransform.m_modelMatrix, scale, rotation, translation, skew,
                                perspective);
                 
-                glm::vec3 eulerRot = glm::eulerAngles(rotation);
+                finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale, mesh->m_base.m_meshData->m_aabb);
                 
-                for(auto& point : points)
-                {
-                    point *= scale;
-                    point = rotation * glm::vec4(point, 1.0);
-                    point += translation;
-                }
+                glm::vec3 eulerRotation = glm::eulerAngles(rotation);
                 
-                min = points[0];
-                max = points[0];
+                finalTransform.m_position = translation;
+                finalTransform.m_lastPosition = translation;
                 
-                for(const auto& point : points)
-                {
-                    if(point.x < min.x)
-                    {
-                        min.x = point.x;
-                    }
-                    if(point.y < min.y)
-                    {
-                        min.y = point.y;
-                    }
-                    if(point.z < min.z)
-                    {
-                        min.z = point.z;
-                    }
-                }
+                finalTransform.m_rotation = eulerRotation;
+                finalTransform.m_lastRotation = eulerRotation;
                 
-                for(const auto& point : points)
-                {
-                    if(point.x > max.x)
-                    {
-                        max.x = point.x;
-                    }
-                    if(point.y > max.y)
-                    {
-                        max.y = point.y;
-                    }
-                    if(point.z > max.z)
-                    {
-                        max.z = point.z;
-                    }
-                }
+                finalTransform.m_scale = scale;
+                finalTransform.m_lastScale = scale;
+                
+                ownTransform.m_aabb = finalTransform.m_aabb;
             }
             
             (*m_transformChangedEvent)(m_sharedScene->getECSRegistry(), vec[i].m_owner, vec[i].m_memberValue);

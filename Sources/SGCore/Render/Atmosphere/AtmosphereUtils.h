@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_ATMOSPHEREUTILS_H
 #define SUNGEARENGINE_ATMOSPHEREUTILS_H
 
-#include "SGUtils/MathUtils.h"
+#include "SGUtils/Math/MathUtils.h"
 #include "Atmosphere.h"
 
 namespace SGCore

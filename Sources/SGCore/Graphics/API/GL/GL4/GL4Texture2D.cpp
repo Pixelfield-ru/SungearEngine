@@ -34,20 +34,33 @@ void SGCore::GL4Texture2D::create() noexcept
         glBindTexture(GL_TEXTURE_2D, m_textureHandler);
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    
+
+        if(m_isCompressedFormat)
+        {
+            glCompressedTexImage2D(GL_TEXTURE_2D,
+                                   0,
+                                   GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
+                                   m_width,
+                                   m_height,
+                                   0,
+                                   m_pixelSize,
+                                   m_textureData.get());
+        }
+        else
+        {
+            glTexImage2D(GL_TEXTURE_2D,
+                         0,
+                         GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
+                         m_width,
+                         m_height,
+                         0,
+                         GLGraphicsTypesCaster::sggFormatToGL(m_format),
+                         GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
+                         m_textureData.get());
+        }
+        
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat),
-                     m_width,
-                     m_height,
-                     0,
-                     GLGraphicsTypesCaster::sggFormatToGL(m_format),
-                     GLGraphicsTypesCaster::sggDataTypeToGL(m_dataType),
-                     m_textureData.get());
 
         // glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
         glGenerateMipmap(GL_TEXTURE_2D);

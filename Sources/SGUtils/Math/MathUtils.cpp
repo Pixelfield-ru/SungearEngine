@@ -2,7 +2,7 @@
 // Created by ilya on 15.02.24.
 //
 #include <cmath>
-#include <glm/geometric.hpp>
+#include "glm/geometric.hpp"
 #include <memory>
 
 #include "MathUtils.h"

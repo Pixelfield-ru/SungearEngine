@@ -34,14 +34,14 @@ SGSubPass(GeometryPass)
         void main()
         {
             vsOut.UV = UVAttribute.xy;
-            vsOut.normal = normalsAttribute;
+            vsOut.normal = normalize(normalsAttribute);
 
             vsOut.vertexPos = positionsAttribute;
             vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute, 1.0));
 
             vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tangentsAttribute, 0.0)));
             vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(bitangentsAttribute, 0.0)));
-            vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(normalsAttribute, 0.0)));
+            vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(vsOut.normal, 0.0)));
             vsOut.TBN = mat3(T, B, N);
 
             gl_Position = camera.projectionSpaceMatrix * vec4(vsOut.fragPos, 1.0);
@@ -139,7 +139,7 @@ SGSubPass(GeometryPass)
 
         void main()
         {
-            vec3 normalizedNormal = normalize(vsIn.normal);
+            vec3 normalizedNormal = vsIn.normal;
 
             vec4 diffuseColor = vec4(materialDiffuseCol.rgb, 1);
             vec4 aoRoughnessMetallic = vec4(1, materialRoughnessFactor, materialMetallicFactor, 1);
@@ -230,6 +230,7 @@ SGSubPass(GeometryPass)
             }
             else
             {
+                // finalNormal = vec3(normalizedNormal.x, normalizedNormal.z, -normalizedNormal.y);
                 finalNormal = normalizedNormal;
             }
 
@@ -265,6 +266,7 @@ SGSubPass(GeometryPass)
 
             vec3 dirLightsShadowCoeff = vec3(0.0);
 
+            vec3 ambient = vec3(0.0);
             vec3 lo = vec3(0.0);
             for (int i = 0; i < directionalLightsCount; i++)
             {
@@ -318,17 +320,26 @@ SGSubPass(GeometryPass)
                 vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
 
                 lo += (diffuse * albedo.rgb / PI + specular) * radiance * NdotL;
+
+                ambient += 0.025 * radiance;
                 // lo = vec3(1.0);
             }
 
             // calculating sun
             {
+                // ambient += atmosphere.sunAmbient;
+
                 vec3 lightDir = normalize(atmosphere.sunPosition);// TRUE
                 vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
 
                 // energy brightness coeff (коэфф. энергетической яркости)
                 float NdotL = max(dot(finalNormal, lightDir), 0.0);
                 float NdotVD = max(dot(finalNormal, viewDir), 0.0);
+
+                if(NdotL <= 0.0)
+                {
+                    ambient += atmosphere.sunAmbient;
+                }
 
                 // vec3 finalRadiance = NdotL * radiance + radiance * 0.04;
 
@@ -369,8 +380,7 @@ SGSubPass(GeometryPass)
                 lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 3.0;
             }
 
-
-            vec3 ambient = vec3(0.025) * albedo.rgb * ao;
+            ambient = ambient * albedo.rgb * ao;
             vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
             float exposure = 1.3;
 
@@ -393,6 +403,8 @@ SGSubPass(GeometryPass)
             // fragColor0.rgb = albedo.rgb; // PASSED
             // fragColor0.rgb = vec3(metalness); // PASSED
             // fragColor0.rgb = vec3(roughness); // PASSED
+            // fragColor0.rgb = finalNormal;
+            // fragColor0.rgb = normalizedNormal;
             // fragColor0.rgb = normalMapColor; // PASSED
             // fragColor0.rgb = vec3(ao); // PASSED
         }

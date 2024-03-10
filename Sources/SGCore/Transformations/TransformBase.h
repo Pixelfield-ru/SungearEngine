@@ -9,9 +9,10 @@
 
 #include <glm/glm.hpp>
 
-#include "SGUtils/MathUtils.h"
+#include "SGUtils/Math/MathUtils.h"
 #include "SGUtils/Utils.h"
 #include "SGUtils/Event.h"
+#include "SGUtils/Math/AABB.h"
 
 namespace SGCore
 {
@@ -25,8 +26,7 @@ namespace SGCore
         bool m_blockRotation = false;
         bool m_blockScale = false;
 
-        glm::vec3 m_aabbMin { 0.0 };
-        glm::vec3 m_aabbMax { 0.0 };
+        AABB m_aabb;
         
         glm::vec3 m_position { 0.0 };
         glm::vec3 m_rotation { 0.0 };
@@ -50,8 +50,6 @@ namespace SGCore
         glm::vec3 m_lastPosition { 0.0 };
         glm::vec3 m_lastRotation { 0.0 };
         glm::vec3 m_lastScale = glm::vec3(0);
-
-        glm::vec3 m_lastCenter { 0.0 };
     };
 }
 

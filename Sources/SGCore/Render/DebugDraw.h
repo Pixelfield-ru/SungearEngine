@@ -16,6 +16,12 @@
 
 namespace SGCore
 {
+    enum DebugDrawMode
+    {
+        NO_DEBUG,
+        WIREFRAME
+    };
+    
     class IVertexArray;
     class IVertexBuffer;
     class IShader;
@@ -26,6 +32,8 @@ namespace SGCore
     {
     public:
         DebugDraw();
+        
+        DebugDrawMode m_mode = DebugDrawMode::WIREFRAME;
         
         Ref<IVertexArray> m_linesVertexArray;
         Ref<IVertexBuffer> m_linesPositionsVertexBuffer;
@@ -45,7 +53,7 @@ namespace SGCore
     private:
         int m_debugMode = 0;
         
-        std::uint32_t m_maxLines = 1'000'000;
+        std::uint32_t m_maxLines = 4'000'000;
         std::uint32_t m_currentDrawingLine = 0;
         
         std::vector<float> m_linesPositions;

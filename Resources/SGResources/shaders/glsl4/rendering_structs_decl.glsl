@@ -46,8 +46,11 @@ struct DirectionalLight extends ILight
 
 struct Atmosphere
 {
-    vec3 sunPosition;
+    vec3 sunAmbient;
     float p0;
+
+    vec3 sunPosition;
+    float p1;
 
     vec3 sunColor;
     float rayleighScaleHeight;

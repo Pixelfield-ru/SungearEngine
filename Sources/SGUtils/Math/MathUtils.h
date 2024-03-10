@@ -5,8 +5,8 @@
 #ifndef SUNGEARENGINE_MATHUTILS_H
 #define SUNGEARENGINE_MATHUTILS_H
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
 #include <memory>
 
 #define PI 3.141592

@@ -5,4 +5,4 @@
 #include <random>
 
 #include "PerlinNoise.h"
-#include "SGUtils/MathUtils.h"
+#include "SGUtils/Math/MathUtils.h"

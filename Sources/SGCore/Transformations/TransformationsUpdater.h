@@ -47,6 +47,7 @@ namespace SGCore
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;
         SafeObject<std::vector<entt::entity>> m_entitiesForPhysicsUpdateToCheck;
         
+        // TODO: FIX. MAY PRODUCE SIGSEGV WHEN ITERATING THROUGH IN ONE THREAD AND push_back IN OTHER
         SafeObject<FixedVector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;
         SafeObject<FixedVector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntities;
         

@@ -22,6 +22,7 @@
 #include "SGCore/UI/UIElement.h"
 #include "SGCore/Memory/Assets/XMLDocument.h"
 #include "SGCore/Render/DebugDraw.h"
+#include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 
 SGCore::Scene::Scene()
 {
@@ -80,6 +81,11 @@ void SGCore::Scene::createDefaultSystems()
     
     auto batchesRenderer = MakeRef<BatchesRenderer>();
     addSystem(batchesRenderer);
+    
+    // space partitions solvers ==============
+    
+    auto octreesSolver = MakeRef<OctreesSolver>();
+    addSystem(octreesSolver);
     
     for(auto& system : m_systems)
     {

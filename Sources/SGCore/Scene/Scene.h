@@ -26,7 +26,7 @@ namespace SGCore
     {
     public:
         Scene();
-
+        
         std::string m_name;
 
         void createDefaultSystems();

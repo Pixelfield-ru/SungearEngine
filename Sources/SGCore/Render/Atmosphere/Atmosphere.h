@@ -20,6 +20,8 @@ namespace SGCore
         Atmosphere(Atmosphere&& atmosphere) noexcept = default;
         
         glm::vec3 m_sunPosition { 0.0, 0.0, 0.0 };
+        glm::vec3 m_sunAmbient { 0, 0, 0 };
+        glm::vec3 m_lastSunAmbient  { 0, 0, 0 };
         glm::vec3 m_sunRotation { 0.0, 0.0, 0.0 };
         glm::vec3 m_lastSunRotation { -1.0, 0.0, 0.0 };
 

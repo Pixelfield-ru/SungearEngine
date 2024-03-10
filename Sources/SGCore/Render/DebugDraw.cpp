@@ -94,6 +94,8 @@ SGCore::DebugDraw::DebugDraw()
 
 void SGCore::DebugDraw::drawLine(const glm::vec3& from, const glm::vec3& to, const glm::vec4& color) noexcept
 {
+    if(m_mode == DebugDrawMode::NO_DEBUG) return;
+    
     const size_t linePosIdx = m_currentDrawingLine * 6;
     const size_t lineColorIdx = m_currentDrawingLine * 8;
     
@@ -133,6 +135,8 @@ void SGCore::DebugDraw::drawLine(const glm::vec3& from, const glm::vec3& to, con
 
 void SGCore::DebugDraw::drawAABB(const glm::vec3& min, const glm::vec3& max, const glm::vec4& color) noexcept
 {
+    if(m_mode == DebugDrawMode::NO_DEBUG) return;
+    
     // face
     drawLine(min, { min.x, max.y, min.z }, color);
     drawLine({ min.x, max.y, min.z }, { max.x, max.y, min.z }, color);
@@ -154,11 +158,11 @@ void SGCore::DebugDraw::drawAABB(const glm::vec3& min, const glm::vec3& max, con
     drawLine({ max.x, min.y, max.z }, { max.x, min.y, min.z }, color);
 }
 
-void SGCore::DebugDraw::update(const double& dt, const double& fixedD)
+void SGCore::DebugDraw::update(const double& dt, const double& fixedDt)
 {
     auto lockedScene = m_scene.lock();
     
-    if(!m_linesShader || !lockedScene) return;
+    if(!m_linesShader || !lockedScene || m_mode == DebugDrawMode::NO_DEBUG) return;
     
     auto subPassShader = m_linesShader->getSubPassShader("BatchedLinesPass");
     

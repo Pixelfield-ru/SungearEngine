@@ -26,8 +26,11 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     
     m_uniformBuffer->m_blockName = "AtmosphereBlock";
     m_uniformBuffer->putUniforms({
-        IShaderUniform("atmosphere.sunPosition", SGGDataType::SGG_FLOAT3),
+        IShaderUniform("atmosphere.sunAmbient", SGGDataType::SGG_FLOAT3),
         IShaderUniform("atmosphere.p0", SGGDataType::SGG_FLOAT),
+        
+        IShaderUniform("atmosphere.sunPosition", SGGDataType::SGG_FLOAT3),
+        IShaderUniform("atmosphere.p1", SGGDataType::SGG_FLOAT),
 
         IShaderUniform("atmosphere.sunColor", SGGDataType::SGG_FLOAT3),
         IShaderUniform("atmosphere.rayleighScaleHeight", SGGDataType::SGG_FLOAT),
@@ -97,17 +100,22 @@ void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
         
         if(atmosphere.m_sunRotation != atmosphere.m_lastSunRotation)
         {
-            atmosphere.m_sunPosition = glm::rotateX(Atmosphere::getSunOrigin(), glm::radians(atmosphere.m_sunRotation.x));
-            atmosphere.m_sunPosition = glm::rotateY(atmosphere.m_sunPosition, glm::radians(atmosphere.m_sunRotation.y));
             atmosphere.m_sunPosition = glm::rotateZ(atmosphere.m_sunPosition, glm::radians(atmosphere.m_sunRotation.z));
+            atmosphere.m_sunPosition = glm::rotateY(atmosphere.m_sunPosition, glm::radians(atmosphere.m_sunRotation.y));
+            atmosphere.m_sunPosition = glm::rotateX(Atmosphere::getSunOrigin(), glm::radians(atmosphere.m_sunRotation.x));
             
             if(atmosphere.m_precalculatedSunColors.find(hashedSunPos) == atmosphere.m_precalculatedSunColors.end())
             {
                 atmosphere.m_precalculatedSunColors[hashedSunPos] = AtmosphereUtils::calculateSunColor(atmosphere);
             }
             
+            auto& sunColor = atmosphere.m_precalculatedSunColors[hashedSunPos];
+            
+            atmosphere.m_sunAmbient = 0.025f * glm::vec3(sunColor.r, sunColor.r, sunColor.r);
+            
             m_uniformBuffer->subData("atmosphere.sunPosition", glm::value_ptr(atmosphere.m_sunPosition), 3);
-            m_uniformBuffer->subData("atmosphere.sunColor", glm::value_ptr(atmosphere.m_precalculatedSunColors[hashedSunPos]), 3);
+            m_uniformBuffer->subData("atmosphere.sunColor", glm::value_ptr(sunColor), 3);
+            m_uniformBuffer->subData("atmosphere.sunAmbient", glm::value_ptr(atmosphere.m_sunAmbient), 3);
             
             atmosphere.m_lastSunRotation = atmosphere.m_sunRotation;
         }

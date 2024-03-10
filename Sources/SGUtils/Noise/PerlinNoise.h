@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_PERLINNOISE_H
 
 #include <glm/vec2.hpp>
-#include "SGUtils/MathUtils.h"
+#include "SGUtils/Math/MathUtils.h"
 #include "glm/geometric.hpp"
 #include "SGUtils/SingleArrayMatrix.h"
 #include <iostream>

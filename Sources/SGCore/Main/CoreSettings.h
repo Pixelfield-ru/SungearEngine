@@ -19,6 +19,7 @@ namespace SGCore
     namespace ModelsImportSettings
     {
         static inline const int IMPORTER_FLAGS = aiProcess_Triangulate |
+                // aiProcess_GenNormals |
                 aiProcess_GenSmoothNormals |
                 aiProcess_GenUVCoords |
                 aiProcess_FlipUVs |

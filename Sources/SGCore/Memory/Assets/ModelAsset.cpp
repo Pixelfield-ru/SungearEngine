@@ -88,10 +88,13 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
     polygonsNumber += aiMesh->mNumVertices / 3;
     std::cout << "current polygons num: " << std::to_string(polygonsNumber) << std::endl;
     
+    auto& min = sgMeshData->m_aabb.m_min;
+    auto& max = sgMeshData->m_aabb.m_max;
+    
     if(aiMesh->mNumVertices > 0)
     {
-        sgMeshData->m_aabbMin = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
-        sgMeshData->m_aabbMax = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
+        min = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
+        max = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
     }
 
     for(unsigned i = 0; i < aiMesh->mNumVertices; i++)
@@ -102,30 +105,30 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
         sgMeshData->m_positions.push_back(vertex.y);
         sgMeshData->m_positions.push_back(vertex.z);
         
-        if(sgMeshData->m_aabbMin.x > vertex.x)
+        if(min.x > vertex.x)
         {
-            sgMeshData->m_aabbMin.x = vertex.x;
+            min.x = vertex.x;
         }
-        if(sgMeshData->m_aabbMin.y > vertex.y)
+        if(min.y > vertex.y)
         {
-            sgMeshData->m_aabbMin.y = vertex.y;
+            min.y = vertex.y;
         }
-        if(sgMeshData->m_aabbMin.z > vertex.z)
+        if(min.z > vertex.z)
         {
-            sgMeshData->m_aabbMin.z = vertex.z;
+            min.z = vertex.z;
         }
         
-        if(sgMeshData->m_aabbMax.x < vertex.x)
+        if(max.x < vertex.x)
         {
-            sgMeshData->m_aabbMax.x = vertex.x;
+            max.x = vertex.x;
         }
-        if(sgMeshData->m_aabbMax.y < vertex.y)
+        if(max.y < vertex.y)
         {
-            sgMeshData->m_aabbMax.y = vertex.y;
+            max.y = vertex.y;
         }
-        if(sgMeshData->m_aabbMax.z < vertex.z)
+        if(max.z < vertex.z)
         {
-            sgMeshData->m_aabbMax.z = vertex.z;
+            max.z = vertex.z;
         }
 
         sgMeshData->m_normals.push_back(aiMesh->mNormals[i].x);
@@ -163,26 +166,26 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
     }
     
     // todo: make 0.05 as not hardcoded minimal values of aabb
-    if(sgMeshData->m_aabbMax.x - sgMeshData->m_aabbMin.x == 0)
+    if(max.x - min.x == 0)
     {
-        sgMeshData->m_aabbMax.x = 0.05;
-        sgMeshData->m_aabbMin.x = -0.05;
+        max.x = 0.05;
+        min.x = -0.05;
     }
     
-    if(sgMeshData->m_aabbMax.y - sgMeshData->m_aabbMin.y == 0)
+    if(max.y - min.y == 0)
     {
-        sgMeshData->m_aabbMax.y = 0.05;
-        sgMeshData->m_aabbMin.y = -0.05;
+        max.y = 0.05;
+        min.y = -0.05;
     }
     
-    if(sgMeshData->m_aabbMax.z - sgMeshData->m_aabbMin.z == 0)
+    if(max.z - min.z == 0)
     {
-        sgMeshData->m_aabbMax.z = 0.05;
-        sgMeshData->m_aabbMin.z = -0.05;
+        max.z = 0.05;
+        min.z = -0.05;
     }
     
-    std::cout << "name: " << sgMeshData->m_name << ", min: " << sgMeshData->m_aabbMin.x << ", " << sgMeshData->m_aabbMin.y << ", " << sgMeshData->m_aabbMin.z <<
-              ", max: " << sgMeshData->m_aabbMax.x << ", " << sgMeshData->m_aabbMax.y << ", " << sgMeshData->m_aabbMax.z << std::endl;
+    std::cout << "name: " << sgMeshData->m_name << ", min: " << min.x << ", " << min.y << ", " << min.z <<
+              ", max: " << max.x << ", " << max.y << ", " << max.z << std::endl;
     
     for(unsigned i = 0; i < aiMesh->mNumFaces; i++)
     {
@@ -243,6 +246,8 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
         }
 
         sgMeshData->m_material->m_name = aiMat->GetName().data;
+        
+        spdlog::info("Current object: {0}", sgMeshData->m_material->m_name);
 
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureType::SGTT_EMISSIVE);
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureType::SGTT_AMBIENT_OCCLUSION);

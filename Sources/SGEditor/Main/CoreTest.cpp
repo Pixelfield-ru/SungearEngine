@@ -61,6 +61,8 @@
 #include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/ShaderComponent.h"
 #include "SGCore/Render/DebugDraw.h"
+#include "SGCore/Render/SpacePartitioning/Octree.h"
+#include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -72,6 +74,7 @@ SGCore::Atmosphere* _atmosphereScattering = nullptr;
 std::vector<entt::entity> model1Entities;
 
 SGCore::Batch* globalBatch = nullptr;
+SGCore::Ref<SGCore::Octree> globalOctree;
 
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
@@ -222,6 +225,7 @@ void init()
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
             "../SGResources/models/test/wooden_table/scene.gltf"
+            //"../SGResources/models/test/limansk/limansk1.fbx"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/vss/scene.gltf"
@@ -331,7 +335,7 @@ void init()
     }
     if(transform)
     {
-        (*transform)->m_ownTransform.m_scale = { 1000.0, 1000.0, 1000.0 };
+        (*transform)->m_ownTransform.m_scale = { 1000.0, 1.0, 1000.0 };
     }
     
     auto floorRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Rigidbody3D>>(floorEntities[0],
@@ -471,8 +475,9 @@ void init()
     {
         SGCore::Ref<SGCore::Transform> model1Transform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
         model1Transform->m_ownTransform.m_position = { 0, 120.30, -20 };
-        model1Transform->m_ownTransform.m_rotation = { 90, 90, 45 };
+        model1Transform->m_ownTransform.m_rotation = { -90, 0, 0 };
         model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
+        // model1Transform->m_ownTransform.m_scale = { 1, 1, 1 };
         
         for(size_t i = 1; i < model1Entities.size(); ++i)
         {
@@ -485,7 +490,24 @@ void init()
     
     for(size_t i = 0; i < model1Entities.size(); ++i)
     {
-        std::cout << "model1 idx: " << i << ", has mesh?: " << testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[i]) << std::endl;
+        /*auto* _mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[i]);
+        
+        if(_mesh)
+        {
+            for(auto& p : _mesh->m_base.m_meshData->m_material->getTextures())
+            {
+                for(auto& tex : p.second)
+                {
+                    std::string rawPath = tex->getPath().filename();
+                    std::string filename = rawPath.substr(rawPath.find_last_of("\\") + 1);
+                    std::string finalPath = std::string(filename.begin(), filename.end() - 4) + ".png";
+                    
+                    tex->load("../SGResources/models/test/limansk/limansk1.fbm/" + finalPath);
+                }
+            }
+        }*/
+        
+        // std::cout << "model1 idx: " << i << ", has mesh?: " << mesh << std::endl;
     }
     
     {
@@ -559,6 +581,7 @@ void init()
         std::vector<entt::entity> skyboxEntities;
         cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
             skyboxEntities.push_back(entity);
+            testScene->getECSRegistry().emplace<SGCore::IgnoreOctrees>(entity);
         });
 
         SGCore::Mesh& skyboxMesh = testScene->getECSRegistry().get<SGCore::Mesh>(skyboxEntities[2]);
@@ -705,6 +728,24 @@ void init()
     int primaryMonitorHeight;
 
     SGCore::Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
+    
+    /*
+     * ========================= OCTREE TEST ============
+     */
+    
+    {
+        auto octreeEntity = testScene->getECSRegistry().create();
+        SGCore::Ref<SGCore::Octree>& octree = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Octree>>(octreeEntity, SGCore::MakeRef<SGCore::Octree>());
+        octree->m_nodeMinSize = { 10, 10, 10 };
+        octree->m_root->m_aabb.m_min = { -500, -500, -500 };
+        octree->m_root->m_aabb.m_max = { 500, 500, 500 };
+        globalOctree = octree;
+        // octree->subdivide(octree->m_root);
+    }
+    
+    /*
+     * ===================================================
+     */
 
     // =================================================================================
     // ================ POST PROCESS SETUP =============================================
@@ -1113,6 +1154,24 @@ void update(const double& dt, const double& fixedDt)
             physicsWorld3DDebug->setDebugMode(btIDebugDraw::DBG_NoDebug);
         }
     }
+    
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F10))
+    {
+        auto debugDraw = testScene->getSystem<SGCore::DebugDraw>();
+        if(debugDraw->m_mode == SGCore::DebugDrawMode::NO_DEBUG)
+        {
+            debugDraw->m_mode = SGCore::DebugDrawMode::WIREFRAME;
+        }
+        else
+        {
+            debugDraw->m_mode = SGCore::DebugDrawMode::NO_DEBUG;
+        }
+    }
+    
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_0))
+    {
+        globalOctree->clearNodeChildren(globalOctree->m_root);
+    }
 
     SGCore::ImGuiWrap::ImGuiLayer::beginFrame();
 
@@ -1174,7 +1233,13 @@ void update(const double& dt, const double& fixedDt)
     
     auto transformsView = testScene->getECSRegistry().view<SGCore::Ref<SGCore::Transform>>();
     transformsView.each([&debugDrawSystem](SGCore::Ref<SGCore::Transform>& transform) {
-        debugDrawSystem->drawAABB(transform->m_ownTransform.m_aabbMin, transform->m_ownTransform.m_aabbMax, { 1, 0, 1, 1 });
+        debugDrawSystem->drawAABB(transform->m_ownTransform.m_aabb.m_min, transform->m_ownTransform.m_aabb.m_max, { 1, 0, 1, 1 });
+    });
+    
+    auto octreesView = testScene->getECSRegistry().view<SGCore::Ref<SGCore::Octree>>();
+    octreesView.each([&debugDrawSystem](SGCore::Ref<SGCore::Octree> octree) {
+        octree->m_root->draw(debugDrawSystem);
+        // debugDrawSystem->drawAABB(transform->m_ownTransform.m_aabb.m_min, transform->m_ownTransform.m_aabb.m_max, { 1, 0, 1, 1 });
     });
 
     auto& viewsInjector = *SGUtils::Singleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
@@ -1224,10 +1289,10 @@ int main()
     sgSetUpdateCallback(update);
 
     SGCore::PerlinNoise perlinNoise;
-    perlinNoise.setSeed();
+    // perlinNoise.setSeed();
     
     // perlinNoise.generateMap({ 256, 256 });
-    perlinNoise.generateMap({ 16, 16 });
+    perlinNoise.generate({ 16, 16 }, 5, 0.4f);
 
     auto perlinMapSize = perlinNoise.getCurrentMapSize();
 

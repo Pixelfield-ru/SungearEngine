@@ -16,6 +16,7 @@
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGUtils/Math/AABB.h"
 
 namespace SGCore
 {
@@ -41,8 +42,7 @@ namespace SGCore
         Ref<IIndexBuffer> m_indicesBuffer;
 
     public:
-        glm::vec3 m_aabbMin { 0.0 };
-        glm::vec3 m_aabbMax { 0.0 };
+        AABB m_aabb;
         
         // Mesh() noexcept;
         virtual ~IMeshData() = default;

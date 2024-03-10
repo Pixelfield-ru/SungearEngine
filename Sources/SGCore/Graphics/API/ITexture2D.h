@@ -43,6 +43,8 @@ namespace SGCore
 
         int m_mipLevel = 0;
         int m_layer = 0;
+        
+        bool m_isCompressedFormat = false;
 
         SGGDataType m_dataType = SGG_UNSIGNED_BYTE;
 
@@ -115,6 +117,8 @@ namespace SGCore
         [[nodiscard]] Ref<std::uint8_t[]> getData() noexcept;
 
     protected:
+        size_t m_pixelSize = 0;
+        
         virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
         virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;
         
