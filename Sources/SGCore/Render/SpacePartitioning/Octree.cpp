@@ -86,18 +86,29 @@ bool SGCore::Octree::subdivide(Ref<OctreeNode> node) const noexcept
         
         node->m_isSubdivided.store(true);
     }
-    
+
     return true;
 }
 
-void SGCore::Octree::subdivideWhileCollidesWithAABB(const SGCore::AABB& aabb, Ref<OctreeNode> node, std::vector<Ref<OctreeNode>>& collidedNodes, std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept
+void SGCore::Octree::subdivideWhileCollidesWithAABB(const SGCore::AABB& aabb, Ref<OctreeNode> node,
+                                                    std::vector<Ref<OctreeNode>>& collidedNodes,
+                                                    std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept
 {
     if(!node) return;
-    
-    if(node->m_aabb.isCollidesWith(aabb))
+
+    bool collides = node->m_aabb.isCollidesWith(aabb);
+
+    if(collides)
     {
         collidedNodes.push_back(node);
-        
+    }
+    else
+    {
+        notCollidedNodes.push_back(node);
+    }
+
+    if(collides)
+    {
         if(subdivide(node))
         {
             if(node->m_isSubdivided.load())
@@ -111,39 +122,37 @@ void SGCore::Octree::subdivideWhileCollidesWithAABB(const SGCore::AABB& aabb, Re
     }
     else
     {
-        notCollidedNodes.push_back(node);
+        if(node->m_isSubdivided.load())
+        {
+            for(std::uint8_t i = 0; i < 8; ++i)
+            {
+                getAllNodesCollideWith(aabb, node->m_children[i], collidedNodes, notCollidedNodes);
+            }
+        }
     }
 }
 
-void SGCore::Octree::getAllNodesCollideWith(const SGCore::AABB& aabb, SGCore::Ref<SGCore::OctreeNode> node, std::vector<Ref<OctreeNode>>& output) const noexcept
+void SGCore::Octree::getAllNodesCollideWith(const SGCore::AABB& aabb,
+                                            SGCore::Ref<SGCore::OctreeNode> node,
+                                            std::vector<Ref<OctreeNode>>& collidedNodes,
+                                            std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept
 {
     if(!node) return;
     
     if(node->m_aabb.isCollidesWith(aabb))
     {
-        output.push_back(node);
+        collidedNodes.push_back(node);
+    }
+    else
+    {
+        notCollidedNodes.push_back(node);
     }
     
     if(node->m_isSubdivided.load())
     {
         for(auto child : node->m_children)
         {
-            getAllNodesCollideWith(aabb, child, output);
-        }
-    }
-}
-
-void SGCore::Octree::clearNodesBranchEntities(SGCore::Ref<SGCore::OctreeNode> node) const noexcept
-{
-    if(!node) return;
-    
-    // node->m_entities.clear();
-    
-    if(node->m_isSubdivided.load())
-    {
-        for(const auto& child : node->m_children)
-        {
-            clearNodesBranchEntities(child);
+            getAllNodesCollideWith(aabb, child, collidedNodes, notCollidedNodes);
         }
     }
 }

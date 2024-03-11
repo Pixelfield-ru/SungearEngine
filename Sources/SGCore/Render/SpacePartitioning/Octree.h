@@ -44,9 +44,13 @@ namespace SGCore
         glm::vec3 m_nodeMinSize { 10 };
         
         [[nodiscard]] bool subdivide(Ref<OctreeNode> node) const noexcept;
-        void subdivideWhileCollidesWithAABB(const AABB& aabb, Ref<OctreeNode> node, std::vector<Ref<OctreeNode>>& collidedNodes, std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept;
-        void getAllNodesCollideWith(const AABB& aabb, Ref<OctreeNode> node, std::vector<Ref<OctreeNode>>& output) const noexcept;
-        void clearNodesBranchEntities(Ref<OctreeNode> node) const noexcept;
+        void subdivideWhileCollidesWithAABB(const AABB& aabb,
+                                            Ref<OctreeNode> node,
+                                            std::vector<Ref<OctreeNode>>& collidedNodes,
+                                            std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept;
+        void getAllNodesCollideWith(const AABB& aabb, Ref<OctreeNode> node,
+                                    std::vector<Ref<OctreeNode>>& collidedNodes,
+                                    std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept;
         void clearNodeChildren(Ref<OctreeNode> node) noexcept;
         
         Ref<OctreeNode> m_root = MakeRef<OctreeNode>();

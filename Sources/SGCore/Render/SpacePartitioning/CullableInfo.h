@@ -11,6 +11,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/Event.h"
+#include "SGUtils/Utils.h"
 
 namespace SGCore
 {
@@ -18,7 +19,7 @@ namespace SGCore
     
     struct CullableInfo
     {
-        std::unordered_set<Ref<OctreeNode>> m_intersectingNodes;
+        std::set<Weak<OctreeNode>, SGUtils::Utils::WeakCompare<OctreeNode>> m_intersectingNodes;
 
         bool isVisible(const entt::entity& forReceiverEntity) const noexcept;
 

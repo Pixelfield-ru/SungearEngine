@@ -36,6 +36,19 @@ namespace SGUtils
         template<typename T>
         struct TypeWrapper { using type = T; };
 
+        template<typename T>
+        struct WeakCompare
+        {
+            bool operator()(const std::weak_ptr<T>& lhs, const std::weak_ptr<T>& rhs) const
+            {
+                auto lptr = lhs.lock(), rptr = rhs.lock();
+                if (!rptr) return false; // nothing after expired pointer
+                if (!lptr) return true;  // every not expired after expired pointer
+
+                return lptr.get() < rptr.get();
+            }
+        };
+
         /**
          * Example
          * forTypes<InTypes...>([](auto t) { using type = typename decltype(t)::type; });

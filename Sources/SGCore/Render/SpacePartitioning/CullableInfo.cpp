@@ -6,9 +6,13 @@
 
 bool SGCore::CullableInfo::isVisible(const entt::entity& forReceiverEntity) const noexcept
 {
-    for (auto node: m_intersectingNodes)
+    for (auto node : m_intersectingNodes)
     {
-        if(node->m_visibleReceivers.contains(forReceiverEntity))
+        auto lockedNode = node.lock();
+
+        if(!lockedNode) continue;
+
+        if(lockedNode->m_visibleReceivers.contains(forReceiverEntity))
         {
             return true;
         }

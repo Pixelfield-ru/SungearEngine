@@ -52,6 +52,8 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
                 octree->subdivideWhileCollidesWithAABB(p.second->m_ownTransform.m_aabb, octree->m_root, collidedNodes, notCollidedNodes);
                 for(const auto& node : collidedNodes)
                 {
+                    if(node->isSubdivided()) continue;
+
                     auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(p.first);
                     if(tmpCullableInfo)
                     {
@@ -60,6 +62,8 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
                 }
                 for(const auto& node : notCollidedNodes)
                 {
+                    if(node->isSubdivided()) continue;
+
                     auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(p.first);
                     if(tmpCullableInfo)
                     {
@@ -74,6 +78,9 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
             transformationsView.each([&octree, &registry](const entt::entity& transformEntity, Ref<Transform> transform) {
                 if(!registry.all_of<IgnoreOctrees>(transformEntity))
                 {
+                    auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(transformEntity);
+                    auto cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
+
                     std::vector<Ref<OctreeNode>> collidedNodes;
                     std::vector<Ref<OctreeNode>> notCollidedNodes;
                     octree->subdivideWhileCollidesWithAABB(transform->m_ownTransform.m_aabb, octree->m_root,
@@ -81,16 +88,18 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
 
                     for(const auto& node : collidedNodes)
                     {
-                        auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(transformEntity);
-                        if(tmpCullableInfo)
+                        if(node->isSubdivided()) continue;
+
+                        if(cullableInfo)
                         {
                             (*tmpCullableInfo)->m_intersectingNodes.insert(node);
                         }
                     }
                     for(const auto& node : notCollidedNodes)
                     {
-                        auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(transformEntity);
-                        if(tmpCullableInfo)
+                        if(node->isSubdivided()) continue;
+
+                        if(cullableInfo)
                         {
                             (*tmpCullableInfo)->m_intersectingNodes.erase(node);
                         }
@@ -108,6 +117,6 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
 void SGCore::OctreesSolver::onTransformChanged(const entt::entity& entity, const SGCore::Ref<const SGCore::Transform>& transform) noexcept
 {
     std::lock_guard g(m_solveMutex);
-    m_lastSize = m_changedTransforms.size();
     m_changedTransforms.push_back({ entity, transform });
+    m_lastSize = m_changedTransforms.size();
 }
