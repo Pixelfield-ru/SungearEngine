@@ -21,6 +21,7 @@
 #include "SGCore/Render/ShaderComponent.h"
 #include "SGCore/Render/SpacePartitioning/CullableMesh.h"
 #include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
+#include "SGCore/Render/SpacePartitioning/CullableInfo.h"
 
 void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
@@ -88,10 +89,11 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
 
         meshesView.each([&renderPipeline, &standardGeometryShader, &scene, &cameraEntity, &registry, this]
         (const entt::entity& meshEntity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
-            auto* tmpCullableMesh = registry.try_get<Ref<CullableMesh>>(meshEntity);
-            Ref<CullableMesh> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
+            auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(meshEntity);
+            Ref<CullableInfo> cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
             
-            bool willRender = registry.try_get<IgnoreOctrees>(meshEntity) || !cullableMesh || cullableMesh->m_visibleCameras.contains(cameraEntity);
+            bool willRender = registry.try_get<IgnoreOctrees>(meshEntity) || !cullableInfo ||
+                    (cullableInfo->isVisible(cameraEntity));
             
             if(willRender)
             {

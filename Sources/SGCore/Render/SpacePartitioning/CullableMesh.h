@@ -21,12 +21,14 @@ namespace SGCore
     {
         CullableMesh();
         // CullableMesh(const CullableMesh&) = default;
-        CullableMesh(CullableMesh&&) = default;
+        // CullableMesh(CullableMesh&&) = default;
         
         EventListener<void(Ref<OctreeNode> node, const entt::entity& thisEntity)> m_nodeLeaveListener;
         //std::function<void(Ref<OctreeNode> node, const entt::entity& thisEntity)> m_nodeLeaveCallback;
-        
-        std::set<entt::entity> m_visibleCameras;
+
+        std::atomic<bool> m_visibleCamerasUpdatedFlag = true;
+        std::unordered_set<entt::entity> m_visibleCameras;
+        int m_visibleNodesCount = 0;
     };
 }
 

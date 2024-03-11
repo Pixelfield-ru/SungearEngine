@@ -137,7 +137,7 @@ void SGCore::Octree::clearNodesBranchEntities(SGCore::Ref<SGCore::OctreeNode> no
 {
     if(!node) return;
     
-    node->m_entities.clear();
+    // node->m_entities.clear();
     
     if(node->m_isSubdivided.load())
     {

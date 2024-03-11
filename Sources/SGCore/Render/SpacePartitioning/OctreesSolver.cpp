@@ -50,18 +50,21 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
                 std::vector<Ref<OctreeNode>> collidedNodes;
                 std::vector<Ref<OctreeNode>> notCollidedNodes;
                 octree->subdivideWhileCollidesWithAABB(p.second->m_ownTransform.m_aabb, octree->m_root, collidedNodes, notCollidedNodes);
-                for(const auto& node : notCollidedNodes)
+                for(const auto& node : collidedNodes)
                 {
-                    node->m_entities.erase(p.first);
                     auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(p.first);
                     if(tmpCullableInfo)
                     {
-                        (*(*tmpCullableInfo)->m_onNodeLeave)(node, p.first);
+                        (*tmpCullableInfo)->m_intersectingNodes.insert(node);
                     }
                 }
-                for(const auto& node : collidedNodes)
+                for(const auto& node : notCollidedNodes)
                 {
-                    node->m_entities.insert(p.first);
+                    auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(p.first);
+                    if(tmpCullableInfo)
+                    {
+                        (*tmpCullableInfo)->m_intersectingNodes.erase(node);
+                    }
                 }
             }
         }
@@ -75,30 +78,27 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
                     std::vector<Ref<OctreeNode>> notCollidedNodes;
                     octree->subdivideWhileCollidesWithAABB(transform->m_ownTransform.m_aabb, octree->m_root,
                                                            collidedNodes, notCollidedNodes);
-                    
-                    for(const auto& node : notCollidedNodes)
+
+                    for(const auto& node : collidedNodes)
                     {
-                        node->m_entities.erase(transformEntity);
                         auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(transformEntity);
                         if(tmpCullableInfo)
                         {
-                            (*(*tmpCullableInfo)->m_onNodeLeave)(node, transformEntity);
+                            (*tmpCullableInfo)->m_intersectingNodes.insert(node);
                         }
                     }
-                    for(const auto& node : collidedNodes)
+                    for(const auto& node : notCollidedNodes)
                     {
-                        node->m_entities.insert(transformEntity);
+                        auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(transformEntity);
+                        if(tmpCullableInfo)
+                        {
+                            (*tmpCullableInfo)->m_intersectingNodes.erase(node);
+                        }
                     }
                 }
             });
         }
     });
-    
-    /*auto objectsCullingOctrees = lockedScene->getECSRegistry().view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
-    auto camerasView = lockedScene->getECSRegistry().view<Camera3D>();
-    objectsCullingOctrees.each([&camerasView](Ref<Octree> octree, Ref<ObjectsCullingOctree>) {
-    
-    });*/
     
     std::lock_guard g(m_solveMutex);
     m_lastSize = 0;

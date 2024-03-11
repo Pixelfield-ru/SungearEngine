@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_PHYSICSWORLD3D_H
 
 #include <thread>
+#include <mutex>
 #include <BulletCollision/CollisionDispatch/btCollisionConfiguration.h>
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <BulletCollision/BroadphaseCollision/btDispatcher.h>

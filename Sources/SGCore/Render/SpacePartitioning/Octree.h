@@ -9,6 +9,7 @@
 #include <vector>
 #include <atomic>
 #include <unordered_set>
+#include <array>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "glm/vec3.hpp"
@@ -24,7 +25,7 @@ namespace SGCore
         friend struct Octree;
         
         AABB m_aabb;
-        std::unordered_set<entt::entity> m_entities;
+        std::unordered_set<entt::entity> m_visibleReceivers;
         std::array<Ref<OctreeNode>, 8> m_children;
         
         glm::vec4 m_notCollidesDebugColor { 0, 0, 1, 1 };

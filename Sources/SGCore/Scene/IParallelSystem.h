@@ -7,6 +7,7 @@
 
 #include <thread>
 #include <unordered_set>
+#include <mutex>
 
 #include "ISystem.h"
 #include "SGUtils/Timer.h"
