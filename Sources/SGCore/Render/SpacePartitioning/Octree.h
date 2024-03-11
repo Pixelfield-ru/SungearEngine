@@ -27,14 +27,14 @@ namespace SGCore
         AABB m_aabb;
         std::unordered_set<entt::entity> m_visibleReceivers;
         std::array<Ref<OctreeNode>, 8> m_children;
-        
+
         glm::vec4 m_notCollidesDebugColor { 0, 0, 1, 1 };
         glm::vec4 m_collidesDebugColor { 1, 0, 0, 1 };
-        
+
         void draw(const Ref<DebugDraw>& debugDraw) noexcept;
-        
+
         [[nodiscard]] bool isSubdivided() const noexcept;
-        
+
     private:
         std::atomic<bool> m_isSubdivided = false;
     };

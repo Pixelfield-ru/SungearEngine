@@ -25,25 +25,24 @@
 #include "SGCore/Scene/EntityComponentMember.h"
 #include "SGCore/Threading/SafeObject.h"
 #include "SGCore/Threading/FixedVector.h"
+#include "SGCore/Scene/IParallelSystem.h"
 
 namespace SGCore
 {
     struct Transform;
     
-    struct PhysicsWorld3D : public ISystem
+    struct PhysicsWorld3D : public IParallelSystem<PhysicsWorld3D>
     {
         friend struct TransformationsUpdater;
         
-        Timer m_worldUpdateTimer;
-        
         PhysicsWorld3D();
-        ~PhysicsWorld3D();
-        
+
+        void parallelUpdate(const double& dt, const double& fixedDt) noexcept final;
+
         void addBody(const Ref<btRigidBody>& rigidBody) noexcept;
         void removeBody(const Ref<btRigidBody>& rigidBody) noexcept;
         
         void update(const double& dt, const double& fixedDt) noexcept override;
-        void fixedUpdate(const double& dt, const double& fixedDt) noexcept override;
         void onAddToScene() override;
         void onRemoveFromScene() override;
         
@@ -78,10 +77,6 @@ namespace SGCore
         }
     
     private:
-        void worldUpdate(const double& dt, const double& fixedDt) noexcept;
-        
-        bool m_isAlive = true;
-        
         Scope<btCollisionConfiguration> m_collisionConfig;
         Scope<btCollisionDispatcher> m_collisionDispatcher;
         Scope<btBroadphaseInterface> m_overlappingPairCache;
@@ -92,8 +87,6 @@ namespace SGCore
         std::mutex m_bodiesCountChangeMutex;
         
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_physicalMatricesVector;
-        
-        std::thread m_physicsWorldThread;
     };
 }
 

@@ -9,7 +9,7 @@
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/SpacePartitioning/CullableMesh.h"
-#include "SGCore/Render/SpacePartitioning/CullableInfo.h"
+#include "SGCore/Render/SpacePartitioning/OctreeCullableInfo.h"
 
 entt::entity SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
                                       const std::string& layerName,
@@ -55,8 +55,7 @@ entt::entity SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
         Ref<Transform>& meshTransform = registry.emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
         Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
         auto cullableMesh = registry.emplace<Ref<CullableMesh>>(meshEntity, MakeRef<CullableMesh>());
-        auto cullableInfo = registry.emplace<Ref<CullableInfo>>(meshEntity, MakeRef<CullableInfo>());
-        (*cullableInfo->m_onNodeLeave) += cullableMesh->m_nodeLeaveListener;
+        auto cullableInfo = registry.emplace<Ref<OctreeCullableInfo>>(meshEntity, MakeRef<OctreeCullableInfo>());
         meshEntityMesh.m_base.m_meshData = mesh;
         // meshEntityMesh.m_base.m_meshData->setData(mesh);
 

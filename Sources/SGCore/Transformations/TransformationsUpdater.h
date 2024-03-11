@@ -17,6 +17,7 @@
 #include "SGUtils/Event.h"
 #include "Transform.h"
 #include "SGCore/Threading/FixedVector.h"
+#include "SGCore/Scene/IParallelSystem.h"
 
 namespace SGCore
 {
@@ -24,17 +25,16 @@ namespace SGCore
 
     struct TransformBase;
     
-    struct TransformationsUpdater : public ISystem
+    struct TransformationsUpdater : public IParallelSystem<TransformationsUpdater>
     {
         friend class PhysicsWorld3D;
-        
+
         TransformationsUpdater();
-        ~TransformationsUpdater();
-        
+
+        void parallelUpdate(const double& dt, const double& fixedDt) noexcept final;
+
         // main thread
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
-        
-        Timer m_updaterTimer;
         
         void setScene(const Ref<Scene>& scene) noexcept final;
         
@@ -42,7 +42,6 @@ namespace SGCore
         
     private:
         Ref<Scene> m_sharedScene;
-        bool m_isAlive = true;
 
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;
         SafeObject<std::vector<entt::entity>> m_entitiesForPhysicsUpdateToCheck;
@@ -50,10 +49,5 @@ namespace SGCore
         // TODO: FIX. MAY PRODUCE SIGSEGV WHEN ITERATING THROUGH IN ONE THREAD AND push_back IN OTHER
         SafeObject<FixedVector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;
         SafeObject<FixedVector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntities;
-        
-        // thread 3
-        void updateTransformations(const double& dt, const double& fixedDt) noexcept;
-        
-        std::thread m_updaterThread;
     };
 }

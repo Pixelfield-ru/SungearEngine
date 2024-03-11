@@ -19,16 +19,8 @@ namespace SGCore
     
     struct CullableMesh
     {
-        CullableMesh();
-        // CullableMesh(const CullableMesh&) = default;
-        // CullableMesh(CullableMesh&&) = default;
-        
-        EventListener<void(Ref<OctreeNode> node, const entt::entity& thisEntity)> m_nodeLeaveListener;
-        //std::function<void(Ref<OctreeNode> node, const entt::entity& thisEntity)> m_nodeLeaveCallback;
-
-        std::atomic<bool> m_visibleCamerasUpdatedFlag = true;
-        std::unordered_set<entt::entity> m_visibleCameras;
-        int m_visibleNodesCount = 0;
+    private:
+        bool m_dummy = true;
     };
 }
 

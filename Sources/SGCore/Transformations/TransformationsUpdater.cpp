@@ -21,34 +21,9 @@
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
-    Ref<TimerCallback> callback = MakeRef<TimerCallback>();
-    
-    m_updaterTimer.setTargetFrameRate(80);
-    m_updaterTimer.m_cyclic = true;
-    m_updaterTimer.addCallback(callback);
-
-    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
-        updateTransformations(dt, fixedDt);
-    });
-    
-    m_updaterThread = std::thread([this, callback]() {
-        while(m_isAlive)
-        {
-            if(m_active)
-            {
-               m_updaterTimer.startFrame();
-            }
-        }
-    });
+    startThread();
     
     // m_updaterThread.detach();
-}
-
-SGCore::TransformationsUpdater::~TransformationsUpdater()
-{
-    // m_scene;
-    m_isAlive = false;
-    m_updaterThread.join();
 }
 
 void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
@@ -57,7 +32,7 @@ void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& 
     m_sharedScene = scene;
 }
 
-void SGCore::TransformationsUpdater::updateTransformations(const double& dt, const double& fixedDt) noexcept
+void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const double& fixedDt) noexcept
 {
     if(!m_sharedScene) return;
 

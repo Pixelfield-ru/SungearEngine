@@ -36,6 +36,8 @@ void SGCore::Scene::createDefaultSystems()
     // ALWAYS BEFORE TRANSFORMATIONS UPDATER
     auto physicsWorld = MakeRef<PhysicsWorld3D>();
     addSystem(physicsWorld);
+
+    //std::cout << "dfdfdf" << std::endl;
     
     // ===================
     
@@ -83,7 +85,7 @@ void SGCore::Scene::createDefaultSystems()
     addSystem(batchesRenderer);
     
     // space partitions solvers ==============
-    
+
     auto octreesSolver = MakeRef<OctreesSolver>();
     addSystem(octreesSolver);
     

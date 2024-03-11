@@ -20,8 +20,8 @@ namespace SGCore
     class IParallelSystem : public ISystem, public std::enable_shared_from_this<ParallelSystemT>
     {
     public:
-        using parallel_subproc_t = IParallelSystemSubprocess<ParallelSystemT>;
-        
+        using subproc_t = IParallelSystemSubprocess<ParallelSystemT>;
+
         Timer m_timer;
         bool m_isAlive = true;
         
@@ -41,8 +41,17 @@ namespace SGCore
             m_timer.setTargetFrameRate(80);
             m_timer.m_cyclic = true;
             m_timer.addCallback(updateCallback);
-            
-            m_thread = std::thread([this]() {
+        }
+        
+        ~IParallelSystem()
+        {
+            stopThread();
+        }
+
+        void startThread() noexcept
+        {
+            m_isAlive = true;
+            m_thread = std::thread([&m_isAlive = this->m_isAlive, &m_active = this->m_active, &m_timer = this->m_timer]() {
                 while(m_isAlive)
                 {
                     if(m_active)
@@ -52,15 +61,15 @@ namespace SGCore
                 }
             });
         }
-        
-        ~IParallelSystem()
+
+        void stopThread() noexcept
         {
             m_isAlive = false;
             m_thread.join();
         }
         
         template<typename SubprocessT>
-        requires(std::is_base_of_v<parallel_subproc_t, SubprocessT>)
+        requires(std::is_base_of_v<subproc_t, SubprocessT>)
         Ref<SubprocessT> getSubprocess()
         {
             for(auto& system : m_subprocesses)
@@ -74,24 +83,24 @@ namespace SGCore
             return nullptr;
         }
         
-        void addSubprocess(const Ref<parallel_subproc_t>& subprocess) noexcept
+        void addSubprocess(const Ref<subproc_t>& subprocess) noexcept
         {
             std::lock_guard g(m_subprocessesVectorEditMutex);
             m_subprocesses.insert(subprocess);
         }
         
-        void removeSubprocess(const Ref<parallel_subproc_t>& subprocess) noexcept
+        void removeSubprocess(const Ref<subproc_t>& subprocess) noexcept
         {
             std::lock_guard g(m_subprocessesVectorEditMutex);
             m_subprocesses.erase(subprocess);
         }
         
         virtual void parallelUpdate(const double& dt, const double& fixedDt) noexcept { };
-        
+
     private:
-        std::unordered_set<Ref<parallel_subproc_t>> m_subprocesses;
+        std::unordered_set<Ref<subproc_t>> m_subprocesses;
         std::mutex m_subprocessesVectorEditMutex;
-        
+
         std::thread m_thread;
     };
 }

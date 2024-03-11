@@ -22,9 +22,9 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_collisionDispatcher = MakeScope<btCollisionDispatcher>(m_collisionConfig.get());
     m_overlappingPairCache = MakeScope<btDbvtBroadphase>();
     m_sequentialImpulseConstraintSolver = MakeScope<btSequentialImpulseConstraintSolver>();
-    
+
     m_debugDraw = MakeScope<PhysicsDebugDraw>();
-    
+
     m_dynamicsWorld = MakeScope<btDiscreteDynamicsWorld>(m_collisionDispatcher.get(),
                                                          m_overlappingPairCache.get(),
                                                          m_sequentialImpulseConstraintSolver.get(),
@@ -34,33 +34,10 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
     m_dynamicsWorld->setDebugDrawer(m_debugDraw.get());
     
     m_dynamicsWorld->setGravity({ 0, -120.0, 0 });
-    
-    Ref<TimerCallback> callback = MakeRef<TimerCallback>();
-    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
-        worldUpdate(dt, fixedDt);
-    });
-    
-    m_worldUpdateTimer.setTargetFrameRate(80);
-    m_worldUpdateTimer.m_cyclic = true;
-    m_worldUpdateTimer.addCallback(callback);
-    
-    m_physicsWorldThread = std::thread([this]() {
-        while(m_isAlive)
-        {
-            if(m_active)
-            {
-                m_worldUpdateTimer.startFrame();
-            }
-        }
-    });
-    
-    // m_physicsWorldThread.detach();
-}
 
-SGCore::PhysicsWorld3D::~PhysicsWorld3D()
-{
-    m_isAlive = false;
-    m_physicsWorldThread.join();
+    std::cout << "fdfdfd" << std::endl;
+
+    startThread();
 }
 
 void SGCore::PhysicsWorld3D::addBody(const SGCore::Ref<btRigidBody>& rigidBody) noexcept
@@ -80,7 +57,7 @@ void SGCore::PhysicsWorld3D::removeBody(const Ref<btRigidBody>& rigidBody) noexc
     m_dynamicsWorld->removeRigidBody(rigidBody.get());
 }
 
-void SGCore::PhysicsWorld3D::worldUpdate(const double& dt, const double& fixedDt) noexcept
+void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixedDt) noexcept
 {
     std::lock_guard guard(m_bodiesCountChangeMutex);
     
@@ -311,11 +288,6 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
         }
         m_debugDraw->drawAll(lockedScene);
     }
-}
-
-void SGCore::PhysicsWorld3D::fixedUpdate(const double& dt, const double& fixedDt) noexcept
-{
-    // worldUpdate(dt, fixedDt);
 }
 
 void SGCore::PhysicsWorld3D::onAddToScene()

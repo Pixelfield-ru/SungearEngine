@@ -19,6 +19,9 @@ namespace SGCore
     
     class OctreesSolver : public IParallelSystem<OctreesSolver>
     {
+    public:
+        OctreesSolver();
+
         void parallelUpdate(const double& dt, const double& fixedDt) noexcept final;
         
         void setScene(const Ref<Scene>& scene) noexcept final;

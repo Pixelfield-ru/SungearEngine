@@ -1,12 +1,12 @@
 //
 // Created by Ilya on 11.03.2024.
 //
-#include "CullableInfo.h"
+#include "OctreeCullableInfo.h"
 #include "Octree.h"
 
-bool SGCore::CullableInfo::isVisible(const entt::entity& forReceiverEntity) const noexcept
+bool SGCore::OctreeCullableInfo::isVisible(const entt::entity& forReceiverEntity) const noexcept
 {
-    for (auto node : m_intersectingNodes)
+    for(auto node : m_intersectingNodes)
     {
         auto lockedNode = node.lock();
 

@@ -11,7 +11,12 @@
 #include "IgnoreOctrees.h"
 #include "SGCore/Render/Camera3D.h"
 #include "ObjectsCullingOctree.h"
-#include "CullableInfo.h"
+#include "OctreeCullableInfo.h"
+
+SGCore::OctreesSolver::OctreesSolver()
+{
+    startThread();
+}
 
 void SGCore::OctreesSolver::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
 {
@@ -54,7 +59,7 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
                 {
                     if(node->isSubdivided()) continue;
 
-                    auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(p.first);
+                    auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(p.first);
                     if(tmpCullableInfo)
                     {
                         (*tmpCullableInfo)->m_intersectingNodes.insert(node);
@@ -64,7 +69,7 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
                 {
                     if(node->isSubdivided()) continue;
 
-                    auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(p.first);
+                    auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(p.first);
                     if(tmpCullableInfo)
                     {
                         (*tmpCullableInfo)->m_intersectingNodes.erase(node);
@@ -78,7 +83,7 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
             transformationsView.each([&octree, &registry](const entt::entity& transformEntity, Ref<Transform> transform) {
                 if(!registry.all_of<IgnoreOctrees>(transformEntity))
                 {
-                    auto* tmpCullableInfo = registry.try_get<Ref<CullableInfo>>(transformEntity);
+                    auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(transformEntity);
                     auto cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
 
                     std::vector<Ref<OctreeNode>> collidedNodes;
