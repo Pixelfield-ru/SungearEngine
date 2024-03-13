@@ -29,7 +29,7 @@ void SGCore::OctreesSolver::setScene(const SGCore::Ref<SGCore::Scene>& scene) no
     }
 }
 
-void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixedDt) noexcept
+void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
     auto lockedScene = m_scene.lock();
     
@@ -43,39 +43,44 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
         // octree->clearNodesBranchEntities(octree->m_root);
         if(octree->m_root->m_isSubdivided)
         {
-            for(size_t i = 0; i < m_lastSize; ++i)
+            for(const auto& p : m_changedTransforms)
             {
-                auto p = m_changedTransforms[i];
-                
                 if(registry.all_of<IgnoreOctrees>(p.first))
                 {
                     continue;
                 }
                 
-                std::vector<Ref<OctreeNode>> collidedNodes;
-                std::vector<Ref<OctreeNode>> notCollidedNodes;
-                octree->subdivideWhileCollidesWithAABB(p.second->m_ownTransform.m_aabb, octree->m_root, collidedNodes, notCollidedNodes);
-                for(const auto& node : collidedNodes)
+                auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(p.first);
+                auto cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
+                
+                if(cullableInfo)
                 {
-                    if(node->isSubdivided()) continue;
-
-                    auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(p.first);
-                    if(tmpCullableInfo)
+                    /*auto lockedParentNode = cullableInfo->m_parentNode.lock();
+                    if(lockedParentNode)
                     {
-                        (*tmpCullableInfo)->m_intersectingNodes.insert(node);
+                        lockedParentNode->m_overlappedEntities.erase(p.first);
                     }
-                }
-                for(const auto& node : notCollidedNodes)
-                {
-                    if(node->isSubdivided()) continue;
-
-                    auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(p.first);
-                    if(tmpCullableInfo)
+                    auto foundNode = octree->getOverlappingNode(p.second->m_ownTransform.m_aabb);
+                    cullableInfo->m_parentNode = foundNode;
+                    if(foundNode)
                     {
-                        (*tmpCullableInfo)->m_intersectingNodes.erase(node);
+                        foundNode->m_overlappedEntities.insert(p.first);
+                    }*/
+                    auto lockedParentNode = cullableInfo->m_parentNode.lock();
+                    if(lockedParentNode)
+                    {
+                        lockedParentNode->m_overlappedEntities.erase(p.first);
+                    }
+                    auto foundNode =  octree->subdivideWhileOverlap(p.first, p.second->m_ownTransform.m_aabb, octree->m_root);
+                    cullableInfo->m_parentNode = foundNode;
+                    if(foundNode)
+                    {
+                        foundNode->m_overlappedEntities.insert(p.first);
                     }
                 }
             }
+            
+            m_changedTransforms.clear();
         }
         else // check all transformations
         {
@@ -85,43 +90,47 @@ void SGCore::OctreesSolver::parallelUpdate(const double& dt, const double& fixed
                 {
                     auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(transformEntity);
                     auto cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
-
-                    std::vector<Ref<OctreeNode>> collidedNodes;
-                    std::vector<Ref<OctreeNode>> notCollidedNodes;
-                    octree->subdivideWhileCollidesWithAABB(transform->m_ownTransform.m_aabb, octree->m_root,
-                                                           collidedNodes, notCollidedNodes);
-
-                    for(const auto& node : collidedNodes)
+                    
+                    if(cullableInfo)
                     {
-                        if(node->isSubdivided()) continue;
-
-                        if(cullableInfo)
+                        /*auto lockedParentNode = cullableInfo->m_parentNode.lock();
+                        if(lockedParentNode)
                         {
-                            (*tmpCullableInfo)->m_intersectingNodes.insert(node);
+                            lockedParentNode->m_overlappedEntities.erase(transformEntity);
                         }
-                    }
-                    for(const auto& node : notCollidedNodes)
-                    {
-                        if(node->isSubdivided()) continue;
-
-                        if(cullableInfo)
+                        auto foundNode = octree->getOverlappingNode(transform->m_ownTransform.m_aabb);
+                        cullableInfo->m_parentNode = foundNode;
+                        if(foundNode)
                         {
-                            (*tmpCullableInfo)->m_intersectingNodes.erase(node);
+                            foundNode->m_overlappedEntities.insert(transformEntity);
                         }
+                        */
+                        auto lockedParentNode = cullableInfo->m_parentNode.lock();
+                        if(lockedParentNode)
+                        {
+                            lockedParentNode->m_overlappedEntities.erase(transformEntity);
+                        }
+                        auto foundNode =  octree->subdivideWhileOverlap(transformEntity, transform->m_ownTransform.m_aabb, octree->m_root);
+                        cullableInfo->m_parentNode = foundNode;
+                        if(foundNode)
+                        {
+                            foundNode->m_overlappedEntities.insert(transformEntity);
+                        }
+                        
+                        /*octree->subdivideWhileOverlap(transformEntity, transform->m_ownTransform.m_aabb,
+                                                      octree->m_root);*/
                     }
                 }
             });
+            
+            m_changedTransforms.clear();
         }
     });
     
-    std::lock_guard g(m_solveMutex);
-    m_lastSize = 0;
-    m_changedTransforms.clear();
+    IParallelSystem::fixedUpdate(dt, fixedDt);
 }
 
 void SGCore::OctreesSolver::onTransformChanged(const entt::entity& entity, const SGCore::Ref<const SGCore::Transform>& transform) noexcept
 {
-    std::lock_guard g(m_solveMutex);
-    m_changedTransforms.push_back({ entity, transform });
-    m_lastSize = m_changedTransforms.size();
+    m_changedTransforms.emplace_back(entity, transform);
 }

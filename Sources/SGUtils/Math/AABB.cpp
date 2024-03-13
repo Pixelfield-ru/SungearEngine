@@ -112,18 +112,28 @@ bool SGCore::AABB::isCollidesWith(const SGCore::AABB& other) const noexcept
     if(std::abs(globalCenter.z - otherGlobalCenter.z) > (localCenter.z + otherLocalCenter.z)) return false;
     
     return true;
+}
+
+bool SGCore::AABB::isOverlappedBy(const SGCore::AABB& other) const noexcept
+{
+    if(m_max.x > other.m_max.x) return false;
+    if(m_max.y > other.m_max.y) return false;
+    if(m_max.z > other.m_max.z) return false;
     
-    /*glm::vec3 globalCenter = getGlobalCenter();
-    glm::vec3 localCenter = getLocalCenter();
+    if(m_min.x < other.m_min.x) return false;
+    if(m_min.y < other.m_min.y) return false;
+    if(m_min.z < other.m_min.z) return false;
     
-    glm::vec3 otherGlobalCenter = other.getGlobalCenter();
-    glm::vec3 otherLocalCenter = other.getLocalCenter();*/
-    
-    // float globalDistance = glm::length(globalCenter - otherGlobalCenter) - glm::length(localCenter + otherLocalCenter);
-    
-    // return glm::length(globalCenter - otherGlobalCenter) <= glm::length(localCenter + otherLocalCenter);
-    
-    // We have an overlap
-    // return globalDistance <= 0;
+    return true;
+}
+
+bool SGCore::AABB::operator==(const SGCore::AABB& abbb) const noexcept
+{
+    return m_min == abbb.m_min && m_max == abbb.m_max;
+}
+
+bool SGCore::AABB::operator!=(const SGCore::AABB& abbb) const noexcept
+{
+    return !(*this == abbb);
 }
 

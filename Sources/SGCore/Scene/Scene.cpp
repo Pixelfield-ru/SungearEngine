@@ -108,22 +108,22 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::getCurrentScene() noexcept
 
 void SGCore::Scene::update(const double& dt, const double& fixedDt)
 {
-    double t0 = glfwGetTime();
+    auto t0 = now();
     
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
 
-        double before = glfwGetTime();
+        auto before = now();
         system->update(dt, fixedDt);
-        double after = glfwGetTime();
+        auto after = now();
         
-        system->m_update_executionTime = (after - before) * 1000.0;
+        system->m_executionTimes["update"] = timeDiff<double, std::milli>(before, after);
     }
     
-    double t1 = glfwGetTime();
+    auto t1 = now();
     
-    m_update_executionTime = (t1 - t0) * 1000.0f;
+    m_update_executionTime = timeDiff<double, std::milli>(t0, t1);
 
     auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
 
@@ -135,22 +135,22 @@ void SGCore::Scene::update(const double& dt, const double& fixedDt)
 
 void SGCore::Scene::fixedUpdate(const double& dt, const double& fixedDt)
 {
-    double t0 = glfwGetTime();
+    auto t0 = now();
 
     for(auto& system : m_systems)
     {
         if(!system->m_active) continue;
 
-        double before = glfwGetTime();
+        auto before = now();
         system->fixedUpdate(dt, fixedDt);
-        double after = glfwGetTime();
+        auto after = now();
 
-        system->m_fixedUpdate_executionTime = (after - before) * 1000.0;
+        system->m_executionTimes["fixedUpdate"] = timeDiff<double, std::milli>(before, after);
     }
 
-    double t1 = glfwGetTime();
+    auto t1 = now();
     
-    m_fixedUpdate_executionTime = (t1 - t0) * 1000.0f;
+    m_fixedUpdate_executionTime = timeDiff<double, std::milli>(t0, t1);
 }
 
 void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept

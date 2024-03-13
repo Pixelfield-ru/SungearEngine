@@ -22,12 +22,11 @@ namespace SGCore
     public:
         OctreesSolver();
 
-        void parallelUpdate(const double& dt, const double& fixedDt) noexcept final;
+        void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
         
         void setScene(const Ref<Scene>& scene) noexcept final;
         
     private:
-        std::mutex m_solveMutex;
         
         void onTransformChanged(const entt::entity& entity, const Ref<const Transform>& transform) noexcept;
     
@@ -38,8 +37,7 @@ namespace SGCore
                 [this](entt::registry& registry, const entt::entity& entity, Ref<const Transform> transform) {
                     onTransformChanged(entity, transform);
                 });
-    
-        std::atomic<size_t> m_lastSize = 0;
+        
         std::vector<std::pair<entt::entity, Ref<const Transform>>> m_changedTransforms;
     };
 }

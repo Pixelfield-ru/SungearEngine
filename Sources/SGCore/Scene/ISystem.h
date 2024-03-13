@@ -8,6 +8,7 @@
 #include <functional>
 #include <map>
 #include <source_location>
+#include <thread>
 
 #include "SGUtils/Marker.h"
 #include "SGUtils/Singleton.h"
@@ -24,6 +25,7 @@ namespace SGCore
         friend class Scene;
     public:
         bool m_active = true;
+        std::unordered_map<std::string, double> m_executionTimes;
 
         virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
         virtual void update(const double& dt, const double& fixedDt) { }
@@ -33,14 +35,12 @@ namespace SGCore
         virtual void setScene(const Ref<Scene>& scene) noexcept;
         Weak<Scene> getScene() const noexcept;
         
-        double getUpdateFunctionExecutionTime() const noexcept;
-        double getFixedUpdateFunctionExecutionTime() const noexcept;
+        [[nodiscard]] const size_t& getThreadID() const noexcept;
 
     protected:
-        Weak<Scene> m_scene;
+        size_t m_threadID = std::hash<std::thread::id>()(std::this_thread::get_id());
         
-        double m_update_executionTime = 0.0;
-        double m_fixedUpdate_executionTime = 0.0;
+        Weak<Scene> m_scene;
     };
 }
 

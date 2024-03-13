@@ -9,8 +9,9 @@
 #include "ObjectsCullingOctree.h"
 #include "CullableMesh.h"
 #include "SGCore/Render/RenderingBase.h"
+#include "OctreeCullableInfo.h"
 
-void SGCore::ObjectsCullingOctreesSolver::parallelUpdate(const double& dt, const double& fixedDt, Ref<OctreesSolver> parent) noexcept
+void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const double& fixedDt, Ref<OctreesSolver> parent) noexcept
 {
     auto lockedScene = parent->getScene().lock();
     
@@ -31,38 +32,16 @@ void SGCore::ObjectsCullingOctreesSolver::parallelUpdate(const double& dt, const
 void SGCore::ObjectsCullingOctreesSolver::testNode
 (entt::registry& registry, const entt::entity& cameraEntity, const Frustum& cameraFrustum, SGCore::Ref<SGCore::OctreeNode> node) noexcept
 {
-    if(cameraFrustum.testAABB(node->m_aabb.m_min, node->m_aabb.m_max))
+    if(!node->m_overlappedEntities.empty())
     {
-        node->m_visibleReceivers.insert(cameraEntity);
-        /*for(const auto& e : node->m_entities)
+        if(cameraFrustum.testAABB(node->m_aabb.m_min, node->m_aabb.m_max))
         {
-            auto* tmpCullableMesh = registry.try_get<Ref<CullableMesh>>(e);
-            Ref<CullableMesh> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
-            
-            if(cullableMesh)
-            {
-                ++cullableMesh->m_visibleNodesCount;
-                cullableMesh->m_visibleCameras.insert(cameraEntity);
-            }
-        }*/
-    }
-    else
-    {
-        node->m_visibleReceivers.erase(cameraEntity);
-        /*for(const auto& e : node->m_entities)
+            node->m_visibleReceivers.insert(cameraEntity);
+        }
+        else
         {
-            auto* tmpCullableMesh = registry.try_get<Ref<CullableMesh>>(e);
-            Ref<CullableMesh> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
-
-            if(cullableMesh)
-            {
-                --cullableMesh->m_visibleNodesCount;
-                if(cullableMesh->m_visibleNodesCount <= 0)
-                {
-                    cullableMesh->m_visibleCameras.erase(cameraEntity);
-                }
-            }
-        }*/
+            node->m_visibleReceivers.erase(cameraEntity);
+        }
     }
     
     if(node->isSubdivided())

@@ -14,7 +14,7 @@ namespace SGCore
 {
     struct ObjectsCullingOctreesSolver : public IParallelSystemSubprocess<OctreesSolver>
     {
-        void parallelUpdate(const double& dt, const double& fixedDt, Ref<OctreesSolver> parent) noexcept final;
+        void fixedUpdate(const double& dt, const double& fixedDt, Ref<OctreesSolver> parent) noexcept final;
         
     private:
         void testNode(entt::registry& registry, const entt::entity& cameraEntity, const Frustum& cameraFrustum, Ref<OctreeNode> node) noexcept;

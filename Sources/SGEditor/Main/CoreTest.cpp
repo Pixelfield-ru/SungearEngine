@@ -79,6 +79,8 @@ std::vector<entt::entity> model1Entities;
 SGCore::Batch* globalBatch = nullptr;
 SGCore::Ref<SGCore::Octree> globalOctree;
 
+SGCore::Text* sceneInfoText = nullptr;
+
 // TODO: ALL THIS CODE WAS WRITTEN JUST FOR THE SAKE OF THE TEST. remove
 
 void createBallAndApplyImpulse(const glm::vec3& spherePos,
@@ -227,8 +229,8 @@ void init()
             //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
-            "../SGResources/models/test/wooden_table/scene.gltf"
-            //"../SGResources/models/test/limansk/limansk1.fbx"
+            //"../SGResources/models/test/wooden_table/scene.gltf"
+            "../SGResources/models/test/limansk/limansk1.fbx"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/vss/scene.gltf"
@@ -322,6 +324,7 @@ void init()
                                       [&floorEntities](const entt::entity& entity)
                                       {
                                           floorEntities.push_back(entity);
+                                          testScene->getECSRegistry().emplace<SGCore::IgnoreOctrees>(entity);
                                       }
     );
     
@@ -479,8 +482,8 @@ void init()
         SGCore::Ref<SGCore::Transform> model1Transform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
         model1Transform->m_ownTransform.m_position = { 0, 120.30, -20 };
         model1Transform->m_ownTransform.m_rotation = { -90, 0, 0 };
-        model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
-        // model1Transform->m_ownTransform.m_scale = { 1, 1, 1 };
+        //model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
+        model1Transform->m_ownTransform.m_scale = { 1, 1, 1 };
         
         for(size_t i = 1; i < model1Entities.size(); ++i)
         {
@@ -493,9 +496,9 @@ void init()
     
     for(size_t i = 0; i < model1Entities.size(); ++i)
     {
-        /*auto* _mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[i]);
+        auto* _mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[i]);
         
-        if(_mesh)
+        /*if(_mesh)
         {
             for(auto& p : _mesh->m_base.m_meshData->m_material->getTextures())
             {
@@ -514,7 +517,7 @@ void init()
     }
     
     {
-        auto model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4],
+        /*auto model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4],
                 SGCore::MakeRef<SGCore::Rigidbody3D>(testScene->getSystem<SGCore::PhysicsWorld3D>()));
         SGCore::Mesh* model1Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[4]);
         std::cout << "model1Mesh0->m_base.m_meshData: " << model1Mesh0->m_base.m_meshData.get() << std::endl;
@@ -532,7 +535,7 @@ void init()
         model1Rigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
         model1Rigidbody3D->m_body->setMassProps(mass, inertia);
         model1Rigidbody3D->updateFlags();
-        model1Rigidbody3D->reAddToWorld();
+        model1Rigidbody3D->reAddToWorld();*/
         
         /*testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(model1Entities[4]);
         globalBatch->addEntity(model1Entities[4]);*/
@@ -636,19 +639,27 @@ void init()
     timesNewRomanFont_height128_rus->parse({ '.', '!', '?', ')', u'ё', u'Ё'});
     timesNewRomanFont_height128_rus->createAtlas();
     
-    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height128_eng = timesNewRomanFont->addOrGetSpecialization({ 34, "eng" });
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height34_eng = timesNewRomanFont->addOrGetSpecialization({ 34, "eng" });
     // just example code
-    timesNewRomanFont_height128_eng->parse('A', 'Z');
-    timesNewRomanFont_height128_eng->parse('a', 'z');
-    timesNewRomanFont_height128_eng->parse('0', '9');
-    timesNewRomanFont_height128_eng->parse({ '.', '!', '?', ')' });
-    timesNewRomanFont_height128_eng->createAtlas();
+    timesNewRomanFont_height34_eng->parse('A', 'Z');
+    timesNewRomanFont_height34_eng->parse('a', 'z');
+    timesNewRomanFont_height34_eng->parse('0', '9');
+    timesNewRomanFont_height34_eng->parse({ '.', '!', '?', ')' });
+    timesNewRomanFont_height34_eng->createAtlas();
+    
+    SGCore::Ref<SGCore::FontSpecialization> timesNewRomanFont_height20_eng = timesNewRomanFont->addOrGetSpecialization({ 20, "eng" });
+    // just example code
+    timesNewRomanFont_height20_eng->parse('A', 'Z');
+    timesNewRomanFont_height20_eng->parse('a', 'z');
+    timesNewRomanFont_height20_eng->parse('0', '9');
+    timesNewRomanFont_height20_eng->parse({ '.', '!', '?', ')', ':' });
+    timesNewRomanFont_height20_eng->createAtlas();
     
     timesNewRomanFont_height128_rus->saveTextAsTexture("font_spec_text_test_rus.png", u"Здравствуйте.");
-    timesNewRomanFont_height128_eng->saveTextAsTexture("font_spec_text_test_eng.png", u"Hi there!!!???))");
+    timesNewRomanFont_height34_eng->saveTextAsTexture("font_spec_text_test_eng.png", u"Hi there!!!???))");
     
     timesNewRomanFont_height128_rus->saveAtlasAsTexture("font_spec_test_rus.png");
-    timesNewRomanFont_height128_eng->saveAtlasAsTexture("font_spec_test_eng.png");
+    timesNewRomanFont_height34_eng->saveAtlasAsTexture("font_spec_test_eng.png");
     
     entt::entity textEntity = testScene->getECSRegistry().create();
     SGCore::Text& helloWorldUIText = testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
@@ -662,8 +673,19 @@ void init()
     helloWorldUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
     helloWorldUIText.m_fontSettings.m_height = 34;
     helloWorldUIText.m_fontSettings.m_name = "eng";
-    // helloWorldUIText.m_color = { 1.0, 0.5, 0.1, 1.0 };
     helloWorldUIText.m_text += u"\n";
+    
+    entt::entity sceneInfoTextEntity = testScene->getECSRegistry().create();
+    SGCore::Text& sceneInfoUIText = testScene->getECSRegistry().emplace<SGCore::Text>(sceneInfoTextEntity);
+    auto& sceneInfoUITextTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(sceneInfoTextEntity, SGCore::MakeRef<SGCore::Transform>());
+    sceneInfoUITextTransform->m_ownTransform.m_position = { 0.0, -80.0, 0 };
+    
+    sceneInfoUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
+    sceneInfoUIText.m_fontSettings.m_height = 20;
+    sceneInfoUIText.m_fontSettings.m_name = "eng";
+    
+    sceneInfoText = &sceneInfoUIText;
+    
     /*for(int i = 0; i < 30; ++i)
     {
         for(int j = 0; j < 100; ++j)
@@ -698,7 +720,7 @@ void init()
 
         if(geniusMesh)
         {
-            geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomanFont_height128_eng->m_atlas);
+            geniusMesh->m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_DIFFUSE, timesNewRomanFont_height34_eng->m_atlas);
             
             SGCore::ShadersUtils::loadShader(geniusMeshShader, "TestTextShader");
             geniusMesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
@@ -740,9 +762,9 @@ void init()
         auto octreeEntity = testScene->getECSRegistry().create();
         SGCore::Ref<SGCore::Octree>& octree = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Octree>>(octreeEntity, SGCore::MakeRef<SGCore::Octree>());
         testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::ObjectsCullingOctree>>(octreeEntity, SGCore::MakeRef<SGCore::ObjectsCullingOctree>());
-        octree->m_nodeMinSize = { 50, 50, 50 };
-        octree->m_root->m_aabb.m_min = { -500, -500, -500 };
-        octree->m_root->m_aabb.m_max = { 500, 500, 500 };
+        octree->m_nodeMinSize = { 10, 10, 10 };
+        octree->m_root->m_aabb.m_min = { -700, -700, -700 };
+        octree->m_root->m_aabb.m_max = { 700, 700, 700 };
         globalOctree = octree;
         // octree->subdivide(octree->m_root);
         
@@ -1185,8 +1207,10 @@ void update(const double& dt, const double& fixedDt)
 
     ImGui::Begin("ECS Systems Stats");
     {
-        if(ImGui::BeginTable("SystemsStats", 3))
+        if(ImGui::BeginTable("SystemsStats", 5))
         {
+            // ImGui::Columns(5, "Columns", true);
+            
             ImGui::TableNextColumn();
             ImGui::Text("System");
             ImGui::TableNextColumn();
@@ -1194,21 +1218,33 @@ void update(const double& dt, const double& fixedDt)
             ImGui::TableNextColumn();
             ImGui::Text("fixedUpdate");
             ImGui::TableNextColumn();
+            ImGui::Text("parallelUpdate");
+            ImGui::TableNextColumn();
+            ImGui::Text("Thread ID");
 
             for(const auto& system : SGCore::Scene::getCurrentScene()->getAllSystems())
             {
+                ImGui::TableNextColumn();
                 std::string systemName = std::string(typeid(*(system)).name());
                 ImGui::Text(systemName.c_str());
 
                 ImGui::TableNextColumn();
 
-                ImGui::Text((std::to_string(system->getUpdateFunctionExecutionTime()) + " ms").c_str());
-
+                ImGui::Text((std::to_string(system->m_executionTimes["update"]) + " ms").c_str());
+                
                 ImGui::TableNextColumn();
 
-                ImGui::Text((std::to_string(system->getFixedUpdateFunctionExecutionTime()) + " ms").c_str());
-
+                ImGui::Text((std::to_string(system->m_executionTimes["fixedUpdate"]) + " ms").c_str());
+                
                 ImGui::TableNextColumn();
+                
+                ImGui::Text((std::to_string(system->m_executionTimes["parallelUpdate"]) + " ms").c_str());
+                
+                ImGui::TableNextColumn();
+                
+                ImGui::Text(std::to_string(system->getThreadID()).c_str());
+                
+                //SGCore::Ref<SGCore::IP
             }
 
             ImGui::EndTable();
@@ -1247,6 +1283,7 @@ void update(const double& dt, const double& fixedDt)
     auto octreesView = testScene->getECSRegistry().view<SGCore::Ref<SGCore::Octree>>();
     octreesView.each([&debugDrawSystem](SGCore::Ref<SGCore::Octree> octree) {
         octree->m_root->draw(debugDrawSystem);
+        // octree->draw(debugDrawSystem);
         // debugDrawSystem->drawAABB(transform->m_ownTransform.m_aabb.m_min, transform->m_ownTransform.m_aabb.m_max, { 1, 0, 1, 1 });
     });
 
@@ -1254,6 +1291,24 @@ void update(const double& dt, const double& fixedDt)
     viewsInjector.renderViews();
 
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
+    
+    if(sceneInfoText)
+    {
+        auto meshesView = testScene->getECSRegistry().view<SGCore::EntityBaseInfo, SGCore::Mesh, SGCore::Ref<SGCore::Transform>>(
+                entt::exclude<SGCore::DisableMeshGeometryPass>);
+        
+        size_t meshesCnt = 0;
+        
+        meshesView.each([&meshesCnt](const auto&, const auto&, const auto&) {
+            ++meshesCnt;
+        });
+        
+        std::string txt;
+        txt += "Scene info: \n";
+        txt += "Rendering objects count: " + std::to_string(meshesCnt);
+        
+        sceneInfoText->m_text = SGUtils::Utils::fromUTF8<char16_t>(txt);
+    }
 }
 
 // --------------------------------------------

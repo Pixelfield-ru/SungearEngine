@@ -15,12 +15,7 @@ SGCore::Weak<SGCore::Scene> SGCore::ISystem::getScene() const noexcept
     return m_scene;
 }
 
-double SGCore::ISystem::getUpdateFunctionExecutionTime() const noexcept
+const size_t& SGCore::ISystem::getThreadID() const noexcept
 {
-    return m_update_executionTime;
-}
-
-double SGCore::ISystem::getFixedUpdateFunctionExecutionTime() const noexcept
-{
-    return m_fixedUpdate_executionTime;
+    return m_threadID;
 }

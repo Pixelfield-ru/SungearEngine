@@ -29,6 +29,7 @@ namespace SGCore
         {
             Ref<TimerCallback> updateCallback = MakeRef<TimerCallback>();
             updateCallback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
+                auto t0 = now();
                 parallelUpdate(dt, fixedDt);
                 
                 std::lock_guard g(m_subprocessesVectorEditMutex);
@@ -36,6 +37,9 @@ namespace SGCore
                 {
                     subprocess->parallelUpdate(dt, fixedDt, this->shared_from_this());
                 }
+                auto t1 = now();
+                
+                m_executionTimes["parallelUpdate"] = timeDiff<double, std::milli>(t0, t1);
             });
             
             m_timer.setTargetFrameRate(80);
@@ -51,7 +55,9 @@ namespace SGCore
         void startThread() noexcept
         {
             m_isAlive = true;
-            m_thread = std::thread([&m_isAlive = this->m_isAlive, &m_active = this->m_active, &m_timer = this->m_timer]() {
+            m_thread = std::thread([this]() {
+                m_threadID = std::hash<std::thread::id>()(std::this_thread::get_id());
+                
                 while(m_isAlive)
                 {
                     if(m_active)
@@ -60,6 +66,14 @@ namespace SGCore
                     }
                 }
             });
+        }
+        
+        void fixedUpdate(const double& dt, const double& fixedDt) noexcept override
+        {
+            for(const auto& subprocess : m_subprocesses)
+            {
+                subprocess->fixedUpdate(dt, fixedDt, this->shared_from_this());
+            }
         }
 
         void stopThread() noexcept

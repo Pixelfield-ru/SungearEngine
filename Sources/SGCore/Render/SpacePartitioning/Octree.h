@@ -10,6 +10,7 @@
 #include <atomic>
 #include <unordered_set>
 #include <array>
+#include <unordered_map>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "glm/vec3.hpp"
@@ -25,6 +26,7 @@ namespace SGCore
         friend struct Octree;
         
         AABB m_aabb;
+        std::unordered_set<entt::entity> m_overlappedEntities;
         std::unordered_set<entt::entity> m_visibleReceivers;
         std::array<Ref<OctreeNode>, 8> m_children;
 
@@ -36,24 +38,33 @@ namespace SGCore
         [[nodiscard]] bool isSubdivided() const noexcept;
 
     private:
-        std::atomic<bool> m_isSubdivided = false;
+        bool m_isSubdivided = false;
+        // std::atomic<bool> m_isSubdivided = false;
     };
     
     struct Octree
     {
+        Octree();
+        ~Octree();
+        
         glm::vec3 m_nodeMinSize { 10 };
+        size_t m_minObjectsInNodeToSubdivide = 1;
+        
+        void draw(const Ref<DebugDraw>& debugDraw) const noexcept;
         
         [[nodiscard]] bool subdivide(Ref<OctreeNode> node) const noexcept;
-        void subdivideWhileCollidesWithAABB(const AABB& aabb,
-                                            Ref<OctreeNode> node,
-                                            std::vector<Ref<OctreeNode>>& collidedNodes,
-                                            std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept;
-        void getAllNodesCollideWith(const AABB& aabb, Ref<OctreeNode> node,
-                                    std::vector<Ref<OctreeNode>>& collidedNodes,
-                                    std::vector<Ref<OctreeNode>>& notCollidedNodes) const noexcept;
+        
+        SGCore::Ref<SGCore::OctreeNode> subdivideWhileOverlap(const entt::entity& overlappingEntity,
+                                                              const AABB& aabb,
+                                                              Ref<OctreeNode> node,
+                                                              bool isParentOverlapped = true) const noexcept;
         void clearNodeChildren(Ref<OctreeNode> node) noexcept;
         
         Ref<OctreeNode> m_root = MakeRef<OctreeNode>();
+        
+        std::unordered_map<AABB, Ref<OctreeNode>> m_allNodes;
+        
+        Ref<OctreeNode> getOverlappingNode(const AABB& aabb) noexcept;
     };
 }
 

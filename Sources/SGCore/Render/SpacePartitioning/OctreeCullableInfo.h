@@ -19,9 +19,10 @@ namespace SGCore
     
     struct OctreeCullableInfo
     {
-        std::set<Weak<OctreeNode>, SGUtils::Utils::WeakCompare<OctreeNode>> m_intersectingNodes;
-
-        [[nodiscard]] bool isVisible(const entt::entity& forReceiverEntity) const noexcept;
+        Weak<OctreeNode> m_parentNode;
+        
+    private:
+        bool m_dummy = true;
     };
 }
 

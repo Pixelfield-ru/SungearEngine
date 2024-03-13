@@ -11,6 +11,7 @@ namespace SGCore
     struct IParallelSystemSubprocess
     {
         virtual void parallelUpdate(const double& dt, const double& fixedDt, Ref<ParentParallelSystemT> parentParallelSystem) noexcept { }
+        virtual void fixedUpdate(const double& dt, const double& fixedDt, Ref<ParentParallelSystemT> parentParallelSystem) noexcept { }
     };
 }
 
