@@ -229,8 +229,8 @@ void init()
             //"../SGResources/models/test/vodka/scene.gltf"
             //"../SGResources/models/test/mgu/scene.gltf"
             //"../SGResources/models/test/realistic_tree/scene.gltf"
-            //"../SGResources/models/test/wooden_table/scene.gltf"
-            "../SGResources/models/test/limansk/limansk1.fbx"
+            "../SGResources/models/test/wooden_table/scene.gltf"
+            //"../SGResources/models/test/limansk/limansk1.fbx"
             //"../SGResources/models/test/svd/scene.gltf"
             //"../SGResources/models/test/yamato/scene.gltf"
             //"../SGResources/models/test/vss/scene.gltf"
@@ -482,8 +482,8 @@ void init()
         SGCore::Ref<SGCore::Transform> model1Transform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
         model1Transform->m_ownTransform.m_position = { 0, 120.30, -20 };
         model1Transform->m_ownTransform.m_rotation = { -90, 0, 0 };
-        //model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
-        model1Transform->m_ownTransform.m_scale = { 1, 1, 1 };
+        model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
+        //model1Transform->m_ownTransform.m_scale = { 1, 1, 1 };
         
         for(size_t i = 1; i < model1Entities.size(); ++i)
         {
@@ -517,7 +517,7 @@ void init()
     }
     
     {
-        /*auto model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4],
+        auto model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4],
                 SGCore::MakeRef<SGCore::Rigidbody3D>(testScene->getSystem<SGCore::PhysicsWorld3D>()));
         SGCore::Mesh* model1Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[4]);
         std::cout << "model1Mesh0->m_base.m_meshData: " << model1Mesh0->m_base.m_meshData.get() << std::endl;
@@ -535,7 +535,7 @@ void init()
         model1Rigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
         model1Rigidbody3D->m_body->setMassProps(mass, inertia);
         model1Rigidbody3D->updateFlags();
-        model1Rigidbody3D->reAddToWorld();*/
+        model1Rigidbody3D->reAddToWorld();
         
         /*testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(model1Entities[4]);
         globalBatch->addEntity(model1Entities[4]);*/

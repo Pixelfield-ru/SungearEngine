@@ -27,7 +27,6 @@ namespace SGCore
         void setScene(const Ref<Scene>& scene) noexcept final;
         
     private:
-        
         void onTransformChanged(const entt::entity& entity, const Ref<const Transform>& transform) noexcept;
     
         EventListener<void(entt::registry&, const entt::entity&,

@@ -236,13 +236,23 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                                     finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
                                 }
                                 
-                                transformationsUpdater->m_calculatedPhysicalEntities.getObject().m_vector.push_back({ entity, transform });
+                                transformationsUpdater->m_calculatedPhysicalEntities.getObject().push_back({ entity, transform });
                             }
                         }
                     }
                 }
-
-                transformationsUpdater->m_calculatedPhysicalEntities.getObject().m_vectorLastSize.store(transformationsUpdater->m_calculatedPhysicalEntities.getObject().m_vector.size());
+                
+                if(transformationsUpdater->m_canCopyPhysicalEntities)
+                {
+                    transformationsUpdater->m_canCopyPhysicalEntities = false;
+                    if(transformationsUpdater->m_calculatedPhysicalEntitiesCopy.empty())
+                    {
+                        transformationsUpdater->m_calculatedPhysicalEntitiesCopy = transformationsUpdater->m_calculatedPhysicalEntities.getObject();
+                        transformationsUpdater->m_calculatedPhysicalEntities.getObject().clear();
+                    }
+                    transformationsUpdater->m_canCopyPhysicalEntities = true;
+                }
+                
                 transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getObject().clear();
                 transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.unlock();
             }
@@ -283,10 +293,10 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
     if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
     {
         // if(m_bodiesToAdd.getObject().empty() && m_bodiesToRemove.getObject().empty())
-        /*{
+        {
             m_dynamicsWorld->debugDrawWorld();
         }
-        m_debugDraw->drawAll(lockedScene);*/
+        m_debugDraw->drawAll(lockedScene);
     }
 }
 

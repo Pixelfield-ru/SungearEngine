@@ -180,18 +180,30 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             }
 
             m_changedModelMatrices.getObject().push_back({ entity, finalTransform.m_modelMatrix });
-            m_calculatedNotPhysicalEntities.getObject().m_vector.push_back({ entity, transform });
+            
+            // std::cout << "dkkdd" << std::endl;
+            
+            m_calculatedNotPhysicalEntities.getObject().push_back({ entity, transform });
         }
         else
         {
             m_entitiesForPhysicsUpdateToCheck.getObject().push_back(entity);
         }
     });
-
+    
+    if(m_canCopyPhysicalEntities)
+    {
+        m_canCopyPhysicalEntities = false;
+        if(m_calculatedNotPhysicalEntitiesCopy.empty())
+        {
+            m_calculatedNotPhysicalEntitiesCopy = m_calculatedNotPhysicalEntities.getObject();
+            m_calculatedNotPhysicalEntities.getObject().clear();
+        }
+        m_canCopyPhysicalEntities = true;
+    }
+    
     m_changedModelMatrices.lock();
     m_entitiesForPhysicsUpdateToCheck.lock();
-    
-    m_calculatedNotPhysicalEntities.getObject().m_vectorLastSize.store(m_calculatedNotPhysicalEntities.getObject().m_vector.size());
 }
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
@@ -201,15 +213,17 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
     
     if(!m_sharedScene) return;
     
-    const size_t calculatedNotPhysEntitiesLastSize = m_calculatedNotPhysicalEntities.getObject().m_vectorLastSize.load();
-    if(calculatedNotPhysEntitiesLastSize > 0)
+    if(m_canCopyPhysicalEntities)
     {
-        auto& vec = m_calculatedNotPhysicalEntities.getObject().m_vector;
-        for(size_t i = 0; i < calculatedNotPhysEntitiesLastSize; ++i)
+        m_canCopyPhysicalEntities = false;
+        
+        size_t i = 0;
+        
+        for(const auto& t : m_calculatedNotPhysicalEntitiesCopy)
         {
-            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry().try_get<Ref<Transform>>(vec[i].m_owner);
+            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry().try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = m_sharedScene->getECSRegistry().try_get<Mesh>(vec[i].m_owner);
+            Mesh* mesh = m_sharedScene->getECSRegistry().try_get<Mesh>(t.m_owner);
             if(nonConstTransform && mesh)
             {
                 auto& finalTransform = nonConstTransform->m_finalTransform;
@@ -224,7 +238,8 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 glm::decompose(finalTransform.m_modelMatrix, scale, rotation, translation, skew,
                                perspective);
                 
-                finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale, mesh->m_base.m_meshData->m_aabb);
+                finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
+                                                           mesh->m_base.m_meshData->m_aabb);
                 
                 glm::vec3 eulerRotation = glm::eulerAngles(rotation);
                 
@@ -240,23 +255,27 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 ownTransform.m_aabb = finalTransform.m_aabb;
             }
             
-            (*m_transformChangedEvent)(m_sharedScene->getECSRegistry(), vec[i].m_owner, vec[i].m_memberValue);
+            (*m_transformChangedEvent)(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
+            
+            ++i;
         }
-        // std::cout << "calculatedNotPhysEntitiesLastSize - 1: " << (calculatedNotPhysEntitiesLastSize - 1) << std::endl;
         
-        vec.erase(vec.begin(), vec.begin() + calculatedNotPhysEntitiesLastSize - 1);
-        m_calculatedNotPhysicalEntities.getObject().m_vectorLastSize.store(0);
+        m_calculatedNotPhysicalEntitiesCopy.clear();
+        
+        m_canCopyPhysicalEntities = true;
     }
     
-    const size_t calculatedPhysEntitiesLastSize = m_calculatedPhysicalEntities.getObject().m_vectorLastSize.load();
-    if(calculatedPhysEntitiesLastSize > 0)
+    // std::cout << "calculatedNotPhysEntitiesLastSize - 1: " << (calculatedNotPhysEntitiesLastSize - 1) << std::endl;
+    
+    if(m_canCopyPhysicalEntities)
     {
-        auto& vec = m_calculatedPhysicalEntities.getObject().m_vector;
-        for(size_t i = 0; i < calculatedPhysEntitiesLastSize; ++i)
+        m_canCopyPhysicalEntities = false;
+        
+        for(const auto& t : m_calculatedPhysicalEntitiesCopy)
         {
-            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry().try_get<Ref<Transform>>(vec[i].m_owner);
+            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry().try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = m_sharedScene->getECSRegistry().try_get<Mesh>(vec[i].m_owner);
+            Mesh* mesh = m_sharedScene->getECSRegistry().try_get<Mesh>(t.m_owner);
             if(nonConstTransform && mesh)
             {
                 auto& finalTransform = nonConstTransform->m_finalTransform;
@@ -271,7 +290,8 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 glm::decompose(finalTransform.m_modelMatrix, scale, rotation, translation, skew,
                                perspective);
                 
-                finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale, mesh->m_base.m_meshData->m_aabb);
+                finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
+                                                           mesh->m_base.m_meshData->m_aabb);
                 
                 glm::vec3 eulerRotation = glm::eulerAngles(rotation);
                 
@@ -287,9 +307,11 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 ownTransform.m_aabb = finalTransform.m_aabb;
             }
             
-            (*m_transformChangedEvent)(m_sharedScene->getECSRegistry(), vec[i].m_owner, vec[i].m_memberValue);
+            (*m_transformChangedEvent)(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
         }
-        vec.erase(vec.begin(), vec.begin() + calculatedPhysEntitiesLastSize - 1);
-        m_calculatedPhysicalEntities.getObject().m_vectorLastSize.store(0);
+        
+        m_calculatedPhysicalEntitiesCopy.clear();
+        
+        m_canCopyPhysicalEntities = true;
     }
 }

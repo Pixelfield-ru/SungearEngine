@@ -175,7 +175,9 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(entt::registry& registry,
                                                  const SGCore::Ref<SGCore::OctreeNode>& node,
                                                  const Ref<ISubPassShader>& standardGeometryShader) noexcept
 {
-    if(node->m_visibleReceivers.contains(forCamera))
+    bool isVisibleForCamera = node->m_visibleReceivers.contains(forCamera);
+    
+    if(isVisibleForCamera)
     {
         // render all entities
         for(const auto& e : node->m_overlappedEntities)
@@ -197,7 +199,7 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(entt::registry& registry,
         }
     }
     
-    if(node->isSubdivided())
+    if(isVisibleForCamera && node->isSubdivided())
     {
         for(const auto& child : node->m_children)
         {

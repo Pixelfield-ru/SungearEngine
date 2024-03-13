@@ -47,7 +47,13 @@ namespace SGCore
         SafeObject<std::vector<entt::entity>> m_entitiesForPhysicsUpdateToCheck;
         
         // TODO: FIX. MAY PRODUCE SIGSEGV WHEN ITERATING THROUGH IN ONE THREAD AND push_back IN OTHER
-        SafeObject<FixedVector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;
-        SafeObject<FixedVector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntities;
+        SafeObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;
+        SafeObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntities;
+        
+        std::atomic<bool> m_canCopyPhysicalEntities = true;
+        std::vector<EntityComponentMember<Ref<const Transform>>> m_calculatedNotPhysicalEntitiesCopy;
+        
+        std::atomic<bool> m_canCopyNotPhysicalEntities = true;
+        std::vector<EntityComponentMember<Ref<const Transform>>> m_calculatedPhysicalEntitiesCopy;
     };
 }

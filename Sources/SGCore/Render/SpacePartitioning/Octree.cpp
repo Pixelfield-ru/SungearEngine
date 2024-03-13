@@ -110,14 +110,14 @@ bool SGCore::Octree::subdivide(Ref<OctreeNode> node) const noexcept
         node->m_children[7]->m_aabb.m_min = { node->m_aabb.m_min + newNodeSize };
         node->m_children[7]->m_aabb.m_max = { node->m_aabb.m_min + newNodeSize * 2.0f };
         
-        for(auto& c : node->m_children)
+        /*for(auto& c : node->m_children)
         {
             auto it = m_allNodes.find(c->m_aabb);
             if(it != m_allNodes.end())
             {
                 c = it->second;
             }
-        }
+        }*/
         
         node->m_isSubdivided = true;
     }
@@ -136,12 +136,7 @@ SGCore::Ref<SGCore::OctreeNode> SGCore::Octree::subdivideWhileOverlap(const entt
     
     if(overlapped)
     {
-        node->m_overlappedEntities.insert(overlappingEntity);
         subdivide(node);
-    }
-    else
-    {
-        node->m_overlappedEntities.erase(overlappingEntity);
     }
     
     if(node->m_isSubdivided)
@@ -150,12 +145,7 @@ SGCore::Ref<SGCore::OctreeNode> SGCore::Octree::subdivideWhileOverlap(const entt
         {
             if(overlapped && aabb.isOverlappedBy(child->m_aabb))
             {
-                node->m_overlappedEntities.erase(overlappingEntity);
                 return subdivideWhileOverlap(overlappingEntity, aabb, child, overlapped);
-            }
-            else
-            {
-                child->m_overlappedEntities.erase(overlappingEntity);
             }
         }
     }

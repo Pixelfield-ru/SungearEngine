@@ -32,19 +32,18 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
 void SGCore::ObjectsCullingOctreesSolver::testNode
 (entt::registry& registry, const entt::entity& cameraEntity, const Frustum& cameraFrustum, SGCore::Ref<SGCore::OctreeNode> node) noexcept
 {
-    if(!node->m_overlappedEntities.empty())
+    bool isInFrustum = cameraFrustum.testAABB(node->m_aabb.m_min, node->m_aabb.m_max);
+    
+    if(isInFrustum)
     {
-        if(cameraFrustum.testAABB(node->m_aabb.m_min, node->m_aabb.m_max))
-        {
-            node->m_visibleReceivers.insert(cameraEntity);
-        }
-        else
-        {
-            node->m_visibleReceivers.erase(cameraEntity);
-        }
+        node->m_visibleReceivers.insert(cameraEntity);
+    }
+    else
+    {
+        node->m_visibleReceivers.erase(cameraEntity);
     }
     
-    if(node->isSubdivided())
+    if(isInFrustum && node->isSubdivided())
     {
         for(const auto& child : node->m_children)
         {
