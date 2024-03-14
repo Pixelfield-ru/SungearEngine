@@ -11,5 +11,8 @@
   }, {
     "name" : "freetype",
     "version>=" : "2.13.2"
+  }, {
+    "name" : "boost-stacktrace",
+    "version>=" : "1.84.0"
   } ]
 }

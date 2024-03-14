@@ -16,6 +16,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
+#include "SGUtils/CrashHandler/CrashHandler.h"
 
 void SGCore::CoreMain::start()
 {
@@ -24,8 +25,14 @@ void SGCore::CoreMain::start()
 
     std::ostringstream timeStringStream;
     timeStringStream << std::put_time(std::localtime(&in_time_t), "%Y_%m_%d_%H_%M_%S");
+    
+    const std::string finalLogName = "logs/sg_log_" + timeStringStream.str() + ".log";
+    
+    CrashHandler::hc_application_name = "Sungear Engine";
+    CrashHandler::hc_log_file_output = finalLogName;
+    CrashHandler::hc_install();
 
-    auto currentSessionLogger = spdlog::basic_logger_mt("current_session", "logs/sg_log_" + timeStringStream.str() + ".txt");
+    auto currentSessionLogger = spdlog::basic_logger_mt("current_session", finalLogName);
     spdlog::set_default_logger(currentSessionLogger);
     
     spdlog::flush_on(spdlog::level::info);

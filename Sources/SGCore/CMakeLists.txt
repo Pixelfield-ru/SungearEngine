@@ -73,6 +73,9 @@
 
          EnTT::EnTT
          SGUtils
+
+         ${CMAKE_DL_LIBS}
+         backtrace
          )
 
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)
