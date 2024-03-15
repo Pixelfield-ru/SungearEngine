@@ -32,6 +32,8 @@ void SGCore::CoreMain::start()
     CrashHandler::hc_log_file_output = finalLogName;
     CrashHandler::hc_install();
 
+    m_signalsHandler = MakeRef<HwExceptionHandler>();
+
     auto currentSessionLogger = spdlog::basic_logger_mt("current_session", finalLogName);
     spdlog::set_default_logger(currentSessionLogger);
     
@@ -87,11 +89,20 @@ void SGCore::CoreMain::start()
     m_renderTimer.resetTimer();
     
     // m_fixedTimerThread.detach();
-    
-    while(!m_window.shouldClose())
+
+    HW_TO_SW_CONVERTER();
+
+    try
     {
-        m_fixedTimer.startFrame();
-        m_renderTimer.startFrame();
+        while (!m_window.shouldClose())
+        {
+            m_fixedTimer.startFrame();
+            m_renderTimer.startFrame();
+        }
+    }
+    catch(...)
+    {
+        std::cout << "huinya" << std::endl;
     }
 }
 

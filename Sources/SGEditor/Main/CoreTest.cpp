@@ -123,6 +123,9 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
 
 void init()
 {
+    int* p = nullptr;
+    *p = 5;
+
     auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
     SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
     SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();

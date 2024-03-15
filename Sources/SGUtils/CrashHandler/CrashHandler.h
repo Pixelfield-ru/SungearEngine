@@ -11,10 +11,12 @@
 #include <cstring>
 
 #include <ctime>
-#include <execinfo.h>
 #include <csignal>
+#ifdef __linux__
+#include <execinfo.h>
 #include <err.h>
 #include <ucontext.h>
+#endif
 #include <boost/stacktrace.hpp>
 
 #ifndef HC_NO_COMPRESSION
@@ -157,7 +159,8 @@ namespace SGCore::CrashHandler
 #define HC_REGFMT8 "%08llx"
 #define HC_REGFMT4 "%04llx"
 #endif
-    
+
+    #ifdef __linux__
     void hc_handler_posix(int sig, siginfo_t* siginfo, void* context)
     {
 #define hc_print(fmt, ...) printf(fmt, ##__VA_ARGS__); fprintf(fpCrash, fmt, ##__VA_ARGS__);
@@ -165,7 +168,7 @@ namespace SGCore::CrashHandler
         
         char fnmBuffer[256];
         sprintf(fnmBuffer, hc_log_file_output.c_str(), time(0));
-        
+
         FILE* fpCrash = fopen(fnmBuffer, "a");
         
         ucontext_t *u =(ucontext_t *) context;
@@ -210,7 +213,7 @@ namespace SGCore::CrashHandler
 #endif
         hc_print("*** Dump file: %s\n", fnmBuffer);
         hc_print("***\n");
-        
+
         hc_print("*** Signal: %s\n", strsignal(sig));
         hc_print("*** Signal errno: %d\n", siginfo->si_errno);
         hc_print("*** Signal code: %d\n", siginfo->si_code);
@@ -402,6 +405,7 @@ namespace SGCore::CrashHandler
 
 #undef hc_print
     }
+    #endif
 
 #ifndef HC_NO_COMPRESSION
     
@@ -410,6 +414,7 @@ namespace SGCore::CrashHandler
     void hc_install(int dumpstack = hc_dumpstack_all)
 #endif
     {
+        #ifdef __linux__
         _hc_dumpstack_type = dumpstack;
 #ifndef HC_NO_COMPRESSION
         _hc_dumpstack_compression = dumpstackCompression;
@@ -439,5 +444,6 @@ namespace SGCore::CrashHandler
         { err(1, "sigaction"); }
         if(sigaction(SIGFPE, &sig_action, 0) != 0)
         { err(1, "sigaction"); }
+        #endif
     }
 }
