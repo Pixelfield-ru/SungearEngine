@@ -14,8 +14,6 @@
     class IRenderer;
 }*/
 
-#include "SGUtils/CrashHandler/HwExcpetionHandler.h"
-
 namespace SGCore
 {
     class IRenderer;
@@ -28,8 +26,6 @@ namespace SGCore
 
         static inline Timer m_renderTimer { true, 1200};
         static inline Timer m_fixedTimer { true, 100.0 };
-
-        static inline Ref<HwExceptionHandler> m_signalsHandler;
 
     public:
         CoreMain() = delete;

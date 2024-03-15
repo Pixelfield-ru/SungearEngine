@@ -17,6 +17,7 @@
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
 #include "SGUtils/CrashHandler/CrashHandler.h"
+#include "SGUtils/CrashHandler/HwExcpetionHandler.h"
 
 void SGCore::CoreMain::start()
 {
@@ -25,18 +26,20 @@ void SGCore::CoreMain::start()
 
     std::ostringstream timeStringStream;
     timeStringStream << std::put_time(std::localtime(&in_time_t), "%Y_%m_%d_%H_%M_%S");
-    
+
     const std::string finalLogName = "logs/sg_log_" + timeStringStream.str() + ".log";
-    
+
     CrashHandler::hc_application_name = "Sungear Engine";
     CrashHandler::hc_log_file_output = finalLogName;
     CrashHandler::hc_install();
 
-    m_signalsHandler = MakeRef<HwExceptionHandler>();
+    HwExceptionHandler::applicationName = "Sungear Engine";
+    HwExceptionHandler::logFileOutput = finalLogName;
+    HwExceptionHandler::setupHandler();
 
     auto currentSessionLogger = spdlog::basic_logger_mt("current_session", finalLogName);
     spdlog::set_default_logger(currentSessionLogger);
-    
+
     spdlog::flush_on(spdlog::level::info);
 
     // todo: move
@@ -60,23 +63,23 @@ void SGCore::CoreMain::start()
 
     // update
     globalTimerCallback->setUpdateFunction([](const double& dt, const double& fixedDt)
-                                                {
-                                                    update(dt, fixedDt);
-                                                });
-    
+                                           {
+                                               update(dt, fixedDt);
+                                           });
+
     Ref<TimerCallback> fpsTimerCallback = MakeRef<TimerCallback>();
-    
+
     m_renderTimer.addCallback(globalTimerCallback);
     m_renderTimer.setTargetFrameRate(1200.0);
 
     // -----------------
-    
+
     std::shared_ptr<TimerCallback> fixedTimerCallback = std::make_shared<TimerCallback>();
 
     fixedTimerCallback->setUpdateFunction([](const double& dt, const double& fixedDt)
-                                                {
-                                                    fixedUpdate(dt, fixedDt);
-                                                });
+                                          {
+                                              fixedUpdate(dt, fixedDt);
+                                          });
 
     m_fixedTimer.addCallback(fixedTimerCallback);
     // m_fixedTimer.m_useFixedUpdateCatchUp = false;
@@ -87,22 +90,13 @@ void SGCore::CoreMain::start()
 
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();
-    
+
     // m_fixedTimerThread.detach();
 
-    HW_TO_SW_CONVERTER();
-
-    try
+    while (!m_window.shouldClose())
     {
-        while (!m_window.shouldClose())
-        {
-            m_fixedTimer.startFrame();
-            m_renderTimer.startFrame();
-        }
-    }
-    catch(...)
-    {
-        std::cout << "huinya" << std::endl;
+        m_fixedTimer.startFrame();
+        m_renderTimer.startFrame();
     }
 }
 
