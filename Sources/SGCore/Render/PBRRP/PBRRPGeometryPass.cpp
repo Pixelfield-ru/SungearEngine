@@ -97,16 +97,15 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         }
         
         auto objectsCullingOctreesView = registry.view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
-        objectsCullingOctreesView.each([&standardGeometryShader, &scene, &cameraEntity, &registry, this](Ref<Octree> octree, const Ref<ObjectsCullingOctree>&) {
-            /*for(const auto& p : octree->m_allNodes)
+        objectsCullingOctreesView.each([&standardGeometryShader, &scene, &cameraEntity, &registry, &cameraRenderingBase, this](Ref<Octree> octree, const Ref<ObjectsCullingOctree>&) {
+            for(const auto& n : octree->m_notEmptyNodes)
             {
-                renderOctreeNode(registry, cameraEntity, p.second, standardGeometryShader);
-            }*/
-            renderOctreeNode(registry, cameraEntity, octree->m_root, standardGeometryShader);
+                renderOctreeNode(registry, cameraEntity, n, standardGeometryShader);
+            }
         });
     });
     
-    std::cout << "renderedInOctrees: " << renderedInOctrees << std::endl;
+    // std::cout << "renderedInOctrees: " << renderedInOctrees << std::endl;
 }
 
 void SGCore::PBRRPGeometryPass::renderMesh(entt::registry& registry,
@@ -196,14 +195,6 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(entt::registry& registry,
                 ++renderedInOctrees;
                 renderMesh(registry, e, meshTransform, *mesh, standardGeometryShader);
             }
-        }
-    }
-    
-    if(isVisibleForCamera && node->isSubdivided())
-    {
-        for(const auto& child : node->m_children)
-        {
-            renderOctreeNode(registry, forCamera, child, standardGeometryShader);
         }
     }
 }

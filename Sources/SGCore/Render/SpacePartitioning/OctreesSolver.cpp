@@ -40,7 +40,6 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
     auto octreesView = registry.view<Ref<Octree>>();
     
     octreesView.each([this, &registry](const entt::entity& entity, Ref<Octree> octree) {
-        // octree->clearNodesBranchEntities(octree->m_root);
         if(octree->m_root->m_isSubdivided)
         {
             for(const auto& p : m_changedTransforms)
@@ -55,27 +54,21 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
                 
                 if(cullableInfo)
                 {
-                    /*auto lockedParentNode = cullableInfo->m_parentNode.lock();
-                    if(lockedParentNode)
-                    {
-                        lockedParentNode->m_overlappedEntities.erase(p.first);
-                    }
-                    auto foundNode = octree->getOverlappingNode(p.second->m_ownTransform.m_aabb);
-                    cullableInfo->m_parentNode = foundNode;
-                    if(foundNode)
-                    {
-                        foundNode->m_overlappedEntities.insert(p.first);
-                    }*/
                     auto lockedParentNode = cullableInfo->m_parentNode.lock();
                     if(lockedParentNode)
                     {
                         lockedParentNode->m_overlappedEntities.erase(p.first);
+                        if(lockedParentNode->m_overlappedEntities.empty())
+                        {
+                            octree->m_notEmptyNodes.erase(lockedParentNode);
+                        }
                     }
                     auto foundNode =  octree->subdivideWhileOverlap(p.first, p.second->m_ownTransform.m_aabb, octree->m_root);
                     cullableInfo->m_parentNode = foundNode;
                     if(foundNode)
                     {
                         foundNode->m_overlappedEntities.insert(p.first);
+                        octree->m_notEmptyNodes.insert(foundNode);
                     }
                 }
             }
@@ -93,32 +86,22 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
                     
                     if(cullableInfo)
                     {
-                        /*auto lockedParentNode = cullableInfo->m_parentNode.lock();
-                        if(lockedParentNode)
-                        {
-                            lockedParentNode->m_overlappedEntities.erase(transformEntity);
-                        }
-                        auto foundNode = octree->getOverlappingNode(transform->m_ownTransform.m_aabb);
-                        cullableInfo->m_parentNode = foundNode;
-                        if(foundNode)
-                        {
-                            foundNode->m_overlappedEntities.insert(transformEntity);
-                        }
-                        */
                         auto lockedParentNode = cullableInfo->m_parentNode.lock();
                         if(lockedParentNode)
                         {
                             lockedParentNode->m_overlappedEntities.erase(transformEntity);
+                            if(lockedParentNode->m_overlappedEntities.empty())
+                            {
+                                octree->m_notEmptyNodes.erase(lockedParentNode);
+                            }
                         }
                         auto foundNode =  octree->subdivideWhileOverlap(transformEntity, transform->m_ownTransform.m_aabb, octree->m_root);
                         cullableInfo->m_parentNode = foundNode;
                         if(foundNode)
                         {
                             foundNode->m_overlappedEntities.insert(transformEntity);
+                            octree->m_notEmptyNodes.insert(foundNode);
                         }
-                        
-                        /*octree->subdivideWhileOverlap(transformEntity, transform->m_ownTransform.m_aabb,
-                                                      octree->m_root);*/
                     }
                 }
             });

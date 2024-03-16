@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <array>
 #include <unordered_map>
+#include <set>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "glm/vec3.hpp"
@@ -44,27 +45,19 @@ namespace SGCore
     
     struct Octree
     {
-        Octree();
-        ~Octree();
-        
         glm::vec3 m_nodeMinSize { 10 };
-        size_t m_minObjectsInNodeToSubdivide = 1;
-        
-        void draw(const Ref<DebugDraw>& debugDraw) const noexcept;
         
         [[nodiscard]] bool subdivide(Ref<OctreeNode> node) const noexcept;
         
         SGCore::Ref<SGCore::OctreeNode> subdivideWhileOverlap(const entt::entity& overlappingEntity,
                                                               const AABB& aabb,
-                                                              Ref<OctreeNode> node,
+                                                              const Ref<OctreeNode>& node,
                                                               bool isParentOverlapped = true) const noexcept;
         void clearNodeChildren(Ref<OctreeNode> node) noexcept;
         
         Ref<OctreeNode> m_root = MakeRef<OctreeNode>();
         
-        std::unordered_map<AABB, Ref<OctreeNode>> m_allNodes;
-        
-        Ref<OctreeNode> getOverlappingNode(const AABB& aabb) noexcept;
+        std::unordered_set<Ref<OctreeNode>> m_notEmptyNodes;
     };
 }
 

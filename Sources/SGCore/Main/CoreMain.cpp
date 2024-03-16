@@ -29,12 +29,12 @@ void SGCore::CoreMain::start()
 
     const std::string finalLogName = "logs/sg_log_" + timeStringStream.str() + ".log";
 
-    CrashHandler::hc_application_name = "Sungear Engine";
+    /*CrashHandler::hc_application_name = "Sungear Engine";
     CrashHandler::hc_log_file_output = finalLogName;
-    CrashHandler::hc_install();
+    CrashHandler::hc_install();*/
 
-    HwExceptionHandler::applicationName = "Sungear Engine";
-    HwExceptionHandler::logFileOutput = finalLogName;
+    HwExceptionHandler::setApplicationName("Sungear Engine");
+    HwExceptionHandler::setOutputLogFilePath(finalLogName);
     HwExceptionHandler::setupHandler();
 
     auto currentSessionLogger = spdlog::basic_logger_mt("current_session", finalLogName);
