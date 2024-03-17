@@ -50,7 +50,7 @@ namespace SGCore
         SafeObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;
         SafeObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntities;
         
-        std::atomic<bool> m_canCopyPhysicalEntities = true;
+        std::atomic<bool> m_canCopyEntities = true;
         std::vector<EntityComponentMember<Ref<const Transform>>> m_calculatedNotPhysicalEntitiesCopy;
         
         std::atomic<bool> m_canCopyNotPhysicalEntities = true;

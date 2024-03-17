@@ -10,6 +10,7 @@
 #include "glm/geometric.hpp"
 #include "SGUtils/SingleArrayMatrix.h"
 #include <iostream>
+#include <random>
 
 namespace SGCore
 {
@@ -18,26 +19,35 @@ namespace SGCore
         SingleArrayMatrix<float> m_map;
         SingleArrayMatrix<float> m_seeds;
         
-        void generate(const glm::ivec2& mapSize, int octavesCount, float bias)
+        void generate(const glm::vec<2, size_t, glm::defaultp>& mapSize, int octavesCount, float bias)
+        {
+            return generate({ 0, 0 }, mapSize, octavesCount, bias);
+        }
+        
+        void generate(const glm::vec<2, size_t, glm::defaultp>& offset, const glm::vec<2, size_t, glm::defaultp>& mapSize, int octavesCount, float bias)
         {
             std::random_device rd;
-            std::mt19937 gen(rd());
+            std::mt19937 gen(m_seed);
             std::uniform_real_distribution dist(std::numeric_limits<float>::min(),
                                                                           std::numeric_limits<float>::max());
             
             m_map = SingleArrayMatrix<float>(mapSize.x, mapSize.y);
             m_seeds = SingleArrayMatrix<float>(mapSize.x, mapSize.y);
             
-            for(int i = 0; i < mapSize.x * mapSize.y; ++i)
+            for(size_t i = 0; i < mapSize.x * mapSize.y; ++i)
             {
                 m_seeds.data()[i] = dist(gen) / std::numeric_limits<float>::max();
             }
             
             // Used 1D Perlin Noise
-            for (int x = 0; x < mapSize.x; x++)
+            for (size_t x = 0; x < mapSize.x; x++)
             {
-                for(int y = 0; y < mapSize.y; y++)
+                size_t offsetX = offset.x + x;
+                
+                for(size_t y = 0; y < mapSize.y; y++)
                 {
+                    size_t offsetY = offset.y + y;
+                    
                     float fNoise = 0.0f;
                     float fScaleAcc = 0.0f;
                     float fScale = 1.0f;
@@ -46,14 +56,14 @@ namespace SGCore
                     {
                         int nPitch = mapSize.x >> o;
                         if(nPitch == 0) continue;
-                        int nSampleX1 = (x / nPitch) * nPitch;
-                        int nSampleY1 = (y / nPitch) * nPitch;
+                        int nSampleX1 = (offsetX / nPitch) * nPitch;
+                        int nSampleY1 = (offsetY / nPitch) * nPitch;
                         
                         int nSampleX2 = (nSampleX1 + nPitch) % mapSize.x;
                         int nSampleY2 = (nSampleY1 + nPitch) % mapSize.x;
                         
-                        float fBlendX = (float) (x - nSampleX1) / (float) nPitch;
-                        float fBlendY = (float) (y - nSampleY1) / (float) nPitch;
+                        float fBlendX = (float) (offsetX - nSampleX1) / (float) nPitch;
+                        float fBlendY = (float) (offsetY - nSampleY1) / (float) nPitch;
                         
                         float fSampleT = (1.0f - fBlendX) * m_seeds.data()[nSampleY1 * mapSize.x + nSampleX1] +
                                          fBlendX * m_seeds.data()[nSampleY1 * mapSize.x + nSampleX2];

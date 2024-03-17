@@ -24,8 +24,10 @@ void SGCore::GL4Texture2D::create() noexcept
         
         glGenTextures(1, &m_textureHandler);
         glBindTexture(GL_TEXTURE_BUFFER, m_textureHandler);
-
         glTexBuffer(GL_TEXTURE_BUFFER, GLGraphicsTypesCaster::sggInternalFormatToGL(m_internalFormat), m_textureBufferHandler);
+        
+        glBindTexture(GL_TEXTURE_BUFFER, 0);
+        glBindBuffer(GL_TEXTURE_BUFFER, 0);
     }
     else
     {
@@ -191,7 +193,6 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
 
 void SGCore::GL4Texture2D::subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) noexcept
 {
-    glBindBuffer(GL_TEXTURE_BUFFER, m_textureBufferHandler);
     glBufferSubData(GL_TEXTURE_BUFFER, bytesOffset, bytesCount, m_textureData.get());
 }
 
@@ -214,11 +215,15 @@ void SGCore::GL4Texture2D::destroy() noexcept
 
 void SGCore::GL4Texture2D::bind(const std::uint8_t& textureUnit) noexcept
 {
-    //glBindTextureUnit(textureUnit, m_handler);
-    glActiveTexture(GL_TEXTURE0 + textureUnit);
-    glBindTexture(GL_TEXTURE_2D, m_textureHandler);
-    if(m_isTextureBuffer)
+    if(!m_isTextureBuffer)
     {
+        glActiveTexture(GL_TEXTURE0 + textureUnit);
+        glBindTexture(GL_TEXTURE_2D, m_textureHandler);
+    }
+    else
+    {
+        glActiveTexture(GL_TEXTURE0 + textureUnit);
+        glBindTexture(GL_TEXTURE_BUFFER, m_textureHandler);
         glBindBuffer(GL_TEXTURE_BUFFER, m_textureBufferHandler);
     }
 }

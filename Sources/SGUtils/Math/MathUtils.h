@@ -26,6 +26,18 @@ namespace SGCore
         {
             return std::hash<T>()(vec.x) ^ std::hash<T>()(vec.y);
         }
+        
+        template<typename VecT>
+        struct GLMVectorHash;
+        
+        template<glm::length_t N, typename T, glm::qualifier Q>
+        struct GLMVectorHash<glm::vec<N, T, Q>>
+        {
+            size_t operator()(const glm::vec<N, T, Q>& v) const
+            {
+                return hashVector(v);
+            }
+        };
 
         template<typename T>
         static T quinticCurve(const T& t) noexcept

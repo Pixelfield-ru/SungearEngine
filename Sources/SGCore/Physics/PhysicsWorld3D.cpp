@@ -242,15 +242,15 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     }
                 }
                 
-                if(transformationsUpdater->m_canCopyPhysicalEntities)
+                if(transformationsUpdater->m_canCopyEntities)
                 {
-                    transformationsUpdater->m_canCopyPhysicalEntities = false;
+                    transformationsUpdater->m_canCopyEntities = false;
                     if(transformationsUpdater->m_calculatedPhysicalEntitiesCopy.empty())
                     {
                         transformationsUpdater->m_calculatedPhysicalEntitiesCopy = transformationsUpdater->m_calculatedPhysicalEntities.getObject();
                         transformationsUpdater->m_calculatedPhysicalEntities.getObject().clear();
                     }
-                    transformationsUpdater->m_canCopyPhysicalEntities = true;
+                    transformationsUpdater->m_canCopyEntities = true;
                 }
                 
                 transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getObject().clear();

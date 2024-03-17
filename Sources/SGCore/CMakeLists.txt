@@ -19,7 +19,7 @@
  include(GenerateExportHeader)
  generate_export_header(${PROJECT_NAME})
 
- find_package(Freetype CONFIG REQUIRED)
+ find_package(Freetype REQUIRED)
  message("FREETYPE_FOUND: " ${FREETYPE_FOUND})
  message("FREETYPE_INCLUDE_DIRS: " ${FREETYPE_INCLUDE_DIRS})
  message("FREETYPE_LIBRARIES: " ${FREETYPE_LIBRARIES})

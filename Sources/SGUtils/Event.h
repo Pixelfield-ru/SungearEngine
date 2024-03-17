@@ -198,6 +198,11 @@ namespace SGCore
             }
         }
 
+        size_t listenersCount() const noexcept
+        {
+            return m_callbacks.size();
+        }
+        
     private:
         std::unordered_map<long, HolderT*> m_callbacks;
     };

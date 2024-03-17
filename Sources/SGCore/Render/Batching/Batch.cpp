@@ -142,6 +142,7 @@ void SGCore::Batch::renderAll() noexcept
     
     size_t indicesCount = std::min<size_t>(m_currentIndicesCountToRender, m_maxIndicesCount);
     size_t verticesCount = std::min<size_t>(m_currentVerticesCountToRender, m_maxVerticesCount);
+    size_t instanceCnt = std::min<size_t>(m_currentRenderingInstancesCount, m_maxInstancesCount);
     
     // std::cout << "indicesCount : " << indicesCount << ", verticesCount: " << verticesCount << std::endl;
     
@@ -173,12 +174,10 @@ void SGCore::Batch::renderAll() noexcept
     }
     
     m_matricesTextureBuffer->bind(0);
-    
     if(m_modelMatricesArrayChanged)
     {
-        m_matricesTextureBuffer->subTextureBufferData<float>(m_modelMatrices.data(), m_currentRenderingInstancesCount * 16, 0);
+        m_matricesTextureBuffer->subTextureBufferData<float>(m_modelMatrices.data(), instanceCnt * 16, 0);
     }
-    
     subPassShader->useTextureBlock("u_matricesTextureBuffer", 0);
     
     CoreMain::getRenderer()->renderArray(m_vertexArray, m_renderInfo,
@@ -499,6 +498,9 @@ void SGCore::Batch::onTransformUpdate(entt::registry& registry, entt::entity ent
     const size_t endIdx = startIdx + 16;
     
     const float* matPtr = glm::value_ptr(transform->m_finalTransform.m_modelMatrix);
+    
+    // TRUE
+    // std::cout << "this: " << this << ", " << transform->m_finalTransform.m_position.x << ", " << transform->m_finalTransform.m_position.y << ", " << transform->m_finalTransform.m_position.z << std::endl;
     
     for(size_t m = startIdx; m < endIdx; ++m)
     {

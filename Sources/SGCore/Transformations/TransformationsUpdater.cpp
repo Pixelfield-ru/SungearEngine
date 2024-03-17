@@ -42,7 +42,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
     
     auto transformsView = registry.view<Ref<Transform>>();
     
-    transformsView.each([&registry, this](const entt::entity& entity, Ref<Transform>& transform) {
+    transformsView.each([&registry, this](const entt::entity& entity, Ref<Transform> transform) {
         EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
         Ref<Transform> parentTransform;
         
@@ -191,15 +191,15 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
         }
     });
     
-    if(m_canCopyPhysicalEntities)
+    if(m_canCopyEntities)
     {
-        m_canCopyPhysicalEntities = false;
+        m_canCopyEntities = false;
         if(m_calculatedNotPhysicalEntitiesCopy.empty())
         {
             m_calculatedNotPhysicalEntitiesCopy = m_calculatedNotPhysicalEntities.getObject();
             m_calculatedNotPhysicalEntities.getObject().clear();
         }
-        m_canCopyPhysicalEntities = true;
+        m_canCopyEntities = true;
     }
     
     m_changedModelMatrices.lock();
@@ -213,9 +213,9 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
     
     if(!m_sharedScene) return;
     
-    if(m_canCopyPhysicalEntities)
+    if(m_canCopyEntities)
     {
-        m_canCopyPhysicalEntities = false;
+        m_canCopyEntities = false;
         
         size_t i = 0;
         
@@ -262,14 +262,14 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         
         m_calculatedNotPhysicalEntitiesCopy.clear();
         
-        m_canCopyPhysicalEntities = true;
+        m_canCopyEntities = true;
     }
     
     // std::cout << "calculatedNotPhysEntitiesLastSize - 1: " << (calculatedNotPhysEntitiesLastSize - 1) << std::endl;
     
-    if(m_canCopyPhysicalEntities)
+    if(m_canCopyEntities)
     {
-        m_canCopyPhysicalEntities = false;
+        m_canCopyEntities = false;
         
         for(const auto& t : m_calculatedPhysicalEntitiesCopy)
         {
@@ -312,6 +312,6 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         
         m_calculatedPhysicalEntitiesCopy.clear();
         
-        m_canCopyPhysicalEntities = true;
+        m_canCopyEntities = true;
     }
 }

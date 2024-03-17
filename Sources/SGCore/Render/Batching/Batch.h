@@ -34,7 +34,7 @@ namespace SGCore
         
         void addEntity(const entt::entity& entity) noexcept;
         void removeEntity(const entt::entity& entity) noexcept;
-
+        
     private:
         Weak<Scene> m_parentScene;
         
