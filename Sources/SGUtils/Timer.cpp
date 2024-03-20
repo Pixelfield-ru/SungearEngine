@@ -70,9 +70,9 @@ void SGCore::Timer::firstTimeStart()
     }
 }
 
-void SGCore::Timer::addCallback(std::shared_ptr<TimerCallback> callback)
+void SGCore::Timer::addCallback(const std::shared_ptr<TimerCallback>& callback)
 {
-    m_callbacks.push_back(std::move(callback));
+    m_callbacks.push_back(callback);
 }
 
 void SGCore::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)

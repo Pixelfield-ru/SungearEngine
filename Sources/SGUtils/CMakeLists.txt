@@ -10,10 +10,10 @@ include(GenerateExportHeader)
 generate_export_header(${PROJECT_NAME})
 
 message("sgutils bin: " ${CMAKE_CURRENT_BINARY_DIR})
+find_package(glm REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
-        ${CMAKE_SOURCE_DIR}/Externals/GLM
         ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
         ${CMAKE_SOURCE_DIR}/Sources
         ${CMAKE_CURRENT_BINARY_DIR}

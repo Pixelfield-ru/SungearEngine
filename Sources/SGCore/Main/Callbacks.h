@@ -3,7 +3,7 @@
 
 #define GLFW_INCLUDE_NONE
 
-#include <GLFW/glfw3.h>
+#include <GLFW/include/GLFW/glfw3.h>
 
 // glfw standard callbacks -------------------------------------------------
 typedef void(*SGCoreInitCallback)();

@@ -14,5 +14,8 @@
   }, {
     "name" : "freetype",
     "version>=" : "2.13.2"
+  }, {
+    "name" : "glm",
+    "version>=" : "1.0.1#1"
   } ]
 }

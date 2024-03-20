@@ -9,6 +9,7 @@
  #add_subdirectory(${CMAKE_SOURCE_DIR} Externals/Assimp)
 
  find_package(pugixml CONFIG REQUIRED)
+ find_package(glm REQUIRED)
 
  find_path(PUGIXML_INCLUDE_DIR pugixml.hpp)
  message("PUGIXML_INCLUDE_DIR: " ${PUGIXML_INCLUDE_DIR})
@@ -26,7 +27,6 @@
 
  target_include_directories(${PROJECT_NAME} PUBLIC
          ${CMAKE_SOURCE_DIR}/Externals
-         ${CMAKE_SOURCE_DIR}/Externals/GLM
          ${CMAKE_SOURCE_DIR}/Externals/Assimp/include
          ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
          ${CMAKE_SOURCE_DIR}/Externals/GLFW/include

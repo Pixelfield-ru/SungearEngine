@@ -28,6 +28,8 @@ namespace SGCore
         static inline Timer m_fixedTimer { true, 100.0 };
 
     public:
+        static inline std::string m_pathToSungearEngineSources;
+        
         CoreMain() = delete;
 
         static void start();

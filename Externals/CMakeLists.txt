@@ -29,12 +29,11 @@ link_directories("F:/Pixelfield/SungearEngine/cmake-build-debug/vcpkg_installed/
 add_subdirectory(Assimp)
 add_subdirectory(GLFW)
 add_subdirectory(OpenGL)
-add_subdirectory(GLM)
 add_subdirectory(imgui)
 add_subdirectory(entt)
 #add_subdirectory(fmt)
-find_package(Bullet REQUIRED)
 add_subdirectory(spdlog)
+find_package(Bullet REQUIRED)
 
 add_subdirectory(sparse_map)
 

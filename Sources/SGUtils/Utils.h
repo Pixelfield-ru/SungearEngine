@@ -17,6 +17,18 @@
 
 #define SG_STRINGIFY(n) #n
 
+#ifdef _MSC_VER
+#define SG_NOINLINE __declspec(noinline)
+#elif defined(__GNUC__)
+#define SG_NOINLINE __attribute__((noinline))
+#endif
+
+#ifdef _MSC_VEC
+#define SG_CDECL __cdecl
+#elif defined(__GNUC__)
+#define SG_CDECL __attribute__((cdecl))
+#endif
+
 #include <string>
 #include <fstream>
 #include <iostream>

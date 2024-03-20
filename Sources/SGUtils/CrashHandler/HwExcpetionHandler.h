@@ -7,12 +7,19 @@
 
 #include <csetjmp>
 #include <stdexcept>
+#include "sgutils_export.h"
 
 #include "Platform.h"
 
 #ifdef PLATFORM_OS_WINDOWS
 #include <windows.h>
 #include <winnt.h>
+#endif
+#ifdef PLATFORM_OS_LINUX
+#include <csignal>
+#include <cstring>
+#include <ucontext.h>
+#include <err.h>
 #endif
 
 #include <boost/stacktrace.hpp>
@@ -105,7 +112,7 @@ namespace SGCore
             
             FILE* fpCrash = fopen(fnmBuffer, "a");
             
-            ucontext_t *u =(ucontext_t *) context;
+            auto *u =(ucontext_t *) context;
             void* exAddr = (void*) u->uc_mcontext.gregs[REG_RIP];
             
             std::cout << "addr: " << exAddr << std::endl;

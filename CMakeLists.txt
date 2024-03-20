@@ -2,9 +2,12 @@ cmake_minimum_required(VERSION 3.22)
 
 project(SungearEngine)
 
+#message("CMAKE_SOURCE_DIR : ${CMAKE_SOURCE_DIR}")
+
 add_definitions(-DSUNGEAR_DEBUG)
 add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
 add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
+add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 #add_definitions(-DBOOST_STACKTRACE_LINK)
 add_definitions(-DHC_NO_COMPRESSION)
 #add_definitions(-DCMAKE_TOOLCHAIN_FILE="C:\\Users\\Ilya\\.clion-vcpkg\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")

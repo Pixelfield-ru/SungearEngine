@@ -110,7 +110,9 @@ namespace SGCore
         ~Window() noexcept
         {
             glfwMakeContextCurrent(nullptr);
-            glfwDestroyWindow(m_handler);
+            glfwSetWindowShouldClose(m_handler, GLFW_TRUE);
+            // glfwDestroyWindow(m_handler);
+            m_handler = nullptr;
         }
 
         void create();

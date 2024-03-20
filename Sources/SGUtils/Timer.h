@@ -41,7 +41,7 @@ namespace SGCore
 
         void firstTimeStart();
 
-        void addCallback(std::shared_ptr<TimerCallback> callback);
+        void addCallback(const std::shared_ptr<TimerCallback>& callback);
         void removeCallback(const std::shared_ptr<TimerCallback>& callback);
 
         [[nodiscard]] std::uint16_t getFramesPerSecond() const noexcept;

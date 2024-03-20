@@ -66,6 +66,7 @@
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Render/SpacePartitioning/ObjectsCullingOctreesSolver.h"
 #include "SGCore/Render/SpacePartitioning/ObjectsCullingOctree.h"
+#include "SGCore/PluginsSystem/PluginsManager.h"
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
@@ -121,8 +122,23 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     globalBatch->addEntity(sphereEntities[2]);*/
 }
 
+#include <dlfcn.h>
+
 void init()
 {
+    SGCore::CoreMain::m_pathToSungearEngineSources = "/home/ilya/pixelfield/SungearEngine";
+    
+    std::cout << SGCore::PluginsManager::createPluginProject("/home/ilya/pixelfield/test", "TestSGPlugin2", "23") << std::endl;
+    
+    auto testPlugin =
+            SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "1.0.0", "/home/ilya/pixelfield/test/TestSGPlugin2", { "arg0" }, SGCore::PluginBuildType::PBT_DEBUG);
+    // SGCore::PluginsManager::getPlugins().clear();
+    
+    /*for(const auto& plugin : SGCore::PluginsManager::getPlugins())
+    {
+        std::cout << "plugin: " << plugin->m_name << " " << plugin->m_version << std::endl;
+    }*/
+    
     auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
     SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
     SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
@@ -1070,9 +1086,14 @@ void fixedUpdate(const double& dt, const double& fixedDt)
         _atmosphereScattering->m_sunRotation.x -= 0.5f;
     }
 
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_T))
+    {
+        SGCore::PluginsManager::reloadPlugin("TestSGPlugin2", "1.0.0", { "" }, SGCore::PluginBuildType::PBT_DEBUG);
+    }
+    
     if(_atmosphereScattering)
     {
-        // _atmosphereScattering->m_sunRotation.x += 0.01f;
+        _atmosphereScattering->m_sunRotation.x += 0.01f;
     }
 
     // auto transform0 = testShadowsCaster->getComponent<SGCore::TransformBase>();
