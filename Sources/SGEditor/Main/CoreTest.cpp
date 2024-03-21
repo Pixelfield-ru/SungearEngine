@@ -133,6 +133,10 @@ void init()
     /*auto testPlugin =
             SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "1.0.0", "/home/ilya/pixelfield/test/TestSGPlugin2", { "arg0" },
                                                SGCore::PluginBuildType::PBT_DEBUG);*/
+
+    auto testPlugin =
+            SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "1.0.0", R"(F:\Pixelfield\test\TestSGPlugin2)", { "arg0" },
+                                               SGCore::PluginBuildType::PBT_DEBUG);
     // SGCore::PluginsManager::getPlugins().clear();
     
     /*for(const auto& plugin : SGCore::PluginsManager::getPlugins())
