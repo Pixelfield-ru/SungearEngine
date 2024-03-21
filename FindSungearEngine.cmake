@@ -1,11 +1,19 @@
+set(SG_DL_EXT ???)
+
+if(MSVC)
+    set(SG_DL_EXT lib)
+elseif(${CMAKE_COMPILER_IS_GNUCXX})
+    set(SG_DL_EXT so)
+endif ()
+
 set(SungearEngine_INCLUDE_DIRS "${SUNGEAR_ENGINE_DIR}/Sources")
 list(APPEND SungearEngine_INCLUDE_DIRS "${SUNGEAR_ENGINE_DIR}/cmake-build-release/Sources/SGCore")
 list(APPEND SungearEngine_INCLUDE_DIRS "${SUNGEAR_ENGINE_DIR}/cmake-build-release/Sources/SGUtils")
 list(APPEND SungearEngine_INCLUDE_DIRS "${SUNGEAR_ENGINE_DIR}/Externals")
 
-set(SungearEngine_LIBS "${SUNGEAR_ENGINE_DIR}/cmake-build-release/Sources/SGCore/SGCore.so")
-list(APPEND SungearEngine_LIBS "${SUNGEAR_ENGINE_DIR}/cmake-build-release/Sources/SGUtils/SGUtils.so")
-list(APPEND SungearEngine_LIBS "${SUNGEAR_ENGINE_DIR}/cmake-build-release/Sources/SGConsole/API/SGConsoleAPI.so")
+set(SungearEngine_LIBS "${SUNGEAR_ENGINE_DIR}/cmake-build-release/Sources/SGCore/SGCore.${SG_DL_EXT}")
+list(APPEND SungearEngine_LIBS "${SUNGEAR_ENGINE_DIR}/cmake-build-release/Sources/SGUtils/SGUtils.${SG_DL_EXT}")
+list(APPEND SungearEngine_LIBS "${SUNGEAR_ENGINE_DIR}/cmake-build-release/Sources/SGConsole/API/SGConsoleAPI.${SG_DL_EXT}")
 
 if(${SG_INCLUDE_BULLET})
     find_package(Bullet REQUIRED)

@@ -20,8 +20,8 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
                                                         const std::string& pluginName,
                                                         const std::string& cxxStandard)
 {
-    const auto& sep = std::filesystem::path::preferred_separator;
-    
+    const auto& sep = (char) std::filesystem::path::preferred_separator;
+
     if(!std::filesystem::exists(CoreMain::m_pathToSungearEngineSources + sep + "FindSungearEngine.cmake"))
     {
         return "Error: Incorrect Sungear Engine sources directory!";
@@ -29,6 +29,12 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
     
     try
     {
+        auto finalSGPath = CoreMain::m_pathToSungearEngineSources;
+        if(std::filesystem::path::preferred_separator == L'\\')
+        {
+            finalSGPath = SGUtils::Utils::replaceAll(finalSGPath, R"(\)", R"(\\)");
+        }
+
         const auto pluginDir = projectPath + sep + pluginName;
         const auto cmakeListsPath = pluginDir + sep + "CMakeLists.txt";
         const auto pluginSourcesDir = pluginDir + sep + "Sources";
@@ -50,18 +56,20 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         // ====================================== CMakeLists.txt
         
         std::string cmakeListsContent;
-        cmakeListsContent += "cmake_minimum_required(VERSION 3.27)\n";
+        cmakeListsContent += "cmake_minimum_required(VERSION 3.25)\n";
         cmakeListsContent += fmt::format("project({0})\n\n", pluginName);
         cmakeListsContent += fmt::format("set(CMAKE_CXX_STANDARD {0})\n", cxxStandard);
         cmakeListsContent += "set(CMAKE_SHARED_LIBRARY_PREFIX \"\")\n";
-        cmakeListsContent += "set(CMAKE_CXX_FLAGS \"-g -rdynamic -fno-pie -no-pie\")\n\n";
+        cmakeListsContent += "if(${CMAKE_COMPILER_IS_GNUCXX})\n";
+        cmakeListsContent += "\tset(CMAKE_CXX_FLAGS \"-g -rdynamic -fno-pie -no-pie\")\n";
+        cmakeListsContent += "endif()\n\n";
         cmakeListsContent += "add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)\n";
         cmakeListsContent += "add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)\n\n";
         cmakeListsContent += "set(SG_INCLUDE_BULLET ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_PUGIXML ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_FREETYPE ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_GLM ON)\n\n";
-        cmakeListsContent += fmt::format("set(SUNGEAR_ENGINE_DIR \"{0}\")\n", CoreMain::m_pathToSungearEngineSources);
+        cmakeListsContent += fmt::format("set(SUNGEAR_ENGINE_DIR \"{0}\")\n", finalSGPath);
         cmakeListsContent += "list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_DIR})\n\n";
         cmakeListsContent += "find_package(SungearEngine REQUIRED)\n\n";
         cmakeListsContent += "add_library(${PROJECT_NAME} " +
@@ -156,7 +164,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
                                    const std::vector<std::string>& entryArgs,
                                    PluginBuildType pluginBuildType)
 {
-    const auto& sep = std::filesystem::path::preferred_separator;
+    const auto& sep = (char) std::filesystem::path::preferred_separator;
     
     Ref<PluginWrap> loadedPlugin;
     
@@ -228,7 +236,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
                                      const std::vector<std::string>& entryArgs,
                                      PluginBuildType pluginBuildType)
 {
-    const auto& sep = std::filesystem::path::preferred_separator;
+    const auto& sep = (char) std::filesystem::path::preferred_separator;
     
     Ref<PluginWrap> loadedPlugin;
     

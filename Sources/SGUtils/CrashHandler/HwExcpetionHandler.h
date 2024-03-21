@@ -26,7 +26,7 @@
 
 namespace SGCore
 {
-    class SGUTILS_EXPORT HwExceptionHandler
+    class HwExceptionHandler
     {
     private:
         #define eh_print(fmt, ...) printf(fmt, ##__VA_ARGS__); fprintf(fpCrash, fmt, ##__VA_ARGS__);
@@ -40,7 +40,7 @@ namespace SGCore
             std::cout << "fatal error" << std::endl;
     
             char fnmBuffer[256];
-            sprintf(fnmBuffer, logFileOutput.c_str(), time(0));
+            sprintf(fnmBuffer, m_outputLogFilePath.c_str(), time(0));
     
             FILE* fpCrash = fopen(fnmBuffer, "a");
     
@@ -63,7 +63,7 @@ namespace SGCore
             }
     
             eh_print("***\n");
-            eh_print("*** APPLICATION '%s' FATAL ERROR CRASH\n", applicationName.c_str());
+            eh_print("*** APPLICATION '%s' FATAL ERROR CRASH\n", m_applicationName.c_str());
     
             eh_print("***\n");
             eh_print("*** =========================================\n");
@@ -197,7 +197,7 @@ namespace SGCore
         {
            return m_outputLogFilePath;
         };
-        
+
         static void setOutputLogFilePath(const std::string& path) noexcept
         {
             m_outputLogFilePath = path;
