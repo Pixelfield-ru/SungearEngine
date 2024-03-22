@@ -59,7 +59,7 @@ namespace SGCore
             
             if(s_supportingExtensions.contains(SG_STRINGIFY(GL_EXT_texture_filter_anisotropic)))
             {
-                glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &MAX_TEXTURE_MAX_ANISOTROPY);
+                glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &MAX_TEXTURE_MAX_ANISOTROPY);
             }
             else
             {

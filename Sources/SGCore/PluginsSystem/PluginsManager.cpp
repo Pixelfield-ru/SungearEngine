@@ -68,7 +68,14 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         cmakeListsContent += "set(SG_INCLUDE_BULLET ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_PUGIXML ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_FREETYPE ON)\n";
-        cmakeListsContent += "set(SG_INCLUDE_GLM ON)\n\n";
+        cmakeListsContent += "set(SG_INCLUDE_GLM ON)\n";
+        cmakeListsContent += "set(SG_INCLUDE_ASSIMP ON)\n";
+        cmakeListsContent += "set(SG_INCLUDE_ENTT ON)\n";
+        cmakeListsContent += "set(SG_INCLUDE_GLFW ON)\n";
+        cmakeListsContent += "set(SG_INCLUDE_IMGUI ON)\n";
+        cmakeListsContent += "set(SG_INCLUDE_SPDLOG ON)\n";
+        cmakeListsContent += "set(SG_INCLUDE_STB ON)\n";
+        cmakeListsContent += "set(SG_INCLUDE_GLAD ON)\n\n";
         cmakeListsContent += fmt::format("set(SUNGEAR_ENGINE_DIR \"{0}\")\n", finalSGPath);
         cmakeListsContent += "list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_DIR})\n\n";
         cmakeListsContent += "find_package(SungearEngine REQUIRED)\n\n";
@@ -230,6 +237,8 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
     return loadedPlugin;
 }
 
+#include <dlfcn.h>
+
 SGCore::Ref<SGCore::PluginWrap>
 SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
                                      const std::string& pluginVersion,
@@ -276,6 +285,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
             return nullptr;
         }
         
+        // auto pluginEntry = std::function<Ref<IPlugin>()>((Ref<IPlugin>(*)()) dlsym(loadedPlugin->m_pluginLib->getNativeHandler(), "SGPluginMain"));
         auto pluginEntry = loadedPlugin->m_pluginLib->loadFunction<Ref<IPlugin>()>("SGPluginMain", dlEntryErr);
         
         if(!pluginEntry)

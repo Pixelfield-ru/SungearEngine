@@ -41,4 +41,40 @@ endif()
 
 if(${SG_INCLUDE_GLM})
     find_package(glm REQUIRED)
+    list(APPEND SungearEngine_LIBS "glm::glm")
+endif()
+
+if(${SG_INCLUDE_ASSIMP})
+    find_package(assimp CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "assimp::assimp")
+endif()
+
+if(${SG_INCLUDE_ENTT})
+    find_package(EnTT CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "EnTT::EnTT")
+endif()
+
+if(${SG_INCLUDE_GLFW})
+    find_package(glfw3 CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "glfw")
+endif()
+
+if(${SG_INCLUDE_IMGUI})
+    find_package(imgui CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "imgui::imgui")
+endif()
+
+if(${SG_INCLUDE_SPDLOG})
+    find_package(spdlog CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "spdlog::spdlog")
+endif()
+
+if(${SG_INCLUDE_STB})
+    find_package(Stb REQUIRED)
+    list(APPEND SungearEngine_INCLUDE_DIRS "${Stb_INCLUDE_DIR}")
+endif()
+
+if(${SG_INCLUDE_GLAD})
+    find_package(glad CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "glad::glad")
 endif()

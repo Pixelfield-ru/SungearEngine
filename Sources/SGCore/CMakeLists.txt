@@ -8,8 +8,17 @@
 
  #add_subdirectory(${CMAKE_SOURCE_DIR} Externals/Assimp)
 
+ find_package(Bullet REQUIRED)
  find_package(pugixml CONFIG REQUIRED)
- find_package(glm REQUIRED)
+ find_package(glm CONFIG REQUIRED)
+ find_package(assimp CONFIG REQUIRED)
+ find_package(Freetype REQUIRED)
+ find_package(EnTT CONFIG REQUIRED)
+ find_package(glfw3 CONFIG REQUIRED)
+ find_package(imgui CONFIG REQUIRED)
+ find_package(spdlog CONFIG REQUIRED)
+ find_package(Stb REQUIRED)
+ find_package(glad CONFIG REQUIRED)
 
  find_path(PUGIXML_INCLUDE_DIR pugixml.hpp)
  message("PUGIXML_INCLUDE_DIR: " ${PUGIXML_INCLUDE_DIR})
@@ -20,25 +29,19 @@
  include(GenerateExportHeader)
  generate_export_header(${PROJECT_NAME})
 
- find_package(Freetype REQUIRED)
  message("FREETYPE_FOUND: " ${FREETYPE_FOUND})
  message("FREETYPE_INCLUDE_DIRS: " ${FREETYPE_INCLUDE_DIRS})
  message("FREETYPE_LIBRARIES: " ${FREETYPE_LIBRARIES})
 
  target_include_directories(${PROJECT_NAME} PUBLIC
          ${CMAKE_SOURCE_DIR}/Externals
-         ${CMAKE_SOURCE_DIR}/Externals/Assimp/include
          ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
-         ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
-         ${CMAKE_SOURCE_DIR}/Externals/stb
-         ${CMAKE_SOURCE_DIR}/Externals/bullet3/src
          ${Vulkan_INCLUDE_DIR}
          ${CMAKE_SOURCE_DIR}/Sources
-         ${CMAKE_SOURCE_DIR}/Externals/fmt/include
-         ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
          ${BULLET_INCLUDE_DIR}
          ${PUGIXML_INCLUDE_DIR}
          ${FREETYPE_INCLUDE_DIRS}
+         ${Stb_INCLUDE_DIR}
          ${CMAKE_CURRENT_BINARY_DIR}
 
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
@@ -47,39 +50,26 @@
 
  # TODO: make for linux and mac
  target_link_libraries(${PROJECT_NAME} PUBLIC
-         glfw
          glm::glm
-         gl46
-         #${Vulkan_LIBRARIES}
-         assimp
-
-         gl46
-         #LinearMath
-         #Bullet3Common
-         #BulletDynamics
-         #BulletCollision
-         #BulletInverseDynamics
-         #BulletSoftBody
-
+         assimp::assimp
+         glfw
+         imgui::imgui
+         pugixml
+         EnTT::EnTT
+         spdlog::spdlog
+         glad::glad
+         SGUtils
          ${BULLET_COLLISION_LIBRARY}
          ${BULLET_DYNAMICS_LIBRARY}
          ${BULLET_MATH_LIBRARY}
-
-         ImGui
-
-         pugixml
-
          ${FREETYPE_LIBRARIES}
-
-         EnTT::EnTT
-         SGUtils
          )
 
- IF(UNIX)
+ if(${CMAKE_COMPILER_IS_GNUCXX})
   target_link_libraries(${PROJECT_NAME} PUBLIC
           ${CMAKE_DL_LIBS}
           backtrace)
- ENDIF()
+ endif()
 
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)
 

@@ -20,12 +20,16 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 message("ToolChain CMAKE_CXX_LINK_EXECUTABLE: ${CMAKE_CXX_LINK_EXECUTABLE}")
 
-IF(NOT MSVC)
+IF(UNIX)
     add_compile_options(-fPIC)
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-implicit-fallthrough -Wno-ignored-qualifiers -g -rdynamic -fno-pie -no-pie")
     set(CMAKE_CXX_FLAGS_DEBUG "-O1")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-else()
+    #[[set(CMAKE_C_FLAGS "-fprofile-arcs -ftest-coverage --coverage")
+    set(GCOV_CFLAGS "-fprofile-arcs -ftest-coverage --coverage")
+    set(GCOV_LDFLAGS "-fprofile-arcs -ftest-coverage")
+    set(GCOV_LIBS "lgcov")]]
+elseif(MSVC)
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
     add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
@@ -71,6 +75,7 @@ set(SG_EDITOR_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
 
 # multiple definition because of bullet library
 set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
+#set(CMAKE_STATIC_LINKER_FLAGS "-lgcov")
 
 # options --------------------------
 

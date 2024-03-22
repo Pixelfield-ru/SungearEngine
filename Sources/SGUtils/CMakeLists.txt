@@ -4,6 +4,9 @@ SET(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 file(GLOB_RECURSE SGUTILS_SOURCES ../SGUtils/*.cpp ../SGUtils/*.h)
 
+find_package(glfw3 CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+
 add_library(${PROJECT_NAME} SHARED ${SGUTILS_SOURCES})
 
 include(GenerateExportHeader)
@@ -13,8 +16,6 @@ message("sgutils bin: " ${CMAKE_CURRENT_BINARY_DIR})
 find_package(glm REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        ${CMAKE_SOURCE_DIR}/Externals/GLFW/include
-        ${CMAKE_SOURCE_DIR}/Externals/spdlog/include
         ${CMAKE_SOURCE_DIR}/Sources
         ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -22,6 +23,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} PUBLIC
         glfw
         glm::glm
+        spdlog::spdlog
         ${spdlog_lib}
 )
 

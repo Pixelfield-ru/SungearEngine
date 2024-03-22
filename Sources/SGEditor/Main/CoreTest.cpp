@@ -4,7 +4,7 @@
 #define BULLET_IMPLEMENTATION
 
 #include <cstdlib>
-#include <stb/stb_image_write.h>
+#include <stb_image_write.h>
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <BulletCollision/CollisionShapes/btStaticPlaneShape.h>
 #include <BulletCollision/CollisionShapes/btBox2dShape.h>
@@ -124,19 +124,19 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
 
 void init()
 {
-    // SGCore::CoreMain::m_pathToSungearEngineSources = "/home/ilya/pixelfield/SungearEngine";
-    SGCore::CoreMain::m_pathToSungearEngineSources = "F:\\Pixelfield\\SungearEngine";
+    SGCore::CoreMain::m_pathToSungearEngineSources = "/home/ilya/pixelfield/SungearEngine";
+    // SGCore::CoreMain::m_pathToSungearEngineSources = "F:\\Pixelfield\\SungearEngine";
     
-    // std::cout << SGCore::PluginsManager::createPluginProject("/home/ilya/pixelfield/test", "TestSGPlugin2", "23") << std::endl;
-    std::cout << SGCore::PluginsManager::createPluginProject("F:\\Pixelfield\\test", "TestSGPlugin2", "23") << std::endl;
+    std::cout << SGCore::PluginsManager::createPluginProject("/home/ilya/pixelfield/test", "TestSGPlugin2", "23") << std::endl;
+    // std::cout << SGCore::PluginsManager::createPluginProject("F:\\Pixelfield\\test", "TestSGPlugin2", "23") << std::endl;
     
-    /*auto testPlugin =
-            SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "1.0.0", "/home/ilya/pixelfield/test/TestSGPlugin2", { "arg0" },
-                                               SGCore::PluginBuildType::PBT_DEBUG);*/
-
     auto testPlugin =
-            SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "1.0.0", R"(F:\Pixelfield\test\TestSGPlugin2)", { "arg0" },
+            SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "1.0.0", "/home/ilya/pixelfield/test/TestSGPlugin2", { "arg0" },
                                                SGCore::PluginBuildType::PBT_DEBUG);
+
+    /*auto testPlugin =
+            SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "1.0.0", R"(F:\Pixelfield\test\TestSGPlugin2)", { "arg0" },
+                                               SGCore::PluginBuildType::PBT_DEBUG);*/
     // SGCore::PluginsManager::getPlugins().clear();
     
     /*for(const auto& plugin : SGCore::PluginsManager::getPlugins())

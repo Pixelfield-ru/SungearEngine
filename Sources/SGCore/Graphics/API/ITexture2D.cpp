@@ -1,5 +1,5 @@
 #include <spdlog/spdlog.h>
-#include <stb/stb_image.h>
+#include <stb_image.h>
 
 #include "ITexture2D.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"

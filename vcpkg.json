@@ -17,5 +17,34 @@
   }, {
     "name" : "glm",
     "version>=" : "1.0.1#1"
+  }, {
+    "name" : "assimp",
+    "version>=" : "5.3.1#4"
+  }, {
+    "name" : "entt",
+    "version>=" : "3.13.1"
+  }, {
+    "name" : "glfw3",
+    "version>=" : "3.4"
+  }, {
+    "name" : "imgui",
+    "version>=" : "1.90.2",
+    "features" : [ "glfw-binding", "opengl3-binding" ]
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2023-05-04"
+  }, {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2022-02-06#1"
+  }, {
+    "name" : "spdlog",
+    "version>=" : "1.13.0"
+  }, {
+    "name" : "stb",
+    "version>=" : "2023-04-11#1"
+  }, {
+    "name" : "glad",
+    "version>=" : "0.1.36",
+    "features": ["extensions"]
   } ]
 }
