@@ -87,10 +87,29 @@ namespace SGUtils
          * @param f Function.
          */
         template <typename... InTypes, typename Func>
-        static void forTypes(Func&& f)
+        static void forTypes(Func&& func)
         {
-            (f(TypeWrapper<InTypes>()), ...);
+            (func(TypeWrapper<InTypes>()), ...);
         }
+        
+        template<typename T, size_t RepeatsCnt>
+        struct repeated_type
+        {
+            using type = T;
+            static const size_t N = RepeatsCnt;
+        };
+        
+        template<typename T, std::size_t... C>
+        static auto repeated_tuple_impl(std::index_sequence<C...>)
+        {
+            return std::make_tuple((C, T { })...);
+        }
+        
+        template<typename RepeatT>
+        using repeated_tuple_single = decltype(repeated_tuple_impl<typename RepeatT::type>(std::make_index_sequence<RepeatT::N>()));
+        
+        template<typename... RepeatT>
+        using repeated_tuple = decltype(std::tuple_cat((repeated_tuple_single<RepeatT>())...));
 
         template<typename Base, typename T>
         static bool instanceof(const T* ptr)

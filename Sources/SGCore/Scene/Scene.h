@@ -21,7 +21,7 @@
 namespace SGCore
 {
     struct XMLDocument;
-
+    
     class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
     {
     public:
@@ -105,7 +105,7 @@ namespace SGCore
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;
         
-        entt::registry m_ecsRegistry;
+        entt::basic_registry<highp_entity> m_ecsRegistry;
 
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 

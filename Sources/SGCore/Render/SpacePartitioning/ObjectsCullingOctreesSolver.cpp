@@ -23,7 +23,7 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
     auto camerasView = registry.view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();
     objectsCullingOctrees.each([&camerasView, &registry, this](Ref<Octree> octree, Ref<ObjectsCullingOctree>&) {
         camerasView.each([&octree, &registry, this]
-        (const entt::entity& cameraEntity, Ref<Camera3D> camera3D, Ref<RenderingBase> renderingBase, Ref<Transform> cameraTransform) {
+        (const entity_t& cameraEntity, Ref<Camera3D> camera3D, Ref<RenderingBase> renderingBase, Ref<Transform> cameraTransform) {
             for(const auto& n : octree->m_notEmptyNodes)
             {
                 testNode(cameraEntity, renderingBase->m_frustum, n);
@@ -33,7 +33,7 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
 }
 
 void SGCore::ObjectsCullingOctreesSolver::testNode
-(const entt::entity& cameraEntity, const Frustum& cameraFrustum, const Ref<OctreeNode>& node) noexcept
+(const entity_t& cameraEntity, const Frustum& cameraFrustum, const Ref<OctreeNode>& node) noexcept
 {
     bool isInFrustum = cameraFrustum.testAABB(node->m_aabb.m_min, node->m_aabb.m_max);
     

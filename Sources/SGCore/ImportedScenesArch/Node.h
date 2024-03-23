@@ -13,10 +13,10 @@ namespace SGCore
     class Node
     {
     private:
-        using MeshFunc = std::function<void(const entt::entity& parentEntity, const entt::entity& meshEntity)>;
-        using EachEntityFunc = std::function<void(const entt::entity& parentEntity)>;
+        using MeshFunc = std::function<void(const entity_t& parentEntity, const entity_t& meshEntity)>;
+        using EachEntityFunc = std::function<void(const entity_t& parentEntity)>;
 
-        entt::entity addOnScene(const Ref<Scene>& scene,
+        entity_t addOnScene(const Ref<Scene>& scene,
                                 const std::string& layerName,
                                 const EachEntityFunc& eachEntityFunc,
                                 const MeshFunc& meshFunc,

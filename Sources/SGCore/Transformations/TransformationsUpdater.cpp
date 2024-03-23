@@ -38,11 +38,11 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
 
     if(m_changedModelMatrices.isLocked() || m_entitiesForPhysicsUpdateToCheck.isLocked()) return;
 
-    entt::registry& registry = m_sharedScene->getECSRegistry();
+    auto& registry = m_sharedScene->getECSRegistry();
     
     auto transformsView = registry.view<Ref<Transform>>();
     
-    transformsView.each([&registry, this](const entt::entity& entity, Ref<Transform> transform) {
+    transformsView.each([&registry, this](const entity_t& entity, Ref<Transform> transform) {
         if(transform)
         {
             EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);

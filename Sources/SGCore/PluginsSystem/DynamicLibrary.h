@@ -6,7 +6,6 @@
 #define SUNGEARENGINE_DYNAMICLIBRARY_H
 
 #include "SGUtils/CrashHandler/Platform.h"
-#include "SGUtils/TypeInfo.h"
 
 #include <functional>
 

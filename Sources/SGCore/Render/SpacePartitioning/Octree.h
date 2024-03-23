@@ -27,8 +27,8 @@ namespace SGCore
         friend struct Octree;
         
         AABB m_aabb;
-        std::unordered_set<entt::entity> m_overlappedEntities;
-        std::unordered_set<entt::entity> m_visibleReceivers;
+        std::unordered_set<entity_t> m_overlappedEntities;
+        std::unordered_set<entity_t> m_visibleReceivers;
         std::array<Ref<OctreeNode>, 8> m_children;
 
         glm::vec4 m_notCollidesDebugColor { 0, 0, 1, 1 };
@@ -49,7 +49,7 @@ namespace SGCore
         
         [[nodiscard]] bool subdivide(Ref<OctreeNode> node) const noexcept;
         
-        SGCore::Ref<SGCore::OctreeNode> subdivideWhileOverlap(const entt::entity& overlappingEntity,
+        SGCore::Ref<SGCore::OctreeNode> subdivideWhileOverlap(const entity_t& overlappingEntity,
                                                               const AABB& aabb,
                                                               const Ref<OctreeNode>& node,
                                                               bool isParentOverlapped = true) const noexcept;

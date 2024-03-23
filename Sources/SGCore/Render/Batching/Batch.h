@@ -32,8 +32,8 @@ namespace SGCore
         
         void renderAll() noexcept;
         
-        void addEntity(const entt::entity& entity) noexcept;
-        void removeEntity(const entt::entity& entity) noexcept;
+        void addEntity(const entity_t& entity) noexcept;
+        void removeEntity(const entity_t& entity) noexcept;
         
     private:
         Weak<Scene> m_parentScene;
@@ -52,7 +52,7 @@ namespace SGCore
         bool m_modelMatricesArrayChanged = false;
         bool m_instancesIndicesChanged = false;
         
-        std::unordered_map<entt::entity, size_t> m_entitiesIndices;
+        std::unordered_map<entity_t, size_t> m_entitiesIndices;
         std::vector<BatchEntityRanges> m_entitiesRanges;
         
         std::vector<float> m_verticesPositions;
@@ -73,20 +73,20 @@ namespace SGCore
         
         Ref<IShader> m_shader;
         
-        EventListener<void(entt::registry&, const entt::entity&, Ref<const Transform>)> m_transformChangedListener = MakeEventListener<void(entt::registry&, const entt::entity&, Ref<const Transform>)>(
-                [this](entt::registry& registry, const entt::entity& entity, Ref<const Transform> transform) {
+        EventListener<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)> m_transformChangedListener = MakeEventListener<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)>(
+                [this](entt::basic_registry<entity_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
             onTransformUpdate(registry, entity, transform);
         });
         
-        void updateArraysForEntity(const Ref<Scene>& lockedScene, const entt::entity& entity) noexcept;
+        void updateArraysForEntity(const Ref<Scene>& lockedScene, const entity_t& entity) noexcept;
         
         void recalculateRanges() noexcept;
 
-        void onMeshDestroyed(entt::registry& registry, entt::entity entity) noexcept;
-        void onTransformDestroyed(entt::registry& registry, entt::entity entity) noexcept;
+        void onMeshDestroyed(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept;
+        void onTransformDestroyed(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept;
         
-        void onMeshUpdate(entt::registry& registry, entt::entity entity) noexcept;
-        void onTransformUpdate(entt::registry& registry, entt::entity entity, Ref<const Transform> transform) noexcept;
+        void onMeshUpdate(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept;
+        void onTransformUpdate(entt::basic_registry<entity_t>& registry, entity_t entity, Ref<const Transform> transform) noexcept;
         
         void onRenderPipelineSet() noexcept;
         

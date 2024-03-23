@@ -25,13 +25,13 @@ namespace SGCore
         void render(const Ref<Scene>& meshEntity, const Ref<IRenderPipeline>& renderPipeline) final;
         
     private:
-        void renderMesh(entt::registry& registry,
-                        const entt::entity& meshEntity,
+        void renderMesh(entt::basic_registry<entity_t>& registry,
+                        const entity_t& meshEntity,
                         const Ref<Transform>& meshTransform,
                         Mesh& mesh,
                         const Ref<ISubPassShader>& standardGeometryShader) noexcept;
-        void renderOctreeNode(entt::registry& registry,
-                              const entt::entity& forCamera,
+        void renderOctreeNode(entt::basic_registry<entity_t>& registry,
+                              const entity_t& forCamera,
                               const Ref<OctreeNode>& node,
                               const Ref<ISubPassShader>& standardGeometryShader) noexcept;
     };

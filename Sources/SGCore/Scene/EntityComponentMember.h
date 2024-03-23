@@ -12,7 +12,7 @@ namespace SGCore
     template<typename T>
     struct EntityComponentMember
     {
-        entt::entity m_owner;
+        entity_t m_owner;
         T m_memberValue;
     };
 }

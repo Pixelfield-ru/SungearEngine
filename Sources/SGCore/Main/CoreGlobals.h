@@ -9,6 +9,10 @@
 
 namespace SGCore
 {
+    enum class highp_entity : std::uint64_t { };
+    
+    using entity_t = highp_entity;
+    
     template<typename T>
     using Ref = std::shared_ptr<T>;
     template<typename T, typename... Args>

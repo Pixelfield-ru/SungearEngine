@@ -27,17 +27,17 @@ namespace SGCore
         void setScene(const Ref<Scene>& scene) noexcept final;
         
     private:
-        void onTransformChanged(const entt::entity& entity, const Ref<const Transform>& transform) noexcept;
+        void onTransformChanged(const entity_t& entity, const Ref<const Transform>& transform) noexcept;
     
-        EventListener<void(entt::registry&, const entt::entity&,
-                           Ref<const Transform>)> m_transformChangedListener = MakeEventListener<void(entt::registry&,
-                                                                                                      const entt::entity&,
+        EventListener<void(entt::basic_registry<entity_t>&, const entity_t&,
+                           Ref<const Transform>)> m_transformChangedListener = MakeEventListener<void(entt::basic_registry<entity_t>&,
+                                                                                                      const entity_t&,
                                                                                                       Ref<const Transform>)>(
-                [this](entt::registry& registry, const entt::entity& entity, Ref<const Transform> transform) {
+                [this](entt::basic_registry<entity_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
                     onTransformChanged(entity, transform);
                 });
         
-        std::vector<std::pair<entt::entity, Ref<const Transform>>> m_changedTransforms;
+        std::vector<std::pair<entity_t, Ref<const Transform>>> m_changedTransforms;
     };
 }
 

@@ -38,13 +38,14 @@ namespace SGCore
         
         void setScene(const Ref<Scene>& scene) noexcept final;
         
-        Event<void(entt::registry&, const entt::entity&, Ref<const Transform>)> m_transformChangedEvent = MakeEvent<void(entt::registry&, const entt::entity&, Ref<const Transform>)>();
+        Event<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)> m_transformChangedEvent =
+                MakeEvent<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)>();
         
     private:
         Ref<Scene> m_sharedScene;
 
         SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;
-        SafeObject<std::vector<entt::entity>> m_entitiesForPhysicsUpdateToCheck;
+        SafeObject<std::vector<entity_t>> m_entitiesForPhysicsUpdateToCheck;
         
         // TODO: FIX. MAY PRODUCE SIGSEGV WHEN ITERATING THROUGH IN ONE THREAD AND push_back IN OTHER
         SafeObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;

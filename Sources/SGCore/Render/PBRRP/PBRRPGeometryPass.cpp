@@ -56,7 +56,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     }
     
     camerasView.each([&meshesView, &renderPipeline, &standardGeometryShader, &scene, &registry, this]
-    (const entt::entity& cameraEntity, Ref<Camera3D>& camera3D, Ref<RenderingBase>& cameraRenderingBase, Ref<Transform>& cameraTransform) {
+    (const entity_t& cameraEntity, Ref<Camera3D>& camera3D, Ref<RenderingBase>& cameraRenderingBase, Ref<Transform>& cameraTransform) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
         if(standardGeometryShader)
@@ -67,7 +67,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         // todo: make get receiver (postprocess or default) and render in them
 
         meshesView.each([&renderPipeline, &standardGeometryShader, &scene, &cameraEntity, &registry, this]
-        (const entt::entity& meshEntity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
+        (const entity_t& meshEntity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
             auto* tmpCullableMesh = registry.try_get<Ref<CullableMesh>>(meshEntity);
             Ref<CullableMesh> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
             
@@ -87,7 +87,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     renderedInOctrees = 0;
     
     camerasView.each([&meshesView, &renderPipeline, &standardGeometryShader, &scene, &registry, this]
-                             (const entt::entity& cameraEntity, Ref<Camera3D>& camera3D, Ref<RenderingBase>& cameraRenderingBase, Ref<Transform>& cameraTransform) {
+                             (const entity_t& cameraEntity, Ref<Camera3D>& camera3D, Ref<RenderingBase>& cameraRenderingBase, Ref<Transform>& cameraTransform) {
         
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         
@@ -108,8 +108,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     // std::cout << "renderedInOctrees: " << renderedInOctrees << std::endl;
 }
 
-void SGCore::PBRRPGeometryPass::renderMesh(entt::registry& registry,
-                                           const entt::entity& meshEntity,
+void SGCore::PBRRPGeometryPass::renderMesh(entt::basic_registry<entity_t>& registry,
+                                           const entity_t& meshEntity,
                                            const Ref<Transform>& meshTransform,
                                            Mesh& mesh,
                                            const Ref<ISubPassShader>& standardGeometryShader) noexcept
@@ -169,8 +169,8 @@ void SGCore::PBRRPGeometryPass::renderMesh(entt::registry& registry,
     }
 }
 
-void SGCore::PBRRPGeometryPass::renderOctreeNode(entt::registry& registry,
-                                                 const entt::entity& forCamera,
+void SGCore::PBRRPGeometryPass::renderOctreeNode(entt::basic_registry<entity_t>& registry,
+                                                 const entity_t& forCamera,
                                                  const SGCore::Ref<SGCore::OctreeNode>& node,
                                                  const Ref<ISubPassShader>& standardGeometryShader) noexcept
 {

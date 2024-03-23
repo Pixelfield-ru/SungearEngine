@@ -119,11 +119,11 @@ void SGCore::IMeshData::setData(const Ref<IMeshData>& other) noexcept
     other->m_material->copyTextures(m_material);
 }
 
-entt::entity SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
+SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
 {
     auto& registry = scene->getECSRegistry();
     
-    entt::entity meshEntity = registry.create();
+    auto meshEntity = registry.create();
     
     EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
     Ref<Transform>& meshTransform = registry.emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
