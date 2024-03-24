@@ -17,6 +17,8 @@ enum SGShaderDefineType
 enum SGDrawMode
 {
     SGG_TRIANGLES,
+    SGG_TRIANGLE_STRIP,
+    SGG_TRIANGLE_FAN,
     SGG_LINES,
     SGG_QUADS,
     SGG_POINTS

@@ -20,10 +20,10 @@ namespace SGCore
         
         Timer m_atmosphereUpdateTimer;
         
+        Ref<IUniformBuffer> m_uniformBuffer;
+        
     private:
         void updateAtmosphere() noexcept;
-        
-        Ref<IUniformBuffer> m_uniformBuffer;
     };
 }
 

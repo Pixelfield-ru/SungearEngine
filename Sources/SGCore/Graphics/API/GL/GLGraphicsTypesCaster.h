@@ -25,7 +25,13 @@ namespace GLGraphicsTypesCaster
                 return GL_QUADS;
             case SGG_POINTS:
                 return GL_POINTS;
-
+            case SGG_TRIANGLE_STRIP:
+                return GL_TRIANGLE_STRIP;
+                break;
+            case SGG_TRIANGLE_FAN:
+                return GL_TRIANGLE_FAN;
+                break;
+            
             default:
                 return GL_TRIANGLES;
         }

@@ -16,7 +16,6 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
-#include "SGUtils/CrashHandler/CrashHandler.h"
 #include "SGUtils/CrashHandler/HwExcpetionHandler.h"
 
 void SGCore::CoreMain::start()
