@@ -16,7 +16,7 @@
 #include "SGUtils/UniqueNamesManager.h"
 #include "SGUtils/Event.h"
 #include "SGUtils/EventListener.h"
-#include "SGUtils/TypeInfo.h"
+#include "SGUtils/TypeTraits.h"
 
 namespace SGCore
 {

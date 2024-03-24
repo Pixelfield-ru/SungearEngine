@@ -16,6 +16,7 @@ namespace SGCore
         ~VkVertexBuffer() noexcept override;
 
         std::shared_ptr<IVertexBuffer> create() noexcept final;
+        std::shared_ptr<IVertexBuffer> create(const size_t& byteSize) noexcept final;
         void destroy() noexcept final;
         
         std::shared_ptr<IVertexBuffer> bind() noexcept final;

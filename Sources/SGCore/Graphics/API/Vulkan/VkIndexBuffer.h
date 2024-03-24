@@ -16,6 +16,7 @@ namespace SGCore
         ~VkIndexBuffer() noexcept override;
 
         std::shared_ptr<IIndexBuffer> create() noexcept final;
+        std::shared_ptr<IIndexBuffer> create(const size_t& byteSize) noexcept final;
 
         void destroy() noexcept final;
 

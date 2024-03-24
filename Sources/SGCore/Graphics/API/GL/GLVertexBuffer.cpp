@@ -17,20 +17,24 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::create() noexcept
 
     glGenBuffers(1, &m_handler);
 
-    #ifdef SUNGEAR_DEBUG
-    GL4Renderer::getInstance()->checkForErrors();
-    #endif
+    return shared_from_this();
+}
 
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::create(const size_t& byteSize) noexcept
+{
+    destroy();
+    
+    glGenBuffers(1, &m_handler);
+    bind();
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) byteSize, nullptr,
+                 GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
+    
     return shared_from_this();
 }
 
 void SGCore::GLVertexBuffer::destroy() noexcept
 {
     glDeleteBuffers(1, &m_handler);
-
-    #ifdef SUNGEAR_DEBUG
-    //GL46::GL4Renderer::getInstance()->checkForErrors();
-    #endif
 }
 
 void SGCore::GLVertexBuffer::subDataOnGAPISide(const void* data, const size_t& bytesCount,
@@ -46,20 +50,12 @@ void SGCore::GLVertexBuffer::subDataOnGAPISide(const void* data, const size_t& b
     {
         glBufferSubData(GL_ARRAY_BUFFER, (GLsizeiptr) bytesOffset, (GLsizeiptr) bytesCount, data);
     }
-    
-    #ifdef SUNGEAR_DEBUG
-    GL4Renderer::getInstance()->checkForErrors();
-    #endif
 }
 
 std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::bind() noexcept
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_handler);
-
-    #ifdef SUNGEAR_DEBUG
-    GL4Renderer::getInstance()->checkForErrors();
-    #endif
-
+    
     return shared_from_this();
 }
 

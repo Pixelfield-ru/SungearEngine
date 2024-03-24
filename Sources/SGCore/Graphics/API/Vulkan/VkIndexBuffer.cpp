@@ -14,6 +14,12 @@ std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::create() noexcept
     return shared_from_this();
 }
 
+std::shared_ptr<SGCore::IIndexBuffer> SGCore::VkIndexBuffer::create(const size_t& byteSize) noexcept
+{
+    return shared_from_this();
+}
+
+
 void SGCore::VkIndexBuffer::destroy() noexcept
 {
 

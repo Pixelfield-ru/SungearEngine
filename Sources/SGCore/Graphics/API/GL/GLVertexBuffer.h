@@ -22,6 +22,7 @@ namespace SGCore
         ~GLVertexBuffer() noexcept override;
 
         std::shared_ptr<IVertexBuffer> create() noexcept override;
+        std::shared_ptr<IVertexBuffer> create(const size_t& byteSize) noexcept override;
         void destroy() noexcept override;
         
         std::shared_ptr<IVertexBuffer> bind() noexcept override;

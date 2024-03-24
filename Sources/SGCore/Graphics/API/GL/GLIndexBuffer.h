@@ -19,6 +19,7 @@ namespace SGCore
         ~GLIndexBuffer() noexcept override;
 
         std::shared_ptr<IIndexBuffer> create() noexcept override;
+        std::shared_ptr<IIndexBuffer> create(const size_t& byteSize) noexcept override;
 
         void destroy() noexcept final;
 

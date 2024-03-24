@@ -14,6 +14,11 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::create() noexcept
     return shared_from_this();
 }
 
+std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::create(const size_t& byteSize) noexcept
+{
+    return shared_from_this();
+}
+
 void SGCore::VkVertexBuffer::destroy() noexcept
 {
 
@@ -34,3 +39,4 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::VkVertexBuffer::setUsage(SGGUsage
 {
     return shared_from_this();
 }
+

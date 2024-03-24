@@ -24,6 +24,7 @@ namespace SGCore
         virtual ~IVertexBuffer() = default;
 
         virtual std::shared_ptr<IVertexBuffer> create() = 0;
+        virtual std::shared_ptr<IVertexBuffer> create(const size_t& byteSize) = 0;
         virtual void destroy() = 0;
         
         template<typename DataType>

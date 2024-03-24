@@ -23,6 +23,7 @@ namespace SGCore
         virtual ~IIndexBuffer() = default;
 
         virtual std::shared_ptr<IIndexBuffer> create() = 0;
+        virtual std::shared_ptr<IIndexBuffer> create(const size_t& byteSize) = 0;
         virtual void destroy() = 0;
 
         virtual std::shared_ptr<IIndexBuffer> putData(const std::vector<std::uint32_t>& data) = 0;

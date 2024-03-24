@@ -1,42 +1,53 @@
-//
-// Created by ilya on 23.03.24.
-//
-
-#ifndef OCEANSEDGE_SINGLEARRAYMULTIARRAY_H
-#define OCEANSEDGE_SINGLEARRAYMULTIARRAY_H
+#ifndef SUNGEARENGINE_MULTIDIMENSIONALSINGLEARRAY_H
+#define SUNGEARENGINE_MULTIDIMENSIONALSINGLEARRAY_H
 
 #include <cstddef>
 #include <type_traits>
 #include <utility>
 #include <tuple>
+#include <cstring>
 
-#include "SGUtils/Utils.h"
+#include "SGUtils/TypeTraits.h"
 
 namespace SGCore
 {
     template<typename T, long DimensionsCnt>
-    struct SingleArrayMultiArray
+    struct MultiDimensionalSingleArray
     {
-        using dimensions_tuple_t = SGUtils::Utils::repeated_tuple<SGUtils::Utils::repeated_type<long, DimensionsCnt>>;
+        using dimensions_tuple_t = repeated_tuple<repeated_type<long, DimensionsCnt>>;
         
-        SingleArrayMultiArray() = default;
+        using type = T;
+        using const_type = T;
+        using pointer_t = T*;
+        using const_pointer_t = T*;
+        static const constexpr long dimensions_count = DimensionsCnt;
+        
+        MultiDimensionalSingleArray() = default;
+        
+        MultiDimensionalSingleArray(const MultiDimensionalSingleArray& other) noexcept
+        {
+            *this = other;
+        }
+        
+        MultiDimensionalSingleArray(MultiDimensionalSingleArray&& other) noexcept
+        {
+            *this = std::move(other);
+        }
         
         template<typename... DimensionT>
         requires((std::is_integral_v<DimensionT> && ...) && sizeof...(DimensionT) == DimensionsCnt)
-        explicit SingleArrayMultiArray(DimensionT... dimensionSizes) noexcept
+        explicit MultiDimensionalSingleArray(DimensionT... dimensionSizes) noexcept
         {
             m_dimensionsSizes = std::make_tuple(dimensionSizes...);
             
-            (std::cout << ... << dimensionSizes) << std::endl;
+            getSize(m_size);
             
-            getOffset(std::array<long, DimensionsCnt>({ (long) dimensionSizes... }), m_size);
-            
-            std::cout << "m_size : " << m_size << std::endl;
+            // std::cout << "m_size : " << m_size << std::endl;
             
             m_buffer = new T[m_size];
         }
         
-        ~SingleArrayMultiArray() noexcept
+        ~MultiDimensionalSingleArray() noexcept
         {
             delete m_buffer;
             m_buffer = nullptr;
@@ -56,7 +67,7 @@ namespace SGCore
             return m_buffer;
         }
         
-        SingleArrayMultiArray& operator=(const SingleArrayMultiArray& other) noexcept
+        MultiDimensionalSingleArray& operator=(const MultiDimensionalSingleArray& other) noexcept
         {
             if(this == std::addressof(other)) return *this;
             
@@ -71,9 +82,9 @@ namespace SGCore
             return *this;
         }
         
-        SingleArrayMultiArray& operator=(SingleArrayMultiArray&& other) noexcept
+        MultiDimensionalSingleArray& operator=(MultiDimensionalSingleArray&& other) noexcept
         {
-            if (this == std::addressof(other)) return *this;
+            if(this == std::addressof(other)) return *this;
             
             m_size = other.m_size;
             
@@ -93,15 +104,38 @@ namespace SGCore
             {
                 offset += indices[curIdx];
             }
+            else if constexpr(curIdx == DimensionsCnt - 2)
+            {
+                if constexpr(curIdx == 0)
+                {
+                    offset = std::get<curIdx>(m_dimensionsSizes);
+                }
+                
+                offset *= indices[curIdx];
+                getOffset<curIdx + 1>(indices, offset);
+            }
             else
             {
                 if constexpr(curIdx == 0)
                 {
                     offset = 1;
                 }
-                // std::cout << indices[curIdx] << std::endl;
-                offset *= indices[curIdx];
+                offset *= std::get<curIdx>(m_dimensionsSizes);
                 getOffset<curIdx + 1>(indices, offset);
+            }
+        }
+        
+        template<size_t curIdx = 0>
+        void getSize(size_t& size)
+        {
+            if constexpr(curIdx < DimensionsCnt)
+            {
+                if constexpr(curIdx == 0)
+                {
+                    size = 1;
+                }
+                size *= std::get<curIdx>(m_dimensionsSizes);
+                getSize<curIdx + 1>(size);
             }
         }
         
@@ -113,4 +147,4 @@ namespace SGCore
     };
 }
 
-#endif //OCEANSEDGE_SINGLEARRAYMULTIARRAY_H
+#endif // SUNGEARENGINE_MULTIDIMENSIONALSINGLEARRAY_H

@@ -8,7 +8,7 @@
 #include <list>
 #include <functional>
 #include "EventListener.h"
-#include "SGUtils/TypeInfo.h"
+#include "SGUtils/TypeTraits.h"
 
 #include "UUID.h"
 
@@ -109,7 +109,7 @@ namespace SGCore
         }
         
         template<auto FuncPtr>
-        void connect(SGUtils::MemberFunctionTraits<decltype(FuncPtr)>::instance_type& obj)
+        void connect(MemberFunctionTraits<decltype(FuncPtr)>::instance_type& obj)
         {
             auto* holder = new HolderT;
             holder->m_hash = std::hash<const char*>()(typeid(FuncPtr).name()) ^ *reinterpret_cast<std::intptr_t*>(&obj);
@@ -155,7 +155,7 @@ namespace SGCore
         }
         
         template<auto FuncPtr>
-        void disconnect(SGUtils::MemberFunctionTraits<decltype(FuncPtr)>::instance_type& obj)
+        void disconnect(MemberFunctionTraits<decltype(FuncPtr)>::instance_type& obj)
         {
             const size_t hash = std::hash<const char*>()(typeid(FuncPtr).name()) ^ *reinterpret_cast<std::intptr_t*>(&obj);
             
