@@ -61,13 +61,8 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
         }
     }
     
-    Ref<TimerCallback> callback = MakeRef<TimerCallback>();
-    callback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
-        updateAtmosphere();
-    });
-    
     m_atmosphereUpdateTimer.setTargetFrameRate(60);
-    m_atmosphereUpdateTimer.addCallback(callback);
+    (*m_atmosphereUpdateTimer.m_updateEvent) += m_atmosphereUpdateEventListener;
     m_atmosphereUpdateTimer.m_cyclic = true;
 }
 

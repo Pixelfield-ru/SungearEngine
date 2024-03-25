@@ -22,10 +22,7 @@
 #include "SGCore/Memory/Assets/ModelAsset.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
-#include "SGCore/Main/Callbacks.h"
-
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
-#include "EditorMain.h"
 #include "SGCore/ImGuiWrap/Views/Base/Window.h"
 #include "SGCore/ImGuiWrap/Views/Base/CollapsingHeader.h"
 #include "SGCore/ImGuiWrap/ViewsInjector.h"
@@ -43,7 +40,6 @@
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
 #include "SGCore/Render/Lighting/DirectionalLight.h"
 #include "SGCore/Render/Gizmos/BoxGizmo.h"
-#include "SGUtils/Noise/PerlinNoise.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
@@ -70,12 +66,12 @@
 
 SGCore::Ref<SGCore::ModelAsset> testModel;
 
-entt::entity testCameraEntity = entt::null;
+SGCore::entity_t testCameraEntity = entt::null;
 SGCore::Ref<SGCore::Scene> testScene;
 
 SGCore::Atmosphere* _atmosphereScattering = nullptr;
 
-std::vector<entt::entity> model1Entities;
+std::vector<SGCore::entity_t> model1Entities;
 
 SGCore::Batch* globalBatch = nullptr;
 SGCore::Ref<SGCore::Octree> globalOctree;
@@ -89,9 +85,9 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
 {
     auto sphereModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>("ball0");
     
-    std::vector<entt::entity> sphereEntities;
+    std::vector<SGCore::entity_t> sphereEntities;
     sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                        [&sphereEntities](const entt::entity& entity)
+                                        [&sphereEntities](const SGCore::entity_t& entity)
                                         {
                                             sphereEntities.push_back(entity);
                                         }
@@ -156,7 +152,7 @@ void init()
 
     // BATCHING ==========================================
     
-    entt::entity batchEntity = testScene->getECSRegistry().create();
+    SGCore::entity_t batchEntity = testScene->getECSRegistry().create();
     globalBatch = &testScene->getECSRegistry().emplace<SGCore::Batch>(batchEntity, testScene);
 
     std::cout << "dfdfdf" << std::endl;
@@ -293,9 +289,9 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    /*std::vector<entt::entity> sphereEntities;
+    /*std::vector<SGCore::entity_t> sphereEntities;
     sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                      [&sphereEntities](const entt::entity& entity)
+                                      [&sphereEntities](const SGCore::entity_t& entity)
                                       {
                                           sphereEntities.push_back(entity);
                                       }
@@ -340,9 +336,9 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    std::vector<entt::entity> floorEntities;
+    std::vector<SGCore::entity_t> floorEntities;
     testModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                      [&floorEntities](const entt::entity& entity)
+                                      [&floorEntities](const SGCore::entity_t& entity)
                                       {
                                           floorEntities.push_back(entity);
                                           testScene->getECSRegistry().emplace<SGCore::IgnoreOctrees>(entity);
@@ -379,10 +375,10 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    std::vector<entt::entity> model0Entities;
+    std::vector<SGCore::entity_t> model0Entities;
     
     model0->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                   [&model0Entities](const entt::entity& entity)
+                                   [&model0Entities](const SGCore::entity_t& entity)
     {
         model0Entities.push_back(entity);
     });
@@ -493,7 +489,7 @@ void init()
     // ==========================================================================================
     
     model1->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                      [](const entt::entity& entity)
+                                      [](const SGCore::entity_t& entity)
                                       {
                                           model1Entities.push_back(entity);
                                       }
@@ -605,7 +601,7 @@ void init()
 
     // adding skybox
     {
-        std::vector<entt::entity> skyboxEntities;
+        std::vector<SGCore::entity_t> skyboxEntities;
         cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
             skyboxEntities.push_back(entity);
             testScene->getECSRegistry().emplace<SGCore::IgnoreOctrees>(entity);
@@ -633,10 +629,10 @@ void init()
     // ==========================================================================================
     // ==========================================================================================
 
-    std::vector<entt::entity> geniusEntities;
+    std::vector<SGCore::entity_t> geniusEntities;
     
     cubeModel1->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
-                                       [&geniusEntities](const entt::entity& entity)
+                                       [&geniusEntities](const SGCore::entity_t& entity)
                                        {
                                            geniusEntities.push_back(entity);
                                        }
@@ -682,7 +678,7 @@ void init()
     timesNewRomanFont_height128_rus->saveAtlasAsTexture("font_spec_test_rus.png");
     timesNewRomanFont_height34_eng->saveAtlasAsTexture("font_spec_test_eng.png");
     
-    entt::entity textEntity = testScene->getECSRegistry().create();
+    SGCore::entity_t textEntity = testScene->getECSRegistry().create();
     SGCore::Text& helloWorldUIText = testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
     auto& helloWorldUITextTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(textEntity, SGCore::MakeRef<SGCore::Transform>());
     helloWorldUITextTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1 };
@@ -696,7 +692,7 @@ void init()
     helloWorldUIText.m_fontSettings.m_name = "eng";
     helloWorldUIText.m_text += u"\n";
     
-    entt::entity sceneInfoTextEntity = testScene->getECSRegistry().create();
+    SGCore::entity_t sceneInfoTextEntity = testScene->getECSRegistry().create();
     SGCore::Text& sceneInfoUIText = testScene->getECSRegistry().emplace<SGCore::Text>(sceneInfoTextEntity);
     auto& sceneInfoUITextTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(sceneInfoTextEntity, SGCore::MakeRef<SGCore::Transform>());
     sceneInfoUITextTransform->m_ownTransform.m_position = { 0.0, -80.0, 0 };
@@ -717,7 +713,7 @@ void init()
     }*/
     // helloWorldUIText->m_color = { 1.0, 0.0, 0.0, 1.0 };
 
-    entt::entity uiCameraEntity = testScene->getECSRegistry().create();
+    SGCore::entity_t uiCameraEntity = testScene->getECSRegistry().create();
     SGCore::UICamera& uiCameraEntityCamera = testScene->getECSRegistry().emplace<SGCore::UICamera>(uiCameraEntity);
     auto& uiCameraEntityTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(uiCameraEntity, SGCore::MakeRef<SGCore::Transform>());
     auto& uiCameraEntityRenderingBase = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::RenderingBase>>(uiCameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
@@ -1003,7 +999,7 @@ void init()
     testShadowsCaster1->addComponent(zLineGizmo);*/
     
     /*{
-        entt::entity testShadowsCaster = testScene->getECSRegistry().create();
+        SGCore::entity_t testShadowsCaster = testScene->getECSRegistry().create();
         SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
                 testShadowsCaster);
         SGCore::DirectionalLight& testShadowsCasterDirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(
@@ -1018,7 +1014,7 @@ void init()
     }
     
     {
-        entt::entity testShadowsCaster = testScene->getECSRegistry().create();
+        SGCore::entity_t testShadowsCaster = testScene->getECSRegistry().create();
         SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
                 testShadowsCaster);
         SGCore::DirectionalLight& testShadowsCasterDirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(
@@ -1033,7 +1029,7 @@ void init()
     }
     
     {
-        entt::entity testShadowsCaster = testScene->getECSRegistry().create();
+        SGCore::entity_t testShadowsCaster = testScene->getECSRegistry().create();
         SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
                 testShadowsCaster);
         SGCore::DirectionalLight& testShadowsCasterDirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(
@@ -1052,7 +1048,7 @@ void init()
     }
     
     {
-        entt::entity testShadowsCaster = testScene->getECSRegistry().create();
+        SGCore::entity_t testShadowsCaster = testScene->getECSRegistry().create();
         SGCore::Transform& testShadowsCasterTransform = testScene->getECSRegistry().emplace<SGCore::Transform>(
                 testShadowsCaster);
         SGCore::DirectionalLight& testShadowsCasterDirLight = testScene->getECSRegistry().emplace<SGCore::DirectionalLight>(
@@ -1082,16 +1078,16 @@ void fixedUpdate(const double& dt, const double& fixedDt)
 {
     double angle = framesCnt / 75.0;
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_1))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_1))
     {
         _atmosphereScattering->m_sunRotation.x += 0.5f;
     }
-    else if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_2))
+    else if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_2))
     {
         _atmosphereScattering->m_sunRotation.x -= 0.5f;
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_T))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_T))
     {
         SGCore::PluginsManager::reloadPlugin("TestSGPlugin2", "1.0.0", { "" }, SGCore::PluginBuildType::PBT_DEBUG);
     }
@@ -1106,7 +1102,7 @@ void fixedUpdate(const double& dt, const double& fixedDt)
     // transform0->m_position.y += sin(framesCnt / 30.0) / 2.5;
 
     auto& tr0 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[4]);
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_3))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_3))
     {
         tr0->m_ownTransform.m_position.y += 0.1f;
     }
@@ -1114,7 +1110,7 @@ void fixedUpdate(const double& dt, const double& fixedDt)
     auto tmpRB1 = testScene->getECSRegistry().try_get<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4]);
     auto rb1 = (tmpRB1 ? *tmpRB1 : nullptr);
     auto tr1 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_E))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_E))
     {
         auto curRot = rb1->m_body->getWorldTransform().getRotation();
         float x;
@@ -1125,7 +1121,7 @@ void fixedUpdate(const double& dt, const double& fixedDt)
                                                                  glm::radians(z)));
         // tr1->m_ownTransform.m_rotation.x += 0.5f;
     }
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_Q))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_Q))
     {
         auto curRot = rb1->m_body->getWorldTransform().getRotation();
         float x;
@@ -1137,17 +1133,17 @@ void fixedUpdate(const double& dt, const double& fixedDt)
         // tr1->m_ownTransform.m_rotation.x -= 0.5f;
     }
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_C))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_C))
     {
         tr0->m_ownTransform.m_rotation.x += 0.5f;
     }
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_V))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_V))
     {
         tr0->m_ownTransform.m_rotation.x -= 0.5f;
     }
     
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_5))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_5))
     {
         auto v0 = testScene->getECSRegistry().view<SGCore::Ref<SGCore::Rigidbody3D>>();
         testScene->getECSRegistry().remove<SGCore::Ref<SGCore::Rigidbody3D>>(v0.begin(), v0.end());
@@ -1186,19 +1182,19 @@ void update(const double& dt, const double& fixedDt)
     SGCore::PhysicsWorld::getDebugDraw()->drawLine({ 10, 20, 0 }, { 10, 10, 0 }, { 0.0, 0.0, 1.0 });
     SGCore::PhysicsWorld::getDebugDraw()->drawLine({ 10, 10, 0 }, { 0, 10, 0 }, { 1.0, 0.0, 1.0 });*/
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F11))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F11))
     {
         std::cout << "pressed f11" << std::endl;
         SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
     }
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(KEY_4))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_4))
     {
         auto& cameraTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(testCameraEntity);
         createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F12))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F12))
     {
         auto& physicsWorld3DDebug = testScene->getSystem<SGCore::PhysicsWorld3D>()->getDebugDraw();
         if(physicsWorld3DDebug->getDebugMode() == btIDebugDraw::DBG_NoDebug)
@@ -1211,7 +1207,7 @@ void update(const double& dt, const double& fixedDt)
         }
     }
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_F10))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F10))
     {
         auto debugDraw = testScene->getSystem<SGCore::DebugDraw>();
         if(debugDraw->m_mode == SGCore::DebugDrawMode::NO_DEBUG)
@@ -1224,7 +1220,7 @@ void update(const double& dt, const double& fixedDt)
         }
     }
     
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(KEY_0))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_0))
     {
         globalOctree->clearNodeChildren(globalOctree->m_root);
     }
@@ -1346,8 +1342,8 @@ void testWindowOverdrawFun()
 
 int main()
 {
-    SGEditor::EditorMain::start();
-
+    // std::cout << typeid(const double&).name() << std::endl;
+    
     auto& viewsInjector = *SGUtils::Singleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
     viewsInjector["TestWindow"].m_rootView = testWindow;
     viewsInjector["TestWindow"].m_childrenViews.push_back(testCollapsingHeader);
@@ -1373,20 +1369,9 @@ int main()
 
     //SGConsole::Console::start();
 
-    sgSetCoreInitCallback(init);
-    sgSetFixedUpdateCallback(fixedUpdate);
-    sgSetUpdateCallback(update);
-
-    SGCore::PerlinNoise perlinNoise;
-    // perlinNoise.setSeed();
-    
-    // perlinNoise.generateMap({ 256, 256 });
-    perlinNoise.generate({ 16, 16 }, 5, 0.4f);
-
-    auto perlinMapSize = perlinNoise.getCurrentMapSize();
-
-    stbi_write_png("perlin_noise_test.png", perlinMapSize.x, perlinMapSize.y, 4,
-                   (perlinNoise.m_map.data()), 4 * perlinMapSize.x);
+    SGCore::CoreMain::m_initCallback->connect<&init>();
+    SGCore::CoreMain::getFixedTimer().m_updateEvent->connect<&fixedUpdate>();
+    SGCore::CoreMain::getRenderTimer().m_updateEvent->connect<&update>();
 
     std::cout << "perlin generated" << std::endl;
 

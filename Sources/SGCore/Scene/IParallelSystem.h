@@ -19,6 +19,9 @@ namespace SGCore
     template<typename ParallelSystemT>
     class IParallelSystem : public ISystem, public std::enable_shared_from_this<ParallelSystemT>
     {
+        template<typename>
+        friend struct EventImpl;
+        
     public:
         using subproc_t = IParallelSystemSubprocess<ParallelSystemT>;
 
@@ -27,29 +30,15 @@ namespace SGCore
         
         IParallelSystem()
         {
-            Ref<TimerCallback> updateCallback = MakeRef<TimerCallback>();
-            updateCallback->setUpdateFunction([this](const double& dt, const double& fixedDt) {
-                auto t0 = now();
-                parallelUpdate(dt, fixedDt);
-                
-                std::lock_guard g(m_subprocessesVectorEditMutex);
-                for(const auto& subprocess : m_subprocesses)
-                {
-                    subprocess->parallelUpdate(dt, fixedDt, this->shared_from_this());
-                }
-                auto t1 = now();
-                
-                m_executionTimes["parallelUpdate"] = timeDiff<double, std::milli>(t0, t1);
-            });
-            
             m_timer.setTargetFrameRate(80);
             m_timer.m_cyclic = true;
-            m_timer.addCallback(updateCallback);
+            m_timer.m_updateEvent->connect<&IParallelSystem::internalUpdate>(*this);
         }
         
         ~IParallelSystem()
         {
             stopThread();
+            m_timer.m_updateEvent->disconnect<&IParallelSystem::internalUpdate>(*this);
         }
 
         void startThread() noexcept
@@ -112,6 +101,21 @@ namespace SGCore
         virtual void parallelUpdate(const double& dt, const double& fixedDt) noexcept { };
 
     private:
+        void internalUpdate(const double& dt, const double& fixedDt) noexcept
+        {
+            auto t0 = now();
+            parallelUpdate(dt, fixedDt);
+            
+            std::lock_guard g(m_subprocessesVectorEditMutex);
+            for(const auto& subprocess : m_subprocesses)
+            {
+                subprocess->parallelUpdate(dt, fixedDt, this->shared_from_this());
+            }
+            auto t1 = now();
+            
+            m_executionTimes["parallelUpdate"] = timeDiff<double, std::milli>(t0, t1);
+        }
+        
         std::unordered_set<Ref<subproc_t>> m_subprocesses;
         std::mutex m_subprocessesVectorEditMutex;
 

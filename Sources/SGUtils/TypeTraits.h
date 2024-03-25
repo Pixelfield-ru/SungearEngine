@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <set>
 #include <map>
+#include <tuple>
+#include <type_traits>
 
 #define SGECS_DECLARE_BASE(DerivedType, BaseType) \
 private: \
@@ -60,6 +62,10 @@ namespace SGCore
 #endif
     };
     
+    struct unknown_type { };
+    struct pointer_type { };
+    struct reference_type { };
+    
     template<typename T, size_t RepeatsCnt>
     struct repeated_type
     {
@@ -79,31 +85,272 @@ namespace SGCore
     template<typename... RepeatT>
     using repeated_tuple = decltype(std::tuple_cat((repeated_tuple_single<RepeatT>())...));
     
-    template <typename> struct MemberFunctionTraits;
+    template <std::size_t Idx, class... Types>
+    class extract
+    {
+        static_assert(Idx < sizeof...( Types ), "index out of bounds");
+        
+        template <std::size_t I, std::size_t N, class... Rest>
+        struct extract_impl;
+        
+        template <std::size_t I, std::size_t N, class T, class... Rest>
+        struct extract_impl<I, N, T, Rest...>
+        {
+            using type = typename extract_impl<I + 1, N, Rest...>::type;
+        };
+        
+        template <std::size_t N, class T, class... Rest>
+        struct extract_impl<N, N, T, Rest...>
+        {
+            using type = T;
+        };
+    public:
+        using type = typename extract_impl<0, Idx, Types...>::type;
+    };
+    
+    template <typename> struct class_function_traits;
     
     template <typename Return, typename Object, typename... Args>
-    struct MemberFunctionTraits<Return(Object::*)(Args...)>
+    struct class_function_traits<Return(Object::*)(Args...)>
     {
         typedef Return return_type;
         typedef Object instance_type;
-        typedef Object & instance_reference;
+        typedef Object& instance_reference;
         using function_type = Return(Object::*)(Args...);
         
         // Can mess with Args... if you need to, for example:
-        static constexpr size_t argument_count = sizeof...(Args);
+        static constexpr size_t arguments_count = sizeof...(Args);
+        
+        template<size_t Idx>
+        using get_type = extract<Idx, Args...>;
     };
 
     template <typename Return, typename Object, typename... Args>
-    struct MemberFunctionTraits<Return(Object::*)(Args...) const>
+    struct class_function_traits<Return(Object::*)(Args...) const>
     {
         typedef Return return_type;
         typedef Object instance_type;
-        typedef Object const & instance_reference;
+        typedef Object const& instance_reference;
         using function_type = Return(Object::*)(Args...);
         
         // Can mess with Args... if you need to, for example:
-        static constexpr size_t argument_count = sizeof...(Args);
+        static constexpr size_t arguments_count = sizeof...(Args);
+        
+        template<size_t Idx>
+        using get_type = extract<Idx, Args...>;
     };
+    
+    template<auto ClassFuncPtr>
+    using make_class_function_traits = class_function_traits<decltype(ClassFuncPtr)>;
+    
+    template<typename T, bool noexcept_state = true>
+    struct make_noexcept { using type = T; };
+    
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) noexcept, noexcept_state> { using type = R(Args...) noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const noexcept, noexcept_state> { using type = R(Args...) const noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) volatile noexcept, noexcept_state> { using type = R(Args...) volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const volatile noexcept, noexcept_state> { using type = R(Args...) const volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) noexcept, noexcept_state> { using type = R(Args..., ...) noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const noexcept, noexcept_state> { using type = R(Args..., ...) const noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) volatile noexcept, noexcept_state> { using type = R(Args..., ...) volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const volatile noexcept, noexcept_state> { using type = R(Args..., ...) const volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) & noexcept, noexcept_state> { using type = R(Args...) & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const & noexcept, noexcept_state> { using type = R(Args...) const & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) volatile & noexcept, noexcept_state> { using type = R(Args...) volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const volatile & noexcept, noexcept_state> { using type = R(Args...) const volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) & noexcept, noexcept_state> { using type = R(Args..., ...) & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const & noexcept, noexcept_state> { using type = R(Args..., ...) const & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) volatile & noexcept, noexcept_state> { using type = R(Args..., ...) volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const volatile & noexcept, noexcept_state> { using type = R(Args..., ...) const volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) && noexcept, noexcept_state> { using type = R(Args...) && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const && noexcept, noexcept_state> { using type = R(Args...) const && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) volatile && noexcept, noexcept_state> { using type = R(Args...) volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const volatile && noexcept, noexcept_state> { using type = R(Args...) const volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) && noexcept, noexcept_state> { using type = R(Args..., ...) && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const && noexcept, noexcept_state> { using type = R(Args..., ...) const && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) volatile && noexcept, noexcept_state> { using type = R(Args..., ...) volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const volatile && noexcept, noexcept_state> { using type = R(Args..., ...) const volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) noexcept, noexcept_state> { using type = R(C::*)(Args...) noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const noexcept, noexcept_state> { using type = R(C::*)(Args...) const noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) volatile noexcept, noexcept_state> { using type = R(C::*)(Args...) volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const volatile noexcept, noexcept_state> { using type = R(C::*)(Args...) const volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const noexcept, noexcept_state> { using type = R(C::*)(Args...) const noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) volatile noexcept, noexcept_state> { using type = R(C::*)(Args...) volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const volatile noexcept, noexcept_state> { using type = R(C::*)(Args...) const volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) & noexcept, noexcept_state> { using type = R(C::*)(Args...) & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const & noexcept, noexcept_state> { using type = R(C::*)(Args...) const & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) volatile & noexcept, noexcept_state> { using type = R(C::*)(Args...) volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const volatile & noexcept, noexcept_state> { using type = R(C::*)(Args...) const volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) & noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const & noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) const & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) volatile & noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const volatile & noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) const volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) && noexcept, noexcept_state> { using type = R(C::*)(Args...) && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const && noexcept, noexcept_state> { using type = R(C::*)(Args...) const && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) volatile && noexcept, noexcept_state> { using type = R(C::*)(Args...) volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const volatile && noexcept, noexcept_state> { using type = R(C::*)(Args...) const volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) && noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const && noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) const && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) volatile && noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const volatile && noexcept, noexcept_state> { using type = R(C::*)(Args..., ...) const volatile && noexcept(noexcept_state); };
+
+    // MSVC++ 2019 (v142) doesn't allow `noexcept(x)` with a template parameter `x` in the template specialization list.
+    // (e.g., `struct make_noexcept<R(Args...) noexcept(noexcept_state)>` gives - C2057: expected constant expression)
+    // GCC 7.1.0 and Clang 5.0.0 (and later versions) were tested and do allow this, so MSVC++ is probably wrong.
+    // $ g++ prog.cc -Wall -Wextra -std=c++17 -pedantic
+    // $ clang++ prog.cc -Wall -Wextra -std=c++17 -pedantic
+    
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...), noexcept_state> { using type = R(Args...) noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const, noexcept_state> { using type = R(Args...) const noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) volatile, noexcept_state> { using type = R(Args...) volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const volatile, noexcept_state> { using type = R(Args...) const volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...), noexcept_state> { using type = R(Args..., ...) noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const, noexcept_state> { using type = R(Args..., ...) const noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) volatile, noexcept_state> { using type = R(Args..., ...) volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const volatile, noexcept_state> { using type = R(Args..., ...) const volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...)&, noexcept_state> { using type = R(Args...) & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const &, noexcept_state> { using type = R(Args...) const & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) volatile &, noexcept_state> { using type = R(Args...) volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const volatile &, noexcept_state> { using type = R(Args...) const volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...)&, noexcept_state> { using type = R(Args..., ...) & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const &, noexcept_state> { using type = R(Args..., ...) const & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) volatile &, noexcept_state> { using type = R(Args..., ...) volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const volatile &, noexcept_state> { using type = R(Args..., ...) const volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) &&, noexcept_state> { using type = R(Args...) && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const &&, noexcept_state> { using type = R(Args...) const && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) volatile &&, noexcept_state> { using type = R(Args...) volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args...) const volatile &&, noexcept_state> { using type = R(Args...) const volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) &&, noexcept_state> { using type = R(Args..., ...) && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const &&, noexcept_state> { using type = R(Args..., ...) const && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) volatile &&, noexcept_state> { using type = R(Args..., ...) volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename... Args>
+    struct make_noexcept<R(Args..., ...) const volatile &&, noexcept_state> { using type = R(Args..., ...) const volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...), noexcept_state> { using type = R(C::*)(Args...) noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const, noexcept_state> { using type = R(C::*)(Args...) const noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) volatile, noexcept_state> { using type = R(C::*)(Args...) volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const volatile, noexcept_state> { using type = R(C::*)(Args...) const volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...), noexcept_state> { using type = R(C::*)(Args..., ...) noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const, noexcept_state> { using type = R(C::*)(Args...) const noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) volatile, noexcept_state> { using type = R(C::*)(Args...) volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const volatile, noexcept_state> { using type = R(C::*)(Args...) const volatile noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...)&, noexcept_state> { using type = R(C::*)(Args...) & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const &, noexcept_state> { using type = R(C::*)(Args...) const & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) volatile &, noexcept_state> { using type = R(C::*)(Args...) volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const volatile &, noexcept_state> { using type = R(C::*)(Args...) const volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...)&, noexcept_state> { using type = R(C::*)(Args..., ...) & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const &, noexcept_state> { using type = R(C::*)(Args..., ...) const & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) volatile &, noexcept_state> { using type = R(C::*)(Args..., ...) volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const volatile &, noexcept_state> { using type = R(C::*)(Args..., ...) const volatile & noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) &&, noexcept_state> { using type = R(C::*)(Args...) && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const &&, noexcept_state> { using type = R(C::*)(Args...) const && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) volatile &&, noexcept_state> { using type = R(C::*)(Args...) volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args...) const volatile &&, noexcept_state> { using type = R(C::*)(Args...) const volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) &&, noexcept_state> { using type = R(C::*)(Args..., ...) && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const &&, noexcept_state> { using type = R(C::*)(Args..., ...) const && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) volatile &&, noexcept_state> { using type = R(C::*)(Args..., ...) volatile && noexcept(noexcept_state); };
+    template<bool noexcept_state, typename R, typename C, typename... Args>
+    struct make_noexcept<R(C::*)(Args..., ...) const volatile &&, noexcept_state> { using type = R(C::*)(Args..., ...) const volatile && noexcept(noexcept_state); };
+    
+    template<typename T, bool noexcept_state = true>
+    using make_noexcept_t = typename make_noexcept<T, noexcept_state>::type;
+    
+    template<typename T>
+    using remove_noexcept_t = make_noexcept_t<T, false>;
 }
 
 #endif //ECS_TYPEMETA_H

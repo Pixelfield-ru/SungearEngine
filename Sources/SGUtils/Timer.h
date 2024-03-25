@@ -1,18 +1,14 @@
-//
-// Created by stuka on 03.05.2023.
-//
-
-#pragma once
-
-#ifndef NATIVECORE_TIMER_H
-#define NATIVECORE_TIMER_H
+#ifndef SUNGEARENGINE_TIMER_H
+#define SUNGEARENGINE_TIMER_H
 
 #include <iostream>
 #include <memory>
 #include <list>
 #include <cstdint>
 
-#include "TimerCallback.h"
+// #include "TimerCallback.h"
+#include "Event.h"
+#include "EventListener.h"
 
 namespace SGCore
 {
@@ -20,6 +16,9 @@ namespace SGCore
     class Timer
     {
     public:
+        Event<void(const double&, const double&)> m_updateEvent = MakeEvent<void(const double&, const double&)>();
+        Event<void()> m_startEvent = MakeEvent<void()>();
+        
         bool m_active = true;
         bool m_cyclic = false;
         
@@ -40,9 +39,6 @@ namespace SGCore
         void resetTimer() noexcept;
 
         void firstTimeStart();
-
-        void addCallback(const std::shared_ptr<TimerCallback>& callback);
-        void removeCallback(const std::shared_ptr<TimerCallback>& callback);
 
         [[nodiscard]] std::uint16_t getFramesPerSecond() const noexcept;
         [[nodiscard]] double getRawDeltaTime() const noexcept;
@@ -77,10 +73,8 @@ namespace SGCore
 
         uint16_t m_framesPerSecond = 0;
         uint16_t m_framesPerSecondAccum = 0;
-
-        std::list<std::shared_ptr<TimerCallback>> m_callbacks;
     };
 }
 
 
-#endif //NATIVECORE_TIMER_H
+#endif // SUNGEARENGINE_TIMER_H

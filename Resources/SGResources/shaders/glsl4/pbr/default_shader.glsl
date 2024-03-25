@@ -336,10 +336,10 @@ SGSubPass(GeometryPass)
                 float NdotL = max(dot(finalNormal, lightDir), 0.0);
                 float NdotVD = max(dot(finalNormal, viewDir), 0.0);
 
-                if(NdotL <= 0.0)
+                /*if(NdotL <= 0.0)
                 {
                     ambient += atmosphere.sunAmbient;
-                }
+                }*/
 
                 // vec3 finalRadiance = NdotL * radiance + radiance * 0.04;
 

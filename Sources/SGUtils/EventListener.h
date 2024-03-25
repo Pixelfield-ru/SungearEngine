@@ -24,6 +24,8 @@ namespace SGCore
     {
         friend struct EventImpl<Return(Args...)>;
 
+        size_t m_priority = 0;
+        
         EventListenerImpl() = default;
         EventListenerImpl(const std::function<Return(Args&&...)>& func)
         {

@@ -8,6 +8,10 @@
 void SGCore::InputManager::init() noexcept
 {
     addInputListener(mainInputListener);
+    
+    Window::m_keyboardKeyEvent->connect<&keyboardKeyCallback>();
+    Window::m_mouseButtonEvent->connect<&mouseButtonCallback>();
+    Window::m_cursorPositionEvent->connect<&cursorPositionCallback>();
 }
 
 void SGCore::InputManager::startFrame() noexcept
@@ -32,24 +36,20 @@ void SGCore::InputManager::startFrame() noexcept
     }
 }
 
-void SGCore::InputManager::keyboardKeyCallback(GLFWwindow* wnd, int key, int scanCode, int action, int mods)
+void SGCore::InputManager::keyboardKeyCallback(Window& wnd, const KeyboardKey& key, const int& scanCode, const KeyState& state, const int& mods)
 {
     for(const auto& inputListener : m_inputListeners)
     {
-        inputListener->notifyKeyboard(wnd, key, action);
+        inputListener->notifyKeyboard(wnd, key, state);
     }
-
-    sgCallWindowKeyCallback(wnd, key, scanCode, action, mods);
 }
 
-void SGCore::InputManager::mouseButtonCallback(GLFWwindow* wnd, int button, int scanCode, int action)
+void SGCore::InputManager::mouseButtonCallback(Window& wnd, const MouseButton& button, const KeyState& state, const int& mods)
 {
     for(const auto& inputListener : m_inputListeners)
     {
-        inputListener->notifyMouse(wnd, button, action);
+        inputListener->notifyMouse(wnd, button, state);
     }
-
-    sgCallWindowMouseButtonCallback(wnd, button, scanCode, action);
 }
 
 void SGCore::InputManager::addInputListener(Ref<InputListener> inputListener) noexcept
@@ -69,7 +69,7 @@ SGCore::Ref<SGCore::InputListener> SGCore::InputManager::getMainInputListener() 
     return mainInputListener;
 }
 
-void SGCore::InputManager::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
+void SGCore::InputManager::cursorPositionCallback(Window& window, const double& xPos, const double& yPos)
 {
     /*if(Core::Main::Core::getWindow().getConfig().m_hideAndCentralizeCursor)
     {

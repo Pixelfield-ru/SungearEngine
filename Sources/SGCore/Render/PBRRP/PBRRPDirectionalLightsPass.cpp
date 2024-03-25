@@ -20,18 +20,12 @@ void SGCore::PBRRPDirectionalLightsPass::create(const SGCore::Ref<SGCore::IRende
 {
     m_renderTimer.setTargetFrameRate(24);
     
-    m_renderTimer.addCallback(m_renderTimerCallback);
+    (*m_renderTimer.m_updateEvent) += m_renderListener;
 }
 
 void SGCore::PBRRPDirectionalLightsPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
     m_renderTimer.startFrame();
-
-    m_renderTimerCallback->setUpdateFunction([&](const double& dt, const double& fixedDt) {
-        // todo: shadows
-        
-        // std::cout << "endupd : " << std::endl;
-    });
 
     /*m_renderTimerCallback->setUpdateFunction([&, renderPipeline]()
                                              {

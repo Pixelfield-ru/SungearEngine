@@ -8,6 +8,7 @@
 #include "SGUtils/Timer.h"
 
 #include "CoreGlobals.h"
+#include "SGUtils/Utils.h"
 
 /*namespace Core::Graphics
 {
@@ -26,16 +27,20 @@ namespace SGCore
 
         static inline Timer m_renderTimer { true, 1200};
         static inline Timer m_fixedTimer { true, 100.0 };
-
+        
+        static void fixedUpdateStart(const double& dt, const double& fixedDt);
+        static void fixedUpdateEnd(const double& dt, const double& fixedDt);
+        static void updateStart(const double& dt, const double& fixedDt);
+        static void updateEnd(const double& dt, const double& fixedDt);
+        
     public:
+        static inline Event<void()> m_initCallback = MakeEvent<void()>();
+        
         static inline std::string m_pathToSungearEngineSources;
         
         CoreMain() = delete;
 
         static void start();
-
-        static void fixedUpdate(const double& dt, const double& fixedDt);
-        static void update(const double& dt, const double& fixedDt);
 
         static Window& getWindow() noexcept;
 

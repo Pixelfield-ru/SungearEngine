@@ -1,6 +1,4 @@
 #include "InputListener.h"
-#include "InputManager.h"
-#include "SGCore/Main/CoreMain.h"
 
 SGCore::InputListener::InputListener() noexcept
 {
@@ -9,7 +7,7 @@ SGCore::InputListener::InputListener() noexcept
 
 void SGCore::InputListener::startFrame() noexcept
 {
-    if(!m_focusedWindowHandler) return;
+    if(!m_focusedWindow) return;
 
     m_cursorPositionLastX = m_cursorPositionX;
     m_cursorPositionLastY = m_cursorPositionY;
@@ -20,57 +18,69 @@ void SGCore::InputListener::startFrame() noexcept
     m_cursorPositionDeltaY = m_cursorPositionY - m_cursorPositionLastY;
 }
 
-void SGCore::InputListener::notifyKeyboard(GLFWwindow* wnd, const int& key, const int& action) noexcept
+void SGCore::InputListener::notifyKeyboard(Window& wnd, const KeyboardKey& key, const KeyState& state) noexcept
 {
-    m_focusedWindowHandler = wnd;
+    m_focusedWindow = &wnd;
 }
 
-void SGCore::InputListener::notifyMouse(GLFWwindow* wnd, const int& button, const int& action) noexcept
+void SGCore::InputListener::notifyMouse(Window& wnd, const MouseButton& button, const KeyState& state) noexcept
 {
-    m_focusedWindowHandler = wnd;
+    m_focusedWindow = &wnd;
 }
 
-bool SGCore::InputListener::keyboardKeyDown(const int& key) noexcept
+bool SGCore::InputListener::keyboardKeyDown(const KeyboardKey& key) noexcept
 {
-    return key >= KEY_FIRST && key <= KEY_LAST && m_focusedWindowHandler && glfwGetKey(m_focusedWindowHandler, key) == GLFW_PRESS;
+    return m_focusedWindow && m_focusedWindow->getKeyboardKeyState(key) == KeyState::PRESS;
 }
 
-bool SGCore::InputListener::keyboardKeyPressed(const int& key) noexcept
+bool SGCore::InputListener::keyboardKeyPressed(const KeyboardKey& key) noexcept
 {
-    int lastAction = m_keyboardKeys[key];
-    m_keyboardKeys[key] = keyboardKeyDown(key);
-
-    return key >= KEY_FIRST && key <= KEY_LAST && m_focusedWindowHandler && lastAction == GLFW_RELEASE && m_keyboardKeys[key] == GLFW_PRESS;
+    auto underlyingKey = std::to_underlying(key);
+    
+    KeyState lastAction = m_keyboardKeysStates[underlyingKey];
+    m_keyboardKeysStates[underlyingKey] = keyboardKeyDown(key) ? KeyState::PRESS : KeyState::RELEASE;
+    
+    return m_focusedWindow &&
+           lastAction == KeyState::RELEASE &&
+           m_keyboardKeysStates[underlyingKey] == KeyState::PRESS;
 }
 
-bool SGCore::InputListener::keyboardKeyReleased(const int& key) noexcept
+bool SGCore::InputListener::keyboardKeyReleased(const KeyboardKey& key) noexcept
 {
-    int lastAction = m_keyboardKeys[key];
-    m_keyboardKeys[key] = keyboardKeyDown(key);
-
-    return key >= KEY_FIRST && key <= KEY_LAST && m_focusedWindowHandler && lastAction == GLFW_PRESS && m_keyboardKeys[key] == GLFW_RELEASE;
+    auto underlyingKey = std::to_underlying(key);
+    
+    KeyState lastAction = m_keyboardKeysStates[underlyingKey];
+    m_keyboardKeysStates[underlyingKey] = keyboardKeyDown(key) ? KeyState::PRESS : KeyState::RELEASE;
+    
+    return m_focusedWindow &&
+           lastAction == KeyState::PRESS &&
+           m_keyboardKeysStates[underlyingKey] == KeyState::RELEASE;
 }
 
-bool SGCore::InputListener::mouseButtonDown(const int& button) noexcept
+bool SGCore::InputListener::mouseButtonDown(const MouseButton& button) noexcept
 {
     //std::cout <<  m_focusedWindowHandler << std::endl;
-    return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && m_focusedWindowHandler && glfwGetMouseButton(m_focusedWindowHandler, button) == GLFW_PRESS;
+    return m_focusedWindow && m_focusedWindow->getMouseButtonState(button) == KeyState::PRESS;
 }
 
-bool SGCore::InputListener::mouseButtonPressed(const int& button) noexcept
+bool SGCore::InputListener::mouseButtonPressed(const MouseButton& button) noexcept
 {
-    int lastAction = m_mouseButtons[button];
-    m_mouseButtons[button] = mouseButtonDown(button);
+    auto underlyingButton = std::to_underlying(button);
+    
+    int lastAction = m_mouseButtonsStates[underlyingButton];
+    m_mouseButtonsStates[underlyingButton] = mouseButtonDown(button) ? KeyState::PRESS : KeyState::RELEASE;
 
-    return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && m_focusedWindowHandler && lastAction == GLFW_RELEASE && m_mouseButtons[button] == GLFW_PRESS;
+    return m_focusedWindow && lastAction == KeyState::RELEASE && m_mouseButtonsStates[underlyingButton] == KeyState::PRESS;
 }
 
-bool SGCore::InputListener::mouseButtonReleased(const int& button) noexcept
+bool SGCore::InputListener::mouseButtonReleased(const MouseButton& button) noexcept
 {
-    int lastAction = m_mouseButtons[button];
-    m_mouseButtons[button] = mouseButtonDown(button);
+    auto underlyingButton = std::to_underlying(button);
+    
+    int lastAction = m_mouseButtonsStates[underlyingButton];
+    m_mouseButtonsStates[underlyingButton] = mouseButtonDown(button) ? KeyState::PRESS : KeyState::RELEASE;
 
-    return button >= MOUSE_BUTTON_FIRST && button <= MOUSE_BUTTON_LAST && m_focusedWindowHandler && lastAction == GLFW_PRESS && m_mouseButtons[button] == GLFW_RELEASE;
+    return m_focusedWindow && lastAction == KeyState::PRESS && m_mouseButtonsStates[underlyingButton] == KeyState::RELEASE;
 }
 
 double SGCore::InputListener::getCursorPositionLastX() const noexcept
@@ -105,8 +115,8 @@ double SGCore::InputListener::getCursorPositionDeltaY() const noexcept
 
 void SGCore::InputListener::updateCursorPosition() noexcept
 {
-    if(!m_focusedWindowHandler) return;
-
-    glfwGetCursorPos(m_focusedWindowHandler, &m_cursorPositionX, &m_cursorPositionY);
+    if(!m_focusedWindow) return;
+    
+    m_focusedWindow->getCursorPosition(m_cursorPositionX, m_cursorPositionY);
 }
 

@@ -7,15 +7,15 @@
 
 #include <atomic>
 #include <memory>
-#include <GLFW/glfw3.h>
+#include "SGCore/Main/Window.h"
 
 namespace SGCore
 {
     class InputListener : public std::enable_shared_from_this<InputListener>
     {
     private:
-        bool m_keyboardKeys[GLFW_KEY_LAST];
-        bool m_mouseButtons[GLFW_MOUSE_BUTTON_LAST];
+        KeyState m_keyboardKeysStates[std::to_underlying(KeyboardKey::KEY_LAST) + 1];
+        KeyState m_mouseButtonsStates[std::to_underlying(MouseButton::MOUSE_BUTTON_LAST) + 1];
 
         double m_cursorPositionLastX = 0;
         double m_cursorPositionLastY = 0;
@@ -26,28 +26,28 @@ namespace SGCore
         double m_cursorPositionDeltaX = 0;
         double m_cursorPositionDeltaY = 0;
 
-        GLFWwindow* m_focusedWindowHandler = nullptr;
+        Window* m_focusedWindow = nullptr;
 
     public:
         InputListener() noexcept;
 
         void startFrame() noexcept;
 
-        void notifyKeyboard(GLFWwindow*, const int&, const int&) noexcept;
+        void notifyKeyboard(Window&, const KeyboardKey& key, const KeyState& state) noexcept;
 
-        void notifyMouse(GLFWwindow*, const int&, const int&) noexcept;
+        void notifyMouse(Window&, const MouseButton& button, const KeyState& state) noexcept;
 
-        bool keyboardKeyDown(const int&) noexcept;
+        bool keyboardKeyDown(const KeyboardKey&) noexcept;
 
-        bool keyboardKeyPressed(const int&) noexcept;
+        bool keyboardKeyPressed(const KeyboardKey&) noexcept;
 
-        bool keyboardKeyReleased(const int&) noexcept;
+        bool keyboardKeyReleased(const KeyboardKey&) noexcept;
 
-        bool mouseButtonDown(const int&) noexcept;
+        bool mouseButtonDown(const MouseButton&) noexcept;
 
-        bool mouseButtonPressed(const int&) noexcept;
+        bool mouseButtonPressed(const MouseButton&) noexcept;
 
-        bool mouseButtonReleased(const int&) noexcept;
+        bool mouseButtonReleased(const MouseButton&) noexcept;
 
         double getCursorPositionLastX() const noexcept;
 

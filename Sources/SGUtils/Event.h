@@ -7,6 +7,8 @@
 
 #include <list>
 #include <functional>
+#include <map>
+
 #include "EventListener.h"
 #include "SGUtils/TypeTraits.h"
 
@@ -37,16 +39,22 @@ namespace SGCore
         
         EventImpl& operator+=(HolderT* holder)
         {
+            m_currentMaxPriority = std::max(m_currentMaxPriority, holder->m_priority);
+            
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                    listeningEvent->m_callbacks.remove(std::make_pair(holder->m_hash, holder));
+                    
+                    listeningEvent->sortByPriorities();
                 }
             };
             disconnect(holder->m_hash);
-            m_callbacks[holder->m_hash] = holder;
+            m_callbacks.emplace_back(holder->m_hash, holder);
             holder->m_listeningEvents.push_back(this->shared_from_this());
+            
+            sortByPriorities();
 
             return *this;
         }
@@ -55,33 +63,45 @@ namespace SGCore
         {
             auto* holder = eventHolder.get();
             
+            m_currentMaxPriority = std::max(m_currentMaxPriority, holder->m_priority);
+            
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                    listeningEvent->m_callbacks.remove(std::make_pair(holder->m_hash, holder));
+                    
+                    listeningEvent->sortByPriorities();
                 }
             };
             disconnect(holder->m_hash);
-            m_callbacks[holder->m_hash] = holder;
+            m_callbacks.emplace_back(holder->m_hash, holder);
             holder->m_listeningEvents.push_back(this->shared_from_this());
+            
+            sortByPriorities();
 
             return *this;
         }
         
         EventImpl& operator+=(const HolderT* holder)
         {
+            m_currentMaxPriority = std::max(m_currentMaxPriority, holder->m_priority);
+            
             // m_callbacks.contains(holder->m_hash)
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                    listeningEvent->m_callbacks.remove(std::make_pair(holder->m_hash, holder));
+                    
+                    listeningEvent->sortByPriorities();
                 }
             };
             disconnect(holder->m_hash);
-            m_callbacks[holder->m_hash] = holder;
+            m_callbacks.emplace_back(holder->m_hash, holder);
             holder->m_listeningEvents.push_back(this->shared_from_this());
+            
+            sortByPriorities();
             
             return *this;
         }
@@ -90,7 +110,10 @@ namespace SGCore
         requires(std::is_invocable_v<Func, Args...>)
         EventImpl& operator+=(Func&& l)
         {
+            ++m_currentMaxPriority;
+            
             auto* holder = new HolderT(l);
+            holder->m_priority = m_currentMaxPriority;
             holder->m_isLambda = true;
             std::cout << "hash : " << holder->m_hash << std::endl;
             
@@ -98,27 +121,36 @@ namespace SGCore
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                    listeningEvent->m_callbacks.remove(std::make_pair(holder->m_hash, holder));
+                    
+                    listeningEvent->sortByPriorities();
                 }
             };
             disconnect(holder->m_hash);
-            m_callbacks[holder->m_hash] = holder;
+            m_callbacks.emplace_back(holder->m_hash, holder);
             holder->m_listeningEvents.push_back(this->shared_from_this());
+            
+            sortByPriorities();
             
             return *this;
         }
         
         template<auto FuncPtr>
-        void connect(MemberFunctionTraits<decltype(FuncPtr)>::instance_type& obj)
+        void connect(class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj, const size_t& priority)
         {
+            const auto fnPtr = FuncPtr;
+            
             auto* holder = new HolderT;
-            holder->m_hash = std::hash<const char*>()(typeid(FuncPtr).name()) ^ *reinterpret_cast<std::intptr_t*>(&obj);
+            holder->m_priority = priority;
+            holder->m_hash = std::hash<const char*>()(static_cast<const char*>(static_cast<const void*>(&fnPtr))) ^ *reinterpret_cast<std::intptr_t*>(&obj);
             holder->m_isLambda = true;
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                    listeningEvent->m_callbacks.remove(std::make_pair(holder->m_hash, holder));
+                    
+                    listeningEvent->sortByPriorities();
                 }
             };
             auto funcLambda = [&obj](Args&&... args) {
@@ -127,21 +159,35 @@ namespace SGCore
             (*holder) = funcLambda;
             
             disconnect(holder->m_hash);
-            m_callbacks[holder->m_hash] = holder;
+            m_callbacks.emplace_back(holder->m_hash, holder);
             holder->m_listeningEvents.push_back(this->shared_from_this());
+            
+            sortByPriorities();
         }
         
         template<auto FuncPtr>
-        void connect()
+        void connect(class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj)
         {
+            ++m_currentMaxPriority;
+            connect<FuncPtr>(obj, m_currentMaxPriority);
+        }
+        
+        template<auto FuncPtr>
+        void connect(const size_t& priority)
+        {
+            const auto fnPtr = FuncPtr;
+            
             auto* holder = new HolderT;
-            holder->m_hash = std::hash<const char*>()(typeid(FuncPtr).name());
+            holder->m_priority = priority;
+            holder->m_hash = std::hash<const char*>()(static_cast<const char*>(static_cast<const void*>(&fnPtr)));
             holder->m_isLambda = true;
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    (listeningEvent)->m_callbacks.erase(holder->m_hash);
+                    listeningEvent->m_callbacks.remove(std::make_pair(holder->m_hash, holder));
+                    
+                    listeningEvent->sortByPriorities();
                 }
             };
             auto funcLambda = [](Args&&... args) {
@@ -150,21 +196,34 @@ namespace SGCore
             (*holder) = funcLambda;
             
             disconnect(holder->m_hash);
-            m_callbacks[holder->m_hash] = holder;
+            m_callbacks.emplace_back(holder->m_hash, holder);
             holder->m_listeningEvents.push_back(this->shared_from_this());
+            
+            sortByPriorities();
         }
         
         template<auto FuncPtr>
-        void disconnect(MemberFunctionTraits<decltype(FuncPtr)>::instance_type& obj)
+        void connect()
         {
-            const size_t hash = std::hash<const char*>()(typeid(FuncPtr).name()) ^ *reinterpret_cast<std::intptr_t*>(&obj);
+            ++m_currentMaxPriority;
+            connect<FuncPtr>(m_currentMaxPriority);
+        }
+        
+        template<auto FuncPtr>
+        void disconnect(class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj)
+        {
+            const auto fnPtr = FuncPtr;
+            
+            const size_t hash = std::hash<const char*>()(static_cast<const char*>(static_cast<const void*>(&fnPtr))) ^ *reinterpret_cast<std::intptr_t*>(&obj);
             
             disconnect(hash);
         }
         
         void disconnect(const size_t& funcHash)
         {
-            auto it = m_callbacks.find(funcHash);
+            auto it = std::find_if(m_callbacks.begin(), m_callbacks.end(), [&funcHash](const std::pair<long, HolderT*>& a) {
+                return a.second->m_priority == funcHash;
+            });
             if(it != m_callbacks.end())
             {
                 if(it->second->m_isLambda)
@@ -172,6 +231,7 @@ namespace SGCore
                     delete it->second;
                 }
                 m_callbacks.erase(it);
+                sortByPriorities();
             }
         }
         
@@ -204,7 +264,16 @@ namespace SGCore
         }
         
     private:
-        std::unordered_map<long, HolderT*> m_callbacks;
+        size_t m_currentMaxPriority = 0;
+        
+        void sortByPriorities() noexcept
+        {
+            m_callbacks.sort([](const std::pair<long, HolderT*>& a, const std::pair<long, HolderT*>& b) {
+                return a.second->m_priority < b.second->m_priority;
+            });
+        }
+        
+        std::list<std::pair<long, HolderT*>> m_callbacks;
     };
 
     template <typename T>

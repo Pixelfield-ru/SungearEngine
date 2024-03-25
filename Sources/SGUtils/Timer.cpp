@@ -33,10 +33,7 @@ void SGCore::Timer::startFrame()
 
     if(m_elapsedTimeForUpdate >= m_targetFrameTime)
     {
-        for(const auto& callback : m_callbacks)
-        {
-            callback->callUpdateFunction(m_elapsedTimeForUpdate, m_targetFrameTime);
-        }
+        (*m_updateEvent)(m_elapsedTimeForUpdate, m_targetFrameTime);
         
         m_elapsedTimeForUpdate = 0.0;
         ++m_framesPerSecondAccum;
@@ -64,20 +61,7 @@ void SGCore::Timer::firstTimeStart()
     //m_currentTime = m_startTime;
     m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
     
-    for(const std::shared_ptr<TimerCallback>& callback : m_callbacks)
-    {
-        callback->callStartFunction();
-    }
-}
-
-void SGCore::Timer::addCallback(const std::shared_ptr<TimerCallback>& callback)
-{
-    m_callbacks.push_back(callback);
-}
-
-void SGCore::Timer::removeCallback(const std::shared_ptr<TimerCallback>& callback)
-{
-    m_callbacks.remove(callback);
+    (*m_startEvent)();
 }
 
 uint16_t SGCore::Timer::getFramesPerSecond() const noexcept
