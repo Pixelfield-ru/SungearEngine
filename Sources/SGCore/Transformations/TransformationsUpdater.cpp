@@ -260,7 +260,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 ownTransform.m_aabb = finalTransform.m_aabb;
             }
             
-            (*m_transformChangedEvent)(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
+            (*onTransformChanged)(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
             
             ++i;
         }
@@ -312,7 +312,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 ownTransform.m_aabb = finalTransform.m_aabb;
             }
             
-            (*m_transformChangedEvent)(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
+            (*onTransformChanged)(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
         }
         
         m_calculatedPhysicalEntitiesCopy.clear();

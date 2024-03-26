@@ -62,7 +62,7 @@ SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
     }
     
     m_atmosphereUpdateTimer.setTargetFrameRate(60);
-    (*m_atmosphereUpdateTimer.m_updateEvent) += m_atmosphereUpdateEventListener;
+    (*m_atmosphereUpdateTimer.onUpdate) += m_atmosphereUpdateEventListener;
     m_atmosphereUpdateTimer.m_cyclic = true;
 }
 

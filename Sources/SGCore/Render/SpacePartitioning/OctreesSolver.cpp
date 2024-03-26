@@ -25,7 +25,7 @@ void SGCore::OctreesSolver::setScene(const SGCore::Ref<SGCore::Scene>& scene) no
     auto transformationsUpdater = scene->getSystem<TransformationsUpdater>();
     if(transformationsUpdater)
     {
-        (*transformationsUpdater->m_transformChangedEvent) += m_transformChangedListener;
+        (*transformationsUpdater->onTransformChanged) += m_transformChangedListener;
     }
 }
 

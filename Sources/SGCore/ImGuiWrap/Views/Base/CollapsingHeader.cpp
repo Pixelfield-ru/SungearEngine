@@ -12,7 +12,7 @@ bool SGCore::ImGuiWrap::CollapsingHeader::begin() noexcept
 
 void SGCore::ImGuiWrap::CollapsingHeader::renderBody()
 {
-    (*m_onRenderEvent)();
+    (*onRender)();
 }
 
 void SGCore::ImGuiWrap::CollapsingHeader::end() noexcept

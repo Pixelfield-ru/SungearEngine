@@ -34,7 +34,7 @@ namespace SGCore
         static void updateEnd(const double& dt, const double& fixedDt);
         
     public:
-        static inline Event<void()> m_initCallback = MakeEvent<void()>();
+        static inline Event<void()> onInit = MakeEvent<void()>();
         
         static inline std::string m_pathToSungearEngineSources;
         

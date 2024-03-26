@@ -32,13 +32,13 @@ namespace SGCore
         {
             m_timer.setTargetFrameRate(80);
             m_timer.m_cyclic = true;
-            m_timer.m_updateEvent->connect<&IParallelSystem::internalUpdate>(*this);
+            m_timer.onUpdate->connect<&IParallelSystem::internalUpdate>(*this);
         }
         
         ~IParallelSystem()
         {
             stopThread();
-            m_timer.m_updateEvent->disconnect<&IParallelSystem::internalUpdate>(*this);
+            m_timer.onUpdate->disconnect<&IParallelSystem::internalUpdate>(*this);
         }
 
         void startThread() noexcept

@@ -60,7 +60,7 @@ SGCore::DirectionalLightsUpdater::DirectionalLightsUpdater() noexcept
     }
     
     m_lightsUpdateTimer.setTargetFrameRate(30);
-    (*m_lightsUpdateTimer.m_updateEvent) += m_lightsUpdateEventListener;
+    (*m_lightsUpdateTimer.onUpdate) += m_lightsUpdateEventListener;
     m_lightsUpdateTimer.m_cyclic = true;
 }
 

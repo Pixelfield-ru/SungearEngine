@@ -38,7 +38,7 @@ namespace SGCore
         
         void setScene(const Ref<Scene>& scene) noexcept final;
         
-        Event<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)> m_transformChangedEvent =
+        Event<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)> onTransformChanged =
                 MakeEvent<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)>();
         
     private:

@@ -58,19 +58,19 @@ void SGCore::CoreMain::start()
     AssetManager::init();
     FontsManager::init();
 
-    m_renderTimer.m_updateEvent->connect<&updateStart>(0);
-    m_renderTimer.m_updateEvent->connect<&updateEnd>(std::numeric_limits<size_t>::max());
+    m_renderTimer.onUpdate->connect<&updateStart>(0);
+    m_renderTimer.onUpdate->connect<&updateEnd>(std::numeric_limits<size_t>::max());
     m_renderTimer.setTargetFrameRate(1200.0);
 
     // -----------------
     
-    m_fixedTimer.m_updateEvent->connect<&fixedUpdateStart>(0);
-    m_renderTimer.m_updateEvent->connect<&fixedUpdateEnd>(std::numeric_limits<size_t>::max());
+    m_fixedTimer.onUpdate->connect<&fixedUpdateStart>(0);
+    m_renderTimer.onUpdate->connect<&fixedUpdateEnd>(std::numeric_limits<size_t>::max());
     // m_fixedTimer.m_useFixedUpdateCatchUp = false;
 
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
     
-    (*m_initCallback)();
+    (*onInit)();
 
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();

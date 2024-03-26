@@ -63,16 +63,16 @@ namespace SGCore
 
             ++uniqueNamesCounter.m_count;
 
-            (*m_someNameChangedEvent)(uniqueName.m_name);
+            (*onSomeNameChanged)(uniqueName.m_name);
         }
 
         void subscribeToSomeNameChangedEvent(const EventListener<void(const std::string&)>& eventListener)
         {
-            (*m_someNameChangedEvent) += eventListener;
+            (*onSomeNameChanged) += eventListener;
         }
 
     private:
-        Event<void(const std::string& newName)> m_someNameChangedEvent = MakeEvent<void(const std::string& newName)>();
+        Event<void(const std::string& newName)> onSomeNameChanged = MakeEvent<void(const std::string& newName)>();
 
         std::unordered_map<std::string, UniqueNamesCounter> m_uniqueNamesCounters;
     };

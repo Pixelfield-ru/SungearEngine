@@ -16,8 +16,8 @@ namespace SGCore
     class Timer
     {
     public:
-        Event<void(const double&, const double&)> m_updateEvent = MakeEvent<void(const double&, const double&)>();
-        Event<void()> m_startEvent = MakeEvent<void()>();
+        Event<void(const double&, const double&)> onUpdate = MakeEvent<void(const double&, const double&)>();
+        Event<void()> onStart = MakeEvent<void()>();
         
         bool m_active = true;
         bool m_cyclic = false;

@@ -244,17 +244,17 @@ namespace SGCore
     {
         friend class ImGuiWrap::ImGuiLayer;
         
-        static inline Event<void(Window&)> m_closeEvent = MakeEvent<void(Window&)>();
+        static inline Event<void(Window&)> onClose = MakeEvent<void(Window&)>();
         
-        static inline Event<void(Window&, const int&)> m_iconifyEvent = MakeEvent<void(Window&, const int&)>();
+        static inline Event<void(Window&, const int&)> onIconify = MakeEvent<void(Window&, const int&)>();
         
-        static inline Event<void(Window&, const KeyboardKey&, const int&, const KeyState&, const int&)> m_keyboardKeyEvent =
+        static inline Event<void(Window&, const KeyboardKey&, const int&, const KeyState&, const int&)> onKeyboardKeyEvent =
                 MakeEvent<void(Window&, const KeyboardKey&, const int&, const KeyState&, const int&)>();
         
-        static inline Event<void(Window&, const MouseButton&, const KeyState&, const int&)> m_mouseButtonEvent =
+        static inline Event<void(Window&, const MouseButton&, const KeyState&, const int&)> onMouseButtonEvent =
                 MakeEvent<void(Window&, const MouseButton&, const KeyState&, const int&)>();
         
-        static inline Event<void(Window&, const double&, const double&)> m_cursorPositionEvent =
+        static inline Event<void(Window&, const double&, const double&)> onCursorPositionChanged =
                 MakeEvent<void(Window&, const double&, const double&)>();
         
         Window() noexcept = default;
