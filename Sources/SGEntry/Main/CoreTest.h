@@ -7,6 +7,6 @@
 #ifndef NATIVECORE_CORETEST_H
 #define NATIVECORE_CORETEST_H
 
-int main();
+// int main();
 
 #endif //NATIVECORE_CORETEST_H

@@ -49,29 +49,6 @@ elseif(MSVC)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
     set(BUILD_SHARED_LIBS FALSE)
 endif ()
-# projects --------------------
-set(SG_SOURCES_PROJ Sources)
-set(SG_CORE_PROJ SGCore)
-set(SG_EDITOR_PROJ SGEditor)
-set(SG_CONSOLE_PROJ SGConsole)
-set(SG_CONSOLE_API_PROJ SGConsoleAPI)
-set(SG_CONSOLE_APP_PROJ SGConsoleApp)
-set(SG_UTILS_PROJ SGUtils)
-
-set(SG_TESTS_PROJ Tests)
-set(SG_PHYS_TEST_PROJ SGPhysicsTest)
-
-# libs ------------------------
-# TODO: MAKE SG_CORE_STATIC OR SHARED
-set(SG_CORE_DLL ${CMAKE_BINARY_DIR}/lib/${SG_CORE_PROJ}d.dll)
-set(SG_UTILS_DLL ${CMAKE_BINARY_DIR}/lib/${SG_UTILS_PROJ}d.dll)
-
-set(SG_SOURCES_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ})
-set(SG_TESTS_BIN ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ})
-set(SG_PHYS_TEST_BIN ${CMAKE_BINARY_DIR}/${SG_TESTS_PROJ}/${SG_PHYS_TEST_PROJ})
-set(SG_EDITOR_BIN ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
-
-# -----------------------------
 
 # multiple definition because of bullet library
 set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")

@@ -1340,6 +1340,7 @@ void testWindowOverdrawFun()
     ImGui::Text("testWindowOverdraw (2).");
 }
 
+/*
 int main()
 {
     // std::cout << typeid(const double&).name() << std::endl;
@@ -1360,18 +1361,18 @@ int main()
                                                                                       ImGui::DragInt("Drag this int!", dragInt);
                                                                                       ImGui::Text("hi!!");
                                                                                   });
-    (*testWindow->m_onRenderEvent) += testWindowOverdraw;
-    (*testWindow->m_onRenderEvent) += []() {
+    (*testWindow->onRender) += testWindowOverdraw;
+    (*testWindow->onRender) += []() {
         ImGui::Text("testWindowOverdraw (1).");
     };
-    testWindow->m_onRenderEvent->connect<&testWindowOverdrawFun>();
-    (*testCollapsingHeader->m_onRenderEvent) += testCollapsingHeaderOverdraw;
+    testWindow->onRender->connect<&testWindowOverdrawFun>();
+    (*testCollapsingHeader->onRender) += testCollapsingHeaderOverdraw;
 
     //SGConsole::Console::start();
 
-    SGCore::CoreMain::m_initCallback->connect<&init>();
-    SGCore::CoreMain::getFixedTimer().m_updateEvent->connect<&fixedUpdate>();
-    SGCore::CoreMain::getRenderTimer().m_updateEvent->connect<&update>();
+    SGCore::CoreMain::onInit->connect<&init>();
+    SGCore::CoreMain::getFixedTimer().onUpdate->connect<&fixedUpdate>();
+    SGCore::CoreMain::getRenderTimer().onUpdate->connect<&update>();
 
     std::cout << "perlin generated" << std::endl;
 
@@ -1380,4 +1381,4 @@ int main()
     //SGConsole::Console::stop();
 
     return EXIT_SUCCESS;
-}
+}*/

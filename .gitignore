@@ -22,7 +22,7 @@ Externals/bullet3/docs
 Sources/cmake-build-debug
 Sources/SGCore/cmake-build-debug
 Sources/SGConsole/cmake-build-debug
-Sources/SGEditor/cmake-build-debug
+Sources/SGEntry/cmake-build-debug
 # -----------------------
 
 # RESOURCES -------------

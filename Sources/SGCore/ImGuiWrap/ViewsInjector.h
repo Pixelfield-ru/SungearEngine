@@ -21,14 +21,14 @@ namespace SGCore::ImGuiWrap
         // in those children other views can not be injected
         std::vector<std::weak_ptr<IView>> m_childrenViews;
         std::weak_ptr<IView> m_rootView;
-
+        // in those children injector other views can be injected
+        std::unordered_map<std::string, std::shared_ptr<ViewsInjector>> m_childrenInjectors;
+        
         ViewsInjector& operator[](const std::string& viewName) noexcept;
-
+        
         void renderViews();
 
     private:
-        // in those children injector other views can be injected
-        std::unordered_map<std::string, std::shared_ptr<ViewsInjector>> m_childrenInjectors;
 
         SG_FULL_SINGLETON(ViewsInjector)
     };

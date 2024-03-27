@@ -17,7 +17,7 @@
          )
 
  target_link_libraries(${PROJECT_NAME}
-         ${SG_CORE_PROJ}
+         SGCore
          )
 
  # todo: make by file

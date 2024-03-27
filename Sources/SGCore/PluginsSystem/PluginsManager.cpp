@@ -105,7 +105,7 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         pluginMainHContent += "#include <SGCore/PluginsSystem/PluginsManager.h>\n";
         pluginMainHContent += "#include <SGCore/PluginsSystem/IPlugin.h>\n\n";
         pluginMainHContent += fmt::format("#include \"{0}.h\"\n\n", pluginName);
-        pluginMainHContent += fmt::format("SGCore::Ref<{0}> s_{1}Instance;\n\n", pluginName, pluginName);
+        pluginMainHContent += fmt::format("static SGCore::Ref<{0}> s_{1}Instance;\n\n", pluginName, pluginName);
         pluginMainHContent += "extern \"C\" SGCore::Ref<SGCore::IPlugin> SGPluginMain();\n\n";
         pluginMainHContent += fmt::format("#endif // {0}\n", pluginMainHDefine);
         
