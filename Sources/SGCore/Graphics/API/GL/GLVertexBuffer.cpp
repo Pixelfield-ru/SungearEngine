@@ -26,7 +26,7 @@ std::shared_ptr<SGCore::IVertexBuffer> SGCore::GLVertexBuffer::create(const size
     
     glGenBuffers(1, &m_handler);
     bind();
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) byteSize, nullptr,
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(byteSize), nullptr,
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
     
     return shared_from_this();

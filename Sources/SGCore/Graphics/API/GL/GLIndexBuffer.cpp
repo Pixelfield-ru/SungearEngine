@@ -30,7 +30,7 @@ std::shared_ptr<SGCore::IIndexBuffer> SGCore::GLIndexBuffer::create(const size_t
     
     glGenBuffers(1, &m_handler);
     bind();
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) byteSize, nullptr,
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(byteSize), nullptr,
                  GLGraphicsTypesCaster::sggBufferUsageToGL(m_usage));
     
     return shared_from_this();

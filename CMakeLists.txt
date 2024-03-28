@@ -10,6 +10,7 @@ add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 #add_definitions(-DBOOST_STACKTRACE_LINK)
 add_definitions(-DHC_NO_COMPRESSION)
+add_definitions(-DNOMINMAX)
 #add_definitions(-DCMAKE_TOOLCHAIN_FILE="C:\\Users\\Ilya\\.clion-vcpkg\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")
 
 set(CMAKE_CXX_STANDARD 23)

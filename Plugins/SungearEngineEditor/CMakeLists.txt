@@ -22,7 +22,8 @@ set(SG_INCLUDE_SPDLOG ON)
 set(SG_INCLUDE_STB ON)
 set(SG_INCLUDE_GLAD ON)
 
-set(SUNGEAR_ENGINE_DIR "/home/ilya/pixelfield/SungearEngine")
+#set(SUNGEAR_ENGINE_DIR "/home/ilya/pixelfield/SungearEngine")
+set(SUNGEAR_ENGINE_DIR "F:/Pixelfield/SungearEngine")
 list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_DIR})
 
 find_package(SungearEngine REQUIRED)

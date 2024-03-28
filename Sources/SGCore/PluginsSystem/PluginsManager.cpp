@@ -237,8 +237,6 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
     return loadedPlugin;
 }
 
-#include <dlfcn.h>
-
 SGCore::Ref<SGCore::PluginWrap>
 SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
                                      const std::string& pluginVersion,

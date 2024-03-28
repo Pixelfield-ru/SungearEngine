@@ -8,6 +8,7 @@
 #include <list>
 #include <functional>
 #include <map>
+#include <utility>
 
 #include "EventListener.h"
 #include "SGUtils/TypeTraits.h"
@@ -39,7 +40,7 @@ namespace SGCore
         
         EventImpl& operator+=(HolderT* holder)
         {
-            m_currentMaxPriority = std::max(m_currentMaxPriority, holder->m_priority);
+            m_currentMaxPriority = std::max<size_t>(m_currentMaxPriority, holder->m_priority);
             
             holder->m_unsubscribeFunc = [holder]()
             {
@@ -63,7 +64,7 @@ namespace SGCore
         {
             auto* holder = eventHolder.get();
             
-            m_currentMaxPriority = std::max(m_currentMaxPriority, holder->m_priority);
+            m_currentMaxPriority = std::max<size_t>(m_currentMaxPriority, holder->m_priority);
             
             holder->m_unsubscribeFunc = [holder]()
             {
@@ -85,7 +86,7 @@ namespace SGCore
         
         EventImpl& operator+=(const HolderT* holder)
         {
-            m_currentMaxPriority = std::max(m_currentMaxPriority, holder->m_priority);
+            m_currentMaxPriority = std::max<size_t>(m_currentMaxPriority, holder->m_priority);
             
             // m_callbacks.contains(holder->m_hash)
             holder->m_unsubscribeFunc = [holder]()
