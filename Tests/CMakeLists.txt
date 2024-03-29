@@ -1,1 +1,0 @@
-add_subdirectory(${SG_PHYS_TEST_PROJ})
