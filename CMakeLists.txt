@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(SungearEngine)
 
+#set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}")
+
 #message("CMAKE_SOURCE_DIR : ${CMAKE_SOURCE_DIR}")
 
 add_definitions(-DSUNGEAR_DEBUG)
@@ -73,8 +75,8 @@ if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)
 endif()
 
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}")
-install()
+set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR})
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR})
 
 message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
 message("Bullet Libraries: " ${BULLET_COLLISION_LIBRARY} ", " ${BULLET_DYNAMICS_LIBRARY} ", " ${BULLET_MATH_LIBRARY})
