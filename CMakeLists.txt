@@ -67,7 +67,6 @@ set(SG_RESOURCES_COPY_UI ON)
 set(SG_RESOURCES_COPY_FONTS ON)
 
 # ----------------------------------
-add_subdirectory(syslibs)
 add_subdirectory(Externals)
 add_subdirectory(Sources)
 if(${SG_BUILD_TESTS})
