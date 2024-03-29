@@ -1,0 +1,2 @@
+vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
+
