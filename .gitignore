@@ -2,21 +2,7 @@ cmake-build-debug
 cmake-build-release
 release-test
 out
-.vs 
-
-# EXTERNALS -------------
-Externals/Assimp/doc
-Externals/Assimp/test
-Externals/doxygen
-Externals/GLFW/tests
-Externals/GLFW/docs
-Externals/imgui/docs
-Externals/Vulkan/Bin
-Externals/Vulkan/Bin32
-Externals/bullet3/data
-#Externals/bullet3/examples
-Externals/bullet3/docs
-# -----------------------
+.vs
 
 # SOURCES ---------------
 Sources/cmake-build-debug
@@ -43,46 +29,7 @@ Resources/SGResources/models/test/T34.obj
 Resources/SGResources/models/test/T_34_85.obj
 Resources/SGResources/models/test/Tiger1.obj
 
-Resources/SGResources/models/test/backpack
-Resources/SGResources/models/test/Duty Exoskeleton
-Resources/SGResources/models/test/stalk_bunk
-Resources/SGResources/models/test/triangle_musical.glb
-Resources/SGResources/models/test/ak47
-Resources/SGResources/models/test/ak74
-Resources/SGResources/models/test/cathedral
-Resources/SGResources/models/test/panelka
-Resources/SGResources/models/test/pavlov
-Resources/SGResources/models/test/Putin
-Resources/SGResources/models/test/room
-Resources/SGResources/models/test/Russia_flag
-Resources/SGResources/models/test/stierlitz
-Resources/SGResources/models/test/t55a
-Resources/SGResources/models/test/zucchini
-Resources/SGResources/models/test/t62
-Resources/SGResources/models/test/stalk_bagger
-Resources/SGResources/models/test/apb
-Resources/SGResources/models/test/cnpp
-Resources/SGResources/models/test/svd
-Resources/SGResources/models/test/vsk94
-Resources/SGResources/models/test/toilet
-Resources/SGResources/models/test/metal_door
-Resources/SGResources/models/test/helicopter
-Resources/SGResources/models/test/mgu
-Resources/SGResources/models/test/apb
-Resources/SGResources/models/test/btr_80a2016
-Resources/SGResources/models/test/hamada_gun
-Resources/SGResources/models/test/kv2
-Resources/SGResources/models/test/old_building
-Resources/SGResources/models/test/room
-Resources/SGResources/models/test/rpg7
-Resources/SGResources/models/test/sponza
-Resources/SGResources/models/test/uaz
-Resources/SGResources/models/test/T34.obj
-Resources/SGResources/models/test/T_34_85.obj
-Resources/SGResources/models/test/Tiger1.obj
-Resources/SGResources/models/test/gaz-66.obj
-Resources/SGResources/models/test/gaz-66.mtl
-Resources/SGResources/models/test/limansk
+Resources/SGResources/models/test
 # -----------------------
 
 Games
