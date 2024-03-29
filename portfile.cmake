@@ -4,7 +4,7 @@ vcpkg_from_github(
         OUT_SOURCE_PATH SOURCE_PATH
         REPO Pixelfield-ru/SungearEngine
         REF "${VERSION}"
-        SHA512 0  # This is a temporary value. We will modify this value in the next section.
+        SHA512 e70a9ff761e3f75662f4d6a2f9d2656cdd36950acc229ba05fccede109fb3c5097fdc5c0bdcc523307e34a11a0d89d25497e5e424b8dda9855112c38e9cc865a
         HEAD_REF main
 )
 
