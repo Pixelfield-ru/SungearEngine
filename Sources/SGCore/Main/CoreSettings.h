@@ -10,7 +10,7 @@
 #define SG_CORE_MAJOR_VERSION 0
 #define SG_CORE_MINOR_VERSION 14
 #define SG_CORE_PATCH_VERSION 0
-#define SG_CORE_BUILD_VERSION 1
+#define SG_CORE_BUILD_VERSION 3
 
 #include "assimp/postprocess.h"
 
