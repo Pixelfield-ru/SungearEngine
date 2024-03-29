@@ -24,6 +24,8 @@ namespace SGCore
     {
         friend class Scene;
     public:
+        virtual ~ISystem() = default;
+
         bool m_active = true;
         std::unordered_map<std::string, double> m_executionTimes;
 

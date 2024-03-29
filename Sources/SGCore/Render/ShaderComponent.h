@@ -17,8 +17,10 @@ namespace SGCore
     {
         ShaderComponent();
         // ShaderComponent(const ShaderComponent&) = default;
+
+        bool m_isCustomShader = false;
         
-        Ref<IShader> m_shader = SGCore::MakeRef<SGCore::IShader>();
+        Ref<IShader> m_shader = SGCore::MakeRef<IShader>();
         
         std::string m_shaderPath;
         

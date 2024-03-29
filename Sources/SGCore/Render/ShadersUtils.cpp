@@ -12,6 +12,8 @@
 
 void SGCore::ShadersUtils::loadShader(ShaderComponent& shaderComponent, const std::string& shaderPath) noexcept
 {
+    if(shaderComponent.m_isCustomShader) return;
+
     auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
 
     if(renderPipeline)
@@ -26,6 +28,8 @@ void SGCore::ShadersUtils::loadShader(ShaderComponent& shaderComponent, const st
 
 void SGCore::ShadersUtils::onRenderPipelineSet(ShaderComponent& shaderComponent) noexcept
 {
+    if(shaderComponent.m_isCustomShader) return;
+
     if(shaderComponent.m_shader)
     {
         shaderComponent.m_shader->removeAllSubPassShadersByDiskPath(shaderComponent.m_shaderPath);

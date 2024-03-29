@@ -35,7 +35,7 @@ namespace SGCore
             m_timer.onUpdate->connect<&IParallelSystem::internalUpdate>(*this);
         }
         
-        ~IParallelSystem()
+        ~IParallelSystem() override
         {
             stopThread();
             m_timer.onUpdate->disconnect<&IParallelSystem::internalUpdate>(*this);

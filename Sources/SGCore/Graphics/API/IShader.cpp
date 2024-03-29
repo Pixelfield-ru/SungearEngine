@@ -26,7 +26,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
         const auto subPassName = subPassIter.first;
         const auto& subPass = subPassIter.second;
 
-        auto subPassShader = Ref<ISubPassShader>(SGCore::CoreMain::getRenderer()->createShader());
+        auto subPassShader = Ref<ISubPassShader>(CoreMain::getRenderer()->createShader());
 
         for(const auto& subShaderIter : subPass.m_subShaders)
         {
