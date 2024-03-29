@@ -1,9 +1,3 @@
-//
-// Created by stuka on 20.05.2023.
-//
-
-#pragma once
-
 #ifndef SUNGEARENGINE_IMESH_H
 #define SUNGEARENGINE_IMESH_H
 
@@ -11,7 +5,6 @@
 #include <vector>
 #include <cstdint>
 #include <string>
-#include <glm/glm.hpp>
 #include <entt/entity/entity.hpp>
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
