@@ -37,3 +37,6 @@ Games
 CMakeSettings.json
 
 build
+
+.vscode
+.idea
