@@ -19,6 +19,9 @@
  find_package(spdlog CONFIG REQUIRED)
  find_package(Stb REQUIRED)
  find_package(glad CONFIG REQUIRED)
+ find_package(PNG REQUIRED)
+ find_package(BZip2 REQUIRED)
+ find_package(unofficial-brotli CONFIG REQUIRED)
 
  find_path(PUGIXML_INCLUDE_DIR pugixml.hpp)
  message("PUGIXML_INCLUDE_DIR: " ${PUGIXML_INCLUDE_DIR})
@@ -50,6 +53,10 @@
 
  # TODO: make for linux and mac
  target_link_libraries(${PROJECT_NAME} PUBLIC
+         PNG::PNG
+         BZip2::BZip2
+         unofficial::brotli::brotlidec
+         unofficial::brotli::brotlienc
          glm::glm
          assimp::assimp
          glfw

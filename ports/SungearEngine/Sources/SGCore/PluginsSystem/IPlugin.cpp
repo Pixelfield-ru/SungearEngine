@@ -1,0 +1,21 @@
+//
+// Created by ilya on 19.03.24.
+//
+#include "IPlugin.h"
+#include "SGUtils/CrashHandler/Platform.h"
+
+#include <iostream>
+
+#ifdef PLATFORM_OS_LINUX
+#include <dlfcn.h>
+#endif
+
+bool SGCore::IPlugin::operator==(const IPlugin& other) const noexcept
+{
+    return m_name == other.m_name && m_version == other.m_version;
+}
+
+bool SGCore::IPlugin::operator!=(const SGCore::IPlugin& other) const noexcept
+{
+    return !(*this == other);
+}
