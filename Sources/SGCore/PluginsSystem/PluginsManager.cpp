@@ -22,9 +22,9 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
 {
     const auto& sep = (char) std::filesystem::path::preferred_separator;
 
-    if(!std::filesystem::exists(CoreMain::m_pathToSungearEngineSources + sep + "FindSungearEngine.cmake"))
+    if(!std::filesystem::exists(CoreMain::m_pathToSungearEngineSources + sep + "FindSungearEngineSDK.cmake"))
     {
-        return "Error: Incorrect Sungear Engine sources directory!";
+        return "Error: Incorrect Sungear Engine SDK sources directory!";
     }
     
     try
@@ -78,7 +78,7 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         cmakeListsContent += "set(SG_INCLUDE_GLAD ON)\n\n";
         cmakeListsContent += fmt::format("set(SUNGEAR_ENGINE_DIR \"{0}\")\n", finalSGPath);
         cmakeListsContent += "list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_DIR})\n\n";
-        cmakeListsContent += "find_package(SungearEngine REQUIRED)\n\n";
+        cmakeListsContent += "find_package(SungearEngineSDK REQUIRED)\n\n";
         cmakeListsContent += "add_library(${PROJECT_NAME} " +
                              fmt::format(
                                      "SHARED Sources/PluginMain.h Sources/PluginMain.cpp Sources/{0}.h Sources/{1}.cpp)\n\n",

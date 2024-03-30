@@ -1,5 +1,5 @@
 {
-  "name" : "sungearengine",
+  "name" : "SungearEngine",
   "version-string" : "0.14.0.5",
   "description" : "A general purpose game engine written in C++. This package includes the core libraries and accepted standard plugins.",
   "homepage" : "https://github.com/Pixelfield-ru/SungearEngine/tree/main",
