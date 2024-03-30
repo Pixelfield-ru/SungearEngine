@@ -12,9 +12,10 @@ vcpkg_cmake_configure(
         SOURCE_PATH "${SOURCE_PATH}"
 )
 
+
 vcpkg_cmake_install()
 
-vcpkg_cmake_config_fixup(PACKAGE_NAME "sungearengine")
+vcpkg_cmake_config_fixup(PACKAGE_NAME "sungearengine-sdk")
 
 # file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 
