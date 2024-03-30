@@ -15,7 +15,8 @@
     "version>=" : "3.25#1"
   }, {
     "name" : "entt",
-    "version>=" : "3.13.1"
+    "version>=" : "3.13.1",
+    "host" : true
   }, {
     "name" : "freetype",
     "version>=" : "2.13.2"

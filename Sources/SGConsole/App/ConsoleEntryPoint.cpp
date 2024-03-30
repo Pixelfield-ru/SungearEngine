@@ -7,7 +7,6 @@
 #include <iostream>
 
 #include "SGConsole/API/Console.h"
-#include "SGCore/ImportedScenesArch/IMeshData.h"
 
 int main()
 {
