@@ -36,7 +36,7 @@ namespace SGCore
     public:
         static inline Event<void()> onInit = MakeEvent<void()>();
         
-        static inline std::string m_pathToSungearEngineSources;
+        static inline std::string m_pathToSungearEngineSDKSources;
         
         CoreMain() = delete;
 

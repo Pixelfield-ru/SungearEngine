@@ -22,14 +22,14 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
 {
     const auto& sep = (char) std::filesystem::path::preferred_separator;
 
-    if(!std::filesystem::exists(CoreMain::m_pathToSungearEngineSources + sep + "FindSungearEngine.cmake"))
+    if(!std::filesystem::exists(CoreMain::m_pathToSungearEngineSDKSources + sep + "FindSungearEngineSDK.cmake"))
     {
-        return "Error: Incorrect Sungear Engine sources directory!";
+        return "Error: Incorrect Sungear Engine SDK sources directory!";
     }
     
     try
     {
-        auto finalSGPath = CoreMain::m_pathToSungearEngineSources;
+        auto finalSGPath = CoreMain::m_pathToSungearEngineSDKSources;
         if(std::filesystem::path::preferred_separator == L'\\')
         {
             finalSGPath = SGUtils::Utils::replaceAll(finalSGPath, R"(\)", R"(\\)");
@@ -76,16 +76,16 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         cmakeListsContent += "set(SG_INCLUDE_SPDLOG ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_STB ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_GLAD ON)\n\n";
-        cmakeListsContent += fmt::format("set(SUNGEAR_ENGINE_DIR \"{0}\")\n", finalSGPath);
-        cmakeListsContent += "list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_DIR})\n\n";
-        cmakeListsContent += "find_package(SungearEngine REQUIRED)\n\n";
+        cmakeListsContent += fmt::format("set(SUNGEAR_ENGINE_SDK_DIR \"{0}\")\n", finalSGPath);
+        cmakeListsContent += "list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_SDK_DIR})\n\n";
+        cmakeListsContent += "find_package(SungearEngineSDK REQUIRED)\n\n";
         cmakeListsContent += "add_library(${PROJECT_NAME} " +
                              fmt::format(
                                      "SHARED Sources/PluginMain.h Sources/PluginMain.cpp Sources/{0}.h Sources/{1}.cpp)\n\n",
                                      pluginName,
                                      pluginName);
-        cmakeListsContent += "target_include_directories(${PROJECT_NAME} PRIVATE ${SungearEngine_INCLUDE_DIRS})\n";
-        cmakeListsContent += "target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS})\n";
+        cmakeListsContent += "target_include_directories(${PROJECT_NAME} PRIVATE ${SungearEngineSDK_INCLUDE_DIRS})\n";
+        cmakeListsContent += "target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngineSDK_LIBS})\n";
         
         std::ofstream cmakeListsStream(cmakeListsPath);
         cmakeListsStream << cmakeListsContent;
