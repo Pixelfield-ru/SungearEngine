@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(SungearEngine)
+project(SungearEngineSDK)
 
 message("VCPKG_ROOT: " $ENV{VCPKG_ROOT})
 
@@ -79,10 +79,10 @@ if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)
 endif()
 
-install(TARGETS ${PROJECT_NAME})
-
 message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
 message("Bullet Libraries: " ${BULLET_COLLISION_LIBRARY} ", " ${BULLET_DYNAMICS_LIBRARY} ", " ${BULLET_MATH_LIBRARY})
+
+install(FILES "FindSungearEngineSDK.cmake" DESTINATION "share/SungearEngineSDK")
 
 # move all necessary dlls to target exes ------------------
 
