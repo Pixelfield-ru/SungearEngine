@@ -1,7 +1,8 @@
 {
-  "name" : "sungearengine",
+  "name" : "sungearengine-sdk",
   "version-string" : "0.14.0.8",
-  "homepage" : "https://github.com/Pixelfield-ru/SungearEngine/tree/main",
+  "description" : "A general purpose game engine SDK written in C++. This package includes the core libraries and accepted standard plugins.",
+  "homepage" : "https://github.com/Pixelfield-ru/SungearEngineSDK/tree/main",
   "builtin-baseline" : "37c3e63a1306562f7f59c4c3c8892ddd50fdf992",
   "dependencies" : [ {
     "name" : "assimp",

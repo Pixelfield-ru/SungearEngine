@@ -1,14 +1,24 @@
 {
     "version": 2,
-  
     "configurePresets": [
-      {
-        "binaryDir": "cmake-build-release",
-        "generator": "Ninja",
-        "name": "release",
-        "cacheVariables": {
-          "CMAKE_TOOLCHAIN_FILE": "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        {
+            "binaryDir": "cmake-build-release",
+            "generator": "Ninja",
+            "name": "release",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
+        },
+        {
+            "name": "release-1",
+            "displayName": "Custom configure preset",
+            "description": "Sets Ninja generator, build and install directory",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            }
         }
-      }
     ]
-  }
+}
