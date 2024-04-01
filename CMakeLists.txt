@@ -21,7 +21,7 @@ endif()]]
 #[[list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share)
 list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/include)
 list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/lib)
-list(APPEND CMAKE_MODULE_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share/stb)]]
+list(APPEND CMAKE_MODULE_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share/entt)]]
 
 list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT})
 list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/share)
@@ -95,7 +95,7 @@ if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)
 endif()
 
-install(TARGETS ${PROJECT_NAME})
+install(FILES "FindSungearEngine.cmake" DESTINATION "share/SungearEngine")
 
 message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
 message("Bullet Libraries: " ${BULLET_COLLISION_LIBRARY} ", " ${BULLET_DYNAMICS_LIBRARY} ", " ${BULLET_MATH_LIBRARY})
