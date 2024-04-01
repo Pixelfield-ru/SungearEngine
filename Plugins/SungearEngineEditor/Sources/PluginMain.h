@@ -16,9 +16,6 @@ static auto& mainViewsInjector = *SGUtils::Singleton::getSharedPtrInstance<SGCor
 
 extern "C" SGCore::Ref<SGCore::IPlugin> SGPluginMain();
 
-int main()
-{
-    return 0;
-}
+int main();
 
 #endif // SUNGEARENGINEEDITOR_PLUGINMAIN_H

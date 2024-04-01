@@ -6,3 +6,8 @@ extern "C" SGCore::Ref<SGCore::IPlugin> SGPluginMain()
 
 	return s_SungearEngineEditorInstance;
 }
+
+int main()
+{
+    return 0;
+}

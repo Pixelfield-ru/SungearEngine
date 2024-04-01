@@ -36,7 +36,20 @@ set(SG_INCLUDE_GLAD ON)
 set(SUNGEAR_ENGINE_DIR "F:/Pixelfield/SungearEngine")
 list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_DIR})
 
+find_package(Bullet REQUIRED)
+find_package(pugixml CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
+find_package(Freetype REQUIRED)
+find_package(EnTT CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(Stb REQUIRED)
+find_package(glad CONFIG REQUIRED)
+find_package(PNG REQUIRED)
+find_package(BZip2 REQUIRED)
+find_package(unofficial-brotli CONFIG REQUIRED)
 find_package(SungearEngine CONFIG REQUIRED)
 
 file(GLOB_RECURSE SGE_SOURCES Sources/*.cpp Sources/*.h)
@@ -44,5 +57,10 @@ file(GLOB_RECURSE SGE_SOURCES Sources/*.cpp Sources/*.h)
 #add_library(${PROJECT_NAME} SHARED ${SGE_SOURCES})
 add_executable(${PROJECT_NAME} ${SGE_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${SungearEngine_INCLUDE_DIR} Sources)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw SungearEngine ${SungearEngine_LIBS})
+target_include_directories(${PROJECT_NAME} PRIVATE Sources ${SungearEngine_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE
+		glfw
+		glm::glm
+		SGCore
+		SGUtils
+		SGConsoleAPI)

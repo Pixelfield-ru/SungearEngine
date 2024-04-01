@@ -1,7 +1,26 @@
 # SungearEngineConfig.cmake.in
 @PACKAGE_INIT@
 
+include(CMakeFindDependencyMacro)
+
+find_dependency(Bullet)
+find_dependency(pugixml CONFIG)
+find_dependency(glm CONFIG)
+find_dependency(assimp CONFIG)
+find_dependency(Freetype)
+find_dependency(EnTT CONFIG)
+find_dependency(glfw3 CONFIG)
+find_dependency(imgui CONFIG)
+find_dependency(spdlog CONFIG)
+find_dependency(Stb MODULE)
+find_dependency(glad CONFIG)
+find_dependency(PNG)
+find_dependency(BZip2)
+find_dependency(unofficial-brotli CONFIG)
+
 # Here we could use `@PACKAGE_INCLUDE_DIR@` as reference
 # to variable 'INCLUDE_DIR' set in the CMakeLists.txt.
 set_and_check(SungearEngine_INCLUDE_DIR "@PACKAGE_SG_VCPKG_INCLUDE_DIR@")
 include("${CMAKE_CURRENT_LIST_DIR}/SungearEngineTargets.cmake")
+
+get_property(PACKAGE_SG_VCPKG_INCLUDE_DIR TARGET SGCore PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
