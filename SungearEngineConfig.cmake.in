@@ -4,3 +4,4 @@
 # Here we could use `@PACKAGE_INCLUDE_DIR@` as reference
 # to variable 'INCLUDE_DIR' set in the CMakeLists.txt.
 set_and_check(SungearEngine_INCLUDE_DIR "@PACKAGE_SG_VCPKG_INCLUDE_DIR@")
+include("${CMAKE_CURRENT_LIST_DIR}/SungearEngineTargets.cmake")

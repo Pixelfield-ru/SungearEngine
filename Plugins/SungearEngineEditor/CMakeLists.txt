@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 3.25)
 project(SungearEngineEditor)
 
+get_filename_component(VCPKG_CMAKE_ROOT ${CMAKE_TOOLCHAIN_FILE} DIRECTORY)
+get_filename_component(VCPKG_CMAKE_ROOT ${VCPKG_CMAKE_ROOT} DIRECTORY)
+get_filename_component(VCPKG_CMAKE_ROOT ${VCPKG_CMAKE_ROOT} DIRECTORY)
+
+list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share/sungearengine)
+list(APPEND CMAKE_MODULE_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share)
+list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share)
+list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/include)
+list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/lib)
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 if(${CMAKE_COMPILER_IS_GNUCXX})
@@ -26,11 +36,13 @@ set(SG_INCLUDE_GLAD ON)
 set(SUNGEAR_ENGINE_DIR "F:/Pixelfield/SungearEngine")
 list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_DIR})
 
-find_package(SungearEngine REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+find_package(SungearEngine CONFIG REQUIRED)
 
 file(GLOB_RECURSE SGE_SOURCES Sources/*.cpp Sources/*.h)
 
-add_library(${PROJECT_NAME} SHARED ${SGE_SOURCES})
+#add_library(${PROJECT_NAME} SHARED ${SGE_SOURCES})
+add_executable(${PROJECT_NAME} ${SGE_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${SungearEngine_INCLUDE_DIRS} Sources)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SungearEngine_INCLUDE_DIR} Sources)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw SungearEngine ${SungearEngine_LIBS})

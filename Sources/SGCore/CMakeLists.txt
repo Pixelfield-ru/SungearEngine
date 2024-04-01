@@ -37,14 +37,13 @@
  message("FREETYPE_LIBRARIES: " ${FREETYPE_LIBRARIES})
 
  target_include_directories(${PROJECT_NAME} PUBLIC
-         ${CMAKE_SOURCE_DIR}/Externals
-         ${CMAKE_SOURCE_DIR}/Externals/OpenGL/include
-         ${Vulkan_INCLUDE_DIR}
-         ${CMAKE_SOURCE_DIR}/Sources
-         ${BULLET_INCLUDE_DIR}
-         ${PUGIXML_INCLUDE_DIR}
-         ${FREETYPE_INCLUDE_DIRS}
-         ${Stb_INCLUDE_DIR}
+         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Externals>
+         $<BUILD_INTERFACE:${Vulkan_INCLUDE_DIR}>
+         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sources>
+         $<BUILD_INTERFACE:${BULLET_INCLUDE_DIR}>
+         $<BUILD_INTERFACE:${PUGIXML_INCLUDE_DIR}>
+         $<BUILD_INTERFACE:${FREETYPE_INCLUDE_DIRS}>
+         $<BUILD_INTERFACE:${Stb_INCLUDE_DIR}>
 
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
          #"C:/VulkanSDK/1.3.250.1/Include"

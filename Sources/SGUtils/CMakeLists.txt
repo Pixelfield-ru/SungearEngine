@@ -16,7 +16,7 @@ message("sgutils bin: " ${CMAKE_CURRENT_BINARY_DIR})
 find_package(glm REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        ${CMAKE_SOURCE_DIR}/Sources
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sources>
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC

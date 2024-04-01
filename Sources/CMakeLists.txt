@@ -5,8 +5,24 @@ add_subdirectory(SGCore)
 add_subdirectory(SGConsole)
 add_subdirectory(SGEntry)
 
+message("LIBDIR: " ${CMAKE_INSTALL_LIBDIR})
+
 # installing targets
-install(TARGETS SGUtils SGCore SGConsoleAPI)
+install(TARGETS SGUtils SGCore SGConsoleAPI
+        EXPORT SungearEngineTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+export(
+        EXPORT SungearEngineTargets
+        FILE ${CMAKE_CURRENT_BINARY_DIR}/SungearEngineTargets.cmake
+)
+
+install(
+        EXPORT SungearEngineTargets
+        FILE SungearEngineTargets.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/SungearEngine/cmake
+)
 
 #installing headers
 file(GLOB_RECURSE SGCONSOLEAPI_HEADERS SGConsole/API/*.h)
