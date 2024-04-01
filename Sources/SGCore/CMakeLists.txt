@@ -45,7 +45,6 @@
          ${PUGIXML_INCLUDE_DIR}
          ${FREETYPE_INCLUDE_DIRS}
          ${Stb_INCLUDE_DIR}
-         ${CMAKE_CURRENT_BINARY_DIR}
 
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
          #"C:/VulkanSDK/1.3.250.1/Include"

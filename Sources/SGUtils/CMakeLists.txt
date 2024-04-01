@@ -17,7 +17,6 @@ find_package(glm REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_SOURCE_DIR}/Sources
-        ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
