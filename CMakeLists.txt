@@ -95,7 +95,13 @@ if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)
 endif()
 
-install(FILES "FindSungearEngine.cmake" DESTINATION "share/SungearEngine")
+set(INCLUDE_DIR Sources)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(SungearEngineConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/SungearEngineConfig.cmake
+        PATH_VARS INCLUDE_DIR
+        INSTALL_DESTINATION share/SungearEngine)
+# install(FILES "FindSungearEngine.cmake" DESTINATION "share/SungearEngine")
 
 message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
 message("Bullet Libraries: " ${BULLET_COLLISION_LIBRARY} ", " ${BULLET_DYNAMICS_LIBRARY} ", " ${BULLET_MATH_LIBRARY})
