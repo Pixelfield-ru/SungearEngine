@@ -2,20 +2,36 @@ cmake_minimum_required(VERSION 3.22)
 
 project(SungearEngine)
 
-message("VCPKG_ROOT: " $ENV{VCPKG_ROOT})
+get_filename_component(VCPKG_CMAKE_ROOT ${CMAKE_TOOLCHAIN_FILE} DIRECTORY)
+get_filename_component(VCPKG_CMAKE_ROOT ${VCPKG_CMAKE_ROOT} DIRECTORY)
+get_filename_component(VCPKG_CMAKE_ROOT ${VCPKG_CMAKE_ROOT} DIRECTORY)
+
+set(VCPKG_ROOT ${VCPKG_CMAKE_ROOT})
+
+message("VCPKG_ROOT: " ${VCPKG_ROOT})
 
 if(NOT EXISTS $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
     message(FATAL_ERROR "Please specify VCPKG_ROOT. Check that the %VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake file exists in the VCPKG_ROOT directory. Restart your IDE after specifying VCPKG_ROOT.")
 endif()
 
-list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share)
+#[[if(NOT EXISTS $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+    message(FATAL_ERROR "Please specify VCPKG_ROOT. Check that the %VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake file exists in the VCPKG_ROOT directory. Restart your IDE after specifying VCPKG_ROOT.")
+endif()]]
+
+#[[list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share)
 list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/include)
 list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/lib)
-list(APPEND CMAKE_MODULE_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share/stb)
+list(APPEND CMAKE_MODULE_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share/stb)]]
+
+list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT})
+list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/share)
+list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/include)
+list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/lib)
+list(APPEND CMAKE_MODULE_PATH ${VCPKG_ROOT}/installed/x64-windows/share/entt)
 
 message("CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
 
-set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 add_definitions(-DSUNGEAR_DEBUG)
 add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
