@@ -9,10 +9,18 @@
 #  ifndef SGUTILS_EXPORT
 #    ifdef SGUtils_EXPORTS
         /* We are building this library */
+#      if defined(_MSC_VER)
 #      define SGUTILS_EXPORT __declspec(dllexport)
+#      elif defined(__GNUC__)
+#      define SGUTILS_EXPORT __attribute__((visibility("default")))
+#      endif
 #    else
         /* We are using this library */
+#      if defined(_MSC_VER)
 #      define SGUTILS_EXPORT __declspec(dllimport)
+#      elif defined(__GNUC__)
+#      define SGUTILS_EXPORT __attribute__((visibility("default")))
+#      endif
 #    endif
 #  endif
 
@@ -22,7 +30,11 @@
 #endif
 
 #ifndef SGUTILS_DEPRECATED
+#  if defined(_MSC_VER)
 #  define SGUTILS_DEPRECATED __declspec(deprecated)
+#  elif defined(__GNUC__)
+#  define SGUTILS_DEPRECATED __attribute__((deprecated))
+#  endif
 #endif
 
 #ifndef SGUTILS_DEPRECATED_EXPORT

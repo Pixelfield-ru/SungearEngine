@@ -9,10 +9,18 @@
 #  ifndef SGCORE_EXPORT
 #    ifdef SGCore_EXPORTS
         /* We are building this library */
+#      if defined(_MSC_VER)
 #      define SGCORE_EXPORT __declspec(dllexport)
+#      elif defined(__GNUC__)
+#      define SGCORE_EXPORT __attribute__((visibility("default")))
+#      endif
 #    else
         /* We are using this library */
+#      if defined(_MSC_VER)
 #      define SGCORE_EXPORT __declspec(dllimport)
+#      elif defined(__GNUC__)
+#      define SGCORE_EXPORT __attribute__((visibility("default")))
+#      endif
 #    endif
 #  endif
 
@@ -22,7 +30,11 @@
 #endif
 
 #ifndef SGCORE_DEPRECATED
+#  if defined(_MSC_VER)
 #  define SGCORE_DEPRECATED __declspec(deprecated)
+#  elif defined(__GNUC__)
+#  define SGCORE_DEPRECATED __attribute__((deprecated))
+#  endif
 #endif
 
 #ifndef SGCORE_DEPRECATED_EXPORT

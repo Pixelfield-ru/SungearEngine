@@ -13,7 +13,7 @@ file(GLOB_RECURSE SGCONSOLEAPI_HEADERS SGConsole/API/*.h)
 file(GLOB_RECURSE SGCORE_HEADERS SGCore/*.h)
 file(GLOB_RECURSE SGUTILS_HEADERS SGUtils/*.h)
 
-message("core headers: " ${SGCORE_HEADERS})
+#message("core headers: " ${SGCORE_HEADERS})
 
 install(DIRECTORY "SGConsole" # source directory
         DESTINATION "include/SungearEngine" # target directory
@@ -35,3 +35,11 @@ install(DIRECTORY "SGUtils" # source directory
         PATTERN "*.h" # select header files
         PATTERN "*.hpp"
         )
+
+install(FILES "sgcore_export.h" # source directory
+        DESTINATION "include/SungearEngine" # target directory
+)
+
+install(FILES "sgutils_export.h" # source directory
+        DESTINATION "include/SungearEngine" # target directory
+)
