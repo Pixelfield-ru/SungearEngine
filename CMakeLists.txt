@@ -101,7 +101,7 @@ configure_package_config_file(SungearEngineConfig.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/SungearEngineConfig.cmake
         PATH_VARS INCLUDE_DIR
         INSTALL_DESTINATION share/SungearEngine)
-# install(FILES "FindSungearEngine.cmake" DESTINATION "share/SungearEngine")
+install(FILES "SungearEngineConfig.cmake" DESTINATION "share/sungearengine")
 
 message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
 message("Bullet Libraries: " ${BULLET_COLLISION_LIBRARY} ", " ${BULLET_DYNAMICS_LIBRARY} ", " ${BULLET_MATH_LIBRARY})
