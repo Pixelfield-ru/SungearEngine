@@ -25,6 +25,6 @@ endmacro()
 
 ####################################################################################
 
-# Here we could use `${PACKAGE_PREFIX_DIR}/Sources` as reference
+# Here we could use `` as reference
 # to variable 'INCLUDE_DIR' set in the CMakeLists.txt.
-set_and_check(SungearEngine_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/Sources")
+set_and_check(SungearEngine_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include/SungearEngine")

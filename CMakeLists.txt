@@ -95,11 +95,12 @@ if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)
 endif()
 
-set(INCLUDE_DIR Sources)
+set(SG_VCPKG_INCLUDE_DIR include/SungearEngine)
+
 include(CMakePackageConfigHelpers)
 configure_package_config_file(SungearEngineConfig.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/SungearEngineConfig.cmake
-        PATH_VARS INCLUDE_DIR
+        PATH_VARS SG_VCPKG_INCLUDE_DIR
         INSTALL_DESTINATION share/SungearEngine)
 install(FILES "SungearEngineConfig.cmake" DESTINATION "share/sungearengine")
 
