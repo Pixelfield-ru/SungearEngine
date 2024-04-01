@@ -28,3 +28,4 @@ endmacro()
 # Here we could use `` as reference
 # to variable 'INCLUDE_DIR' set in the CMakeLists.txt.
 set_and_check(SungearEngine_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include/SungearEngine")
+include("${CMAKE_CURRENT_LIST_DIR}/SungearEngineTargets.cmake")
