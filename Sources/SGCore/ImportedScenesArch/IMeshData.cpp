@@ -147,16 +147,5 @@ void SGCore::IMeshData::migrateAndSetNewMaterial
 
 void SGCore::IMeshData::generatePhysicalMesh() noexcept
 {
-    m_physicalMesh = MakeRef<btTriangleMesh>();
-    
-    for(size_t i = 0; i < m_indices.size(); i += 3)
-    {
-        size_t ti0 = m_indices[i] * 3;
-        size_t ti1 = m_indices[i + 1] * 3;
-        size_t ti2 = m_indices[i + 2] * 3;
-
-        m_physicalMesh->addTriangle(btVector3(m_positions[ti0], m_positions[ti0 + 1], m_positions[ti0 + 2]),
-                                    btVector3(m_positions[ti1], m_positions[ti1 + 1], m_positions[ti1 + 2]),
-                                    btVector3(m_positions[ti2], m_positions[ti2 + 1], m_positions[ti2 + 2]));
-    }
+    m_physicalMesh = generatePhysicalMesh(m_positions, m_indices);
 }

@@ -50,6 +50,7 @@ namespace SGCore
         void updateFlags() noexcept;
         
         void reAddToWorld() const noexcept;
+        void removeFromWorld() const noexcept;
         
         Rigidbody3D& operator=(const Rigidbody3D& other) noexcept = default;
         Rigidbody3D& operator=(Rigidbody3D&& other) noexcept = default;

@@ -129,9 +129,10 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                             
                             glm::mat4 glmRigidbody3DOwnModelMatrix = glm::make_mat4(rigidbody3DMatrix);
                             
-                            glm::mat4 inversedParentTranslationMatrix = glm::mat4(1.0);
-                            glm::mat4 inversedParentRotationMatrix = glm::mat4(1.0);
-                            glm::mat4 inversedParentScaleMatrix = glm::mat4(1.0);
+                            auto inversedParentTranslationMatrix = glm::mat4(1.0);
+                            auto inversedParentRotationMatrix = glm::mat4(1.0);
+                            auto inversedParentScaleMatrix = glm::mat4(1.0);
+                            
                             if(parentTransform)
                             {
                                 inversedParentTranslationMatrix = glm::inverse(

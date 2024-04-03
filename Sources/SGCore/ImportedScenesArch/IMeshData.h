@@ -95,6 +95,25 @@ namespace SGCore
          */
         void migrateAndSetNewMaterial(const Ref<IMaterial>& newMaterial) noexcept;
         
+        template<typename VScalarT, typename IScalarT>
+        static Ref<btTriangleMesh> generatePhysicalMesh(const std::vector<VScalarT>& vertices, const std::vector<IScalarT>& indices) noexcept
+        {
+            auto physicalMesh = MakeRef<btTriangleMesh>();
+            
+            for(size_t i = 0; i < indices.size(); i += 3)
+            {
+                size_t ti0 = indices[i] * 3;
+                size_t ti1 = indices[i + 1] * 3;
+                size_t ti2 = indices[i + 2] * 3;
+                
+                physicalMesh->addTriangle(btVector3(vertices[ti0], vertices[ti0 + 1], vertices[ti0 + 2]),
+                                          btVector3(vertices[ti1], vertices[ti1 + 1], vertices[ti1 + 2]),
+                                          btVector3(vertices[ti2], vertices[ti2 + 1], vertices[ti2 + 2]));
+            }
+            
+            return physicalMesh;
+        }
+        
         void generatePhysicalMesh() noexcept;
 
         Ref<IVertexArray> getVertexArray() noexcept;

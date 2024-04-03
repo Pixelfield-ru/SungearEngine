@@ -95,3 +95,12 @@ void SGCore::Rigidbody3D::reAddToWorld() const noexcept
         lockedWorld->addBody(m_body);
     }
 }
+
+void SGCore::Rigidbody3D::removeFromWorld() const noexcept
+{
+    auto lockedWorld = m_parentPhysicsWorld.lock();
+    if(lockedWorld && m_body)
+    {
+        lockedWorld->removeBody(m_body);
+    }
+}
