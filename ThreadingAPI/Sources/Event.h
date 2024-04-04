@@ -283,8 +283,6 @@ namespace SGCore
             
             const size_t hash = std::hash<const char*>()(static_cast<const char*>(static_cast<const void*>(&fnPtr)));
             
-            std::cout << "hash0: " << hash << std::endl;
-            
             return contains(hash);
         }
         
@@ -313,7 +311,7 @@ namespace SGCore
             auto it = std::find_if(m_listeners.begin(), m_listeners.end(), [&hash](const std::pair<long, HolderT*>& a) {
                 return a.second->m_hash == hash;
             });
-            
+
             return it != m_listeners.end();
         }
         
@@ -327,7 +325,7 @@ namespace SGCore
             });
         }
         
-        std::list<std::pair<long, HolderT*>> m_listeners;
+        std::list<std::pair<size_t, HolderT*>> m_listeners;
     };
 
     template <typename T>

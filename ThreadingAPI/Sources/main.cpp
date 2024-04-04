@@ -12,7 +12,9 @@ void executableFunc()
 
 void onWorkerDone(std::shared_ptr<SGCore::IWorker> worker)
 {
-    std::cout << "worker done" << std::endl;
+    std::cout << "worker done : " << worker << "" << std::endl;
+
+
 }
 
 int main()
@@ -20,13 +22,24 @@ int main()
     std::cout << "dfdfdf" << std::endl;
     
     SGCore::Thread thread;
-    
-    std::cout << "worker0: " << thread.addWorker<&executableFunc, &onWorkerDone>() << std::endl;
-    std::cout << "worker1: " << thread.addWorker<&executableFunc, &onWorkerDone>() << std::endl;
+
+    static const SGCore::WorkerGuard workerGuard = SGCore::MakeWorkerGuard();
+    static const SGCore::WorkerGuard workerGuard0 = SGCore::MakeWorkerGuard();
+
+    auto work0 = thread.addWorker<&executableFunc, &onWorkerDone>(workerGuard);
+    auto work1 = thread.addWorker(workerGuard0, []()
+    {
+        std::cout << "df" << std::endl;
+    }, onWorkerDone);
+
+    std::cout << "worker0: " << work0 << std::endl;
+    std::cout << "worker1: " << work1 << std::endl;
+
+    thread.removeWorker(work1);
     
     thread.start();
     
-    sleep(3);
+    std::this_thread::sleep_for(std::chrono::duration<float>(3.0));
     
     std::cout << "Hello, World! " << std::endl;
     return 0;

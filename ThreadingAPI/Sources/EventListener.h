@@ -23,7 +23,7 @@ namespace SGCore
         friend struct EventImpl<Return(Args...)>;
 
         size_t m_priority = 0;
-        long m_hash = reinterpret_cast<long>(this);
+        size_t m_hash = reinterpret_cast<std::intptr_t>(this);
         
         EventListenerImpl() = default;
         EventListenerImpl(const std::function<Return(Args&&...)>& func)
