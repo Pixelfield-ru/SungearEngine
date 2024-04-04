@@ -22,6 +22,13 @@ namespace SGCore
         
         return timeSpan.count();
     }
+    
+    template<typename T>
+    requires(std::is_pointer_v<T> || std::is_member_function_pointer_v<T>)
+    inline static size_t hashPointer(T ptr) noexcept
+    {
+        return std::hash<const char*>()(static_cast<const char*>(reinterpret_cast<const void*>(ptr)));
+    }
 }
 
 #endif //THREADINGAPI_UTILS_H

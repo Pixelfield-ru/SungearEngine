@@ -24,37 +24,47 @@ namespace SGCore
         
         void start() noexcept
         {
+            if(m_isBusy) return;
+            
             auto internalFunc = [this]() {
-                while(m_isAlive)
+                auto t0 = now();
+                
+                EventImpl<void()> workersProcessCopy;
+                std::vector<std::shared_ptr<IWorker>> workersCopy;
+                
                 {
-                    auto t0 = now();
-
-                    EventImpl<void()> workersProcessCopy;
-                    std::vector<std::shared_ptr<IWorker>> workersCopy;
-
-                    {
-                        std::lock_guard copyGuard(m_workersProcessMutex);
-
-                        workersProcessCopy = *onWorkersProcess;
-                        workersCopy = m_workers;
-                    }
-
-                    workersProcessCopy();
-
-                    {
-                        std::lock_guard copyGuard(m_workersProcessMutex);
-
-                        size_t endElementIdx = std::min(workersCopy.size(), m_workers.size());
-                        m_workers.erase(m_workers.begin(), m_workers.begin() + endElementIdx);
-                    }
-
-                    auto t1 = now();
-
-                    m_executionTime = timeDiff<double, std::milli>(t0, t1);
+                    std::lock_guard copyGuard(m_workersProcessMutex);
+                    
+                    workersProcessCopy = *onWorkersProcess;
+                    workersCopy = m_workers;
                 }
+                
+                workersProcessCopy();
+                
+                {
+                    std::lock_guard copyGuard(m_workersProcessMutex);
+                    
+                    /*onWorkersProcess->excludeIf(workersProcessCopy, [](const EventImpl<void()>::holder_t* holder) {
+                        return false;
+                    });*/
+                    onWorkersProcess->exclude(workersProcessCopy);
+                    
+                    // exclude from vector
+                    for(const auto& worker : workersCopy)
+                    {
+                        std::erase(m_workers, worker);
+                    }
+                }
+                
+                auto t1 = now();
+                
+                m_executionTime = timeDiff<double, std::milli>(t0, t1);
+                
+                m_isBusy = false;
             };
             
             m_isAlive = true;
+            m_isBusy = true;
             m_thread = std::thread(internalFunc);
         }
         
@@ -67,8 +77,7 @@ namespace SGCore
             
             std::shared_ptr<IWorker> worker = nullptr;
 
-            const size_t workerGuardHash =
-                    std::hash<const char*>()(static_cast<const char*>(static_cast<const void*>(workerGuard)));;
+            const size_t workerGuardHash = hashPointer(workerGuard);
 
             if(!onWorkersProcess->contains(workerGuardHash))
             {
@@ -81,18 +90,22 @@ namespace SGCore
                 (*onWorkersProcess) += worker->m_onExecuteListener;
             }
             
+            if(worker)
+            {
+                start();
+            }
+            
             return worker;
         }
 
         template<typename ExecFuncT, typename ExecFuncListenerT>
-        std::shared_ptr<IWorker> addWorker(const WorkerGuard  workerGuard, ExecFuncT&& execFunc, ExecFuncListenerT&& execFuncListener)
+        std::shared_ptr<IWorker> addWorker(const WorkerGuard workerGuard, ExecFuncT&& execFunc, ExecFuncListenerT&& execFuncListener)
         {
             std::lock_guard guard(m_workersProcessMutex);
 
             std::shared_ptr<IWorker> worker = nullptr;
 
-            const size_t workerGuardHash =
-                    std::hash<const char*>()(static_cast<const char*>(static_cast<const void*>(workerGuard)));;
+            const size_t workerGuardHash = hashPointer(workerGuard);
 
             if(!onWorkersProcess->contains(workerGuardHash))
             {
@@ -104,6 +117,11 @@ namespace SGCore
 
                 (*onWorkersProcess) += worker->m_onExecuteListener;
             }
+            
+            if(worker)
+            {
+                start();
+            }
 
             return worker;
         }
@@ -113,13 +131,13 @@ namespace SGCore
             std::lock_guard guard(m_workersProcessMutex);
 
             std::erase_if(m_workers, [&worker](std::shared_ptr<IWorker> w) {
-                return w == worker; // w.get() == worker.get(); // w.owner_before(worker);
+                return w == worker;
             });
 
             (*onWorkersProcess) -= worker->m_onExecuteListener;
         }
 
-        inline auto getExecutionTime() const noexcept
+        [[nodiscard]] inline auto getExecutionTime() const noexcept
         {
             return m_executionTime.load();
         }
@@ -132,6 +150,7 @@ namespace SGCore
         std::vector<std::shared_ptr<IWorker>> m_workers;
         Event<void()> onWorkersProcess = MakeEvent<void()>();
         
+        std::atomic<bool> m_isBusy = false;
         std::atomic<bool> m_isAlive = false;
         
         std::thread m_thread;

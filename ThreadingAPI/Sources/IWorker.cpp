@@ -8,11 +8,11 @@
 
 void SGCore::IWorker::attachToThread(std::shared_ptr<Thread> thread)
 {
-    auto lockedThread = m_parentThread.lock();
+    /*auto lockedThread = m_parentThread.lock();
     if(lockedThread)
     {
         lockedThread->removeWorker(shared_from_this());
     }
 
-    m_parentThread = thread;
+    m_parentThread = thread;*/
 }

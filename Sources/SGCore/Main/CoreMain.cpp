@@ -65,7 +65,7 @@ void SGCore::CoreMain::start()
     // -----------------
     
     m_fixedTimer.onUpdate->connect<&fixedUpdateStart>(0);
-    m_renderTimer.onUpdate->connect<&fixedUpdateEnd>(std::numeric_limits<size_t>::max());
+    m_fixedTimer.onUpdate->connect<&fixedUpdateEnd>(std::numeric_limits<size_t>::max());
     // m_fixedTimer.m_useFixedUpdateCatchUp = false;
 
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();

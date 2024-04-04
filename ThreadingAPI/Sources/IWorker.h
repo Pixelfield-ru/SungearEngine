@@ -6,6 +6,7 @@
 #define THREADINGAPI_IWORKER_H
 
 #include "Event.h"
+#include "Utils.h"
 
 namespace SGCore
 {
@@ -25,7 +26,7 @@ namespace SGCore
         template<auto F>
         void setExecutableFunction(const WorkerGuard workerGuard)
         {
-            const size_t hash = std::hash<const char*>()(static_cast<const char*>(static_cast<const void*>(workerGuard)));;
+            const size_t hash = hashPointer(workerGuard);
             
             m_onExecuteListener->m_hash = hash;
             
@@ -35,20 +36,21 @@ namespace SGCore
         template<typename F>
         void setExecutableFunction(const WorkerGuard workerGuard, F&& func)
         {
-            const size_t hash = std::hash<const char*>()(static_cast<const char*>(static_cast<const void*>(workerGuard)));;
+            const size_t hash = hashPointer(workerGuard);
 
             m_onExecuteListener->m_hash = hash;
 
             m_executableFunction = func;
         }
 
+        // TODO:
         void attachToThread(std::shared_ptr<Thread> thread);
 
         std::function<void(std::shared_ptr<IWorker> worker)> m_onExecutedFunction;
         
     private:
-        WorkerGuard m_parentWorkerGuard = nullptr;
-        std::weak_ptr<Thread> m_parentThread;
+        // WorkerGuard m_parentWorkerGuard = nullptr;
+        // std::weak_ptr<Thread> m_parentThread;
 
         std::function<void()> m_executableFunction;
         

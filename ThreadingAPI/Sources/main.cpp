@@ -4,7 +4,7 @@
 
 void executableFunc()
 {
-    for(size_t i = 0; i < 1'000; ++i)
+    // for(size_t i = 0; i < 1'000'000'000; ++i)
     {
         // std::cout << "worker exec" << std::endl;
     }
@@ -13,8 +13,6 @@ void executableFunc()
 void onWorkerDone(std::shared_ptr<SGCore::IWorker> worker)
 {
     std::cout << "worker done : " << worker << "" << std::endl;
-
-
 }
 
 int main()
@@ -34,10 +32,12 @@ int main()
 
     std::cout << "worker0: " << work0 << std::endl;
     std::cout << "worker1: " << work1 << std::endl;
-
-    thread.removeWorker(work1);
     
     thread.start();
+    
+    thread.removeWorker(work1);
+    
+    std::cout << "aga" << std::endl;
     
     std::this_thread::sleep_for(std::chrono::duration<float>(3.0));
     
