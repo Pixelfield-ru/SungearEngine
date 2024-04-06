@@ -12,21 +12,23 @@ namespace SGCore
 {
     struct Thread;
 
-    struct WorkerGuardImpl { };
-    using WorkerGuard = WorkerGuardImpl*;
-    static WorkerGuard MakeWorkerGuard()
+    struct WorkerSingletonGuardImpl { };
+    using WorkerSingletonGuard = WorkerSingletonGuardImpl*;
+    static WorkerSingletonGuard MakeWorkerSingletonGuard()
     {
-        return new WorkerGuardImpl;
+        return new WorkerSingletonGuardImpl;
     }
 
     struct IWorker : public std::enable_shared_from_this<IWorker>
     {
         friend struct Thread;
         
+        bool m_isStatic = false;
+        
         template<auto F>
-        void setExecutableFunction(const WorkerGuard workerGuard)
+        void setExecutableFunction(const WorkerSingletonGuard workerSingletonGuard)
         {
-            const size_t hash = hashPointer(workerGuard);
+            const size_t hash = hashPointer(workerSingletonGuard);
             
             m_onExecuteListener->m_hash = hash;
             
@@ -34,9 +36,9 @@ namespace SGCore
         }
 
         template<typename F>
-        void setExecutableFunction(const WorkerGuard workerGuard, F&& func)
+        void setExecutableFunction(const WorkerSingletonGuard workerSingletonGuard, F&& func)
         {
-            const size_t hash = hashPointer(workerGuard);
+            const size_t hash = hashPointer(workerSingletonGuard);
 
             m_onExecuteListener->m_hash = hash;
 

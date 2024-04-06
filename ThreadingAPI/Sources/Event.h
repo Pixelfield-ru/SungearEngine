@@ -11,7 +11,7 @@
 #include <utility>
 #include <iostream>
 
-#include "EventListener.h"
+#include "EventListenerImpl.h"
 #include "TypeTraits.h"
 #include "Utils.h"
 
@@ -26,11 +26,21 @@ namespace SGCore
         using holder_t = EventListenerImpl<Return(Args...)>;
         using holders_container = std::list<holder_t*>;
         
+        EventImpl() = default;
+        EventImpl(const EventImpl& other)
+        {
+            *this = std::forward<EventImpl>(other);
+        }
+        EventImpl(EventImpl&& other) noexcept
+        {
+            *this = std::forward<EventImpl>(other);
+        }
+        
         ~EventImpl()
         {
             for(auto& holder : m_listeners)
             {
-                if(holder->m_isLambda)
+                if(holder->m_isOwnedByEvent)
                 {
                     delete holder;
                 }
@@ -45,13 +55,13 @@ namespace SGCore
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    listeningEvent->m_listeners.remove(holder);
+                    std::erase(listeningEvent->m_listeners, holder);
                     
                     listeningEvent->sortByPriorities();
                 }
             };
             disconnect(holder->m_hash);
-            m_listeners.emplace_back(holder->m_hash, holder);
+            m_listeners.emplace_back(holder);
             holder->m_listeningEvents.push_back(this->shared_from_this());
             
             sortByPriorities();
@@ -69,7 +79,7 @@ namespace SGCore
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    listeningEvent->m_listeners.remove(holder);
+                    std::erase(listeningEvent->m_listeners, holder);
                     
                     listeningEvent->sortByPriorities();
                 }
@@ -92,7 +102,7 @@ namespace SGCore
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    listeningEvent->m_listeners.remove(holder);
+                    std::erase(listeningEvent->m_listeners, holder);
                     
                     listeningEvent->sortByPriorities();
                 }
@@ -114,14 +124,14 @@ namespace SGCore
             
             auto* holder = new holder_t(l);
             holder->m_priority = m_currentMaxPriority;
-            holder->m_isLambda = true;
+            holder->m_isOwnedByEvent = true;
             std::cout << "hash : " << holder->m_hash << std::endl;
             
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    listeningEvent->m_listeners.remove(holder);
+                    std::erase(listeningEvent->m_listeners, holder);
                     
                     listeningEvent->sortByPriorities();
                 }
@@ -141,12 +151,12 @@ namespace SGCore
             auto* holder = new holder_t;
             holder->m_priority = priority;
             holder->m_hash = hashPointer(FuncPtr) ^ reinterpret_cast<std::intptr_t>(&obj);
-            holder->m_isLambda = true;
+            holder->m_isOwnedByEvent = true;
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    listeningEvent->m_listeners.remove(holder);
+                    std::erase(listeningEvent->m_listeners, holder);
                     
                     listeningEvent->sortByPriorities();
                 }
@@ -177,12 +187,12 @@ namespace SGCore
             holder->m_priority = priority;
             holder->m_hash = hashPointer(FuncPtr);
             // std::cout << "hash ::: " << holder->m_hash << ", " << (std::hash<const char*>()(static_cast<const char*>(reinterpret_cast<const void*>(FuncPtr)))) << std::endl;
-            holder->m_isLambda = true;
+            holder->m_isOwnedByEvent = true;
             holder->m_unsubscribeFunc = [holder]()
             {
                 for(auto& listeningEvent : holder->m_listeningEvents)
                 {
-                    listeningEvent->m_listeners.remove(holder);
+                    std::erase(listeningEvent->m_listeners, holder);
                     
                     listeningEvent->sortByPriorities();
                 }
@@ -221,10 +231,15 @@ namespace SGCore
             });
             if(it != m_listeners.end())
             {
-                if((*it)->m_isLambda)
+                if((*it)->m_isOwnedByEvent)
                 {
                     delete *it;
                 }
+                else
+                {
+                    std::erase((*it)->m_listeningEvents, this->shared_from_this());
+                }
+                
                 m_listeners.erase(it);
                 sortByPriorities();
             }
@@ -262,9 +277,13 @@ namespace SGCore
         {
             for(auto& holder : m_listeners)
             {
-                if(holder.second->m_isLambda)
+                if(holder->m_isOwnedByEvent)
                 {
-                    delete holder.second;
+                    delete holder;
+                }
+                else
+                {
+                    std::erase(holder->m_listeningEvents, this->shared_from_this());
                 }
             }
             
@@ -316,10 +335,15 @@ namespace SGCore
                 
                 if(it != m_listeners.end())
                 {
-                    if((*it)->m_isLambda)
+                    if((*it)->m_isOwnedByEvent)
                     {
                         delete *it;
                     }
+                    else
+                    {
+                        std::erase((*it)->m_listeningEvents, this->shared_from_this());
+                    }
+                    
                     m_listeners.erase(it);
                 }
             }
@@ -327,27 +351,64 @@ namespace SGCore
             sortByPriorities();
         }
         
-        template<typename Func>
-        requires(std::is_invocable_r_v<bool, Func, const holder_t*>)
-        void excludeIf(const EventImpl& other, Func&& predicate)
+        EventImpl& operator=(const EventImpl& other) noexcept
         {
-            for(const auto& e : other.m_listeners)
+            if(this == std::addressof(other)) return *this;
+            
+            clear();
+            
+            m_currentMaxPriority = other.m_currentMaxPriority;
+            
+            for(const auto& listener : other.m_listeners)
             {
-                typename holders_container::iterator it = std::find_if(m_listeners.begin(), m_listeners.end(), [&e](const holder_t* a) {
-                    return a->m_hash == e->m_hash;
-                });
+                holder_t* holder = listener;
                 
-                if(it != m_listeners.end() && predicate(*it))
+                if(listener->m_isOwnedByEvent)
                 {
-                    if((*it)->m_isLambda)
-                    {
-                        delete *it;
-                    }
-                    m_listeners.erase(it);
+                    holder = new holder_t(*listener);
                 }
+                else
+                {
+                    holder->m_listeningEvents.push_back(this->shared_from_this());
+                }
+                
+                m_listeners.push_back(holder);
             }
             
             sortByPriorities();
+            
+            return *this;
+        }
+        
+        EventImpl& operator=(EventImpl&& other) noexcept
+        {
+            if(this == std::addressof(other)) return *this;
+            
+            clear();
+            
+            m_currentMaxPriority = other.m_currentMaxPriority;
+            
+            for(const auto& listener : other.m_listeners)
+            {
+                holder_t* holder = listener;
+                
+                if(listener->m_isOwnedByEvent)
+                {
+                    holder = new holder_t(*listener);
+                }
+                else
+                {
+                    holder->m_listeningEvents.push_back(this->shared_from_this());
+                }
+                
+                m_listeners.push_back(holder);
+            }
+            
+            sortByPriorities();
+            
+            other.clear();
+            
+            return *this;
         }
     
     private:

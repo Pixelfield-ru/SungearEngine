@@ -61,7 +61,7 @@ namespace SGCore
         std::function<void(Args...)> m_func;
         std::function<void()> m_unsubscribeFunc;
         std::list<std::shared_ptr<EventImpl<Return(Args...)>>> m_listeningEvents;
-        bool m_isLambda = false;
+        bool m_isOwnedByEvent = false;
     };
     
     template <typename T>

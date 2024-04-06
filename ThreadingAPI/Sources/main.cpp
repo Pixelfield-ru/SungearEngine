@@ -4,7 +4,7 @@
 
 void executableFunc()
 {
-    // for(size_t i = 0; i < 1'000'000'000; ++i)
+    for(size_t i = 0; i < 1'000'000'000; ++i)
     {
         // std::cout << "worker exec" << std::endl;
     }
@@ -21,8 +21,8 @@ int main()
     
     SGCore::Thread thread;
 
-    static const SGCore::WorkerGuard workerGuard = SGCore::MakeWorkerGuard();
-    static const SGCore::WorkerGuard workerGuard0 = SGCore::MakeWorkerGuard();
+    static const SGCore::WorkerSingletonGuard workerGuard = SGCore::MakeWorkerSingletonGuard();
+    static const SGCore::WorkerSingletonGuard workerGuard0 = SGCore::MakeWorkerSingletonGuard();
 
     auto work0 = thread.addWorker<&executableFunc, &onWorkerDone>(workerGuard);
     auto work1 = thread.addWorker(workerGuard0, []()
