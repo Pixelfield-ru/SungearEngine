@@ -52,7 +52,7 @@ namespace SGCore
             }
         }
         
-        Event& operator+=(const holder_t& holder)
+        Event& operator+=(holder_t& holder)
         {
             m_currentMaxPriority = std::max<size_t>(m_currentMaxPriority, holder.m_priority);
 
@@ -94,7 +94,7 @@ namespace SGCore
         {
             auto* holder = new holder_t;
             holder->m_priority = priority;
-            holder->m_hash = hashPointer(FuncPtr) ^ reinterpret_cast<std::intptr_t>(&obj);
+            holder->m_hash = hashMemberFunction<FuncPtr>(obj);
             holder->m_isOwnedByEvent = true;
             setHolderUnsubscribeFunction(holder);
 
@@ -122,7 +122,7 @@ namespace SGCore
         {
             auto* holder = new holder_t;
             holder->m_priority = priority;
-            holder->m_hash = hashPointer(FuncPtr);
+            holder->m_hash = hashConstexprObject<FuncPtr>();
             // std::cout << "hash ::: " << holder->m_hash << ", " << (std::hash<const char*>()(static_cast<const char*>(reinterpret_cast<const void*>(FuncPtr)))) << std::endl;
             holder->m_isOwnedByEvent = true;
             setHolderUnsubscribeFunction(holder);
@@ -149,7 +149,7 @@ namespace SGCore
         template<auto FuncPtr>
         void disconnect(class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj)
         {
-            const size_t hash = hashPointer(FuncPtr) ^ reinterpret_cast<std::intptr_t>(&obj);
+            const size_t hash = hashMemberFunction<FuncPtr>(obj);
             
             disconnect(hash);
         }
@@ -221,7 +221,7 @@ namespace SGCore
         template<auto FuncPtr>
         bool contains()
         {
-            const size_t hash = hashPointer(FuncPtr);
+            const size_t hash = hashConstexprObject<FuncPtr>();
             
             return contains(hash);
         }
@@ -229,7 +229,7 @@ namespace SGCore
         template<auto FuncPtr>
         bool contains(class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj)
         {
-            const size_t hash = hashPointer(FuncPtr) ^ reinterpret_cast<std::intptr_t>(&obj);
+            const size_t hash = hashMemberFunction<FuncPtr>(obj);
             
             return contains(hash);
         }

@@ -57,9 +57,9 @@ namespace SGCore
         std::vector<float> m_charactersVerticesPositions;
         // ------------------------------------
         
-        EventListener<void()> m_onRenderPipelineSetEventListener = MakeEventListener<void()>([this]() {
+        EventListener<void()> m_onRenderPipelineSetEventListener = [this]() {
             onRenderPipelineSet();
-        });
+        };
         
         void onRenderPipelineSet() noexcept;
     };

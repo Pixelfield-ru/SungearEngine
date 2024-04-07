@@ -22,7 +22,7 @@ namespace SGCore
 
         static void subscribeToRenderPipelineSetEvent(const EventListener<void()>& holder)
         {
-            (*onRenderPipelineSet) += holder;
+            onRenderPipelineSet += holder;
         }
 
         template<typename PipelineT>
@@ -40,7 +40,7 @@ namespace SGCore
 
             m_currentRenderPipeline = renderPipeline;
 
-            (*onRenderPipelineSet)();
+            onRenderPipelineSet();
         }
 
         static Ref<IRenderPipeline> getCurrentRenderPipeline() noexcept;
@@ -83,7 +83,7 @@ namespace SGCore
         static inline std::vector<Ref<IRenderPipeline>> m_renderPipelines;
         static inline Ref<IRenderPipeline> m_currentRenderPipeline;
 
-        static inline Event<void()> onRenderPipelineSet = MakeEvent<void()>();
+        static inline Event<void()> onRenderPipelineSet;
     };
 }
 

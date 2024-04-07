@@ -50,8 +50,19 @@ void loop1()
     }
 }
 
+template<auto F>
+size_t hash()
+{
+    return SGCore::hashConstexprObject<F>();
+}
+
 int main()
 {
+    SGCore::Event<void()> e;
+    e.connect<&loop1>(3);
+
+    std::cout << "h: " << hash<&SGCore::Threading::Thread::addWorker>() << ", h0: " << hash<&SGCore::Threading::Thread::start>() << std::endl;
+
     std::cout << "MAIN THREAD: " << SGCore::Threading::ThreadsManager::currentThread() << ", thread0: " << thread << std::endl;
 
     thread->start();

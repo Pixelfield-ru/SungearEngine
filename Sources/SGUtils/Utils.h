@@ -39,6 +39,9 @@
 #include <locale>
 #include <codecvt>
 #include <memory>
+#include <unordered_set>
+
+#include "TypeTraits.h"
 
 namespace SGCore
 {
@@ -55,12 +58,36 @@ namespace SGCore
         
         return timeSpan.count();
     }
-    
+
     template<typename T>
-    requires(std::is_pointer_v<T> || std::is_member_function_pointer_v<T>)
-    inline static size_t hashPointer(T ptr) noexcept
+    requires(std::is_pointer_v<T>)
+    inline static size_t hashObject(T ptr) noexcept
     {
         return std::hash<const char*>()(static_cast<const char*>(reinterpret_cast<const void*>(ptr)));
+    }
+
+    template<auto FuncPtr>
+    inline static size_t hashConstexprObject() noexcept
+    {
+        return TypeID<decltype(FuncPtr)>::id();
+    }
+
+    template<auto FuncPtr>
+    requires(std::is_member_function_pointer_v<decltype(FuncPtr)>)
+    inline static size_t hashMemberFunction(const typename class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj) noexcept
+    {
+        return hashConstexprObject<FuncPtr>() ^ hashObject(&obj);
+    }
+
+    template<typename T>
+    void exclude(std::vector<T>& vec, std::vector<T>& from)
+    {
+        std::unordered_multiset<T> st { };
+        st.insert(vec.begin(), vec.end());
+        st.insert(from.begin(), from.end());
+        auto predicate = [&st](const T& k){ return st.count(k) > 1; };
+        // a.erase(std::remove_if(a.begin(), a.end(), predicate), a.end());
+        from.erase(std::remove_if(from.begin(), from.end(), predicate), from.end());
     }
 }
 

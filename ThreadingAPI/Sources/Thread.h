@@ -27,7 +27,7 @@ namespace SGCore::Threading
 
         std::shared_ptr<IWorker> createWorker(const WorkerSingletonGuard workerSingletonGuard)
         {
-            const size_t workerGuardHash = hashPointer(workerSingletonGuard);
+            const size_t workerGuardHash = hashObject(workerSingletonGuard);
 
             std::lock_guard guard(m_workersProcessMutex);
 
@@ -49,7 +49,7 @@ namespace SGCore::Threading
 
         void addWorker(std::shared_ptr<IWorker> worker)
         {
-            const size_t workerGuardHash = hashPointer(worker->m_parentWorkerGuard);
+            const size_t workerGuardHash = hashObject(worker->m_parentWorkerGuard);
 
             std::lock_guard guard(m_workersProcessMutex);
 

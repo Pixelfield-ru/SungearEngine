@@ -28,14 +28,12 @@ namespace SGCore
         
     private:
         void onTransformChanged(const entity_t& entity, const Ref<const Transform>& transform) noexcept;
-    
-        EventListener<void(entt::basic_registry<entity_t>&, const entity_t&,
-                           Ref<const Transform>)> m_transformChangedListener = MakeEventListener<void(entt::basic_registry<entity_t>&,
-                                                                                                      const entity_t&,
-                                                                                                      Ref<const Transform>)>(
-                [this](entt::basic_registry<entity_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
-                    onTransformChanged(entity, transform);
-                });
+
+        EventListener<void(entt::basic_registry<entity_t> & , const entity_t&,
+                Ref<const Transform>)> m_transformChangedListener =
+        [this](entt::basic_registry<entity_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
+            onTransformChanged(entity, transform);
+        };
         
         std::vector<std::pair<entity_t, Ref<const Transform>>> m_changedTransforms;
     };

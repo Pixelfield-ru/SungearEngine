@@ -42,8 +42,8 @@ int main()
 {
     using namespace SGCore;
     
-    CoreMain::onInit->connect<&coreInit>();
-    CoreMain::getRenderTimer().onUpdate->connect<&onUpdate>();
+    CoreMain::onInit.connect<&coreInit>();
+    CoreMain::getRenderTimer().onUpdate.connect<&onUpdate>();
     
     CoreMain::start();
     

@@ -15,7 +15,7 @@ namespace SGCore
     template<typename ObjT>
     struct SafeObject
     {
-        Event<void()> onUnlock = MakeEvent<void()>();
+        Event<void()> onUnlock;
         
         inline void lock() noexcept
         {

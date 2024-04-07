@@ -26,10 +26,18 @@ namespace SGCore
         size_t m_hash = reinterpret_cast<std::intptr_t>(this);
         
         EventListener() = default;
+
         EventListener(const std::function<Return(Args&&...)>& func)
         {
             m_func = func;
         }
+
+        template<typename Func>
+        EventListener(Func&& func)
+        {
+            m_func = func;
+        }
+
         EventListener(const EventListener& e) = default;
         EventListener(EventListener&&) noexcept = default;
         
@@ -45,6 +53,14 @@ namespace SGCore
         {
             m_func = func;
             
+            return *this;
+        }
+
+        template<typename Func>
+        EventListener& operator=(Func&& func) noexcept
+        {
+            m_func = func;
+
             return *this;
         }
         

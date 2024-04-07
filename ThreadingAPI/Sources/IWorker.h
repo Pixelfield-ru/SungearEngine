@@ -33,7 +33,7 @@ namespace SGCore::Threading
 
         void useSingletonGuard(const WorkerSingletonGuard workerSingletonGuard) noexcept
         {
-            const size_t hash = hashPointer(workerSingletonGuard);
+            const size_t hash = hashObject(workerSingletonGuard);
 
             std::lock_guard guard(m_listenerMutex);
 
@@ -92,9 +92,9 @@ namespace SGCore::Threading
 
         void execute() noexcept;
 
-        EventListener<void()> m_onExecuteListener = { [this]() {
+        EventListener<void()> m_onExecuteListener = [this]() {
             execute();
-        } };
+        };
     };
 }
 

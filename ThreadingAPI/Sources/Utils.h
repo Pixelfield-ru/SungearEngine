@@ -25,10 +25,23 @@ namespace SGCore
     }
     
     template<typename T>
-    requires(std::is_pointer_v<T> || std::is_member_function_pointer_v<T>)
-    inline static size_t hashPointer(T ptr) noexcept
+    requires(std::is_pointer_v<T>)
+    inline static size_t hashObject(T ptr) noexcept
     {
         return std::hash<const char*>()(static_cast<const char*>(reinterpret_cast<const void*>(ptr)));
+    }
+
+    template<auto FuncPtr>
+    inline static size_t hashConstexprObject() noexcept
+    {
+        return TypeID<decltype(FuncPtr)>::id();
+    }
+
+    template<auto FuncPtr>
+    requires(std::is_member_function_pointer_v<decltype(FuncPtr)>)
+    inline static size_t hashMemberFunction(const typename class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj) noexcept
+    {
+        return hashConstexprObject<FuncPtr>() ^ hashObject(&obj);
     }
 
     template<typename T>

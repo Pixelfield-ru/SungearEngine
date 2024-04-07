@@ -73,10 +73,10 @@ namespace SGCore
         
         Ref<IShader> m_shader;
         
-        EventListener<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)> m_transformChangedListener = MakeEventListener<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)>(
+        EventListener<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)> m_transformChangedListener =
                 [this](entt::basic_registry<entity_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
             onTransformUpdate(registry, entity, transform);
-        });
+        };
         
         void updateArraysForEntity(const Ref<Scene>& lockedScene, const entity_t& entity) noexcept;
         
@@ -90,9 +90,9 @@ namespace SGCore
         
         void onRenderPipelineSet() noexcept;
         
-        EventListener<void()> m_onRenderPipelineSetEventListener = MakeEventListener<void()>([this]() {
+        EventListener<void()> m_onRenderPipelineSetEventListener = [this]() {
             onRenderPipelineSet();
-        });
+        };
     };
 }
 

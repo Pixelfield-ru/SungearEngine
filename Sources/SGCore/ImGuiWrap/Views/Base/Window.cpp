@@ -14,7 +14,7 @@ bool SGCore::ImGuiWrap::Window::begin() noexcept
 
 void SGCore::ImGuiWrap::Window::renderBody()
 {
-    (*onRender)();
+    onRender();
 }
 
 void SGCore::ImGuiWrap::Window::end() noexcept

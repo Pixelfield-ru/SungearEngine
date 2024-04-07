@@ -9,9 +9,9 @@ void SGCore::InputManager::init() noexcept
 {
     addInputListener(mainInputListener);
     
-    Window::onKeyboardKeyEvent->connect<&keyboardKeyCallback>();
-    Window::onMouseButtonEvent->connect<&mouseButtonCallback>();
-    Window::onCursorPositionChanged->connect<&cursorPositionCallback>();
+    Window::onKeyboardKeyEvent.connect<&keyboardKeyCallback>();
+    Window::onMouseButtonEvent.connect<&mouseButtonCallback>();
+    Window::onCursorPositionChanged.connect<&cursorPositionCallback>();
 }
 
 void SGCore::InputManager::startFrame() noexcept

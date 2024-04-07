@@ -33,7 +33,7 @@ void SGCore::Timer::startFrame()
 
     if(m_elapsedTimeForUpdate >= m_targetFrameTime)
     {
-        (*onUpdate)(m_elapsedTimeForUpdate, m_targetFrameTime);
+        onUpdate(m_elapsedTimeForUpdate, m_targetFrameTime);
         
         m_elapsedTimeForUpdate = 0.0;
         ++m_framesPerSecondAccum;
@@ -61,7 +61,7 @@ void SGCore::Timer::firstTimeStart()
     //m_currentTime = m_startTime;
     m_currentTime = (double) SGUtils::Utils::getTimeMilliseconds();
     
-    (*onStart)();
+    onStart();
 }
 
 uint16_t SGCore::Timer::getFramesPerSecond() const noexcept

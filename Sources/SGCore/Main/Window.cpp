@@ -221,31 +221,31 @@ void SGCore::Window::getSize(int& sizeX, int& sizeY) noexcept
 
 void SGCore::Window::nativeCloseCallback(GLFWwindow* window) noexcept
 {
-    (*onClose)(*((Window*) glfwGetWindowUserPointer(window)));
+    onClose(*((Window*) glfwGetWindowUserPointer(window)));
 
     spdlog::info("GLFW window closed.");
 }
 
 void SGCore::Window::nativeIconifyCallback(GLFWwindow* window, int iconified) noexcept
 {
-    (*onIconify)(*((Window*) glfwGetWindowUserPointer(window)), iconified);
+    onIconify(*((Window*) glfwGetWindowUserPointer(window)), iconified);
 
     spdlog::info("GLFW window iconified.");
 }
 
 void SGCore::Window::nativeKeyboardKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept
 {
-    (*onKeyboardKeyEvent)(*((Window*) glfwGetWindowUserPointer(window)), (KeyboardKey) key, scancode, (KeyState) action, mods);
+    onKeyboardKeyEvent(*((Window*) glfwGetWindowUserPointer(window)), (KeyboardKey) key, scancode, (KeyState) action, mods);
 }
 
 void SGCore::Window::nativeMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) noexcept
 {
-    (*onMouseButtonEvent)(*((Window*) glfwGetWindowUserPointer(window)), (MouseButton) button, (KeyState) action, mods);
+    onMouseButtonEvent(*((Window*) glfwGetWindowUserPointer(window)), (MouseButton) button, (KeyState) action, mods);
 }
 
 void SGCore::Window::nativeMouseButtonCallback(GLFWwindow* window, double xpos, double ypos) noexcept
 {
-    (*onCursorPositionChanged)(*((Window*) glfwGetWindowUserPointer(window)), xpos, ypos);
+    onCursorPositionChanged(*((Window*) glfwGetWindowUserPointer(window)), xpos, ypos);
 }
 
 void SGCore::Window::errorCallback(int errCode, const char* err_msg)

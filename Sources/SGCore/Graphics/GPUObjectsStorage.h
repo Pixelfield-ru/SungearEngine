@@ -36,12 +36,10 @@ namespace SGCore
 
         static inline Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 
-        static inline EventListener<void(const std::string&)> m_someNameChangedListener = MakeEventListener<void(
-                const std::string&)>([](const std::string& newName)
+        static inline EventListener<void(const std::string&)> m_someNameChangedListener = [](const std::string& newName)
                                      {
                                          GPUObjectsStorage::onSomeObjectNameChanged(newName);
-                                     }
-        );
+                                     };
 
         [[maybe_unused]] static inline bool s_staticInit = []() {
             GPUObjectsStorage::m_uniqueNamesManager->subscribeToSomeNameChangedEvent(

@@ -22,7 +22,7 @@ namespace SGCore::ImGuiWrap
 
         bool m_active = true;
 
-        Event<void()> onRender = MakeEvent<void()>();
+        Event<void()> onRender;
 
         std::string m_name = SGUtils::UUID::generateNew();
 

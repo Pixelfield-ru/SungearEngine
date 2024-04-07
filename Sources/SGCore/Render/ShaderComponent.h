@@ -24,7 +24,9 @@ namespace SGCore
         
         std::string m_shaderPath;
         
-        EventListener<void()> m_onRenderPipelineSet = MakeEventListener<void()>([this]() { ShadersUtils::onRenderPipelineSet(*this); });
+        EventListener<void()> m_onRenderPipelineSet = [this]() {
+            ShadersUtils::onRenderPipelineSet(*this);
+        };
     };
 }
 

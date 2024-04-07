@@ -1,7 +1,3 @@
-//
-// Created by stuka on 28.11.2023.
-//
-
 #ifndef SUNGEARENGINE_EVENTLISTENER_H
 #define SUNGEARENGINE_EVENTLISTENER_H
 
@@ -9,47 +5,61 @@
 #include <functional>
 #include <memory>
 
-#include "UUID.h"
-
 namespace SGCore
 {
     template<typename Return>
-    struct EventImpl;
-    
+    struct Event;
+
     template<typename Return>
-    struct EventListenerImpl;
-    
+    struct EventListener;
+
     template<typename Return, typename... Args>
-    struct EventListenerImpl<Return(Args...)>
+    struct EventListener<Return(Args...)>
     {
-        friend struct EventImpl<Return(Args...)>;
-        
+        friend struct Event<Return(Args...)>;
+
         size_t m_priority = 0;
         size_t m_hash = reinterpret_cast<std::intptr_t>(this);
-        
-        EventListenerImpl() = default;
-        EventListenerImpl(const std::function<Return(Args&&...)>& func)
+
+        EventListener() = default;
+
+        EventListener(const std::function<Return(Args&&...)>& func)
         {
             m_func = func;
         }
-        EventListenerImpl(const EventListenerImpl& e) = default;
-        EventListenerImpl(EventListenerImpl&&) noexcept = default;
-        
-        ~EventListenerImpl()
+
+        template<typename Func>
+        EventListener(Func&& func)
+        {
+            m_func = func;
+        }
+
+        EventListener(const EventListener& e) = default;
+        EventListener(EventListener&&) noexcept = default;
+
+        ~EventListener()
         {
             if(m_unsubscribeFunc)
             {
-                m_unsubscribeFunc();
+                m_unsubscribeFunc(this);
             }
         }
-        
-        EventListenerImpl& operator=(const std::function<Return(Args&&...)>& func) noexcept
+
+        EventListener& operator=(const std::function<Return(Args&&...)>& func) noexcept
         {
             m_func = func;
-            
+
             return *this;
         }
-        
+
+        template<typename Func>
+        EventListener& operator=(Func&& func) noexcept
+        {
+            m_func = func;
+
+            return *this;
+        }
+
         template<typename... Args0>
         void operator()(Args0&&... args) const noexcept
         {
@@ -58,22 +68,13 @@ namespace SGCore
                 m_func(std::forward<Args0>(args)...);
             }
         }
-    
+
     private:
         std::function<void(Args...)> m_func;
-        std::function<void()> m_unsubscribeFunc;
-        std::list<std::shared_ptr<EventImpl<Return(Args...)>>> m_listeningEvents;
-        bool m_isLambda = false;
+        std::function<void(EventListener*)> m_unsubscribeFunc;
+        std::list<Event<Return(Args...)>*> m_listeningEvents;
+        bool m_isOwnedByEvent = false;
     };
-    
-    template <typename T>
-    using EventListener = std::unique_ptr<EventListenerImpl<T>>;
-    
-    template<typename T, typename Func>
-    constexpr EventListener<T> MakeEventListener(Func&& func)
-    {
-        return std::make_unique<EventListenerImpl<T>>(func);
-    }
 }
 
 #endif //SUNGEARENGINE_EVENTLISTENER_H
