@@ -24,7 +24,7 @@ void onWorkerDone(std::shared_ptr<SGCore::Threading::IWorker> worker)
 void loop0()
 {
     auto t0 = SGCore::now();
-    for(size_t i = 0; i < 1'000'000'000; ++i)
+    for(size_t i = 0; i < 1'000'000'00; ++i)
     {
         static const SGCore::Threading::WorkerSingletonGuard workerGuard = SGCore::Threading::MakeWorkerSingletonGuard();
 

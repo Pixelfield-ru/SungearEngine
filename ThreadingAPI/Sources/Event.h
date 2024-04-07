@@ -11,33 +11,38 @@
 #include <utility>
 #include <iostream>
 
-#include "EventListenerImpl.h"
+#include "EventListener.h"
 #include "TypeTraits.h"
 #include "Utils.h"
 
 namespace SGCore
 {
     template<typename Return>
-    struct EventImpl;
+    struct Event;
     
     template<typename Return, typename... Args>
-    struct EventImpl<Return(Args...)> : public std::enable_shared_from_this<EventImpl<Return(Args...)>>
+    struct Event<Return(Args...)>
     {
-        using holder_t = EventListenerImpl<Return(Args...)>;
+        using holder_t = EventListener<Return(Args...)>;
         using holders_container = std::list<holder_t*>;
         
-        EventImpl() = default;
-        EventImpl(const EventImpl& other)
+        Event() = default;
+        Event(const Event& other)
         {
-            *this = std::forward<EventImpl>(other);
+            *this = std::forward<Event>(other);
         }
-        EventImpl(EventImpl&& other) noexcept
+        Event(Event&& other) noexcept
         {
-            *this = std::forward<EventImpl>(other);
+            *this = std::forward<Event>(other);
         }
         
-        ~EventImpl()
+        ~Event()
         {
+            for(auto& holder : m_listeners)
+            {
+                holder->m_listeningEvents.remove(this);
+            }
+
             for(auto& holder : m_listeners)
             {
                 if(holder->m_isOwnedByEvent)
@@ -47,78 +52,24 @@ namespace SGCore
             }
         }
         
-        EventImpl& operator+=(holder_t* holder)
+        Event& operator+=(const holder_t& holder)
         {
-            m_currentMaxPriority = std::max<size_t>(m_currentMaxPriority, holder->m_priority);
-            
-            holder->m_unsubscribeFunc = [holder]()
-            {
-                for(auto& listeningEvent : holder->m_listeningEvents)
-                {
-                    std::erase(listeningEvent->m_listeners, holder);
-                    
-                    listeningEvent->sortByPriorities();
-                }
-            };
-            disconnect(holder->m_hash);
-            m_listeners.emplace_back(holder);
-            holder->m_listeningEvents.push_back(this->shared_from_this());
+            m_currentMaxPriority = std::max<size_t>(m_currentMaxPriority, holder.m_priority);
+
+            setHolderUnsubscribeFunction(&holder);
+
+            disconnect(holder.m_hash);
+            m_listeners.emplace_back(&holder);
+            holder.m_listeningEvents.push_back(this);
             
             sortByPriorities();
             
             return *this;
         }
-        
-        EventImpl& operator+=(const std::unique_ptr<holder_t>& eventHolder)
-        {
-            auto* holder = eventHolder.get();
-            
-            m_currentMaxPriority = std::max<size_t>(m_currentMaxPriority, holder->m_priority);
-            
-            holder->m_unsubscribeFunc = [holder]()
-            {
-                for(auto& listeningEvent : holder->m_listeningEvents)
-                {
-                    std::erase(listeningEvent->m_listeners, holder);
-                    
-                    listeningEvent->sortByPriorities();
-                }
-            };
-            disconnect(holder->m_hash);
-            m_listeners.emplace_back(holder);
-            holder->m_listeningEvents.push_back(this->shared_from_this());
-            
-            sortByPriorities();
-            
-            return *this;
-        }
-        
-        EventImpl& operator+=(const holder_t* holder)
-        {
-            m_currentMaxPriority = std::max<size_t>(m_currentMaxPriority, holder->m_priority);
-            
-            // m_callbacks.contains(holder->m_hash)
-            holder->m_unsubscribeFunc = [holder]()
-            {
-                for(auto& listeningEvent : holder->m_listeningEvents)
-                {
-                    std::erase(listeningEvent->m_listeners, holder);
-                    
-                    listeningEvent->sortByPriorities();
-                }
-            };
-            disconnect(holder->m_hash);
-            m_listeners.emplace_back(holder);
-            holder->m_listeningEvents.push_back(this->shared_from_this());
-            
-            sortByPriorities();
-            
-            return *this;
-        }
-        
+
         template<typename Func>
         requires(std::is_invocable_v<Func, Args...>)
-        EventImpl& operator+=(Func&& l)
+        Event& operator+=(Func&& l)
         {
             ++m_currentMaxPriority;
             
@@ -126,19 +77,12 @@ namespace SGCore
             holder->m_priority = m_currentMaxPriority;
             holder->m_isOwnedByEvent = true;
             std::cout << "hash : " << holder->m_hash << std::endl;
-            
-            holder->m_unsubscribeFunc = [holder]()
-            {
-                for(auto& listeningEvent : holder->m_listeningEvents)
-                {
-                    std::erase(listeningEvent->m_listeners, holder);
-                    
-                    listeningEvent->sortByPriorities();
-                }
-            };
+
+            setHolderUnsubscribeFunction(holder);
+
             disconnect(holder->m_hash);
             m_listeners.emplace_back(holder);
-            holder->m_listeningEvents.push_back(this->shared_from_this());
+            holder->m_listeningEvents.push_back(this);
             
             sortByPriorities();
             
@@ -152,15 +96,8 @@ namespace SGCore
             holder->m_priority = priority;
             holder->m_hash = hashPointer(FuncPtr) ^ reinterpret_cast<std::intptr_t>(&obj);
             holder->m_isOwnedByEvent = true;
-            holder->m_unsubscribeFunc = [holder]()
-            {
-                for(auto& listeningEvent : holder->m_listeningEvents)
-                {
-                    std::erase(listeningEvent->m_listeners, holder);
-                    
-                    listeningEvent->sortByPriorities();
-                }
-            };
+            setHolderUnsubscribeFunction(holder);
+
             auto funcLambda = [&obj](Args&&... args) {
                 (obj.*FuncPtr)(std::forward<Args>(args)...);
             };
@@ -168,7 +105,7 @@ namespace SGCore
             
             disconnect(holder->m_hash);
             m_listeners.emplace_back(holder);
-            holder->m_listeningEvents.push_back(this->shared_from_this());
+            holder->m_listeningEvents.push_back(this);
             
             sortByPriorities();
         }
@@ -188,15 +125,8 @@ namespace SGCore
             holder->m_hash = hashPointer(FuncPtr);
             // std::cout << "hash ::: " << holder->m_hash << ", " << (std::hash<const char*>()(static_cast<const char*>(reinterpret_cast<const void*>(FuncPtr)))) << std::endl;
             holder->m_isOwnedByEvent = true;
-            holder->m_unsubscribeFunc = [holder]()
-            {
-                for(auto& listeningEvent : holder->m_listeningEvents)
-                {
-                    std::erase(listeningEvent->m_listeners, holder);
-                    
-                    listeningEvent->sortByPriorities();
-                }
-            };
+            setHolderUnsubscribeFunction(holder);
+
             auto funcLambda = [](Args&&... args) {
                 (*FuncPtr)(std::forward<Args>(args)...);
             };
@@ -204,7 +134,7 @@ namespace SGCore
             
             disconnect(holder->m_hash);
             m_listeners.push_back(holder);
-            holder->m_listeningEvents.push_back(this->shared_from_this());
+            holder->m_listeningEvents.push_back(this);
             
             sortByPriorities();
         }
@@ -231,30 +161,28 @@ namespace SGCore
             });
             if(it != m_listeners.end())
             {
-                if((*it)->m_isOwnedByEvent)
+                auto ptr = *it;
+
+                if(!ptr->m_isOwnedByEvent)
                 {
-                    delete *it;
+                    ptr->m_listeningEvents.remove(this);
                 }
-                else
+
+                m_listeners.erase(it);
+
+                if(ptr->m_isOwnedByEvent)
                 {
-                    std::erase((*it)->m_listeningEvents, this->shared_from_this());
+                    delete ptr;
                 }
                 
                 m_listeners.erase(it);
                 sortByPriorities();
             }
         }
-        
-        EventImpl& operator-=(const std::unique_ptr<holder_t>& eventHolder)
+
+        Event& operator-=(const holder_t& eventHolder)
         {
-            disconnect(eventHolder->m_hash);
-            
-            return *this;
-        }
-        
-        EventImpl& operator-=(const holder_t* eventHolder)
-        {
-            disconnect(eventHolder->m_hash);
+            disconnect(eventHolder.m_hash);
             
             return *this;
         }
@@ -283,7 +211,7 @@ namespace SGCore
                 }
                 else
                 {
-                    std::erase(holder->m_listeningEvents, this->shared_from_this());
+                    holder->m_listeningEvents.remove(this);
                 }
             }
             
@@ -325,7 +253,7 @@ namespace SGCore
             return it != m_listeners.end();
         }
         
-        void exclude(const EventImpl& other)
+        void exclude(const Event& other)
         {
             for(const auto& e : other.m_listeners)
             {
@@ -335,23 +263,26 @@ namespace SGCore
                 
                 if(it != m_listeners.end())
                 {
-                    if((*it)->m_isOwnedByEvent)
+                    auto ptr = *it;
+
+                    if(!ptr->m_isOwnedByEvent)
                     {
-                        delete *it;
+                        ptr->m_listeningEvents.remove(this);
                     }
-                    else
-                    {
-                        std::erase((*it)->m_listeningEvents, this->shared_from_this());
-                    }
-                    
+
                     m_listeners.erase(it);
+
+                    if(ptr->m_isOwnedByEvent)
+                    {
+                        delete ptr;
+                    }
                 }
             }
             
             sortByPriorities();
         }
         
-        EventImpl& operator=(const EventImpl& other) noexcept
+        Event& operator=(const Event& other) noexcept
         {
             if(this == std::addressof(other)) return *this;
             
@@ -369,7 +300,7 @@ namespace SGCore
                 }
                 else
                 {
-                    holder->m_listeningEvents.push_back(this->shared_from_this());
+                    holder->m_listeningEvents.push_back(this);
                 }
                 
                 m_listeners.push_back(holder);
@@ -380,7 +311,7 @@ namespace SGCore
             return *this;
         }
         
-        EventImpl& operator=(EventImpl&& other) noexcept
+        Event& operator=(Event&& other) noexcept
         {
             if(this == std::addressof(other)) return *this;
             
@@ -398,7 +329,7 @@ namespace SGCore
                 }
                 else
                 {
-                    holder->m_listeningEvents.push_back(this->shared_from_this());
+                    holder->m_listeningEvents.push_back(this);
                 }
                 
                 m_listeners.push_back(holder);
@@ -413,6 +344,19 @@ namespace SGCore
     
     private:
         size_t m_currentMaxPriority = 0;
+
+        void setHolderUnsubscribeFunction(holder_t* holder) noexcept
+        {
+            holder->m_unsubscribeFunc = [](holder_t* thisHolder)
+            {
+                for(auto& listeningEvent : thisHolder->m_listeningEvents)
+                {
+                    listeningEvent->m_listeners.remove(thisHolder);
+
+                    listeningEvent->sortByPriorities();
+                }
+            };
+        }
         
         void sortByPriorities() noexcept
         {
@@ -423,15 +367,6 @@ namespace SGCore
         
         holders_container m_listeners;
     };
-    
-    template <typename T>
-    using Event = std::shared_ptr<EventImpl<T>>;
-    
-    template<typename T>
-    constexpr Event<T> MakeEvent()
-    {
-        return std::make_shared<EventImpl<T>>();
-    }
 }
 
 #endif //SUNGEARENGINE_EVENT_H

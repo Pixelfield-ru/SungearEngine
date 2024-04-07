@@ -31,7 +31,7 @@ namespace SGCore::Threading
 
             std::lock_guard guard(m_workersProcessMutex);
 
-            if(!onWorkersProcess->contains(workerGuardHash))
+            if(!onWorkersProcess.contains(workerGuardHash))
             {
                 auto worker = std::make_shared<IWorker>();
                 worker->useSingletonGuard(workerSingletonGuard);
@@ -53,11 +53,11 @@ namespace SGCore::Threading
 
             std::lock_guard guard(m_workersProcessMutex);
 
-            if(!onWorkersProcess->contains(workerGuardHash))
+            if(!onWorkersProcess.contains(workerGuardHash))
             {
                 m_workers.push_back(worker);
 
-                (*onWorkersProcess) += worker->m_onExecuteListener;
+                onWorkersProcess += worker->m_onExecuteListener;
             }
         }
 
@@ -71,7 +71,7 @@ namespace SGCore::Threading
                 return w == worker;
             });
 
-            (*onWorkersProcess) -= worker->m_onExecuteListener;
+            onWorkersProcess -= worker->m_onExecuteListener;
         }
 
         void processFinishedWorkers() noexcept
@@ -115,10 +115,10 @@ namespace SGCore::Threading
         std::mutex m_workersProcessMutex;
         
         std::vector<std::shared_ptr<IWorker>> m_workers;
-        Event<void()> onWorkersProcess = MakeEvent<void()>();
+        Event<void()> onWorkersProcess;
         
         std::vector<std::shared_ptr<IWorker>> m_workersCopy;
-        Event<void()> m_workersProcessCopy = MakeEvent<void()>();
+        Event<void()> m_workersProcessCopy;
 
         std::atomic<bool> m_isBusy = false;
         std::atomic<bool> m_isAlive = false;

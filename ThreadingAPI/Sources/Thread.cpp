@@ -28,17 +28,17 @@ void SGCore::Threading::Thread::start() noexcept
             
             {
                 std::lock_guard copyGuard(m_workersProcessMutex);
-                
-                *m_workersProcessCopy = *onWorkersProcess;
+
+                m_workersProcessCopy = onWorkersProcess;
                 m_workersCopy = m_workers;
             }
             
-            (*m_workersProcessCopy)();
+            m_workersProcessCopy();
             
             {
                 std::lock_guard copyGuard(m_workersProcessMutex);
 
-                onWorkersProcess->exclude(*m_workersProcessCopy);
+                onWorkersProcess.exclude(m_workersProcessCopy);
                 
                 // exclude from vector
                 {

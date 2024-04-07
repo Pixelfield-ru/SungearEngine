@@ -6,6 +6,7 @@
 #define THREADINGAPI_IWORKER_H
 
 #include <mutex>
+#include <atomic>
 
 #include "Event.h"
 #include "Utils.h"
@@ -36,7 +37,7 @@ namespace SGCore::Threading
 
             std::lock_guard guard(m_listenerMutex);
 
-            m_onExecuteListener->m_hash = hash;
+            m_onExecuteListener.m_hash = hash;
 
             m_parentWorkerGuard = workerSingletonGuard;
         }
@@ -91,9 +92,9 @@ namespace SGCore::Threading
 
         void execute() noexcept;
 
-        EventListener<void()> m_onExecuteListener = MakeEventListener<void()>([this]() {
+        EventListener<void()> m_onExecuteListener = { [this]() {
             execute();
-        });
+        } };
     };
 }
 
