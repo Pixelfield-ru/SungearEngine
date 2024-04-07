@@ -5,14 +5,19 @@
 #ifndef THREADINGAPI_IWORKER_H
 #define THREADINGAPI_IWORKER_H
 
+#include <mutex>
+
 #include "Event.h"
 #include "Utils.h"
 
-namespace SGCore
+namespace SGCore::Threading
 {
     struct Thread;
 
     struct WorkerSingletonGuardImpl { };
+    /**
+     * It is used to wait for the completion of the worker.
+     */
     using WorkerSingletonGuard = WorkerSingletonGuardImpl*;
     static WorkerSingletonGuard MakeWorkerSingletonGuard()
     {
@@ -24,47 +29,70 @@ namespace SGCore
         friend struct Thread;
         
         bool m_isStatic = false;
-        
-        template<auto F>
-        void setExecutableFunction(const WorkerSingletonGuard workerSingletonGuard)
+
+        void useSingletonGuard(const WorkerSingletonGuard workerSingletonGuard) noexcept
         {
             const size_t hash = hashPointer(workerSingletonGuard);
-            
+
+            std::lock_guard guard(m_listenerMutex);
+
             m_onExecuteListener->m_hash = hash;
-            
-            m_executableFunction = F;
+
+            m_parentWorkerGuard = workerSingletonGuard;
         }
 
-        template<typename F>
-        void setExecutableFunction(const WorkerSingletonGuard workerSingletonGuard, F&& func)
+        template<typename F, typename... Args>
+        void setOnExecuteCallback(F&& func, const Args&... args)
         {
-            const size_t hash = hashPointer(workerSingletonGuard);
+            std::lock_guard guard(m_listenerMutex);
 
-            m_onExecuteListener->m_hash = hash;
+            m_executableCallback = [func, args...]() {
+                func(args...);
+            };
+        }
 
-            m_executableFunction = func;
+        template<typename F, typename... Args>
+        void setOnExecutedCallback(F&& func, const Args&... args)
+        {
+            std::lock_guard guard(m_listenerMutex);
+
+            m_onExecutedCallback = [func, args...]() {
+                func(args...);
+            };
+        }
+
+        template<typename F, typename... Args>
+        void setOnExecutedCallback(F&& func, const std::shared_ptr<Thread>& inThread, const Args&... args)
+        {
+            std::lock_guard guard(m_listenerMutex);
+
+            m_onExecutedCallbackParentThread = inThread;
+            m_processFinishInOwnerThread = false;
+
+            m_onExecutedCallback = [func, args...]() {
+                func(args...);
+            };
         }
 
         // TODO:
         void attachToThread(std::shared_ptr<Thread> thread);
-
-        std::function<void(std::shared_ptr<IWorker> worker)> m_onExecutedFunction;
         
     private:
-        // WorkerGuard m_parentWorkerGuard = nullptr;
-        // std::weak_ptr<Thread> m_parentThread;
+        std::mutex m_listenerMutex;
 
-        std::function<void()> m_executableFunction;
-        
+        std::atomic<bool> m_processFinishInOwnerThread = true;
+
+        std::function<void()> m_executableCallback;
+        std::function<void()> m_onExecutedCallback;
+
+        WorkerSingletonGuard m_parentWorkerGuard = nullptr;
+
+        std::weak_ptr<Thread> m_onExecutedCallbackParentThread;
+
+        void execute() noexcept;
+
         EventListener<void()> m_onExecuteListener = MakeEventListener<void()>([this]() {
-            if(m_executableFunction)
-            {
-                m_executableFunction();
-            }
-            if(m_onExecutedFunction)
-            {
-                m_onExecutedFunction(shared_from_this());
-            }
+            execute();
         });
     };
 }
