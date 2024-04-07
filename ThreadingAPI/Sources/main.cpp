@@ -51,17 +51,22 @@ void loop1()
 }
 
 template<auto F>
-size_t hash()
+void print()
 {
-    return SGCore::hashConstexprObject<F>();
+    std::cout << GENERATOR_PRETTY_FUNCTION << std::endl;
 }
+
+
 
 int main()
 {
     SGCore::Event<void()> e;
-    e.connect<&loop1>(3);
+    e.connect<&loop1>(4);
+    // e();
+    
+    print<&SGCore::Threading::Thread::addWorker>();
 
-    std::cout << "h: " << hash<&SGCore::Threading::Thread::addWorker>() << ", h0: " << hash<&SGCore::Threading::Thread::start>() << std::endl;
+    // std::cout << "h: " << hash<&SGCore::Threading::Thread::addWorker>() << ", h0: " << hash<&SGCore::Threading::Thread::start>() << std::endl;
 
     std::cout << "MAIN THREAD: " << SGCore::Threading::ThreadsManager::currentThread() << ", thread0: " << thread << std::endl;
 

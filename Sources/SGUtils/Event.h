@@ -123,7 +123,7 @@ namespace SGCore
             auto* holder = new holder_t;
             holder->m_priority = priority;
             holder->m_hash = hashConstexprObject<FuncPtr>();
-            // std::cout << "hash ::: " << holder->m_hash << ", " << (std::hash<const char*>()(static_cast<const char*>(reinterpret_cast<const void*>(FuncPtr)))) << std::endl;
+            std::cout << "hash ::: " << holder->m_hash << ", " << std::endl;
             holder->m_isOwnedByEvent = true;
             setHolderUnsubscribeFunction(holder);
 
@@ -174,8 +174,7 @@ namespace SGCore
                 {
                     delete ptr;
                 }
-
-                m_listeners.erase(it);
+                
                 sortByPriorities();
             }
         }

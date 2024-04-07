@@ -44,18 +44,39 @@ namespace SGCore
     private:
         static inline size_t m_typesCount = 0;
     };
-
-    template<typename Type>
-    struct TypeID
+    
+    template<auto Obj>
+    struct ConstexprObject
     {
 #ifdef GENERATOR_PRETTY_FUNCTION
         static constexpr std::size_t id()
         {
+            std::cout << GENERATOR_PRETTY_FUNCTION << std::endl;
             constexpr auto value = constexprHash(GENERATOR_PRETTY_FUNCTION);
             return value;
         }
 #else
-        static std::size_t id() {
+        static std::size_t id()
+        {
+            static const std::size_t value = TypesCounter::next();
+            return value;
+        }
+#endif
+    };
+    
+    template<typename T>
+    struct Type
+    {
+#ifdef GENERATOR_PRETTY_FUNCTION
+        static constexpr std::size_t id()
+        {
+            std::cout << GENERATOR_PRETTY_FUNCTION << std::endl;
+            constexpr auto value = constexprHash(GENERATOR_PRETTY_FUNCTION);
+            return value;
+        }
+#else
+        static std::size_t id()
+        {
             static const std::size_t value = TypesCounter::next();
             return value;
         }
@@ -352,5 +373,16 @@ namespace SGCore
     template<typename T>
     using remove_noexcept_t = make_noexcept_t<T, false>;
 }
+
+/**
+ * Constexpr hash of constexpr text.
+ * @param in - Constexpr text.
+ * @return Hash.
+ */
+constexpr size_t operator ""_hash(const char* in, size_t)
+{
+    return SGCore::constexprHash(in);
+}
+
 
 #endif //ECS_TYPEMETA_H

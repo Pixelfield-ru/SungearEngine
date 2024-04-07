@@ -69,7 +69,7 @@ namespace SGCore
     template<auto FuncPtr>
     inline static size_t hashConstexprObject() noexcept
     {
-        return TypeID<decltype(FuncPtr)>::id();
+        return ConstexprObject<FuncPtr>::id();
     }
 
     template<auto FuncPtr>
