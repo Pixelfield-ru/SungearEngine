@@ -49,6 +49,12 @@
          #"C:/VulkanSDK/1.3.250.1/Include"
          )
 
+ if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+  set(SG_BULLET_LIBS ${BULLET_COLLISION_LIBRARY_DEBUG} ${BULLET_DYNAMICS_LIBRARY_DEBUG} ${BULLET_MATH_LIBRARY_DEBUG})
+ elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
+  set(SG_BULLET_LIBS ${BULLET_COLLISION_LIBRARY} ${BULLET_DYNAMICS_LIBRARY} ${BULLET_MATH_LIBRARY})
+ endif()
+
  # TODO: make for linux and mac
  target_link_libraries(${PROJECT_NAME} PUBLIC
          PNG::PNG
@@ -64,9 +70,7 @@
          spdlog::spdlog
          glad::glad
          SGUtils
-         ${BULLET_COLLISION_LIBRARY}
-         ${BULLET_DYNAMICS_LIBRARY}
-         ${BULLET_MATH_LIBRARY}
+         ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
          )
 

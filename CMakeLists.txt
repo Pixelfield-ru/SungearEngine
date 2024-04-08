@@ -69,6 +69,8 @@ elseif(MSVC)
         string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
     endforeach()
 
+    #set(USE_MSVC_RUNTIME_LIBRARY_DLL TRUE)
+    #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     set(MSVC_RUNTIME "dynamic")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
     set(BUILD_SHARED_LIBS FALSE)
