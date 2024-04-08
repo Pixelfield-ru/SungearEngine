@@ -21,7 +21,8 @@
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
-    startThread();
+    m_thread->start();
+    // startThread();
     
     // m_updaterThread.detach();
 }

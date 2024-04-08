@@ -20,7 +20,7 @@ void SGCore::Threading::IWorker::attachToThread(std::shared_ptr<Thread> thread)
 void SGCore::Threading::IWorker::execute() noexcept
 {
     std::lock_guard guard(m_listenerMutex);
-
+    
     if(m_executableCallback)
     {
         m_executableCallback();
@@ -34,13 +34,13 @@ void SGCore::Threading::IWorker::execute() noexcept
         else
         {
             auto lockedParentThread = m_onExecutedCallbackParentThread.lock();
-
+            
             std::cout << lockedParentThread << std::endl;
-
+            
             if(lockedParentThread)
             {
                 std::lock_guard executedCallbackGuard(lockedParentThread->m_workersEndCopyMutex);
-
+                
                 lockedParentThread->m_finishedWorkersToExecute.push_back(shared_from_this());
             }
         }

@@ -18,6 +18,7 @@ void executableFunc(std::shared_ptr<SGCore::Threading::IWorker> worker)
 
 void onWorkerDone(std::shared_ptr<SGCore::Threading::IWorker> worker)
 {
+    // std::cout << "thread0 id: " << thread->getNativeID() << ", cur id: " << std::this_thread::get_id() << std::endl;
     std::cout << "worker done : " << worker << ", thread: " << SGCore::Threading::ThreadsManager::currentThread() << std::endl;
 }
 
@@ -32,7 +33,7 @@ void loop0()
         if(worker0)
         {
             worker0->setOnExecuteCallback(executableFunc, worker0);
-            worker0->setOnExecutedCallback(onWorkerDone, SGCore::Threading::ThreadsManager::currentThread(), worker0);
+            worker0->setOnExecutedCallback(onWorkerDone, worker0);
 
             thread->addWorker(worker0);
         }
@@ -50,13 +51,10 @@ void loop1()
     }
 }
 
-template<auto F>
 void print()
 {
-    std::cout << GENERATOR_PRETTY_FUNCTION << std::endl;
+    std::cout << "hello" << std::endl;
 }
-
-
 
 int main()
 {
@@ -64,17 +62,24 @@ int main()
     e.connect<&loop1>(4);
     // e();
     
-    print<&SGCore::Threading::Thread::addWorker>();
+    // print<&SGCore::Threading::Thread::addWorker>();
 
     // std::cout << "h: " << hash<&SGCore::Threading::Thread::addWorker>() << ", h0: " << hash<&SGCore::Threading::Thread::start>() << std::endl;
 
     std::cout << "MAIN THREAD: " << SGCore::Threading::ThreadsManager::currentThread() << ", thread0: " << thread << std::endl;
 
+    thread->editOnUpdateEvent([](SGCore::Event<void()>& onUpdate) {
+        onUpdate += print;
+    });
+    
     thread->start();
     thread1->start();
 
+    thread->join();
+    thread->start();
+    
     loop0();
-    loop1();
+    // loop1();
 
     std::cout << "aga" << std::endl;
     

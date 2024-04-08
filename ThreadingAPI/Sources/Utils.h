@@ -8,6 +8,12 @@
 #include <chrono>
 #include <unordered_set>
 
+#ifdef _MSC_VER
+#define SG_FORCEINLINE __forceinline
+#elif defined(__GNUC__)
+#define SG_FORCEINLINE __attribute__((always_inline))
+#endif
+
 namespace SGCore
 {
     static std::chrono::high_resolution_clock::time_point now() noexcept

@@ -15,7 +15,7 @@ SGCore::Weak<SGCore::Scene> SGCore::ISystem::getScene() const noexcept
     return m_scene;
 }
 
-const size_t& SGCore::ISystem::getThreadID() const noexcept
+std::shared_ptr<SGCore::Threading::Thread> SGCore::ISystem::getThread() const noexcept
 {
-    return m_threadID;
+    return m_thread;
 }

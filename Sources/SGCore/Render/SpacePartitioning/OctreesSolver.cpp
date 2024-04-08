@@ -15,7 +15,8 @@
 
 SGCore::OctreesSolver::OctreesSolver()
 {
-    startThread();
+    m_thread->start();
+    // startThread();
 }
 
 void SGCore::OctreesSolver::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept

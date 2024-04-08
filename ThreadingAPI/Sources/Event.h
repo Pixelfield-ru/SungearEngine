@@ -290,7 +290,7 @@ namespace SGCore
             
             m_currentMaxPriority = other.m_currentMaxPriority;
             
-            for(const auto& listener : other.m_listeners)
+            for(holder_t* listener : other.m_listeners)
             {
                 holder_t* holder = listener;
                 
@@ -319,7 +319,7 @@ namespace SGCore
             
             m_currentMaxPriority = other.m_currentMaxPriority;
             
-            for(const auto& listener : other.m_listeners)
+            for(holder_t* listener : other.m_listeners)
             {
                 holder_t* holder = listener;
                 

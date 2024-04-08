@@ -20,10 +20,13 @@ namespace SGCore::Threading
         {
             std::lock_guard guard(m_threadAccessMutex);
 
-            auto it = m_threads.find(std::this_thread::get_id());
+            auto it = std::find_if(m_threads.begin(), m_threads.end(), [](const Thread* thread) {
+               return thread->m_nativeThreadID == std::this_thread::get_id();
+            });
+
             if(it != m_threads.end())
             {
-                return it->second->shared_from_this();
+                return (*it)->shared_from_this();
             }
 
             return nullptr;
@@ -32,13 +35,14 @@ namespace SGCore::Threading
     private:
         static inline std::mutex m_threadAccessMutex;
 
-        // static inline std::vector<std::shared_ptr<Thread>> m_threads;
-        static inline std::unordered_map<std::thread::id, Thread*> m_threads;
+        static inline std::vector<Thread*> m_threads;
 
-        static inline std::shared_ptr<MainThread> m_mainThread = std::make_shared<MainThread>();
+        static inline std::shared_ptr<MainThread> m_mainThread;
 
         static inline bool m_staticInit = []() {
-            m_threads[std::this_thread::get_id()] = m_mainThread.get();
+            m_mainThread = std::make_shared<MainThread>();
+            m_mainThread->m_nativeThreadID = std::this_thread::get_id();
+            
             return true;
         }();
     };

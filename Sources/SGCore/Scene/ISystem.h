@@ -10,6 +10,8 @@
 #include <source_location>
 #include <thread>
 
+#include "SGCore/Threading/ThreadsManager.h"
+#include "SGCore/Threading/Thread.h"
 #include "SGUtils/Marker.h"
 #include "SGUtils/Singleton.h"
 
@@ -37,10 +39,10 @@ namespace SGCore
         virtual void setScene(const Ref<Scene>& scene) noexcept;
         Weak<Scene> getScene() const noexcept;
         
-        [[nodiscard]] const size_t& getThreadID() const noexcept;
+        Ref<Threading::Thread> getThread() const noexcept;
 
     protected:
-        size_t m_threadID = std::hash<std::thread::id>()(std::this_thread::get_id());
+        Ref<Threading::Thread> m_thread = Threading::ThreadsManager::getMainThread();
         
         Weak<Scene> m_scene;
     };

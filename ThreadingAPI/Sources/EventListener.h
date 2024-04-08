@@ -33,7 +33,8 @@ namespace SGCore
         }
 
         template<typename Func>
-        EventListener(Func&& func)
+        requires(std::is_invocable_r_v<Return, Func, Args...>)
+        EventListener(const Func& func)
         {
             m_func = func;
         }

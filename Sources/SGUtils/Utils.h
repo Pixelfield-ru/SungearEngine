@@ -23,6 +23,12 @@
 #define SG_NOINLINE __attribute__((noinline))
 #endif
 
+#ifdef _MSC_VER
+#define SG_FORCEINLINE __forceinline
+#elif defined(__GNUC__)
+#define SG_FORCEINLINE __attribute__((always_inline))
+#endif
+
 #ifdef _MSC_VEC
 #define SG_CDECL __cdecl
 #elif defined(__GNUC__)

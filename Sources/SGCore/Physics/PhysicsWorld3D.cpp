@@ -37,7 +37,7 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
 
     std::cout << "fdfdfd" << std::endl;
 
-    startThread();
+    m_thread->start();
 }
 
 void SGCore::PhysicsWorld3D::addBody(const SGCore::Ref<btRigidBody>& rigidBody) noexcept
