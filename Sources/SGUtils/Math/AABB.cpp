@@ -127,6 +127,18 @@ bool SGCore::AABB::isOverlappedBy(const SGCore::AABB& other) const noexcept
     return true;
 }
 
+bool SGCore::AABB::isIntersectedByRay
+(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, float& intersectionLength) const noexcept
+{
+    return MathUtils::rayAABBIntersection<float>(rayOrigin, rayDirection, m_min, m_max, intersectionLength);
+}
+
+bool SGCore::AABB::isIntersectedByLine
+(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const float& lineLength, float& intersectionLength) const noexcept
+{
+    return MathUtils::lineAABBIntersection(rayOrigin, rayDirection, m_min, m_max, lineLength, intersectionLength);
+}
+
 bool SGCore::AABB::operator==(const SGCore::AABB& abbb) const noexcept
 {
     return m_min == abbb.m_min && m_max == abbb.m_max;

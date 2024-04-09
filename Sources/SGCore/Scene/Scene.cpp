@@ -11,8 +11,8 @@
 #include "SGCore/Transformations/TransformationsUpdater.h"
 #include "SGCore/Transformations/Controllables3DUpdater.h"
 #include "SGCore/Render/RenderingBasesUpdater.h"
-#include "SGCore/Render/Gizmos/BoxGizmosUpdater.h"
-#include "SGCore/Render/Gizmos/LineGizmosUpdater.h"
+#include "SGCore/Render/Gizmos/BoxGizmosRenderer.h"
+#include "SGCore/Render/Gizmos/LineGizmosRenderer.h"
 #include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
 #include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
 #include "SGCore/Render/Mesh.h"
@@ -67,10 +67,10 @@ void SGCore::Scene::createDefaultSystems()
     
     // gizmos ===================
 
-    auto boxGizmosUpdater = MakeRef<BoxGizmosUpdater>();
+    auto boxGizmosUpdater = MakeRef<BoxGizmosRenderer>();
     addSystem(boxGizmosUpdater);
 
-    auto lineGizmosUpdater = MakeRef<LineGizmosUpdater>();
+    auto lineGizmosUpdater = MakeRef<LineGizmosRenderer>();
     addSystem(lineGizmosUpdater);
 
     auto sphereGizmosUpdater = MakeRef<SphereGizmosUpdater>();

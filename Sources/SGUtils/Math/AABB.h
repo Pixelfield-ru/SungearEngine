@@ -26,6 +26,13 @@ namespace SGCore
         
         [[nodiscard]] bool isCollidesWith(const AABB& other) const noexcept;
         [[nodiscard]] bool isOverlappedBy(const AABB& other) const noexcept;
+        [[nodiscard]] bool isIntersectedByRay(const glm::vec3& rayOrigin,
+                                              const glm::vec3& rayDirection,
+                                              float& intersectionLength) const noexcept;
+        [[nodiscard]] bool isIntersectedByLine(const glm::vec3& rayOrigin,
+                                               const glm::vec3& rayDirection,
+                                               const float& lineLength,
+                                               float& intersectionLength) const noexcept;
         
         void calculateAABBFromModelMatrix(const glm::mat4& modelMatrix, const AABB& sourceAABB) noexcept;
         void calculateAABBFromTRS(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale, const AABB& sourceAABB) noexcept;

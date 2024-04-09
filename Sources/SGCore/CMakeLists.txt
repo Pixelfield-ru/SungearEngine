@@ -50,7 +50,11 @@
          )
 
  if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-  set(SG_BULLET_LIBS ${BULLET_COLLISION_LIBRARY_DEBUG} ${BULLET_DYNAMICS_LIBRARY_DEBUG} ${BULLET_MATH_LIBRARY_DEBUG})
+  if(MSVC)
+   set(SG_BULLET_LIBS ${BULLET_COLLISION_LIBRARY_DEBUG} ${BULLET_DYNAMICS_LIBRARY_DEBUG} ${BULLET_MATH_LIBRARY_DEBUG})
+  elseif(UNIX)
+   set(SG_BULLET_LIBS ${BULLET_COLLISION_LIBRARY} ${BULLET_DYNAMICS_LIBRARY} ${BULLET_MATH_LIBRARY})
+  endif()
  elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
   set(SG_BULLET_LIBS ${BULLET_COLLISION_LIBRARY} ${BULLET_DYNAMICS_LIBRARY} ${BULLET_MATH_LIBRARY})
  endif()
@@ -60,7 +64,6 @@
          PNG::PNG
          BZip2::BZip2
          unofficial::brotli::brotlidec
-         unofficial::brotli::brotlienc
          glm::glm
          assimp::assimp
          glfw

@@ -22,5 +22,7 @@ void SGCore::SphereGizmosUpdater::fixedUpdate(const double& dt, const double& fi
             gizmo.m_lastRadius = gizmo.m_radius;
             gizmo.m_lastAngleIncrement = gizmo.m_angleIncrement;
         }
+        
+        
     });
 }

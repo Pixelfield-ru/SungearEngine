@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    class BoxGizmosUpdater : public ISystem
+    class BoxGizmosRenderer : public ISystem
     {
         void fixedUpdate(const double& dt, const double& fixedDt) final;
     };

@@ -28,6 +28,8 @@ namespace SGCore
     class IIndexBuffer;
     class Scene;
     
+    // TODO: add drawMesh function
+    // TODO: add flag updateArrays to draw*** functions
     class DebugDraw : public ISystem
     {
     public:

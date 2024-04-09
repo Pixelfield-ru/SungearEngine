@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    struct LineGizmosUpdater : public ISystem
+    struct LineGizmosRenderer : public ISystem
     {
         void fixedUpdate(const double& dt, const double& fixedDt) final;
     };

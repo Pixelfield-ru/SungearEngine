@@ -11,8 +11,7 @@ namespace SGCore
     struct BoxGizmo
     {
         GizmoBase m_base;
-
-        // todo: move in transform as AABB
+        
         glm::vec3 m_size { 5.0, 5.0, 5.0 };
 
         glm::vec3 m_lastSize { 0.0, 0.0, 0.0 };
