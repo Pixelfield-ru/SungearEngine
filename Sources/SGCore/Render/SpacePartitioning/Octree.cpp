@@ -91,7 +91,7 @@ bool SGCore::Octree::subdivide(Ref<OctreeNode> node) const noexcept
 }
 
 SGCore::Ref<SGCore::OctreeNode> SGCore::Octree::subdivideWhileOverlap(const entity_t& overlappingEntity,
-                                                                      const AABB& aabb,
+                                                                      const AABB<>& aabb,
                                                                       const Ref<OctreeNode>& node,
                                                                       bool isParentOverlapped) const noexcept
 {

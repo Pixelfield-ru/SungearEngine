@@ -35,7 +35,7 @@ namespace SGCore
         Ref<IIndexBuffer> m_indicesBuffer;
 
     public:
-        AABB m_aabb;
+        AABB<> m_aabb;
         
         // Mesh() noexcept;
         virtual ~IMeshData() = default;

@@ -13,45 +13,161 @@
 
 namespace SGCore
 {
+    template<typename ScalarT = float>
+    requires(std::is_scalar_v<ScalarT>)
     struct AABB
     {
-        AABB(const glm::vec3& min, const glm::vec3& max) noexcept;
+        using vec2_t = glm::vec<3, ScalarT, glm::defaultp>;
+        using vec3_t = glm::vec<3, ScalarT, glm::defaultp>;
+        using vec4_t = glm::vec<4, ScalarT, glm::defaultp>;
+        
+        using mat4_t = glm::mat<4, 4, ScalarT, glm::defaultp>;
+        using quat_t = glm::qua<ScalarT, glm::defaultp>;
+        
+        AABB(const vec3_t& min, const vec3_t& max) noexcept : m_min(min), m_max(max) { }
         
         AABB() = default;
         AABB(const AABB&) = default;
         AABB(AABB&) = default;
         
-        glm::vec3 m_min = { 0, 0, 0 };
-        glm::vec3 m_max = { 0, 0, 0 };
+        vec3_t m_min = { 0, 0, 0 };
+        vec3_t m_max = { 0, 0, 0 };
         
-        [[nodiscard]] bool isCollidesWith(const AABB& other) const noexcept;
-        [[nodiscard]] bool isOverlappedBy(const AABB& other) const noexcept;
-        [[nodiscard]] bool isIntersectedByRay(const glm::vec3& rayOrigin,
-                                              const glm::vec3& rayDirection,
-                                              float& intersectionLength) const noexcept;
-        [[nodiscard]] bool isIntersectedByLine(const glm::vec3& rayOrigin,
-                                               const glm::vec3& rayDirection,
-                                               const float& lineLength,
-                                               float& intersectionLength) const noexcept;
+        [[nodiscard]] bool isCollidesWith(const AABB& other) const noexcept
+        {
+            vec3_t globalCenter = getGlobalCenter();
+            vec3_t localCenter = getLocalCenter();
+            
+            vec3_t otherGlobalCenter = other.getGlobalCenter();
+            vec3_t otherLocalCenter = other.getLocalCenter();
+            
+            if(std::abs(globalCenter.x - otherGlobalCenter.x) > (localCenter.x + otherLocalCenter.x)) return false;
+            if(std::abs(globalCenter.y - otherGlobalCenter.y) > (localCenter.y + otherLocalCenter.y)) return false;
+            if(std::abs(globalCenter.z - otherGlobalCenter.z) > (localCenter.z + otherLocalCenter.z)) return false;
+            
+            return true;
+        }
         
-        void calculateAABBFromModelMatrix(const glm::mat4& modelMatrix, const AABB& sourceAABB) noexcept;
-        void calculateAABBFromTRS(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale, const AABB& sourceAABB) noexcept;
+        [[nodiscard]] bool isOverlappedBy(const AABB& other) const noexcept
+        {
+            if(m_max.x > other.m_max.x) return false;
+            if(m_max.y > other.m_max.y) return false;
+            if(m_max.z > other.m_max.z) return false;
+            
+            if(m_min.x < other.m_min.x) return false;
+            if(m_min.y < other.m_min.y) return false;
+            if(m_min.z < other.m_min.z) return false;
+            
+            return true;
+        }
         
-        [[nodiscard]] glm::vec3 getLocalCenter() const noexcept;
-        [[nodiscard]] glm::vec3 getGlobalCenter() const noexcept;
+        void calculateAABBFromModelMatrix(const mat4_t& modelMatrix, const AABB& sourceAABB) noexcept
+        {
+            vec3_t scale;
+            quat_t rotation;
+            vec3_t translation;
+            vec3_t skew;
+            vec4_t perspective;
+            
+            glm::decompose(modelMatrix, scale, rotation, translation, skew, perspective);
+            
+            calculateAABBFromTRS(translation, rotation, scale, sourceAABB);
+        }
+        
+        void calculateAABBFromTRS(const vec3_t& translation, const quat_t& rotation, const vec3_t& scale, const AABB& sourceAABB) noexcept
+        {
+            m_min = sourceAABB.m_min;
+            m_max = sourceAABB.m_max;
+            
+            vec3_t& min = m_min;
+            vec3_t& max = m_max;
+            
+            vec3_t points[8] = {
+                    { min },
+                    { min.x, min.y, max.z },
+                    { min.x, max.y, max.z },
+                    { min.x, max.y, min.z },
+                    
+                    { max.x, min.y, min.z },
+                    { max.x, max.y, min.z },
+                    { max },
+                    { max.x, min.y, max.z }
+            };
+            
+            vec3_t eulerRot = glm::eulerAngles(rotation);
+            
+            for(auto& point : points)
+            {
+                point *= scale;
+                point = rotation * vec4_t(point, 1.0);
+                point += translation;
+            }
+            
+            min = points[0];
+            max = points[0];
+            
+            for(const auto& point : points)
+            {
+                if(point.x < min.x)
+                {
+                    min.x = point.x;
+                }
+                if(point.y < min.y)
+                {
+                    min.y = point.y;
+                }
+                if(point.z < min.z)
+                {
+                    min.z = point.z;
+                }
+            }
+            
+            for(const auto& point : points)
+            {
+                if(point.x > max.x)
+                {
+                    max.x = point.x;
+                }
+                if(point.y > max.y)
+                {
+                    max.y = point.y;
+                }
+                if(point.z > max.z)
+                {
+                    max.z = point.z;
+                }
+            }
+        }
+        
+        [[nodiscard]] vec3_t getLocalCenter() const noexcept
+        {
+            return (m_max - m_min) / 2.0f;
+        }
+        
+        [[nodiscard]] vec3_t getGlobalCenter() const noexcept
+        {
+            return m_min + getLocalCenter();
+        }
         
         AABB& operator=(const AABB&) noexcept = default;
         AABB& operator=(AABB&&) noexcept = default;
         
-        [[nodiscard]] bool operator==(const AABB& abbb) const noexcept;
-        [[nodiscard]] bool operator!=(const AABB& abbb) const noexcept;
+        [[nodiscard]] bool operator==(const AABB& aabb) const noexcept
+        {
+            return m_min == aabb.m_min && m_max == aabb.m_max;
+        }
+        
+        [[nodiscard]] bool operator!=(const AABB& aabb) const noexcept
+        {
+            return !(*this == aabb);
+        }
     };
 }
 
-template<>
-struct std::hash<SGCore::AABB>
+template<typename ScalarT>
+struct std::hash<SGCore::AABB<ScalarT>>
 {
-    std::size_t operator()(const SGCore::AABB& k) const
+    std::size_t operator()(const SGCore::AABB<ScalarT>& k) const
     {
         return SGCore::MathUtils::hashVector(k.m_min) ^ SGCore::MathUtils::hashVector(k.m_max);
     }
