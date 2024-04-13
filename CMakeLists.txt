@@ -23,11 +23,7 @@ list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/include)
 list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/lib)
 list(APPEND CMAKE_MODULE_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share/entt)]]
 
-list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT})
-list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/share)
-list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/include)
-list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/lib)
-list(APPEND CMAKE_MODULE_PATH ${VCPKG_ROOT}/installed/x64-windows/share/entt)
+list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-linux/share/openal-soft)
 
 message("CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
 

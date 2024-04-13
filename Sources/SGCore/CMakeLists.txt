@@ -22,6 +22,7 @@
  find_package(PNG REQUIRED)
  find_package(BZip2 REQUIRED)
  find_package(unofficial-brotli CONFIG REQUIRED)
+ find_package(OpenAL CONFIG REQUIRED)
 
  find_path(PUGIXML_INCLUDE_DIR pugixml.hpp)
  message("PUGIXML_INCLUDE_DIR: " ${PUGIXML_INCLUDE_DIR})
@@ -73,6 +74,7 @@
          spdlog::spdlog
          glad::glad
          SGUtils
+         OpenAL::OpenAL
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
          )

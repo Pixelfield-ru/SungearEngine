@@ -1264,7 +1264,7 @@ void update(const double& dt, const double& fixedDt)
                 
                 ImGui::TableNextColumn();
                 
-                ImGui::Text(std::to_string(system->getThreadID()).c_str());
+                ImGui::Text(std::to_string(std::hash<std::thread::id>()(system->getThread()->getNativeID())).c_str());
                 
                 //SGCore::Ref<SGCore::IP
             }

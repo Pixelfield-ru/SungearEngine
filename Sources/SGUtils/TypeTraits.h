@@ -165,6 +165,39 @@ namespace SGCore
     template<auto ClassFuncPtr>
     using make_class_function_traits = class_function_traits<decltype(ClassFuncPtr)>;
     
+    template <typename T>
+    struct func_return_type;
+    template <typename R, typename... Args>
+    struct func_return_type<R(Args...)> { using type = R; };
+    template <typename R, typename... Args>
+    struct func_return_type<R(*)(Args...)> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...)> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) &> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) &&> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) const> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) const&> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) const&&> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) volatile> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) volatile&> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) volatile&&> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) const volatile> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) const volatile&> { using type = R; };
+    template <typename R, typename C, typename... Args>
+    struct func_return_type<R(C::*)(Args...) const volatile&&> { using type = R; };
+    template <typename T>
+    using func_return_type_t = typename func_return_type<T>::type;
+    
     template<typename T, bool noexcept_state = true>
     struct make_noexcept { using type = T; };
     
