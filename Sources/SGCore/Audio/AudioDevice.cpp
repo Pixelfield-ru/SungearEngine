@@ -3,21 +3,36 @@
 //
 
 #include <spdlog/spdlog.h>
+#include <alext.h>
 
 #include "AudioDevice.h"
 #include "AudioUtils.h"
 
 SGCore::AudioDevice::AudioDevice(const char* deviceName)
 {
-    m_handler = AL_CALL(alcOpenDevice, deviceName);
-    if(m_handler)
+    if(!deviceName)
     {
-        m_context = AL_CALL(alcCreateContext, m_handler, nullptr);
+        m_name = "Preferred";
     }
     else
     {
-        spdlog::error("Could not load  load a sound device with the name '{0}'.", deviceName);
+        m_name = deviceName;
     }
+    
+    m_handler = alcOpenDevice(deviceName);
+    if(m_handler)
+    {
+        m_context = alcCreateContext(m_handler, nullptr);
+    }
+    else
+    {
+        spdlog::error("Could not load a sound device with the name '{0}'.", deviceName);
+    }
+}
+
+void SGCore::AudioDevice::init() noexcept
+{
+    m_defaultDevice = createAudioDevice(nullptr);
 }
 
 SGCore::AudioDevice::~AudioDevice()
@@ -50,12 +65,21 @@ void SGCore::AudioDevice::makeCurrent() const noexcept
 {
     if(m_handler && m_context)
     {
-        AL_CALL(alcMakeContextCurrent, m_context);
-        m_currentContext = m_context;
+        ALCboolean contextMadeAsCurrent = alcMakeContextCurrent(m_context);
+        if(contextMadeAsCurrent)
+        {
+            m_currentContext = m_context;
+        }
+        else
+        {
+            spdlog::error("OpenAL error: could not make device`s '{0}' context as current. Device: {1}, context: {2}.", m_name, (void*) m_handler, (void*) m_context);
+        }
+        
+        std::cout << "current context: " << alcGetCurrentContext() << std::endl;
     }
 }
 
-SGCore::AudioDevice* SGCore::AudioDevice::getDefaultDevice() noexcept
+SGCore::Ref<SGCore::AudioDevice> SGCore::AudioDevice::getDefaultDevice() noexcept
 {
     return m_defaultDevice;
 }

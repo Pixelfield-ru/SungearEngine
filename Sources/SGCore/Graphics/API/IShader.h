@@ -11,7 +11,7 @@
 
 #include "SGCore/Memory/Assets/IAssetObserver.h"
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
-#include "SGCore/Memory/Assets/FileAsset.h"
+#include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "GraphicsDataTypes.h"
 
 namespace SGCore
@@ -25,9 +25,9 @@ namespace SGCore
     public:
         Ref<ShaderAnalyzedFile> m_shaderAnalyzedFile;
 
-        Weak<FileAsset> m_fileAsset;
+        Weak<TextFileAsset> m_fileAsset;
 
-        void addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept;
+        void addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noexcept;
 
         void setSubPassShader(const Ref<IShader>& from, const std::string& subPassName) noexcept;
 

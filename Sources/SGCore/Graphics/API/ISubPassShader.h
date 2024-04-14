@@ -8,7 +8,7 @@
 #include <glm/matrix.hpp>
 #include <SGCore/Graphics/ShaderTextureBinding.h>
 
-#include "SGCore/Memory/Assets/FileAsset.h"
+#include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGCore/Memory/Assets/IAssetObserver.h"
 
 #include "IUniformBuffer.h"
@@ -41,11 +41,11 @@ namespace SGCore
 
         std::unordered_map<SGSLESubShaderType, Ref<SGSLESubShader>> m_subShaders;
 
-        Weak<FileAsset> m_fileAsset;
+        Weak<TextFileAsset> m_fileAsset;
 
         virtual ~ISubPassShader() = default;
 
-        virtual void compile(Ref<FileAsset> fileAsset) = 0;
+        virtual void compile(Ref<TextFileAsset> fileAsset) = 0;
         virtual void recompile() noexcept;
 
         virtual void destroy() = 0;

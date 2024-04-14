@@ -516,6 +516,6 @@ void SGCore::Batch::onRenderPipelineSet() noexcept
     
     if(!renderPipeline) return;
     
-    m_shader->addSubPassShadersAndCompile(AssetManager::loadAsset<FileAsset>(
+    m_shader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
             renderPipeline->m_shadersPaths.getByVirtualPath("BatchingShader").getCurrentRealization()));
 }

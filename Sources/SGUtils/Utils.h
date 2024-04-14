@@ -293,6 +293,22 @@ namespace SGUtils
 
             return fine;
         }
+        
+        static void swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept
+        {
+            for(size_t i = 0; i < bufferSize; ++i)
+            {
+                sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
+            }
+        }
+        
+        static void swapEndian(char* sourceBuffer, const size_t& bufferSize) noexcept
+        {
+            for(size_t i = 0; i < bufferSize; ++i)
+            {
+                sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
+            }
+        }
     };
 }
 

@@ -16,11 +16,13 @@ namespace SGCore
     {
         ~AudioDevice();
         
+        static void init() noexcept;
+        
         static Ref<AudioDevice> createAudioDevice(const char* deviceName) noexcept;
         
         void makeCurrent() const noexcept;
         
-        SG_NOINLINE static AudioDevice* getDefaultDevice() noexcept;
+        SG_NOINLINE static Ref<AudioDevice> getDefaultDevice() noexcept;
         
         bool isLoaded() const noexcept;
         
@@ -29,10 +31,14 @@ namespace SGCore
         
         ALCdevice* m_handler = nullptr;
         ALCcontext* m_context = nullptr;
+        
+        std::string m_name;
+        
+        // TODO:
         Ref<AudioDevice> m_fallbackDevice;
         
         // preferred device
-        static inline AudioDevice* m_defaultDevice = createAudioDevice(nullptr).get();
+        static inline Ref<AudioDevice> m_defaultDevice;
         static inline std::vector<Ref<AudioDevice>> m_devices;
         
         static inline ALCcontext* m_currentContext = nullptr;

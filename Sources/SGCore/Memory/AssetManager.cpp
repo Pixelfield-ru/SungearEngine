@@ -5,7 +5,7 @@
 #include <spdlog/spdlog.h>
 
 #include "AssetManager.h"
-#include "Assets/FileAsset.h"
+#include "Assets/TextFileAsset.h"
 
 #include <assimp/version.h>
 

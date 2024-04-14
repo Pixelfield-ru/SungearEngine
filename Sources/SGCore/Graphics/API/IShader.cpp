@@ -12,7 +12,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 
-void SGCore::IShader::addSubPassShadersAndCompile(Ref<FileAsset> asset) noexcept
+void SGCore::IShader::addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noexcept
 {
     if(!asset) return;
 

@@ -3,6 +3,7 @@
 
 #include <sgcore_export.h>
 #include <thread>
+#include <spdlog/logger.h>
 
 #include "Window.h"
 #include "SGUtils/Timer.h"
@@ -37,6 +38,8 @@ namespace SGCore
         static inline Event<void()> onInit;
         
         static inline std::string m_pathToSungearEngineSDKSources;
+        
+        static inline Ref<spdlog::logger> m_defaultLogger;
         
         CoreMain() = delete;
 

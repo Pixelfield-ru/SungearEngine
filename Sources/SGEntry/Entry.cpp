@@ -1,7 +1,12 @@
 #include "Entry.h"
+#include "SGCore/Memory/Assets/AudioTrackAsset.h"
+#include "SGCore/Audio/AudioBuffer.h"
+#include "SGCore/Audio/AudioSource.h"
+#include "SGCore/Audio/AudioDevice.h"
 
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
+#include <SGCore/Memory/AssetManager.h>
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -15,6 +20,9 @@ extern "C" {
 #endif
 #endif
 
+SGCore::AudioSource darkWindSrc;
+SGCore::Ref<SGCore::AudioBuffer> darkWindAudioBuf = SGCore::MakeRef<SGCore::AudioBuffer>();
+
 void coreInit()
 {
     // hardcoded sgeditor load
@@ -27,6 +35,25 @@ void coreInit()
                                                SGCore::PluginBuildType::PBT_RELEASE);
     
     std::cout << sgEditorPlugin << std::endl;
+    
+    SGCore::AudioDevice::getDefaultDevice()->makeCurrent();
+    
+    SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("rnd_darkwind6.wav");
+    
+    darkWindAudioBuf->create();
+    darkWindAudioBuf->putData(darkWindAudio->getAudioTrack().getAudioFormat(),
+                              darkWindAudio->getAudioTrack().getDataBuffer(),
+                              darkWindAudio->getAudioTrack().getDataBufferSize(),
+                              darkWindAudio->getAudioTrack().getSampleRate());
+    darkWindAudioBuf->setBitsPerSample(darkWindAudio->getAudioTrack().getBitsPerSample());
+    darkWindAudioBuf->setNumChannels(darkWindAudio->getAudioTrack().getNumChannels());
+    
+    darkWindSrc.attachBuffer(darkWindAudioBuf);
+    
+    darkWindSrc.setIsLooping(true);
+    darkWindSrc.setState(SGCore::AudioSourceState::SOURCE_PLAYING);
+    
+    std::cout << darkWindAudio->getAudioTrack().getSummary() << std::endl;
 }
 
 void onUpdate(const double& dt, const double& fixedDt)

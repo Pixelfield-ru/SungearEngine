@@ -9,7 +9,7 @@ SGCore::VkShader::~VkShader() noexcept
     destroy();
 }
 
-void SGCore::VkShader::compile(Ref<FileAsset>) noexcept
+void SGCore::VkShader::compile(Ref<TextFileAsset>) noexcept
 {
 
 }

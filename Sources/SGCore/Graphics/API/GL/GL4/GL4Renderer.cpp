@@ -333,7 +333,7 @@ SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader(const std::string& 
     auto* shader = createShader();
 
     shader->compile(
-            AssetManager::loadAsset<FileAsset>(path)
+            AssetManager::loadAsset<TextFileAsset>(path)
     );
 
     return shader;

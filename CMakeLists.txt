@@ -29,8 +29,11 @@ message("CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
 
 set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
-add_definitions(-DSUNGEAR_DEBUG)
-add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_definitions(-DSUNGEAR_DEBUG)
+endif()
+
+    add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
 add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 add_definitions(-DUSE_LIBPNG)

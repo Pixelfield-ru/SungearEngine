@@ -15,7 +15,7 @@ namespace SGCore
     public:
         ~VkShader() noexcept override;
 
-        void compile(Ref<FileAsset>) noexcept final;
+        void compile(Ref<TextFileAsset>) noexcept final;
 
         void bind() noexcept final;
 

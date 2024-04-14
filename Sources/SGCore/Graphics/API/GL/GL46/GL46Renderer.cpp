@@ -5,7 +5,7 @@
 
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/Memory/Assets/FileAsset.h"
+#include "SGCore/Memory/Assets/TextFileAsset.h"
 
 bool SGCore::GL46Renderer::confirmSupport() noexcept
 {
@@ -36,7 +36,7 @@ SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader(const std::string&
 {
     auto* shader = createShader();
     shader->compile(
-            AssetManager::loadAsset<FileAsset>(path)
+            AssetManager::loadAsset<TextFileAsset>(path)
     );
 
     return shader;

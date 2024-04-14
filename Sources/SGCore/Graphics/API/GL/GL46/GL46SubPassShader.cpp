@@ -17,7 +17,7 @@ SGCore::GL46SubPassShader::~GL46SubPassShader() noexcept
 
 // TODO: watch SGP1
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
-void SGCore::GL46SubPassShader::compile(Ref<FileAsset> fileAsset)
+void SGCore::GL46SubPassShader::compile(Ref<TextFileAsset> fileAsset)
 {
     if(!fileAsset)
     {

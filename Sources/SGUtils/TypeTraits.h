@@ -10,6 +10,7 @@
 #include <map>
 #include <tuple>
 #include <type_traits>
+#include <iostream>
 
 #define SGECS_DECLARE_BASE(DerivedType, BaseType) \
 private: \

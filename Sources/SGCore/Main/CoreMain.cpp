@@ -5,7 +5,6 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
-#include "SGCore/Graphics/API/GL/GL46/GL46Renderer.h"
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
@@ -17,6 +16,7 @@
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
 #include "SGUtils/CrashHandler/HwExcpetionHandler.h"
+#include "SGCore/Audio/AudioDevice.h"
 
 void SGCore::CoreMain::start()
 {
@@ -35,9 +35,9 @@ void SGCore::CoreMain::start()
     HwExceptionHandler::setApplicationName("Sungear Engine");
     HwExceptionHandler::setOutputLogFilePath(finalLogName);
     HwExceptionHandler::setupHandler();
-
-    auto currentSessionLogger = spdlog::basic_logger_mt("current_session", finalLogName);
-    spdlog::set_default_logger(currentSessionLogger);
+    
+    m_defaultLogger = spdlog::basic_logger_mt("current_session", finalLogName);
+    spdlog::set_default_logger(m_defaultLogger);
 
     spdlog::flush_on(spdlog::level::info);
 
@@ -50,6 +50,8 @@ void SGCore::CoreMain::start()
     //m_renderer = VkRenderer::getInstance();
 
     m_window.create();
+    
+    AudioDevice::init();
 
     m_renderer->init();
 
@@ -82,6 +84,8 @@ void SGCore::CoreMain::start()
         m_fixedTimer.startFrame();
         m_renderTimer.startFrame();
     }
+    
+    spdlog::shutdown();
 }
 
 void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)

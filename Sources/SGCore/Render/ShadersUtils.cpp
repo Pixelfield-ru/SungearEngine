@@ -21,7 +21,7 @@ void SGCore::ShadersUtils::loadShader(ShaderComponent& shaderComponent, const st
         // std::cout << "loaded shader: " << renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization() << std::endl;
         shaderComponent.m_shaderPath = shaderPath;
         shaderComponent.m_shader->addSubPassShadersAndCompile(
-                AssetManager::loadAsset<FileAsset>(
+                AssetManager::loadAsset<TextFileAsset>(
                         renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization()));
     }
 }
@@ -39,7 +39,7 @@ void SGCore::ShadersUtils::onRenderPipelineSet(ShaderComponent& shaderComponent)
         if(renderPipeline)
         {
             shaderComponent.m_shader->addSubPassShadersAndCompile(
-                    AssetManager::loadAsset<FileAsset>(
+                    AssetManager::loadAsset<TextFileAsset>(
                             renderPipeline->m_shadersPaths.getByVirtualPath(shaderComponent.m_shaderPath
                             ).getCurrentRealization()));
         }
