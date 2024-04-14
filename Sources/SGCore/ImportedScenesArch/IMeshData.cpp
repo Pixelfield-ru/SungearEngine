@@ -123,13 +123,13 @@ SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const st
 {
     auto& registry = scene->getECSRegistry();
     
-    auto meshEntity = registry.create();
+    auto meshEntity = registry->create();
     
-    EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
-    Ref<Transform>& meshTransform = registry.emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
-    Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
-    auto cullableMesh = registry.emplace<Ref<CullableMesh>>(meshEntity, MakeRef<CullableMesh>());
-    auto cullableInfo = registry.emplace<Ref<OctreeCullableInfo>>(meshEntity, MakeRef<OctreeCullableInfo>());
+    EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity);
+    Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
+    Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
+    auto cullableMesh = registry->emplace<Ref<CullableMesh>>(meshEntity, MakeRef<CullableMesh>());
+    auto cullableInfo = registry->emplace<Ref<OctreeCullableInfo>>(meshEntity, MakeRef<OctreeCullableInfo>());
     // maybe can load the ram
     meshEntityMesh.m_base.m_meshData = shared_from_this();
     

@@ -38,19 +38,19 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
     
     auto& registry = lockedScene->getECSRegistry();
     
-    auto octreesView = registry.view<Ref<Octree>>();
+    auto octreesView = registry->view<Ref<Octree>>();
     
     octreesView.each([this, &registry](const entity_t& entity, Ref<Octree> octree) {
         if(octree->m_root->m_isSubdivided)
         {
             for(const auto& p : m_changedTransforms)
             {
-                if(registry.all_of<IgnoreOctrees>(p.first))
+                if(registry->all_of<IgnoreOctrees>(p.first))
                 {
                     continue;
                 }
                 
-                auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(p.first);
+                auto* tmpCullableInfo = registry->try_get<Ref<OctreeCullableInfo>>(p.first);
                 auto cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
                 
                 if(cullableInfo)
@@ -78,11 +78,11 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
         }
         else // check all transformations
         {
-            auto transformationsView = registry.view<Ref<Transform>>();
+            auto transformationsView = registry->view<Ref<Transform>>();
             transformationsView.each([&octree, &registry](const entity_t& transformEntity, Ref<Transform> transform) {
-                if(!registry.all_of<IgnoreOctrees>(transformEntity))
+                if(!registry->all_of<IgnoreOctrees>(transformEntity))
                 {
-                    auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(transformEntity);
+                    auto* tmpCullableInfo = registry->try_get<Ref<OctreeCullableInfo>>(transformEntity);
                     auto cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
                     
                     if(cullableInfo)

@@ -105,7 +105,7 @@ namespace SGCore
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;
         
-        entt::basic_registry<highp_entity> m_ecsRegistry;
+        Ref<registry_t> m_ecsRegistry = MakeRef<registry_t>();
 
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 

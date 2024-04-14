@@ -15,7 +15,7 @@ void SGCore::BoxGizmosRenderer::fixedUpdate(const double& dt, const double& fixe
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
-    auto boxGizmosView = lockedScene->getECSRegistry().view<BoxGizmo>();
+    auto boxGizmosView = lockedScene->getECSRegistry()->view<BoxGizmo>();
 
     auto debugDraw = lockedScene->getSystem<DebugDraw>();
     

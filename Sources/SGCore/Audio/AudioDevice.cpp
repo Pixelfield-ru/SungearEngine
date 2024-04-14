@@ -3,7 +3,6 @@
 //
 
 #include <spdlog/spdlog.h>
-#include <alext.h>
 
 #include "AudioDevice.h"
 #include "AudioUtils.h"

@@ -41,18 +41,23 @@ namespace SGCore
     private:
         // if WAV:
         // PCM = 1
-        std::uint16_t m_audioFormat = 0;
-        // if WAV:
+        // if OGG: not provided
+        std::int16_t m_audioFormat = 0;
+        // if WAV or OGG:
         // MONO = 1
         // STEREO = 2
-        std::uint16_t m_numChannels = 0;
-        std::uint32_t m_sampleRate = 0;
+        std::int32_t m_numChannels = 0;
+        // PROVIDED IN WAV, OGG
+        std::int32_t m_sampleRate = 0;
         // if WAV:
         // m_sampleRate * m_numChannels * m_bitsPerSample / 8
+        // if OGG: not provided
         std::uint32_t m_byteRate = 0;
         // if WAV:
         // m_numChannels * m_bitsPerSample / 8
+        // if OGG: not provided
         std::uint16_t m_blockAlign = 0;
+        // if OGG: 16 bits
         std::uint16_t m_bitsPerSample = 0;
         
         // buffer in subchunk 'data'

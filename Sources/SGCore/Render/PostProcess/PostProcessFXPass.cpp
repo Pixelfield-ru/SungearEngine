@@ -31,7 +31,7 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const Ref<IRende
 {
     CoreMain::getRenderer()->setDepthTestingEnabled(false);
 
-    auto receiversView = scene->getECSRegistry().view<PostProcessFrameReceiver>();
+    auto receiversView = scene->getECSRegistry()->view<PostProcessFrameReceiver>();
 
     receiversView.each([this](PostProcessFrameReceiver& camera) {
         depthPass(camera);

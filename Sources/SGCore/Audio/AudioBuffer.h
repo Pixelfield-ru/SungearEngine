@@ -18,7 +18,7 @@ namespace SGCore
         void create() noexcept;
         void destroy() noexcept;
         
-        void putData(const uint16_t& audioFormat, const void* data, const size_t& dataSize, const uint16_t& sampleRate) const noexcept;
+        void putData(const uint16_t& numChannels, const std::uint16_t& bitsPerSample, const void* data, const size_t& dataSize, const uint16_t& sampleRate) noexcept;
         
         void setFrequency(const std::uint32_t& frequency) noexcept;
         [[nodiscard]] std::uint32_t getFrequency() const noexcept;

@@ -38,7 +38,7 @@ namespace SGCore
         
         void setScene(const Ref<Scene>& scene) noexcept final;
         
-        Event<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)> onTransformChanged;
+        Event<void(const Ref<registry_t>& registry, const entity_t&, Ref<const Transform>)> onTransformChanged;
         
     private:
         Ref<Scene> m_sharedScene;

@@ -76,12 +76,12 @@ void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
-    auto atmosphereScatteringsView = lockedScene->getECSRegistry().view<Atmosphere>();
+    auto atmosphereScatteringsView = lockedScene->getECSRegistry()->view<Atmosphere>();
     
     atmosphereScatteringsView.each([&lockedScene, this](const entity_t& entity, Atmosphere& atmosphere) {
         size_t hashedSunPos = MathUtils::hashVector(atmosphere.m_sunPosition);
         
-        ShaderComponent* atmosphereScatteringShader = lockedScene->getECSRegistry().try_get<ShaderComponent>(entity);
+        ShaderComponent* atmosphereScatteringShader = lockedScene->getECSRegistry()->try_get<ShaderComponent>(entity);
         if(atmosphereScatteringShader)
         {
             auto meshShader = atmosphereScatteringShader->m_shader;

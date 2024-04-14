@@ -52,6 +52,7 @@ void SGCore::CoreMain::start()
     m_window.create();
     
     AudioDevice::init();
+    AudioDevice::getDefaultDevice()->makeCurrent();
 
     m_renderer->init();
 

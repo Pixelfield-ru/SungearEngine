@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_AUDIOSOURCE_H
 #define SUNGEARENGINE_AUDIOSOURCE_H
 
+#include <glm/vec3.hpp>
+#include <SGUtils/Event.h>
 #include "AudioUtils.h"
 
 #include "SGCore/Main/CoreGlobals.h"
@@ -22,6 +24,8 @@ namespace SGCore
     
     struct AudioSource
     {
+        friend struct AudioProcessor;
+        
         ~AudioSource();
         
         void create() noexcept;
@@ -29,6 +33,21 @@ namespace SGCore
         
         void attachBuffer(const Ref<AudioBuffer>& buffer) noexcept;
         void detachBuffer() const noexcept;
+        
+        void setPosition(const glm::vec3& position) noexcept;
+        glm::vec3 getPosition() noexcept;
+        
+        void setVelocity(const glm::vec3& velocity) noexcept;
+        glm::vec3 getVelocity() noexcept;
+        
+        void setDirection(const glm::vec3& direction) noexcept;
+        glm::vec3 getDirection() noexcept;
+        
+        void setGain(const float& gain) noexcept;
+        [[nodiscard]] float getGain() const noexcept;
+        
+        void setPitch(const float& pitch) noexcept;
+        [[nodiscard]] float getPitch() const noexcept;
         
         void setState(const AudioSourceState& state) noexcept;
         [[nodiscard]] AudioSourceState getState() const noexcept;
@@ -39,13 +58,16 @@ namespace SGCore
         AudioSource& operator=(const AudioSource& other) noexcept;
         AudioSource& operator=(AudioSource&& other) noexcept;
         
+        Event<void(AudioSource& source, AudioSourceState lastState, AudioSourceState newState)> onStateChanged;
+        
     private:
-        AudioSourceState m_state = AudioSourceState::SOURCE_STOPPED;
+        AudioSourceState m_lastState = AudioSourceState::SOURCE_STOPPED;
+        
         bool m_isLooping = false;
         
         Weak<AudioBuffer> m_attachedBuffer;
         
-        ALuint m_handler = 0;
+        ALuint m_handler = 0 ;
         bool m_isValid = false;
     };
 }

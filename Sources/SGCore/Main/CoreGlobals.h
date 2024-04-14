@@ -6,12 +6,15 @@
 #define SUNGEARENGINE_COREGLOBALS_H
 
 #include <memory>
+#include <entt/entt.hpp>
 
 namespace SGCore
 {
     enum class highp_entity : std::uint64_t { };
     
     using entity_t = highp_entity;
+    
+    using registry_t = entt::basic_registry<entity_t>;
     
     template<typename T>
     using Ref = std::shared_ptr<T>;

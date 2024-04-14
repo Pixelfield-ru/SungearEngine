@@ -26,10 +26,10 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
     m_maxIndicesCount = m_maxVerticesCount * 3;
     m_maxInstancesCount = maxInstancesCount;
     
-    parentScene->getECSRegistry().on_destroy<Mesh>().connect<&Batch::onMeshDestroyed>(*this);
-    parentScene->getECSRegistry().on_destroy<Ref<Transform>>().connect<&Batch::onTransformDestroyed>(*this);
+    parentScene->getECSRegistry()->on_destroy<Mesh>().connect<&Batch::onMeshDestroyed>(*this);
+    parentScene->getECSRegistry()->on_destroy<Ref<Transform>>().connect<&Batch::onTransformDestroyed>(*this);
     
-    parentScene->getECSRegistry().on_update<Mesh>().connect<&Batch::onMeshUpdate>(*this);
+    parentScene->getECSRegistry()->on_update<Mesh>().connect<&Batch::onMeshUpdate>(*this);
     // parentScene->getECSRegistry().on_update<Ref<Transform>>().connect<&Batch::onTransformUpdate>(*this);
     
     parentScene->getSystem<TransformationsUpdater>()->onTransformChanged += m_transformChangedListener;
@@ -201,13 +201,13 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
         return;
     }
     
-    if(!lockedScene->getECSRegistry().all_of<Mesh, Ref<Transform>>(entity))
+    if(!lockedScene->getECSRegistry()->all_of<Mesh, Ref<Transform>>(entity))
     {
         spdlog::error("Batching error: can not add entity. One of Mesh or Transform components is not set.");
         return;
     }
     
-    Mesh& entityMesh = lockedScene->getECSRegistry().get<Mesh>(entity);
+    Mesh& entityMesh = lockedScene->getECSRegistry()->get<Mesh>(entity);
     
     if(entityMesh.m_base.m_meshData->m_positions.empty())
     {
@@ -366,8 +366,8 @@ void SGCore::Batch::removeEntity(const entity_t& entity) noexcept
 void SGCore::Batch::updateArraysForEntity(const Ref<Scene>& lockedScene, const entity_t& entity) noexcept
 {
     const size_t& entityIdx = m_entitiesIndices[entity];
-    Mesh& entityMesh = lockedScene->getECSRegistry().get<Mesh>(entity);
-    Ref<Transform>& entityTransform = lockedScene->getECSRegistry().get<Ref<Transform>>(entity);
+    Mesh& entityMesh = lockedScene->getECSRegistry()->get<Mesh>(entity);
+    Ref<Transform>& entityTransform = lockedScene->getECSRegistry()->get<Ref<Transform>>(entity);
     BatchEntityRanges& ranges = m_entitiesRanges[entityIdx];
     
     size_t positionsCount = entityMesh.m_base.m_meshData->m_positions.size();
@@ -459,7 +459,7 @@ void SGCore::Batch::recalculateRanges() noexcept
     }
 }
 
-void SGCore::Batch::onMeshDestroyed(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept
+void SGCore::Batch::onMeshDestroyed(registry_t& registry, entity_t entity) noexcept
 {
     if(m_entitiesIndices.contains(entity))
     {
@@ -467,7 +467,7 @@ void SGCore::Batch::onMeshDestroyed(entt::basic_registry<entity_t>& registry, en
     }
 }
 
-void SGCore::Batch::onTransformDestroyed(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept
+void SGCore::Batch::onTransformDestroyed(registry_t& registry, entity_t entity) noexcept
 {
     if(m_entitiesIndices.contains(entity))
     {
@@ -475,7 +475,7 @@ void SGCore::Batch::onTransformDestroyed(entt::basic_registry<entity_t>& registr
     }
 }
 
-void SGCore::Batch::onMeshUpdate(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept
+void SGCore::Batch::onMeshUpdate(registry_t& registry, entity_t entity) noexcept
 {
     auto it = m_entitiesIndices.find(entity);
     if(it == m_entitiesIndices.end()) return;
@@ -487,7 +487,7 @@ void SGCore::Batch::onMeshUpdate(entt::basic_registry<entity_t>& registry, entit
     // todo:
 }
 
-void SGCore::Batch::onTransformUpdate(entt::basic_registry<entity_t>& registry, entity_t entity, Ref<const Transform> transform) noexcept
+void SGCore::Batch::onTransformUpdate(const Ref<registry_t>& registry, entity_t entity, Ref<const Transform> transform) noexcept
 {
     auto it = m_entitiesIndices.find(entity);
     if(it == m_entitiesIndices.end()) return;

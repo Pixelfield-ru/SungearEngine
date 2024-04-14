@@ -23,6 +23,7 @@
 #include "SGCore/Memory/Assets/XMLDocument.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
+#include "SGCore/Audio/AudioProcessor.h"
 
 SGCore::Scene::Scene()
 {
@@ -88,6 +89,11 @@ void SGCore::Scene::createDefaultSystems()
 
     auto octreesSolver = MakeRef<OctreesSolver>();
     addSystem(octreesSolver);
+    
+    // audio =================================
+    
+    auto audioProcessor = MakeRef<AudioProcessor>();
+    addSystem(audioProcessor);
     
     for(auto& system : m_systems)
     {
@@ -241,7 +247,7 @@ SGCore::Weak<SGCore::XMLDocument> SGCore::Scene::getUIXMLDocument() const noexce
 
 void SGCore::Scene::reloadUI() noexcept
 {
-    m_ecsRegistry.clear<UIElement>();
+    m_ecsRegistry->clear<UIElement>();
     
     if(auto lockedUIDocument = m_UIXMLDocument.lock())
     {

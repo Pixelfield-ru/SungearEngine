@@ -41,8 +41,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     // scene->getECSRegistry();
     auto& registry = scene->getECSRegistry();
     
-    auto camerasView = registry.view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();
-    auto meshesView = registry.view<EntityBaseInfo, Mesh, Ref<Transform>>(entt::exclude<DisableMeshGeometryPass>);
+    auto camerasView = registry->view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();
+    auto meshesView = registry->view<EntityBaseInfo, Mesh, Ref<Transform>>(entt::exclude<DisableMeshGeometryPass>);
     
     Ref<ISubPassShader> standardGeometryShader;
     if(m_shader)
@@ -68,10 +68,10 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
 
         meshesView.each([&renderPipeline, &standardGeometryShader, &scene, &cameraEntity, &registry, this]
         (const entity_t& meshEntity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
-            auto* tmpCullableMesh = registry.try_get<Ref<CullableMesh>>(meshEntity);
+            auto* tmpCullableMesh = registry->try_get<Ref<CullableMesh>>(meshEntity);
             Ref<CullableMesh> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
             
-            bool willRender = registry.try_get<IgnoreOctrees>(meshEntity) || !cullableMesh;
+            bool willRender = registry->try_get<IgnoreOctrees>(meshEntity) || !cullableMesh;
             
             if(willRender)
             {
@@ -96,7 +96,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             standardGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
         }
         
-        auto objectsCullingOctreesView = registry.view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
+        auto objectsCullingOctreesView = registry->view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
         objectsCullingOctreesView.each([&standardGeometryShader, &scene, &cameraEntity, &registry, &cameraRenderingBase, this](Ref<Octree> octree, const Ref<ObjectsCullingOctree>&) {
             for(const auto& n : octree->m_notEmptyNodes)
             {
@@ -108,13 +108,13 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     // std::cout << "renderedInOctrees: " << renderedInOctrees << std::endl;
 }
 
-void SGCore::PBRRPGeometryPass::renderMesh(entt::basic_registry<entity_t>& registry,
+void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                            const entity_t& meshEntity,
                                            const Ref<Transform>& meshTransform,
                                            Mesh& mesh,
                                            const Ref<ISubPassShader>& standardGeometryShader) noexcept
 {
-    ShaderComponent* entityShader = registry.try_get<ShaderComponent>(meshEntity);
+    ShaderComponent* entityShader = registry->try_get<ShaderComponent>(meshEntity);
     
     auto meshGeomShader = (entityShader && entityShader->m_shader)
                           ? entityShader->m_shader->getSubPassShader("GeometryPass") : nullptr;
@@ -169,7 +169,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(entt::basic_registry<entity_t>& regis
     }
 }
 
-void SGCore::PBRRPGeometryPass::renderOctreeNode(entt::basic_registry<entity_t>& registry,
+void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry,
                                                  const entity_t& forCamera,
                                                  const SGCore::Ref<SGCore::OctreeNode>& node,
                                                  const Ref<ISubPassShader>& standardGeometryShader) noexcept
@@ -181,13 +181,13 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(entt::basic_registry<entity_t>&
         // render all entities
         for(const auto& e : node->m_overlappedEntities)
         {
-            auto* tmpCullableInfo = registry.try_get<Ref<OctreeCullableInfo>>(e);
+            auto* tmpCullableInfo = registry->try_get<Ref<OctreeCullableInfo>>(e);
             Ref<OctreeCullableInfo> cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
             
             if(!cullableInfo) continue;
             
-            Mesh* mesh = registry.try_get<Mesh>(e);
-            auto* tmpMeshTransform = registry.try_get<Ref<Transform>>(e);
+            Mesh* mesh = registry->try_get<Mesh>(e);
+            auto* tmpMeshTransform = registry->try_get<Ref<Transform>>(e);
             auto meshTransform = (tmpMeshTransform ? *tmpMeshTransform : nullptr);
             
             if(meshTransform && mesh)

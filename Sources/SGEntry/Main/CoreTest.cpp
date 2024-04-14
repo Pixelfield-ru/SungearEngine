@@ -93,7 +93,7 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
                                         }
     );
     
-    auto sphereRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Rigidbody3D>>(sphereEntities[2],
+    auto sphereRigidbody3D = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Rigidbody3D>>(sphereEntities[2],
                                                                                                    SGCore::MakeRef<SGCore::Rigidbody3D>(
                                                                                                            testScene->getSystem<SGCore::PhysicsWorld3D>()));
     SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
@@ -111,7 +111,7 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     glm::vec3 finalImpulse = impulse;
     sphereRigidbody3D->m_body->applyCentralImpulse({ finalImpulse.x, finalImpulse.y, finalImpulse.z });
     
-    SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(sphereEntities[0]);
+    SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(sphereEntities[0]);
     sphereTransform->m_ownTransform.m_position = spherePos;
     
     /*testScene->getECSRegistry().emplace<SGCore::DisableMeshGeometryPass>(sphereEntities[2]);
@@ -152,8 +152,8 @@ void init()
 
     // BATCHING ==========================================
     
-    SGCore::entity_t batchEntity = testScene->getECSRegistry().create();
-    globalBatch = &testScene->getECSRegistry().emplace<SGCore::Batch>(batchEntity, testScene);
+    SGCore::entity_t batchEntity = testScene->getECSRegistry()->create();
+    globalBatch = &testScene->getECSRegistry()->emplace<SGCore::Batch>(batchEntity, testScene);
 
     std::cout << "dfdfdf" << std::endl;
     
@@ -341,12 +341,12 @@ void init()
                                       [&floorEntities](const SGCore::entity_t& entity)
                                       {
                                           floorEntities.push_back(entity);
-                                          testScene->getECSRegistry().emplace<SGCore::IgnoreOctrees>(entity);
+                                          testScene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
                                       }
     );
     
-    auto mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(floorEntities[2]);
-    auto transform = testScene->getECSRegistry().try_get<SGCore::Ref<SGCore::Transform>>(floorEntities[0]);
+    auto mesh = testScene->getECSRegistry()->try_get<SGCore::Mesh>(floorEntities[2]);
+    auto transform = testScene->getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(floorEntities[0]);
     if(mesh)
     {
         mesh->m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
@@ -361,7 +361,7 @@ void init()
         (*transform)->m_ownTransform.m_scale = { 1000.0, 1.0, 1000.0 };
     }
     
-    auto floorRigidbody3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Rigidbody3D>>(floorEntities[0],
+    auto floorRigidbody3D = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Rigidbody3D>>(floorEntities[0],
             SGCore::MakeRef<SGCore::Rigidbody3D>(testScene->getSystem<SGCore::PhysicsWorld3D>()));
     SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(500 / 2.0, 1 / 2.0, 500.0 / 2.0));
     floorRigidbody3D->setShape(floorRigidbody3DShape);
@@ -385,8 +385,8 @@ void init()
     
     {
         // testScene->getECSRegistry().remove<SGCore::Ref<SGCore::Transform>>(model0Entities[5]);
-        auto e = testScene->getECSRegistry().try_get<SGCore::EntityBaseInfo>(model0Entities[0]);
-        auto model0Transform = testScene->getECSRegistry().try_get<SGCore::Ref<SGCore::Transform>>(model0Entities[0]);
+        auto e = testScene->getECSRegistry()->try_get<SGCore::EntityBaseInfo>(model0Entities[0]);
+        auto model0Transform = testScene->getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(model0Entities[0]);
         if(transform)
         {
             /*transform->m_ownTransform.m_position = { -8, 20, -2 };
@@ -496,7 +496,7 @@ void init()
     );
     
     {
-        SGCore::Ref<SGCore::Transform> model1Transform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
+        SGCore::Ref<SGCore::Transform> model1Transform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
         model1Transform->m_ownTransform.m_position = { 0, 120.30, -20 };
         model1Transform->m_ownTransform.m_rotation = { -90, 0, 0 };
         model1Transform->m_ownTransform.m_scale = { 0.4, 0.4, 0.4 };
@@ -504,7 +504,7 @@ void init()
         
         for(size_t i = 1; i < model1Entities.size(); ++i)
         {
-            SGCore::Ref<SGCore::Transform> model1Transform0 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[i]);
+            SGCore::Ref<SGCore::Transform> model1Transform0 = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(model1Entities[i]);
             model1Transform0->m_ownTransform.m_position = { 0, 0, 0 };
             model1Transform0->m_ownTransform.m_rotation = { 0, 0, 0 };
             model1Transform0->m_ownTransform.m_scale = { 1, 1, 1 };
@@ -513,7 +513,7 @@ void init()
     
     for(size_t i = 0; i < model1Entities.size(); ++i)
     {
-        auto* _mesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[i]);
+        auto* _mesh = testScene->getECSRegistry()->try_get<SGCore::Mesh>(model1Entities[i]);
         
         /*if(_mesh)
         {
@@ -534,9 +534,9 @@ void init()
     }
     
     {
-        auto model1Rigidbody3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4],
+        auto model1Rigidbody3D = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4],
                 SGCore::MakeRef<SGCore::Rigidbody3D>(testScene->getSystem<SGCore::PhysicsWorld3D>()));
-        SGCore::Mesh* model1Mesh0 = testScene->getECSRegistry().try_get<SGCore::Mesh>(model1Entities[4]);
+        SGCore::Mesh* model1Mesh0 = testScene->getECSRegistry()->try_get<SGCore::Mesh>(model1Entities[4]);
         std::cout << "model1Mesh0->m_base.m_meshData: " << model1Mesh0->m_base.m_meshData.get() << std::endl;
         model1Mesh0->m_base.m_meshData->generatePhysicalMesh();
         SGCore::Ref<btConvexTriangleMeshShape> model1Rigidbody3DShape = SGCore::MakeRef<btConvexTriangleMeshShape>(
@@ -604,12 +604,12 @@ void init()
         std::vector<SGCore::entity_t> skyboxEntities;
         cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
             skyboxEntities.push_back(entity);
-            testScene->getECSRegistry().emplace<SGCore::IgnoreOctrees>(entity);
+            testScene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
         });
 
-        SGCore::Mesh& skyboxMesh = testScene->getECSRegistry().get<SGCore::Mesh>(skyboxEntities[2]);
-        SGCore::ShaderComponent& skyboxShaderComponent = testScene->getECSRegistry().emplace<SGCore::ShaderComponent>(skyboxEntities[2]);
-        SGCore::Atmosphere& atmosphereScattering = testScene->getECSRegistry().emplace<SGCore::Atmosphere>(skyboxEntities[2]);
+        SGCore::Mesh& skyboxMesh = testScene->getECSRegistry()->get<SGCore::Mesh>(skyboxEntities[2]);
+        SGCore::ShaderComponent& skyboxShaderComponent = testScene->getECSRegistry()->emplace<SGCore::ShaderComponent>(skyboxEntities[2]);
+        SGCore::Atmosphere& atmosphereScattering = testScene->getECSRegistry()->emplace<SGCore::Atmosphere>(skyboxEntities[2]);
         _atmosphereScattering = &atmosphereScattering;
         // atmosphereScattering.m_sunRotation.z = 90.0;
         skyboxMesh.m_base.m_meshData->m_material->addTexture2D(SGTextureType::SGTT_SKYBOX,
@@ -619,7 +619,7 @@ void init()
         SGCore::ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
         skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
 
-        auto& skyboxTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(skyboxEntities[2]);
+        auto& skyboxTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(skyboxEntities[2]);
         // auto transformComponent = skyboxEntities[2]->getComponent<SGCore::Transform>();
 
         skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
@@ -678,9 +678,9 @@ void init()
     timesNewRomanFont_height128_rus->saveAtlasAsTexture("font_spec_test_rus.png");
     timesNewRomanFont_height34_eng->saveAtlasAsTexture("font_spec_test_eng.png");
     
-    SGCore::entity_t textEntity = testScene->getECSRegistry().create();
-    SGCore::Text& helloWorldUIText = testScene->getECSRegistry().emplace<SGCore::Text>(textEntity);
-    auto& helloWorldUITextTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(textEntity, SGCore::MakeRef<SGCore::Transform>());
+    SGCore::entity_t textEntity = testScene->getECSRegistry()->create();
+    SGCore::Text& helloWorldUIText = testScene->getECSRegistry()->emplace<SGCore::Text>(textEntity);
+    auto& helloWorldUITextTransform = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(textEntity, SGCore::MakeRef<SGCore::Transform>());
     helloWorldUITextTransform->m_ownTransform.m_scale = { 1.0, 1.0, 1 };
     helloWorldUITextTransform->m_ownTransform.m_position = { 0.0, -50.0, 0 };
 
@@ -692,9 +692,9 @@ void init()
     helloWorldUIText.m_fontSettings.m_name = "eng";
     helloWorldUIText.m_text += u"\n";
     
-    SGCore::entity_t sceneInfoTextEntity = testScene->getECSRegistry().create();
-    SGCore::Text& sceneInfoUIText = testScene->getECSRegistry().emplace<SGCore::Text>(sceneInfoTextEntity);
-    auto& sceneInfoUITextTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(sceneInfoTextEntity, SGCore::MakeRef<SGCore::Transform>());
+    SGCore::entity_t sceneInfoTextEntity = testScene->getECSRegistry()->create();
+    SGCore::Text& sceneInfoUIText = testScene->getECSRegistry()->emplace<SGCore::Text>(sceneInfoTextEntity);
+    auto& sceneInfoUITextTransform = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(sceneInfoTextEntity, SGCore::MakeRef<SGCore::Transform>());
     sceneInfoUITextTransform->m_ownTransform.m_position = { 0.0, -80.0, 0 };
     
     sceneInfoUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
@@ -713,10 +713,10 @@ void init()
     }*/
     // helloWorldUIText->m_color = { 1.0, 0.0, 0.0, 1.0 };
 
-    SGCore::entity_t uiCameraEntity = testScene->getECSRegistry().create();
-    SGCore::UICamera& uiCameraEntityCamera = testScene->getECSRegistry().emplace<SGCore::UICamera>(uiCameraEntity);
-    auto& uiCameraEntityTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(uiCameraEntity, SGCore::MakeRef<SGCore::Transform>());
-    auto& uiCameraEntityRenderingBase = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::RenderingBase>>(uiCameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
+    SGCore::entity_t uiCameraEntity = testScene->getECSRegistry()->create();
+    SGCore::UICamera& uiCameraEntityCamera = testScene->getECSRegistry()->emplace<SGCore::UICamera>(uiCameraEntity);
+    auto& uiCameraEntityTransform = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(uiCameraEntity, SGCore::MakeRef<SGCore::Transform>());
+    auto& uiCameraEntityRenderingBase = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::RenderingBase>>(uiCameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
     
     uiCameraEntityRenderingBase->m_left = 0;
     uiCameraEntityRenderingBase->m_right = 2560;
@@ -724,9 +724,9 @@ void init()
     uiCameraEntityRenderingBase->m_top = 0;
     
     {
-        auto geniusMesh = testScene->getECSRegistry().try_get<SGCore::Mesh>(geniusEntities[2]);
-        auto geniusTransform = *testScene->getECSRegistry().try_get<SGCore::Ref<SGCore::Transform>>(geniusEntities[2]);
-        SGCore::ShaderComponent& geniusMeshShader = testScene->getECSRegistry().emplace<SGCore::ShaderComponent>(geniusEntities[2]);
+        auto geniusMesh = testScene->getECSRegistry()->try_get<SGCore::Mesh>(geniusEntities[2]);
+        auto geniusTransform = *testScene->getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(geniusEntities[2]);
+        SGCore::ShaderComponent& geniusMeshShader = testScene->getECSRegistry()->emplace<SGCore::ShaderComponent>(geniusEntities[2]);
 
         if(geniusTransform)
         {
@@ -750,19 +750,19 @@ void init()
 
     // --- camera ---------------
 
-    testCameraEntity = testScene->getECSRegistry().create();
-    SGCore::EntityBaseInfo& cameraBaseInfo = testScene->getECSRegistry().emplace<SGCore::EntityBaseInfo>(testCameraEntity);
+    testCameraEntity = testScene->getECSRegistry()->create();
+    SGCore::EntityBaseInfo& cameraBaseInfo = testScene->getECSRegistry()->emplace<SGCore::EntityBaseInfo>(testCameraEntity);
     cameraBaseInfo.setRawName("SGMainCamera");
 
-    auto& cameraTransform = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Transform>>(testCameraEntity, SGCore::MakeRef<SGCore::Transform>());
+    auto& cameraTransform = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(testCameraEntity, SGCore::MakeRef<SGCore::Transform>());
     cameraTransform->m_ownTransform.m_position.y = -3;
     cameraTransform->m_ownTransform.m_position.z = 2;
     cameraTransform->m_ownTransform.m_rotation.x = -30;
 
-    auto& cameraEntityCamera3D = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Camera3D>>(testCameraEntity, SGCore::MakeRef<SGCore::Camera3D>());
+    auto& cameraEntityCamera3D = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Camera3D>>(testCameraEntity, SGCore::MakeRef<SGCore::Camera3D>());
     // SGCore::DefaultFrameReceiver& cameraEntityReceiver = testScene->getECSRegistry().emplace<SGCore::DefaultFrameReceiver>(testCameraEntity);
-    SGCore::Controllable3D& cameraEntityControllable = testScene->getECSRegistry().emplace<SGCore::Controllable3D>(testCameraEntity);
-    auto& cameraRenderingBase = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::RenderingBase>>(testCameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
+    SGCore::Controllable3D& cameraEntityControllable = testScene->getECSRegistry()->emplace<SGCore::Controllable3D>(testCameraEntity);
+    auto& cameraRenderingBase = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::RenderingBase>>(testCameraEntity, SGCore::MakeRef<SGCore::RenderingBase>());
 
     // ===============================
 
@@ -776,9 +776,9 @@ void init()
      */
     
     {
-        auto octreeEntity = testScene->getECSRegistry().create();
-        SGCore::Ref<SGCore::Octree>& octree = testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::Octree>>(octreeEntity, SGCore::MakeRef<SGCore::Octree>());
-        testScene->getECSRegistry().emplace<SGCore::Ref<SGCore::ObjectsCullingOctree>>(octreeEntity, SGCore::MakeRef<SGCore::ObjectsCullingOctree>());
+        auto octreeEntity = testScene->getECSRegistry()->create();
+        SGCore::Ref<SGCore::Octree>& octree = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Octree>>(octreeEntity, SGCore::MakeRef<SGCore::Octree>());
+        testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::ObjectsCullingOctree>>(octreeEntity, SGCore::MakeRef<SGCore::ObjectsCullingOctree>());
         octree->m_nodeMinSize = { 10, 10, 10 };
         octree->m_root->m_aabb.m_min = { -700, -700, -700 };
         octree->m_root->m_aabb.m_max = { 700, 700, 700 };
@@ -1101,15 +1101,15 @@ void fixedUpdate(const double& dt, const double& fixedDt)
 
     // transform0->m_position.y += sin(framesCnt / 30.0) / 2.5;
 
-    auto& tr0 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[4]);
+    auto& tr0 = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(model1Entities[4]);
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_3))
     {
         tr0->m_ownTransform.m_position.y += 0.1f;
     }
 
-    auto tmpRB1 = testScene->getECSRegistry().try_get<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4]);
+    auto tmpRB1 = testScene->getECSRegistry()->try_get<SGCore::Ref<SGCore::Rigidbody3D>>(model1Entities[4]);
     auto rb1 = (tmpRB1 ? *tmpRB1 : nullptr);
-    auto tr1 = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
+    auto tr1 = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(model1Entities[0]);
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_E))
     {
         auto curRot = rb1->m_body->getWorldTransform().getRotation();
@@ -1145,8 +1145,8 @@ void fixedUpdate(const double& dt, const double& fixedDt)
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_5))
     {
-        auto v0 = testScene->getECSRegistry().view<SGCore::Ref<SGCore::Rigidbody3D>>();
-        testScene->getECSRegistry().remove<SGCore::Ref<SGCore::Rigidbody3D>>(v0.begin(), v0.end());
+        auto v0 = testScene->getECSRegistry()->view<SGCore::Ref<SGCore::Rigidbody3D>>();
+        testScene->getECSRegistry()->remove<SGCore::Ref<SGCore::Rigidbody3D>>(v0.begin(), v0.end());
     }
     
     SGCore::Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
@@ -1190,7 +1190,7 @@ void update(const double& dt, const double& fixedDt)
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_4))
     {
-        auto& cameraTransform = testScene->getECSRegistry().get<SGCore::Ref<SGCore::Transform>>(testCameraEntity);
+        auto& cameraTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(testCameraEntity);
         createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
     
@@ -1297,12 +1297,12 @@ void update(const double& dt, const double& fixedDt)
     
     auto debugDrawSystem = testScene->getSystem<SGCore::DebugDraw>();
     
-    auto transformsView = testScene->getECSRegistry().view<SGCore::Ref<SGCore::Transform>>();
+    auto transformsView = testScene->getECSRegistry()->view<SGCore::Ref<SGCore::Transform>>();
     transformsView.each([&debugDrawSystem](SGCore::Ref<SGCore::Transform>& transform) {
         debugDrawSystem->drawAABB(transform->m_ownTransform.m_aabb.m_min, transform->m_ownTransform.m_aabb.m_max, { 1, 0, 1, 1 });
     });
     
-    auto octreesView = testScene->getECSRegistry().view<SGCore::Ref<SGCore::Octree>>();
+    auto octreesView = testScene->getECSRegistry()->view<SGCore::Ref<SGCore::Octree>>();
     octreesView.each([&debugDrawSystem](SGCore::Ref<SGCore::Octree> octree) {
         octree->m_root->draw(debugDrawSystem);
         // octree->draw(debugDrawSystem);
@@ -1316,7 +1316,7 @@ void update(const double& dt, const double& fixedDt)
     
     if(sceneInfoText)
     {
-        auto meshesView = testScene->getECSRegistry().view<SGCore::EntityBaseInfo, SGCore::Mesh, SGCore::Ref<SGCore::Transform>>(
+        auto meshesView = testScene->getECSRegistry()->view<SGCore::EntityBaseInfo, SGCore::Mesh, SGCore::Ref<SGCore::Transform>>(
                 entt::exclude<SGCore::DisableMeshGeometryPass>);
         
         size_t meshesCnt = 0;

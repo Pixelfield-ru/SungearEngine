@@ -41,17 +41,17 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
 
     auto& registry = m_sharedScene->getECSRegistry();
     
-    auto transformsView = registry.view<Ref<Transform>>();
+    auto transformsView = registry->view<Ref<Transform>>();
     
     transformsView.each([&registry, this](const entity_t& entity, Ref<Transform> transform) {
         if(transform)
         {
-            EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
+            EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(entity);
             Ref<Transform> parentTransform;
             
             if(entityBaseInfo)
             {
-                auto* tmp = registry.try_get<Ref<Transform>>(entityBaseInfo->m_parent);
+                auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo->m_parent);
                 parentTransform = (tmp ? *tmp : nullptr);
             }
             
@@ -227,9 +227,9 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         
         for(const auto& t : m_calculatedNotPhysicalEntitiesCopy)
         {
-            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry().try_get<Ref<Transform>>(t.m_owner);
+            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = m_sharedScene->getECSRegistry().try_get<Mesh>(t.m_owner);
+            Mesh* mesh = m_sharedScene->getECSRegistry()->try_get<Mesh>(t.m_owner);
             if(nonConstTransform && mesh)
             {
                 auto& finalTransform = nonConstTransform->m_finalTransform;
@@ -279,9 +279,9 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         
         for(const auto& t : m_calculatedPhysicalEntitiesCopy)
         {
-            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry().try_get<Ref<Transform>>(t.m_owner);
+            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = m_sharedScene->getECSRegistry().try_get<Mesh>(t.m_owner);
+            Mesh* mesh = m_sharedScene->getECSRegistry()->try_get<Mesh>(t.m_owner);
             if(nonConstTransform && mesh)
             {
                 auto& finalTransform = nonConstTransform->m_finalTransform;

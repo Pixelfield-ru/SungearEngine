@@ -19,8 +19,8 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
     
     auto& registry = lockedScene->getECSRegistry();
 
-    auto objectsCullingOctrees = registry.view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
-    auto camerasView = registry.view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();
+    auto objectsCullingOctrees = registry->view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
+    auto camerasView = registry->view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();
     objectsCullingOctrees.each([&camerasView, &registry, this](Ref<Octree> octree, Ref<ObjectsCullingOctree>&) {
         camerasView.each([&octree, &registry, this]
         (const entity_t& cameraEntity, Ref<Camera3D> camera3D, Ref<RenderingBase> renderingBase, Ref<Transform> cameraTransform) {

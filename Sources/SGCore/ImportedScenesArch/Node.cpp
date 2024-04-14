@@ -24,10 +24,10 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
     auto& registry = scene->getECSRegistry();
 
-    entity_t parentEntity = registry.create();
+    entity_t parentEntity = registry->create();
 
-    EntityBaseInfo& nodeBaseInfo = registry.emplace<EntityBaseInfo>(parentEntity);
-    Ref<Transform> nodeTransform = registry.emplace<Ref<Transform>>(parentEntity, MakeRef<Transform>());
+    EntityBaseInfo& nodeBaseInfo = registry->emplace<EntityBaseInfo>(parentEntity);
+    Ref<Transform> nodeTransform = registry->emplace<Ref<Transform>>(parentEntity, MakeRef<Transform>());
     nodeTransform->m_ownTransform.m_position = m_position;
     // auto eulerRot = glm::eulerAngles(m_rotationQuaternion);
     nodeTransform->m_ownTransform.m_rotation = glm::degrees(glm::eulerAngles(m_rotationQuaternion));
@@ -49,13 +49,13 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
     for(auto& mesh : m_meshesData)
     {
-        entity_t meshEntity = registry.create();
+        entity_t meshEntity = registry->create();
 
-        EntityBaseInfo& meshEntityBaseInfo = registry.emplace<EntityBaseInfo>(meshEntity);
-        Ref<Transform>& meshTransform = registry.emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
-        Mesh& meshEntityMesh = registry.emplace<Mesh>(meshEntity);
-        auto cullableMesh = registry.emplace<Ref<CullableMesh>>(meshEntity, MakeRef<CullableMesh>());
-        auto cullableInfo = registry.emplace<Ref<OctreeCullableInfo>>(meshEntity, MakeRef<OctreeCullableInfo>());
+        EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity);
+        Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
+        Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
+        auto cullableMesh = registry->emplace<Ref<CullableMesh>>(meshEntity, MakeRef<CullableMesh>());
+        auto cullableInfo = registry->emplace<Ref<OctreeCullableInfo>>(meshEntity, MakeRef<OctreeCullableInfo>());
         meshEntityMesh.m_base.m_meshData = mesh;
         // meshEntityMesh.m_base.m_meshData->setData(mesh);
 
@@ -72,7 +72,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     for(auto& childNode : m_children)
     {
         auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
-        EntityBaseInfo& childEntityBaseInfo = registry.get<EntityBaseInfo>(childNodeEntity);
+        EntityBaseInfo& childEntityBaseInfo = registry->get<EntityBaseInfo>(childNodeEntity);
         childEntityBaseInfo.m_parent = parentEntity;
         // parentEntity->addChild(childNodeEntity);
     }

@@ -20,7 +20,7 @@ void SGCore::AudioSource::create() noexcept
     // auto attaching to buffer if it is not nullptr
     attachBuffer(m_attachedBuffer.lock());
     
-    setState(m_state);
+    setState(getState());
 }
 
 void SGCore::AudioSource::destroy() noexcept
@@ -53,19 +53,18 @@ void SGCore::AudioSource::detachBuffer() const noexcept
 
 void SGCore::AudioSource::setState(const SGCore::AudioSourceState& state) noexcept
 {
-    m_state = state;
     if(m_isValid)
     {
         switch(state)
         {
             case SOURCE_PLAYING:
-                AL_CALL(alSourcei, m_handler, AL_SOURCE_STATE, AL_PLAYING);
+                AL_CALL(alSourcePlay, m_handler);
                 break;
             case SOURCE_PAUSED:
-                AL_CALL(alSourcei, m_handler, AL_SOURCE_STATE, AL_PAUSED);
+                AL_CALL(alSourcePause, m_handler);
                 break;
             case SOURCE_STOPPED:
-                AL_CALL(alSourcei, m_handler, AL_SOURCE_STATE, AL_STOPPED);
+                AL_CALL(alSourceStop, m_handler);
                 break;
         }
     }
@@ -73,7 +72,18 @@ void SGCore::AudioSource::setState(const SGCore::AudioSourceState& state) noexce
 
 SGCore::AudioSourceState SGCore::AudioSource::getState() const noexcept
 {
-    return m_state;
+    ALint alState;
+    AL_CALL(alGetSourcei, m_handler, AL_SOURCE_STATE, &alState);
+    
+    switch(alState)
+    {
+        case AL_PLAYING:
+            return AudioSourceState::SOURCE_PLAYING;
+        case AL_PAUSED:
+            return AudioSourceState::SOURCE_PAUSED;
+        case AL_STOPPED:
+            return AudioSourceState::SOURCE_STOPPED;
+    }
 }
 
 SGCore::AudioSource& SGCore::AudioSource::operator=(const SGCore::AudioSource& other) noexcept
@@ -85,6 +95,11 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(const SGCore::AudioSource& o
         m_attachedBuffer = other.m_attachedBuffer;
         
         attachBuffer(m_attachedBuffer.lock());
+        
+        setGain(other.getGain());
+        setPitch(other.getPitch());
+        setIsLooping(other.isLooping());
+        setState(other.getState());
     }
     
     return *this;
@@ -109,6 +124,92 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(SGCore::AudioSource&& other)
     return *this;
 }
 
+void SGCore::AudioSource::setPosition(const glm::vec3& position) noexcept
+{
+    AL_CALL(alSource3f, m_handler, AL_POSITION, position.x, position.y, position.z);
+}
+
+glm::vec3 SGCore::AudioSource::getPosition() noexcept
+{
+    float x;
+    float y;
+    float z;
+    
+    AL_CALL(alGetSource3f, m_handler, AL_POSITION, &x, &y, &z);
+    
+    return { x, y, z };
+}
+
+void SGCore::AudioSource::setVelocity(const glm::vec3& velocity) noexcept
+{
+    AL_CALL(alSource3f, m_handler, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
+}
+
+glm::vec3 SGCore::AudioSource::getVelocity() noexcept
+{
+    float x;
+    float y;
+    float z;
+    
+    AL_CALL(alGetSource3f, m_handler, AL_VELOCITY, &x, &y, &z);
+    
+    return { x, y, z };
+}
+
+void SGCore::AudioSource::setDirection(const glm::vec3& direction) noexcept
+{
+    AL_CALL(alSource3f, m_handler, AL_DIRECTION, direction.x, direction.y, direction.z);
+}
+
+glm::vec3 SGCore::AudioSource::getDirection() noexcept
+{
+    float x;
+    float y;
+    float z;
+    
+    AL_CALL(alGetSource3f, m_handler, AL_DIRECTION, &x, &y, &z);
+    
+    return { x, y, z };
+}
+
+void SGCore::AudioSource::setGain(const float& gain) noexcept
+{
+    if(m_isValid)
+    {
+        AL_CALL(alSourcef, m_handler, AL_GAIN, gain);
+    }
+}
+
+float SGCore::AudioSource::getGain() const noexcept
+{
+    float val = 0;
+    if(m_isValid)
+    {
+        AL_CALL(alGetSourcef, m_handler, AL_GAIN, &val);
+    }
+    
+    return val;
+}
+
+void SGCore::AudioSource::setPitch(const float& pitch) noexcept
+{
+    if(m_isValid)
+    {
+        AL_CALL(alSourcef, m_handler, AL_PITCH, pitch);
+    }
+}
+
+float SGCore::AudioSource::getPitch() const noexcept
+{
+    float val = 0;
+    if(m_isValid)
+    {
+        AL_CALL(alGetSourcef, m_handler, AL_PITCH, &val);
+    }
+    
+    return val;
+}
+
 void SGCore::AudioSource::setIsLooping(bool isLooping) noexcept
 {
     m_isLooping = isLooping;
@@ -123,3 +224,4 @@ bool SGCore::AudioSource::isLooping() const noexcept
 {
     return m_isLooping;
 }
+

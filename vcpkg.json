@@ -48,5 +48,8 @@
   }, {
     "name" : "glfw3",
     "version>=" : "3.4"
+  }, {
+    "name" : "openal-soft",
+    "version>=" : "1.23.1"
   } ]
 }

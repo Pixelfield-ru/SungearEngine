@@ -118,7 +118,19 @@ namespace SGUtils
                 return lptr.get() < rptr.get();
             }
         };
-
+        
+        template<typename T>
+        struct WeakHash
+        {
+            size_t operator()(const std::weak_ptr<T>& ptr) const noexcept
+            {
+                auto locked = ptr.lock();
+                if(!locked) return 0;
+                
+                return std::hash<T*>()(locked.get());
+            }
+        };
+        
         /**
          * Example
          * forTypes<InTypes...>([](auto t) { using type = typename decltype(t)::type; });

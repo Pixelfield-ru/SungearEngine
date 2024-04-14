@@ -73,8 +73,8 @@ namespace SGCore
         
         Ref<IShader> m_shader;
         
-        EventListener<void(entt::basic_registry<entity_t>&, const entity_t&, Ref<const Transform>)> m_transformChangedListener =
-                [this](entt::basic_registry<entity_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
+        EventListener<void(const Ref<registry_t>&, const entity_t&, Ref<const Transform>)> m_transformChangedListener =
+                [this](const Ref<registry_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
             onTransformUpdate(registry, entity, transform);
         };
         
@@ -82,11 +82,11 @@ namespace SGCore
         
         void recalculateRanges() noexcept;
 
-        void onMeshDestroyed(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept;
-        void onTransformDestroyed(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept;
+        void onMeshDestroyed(registry_t& registry, entity_t entity) noexcept;
+        void onTransformDestroyed(registry_t& registry, entity_t entity) noexcept;
         
-        void onMeshUpdate(entt::basic_registry<entity_t>& registry, entity_t entity) noexcept;
-        void onTransformUpdate(entt::basic_registry<entity_t>& registry, entity_t entity, Ref<const Transform> transform) noexcept;
+        void onMeshUpdate(registry_t& registry, entity_t entity) noexcept;
+        void onTransformUpdate(const Ref<registry_t>& registry, entity_t entity, Ref<const Transform> transform) noexcept;
         
         void onRenderPipelineSet() noexcept;
         

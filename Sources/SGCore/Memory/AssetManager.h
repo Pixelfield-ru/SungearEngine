@@ -35,7 +35,7 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> loadAsset(const std::string& path)
         {
-            entt::entity entity;
+            entity_t entity;
             
             auto foundEntity = m_entities.find(path);
             if(foundEntity != m_entities.end())
@@ -44,19 +44,19 @@ namespace SGCore
             }
             else
             {
-                entity = m_registry.create();
+                entity = m_registry->create();
                 m_entities[path] = entity;
             }
             
-            Ref<AssetT>* asset = m_registry.try_get<Ref<AssetT>>(entity);
+            Ref<AssetT>* asset = m_registry->try_get<Ref<AssetT>>(entity);
             // asset found
             if(asset)
             {
                 return *asset;
             }
             
-            Ref<AssetT> newAsset = m_registry.emplace<Ref<AssetT>>(entity,
-                                                                   AssetT::template createRefInstance<AssetT>());
+            Ref<AssetT> newAsset = m_registry->emplace<Ref<AssetT>>(entity,
+                                                                    AssetT::template createRefInstance<AssetT>());
             
             std::filesystem::path p(path);
             
@@ -72,7 +72,7 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         static std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias, const std::string& path)
         {
-            entt::entity entity;
+            entity_t entity;
             
             auto foundEntity = m_entities.find(alias);
             if(foundEntity != m_entities.end())
@@ -81,19 +81,19 @@ namespace SGCore
             }
             else
             {
-                entity = m_registry.create();
+                entity = m_registry->create();
                 m_entities[alias] = entity;
             }
             
-            Ref<AssetT>* asset = m_registry.try_get<Ref<AssetT>>(entity);
+            Ref<AssetT>* asset = m_registry->try_get<Ref<AssetT>>(entity);
             // asset found
             if(asset)
             {
                 return *asset;
             }
             
-            Ref<AssetT> newAsset = m_registry.emplace<Ref<AssetT>>(entity,
-                                                                   AssetT::template createRefInstance<AssetT>());
+            Ref<AssetT> newAsset = m_registry->emplace<Ref<AssetT>>(entity,
+                                                                    AssetT::template createRefInstance<AssetT>());
             
             std::filesystem::path p(path);
             
@@ -109,7 +109,7 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         static void addAsset(const std::string& alias, const Ref<AssetT>& asset)
         {
-            entt::entity entity;
+            entity_t entity;
             
             auto foundEntity = m_entities.find(alias);
             if(foundEntity != m_entities.end())
@@ -118,18 +118,18 @@ namespace SGCore
             }
             else
             {
-                entity = m_registry.create();
+                entity = m_registry->create();
                 m_entities[alias] = entity;
             }
             
-            Ref<AssetT>* foundAsset = m_registry.try_get<Ref<AssetT>>(entity);
+            Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
             // asset already exists
             if(foundAsset)
             {
                 return;
             }
             
-            m_registry.emplace<Ref<AssetT>>(entity, asset);
+            m_registry->emplace<Ref<AssetT>>(entity, asset);
             asset->setRawName(alias);
             
             if(SG_INSTANCEOF(asset.get(), GPUObject))
@@ -144,7 +144,7 @@ namespace SGCore
         {
             const std::string& assetPath = asset->getPath().string();
             
-            entt::entity entity;
+            entity_t entity;
             
             auto foundEntity = m_entities.find(assetPath);
             if(foundEntity != m_entities.end())
@@ -153,18 +153,18 @@ namespace SGCore
             }
             else
             {
-                entity = m_registry.create();
+                entity = m_registry->create();
                 m_entities[assetPath] = entity;
             }
             
-            Ref<AssetT>* foundAsset = m_registry.try_get<Ref<AssetT>>(entity);
+            Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
             // asset already exists
             if(foundAsset)
             {
                 return;
             }
             
-            m_registry.emplace<Ref<AssetT>>(entity, asset);
+            m_registry->emplace<Ref<AssetT>>(entity, asset);
             
             if(SG_INSTANCEOF(asset.get(), GPUObject))
             {
@@ -172,11 +172,11 @@ namespace SGCore
             }
         }
         
-        static entt::registry& getRegistry() noexcept;
+        SG_NOINLINE static Ref<registry_t> getRegistry() noexcept;
 
     private:
-        static inline entt::registry m_registry;
-        static inline std::unordered_map<std::string, entt::entity> m_entities;
+        static inline Ref<registry_t> m_registry = MakeRef<registry_t>();
+        static inline std::unordered_map<std::string, entity_t> m_entities;
     };
 }
 

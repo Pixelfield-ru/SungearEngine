@@ -10,6 +10,9 @@
 #include <spdlog/spdlog.h>
 
 #include "SGUtils/Utils.h"
+#include "SGCore/Main/CoreGlobals.h"
+
+#include <stb_vorbis.c>
 
 SGCore::AudioTrack::~AudioTrack()
 {
@@ -139,6 +142,33 @@ void SGCore::AudioTrack::loadFromMemory(const char* buffer, const size_t& buffer
         deleteData();
         m_dataBuffer = (char*) std::malloc(m_dataBufferSize);
         std::memcpy(m_dataBuffer, buffer + offsetToData + 8, m_dataBufferSize);
+    }
+    else if(type == AudioTrackType::ATT_OGG)
+    {
+        int stbErr;
+        stb_vorbis* vorbis = stb_vorbis_open_memory((std::uint8_t*) buffer, bufferSize, &stbErr, nullptr);
+        
+        if(stbErr != STBVorbisError::VORBIS__no_error)
+        {
+            spdlog::error("Could not load ogg from memory. Error is: {0}", stbErr);
+            stb_vorbis_close(vorbis);
+            return;
+        }
+        
+        m_bitsPerSample = 16;
+        m_sampleRate = vorbis->sample_rate;
+        m_numChannels = vorbis->channels;
+        
+        size_t trackByteSize = stb_vorbis_stream_length_in_samples(vorbis) * sizeof(short);
+        
+        m_dataBuffer = (char*) std::malloc(trackByteSize);
+        m_dataBufferSize = trackByteSize;
+        
+        int samplesCount = stb_vorbis_decode_memory((std::uint8_t*) buffer, trackByteSize, &m_numChannels, &m_sampleRate, (short**) &m_dataBuffer);
+        
+        std::cout << "samples count: " << samplesCount << ", stream len: " << vorbis->stream_len << ", trackByteSize: " << trackByteSize << std::endl;
+        
+        stb_vorbis_close(vorbis);
     }
 }
 

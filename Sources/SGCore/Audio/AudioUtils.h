@@ -8,25 +8,21 @@
 #include <string>
 #include <source_location>
 #include <al.h>
+#include <AL/alc.h>
+#include <AL/alext.h>
 #include <spdlog/spdlog.h>
 
 #include "SGUtils/TypeTraits.h"
 #include "SGUtils/Utils.h"
 
-#ifdef SUNGEAR_DEBUG
 #define AL_CALL(alFunc, ...) SGCore::AudioUtils::alCallImpl(std::source_location::current(), alFunc, __VA_ARGS__)
 #define AL_CALL_E(noError, alFunc, ...) SGCore::AudioUtils::alCallImplE(noError, std::source_location::current(), alFunc, __VA_ARGS__)
-#else
-#define AL_CALL(alFunc, ...) alFunc(__VA_ARGS__)
-#define AL_CALL_E(noError, alFunc, ...) noError = true; alFunc(__VA_ARGS__)
-#endif
 
 namespace SGCore::AudioUtils
 {
     static bool checkALErrors(const std::source_location& sourceLocation)
     {
         auto error = alGetError();
-        std::cout << "error: " << error << std::endl;
         if(error != AL_NO_ERROR)
         {
             std::string errorString;
@@ -51,10 +47,16 @@ namespace SGCore::AudioUtils
                     errorString = "UNKNOWN AL ERROR: " + std::to_string(error);
             }
             
+            std::string formatted = fmt::format("OpenAL error ({0}) (in {1} : {2}): {3}", error,
+                                                sourceLocation.file_name(),
+                                                sourceLocation.line(),
+                                                errorString);
+            
+            std::cout << formatted << std::endl;
+            
             if(spdlog::default_logger())
             {
-                spdlog::error("OpenAL error (in {0} : {1}): {2}", sourceLocation.file_name(), sourceLocation.line(),
-                              errorString);
+                spdlog::error(formatted);
             }
             
             return false;
@@ -63,46 +65,59 @@ namespace SGCore::AudioUtils
     }
     
     template<typename ALFunc, typename... Args>
-    std::enable_if_t<std::is_same_v<func_return_type_t<ALFunc>, void>, void> alCallImpl(const std::source_location& sourceLocation,
-                                                                                        ALFunc alFunc,
-                                                                                        Args&&... args)
+    SG_FORCEINLINE std::enable_if_t<std::is_same_v<func_return_type_t<ALFunc>, void>, void>
+    alCallImpl(const std::source_location& sourceLocation,
+               ALFunc alFunc,
+               Args&& ... args)
     {
         alFunc(args...);
+        #ifdef SUNGEAR_DEBUG
         checkALErrors(sourceLocation);
+        #endif
     }
     
     template<typename ALFunc, typename... Args>
     std::enable_if_t<!std::is_same_v<func_return_type_t<ALFunc>, void>, func_return_type_t<ALFunc>>
-    alCallImpl(const std::source_location& sourceLocation,
-               ALFunc alFunc,
-               Args&&... args)
+    SG_FORCEINLINE alCallImpl(const std::source_location& sourceLocation,
+                              ALFunc alFunc,
+                              Args&& ... args)
     {
         auto ret = alFunc(args...);
+        #ifdef SUNGEAR_DEBUG
         checkALErrors(sourceLocation);
+        #endif
         return ret;
     }
     
     template<typename ALFunc, typename... Args>
     std::enable_if_t<std::is_same_v<func_return_type_t<ALFunc>, void>, void>
-    alCallImplE(bool& noError,
-                const std::source_location& sourceLocation,
-                ALFunc alFunc,
-                Args&&... args)
+    SG_FORCEINLINE alCallImplE(bool& noError,
+                               const std::source_location& sourceLocation,
+                               ALFunc alFunc,
+                               Args&& ... args)
     {
         
         alFunc(std::forward<Args>(args)...);
+        #ifdef SUNGEAR_DEBUG
         noError = checkALErrors(sourceLocation);
+        #else
+        noError = true;
+        #endif
     }
     
     template<typename ALFunc, typename... Args>
     std::enable_if_t<!std::is_same_v<func_return_type_t<ALFunc>, void>, func_return_type_t<ALFunc>>
-    alCallImplE(bool& noError,
-                const std::source_location& sourceLocation,
-                ALFunc alFunc,
-                Args&&... args)
+    SG_FORCEINLINE alCallImplE(bool& noError,
+                               const std::source_location& sourceLocation,
+                               ALFunc alFunc,
+                               Args&& ... args)
     {
         auto ret = alFunc(std::forward<Args>(args)...);
+        #ifdef SUNGEAR_DEBUG
         noError = checkALErrors(sourceLocation);
+        #else
+        noError = true;
+        #endif
         return ret;
     }
 }

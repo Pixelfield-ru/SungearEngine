@@ -75,7 +75,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
             {
                 for(const auto& val : transformationsUpdater->m_changedModelMatrices.getObject())
                 {
-                    Ref<Rigidbody3D>* tmpRigidbody3D = lockedScene->getECSRegistry().try_get<Ref<Rigidbody3D>>(val.m_owner);
+                    Ref<Rigidbody3D>* tmpRigidbody3D = lockedScene->getECSRegistry()->try_get<Ref<Rigidbody3D>>(val.m_owner);
                     Ref<Rigidbody3D> rigidbody3D = (tmpRigidbody3D ? *tmpRigidbody3D : nullptr);
                     
                     if(rigidbody3D)
@@ -97,12 +97,12 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
             {
                 for(const auto& entity : transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getObject())
                 {
-                    if(registry.any_of<Ref<Rigidbody3D>>(entity))
+                    if(registry->any_of<Ref<Rigidbody3D>>(entity))
                     {
-                        Ref<Rigidbody3D> rigidbody3D = registry.get<Ref<Rigidbody3D>>(entity);
+                        Ref<Rigidbody3D> rigidbody3D = registry->get<Ref<Rigidbody3D>>(entity);
                         Ref<Transform> transform;
                         {
-                            Ref<Transform>* tmpTransform = registry.try_get<Ref<Transform>>(entity);
+                            Ref<Transform>* tmpTransform = registry->try_get<Ref<Transform>>(entity);
                             transform = (tmpTransform ? *tmpTransform : nullptr);
                         }
                         
@@ -111,12 +111,12 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                             TransformBase& ownTransform = transform->m_ownTransform;
                             TransformBase& finalTransform = transform->m_finalTransform;
                             
-                            EntityBaseInfo* entityBaseInfo = registry.try_get<EntityBaseInfo>(entity);
+                            EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(entity);
                             Ref<Transform> parentTransform;
                             
                             if(entityBaseInfo)
                             {
-                                auto* tmp = registry.try_get<Ref<Transform>>(entityBaseInfo->m_parent);
+                                auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo->m_parent);
                                 parentTransform = (tmp ? *tmp : nullptr);
                             }
                             
@@ -306,7 +306,7 @@ void SGCore::PhysicsWorld3D::onAddToScene()
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
-    auto rigidbodies3DView = lockedScene->getECSRegistry().view<Ref<Rigidbody3D>>();
+    auto rigidbodies3DView = lockedScene->getECSRegistry()->view<Ref<Rigidbody3D>>();
     
     rigidbodies3DView.each([this](Ref<Rigidbody3D> rigidbody3D) {
         this->addBody(rigidbody3D->m_body);
