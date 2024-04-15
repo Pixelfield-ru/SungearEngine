@@ -623,8 +623,15 @@ void SGCore::SGSLETranslator::sgsleMakeSubShaderCodePretty(const Ref<SGCore::SGS
         {
             --currentIntent;
         }
-        
-        lastLineChar = *line.rbegin();
+
+        if(!line.empty())
+        {
+            lastLineChar = *line.rbegin();
+        }
+        else
+        {
+            lastLineChar = ' ';
+        }
         
         line = currentIntent <= 0 ? line : std::string(currentIntent, '\t') + line;
         

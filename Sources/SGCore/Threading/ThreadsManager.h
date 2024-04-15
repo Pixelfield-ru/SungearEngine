@@ -43,10 +43,11 @@ namespace SGCore::Threading
         static inline std::vector<Thread*> m_threads;
         
         static inline std::shared_ptr<MainThread> m_mainThread;
-        
+
         static inline bool m_staticInit = []() {
             m_mainThread = std::make_shared<MainThread>();
             m_mainThread->m_nativeThreadID = std::this_thread::get_id();
+            m_threads.push_back(m_mainThread.get());
             
             return true;
         }();

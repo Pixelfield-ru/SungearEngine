@@ -356,6 +356,19 @@ namespace SGCore
                     listeningEvent->sortByPriorities();
                 }
             };
+
+            holder->m_copyToEventsFunc = [](const holder_t* from, holder_t* thisHolder)
+            {
+                for(auto& listeningEvent : thisHolder->m_listeningEvents)
+                {
+                    *listeningEvent -= *thisHolder;
+                }
+
+                for(auto& listeningEvent : from->m_listeningEvents)
+                {
+                    *listeningEvent += *thisHolder;
+                }
+            };
         }
         
         void sortByPriorities() noexcept

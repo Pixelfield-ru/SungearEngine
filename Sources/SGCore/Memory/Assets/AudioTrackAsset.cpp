@@ -11,7 +11,7 @@ void SGCore::AudioTrackAsset::load(const std::string& path)
     m_path = path;
     
     AudioTrackType trackType;
-    std::string extension = m_path.extension();
+    std::string extension = m_path.extension().string();
     if(extension == ".wav")
     {
         trackType = AudioTrackType::ATT_WAV;

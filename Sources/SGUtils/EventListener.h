@@ -45,7 +45,19 @@ namespace SGCore
                 m_unsubscribeFunc(this);
             }
         }
-        
+
+        EventListener& operator=(const EventListener& other) noexcept
+        {
+            if(m_copyToEventsFunc)
+            {
+                m_copyToEventsFunc(&other, this);
+            }
+
+            m_func = other.m_func;
+        }
+
+        EventListener& operator=(EventListener&&) noexcept = default;
+
         EventListener& operator=(const std::function<Return(Args&&...)>& func) noexcept
         {
             m_func = func;
@@ -73,6 +85,7 @@ namespace SGCore
     private:
         std::function<void(Args...)> m_func;
         std::function<void(EventListener*)> m_unsubscribeFunc;
+        std::function<void(const EventListener* from, EventListener* to)> m_copyToEventsFunc;
         std::list<Event<Return(Args...)>*> m_listeningEvents;
         bool m_isOwnedByEvent = false;
     };
