@@ -16,9 +16,9 @@ SGSubPass(PostProcessLayerDepthPass)
         uniform int currentFBIndex;
 
         // as layers count
-        uniform int allFrameBuffersDepthAttachmentCount;
+        uniform int layersDepthAttachmentsCount;
         // as all layers depths
-        uniform sampler2D allFrameBuffersDepthAttachments[32];
+        uniform sampler2D layersDepthAttachments[32];
 
         in vec2 vs_UVAttribute;
 
@@ -32,14 +32,14 @@ SGSubPass(PostProcessLayerDepthPass)
 
             // depth test pass -------------------------------------------
 
-            float currentFBDepth = texture(allFrameBuffersDepthAttachments[currentFBIndex], finalUV).r;
+            float currentFBDepth = texture(layersDepthAttachments[currentFBIndex], finalUV).r;
 
             // then sampling depth from other frame buffers and if we have closer depth then discard fragment
-            for (int i = 0; i < allFrameBuffersDepthAttachmentCount; i++)
+            for (int i = 0; i < layersDepthAttachmentsCount; i++)
             {
                 if (currentFBIndex == i) continue;
 
-                float otherDepth = texture(allFrameBuffersDepthAttachments[i], finalUV).r;
+                float otherDepth = texture(layersDepthAttachments[i], finalUV).r;
 
                 // discard fragment
                 if (otherDepth < currentFBDepth)

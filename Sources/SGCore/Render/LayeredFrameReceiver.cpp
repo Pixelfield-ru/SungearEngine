@@ -3,7 +3,7 @@
 //
 #include <spdlog/spdlog.h>
 
-#include "PostProcessFrameReceiver.h"
+#include "LayeredFrameReceiver.h"
 
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/ShadersPaths.h"
@@ -12,10 +12,13 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Scene/Layer.h"
 
-SGCore::PostProcessFrameReceiver::PostProcessFrameReceiver()
+SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 {
     // addRequiredShaderPath("PostProcessingShader");
-
+    
+    m_defaultLayer->m_name = "___DEFAULT_LAYER___";
+    addPostProcessLayer(m_defaultLayer);
+    
     m_shader = MakeRef<IShader>();
 
     /*m_depthPassShader = Ref<ISubPassShader>(
@@ -108,10 +111,6 @@ SGCore::PostProcessFrameReceiver::PostProcessFrameReceiver()
 
     // ---------------------------------------
 
-    // adding default pp layer
-    addPostProcessLayer("defaultPPLayer", m_technicalLayer);
-    m_currentPPFrameBufferToBind = getDefaultPostProcessLayer().m_frameBuffer;
-
     // preparing uniforms in some shaders ======================
     /*auto depthPassShader = m_shader->getSubPassShader("PostProcessLayerDepthPass");
 
@@ -123,39 +122,28 @@ SGCore::PostProcessFrameReceiver::PostProcessFrameReceiver()
     }*/
 }
 
-SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::addPostProcessLayer(const std::string& ppLayerName,
-                                                                                const Ref<Layer>& layer,
-                                                                                const std::uint16_t& fbWidth,
-                                                                                const std::uint16_t& fbHeight)
+SGCore::PostProcessLayer& SGCore::LayeredFrameReceiver::addPostProcessLayer(const Ref<Layer>& layer,
+                                                                            const std::uint16_t& fbWidth,
+                                                                            const std::uint16_t& fbHeight)
 {
     auto& shadersPaths = *SGUtils::Singleton::getSharedPtrInstance<ShadersPaths>();
 
-    const auto& foundPPLayer = m_postProcessLayers.find(layer);
+    PostProcessLayer* foundPPLayer = tryGetPostProcessLayer(layer->m_name);
 
-    if(foundPPLayer != m_postProcessLayers.cend())
+    if(foundPPLayer)
     {
         spdlog::error("Error: can not add a new post-process layer to the camera. This layer already exists.\n{0}",
                       SGUtils::Utils::sourceLocationToString(std::source_location::current()));
-        return foundPPLayer->second;
+        return *foundPPLayer;
     }
 
-    for(auto& ppLayer : m_postProcessLayers)
-    {
-        if(ppLayer.second.m_name == ppLayerName)
-        {
-            spdlog::error("Error: can not add a new post-process layer to the camera. Layer with name '{0}' already exists.\n{1}",
-                          ppLayerName,
-                          SGUtils::Utils::sourceLocationToString(std::source_location::current()));
-
-            return ppLayer.second;
-        }
-    }
-
-    auto& newPPLayer = m_postProcessLayers[layer];
+    m_postProcessLayers.emplace_back();
+    
+    auto& newPPLayer = *m_postProcessLayers.rbegin();
     // without - 1 because 0 is always default FB
     newPPLayer.m_index = m_postProcessLayers.size() - 1;
 
-    newPPLayer.m_name = ppLayerName;
+    newPPLayer.m_sceneLayer = layer;
     newPPLayer.m_frameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer())
             ->create()
             ->bind()
@@ -165,20 +153,21 @@ SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::addPostProcessLayer(
                             SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
                             0,
                             0)
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // ATTACHMENT WITHOUT DEPTH PASS
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // NOT DEPT-TESTED ATTACHMENT
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // ATTACHMENT WITH DEPTH PASS
+            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // DEPTH-TESTED ATTACHMENT
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
             )
+            // NON STANDARD!!
             // GBUFFER ATTACHMENTS
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
+            /*->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
                             SGGColorFormat::SGG_RGB,
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
@@ -207,7 +196,7 @@ SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::addPostProcessLayer(
                             SGGColorInternalFormat::SGG_RGB8,
                             0,
                             0
-            )
+            )*/
             ->unbind();
 
     newPPLayer.m_FXShader = Ref<ISubPassShader>(
@@ -215,6 +204,7 @@ SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::addPostProcessLayer(
                     shadersPaths["PostProcessing"]["DefaultLayerShader"]
             )
     );
+    
     newPPLayer.m_FXShader->addToGlobalStorage();
 
     // ----------------------------------
@@ -254,49 +244,43 @@ SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::addPostProcessLayer(
     return newPPLayer;
 }
 
-SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::addPostProcessLayer(const std::string& ppLayerName,
-                                                                                const Ref<Layer>& layer)
+SGCore::PostProcessLayer& SGCore::LayeredFrameReceiver::addPostProcessLayer(const Ref<Layer>& layer)
 {
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    return addPostProcessLayer(ppLayerName, layer, primaryMonitorWidth, primaryMonitorHeight);
+    return addPostProcessLayer(layer, primaryMonitorWidth, primaryMonitorHeight);
 }
 
-void SGCore::PostProcessFrameReceiver::setPostProcessLayerShader(const Ref<Layer>& layer,
-                                                                 const Ref<ISubPassShader>& shader) noexcept
+void SGCore::LayeredFrameReceiver::setPostProcessLayerShader(const Ref<Layer>& layer,
+                                                             const Ref<ISubPassShader>& shader) noexcept
 {
-    if(m_postProcessLayers.find(layer) == m_postProcessLayers.end())
+    PostProcessLayer* foundLayer = tryGetPostProcessLayer(layer->m_name);
+    
+    if(!foundLayer)
     {
         spdlog::error("Error: can not add a new post-process layer to the camera. This layer does not exist as post-processing layer.\n{0}",
                       SGUtils::Utils::sourceLocationToString(std::source_location::current()));
         return;
     }
-
-    m_postProcessLayers[layer].m_FXShader = shader;
+    
+    foundLayer->m_FXShader = shader;
 }
 
-SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::getPostProcessLayer(const Ref<Layer>& layer) noexcept
-{
-    const auto& foundPPLayer = m_postProcessLayers.find(layer);
-
-    return foundPPLayer != m_postProcessLayers.cend() ? foundPPLayer->second : getDefaultPostProcessLayer();
-}
-
-void SGCore::PostProcessFrameReceiver::bindPostProcessFrameBuffer
+void SGCore::LayeredFrameReceiver::bindPostProcessFrameBuffer
 (const Ref<Layer>& layer) noexcept
 {
-    auto foundPPLayer = getPostProcessLayer(layer);
+    PostProcessLayer* foundPPLayer = tryGetPostProcessLayer(layer->m_name);
 
-    m_currentPPFrameBufferToBind = foundPPLayer.m_frameBuffer;
+    m_currentPPFrameBufferToBind = foundPPLayer->m_frameBuffer;
 
     m_currentPPFrameBufferToBind->bind();
-    m_currentPPFrameBufferToBind->bindAttachmentsToDraw(foundPPLayer.m_attachmentsToRenderIn);
+    m_currentPPFrameBufferToBind->bindAttachmentsToDraw(foundPPLayer->m_attachmentsToRenderIn);
 }
 
-void SGCore::PostProcessFrameReceiver::unbindPostProcessFrameBuffer() const noexcept
+void SGCore::LayeredFrameReceiver::unbindPostProcessFrameBuffer() const noexcept
 {
     if(m_currentPPFrameBufferToBind)
     {
@@ -304,12 +288,16 @@ void SGCore::PostProcessFrameReceiver::unbindPostProcessFrameBuffer() const noex
     }
 }
 
-void SGCore::PostProcessFrameReceiver::clearPostProcessFrameBuffers() const noexcept
+void SGCore::LayeredFrameReceiver::clearPostProcessFrameBuffers() const noexcept
 {
     for(const auto& ppLayer : m_postProcessLayers)
     {
         // ppLayer.second.m_frameBuffer->bind()->clear();
-        ppLayer.second.m_frameBuffer->bind()->bindAttachmentsToDraw(std::vector<SGFrameBufferAttachmentType> { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT6, SGG_COLOR_ATTACHMENT7 })->clear();
+        ppLayer.m_frameBuffer->bind()->bindAttachmentsToDraw(
+                std::vector<SGFrameBufferAttachmentType> { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1,
+                                                           SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT3,
+                                                           SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5,
+                                                           SGG_COLOR_ATTACHMENT6, SGG_COLOR_ATTACHMENT7 })->clear();
     }
 
     m_ppLayersCombinedBuffer->bind()->bindAttachmentsToDraw(m_attachmentsForCombining)->clear();
@@ -317,22 +305,19 @@ void SGCore::PostProcessFrameReceiver::clearPostProcessFrameBuffers() const noex
     m_finalFrameFXFrameBuffer->bind()->clear()->unbind();
 }
 
-SGCore::PostProcessLayer& SGCore::PostProcessFrameReceiver::getDefaultPostProcessLayer() noexcept
+SGCore::PostProcessLayer* SGCore::LayeredFrameReceiver::tryGetPostProcessLayer(const std::string& name) noexcept
 {
-    // It is assumed that the technical layer always exists
-    return m_postProcessLayers.find(m_technicalLayer)->second;
+    auto it = std::find_if(m_postProcessLayers.begin(), m_postProcessLayers.end(), [&](const PostProcessLayer& layer) {
+        auto lockedSceneLayer = layer.m_sceneLayer.lock();
+        if(!lockedSceneLayer) return false;
+        
+        return lockedSceneLayer->m_name == name;
+    });
+    
+    return it != m_postProcessLayers.end() ? &*it : nullptr;
 }
 
-void SGCore::PostProcessFrameReceiver::updateLayersFrameBuffersMarkup() noexcept
+SGCore::PostProcessLayer* SGCore::LayeredFrameReceiver::tryGetDefaultPostProcessLayer() noexcept
 {
-    for(auto& ppLayerPair : m_postProcessLayers)
-    {
-        auto& ppLayer = ppLayerPair.second;
-
-        ppLayer.m_frameBuffersBindMarkup.clear();
-
-        ppLayer.m_FXShader->bind();
-
-        // todo: make
-    }
+    return tryGetPostProcessLayer("___DEFAULT_LAYER___");
 }

@@ -11,7 +11,7 @@
 #include "IgnoreOctrees.h"
 #include "SGCore/Render/Camera3D.h"
 #include "ObjectsCullingOctree.h"
-#include "OctreeCullableInfo.h"
+#include "OctreeCullable.h"
 
 SGCore::OctreesSolver::OctreesSolver()
 {
@@ -19,9 +19,11 @@ SGCore::OctreesSolver::OctreesSolver()
     // startThread();
 }
 
-void SGCore::OctreesSolver::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+void SGCore::OctreesSolver::onAddToScene(const Ref<Scene>& scene)
 {
     m_scene = scene;
+    
+    if(!scene) return;
     
     auto transformationsUpdater = scene->getSystem<TransformationsUpdater>();
     if(transformationsUpdater)
@@ -50,12 +52,12 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
                     continue;
                 }
                 
-                auto* tmpCullableInfo = registry->try_get<Ref<OctreeCullableInfo>>(p.first);
-                auto cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
+                auto* tmpCullable = registry->try_get<Ref<OctreeCullable>>(p.first);
+                auto cullable = (tmpCullable ? *tmpCullable : nullptr);
                 
-                if(cullableInfo)
+                if(cullable)
                 {
-                    auto lockedParentNode = cullableInfo->m_parentNode.lock();
+                    auto lockedParentNode = cullable->m_parentNode.lock();
                     if(lockedParentNode)
                     {
                         lockedParentNode->m_overlappedEntities.erase(p.first);
@@ -65,7 +67,7 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
                         }
                     }
                     auto foundNode =  octree->subdivideWhileOverlap(p.first, p.second->m_ownTransform.m_aabb, octree->m_root);
-                    cullableInfo->m_parentNode = foundNode;
+                    cullable->m_parentNode = foundNode;
                     if(foundNode)
                     {
                         foundNode->m_overlappedEntities.insert(p.first);
@@ -82,12 +84,12 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
             transformationsView.each([&octree, &registry](const entity_t& transformEntity, Ref<Transform> transform) {
                 if(!registry->all_of<IgnoreOctrees>(transformEntity))
                 {
-                    auto* tmpCullableInfo = registry->try_get<Ref<OctreeCullableInfo>>(transformEntity);
-                    auto cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
+                    auto* tmpCullable = registry->try_get<Ref<OctreeCullable>>(transformEntity);
+                    auto cullable = (tmpCullable ? *tmpCullable : nullptr);
                     
-                    if(cullableInfo)
+                    if(cullable)
                     {
-                        auto lockedParentNode = cullableInfo->m_parentNode.lock();
+                        auto lockedParentNode = cullable->m_parentNode.lock();
                         if(lockedParentNode)
                         {
                             lockedParentNode->m_overlappedEntities.erase(transformEntity);
@@ -97,7 +99,7 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
                             }
                         }
                         auto foundNode =  octree->subdivideWhileOverlap(transformEntity, transform->m_ownTransform.m_aabb, octree->m_root);
-                        cullableInfo->m_parentNode = foundNode;
+                        cullable->m_parentNode = foundNode;
                         if(foundNode)
                         {
                             foundNode->m_overlappedEntities.insert(transformEntity);

@@ -46,6 +46,8 @@ namespace SGCore
         [[nodiscard]] double getTargetFrameRate() const noexcept;
         void setTargetFrameRate(const double& frameRate) noexcept;
         
+        void setTargetTime(const double& timeSeconds) noexcept;
+        
         [[nodiscard]] double getTargetFrameTime() const noexcept;
         
         [[nodiscard]] double getFixedUpdateCallDeltaTime() const noexcept

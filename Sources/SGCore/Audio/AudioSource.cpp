@@ -20,6 +20,7 @@ void SGCore::AudioSource::create() noexcept
     // auto attaching to buffer if it is not nullptr
     attachBuffer(m_attachedBuffer.lock());
     
+    setType(getType());
     setState(getState());
 }
 
@@ -84,6 +85,36 @@ SGCore::AudioSourceState SGCore::AudioSource::getState() const noexcept
         case AL_STOPPED:
             return AudioSourceState::SOURCE_STOPPED;
     }
+    
+    return AudioSourceState::SOURCE_STOPPED;
+}
+
+void SGCore::AudioSource::setType(const SGCore::AudioSourceType& type) noexcept
+{
+    m_type = type;
+    
+    if(m_isValid)
+    {
+        switch(type)
+        {
+            case AST_POSITIONAL:
+            {
+                AL_CALL(alSourcei, m_handler, AL_SOURCE_RELATIVE, AL_FALSE);
+                break;
+            }
+            case AST_AMBIENT:
+            {
+                AL_CALL(alSourcei, m_handler, AL_SOURCE_RELATIVE, AL_TRUE);
+                setPosition({ 0, 0, 0 });
+                break;
+            }
+        }
+    }
+}
+
+SGCore::AudioSourceType SGCore::AudioSource::getType() const noexcept
+{
+    return m_type;
 }
 
 SGCore::AudioSource& SGCore::AudioSource::operator=(const SGCore::AudioSource& other) noexcept
@@ -100,6 +131,7 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(const SGCore::AudioSource& o
         setPitch(other.getPitch());
         setIsLooping(other.isLooping());
         setState(other.getState());
+        setType(other.getType());
     }
     
     return *this;
@@ -116,6 +148,7 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(SGCore::AudioSource&& other)
         m_attachedBuffer = other.m_attachedBuffer;
         m_handler = other.m_handler;
         m_isValid = other.m_isValid;
+        m_type = other.m_type;
         
         attachBuffer(m_attachedBuffer.lock());
         other.detachBuffer();
@@ -223,5 +256,24 @@ void SGCore::AudioSource::setIsLooping(bool isLooping) noexcept
 bool SGCore::AudioSource::isLooping() const noexcept
 {
     return m_isLooping;
+}
+
+void SGCore::AudioSource::setRolloffFactor(const float& rolloffFactor) noexcept
+{
+    if(m_isValid)
+    {
+        AL_CALL(alSourcef, m_handler, AL_ROLLOFF_FACTOR, rolloffFactor);
+    }
+}
+
+float SGCore::AudioSource::getRolloffFactor() const noexcept
+{
+    float val = 0;
+    if(m_isValid)
+    {
+        AL_CALL(alGetSourcef, m_handler, AL_ROLLOFF_FACTOR, &val);
+    }
+    
+    return 0;
 }
 

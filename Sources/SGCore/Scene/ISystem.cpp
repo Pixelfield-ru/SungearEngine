@@ -8,6 +8,7 @@
 void SGCore::ISystem::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
 {
     m_scene = scene;
+    onAddToScene(scene);
 }
 
 SGCore::Weak<SGCore::Scene> SGCore::ISystem::getScene() const noexcept

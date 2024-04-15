@@ -301,19 +301,18 @@ void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noe
     }
 }
 
-void SGCore::PhysicsWorld3D::onAddToScene()
+void SGCore::PhysicsWorld3D::onAddToScene(const Ref<Scene>& scene)
 {
-    auto lockedScene = m_scene.lock();
-    if(!lockedScene) return;
+    if(!scene) return;
     
-    auto rigidbodies3DView = lockedScene->getECSRegistry()->view<Ref<Rigidbody3D>>();
+    auto rigidbodies3DView = scene->getECSRegistry()->view<Ref<Rigidbody3D>>();
     
     rigidbodies3DView.each([this](Ref<Rigidbody3D> rigidbody3D) {
         this->addBody(rigidbody3D->m_body);
     });
 }
 
-void SGCore::PhysicsWorld3D::onRemoveFromScene()
+void SGCore::PhysicsWorld3D::onRemoveFromScene(const Ref<Scene>& scene)
 {
 
 }

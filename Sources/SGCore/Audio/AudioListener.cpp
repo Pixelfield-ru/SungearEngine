@@ -37,20 +37,25 @@ glm::vec3 SGCore::AudioListener::getVelocity() noexcept
     return { x, y, z };
 }
 
-void SGCore::AudioListener::setOrientation(const glm::vec3& orientation) noexcept
+void SGCore::AudioListener::setOrientation(const glm::vec3& forward, const glm::vec3& up) noexcept
 {
-    AL_CALL(alListener3f, AL_ORIENTATION, orientation.x, orientation.y, orientation.z);
+    ALfloat floats[] = { forward.x, forward.y, forward.z, up.x, up.y, up.z };
+    AL_CALL(alListenerfv, AL_ORIENTATION, floats);
 }
 
-glm::vec3 SGCore::AudioListener::getOrientation() noexcept
+void SGCore::AudioListener::getOrientation(glm::vec3& forward, glm::vec3& up) noexcept
 {
-    float x;
-    float y;
-    float z;
+    float values[6];
     
-    AL_CALL(alGetListener3f, AL_ORIENTATION, &x, &y, &z);
+    AL_CALL(alGetListenerfv, AL_ORIENTATION, values);
     
-    return { x, y, z };
+    forward.x = values[0];
+    forward.y = values[1];
+    forward.z = values[2];
+    
+    up.x = values[3];
+    up.y = values[4];
+    up.z = values[5];
 }
 
 void SGCore::AudioListener::setGain(const float& gain) noexcept

@@ -4,7 +4,7 @@
 #define SUNGEARENGINE_CAMERA3DMOVEMENTSYSTEM_H
 
 #include "SGCore/Scene/ISystem.h"
-#include "SGCore/Render/PostProcessFrameReceiver.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 #include "TransformBase.h"
 
 namespace SGCore

@@ -33,6 +33,8 @@ SGCore::entity_t SGCore::EntitiesPool::pop(bool& isCreatedNew) noexcept
         }
         else
         {
+            m_mutex.unlock();
+            
             clear();
             
             return entt::null;
@@ -97,6 +99,8 @@ SGCore::EntitiesPool& SGCore::EntitiesPool::operator=(const SGCore::EntitiesPool
     if(this == std::addressof(other)) return *this;
 
     clear();
+    
+    std::lock_guard guard(m_mutex);
 
     m_attachedRegistry = other.m_attachedRegistry;
 

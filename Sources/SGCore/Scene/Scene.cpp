@@ -94,13 +94,6 @@ void SGCore::Scene::createDefaultSystems()
     
     auto audioProcessor = MakeRef<AudioProcessor>();
     addSystem(audioProcessor);
-    
-    for(auto& system : m_systems)
-    {
-        system->setScene(thisShared);
-    }
-
-    // m_systems.emplace(pipelineSystem);
 }
 
 // ----------------
@@ -161,8 +154,7 @@ void SGCore::Scene::fixedUpdate(const double& dt, const double& fixedDt)
 
 void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
 {
-    system->m_scene = shared_from_this();
-    system->onAddToScene();
+    system->setScene(shared_from_this());
     m_systems.push_back(system);
 }
 
@@ -179,11 +171,34 @@ const std::vector<SGCore::Ref<SGCore::ISystem>>& SGCore::Scene::getAllSystems() 
     return entity;
 }*/
 
-SGCore::Layer SGCore::Scene::createLayer(const std::string& name) noexcept
+SGCore::Ref<SGCore::Layer> SGCore::Scene::createLayer(const std::string& name) noexcept
 {
-    Layer layer = m_layers[name];
-    layer.m_index = m_maxLayersCount++;
-    return layer;
+    auto foundIt = std::find_if(m_layers.begin(), m_layers.end(), [&name](const Ref<Layer>& layer) {
+        return name == layer->m_name;
+    });
+    
+    if(foundIt != m_layers.end())
+    {
+        return *foundIt;
+    }
+    else
+    {
+        Ref<Layer> newLayer = MakeRef<Layer>();
+        newLayer->m_name = name;
+        newLayer->m_index = m_maxLayersCount++;
+        m_layers.push_back(newLayer);
+        
+        return newLayer;
+    }
+}
+
+SGCore::Ref<SGCore::Layer> SGCore::Scene::getLayer(const std::string& name) noexcept
+{
+    auto foundIt = std::find_if(m_layers.begin(), m_layers.end(), [&name](const Ref<Layer>& layer) {
+        return name == layer->m_name;
+    });
+    
+    return foundIt != m_layers.end() ? *foundIt : nullptr;
 }
 
 double SGCore::Scene::getUpdateFunctionExecutionTime() const noexcept

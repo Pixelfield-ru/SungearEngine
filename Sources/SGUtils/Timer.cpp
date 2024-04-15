@@ -79,13 +79,19 @@ double SGCore::Timer::getTargetFrameRate() const noexcept
     return m_targetFrameRate;
 }
 
+double SGCore::Timer::getTargetFrameTime() const noexcept
+{
+    return m_targetFrameTime;
+}
+
 void SGCore::Timer::setTargetFrameRate(const double& frameRate) noexcept
 {
     m_targetFrameRate = frameRate;
     m_targetFrameTime = 1.0 / m_targetFrameRate;
 }
 
-double SGCore::Timer::getTargetFrameTime() const noexcept
+void SGCore::Timer::setTargetTime(const double& timeSeconds) noexcept
 {
-    return m_targetFrameTime;
+    m_targetFrameRate = 1.0 / timeSeconds;
+    m_targetFrameTime = timeSeconds;
 }

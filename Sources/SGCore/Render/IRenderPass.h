@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/ISubPassShader.h"
 #include "SGUtils/Timer.h"
-#include "PostProcessFrameReceiver.h"
+#include "LayeredFrameReceiver.h"
 
 namespace SGCore
 {

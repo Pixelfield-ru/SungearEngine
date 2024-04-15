@@ -17,8 +17,8 @@ namespace SGCore
         static void setVelocity(const glm::vec3& velocity) noexcept;
         static glm::vec3 getVelocity() noexcept;
         
-        static void setOrientation(const glm::vec3& orientation) noexcept;
-        static glm::vec3 getOrientation() noexcept;
+        static void setOrientation(const glm::vec3& forward, const glm::vec3& up) noexcept;
+        static void getOrientation(glm::vec3& forward, glm::vec3& up) noexcept;
         
         static void setGain(const float& gain) noexcept;
         static float getGain() noexcept;

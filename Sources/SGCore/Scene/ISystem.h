@@ -33,10 +33,12 @@ namespace SGCore
 
         virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
         virtual void update(const double& dt, const double& fixedDt) { }
-        virtual void onAddToScene() { }
-        virtual void onRemoveFromScene() { }
+        // scene - this (m_scene) locked scene
+        virtual void onAddToScene(const Ref<Scene>& scene) { }
+        // scene - this (m_scene) locked scene
+        virtual void onRemoveFromScene(const Ref<Scene>& scene) { }
         
-        virtual void setScene(const Ref<Scene>& scene) noexcept;
+        void setScene(const Ref<Scene>& scene) noexcept;
         Weak<Scene> getScene() const noexcept;
         
         Ref<Threading::Thread> getThread() const noexcept;

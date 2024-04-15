@@ -33,7 +33,7 @@
 #include "SGCore/Input/InputManager.h"
 
 #include "SGCore/Render/Mesh.h"
-#include "SGCore/Render/PostProcessFrameReceiver.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Controllable3D.h"
 #include "SGCore/Render/RenderingBase.h"
@@ -48,7 +48,7 @@
 #include "SGCore/Memory/Assets/Font.h"
 #include "SGCore/UI/FontSpecializationRenderer.h"
 #include "SGCore/UI/Text.h"
-#include "SGCore/Render/DefaultFrameReceiver.h"
+#include "SGCore/Render/SimpleFrameReceiver.h"
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/UICamera.h"
 #include "SGCore/Render/LWRP/LWRenderPipeline.h"

@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    struct DefaultFrameReceiver
+    struct SimpleFrameReceiver
     {
         Ref<IFrameBuffer> m_receiver;
     };

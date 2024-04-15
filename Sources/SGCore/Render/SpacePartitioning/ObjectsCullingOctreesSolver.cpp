@@ -7,9 +7,8 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/Camera3D.h"
 #include "ObjectsCullingOctree.h"
-#include "CullableMesh.h"
+#include "OctreeCullable.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "OctreeCullableInfo.h"
 
 void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const double& fixedDt, Ref<OctreesSolver> parent) noexcept
 {

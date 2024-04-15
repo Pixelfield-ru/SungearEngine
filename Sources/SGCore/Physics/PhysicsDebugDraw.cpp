@@ -14,7 +14,7 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/RenderingBase.h"
-#include "SGCore/Render/PostProcessFrameReceiver.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/Camera3D.h"

@@ -2,7 +2,7 @@
 // Created by stuka on 26.11.2023.
 //
 
-#include "PostProcessFXPass.h"
+#include "PostProcessPass.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
@@ -10,7 +10,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/IRenderPipeline.h"
 
-SGCore::PostProcessFXPass::PostProcessFXPass()
+SGCore::PostProcessPass::PostProcessPass()
 {
     m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
 
@@ -27,13 +27,13 @@ SGCore::PostProcessFXPass::PostProcessFXPass()
     m_postProcessQuad->prepare();
 }
 
-void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
+void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
 {
     CoreMain::getRenderer()->setDepthTestingEnabled(false);
 
-    auto receiversView = scene->getECSRegistry()->view<PostProcessFrameReceiver>();
+    auto receiversView = scene->getECSRegistry()->view<LayeredFrameReceiver>();
 
-    receiversView.each([this](PostProcessFrameReceiver& camera) {
+    receiversView.each([this](LayeredFrameReceiver& camera) {
         depthPass(camera);
         FXPass(camera);
         layersCombiningPass(camera);
@@ -44,18 +44,16 @@ void SGCore::PostProcessFXPass::render(const Ref<Scene>& scene, const Ref<IRende
 }
 
 // DONE
-void SGCore::PostProcessFXPass::depthPass(PostProcessFrameReceiver& camera) const noexcept
+void SGCore::PostProcessPass::depthPass(LayeredFrameReceiver& camera) const noexcept
 {
     auto depthPassShader = camera.m_shader->getSubPassShader("PostProcessLayerDepthPass");
 
     depthPassShader->bind();
 
     std::uint8_t layerIdx = 0;
-
-    for(const auto& ppLayerPair : camera.getPostProcessLayers())
+    
+    for(const auto& ppLayer : camera.getPostProcessLayers())
     {
-        const auto& ppLayer = ppLayerPair.second;
-
         depthPassShader->useInteger("currentFBIndex", layerIdx);
 
         ppLayer.m_frameBuffer->bind();
@@ -75,12 +73,10 @@ void SGCore::PostProcessFXPass::depthPass(PostProcessFrameReceiver& camera) cons
 }
 
 // DONE
-void SGCore::PostProcessFXPass::FXPass(SGCore::PostProcessFrameReceiver& camera) const noexcept
+void SGCore::PostProcessPass::FXPass(SGCore::LayeredFrameReceiver& camera) const noexcept
 {
-    for(const auto& ppLayerPair: camera.getPostProcessLayers())
+    for(const auto& ppLayer: camera.getPostProcessLayers())
     {
-        const auto& ppLayer = ppLayerPair.second;
-
         auto layerShader = ppLayer.m_FXShader;
 
         layerShader->bind();
@@ -113,7 +109,7 @@ void SGCore::PostProcessFXPass::FXPass(SGCore::PostProcessFrameReceiver& camera)
 }
 
 // DONE
-void SGCore::PostProcessFXPass::layersCombiningPass(PostProcessFrameReceiver& camera) const noexcept
+void SGCore::PostProcessPass::layersCombiningPass(LayeredFrameReceiver& camera) const noexcept
 {
     auto ppLayerCombiningShader = camera.m_shader->getSubPassShader("PostProcessAttachmentsCombiningPass");
 
@@ -123,10 +119,8 @@ void SGCore::PostProcessFXPass::layersCombiningPass(PostProcessFrameReceiver& ca
     camera.m_ppLayersCombinedBuffer->bind();
 
     // collecting all attachment to render in
-    for(const auto& ppLayerPair : camera.getPostProcessLayers())
+    for(const auto& ppLayer : camera.getPostProcessLayers())
     {
-        const auto& ppLayer = ppLayerPair.second;
-
         for(const auto& attachmentsPair : ppLayer.m_attachmentsForCombining)
         {
             camera.m_attachmentsForCombining.insert(attachmentsPair.first);
@@ -140,10 +134,8 @@ void SGCore::PostProcessFXPass::layersCombiningPass(PostProcessFrameReceiver& ca
 
         std::uint8_t attachmentIdx = 0;
 
-        for(const auto& ppLayerPair : camera.getPostProcessLayers())
+        for(const auto& ppLayer : camera.getPostProcessLayers())
         {
-            const auto& ppLayer = ppLayerPair.second;
-
             const auto& foundAttachmentIter = ppLayer.m_attachmentsForCombining.find(attachmentToRenderIn);
 
             if(foundAttachmentIter != ppLayer.m_attachmentsForCombining.cend())
@@ -171,7 +163,7 @@ void SGCore::PostProcessFXPass::layersCombiningPass(PostProcessFrameReceiver& ca
 }
 
 // DONE
-void SGCore::PostProcessFXPass::finalFrameFXPass(PostProcessFrameReceiver& camera) const
+void SGCore::PostProcessPass::finalFrameFXPass(LayeredFrameReceiver& camera) const
 {
     auto ppFinalFxShader = camera.m_shader->getSubPassShader("PostProcessFinalFXPass");
 

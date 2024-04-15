@@ -27,9 +27,8 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
     // m_updaterThread.detach();
 }
 
-void SGCore::TransformationsUpdater::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+void SGCore::TransformationsUpdater::onAddToScene(const Ref<Scene>& scene)
 {
-    m_scene = scene;
     m_sharedScene = scene;
 }
 

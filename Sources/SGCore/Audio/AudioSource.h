@@ -22,6 +22,12 @@ namespace SGCore
         SOURCE_STOPPED
     };
     
+    enum AudioSourceType
+    {
+        AST_POSITIONAL,
+        AST_AMBIENT
+    };
+    
     struct AudioSource
     {
         friend struct AudioProcessor;
@@ -49,8 +55,14 @@ namespace SGCore
         void setPitch(const float& pitch) noexcept;
         [[nodiscard]] float getPitch() const noexcept;
         
+        void setRolloffFactor(const float& rolloffFactor) noexcept;
+        [[nodiscard]] float getRolloffFactor() const noexcept;
+        
         void setState(const AudioSourceState& state) noexcept;
         [[nodiscard]] AudioSourceState getState() const noexcept;
+        
+        void setType(const AudioSourceType& type) noexcept;
+        [[nodiscard]] AudioSourceType getType() const noexcept;
         
         void setIsLooping(bool isLooping) noexcept;
         [[nodiscard]] bool isLooping() const noexcept;
@@ -62,6 +74,7 @@ namespace SGCore
         
     private:
         AudioSourceState m_lastState = AudioSourceState::SOURCE_STOPPED;
+        AudioSourceType m_type = AudioSourceType::AST_POSITIONAL;
         
         bool m_isLooping = false;
         

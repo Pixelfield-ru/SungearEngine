@@ -36,7 +36,7 @@ namespace SGCore
         // main thread
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
         
-        void setScene(const Ref<Scene>& scene) noexcept final;
+        void onAddToScene(const Ref<Scene>& scene) final;
         
         Event<void(const Ref<registry_t>& registry, const entity_t&, Ref<const Transform>)> onTransformChanged;
         

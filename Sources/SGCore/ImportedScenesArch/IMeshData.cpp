@@ -15,8 +15,7 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 #include "SGCore/Scene/Scene.h"
-#include "SGCore/Render/SpacePartitioning/CullableMesh.h"
-#include "SGCore/Render/SpacePartitioning/OctreeCullableInfo.h"
+#include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 
 /*SGCore::Mesh::Mesh() noexcept
 {
@@ -128,8 +127,8 @@ SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const st
     EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity);
     Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
     Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
-    auto cullableMesh = registry->emplace<Ref<CullableMesh>>(meshEntity, MakeRef<CullableMesh>());
-    auto cullableInfo = registry->emplace<Ref<OctreeCullableInfo>>(meshEntity, MakeRef<OctreeCullableInfo>());
+    // NOT STANDARD
+    // auto cullableMesh = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
     // maybe can load the ram
     meshEntityMesh.m_base.m_meshData = shared_from_this();
     

@@ -17,8 +17,10 @@ namespace SGCore
 {
     struct OctreeNode;
     
-    struct CullableMesh
+    struct OctreeCullable
     {
+        Weak<OctreeNode> m_parentNode;
+        
     private:
         bool m_dummy = true;
     };

@@ -6,7 +6,7 @@
 #include "SGCore/Main/CoreMain.h"
 
 #include "PBRRPGeometryPass.h"
-#include "SGCore/Render/PostProcess/PostProcessFXPass.h"
+#include "SGCore/Render/PostProcess/PostProcessPass.h"
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Render/TextRenderPass.h"
 

@@ -92,7 +92,14 @@ namespace SGCore
             return m_scenes;
         }
         
-        Layer createLayer(const std::string& name) noexcept;
+        /**
+         * Creates new layer or returns existing layer.
+         * @param name - Name of new layer.
+         * @return Layer.
+         */
+        Ref<Layer> createLayer(const std::string& name) noexcept;
+        
+        Ref<Layer> getLayer(const std::string& name) noexcept;
         
         void setUIXMLDocument(const Ref<XMLDocument>& xmlDocument) noexcept;
         Weak<XMLDocument> getUIXMLDocument() const noexcept;
@@ -110,7 +117,7 @@ namespace SGCore
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 
         std::vector<Ref<ISystem>> m_systems;
-        std::unordered_map<std::string, Layer> m_layers;
+        std::vector<Ref<Layer>> m_layers;
 
         size_t m_maxLayersCount = 0;
         

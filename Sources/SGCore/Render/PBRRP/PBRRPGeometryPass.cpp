@@ -6,7 +6,7 @@
 
 #include "PBRRPGeometryPass.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Render/PostProcessFrameReceiver.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/Mesh.h"
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
@@ -19,9 +19,8 @@
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/DisableMeshGeometryPass.h"
 #include "SGCore/Render/ShaderComponent.h"
-#include "SGCore/Render/SpacePartitioning/CullableMesh.h"
+#include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 #include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
-#include "SGCore/Render/SpacePartitioning/OctreeCullableInfo.h"
 #include "SGCore/Render/SpacePartitioning/Octree.h"
 #include "SGCore/Render/SpacePartitioning/ObjectsCullingOctree.h"
 
@@ -64,18 +63,45 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             standardGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
         }
         
+        LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->try_get<LayeredFrameReceiver>(cameraEntity);
+        
         // todo: make get receiver (postprocess or default) and render in them
 
-        meshesView.each([&renderPipeline, &standardGeometryShader, &scene, &cameraEntity, &registry, this]
+        meshesView.each([&cameraLayeredFrameReceiver, &renderPipeline, &standardGeometryShader, &scene, &cameraEntity, &registry, this]
         (const entity_t& meshEntity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
-            auto* tmpCullableMesh = registry->try_get<Ref<CullableMesh>>(meshEntity);
-            Ref<CullableMesh> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
+            auto* tmpCullableMesh = registry->try_get<Ref<OctreeCullable>>(meshEntity);
+            Ref<OctreeCullable> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
             
             bool willRender = registry->try_get<IgnoreOctrees>(meshEntity) || !cullableMesh;
             
             if(willRender)
             {
+                EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(meshEntity);
+                Ref<Layer> meshLayer = entityBaseInfo ? entityBaseInfo->m_layer.lock() : nullptr;
+                // only for LayeredFrameReceiver
+                PostProcessLayer* postProcessLayer = nullptr;
+                
+                if(cameraLayeredFrameReceiver)
+                {
+                    if(meshLayer)
+                    {
+                        postProcessLayer = cameraLayeredFrameReceiver->tryGetPostProcessLayer(meshLayer->m_name);
+                    }
+                    
+                    if(!postProcessLayer)
+                    {
+                        postProcessLayer = cameraLayeredFrameReceiver->tryGetDefaultPostProcessLayer();
+                    }
+                    
+                    postProcessLayer->m_frameBuffer->bind();
+                }
+                
                 renderMesh(registry, meshEntity, meshTransform, mesh, standardGeometryShader);
+                
+                if(postProcessLayer)
+                {
+                    postProcessLayer->m_frameBuffer->unbind();
+                }
             }
         });
     });
@@ -181,8 +207,8 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry
         // render all entities
         for(const auto& e : node->m_overlappedEntities)
         {
-            auto* tmpCullableInfo = registry->try_get<Ref<OctreeCullableInfo>>(e);
-            Ref<OctreeCullableInfo> cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
+            auto* tmpCullableInfo = registry->try_get<Ref<OctreeCullable>>(e);
+            Ref<OctreeCullable> cullableInfo = (tmpCullableInfo ? *tmpCullableInfo : nullptr);
             
             if(!cullableInfo) continue;
             

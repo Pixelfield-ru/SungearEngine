@@ -159,6 +159,7 @@ namespace SGCore
             auto it = std::find_if(m_listeners.begin(), m_listeners.end(), [&funcHash](const holder_t* a) {
                 return a->m_hash == funcHash;
             });
+            
             if(it != m_listeners.end())
             {
                 auto ptr = *it;
@@ -175,7 +176,7 @@ namespace SGCore
                     delete ptr;
                 }
                 
-                m_listeners.erase(it);
+                // m_listeners.erase(it);
                 sortByPriorities();
             }
         }
