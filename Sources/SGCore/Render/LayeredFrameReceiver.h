@@ -6,6 +6,7 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/PostProcess/PostProcessFXSubPass.h"
 #include "SGCore/Scene/Layer.h"
+#include "SGUtils/EventListener.h"
 
 #define SG_PP_LAYER_FB_NAME(idx)  ("frameBuffer" + std::to_string(idx))
 
@@ -26,12 +27,21 @@ namespace SGCore
 
         Ref<IFrameBuffer> m_frameBuffer;
 
-        Weak<Layer> m_sceneLayer;
+        std::string m_name;
 
-        Ref<ISubPassShader> m_FXShader;
+        Ref<ISubPassShader> m_FXSubPassShader;
 
         std::uint16_t m_index = 0;
-
+        
+        // attachments that the scene will be rendered into
+        std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0, // BY DEFAULT DEPTH NON-TESTED ATTACHMENT
+                                                                           SGG_COLOR_ATTACHMENT1/*, // BY DEFAULT DEPTH-TESTED ATTACHMENT
+                                                                           SGG_COLOR_ATTACHMENT2,
+                                                                           SGG_COLOR_ATTACHMENT3,
+                                                                           SGG_COLOR_ATTACHMENT4,
+                                                                           SGG_COLOR_ATTACHMENT5,
+                                                                           SGG_COLOR_ATTACHMENT6*/};
+        
         // attachments that will pass the depth test
         // SGG_COLOR_ATTACHMENT0 IS NOT DEPTH-TESTED ATTACHMENT
         std::vector<SGFrameBufferAttachmentType> m_attachmentsToDepthTest { SGG_COLOR_ATTACHMENT1/*,
@@ -39,26 +49,17 @@ namespace SGCore
                                                                             SGG_COLOR_ATTACHMENT3,
                                                                             SGG_COLOR_ATTACHMENT4,
                                                                             SGG_COLOR_ATTACHMENT5,
-                                                                            SGG_COLOR_ATTACHMENT6 */};
-
-        // attachments that the scene will be rendered into
-        std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0,
-                                                                           SGG_COLOR_ATTACHMENT1/*,
-                                                                           SGG_COLOR_ATTACHMENT2,
-                                                                           SGG_COLOR_ATTACHMENT3,
-                                                                           SGG_COLOR_ATTACHMENT4,
-                                                                           SGG_COLOR_ATTACHMENT5,
-                                                                           SGG_COLOR_ATTACHMENT6 */};
+                                                                            SGG_COLOR_ATTACHMENT6*/};
 
         // first - to which attachment of the output buffer will the data from the attachment "second" be copied
         // second - the attachment to be copied
         std::unordered_map<SGFrameBufferAttachmentType, SGFrameBufferAttachmentType> m_attachmentsForCombining {
-                { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1 },
+                { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1 }/*,
                 { SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT2 },
                 { SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT3 },
                 { SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT4 },
                 { SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5 },
-                { SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT6 }
+                { SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT6 }*/
         };
 
         std::string getNameInShader() const noexcept
@@ -90,14 +91,14 @@ namespace SGCore
         bool m_useFinalFrameBuffer = false;
 
         std::set<SGFrameBufferAttachmentType> m_attachmentsForCombining;
+        
+        Ref<PostProcessLayer> addPostProcessLayer(const std::string& name,
+                                                  const std::uint16_t& fbWidth,
+                                                  const std::uint16_t& fbHeight);
+        
+        Ref<PostProcessLayer> addPostProcessLayer(const std::string& name);
 
-        PostProcessLayer& addPostProcessLayer(const Ref<Layer>& layer,
-                                              const std::uint16_t& fbWidth,
-                                              const std::uint16_t& fbHeight);
-
-        PostProcessLayer& addPostProcessLayer(const Ref<Layer>& layer);
-
-        void setPostProcessLayerShader(const Ref<Layer>& layer,
+        void setPostProcessLayerShader(const std::string& name,
                                        const Ref<ISubPassShader>& shader) noexcept;
 
         [[nodiscard]] const auto& getPostProcessLayers() const noexcept
@@ -105,8 +106,8 @@ namespace SGCore
             return m_postProcessLayers;
         }
         
-        PostProcessLayer* tryGetPostProcessLayer(const std::string& name) noexcept;
-        PostProcessLayer* tryGetDefaultPostProcessLayer() noexcept;
+        Ref<PostProcessLayer> getPostProcessLayer(const std::string& name) noexcept;
+        Ref<PostProcessLayer> getDefaultPostProcessLayer() noexcept;
         
         void bindPostProcessFrameBuffer(const Ref<Layer>& layer) noexcept;
 
@@ -117,9 +118,9 @@ namespace SGCore
         // todo: make rename pp layer function
 
     private:
-        Ref<Layer> m_defaultLayer = MakeRef<Layer>();
+        Ref<PostProcessLayer> m_defaultLayer;
         
-        std::vector<PostProcessLayer> m_postProcessLayers;
+        std::vector<Ref<PostProcessLayer>> m_postProcessLayers;
 
         Ref<IFrameBuffer> m_currentPPFrameBufferToBind;
     };

@@ -26,7 +26,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noex
         const auto subPassName = subPassIter.first;
         const auto& subPass = subPassIter.second;
 
-        auto subPassShader = Ref<ISubPassShader>(CoreMain::getRenderer()->createShader());
+        auto subPassShader = Ref<ISubPassShader>(CoreMain::getRenderer()->createSubPassShader());
 
         for(const auto& subShaderIter : subPass.m_subShaders)
         {
@@ -37,34 +37,52 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noex
                 subPassShader->m_subShaders[subShaderType] = m_shaderAnalyzedFile->m_subPasses[subPass.m_name].m_subShaders[subShaderType];
             }
         }
-
-        subPassShader->compile(asset);
+        
+        subPassShader->m_fileAsset = asset;
+        subPassShader->compile(subPassName);
         subPassShader->addToGlobalStorage();
 
-        m_subPassesShaders[subPassName] = subPassShader;
+        if(!getSubPassShader(subPassName))
+        {
+            m_subPassesShaders.push_back(subPassShader);
+        }
+        else
+        {
+            setSubPassShader(subPassName, subPassShader);
+        }
     }
 }
 
 void SGCore::IShader::setSubPassShader
-(const SGCore::Ref<SGCore::IShader>& from, const std::string& subPassName) noexcept
+(const std::string& subPassName, const SGCore::Ref<SGCore::IShader>& from) noexcept
 {
-    auto foundFrom = from->m_subPassesShaders.find(subPassName);
-    if(foundFrom != from->m_subPassesShaders.end())
+    auto foundFrom = from->getSubPassShader(subPassName);
+    if(foundFrom)
     {
-        m_subPassesShaders[subPassName] = foundFrom->second;
+        setSubPassShader(subPassName, foundFrom);
+    }
+}
+
+void SGCore::IShader::setSubPassShader
+(const std::string& subPassName, const SGCore::Ref<SGCore::ISubPassShader>& subPassShader) noexcept
+{
+    for(auto& s : m_subPassesShaders)
+    {
+        if(s->m_subPassName == subPassName)
+        {
+            s = subPassShader;
+            break;
+        }
     }
 }
 
 SGCore::Ref<SGCore::ISubPassShader> SGCore::IShader::getSubPassShader(const std::string& subPassName) noexcept
 {
-    auto foundIter = m_subPassesShaders.find(subPassName);
-    if(foundIter != m_subPassesShaders.end())
-    {
-        return foundIter->second;
-    }
-
-    return nullptr;
-    // return m_subPassesShaders[subPassName];
+    auto it = std::find_if(m_subPassesShaders.begin(), m_subPassesShaders.end(), [&subPassName](const Ref<ISubPassShader>& subPassShader) {
+        return subPassShader->m_subPassName == subPassName;
+    });
+    
+    return it != m_subPassesShaders.end() ? *it : nullptr;
 }
 
 void SGCore::IShader::onAssetModified()
@@ -81,23 +99,17 @@ void SGCore::IShader::onAssetPathChanged()
 
 void SGCore::IShader::removeAllSubPassShadersByDiskPath(const std::string& path) noexcept
 {
-    auto curIter = m_subPassesShaders.begin();
-    while(curIter != m_subPassesShaders.end())
-    {
-        if(auto lockedFileAsset = curIter->second->m_fileAsset.lock())
-        {
-            if(lockedFileAsset->getPath() == path)
-            {
-                curIter = m_subPassesShaders.erase(curIter);
-                continue;
-            }
-        }
-
-        ++curIter;
-    }
+    std::erase_if(m_subPassesShaders, [&path](const Ref<ISubPassShader>& subPassShader) {
+        auto lockedFileAsset = subPassShader->m_fileAsset.lock();
+        if(!lockedFileAsset) return false;
+        
+        return path == lockedFileAsset->getPath();
+    });
 }
 
 void SGCore::IShader::removeSubPass(const std::string& subPassName) noexcept
 {
-    m_subPassesShaders.erase(subPassName);
+    std::erase_if(m_subPassesShaders, [&subPassName](const Ref<ISubPassShader>& subPassShader) {
+        return subPassName == subPassShader->m_subPassName;
+    });
 }

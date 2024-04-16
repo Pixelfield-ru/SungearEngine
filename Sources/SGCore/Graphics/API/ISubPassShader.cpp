@@ -12,7 +12,7 @@
 void SGCore::ISubPassShader::recompile() noexcept
 {
     destroy();
-    compile(m_fileAsset.lock());
+    compile(m_subPassName);
 }
 
 void SGCore::ISubPassShader::addDefines(const SGShaderDefineType& shaderDefineType,

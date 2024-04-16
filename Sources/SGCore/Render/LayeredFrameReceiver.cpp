@@ -5,22 +5,25 @@
 
 #include "LayeredFrameReceiver.h"
 
+#include "SGCore/Utils/DefaultShadersPaths.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/ShadersPaths.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Scene/Layer.h"
+#include "RenderPipelinesManager.h"
 
 SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 {
     // addRequiredShaderPath("PostProcessingShader");
     
-    m_defaultLayer->m_name = "___DEFAULT_LAYER___";
-    addPostProcessLayer(m_defaultLayer);
+    m_defaultLayer = addPostProcessLayer("___DEFAULT_LAYER___");
     
     m_shader = MakeRef<IShader>();
-
+    m_shader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+            DefaultShadersPaths::getPaths()["LayeredPP"]["ReceiverShader"].getCurrentRealization()));
+    
     /*m_depthPassShader = Ref<ISubPassShader>(
             CoreMain::getRenderer().createShader(
                     shadersPaths["PostProcessing"]["DepthPassShader"]
@@ -46,68 +49,87 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    m_ppLayersCombinedBuffer =
-            Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer())
-                    ->setSize(primaryMonitorWidth, primaryMonitorHeight)
-                    ->create()
-                    ->bind()
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
-                                    SGGColorFormat::SGG_DEPTH_COMPONENT,
-                                    SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
-                                    0,
-                                    0)
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH PASS
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA8,
-                                    0,
-                                    0
-                    )
-                            // GBUFFER ATTACHMENTS
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
-                                    SGGColorFormat::SGG_RGBA,
-                                    SGGColorInternalFormat::SGG_RGBA8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0
-                    )
-                    ->unbind();
+    m_ppLayersCombinedBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer());
+    m_ppLayersCombinedBuffer->setSize(primaryMonitorWidth, primaryMonitorHeight);
+    m_ppLayersCombinedBuffer->create();
+    m_ppLayersCombinedBuffer->bind();
+    /*m_ppLayersCombinedBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
+            SGGColorFormat::SGG_DEPTH_COMPONENT,
+            SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
+            0,
+            0);*/
+    m_ppLayersCombinedBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
+            0,
+            0
+    );
+    /*m_ppLayersCombinedBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // DEPTH-TESTED ATTACHMENT
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
+            0,
+            0
+    );*/
+    /*m_ppLayersCombinedBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
+                                            SGGColorFormat::SGG_DEPTH_COMPONENT,
+                                            SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
+                                            0,
+                                            0);
+    m_ppLayersCombinedBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // for DEPTH PASS
+                                            SGGColorFormat::SGG_RGBA,
+                                            SGGColorInternalFormat::SGG_RGBA8,
+                                            0,
+                                            0
+    );*/
+    // GBUFFER ATTACHMENTS
+    // NOT STANDARD
+    /*m_ppLayersCombinedBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
+                                            SGGColorFormat::SGG_RGB,
+                                            SGGColorInternalFormat::SGG_RGB8,
+                                            0,
+                                            0
+    );
+    m_ppLayersCombinedBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
+                    SGGColorFormat::SGG_RGB,
+                    SGGColorInternalFormat::SGG_RGB8,
+                    0,
+                    0
+    );
+    m_ppLayersCombinedBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
+                    SGGColorFormat::SGG_RGBA,
+                    SGGColorInternalFormat::SGG_RGBA8,
+                    0,
+                    0
+    );
+    m_ppLayersCombinedBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4,
+                    SGGColorFormat::SGG_RGB,
+                    SGGColorInternalFormat::SGG_RGB8,
+                    0,
+                    0
+    );
+    m_ppLayersCombinedBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT5,
+                    SGGColorFormat::SGG_RGB,
+                    SGGColorInternalFormat::SGG_RGB8,
+                    0,
+                    0
+    );*/
+    m_ppLayersCombinedBuffer->unbind();
 
     // m_defaultLayersFrameBuffer->m_bgColor.a = 0.0;
 
-    m_finalFrameFXFrameBuffer =
-            Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer())
-                    ->create()
-                    ->bind()
-                    ->setSize(primaryMonitorWidth, primaryMonitorHeight)
-                    ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
-                                    SGGColorFormat::SGG_RGB,
-                                    SGGColorInternalFormat::SGG_RGB8,
-                                    0,
-                                    0)
-                    ->unbind();
+    m_finalFrameFXFrameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer());
+    m_finalFrameFXFrameBuffer->create();
+    m_finalFrameFXFrameBuffer->bind();
+    m_finalFrameFXFrameBuffer->setSize(primaryMonitorWidth, primaryMonitorHeight);
+    m_finalFrameFXFrameBuffer->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
+                                             SGGColorFormat::SGG_RGB,
+                                             SGGColorInternalFormat::SGG_RGB8,
+                                             0,
+                                             0);
+    m_finalFrameFXFrameBuffer->unbind();
 
     // ---------------------------------------
 
@@ -122,49 +144,50 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     }*/
 }
 
-SGCore::PostProcessLayer& SGCore::LayeredFrameReceiver::addPostProcessLayer(const Ref<Layer>& layer,
-                                                                            const std::uint16_t& fbWidth,
-                                                                            const std::uint16_t& fbHeight)
+SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addPostProcessLayer(const std::string& name,
+                                                                                        const std::uint16_t& fbWidth,
+                                                                                        const std::uint16_t& fbHeight)
 {
-    auto& shadersPaths = *SGUtils::Singleton::getSharedPtrInstance<ShadersPaths>();
-
-    PostProcessLayer* foundPPLayer = tryGetPostProcessLayer(layer->m_name);
+    auto foundPPLayer = getPostProcessLayer(name);
 
     if(foundPPLayer)
     {
         spdlog::error("Error: can not add a new post-process layer to the camera. This layer already exists.\n{0}",
                       SGUtils::Utils::sourceLocationToString(std::source_location::current()));
-        return *foundPPLayer;
+        return foundPPLayer;
     }
 
-    m_postProcessLayers.emplace_back();
+    m_postProcessLayers.emplace_back(MakeRef<PostProcessLayer>());
     
     auto& newPPLayer = *m_postProcessLayers.rbegin();
     // without - 1 because 0 is always default FB
-    newPPLayer.m_index = m_postProcessLayers.size() - 1;
-
-    newPPLayer.m_sceneLayer = layer;
-    newPPLayer.m_frameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer())
-            ->create()
-            ->bind()
-            ->setSize(fbWidth, fbHeight)
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
-                            SGGColorFormat::SGG_DEPTH_COMPONENT,
-                            SGGColorInternalFormat::SGG_DEPTH_COMPONENT16,
-                            0,
-                            0)
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // NOT DEPT-TESTED ATTACHMENT
-                            SGGColorFormat::SGG_RGB,
-                            SGGColorInternalFormat::SGG_RGB8,
-                            0,
-                            0
-            )
-            ->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // DEPTH-TESTED ATTACHMENT
-                            SGGColorFormat::SGG_RGB,
-                            SGGColorInternalFormat::SGG_RGB8,
-                            0,
-                            0
-            )
+    newPPLayer->m_index = m_postProcessLayers.size() - 1;
+    
+    newPPLayer->m_name = name;
+    newPPLayer->m_frameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer());
+    newPPLayer->m_frameBuffer->create();
+    newPPLayer->m_frameBuffer->bind();
+    newPPLayer->m_frameBuffer->setSize(fbWidth, fbHeight);
+    newPPLayer->m_frameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
+            SGGColorFormat::SGG_DEPTH_COMPONENT,
+            SGGColorInternalFormat::SGG_DEPTH_COMPONENT32,
+            0,
+            0);
+    newPPLayer->m_frameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // NOT DEPT-TESTED ATTACHMENT
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
+            0,
+            0
+    );
+    newPPLayer->m_frameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // DEPTH-TESTED ATTACHMENT
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
+            0,
+            0
+    );
             // NON STANDARD!!
             // GBUFFER ATTACHMENTS
             /*->addAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
@@ -197,21 +220,19 @@ SGCore::PostProcessLayer& SGCore::LayeredFrameReceiver::addPostProcessLayer(cons
                             0,
                             0
             )*/
-            ->unbind();
+    newPPLayer->m_frameBuffer->unbind();
 
-    newPPLayer.m_FXShader = Ref<ISubPassShader>(
-            CoreMain::getRenderer()->createShader(
-                    shadersPaths["PostProcessing"]["DefaultLayerShader"]
-            )
-    );
+    auto fxShader = MakeRef<IShader>();
+    fxShader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+            DefaultShadersPaths::getPaths()["LayeredPP"]["LayerFXShader"].getCurrentRealization()));
     
-    newPPLayer.m_FXShader->addToGlobalStorage();
+    newPPLayer->m_FXSubPassShader = fxShader->getSubPassShader("PostProcessLayerFXPass");
 
     // ----------------------------------
 
-    std::string layerNameInShaders = SG_PP_LAYER_FB_NAME(newPPLayer.m_index);
+    std::string layerNameInShaders = SG_PP_LAYER_FB_NAME(newPPLayer->m_index);
 
-    newPPLayer.m_nameInShader = layerNameInShaders;
+    newPPLayer->m_nameInShader = layerNameInShaders;
 
     // ----------------------------------
     // updating all frame buffers in all shaders
@@ -244,20 +265,20 @@ SGCore::PostProcessLayer& SGCore::LayeredFrameReceiver::addPostProcessLayer(cons
     return newPPLayer;
 }
 
-SGCore::PostProcessLayer& SGCore::LayeredFrameReceiver::addPostProcessLayer(const Ref<Layer>& layer)
+SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addPostProcessLayer(const std::string& name)
 {
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    return addPostProcessLayer(layer, primaryMonitorWidth, primaryMonitorHeight);
+    return addPostProcessLayer(name, primaryMonitorWidth, primaryMonitorHeight);
 }
 
-void SGCore::LayeredFrameReceiver::setPostProcessLayerShader(const Ref<Layer>& layer,
+void SGCore::LayeredFrameReceiver::setPostProcessLayerShader(const std::string& name,
                                                              const Ref<ISubPassShader>& shader) noexcept
 {
-    PostProcessLayer* foundLayer = tryGetPostProcessLayer(layer->m_name);
+    auto foundLayer = getPostProcessLayer(name);
     
     if(!foundLayer)
     {
@@ -266,18 +287,18 @@ void SGCore::LayeredFrameReceiver::setPostProcessLayerShader(const Ref<Layer>& l
         return;
     }
     
-    foundLayer->m_FXShader = shader;
+    foundLayer->m_FXSubPassShader = shader;
 }
 
 void SGCore::LayeredFrameReceiver::bindPostProcessFrameBuffer
 (const Ref<Layer>& layer) noexcept
 {
-    PostProcessLayer* foundPPLayer = tryGetPostProcessLayer(layer->m_name);
+    auto foundPPLayer = getPostProcessLayer(layer->m_name);
 
     m_currentPPFrameBufferToBind = foundPPLayer->m_frameBuffer;
 
     m_currentPPFrameBufferToBind->bind();
-    m_currentPPFrameBufferToBind->bindAttachmentsToDraw(foundPPLayer->m_attachmentsToRenderIn);
+    m_currentPPFrameBufferToBind->bindAttachmentsToDrawIn(foundPPLayer->m_attachmentsToRenderIn);
 }
 
 void SGCore::LayeredFrameReceiver::unbindPostProcessFrameBuffer() const noexcept
@@ -293,31 +314,35 @@ void SGCore::LayeredFrameReceiver::clearPostProcessFrameBuffers() const noexcept
     for(const auto& ppLayer : m_postProcessLayers)
     {
         // ppLayer.second.m_frameBuffer->bind()->clear();
-        ppLayer.m_frameBuffer->bind()->bindAttachmentsToDraw(
+        ppLayer->m_frameBuffer->bind();
+        ppLayer->m_frameBuffer->bindAttachmentsToDrawIn(
                 std::vector<SGFrameBufferAttachmentType> { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1,
                                                            SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT3,
                                                            SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5,
-                                                           SGG_COLOR_ATTACHMENT6, SGG_COLOR_ATTACHMENT7 })->clear();
+                                                           SGG_COLOR_ATTACHMENT6, SGG_COLOR_ATTACHMENT7 });
+        ppLayer->m_frameBuffer->clear();
     }
 
-    m_ppLayersCombinedBuffer->bind()->bindAttachmentsToDraw(m_attachmentsForCombining)->clear();
+    m_ppLayersCombinedBuffer->bind();
+    m_ppLayersCombinedBuffer->bindAttachmentsToDrawIn(m_attachmentsForCombining);
+    m_ppLayersCombinedBuffer->clear();
 
-    m_finalFrameFXFrameBuffer->bind()->clear()->unbind();
+    m_finalFrameFXFrameBuffer->bind();
+    m_finalFrameFXFrameBuffer->clear();
+    m_finalFrameFXFrameBuffer->unbind();
 }
 
-SGCore::PostProcessLayer* SGCore::LayeredFrameReceiver::tryGetPostProcessLayer(const std::string& name) noexcept
+SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::getPostProcessLayer(const std::string& name) noexcept
 {
-    auto it = std::find_if(m_postProcessLayers.begin(), m_postProcessLayers.end(), [&](const PostProcessLayer& layer) {
-        auto lockedSceneLayer = layer.m_sceneLayer.lock();
-        if(!lockedSceneLayer) return false;
-        
-        return lockedSceneLayer->m_name == name;
+    auto it = std::find_if(m_postProcessLayers.begin(), m_postProcessLayers.end(), [&](const Ref<PostProcessLayer>& layer) {
+        return layer->m_name == name;
     });
     
-    return it != m_postProcessLayers.end() ? &*it : nullptr;
+    return it != m_postProcessLayers.end() ? *it : nullptr;
 }
 
-SGCore::PostProcessLayer* SGCore::LayeredFrameReceiver::tryGetDefaultPostProcessLayer() noexcept
+SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::getDefaultPostProcessLayer() noexcept
 {
-    return tryGetPostProcessLayer("___DEFAULT_LAYER___");
+    return m_defaultLayer;
+    // return getPostProcessLayer("___DEFAULT_LAYER___");
 }

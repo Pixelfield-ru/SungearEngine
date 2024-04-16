@@ -77,30 +77,23 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             if(willRender)
             {
                 EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(meshEntity);
-                Ref<Layer> meshLayer = entityBaseInfo ? entityBaseInfo->m_layer.lock() : nullptr;
-                // only for LayeredFrameReceiver
-                PostProcessLayer* postProcessLayer = nullptr;
+                Ref<PostProcessLayer> meshPPLayer = entityBaseInfo ? entityBaseInfo->m_postProcessLayers[cameraLayeredFrameReceiver].lock() : nullptr;
                 
                 if(cameraLayeredFrameReceiver)
                 {
-                    if(meshLayer)
+                    if(!meshPPLayer)
                     {
-                        postProcessLayer = cameraLayeredFrameReceiver->tryGetPostProcessLayer(meshLayer->m_name);
+                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultPostProcessLayer();
                     }
                     
-                    if(!postProcessLayer)
-                    {
-                        postProcessLayer = cameraLayeredFrameReceiver->tryGetDefaultPostProcessLayer();
-                    }
-                    
-                    postProcessLayer->m_frameBuffer->bind();
+                    meshPPLayer->m_frameBuffer->bind();
                 }
                 
                 renderMesh(registry, meshEntity, meshTransform, mesh, standardGeometryShader);
                 
-                if(postProcessLayer)
+                if(meshPPLayer)
                 {
-                    postProcessLayer->m_frameBuffer->unbind();
+                    meshPPLayer->m_frameBuffer->unbind();
                 }
             }
         });
@@ -122,11 +115,14 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             standardGeometryShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
         }
         
+        LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->try_get<LayeredFrameReceiver>(cameraEntity);
+        
         auto objectsCullingOctreesView = registry->view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
-        objectsCullingOctreesView.each([&standardGeometryShader, &scene, &cameraEntity, &registry, &cameraRenderingBase, this](Ref<Octree> octree, const Ref<ObjectsCullingOctree>&) {
+        objectsCullingOctreesView.each([&cameraLayeredFrameReceiver, &standardGeometryShader, &scene, &cameraEntity, &registry, &cameraRenderingBase, this]
+        (Ref<Octree> octree, const Ref<ObjectsCullingOctree>&) {
             for(const auto& n : octree->m_notEmptyNodes)
             {
-                renderOctreeNode(registry, cameraEntity, n, standardGeometryShader);
+                renderOctreeNode(registry, cameraEntity, cameraLayeredFrameReceiver, n, standardGeometryShader);
             }
         });
     });
@@ -197,6 +193,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
 
 void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry,
                                                  const entity_t& forCamera,
+                                                 LayeredFrameReceiver* cameraLayeredFrameReceiver,
                                                  const SGCore::Ref<SGCore::OctreeNode>& node,
                                                  const Ref<ISubPassShader>& standardGeometryShader) noexcept
 {
@@ -219,7 +216,26 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry
             if(meshTransform && mesh)
             {
                 ++renderedInOctrees;
+                
+                EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(e);
+                Ref<PostProcessLayer> meshPPLayer = entityBaseInfo ? entityBaseInfo->m_postProcessLayers[cameraLayeredFrameReceiver].lock() : nullptr;
+                
+                if(cameraLayeredFrameReceiver)
+                {
+                    if(!meshPPLayer)
+                    {
+                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultPostProcessLayer();
+                    }
+                    
+                    meshPPLayer->m_frameBuffer->bind();
+                }
+                
                 renderMesh(registry, e, meshTransform, *mesh, standardGeometryShader);
+                
+                if(meshPPLayer)
+                {
+                    meshPPLayer->m_frameBuffer->unbind();
+                }
             }
         }
     }

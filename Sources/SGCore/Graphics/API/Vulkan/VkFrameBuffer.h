@@ -12,16 +12,16 @@ namespace SGCore
     class VkFrameBuffer : public IFrameBuffer
     {
     public:
-        std::shared_ptr<IFrameBuffer> bind() override;
-        std::shared_ptr<IFrameBuffer> unbind() override;
+        void bind() override;
+        void unbind() override;
 
-        std::shared_ptr<IFrameBuffer> create() override;
+        void create() override;
         void destroy() override;
-
-        std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType,
-                                                    SGGColorFormat format, SGGColorInternalFormat internalFormat,
-                                                    const int& mipLevel,
-                                                    const int& layer) override;
+        
+        void addAttachment(SGFrameBufferAttachmentType,
+                           SGGColorFormat format, SGGColorInternalFormat internalFormat,
+                           const int& mipLevel,
+                           const int& layer) override;
     };
 }
 

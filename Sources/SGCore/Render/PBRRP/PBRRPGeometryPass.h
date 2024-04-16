@@ -32,6 +32,7 @@ namespace SGCore
                         const Ref<ISubPassShader>& standardGeometryShader) noexcept;
         void renderOctreeNode(const Ref<registry_t>& registry,
                               const entity_t& forCamera,
+                              LayeredFrameReceiver* cameraLayeredFrameReceiver,
                               const Ref<OctreeNode>& node,
                               const Ref<ISubPassShader>& standardGeometryShader) noexcept;
     };

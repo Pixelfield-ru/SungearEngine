@@ -29,8 +29,6 @@ namespace SGCore
 
         // ---------------
 
-        void createDefaultPaths() noexcept;
-
         [[nodiscard]] std::string getCurrentRealization() const noexcept;
 
         // ---------------

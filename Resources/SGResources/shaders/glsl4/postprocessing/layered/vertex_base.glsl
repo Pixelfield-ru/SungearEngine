@@ -1,11 +1,11 @@
 #sg_pragma once
 
-#sg_include "../primitives.glsl"
-
 SGSubPass(PostProcessLayerDepthPass, PostProcessLayerFXPass, PostProcessAttachmentsCombiningPass, PostProcessFinalFXPass)
 {
     SGSubShader(Vertex)
     {
+        #sg_include "../../primitives.glsl"
+
         out vec2 vs_UVAttribute;
 
         void main()

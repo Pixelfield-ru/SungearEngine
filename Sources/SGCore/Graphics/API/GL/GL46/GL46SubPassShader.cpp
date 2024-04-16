@@ -17,21 +17,23 @@ SGCore::GL46SubPassShader::~GL46SubPassShader() noexcept
 
 // TODO: watch SGP1
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
-void SGCore::GL46SubPassShader::compile(Ref<TextFileAsset> fileAsset)
+void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
 {
-    if(!fileAsset)
+    auto lockedFileAsset = m_fileAsset.lock();
+    
+    if(!lockedFileAsset)
     {
-        spdlog::error("Can not compile subpass shader! File asset is nullptr.\n{0}", SG_CURRENT_LOCATION_STR);
+        spdlog::error("Can not compile subpass shader! File asset is nullptr. Please set m_fileAsset before compiling.\n{0}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
     if(m_subShaders.empty())
     {
-        spdlog::error("No sub shaders to compile! Shader path: {0}\n{1}", fileAsset->getPath().string(), SG_CURRENT_LOCATION_STR);
+        spdlog::error("No sub shaders to compile! Shader path: {0}\n{1}", lockedFileAsset->getPath().string(), SG_CURRENT_LOCATION_STR);
         return;
     }
-
-    m_fileAsset = fileAsset;
+    
+    m_subPassName = subPassName;
 
     std::string definesCode;
 
@@ -45,6 +47,14 @@ void SGCore::GL46SubPassShader::compile(Ref<TextFileAsset> fileAsset)
 
     for(const auto& subShadersIter : m_subShaders)
     {
+        if(!subShadersIter.second)
+        {
+            spdlog::error("Can not compile sub shader with type '{0}' for sub pass '{1}' shader by path '{2}'. Sub shader with this type does not exist.",
+                          sgsleSubShaderTypeToString(subShadersIter.first),
+                          m_subPassName,
+                          lockedFileAsset->getPath().string());
+            continue;
+        }
         m_subShadersHandlers.push_back(compileSubShader(subShadersIter.first, definesCode + "\n" + subShadersIter.second->m_code));
     }
 

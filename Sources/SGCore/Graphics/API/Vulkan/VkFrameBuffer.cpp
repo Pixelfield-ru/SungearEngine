@@ -4,19 +4,19 @@
 
 #include "VkFrameBuffer.h"
 
-std::shared_ptr<SGCore::IFrameBuffer> SGCore::VkFrameBuffer::bind()
+void SGCore::VkFrameBuffer::bind()
 {
-    return shared_from_this();
+
 }
 
-std::shared_ptr<SGCore::IFrameBuffer> SGCore::VkFrameBuffer::unbind()
+void SGCore::VkFrameBuffer::unbind()
 {
-    return shared_from_this();
+
 }
 
-std::shared_ptr<SGCore::IFrameBuffer> SGCore::VkFrameBuffer::create()
+void SGCore::VkFrameBuffer::create()
 {
-    return shared_from_this();
+
 }
 
 void SGCore::VkFrameBuffer::destroy()
@@ -24,11 +24,11 @@ void SGCore::VkFrameBuffer::destroy()
 
 }
 
-std::shared_ptr<SGCore::IFrameBuffer>
+void
 SGCore::VkFrameBuffer::addAttachment(SGFrameBufferAttachmentType,
                                      SGGColorFormat format,
                                      SGGColorInternalFormat internalFormat, const int& mipLevel,
                                      const int& layer)
 {
-    return shared_from_this();
+
 }

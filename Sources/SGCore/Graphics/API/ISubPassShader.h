@@ -33,6 +33,8 @@ namespace SGCore
     class ISubPassShader : public UniqueNameWrapper, public std::enable_shared_from_this<ISubPassShader>, public GPUObject
     {
     public:
+        std::string m_subPassName;
+        
         std::string m_version;
 
         bool m_autoRecompile = true;
@@ -45,7 +47,7 @@ namespace SGCore
 
         virtual ~ISubPassShader() = default;
 
-        virtual void compile(Ref<TextFileAsset> fileAsset) = 0;
+        virtual void compile(const std::string& subPassName) = 0;
         virtual void recompile() noexcept;
 
         virtual void destroy() = 0;

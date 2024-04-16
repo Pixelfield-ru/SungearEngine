@@ -29,7 +29,8 @@ namespace SGCore
 
         void addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noexcept;
 
-        void setSubPassShader(const Ref<IShader>& from, const std::string& subPassName) noexcept;
+        void setSubPassShader(const std::string& subPassName, const Ref<IShader>& from) noexcept;
+        void setSubPassShader(const std::string& subPassName, const Ref<ISubPassShader>& subPassShader) noexcept;
 
         Ref<ISubPassShader> getSubPassShader(const std::string& subPassName) noexcept;
 
@@ -76,8 +77,7 @@ namespace SGCore
         static void useTextureBlockGlobal(const std::string& uniformName, const size_t& textureBlock) noexcept;*/
 
     private:
-        // first - sub pass name
-        std::unordered_map<std::string, Ref<ISubPassShader>> m_subPassesShaders;
+        std::vector<Ref<ISubPassShader>> m_subPassesShaders;
     };
 }
 

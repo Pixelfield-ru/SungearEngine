@@ -13,7 +13,7 @@
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
     m_shadersPaths["StandardMeshShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/pbr/default_shader.glsl";
-    m_shadersPaths["PostProcessingShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/default_shader.glsl";
+    m_shadersPaths["LayeredPostProcessingShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/default_shader.glsl";
     m_shadersPaths["ShadowsGenerationShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/shadows_generator/default_shader.glsl";
     m_shadersPaths["SkyboxShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/skybox/default_shader.glsl";
     m_shadersPaths["Gizmos"]["ComplexGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
@@ -52,10 +52,10 @@ SGCore::PBRRenderPipeline::PBRRenderPipeline()
     }
 
     // WARNING! PostProcessFXPass ALWAYS AFTER OTHER PASSES
-    /*{
-        auto postProcessFXPass = MakeRef<PostProcessFXPass>();
+    {
+        auto postProcessFXPass = MakeRef<PostProcessPass>();
 
         m_renderPasses.push_back(postProcessFXPass);
-    }*/
+    }
 }
 

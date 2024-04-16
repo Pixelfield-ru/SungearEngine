@@ -67,8 +67,7 @@ namespace SGCore
         void checkForErrors(const std::source_location& location = std::source_location::current()) noexcept override;
 
         // TODO: create docs
-        [[nodiscard]] GL46SubPassShader* createShader() const override;
-        [[nodiscard]] GL46SubPassShader* createShader(const std::string& path) const override;
+        [[nodiscard]] GL46SubPassShader* createSubPassShader() const override;
 
         [[nodiscard]] GLVertexArray* createVertexArray() const override;
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() const override;

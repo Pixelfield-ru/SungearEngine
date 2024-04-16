@@ -41,8 +41,7 @@ namespace SGCore
 
         bool confirmSupport() noexcept override;
 
-        [[nodiscard]] GL46SubPassShader* createShader() const override;
-        [[nodiscard]] GL46SubPassShader* createShader(const std::string& path) const override;
+        [[nodiscard]] GL46SubPassShader* createSubPassShader() const override;
 
         [[nodiscard]] GL46Texture2D* createTexture2D() const final;
 

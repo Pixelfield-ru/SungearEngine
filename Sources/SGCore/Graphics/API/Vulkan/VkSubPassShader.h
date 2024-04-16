@@ -10,12 +10,12 @@
 namespace SGCore
 {
     // TODO: impl VkShader
-    class VkShader : public ISubPassShader
+    class VkSubPassShader : public ISubPassShader
     {
     public:
-        ~VkShader() noexcept override;
+        ~VkSubPassShader() noexcept override;
 
-        void compile(Ref<TextFileAsset>) noexcept final;
+        void compile(const std::string& subPassName) noexcept final;
 
         void bind() noexcept final;
 

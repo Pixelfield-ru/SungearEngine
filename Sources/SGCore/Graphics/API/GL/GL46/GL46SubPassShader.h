@@ -17,7 +17,7 @@ namespace SGCore
     public:
         ~GL46SubPassShader() noexcept override;
 
-        void compile(Ref<TextFileAsset> fileAsset) override;
+        void compile(const std::string& subPassName) override;
 
         void bind() noexcept override;
 

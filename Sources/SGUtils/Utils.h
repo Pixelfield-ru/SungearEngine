@@ -120,7 +120,20 @@ namespace SGUtils
         };
         
         template<typename T>
-        struct WeakHash
+        struct RawPointerHash
+        {
+            virtual size_t operator()(const T* ptr) const noexcept
+            {
+                return std::hash<T*>()(ptr);
+            }
+        };
+        
+        /**
+         * Hashes result of locked weak pointer get() function.
+         * @tparam T
+         */
+        template<typename T>
+        struct WeakPointerHash
         {
             size_t operator()(const std::weak_ptr<T>& ptr) const noexcept
             {

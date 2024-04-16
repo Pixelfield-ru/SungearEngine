@@ -20,7 +20,7 @@ bool SGCore::GL46Renderer::confirmSupport() noexcept
     return true;
 }
 
-SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader() const
+SGCore::GL46SubPassShader* SGCore::GL46Renderer::createSubPassShader() const
 {
     auto* shader = new GL46SubPassShader;
     shader->m_version = "460";
@@ -28,16 +28,6 @@ SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader() const
     shader->setRawName("SGUnknownShader");
 
     //GPUObjectsStorage::addShader(shader->weak_from_this());
-
-    return shader;
-}
-
-SGCore::GL46SubPassShader* SGCore::GL46Renderer::createShader(const std::string& path) const
-{
-    auto* shader = createShader();
-    shader->compile(
-            AssetManager::loadAsset<TextFileAsset>(path)
-    );
 
     return shader;
 }

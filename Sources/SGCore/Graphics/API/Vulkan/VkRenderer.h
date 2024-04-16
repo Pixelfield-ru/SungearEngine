@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_VKRENDERER_H
 
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "VkShader.h"
+#include "VkSubPassShader.h"
 #include "VkVertexArray.h"
 #include "VkVertexBuffer.h"
 #include "VkVertexBufferLayout.h"
@@ -52,8 +52,7 @@ namespace SGCore
         void checkForErrors(const std::source_location& location = std::source_location::current()) noexcept override;
 
         // TODO: create docs
-        [[nodiscard]] VkShader* createShader() const override;
-        [[nodiscard]] VkShader* createShader(const std::string& path) const override;
+        [[nodiscard]] VkSubPassShader* createSubPassShader() const override;
 
         [[nodiscard]] VkVertexArray* createVertexArray() const override;
         [[nodiscard]] VkVertexBuffer* createVertexBuffer() const override;

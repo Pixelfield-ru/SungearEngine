@@ -9,6 +9,8 @@
 #sg_include "../defines.glsl"
 #sg_include "../primitives.glsl"
 
+// this subpass compares data from the depth attachment of the current layer and data from the depth attachments of other layers.
+// if a nearer pixel is found, then the color of the attachment that passes the depth check using this subpass is set to vec4(0, 0, 0, 1) (black)
 SGSubPass(PostProcessLayerDepthPass)
 {
     SGSubShader(Fragment)
@@ -48,43 +50,9 @@ SGSubPass(PostProcessLayerDepthPass)
 
                     return;
                 }
+
+                // else do nothing and save the pixel color
             }
-        }
-    }
-}
-
-// todo: отдельный шейдер
-SGSubPass(PostProcessLayerFXPass)
-{
-    SGSubShader(Fragment)
-    {
-        // valid
-        uniform int currentSubPass_Idx;
-        // valid
-        uniform int currentFBIndex;
-        // valid
-        uniform int FBCount;
-
-        // valid
-        uniform int frameBuffer0_colorAttachmentsCount;
-        // valid
-        uniform int frameBuffer1_colorAttachmentsCount;
-        // layer 0 (valid)
-        uniform sampler2D frameBuffer0_colorAttachments[3];
-        // layer 1 (valid)
-        uniform sampler2D frameBuffer1_colorAttachments[3];
-
-        in vec2 vs_UVAttribute;
-
-        void main()
-        {
-            vec2 finalUV = vs_UVAttribute.xy;
-
-            #ifdef FLIP_TEXTURES_Y
-                finalUV.y = 1.0 - vs_UVAttribute.y;
-            #endif
-
-            // just do nothing
         }
     }
 }
@@ -95,9 +63,11 @@ SGSubPass(PostProcessAttachmentsCombiningPass)
     {
         // out vec4 fragColor;
 
-        uniform int layersAttachmentNCount;
+        uniform int attachmentsToCopyInCurrentTargetAttachmentCount;
         // 32 is max count of layers
-        uniform sampler2D layersAttachmentN[32];
+        // an array of attachments that will be "copied" to the current target color attachment
+        // (i.e., the attachment of the combined attachments of the postprocessing layers)
+        uniform sampler2D attachmentsToCopyInCurrentTargetAttachment[32];
 
         in vec2 vs_UVAttribute;
 
@@ -111,9 +81,9 @@ SGSubPass(PostProcessAttachmentsCombiningPass)
 
             vec4 combinedColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-            for(int i = 0; i < layersAttachmentNCount; ++i)
+            for(int i = 0; i < attachmentsToCopyInCurrentTargetAttachmentCount; ++i)
             {
-                combinedColor.rgb += texture(layersAttachmentN[i], finalUV).rgb;
+                combinedColor.rgb += texture(attachmentsToCopyInCurrentTargetAttachment[i], finalUV).rgb;
             }
 
             gl_FragColor = combinedColor;
@@ -127,8 +97,8 @@ SGSubPass(PostProcessFinalFXPass)
 {
     SGSubShader(Fragment)
     {
-        uniform int combinedBufferAttachmentsCount;
-        uniform sampler2D combinedBuffer[32];
+        uniform int combinedAttachmentsCount;
+        uniform sampler2D combinedAttachments[32];
 
         in vec2 vs_UVAttribute;
 
@@ -142,7 +112,7 @@ SGSubPass(PostProcessFinalFXPass)
 
             vec4 finalColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-            finalColor.rgb = texture(combinedBuffer[0], finalUV).rgb;
+            finalColor.rgb = texture(combinedAttachments[0], finalUV).rgb;
 
             gl_FragColor = finalColor;
 

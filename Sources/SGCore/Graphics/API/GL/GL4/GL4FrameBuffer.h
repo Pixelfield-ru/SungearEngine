@@ -18,45 +18,45 @@ namespace SGCore
         GLuint m_handler = 0;
 
     public:
-        std::shared_ptr<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
+        void bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                                      const std::uint8_t& textureBlock) override;
 
-        std::shared_ptr<IFrameBuffer> bindAttachmentToRead(const SGFrameBufferAttachmentType& attachmentType) override;
-        std::shared_ptr<IFrameBuffer> bindAttachmentToDraw(const SGFrameBufferAttachmentType& attachmentType) override;
+        void bindAttachmentToReadFrom(const SGFrameBufferAttachmentType& attachmentType) override;
+        void bindAttachmentToDrawIn(const SGFrameBufferAttachmentType& attachmentType) override;
 
         /**
          * OPENGL DOES NOT SUPPORT THIS.
          * @param attachmentsTypes
          * @return
          */
-        std::shared_ptr<IFrameBuffer> bindAttachmentsToRead(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) override;
-        std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) override;
-        std::shared_ptr<IFrameBuffer> bindAttachmentsToDraw(const std::set<SGFrameBufferAttachmentType>& attachmentsTypes) override;
+        void bindAttachmentsToReadFrom(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) override;
+        void bindAttachmentsToDrawIn(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) override;
+        void bindAttachmentsToDrawIn(const std::set<SGFrameBufferAttachmentType>& attachmentsTypes) override;
 
-        std::shared_ptr<IFrameBuffer> unbindAttachmentToRead() override;
-        std::shared_ptr<IFrameBuffer> unbindAttachmentToDraw() override;
+        void unbindAttachmentToReadFrom() override;
+        void unbindAttachmentToDrawIn() override;
 
-        std::shared_ptr<IFrameBuffer> bind() override;
-        std::shared_ptr<IFrameBuffer> unbind() override;
+        void bind() override;
+        void unbind() override;
 
-        std::shared_ptr<IFrameBuffer> create() override;
+        void create() override;
         void destroy() override;
-
-        std::shared_ptr<IFrameBuffer> clear() override;
-
-        std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType,
-                                                    SGGColorFormat format,
-                                                    SGGColorInternalFormat internalFormat,
-                                                    const int& mipLevel,
-                                                    const int& layer) override;
-
-        std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType attachmentType,
-                                                    SGGColorFormat format,
-                                                    SGGColorInternalFormat internalFormat,
-                                                    const int& mipLevel,
-                                                    const int& layer,
-                                                    bool useMultisampling,
-                                                    std::uint8_t multisamplingSamplesCount) override;
+        
+        void clear() override;
+        
+        void addAttachment(SGFrameBufferAttachmentType,
+                           SGGColorFormat format,
+                           SGGColorInternalFormat internalFormat,
+                           const int& mipLevel,
+                           const int& layer) override;
+        
+        void addAttachment(SGFrameBufferAttachmentType attachmentType,
+                           SGGColorFormat format,
+                           SGGColorInternalFormat internalFormat,
+                           const int& mipLevel,
+                           const int& layer,
+                           bool useMultisampling,
+                           std::uint8_t multisamplingSamplesCount) override;
     };
 }
 

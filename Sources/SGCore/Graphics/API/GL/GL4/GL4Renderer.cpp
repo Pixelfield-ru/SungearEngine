@@ -183,7 +183,7 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
 }
 
 void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
-                                                 const MeshDataRenderInfo& meshDataRenderInfo)
+                                         const MeshDataRenderInfo& meshDataRenderInfo)
 {
     if(meshDataRenderInfo.m_enableFacesCulling)
     {
@@ -318,23 +318,12 @@ void SGCore::GL4Renderer::renderArrayInstanced(const SGCore::Ref<SGCore::IVertex
     }
 }
 
-SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader() const
+SGCore::GL46SubPassShader* SGCore::GL4Renderer::createSubPassShader() const
 {
     auto* shader = new GL46SubPassShader;
     shader->m_version = "400 core";
 
     shader->setRawName("SGUnknownShader");
-
-    return shader;
-}
-
-SGCore::GL46SubPassShader* SGCore::GL4Renderer::createShader(const std::string& path) const
-{
-    auto* shader = createShader();
-
-    shader->compile(
-            AssetManager::loadAsset<TextFileAsset>(path)
-    );
 
     return shader;
 }

@@ -87,13 +87,7 @@ namespace SGCore
 
         virtual void checkForErrors(const std::source_location& = std::source_location::current()) noexcept { }
 
-        [[nodiscard]] virtual ISubPassShader* createShader() const = 0;
-        [[nodiscard]] virtual ISubPassShader* createShader(const std::string& path) const = 0;
-
-        [[nodiscard]] ISubPassShader* createShader(const ShadersPaths& shadersPaths) const
-        {
-            return createShader(shadersPaths.getCurrentRealization());
-        };
+        [[nodiscard]] virtual ISubPassShader* createSubPassShader() const = 0;
 
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() const = 0;
         [[nodiscard]] virtual IVertexArray* createVertexArray() const = 0;

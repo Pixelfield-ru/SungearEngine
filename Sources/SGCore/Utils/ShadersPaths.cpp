@@ -49,19 +49,6 @@ SGCore::ShadersPaths& SGCore::ShadersPaths::getByVirtualPath(const std::string& 
     return *curShadersPaths;
 }
 
-
-void SGCore::ShadersPaths::createDefaultPaths() noexcept
-{
-    // COMMON SHADERS
-    // -------------------------------------
-
-    (*this)["Gizmos"]["ComplexGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
-
-    (*this)["Gizmos"]["LinesGizmosShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/gizmos/lines_shader.glsl";
-
-    // -------------------------------------
-}
-
 std::string SGCore::ShadersPaths::getCurrentRealization() const noexcept
 {
     auto gapiType = SGCore::CoreMain::getRenderer()->getGAPIType();

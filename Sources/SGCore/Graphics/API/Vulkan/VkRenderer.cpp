@@ -56,14 +56,9 @@ void SGCore::VkRenderer::checkForErrors(const std::source_location& location) no
 
 }
 
-SGCore::VkShader* SGCore::VkRenderer::createShader() const
+SGCore::VkSubPassShader* SGCore::VkRenderer::createSubPassShader() const
 {
-    return new VkShader;
-}
-
-SGCore::VkShader* SGCore::VkRenderer::createShader(const std::string& path) const
-{
-    return new VkShader;
+    return new VkSubPassShader;
 }
 
 SGCore::VkVertexArray* SGCore::VkRenderer::createVertexArray() const

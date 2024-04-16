@@ -1,25 +1,19 @@
 #include "IFrameBuffer.h"
 
-std::shared_ptr<SGCore::IFrameBuffer> SGCore::IFrameBuffer::setWidth(const int& width) noexcept
+void SGCore::IFrameBuffer::setWidth(const int& width) noexcept
 {
     m_width = width;
-
-    return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IFrameBuffer> SGCore::IFrameBuffer::setHeight(const int& height) noexcept
+void SGCore::IFrameBuffer::setHeight(const int& height) noexcept
 {
     m_height = height;
-
-    return shared_from_this();
 }
 
-std::shared_ptr<SGCore::IFrameBuffer> SGCore::IFrameBuffer::setSize(const int& width, const int& height) noexcept
+void SGCore::IFrameBuffer::setSize(const int& width, const int& height) noexcept
 {
     m_width = width;
     m_height = height;
-
-    return shared_from_this();
 }
 
 int SGCore::IFrameBuffer::getWidth() const noexcept

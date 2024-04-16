@@ -4,14 +4,12 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+#include "SGCore/Utils/DefaultShadersPaths.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
-
 #include "SGCore/Memory/AssetManager.h"
 #include "SGConsole/API/Console.h"
 #include "SGCore/Utils/ShadersPaths.h"
-
 #include "SGCore/Input/InputManager.h"
-
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
@@ -56,7 +54,7 @@ void SGCore::CoreMain::start()
 
     m_renderer->init();
 
-    SGUtils::Singleton::getSharedPtrInstance<ShadersPaths>()->createDefaultPaths();
+    DefaultShadersPaths::init();
     InputManager::init();
     AssetManager::init();
     FontsManager::init();

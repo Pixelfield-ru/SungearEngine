@@ -29,46 +29,46 @@ namespace SGCore
     {
     public:
         glm::vec4 m_bgColor { 0.0, 0.0, 0.0, 1.0 };
+        
+        virtual void bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
+                                    const std::uint8_t& textureBlock) { };
 
-        virtual Ref<IFrameBuffer> bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
-                                                 const std::uint8_t& textureBlock) { return shared_from_this(); };
+        virtual void bindAttachmentToReadFrom(const SGFrameBufferAttachmentType& attachmentType) { }
+        virtual void bindAttachmentToDrawIn(const SGFrameBufferAttachmentType& attachmentType) { }
 
-        virtual Ref<IFrameBuffer> bindAttachmentToRead(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
-        virtual Ref<IFrameBuffer> bindAttachmentToDraw(const SGFrameBufferAttachmentType& attachmentType) { return shared_from_this(); }
+        virtual void bindAttachmentsToReadFrom(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { }
+        virtual void bindAttachmentsToDrawIn(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { }
+        virtual void bindAttachmentsToDrawIn(const std::set<SGFrameBufferAttachmentType>& attachmentsTypes) { }
 
-        virtual Ref<IFrameBuffer> bindAttachmentsToRead(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
-        virtual Ref<IFrameBuffer> bindAttachmentsToDraw(const std::vector<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
-        virtual Ref<IFrameBuffer> bindAttachmentsToDraw(const std::set<SGFrameBufferAttachmentType>& attachmentsTypes) { return shared_from_this(); }
+        virtual void unbindAttachmentToReadFrom() { }
+        virtual void unbindAttachmentToDrawIn() { }
 
-        virtual Ref<IFrameBuffer> unbindAttachmentToRead() { return shared_from_this(); }
-        virtual Ref<IFrameBuffer> unbindAttachmentToDraw() { return shared_from_this(); }
+        virtual void bind() = 0;
+        virtual void unbind() = 0;
 
-        virtual Ref<IFrameBuffer> bind() = 0;
-        virtual Ref<IFrameBuffer> unbind() = 0;
-
-        virtual Ref<IFrameBuffer> create() = 0;
+        virtual void create() = 0;
         virtual void destroy() = 0;
 
-        virtual std::shared_ptr<IFrameBuffer> clear() { return shared_from_this(); };
+        virtual void clear() { };
 
-        virtual std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType attachmentType,
+        virtual void addAttachment(SGFrameBufferAttachmentType attachmentType,
                                                             SGGColorFormat format,
                                                             SGGColorInternalFormat internalFormat,
                                                             const int& mipLevel,
                                                             const int& layer) = 0;
 
-        virtual std::shared_ptr<IFrameBuffer> addAttachment(SGFrameBufferAttachmentType attachmentType,
+        virtual void addAttachment(SGFrameBufferAttachmentType attachmentType,
                                                             SGGColorFormat format,
                                                             SGGColorInternalFormat internalFormat,
                                                             const int& mipLevel,
                                                             const int& layer,
                                                             bool useMultisampling,
-                                                            std::uint8_t multisamplingSamplesCount) { return nullptr; };
+                                                            std::uint8_t multisamplingSamplesCount) { };
 
-        std::shared_ptr<IFrameBuffer> setWidth(const int& width) noexcept;
-        std::shared_ptr<IFrameBuffer> setHeight(const int& height) noexcept;
+        void setWidth(const int& width) noexcept;
+        void setHeight(const int& height) noexcept;
 
-        std::shared_ptr<IFrameBuffer> setSize(const int& width, const int& height) noexcept;
+        void setSize(const int& width, const int& height) noexcept;
 
         int getWidth() const noexcept;
         int getHeight() const noexcept;
