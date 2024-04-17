@@ -1,6 +1,6 @@
 #sg_pragma once
 
-#sg_include "vertex_base.glsl"
+#sg_include "layered_pp_base.glsl"
 
 #define SG_NOT_INCLUDE_LIGHTS
 
@@ -15,12 +15,17 @@ SGSubPass(PostProcessLayerDepthPass)
 {
     SGSubShader(Fragment)
     {
-        uniform int currentFBIndex;
+        // CAN NOT BE USED IN OTHER PASSES. JUST A SEQUENTIAL INDEX OF THE LAYER
+        uniform int SGLPP_OnlyDepthPass_CurrentLayerIndex;
+
+        uniform int SGLPP_CurrentLayerIndex;
+
+        uniform int SGLPP_LayersCount;
 
         // as layers count
-        uniform int layersDepthAttachmentsCount;
+        uniform int SGLPP_LayersDepthAttachmentsCount;
         // as all layers depths
-        uniform sampler2D layersDepthAttachments[32];
+        uniform sampler2D SGLPP_LayersDepthAttachments[32];
 
         in vec2 vs_UVAttribute;
 
@@ -34,19 +39,19 @@ SGSubPass(PostProcessLayerDepthPass)
 
             // depth test pass -------------------------------------------
 
-            float currentFBDepth = texture(layersDepthAttachments[currentFBIndex], finalUV).r;
+            float currentFBDepth = texture(SGLPP_LayersDepthAttachments[SGLPP_OnlyDepthPass_CurrentLayerIndex], finalUV).r;
 
             // then sampling depth from other frame buffers and if we have closer depth then discard fragment
-            for (int i = 0; i < layersDepthAttachmentsCount; i++)
+            for (int i = 0; i < SGLPP_LayersCount; i++)
             {
-                if (currentFBIndex == i) continue;
+                if (SGLPP_OnlyDepthPass_CurrentLayerIndex == i) continue;
 
-                float otherDepth = texture(layersDepthAttachments[i], finalUV).r;
+                float otherDepth = texture(SGLPP_LayersDepthAttachments[i], finalUV).r;
 
                 // discard fragment
                 if (otherDepth < currentFBDepth)
                 {
-                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                    gl_FragColor = SG_MAKE_NOT_THIS_LAYER_COLOR(SGLPP_CurrentLayerIndex);
 
                     return;
                 }
@@ -63,11 +68,11 @@ SGSubPass(PostProcessAttachmentsCombiningPass)
     {
         // out vec4 fragColor;
 
-        uniform int attachmentsToCopyInCurrentTargetAttachmentCount;
+        uniform int SGLPP_AttachmentsToCopyInCurrentTargetAttachmentCount;
         // 32 is max count of layers
         // an array of attachments that will be "copied" to the current target color attachment
         // (i.e., the attachment of the combined attachments of the postprocessing layers)
-        uniform sampler2D attachmentsToCopyInCurrentTargetAttachment[32];
+        uniform sampler2D SGLPP_AttachmentsToCopyInCurrentTargetAttachment[32];
 
         in vec2 vs_UVAttribute;
 
@@ -81,9 +86,9 @@ SGSubPass(PostProcessAttachmentsCombiningPass)
 
             vec4 combinedColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-            for(int i = 0; i < attachmentsToCopyInCurrentTargetAttachmentCount; ++i)
+            for(int i = 0; i < SGLPP_AttachmentsToCopyInCurrentTargetAttachmentCount; ++i)
             {
-                combinedColor.rgb += texture(attachmentsToCopyInCurrentTargetAttachment[i], finalUV).rgb;
+                combinedColor.rgb += texture(SGLPP_AttachmentsToCopyInCurrentTargetAttachment[i], finalUV).rgb;
             }
 
             gl_FragColor = combinedColor;
@@ -97,8 +102,8 @@ SGSubPass(PostProcessFinalFXPass)
 {
     SGSubShader(Fragment)
     {
-        uniform int combinedAttachmentsCount;
-        uniform sampler2D combinedAttachments[32];
+        uniform int SGLPP_CombinedAttachmentsCount;
+        uniform sampler2D SGLPP_CombinedAttachments[32];
 
         in vec2 vs_UVAttribute;
 
@@ -112,7 +117,7 @@ SGSubPass(PostProcessFinalFXPass)
 
             vec4 finalColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-            finalColor.rgb = texture(combinedAttachments[0], finalUV).rgb;
+            finalColor.rgb = texture(SGLPP_CombinedAttachments[0], finalUV).rgb;
 
             gl_FragColor = finalColor;
 

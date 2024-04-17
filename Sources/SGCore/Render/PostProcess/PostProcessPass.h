@@ -30,6 +30,8 @@ namespace SGCore
         void FXPass(LayeredFrameReceiver& camera) const noexcept;
         void layersCombiningPass(LayeredFrameReceiver& camera) const noexcept;
         void finalFrameFXPass(LayeredFrameReceiver& camera) const;
+        
+        void bindLayersIndices(LayeredFrameReceiver& camera, const Ref<ISubPassShader>& subPassShader) const noexcept;
     };
 }
 

@@ -83,10 +83,11 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                 {
                     if(!meshPPLayer)
                     {
-                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultPostProcessLayer();
+                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
                     }
                     
                     meshPPLayer->m_frameBuffer->bind();
+                    meshPPLayer->m_frameBuffer->bindAttachmentsToDrawIn(meshPPLayer->m_attachmentsToRenderIn);
                 }
                 
                 renderMesh(registry, meshEntity, meshTransform, mesh, standardGeometryShader);
@@ -224,10 +225,11 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry
                 {
                     if(!meshPPLayer)
                     {
-                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultPostProcessLayer();
+                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
                     }
                     
                     meshPPLayer->m_frameBuffer->bind();
+                    meshPPLayer->m_frameBuffer->bindAttachmentsToDrawIn(meshPPLayer->m_attachmentsToRenderIn);
                 }
                 
                 renderMesh(registry, e, meshTransform, *mesh, standardGeometryShader);

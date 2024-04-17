@@ -34,8 +34,8 @@ namespace SGCore
         std::uint16_t m_index = 0;
         
         // attachments that the scene will be rendered into
-        std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0, // BY DEFAULT DEPTH NON-TESTED ATTACHMENT
-                                                                           SGG_COLOR_ATTACHMENT1/*, // BY DEFAULT DEPTH-TESTED ATTACHMENT
+        std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0,    // BY DEFAULT DEPTH NON-TESTED ATTACHMENT
+                                                                           SGG_COLOR_ATTACHMENT1/*,  // BY DEFAULT DEPTH-TESTED ATTACHMENT
                                                                            SGG_COLOR_ATTACHMENT2,
                                                                            SGG_COLOR_ATTACHMENT3,
                                                                            SGG_COLOR_ATTACHMENT4,
@@ -61,15 +61,6 @@ namespace SGCore
                 { SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5 },
                 { SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT6 }*/
         };
-
-        std::string getNameInShader() const noexcept
-        {
-            return m_nameInShader;
-        }
-
-    private:
-        // technical name
-        std::string m_nameInShader = SG_PP_LAYER_FB_NAME(0);
     };
 
     // todo: make change for default PP shader
@@ -82,7 +73,7 @@ namespace SGCore
         
         Ref<IShader> m_shader;
 
-        Ref<IFrameBuffer> m_ppLayersCombinedBuffer;
+        Ref<IFrameBuffer> m_layersCombinedBuffer;
 
         // final frame buffer with all post-processing
         Ref<IFrameBuffer> m_finalFrameFXFrameBuffer;
@@ -92,27 +83,25 @@ namespace SGCore
 
         std::set<SGFrameBufferAttachmentType> m_attachmentsForCombining;
         
-        Ref<PostProcessLayer> addPostProcessLayer(const std::string& name,
-                                                  const std::uint16_t& fbWidth,
-                                                  const std::uint16_t& fbHeight);
+        Ref<PostProcessLayer> addLayer(const std::string& name,
+                                       const std::uint16_t& fbWidth,
+                                       const std::uint16_t& fbHeight);
         
-        Ref<PostProcessLayer> addPostProcessLayer(const std::string& name);
+        Ref<PostProcessLayer> addLayer(const std::string& name);
 
-        void setPostProcessLayerShader(const std::string& name,
-                                       const Ref<ISubPassShader>& shader) noexcept;
+        void setLayerShader(const std::string& name,
+                            const Ref<ISubPassShader>& shader) noexcept;
 
-        [[nodiscard]] const auto& getPostProcessLayers() const noexcept
+        [[nodiscard]] const auto& getLayers() const noexcept
         {
-            return m_postProcessLayers;
+            return m_layers;
         }
         
-        Ref<PostProcessLayer> getPostProcessLayer(const std::string& name) noexcept;
-        Ref<PostProcessLayer> getDefaultPostProcessLayer() noexcept;
+        Ref<PostProcessLayer> getLayer(const std::string& name) noexcept;
+        Ref<PostProcessLayer> getDefaultLayer() noexcept;
         
-        void bindPostProcessFrameBuffer(const Ref<Layer>& layer) noexcept;
-
-        void unbindPostProcessFrameBuffer() const noexcept;
-
+        [[nodiscard]] std::uint16_t getLayersMaximumIndex() const noexcept;
+        
         void clearPostProcessFrameBuffers() const noexcept;
 
         // todo: make rename pp layer function
@@ -120,9 +109,7 @@ namespace SGCore
     private:
         Ref<PostProcessLayer> m_defaultLayer;
         
-        std::vector<Ref<PostProcessLayer>> m_postProcessLayers;
-
-        Ref<IFrameBuffer> m_currentPPFrameBufferToBind;
+        std::vector<Ref<PostProcessLayer>> m_layers;
     };
 }
 

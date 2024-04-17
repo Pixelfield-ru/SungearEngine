@@ -72,6 +72,11 @@ namespace SGCore
 
         int getWidth() const noexcept;
         int getHeight() const noexcept;
+        
+        const auto& getAttachments() const noexcept
+        {
+            return m_attachments;
+        }
 
     protected:
         std::unordered_map<SGFrameBufferAttachmentType, Ref<ITexture2D>> m_attachments;

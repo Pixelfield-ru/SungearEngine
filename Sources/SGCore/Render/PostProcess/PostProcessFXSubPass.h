@@ -17,7 +17,6 @@ namespace SGCore
     struct PostProcessFXSubPass
     {
         std::function<void(const Ref<ISubPassShader>& ppLayerShader)> m_prepareFunction;
-        std::uint16_t m_index = 0;
         /**
          * YOU MUST SPECIFY RENDER TARGET.
          */
