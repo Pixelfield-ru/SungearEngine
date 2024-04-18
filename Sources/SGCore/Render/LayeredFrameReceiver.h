@@ -71,15 +71,16 @@ namespace SGCore
     public:
         LayeredFrameReceiver();
         
+        // contains only PostProcessFinalFXPass
+        Ref<ISubPassShader> m_finalFrameFXShader;
+        
+        // contains depth pass and combination pass
         Ref<IShader> m_shader;
 
         Ref<IFrameBuffer> m_layersCombinedBuffer;
 
         // final frame buffer with all post-processing
         Ref<IFrameBuffer> m_finalFrameFXFrameBuffer;
-
-        // can be helpful for ImGUI
-        bool m_useFinalFrameBuffer = false;
 
         std::set<SGFrameBufferAttachmentType> m_attachmentsForCombining;
         
@@ -89,6 +90,8 @@ namespace SGCore
         
         Ref<PostProcessLayer> addLayer(const std::string& name);
 
+        void removeLayer(const std::string& name) noexcept;
+        
         void setLayerShader(const std::string& name,
                             const Ref<ISubPassShader>& shader) noexcept;
 
@@ -103,9 +106,7 @@ namespace SGCore
         [[nodiscard]] std::uint16_t getLayersMaximumIndex() const noexcept;
         
         void clearPostProcessFrameBuffers() const noexcept;
-
-        // todo: make rename pp layer function
-
+        
     private:
         Ref<PostProcessLayer> m_defaultLayer;
         

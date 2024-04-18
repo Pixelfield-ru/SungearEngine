@@ -20,6 +20,7 @@ namespace SGCore
             
             m_paths["LayeredPP"]["ReceiverShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/layered/receiver_shader.glsl";
             m_paths["LayeredPP"]["LayerFXShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/layered/layer_default_fx.glsl";
+            m_paths["LayeredPP"]["FinalFrameFXShader"].m_GLSL4RealizationPath = "../SGResources/shaders/glsl4/postprocessing/layered/final_frame_fx.glsl";
         }
         
         SG_NOINLINE static auto& getPaths() noexcept

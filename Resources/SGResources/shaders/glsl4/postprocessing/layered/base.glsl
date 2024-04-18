@@ -1,8 +1,6 @@
 #sg_pragma once
 
-#define SG_MAKE_NOT_THIS_LAYER_COLOR(layerIndex) vec4((float(layerIndex) * 10.0) / 255.0, 0, 0, 1)
-
-SGSubPass(PostProcessLayerDepthPass, PostProcessLayerFXPass, PostProcessAttachmentsCombiningPass, PostProcessFinalFXPass)
+SGSubPass(SGLPPLayerDepthPass, SGLPPLayerFXPass, SGLPPAttachmentsCombiningPass, SGLPPFinalFXPass)
 {
     SGSubShader(Vertex)
     {

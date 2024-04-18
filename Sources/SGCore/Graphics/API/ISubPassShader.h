@@ -130,6 +130,9 @@ namespace SGCore
             return cnt;
         }*/
         
+        void addTextureBinding(const std::string& bindingName, const Ref<ITexture2D>& texture) noexcept;
+        void removeTextureBinding(const std::string& bindingName) noexcept;
+        
         std::vector<ShaderTextureBinding> m_textureBindings;
         
         ISubPassShader& operator=(const ISubPassShader&) noexcept;

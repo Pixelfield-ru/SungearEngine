@@ -33,7 +33,7 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_definitions(-DSUNGEAR_DEBUG)
 endif()
 
-    add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
+add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
 add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 add_definitions(-DUSE_LIBPNG)
@@ -90,7 +90,6 @@ set(SG_RESOURCES_COPY_UI ON)
 set(SG_RESOURCES_COPY_FONTS ON)
 
 # ----------------------------------
-add_subdirectory(Externals)
 add_subdirectory(Sources)
 if(${SG_BUILD_TESTS})
     add_subdirectory(Tests)

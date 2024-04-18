@@ -47,7 +47,7 @@ void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderP
 // DONE
 void SGCore::PostProcessPass::depthPass(LayeredFrameReceiver& camera) const noexcept
 {
-    auto depthPassShader = camera.m_shader->getSubPassShader("PostProcessLayerDepthPass");
+    auto depthPassShader = camera.m_shader->getSubPassShader("SGLPPLayerDepthPass");
 
     if(!depthPassShader) return;
     
@@ -76,7 +76,7 @@ void SGCore::PostProcessPass::depthPass(LayeredFrameReceiver& camera) const noex
     
     for(const auto& ppLayer : camera.getLayers())
     {
-        depthPassShader->useInteger("SGLPP_OnlyDepthPass_CurrentLayerIndex", layerIdx);
+        depthPassShader->useInteger("SGLPP_CurrentLayerSeqIndex", layerIdx);
         depthPassShader->useInteger("SGLPP_CurrentLayerIndex", ppLayer->m_index);
 
         ppLayer->m_frameBuffer->bind();
@@ -101,158 +101,38 @@ void SGCore::PostProcessPass::depthPass(LayeredFrameReceiver& camera) const noex
 // DONE
 void SGCore::PostProcessPass::FXPass(SGCore::LayeredFrameReceiver& camera) const noexcept
 {
-    std::uint8_t colorAttachmentIdx = 0;
-    std::uint8_t depthAttachmentIdx = 0;
-    std::uint8_t depthStencilAttachmentIdx = 0;
-    std::uint8_t renderAttachmentIdx = 0;
-    
-    std::uint8_t currentTextureUnit = 0;
-    
-    std::string attachmentsBindingPostfix;
+    std::uint16_t layerIdx = 0;
     
     for(const auto& ppLayer: camera.getLayers())
     {
-        currentTextureUnit = 0;
+        if(ppLayer->m_subPasses.empty())
+        {
+            ++layerIdx;
+            continue;
+        }
         
         auto layerShader = ppLayer->m_FXSubPassShader;
         
-        if(!layerShader) continue;
+        if(!layerShader)
+        {
+            ++layerIdx;
+            continue;
+        }
         
         layerShader->bind();
         
-        // binding all attachments of layers to current layer fx shader
-        for(const auto& ppLayer0 : camera.getLayers())
-        {
-            colorAttachmentIdx = 0;
-            depthAttachmentIdx = 0;
-            depthStencilAttachmentIdx = 0;
-            renderAttachmentIdx = 0;
-            
-            for(const auto& attachmentPair : ppLayer0->m_frameBuffer->getAttachments())
-            {
-                const auto& attachmentType = attachmentPair.first;
-                const auto& attachment = attachmentPair.second;
-                
-                attachment->bind(currentTextureUnit);
-                
-                if(isColorAttachment(attachmentType))
-                {
-                    attachmentsBindingPostfix = fmt::format("_ColorAttachments[{0}]", colorAttachmentIdx);
-                    
-                    ++colorAttachmentIdx;
-                    ++currentTextureUnit;
-                }
-                else if(isDepthAttachment(attachmentType))
-                {
-                    attachmentsBindingPostfix = fmt::format("_DepthAttachments[{0}]", depthAttachmentIdx);
-                    
-                    ++depthAttachmentIdx;
-                    ++currentTextureUnit;
-                }
-                else if(isDepthStencilAttachment(attachmentType))
-                {
-                    attachmentsBindingPostfix = fmt::format("_DepthStencilAttachments[{0}]", depthStencilAttachmentIdx);
-                    
-                    ++depthStencilAttachmentIdx;
-                    ++currentTextureUnit;
-                }
-                else if(isRenderAttachment(attachmentType))
-                {
-                    attachmentsBindingPostfix = fmt::format("_RenderAttachments[{0}]", renderAttachmentIdx);
-                    
-                    ++renderAttachmentIdx;
-                    ++currentTextureUnit;
-                }
-                
-                std::cout << fmt::format("SGLPP_{0}{1}", ppLayer0->m_name, attachmentsBindingPostfix) << ", currentTextureUnit - 1: " << (currentTextureUnit - 1) << std::endl;
-                
-                layerShader->useTextureBlock(
-                        fmt::format("SGLPP_Layer{0}{1}", ppLayer0->m_index, attachmentsBindingPostfix),
-                        currentTextureUnit - 1);
-                
-                layerShader->useTextureBlock(
-                        fmt::format("SGLPP_{0}{1}", ppLayer0->m_name, attachmentsBindingPostfix),
-                        currentTextureUnit - 1);
-            }
-            
-            layerShader->useInteger(fmt::format("SGLPP_Layer{0}_ColorAttachments_Count", ppLayer0->m_index), colorAttachmentIdx);
-            layerShader->useInteger(fmt::format("SGLPP_Layer{0}_DepthAttachments_Count", ppLayer0->m_index), depthAttachmentIdx);
-            layerShader->useInteger(fmt::format("SGLPP_Layer{0}_DepthStencilAttachments_Count", ppLayer0->m_index), depthStencilAttachmentIdx);
-            layerShader->useInteger(fmt::format("SGLPP_Layer{0}_RenderAttachments_Count", ppLayer0->m_index), renderAttachmentIdx);
-            
-            layerShader->useInteger(fmt::format("SGLPP_{0}_ColorAttachments_Count", ppLayer0->m_name), colorAttachmentIdx);
-            layerShader->useInteger(fmt::format("SGLPP_{0}_DepthAttachments_Count", ppLayer0->m_name), depthAttachmentIdx);
-            layerShader->useInteger(fmt::format("SGLPP_{0}_DepthStencilAttachments_Count", ppLayer0->m_name), depthStencilAttachmentIdx);
-            layerShader->useInteger(fmt::format("SGLPP_{0}_RenderAttachments_Count", ppLayer0->m_name), renderAttachmentIdx);
-        }
+        layerShader->useInteger("SGLPP_CurrentLayerSeqIndex", layerIdx);
         
         layerShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
 
         // std::cout << "layer name: " << ppLayer->m_name << ", index: " << ppLayer->m_index << std::endl;
         
+        layerShader->bindTextureBindings(0);
+        
         bindLayersIndices(camera, layerShader);
         
         layerShader->useInteger("SGLPP_CurrentLayerIndex", ppLayer->m_index);
         layerShader->useInteger("SGLPP_LayersCount", camera.getLayers().size());
-        
-        // clearing indices ============
-        colorAttachmentIdx = 0;
-        depthAttachmentIdx = 0;
-        depthStencilAttachmentIdx = 0;
-        renderAttachmentIdx = 0;
-        // =============================
-        
-        // binding attachments from combined buffer
-        // programmer will be able to use results of last frame in combined framebuffer
-        for(const auto& attachmentPair : camera.m_layersCombinedBuffer->getAttachments())
-        {
-            const auto& attachmentType = attachmentPair.first;
-            const auto& attachment = attachmentPair.second;
-            
-            attachment->bind(currentTextureUnit);
-            
-            if(isColorAttachment(attachmentType))
-            {
-                attachmentsBindingPostfix = fmt::format("_ColorAttachments[{0}]", colorAttachmentIdx);
-                
-                ++colorAttachmentIdx;
-                ++currentTextureUnit;
-            }
-            else if(isDepthAttachment(attachmentType))
-            {
-                attachmentsBindingPostfix = fmt::format("_DepthAttachments[{0}]", depthAttachmentIdx);
-                
-                ++depthAttachmentIdx;
-                ++currentTextureUnit;
-            }
-            else if(isDepthStencilAttachment(attachmentType))
-            {
-                attachmentsBindingPostfix = fmt::format("_DepthStencilAttachments[{0}]", depthStencilAttachmentIdx);
-                
-                ++depthStencilAttachmentIdx;
-                ++currentTextureUnit;
-            }
-            else if(isRenderAttachment(attachmentType))
-            {
-                attachmentsBindingPostfix = fmt::format("_RenderAttachments[{0}]", renderAttachmentIdx);
-                
-                ++renderAttachmentIdx;
-                ++currentTextureUnit;
-            }
-            
-            layerShader->useTextureBlock(
-                    fmt::format("SGLPP_CombinedFrameBuffer{0}", attachmentsBindingPostfix),
-                    currentTextureUnit - 1);
-        }
-        
-        // binding combined frame buffer attachments counts
-        {
-            layerShader->useTextureBlock("SGLPP_CombinedFrameBuffer_ColorAttachments_Count", colorAttachmentIdx);
-            layerShader->useTextureBlock("SGLPP_CombinedFrameBuffer_DepthAttachments_Count", depthAttachmentIdx);
-            layerShader->useTextureBlock("SGLPP_CombinedFrameBuffer_DepthStencilAttachments_Count",
-                                         depthStencilAttachmentIdx);
-            layerShader->useTextureBlock("SGLPP_CombinedFrameBuffer_RenderAttachments_Count", renderAttachmentIdx);
-        }
 
         ppLayer->m_frameBuffer->bind();
         
@@ -278,13 +158,15 @@ void SGCore::PostProcessPass::FXPass(SGCore::LayeredFrameReceiver& camera) const
         }
 
         ppLayer->m_frameBuffer->unbind();
+        
+        ++layerIdx;
     }
 }
 
 // DONE
 void SGCore::PostProcessPass::layersCombiningPass(LayeredFrameReceiver& camera) const noexcept
 {
-    auto ppLayerCombiningShader = camera.m_shader->getSubPassShader("PostProcessAttachmentsCombiningPass");
+    auto ppLayerCombiningShader = camera.m_shader->getSubPassShader("SGLPPAttachmentsCombiningPass");
 
     if(!ppLayerCombiningShader) return;
     
@@ -343,23 +225,14 @@ void SGCore::PostProcessPass::layersCombiningPass(LayeredFrameReceiver& camera) 
 // DONE
 void SGCore::PostProcessPass::finalFrameFXPass(LayeredFrameReceiver& camera) const
 {
-    auto ppFinalFxShader = camera.m_shader->getSubPassShader("PostProcessFinalFXPass");
+    auto ppFinalFXShader = camera.m_finalFrameFXShader;
 
-    if(!ppFinalFxShader) return;
+    if(!ppFinalFXShader) return;
     
-    ppFinalFxShader->bind();
+    ppFinalFXShader->bind();
 
     // binding all attachments from camera.m_ppLayersCombinedBuffer. these attachments are the assembled layer attachments
-    std::uint8_t attachmentIdx = 0;
-    for(const auto& attachmentType : camera.m_attachmentsForCombining)
-    {
-        camera.m_layersCombinedBuffer->bindAttachment(attachmentType, attachmentIdx);
-        ppFinalFxShader->useInteger("SGLPP_CombinedAttachments[" + std::to_string(attachmentIdx) + "]", attachmentIdx);
-
-        ++attachmentIdx;
-    }
-
-    ppFinalFxShader->useInteger("SGLPP_CombinedAttachmentsCount", attachmentIdx);
+    ppFinalFXShader->bindTextureBindings(0);
 
     CoreMain::getRenderer()->renderMeshData(
             m_postProcessQuad,

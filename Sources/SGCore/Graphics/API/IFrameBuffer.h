@@ -50,20 +50,21 @@ namespace SGCore
         virtual void destroy() = 0;
 
         virtual void clear() { };
-
+        
         virtual void addAttachment(SGFrameBufferAttachmentType attachmentType,
-                                                            SGGColorFormat format,
-                                                            SGGColorInternalFormat internalFormat,
-                                                            const int& mipLevel,
-                                                            const int& layer) = 0;
-
+                                   SGGColorFormat format,
+                                   SGGColorInternalFormat internalFormat,
+                                   const int& mipLevel,
+                                   const int& layer) = 0;
+        
         virtual void addAttachment(SGFrameBufferAttachmentType attachmentType,
-                                                            SGGColorFormat format,
-                                                            SGGColorInternalFormat internalFormat,
-                                                            const int& mipLevel,
-                                                            const int& layer,
-                                                            bool useMultisampling,
-                                                            std::uint8_t multisamplingSamplesCount) { };
+                                   SGGColorFormat format,
+                                   SGGColorInternalFormat internalFormat,
+                                   const int& mipLevel,
+                                   const int& layer,
+                                   bool useMultisampling,
+                                   std::uint8_t multisamplingSamplesCount)
+        {};
 
         void setWidth(const int& width) noexcept;
         void setHeight(const int& height) noexcept;
@@ -77,6 +78,8 @@ namespace SGCore
         {
             return m_attachments;
         }
+        
+        Ref<ITexture2D> getAttachment(SGFrameBufferAttachmentType attachmentType) const noexcept;
 
     protected:
         std::unordered_map<SGFrameBufferAttachmentType, Ref<ITexture2D>> m_attachments;

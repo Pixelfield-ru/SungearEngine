@@ -25,3 +25,10 @@ int SGCore::IFrameBuffer::getHeight() const noexcept
 {
     return m_height;
 }
+
+SGCore::Ref<SGCore::ITexture2D>
+SGCore::IFrameBuffer::getAttachment(SGFrameBufferAttachmentType attachmentType) const noexcept
+{
+    auto it = m_attachments.find(attachmentType);
+    return it != m_attachments.end() ? it->second : nullptr;
+}

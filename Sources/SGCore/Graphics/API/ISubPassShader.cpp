@@ -284,3 +284,19 @@ size_t SGCore::ISubPassShader::bindTextureBindings(const size_t& samplersOffset)
     
     return offset;
 }
+
+void SGCore::ISubPassShader::addTextureBinding
+(const std::string& bindingName, const SGCore::Ref<SGCore::ITexture2D>& texture) noexcept
+{
+    ShaderTextureBinding shaderTextureBinding;
+    shaderTextureBinding.m_bindingName = bindingName;
+    shaderTextureBinding.m_texture = texture;
+    m_textureBindings.emplace_back(std::move(shaderTextureBinding));
+}
+
+void SGCore::ISubPassShader::removeTextureBinding(const std::string& bindingName) noexcept
+{
+    std::erase_if(m_textureBindings, [&bindingName](const ShaderTextureBinding& shaderTextureBinding) {
+        return shaderTextureBinding.m_bindingName == bindingName;
+    });
+}
