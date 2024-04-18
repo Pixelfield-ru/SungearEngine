@@ -203,12 +203,19 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
             std::string finalIncludedFilePath = std::filesystem::path(path).parent_path().string() + "/" +
                                                 std::string(includedFilePath.begin() + 1, includedFilePath.end() - 1);
             
-            if(finalIncludedFilePath.starts_with("/") || finalIncludedFilePath.starts_with("\\"))
-            {
-                finalIncludedFilePath.erase(finalIncludedFilePath.begin());
-            }
             
-            // finalIncludedFilePath = realpath(std::filesystem::path(finalIncludedFilePath)).string();
+            // std::string f = finalIncludedFilePath;
+            finalIncludedFilePath = SGUtils::Utils::getRealPath(finalIncludedFilePath);
+            if(!std::filesystem::exists(finalIncludedFilePath))
+            {
+                // trying to include file using relative to executable file path
+                finalIncludedFilePath = std::filesystem::current_path().string() + "/" +
+                                        std::string(includedFilePath.begin() + 1, includedFilePath.end() - 1);
+                // f = finalIncludedFilePath;
+                finalIncludedFilePath = SGUtils::Utils::getRealPath(finalIncludedFilePath);
+                
+                //std::cout << "exec path: " << std::filesystem::current_path().string() << ", f: " << f << ", realpath: " << finalIncludedFilePath << std::endl;
+            }
             
             bool alreadyIncluded = false;
             for(const auto& p : translator.m_includedFiles)

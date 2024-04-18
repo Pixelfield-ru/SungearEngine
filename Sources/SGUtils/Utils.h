@@ -46,8 +46,10 @@
 #include <codecvt>
 #include <memory>
 #include <unordered_set>
+#include <filesystem>
 
 #include "TypeTraits.h"
+#include "CrashHandler/Platform.h"
 
 namespace SGCore
 {
@@ -333,6 +335,40 @@ namespace SGUtils
             {
                 sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
             }
+        }
+        
+        static std::string getCurrentExecutablePath()
+        {
+#if defined(PLATFORM_POSIX) || defined(__linux__)
+            std::string sp;
+            std::ifstream("/proc/self/comm") >> sp;
+            return sp;
+#elif defined(_WIN32)
+            char buf[MAX_PATH];
+            GetModuleFileNameA(nullptr, buf, MAX_PATH);
+            return buf;
+#else
+
+            static_assert(false, "unrecognized platform");
+
+#endif
+        }
+        
+        static std::string getRealPath(const std::string& path) noexcept
+        {
+#ifdef PLATFORM_WINDOWS
+#elif defined(PLATFORM_OS_LINUX)
+            char buf[PATH_MAX];
+            char* res = realpath(path.c_str(), buf);
+            if(res)
+            {
+                return buf;
+            }
+            else
+            {
+                return "";
+            }
+#endif
         }
     };
 }
