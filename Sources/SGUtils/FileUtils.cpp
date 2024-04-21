@@ -65,7 +65,10 @@ void SGUtils::FileUtils::writeToFile(const std::string_view& path, const std::st
     if(createDirectories)
     {
         std::filesystem::path fPath(path);
-        std::filesystem::create_directories(fPath.parent_path().string());
+        if(!fPath.parent_path().empty())
+        {
+            std::filesystem::create_directories(fPath.parent_path().string());
+        }
     }
 
     try

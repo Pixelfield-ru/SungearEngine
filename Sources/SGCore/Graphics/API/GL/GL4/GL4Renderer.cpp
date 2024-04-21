@@ -76,10 +76,12 @@ void SGCore::GL4Renderer::init() noexcept
     m_viewMatricesBuffer->prepare();
 
     m_programDataBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
-    m_programDataBuffer->m_blockName = "ProgramData";
+    m_programDataBuffer->m_blockName = "ProgramDataBlock";
     m_programDataBuffer->putUniforms({
-                                             IShaderUniform("windowSize", SGGDataType::SGG_FLOAT2),
-                                             IShaderUniform("currentTime", SGGDataType::SGG_FLOAT)
+                                             IShaderUniform("programData.windowSize", SGGDataType::SGG_FLOAT2),
+                                             IShaderUniform("programData.primaryMonitorSize", SGGDataType::SGG_FLOAT2),
+                                             IShaderUniform("programData.p0", SGGDataType::SGG_FLOAT),
+                                             IShaderUniform("programData.currentTime", SGGDataType::SGG_FLOAT)
                                        });
     m_programDataBuffer->setLayoutLocation(2);
     m_programDataBuffer->prepare();
@@ -145,7 +147,6 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
     // double t0 = glfwGetTime();
 
     m_viewMatricesBuffer->bind();
-    m_programDataBuffer->bind();
 
     m_viewMatricesBuffer->subData("camera.projectionSpaceMatrix",
                                   glm::value_ptr(renderingBase->m_projectionSpaceMatrix), 16
@@ -170,11 +171,18 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
 
     int windowWidth;
     int windowHeight;
-
+    
+    int primaryMonitorWidth;
+    int primaryMonitorHeight;
+    
+    m_programDataBuffer->bind();
     CoreMain::getWindow().getSize(windowWidth, windowHeight);
+    Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
+
     // todo: перенести обновление в класс окна
-    m_programDataBuffer->subData("windowSize", {windowWidth, windowHeight});
-    m_programDataBuffer->subData("currentTime", {(float) glfwGetTime()});
+    m_programDataBuffer->subData("programData.windowSize", { (float) windowWidth, (float) windowHeight });
+    m_programDataBuffer->subData("programData.primaryMonitorSize", { (float) primaryMonitorWidth, (float) primaryMonitorHeight });
+    m_programDataBuffer->subData("programData.currentTime", {(float) glfwGetTime()});
 
     // double t1 = glfwGetTime();
 

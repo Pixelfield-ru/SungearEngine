@@ -32,20 +32,21 @@ void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderP
 {
     CoreMain::getRenderer()->setDepthTestingEnabled(false);
 
-    auto receiversView = scene->getECSRegistry()->view<LayeredFrameReceiver>();
+    auto receiversView = scene->getECSRegistry()->view<LayeredFrameReceiver, Ref<RenderingBase>, Ref<Transform>>();
 
-    receiversView.each([this](LayeredFrameReceiver& camera) {
-        depthPass(camera);
-        FXPass(camera);
-        layersCombiningPass(camera);
-        finalFrameFXPass(camera);
+    receiversView.each([this](LayeredFrameReceiver& receiver, Ref<RenderingBase> renderingBase, Ref<Transform> transform) {
+        depthPass(receiver, renderingBase, transform);
+        FXPass(receiver, renderingBase, transform);
+        layersCombiningPass(receiver, renderingBase, transform);
+        finalFrameFXPass(receiver, renderingBase, transform);
     });
 
     CoreMain::getRenderer()->setDepthTestingEnabled(true);
 }
 
 // DONE
-void SGCore::PostProcessPass::depthPass(LayeredFrameReceiver& camera) const noexcept
+void SGCore::PostProcessPass::depthPass
+(LayeredFrameReceiver& camera, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const noexcept
 {
     auto depthPassShader = camera.m_shader->getSubPassShader("SGLPPLayerDepthPass");
 
@@ -99,9 +100,12 @@ void SGCore::PostProcessPass::depthPass(LayeredFrameReceiver& camera) const noex
 }
 
 // DONE
-void SGCore::PostProcessPass::FXPass(SGCore::LayeredFrameReceiver& camera) const noexcept
+void SGCore::PostProcessPass::FXPass
+(SGCore::LayeredFrameReceiver& camera, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const noexcept
 {
     std::uint16_t layerIdx = 0;
+    
+    auto depthPassShader = camera.m_shader->getSubPassShader("SGLPPLayerDepthPass");
     
     for(const auto& ppLayer: camera.getLayers())
     {
@@ -111,7 +115,7 @@ void SGCore::PostProcessPass::FXPass(SGCore::LayeredFrameReceiver& camera) const
             continue;
         }
         
-        auto layerShader = ppLayer->m_FXSubPassShader;
+        auto layerShader = ppLayer->getFXSubPassShader();
         
         if(!layerShader)
         {
@@ -121,19 +125,27 @@ void SGCore::PostProcessPass::FXPass(SGCore::LayeredFrameReceiver& camera) const
         
         layerShader->bind();
         
+        layerShader->bindTextureBindings(0);
+        
         layerShader->useInteger("SGLPP_CurrentLayerSeqIndex", layerIdx);
         
         layerShader->useUniformBuffer(CoreMain::getRenderer()->m_programDataBuffer);
+        
+        CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
+        layerShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
         // std::cout << "layer name: " << ppLayer->m_name << ", index: " << ppLayer->m_index << std::endl;
-        
-        layerShader->bindTextureBindings(0);
         
         bindLayersIndices(camera, layerShader);
         
         layerShader->useInteger("SGLPP_CurrentLayerIndex", ppLayer->m_index);
         layerShader->useInteger("SGLPP_LayersCount", camera.getLayers().size());
 
+        for(const auto& effect : ppLayer->getEffects())
+        {
+            effect->onFXPass(ppLayer);
+        }
+        
         ppLayer->m_frameBuffer->bind();
         
         std::uint16_t currentSubPassIdx = 0;
@@ -142,17 +154,55 @@ void SGCore::PostProcessPass::FXPass(SGCore::LayeredFrameReceiver& camera) const
         {
             layerShader->useInteger("SGLPP_CurrentSubPassIndex", currentSubPassIdx);
 
-            if (ppFXSubPass.m_prepareFunction)
+            if (ppFXSubPass.m_prepassFunction)
             {
-                ppFXSubPass.m_prepareFunction(layerShader);
+                ppFXSubPass.m_prepassFunction(layerShader);
             }
             
             ppLayer->m_frameBuffer->bindAttachmentToDrawIn(ppFXSubPass.m_attachmentRenderTo);
-
+            ppLayer->m_frameBuffer->clearAttachment(ppFXSubPass.m_attachmentRenderTo);
+            
             CoreMain::getRenderer()->renderMeshData(
                     m_postProcessQuad,
                     m_postProcessQuadRenderInfo
             );
+            
+            if(ppFXSubPass.m_enablePostFXDepthPass && depthPassShader)
+            {
+                depthPassShader->bind();
+                
+                depthPassShader->useInteger("SGLPP_CurrentLayerIndex", ppLayer->m_index);
+                depthPassShader->useInteger("SGLPP_CurrentLayerSeqIndex", layerIdx);
+                
+                std::uint8_t depthPassLayerIdx = 0;
+                
+                // binding depth uniforms =================
+                for(const auto& depthPassLayer : camera.getLayers())
+                {
+                    if(depthPassLayer->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0))
+                    {
+                        depthPassShader->useTextureBlock("SGLPP_LayersDepthAttachments[" + std::to_string(depthPassLayerIdx) + "]", depthPassLayerIdx);
+                        depthPassLayer->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0, depthPassLayerIdx);
+                        ++depthPassLayerIdx;
+                    }
+                }
+                // =========================================
+                
+                depthPassShader->useInteger("SGLPP_LayersDepthAttachmentsCount", depthPassLayerIdx);
+                
+                CoreMain::getRenderer()->renderMeshData(
+                        m_postProcessQuad,
+                        m_postProcessQuadRenderInfo
+                );
+                
+                layerShader->bind();
+                layerShader->bindTextureBindings(0);
+            }
+            
+            if (ppFXSubPass.m_postpassFunction)
+            {
+                ppFXSubPass.m_postpassFunction(layerShader);
+            }
             
             ++currentSubPassIdx;
         }
@@ -164,7 +214,8 @@ void SGCore::PostProcessPass::FXPass(SGCore::LayeredFrameReceiver& camera) const
 }
 
 // DONE
-void SGCore::PostProcessPass::layersCombiningPass(LayeredFrameReceiver& camera) const noexcept
+void SGCore::PostProcessPass::layersCombiningPass
+(LayeredFrameReceiver& camera, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const noexcept
 {
     auto ppLayerCombiningShader = camera.m_shader->getSubPassShader("SGLPPAttachmentsCombiningPass");
 
@@ -223,9 +274,10 @@ void SGCore::PostProcessPass::layersCombiningPass(LayeredFrameReceiver& camera) 
 }
 
 // DONE
-void SGCore::PostProcessPass::finalFrameFXPass(LayeredFrameReceiver& camera) const
+void SGCore::PostProcessPass::finalFrameFXPass
+(LayeredFrameReceiver& receiver, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const
 {
-    auto ppFinalFXShader = camera.m_finalFrameFXShader;
+    auto ppFinalFXShader = receiver.m_finalFrameFXShader;
 
     if(!ppFinalFXShader) return;
     
@@ -234,26 +286,27 @@ void SGCore::PostProcessPass::finalFrameFXPass(LayeredFrameReceiver& camera) con
     // binding all attachments from camera.m_ppLayersCombinedBuffer. these attachments are the assembled layer attachments
     ppFinalFXShader->bindTextureBindings(0);
 
+    CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
+    ppFinalFXShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+    
     CoreMain::getRenderer()->renderMeshData(
             m_postProcessQuad,
             m_postProcessQuadRenderInfo
     );
     
-    // clearing buffers
-    for(const auto& ppLayer : camera.getLayers())
+    for(const auto& ppLayer : receiver.getLayers())
     {
         ppLayer->m_frameBuffer->bind();
-        ppLayer->m_frameBuffer->clear();
-        ppLayer->m_frameBuffer->unbind();
+        ppLayer->m_frameBuffer->clearAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
     }
 }
 
-void SGCore::PostProcessPass::bindLayersIndices(SGCore::LayeredFrameReceiver& camera,
+void SGCore::PostProcessPass::bindLayersIndices(SGCore::LayeredFrameReceiver& receiver,
                                                 const SGCore::Ref<SGCore::ISubPassShader>& subPassShader) const noexcept
 {
     std::uint8_t layerIdx = 0;
     
-    for(const auto& ppLayer : camera.getLayers())
+    for(const auto& ppLayer : receiver.getLayers())
     {
         subPassShader->useInteger("SGLPP_LayersIndices[" + std::to_string(layerIdx) + "]", ppLayer->m_index);
         ++layerIdx;

@@ -3,10 +3,14 @@
 
 #include <set>
 
+#include "SGCore/Render/PostProcess/PostProcessEffect.h"
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/PostProcess/PostProcessFXSubPass.h"
 #include "SGCore/Scene/Layer.h"
 #include "SGUtils/EventListener.h"
+#include "SGUtils/Utils.h"
+#include "SGCore/ImportedScenesArch/IMeshData.h"
+#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 
 #define SG_PP_LAYER_FB_NAME(idx)  ("frameBuffer" + std::to_string(idx))
 
@@ -19,7 +23,7 @@ namespace SGCore
         SGFrameBufferAttachmentType m_frameBufferAttachmentType = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0;
     };
 
-    struct PostProcessLayer
+    struct PostProcessLayer : public std::enable_shared_from_this<PostProcessLayer>
     {
         friend class LayeredFrameReceiver;
 
@@ -28,8 +32,6 @@ namespace SGCore
         Ref<IFrameBuffer> m_frameBuffer;
 
         std::string m_name;
-
-        Ref<ISubPassShader> m_FXSubPassShader;
 
         std::uint16_t m_index = 0;
         
@@ -61,6 +63,83 @@ namespace SGCore
                 { SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5 },
                 { SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT6 }*/
         };
+        
+        template<typename EffectT>
+        requires(std::is_base_of_v<PostProcessEffect, EffectT>)
+        void addEffect(const Ref<EffectT>& effect) noexcept
+        {
+            if(getEffect<EffectT>()) return;
+            
+            m_effects.push_back(effect);
+            
+            auto thisShared = shared_from_this();
+            
+            effect->m_parentPostProcessLayers.push_back(thisShared);
+            effect->onAttachToLayer(thisShared);
+        }
+        
+        template<typename EffectT>
+        requires(std::is_base_of_v<PostProcessEffect, EffectT>)
+        void removeEffect() noexcept
+        {
+            std::erase_if(m_effects, [this](const Ref<PostProcessEffect>& otherEffect) {
+                if(SG_INSTANCEOF(otherEffect.get(), EffectT))
+                {
+                    auto thisShared = shared_from_this();
+                    
+                    std::erase_if(otherEffect->m_parentPostProcessLayers, [this](const Weak<PostProcessLayer>& parentLayer) {
+                        auto lockedLayer = parentLayer.lock();
+                        return lockedLayer && lockedLayer.get() == this;
+                    });
+                    
+                    otherEffect->onDetachFromLayer(thisShared);
+                    
+                    return true;
+                }
+                
+                return false;
+            });
+        }
+        
+        template<typename EffectT>
+        requires(std::is_base_of_v<PostProcessEffect, EffectT>)
+        Ref<EffectT> getEffect() const noexcept
+        {
+            for(const auto& effect : m_effects)
+            {
+                if(SG_INSTANCEOF(effect.get(), EffectT))
+                {
+                    return std::static_pointer_cast<EffectT>(effect);
+                }
+            }
+            
+            return nullptr;
+        }
+        
+        [[nodiscard]] const auto& getEffects() const noexcept
+        {
+            return m_effects;
+        }
+        
+        auto getFXSubPassShader() const noexcept
+        {
+            return m_FXSubPassShader;
+        }
+        
+        void setFXSubPassShader(const Ref<ISubPassShader>& FXSubPassShader) noexcept
+        {
+            m_FXSubPassShader = FXSubPassShader;
+            
+            for(const auto& effect : m_effects)
+            {
+                effect->onLayerShaderChanged(shared_from_this());
+            }
+        }
+        
+    private:
+        Ref<ISubPassShader> m_FXSubPassShader;
+        
+        std::vector<Ref<PostProcessEffect>> m_effects;
     };
 
     // todo: make change for default PP shader
@@ -107,7 +186,12 @@ namespace SGCore
         
         void clearPostProcessFrameBuffers() const noexcept;
         
+        void attachmentDepthPass(const SGCore::Ref<SGCore::PostProcessLayer>& layer, SGFrameBufferAttachmentType attachmentType) noexcept;
+        
     private:
+        MeshDataRenderInfo m_postProcessQuadRenderInfo;
+        Ref<IMeshData> m_postProcessQuad;
+        
         Ref<PostProcessLayer> m_defaultLayer;
         
         std::vector<Ref<PostProcessLayer>> m_layers;

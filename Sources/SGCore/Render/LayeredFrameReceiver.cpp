@@ -16,6 +16,20 @@
 
 SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 {
+    m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
+    
+    m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
+    
+    m_postProcessQuad->m_indices.push_back(0);
+    m_postProcessQuad->m_indices.push_back(2);
+    m_postProcessQuad->m_indices.push_back(1);
+    
+    m_postProcessQuad->m_indices.push_back(0);
+    m_postProcessQuad->m_indices.push_back(3);
+    m_postProcessQuad->m_indices.push_back(2);
+    
+    m_postProcessQuad->prepare();
+    
     m_defaultLayer = addLayer("___DEFAULT_LAYER___");
     
     m_shader = MakeRef<IShader>();
@@ -203,4 +217,45 @@ void SGCore::LayeredFrameReceiver::clearPostProcessFrameBuffers() const noexcept
     m_finalFrameFXFrameBuffer->bind();
     m_finalFrameFXFrameBuffer->clear();
     m_finalFrameFXFrameBuffer->unbind();
+}
+
+void SGCore::LayeredFrameReceiver::attachmentDepthPass
+(const SGCore::Ref<SGCore::PostProcessLayer>& layer, SGFrameBufferAttachmentType attachmentType) noexcept
+{
+    auto depthPassShader = m_shader->getSubPassShader("SGLPPLayerDepthPass");
+    
+    if(!depthPassShader) return;
+    
+    depthPassShader->bind();
+    
+    depthPassShader->useInteger("SGLPP_CurrentLayerIndex", layer->m_index);
+    
+    std::uint8_t layerIdx = 0;
+    
+    // binding depth uniforms =================
+    for(const auto& ppLayer : m_layers)
+    {
+        if(ppLayer->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0))
+        {
+            depthPassShader->useTextureBlock("SGLPP_LayersDepthAttachments[" + std::to_string(layerIdx) + "]", layerIdx);
+            ppLayer->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0, layerIdx);
+            ++layerIdx;
+        }
+    }
+    
+    depthPassShader->useInteger("SGLPP_LayersDepthAttachmentsCount", layerIdx);
+    
+    // =========================================
+    
+    // layer->m_frameBuffer->bind();
+    
+    // bind the attachment to which the fragment will be received and into which this fragment will be overwritten
+    layer->m_frameBuffer->bindAttachmentToDrawIn(attachmentType);
+    
+    CoreMain::getRenderer()->renderMeshData(
+            m_postProcessQuad,
+            m_postProcessQuadRenderInfo
+    );
+    
+    // layer->m_frameBuffer->unbind();
 }

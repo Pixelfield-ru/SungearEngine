@@ -2,6 +2,14 @@
 
 #define DIRECTIONAL_LIGHTS_MAX_COUNT    5
 
+struct ProgramData
+{
+    vec2 windowSize;
+    vec2 primaryMonitorSize;
+    float currentTime;
+    float p0;
+};
+
 struct ObjectTransform
 {
     mat4 modelMatrix;

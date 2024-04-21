@@ -1,6 +1,6 @@
 #sg_pragma once
 
-#sg_include "../rendering_structs_decl.glsl"
+#sg_include "../structs_decl.glsl"
 #sg_include "../math.glsl"
 
 // todo: make PCSS, PCF

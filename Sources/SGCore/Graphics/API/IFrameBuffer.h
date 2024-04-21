@@ -51,6 +51,8 @@ namespace SGCore
 
         virtual void clear() { };
         
+        virtual void clearAttachment(const SGFrameBufferAttachmentType& attachmentType) { };
+        
         virtual void addAttachment(SGFrameBufferAttachmentType attachmentType,
                                    SGGColorFormat format,
                                    SGGColorInternalFormat internalFormat,

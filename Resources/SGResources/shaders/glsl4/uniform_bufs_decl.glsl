@@ -1,7 +1,7 @@
 #sg_pragma once
 
 #sg_include "defines.glsl"
-#sg_include "rendering_structs_decl.glsl"
+#sg_include "structs_decl.glsl"
 
 // todo: return
 vec4 materialDiffuseCol = vec4(1.0);
@@ -27,10 +27,9 @@ layout(std140) uniform CameraData
     IRenderingComponent camera;
 };
 
-layout(std140) uniform ProgramData
+layout(std140) uniform ProgramDataBlock
 {
-    vec2 windowSize;
-    float currentTime;
+    ProgramData programData;
 };
 
 layout(std140) uniform AtmosphereBlock

@@ -17,6 +17,7 @@ SGSubPass(SGLPPLayerDepthPass)
     {
         uniform int SGLPP_CurrentLayerSeqIndex;
         uniform int SGLPP_CurrentLayerIndex;
+        uniform int SGLPP_LayersIndices[32];
         uniform int SGLPP_LayersCount;
 
         // as layers count
@@ -41,7 +42,7 @@ SGSubPass(SGLPPLayerDepthPass)
             // then sampling depth from other frame buffers and if we have closer depth then discard fragment
             for (int i = 0; i < SGLPP_LayersCount; i++)
             {
-                if (SGLPP_CurrentLayerSeqIndex == i) continue;
+                if (SGLPP_CurrentLayerIndex == SGLPP_LayersIndices[i]) continue;
 
                 float otherDepth = texture(SGLPP_LayersDepthAttachments[i], finalUV).r;
 

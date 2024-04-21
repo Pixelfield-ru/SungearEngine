@@ -15,6 +15,8 @@ namespace SGCore
     class LayeredFrameReceiver;
     struct IRenderPipeline;
     class Scene;
+    struct RenderingBase;
+    struct Transform;
 
     struct PostProcessPass : public IRenderPass
     {
@@ -26,12 +28,12 @@ namespace SGCore
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
 
     private:
-        void depthPass(LayeredFrameReceiver& camera) const noexcept;
-        void FXPass(LayeredFrameReceiver& camera) const noexcept;
-        void layersCombiningPass(LayeredFrameReceiver& camera) const noexcept;
-        void finalFrameFXPass(LayeredFrameReceiver& camera) const;
+        void depthPass(LayeredFrameReceiver& receiver, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const noexcept;
+        void FXPass(LayeredFrameReceiver& receiver, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const noexcept;
+        void layersCombiningPass(LayeredFrameReceiver& receiver, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const noexcept;
+        void finalFrameFXPass(LayeredFrameReceiver& receiver, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const;
         
-        void bindLayersIndices(LayeredFrameReceiver& camera, const Ref<ISubPassShader>& subPassShader) const noexcept;
+        void bindLayersIndices(LayeredFrameReceiver& receiver, const Ref<ISubPassShader>& subPassShader) const noexcept;
     };
 }
 

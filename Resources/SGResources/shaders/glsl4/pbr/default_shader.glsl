@@ -1,6 +1,5 @@
 #sg_pragma once
 
-#sg_include "../rendering_structs_decl.glsl"
 #sg_include "../uniform_bufs_decl.glsl"
 #sg_include "../random.glsl"
 #sg_include "../disks.glsl"

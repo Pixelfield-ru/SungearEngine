@@ -134,6 +134,28 @@ void SGCore::GL4FrameBuffer::clear()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
+void SGCore::GL4FrameBuffer::clearAttachment(const SGFrameBufferAttachmentType& attachmentType)
+{
+    if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+       attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
+    {
+        glDrawBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+        
+        glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgColor.a);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+    else if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
+            attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)
+    {
+        glClear(GL_DEPTH_BUFFER_BIT);
+    }
+    else if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
+            attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
+    {
+        glClear(GL_STENCIL_BUFFER_BIT);
+    }
+}
+
 void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType,
                                            SGGColorFormat format,
                                            SGGColorInternalFormat internalFormat,
@@ -253,3 +275,4 @@ SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType
 {
     addAttachment(attachmentType, format, internalFormat, mipLevel, layer, false, 8);
 }
+

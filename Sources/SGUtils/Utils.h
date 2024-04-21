@@ -337,23 +337,6 @@ namespace SGUtils
             }
         }
         
-        static std::string getCurrentExecutablePath()
-        {
-#if defined(PLATFORM_POSIX) || defined(__linux__)
-            std::string sp;
-            std::ifstream("/proc/self/comm") >> sp;
-            return sp;
-#elif defined(_WIN32)
-            char buf[MAX_PATH];
-            GetModuleFileNameA(nullptr, buf, MAX_PATH);
-            return buf;
-#else
-
-            static_assert(false, "unrecognized platform");
-
-#endif
-        }
-        
         static std::string getRealPath(const std::string& path) noexcept
         {
 #ifdef PLATFORM_WINDOWS

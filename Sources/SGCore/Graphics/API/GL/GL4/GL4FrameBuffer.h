@@ -43,6 +43,7 @@ namespace SGCore
         void destroy() override;
         
         void clear() override;
+        void clearAttachment(const SGFrameBufferAttachmentType& attachmentType) override;
         
         void addAttachment(SGFrameBufferAttachmentType,
                            SGGColorFormat format,
