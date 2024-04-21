@@ -8,6 +8,7 @@
 #include "SGCore/Transformations/Transform.h"
 #include "RenderingBase.h"
 #include "SGCore/Scene/Scene.h"
+#include "SGCore/Main/CoreMain.h"
 #include "glm/ext/quaternion_trigonometric.hpp"
 #include "glm/gtx/quaternion.hpp"
 
@@ -87,19 +88,8 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
         
         renderingBase->m_frustum = { renderingBase->m_projectionSpaceMatrix };
         
-        if(renderingBase->m_left != renderingBase->m_lastLeft ||
-           renderingBase->m_right != renderingBase->m_lastRight ||
-           renderingBase->m_bottom != renderingBase->m_lastRight ||
-           renderingBase->m_top != renderingBase->m_lastTop)
-        {
-            renderingBase->m_orthographicMatrix = glm::ortho<float>(renderingBase->m_left, renderingBase->m_right,
-                                                                   renderingBase->m_bottom, renderingBase->m_top);
-            
-            renderingBase->m_lastLeft = renderingBase->m_left;
-            renderingBase->m_lastRight = renderingBase->m_right;
-            renderingBase->m_lastBottom = renderingBase->m_bottom;
-            renderingBase->m_lastTop = renderingBase->m_top;
-        }
+        renderingBase->m_orthographicMatrix = glm::ortho<float>(renderingBase->m_left, renderingBase->m_right,
+                                                                renderingBase->m_bottom, renderingBase->m_top);
         
         {
             renderingBase->m_orthographicSpaceMatrix =
