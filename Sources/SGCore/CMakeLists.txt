@@ -61,6 +61,11 @@
   set(SG_BULLET_LIBS ${BULLET_COLLISION_LIBRARY} ${BULLET_DYNAMICS_LIBRARY} ${BULLET_MATH_LIBRARY})
  endif()
 
+ message("CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
+
+ message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
+ message("Bullet Libraries: " ${SG_BULLET_LIBS})
+
  # TODO: make for linux and mac
  target_link_libraries(${PROJECT_NAME} PUBLIC
          PNG::PNG

@@ -14,8 +14,3 @@
  target_link_libraries(${PROJECT_NAME}
          SGCore
          )
-
- # todo: make by file
- IF(EXISTS ${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}d.dll)
-   file(COPY ${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}d.dll DESTINATION ${CMAKE_BINARY_DIR}/${SG_SOURCES_PROJ}/${SG_EDITOR_PROJ})
- ENDIF ()

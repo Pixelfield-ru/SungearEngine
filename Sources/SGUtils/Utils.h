@@ -101,9 +101,8 @@ namespace SGCore
 
 namespace SGUtils
 {
-    class Utils
+    struct Utils
     {
-    public:
         // stores type of T
         template<typename T>
         struct TypeWrapper { using type = T; };
@@ -337,22 +336,7 @@ namespace SGUtils
             }
         }
         
-        static std::string getRealPath(const std::string& path) noexcept
-        {
-#ifdef PLATFORM_WINDOWS
-#elif defined(PLATFORM_OS_LINUX)
-            char buf[PATH_MAX];
-            char* res = realpath(path.c_str(), buf);
-            if(res)
-            {
-                return buf;
-            }
-            else
-            {
-                return "";
-            }
-#endif
-        }
+        static std::string getRealPath(const std::string& path) noexcept;
     };
 }
 

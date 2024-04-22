@@ -5,7 +5,7 @@
 #include "AudioTrack.h"
 
 #include <memory>
-#include <cstring>
+#include <string>
 #include <iostream>
 #include <spdlog/spdlog.h>
 

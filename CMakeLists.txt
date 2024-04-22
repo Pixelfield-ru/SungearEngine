@@ -23,7 +23,8 @@ list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/include)
 list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/lib)
 list(APPEND CMAKE_MODULE_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share/entt)]]
 
-list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-linux/share/openal-soft)
+#list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-linux/share/openal-soft)
+list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/share/openal-soft)
 
 message("CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
 
@@ -105,23 +106,3 @@ configure_package_config_file(SungearEngineConfig.cmake.in
         PATH_VARS SG_VCPKG_INCLUDE_DIR
         INSTALL_DESTINATION share/SungearEngine)
 install(FILES "SungearEngineConfig.cmake" DESTINATION "share/sungearengine")
-
-message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
-message("Bullet Libraries: " ${BULLET_COLLISION_LIBRARY} ", " ${BULLET_DYNAMICS_LIBRARY} ", " ${BULLET_MATH_LIBRARY})
-
-# move all necessary dlls to target exes ------------------
-
-if(EXISTS ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll)
-    file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll DESTINATION ${SG_PHYS_TEST_BIN})
-    file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/libassimp-5d.dll DESTINATION ${SG_EDITOR_BIN})
-endif()
-
-if(MSVC AND EXISTS ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/assimp-vc143-mtd.dll)
-    file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/assimp-vc143-mtd.dll DESTINATION ${SG_PHYS_TEST_BIN})
-    file(COPY ${CMAKE_BINARY_DIR}/Externals/Assimp/bin/assimp-vc143-mtd.dll DESTINATION ${SG_EDITOR_BIN})
-endif()
-
-if(EXISTS ${CMAKE_BINARY_DIR}/lib/glfw3d.dll)
-    file(COPY ${CMAKE_BINARY_DIR}/lib/glfw3d.dll DESTINATION ${SG_PHYS_TEST_BIN})
-    file(COPY ${CMAKE_BINARY_DIR}/lib/glfw3d.dll DESTINATION ${SG_EDITOR_BIN})
-endif ()

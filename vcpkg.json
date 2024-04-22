@@ -51,5 +51,8 @@
   }, {
     "name" : "openal-soft",
     "version>=" : "1.23.1"
+  }, {
+    "name" : "glaze",
+    "version>=" : "2.1.7"
   } ]
 }
