@@ -99,10 +99,9 @@ endif()
 set(SG_VCPKG_INCLUDE_DIR include/SungearEngine)
 
 include(CMakePackageConfigHelpers)
-#include(GNUInstallDirs)
 
-configure_package_config_file(SungearEngineConfig.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/SungearEngineConfig.cmake
+configure_package_config_file(cmake/SungearEngineConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/cmake/SungearEngineConfig.cmake
         PATH_VARS SG_VCPKG_INCLUDE_DIR
         INSTALL_DESTINATION share/SungearEngine)
 install(FILES "SungearEngineConfig.cmake" DESTINATION "share/sungearengine")

@@ -56,15 +56,15 @@ void coreInit()
     SGCore::Scene::setCurrentScene("TestScene");
     
     // hardcoded sgeditor load
-    /*auto sgEditorPlugin =
-            SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0", "/home/ilya/pixelfield/SungearEngine/Plugins/SungearEngineEditor", { },
-                                               SGCore::PluginBuildType::PBT_RELEASE);*/
-
     auto sgEditorPlugin =
-            SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0", "F:/Pixelfield/SungearEngine/Plugins/SungearEngineEditor", { },
+            SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0", "/home/ilya/pixelfield/SungearEngine/Plugins/SungearEngineEditor", { },
                                                SGCore::PluginBuildType::PBT_RELEASE);
+
+    /*auto sgEditorPlugin =
+            SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0", "Plugins/SungearEngineEditor", { },
+                                               SGCore::PluginBuildType::PBT_RELEASE);*/
     
-    std::cout << sgEditorPlugin << std::endl;
+    std::cout << "plugin: " << sgEditorPlugin << std::endl;
     
     // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("rnd_darkwind6.wav");
     // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("hoof_hard5.ogg");

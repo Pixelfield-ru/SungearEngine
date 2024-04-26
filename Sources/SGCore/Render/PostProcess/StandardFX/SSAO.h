@@ -17,12 +17,9 @@ namespace SGCore
         SSAO(const SSAO&) = default;
         SSAO(SSAO&&) = default;
         
-        void onAttachToLayer(const Ref<PostProcessLayer>& toLayer) final;
-        void onLayerShaderChanged(const Ref<PostProcessLayer>& toLayer) final;
-        
         void generateKernel() noexcept;
         
-        void passValuesToSubPassShader(const Ref<ISubPassShader>& subPassShader) const noexcept;
+        void passValuesToSubPassShader(const Ref<ISubPassShader>& subPassShader) noexcept override;
         
         [[nodiscard]] std::uint16_t getSamplesCount() const noexcept;
         void setSamplesCount(std::uint16_t samplesCount) noexcept;

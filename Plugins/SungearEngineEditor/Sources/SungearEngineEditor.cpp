@@ -7,7 +7,8 @@
 
 SungearEngineEditor::~SungearEngineEditor()
 {
-    SGCore::CoreMain::getRenderTimer().onUpdate->disconnect<&SungearEngineEditor::onUpdate>(*this);
+    SGCore::CoreMain::getRenderTimer().onUpdate.disconnect<&SungearEngineEditor::onUpdate>(*this);
+    std::cout << "sdfsdfssdgjfgh" << std::endl;
 }
 
 std::string SungearEngineEditor::load(const std::vector<std::string>& args)
@@ -15,7 +16,7 @@ std::string SungearEngineEditor::load(const std::vector<std::string>& args)
 	m_name = "SungearEngineEditor";
 	m_version = "1.0.0";
 
-    SGCore::CoreMain::getRenderTimer().onUpdate->connect<&SungearEngineEditor::onUpdate>(*this);
+    SGCore::CoreMain::getRenderTimer().onUpdate.connect<&SungearEngineEditor::onUpdate>(*this);
     
 	// No error.
 	return "";

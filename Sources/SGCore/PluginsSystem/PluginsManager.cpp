@@ -77,8 +77,7 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         cmakeListsContent += "set(SG_INCLUDE_STB ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_GLAD ON)\n\n";
         cmakeListsContent += fmt::format("set(SUNGEAR_ENGINE_SDK_DIR \"{0}\")\n", finalSGPath);
-        cmakeListsContent += "list(APPEND CMAKE_MODULE_PATH ${SUNGEAR_ENGINE_SDK_DIR})\n\n";
-        cmakeListsContent += "find_package(SungearEngineSDK REQUIRED)\n\n";
+        cmakeListsContent += "include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude)\n\n";
         cmakeListsContent += "add_library(${PROJECT_NAME} " +
                              fmt::format(
                                      "SHARED Sources/PluginMain.h Sources/PluginMain.cpp Sources/{0}.h Sources/{1}.cpp)\n\n",

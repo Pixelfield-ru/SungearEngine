@@ -7,6 +7,8 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 
+#include "SGCore/Graphics/API/ISubPassShader.h"
+
 namespace SGCore
 {
     struct PostProcessLayer;
@@ -15,12 +17,21 @@ namespace SGCore
     {
         friend struct PostProcessLayer;
         
-        virtual void onAttachToLayer(const Ref<PostProcessLayer>& toLayer) { }
-        virtual void onLayerShaderChanged(const Ref<PostProcessLayer>& layer) { }
+        std::string m_name;
+        
+        virtual void onAttachToLayer(const Ref<PostProcessLayer>& toLayer);
+        virtual void onLayerShaderChanged(const Ref<PostProcessLayer>& layer);
         virtual void onFXPass(const Ref<PostProcessLayer>& currentLayer) { }
         virtual void onDetachFromLayer(const Ref<PostProcessLayer>& fromLayer) { }
         
+        virtual void passValuesToSubPassShader(const Ref<ISubPassShader>& subPassShader) noexcept { }
+        
+        [[nodiscard]] bool isEnabled() const noexcept;
+        void setEnabled(bool isEnabled) noexcept;
+        
     protected:
+        bool m_isEnabled = true;
+        
         std::vector<Weak<PostProcessLayer>> m_parentPostProcessLayers;
     };
 }

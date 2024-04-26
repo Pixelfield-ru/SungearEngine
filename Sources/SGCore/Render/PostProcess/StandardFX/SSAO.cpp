@@ -12,18 +12,10 @@
 
 SGCore::SSAO::SSAO()
 {
+    m_name = "SG_SSAO";
+    
     m_noise = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     generateKernel();
-}
-
-void SGCore::SSAO::onAttachToLayer(const Ref<PostProcessLayer>& toLayer)
-{
-    passValuesToSubPassShader(toLayer->getFXSubPassShader());
-}
-
-void SGCore::SSAO::onLayerShaderChanged(const Ref<PostProcessLayer>& toLayer)
-{
-    passValuesToSubPassShader(toLayer->getFXSubPassShader());
 }
 
 void SGCore::SSAO::generateKernel() noexcept
@@ -74,20 +66,21 @@ void SGCore::SSAO::generateKernel() noexcept
     }
 }
 
-void SGCore::SSAO::passValuesToSubPassShader(const Ref<ISubPassShader>& subPassShader) const noexcept
+void SGCore::SSAO::passValuesToSubPassShader(const Ref<ISubPassShader>& subPassShader) noexcept
 {
     if(subPassShader)
     {
         subPassShader->bind();
         
-        subPassShader->useInteger("SG_SSAO_samplesCount", m_samplesCount);
-        subPassShader->removeTextureBinding("SG_SSAO_noise");
-        subPassShader->addTextureBinding("SG_SSAO_noise", m_noise);
+        subPassShader->useInteger(m_name + "_samplesCount", m_samplesCount);
+        
+        subPassShader->removeTextureBinding(m_name + "_noise");
+        subPassShader->addTextureBinding(m_name + "_noise", m_noise);
         
         std::uint16_t currentValIdx = 0;
         for(const auto& val : m_kernel)
         {
-            subPassShader->useVectorf("SG_SSAO_samples[" + std::to_string(currentValIdx) + "]", val);
+            subPassShader->useVectorf(m_name + "_samples[" + std::to_string(currentValIdx) + "]", val);
             ++currentValIdx;
         }
     }

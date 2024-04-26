@@ -248,5 +248,8 @@
   }, {
     "name" : "glad",
     "version>=" : "0.1.36"
+  }, {
+    "name" : "openal-soft",
+    "version>=" : "1.23.1"
   } ]
 }

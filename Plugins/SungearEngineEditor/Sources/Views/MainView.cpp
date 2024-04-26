@@ -11,11 +11,11 @@ SGE::MainView::MainView()
 {
     m_topToolbarView = SGCore::MakeRef<TopToolbarView>();
     
-    mainViewsInjector["SGE_RootView"].m_childrenViews.push_back(m_topToolbarView);
+    mainViewsInjector["SGE_RootView"]; //.m_childrenViews.push_back(m_topToolbarView);
 }
 
 SGE::MainView::~MainView()
 {
     mainViewsInjector.m_childrenInjectors.erase("SGE_RootView");
-    std::cout << "dfdfdf" << std::endl;
+    std::cout << "erased" << std::endl;
 }

@@ -5,6 +5,7 @@ add_subdirectory(SGCore)
 add_subdirectory(SGConsole)
 add_subdirectory(SGEntry)
 
+#[[
 # installing targets
 install(TARGETS SGUtils SGCore SGConsoleAPI
         EXPORT SungearEngineTargets
@@ -56,4 +57,4 @@ install(FILES "sgcore_export.h" # source directory
 
 install(FILES "sgutils_export.h" # source directory
         DESTINATION "include/SungearEngine" # target directory
-)
+)]]
