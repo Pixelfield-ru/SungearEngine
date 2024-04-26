@@ -23,7 +23,21 @@
  find_package(BZip2 REQUIRED)
  find_package(unofficial-brotli CONFIG REQUIRED)
  find_package(OpenAL CONFIG REQUIRED)
- find_package(glaze REQUIRED)
+
+ # ========================================
+
+ include(FetchContent)
+
+ FetchContent_Declare(
+         glaze
+         GIT_REPOSITORY https://github.com/stephenberry/glaze.git
+         GIT_TAG main
+         GIT_SHALLOW TRUE
+ )
+
+ FetchContent_MakeAvailable(glaze)
+
+ # ========================================
 
  find_path(PUGIXML_INCLUDE_DIR pugixml.hpp)
  message("PUGIXML_INCLUDE_DIR: " ${PUGIXML_INCLUDE_DIR})
