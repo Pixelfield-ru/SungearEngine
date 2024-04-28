@@ -28,7 +28,7 @@
     "version>=" : "1.0.1#1"
   }, {
     "name" : "imgui",
-    "features" : [ "glfw-binding", "opengl3-binding" ],
+    "features" : [ "glfw-binding", "opengl3-binding", "docking-experimental" ],
     "version>=" : "1.90.2"
   }, {
     "name" : "pugixml",

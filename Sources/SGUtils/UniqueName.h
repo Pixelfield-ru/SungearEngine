@@ -15,6 +15,12 @@ namespace SGCore
     struct UniqueName
     {
         friend class UniqueNamesManager;
+        
+        UniqueName() = default;
+        UniqueName(const UniqueName& other) noexcept;
+        UniqueName(const char* rawName) noexcept;
+        UniqueName(const std::string& rawName) noexcept;
+        UniqueName(UniqueName&&) noexcept = default;
 
         [[nodiscard]] std::string getRawName() const noexcept;
 
@@ -25,6 +31,19 @@ namespace SGCore
         void setRawName(const std::string& rawName) noexcept;
 
         void attachToManager(const std::shared_ptr<UniqueNamesManager>& manager) noexcept;
+        
+        UniqueName& operator=(const UniqueName& other) noexcept;
+        UniqueName& operator=(UniqueName&&) noexcept = default;
+        
+        UniqueName& operator=(const char* rawName) noexcept;
+        UniqueName& operator=(const std::string& rawName) noexcept;
+        
+        bool operator==(const UniqueName& other) const noexcept;
+        bool operator!=(const UniqueName& other) const noexcept;
+        bool operator==(const char* name) const noexcept;
+        bool operator!=(const char* name) const noexcept;
+        bool operator==(const std::string& name) const noexcept;
+        bool operator!=(const std::string& name) const noexcept;
 
     private:
         std::weak_ptr<UniqueNamesManager> m_parentUniqueNamesManager;

@@ -3,20 +3,116 @@
 //
 
 #include "IView.h"
-#include "SGCore/ImGuiWrap/ViewsInjector.h"
 
-/*SGCore::ImGuiWrap::IView::IView() noexcept
+void SGCore::ImGuiWrap::IView::render()
 {
-    inject();
-}*/
-
-std::string SGCore::ImGuiWrap::IView::getUniquePathPart() const noexcept
-{
-    return m_uniquePathPart;
+    if(begin())
+    {
+        renderBody();
+        
+        auto childrenIt = m_children.begin();
+        while(childrenIt != m_children.end())
+        {
+            if(auto lockedChild = childrenIt->lock())
+            {
+                lockedChild->render();
+                ++childrenIt;
+            }
+            else
+            {
+                childrenIt = m_children.erase(childrenIt);
+            }
+        }
+        
+        end();
+    }
 }
 
-void SGCore::ImGuiWrap::IView::inject() noexcept
+SGCore::Ref<SGCore::ImGuiWrap::IView> SGCore::ImGuiWrap::IView::getViewByName(const std::string& name) const noexcept
 {
-    //auto f = weak_from_this();
-    (*SGUtils::Singleton::getSharedPtrInstance<ViewsInjector>())["DefaultView"].m_childrenViews.push_back(weak_from_this());
+    for(const auto& child : m_children)
+    {
+        if(auto lockedChild = child.lock())
+        {
+            if(lockedChild->m_name == name)
+            {
+                return lockedChild;
+            }
+        }
+    }
+    
+    return nullptr;
+}
+
+std::vector<SGCore::Ref<SGCore::ImGuiWrap::IView>> SGCore::ImGuiWrap::IView::getViewsWithTag(const std::string& tag) const noexcept
+{
+    std::vector<Ref<IView>> foundViews;
+    for(const auto& child : m_children)
+    {
+        if(auto lockedChild = child.lock())
+        {
+            if(lockedChild->m_tag == tag)
+            {
+                foundViews.push_back(lockedChild);
+            }
+        }
+    }
+    
+    return foundViews;
+}
+
+SGCore::Weak<SGCore::ImGuiWrap::IView> SGCore::ImGuiWrap::IView::getParent() const noexcept
+{
+    return m_parent;
+}
+
+void SGCore::ImGuiWrap::IView::setParent(const SGCore::Ref<SGCore::ImGuiWrap::IView>& view) noexcept
+{
+    m_parent = view;
+    
+    m_name.attachToManager(view->m_namesManager);
+}
+
+std::vector<SGCore::Weak<SGCore::ImGuiWrap::IView>>& SGCore::ImGuiWrap::IView::getChildren() noexcept
+{
+    return m_children;
+}
+
+void SGCore::ImGuiWrap::IView::addChild(const SGCore::Weak<SGCore::ImGuiWrap::IView>& view) noexcept
+{
+    if(auto lockedView = view.lock())
+    {
+        lockedView->m_name.attachToManager(m_namesManager);
+        m_children.push_back(view);
+    }
+}
+
+void SGCore::ImGuiWrap::IView::addChildren(const std::vector<SGCore::Weak<SGCore::ImGuiWrap::IView>>& views) noexcept
+{
+    for(const auto& view : views)
+    {
+        addChild(view);
+    }
+}
+
+void SGCore::ImGuiWrap::IView::removeChild(const SGCore::Weak<SGCore::ImGuiWrap::IView>& view) noexcept
+{
+    std::erase_if(m_children, [&view](const Weak<IView>& v) {
+        auto lockedView0 = v.lock();
+        auto lockedView1 = view.lock();
+        return lockedView0 && lockedView1 && lockedView0 == lockedView1;
+    });
+}
+
+void SGCore::ImGuiWrap::IView::removeChildren(const std::vector<SGCore::Weak<SGCore::ImGuiWrap::IView>>& views) noexcept
+{
+    for(const auto& view : views)
+    {
+        removeChild(view);
+    }
+}
+
+SGCore::Ref<SGCore::ImGuiWrap::IView> SGCore::ImGuiWrap::IView::getRoot() noexcept
+{
+    return m_rootView;
 }

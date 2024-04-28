@@ -44,6 +44,7 @@ namespace SGCore
 
             ++uniqueNamesCounter.m_count;
 
+            // TODO: MAYBE INCORRECT BEHAVIOUR THERE BECAUSE OF COPY OPERATOR
             return newUniqueName;
         }
 

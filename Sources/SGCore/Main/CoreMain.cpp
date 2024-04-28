@@ -15,6 +15,7 @@
 #include "SGCore/UI/FontsManager.h"
 #include "SGUtils/CrashHandler/HwExcpetionHandler.h"
 #include "SGCore/Audio/AudioDevice.h"
+#include "SGCore/ImGuiWrap/ImGuiLayer.h"
 
 void SGCore::CoreMain::start()
 {
@@ -48,6 +49,8 @@ void SGCore::CoreMain::start()
     //m_renderer = VkRenderer::getInstance();
 
     m_window.create();
+    
+    SGCore::ImGuiWrap::ImGuiLayer::init();
     
     AudioDevice::init();
     AudioDevice::getDefaultDevice()->makeCurrent();

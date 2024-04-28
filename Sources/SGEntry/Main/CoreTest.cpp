@@ -25,7 +25,6 @@
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/ImGuiWrap/Views/Base/Window.h"
 #include "SGCore/ImGuiWrap/Views/Base/CollapsingHeader.h"
-#include "SGCore/ImGuiWrap/ViewsInjector.h"
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/ICubemapTexture.h"
@@ -1065,7 +1064,7 @@ void init()
 
     // IMGUI DEBUG -----------------------------------------------------------
 
-    SGCore::ImGuiWrap::ImGuiLayer::initImGui();
+    // SGCore::ImGuiWrap::ImGuiLayer::initImGui();
 
     // -----------------------------------------------------------------------
 }
@@ -1309,8 +1308,7 @@ void update(const double& dt, const double& fixedDt)
         // debugDrawSystem->drawAABB(transform->m_ownTransform.m_aabb.m_min, transform->m_ownTransform.m_aabb.m_max, { 1, 0, 1, 1 });
     });
 
-    auto& viewsInjector = *SGUtils::Singleton::getSharedPtrInstance<SGCore::ImGuiWrap::ViewsInjector>();
-    viewsInjector.renderViews();
+    SGCore::ImGuiWrap::IView::getRoot()->render();
 
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
     

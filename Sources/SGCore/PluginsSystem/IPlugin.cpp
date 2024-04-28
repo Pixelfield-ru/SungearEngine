@@ -19,3 +19,8 @@ bool SGCore::IPlugin::operator!=(const SGCore::IPlugin& other) const noexcept
 {
     return !(*this == other);
 }
+
+std::string SGCore::IPlugin::getLocalPath() const noexcept
+{
+    return m_localPath;
+}

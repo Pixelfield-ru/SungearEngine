@@ -11,6 +11,9 @@
 
 #include "SGUtils/UUID.h"
 #include "SGUtils/Event.h"
+#include "SGCore/Main/CoreGlobals.h"
+#include "SGUtils/UniqueName.h"
+#include "SGUtils/UniqueNamesManager.h"
 
 namespace SGCore::ImGuiWrap
 {
@@ -18,27 +21,42 @@ namespace SGCore::ImGuiWrap
     {
         friend struct ViewsInjector;
 
-        //IView() noexcept;
-
         bool m_active = true;
 
         Event<void()> onRender;
 
-        std::string m_name = SGUtils::UUID::generateNew();
+        UniqueName m_name = SGUtils::UUID::generateNew();
+        std::string m_tag;
 
-        virtual bool begin() = 0;
-        virtual void renderBody() = 0;
-        virtual void end() = 0;
+        virtual bool begin() { return true; };
+        virtual void renderBody() { };
+        virtual void end() { };
+        
+        virtual void render();
+        
+        Ref<IView> getViewByName(const std::string& name) const noexcept;
+        std::vector<Ref<IView>> getViewsWithTag(const std::string& tag) const noexcept;
 
-        [[nodiscard]] std::string getUniquePathPart() const noexcept;
-
-        virtual void inject() noexcept;
-
+        Weak<IView> getParent() const noexcept;
+        void setParent(const Ref<IView>& view) noexcept;
+        
+        std::vector<Weak<IView>>& getChildren() noexcept;
+        
+        void addChild(const Weak<IView>& view) noexcept;
+        void addChildren(const std::vector<Weak<IView>>& views) noexcept;
+        void removeChild(const Weak<IView>& view) noexcept;
+        void removeChildren(const std::vector<Weak<IView>>& views) noexcept;
+        
+        SG_NOINLINE static Ref<IView> getRoot() noexcept;
+        
     private:
-        // you may use pointer to string
-        std::string m_uniquePathPart;
-
-        virtual void updateUniquePathPart(const std::string& uniquePathPart) const noexcept { }
+        static inline Ref<IView> m_rootView = MakeRef<IView>();
+        
+        std::vector<Weak<IView>> m_children;
+        
+        Weak<IView> m_parent;
+        
+        Ref<UniqueNamesManager> m_namesManager = MakeRef<UniqueNamesManager>();
     };
 }
 

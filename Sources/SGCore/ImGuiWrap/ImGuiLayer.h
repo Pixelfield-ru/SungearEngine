@@ -11,12 +11,17 @@
 
 #include <sgcore_export.h>
 
+#include "SGUtils/Utils.h"
+
 namespace SGCore::ImGuiWrap
 {
     // TODO: ADD ON EXIT CLEAR
     struct SGCORE_EXPORT ImGuiLayer
     {
-        static void initImGui() noexcept;
+        static void init() noexcept;
+        static void destroy() noexcept;
+        
+        static void reload() noexcept;
 
         static void beginFrame() noexcept;
 

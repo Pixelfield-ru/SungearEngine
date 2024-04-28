@@ -3,19 +3,39 @@
 //
 
 #include <SGUtils/Singleton.h>
-#include <SGCore/ImGuiWrap/ViewsInjector.h>
+#include <SGCore/Main/CoreMain.h>
+
 #include "MainView.h"
 #include "PluginMain.h"
 
 SGE::MainView::MainView()
 {
     m_topToolbarView = SGCore::MakeRef<TopToolbarView>();
+    m_topToolbarView->m_name = "SGE_TOP_TOOLBAR";
     
-    mainViewsInjector["SGE_RootView"]; //.m_childrenViews.push_back(m_topToolbarView);
+    addChild(m_topToolbarView);
 }
 
 SGE::MainView::~MainView()
 {
-    mainViewsInjector.m_childrenInjectors.erase("SGE_RootView");
-    std::cout << "erased" << std::endl;
+    removeChild(m_topToolbarView);
+}
+
+bool SGE::MainView::begin()
+{
+    return true;
+}
+
+void SGE::MainView::renderBody()
+{
+    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    
+    /*ImGui::Begin("test");
+    ImGui::Text("hello!");
+    ImGui::End();*/
+}
+
+void SGE::MainView::end()
+{
+    IView::end();
 }

@@ -5,6 +5,13 @@
 #include "SGCore/Audio/AudioDevice.h"
 #include "SGCore/Audio/AudioListener.h"
 #include "SGCore/Scene/Scene.h"
+#include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
+#include "SGCore/Render/RenderPipelinesManager.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Transformations/Transform.h"
+#include "SGCore/Render/Camera3D.h"
+#include "SGCore/Transformations/Controllable3D.h"
+#include "SGCore/Render/RenderingBase.h"
 
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
@@ -23,6 +30,10 @@ extern "C" {
 #endif
 
 #include <glm/vec3.hpp>
+#include <imgui.h>
+
+#include "SGCore/ImGuiWrap/ImGuiLayer.h"
+#include "SGCore/ImGuiWrap/Views/IView.h"
 
 // SGCore::AudioSource darkWindSrc;
 SGCore::Ref<SGCore::AudioBuffer> darkWindAudioBuf = SGCore::MakeRef<SGCore::AudioBuffer>();
@@ -59,10 +70,6 @@ void coreInit()
     auto sgEditorPlugin =
             SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0", "/home/ilya/pixelfield/SungearEngine/Plugins/SungearEngineEditor", { },
                                                SGCore::PluginBuildType::PBT_RELEASE);
-
-    /*auto sgEditorPlugin =
-            SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0", "Plugins/SungearEngineEditor", { },
-                                               SGCore::PluginBuildType::PBT_RELEASE);*/
     
     std::cout << "plugin: " << sgEditorPlugin << std::endl;
     
@@ -101,6 +108,12 @@ void coreInit()
 void onUpdate(const double& dt, const double& fixedDt)
 {
     testScene2->update(dt, fixedDt);
+    
+    SGCore::ImGuiWrap::ImGuiLayer::beginFrame();
+    
+    SGCore::ImGuiWrap::IView::getRoot()->render();
+    
+    SGCore::ImGuiWrap::ImGuiLayer::endFrame();
     
     // darkWindPos.z -= 0.001;
     // listenerPosition.z -= 0.001;

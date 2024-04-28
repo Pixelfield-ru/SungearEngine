@@ -7,7 +7,7 @@
 
 bool SGCore::ImGuiWrap::Window::begin() noexcept
 {
-    ImGui::Begin(m_name.c_str());
+    ImGui::Begin(m_name.getName().c_str());
 
     return true;
 }

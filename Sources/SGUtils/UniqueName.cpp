@@ -5,6 +5,21 @@
 #include "UniqueName.h"
 #include "UniqueNamesManager.h"
 
+SGCore::UniqueName::UniqueName(const UniqueName& other) noexcept
+{
+    operator=(other);
+}
+
+SGCore::UniqueName::UniqueName(const char* rawName) noexcept
+{
+    setRawName(rawName);
+}
+
+SGCore::UniqueName::UniqueName(const std::string& rawName) noexcept
+{
+    setRawName(rawName);
+}
+
 std::string SGCore::UniqueName::getRawName() const noexcept
 {
     return m_rawName;
@@ -38,4 +53,59 @@ void SGCore::UniqueName::attachToManager(const std::shared_ptr<UniqueNamesManage
 
     // update the name
     setRawName(m_rawName);
+}
+
+SGCore::UniqueName& SGCore::UniqueName::operator=(const SGCore::UniqueName& other) noexcept
+{
+    if(this == std::addressof(other)) return *this;
+    
+    m_parentUniqueNamesManager = other.m_parentUniqueNamesManager;
+    
+    setRawName(other.m_rawName);
+    
+    return *this;
+}
+
+SGCore::UniqueName& SGCore::UniqueName::operator=(const char* rawName) noexcept
+{
+    setRawName(rawName);
+    
+    return *this;
+}
+
+SGCore::UniqueName& SGCore::UniqueName::operator=(const std::string& rawName) noexcept
+{
+    setRawName(rawName);
+    
+    return *this;
+}
+
+bool SGCore::UniqueName::operator==(const SGCore::UniqueName& other) const noexcept
+{
+    return m_name == other.m_name;
+}
+
+bool SGCore::UniqueName::operator!=(const SGCore::UniqueName& other) const noexcept
+{
+    return !(*this == other);
+}
+
+bool SGCore::UniqueName::operator==(const char* name) const noexcept
+{
+    return m_name == name;
+}
+
+bool SGCore::UniqueName::operator!=(const char* name) const noexcept
+{
+    return m_name != name;
+}
+
+bool SGCore::UniqueName::operator==(const std::string& name) const noexcept
+{
+    return m_name == name;
+}
+
+bool SGCore::UniqueName::operator!=(const std::string& name) const noexcept
+{
+    return m_name != name;
 }

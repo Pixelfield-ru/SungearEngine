@@ -6,14 +6,20 @@
 #define SUNGEARENGINEEDITOR_MAINVIEW_H
 
 #include <SGCore/Main/CoreGlobals.h>
+#include <imgui.h>
+
 #include "TopToolbarView.h"
 
 namespace SGE
 {
-    struct MainView
+    struct MainView : SGCore::ImGuiWrap::IView
     {
         MainView();
         ~MainView();
+        
+        bool begin() override;
+        void renderBody() override;
+        void end() override;
         
     private:
         SGCore::Ref<TopToolbarView> m_topToolbarView;

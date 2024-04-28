@@ -7,7 +7,7 @@
 
 bool SGCore::ImGuiWrap::CollapsingHeader::begin() noexcept
 {
-    return ImGui::CollapsingHeader(m_name.c_str());
+    return ImGui::CollapsingHeader(m_name.getName().c_str());
 }
 
 void SGCore::ImGuiWrap::CollapsingHeader::renderBody()

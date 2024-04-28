@@ -33,6 +33,8 @@ namespace SGCore
         bool operator==(const IPlugin& other) const noexcept;
         bool operator!=(const IPlugin& other) const noexcept;
         
+        [[nodiscard]] std::string getLocalPath() const noexcept;
+        
     private:
         std::string m_localPath;
     };
