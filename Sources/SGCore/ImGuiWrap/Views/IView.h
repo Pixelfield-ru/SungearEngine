@@ -21,9 +21,8 @@ namespace SGCore::ImGuiWrap
     {
         friend struct ViewsInjector;
 
-        bool m_active = true;
-
         Event<void()> onRender;
+        Event<void(bool lastActive, bool isActive)> onActiveChanged;
 
         UniqueName m_name = SGUtils::UUID::generateNew();
         std::string m_tag;
@@ -31,6 +30,8 @@ namespace SGCore::ImGuiWrap
         virtual bool begin() { return true; };
         virtual void renderBody() { };
         virtual void end() { };
+        
+        virtual void onActiveChangedListener() { };
         
         virtual void render();
         
@@ -47,10 +48,15 @@ namespace SGCore::ImGuiWrap
         void removeChild(const Weak<IView>& view) noexcept;
         void removeChildren(const std::vector<Weak<IView>>& views) noexcept;
         
+        [[nodiscard]] bool isActive() const noexcept;
+        void setActive(bool active) noexcept;
+        
         SG_NOINLINE static Ref<IView> getRoot() noexcept;
         
     private:
         static inline Ref<IView> m_rootView = MakeRef<IView>();
+        
+        bool m_active = true;
         
         std::vector<Weak<IView>> m_children;
         

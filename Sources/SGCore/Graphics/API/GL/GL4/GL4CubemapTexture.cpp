@@ -8,9 +8,9 @@
 // todo: impl 
 void SGCore::GL4CubemapTexture::create()
 {
-    glGenTextures(1, &m_handler);
+    glGenTextures(1, &m_cubemapHandler);
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_handler);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapHandler);
 
     std::uint8_t currentPartId = 0;
     for(const auto& part : m_parts)
@@ -54,13 +54,23 @@ void SGCore::GL4CubemapTexture::createAsFrameBufferAttachment
 
 void SGCore::GL4CubemapTexture::destroy()
 {
-    glDeleteTextures(1, &m_handler);
+    glDeleteTextures(1, &m_cubemapHandler);
 }
 
 void SGCore::GL4CubemapTexture::bind(const uint8_t& textureUnit)
 {
     glActiveTexture(GL_TEXTURE0 + textureUnit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_handler);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapHandler);
+}
+
+void* SGCore::GL4CubemapTexture::getTextureNativeHandler() const noexcept
+{
+    return (void*) (intptr_t) m_cubemapHandler;
+}
+
+void* SGCore::GL4CubemapTexture::getTextureBufferNativeHandler() const noexcept
+{
+    return nullptr;
 }
 
 SGCore::GL4CubemapTexture&

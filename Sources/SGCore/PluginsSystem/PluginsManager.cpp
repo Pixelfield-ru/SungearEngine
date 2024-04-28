@@ -58,14 +58,17 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         std::string cmakeListsContent;
         cmakeListsContent += "cmake_minimum_required(VERSION 3.25)\n";
         cmakeListsContent += fmt::format("project({0})\n\n", pluginName);
+        
         cmakeListsContent += fmt::format("set(CMAKE_CXX_STANDARD {0})\n", cxxStandard);
         cmakeListsContent += "set(CMAKE_SHARED_LIBRARY_PREFIX \"\")\n";
         cmakeListsContent += "if(${CMAKE_COMPILER_IS_GNUCXX})\n";
         cmakeListsContent += "\tset(CMAKE_CXX_FLAGS \"-g -rdynamic -fno-pie -no-pie -fno-gnu-unique\")\n";
         cmakeListsContent += "endif()\n\n";
+        
         cmakeListsContent += "add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)\n";
         cmakeListsContent += "add_definitions(-DGLM_ENABLE_EXPERIMENTAL)\n";
         cmakeListsContent += "add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)\n\n";
+        
         cmakeListsContent += "set(SG_INCLUDE_BULLET ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_PUGIXML ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_FREETYPE ON)\n";
@@ -79,12 +82,15 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         cmakeListsContent += "set(SG_INCLUDE_GLAD ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_OPENAL ON)\n";
         cmakeListsContent += "set(SG_INCLUDE_GLAZE ON)\n\n";
+        
         cmakeListsContent += "include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)\n\n";
+        
         cmakeListsContent += "add_library(${PROJECT_NAME} " +
                              fmt::format(
                                      "SHARED Sources/PluginMain.h Sources/PluginMain.cpp Sources/{0}.h Sources/{1}.cpp)\n\n",
                                      pluginName,
                                      pluginName);
+        
         cmakeListsContent += "target_include_directories(${PROJECT_NAME} PRIVATE ${SungearEngine_INCLUDE_DIRS})\n";
         cmakeListsContent += "target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS})\n";
         
@@ -101,12 +107,16 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         std::string pluginMainHContent;
         pluginMainHContent += fmt::format("#ifndef {0}\n", pluginMainHDefine);
         pluginMainHContent += fmt::format("#define {0}\n\n", pluginMainHDefine);
+        
         pluginMainHContent += "#include <iostream>\n";
         pluginMainHContent += "#include <SGCore/Main/CoreGlobals.h>\n";
         pluginMainHContent += "#include <SGCore/PluginsSystem/PluginsManager.h>\n";
         pluginMainHContent += "#include <SGCore/PluginsSystem/IPlugin.h>\n\n";
+        
         pluginMainHContent += fmt::format("#include \"{0}.h\"\n\n", pluginName);
+        
         pluginMainHContent += "extern \"C\" SGCore::Ref<SGCore::IPlugin> SGPluginMain();\n\n";
+        
         pluginMainHContent += fmt::format("#endif // {0}\n", pluginMainHDefine);
         
         std::ofstream pluginMainHStream(pluginSourcesDir + sep + "PluginMain.h");
@@ -116,6 +126,7 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         
         std::string pluginMainCPPContent;
         pluginMainCPPContent += "#include \"PluginMain.h\"\n\n";
+        
         pluginMainCPPContent += "extern \"C\" SGCore::Ref<SGCore::IPlugin> SGPluginMain()\n";
         pluginMainCPPContent += "{\n";
         pluginMainCPPContent += fmt::format("\treturn {0}::getInstance();\n", pluginName);
@@ -129,17 +140,22 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         std::string pluginHContent;
         pluginHContent += fmt::format("#ifndef {0}_H\n", upperPluginName);
         pluginHContent += fmt::format("#define {0}_H\n\n", upperPluginName);
+        
         pluginHContent += "#include <SGCore/PluginsSystem/IPlugin.h>\n";
         pluginHContent += "#include <SGUtils/Utils.h>\n";
         pluginHContent += "#include <SGCore/Main/CoreMain.h>\n\n";
+        
         pluginHContent += fmt::format("struct {0} : public SGCore::IPlugin\n", pluginName);
         pluginHContent += "{\n";
         pluginHContent += fmt::format("\t~{0}() override = default;\n\n", pluginName);
+        
         pluginHContent += "\tstd::string load(const std::vector<std::string>& args) override;\n\n";
+        
         pluginHContent += fmt::format("\tSG_NOINLINE static SGCore::Ref<{0}> getInstance() noexcept;\n", pluginName);
         pluginHContent += "private:\n";
         pluginHContent += fmt::format("\tstatic inline SGCore::Ref<{0}> s_{1}Instance = SGCore::MakeRef<{2}>();\n", pluginName, pluginName, pluginName);
         pluginHContent += "};\n\n";
+        
         pluginHContent += fmt::format("#endif // {0}_H\n", upperPluginName);
         
         std::ofstream pluginHStream(pluginSourcesDir + sep + fmt::format("{0}.h", pluginName));
@@ -149,10 +165,12 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         
         std::string pluginCPPContent;
         pluginCPPContent += fmt::format("#include \"{0}.h\"\n\n", pluginName);
+        
         pluginCPPContent += fmt::format("std::string {0}::load(const std::vector<std::string>& args)\n", pluginName);
         pluginCPPContent += "{\n";
         pluginCPPContent += fmt::format("\tm_name = \"{0}\";\n", pluginName);
         pluginCPPContent += "\tm_version = \"1.0.0\";\n\n";
+        
         pluginCPPContent += "\t// No error.\n";
         pluginCPPContent += "\treturn \"\";\n";
         pluginCPPContent += "}\n\n";

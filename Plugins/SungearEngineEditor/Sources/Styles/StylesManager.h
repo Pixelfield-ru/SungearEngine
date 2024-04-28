@@ -18,10 +18,21 @@ namespace SGE
     {
         static void init() noexcept
         {
-            SGCore::Ref<EditorStyles::Dark> darkStyle = SGCore::MakeRef<EditorStyles::Dark>();
-            darkStyle->apply();
+            SGCore::Ref<IStyle> darkStyle = SGCore::MakeRef<EditorStyles::Dark>();
+            setCurrentStyle(darkStyle);
             
             m_styles.push_back(darkStyle);
+        }
+        
+        SG_NOINLINE static void setCurrentStyle(const SGCore::Ref<IStyle>& style) noexcept
+        {
+            m_currentStyle = style;
+            m_currentStyle->apply();
+        }
+        
+        SG_NOINLINE static SGCore::Ref<IStyle> getCurrentStyle() noexcept
+        {
+            return m_currentStyle;
         }
         
         static SGCore::Ref<IStyle> getStyle(const std::string& name) noexcept
@@ -39,6 +50,7 @@ namespace SGE
         }
         
     private:
+        static inline SGCore::Ref<IStyle> m_currentStyle;
         static inline std::vector<SGCore::Ref<IStyle>> m_styles;
     };
 }

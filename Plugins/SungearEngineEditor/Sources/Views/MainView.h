@@ -7,8 +7,9 @@
 
 #include <SGCore/Main/CoreGlobals.h>
 #include <imgui.h>
+#include <SGCore/ImGuiWrap/Views/IView.h>
 
-#include "TopToolbarView.h"
+#include "TopToolbar/TopToolbarView.h"
 
 namespace SGE
 {

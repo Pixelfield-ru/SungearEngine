@@ -35,6 +35,16 @@ void SGCore::VkCubemapTexture::destroy()
 
 }
 
+void* SGCore::VkCubemapTexture::getTextureNativeHandler() const noexcept
+{
+    return nullptr;
+}
+
+void* SGCore::VkCubemapTexture::getTextureBufferNativeHandler() const noexcept
+{
+    return nullptr;
+}
+
 SGCore::VkCubemapTexture& SGCore::VkCubemapTexture::operator=(const Ref<ITexture2D>& other)
 {
 	return *this;

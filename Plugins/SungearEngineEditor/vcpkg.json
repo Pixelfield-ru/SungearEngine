@@ -252,5 +252,11 @@
   }, {
     "name" : "openal-soft",
     "version>=" : "1.23.1"
+  }, {
+    "name" : "nativefiledialog",
+    "version>=" : "2022-01-20"
+  }, {
+    "name" : "lunasvg",
+    "version>=" : "2.3.9"
   } ]
 }

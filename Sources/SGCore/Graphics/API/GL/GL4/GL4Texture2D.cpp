@@ -235,3 +235,13 @@ SGCore::GL4Texture2D& SGCore::GL4Texture2D::operator=
 {
     return *this;
 }
+
+void* SGCore::GL4Texture2D::getTextureNativeHandler() const noexcept
+{
+    return (void*) (intptr_t) m_textureHandler;
+}
+
+void* SGCore::GL4Texture2D::getTextureBufferNativeHandler() const noexcept
+{
+    return (void*) (intptr_t) m_textureBufferHandler;
+}

@@ -70,7 +70,7 @@ namespace SGCore
 
         template<typename AssetT, typename... Args>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        static std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias, const std::string& path)
+        static std::shared_ptr<AssetT> loadAsset(const std::string& alias, const std::string& path)
         {
             entity_t entity;
             
@@ -169,6 +169,28 @@ namespace SGCore
             if(SG_INSTANCEOF(asset.get(), GPUObject))
             {
                 std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
+            }
+        }
+        
+        static bool isAssetsEntityExists(const std::string& pathOrAlias) noexcept
+        {
+            auto foundEntity = m_entities.find(pathOrAlias);
+            
+            return foundEntity != m_entities.end();
+        }
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        static bool isAssetExists(const std::string& pathOrAlias) noexcept
+        {
+            auto foundEntity = m_entities.find(pathOrAlias);
+            if(foundEntity == m_entities.end())
+            {
+                return false;
+            }
+            else
+            {
+                return m_registry->try_get<Ref<AssetT>>(foundEntity->second) != nullptr;
             }
         }
         

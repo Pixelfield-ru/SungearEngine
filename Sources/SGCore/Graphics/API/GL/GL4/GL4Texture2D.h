@@ -29,7 +29,10 @@ namespace SGCore
         void destroy() noexcept override;
 
         void bind(const std::uint8_t& textureUnit) noexcept override;
-
+        
+        void* getTextureNativeHandler() const noexcept override;
+        void* getTextureBufferNativeHandler() const noexcept override;
+        
         GL4Texture2D& operator=(const Ref<ITexture2D>& other) override;
     };
 }

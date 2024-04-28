@@ -22,7 +22,10 @@ namespace SGCore
         void destroy() override;
 
         void bind(const std::uint8_t& textureUnit) override;
-
+        
+        void* getTextureNativeHandler() const noexcept override;
+        void* getTextureBufferNativeHandler() const noexcept override;
+        
         VkCubemapTexture& operator=(const Ref<ITexture2D>& other) override;
     };
 }

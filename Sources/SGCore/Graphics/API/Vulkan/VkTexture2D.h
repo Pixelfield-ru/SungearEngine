@@ -23,6 +23,9 @@ namespace SGCore
         void destroy() noexcept final;
 
         void bind(const std::uint8_t& textureUnit) noexcept final;
+        
+        void* getTextureNativeHandler() const noexcept override;
+        void* getTextureBufferNativeHandler() const noexcept override;
 
         VkTexture2D& operator=(const Ref<ITexture2D>& other) final;
     };

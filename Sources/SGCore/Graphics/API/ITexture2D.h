@@ -113,6 +113,9 @@ namespace SGCore
 
         virtual ITexture2D& operator=(const Ref<ITexture2D>& other) = 0;
         //virtual operator=(std::shared_ptr<ITexture2D> other);
+        
+        virtual void* getTextureNativeHandler() const noexcept = 0;
+        virtual void* getTextureBufferNativeHandler() const noexcept = 0;
 
         [[nodiscard]] Ref<std::uint8_t[]> getData() noexcept;
 

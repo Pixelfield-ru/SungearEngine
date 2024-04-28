@@ -21,13 +21,16 @@ namespace SGCore
         void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) override;
         
         void destroy() override;
-
+        
+        void* getTextureNativeHandler() const noexcept override;
+        void* getTextureBufferNativeHandler() const noexcept override;
+        
         void bind(const std::uint8_t& textureUnit) override;
 
         GL4CubemapTexture& operator=(const Ref<ITexture2D>& other) override;
 
     private:
-        GLuint m_handler = 0;
+        GLuint m_cubemapHandler = 0;
     };
 }
 

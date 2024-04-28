@@ -24,6 +24,9 @@ set(SG_INCLUDE_STB ON)
 set(SG_INCLUDE_GLAD ON)
 set(SG_INCLUDE_OPENAL ON)
 set(SG_INCLUDE_GLAZE ON)
+set(SG_INCLUDE_LUNASVG ON)
+
+find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 
 include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)
 
@@ -34,4 +37,4 @@ add_library(${PROJECT_NAME} SHARED ${SGE_SOURCES})
 message("sun: " ${SungearEngine_LIBS})
 
 target_include_directories(${PROJECT_NAME} PRIVATE Sources ${SungearEngine_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS} unofficial::nativefiledialog::nfd)

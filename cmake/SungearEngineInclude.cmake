@@ -98,3 +98,8 @@ if(${SG_INCLUDE_GLAZE})
 
     list(APPEND SungearEngine_LIBS "glaze::glaze")
 endif()
+
+if(${SG_INCLUDE_LUNASVG})
+    find_package(unofficial-lunasvg CONFIG REQUIRED)
+    list(APPEND SungearEngine_LIBS "unofficial::lunasvg::lunasvg")
+endif()

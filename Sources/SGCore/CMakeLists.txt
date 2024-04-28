@@ -57,6 +57,8 @@
          $<BUILD_INTERFACE:${FREETYPE_INCLUDE_DIRS}>
          $<BUILD_INTERFACE:${Stb_INCLUDE_DIR}>
 
+         ${CMAKE_SOURCE_DIR}/Externals/svgpp/include
+
          #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
          #"C:/VulkanSDK/1.3.250.1/Include"
          )

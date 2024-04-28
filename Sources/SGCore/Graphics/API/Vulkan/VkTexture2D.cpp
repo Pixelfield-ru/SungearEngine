@@ -35,6 +35,16 @@ void SGCore::VkTexture2D::bind(const uint8_t& textureUnit) noexcept
 
 }
 
+void* SGCore::VkTexture2D::getTextureNativeHandler() const noexcept
+{
+    return nullptr;
+}
+
+void* SGCore::VkTexture2D::getTextureBufferNativeHandler() const noexcept
+{
+    return nullptr;
+}
+
 SGCore::VkTexture2D& SGCore::VkTexture2D::operator=(const Ref<ITexture2D>& other)
 {
     return *this;

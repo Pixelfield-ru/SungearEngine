@@ -15,7 +15,10 @@ void SGCore::ImGuiWrap::IView::render()
         {
             if(auto lockedChild = childrenIt->lock())
             {
-                lockedChild->render();
+                if(lockedChild->m_active)
+                {
+                    lockedChild->render();
+                }
                 ++childrenIt;
             }
             else
@@ -110,6 +113,20 @@ void SGCore::ImGuiWrap::IView::removeChildren(const std::vector<SGCore::Weak<SGC
     {
         removeChild(view);
     }
+}
+
+bool SGCore::ImGuiWrap::IView::isActive() const noexcept
+{
+    return m_active;
+}
+
+void SGCore::ImGuiWrap::IView::setActive(bool active) noexcept
+{
+    bool lastActive = m_active;
+    m_active = active;
+    
+    onActiveChangedListener();
+    onActiveChanged(lastActive, m_active);
 }
 
 SGCore::Ref<SGCore::ImGuiWrap::IView> SGCore::ImGuiWrap::IView::getRoot() noexcept
