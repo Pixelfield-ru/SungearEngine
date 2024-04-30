@@ -24,7 +24,7 @@ namespace SGE
         std::string m_dirPath;
         std::string m_fileName;
         
-        glm::vec2 m_size { 350, 85 };
+        glm::vec2 m_size { 430, 85 };
     };
 }
 

@@ -20,10 +20,6 @@ namespace SGCore
     class SGCORE_EXPORT AssetManager
     {
     public:
-        AssetManager() = delete;
-
-        static void init();
-
         /**
         * Adds asset with loading by path.
         * If asset already exists then return already loaded asset.
@@ -33,7 +29,7 @@ namespace SGCore
         */
         template<typename AssetT, typename... Args>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        static std::shared_ptr<AssetT> loadAsset(const std::string& path)
+        std::shared_ptr<AssetT> loadAsset(const std::string& path)
         {
             entity_t entity;
             
@@ -70,7 +66,7 @@ namespace SGCore
 
         template<typename AssetT, typename... Args>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        static std::shared_ptr<AssetT> loadAsset(const std::string& alias, const std::string& path)
+        std::shared_ptr<AssetT> loadAsset(const std::string& alias, const std::string& path)
         {
             entity_t entity;
             
@@ -107,7 +103,7 @@ namespace SGCore
         
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        static void addAsset(const std::string& alias, const Ref<AssetT>& asset)
+        void addAsset(const std::string& alias, const Ref<AssetT>& asset)
         {
             entity_t entity;
             
@@ -140,7 +136,7 @@ namespace SGCore
         
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        static void addAsset(const Ref<AssetT>& asset)
+        void addAsset(const Ref<AssetT>& asset)
         {
             const std::string& assetPath = asset->getPath().string();
             
@@ -172,7 +168,7 @@ namespace SGCore
             }
         }
         
-        static bool isAssetsEntityExists(const std::string& pathOrAlias) noexcept
+        bool isAssetsEntityExists(const std::string& pathOrAlias) noexcept
         {
             auto foundEntity = m_entities.find(pathOrAlias);
             
@@ -181,7 +177,7 @@ namespace SGCore
         
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        static bool isAssetExists(const std::string& pathOrAlias) noexcept
+        bool isAssetExists(const std::string& pathOrAlias) noexcept
         {
             auto foundEntity = m_entities.find(pathOrAlias);
             if(foundEntity == m_entities.end())
@@ -194,11 +190,15 @@ namespace SGCore
             }
         }
         
-        SG_NOINLINE static Ref<registry_t> getRegistry() noexcept;
+        Ref<registry_t> getRegistry() noexcept;
+        
+        SG_NOINLINE static Scope<AssetManager>& getInstance() noexcept;
 
     private:
-        static inline Ref<registry_t> m_registry = MakeRef<registry_t>();
-        static inline std::unordered_map<std::string, entity_t> m_entities;
+        Ref<registry_t> m_registry = MakeRef<registry_t>();
+        std::unordered_map<std::string, entity_t> m_entities;
+        
+        static inline Scope<AssetManager> m_instance = MakeScope<AssetManager>();
     };
 }
 

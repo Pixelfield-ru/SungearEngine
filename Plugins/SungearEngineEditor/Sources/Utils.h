@@ -8,6 +8,7 @@
 #include <SGCore/Main/CoreGlobals.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <lunasvg.h>
+#include <stb_image_write.h>
 #include <SGCore/Memory/AssetManager.h>
 
 namespace SGE
@@ -25,9 +26,9 @@ namespace SGE
                 return nullptr;
             }
             
-            if(SGCore::AssetManager::isAssetExists<SGCore::ITexture2D>(alias))
+            if(SungearEngineEditor::getAssetManager().isAssetExists<SGCore::ITexture2D>(alias))
             {
-                return SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(alias, path);
+                return SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>(alias, path);
             }
             
             auto document = lunasvg::Document::loadFromFile(path);
@@ -35,10 +36,9 @@ namespace SGE
             bitmap.convertToRGBA();
             
             auto svgTexture = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
+            svgTexture->create(bitmap.data(), bitmap.width(), bitmap.height(), 4, SGGColorInternalFormat::SGG_RGBA8, SGGColorFormat::SGG_RGBA);
             
-            svgTexture->create(bitmap.data(), bitmap.width(), bitmap.height(), 4, SGGColorInternalFormat::SGG_RGBA32_FLOAT, SGGColorFormat::SGG_RGBA);
-            
-            SGCore::AssetManager::addAsset(alias, svgTexture);
+            SungearEngineEditor::getAssetManager().addAsset(alias, svgTexture);
             
             std::cout << "LOADED SVG: " << path << " WITH ALIAS: " << alias << std::endl;
             

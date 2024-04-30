@@ -61,13 +61,13 @@ namespace SGCore
         template<typename DataType = std::uint8_t>
         requires(std::is_scalar_v<DataType>)
         void create(const DataType* data,
-                            const size_t& width,
-                            const size_t& height,
-                            const int& channelsCount,
-                            SGGColorInternalFormat internalFormat,
-                            SGGColorFormat format)
+                    const size_t& width,
+                    const size_t& height,
+                    const int& channelsCount,
+                    SGGColorInternalFormat internalFormat,
+                    SGGColorFormat format)
         {
-            size_t byteSize = width * height * sizeof(DataType);
+            size_t byteSize = width * height * sizeof(DataType) * channelsCount;
 
             m_width = width;
             m_height = height;

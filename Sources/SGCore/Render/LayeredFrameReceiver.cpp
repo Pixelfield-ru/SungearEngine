@@ -33,7 +33,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_defaultLayer = addLayer("___DEFAULT_LAYER___");
     
     m_shader = MakeRef<IShader>();
-    m_shader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+    m_shader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
             DefaultShadersPaths::getPaths()["LayeredPP"]["ReceiverShader"].getCurrentRealization()));
 
     // ==================================================================
@@ -71,7 +71,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_finalFrameFXFrameBuffer->unbind();
     
     auto finalFrameFXShader = MakeRef<IShader>();
-    finalFrameFXShader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+    finalFrameFXShader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
             DefaultShadersPaths::getPaths()["LayeredPP"]["FinalFrameFXShader"].getCurrentRealization()));
     
     m_finalFrameFXShader = finalFrameFXShader->getSubPassShader("SGLPPFinalFXPass");
@@ -127,7 +127,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addLayer(con
     newPPLayer->m_frameBuffer->unbind();
 
     auto fxShader = MakeRef<IShader>();
-    fxShader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+    fxShader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
             DefaultShadersPaths::getPaths()["LayeredPP"]["LayerFXShader"].getCurrentRealization()));
     
     newPPLayer->m_FXSubPassShader = fxShader->getSubPassShader("SGLPPLayerFXPass");

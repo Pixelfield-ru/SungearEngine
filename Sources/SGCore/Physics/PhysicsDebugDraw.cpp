@@ -86,7 +86,7 @@ SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
     if(currentRenderPipeline)
     {
         m_linesShader = MakeRef<IShader>();
-        m_linesShader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+        m_linesShader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
                 currentRenderPipeline->m_shadersPaths.getByVirtualPath("LinesDebugDrawShader").getCurrentRealization()));
     }
 }
@@ -198,6 +198,6 @@ void SGCore::PhysicsDebugDraw::resetRenderer() noexcept
 void SGCore::PhysicsDebugDraw::onRenderPipelineSet() noexcept
 {
     m_linesShader = MakeRef<IShader>();
-    m_linesShader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+    m_linesShader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
             RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths.getByVirtualPath("LinesDebugDrawShader").getCurrentRealization()));
 }

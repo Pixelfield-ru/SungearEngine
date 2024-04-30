@@ -13,7 +13,7 @@ SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
                                                      const std::string& path)
 {
     auto foundTex =
-            AssetManager::loadAsset<ITexture2D>(path);
+            AssetManager::getInstance()->loadAsset<ITexture2D>(path);
 
     m_textures[textureType].push_back(foundTex);
 

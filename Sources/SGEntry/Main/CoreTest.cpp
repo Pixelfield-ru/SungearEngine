@@ -82,7 +82,7 @@ SGCore::Text* sceneInfoText = nullptr;
 void createBallAndApplyImpulse(const glm::vec3& spherePos,
                                const glm::vec3& impulse) noexcept
 {
-    auto sphereModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>("ball0");
+    auto sphereModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("ball0");
     
     std::vector<SGCore::entity_t> sphereEntities;
     sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_TRANSPARENT_NAME,
@@ -164,11 +164,11 @@ void init()
 
     SGCore::CoreMain::getWindow().getSize(windowWidth, windowHeight);
 
-    testModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+    testModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(
             "../SGResources/models/test/plane.obj"
     );
 
-    auto model0 = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+    auto model0 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(
             // "../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/t62/scene.gltf"
@@ -219,7 +219,7 @@ void init()
             //"../SGResources/models/test/lenin/scene.gltf"
     );
 
-    auto model1 = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+    auto model1 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(
             //"../SGResources/models/test/sponza_new/NewSponza_Main_glTF_002.gltf"
             //"../SGResources/models/test/gaz-66.obj"
             //"../SGResources/models/test/t62/scene.gltf"
@@ -270,16 +270,16 @@ void init()
 
     const std::string cubePath = "../SGResources/models/standard/cube.obj";
 
-    auto cubeModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+    auto cubeModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(
             cubePath
     );
 
-    auto cubeModel1 = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+    auto cubeModel1 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(
             "cube1",
             cubePath
     );
 
-    auto sphereModel = SGCore::AssetManager::loadAsset<SGCore::ModelAsset>(
+    auto sphereModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(
             "ball0",
             "../SGResources/models/standard/sphere.obj"
     );
@@ -563,24 +563,24 @@ void init()
 
     auto standardCubemap = SGCore::Ref<SGCore::ICubemapTexture>(SGCore::CoreMain::getRenderer()->createCubemapTexture());
 
-    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
     ));
-    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
     ));
 
-    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
     ));
-    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
     ));
 
-    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
     ));
-    standardCubemap->m_parts.push_back(SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+    standardCubemap->m_parts.push_back(SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
     ));
 
@@ -588,9 +588,9 @@ void init()
 
     standardCubemap->create();
 
-    SGCore::AssetManager::addAsset("standard_skybox0", standardCubemap);
+    SGCore::AssetManager::getInstance()->addAsset("standard_skybox0", standardCubemap);
 
-    auto geniusJPG = SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(
+    auto geniusJPG = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
             "../SGResources/textures/genius.jpg"
     );
 
@@ -643,7 +643,7 @@ void init()
     
     // fonts test
     
-    SGCore::Ref<SGCore::Font> timesNewRomanFont = SGCore::AssetManager::loadAsset<SGCore::Font>(
+    SGCore::Ref<SGCore::Font> timesNewRomanFont = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Font>(
             "font_times_new_roman",
             "../SGResources/fonts/arialmt.ttf"
     );
@@ -686,7 +686,7 @@ void init()
     std::string formattedVersion = spdlog::fmt_lib::format("{0}.{1}.{2}.{3}", SG_CORE_MAJOR_VERSION, SG_CORE_MINOR_VERSION, SG_CORE_PATCH_VERSION, SG_CORE_BUILD_VERSION);
     helloWorldUIText.m_text = std::u16string(u"Development build. v") +
             SGUtils::Utils::fromUTF8<char16_t>(formattedVersion);
-    helloWorldUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
+    helloWorldUIText.m_usedFont = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Font>("font_times_new_roman");
     helloWorldUIText.m_fontSettings.m_height = 34;
     helloWorldUIText.m_fontSettings.m_name = "eng";
     helloWorldUIText.m_text += u"\n";
@@ -696,7 +696,7 @@ void init()
     auto& sceneInfoUITextTransform = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(sceneInfoTextEntity, SGCore::MakeRef<SGCore::Transform>());
     sceneInfoUITextTransform->m_ownTransform.m_position = { 0.0, -80.0, 0 };
     
-    sceneInfoUIText.m_usedFont = SGCore::AssetManager::loadAsset<SGCore::Font>("font_times_new_roman");
+    sceneInfoUIText.m_usedFont = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Font>("font_times_new_roman");
     sceneInfoUIText.m_fontSettings.m_height = 20;
     sceneInfoUIText.m_fontSettings.m_name = "eng";
     

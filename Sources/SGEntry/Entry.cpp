@@ -75,7 +75,7 @@ void coreInit()
     
     // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("rnd_darkwind6.wav");
     // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("hoof_hard5.ogg");
-    SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("b1.ogg");
+    SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("b1.ogg");
     // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("radar_2.ogg");
     
     darkWindAudioBuf->create();

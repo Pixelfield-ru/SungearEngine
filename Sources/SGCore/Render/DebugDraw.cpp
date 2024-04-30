@@ -87,7 +87,7 @@ SGCore::DebugDraw::DebugDraw()
     if(currentRenderPipeline)
     {
         m_linesShader = MakeRef<IShader>();
-        m_linesShader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+        m_linesShader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
                 currentRenderPipeline->m_shadersPaths.getByVirtualPath("LinesDebugDrawShader").getCurrentRealization()));
     }
 }
@@ -202,6 +202,6 @@ void SGCore::DebugDraw::resetRenderer() noexcept
 void SGCore::DebugDraw::onRenderPipelineSet() noexcept
 {
     m_linesShader = MakeRef<IShader>();
-    m_linesShader->addSubPassShadersAndCompile(AssetManager::loadAsset<TextFileAsset>(
+    m_linesShader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
             RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths.getByVirtualPath("LinesDebugDrawShader").getCurrentRealization()));
 }

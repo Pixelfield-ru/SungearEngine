@@ -3,16 +3,19 @@
 //
 
 #include <imgui.h>
+#include <imgui_stdlib.h>
+#include <nfd.h>
 #include <SGCore/Main/CoreMain.h>
 #include <SGCore/Input/InputManager.h>
 
 #include "FileCreateDialog.h"
 #include "Styles/StylesManager.h"
+#include "ImGuiUtils.h"
 
 SGE::FileCreateDialog::FileCreateDialog()
 {
-    m_dirPath.reserve(128);
-    m_fileName.reserve(128);
+    m_dirPath.reserve(1024);
+    m_fileName.reserve(1024);
 }
 
 bool SGE::FileCreateDialog::begin()
@@ -34,13 +37,6 @@ void SGE::FileCreateDialog::renderBody()
                  ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
                  ImGuiWindowFlags_NoMove);
     
-    auto asset = SGCore::AssetManager::loadAsset<SGCore::ITexture2D>("air");
-    // asset->bind(0);
-    // ImGui::Image((void*) asset.get(), ImVec2(16, 16));
-    
-    // auto asset = SGCore::AssetManager::loadAsset<SGCore::ITexture2D>(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/textures/img.png");
-    ImGui::Image(asset->getTextureNativeHandler(), ImVec2(32, 32));
-    
     ImGui::SetWindowFocus();
     
     ImVec2 texSize0 = ImGui::CalcTextSize("Directory Path");
@@ -49,19 +45,39 @@ void SGE::FileCreateDialog::renderBody()
     ImGui::Text("Directory Path");
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
-    ImGui::InputText("##DirectoryPath", m_dirPath.data(), 128);
+    ImGui::InputText("##DirectoryPath", &m_dirPath);
+    ImGui::SetItemAllowOverlap();
+    
+    auto asset = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("folder20x20");
+    
+    ImGui::SameLine();
+    
+    if(ImGuiUtils::ImageButton(asset->getTextureNativeHandler(), ImVec2(20, 20)))
+    {
+        char* dat = m_dirPath.data();
+        nfdresult_t result = NFD_PickFolder("", &dat);
+        if(result == NFD_OKAY)
+        {
+            m_dirPath = dat;
+        }
+    }
     
     ImGui::Text("File Name");
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (texSize0.x - texSize1.x) + 10.0f);
-    ImGui::InputText("##FileName", m_fileName.data(), 128);
+    ImGui::InputText("##FileName", &m_fileName);
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER))
     {
-        m_fileName.clear();
-        m_dirPath.clear();
-        
-        setActive(false);
+        if(!std::filesystem::exists(m_dirPath + "/" + m_fileName))
+        {
+            std::ofstream ofstream(m_dirPath + "/" + m_fileName);
+            
+            m_fileName.clear();
+            m_dirPath.clear();
+            
+            setActive(false);
+        }
     }
     else if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE))
     {

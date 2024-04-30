@@ -26,167 +26,6 @@ namespace SGE::EditorStyles
             m_name = "Dark";
         }
         
-        SGCore::Ref<SGCore::ITexture2D> getIcon(IconType iconType) noexcept override
-        {
-            switch(iconType)
-            {
-                case FOLDER:
-                    return nullptr;
-                case FOLDER_MINUS:
-                    return nullptr;
-                case FOLDER_PLUS:
-                    return nullptr;
-                case FILE:
-                    return nullptr;
-                case FILE_TEXT:
-                    return nullptr;
-                case FILE_MINUS:
-                    return nullptr;
-                case FILE_PLUS:
-                    return nullptr;
-                case EYE:
-                    break;
-                case EYE_OFF:
-                    break;
-                case LAYERS:
-                    break;
-                case COPY:
-                    break;
-                case GIT_BRANCH:
-                    break;
-                case GIT_COMMIT:
-                    break;
-                case GIT_MERGE:
-                    break;
-                case GIT_PULL_REQUEST:
-                    break;
-                case EDIT1:
-                    break;
-                case EDIT2:
-                    break;
-                case EDIT3:
-                    break;
-                case DOWNLOAD:
-                    break;
-                case DOWNLOAD_CLOUD:
-                    break;
-                case FILTER:
-                    break;
-                case CPU:
-                    break;
-                case CODE:
-                    break;
-                case CLIPBOARD:
-                    break;
-                case CHECK:
-                    break;
-                case CHEVRON_DOWN:
-                    break;
-                case CHEVRON_LEFT:
-                    break;
-                case CHEVRON_RIGHT:
-                    break;
-                case CHEVRON_UP:
-                    break;
-                case CHEVRONS_DOWN:
-                    break;
-                case CHEVRONS_LEFT:
-                    break;
-                case CHEVRONS_RIGHT:
-                    break;
-                case CHEVRONS_UP:
-                    break;
-                case CLOCK:
-                    break;
-                case BATTERY:
-                    break;
-                case ARROW_UP_RIGHT:
-                    break;
-                case ARROW_UP_LEFT:
-                    break;
-                case ARROW_RIGHT:
-                    break;
-                case ARROW_LEFT:
-                    break;
-                case ARROW_DOWN_RIGHT:
-                    break;
-                case ARROW_DOWN_LEFT:
-                    break;
-                case ARROW_DOWN:
-                    break;
-                case ARROW_UP:
-                    break;
-                case ALERT_TRIANGLE:
-                    break;
-                case ALERT_OCTAGON:
-                    break;
-                case ALERT_CIRCLE:
-                    break;
-                case ALIGN_LEFT:
-                    break;
-                case ALIGN_RIGHT:
-                    break;
-                case ALIGN_CENTER:
-                    break;
-                case ALIGN_JUSTIFY:
-                    break;
-                case ANCHOR:
-                    break;
-                case BOOKMARK:
-                    break;
-                case LOADER:
-                    break;
-                case LIST:
-                    break;
-                case LAYOUT:
-                    break;
-                case LOCK:
-                    break;
-                case LOGIN:
-                    break;
-                case LOGOUT:
-                    break;
-                case MOVE:
-                    break;
-                case PACKAGE:
-                    break;
-                case MINUS:
-                    return nullptr;
-                case PLUS:
-                    return nullptr;
-                case X:
-                    return nullptr;
-                case REFRESH_CCW:
-                    break;
-                case REFRESH_CW:
-                    break;
-                case REPEAT:
-                    break;
-                case ROTATE_CCW:
-                    break;
-                case ROTATE_CW:
-                    break;
-                case SEARCH:
-                    break;
-                case SETTINGS:
-                    break;
-                case SAVE:
-                    break;
-                case STAR:
-                    break;
-                case TRASH1:
-                    break;
-                case TRASH2:
-                    break;
-                case ZOOM_IN:
-                    break;
-                case ZOOM_OUT:
-                    break;
-            }
-            
-            return nullptr;
-        }
-        
     private:
         void apply() override
         {
@@ -308,20 +147,14 @@ namespace SGE::EditorStyles
                         (SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/fonts/roboto_flex.ttf").c_str(),
                         16, &fontConfig, io.Fonts->GetGlyphRangesCyrillic());
                 
-                /*fontConfig.MergeMode = true;
-                const ImWchar iconsRanges[] = { 0xe000, 0xe0fe, 0 };
-                io.Fonts->AddFontFromFileTTF(
-                        (SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/fonts/icons_font0.ttf").c_str(),
-                        16, &fontConfig, iconsRanges);*/
-                
                 io.Fonts->Build();
             }
             
             // loading icons
             {
-                static constexpr glm::ivec2 standardSize { 16, 16 };
+                static constexpr glm::ivec2 standardSize { 20, 20 };
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/fonts/entypo/entypo/air.svg", "air", standardSize.x, standardSize.y);
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/folder.svg", "folder20x20", standardSize);
             }
         }
     };

@@ -59,7 +59,6 @@ void SGCore::CoreMain::start()
 
     DefaultShadersPaths::init();
     InputManager::init();
-    AssetManager::init();
     FontsManager::init();
 
     m_renderTimer.onUpdate.connect<&updateStart>(0);
