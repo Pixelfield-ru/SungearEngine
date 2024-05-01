@@ -34,6 +34,10 @@ namespace SGE
         SGCore::Ref<SGCore::ITexture2D> m_folderIcon = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("folder16x16");
         SGCore::Ref<SGCore::ITexture2D> m_headerIcon = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("header16x16");
         SGCore::Ref<SGCore::ITexture2D> m_cppIcon = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("cpp16x16");
+        SGCore::Ref<SGCore::ITexture2D> m_cmakeIcon = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("cmake16x16");
+        SGCore::Ref<SGCore::ITexture2D> m_txtFileIcon = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("lines16x16");
+        SGCore::Ref<SGCore::ITexture2D> m_unknownFileIcon = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("question16x16");
+        SGCore::Ref<SGCore::ITexture2D> m_libraryFileIcon = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("library16x16");
         
         // ================================
         

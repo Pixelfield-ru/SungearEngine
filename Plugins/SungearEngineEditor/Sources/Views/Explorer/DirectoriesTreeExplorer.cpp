@@ -67,18 +67,36 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     }
     else
     {
-        if(parent.extension() == ".h")
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 23);
+        
+        auto fileExt = parent.extension();
+        
+        if(fileExt == ".h")
         {
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 1);
             ImGui::Image(m_headerIcon->getTextureNativeHandler(), ImVec2(16, 16));
-            ImGui::SameLine();
         }
-        else if(parent.extension() == ".cpp")
+        else if(fileExt == ".cpp")
         {
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 1);
             ImGui::Image(m_cppIcon->getTextureNativeHandler(), ImVec2(16, 16));
-            ImGui::SameLine();
         }
+        else if(fileExt == ".cmake" || parent.filename() == "CMakeLists.txt")
+        {
+            ImGui::Image(m_cmakeIcon->getTextureNativeHandler(), ImVec2(16, 16));
+        }
+        else if(fileExt == ".txt" || fileExt == ".log")
+        {
+            ImGui::Image(m_txtFileIcon->getTextureNativeHandler(), ImVec2(16, 16));
+        }
+        else if(fileExt == ".dll" || fileExt == ".so")
+        {
+            ImGui::Image(m_libraryFileIcon->getTextureNativeHandler(), ImVec2(16, 16));
+        }
+        else
+        {
+            ImGui::Image(m_unknownFileIcon->getTextureNativeHandler(), ImVec2(16, 16));
+        }
+        
+        ImGui::SameLine();
     }
     
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 3);

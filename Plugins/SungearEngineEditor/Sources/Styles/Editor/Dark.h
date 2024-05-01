@@ -163,6 +163,16 @@ namespace SGE::EditorStyles
                 Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/header.svg", "header16x16", { 16, 16 });
                 
                 Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/cpp.svg", "cpp16x16", { 16, 16 });
+                
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/cmake.svg", "cmake16x16", { 16, 16 });
+                
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/lines.svg", "lines16x16", { 16, 16 });
+                
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/more.svg", "more16x16", { 16, 16 });
+                
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/question.svg", "question16x16", { 16, 16 });
+                
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/library.svg", "library16x16", { 16, 16 });
             }
         }
     };
