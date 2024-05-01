@@ -10,7 +10,10 @@
 SGE::TopToolbarView::TopToolbarView()
 {
     m_fileCreateDialog->setActive(false);
+    m_projectCreateDialog->setActive(false);
+    
     addChild(m_fileCreateDialog);
+    addChild(m_projectCreateDialog);
 }
 
 bool SGE::TopToolbarView::begin()
@@ -28,15 +31,34 @@ void SGE::TopToolbarView::renderBody()
         {
             if(ImGui::MenuItem("File"))
             {
+                m_fileCreateDialog->m_mode = FileOpenMode::CREATE;
                 m_fileCreateDialog->setActive(true);
+            }
+            
+            if(ImGui::MenuItem("Project"))
+            {
+                m_projectCreateDialog->m_mode = FileOpenMode::CREATE;
+                m_projectCreateDialog->setActive(true);
             }
             
             ImGui::EndMenu();
         }
         
-        if(ImGui::MenuItem("Open..."))
+        if(ImGui::BeginMenu("Open..."))
         {
-        
+            if(ImGui::MenuItem("File"))
+            {
+                m_fileCreateDialog->m_mode = FileOpenMode::OPEN;
+                m_fileCreateDialog->setActive(true);
+            }
+            
+            if(ImGui::MenuItem("Project"))
+            {
+                m_projectCreateDialog->m_mode = FileOpenMode::OPEN;
+                m_projectCreateDialog->setActive(true);
+            }
+            
+            ImGui::EndMenu();
         }
 
         ImGui::Separator();

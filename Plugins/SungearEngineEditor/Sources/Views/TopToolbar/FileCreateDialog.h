@@ -7,12 +7,13 @@
 
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include <glm/vec2.hpp>
+#include "FileOpenMode.h"
 
 namespace SGE
 {
     struct FileCreateDialog : SGCore::ImGuiWrap::IView
     {
-        FileCreateDialog();
+        FileOpenMode m_mode = FileOpenMode::CREATE;
         
         bool begin() final;
         void renderBody() final;
@@ -23,6 +24,8 @@ namespace SGE
     private:
         std::string m_dirPath;
         std::string m_fileName;
+        
+        std::string m_error;
         
         glm::vec2 m_size { 430, 85 };
     };

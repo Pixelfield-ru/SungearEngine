@@ -7,28 +7,25 @@
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/ImGuiWrap/ImGuiLayer.h>
 
-SGE::SungearEngineEditor::SungearEngineEditor()
-{
-    m_mainView = SGCore::MakeRef<MainView>();
-    SGCore::ImGuiWrap::IView::getRoot()->addChild(m_mainView);
-    
-    SGCore::CoreMain::getRenderTimer().onUpdate.connect<&SungearEngineEditor::onUpdate>(*this);
-}
-
 SGE::SungearEngineEditor::~SungearEngineEditor()
 {
     SGCore::CoreMain::getRenderTimer().onUpdate.disconnect<&SungearEngineEditor::onUpdate>(*this);
     SGCore::ImGuiWrap::IView::getRoot()->removeChild(m_mainView);
 }
 
-std::string SGE::SungearEngineEditor::load(const std::vector<std::string>& args)
+std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>& args)
 {
 	m_name = "SungearEngineEditor";
 	m_version = "1.0.0";
     
     std::cout << "SGEDITOR PATH: " << getLocalPath() << std::endl;
     
+    SGCore::CoreMain::getRenderTimer().onUpdate.connect<&SungearEngineEditor::onUpdate>(*this);
+    
     StylesManager::init();
+    
+    m_mainView = SGCore::MakeRef<MainView>();
+    SGCore::ImGuiWrap::IView::getRoot()->addChild(m_mainView);
     
 	// No error.
 	return "";
@@ -38,9 +35,12 @@ void SGE::SungearEngineEditor::onUpdate(const double&, const double&) const noex
 {
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_R))
     {
-        std::cout << std::filesystem::current_path().string() + "/imgui.ini" << std::endl;
-        std::filesystem::remove(std::filesystem::current_path().string() + "/imgui.ini");
-        SGCore::ImGuiWrap::ImGuiLayer::reload();
+        /*std::ofstream ofs(std::filesystem::current_path().string() + "/imgui.ini", std::ios::trunc | std::ios::out);
+        
+        SGCore::ImGuiWrap::ImGuiLayer::destroy();
+        SGCore::ImGuiWrap::ImGuiLayer::init();
+        ImGui::LoadIniSettingsFromDisk((std::filesystem::current_path().string() + "/imgui.ini").c_str());
+        StylesManager::init();*/
     }
 }
 

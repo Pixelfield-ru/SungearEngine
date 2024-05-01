@@ -9,10 +9,9 @@ namespace SGE
 {
     struct SungearEngineEditor : public SGCore::IPlugin
     {
-        SungearEngineEditor();
         ~SungearEngineEditor() override;
         
-        std::string load(const std::vector<std::string>& args) override;
+        std::string onConstruct(const std::vector<std::string>& args) override;
         
         [[nodiscard]] SGCore::Ref<MainView> getMainView() const noexcept;
         

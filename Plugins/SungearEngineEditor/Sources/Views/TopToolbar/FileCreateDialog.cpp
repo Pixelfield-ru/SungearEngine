@@ -12,15 +12,8 @@
 #include "Styles/StylesManager.h"
 #include "ImGuiUtils.h"
 
-SGE::FileCreateDialog::FileCreateDialog()
-{
-    m_dirPath.reserve(1024);
-    m_fileName.reserve(1024);
-}
-
 bool SGE::FileCreateDialog::begin()
 {
-
     return true;
 }
 
@@ -32,25 +25,36 @@ void SGE::FileCreateDialog::renderBody()
     ImGui::SetNextWindowPos(ImVec2(center.x - m_size.x / 2.0f, center.y - m_size.y / 2.0f));
     
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
+
+    if(isActive())
+    {
+        ImGui::OpenPopup("Create File");
+    }
     
-    ImGui::Begin("Create File", nullptr,
-                 ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                 ImGuiWindowFlags_NoMove);
+    ImGui::BeginPopupModal("Create File", nullptr,
+                           ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                           ImGuiWindowFlags_NoMove);
     
     ImGui::SetWindowFocus();
     
-    ImVec2 texSize0 = ImGui::CalcTextSize("Directory Path");
+    ImVec2 texSize0 = ImGui::CalcTextSize("Location");
     ImVec2 texSize1 = ImGui::CalcTextSize("File Name");
     
-    ImGui::Text("Directory Path");
+    ImGui::Text("Location");
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
+    ImGui::SetNextItemWidth(320);
     ImGui::InputText("##DirectoryPath", &m_dirPath);
-    ImGui::SetItemAllowOverlap();
     
-    auto asset = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("folder20x20");
+    if(ImGui::IsItemEdited())
+    {
+        m_error = "";
+        m_size.y = 85;
+    }
     
     ImGui::SameLine();
+    
+    auto asset = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("folder20x20");
     
     if(ImGuiUtils::ImageButton(asset->getTextureNativeHandler(), ImVec2(20, 20)))
     {
@@ -65,18 +69,42 @@ void SGE::FileCreateDialog::renderBody()
     ImGui::Text("File Name");
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (texSize0.x - texSize1.x) + 10.0f);
+    ImGui::SetNextItemWidth(320);
     ImGui::InputText("##FileName", &m_fileName);
+    
+    if(ImGui::IsItemEdited())
+    {
+        m_error = "";
+        m_size.y = 85;
+    }
+    
+    if(!m_error.empty())
+    {
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), m_error.c_str());
+    }
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER))
     {
-        if(!std::filesystem::exists(m_dirPath + "/" + m_fileName))
+        if(!std::filesystem::exists(m_dirPath))
+        {
+            m_error = "This directory does not exist!";
+            m_size.y = 105;
+        }
+        else if(!std::filesystem::exists(m_dirPath + "/" + m_fileName))
         {
             std::ofstream ofstream(m_dirPath + "/" + m_fileName);
             
             m_fileName.clear();
             m_dirPath.clear();
             
+            m_error = "";
+            
             setActive(false);
+        }
+        else
+        {
+            m_error = "This file already exists!";
+            m_size.y = 105;
         }
     }
     else if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE))
@@ -84,10 +112,16 @@ void SGE::FileCreateDialog::renderBody()
         m_fileName.clear();
         m_dirPath.clear();
         
+        m_error = "";
+        
         setActive(false);
+        
+        m_size.y = 85;
     }
     
-    ImGui::End();
+    ImGui::EndPopup();
+    
+    ImGui::PopStyleVar();
 }
 
 void SGE::FileCreateDialog::end()

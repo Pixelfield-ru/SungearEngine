@@ -7,6 +7,7 @@
 
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include "FileCreateDialog.h"
+#include "ProjectCreateDialog.h"
 
 namespace SGE
 {
@@ -20,6 +21,7 @@ namespace SGE
         
     private:
         SGCore::Ref<FileCreateDialog> m_fileCreateDialog = SGCore::MakeRef<FileCreateDialog>();
+        SGCore::Ref<ProjectCreateDialog> m_projectCreateDialog = SGCore::MakeRef<ProjectCreateDialog>();
     };
 }
 

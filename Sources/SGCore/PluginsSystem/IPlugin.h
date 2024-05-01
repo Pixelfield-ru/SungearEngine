@@ -28,15 +28,18 @@ namespace SGCore
         std::string m_name;
         std::string m_version;
         
-        virtual std::string load(const std::vector<std::string>& args) = 0;
-        
         bool operator==(const IPlugin& other) const noexcept;
         bool operator!=(const IPlugin& other) const noexcept;
         
         [[nodiscard]] std::string getLocalPath() const noexcept;
         
     private:
-        std::string m_localPath;
+        virtual std::string onConstruct(const std::vector<std::string>& args) = 0;
+        
+        /**
+         * Plugin local path on computer.
+         */
+        std::string m_path;
     };
 }
 

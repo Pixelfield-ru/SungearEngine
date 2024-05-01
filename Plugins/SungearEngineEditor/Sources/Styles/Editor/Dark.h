@@ -70,7 +70,7 @@ namespace SGE::EditorStyles
             colors[ImGuiCol_TabUnfocused]           = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
             colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
             colors[ImGuiCol_DockingPreview]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-            colors[ImGuiCol_DockingEmptyBg]         = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+            colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
             colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
             colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
             colors[ImGuiCol_PlotHistogram]          = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
@@ -85,7 +85,7 @@ namespace SGE::EditorStyles
             colors[ImGuiCol_NavHighlight]           = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
             colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);
             colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);
-            colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
+            colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.50f, 0.50f, 0.50f, 0.2f);
             
             ImGuiStyle& style = ImGui::GetStyle();
             
@@ -155,6 +155,14 @@ namespace SGE::EditorStyles
                 static constexpr glm::ivec2 standardSize { 20, 20 };
                 
                 Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/folder.svg", "folder20x20", standardSize);
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/folder.svg", "folder16x16", { 16, 16 });
+                
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/chevron_right.svg", "chevron_right16x16", { 16, 16 });
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/chevron_down.svg", "chevron_down16x16", { 16, 16 });
+                
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/header.svg", "header16x16", { 16, 16 });
+                
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/cpp.svg", "cpp16x16", { 16, 16 });
             }
         }
     };

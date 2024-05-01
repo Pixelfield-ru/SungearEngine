@@ -22,5 +22,5 @@ bool SGCore::IPlugin::operator!=(const SGCore::IPlugin& other) const noexcept
 
 std::string SGCore::IPlugin::getLocalPath() const noexcept
 {
-    return m_localPath;
+    return m_path;
 }

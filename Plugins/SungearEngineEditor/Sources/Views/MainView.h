@@ -10,9 +10,13 @@
 #include <SGCore/ImGuiWrap/Views/IView.h>
 
 #include "TopToolbar/TopToolbarView.h"
+#include "Explorer/Explorer.h"
 
 namespace SGE
 {
+    struct DirectoriesTreeExplorer;
+    struct DirectoryExplorer;
+    
     struct MainView : SGCore::ImGuiWrap::IView
     {
         MainView();
@@ -22,8 +26,18 @@ namespace SGE
         void renderBody() override;
         void end() override;
         
+        ImGuiID& getDockID() noexcept;
+        
+        SGCore::Ref<DirectoriesTreeExplorer> getDirectoriesTreeExplorerWindow() const noexcept;
+        
     private:
         SGCore::Ref<TopToolbarView> m_topToolbarView;
+        
+        SGCore::Ref<Explorer> m_explorerWindow;
+        SGCore::Ref<DirectoryExplorer> m_directoryExplorerWindow;
+        SGCore::Ref<DirectoriesTreeExplorer> m_directoriesTreeExplorerWindow;
+        
+        ImGuiID m_dockID = 0;
     };
 }
 

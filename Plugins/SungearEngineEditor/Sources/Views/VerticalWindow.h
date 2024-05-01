@@ -1,0 +1,15 @@
+//
+// Created by ilya on 30.04.24.
+//
+
+#ifndef SUNGEARENGINEEDITOR_VERTICALWINDOW_H
+#define SUNGEARENGINEEDITOR_VERTICALWINDOW_H
+
+
+class VerticalWindow
+{
+
+};
+
+
+#endif //SUNGEARENGINEEDITOR_VERTICALWINDOW_H
