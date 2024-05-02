@@ -19,24 +19,6 @@ target_link_libraries(${SG_EXEC_NAME} PUBLIC
         SGConsoleAPI # includes SGCore
         )
 
-# ========== installing standard plugins ===========================
-
-message("cur bin dir: " ${CMAKE_CURRENT_BINARY_DIR})
-
-if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        add_custom_command(TARGET ${SG_EXEC_NAME} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_SOURCE_DIR}/Plugins/SungearEngineEditor/cmake-build-debug/SungearEngineEditor.so
-                ${CMAKE_CURRENT_BINARY_DIR}/Plugins/SungearEngineEditor/cmake-build-debug/SungearEngineEditor.so)
-elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
-        add_custom_command(TARGET ${SG_EXEC_NAME} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_SOURCE_DIR}/Plugins/SungearEngineEditor/cmake-build-release/SungearEngineEditor.so
-                ${CMAKE_CURRENT_BINARY_DIR}/Plugins/SungearEngineEditor/cmake-build-release/SungearEngineEditor.so)
-endif()
-
-# ==================================================================
-
 if (${SG_RESOURCES_COPY_MODELS})
         add_custom_target(${SG_EXEC_NAME}ModelSCopy ALL
                 COMMAND ${CMAKE_COMMAND} -E copy_directory

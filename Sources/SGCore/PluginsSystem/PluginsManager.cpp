@@ -230,7 +230,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
                 break;
         }
         
-        std::string pluginDLPath = localPluginPath + sep + buildDir + sep + pluginName + DL_POSTFIX;
+        std::string pluginDLPath = std::filesystem::path(localPluginPath + "/" + buildDir + "/" + pluginName + DL_POSTFIX).make_preferred().string();
         
         std::string dlErr;
         
@@ -254,7 +254,9 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         loadedPlugin->m_plugin = pluginEntry();
         loadedPlugin->m_plugin->m_path = localPluginPath;
+        std::cout << "LOADED PLUGIN: " << loadedPlugin->m_plugin << std::endl;
         loadedPlugin->m_plugin->onConstruct(entryArgs);
+        std::cout << "ERROR HERE" << std::endl;
         loadedPlugin->m_pluginLib = pluginDL;
     }
     

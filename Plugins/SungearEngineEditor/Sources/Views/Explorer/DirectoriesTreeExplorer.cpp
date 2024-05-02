@@ -26,7 +26,7 @@ void SGE::DirectoriesTreeExplorer::renderBody()
     {
         if(std::filesystem::exists(m_currentPath))
         {
-            ImGui::Text(m_currentPath.c_str());
+            ImGui::Text(m_currentPath.string().c_str());
         }
         
         renderTreeNode(m_rootPath);
@@ -100,7 +100,7 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     }
     
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 3);
-    ImGui::Text(parent.filename().c_str());
+    ImGui::Text(parent.filename().string().c_str());
     
     auto mouseScreenPos = ImGui::GetCursorScreenPos();
     

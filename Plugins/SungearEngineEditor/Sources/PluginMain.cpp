@@ -1,6 +1,6 @@
 #include "PluginMain.h"
 
-extern "C" SGCore::Ref<SGCore::IPlugin> SGPluginMain()
+extern "C" __declspec(dllexport) SGCore::Ref<SGCore::IPlugin> SGPluginMain()
 {
 	return SGE::SungearEngineEditor::getInstance();
 }

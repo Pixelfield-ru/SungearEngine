@@ -28,7 +28,7 @@ namespace SGCore
         #ifdef PLATFORM_OS_LINUX
         using native_handler_t = void*;
         #elif defined(PLATFORM_OS_WINDOWS)
-        using native_handler_t = HINSTANCE;
+        using native_handler_t = HMODULE;
         #endif
 
         ~DynamicLibrary()
@@ -47,7 +47,8 @@ namespace SGCore
                 err = dlerror();
             }
             #elif defined(PLATFORM_OS_WINDOWS)
-            m_nativeHandler = LoadLibrary(pluginDLPath.c_str());
+            std::cout << "DYNAMIC LIBRARY PATH: " << pluginDLPath.c_str() << std::endl;
+            m_nativeHandler = LoadLibraryA(pluginDLPath.c_str());
             std::cout << "m_nativeHandler " << m_nativeHandler << std::endl;
             if(!m_nativeHandler)
             {

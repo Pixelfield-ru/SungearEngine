@@ -21,8 +21,12 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
     std::cout << "SGEDITOR PATH: " << getLocalPath() << std::endl;
     
     SGCore::CoreMain::getRenderTimer().onUpdate.connect<&SungearEngineEditor::onUpdate>(*this);
-    
+
+    std::cout << "FIRST" << std::endl;
+
     StylesManager::init();
+
+    std::cout << "SECOND" << std::endl;
     
     m_mainView = SGCore::MakeRef<MainView>();
     SGCore::ImGuiWrap::IView::getRoot()->addChild(m_mainView);

@@ -9,6 +9,11 @@
 
 #include <assimp/version.h>
 
+void SGCore::AssetManager::init() noexcept
+{
+    m_instance = MakeScope<AssetManager>();
+}
+
 SGCore::Ref<SGCore::registry_t> SGCore::AssetManager::getRegistry() noexcept
 {
     return m_registry;

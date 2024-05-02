@@ -257,6 +257,6 @@
     "version>=" : "2022-01-20"
   }, {
     "name" : "lunasvg",
-    "version>=" : "2.3.9"
+    "version>=" : "2.3.8"
   } ]
 }

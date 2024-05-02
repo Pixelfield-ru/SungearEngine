@@ -9,7 +9,7 @@
 
 #include "SungearEngineEditor.h"
 
-extern "C" SGCore::Ref<SGCore::IPlugin> SGPluginMain();
+extern "C" __declspec(dllexport) SGCore::Ref<SGCore::IPlugin> SGPluginMain();
 
 int main();
 

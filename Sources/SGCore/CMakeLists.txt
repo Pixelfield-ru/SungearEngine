@@ -119,13 +119,3 @@ if(WIN32)
 else()
   target_link_libraries(${PROJECT_NAME} vulkan)
 endif()]]
-
- if(MSVC)
-    if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/SGCore.dll)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_BINARY_DIR}/SGCore.dll
-            ${CMAKE_BINARY_DIR}/Sources/SGEditor
-            )
-    ENDIF()
- endif()

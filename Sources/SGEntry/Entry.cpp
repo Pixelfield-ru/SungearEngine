@@ -58,6 +58,27 @@ void audioStateChanged(SGCore::AudioSource& audioSource, SGCore::AudioSourceStat
     }
 }
 
+template<typename RetT>
+struct get_address;
+
+template<typename RetT, typename... Args>
+struct get_address<RetT(Args...)>
+{
+    size_t operator()(std::function<RetT(Args...)> f)
+    {
+        typedef RetT (fnType)(Args...);
+        fnType** fnPointer = f.template target<fnType*>();
+        return (size_t) *fnPointer;
+    }
+};
+
+template<typename RetT, typename T>
+size_t getAddress(std::function<RetT(T &)> f) {
+    typedef void (fnType)(T &);
+    fnType** fnPointer = f.template target<fnType*>();
+    return (size_t) *fnPointer;
+}
+
 void coreInit()
 {
     testScene2 = SGCore::MakeRef<SGCore::Scene>();
@@ -65,13 +86,51 @@ void coreInit()
     testScene2->createDefaultSystems();
     SGCore::Scene::addScene(testScene2);
     SGCore::Scene::setCurrentScene("TestScene");
-    
-    // hardcoded sgeditor load
-    auto sgEditorPlugin =
-            SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0", "/home/ilya/pixelfield/SungearEngine/Plugins/SungearEngineEditor", { },
-                                               SGCore::PluginBuildType::PBT_RELEASE);
-    
-    std::cout << "plugin: " << sgEditorPlugin << std::endl;
+
+    char* sgSourcesPath = std::getenv("SUNGEAR_SOURCES_ROOT");
+
+    system("chcp 65001");
+    setlocale(LC_ALL, "Russian");
+
+    if(sgSourcesPath)
+    {
+        std::string sgEditorPath = std::string(sgSourcesPath) + "/Plugins/SungearEngineEditor";
+
+        // hardcoded sgeditor load
+        auto sgEditorPlugin =
+                SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0",
+                                                   sgEditorPath,
+                                                   {},
+                                                   SGCore::PluginBuildType::PBT_RELEASE);
+
+        std::cout << "plugin: " << sgEditorPlugin  << ", sgeditor path: " << sgEditorPath << std::endl;
+
+        std::string err;
+
+        SGCore::DynamicLibrary dynamicLibrary;
+        dynamicLibrary.load("F:/Pixelfield/SungearEngine/SungearEngine/Plugins/SungearEngineEditor/cmake-build-release/SungearEngineEditor.dll", err);
+        if(!dynamicLibrary.getNativeHandler())
+        {
+            std::cout << "ERROR WHILE LOADING LIBRARY: " << err << std::endl;
+        }
+        else
+        {
+            auto func = dynamicLibrary.loadFunction<SGCore::Ref<SGCore::IPlugin>()>("SGPluginMain", err);
+            if(!func)
+            {
+                std::cout << "ERROR WHILE LOADING FUNCTION: " << err << std::endl;
+            }
+            else
+            {
+                auto plug = func();
+                // std::cout << "FUNC: " << get_address<SGCore::Ref<SGCore::IPlugin>()>()(func) << std::endl;
+            }
+        }
+    }
+    else
+    {
+        std::cout << "CANNOT LOAD SUNGEAR EDITOR PLUGIN" << std::endl;
+    }
     
     // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("rnd_darkwind6.wav");
     // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("hoof_hard5.ogg");

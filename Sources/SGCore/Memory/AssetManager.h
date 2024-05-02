@@ -20,6 +20,8 @@ namespace SGCore
     class SGCORE_EXPORT AssetManager
     {
     public:
+        static void init() noexcept;
+
         /**
         * Adds asset with loading by path.
         * If asset already exists then return already loaded asset.
@@ -198,7 +200,7 @@ namespace SGCore
         Ref<registry_t> m_registry = MakeRef<registry_t>();
         std::unordered_map<std::string, entity_t> m_entities;
         
-        static inline Scope<AssetManager> m_instance = MakeScope<AssetManager>();
+        static inline Scope<AssetManager> m_instance;
     };
 }
 

@@ -30,7 +30,7 @@ namespace SGE::EditorStyles
         void apply() override
         {
             ImVec4* colors = ImGui::GetStyle().Colors;
-            
+
             colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
             colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
             colors[ImGuiCol_WindowBg]               = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
@@ -117,6 +117,7 @@ namespace SGE::EditorStyles
             // THE STANDARD OF LOADING FONTS
             if(std::filesystem::exists(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/fonts/roboto_flex.ttf"))
             {
+
                 auto gapiType = SGCore::CoreMain::getRenderer()->getGAPIType();
                 
                 switch(gapiType)
@@ -136,7 +137,7 @@ namespace SGE::EditorStyles
                     case SGCore::SG_API_TYPE_VULKAN:
                         break;
                 }
-                
+
                 auto& io = ImGui::GetIO();
                 
                 ImFontConfig fontConfig;
