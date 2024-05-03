@@ -47,9 +47,7 @@ namespace SGCore
                 err = dlerror();
             }
             #elif defined(PLATFORM_OS_WINDOWS)
-            std::cout << "DYNAMIC LIBRARY PATH: " << pluginDLPath.c_str() << std::endl;
             m_nativeHandler = LoadLibraryA(pluginDLPath.c_str());
-            std::cout << "m_nativeHandler " << m_nativeHandler << std::endl;
             if(!m_nativeHandler)
             {
                 err = getLastWindowsError();

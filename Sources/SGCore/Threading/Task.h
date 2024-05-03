@@ -2,8 +2,8 @@
 // Created by ilya on 03.04.24.
 //
 
-#ifndef THREADINGAPI_IWORKER_H
-#define THREADINGAPI_IWORKER_H
+#ifndef THREADINGAPI_TASK_H
+#define THREADINGAPI_TASK_H
 
 #include <mutex>
 #include <atomic>
@@ -15,32 +15,23 @@ namespace SGCore::Threading
 {
     struct Thread;
     
-    struct WorkerSingletonGuardImpl { };
+    struct TaskSingletonGuardImpl { };
     /**
-     * It is used to wait for the completion of the worker.
+     * It is used to wait for the completion of the task.
      */
-    using WorkerSingletonGuard = WorkerSingletonGuardImpl*;
-    static WorkerSingletonGuard MakeWorkerSingletonGuard()
+    using TaskSingletonGuard = TaskSingletonGuardImpl*;
+    static TaskSingletonGuard MakeTaskSingletonGuard()
     {
-        return new WorkerSingletonGuardImpl;
+        return new TaskSingletonGuardImpl;
     }
     
-    struct IWorker : public std::enable_shared_from_this<IWorker>
+    struct Task : public std::enable_shared_from_this<Task>
     {
         friend struct Thread;
         
         bool m_isStatic = false;
         
-        void useSingletonGuard(const WorkerSingletonGuard workerSingletonGuard) noexcept
-        {
-            const size_t hash = hashObject(workerSingletonGuard);
-            
-            std::lock_guard guard(m_listenerMutex);
-            
-            m_onExecuteListener.m_hash = hash;
-            
-            m_parentWorkerGuard = workerSingletonGuard;
-        }
+        void useSingletonGuard(const TaskSingletonGuard taskSingletonGuard) noexcept;
         
         template<typename F, typename... Args>
         void setOnExecuteCallback(F&& func, const Args&... args)
@@ -76,7 +67,7 @@ namespace SGCore::Threading
         }
         
         // TODO:
-        void attachToThread(std::shared_ptr<Thread> thread);
+        // void attachToThread(std::shared_ptr<Thread> thread);
     
     private:
         std::mutex m_listenerMutex;
@@ -86,7 +77,7 @@ namespace SGCore::Threading
         std::function<void()> m_executableCallback;
         std::function<void()> m_onExecutedCallback;
         
-        WorkerSingletonGuard m_parentWorkerGuard = nullptr;
+        TaskSingletonGuard m_parentTaskGuard = nullptr;
         
         std::weak_ptr<Thread> m_onExecutedCallbackParentThread;
         
@@ -98,4 +89,4 @@ namespace SGCore::Threading
     };
 }
 
-#endif //THREADINGAPI_IWORKER_H
+#endif // THREADINGAPI_TASK_H

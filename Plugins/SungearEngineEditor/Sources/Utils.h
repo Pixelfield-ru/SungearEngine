@@ -28,7 +28,7 @@ namespace SGE
             
             if(SungearEngineEditor::getAssetManager().isAssetExists<SGCore::ITexture2D>(alias))
             {
-                return SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>(alias, path);
+                return SungearEngineEditor::getAssetManager().loadAssetWithAlias<SGCore::ITexture2D>(alias, path);
             }
             
             auto document = lunasvg::Document::loadFromFile(path);

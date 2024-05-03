@@ -22,6 +22,9 @@ void SGE::DirectoriesTreeExplorer::renderBody()
     
     ImGui::TreePush("##DirectoryExplorerTree");
     
+    /*auto rust = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("skybox0");
+    ImGui::Image(rust->getTextureNativeHandler(), ImVec2(rust->m_width, rust->m_height));*/
+    
     if(std::filesystem::exists(m_rootPath))
     {
         if(std::filesystem::exists(m_currentPath))

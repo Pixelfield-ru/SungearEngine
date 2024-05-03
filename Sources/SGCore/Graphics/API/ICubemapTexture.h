@@ -18,13 +18,13 @@ namespace SGCore
         std::vector<Ref<ITexture2D>> m_parts;
 
     private:
-        template<typename InstanceT>
+        template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_same_v<ICubemapTexture, InstanceT>)
-        static Ref<InstanceT> createRefInstance() noexcept
+        static Ref<InstanceT> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
         {
             auto tex = Ref<InstanceT>(CoreMain::getRenderer()->createCubemapTexture());
 
-            tex->addToGlobalStorage();
+            tex->addToGlobalStorage(std::forward<AssetCtorArgs>(assetCtorArgs)...);
 
             return tex;
         }

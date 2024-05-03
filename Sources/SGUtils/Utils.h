@@ -35,6 +35,20 @@
 #define SG_CDECL __attribute__((cdecl))
 #endif
 
+#define SG_NOMANGLING extern "C"
+
+#ifdef _MSC_VEC
+#define SG_DLLEXPORT __declspec(dllexport)
+#elif defined(__GNUC__)
+#define SG_DLLEXPORT __attribute__((visibility("default")))
+#endif
+
+#ifdef _MSC_VEC
+#define SG_DLLIMPORT __declspec(dllimport)
+#elif defined(__GNUC__)
+#define SG_DLLIMPORT
+#endif
+
 #include <string>
 #include <fstream>
 #include <iostream>

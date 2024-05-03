@@ -27,6 +27,7 @@ namespace SGCore
         std::string m_name;
 
         virtual void load(const std::string& path) = 0;
+        virtual void lazyLoad() { }
 
         void addObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
         void removeObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
@@ -47,11 +48,11 @@ namespace SGCore
     private:
         size_t m_assetTypeID = 0;
         
-        template<typename InstanceT>
+        template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, InstanceT>)
-        static Ref<InstanceT> createRefInstance() noexcept
+        static Ref<InstanceT> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
         {
-            return MakeRef<InstanceT>();
+            return MakeRef<InstanceT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
         }
     };
 }

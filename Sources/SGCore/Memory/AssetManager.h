@@ -14,12 +14,23 @@
 #include "SGUtils/Utils.h"
 #include "SGCore/Graphics/GPUObject.h"
 #include "entt/entity/registry.hpp"
+#include "SGCore/Threading/ThreadsPool.h"
+#include "SGCore/Threading/ThreadsManager.h"
 
 namespace SGCore
 {
+    enum AssetsLoadPolicy
+    {
+        SINGLE_THREADED,
+        PARALLEL_THEN_LAZYLOAD,
+        PARALLEL_NO_LAZYLOAD
+    };
+    
     class SGCORE_EXPORT AssetManager
     {
     public:
+        AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD;
+        
         static void init() noexcept;
 
         /**
@@ -29,9 +40,12 @@ namespace SGCore
         * @param path - Asset path
         * @return Added or already loaded asset
         */
-        template<typename AssetT, typename... Args>
+        template<typename AssetT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        std::shared_ptr<AssetT> loadAsset(const std::string& path)
+        std::shared_ptr<AssetT> loadAsset(AssetsLoadPolicy assetsLoadPolicy,
+                                          const Ref<Threading::Thread>& lazyLoadInThread,
+                                          const std::string& path,
+                                          AssetCtorArgs&&... assetCtorArgs)
         {
             entity_t entity;
             
@@ -54,21 +68,43 @@ namespace SGCore
             }
             
             Ref<AssetT> newAsset = m_registry->emplace<Ref<AssetT>>(entity,
-                                                                    AssetT::template createRefInstance<AssetT>());
+                                                                    AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...));
             
             std::filesystem::path p(path);
             
-            newAsset->load(path);
+            distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
+            
             newAsset->setRawName(p.stem().string());
             
             spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
             
             return newAsset;
         }
-
-        template<typename AssetT, typename... Args>
+        
+        template<typename AssetT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        std::shared_ptr<AssetT> loadAsset(const std::string& alias, const std::string& path)
+        std::shared_ptr<AssetT> loadAsset(AssetsLoadPolicy assetsLoadPolicy,
+                                          const std::string& path,
+                                          AssetCtorArgs&&... assetCtorArgs)
+        {
+            return loadAsset<AssetT, AssetCtorArgs...>(assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
+        }
+        
+        template<typename AssetT, typename... AssetCtorArgs>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        std::shared_ptr<AssetT> loadAsset(const std::string& path,
+                                          AssetCtorArgs&&... assetCtorArgs)
+        {
+            return loadAsset<AssetT, AssetCtorArgs...>(m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
+        }
+
+        template<typename AssetT, typename... AssetCtorArgs>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        std::shared_ptr<AssetT> loadAssetWithAlias(AssetsLoadPolicy assetsLoadPolicy,
+                                                   const Ref<Threading::Thread>& lazyLoadInThread,
+                                                   const std::string& alias,
+                                                   const std::string& path,
+                                                   AssetCtorArgs&&... assetCtorArgs)
         {
             entity_t entity;
             
@@ -91,16 +127,36 @@ namespace SGCore
             }
             
             Ref<AssetT> newAsset = m_registry->emplace<Ref<AssetT>>(entity,
-                                                                    AssetT::template createRefInstance<AssetT>());
+                                                                    AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...));
             
             std::filesystem::path p(path);
             
-            newAsset->load(path);
+            distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
+            
             newAsset->setRawName(alias);
             
             spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
             
             return newAsset;
+        }
+        
+        template<typename AssetT, typename... AssetCtorArgs>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        std::shared_ptr<AssetT> loadAssetWithAlias(AssetsLoadPolicy assetsLoadPolicy,
+                                                   const std::string& alias,
+                                                   const std::string& path,
+                                                   AssetCtorArgs&&... assetCtorArgs)
+        {
+            return loadAssetWithAlias<AssetT, AssetCtorArgs...>(assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
+        }
+        
+        template<typename AssetT, typename... AssetCtorArgs>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias,
+                                                   const std::string& path,
+                                                   AssetCtorArgs&&... assetCtorArgs)
+        {
+            return loadAssetWithAlias<AssetT, AssetCtorArgs...>(m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
         }
         
         template<typename AssetT>
@@ -197,8 +253,66 @@ namespace SGCore
         SG_NOINLINE static Scope<AssetManager>& getInstance() noexcept;
 
     private:
+        void distributeAsset(const Ref<IAsset>& asset,
+                             const std::string& path,
+                             AssetsLoadPolicy loadPolicy,
+                             const Ref<Threading::Thread>& lazyLoadInThread) noexcept
+        {
+            switch(loadPolicy)
+            {
+                case SINGLE_THREADED:
+                {
+                    asset->load(path);
+                    asset->lazyLoad();
+                    break;
+                }
+                case PARALLEL_THEN_LAZYLOAD:
+                {
+                    auto loadInThread = m_threadsPool.getThread();
+                    auto loadAssetTask = loadInThread->createTask();
+                    
+                    loadAssetTask->setOnExecuteCallback([asset, path]() {
+                        asset->load(path);
+                    });
+                    
+                    if(lazyLoadInThread)
+                    {
+                        loadAssetTask->setOnExecutedCallback([asset]() {
+                            asset->lazyLoad();
+                        }, lazyLoadInThread);
+                    }
+                    
+                    loadInThread->addTask(loadAssetTask);
+                    loadInThread->start();
+                    
+                    break;
+                }
+                case PARALLEL_NO_LAZYLOAD:
+                {
+                    auto loadInThread = m_threadsPool.getThread();
+                    auto loadAssetTask = loadInThread->createTask();
+                    
+                    loadAssetTask->setOnExecuteCallback([asset, path]() {
+                        asset->load(path);
+                    });
+                    
+                    loadInThread->addTask(loadAssetTask);
+                    loadInThread->start();
+                    
+                    break;
+                }
+            }
+            
+            if(lazyLoadInThread)
+            {
+                lazyLoadInThread->processFinishedTasks();
+            }
+        }
+        
         Ref<registry_t> m_registry = MakeRef<registry_t>();
         std::unordered_map<std::string, entity_t> m_entities;
+        
+        Threading::ThreadsPool m_threadsPool = Threading::ThreadsPool(Threading::ThreadCreatePolicy::IF_NO_FREE_THREADS);
         
         static inline Scope<AssetManager> m_instance;
     };

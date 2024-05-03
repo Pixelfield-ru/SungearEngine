@@ -9,7 +9,7 @@
 #include <functional>
 #include <mutex>
 
-#include "IWorker.h"
+#include "Task.h"
 
 #include "SGUtils/Event.h"
 #include "SGUtils/Utils.h"
@@ -18,88 +18,32 @@ namespace SGCore::Threading
 {
     struct Thread : public std::enable_shared_from_this<Thread>
     {
-        friend struct IWorker;
+        friend struct Task;
         friend struct ThreadsManager;
         
-        Thread();
+        /**
+         * Creates absolute new thread. It is recommended to use ThreadsPool to reuse threads and set a policy for creating new threads.
+         * @return Absolute new thread.
+         */
+        static std::shared_ptr<Thread> create() noexcept;
+        
         ~Thread();
         
         virtual void start() noexcept;
         
         virtual void join() noexcept;
         
-        void processWorkers() noexcept;
+        void processTasks() noexcept;
         
-        std::shared_ptr<IWorker> createWorker(const WorkerSingletonGuard workerSingletonGuard)
-        {
-            const size_t workerGuardHash = hashObject(workerSingletonGuard);
-            
-            std::lock_guard guard(m_threadProcessMutex);
-            
-            if(!onWorkersProcess.contains(workerGuardHash))
-            {
-                auto worker = std::make_shared<IWorker>();
-                worker->useSingletonGuard(workerSingletonGuard);
-                
-                return worker;
-            }
-            
-            return nullptr;
-        }
+        std::shared_ptr<Task> createTask(const TaskSingletonGuard taskSingletonGuard);
+        std::shared_ptr<Task> createTask() const noexcept;
         
-        std::shared_ptr<IWorker> createWorker() const noexcept
-        {
-            return std::make_shared<IWorker>();
-        }
+        void addTask(std::shared_ptr<Task> task);
+        void removeTask(std::shared_ptr<Task> task);
         
-        void addWorker(std::shared_ptr<IWorker> worker)
-        {
-            const size_t workerGuardHash = hashObject(worker->m_parentWorkerGuard);
-            
-            std::lock_guard guard(m_threadProcessMutex);
-            
-            if(!onWorkersProcess.contains(workerGuardHash))
-            {
-                m_workers.push_back(worker);
-                
-                onWorkersProcess += worker->m_onExecuteListener;
-            }
-        }
+        [[nodiscard]] size_t tasksCount() noexcept;
         
-        void removeWorker(std::shared_ptr<IWorker> worker)
-        {
-            if(!worker) return;
-            
-            std::lock_guard guard(m_threadProcessMutex);
-            
-            std::erase_if(m_workers, [&worker](std::shared_ptr<IWorker> w) {
-                return w == worker;
-            });
-            
-            onWorkersProcess -= worker->m_onExecuteListener;
-        }
-        
-        void processFinishedWorkers() noexcept
-        {
-            std::vector<std::shared_ptr<IWorker>> finishedWorkersCopy;
-            
-            {
-                std::lock_guard guard(m_workersEndCopyMutex);
-                
-                finishedWorkersCopy = m_finishedWorkersToExecute;
-            }
-            
-            for(const auto& worker : finishedWorkersCopy)
-            {
-                worker->m_onExecutedCallback();
-            }
-            
-            {
-                std::lock_guard guard(m_workersEndCopyMutex);
-                
-                exclude(finishedWorkersCopy, m_finishedWorkersToExecute);
-            }
-        }
+        void processFinishedTasks() noexcept;
         
         template<typename Func>
         requires(std::is_invocable_v<Func, Event<void()>&>)
@@ -110,46 +54,49 @@ namespace SGCore::Threading
             func(onUpdate);
         }
         
-        [[nodiscard]] inline auto getExecutionTime() const noexcept
-        {
-            return m_executionTime.load();
-        }
+        double getExecutionTime() const noexcept;
         
-        inline auto getNativeID() const noexcept
-        {
-            return m_nativeThreadID.load();
-        }
+        std::thread::id getNativeID() const noexcept;
+        
+        bool isRunning() const noexcept;
     
-    private:
+    protected:
+        Thread() = default;
+        
         std::atomic<std::thread::id> m_nativeThreadID;
         
-        std::mutex m_workersEndCopyMutex;
+        std::mutex m_tasksEndCopyMutex;
         std::mutex m_threadProcessMutex;
         
-        std::vector<std::shared_ptr<IWorker>> m_finishedWorkersToExecute;
+        std::vector<std::shared_ptr<Task>> m_finishedTasksToExecute;
         
-        std::atomic<double> m_executionTime;
+        std::atomic<double> m_executionTime = 0.0;
         
-        std::vector<std::shared_ptr<IWorker>> m_workers;
-        Event<void()> onWorkersProcess;
+        std::vector<std::shared_ptr<Task>> m_tasks;
+        Event<void()> onTasksProcess;
         
-        std::vector<std::shared_ptr<IWorker>> m_workersCopy;
-        Event<void()> onWorkersProcessCopy;
+        std::vector<std::shared_ptr<Task>> m_tasksCopy;
+        Event<void()> onTasksProcessCopy;
         
         Event<void()> onUpdate;
         Event<void()> onUpdateCopy;
         
-        std::atomic<bool> m_isBusy = false;
+        std::atomic<bool> m_isRunning = false;
         std::atomic<bool> m_isAlive = false;
         
         std::thread m_thread;
     };
     
-    struct MainThread : Thread
+    struct MainThread : public Thread
     {
+        friend struct ThreadsManager;
+        
         void start() noexcept final { }
         
         void join() noexcept final { }
+        
+    private:
+        MainThread() = default;
     };
 }
 

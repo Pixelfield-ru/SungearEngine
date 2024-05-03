@@ -30,7 +30,7 @@ namespace SGCore
         
         IParallelSystem()
         {
-            m_thread = MakeRef<Threading::Thread>();
+            m_thread = Threading::Thread::create();
             
             m_timer.setTargetFrameRate(80);
             m_timer.m_cyclic = true;

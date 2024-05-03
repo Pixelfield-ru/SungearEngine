@@ -34,29 +34,9 @@ extern "C" {
 
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/ImGuiWrap/Views/IView.h"
-
-// SGCore::AudioSource darkWindSrc;
-SGCore::Ref<SGCore::AudioBuffer> darkWindAudioBuf = SGCore::MakeRef<SGCore::AudioBuffer>();
-
-glm::vec3 listenerPosition { 0, 0, 0 };
-glm::vec3 darkWindPos { 0, 0, 0 };
+#include "SGCore/Graphics/API/ITexture2D.h"
 
 SGCore::Ref<SGCore::Scene> testScene2;
-
-void audioStateChanged(SGCore::AudioSource& audioSource, SGCore::AudioSourceState lastState, SGCore::AudioSourceState newState)
-{
-    switch(newState)
-    {
-        case SGCore::SOURCE_PLAYING:
-            std::cout << "tha play of some audio" << std::endl;
-            break;
-        case SGCore::SOURCE_PAUSED:
-            break;
-        case SGCore::SOURCE_STOPPED:
-            std::cout << "tha stop of some audio" << std::endl;
-            break;
-    }
-}
 
 template<typename RetT>
 struct get_address;
@@ -79,6 +59,18 @@ size_t getAddress(std::function<RetT(T &)> f) {
     return (size_t) *fnPointer;
 }
 
+SGCore::Threading::ThreadsPool threadsPool(SGCore::Threading::ThreadCreatePolicy::IF_NO_FREE_THREADS);
+
+void onTaskFinish(SGCore::Ref<SGCore::Threading::Thread> inThread)
+{
+    std::cout << "finished task in thread: " << SGCore::Threading::ThreadsManager::currentThread() << std::endl;
+}
+
+void onTaskExecute()
+{
+    std::cout << "execute task in thread : " << SGCore::Threading::ThreadsManager::currentThread() << std::endl;
+}
+
 void coreInit()
 {
     testScene2 = SGCore::MakeRef<SGCore::Scene>();
@@ -86,12 +78,39 @@ void coreInit()
     testScene2->createDefaultSystems();
     SGCore::Scene::addScene(testScene2);
     SGCore::Scene::setCurrentScene("TestScene");
+    
+    std::cout << "MAIN THREAD: " << SGCore::Threading::ThreadsManager::getMainThread() << std::endl;
+    
+    auto thread = threadsPool.getThread();
+    
+    auto task = thread->createTask();
+    task->setOnExecutedCallback(onTaskFinish, SGCore::Threading::ThreadsManager::currentThread(), thread);
+    task->setOnExecuteCallback(onTaskExecute);
+    thread->addTask(task);
+    thread->start();
+    
+    // SGCore::AssetManager::getInstance()->m_defaultAssetsLoadPolicy = SGCore::AssetsLoadPolicy::SINGLE_THREADED;
+    
+    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust_prev", "../SGResources/textures/spotted_rust/spotted-rust_preview.jpg");
+    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust0", "../SGResources/textures/spotted_rust/spotted-rust_albedo.png");
+    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust1", "../SGResources/textures/spotted_rust/spotted-rust_ao.png");
+    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust2", "../SGResources/textures/spotted_rust/spotted-rust_height.png");
+    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust3", "../SGResources/textures/spotted_rust/spotted-rust_metallic.png");
+    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust4", "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png");
+    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust5", "../SGResources/textures/spotted_rust/spotted-rust_roughness.png");
+    
+    for(int i = 0; i < 15; ++i)
+    {
+        SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("skybox" + std::to_string(i),
+                                                                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox5.png");
+    }
+    
+    std::cout << "thread0: " << thread << std::endl;
+    auto thread1 = threadsPool.getThread();
+    std::cout << "thread1: " << thread1 << std::endl;
 
     char* sgSourcesPath = std::getenv("SUNGEAR_SOURCES_ROOT");
-
-    system("chcp 65001");
-    setlocale(LC_ALL, "Russian");
-
+    
     if(sgSourcesPath)
     {
         std::string sgEditorPath = std::string(sgSourcesPath) + "/Plugins/SungearEngineEditor";
@@ -104,64 +123,13 @@ void coreInit()
                                                    SGCore::PluginBuildType::PBT_RELEASE);
 
         std::cout << "plugin: " << sgEditorPlugin  << ", sgeditor path: " << sgEditorPath << std::endl;
-
-        std::string err;
-
-        SGCore::DynamicLibrary dynamicLibrary;
-        dynamicLibrary.load("F:/Pixelfield/SungearEngine/SungearEngine/Plugins/SungearEngineEditor/cmake-build-release/SungearEngineEditor.dll", err);
-        if(!dynamicLibrary.getNativeHandler())
-        {
-            std::cout << "ERROR WHILE LOADING LIBRARY: " << err << std::endl;
-        }
-        else
-        {
-            auto func = dynamicLibrary.loadFunction<SGCore::Ref<SGCore::IPlugin>()>("SGPluginMain", err);
-            if(!func)
-            {
-                std::cout << "ERROR WHILE LOADING FUNCTION: " << err << std::endl;
-            }
-            else
-            {
-                auto plug = func();
-                // std::cout << "FUNC: " << get_address<SGCore::Ref<SGCore::IPlugin>()>()(func) << std::endl;
-            }
-        }
     }
     else
     {
         std::cout << "CANNOT LOAD SUNGEAR EDITOR PLUGIN" << std::endl;
     }
     
-    // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("rnd_darkwind6.wav");
-    // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("hoof_hard5.ogg");
-    SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("b1.ogg");
-    // SGCore::Ref<SGCore::AudioTrackAsset> darkWindAudio = SGCore::AssetManager::loadAsset<SGCore::AudioTrackAsset>("radar_2.ogg");
-    
-    darkWindAudioBuf->create();
-    darkWindAudioBuf->putData(darkWindAudio->getAudioTrack().getNumChannels(),
-                              darkWindAudio->getAudioTrack().getBitsPerSample(),
-                              darkWindAudio->getAudioTrack().getDataBuffer(),
-                              darkWindAudio->getAudioTrack().getDataBufferSize(),
-                              darkWindAudio->getAudioTrack().getSampleRate());
-    
-    auto darWindEntity = testScene2->getECSRegistry()->create();
-    auto& darkWindSrc = testScene2->getECSRegistry()->emplace<SGCore::AudioSource>(darWindEntity);
-    
-    darkWindSrc.onStateChanged += audioStateChanged;
-    
-    darkWindSrc.create();
-    darkWindSrc.attachBuffer(darkWindAudioBuf);
-    
-    darkWindSrc.setIsLooping(false);
-    darkWindSrc.setState(SGCore::AudioSourceState::SOURCE_PLAYING);
-    
-    darkWindSrc.setPitch(1.0f);
-    // darkWindSrc.setPitch(0.2f);
-    darkWindSrc.setGain(1.0f);
-    
-    std::cout << "state: " << darkWindSrc.getState() << std::endl;
-    
-    std::cout << darkWindAudio->getAudioTrack().getSummary() << std::endl;
+    SGCore::Threading::ThreadsManager::currentThread()->processFinishedTasks();
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -169,15 +137,8 @@ void onUpdate(const double& dt, const double& fixedDt)
     testScene2->update(dt, fixedDt);
     
     SGCore::ImGuiWrap::ImGuiLayer::beginFrame();
-    
     SGCore::ImGuiWrap::IView::getRoot()->render();
-    
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
-    
-    // darkWindPos.z -= 0.001;
-    // listenerPosition.z -= 0.001;
-    // darkWindSrc.setPosition(darkWindPos);
-    SGCore::AudioListener::setPosition(listenerPosition);
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_P))
     {

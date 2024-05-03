@@ -51,13 +51,22 @@ void SGCore::ITexture2D::load(const std::string& path)
             m_format = SGGColorFormat::SGG_RGB;
         }
     }
+}
 
+void SGCore::ITexture2D::lazyLoad()
+{
     create();
-    // create(sharedPtr);
-
+    
     addToGlobalStorage();
     
-    spdlog::info("Loaded texture. Width: {0}, height: {1}, MB size: {2}, channels: {3}, path: {4}",
+    std::cout << fmt::format("Loaded texture (in lazy load). Width: {0}, height: {1}, MB size: {2}, channels: {3}, path: {4}",
+                             m_width,
+                             m_height,
+                             m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
+                             m_channelsCount,
+                             m_path.string()) << std::endl;
+    
+    spdlog::info("Loaded texture (in lazy load). Width: {0}, height: {1}, MB size: {2}, channels: {3}, path: {4}",
                  m_width,
                  m_height,
                  m_width * m_height * m_channelsCount / 1024.0 / 1024.0,

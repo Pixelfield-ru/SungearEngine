@@ -2,62 +2,76 @@
 // Created by ilya on 03.04.24.
 //
 
+#include <chrono>
+
 #include "Thread.h"
 
 #include "ThreadsManager.h"
 
-SGCore::Threading::Thread::Thread()
+std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create() noexcept
 {
     std::lock_guard threadsAccessGuard(ThreadsManager::m_threadAccessMutex);
     
-    ThreadsManager::m_threads.push_back(this);
+    auto thread = std::shared_ptr<Thread>(new Thread);
+    ThreadsManager::m_threads.push_back(thread);
+    
+    return thread;
 }
 
 SGCore::Threading::Thread::~Thread()
 {
     join();
-    
-    std::lock_guard threadsAccessGuard(ThreadsManager::m_threadAccessMutex);
-    
-    std::erase_if(ThreadsManager::m_threads, [this](const Thread* thread) {
-        return thread->m_nativeThreadID == m_nativeThreadID;
-    });
 }
 
-void SGCore::Threading::Thread::processWorkers() noexcept
+void SGCore::Threading::Thread::processTasks() noexcept
 {
+    using namespace std::chrono_literals;
+    
     auto t0 = now();
     
     {
         std::lock_guard copyGuard(m_threadProcessMutex);
         
-        onWorkersProcessCopy = onWorkersProcess;
-        m_workersCopy = m_workers;
+        onTasksProcessCopy = onTasksProcess;
+        m_tasksCopy = m_tasks;
         
         onUpdateCopy = onUpdate;
     }
     
-    onWorkersProcessCopy();
+    onTasksProcessCopy();
     onUpdateCopy();
+    
+    size_t tasksCount = 0;
+    size_t onUpdateEventListenersCount = 0;
     
     {
         std::lock_guard copyGuard(m_threadProcessMutex);
         
-        onWorkersProcess.exclude(onWorkersProcessCopy);
+        onTasksProcess.exclude(onTasksProcessCopy);
         
         // exclude from vector
         {
             size_t curIdx = 0;
-            for(const auto& worker : m_workersCopy)
+            for(const auto& task : m_tasksCopy)
             {
-                if(curIdx == m_workers.size()) break;
+                if(curIdx == m_tasks.size()) break;
                 
-                std::erase(m_workers, worker);
+                std::erase(m_tasks, task);
                 ++curIdx;
             }
         }
         
-        m_workersCopy.clear();
+        m_tasksCopy.clear();
+        
+        tasksCount = m_tasks.size();
+        onUpdateEventListenersCount = onUpdate.listenersCount();
+    }
+    
+    processFinishedTasks();
+    
+    if(tasksCount == 0 && onUpdateEventListenersCount == 0)
+    {
+        std::this_thread::sleep_for(100ms);
     }
     
     auto t1 = now();
@@ -67,17 +81,17 @@ void SGCore::Threading::Thread::processWorkers() noexcept
 
 void SGCore::Threading::Thread::start() noexcept
 {
-    if(m_isBusy) return;
+    if(m_isRunning) return;
     
     auto internalFunc = [this]() {
         while(m_isAlive)
         {
-            processWorkers();
+            processTasks();
         }
     };
     
     m_isAlive = true;
-    m_isBusy = true;
+    m_isRunning = true;
     m_thread = std::thread(internalFunc);
     
     m_nativeThreadID = m_thread.get_id();
@@ -90,6 +104,100 @@ void SGCore::Threading::Thread::join() noexcept
     if(lastAlive)
     {
         m_thread.join();
-        m_isBusy = false;
+        m_isRunning = false;
     }
+}
+
+std::shared_ptr<SGCore::Threading::Task> SGCore::Threading::Thread::createTask
+(const SGCore::Threading::TaskSingletonGuard taskSingletonGuard)
+{
+    const size_t taskGuardHash = hashObject(taskSingletonGuard);
+    
+    std::lock_guard guard(m_threadProcessMutex);
+    
+    if(!onTasksProcess.contains(taskGuardHash))
+    {
+        auto task = std::make_shared<Task>();
+        task->useSingletonGuard(taskSingletonGuard);
+        
+        return task;
+    }
+    
+    return nullptr;
+}
+
+std::shared_ptr<SGCore::Threading::Task> SGCore::Threading::Thread::createTask() const noexcept
+{
+    return std::make_shared<Task>();
+}
+
+void SGCore::Threading::Thread::addTask(std::shared_ptr<Task> task)
+{
+    const size_t taskGuardHash = hashObject(task->m_parentTaskGuard);
+    
+    std::lock_guard guard(m_threadProcessMutex);
+    
+    if(!onTasksProcess.contains(taskGuardHash))
+    {
+        m_tasks.push_back(task);
+        
+        onTasksProcess += task->m_onExecuteListener;
+    }
+}
+
+void SGCore::Threading::Thread::removeTask(std::shared_ptr<Task> task)
+{
+    if(!task) return;
+    
+    std::lock_guard guard(m_threadProcessMutex);
+    
+    std::erase_if(m_tasks, [&task](std::shared_ptr<Task> w) {
+        return w == task;
+    });
+    
+    onTasksProcess -= task->m_onExecuteListener;
+}
+
+size_t SGCore::Threading::Thread::tasksCount() noexcept
+{
+    std::lock_guard guard(m_threadProcessMutex);
+    
+    return m_tasks.size();
+}
+
+void SGCore::Threading::Thread::processFinishedTasks() noexcept
+{
+    std::vector<std::shared_ptr<Task>> finishedTasksCopy;
+    
+    {
+        std::lock_guard guard(m_tasksEndCopyMutex);
+        
+        finishedTasksCopy = m_finishedTasksToExecute;
+    }
+    
+    for(const auto& task : finishedTasksCopy)
+    {
+        task->m_onExecutedCallback();
+    }
+    
+    {
+        std::lock_guard guard(m_tasksEndCopyMutex);
+        
+        exclude(finishedTasksCopy, m_finishedTasksToExecute);
+    }
+}
+
+double SGCore::Threading::Thread::getExecutionTime() const noexcept
+{
+    return m_executionTime.load();
+}
+
+std::thread::id SGCore::Threading::Thread::getNativeID() const noexcept
+{
+    return m_nativeThreadID.load();
+}
+
+bool SGCore::Threading::Thread::isRunning() const noexcept
+{
+    return m_isRunning;
 }

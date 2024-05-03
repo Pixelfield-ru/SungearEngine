@@ -16,38 +16,23 @@ namespace SGCore::Threading
     {
         friend struct Thread;
         
-        static std::shared_ptr<Thread> currentThread() noexcept
-        {
-            std::lock_guard guard(m_threadAccessMutex);
-            
-            auto it = std::find_if(m_threads.begin(), m_threads.end(), [](const Thread* thread) {
-                return thread->m_nativeThreadID == std::this_thread::get_id();
-            });
-            
-            if(it != m_threads.end())
-            {
-                return (*it)->shared_from_this();
-            }
-            
-            return nullptr;
-        }
+        static std::shared_ptr<Thread> currentThread() noexcept;
     
-        static std::shared_ptr<Thread> getMainThread() noexcept
-        {
-            return m_mainThread;
-        }
+        static std::shared_ptr<Thread> getLessLoadedThread() noexcept;
+        
+        static std::shared_ptr<Thread> getMainThread() noexcept;
         
     private:
         static inline std::mutex m_threadAccessMutex;
         
-        static inline std::vector<Thread*> m_threads;
+        static inline std::vector<std::shared_ptr<Thread>> m_threads;
         
         static inline std::shared_ptr<MainThread> m_mainThread;
 
         static inline bool m_staticInit = []() {
-            m_mainThread = std::make_shared<MainThread>();
+            m_mainThread = std::shared_ptr<MainThread>(new MainThread);
             m_mainThread->m_nativeThreadID = std::this_thread::get_id();
-            m_threads.push_back(m_mainThread.get());
+            m_threads.push_back(m_mainThread);
             
             return true;
         }();

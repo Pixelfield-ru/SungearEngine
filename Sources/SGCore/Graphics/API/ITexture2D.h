@@ -55,6 +55,7 @@ namespace SGCore
         std::uint8_t m_multisamplingSamplesCount = 8;
 
         void load(const std::string& path) override;
+        void lazyLoad() override;
 
         virtual void create() = 0;
 
@@ -128,13 +129,13 @@ namespace SGCore
         Ref<std::uint8_t[]> m_textureData;
 
     private:
-        template<typename InstanceT>
+        template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_same_v<ITexture2D, InstanceT>)
-        static Ref<InstanceT> createRefInstance() noexcept
+        static Ref<InstanceT> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
         {
             auto tex = Ref<InstanceT>(CoreMain::getRenderer()->createTexture2D());
 
-            tex->addToGlobalStorage();
+            tex->addToGlobalStorage(std::forward<AssetCtorArgs>(assetCtorArgs)...);
 
             return tex;
         }

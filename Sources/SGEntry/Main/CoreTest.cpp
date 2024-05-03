@@ -274,12 +274,12 @@ void init()
             cubePath
     );
 
-    auto cubeModel1 = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(
+    auto cubeModel1 = SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ModelAsset>(
             "cube1",
             cubePath
     );
 
-    auto sphereModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(
+    auto sphereModel = SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ModelAsset>(
             "ball0",
             "../SGResources/models/standard/sphere.obj"
     );
@@ -643,7 +643,7 @@ void init()
     
     // fonts test
     
-    SGCore::Ref<SGCore::Font> timesNewRomanFont = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Font>(
+    SGCore::Ref<SGCore::Font> timesNewRomanFont = SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::Font>(
             "font_times_new_roman",
             "../SGResources/fonts/arialmt.ttf"
     );
