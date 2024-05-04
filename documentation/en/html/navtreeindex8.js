@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"structSGCore_1_1class__function__traits_3_01Return_07Object_1_1_5_08_07Args_8_8_8_08_01const_01_4.html#a3f310019f96e3d7ab1cd5ea51f571e2a":[0,0,1,190,2],
+"structSGCore_1_1class__function__traits_3_01Return_07Object_1_1_5_08_07Args_8_8_8_08_01const_01_4.html#a638ebc50c77ea8aab8fa5fe716ecb02c":[0,0,1,190,4],
 "structSGCore_1_1class__function__traits_3_01Return_07Object_1_1_5_08_07Args_8_8_8_08_01const_01_4.html#a92f2fbdb17ff5dfbedeaedd3fcd5643d":[0,0,1,190,3],
 "structSGCore_1_1class__function__traits_3_01Return_07Object_1_1_5_08_07Args_8_8_8_08_01const_01_4.html#ac7cc28c908e0abe75ac3189bdccb9530":[0,0,1,190,0],
 "structSGCore_1_1class__function__traits_3_01Return_07Object_1_1_5_08_07Args_8_8_8_08_01const_01_4.html#acb55b03eb524b0ae71729eda2af08c25":[0,0,1,190,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "structSGUtils_1_1Utils_1_1RawPointerHash.html#aae91ae0b66ec195fd77cf6c05d618c97":[0,0,2,1,0,0],
 "structSGUtils_1_1Utils_1_1TypeWrapper.html":[0,0,2,1,1],
 "structSGUtils_1_1Utils_1_1TypeWrapper.html#a1f6601b37ffc97416609281e42d2b211":[0,0,2,1,1,0],
-"structSGUtils_1_1Utils_1_1WeakCompare.html":[0,0,2,1,2],
-"structSGUtils_1_1Utils_1_1WeakCompare.html#a980aefd029104181411c8fa13b9bbb6c":[0,0,2,1,2,0],
-"structSGUtils_1_1Utils_1_1WeakPointerHash.html":[0,0,2,1,3]
+"structSGUtils_1_1Utils_1_1WeakCompare.html":[0,0,2,1,2]
 };

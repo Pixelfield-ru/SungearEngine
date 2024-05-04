@@ -10,7 +10,7 @@ set(VCPKG_ROOT ${VCPKG_CMAKE_ROOT})
 
 message("VCPKG_ROOT: " ${VCPKG_ROOT})
 
-if(NOT EXISTS $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+if(NOT EXISTS ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
     message(FATAL_ERROR "Please specify VCPKG_ROOT. Check that the %VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake file exists in the VCPKG_ROOT directory. Restart your IDE after specifying VCPKG_ROOT.")
 endif()
 

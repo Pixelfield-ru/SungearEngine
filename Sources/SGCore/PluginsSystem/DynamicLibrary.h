@@ -23,23 +23,27 @@
 
 namespace SGCore
 {
+    /**
+     * Allows you to load a dynamic library from a local path, load library functions and call them in the future.\n
+     * Note that the functions you want to load must be marked with SG_DLEXPORT and (in most cases) SG_NOMANGLING to disable function name mangling.
+     */
     struct DynamicLibrary
     {
         #ifdef PLATFORM_OS_LINUX
         /**
-         * \brief Native (system) the type of dynamic library handler
+         * \brief Native (system) the type of dynamic library handler.
          */
         using native_handler_t = void*;
         #elif defined(PLATFORM_OS_WINDOWS)
         /**
          * \author pfhgil
-         * \brief Native (system) the type of dynamic library handler
+         * \brief Native (system) the type of dynamic library handler.
          */
         using native_handler_t = HMODULE;
         #endif
 
         /**
-         * \brief Destructor of DynamicLibrary calls unload function
+         * \brief Destructor of DynamicLibrary calls unload function.
          * \see SGCore::DynamicLibrary::unload
          */
         ~DynamicLibrary()
@@ -48,9 +52,9 @@ namespace SGCore
         }
         
         /**
-         * \brief Loads a dynamic library using the pluginDLPath
-         * \param pluginDLPath
-         * \param err
+         * \brief Loads a dynamic library using the pluginDLPath.\n If the download was not successful, then the native handler is equal to nullptr.
+         * \param[in] pluginDLPath The path to the dynamic library.
+         * \param[out] err Error generated while loading the library.\n Remains unchanged if the library was loaded successfully.
          */
         void load(const std::string& pluginDLPath, std::string& err) noexcept
         {
@@ -72,7 +76,9 @@ namespace SGCore
         }
         
         /**
-         * \brief Unloads the dynamic library from memory.\n All static members of the dynamic library are released
+         * \brief\details Unloads the dynamic library from memory.\n
+         * All static members of the dynamic library are released.\n
+         * The native handler becomes equal to nullptr.
          */
         void unload()
         {
@@ -91,6 +97,15 @@ namespace SGCore
             #endif
         }
         
+        /**
+         * \brief Allows you to load a library function.
+         * \note Consider name mangling when loading a function.\n System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library.
+         * \example SGCore::DynamicLibrary::loadFunction std::function<float(float, float)> getSum = loadFunction<float(float, float)>("getSum");
+         * \tparam FuncT Function declaration.
+         * \param[in] funcName Name of the function to load.
+         * \param[out] err
+         * \return std::function
+         */
         template<typename FuncT>
         std::function<FuncT> loadFunction(const char* funcName, std::string& err) noexcept
         {

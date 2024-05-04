@@ -89,6 +89,8 @@ $(document).ready(function(){initNavTree('structSGCore_1_1DynamicLibrary.html','
 <div class="title">SGCore::DynamicLibrary Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="DynamicLibrary_8h_source.html">DynamicLibrary.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -96,10 +98,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aafc6e77b51bc66abb5ee8cade2d09268"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor of <a class="el" href="structSGCore_1_1DynamicLibrary.html">DynamicLibrary</a> calls unload function.  <a href="structSGCore_1_1DynamicLibrary.html#aafc6e77b51bc66abb5ee8cade2d09268">More...</a><br /></td></tr>
 <tr class="separator:aafc6e77b51bc66abb5ee8cade2d09268"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f9a86e1fd7b7aadfc8c87e3725448cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#a5f9a86e1fd7b7aadfc8c87e3725448cc">load</a> (const std::string &amp;pluginDLPath, std::string &amp;err) noexcept</td></tr>
-<tr class="memdesc:a5f9a86e1fd7b7aadfc8c87e3725448cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a dynamic library using the pluginDLPath.  <a href="structSGCore_1_1DynamicLibrary.html#a5f9a86e1fd7b7aadfc8c87e3725448cc">More...</a><br /></td></tr>
+<tr class="memdesc:a5f9a86e1fd7b7aadfc8c87e3725448cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a dynamic library using the pluginDLPath.<br  />
+ If the download was not successful, then the native handler is equal to nullptr.  <a href="structSGCore_1_1DynamicLibrary.html#a5f9a86e1fd7b7aadfc8c87e3725448cc">More...</a><br /></td></tr>
 <tr class="separator:a5f9a86e1fd7b7aadfc8c87e3725448cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70f01a85d57531b074c54a9dd3fdb8c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8">unload</a> ()</td></tr>
-<tr class="memdesc:a70f01a85d57531b074c54a9dd3fdb8c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unloads the dynamic library from memory. All static library members are released.  <a href="structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8">More...</a><br /></td></tr>
 <tr class="separator:a70f01a85d57531b074c54a9dd3fdb8c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memTemplParams" colspan="2"><a id="a249f33efbec1ed2ec23e8774b5ac74cd"></a>
 template&lt;typename FuncT &gt; </td></tr>
@@ -109,7 +111,10 @@ template&lt;typename FuncT &gt; </td></tr>
 native_handler_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNativeHandler</b> () noexcept</td></tr>
 <tr class="separator:ab4cf5f912a3d27512e0d3c764cf6032e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Allows you to load a dynamic library from a local path, load library functions and call them in the future.<br  />
+Note that the functions you want to load must be marked with SG_DLEXPORT and (in most cases) SG_NOMANGLING to disable function name mangling. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aafc6e77b51bc66abb5ee8cade2d09268"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aafc6e77b51bc66abb5ee8cade2d09268">&#9670;&nbsp;</a></span>~DynamicLibrary()</h2>
 
@@ -134,8 +139,7 @@ native_handler_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNative
 </div><div class="memdoc">
 
 <p>Destructor of <a class="el" href="structSGCore_1_1DynamicLibrary.html">DynamicLibrary</a> calls unload function. </p>
-<dl class="section author"><dt>Author</dt><dd>pfhgil </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8" title="Unloads the dynamic library from memory. All static library members are released.">SGCore::DynamicLibrary::unload</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8">SGCore::DynamicLibrary::unload</a> </dd></dl>
 
 </div>
 </div>
@@ -174,11 +178,13 @@ native_handler_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNative
 </table>
 </div><div class="memdoc">
 
-<p>Loads a dynamic library using the pluginDLPath. </p>
+<p>Loads a dynamic library using the pluginDLPath.<br  />
+ If the download was not successful, then the native handler is equal to nullptr. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">pluginDLPath</td><td></td></tr>
-    <tr><td class="paramname">err</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pluginDLPath</td><td>The path to the dynamic library. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">err</td><td>Error generated while loading the library.<br  />
+ Remains unchanged if the library was loaded successfully. </td></tr>
   </table>
   </dd>
 </dl>
@@ -207,9 +213,9 @@ native_handler_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNative
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Unloads the dynamic library from memory. All static library members are released. </p>
-<dl class="section author"><dt>Author</dt><dd>pfhgil </dd></dl>
+<p>\brief\details Unloads the dynamic library from memory.<br  />
+All static members of the dynamic library are released.<br  />
+The native handler becomes equal to nullptr. </p>
 
 </div>
 </div>

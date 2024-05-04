@@ -1,5 +1,7 @@
 var NAVTREEINDEX9 =
 {
+"structSGUtils_1_1Utils_1_1WeakCompare.html#a980aefd029104181411c8fa13b9bbb6c":[0,0,2,1,2,0],
+"structSGUtils_1_1Utils_1_1WeakPointerHash.html":[0,0,2,1,3],
 "structSGUtils_1_1Utils_1_1WeakPointerHash.html#ae908909633bb61b992233abe75f9f674":[0,0,2,1,3,0],
 "structddsktx__error.html":[0,0,5],
 "structddsktx__error.html#af700133d9b6d3af761db22b54aee57bc":[0,0,5,0],

@@ -37,22 +37,23 @@ var NAVTREE =
     ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ]
-    ] ]
+    ] ],
+    [ "Examples", "examples.html", "examples" ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
 "AABB_8h_source.html",
-"classSGCore_1_1AssetManager.html#ab3881b0c832658cd316286fa869c022f",
-"classSGCore_1_1IFrameBuffer.html#aa985c4542f43240513780a5547572173",
-"classSGCore_1_1IUniformBuffer.html#a0e84119cdeba0f414b010b6849490455",
-"classSGCore_1_1VkVertexArray.html#a327d94a38432ad6f8a34f0aecdededcd",
-"structSGCore_1_1AudioSource.html#a7d285480e3bd612f5ec94ed4769d901b",
-"structSGCore_1_1ImGuiWrap_1_1IView.html#a2c50ba481b68b695e650f70c189ebe04",
-"structSGCore_1_1SGSLETranslatorConfiguration.html#abb2b852beea92347dfc54269223737e9",
-"structSGCore_1_1class__function__traits_3_01Return_07Object_1_1_5_08_07Args_8_8_8_08_01const_01_4.html#a92f2fbdb17ff5dfbedeaedd3fcd5643d",
-"structSGUtils_1_1Utils_1_1WeakPointerHash.html#ae908909633bb61b992233abe75f9f674"
+"classSGCore_1_1AssetManager.html#aa7b858e40f11b859ea62fa29438d11a7",
+"classSGCore_1_1IFrameBuffer.html#aa77b3906356b8475b1a639c254f79b13",
+"classSGCore_1_1IUniformBuffer.html",
+"classSGCore_1_1VkVertexArray.html",
+"structSGCore_1_1AudioSource.html#a5052394616ced473eba53e16d40af6df",
+"structSGCore_1_1ImGuiWrap_1_1IView.html#a1191397808d1aec44278f5c80847b89f",
+"structSGCore_1_1SGSLESubShader.html#ade0f3c5304f0bae001ec557c3ea53e12",
+"structSGCore_1_1class__function__traits_3_01Return_07Object_1_1_5_08_07Args_8_8_8_08_01const_01_4.html#a3f310019f96e3d7ab1cd5ea51f571e2a",
+"structSGUtils_1_1Utils_1_1WeakCompare.html#a980aefd029104181411c8fa13b9bbb6c"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

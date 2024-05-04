@@ -145,6 +145,7 @@ var NAVTREEINDEX0 =
 "RenderingBase_8h_source.html":[1,0,0,1,11,18],
 "RenderingBasesUpdater_8h_source.html":[1,0,0,1,11,19],
 "Rigidbody3D_8h_source.html":[1,0,0,1,9,2],
+"SGCore_1_1DynamicLibrary_1_1loadFunction-example.html":[2,0],
 "SGNotImplementedException_8h_source.html":[1,0,0,1,1,0],
 "SGSLEAssignExpression_8h_source.html":[1,0,0,1,16,1,0],
 "SGSLEBracketsListener_8h_source.html":[1,0,0,1,16,1,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "classSGCore_1_1AssetManager.html#a9a85cb2fc2acb5eb540a8edf74086b7d":[0,0,1,65,16],
 "classSGCore_1_1AssetManager.html#aa1817288e0082f3b60f02af85e1a408a":[0,0,1,65,9],
 "classSGCore_1_1AssetManager.html#aa33858b70c7383146621a400395daa71":[0,0,1,65,32],
-"classSGCore_1_1AssetManager.html#aa7b858e40f11b859ea62fa29438d11a7":[0,0,1,65,4],
-"classSGCore_1_1AssetManager.html#aa7b858e40f11b859ea62fa29438d11a7":[0,0,1,65,5]
+"classSGCore_1_1AssetManager.html#aa7b858e40f11b859ea62fa29438d11a7":[0,0,1,65,4]
 };

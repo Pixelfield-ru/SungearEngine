@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"classSGCore_1_1AssetManager.html#aa7b858e40f11b859ea62fa29438d11a7":[0,0,1,65,5],
 "classSGCore_1_1AssetManager.html#ab3881b0c832658cd316286fa869c022f":[0,0,1,65,44],
 "classSGCore_1_1AssetManager.html#ab5df1fd079872a63e0628566e8d2d4ed":[0,0,1,65,24],
 "classSGCore_1_1AssetManager.html#ab7819d2a2a4c61172e746a90a58fecfc":[0,0,1,65,18],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "classSGCore_1_1IFrameBuffer.html#a90cee190c8b894df66c6386262584d1b":[0,0,1,27,2],
 "classSGCore_1_1IFrameBuffer.html#a96c3aac23935188ee0989d3565fabb18":[0,0,1,27,4],
 "classSGCore_1_1IFrameBuffer.html#a9c688692ee869d4ed4a7bca8b94dcdf5":[0,0,1,27,21],
-"classSGCore_1_1IFrameBuffer.html#aa0523ed922101ea6c0900046f4833e1b":[0,0,1,27,22],
-"classSGCore_1_1IFrameBuffer.html#aa77b3906356b8475b1a639c254f79b13":[0,0,1,27,18]
+"classSGCore_1_1IFrameBuffer.html#aa0523ed922101ea6c0900046f4833e1b":[0,0,1,27,22]
 };

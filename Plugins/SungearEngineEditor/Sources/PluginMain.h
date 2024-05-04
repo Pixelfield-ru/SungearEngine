@@ -9,7 +9,7 @@
 
 #include "SungearEngineEditor.h"
 
-SG_NOMANGLING SG_DLLEXPORT SGCore::Ref<SGCore::IPlugin> SGPluginMain();
+SG_NOMANGLING SG_DLEXPORT SGCore::Ref<SGCore::IPlugin> SGPluginMain();
 
 int main();
 

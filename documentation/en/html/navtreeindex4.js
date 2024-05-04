@@ -1,5 +1,6 @@
 var NAVTREEINDEX4 =
 {
+"classSGCore_1_1VkVertexArray.html":[0,0,1,50],
 "classSGCore_1_1VkVertexArray.html#a327d94a38432ad6f8a34f0aecdededcd":[0,0,1,50,3],
 "classSGCore_1_1VkVertexArray.html#a94e1d7653335c54b069dc3b73a549fa4":[0,0,1,50,1],
 "classSGCore_1_1VkVertexArray.html#ad629aa5b095524b6aeee14c524400f70":[0,0,1,50,2],
@@ -165,6 +166,7 @@ var NAVTREEINDEX4 =
 "dir_f443492036f8881b0afba28f1ec62af7.html":[1,0,0,1,11,3],
 "dir_f86511c96554cf439a0be9ebe6594949.html":[1,0,0,1,4],
 "dir_fe9b7140a3c487a3e94b15e6f657d4e0.html":[1,0,0,1,15],
+"examples.html":[2],
 "files.html":[1,0],
 "flat__array_8h_source.html":[1,0,0,3,8],
 "functions.html":[0,3,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX4 =
 "structSGCore_1_1AudioSource.html#a33284ff11949a50e937b67055b803e8f":[0,0,1,6,7],
 "structSGCore_1_1AudioSource.html#a3b8f1dcb4f9774e7246a6394a8c0ff1d":[0,0,1,6,19],
 "structSGCore_1_1AudioSource.html#a3fa0fe4d8590b3060fea7c47ba52524a":[0,0,1,6,24],
-"structSGCore_1_1AudioSource.html#a4ebf8051792be41984028b4653db7119":[0,0,1,6,3],
-"structSGCore_1_1AudioSource.html#a5052394616ced473eba53e16d40af6df":[0,0,1,6,14],
-"structSGCore_1_1AudioSource.html#a7b2827580a2991d47ba59d43a6fd4a5c":[0,0,1,6,12]
+"structSGCore_1_1AudioSource.html#a4ebf8051792be41984028b4653db7119":[0,0,1,6,3]
 };

@@ -1,14 +1,19 @@
 \hypertarget{structSGCore_1_1DynamicLibrary}{}\doxysection{SGCore\+::Dynamic\+Library Struct Reference}
 \label{structSGCore_1_1DynamicLibrary}\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+
+
+{\ttfamily \#include $<$Dynamic\+Library.\+h$>$}
+
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}{$\sim$\+Dynamic\+Library}} ()
 \begin{DoxyCompactList}\small\item\em Destructor of \mbox{\hyperlink{structSGCore_1_1DynamicLibrary}{Dynamic\+Library}} calls unload function. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a5f9a86e1fd7b7aadfc8c87e3725448cc}{load}} (const std\+::string \&plugin\+DLPath, std\+::string \&err) noexcept
-\begin{DoxyCompactList}\small\item\em Loads a dynamic library using the plugin\+DLPath. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Loads a dynamic library using the plugin\+DLPath.~\newline
+ If the download was not successful, then the native handler is equal to nullptr. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}{unload}} ()
-\begin{DoxyCompactList}\small\item\em Unloads the dynamic library from memory. All static library members are released. \end{DoxyCompactList}\item 
+\item 
 \mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_a249f33efbec1ed2ec23e8774b5ac74cd}\label{structSGCore_1_1DynamicLibrary_a249f33efbec1ed2ec23e8774b5ac74cd}} 
 {\footnotesize template$<$typename FuncT $>$ }\\std\+::function$<$ FuncT $>$ {\bfseries load\+Function} (const char $\ast$func\+Name, std\+::string \&err) noexcept
 \item 
@@ -16,6 +21,10 @@ void \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3
 native\+\_\+handler\+\_\+t {\bfseries get\+Native\+Handler} () noexcept
 \end{DoxyCompactItemize}
 
+
+\doxysubsection{Detailed Description}
+Allows you to load a dynamic library from a local path, load library functions and call them in the future.~\newline
+Note that the functions you want to load must be marked with SG\+\_\+\+DLEXPORT and (in most cases) SG\+\_\+\+NOMANGLING to disable function name mangling. 
 
 \doxysubsection{Constructor \& Destructor Documentation}
 \mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}\label{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}} 
@@ -28,9 +37,6 @@ native\+\_\+handler\+\_\+t {\bfseries get\+Native\+Handler} () noexcept
 
 Destructor of \mbox{\hyperlink{structSGCore_1_1DynamicLibrary}{Dynamic\+Library}} calls unload function. 
 
-\begin{DoxyAuthor}{Author}
-pfhgil 
-\end{DoxyAuthor}
 \begin{DoxySeeAlso}{See also}
 \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}{SGCore\+::\+Dynamic\+Library\+::unload}} 
 \end{DoxySeeAlso}
@@ -45,13 +51,15 @@ pfhgil
 
 
 
-Loads a dynamic library using the plugin\+DLPath. 
+Loads a dynamic library using the plugin\+DLPath.~\newline
+ If the download was not successful, then the native handler is equal to nullptr. 
 
 
-\begin{DoxyParams}{Parameters}
-{\em plugin\+DLPath} & \\
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em plugin\+DLPath} & The path to the dynamic library. \\
 \hline
-{\em err} & \\
+\mbox{\texttt{ out}}  & {\em err} & Error generated while loading the library.~\newline
+ Remains unchanged if the library was loaded successfully. \\
 \hline
 \end{DoxyParams}
 \mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}\label{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}} 
@@ -60,14 +68,9 @@ Loads a dynamic library using the plugin\+DLPath.
 \doxysubsubsection{\texorpdfstring{unload()}{unload()}}
 {\footnotesize\ttfamily void SGCore\+::\+Dynamic\+Library\+::unload (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
-
-
-Unloads the dynamic library from memory. All static library members are released. 
-
-\begin{DoxyAuthor}{Author}
-pfhgil 
-\end{DoxyAuthor}
-
+\textbackslash{}brief\textbackslash{}details Unloads the dynamic library from memory.~\newline
+All static members of the dynamic library are released.~\newline
+The native handler becomes equal to nullptr. 
 
 The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

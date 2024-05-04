@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"classSGCore_1_1IFrameBuffer.html#aa77b3906356b8475b1a639c254f79b13":[0,0,1,27,18],
 "classSGCore_1_1IFrameBuffer.html#aa985c4542f43240513780a5547572173":[0,0,1,27,20],
 "classSGCore_1_1IFrameBuffer.html#abf7dffe1eeb2d4ffb00d94f06dcbcf77":[0,0,1,27,19],
 "classSGCore_1_1IFrameBuffer.html#ac1bcd195bbe420b2393ffcb0ad47d8fc":[0,0,1,27,16],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "classSGCore_1_1ITexture2D.html#aea3c5ba646744e642cd2ba3fc1b4f6e2":[0,0,1,35,6],
 "classSGCore_1_1ITexture2D.html#aec953e751efa241f1ca0aa88f888e16d":[0,0,1,35,37],
 "classSGCore_1_1ITexture2D.html#af7509b2dedf15e33436c72cfed1049f4":[0,0,1,35,18],
-"classSGCore_1_1ITexture2D.html#af7e4356623b5f55e283a7102bd2c2d56":[0,0,1,35,49],
-"classSGCore_1_1IUniformBuffer.html":[0,0,1,36]
+"classSGCore_1_1ITexture2D.html#af7e4356623b5f55e283a7102bd2c2d56":[0,0,1,35,49]
 };

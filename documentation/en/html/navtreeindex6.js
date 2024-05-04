@@ -1,5 +1,7 @@
 var NAVTREEINDEX6 =
 {
+"structSGCore_1_1ImGuiWrap_1_1IView.html#a1191397808d1aec44278f5c80847b89f":[0,0,1,0,3,8],
+"structSGCore_1_1ImGuiWrap_1_1IView.html#a1c3ac0d78d56b387541afeca75e272e5":[0,0,1,0,3,12],
 "structSGCore_1_1ImGuiWrap_1_1IView.html#a2c50ba481b68b695e650f70c189ebe04":[0,0,1,0,3,5],
 "structSGCore_1_1ImGuiWrap_1_1IView.html#a40632a56fa8e3979702d7c2b679c9203":[0,0,1,0,3,18],
 "structSGCore_1_1ImGuiWrap_1_1IView.html#a41e8f6059689450855b1208d5dd1640d":[0,0,1,0,3,13],
@@ -247,7 +249,5 @@ var NAVTREEINDEX6 =
 "structSGCore_1_1SGSLESubShader.html#a8615f1bd6ca230605635c3bad596b6fe":[0,0,1,166,5],
 "structSGCore_1_1SGSLESubShader.html#a865a72127276143d1ad723885a6f916a":[0,0,1,166,0],
 "structSGCore_1_1SGSLESubShader.html#a9160a50f8830f7e503fec6a9d3b44234":[0,0,1,166,3],
-"structSGCore_1_1SGSLESubShader.html#ab3f6532d35cac55e559a53169c2c5a29":[0,0,1,166,4],
-"structSGCore_1_1SGSLESubShader.html#ade0f3c5304f0bae001ec557c3ea53e12":[0,0,1,166,6],
-"structSGCore_1_1SGSLETranslatorConfiguration.html":[0,0,1,168]
+"structSGCore_1_1SGSLESubShader.html#ab3f6532d35cac55e559a53169c2c5a29":[0,0,1,166,4]
 };

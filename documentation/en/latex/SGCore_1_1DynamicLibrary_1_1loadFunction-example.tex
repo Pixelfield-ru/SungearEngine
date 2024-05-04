@@ -1,0 +1,25 @@
+\hypertarget{SGCore_1_1DynamicLibrary_1_1loadFunction-example}{}\doxysection{SGCore\+::\+Dynamic\+Library\+::load\+Function}
+Allows you to load a library function. \begin{DoxyNote}{Note}
+Consider name mangling when loading a function.~\newline
+ System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library. std\+::function$<$float(float, float)$>$ get\+Sum = load\+Function$<$float(float, float)$>$(\char`\"{}get\+Sum\char`\"{}); 
+\end{DoxyNote}
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em FuncT} & Function declaration. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em func\+Name} & Name of the function to load. \\
+\hline
+\mbox{\texttt{ out}}  & {\em err} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::function
+\end{DoxyReturn}
+
+\begin{DoxyCodeInclude}{0}
+
+\end{DoxyCodeInclude}
+ 
