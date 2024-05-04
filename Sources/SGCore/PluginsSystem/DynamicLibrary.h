@@ -26,16 +26,32 @@ namespace SGCore
     struct DynamicLibrary
     {
         #ifdef PLATFORM_OS_LINUX
+        /**
+         * \brief Native (system) the type of dynamic library handler
+         */
         using native_handler_t = void*;
         #elif defined(PLATFORM_OS_WINDOWS)
+        /**
+         * \author pfhgil
+         * \brief Native (system) the type of dynamic library handler
+         */
         using native_handler_t = HMODULE;
         #endif
 
+        /**
+         * \brief Destructor of DynamicLibrary calls unload function
+         * \see SGCore::DynamicLibrary::unload
+         */
         ~DynamicLibrary()
         {
             unload();
         }
         
+        /**
+         * \brief Loads a dynamic library using the pluginDLPath
+         * \param pluginDLPath
+         * \param err
+         */
         void load(const std::string& pluginDLPath, std::string& err) noexcept
         {
             unload();
@@ -55,6 +71,9 @@ namespace SGCore
             #endif
         }
         
+        /**
+         * \brief Unloads the dynamic library from memory.\n All static members of the dynamic library are released
+         */
         void unload()
         {
             #ifdef PLATFORM_OS_LINUX

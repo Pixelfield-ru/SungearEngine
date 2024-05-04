@@ -1,0 +1,48 @@
+\hypertarget{classSGCore_1_1IIndexBuffer}{}\doxysection{SGCore\+::IIndex\+Buffer Class Reference}
+\label{classSGCore_1_1IIndexBuffer}\index{SGCore::IIndexBuffer@{SGCore::IIndexBuffer}}
+
+
+Inheritance diagram for SGCore\+::IIndex\+Buffer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IIndex\+Buffer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_a08b3183706bc4e2072f99c00e366acc2}\label{classSGCore_1_1IIndexBuffer_a08b3183706bc4e2072f99c00e366acc2}} 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries create} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_a25b9ddb325c0379da06cf436c43d4225}\label{classSGCore_1_1IIndexBuffer_a25b9ddb325c0379da06cf436c43d4225}} 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries create} (const size\+\_\+t \&byte\+Size)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_aa3958434c66a650f03cf37aca0ade973}\label{classSGCore_1_1IIndexBuffer_aa3958434c66a650f03cf37aca0ade973}} 
+virtual void {\bfseries destroy} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_aa4baa0e3107013712d3ca64f18328bfa}\label{classSGCore_1_1IIndexBuffer_aa4baa0e3107013712d3ca64f18328bfa}} 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries put\+Data} (const std\+::vector$<$ std\+::uint32\+\_\+t $>$ \&data)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_aa674b0e14387ec7b9893a9bbb3365a5e}\label{classSGCore_1_1IIndexBuffer_aa674b0e14387ec7b9893a9bbb3365a5e}} 
+virtual void {\bfseries sub\+Data} (const std\+::vector$<$ std\+::uint32\+\_\+t $>$ \&data, const int \&offset)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_a65754d1bfdb86477a64a1c2cdec5d6c9}\label{classSGCore_1_1IIndexBuffer_a65754d1bfdb86477a64a1c2cdec5d6c9}} 
+virtual void {\bfseries sub\+Data} (std\+::uint32\+\_\+t $\ast$data, const size\+\_\+t \&elements\+Count, const int \&offset)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_a88892ee24a666d2a916f79180165e1aa}\label{classSGCore_1_1IIndexBuffer_a88892ee24a666d2a916f79180165e1aa}} 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries bind} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_afbd24335f03509308f622cf2b903d90a}\label{classSGCore_1_1IIndexBuffer_afbd24335f03509308f622cf2b903d90a}} 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries set\+Usage} (SGGUsage)=0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IIndexBuffer_a18b8f1808375ecf3bbf69783c3face9e}\label{classSGCore_1_1IIndexBuffer_a18b8f1808375ecf3bbf69783c3face9e}} 
+SGGUsage {\bfseries m\+\_\+usage} = SGGUsage\+::\+SGG\+\_\+\+STATIC
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/IIndex\+Buffer.\+h\end{DoxyCompactItemize}

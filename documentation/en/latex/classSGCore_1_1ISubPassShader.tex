@@ -1,0 +1,195 @@
+\hypertarget{classSGCore_1_1ISubPassShader}{}\doxysection{SGCore\+::ISub\+Pass\+Shader Class Reference}
+\label{classSGCore_1_1ISubPassShader}\index{SGCore::ISubPassShader@{SGCore::ISubPassShader}}
+
+
+Inheritance diagram for SGCore\+::ISub\+Pass\+Shader\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::ISub\+Pass\+Shader\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a5c1b09e6cf2ae75afb6db17641db3873}\label{classSGCore_1_1ISubPassShader_a5c1b09e6cf2ae75afb6db17641db3873}} 
+virtual void {\bfseries compile} (const std\+::string \&sub\+Pass\+Name)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a3d4e70eaf0368053c3ac988bf2e84ad4}\label{classSGCore_1_1ISubPassShader_a3d4e70eaf0368053c3ac988bf2e84ad4}} 
+virtual void {\bfseries recompile} () noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a0aed6581246309d98b9e1d59be6b7725}\label{classSGCore_1_1ISubPassShader_a0aed6581246309d98b9e1d59be6b7725}} 
+virtual void {\bfseries destroy} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a397cbf2ce929553c17f7022bb30d67ce}\label{classSGCore_1_1ISubPassShader_a397cbf2ce929553c17f7022bb30d67ce}} 
+virtual void {\bfseries bind} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a712ffc1f8e657f975a0cac6344b22e69}\label{classSGCore_1_1ISubPassShader_a712ffc1f8e657f975a0cac6344b22e69}} 
+virtual std\+::int32\+\_\+t {\bfseries get\+Shader\+Uniform\+Location} (const std\+::string \&uniform\+Name)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a9f4acadf122de4b9a22325d72b1fc8c3}\label{classSGCore_1_1ISubPassShader_a9f4acadf122de4b9a22325d72b1fc8c3}} 
+void {\bfseries add\+Defines} (const SGShader\+Define\+Type \&shader\+Define\+Type, const std\+::vector$<$ \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} $>$ \&shader\+Defines)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a67c54ce23cd4338591a2b819e4661fcb}\label{classSGCore_1_1ISubPassShader_a67c54ce23cd4338591a2b819e4661fcb}} 
+void {\bfseries emplace\+Defines} (const SGShader\+Define\+Type \&shader\+Define\+Type, std\+::vector$<$ \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} $>$ \&shader\+Defines)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a7a8b95958740ad93d0354c4e7fc417bd}\label{classSGCore_1_1ISubPassShader_a7a8b95958740ad93d0354c4e7fc417bd}} 
+void {\bfseries add\+Define} (const SGShader\+Define\+Type \&shader\+Define\+Type, const \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} \&shader\+Define)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_af645d5fe2b696fd2e55c0491ba737c8d}\label{classSGCore_1_1ISubPassShader_af645d5fe2b696fd2e55c0491ba737c8d}} 
+void {\bfseries emplace\+Define} (const SGShader\+Define\+Type \&shader\+Define\+Type, \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} \&\&shader\+Define)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a2d6b5d0189576a096992234cf97224cf}\label{classSGCore_1_1ISubPassShader_a2d6b5d0189576a096992234cf97224cf}} 
+void {\bfseries remove\+Define} (const SGShader\+Define\+Type \&shader\+Define\+Type, const \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} \&shader\+Define)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_abdfe6c57ea3e773e30cff5468d03b7fe}\label{classSGCore_1_1ISubPassShader_abdfe6c57ea3e773e30cff5468d03b7fe}} 
+void {\bfseries remove\+Define} (const SGShader\+Define\+Type \&shader\+Define\+Type, const std\+::string \&shader\+Define\+Name)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_aa5cc669f2b20807ac310bd4c28ee6519}\label{classSGCore_1_1ISubPassShader_aa5cc669f2b20807ac310bd4c28ee6519}} 
+void {\bfseries update\+Define} (const SGShader\+Define\+Type \&shader\+Define\+Type, const \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} \&shader\+Define)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_aa1e75d9a9fb509d17a71feef88e8c55a}\label{classSGCore_1_1ISubPassShader_aa1e75d9a9fb509d17a71feef88e8c55a}} 
+void {\bfseries emplace\+Update\+Define} (const SGShader\+Define\+Type \&shader\+Define\+Type, \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} \&\&shader\+Define)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_ad2f7e01541b1e69b6be8f61b6da515fb}\label{classSGCore_1_1ISubPassShader_ad2f7e01541b1e69b6be8f61b6da515fb}} 
+void {\bfseries update\+Defines} (const SGShader\+Define\+Type \&shader\+Define\+Type, const std\+::vector$<$ \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} $>$ \&shader\+Defines)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a4a20d5de3ac8d17e4e90dc09b2c4def5}\label{classSGCore_1_1ISubPassShader_a4a20d5de3ac8d17e4e90dc09b2c4def5}} 
+void {\bfseries emplace\+Update\+Defines} (const SGShader\+Define\+Type \&shader\+Define\+Type, std\+::vector$<$ \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} $>$ \&shader\+Defines)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a5782eb77f7252d7f1bcc6c9669e39aad}\label{classSGCore_1_1ISubPassShader_a5782eb77f7252d7f1bcc6c9669e39aad}} 
+void {\bfseries replace\+Defines} (const SGShader\+Define\+Type \&shader\+Define\+Type, const std\+::list$<$ \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} $>$ \&other\+Defines) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a1a6fa03ebc8de78e95c9d7b6cb57511a}\label{classSGCore_1_1ISubPassShader_a1a6fa03ebc8de78e95c9d7b6cb57511a}} 
+void {\bfseries replace\+Defines} (const SGShader\+Define\+Type \&shader\+Define\+Type, Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} $>$ other\+Shader) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_afe4731027e76427d7ea557a53b8ade74}\label{classSGCore_1_1ISubPassShader_afe4731027e76427d7ea557a53b8ade74}} 
+void {\bfseries clear\+Defines\+Of\+Type} (const SGShader\+Define\+Type \&shader\+Define\+Type) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a965465fb5f448075e05a9f99edba40e6}\label{classSGCore_1_1ISubPassShader_a965465fb5f448075e05a9f99edba40e6}} 
+virtual void {\bfseries use\+Uniform\+Buffer} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{IUniform\+Buffer}} $>$ \&)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_ac86adb54fee87c34d3be3ce64673e8df}\label{classSGCore_1_1ISubPassShader_ac86adb54fee87c34d3be3ce64673e8df}} 
+virtual void {\bfseries use\+Texture} (const std\+::string \&uniform\+Name, const std\+::uint8\+\_\+t \&tex\+Block)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a7488475de24b5ece2f632e021cd2f13d}\label{classSGCore_1_1ISubPassShader_a7488475de24b5ece2f632e021cd2f13d}} 
+virtual void {\bfseries use\+Matrix} (const std\+::string \&uniform\+Name, const glm\+::mat4 \&matrix)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a1aa53a35e075cc42808f0512a200ae1b}\label{classSGCore_1_1ISubPassShader_a1aa53a35e075cc42808f0512a200ae1b}} 
+virtual void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const float \&x, const float \&y)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_ad462f397e3cae456d4653e1657c12e32}\label{classSGCore_1_1ISubPassShader_ad462f397e3cae456d4653e1657c12e32}} 
+virtual void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const float \&x, const float \&y, const float \&z)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a23d60d812b310661062390da2a778ace}\label{classSGCore_1_1ISubPassShader_a23d60d812b310661062390da2a778ace}} 
+virtual void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const float \&x, const float \&y, const float \&z, const float \&w)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_af82a6cc017fac89213e2468ae8454a62}\label{classSGCore_1_1ISubPassShader_af82a6cc017fac89213e2468ae8454a62}} 
+virtual void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const glm\+::vec2 \&vec)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a32da2a6de478f10b2fb8c398effc2e26}\label{classSGCore_1_1ISubPassShader_a32da2a6de478f10b2fb8c398effc2e26}} 
+virtual void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const glm\+::vec3 \&vec)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a5117ead90e23ca39c57cd63ec7c8780d}\label{classSGCore_1_1ISubPassShader_a5117ead90e23ca39c57cd63ec7c8780d}} 
+virtual void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const glm\+::vec4 \&vec)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a84932354e0d94e3517eb38ddcf17982b}\label{classSGCore_1_1ISubPassShader_a84932354e0d94e3517eb38ddcf17982b}} 
+virtual void {\bfseries use\+Float} (const std\+::string \&uniform\+Name, const float \&f)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a10b2aaca63f67cb21ed2d0bc06b2ce15}\label{classSGCore_1_1ISubPassShader_a10b2aaca63f67cb21ed2d0bc06b2ce15}} 
+virtual void {\bfseries use\+Integer} (const std\+::string \&uniform\+Name, const size\+\_\+t \&i)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a337cdd9efb0ca5e70c0ffc678797e1ac}\label{classSGCore_1_1ISubPassShader_a337cdd9efb0ca5e70c0ffc678797e1ac}} 
+virtual void {\bfseries use\+Texture\+Block} (const std\+::string \&uniform\+Name, const size\+\_\+t \&texture\+Block)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_af362067d7a1b21178e6d12648624342b}\label{classSGCore_1_1ISubPassShader_af362067d7a1b21178e6d12648624342b}} 
+virtual bool {\bfseries is\+Uniform\+Exists} (const std\+::string \&uniform\+Name) const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a43d399bf840a7394c7f67ee29f13172f}\label{classSGCore_1_1ISubPassShader_a43d399bf840a7394c7f67ee29f13172f}} 
+void {\bfseries add\+To\+Global\+Storage} () noexcept final
+\item 
+size\+\_\+t \mbox{\hyperlink{classSGCore_1_1ISubPassShader_a2c08cea672a64ef3108eec2bec01747a}{bind\+Material\+Textures}} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} $>$ \&material) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a7db1e22af1741f3d022fe6f0c9231344}\label{classSGCore_1_1ISubPassShader_a7db1e22af1741f3d022fe6f0c9231344}} 
+void {\bfseries unbind\+Material\+Textures} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} $>$ \&material) noexcept
+\item 
+size\+\_\+t \mbox{\hyperlink{classSGCore_1_1ISubPassShader_a8b7aa40a3e6120da1537fff6c738d5a7}{bind\+Texture\+Bindings}} (const size\+\_\+t \&samplers\+Offset) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a609946507e03e8e3a68d28803ba77717}\label{classSGCore_1_1ISubPassShader_a609946507e03e8e3a68d28803ba77717}} 
+void {\bfseries add\+Texture\+Binding} (const std\+::string \&binding\+Name, const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} $>$ \&texture) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a15c39b3dbd3d7fc48f47cb4eed292e83}\label{classSGCore_1_1ISubPassShader_a15c39b3dbd3d7fc48f47cb4eed292e83}} 
+void {\bfseries remove\+Texture\+Binding} (const std\+::string \&binding\+Name) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_afa887770f389e8d03909b576f1a4a4b8}\label{classSGCore_1_1ISubPassShader_afa887770f389e8d03909b576f1a4a4b8}} 
+\mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} \& {\bfseries operator=} (const \mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} \&) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_ad7e1794b8a71e4b24418b5ec274f690f}\label{classSGCore_1_1ISubPassShader_ad7e1794b8a71e4b24418b5ec274f690f}} 
+std\+::string {\bfseries m\+\_\+sub\+Pass\+Name}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a6f8643748c5f8e27f48ad87873670a5f}\label{classSGCore_1_1ISubPassShader_a6f8643748c5f8e27f48ad87873670a5f}} 
+std\+::string {\bfseries m\+\_\+version}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a0c7e4ce4bcd7c8763df37136c0cc584b}\label{classSGCore_1_1ISubPassShader_a0c7e4ce4bcd7c8763df37136c0cc584b}} 
+bool {\bfseries m\+\_\+auto\+Recompile} = true
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_ac887b9eabd615554f318b8179bb2346a}\label{classSGCore_1_1ISubPassShader_ac887b9eabd615554f318b8179bb2346a}} 
+Scope$<$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{IUniform\+Buffer}} $>$ {\bfseries m\+\_\+uniform\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a6c6668668d12602101a5a4a535a0f39c}\label{classSGCore_1_1ISubPassShader_a6c6668668d12602101a5a4a535a0f39c}} 
+std\+::unordered\+\_\+map$<$ SGSLESub\+Shader\+Type, Ref$<$ \mbox{\hyperlink{structSGCore_1_1SGSLESubShader}{SGSLESub\+Shader}} $>$ $>$ {\bfseries m\+\_\+sub\+Shaders}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a2b32ebd9cd8cad16231797d4d3705a8b}\label{classSGCore_1_1ISubPassShader_a2b32ebd9cd8cad16231797d4d3705a8b}} 
+Weak$<$ \mbox{\hyperlink{structSGCore_1_1TextFileAsset}{Text\+File\+Asset}} $>$ {\bfseries m\+\_\+file\+Asset}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a759b5b61c080a8fc6075bb48ab40a3a7}\label{classSGCore_1_1ISubPassShader_a759b5b61c080a8fc6075bb48ab40a3a7}} 
+std\+::vector$<$ \mbox{\hyperlink{structSGCore_1_1ShaderTextureBinding}{Shader\+Texture\+Binding}} $>$ {\bfseries m\+\_\+texture\+Bindings}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_abe3cc96756c2be4544f2d231524618fe}\label{classSGCore_1_1ISubPassShader_abe3cc96756c2be4544f2d231524618fe}} 
+std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{structSGCore_1_1IShaderUniform}{IShader\+Uniform}} $>$ {\bfseries m\+\_\+uniforms}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a76af128d271a181901040325d64e880b}\label{classSGCore_1_1ISubPassShader_a76af128d271a181901040325d64e880b}} 
+std\+::unordered\+\_\+map$<$ SGShader\+Define\+Type, std\+::list$<$ \mbox{\hyperlink{structSGCore_1_1ShaderDefine}{Shader\+Define}} $>$ $>$ {\bfseries m\+\_\+defines}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a2c08cea672a64ef3108eec2bec01747a}\label{classSGCore_1_1ISubPassShader_a2c08cea672a64ef3108eec2bec01747a}} 
+\index{SGCore::ISubPassShader@{SGCore::ISubPassShader}!bindMaterialTextures@{bindMaterialTextures}}
+\index{bindMaterialTextures@{bindMaterialTextures}!SGCore::ISubPassShader@{SGCore::ISubPassShader}}
+\doxysubsubsection{\texorpdfstring{bindMaterialTextures()}{bindMaterialTextures()}}
+{\footnotesize\ttfamily size\+\_\+t SGCore\+::\+ISub\+Pass\+Shader\+::bind\+Material\+Textures (\begin{DoxyParamCaption}\item[{const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} $>$ \&}]{material }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em material} & -\/ Material to bind textures. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Offset of samplers. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSGCore_1_1ISubPassShader_a8b7aa40a3e6120da1537fff6c738d5a7}\label{classSGCore_1_1ISubPassShader_a8b7aa40a3e6120da1537fff6c738d5a7}} 
+\index{SGCore::ISubPassShader@{SGCore::ISubPassShader}!bindTextureBindings@{bindTextureBindings}}
+\index{bindTextureBindings@{bindTextureBindings}!SGCore::ISubPassShader@{SGCore::ISubPassShader}}
+\doxysubsubsection{\texorpdfstring{bindTextureBindings()}{bindTextureBindings()}}
+{\footnotesize\ttfamily size\+\_\+t SGCore\+::\+ISub\+Pass\+Shader\+::bind\+Texture\+Bindings (\begin{DoxyParamCaption}\item[{const size\+\_\+t \&}]{samplers\+Offset }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+Bind all vector of m\+\_\+texture\+Bindings. 
+\begin{DoxyParams}{Parameters}
+{\em samplers\+Offset} & -\/ Offset to start bind texture bindings. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Offset after bind. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/ISub\+Pass\+Shader.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/ISub\+Pass\+Shader.\+cpp\end{DoxyCompactItemize}

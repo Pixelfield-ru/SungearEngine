@@ -1,0 +1,8 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="SGCore::make_noexcept\l\< R(Args...,...) const\l volatile, noexcept_state \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1make__noexcept_3_01R_07Args_8_8_8_00_8_8_8_08_01const_01volatile_00_01noexcept__state_01_4.html",tooltip=" "];
+}

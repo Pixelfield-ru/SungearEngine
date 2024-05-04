@@ -1,0 +1,4 @@
+var structSGCore_1_1make__noexcept_3_01R_07C_1_1_5_08_07Args_8_8_8_00_8_8_8_08_01const_01volatile_01_6_6_00_01noexcept__state_01_4 =
+[
+    [ "type", "structSGCore_1_1make__noexcept_3_01R_07C_1_1_5_08_07Args_8_8_8_00_8_8_8_08_01const_01volatile_01_6_6_00_01noexcept__state_01_4.html#a4eb8ebd5beb14eed2b2ff22ee6a813ad", null ]
+];

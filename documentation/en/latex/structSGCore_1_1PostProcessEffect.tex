@@ -1,0 +1,57 @@
+\hypertarget{structSGCore_1_1PostProcessEffect}{}\doxysection{SGCore\+::Post\+Process\+Effect Struct Reference}
+\label{structSGCore_1_1PostProcessEffect}\index{SGCore::PostProcessEffect@{SGCore::PostProcessEffect}}
+
+
+Inheritance diagram for SGCore\+::Post\+Process\+Effect\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_a1c8d380a85bfdd1453569de5b3fce072}\label{structSGCore_1_1PostProcessEffect_a1c8d380a85bfdd1453569de5b3fce072}} 
+virtual void {\bfseries on\+Attach\+To\+Layer} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ \&to\+Layer)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_a45f9203af31d0f53de465a3522de3fd2}\label{structSGCore_1_1PostProcessEffect_a45f9203af31d0f53de465a3522de3fd2}} 
+virtual void {\bfseries on\+Layer\+Shader\+Changed} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ \&layer)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_aa144fae7098e4c40ed2144ebc2e0329b}\label{structSGCore_1_1PostProcessEffect_aa144fae7098e4c40ed2144ebc2e0329b}} 
+virtual void {\bfseries on\+FXPass} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ \&current\+Layer)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_addb5d9a85f0ce242103220b56fb2ce82}\label{structSGCore_1_1PostProcessEffect_addb5d9a85f0ce242103220b56fb2ce82}} 
+virtual void {\bfseries on\+Detach\+From\+Layer} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ \&from\+Layer)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_af952a87654bd19f4ce610f7565c14283}\label{structSGCore_1_1PostProcessEffect_af952a87654bd19f4ce610f7565c14283}} 
+virtual void {\bfseries pass\+Values\+To\+Sub\+Pass\+Shader} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} $>$ \&sub\+Pass\+Shader) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_a03a13e01c9c33d5cf59159e17bc16f39}\label{structSGCore_1_1PostProcessEffect_a03a13e01c9c33d5cf59159e17bc16f39}} 
+bool {\bfseries is\+Enabled} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_a61f1be943bcad642a6ed58c378e40b27}\label{structSGCore_1_1PostProcessEffect_a61f1be943bcad642a6ed58c378e40b27}} 
+void {\bfseries set\+Enabled} (bool is\+Enabled) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_aadae84a3c8e399f628676f416d8582db}\label{structSGCore_1_1PostProcessEffect_aadae84a3c8e399f628676f416d8582db}} 
+std\+::string {\bfseries m\+\_\+name}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_a4e02d994e9a6beb7fd1222d171a30340}\label{structSGCore_1_1PostProcessEffect_a4e02d994e9a6beb7fd1222d171a30340}} 
+bool {\bfseries m\+\_\+is\+Enabled} = true
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_a9ddd869180ccd4f784059a27a84a100d}\label{structSGCore_1_1PostProcessEffect_a9ddd869180ccd4f784059a27a84a100d}} 
+std\+::vector$<$ Weak$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ $>$ {\bfseries m\+\_\+parent\+Post\+Process\+Layers}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessEffect_a7e32723e3a6a46f88d817483396e43da}\label{structSGCore_1_1PostProcessEffect_a7e32723e3a6a46f88d817483396e43da}} 
+struct {\bfseries Post\+Process\+Layer}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/\+Post\+Process/Post\+Process\+Effect.\+h\item 
+Sources/\+SGCore/\+Render/\+Post\+Process/Post\+Process\+Effect.\+cpp\end{DoxyCompactItemize}

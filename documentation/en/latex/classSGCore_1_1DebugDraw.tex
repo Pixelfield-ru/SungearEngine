@@ -1,0 +1,56 @@
+\hypertarget{classSGCore_1_1DebugDraw}{}\doxysection{SGCore\+::Debug\+Draw Class Reference}
+\label{classSGCore_1_1DebugDraw}\index{SGCore::DebugDraw@{SGCore::DebugDraw}}
+
+
+Inheritance diagram for SGCore\+::Debug\+Draw\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Debug\+Draw\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a2eac77baa6d1eb5e8fd90a18d558dfa5}\label{classSGCore_1_1DebugDraw_a2eac77baa6d1eb5e8fd90a18d558dfa5}} 
+void {\bfseries draw\+Line} (const glm\+::vec3 \&from, const glm\+::vec3 \&to, const glm\+::vec4 \&color) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a7a4c618b66c139646eef55eea79aa3a9}\label{classSGCore_1_1DebugDraw_a7a4c618b66c139646eef55eea79aa3a9}} 
+void {\bfseries draw\+AABB} (const glm\+::vec3 \&min, const glm\+::vec3 \&max, const glm\+::vec4 \&color) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a4ef35be699c87cf92fd26072551d4cdc}\label{classSGCore_1_1DebugDraw_a4ef35be699c87cf92fd26072551d4cdc}} 
+void {\bfseries update} (const double \&dt, const double \&fixed\+Dt) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a0d0c7d171610ca2a3ce55dd897be9dc2}\label{classSGCore_1_1DebugDraw_a0d0c7d171610ca2a3ce55dd897be9dc2}} 
+void {\bfseries reset\+Renderer} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a835257b3fbadd61e872b5812127176f7}\label{classSGCore_1_1DebugDraw_a835257b3fbadd61e872b5812127176f7}} 
+Debug\+Draw\+Mode {\bfseries m\+\_\+mode} = Debug\+Draw\+Mode\+::\+WIREFRAME
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a51fd6565aff6b67b595d1f4f29a8210a}\label{classSGCore_1_1DebugDraw_a51fd6565aff6b67b595d1f4f29a8210a}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexArray}{IVertex\+Array}} $>$ {\bfseries m\+\_\+lines\+Vertex\+Array}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a7a28ee5dd2192ed45c39ee5a3a8cf0e5}\label{classSGCore_1_1DebugDraw_a7a28ee5dd2192ed45c39ee5a3a8cf0e5}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+lines\+Positions\+Vertex\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a889a1e86dcb4b3423a72dc36833dfb76}\label{classSGCore_1_1DebugDraw_a889a1e86dcb4b3423a72dc36833dfb76}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+lines\+Colors\+Vertex\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_ae28ff9d146af336f14330aa2762fbe44}\label{classSGCore_1_1DebugDraw_ae28ff9d146af336f14330aa2762fbe44}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries m\+\_\+lines\+Index\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a3d6909f76aa104247d49c63edb9d9a5f}\label{classSGCore_1_1DebugDraw_a3d6909f76aa104247d49c63edb9d9a5f}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IShader}{IShader}} $>$ {\bfseries m\+\_\+lines\+Shader}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1DebugDraw_a3ed8dc4c184da86e59380245e80bcd64}\label{classSGCore_1_1DebugDraw_a3ed8dc4c184da86e59380245e80bcd64}} 
+\mbox{\hyperlink{structSGCore_1_1MeshDataRenderInfo}{Mesh\+Data\+Render\+Info}} {\bfseries m\+\_\+lines\+Render\+Info}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/Debug\+Draw.\+h\item 
+Sources/\+SGCore/\+Render/Debug\+Draw.\+cpp\end{DoxyCompactItemize}

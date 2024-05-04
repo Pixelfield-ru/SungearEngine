@@ -1,0 +1,74 @@
+\hypertarget{structSGCore_1_1DynamicLibrary}{}\doxysection{SGCore\+::Dynamic\+Library Struct Reference}
+\label{structSGCore_1_1DynamicLibrary}\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}{$\sim$\+Dynamic\+Library}} ()
+\begin{DoxyCompactList}\small\item\em Destructor of \mbox{\hyperlink{structSGCore_1_1DynamicLibrary}{Dynamic\+Library}} calls unload function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a5f9a86e1fd7b7aadfc8c87e3725448cc}{load}} (const std\+::string \&plugin\+DLPath, std\+::string \&err) noexcept
+\begin{DoxyCompactList}\small\item\em Loads a dynamic library using the plugin\+DLPath. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}{unload}} ()
+\begin{DoxyCompactList}\small\item\em Unloads the dynamic library from memory. All static library members are released. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_a249f33efbec1ed2ec23e8774b5ac74cd}\label{structSGCore_1_1DynamicLibrary_a249f33efbec1ed2ec23e8774b5ac74cd}} 
+{\footnotesize template$<$typename FuncT $>$ }\\std\+::function$<$ FuncT $>$ {\bfseries load\+Function} (const char $\ast$func\+Name, std\+::string \&err) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_ab4cf5f912a3d27512e0d3c764cf6032e}\label{structSGCore_1_1DynamicLibrary_ab4cf5f912a3d27512e0d3c764cf6032e}} 
+native\+\_\+handler\+\_\+t {\bfseries get\+Native\+Handler} () noexcept
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}\label{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}} 
+\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}!````~DynamicLibrary@{$\sim$DynamicLibrary}}
+\index{````~DynamicLibrary@{$\sim$DynamicLibrary}!SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsubsection{\texorpdfstring{$\sim$DynamicLibrary()}{~DynamicLibrary()}}
+{\footnotesize\ttfamily SGCore\+::\+Dynamic\+Library\+::$\sim$\+Dynamic\+Library (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Destructor of \mbox{\hyperlink{structSGCore_1_1DynamicLibrary}{Dynamic\+Library}} calls unload function. 
+
+\begin{DoxyAuthor}{Author}
+pfhgil 
+\end{DoxyAuthor}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}{SGCore\+::\+Dynamic\+Library\+::unload}} 
+\end{DoxySeeAlso}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_a5f9a86e1fd7b7aadfc8c87e3725448cc}\label{structSGCore_1_1DynamicLibrary_a5f9a86e1fd7b7aadfc8c87e3725448cc}} 
+\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}!load@{load}}
+\index{load@{load}!SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily void SGCore\+::\+Dynamic\+Library\+::load (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{plugin\+DLPath,  }\item[{std\+::string \&}]{err }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Loads a dynamic library using the plugin\+DLPath. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em plugin\+DLPath} & \\
+\hline
+{\em err} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}\label{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}} 
+\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}!unload@{unload}}
+\index{unload@{unload}!SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsubsection{\texorpdfstring{unload()}{unload()}}
+{\footnotesize\ttfamily void SGCore\+::\+Dynamic\+Library\+::unload (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Unloads the dynamic library from memory. All static library members are released. 
+
+\begin{DoxyAuthor}{Author}
+pfhgil 
+\end{DoxyAuthor}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Plugins\+System/Dynamic\+Library.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,135 @@
+\hypertarget{structSGCore_1_1Threading_1_1Thread}{}\doxysection{SGCore\+::Threading\+::Thread Struct Reference}
+\label{structSGCore_1_1Threading_1_1Thread}\index{SGCore::Threading::Thread@{SGCore::Threading::Thread}}
+
+
+Inheritance diagram for SGCore\+::Threading\+::Thread\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Threading\+::Thread\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a5c8346ba612a5f54bd5fe820a8bbca09}\label{structSGCore_1_1Threading_1_1Thread_a5c8346ba612a5f54bd5fe820a8bbca09}} 
+virtual void {\bfseries start} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a9c8352c5dc9f2c3c79354fccb1c54aa3}\label{structSGCore_1_1Threading_1_1Thread_a9c8352c5dc9f2c3c79354fccb1c54aa3}} 
+virtual void {\bfseries join} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_adb022c1508e4375a81f17544b4a856e1}\label{structSGCore_1_1Threading_1_1Thread_adb022c1508e4375a81f17544b4a856e1}} 
+void {\bfseries process\+Tasks} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a87a6adf7aaa7446b5240fed647566cc2}\label{structSGCore_1_1Threading_1_1Thread_a87a6adf7aaa7446b5240fed647566cc2}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Task}{Task}} $>$ {\bfseries create\+Task} (const \mbox{\hyperlink{structSGCore_1_1Threading_1_1TaskSingletonGuardImpl}{Task\+Singleton\+Guard}} task\+Singleton\+Guard)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a63e53d793c4baedff38a0df0a3b9ace7}\label{structSGCore_1_1Threading_1_1Thread_a63e53d793c4baedff38a0df0a3b9ace7}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Task}{Task}} $>$ {\bfseries create\+Task} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_aacd547c7f204f312ba24c06870e86142}\label{structSGCore_1_1Threading_1_1Thread_aacd547c7f204f312ba24c06870e86142}} 
+void {\bfseries add\+Task} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Task}{Task}} $>$ task)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a995e296f6ba502e7f6ad8e992df536a4}\label{structSGCore_1_1Threading_1_1Thread_a995e296f6ba502e7f6ad8e992df536a4}} 
+void {\bfseries remove\+Task} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Task}{Task}} $>$ task)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a287d0c7cea86cf2ccae912e3680289ba}\label{structSGCore_1_1Threading_1_1Thread_a287d0c7cea86cf2ccae912e3680289ba}} 
+size\+\_\+t {\bfseries tasks\+Count} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a09a9bffd9ee2558a4b7fdc86cbbbc8a9}\label{structSGCore_1_1Threading_1_1Thread_a09a9bffd9ee2558a4b7fdc86cbbbc8a9}} 
+void {\bfseries process\+Finished\+Tasks} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_af7725c15c1b5f50dd5d3997ca2de2c95}\label{structSGCore_1_1Threading_1_1Thread_af7725c15c1b5f50dd5d3997ca2de2c95}} 
+{\footnotesize template$<$typename Func $>$ }\\{\bfseries requires} (std\+::is\+\_\+invocable\+\_\+v$<$ Func, \mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void()$>$ \& $>$) void edit\+On\+Update\+Event(const Func \&func)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a528ddf80a67bfde33ae70ebe4f289f21}\label{structSGCore_1_1Threading_1_1Thread_a528ddf80a67bfde33ae70ebe4f289f21}} 
+double {\bfseries get\+Execution\+Time} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a55d6bd4b2698c1d20d67c565f3e6c3af}\label{structSGCore_1_1Threading_1_1Thread_a55d6bd4b2698c1d20d67c565f3e6c3af}} 
+std\+::thread\+::id {\bfseries get\+Native\+ID} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a9dc1d2794dd0d146a892023228e3d1a7}\label{structSGCore_1_1Threading_1_1Thread_a9dc1d2794dd0d146a892023228e3d1a7}} 
+bool {\bfseries is\+Running} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Thread}} $>$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread_a076daaf2b960e63edf7bd56776f3fabf}{create}} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_af848c9d35119247ac9529a78727160f1}\label{structSGCore_1_1Threading_1_1Thread_af848c9d35119247ac9529a78727160f1}} 
+std\+::atomic$<$ bool $>$ {\bfseries m\+\_\+auto\+Join\+If\+Not\+Busy} = false
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_ae21a5095235e51da8f8aae75d35a608e}\label{structSGCore_1_1Threading_1_1Thread_ae21a5095235e51da8f8aae75d35a608e}} 
+std\+::atomic$<$ std\+::thread\+::id $>$ {\bfseries m\+\_\+native\+Thread\+ID}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a0809b6e5956a630246168c7c83d190ce}\label{structSGCore_1_1Threading_1_1Thread_a0809b6e5956a630246168c7c83d190ce}} 
+std\+::mutex {\bfseries m\+\_\+tasks\+End\+Copy\+Mutex}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a3f4928d90fd57fdb691a3be7ff04b070}\label{structSGCore_1_1Threading_1_1Thread_a3f4928d90fd57fdb691a3be7ff04b070}} 
+std\+::mutex {\bfseries m\+\_\+thread\+Process\+Mutex}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a0e03094ada5a89bd5453225b75f703f5}\label{structSGCore_1_1Threading_1_1Thread_a0e03094ada5a89bd5453225b75f703f5}} 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Task}{Task}} $>$ $>$ {\bfseries m\+\_\+finished\+Tasks\+To\+Execute}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a17c98515760fd7fd45531afa74c47cc3}\label{structSGCore_1_1Threading_1_1Thread_a17c98515760fd7fd45531afa74c47cc3}} 
+std\+::atomic$<$ double $>$ {\bfseries m\+\_\+execution\+Time} = 0.\+0
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_aaca179d999c1e4b71d615ce7ff6aac59}\label{structSGCore_1_1Threading_1_1Thread_aaca179d999c1e4b71d615ce7ff6aac59}} 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Task}{Task}} $>$ $>$ {\bfseries m\+\_\+tasks}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_acdf9d999eb1c1f0ab82086de6ca1032a}\label{structSGCore_1_1Threading_1_1Thread_acdf9d999eb1c1f0ab82086de6ca1032a}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void()$>$ {\bfseries on\+Tasks\+Process}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_af92310fcd733afcb3537886077179a31}\label{structSGCore_1_1Threading_1_1Thread_af92310fcd733afcb3537886077179a31}} 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Task}{Task}} $>$ $>$ {\bfseries m\+\_\+tasks\+Copy}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_ac9e50286ccd46c1650cb9fdfcc14f5c3}\label{structSGCore_1_1Threading_1_1Thread_ac9e50286ccd46c1650cb9fdfcc14f5c3}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void()$>$ {\bfseries on\+Tasks\+Process\+Copy}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a2264d6f0c59ba423087a4d7530a76b53}\label{structSGCore_1_1Threading_1_1Thread_a2264d6f0c59ba423087a4d7530a76b53}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void()$>$ {\bfseries on\+Update}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a4fb5b430d541a6f1bf1898d39bbb66fe}\label{structSGCore_1_1Threading_1_1Thread_a4fb5b430d541a6f1bf1898d39bbb66fe}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void()$>$ {\bfseries on\+Update\+Copy}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a85a9225d85034b16607ee01593d162f7}\label{structSGCore_1_1Threading_1_1Thread_a85a9225d85034b16607ee01593d162f7}} 
+std\+::atomic$<$ bool $>$ {\bfseries m\+\_\+is\+Running} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a4bfa814837937571ef1882abfb2b55aa}\label{structSGCore_1_1Threading_1_1Thread_a4bfa814837937571ef1882abfb2b55aa}} 
+std\+::atomic$<$ bool $>$ {\bfseries m\+\_\+is\+Alive} = true
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_ac9d033dbf16354981fefae7a4d605641}\label{structSGCore_1_1Threading_1_1Thread_ac9d033dbf16354981fefae7a4d605641}} 
+std\+::thread {\bfseries m\+\_\+thread}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a12567676185970920ed85a50685036a4}\label{structSGCore_1_1Threading_1_1Thread_a12567676185970920ed85a50685036a4}} 
+struct {\bfseries Task}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_aa015d1ea33f7f5597c4489fb665caafa}\label{structSGCore_1_1Threading_1_1Thread_aa015d1ea33f7f5597c4489fb665caafa}} 
+struct {\bfseries Threads\+Manager}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Thread_a076daaf2b960e63edf7bd56776f3fabf}\label{structSGCore_1_1Threading_1_1Thread_a076daaf2b960e63edf7bd56776f3fabf}} 
+\index{SGCore::Threading::Thread@{SGCore::Threading::Thread}!create@{create}}
+\index{create@{create}!SGCore::Threading::Thread@{SGCore::Threading::Thread}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{SGCore\+::\+Threading\+::\+Thread}} $>$ SGCore\+::\+Threading\+::\+Thread\+::create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+Creates absolute new thread. It is recommended to use \mbox{\hyperlink{structSGCore_1_1Threading_1_1ThreadsPool}{Threads\+Pool}} to reuse threads and set a policy for creating new threads. \begin{DoxyReturn}{Returns}
+Absolute new thread. 
+\end{DoxyReturn}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Threading/Thread.\+h\item 
+Sources/\+SGCore/\+Threading/Thread.\+cpp\end{DoxyCompactItemize}

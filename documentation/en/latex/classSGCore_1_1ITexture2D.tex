@@ -1,0 +1,209 @@
+\hypertarget{classSGCore_1_1ITexture2D}{}\doxysection{SGCore\+::ITexture2D Class Reference}
+\label{classSGCore_1_1ITexture2D}\index{SGCore::ITexture2D@{SGCore::ITexture2D}}
+
+
+Inheritance diagram for SGCore\+::ITexture2D\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::ITexture2D\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ae01071c76b8663bbbd67f2e2ca48c60f}\label{classSGCore_1_1ITexture2D_ae01071c76b8663bbbd67f2e2ca48c60f}} 
+virtual void {\bfseries create} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a1be597ff1f0531befa44eb5eda4ef00b}\label{classSGCore_1_1ITexture2D_a1be597ff1f0531befa44eb5eda4ef00b}} 
+{\footnotesize template$<$typename Data\+Type  = std\+::uint8\+\_\+t$>$ }\\{\bfseries requires} (std\+::is\+\_\+scalar\+\_\+v$<$ Data\+Type $>$) void create(const Data\+Type $\ast$data
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aa8674d91972433376c913e79025755a2}\label{classSGCore_1_1ITexture2D_aa8674d91972433376c913e79025755a2}} 
+{\bfseries std\+::memcpy} (m\+\_\+texture\+Data.\+get(), data, byte\+Size)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ade7a8557bf782936d52f8c80cf2fe107}\label{classSGCore_1_1ITexture2D_ade7a8557bf782936d52f8c80cf2fe107}} 
+{\bfseries create} ()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a7f2c49ad898b75fa9b595e552275948b}\label{classSGCore_1_1ITexture2D_a7f2c49ad898b75fa9b595e552275948b}} 
+{\bfseries add\+To\+Global\+Storage} ()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aea3c5ba646744e642cd2ba3fc1b4f6e2}\label{classSGCore_1_1ITexture2D_aea3c5ba646744e642cd2ba3fc1b4f6e2}} 
+virtual void {\bfseries create\+As\+Frame\+Buffer\+Attachment} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IFrameBuffer}{IFrame\+Buffer}} $>$ \&parent\+Frame\+Buffer, SGFrame\+Buffer\+Attachment\+Type attachment\+Type)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ab714223c884c9b376c54bfd3ce2b94d1}\label{classSGCore_1_1ITexture2D_ab714223c884c9b376c54bfd3ce2b94d1}} 
+{\footnotesize template$<$typename Data\+Type  = std\+::uint8\+\_\+t$>$ }\\{\bfseries requires} (std\+::is\+\_\+scalar\+\_\+v$<$ Data\+Type $>$) void sub\+Texture\+Buffer\+Data(const Data\+Type $\ast$data
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_af7509b2dedf15e33436c72cfed1049f4}\label{classSGCore_1_1ITexture2D_af7509b2dedf15e33436c72cfed1049f4}} 
+{\bfseries sub\+Texture\+Buffer\+Data\+On\+GAPISide} (elements\+Count $\ast$sizeof(Data\+Type), elements\+Offset $\ast$sizeof(Data\+Type))
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aa337bdd93b1cd4ae1a26cff9a7cf6504}\label{classSGCore_1_1ITexture2D_aa337bdd93b1cd4ae1a26cff9a7cf6504}} 
+{\footnotesize template$<$typename Data\+Type  = std\+::uint8\+\_\+t$>$ }\\{\bfseries requires} (std\+::is\+\_\+scalar\+\_\+v$<$ Data\+Type $>$) void sub\+Texture\+Data(const Data\+Type $\ast$data
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a7317e3f4ff9bebc1e69a253b2531be48}\label{classSGCore_1_1ITexture2D_a7317e3f4ff9bebc1e69a253b2531be48}} 
+virtual void {\bfseries bind} (const std\+::uint8\+\_\+t \&texture\+Unit)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a243444886b46d9598ae840f7c31a1474}\label{classSGCore_1_1ITexture2D_a243444886b46d9598ae840f7c31a1474}} 
+void {\bfseries add\+To\+Global\+Storage} () noexcept final
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a9f14074fc41e33e645e1e4d4a7949bd9}\label{classSGCore_1_1ITexture2D_a9f14074fc41e33e645e1e4d4a7949bd9}} 
+virtual \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} \& {\bfseries operator=} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} $>$ \&other)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a3adf178527eba25c5217e190f9a31f70}\label{classSGCore_1_1ITexture2D_a3adf178527eba25c5217e190f9a31f70}} 
+virtual void $\ast$ {\bfseries get\+Texture\+Native\+Handler} () const noexcept=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a25bfa91951ded5765306826f9eb8df87}\label{classSGCore_1_1ITexture2D_a25bfa91951ded5765306826f9eb8df87}} 
+virtual void $\ast$ {\bfseries get\+Texture\+Buffer\+Native\+Handler} () const noexcept=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ad6c70b05bacb5a645f75b6d48c5d9981}\label{classSGCore_1_1ITexture2D_ad6c70b05bacb5a645f75b6d48c5d9981}} 
+Ref$<$ std\+::uint8\+\_\+t\mbox{[}$\,$\mbox{]}$>$ {\bfseries get\+Data} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aec953e751efa241f1ca0aa88f888e16d}\label{classSGCore_1_1ITexture2D_aec953e751efa241f1ca0aa88f888e16d}} 
+SGGColor\+Internal\+Format {\bfseries m\+\_\+internal\+Format} = SGGColor\+Internal\+Format\+::\+SGG\+\_\+\+RGBA8
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_abc64113db76c49da5c1a5ea8baa41b0d}\label{classSGCore_1_1ITexture2D_abc64113db76c49da5c1a5ea8baa41b0d}} 
+SGGColor\+Format {\bfseries m\+\_\+format} = SGGColor\+Format\+::\+SGG\+\_\+\+RGBA
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_af7e4356623b5f55e283a7102bd2c2d56}\label{classSGCore_1_1ITexture2D_af7e4356623b5f55e283a7102bd2c2d56}} 
+int {\bfseries m\+\_\+width} = 0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a3fc5b6dd4c30c3d010d501a8858db2b3}\label{classSGCore_1_1ITexture2D_a3fc5b6dd4c30c3d010d501a8858db2b3}} 
+int {\bfseries m\+\_\+height} = 0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aace9fefe3ad455ced04653415e2fd5f7}\label{classSGCore_1_1ITexture2D_aace9fefe3ad455ced04653415e2fd5f7}} 
+int {\bfseries m\+\_\+channels\+Count} = 1
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a244aad7c044898162da0feba2bb0a89b}\label{classSGCore_1_1ITexture2D_a244aad7c044898162da0feba2bb0a89b}} 
+int {\bfseries m\+\_\+mip\+Level} = 0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a6e835215e8da6ac3c70c62602e87436c}\label{classSGCore_1_1ITexture2D_a6e835215e8da6ac3c70c62602e87436c}} 
+int {\bfseries m\+\_\+layer} = 0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a9f6dbdf056da1d796c70a5da071891ee}\label{classSGCore_1_1ITexture2D_a9f6dbdf056da1d796c70a5da071891ee}} 
+bool {\bfseries m\+\_\+is\+Compressed\+Format} = false
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a726044d83e244b7d49c01f599dbf5072}\label{classSGCore_1_1ITexture2D_a726044d83e244b7d49c01f599dbf5072}} 
+SGGData\+Type {\bfseries m\+\_\+data\+Type} = SGG\+\_\+\+UNSIGNED\+\_\+\+BYTE
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a80b8f370657bfd657f0f22a1c38045bf}\label{classSGCore_1_1ITexture2D_a80b8f370657bfd657f0f22a1c38045bf}} 
+bool {\bfseries m\+\_\+is\+Texture\+Buffer} = false
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ac14420d80cefc306d84452ac9874232a}\label{classSGCore_1_1ITexture2D_ac14420d80cefc306d84452ac9874232a}} 
+SGGUsage {\bfseries m\+\_\+texture\+Buffer\+Usage} = SGGUsage\+::\+SGG\+\_\+\+STATIC
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a73974a9006daafc0cd010505ec6aee2b}\label{classSGCore_1_1ITexture2D_a73974a9006daafc0cd010505ec6aee2b}} 
+bool {\bfseries m\+\_\+use\+Multisampling} = false
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ac24086650fdcdeb2ebac9617958db0f9}\label{classSGCore_1_1ITexture2D_ac24086650fdcdeb2ebac9617958db0f9}} 
+std\+::uint8\+\_\+t {\bfseries m\+\_\+multisampling\+Samples\+Count} = 8
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ac9dd0b86708bdb2cf2d54b5ec83ae1b9}\label{classSGCore_1_1ITexture2D_ac9dd0b86708bdb2cf2d54b5ec83ae1b9}} 
+const size\+\_\+t \& {\bfseries width}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aa7fcd1b8faf249bd0200f28d1c8dc3a6}\label{classSGCore_1_1ITexture2D_aa7fcd1b8faf249bd0200f28d1c8dc3a6}} 
+const size\+\_\+t const size\+\_\+t \& {\bfseries height}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ab01f4c713a753f0a6671d04a3aeba703}\label{classSGCore_1_1ITexture2D_ab01f4c713a753f0a6671d04a3aeba703}} 
+const size\+\_\+t const size\+\_\+t const int \& {\bfseries channels\+Count}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ad15c5e78b2087bc9f80d085258059e6a}\label{classSGCore_1_1ITexture2D_ad15c5e78b2087bc9f80d085258059e6a}} 
+const size\+\_\+t const size\+\_\+t const int SGGColor\+Internal\+Format {\bfseries internal\+Format}
+\item 
+const size\+\_\+t const size\+\_\+t const int SGGColor\+Internal\+Format SGGColor\+Format {\bfseries format}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a0bf4d7c5d5793b55be0ff51d5dd35ac6}\label{classSGCore_1_1ITexture2D_a0bf4d7c5d5793b55be0ff51d5dd35ac6}} 
+{\bfseries m\+\_\+width} = width
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a99a0a3cd6844ffe11b32b07f53404500}\label{classSGCore_1_1ITexture2D_a99a0a3cd6844ffe11b32b07f53404500}} 
+{\bfseries m\+\_\+height} = height
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_abadb2eca9d804bca5ddf44c9ce2d3766}\label{classSGCore_1_1ITexture2D_abadb2eca9d804bca5ddf44c9ce2d3766}} 
+{\bfseries m\+\_\+channels\+Count} = channels\+Count
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a7848e9a772758badbd554d81db0abf5b}\label{classSGCore_1_1ITexture2D_a7848e9a772758badbd554d81db0abf5b}} 
+{\bfseries m\+\_\+internal\+Format} = internal\+Format
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aab124a808eb376d0284bd0294ebd3098}\label{classSGCore_1_1ITexture2D_aab124a808eb376d0284bd0294ebd3098}} 
+{\bfseries m\+\_\+format} = format
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a0166c638215e0a2bc12f33f4bfa86f16}\label{classSGCore_1_1ITexture2D_a0166c638215e0a2bc12f33f4bfa86f16}} 
+{\bfseries m\+\_\+data\+Type} = get\+SGData\+Type\+From\+CPPType$<$Data\+Type$>$()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a2324a36f3fc28e8413e446c8ecd41b64}\label{classSGCore_1_1ITexture2D_a2324a36f3fc28e8413e446c8ecd41b64}} 
+{\bfseries m\+\_\+texture\+Data} = Ref$<$std\+::uint8\+\_\+t\mbox{[}$\,$\mbox{]}$>$(new std\+::uint8\+\_\+t\mbox{[}byte\+Size\mbox{]})
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a200c652af93c3d7b31e35ba4a9f90630}\label{classSGCore_1_1ITexture2D_a200c652af93c3d7b31e35ba4a9f90630}} 
+const size\+\_\+t \& {\bfseries elements\+Count}
+\item 
+const size\+\_\+t const size\+\_\+t \& {\bfseries elements\+Offset}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a37295d9602bcf163653b3f689e6bafaf}\label{classSGCore_1_1ITexture2D_a37295d9602bcf163653b3f689e6bafaf}} 
+void {\bfseries do\+Load} (const std\+::string \&path) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_ac2ce837d553cb1882a3532443a737831}\label{classSGCore_1_1ITexture2D_ac2ce837d553cb1882a3532443a737831}} 
+void {\bfseries do\+Lazy\+Load} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aab5f0a9868f0aafa83a5b43e2393d0ab}\label{classSGCore_1_1ITexture2D_aab5f0a9868f0aafa83a5b43e2393d0ab}} 
+virtual void {\bfseries sub\+Texture\+Buffer\+Data\+On\+GAPISide} (const size\+\_\+t \&bytes\+Count, const size\+\_\+t \&bytes\+Offset)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a1eca532a2a363b7934c28e5b47ec735d}\label{classSGCore_1_1ITexture2D_a1eca532a2a363b7934c28e5b47ec735d}} 
+virtual void {\bfseries sub\+Texture\+Data\+On\+GAPISide} (const size\+\_\+t \&bytes\+Count, const size\+\_\+t \&bytes\+Offset)=0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a7203796166e300580cbb1b307ff461e1}\label{classSGCore_1_1ITexture2D_a7203796166e300580cbb1b307ff461e1}} 
+size\+\_\+t {\bfseries m\+\_\+pixel\+Size} = 0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_acfe5bbc9f76fe9aa32cf4da6854b477e}\label{classSGCore_1_1ITexture2D_acfe5bbc9f76fe9aa32cf4da6854b477e}} 
+Ref$<$ std\+::uint8\+\_\+t\mbox{[}$\,$\mbox{]}$>$ {\bfseries m\+\_\+texture\+Data}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a6b19129cc74f42186c355f334402e931}\label{classSGCore_1_1ITexture2D_a6b19129cc74f42186c355f334402e931}} 
+class {\bfseries IFrame\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aa4b49813bd4d2c422257d7176d964fb5}\label{classSGCore_1_1ITexture2D_aa4b49813bd4d2c422257d7176d964fb5}} 
+class {\bfseries Texture\+Asset}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_aafe72876a584aedb5a5546d4fe7746fb}\label{classSGCore_1_1ITexture2D_aafe72876a584aedb5a5546d4fe7746fb}} 
+class {\bfseries Asset\+Manager}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a1be417794c8f13a7cda2438af5b88ec0}\label{classSGCore_1_1ITexture2D_a1be417794c8f13a7cda2438af5b88ec0}} 
+\index{SGCore::ITexture2D@{SGCore::ITexture2D}!elementsOffset@{elementsOffset}}
+\index{elementsOffset@{elementsOffset}!SGCore::ITexture2D@{SGCore::ITexture2D}}
+\doxysubsubsection{\texorpdfstring{elementsOffset}{elementsOffset}}
+{\footnotesize\ttfamily const size\+\_\+t const size\+\_\+t \& SGCore\+::\+ITexture2\+D\+::elements\+Offset}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{            std::memcpy(m\_textureData.get() + elementsOffset * \textcolor{keyword}{sizeof}(DataType), data, elementsCount * \textcolor{keyword}{sizeof}(DataType))}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classSGCore_1_1ITexture2D_a62e46923a2d8c91b500a77951367a883}\label{classSGCore_1_1ITexture2D_a62e46923a2d8c91b500a77951367a883}} 
+\index{SGCore::ITexture2D@{SGCore::ITexture2D}!format@{format}}
+\index{format@{format}!SGCore::ITexture2D@{SGCore::ITexture2D}}
+\doxysubsubsection{\texorpdfstring{format}{format}}
+{\footnotesize\ttfamily const size\+\_\+t const size\+\_\+t const int SGGColor\+Internal\+Format SGGColor\+Format SGCore\+::\+ITexture2\+D\+::format}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{            \textcolor{keywordtype}{size\_t} byteSize = width * height * \textcolor{keyword}{sizeof}(DataType) * channelsCount}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/ITexture2\+D.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/ITexture2\+D.\+cpp\end{DoxyCompactItemize}

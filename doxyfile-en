@@ -1,0 +1,10 @@
+OUTPUT_LANGUAGE     =   English
+PROJECT_NAME        =   SungearEngine
+EXTRACT_PRIVATE     =   NO
+
+INPUT               =   Sources
+OUTPUT_DIRECTORY    =   documentation/en
+RECURSIVE           =   YES
+
+DISABLE_INDEX       =   NO
+GENERATE_TREEVIEW   =   YES

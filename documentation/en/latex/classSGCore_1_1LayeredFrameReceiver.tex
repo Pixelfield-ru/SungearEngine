@@ -1,0 +1,65 @@
+\hypertarget{classSGCore_1_1LayeredFrameReceiver}{}\doxysection{SGCore\+::Layered\+Frame\+Receiver Class Reference}
+\label{classSGCore_1_1LayeredFrameReceiver}\index{SGCore::LayeredFrameReceiver@{SGCore::LayeredFrameReceiver}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_a73a20922b36f990ced77085bdaf133db}\label{classSGCore_1_1LayeredFrameReceiver_a73a20922b36f990ced77085bdaf133db}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ {\bfseries add\+Layer} (const std\+::string \&name, const std\+::uint16\+\_\+t \&fb\+Width, const std\+::uint16\+\_\+t \&fb\+Height)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_ae71ff16b18cf10ebfb452ad5a3c64262}\label{classSGCore_1_1LayeredFrameReceiver_ae71ff16b18cf10ebfb452ad5a3c64262}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ {\bfseries add\+Layer} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_a459c04716cd4ac6a72d155482ebe757f}\label{classSGCore_1_1LayeredFrameReceiver_a459c04716cd4ac6a72d155482ebe757f}} 
+void {\bfseries remove\+Layer} (const std\+::string \&name) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_a2f61aeb264151f99bb1a09c2980e23ff}\label{classSGCore_1_1LayeredFrameReceiver_a2f61aeb264151f99bb1a09c2980e23ff}} 
+void {\bfseries set\+Layer\+Shader} (const std\+::string \&name, const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} $>$ \&shader) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_ad3ed07b67b6f5f9305482796b400a3c0}\label{classSGCore_1_1LayeredFrameReceiver_ad3ed07b67b6f5f9305482796b400a3c0}} 
+const auto \& {\bfseries get\+Layers} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_a4ae3defa080e8c9f221f9f7384c4de65}\label{classSGCore_1_1LayeredFrameReceiver_a4ae3defa080e8c9f221f9f7384c4de65}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ {\bfseries get\+Layer} (const std\+::string \&name) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_aaa89bf2abc8947583d62fd4b0453e2e7}\label{classSGCore_1_1LayeredFrameReceiver_aaa89bf2abc8947583d62fd4b0453e2e7}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{Post\+Process\+Layer}} $>$ {\bfseries get\+Default\+Layer} () noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_a79e890279b3005488011bc46db318432}\label{classSGCore_1_1LayeredFrameReceiver_a79e890279b3005488011bc46db318432}} 
+std\+::uint16\+\_\+t {\bfseries get\+Layers\+Maximum\+Index} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_aa6b45050cda103fddd90140aba09724f}\label{classSGCore_1_1LayeredFrameReceiver_aa6b45050cda103fddd90140aba09724f}} 
+void {\bfseries clear\+Post\+Process\+Frame\+Buffers} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_aec4953a88138d4e49bb5e867a3258357}\label{classSGCore_1_1LayeredFrameReceiver_aec4953a88138d4e49bb5e867a3258357}} 
+void {\bfseries attachment\+Depth\+Pass} (const SGCore\+::\+Ref$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessLayer}{SGCore\+::\+Post\+Process\+Layer}} $>$ \&layer, SGFrame\+Buffer\+Attachment\+Type attachment\+Type) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_ac175b014d7fd21c127d5a18c04ddc702}\label{classSGCore_1_1LayeredFrameReceiver_ac175b014d7fd21c127d5a18c04ddc702}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} $>$ {\bfseries m\+\_\+final\+Frame\+FXShader}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_afaf0d521ef23830b6950b2e0663f467e}\label{classSGCore_1_1LayeredFrameReceiver_afaf0d521ef23830b6950b2e0663f467e}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IShader}{IShader}} $>$ {\bfseries m\+\_\+shader}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_a8190c81a04120e4fc0a415506b090cfc}\label{classSGCore_1_1LayeredFrameReceiver_a8190c81a04120e4fc0a415506b090cfc}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IFrameBuffer}{IFrame\+Buffer}} $>$ {\bfseries m\+\_\+layers\+Combined\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_ad3a14dbd8f54ef7653098a1f646afa7e}\label{classSGCore_1_1LayeredFrameReceiver_ad3a14dbd8f54ef7653098a1f646afa7e}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IFrameBuffer}{IFrame\+Buffer}} $>$ {\bfseries m\+\_\+final\+Frame\+FXFrame\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_a2e300e7875e8a249e6e0ac2018dc69dc}\label{classSGCore_1_1LayeredFrameReceiver_a2e300e7875e8a249e6e0ac2018dc69dc}} 
+std\+::set$<$ SGFrame\+Buffer\+Attachment\+Type $>$ {\bfseries m\+\_\+attachments\+For\+Combining}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1LayeredFrameReceiver_ac46bce624e7f49eec6d92d5a3e462bef}\label{classSGCore_1_1LayeredFrameReceiver_ac46bce624e7f49eec6d92d5a3e462bef}} 
+struct {\bfseries Controllables3\+DUpdater}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/Layered\+Frame\+Receiver.\+h\item 
+Sources/\+SGCore/\+Render/Layered\+Frame\+Receiver.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,53 @@
+\hypertarget{classSGCore_1_1VkVertexBufferLayout}{}\doxysection{SGCore\+::Vk\+Vertex\+Buffer\+Layout Class Reference}
+\label{classSGCore_1_1VkVertexBufferLayout}\index{SGCore::VkVertexBufferLayout@{SGCore::VkVertexBufferLayout}}
+
+
+Inheritance diagram for SGCore\+::Vk\+Vertex\+Buffer\+Layout\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Vk\+Vertex\+Buffer\+Layout\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_a1f05956e34acd69af5c382bda5ad05f0}\label{classSGCore_1_1VkVertexBufferLayout_a1f05956e34acd69af5c382bda5ad05f0}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries prepare} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_adcb84cc7874c25172ae74222423a2e39}\label{classSGCore_1_1VkVertexBufferLayout_adcb84cc7874c25172ae74222423a2e39}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries reset} () noexcept final
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_abaa28cb4483ad6a4e395c4d4f7e03d19}\label{classSGCore_1_1VkVertexBufferLayout_abaa28cb4483ad6a4e395c4d4f7e03d19}} 
+std\+::uint16\+\_\+t {\bfseries get\+Vertex\+Attribute\+Size\+In\+Layout} (const SGGData\+Type \&) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_acc18763ab9e7fa71716ad579a704b0af}\label{classSGCore_1_1VkVertexBufferLayout_acc18763ab9e7fa71716ad579a704b0af}} 
+\mbox{\hyperlink{classSGCore_1_1VkVertexAttribute}{Vk\+Vertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_abb7dc28c6d27d14a7f5dccb41384f4b7}\label{classSGCore_1_1VkVertexBufferLayout_abb7dc28c6d27d14a7f5dccb41384f4b7}} 
+\mbox{\hyperlink{classSGCore_1_1VkVertexAttribute}{Vk\+Vertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, bool normalized) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_abd3fd109df91f1c0c2f82ea3e830dbef}\label{classSGCore_1_1VkVertexBufferLayout_abd3fd109df91f1c0c2f82ea3e830dbef}} 
+\mbox{\hyperlink{classSGCore_1_1VkVertexAttribute}{Vk\+Vertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, bool normalized, const size\+\_\+t \&divisor) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_a5a8acec0d864a19e8e91dd63078b01ab}\label{classSGCore_1_1VkVertexBufferLayout_a5a8acec0d864a19e8e91dd63078b01ab}} 
+\mbox{\hyperlink{classSGCore_1_1VkVertexAttribute}{Vk\+Vertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, const size\+\_\+t \&divisor) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_a6a9b141634c0540a3e1cfbac994a6db4}\label{classSGCore_1_1VkVertexBufferLayout_a6a9b141634c0540a3e1cfbac994a6db4}} 
+\mbox{\hyperlink{classSGCore_1_1VkVertexAttribute}{Vk\+Vertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, const std\+::uint16\+\_\+t \&scalars\+Count, bool normalized, const size\+\_\+t \&stride, const size\+\_\+t \&offset, const size\+\_\+t \&divisor) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_a83f31717c0660fb3075835b8c6395ee9}\label{classSGCore_1_1VkVertexBufferLayout_a83f31717c0660fb3075835b8c6395ee9}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries enable\+Attribute} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $>$ \&) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_a816ae982f106083a282abf1281d29116}\label{classSGCore_1_1VkVertexBufferLayout_a816ae982f106083a282abf1281d29116}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries enable\+Attributes} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkVertexBufferLayout_a2d051cfc8dbc09b2883e65aa48f37e74}\label{classSGCore_1_1VkVertexBufferLayout_a2d051cfc8dbc09b2883e65aa48f37e74}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries add\+Attribute} (Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $>$ attribute) noexcept override
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+Vulkan/Vk\+Vertex\+Buffer\+Layout.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+Vulkan/Vk\+Vertex\+Buffer\+Layout.\+cpp\end{DoxyCompactItemize}

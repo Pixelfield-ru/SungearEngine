@@ -1,0 +1,58 @@
+digraph "SGCore::UniqueNameWrapper"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="SGCore::UniqueNameWrapper",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="SGCore::EntityBaseInfo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1EntityBaseInfo.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="SGCore::IAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1IAsset.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node4 [label="SGCore::ByteFileAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1ByteFileAsset.html",tooltip=" "];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="SGCore::AudioTrackAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1AudioTrackAsset.html",tooltip=" "];
+  Node3 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node6 [label="SGCore::Font",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1Font.html",tooltip=" "];
+  Node3 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node7 [label="SGCore::IMaterial",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1IMaterial.html",tooltip=" "];
+  Node3 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node8 [label="SGCore::ITexture2D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1ITexture2D.html",tooltip=" "];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node9 [label="SGCore::GL4Texture2D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL4Texture2D.html",tooltip=" "];
+  Node9 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node10 [label="SGCore::GL46Texture2D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL46Texture2D.html",tooltip=" "];
+  Node8 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node11 [label="SGCore::ICubemapTexture",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1ICubemapTexture.html",tooltip=" "];
+  Node11 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node12 [label="SGCore::GL4CubemapTexture",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL4CubemapTexture.html",tooltip=" "];
+  Node11 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node13 [label="SGCore::VkCubemapTexture",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1VkCubemapTexture.html",tooltip=" "];
+  Node8 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node14 [label="SGCore::VkTexture2D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1VkTexture2D.html",tooltip=" "];
+  Node3 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node15 [label="SGCore::ModelAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1ModelAsset.html",tooltip=" "];
+  Node3 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node16 [label="SGCore::ShaderAnalyzedFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1ShaderAnalyzedFile.html",tooltip=" "];
+  Node3 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node17 [label="SGCore::ShaderFileAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1ShaderFileAsset.html",tooltip=" "];
+  Node3 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node18 [label="SGCore::TextFileAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1TextFileAsset.html",tooltip=" "];
+  Node3 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node19 [label="SGCore::XMLDocument",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1XMLDocument.html",tooltip=" "];
+  Node1 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node20 [label="SGCore::IFrameBuffer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1IFrameBuffer.html",tooltip=" "];
+  Node20 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node21 [label="SGCore::GL4FrameBuffer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL4FrameBuffer.html",tooltip=" "];
+  Node21 -> Node22 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node22 [label="SGCore::GL46FrameBuffer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL46FrameBuffer.html",tooltip=" "];
+  Node20 -> Node23 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node23 [label="SGCore::VkFrameBuffer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1VkFrameBuffer.html",tooltip=" "];
+  Node1 -> Node24 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node24 [label="SGCore::ISubPassShader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1ISubPassShader.html",tooltip=" "];
+  Node24 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node25 [label="SGCore::GL46SubPassShader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL46SubPassShader.html",tooltip=" "];
+  Node24 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node26 [label="SGCore::VkSubPassShader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1VkSubPassShader.html",tooltip=" "];
+}

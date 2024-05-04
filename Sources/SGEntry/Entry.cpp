@@ -29,9 +29,6 @@ extern "C" {
 #endif
 #endif
 
-#include <glm/vec3.hpp>
-#include <imgui.h>
-
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/ImGuiWrap/Views/IView.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
@@ -59,18 +56,6 @@ size_t getAddress(std::function<RetT(T &)> f) {
     return (size_t) *fnPointer;
 }
 
-SGCore::Threading::ThreadsPool threadsPool(SGCore::Threading::ThreadCreatePolicy::IF_NO_FREE_THREADS);
-
-void onTaskFinish(SGCore::Ref<SGCore::Threading::Thread> inThread)
-{
-    std::cout << "finished task in thread: " << SGCore::Threading::ThreadsManager::currentThread() << std::endl;
-}
-
-void onTaskExecute()
-{
-    std::cout << "execute task in thread : " << SGCore::Threading::ThreadsManager::currentThread() << std::endl;
-}
-
 void coreInit()
 {
     testScene2 = SGCore::MakeRef<SGCore::Scene>();
@@ -78,36 +63,6 @@ void coreInit()
     testScene2->createDefaultSystems();
     SGCore::Scene::addScene(testScene2);
     SGCore::Scene::setCurrentScene("TestScene");
-    
-    std::cout << "MAIN THREAD: " << SGCore::Threading::ThreadsManager::getMainThread() << std::endl;
-    
-    auto thread = threadsPool.getThread();
-    
-    auto task = thread->createTask();
-    task->setOnExecutedCallback(onTaskFinish, SGCore::Threading::ThreadsManager::currentThread(), thread);
-    task->setOnExecuteCallback(onTaskExecute);
-    thread->addTask(task);
-    thread->start();
-    
-    SGCore::AssetManager::getInstance()->m_defaultAssetsLoadPolicy = SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD;
-    
-    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust_prev", "../SGResources/textures/spotted_rust/spotted-rust_preview.jpg");
-    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust0", "../SGResources/textures/spotted_rust/spotted-rust_albedo.png");
-    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust1", "../SGResources/textures/spotted_rust/spotted-rust_ao.png");
-    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust2", "../SGResources/textures/spotted_rust/spotted-rust_height.png");
-    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust3", "../SGResources/textures/spotted_rust/spotted-rust_metallic.png");
-    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust4", "../SGResources/textures/spotted_rust/spotted-rust_normal-ogl.png");
-    SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust5", "../SGResources/textures/spotted_rust/spotted-rust_roughness.png");
-    
-    for(int i = 0; i < 15; ++i)
-    {
-        SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("skybox" + std::to_string(i),
-                                                                                    "../SGResources/textures/skyboxes/skybox0/standard_skybox5.png");
-    }
-    
-    std::cout << "thread0: " << thread << std::endl;
-    auto thread1 = threadsPool.getThread();
-    std::cout << "thread1: " << thread1 << std::endl;
 
     char* sgSourcesPath = std::getenv("SUNGEAR_SOURCES_ROOT");
     
@@ -128,8 +83,6 @@ void coreInit()
     {
         std::cout << "CANNOT LOAD SUNGEAR EDITOR PLUGIN" << std::endl;
     }
-    
-    SGCore::Threading::ThreadsManager::currentThread()->processFinishedTasks();
 }
 
 void onUpdate(const double& dt, const double& fixedDt)

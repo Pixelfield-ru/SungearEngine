@@ -1,0 +1,56 @@
+\hypertarget{classSGCore_1_1GLVertexBufferLayout}{}\doxysection{SGCore\+::GLVertex\+Buffer\+Layout Class Reference}
+\label{classSGCore_1_1GLVertexBufferLayout}\index{SGCore::GLVertexBufferLayout@{SGCore::GLVertexBufferLayout}}
+
+
+Inheritance diagram for SGCore\+::GLVertex\+Buffer\+Layout\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::GLVertex\+Buffer\+Layout\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_af76506bfd816e4d054002bc9d59afa2a}\label{classSGCore_1_1GLVertexBufferLayout_af76506bfd816e4d054002bc9d59afa2a}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries prepare} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_a27f1f60bae98fa6a25c10cc0822d0bf2}\label{classSGCore_1_1GLVertexBufferLayout_a27f1f60bae98fa6a25c10cc0822d0bf2}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries reset} () noexcept final
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_aa4d928b80d690b66c036062c81f4fc4f}\label{classSGCore_1_1GLVertexBufferLayout_aa4d928b80d690b66c036062c81f4fc4f}} 
+\mbox{\hyperlink{structSGCore_1_1GLVertexAttribute}{GLVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_ab081c77c67c96a78e32e3498dde7e403}\label{classSGCore_1_1GLVertexBufferLayout_ab081c77c67c96a78e32e3498dde7e403}} 
+\mbox{\hyperlink{structSGCore_1_1GLVertexAttribute}{GLVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, bool normalized) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_ad44efc1964d110a9d6b68e1714061025}\label{classSGCore_1_1GLVertexBufferLayout_ad44efc1964d110a9d6b68e1714061025}} 
+\mbox{\hyperlink{structSGCore_1_1GLVertexAttribute}{GLVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, bool normalized, const size\+\_\+t \&divisor) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_a05b734609a0f8e165acdb61399473474}\label{classSGCore_1_1GLVertexBufferLayout_a05b734609a0f8e165acdb61399473474}} 
+\mbox{\hyperlink{structSGCore_1_1GLVertexAttribute}{GLVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, const size\+\_\+t \&divisor) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_aa9293bea5eda6c4e060fef8baca633ca}\label{classSGCore_1_1GLVertexBufferLayout_aa9293bea5eda6c4e060fef8baca633ca}} 
+\mbox{\hyperlink{structSGCore_1_1GLVertexAttribute}{GLVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, const std\+::uint16\+\_\+t \&scalars\+Count, bool normalized, const size\+\_\+t \&stride, const size\+\_\+t \&offset, const size\+\_\+t \&divisor) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_a3f7347ddf27ff280e8779a9b8d4c2da0}\label{classSGCore_1_1GLVertexBufferLayout_a3f7347ddf27ff280e8779a9b8d4c2da0}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries enable\+Attribute} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $>$ \&) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_ab7d214530f8ccb36f83587b1868dfbc1}\label{classSGCore_1_1GLVertexBufferLayout_ab7d214530f8ccb36f83587b1868dfbc1}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries enable\+Attributes} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_ae27055551653e54703c52d1647c89d11}\label{classSGCore_1_1GLVertexBufferLayout_ae27055551653e54703c52d1647c89d11}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries add\+Attribute} (Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $>$ attribute) noexcept override
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLVertexBufferLayout_a6229140173b33e8bef4119edd5d59c7d}\label{classSGCore_1_1GLVertexBufferLayout_a6229140173b33e8bef4119edd5d59c7d}} 
+static std\+::uint16\+\_\+t {\bfseries get\+Vertex\+Attribute\+Scalars\+Count} (const SGGData\+Type \&data\+Type) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/GLVertex\+Buffer\+Layout.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/GLVertex\+Buffer\+Layout.\+cpp\end{DoxyCompactItemize}

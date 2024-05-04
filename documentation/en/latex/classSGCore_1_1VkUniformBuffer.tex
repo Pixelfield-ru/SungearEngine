@@ -1,0 +1,70 @@
+\hypertarget{classSGCore_1_1VkUniformBuffer}{}\doxysection{SGCore\+::Vk\+Uniform\+Buffer Class Reference}
+\label{classSGCore_1_1VkUniformBuffer}\index{SGCore::VkUniformBuffer@{SGCore::VkUniformBuffer}}
+
+
+Inheritance diagram for SGCore\+::Vk\+Uniform\+Buffer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Vk\+Uniform\+Buffer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkUniformBuffer_aba08484c693d223dba86b70057660718}\label{classSGCore_1_1VkUniformBuffer_aba08484c693d223dba86b70057660718}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{IUniform\+Buffer}} $>$ {\bfseries bind} () noexcept final
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{IUniform\+Buffer}} $>$ \mbox{\hyperlink{classSGCore_1_1VkUniformBuffer_a6874a93dfede3ca2b3a422587ff4d467}{prepare}} () noexcept final
+\item 
+void \mbox{\hyperlink{classSGCore_1_1VkUniformBuffer_a7e4a95173c8bb48336eb6e9e038c0604}{set\+Layout\+Location}} (const std\+::uint16\+\_\+t \&location) noexcept final
+\item 
+void \mbox{\hyperlink{classSGCore_1_1VkUniformBuffer_a86ed24e502f4dd79e06054d36639a1d4}{destroy}} () noexcept final
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1VkUniformBuffer_a86ed24e502f4dd79e06054d36639a1d4}\label{classSGCore_1_1VkUniformBuffer_a86ed24e502f4dd79e06054d36639a1d4}} 
+\index{SGCore::VkUniformBuffer@{SGCore::VkUniformBuffer}!destroy@{destroy}}
+\index{destroy@{destroy}!SGCore::VkUniformBuffer@{SGCore::VkUniformBuffer}}
+\doxysubsubsection{\texorpdfstring{destroy()}{destroy()}}
+{\footnotesize\ttfamily void SGCore\+::\+Vk\+Uniform\+Buffer\+::destroy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [final]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Destroys GPU object 
+
+Implements \mbox{\hyperlink{classSGCore_1_1IUniformBuffer_ab5404c9dec5e3428bbd157da3c6d4f86}{SGCore\+::\+IUniform\+Buffer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1VkUniformBuffer_a6874a93dfede3ca2b3a422587ff4d467}\label{classSGCore_1_1VkUniformBuffer_a6874a93dfede3ca2b3a422587ff4d467}} 
+\index{SGCore::VkUniformBuffer@{SGCore::VkUniformBuffer}!prepare@{prepare}}
+\index{prepare@{prepare}!SGCore::VkUniformBuffer@{SGCore::VkUniformBuffer}}
+\doxysubsubsection{\texorpdfstring{prepare()}{prepare()}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{SGCore\+::\+IUniform\+Buffer}} $>$ SGCore\+::\+Vk\+Uniform\+Buffer\+::prepare (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [final]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Must be called after pu\+Data Will reallocate buffer to resize. Be careful \begin{DoxyReturn}{Returns}
+This 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{classSGCore_1_1IUniformBuffer_a0e84119cdeba0f414b010b6849490455}{SGCore\+::\+IUniform\+Buffer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1VkUniformBuffer_a7e4a95173c8bb48336eb6e9e038c0604}\label{classSGCore_1_1VkUniformBuffer_a7e4a95173c8bb48336eb6e9e038c0604}} 
+\index{SGCore::VkUniformBuffer@{SGCore::VkUniformBuffer}!setLayoutLocation@{setLayoutLocation}}
+\index{setLayoutLocation@{setLayoutLocation}!SGCore::VkUniformBuffer@{SGCore::VkUniformBuffer}}
+\doxysubsubsection{\texorpdfstring{setLayoutLocation()}{setLayoutLocation()}}
+{\footnotesize\ttfamily void SGCore\+::\+Vk\+Uniform\+Buffer\+::set\+Layout\+Location (\begin{DoxyParamCaption}\item[{const std\+::uint16\+\_\+t \&}]{location }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [final]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+SET LOCATION ONLY BEFORE FIRST PREPARE 
+\begin{DoxyParams}{Parameters}
+{\em location} & \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{classSGCore_1_1IUniformBuffer_a1367cd757a0dc887b23b957502c82266}{SGCore\+::\+IUniform\+Buffer}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+Vulkan/Vk\+Uniform\+Buffer.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+Vulkan/Vk\+Uniform\+Buffer.\+cpp\end{DoxyCompactItemize}

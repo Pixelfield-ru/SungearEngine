@@ -1,0 +1,73 @@
+\hypertarget{structSGCore_1_1FontSpecialization}{}\doxysection{SGCore\+::Font\+Specialization Struct Reference}
+\label{structSGCore_1_1FontSpecialization}\index{SGCore::FontSpecialization@{SGCore::FontSpecialization}}
+
+
+Inheritance diagram for SGCore\+::Font\+Specialization\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Font\+Specialization\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_a6e2016f4376623bc4e5930b7ab32421b}\label{structSGCore_1_1FontSpecialization_a6e2016f4376623bc4e5930b7ab32421b}} 
+void {\bfseries prepare\+To\+Build} (const std\+::string \&path)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_acd024c3aed05a45af37c4c3ee82c1134}\label{structSGCore_1_1FontSpecialization_acd024c3aed05a45af37c4c3ee82c1134}} 
+void {\bfseries destroy\+Face} ()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_a8f0b5ef96d792d0aa8cec66c18929fb9}\label{structSGCore_1_1FontSpecialization_a8f0b5ef96d792d0aa8cec66c18929fb9}} 
+void {\bfseries save\+Text\+As\+Texture} (const std\+::string \&path, const std\+::u16string \&text) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_a90d7dbee13b6fb08d321277f13575caa}\label{structSGCore_1_1FontSpecialization_a90d7dbee13b6fb08d321277f13575caa}} 
+void {\bfseries save\+Atlas\+As\+Texture} (const std\+::string \&path) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_a739e2fd254c979a02497155ecdbc50d1}\label{structSGCore_1_1FontSpecialization_a739e2fd254c979a02497155ecdbc50d1}} 
+void {\bfseries parse} (const char16\+\_\+t \&from, const char16\+\_\+t \&to) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_a7c93788aa29f448abb4b8390877c15e1}\label{structSGCore_1_1FontSpecialization_a7c93788aa29f448abb4b8390877c15e1}} 
+void {\bfseries parse} (const std\+::vector$<$ uint16\+\_\+t $>$ \&characters) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_a92332a153e88acfd39fac242a2e04935}\label{structSGCore_1_1FontSpecialization_a92332a153e88acfd39fac242a2e04935}} 
+bool {\bfseries parse} (const uint16\+\_\+t \&character) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_ad181fc3e47b4b2563b30397e718c1bca}\label{structSGCore_1_1FontSpecialization_ad181fc3e47b4b2563b30397e718c1bca}} 
+void {\bfseries create\+Atlas} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_ab936816b0f210613ec96dfe6e69a09d7}\label{structSGCore_1_1FontSpecialization_ab936816b0f210613ec96dfe6e69a09d7}} 
+const \mbox{\hyperlink{structSGCore_1_1FontGlyph}{Font\+Glyph}} $\ast$ {\bfseries try\+Get\+Glyph} (const char16\+\_\+t \&c) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_abf3e02a17d535ee97aeb7a0c5d6d90f0}\label{structSGCore_1_1FontSpecialization_abf3e02a17d535ee97aeb7a0c5d6d90f0}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1FontSpecializationRenderer}{Font\+Specialization\+Renderer}} $>$ {\bfseries get\+Renderer} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_ad1a0904e7aabcc5d1615f715cc8d509b}\label{structSGCore_1_1FontSpecialization_ad1a0904e7aabcc5d1615f715cc8d509b}} 
+size\+\_\+t {\bfseries get\+Max\+Atlas\+Width} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_a49b64ec2f5381f4855ef22c9bcc6b412}\label{structSGCore_1_1FontSpecialization_a49b64ec2f5381f4855ef22c9bcc6b412}} 
+glm\+::vec$<$ 2, size\+\_\+t, glm\+::defaultp $>$ {\bfseries get\+Max\+Character\+Size} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_aaeb354595e795770904e4260a88ddb18}\label{structSGCore_1_1FontSpecialization_aaeb354595e795770904e4260a88ddb18}} 
+glm\+::vec$<$ 2, size\+\_\+t, glm\+::defaultp $>$ {\bfseries get\+Max\+Character\+Advance} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_aa8956e5fc59684702507f1b2c35481f3}\label{structSGCore_1_1FontSpecialization_aa8956e5fc59684702507f1b2c35481f3}} 
+glm\+::vec$<$ 2, size\+\_\+t, glm\+::defaultp $>$ {\bfseries get\+Max\+Character\+Bearing} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_a14658e4a6d185de56286e94eb68f89fa}\label{structSGCore_1_1FontSpecialization_a14658e4a6d185de56286e94eb68f89fa}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} $>$ {\bfseries m\+\_\+atlas}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1FontSpecialization_af947704edf8d51bacaa398c0e9c6ead5}\label{structSGCore_1_1FontSpecialization_af947704edf8d51bacaa398c0e9c6ead5}} 
+struct {\bfseries Font}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Memory/\+Assets/Font\+Specialization.\+h\item 
+Sources/\+SGCore/\+Memory/\+Assets/Font\+Specialization.\+cpp\end{DoxyCompactItemize}

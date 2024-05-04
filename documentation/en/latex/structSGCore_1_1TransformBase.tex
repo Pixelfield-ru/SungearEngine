@@ -1,0 +1,76 @@
+\hypertarget{structSGCore_1_1TransformBase}{}\doxysection{SGCore\+::Transform\+Base Struct Reference}
+\label{structSGCore_1_1TransformBase}\index{SGCore::TransformBase@{SGCore::TransformBase}}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a546d2355ec506ea021d5beb9ff4d12cb}\label{structSGCore_1_1TransformBase_a546d2355ec506ea021d5beb9ff4d12cb}} 
+bool {\bfseries m\+\_\+block\+Translation} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a5479fcaac423951b6cf4a8c6f14dd3bb}\label{structSGCore_1_1TransformBase_a5479fcaac423951b6cf4a8c6f14dd3bb}} 
+bool {\bfseries m\+\_\+block\+Rotation} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a6072ed95e76c4039ac1f44e84cc03b16}\label{structSGCore_1_1TransformBase_a6072ed95e76c4039ac1f44e84cc03b16}} 
+bool {\bfseries m\+\_\+block\+Scale} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_af48693c21f88946e704520dafe0f6205}\label{structSGCore_1_1TransformBase_af48693c21f88946e704520dafe0f6205}} 
+AABB {\bfseries m\+\_\+aabb}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_ab9a4cd37f53543a5ae3ac93f9e86cdb8}\label{structSGCore_1_1TransformBase_ab9a4cd37f53543a5ae3ac93f9e86cdb8}} 
+glm\+::vec3 {\bfseries m\+\_\+position} \{ 0.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a8282616ff2c091d44799d144f07b2be7}\label{structSGCore_1_1TransformBase_a8282616ff2c091d44799d144f07b2be7}} 
+glm\+::vec3 {\bfseries m\+\_\+rotation} \{ 0.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a4895d8b48d079aca0cdb044ab95056ae}\label{structSGCore_1_1TransformBase_a4895d8b48d079aca0cdb044ab95056ae}} 
+glm\+::vec3 {\bfseries m\+\_\+scale} \{ 1.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_ab7fa2722a2b356d6c2f2babd68c1094b}\label{structSGCore_1_1TransformBase_ab7fa2722a2b356d6c2f2babd68c1094b}} 
+glm\+::vec3 {\bfseries m\+\_\+left} = Math\+Utils\+::left3
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a584356cf4f3da158b83b14383a70dc31}\label{structSGCore_1_1TransformBase_a584356cf4f3da158b83b14383a70dc31}} 
+glm\+::vec3 {\bfseries m\+\_\+forward} = Math\+Utils\+::forward3
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_adf727f1a3e4bd44f97c4bfbf7ca9cf6f}\label{structSGCore_1_1TransformBase_adf727f1a3e4bd44f97c4bfbf7ca9cf6f}} 
+glm\+::vec3 {\bfseries m\+\_\+up} = Math\+Utils\+::up3
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_ab7649ffbb7ad7c02a661af923435a073}\label{structSGCore_1_1TransformBase_ab7649ffbb7ad7c02a661af923435a073}} 
+glm\+::mat4 {\bfseries m\+\_\+translation\+Matrix} = glm\+::mat4(1)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_afc927d0ae4ac98961fd2837f43075826}\label{structSGCore_1_1TransformBase_afc927d0ae4ac98961fd2837f43075826}} 
+glm\+::mat4 {\bfseries m\+\_\+rotation\+Matrix} = glm\+::mat4(1)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a8149f53f1769b7c478fceccc47d4ada8}\label{structSGCore_1_1TransformBase_a8149f53f1769b7c478fceccc47d4ada8}} 
+glm\+::mat4 {\bfseries m\+\_\+scale\+Matrix} = glm\+::mat4(1)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_ae4de2a8f271146668c0ceb2764ba4293}\label{structSGCore_1_1TransformBase_ae4de2a8f271146668c0ceb2764ba4293}} 
+bool {\bfseries m\+\_\+position\+Changed} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a7f5cbb6503baf85d12f56ee4dbc73cd0}\label{structSGCore_1_1TransformBase_a7f5cbb6503baf85d12f56ee4dbc73cd0}} 
+bool {\bfseries m\+\_\+rotation\+Changed} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_ae753f0db35dc72e8480075cb5d2f7305}\label{structSGCore_1_1TransformBase_ae753f0db35dc72e8480075cb5d2f7305}} 
+bool {\bfseries m\+\_\+scale\+Changed} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_ac1bf5325f8171c0d394f75d54d84786c}\label{structSGCore_1_1TransformBase_ac1bf5325f8171c0d394f75d54d84786c}} 
+glm\+::mat4 {\bfseries m\+\_\+model\+Matrix} = glm\+::mat4(1)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a5e9d09a13971affdbbfcec4bf1b015e0}\label{structSGCore_1_1TransformBase_a5e9d09a13971affdbbfcec4bf1b015e0}} 
+glm\+::vec3 {\bfseries m\+\_\+last\+Position} \{ 0.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a777da78ae75d38098f30c71bba8f45a4}\label{structSGCore_1_1TransformBase_a777da78ae75d38098f30c71bba8f45a4}} 
+glm\+::vec3 {\bfseries m\+\_\+last\+Rotation} \{ 0.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a3191d0d8b5707d0fd5bfda78f4690e45}\label{structSGCore_1_1TransformBase_a3191d0d8b5707d0fd5bfda78f4690e45}} 
+glm\+::vec3 {\bfseries m\+\_\+last\+Scale} = glm\+::vec3(0)
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1TransformBase_a9a48413859eabf85476288f5566a4d81}\label{structSGCore_1_1TransformBase_a9a48413859eabf85476288f5566a4d81}} 
+struct {\bfseries Transformations\+Updater}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Transformations/Transform\+Base.\+h\end{DoxyCompactItemize}
