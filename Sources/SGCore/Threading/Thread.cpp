@@ -20,6 +20,7 @@ std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create() n
 
 SGCore::Threading::Thread::~Thread()
 {
+    m_isAlive = false;
     join();
 }
 
@@ -69,8 +70,17 @@ void SGCore::Threading::Thread::processTasks() noexcept
     
     processFinishedTasks();
     
+    // THREAD IS FULL FREE
     if(tasksCount == 0 && onUpdateEventListenersCount == 0)
     {
+        if(m_autoJoinIfNotBusy)
+        {
+            auto joinThisThreadTask = ThreadsManager::getMainThread()->createTask();
+            joinThisThreadTask->setOnExecuteCallback([threadToJoin = shared_from_this()]() {
+                threadToJoin->join();
+            });
+            ThreadsManager::getMainThread()->addTask(joinThisThreadTask);
+        }
         std::this_thread::sleep_for(100ms);
     }
     
@@ -84,13 +94,12 @@ void SGCore::Threading::Thread::start() noexcept
     if(m_isRunning) return;
     
     auto internalFunc = [this]() {
-        while(m_isAlive)
+        while(m_isAlive && m_isRunning)
         {
             processTasks();
         }
     };
     
-    m_isAlive = true;
     m_isRunning = true;
     m_thread = std::thread(internalFunc);
     
@@ -99,13 +108,10 @@ void SGCore::Threading::Thread::start() noexcept
 
 void SGCore::Threading::Thread::join() noexcept
 {
-    bool lastAlive = m_isAlive;
-    m_isAlive = false;
-    if(lastAlive)
-    {
-        m_thread.join();
-        m_isRunning = false;
-    }
+    if(!m_isRunning) return;
+    
+    m_thread.join();
+    m_isRunning = false;
 }
 
 std::shared_ptr<SGCore::Threading::Task> SGCore::Threading::Thread::createTask

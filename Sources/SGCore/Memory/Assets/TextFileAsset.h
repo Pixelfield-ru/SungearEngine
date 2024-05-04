@@ -12,15 +12,15 @@
 
 namespace SGCore
 {
-    class TextFileAsset : public IAsset
+    struct TextFileAsset : public IAsset
     {
+        [[nodiscard]] std::string getData() const noexcept;
+    
+    protected:
+        void doLoad(const std::string& path) override;
+        
     private:
         std::string m_data;
-
-    public:
-        void load(const std::string& path) override;
-
-        [[nodiscard]] std::string getData() const noexcept;
     };
 }
 

@@ -14,7 +14,8 @@ namespace SGCore
     {
         pugi::xml_document m_document;
         
-        void load(const std::string& path) override;
+    protected:
+        void doLoad(const std::string& path) override;
     };
 }
 

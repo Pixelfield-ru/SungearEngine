@@ -14,6 +14,7 @@
 #include "IAssetObserver.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/UniqueName.h"
+#include "SGUtils/Event.h"
 
 namespace SGCore
 {
@@ -25,9 +26,27 @@ namespace SGCore
 
     public:
         std::string m_name;
+        
+        /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
+        Event<void(IAsset* asset)> onLoadDone;
+        /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
+        Event<void(IAsset* asset)> onLazyLoadDone;
 
-        virtual void load(const std::string& path) = 0;
-        virtual void lazyLoad() { }
+        void load(const std::string& path)
+        {
+            doLoad(path);
+            
+            onLoadDone(this);
+        }
+        
+        void lazyLoad()
+        {
+            doLazyLoad();
+            
+            onLazyLoadDone(this);
+            
+            std::cout << "LAZYLOAD DONE" << std::endl;
+        }
 
         void addObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
         void removeObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
@@ -41,6 +60,9 @@ namespace SGCore
         [[nodiscard]] std::filesystem::path getPath() const noexcept;
 
     protected:
+        virtual void doLoad(const std::string& path) = 0;
+        virtual void doLazyLoad() { };
+        
         long m_lastModified = -1;
         std::filesystem::path m_path;
         std::list<Weak<IAssetObserver>> m_observers;

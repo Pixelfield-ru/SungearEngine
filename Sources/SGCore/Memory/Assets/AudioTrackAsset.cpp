@@ -6,7 +6,7 @@
 
 #include "AudioTrackAsset.h"
 
-void SGCore::AudioTrackAsset::load(const std::string& path)
+void SGCore::AudioTrackAsset::doLoad(const std::string& path)
 {
     m_path = path;
     
@@ -30,7 +30,7 @@ void SGCore::AudioTrackAsset::load(const std::string& path)
         return;
     }
     
-    ByteFileAsset::load(path);
+    ByteFileAsset::doLoad(path);
     
     m_audioTrack.loadFromMemory(m_buffer, m_bufferSize, trackType);
 }

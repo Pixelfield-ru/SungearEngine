@@ -8,7 +8,7 @@
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
-void SGCore::Font::load(const std::string& path)
+void SGCore::Font::doLoad(const std::string& path)
 {
     m_path = path;
 }

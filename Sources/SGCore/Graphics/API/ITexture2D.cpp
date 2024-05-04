@@ -16,7 +16,7 @@ void SGCore::STBITextureDataDeleter::operator()(void* data)
 
 // ----------------------------------
 
-void SGCore::ITexture2D::load(const std::string& path)
+void SGCore::ITexture2D::doLoad(const std::string& path)
 {
     int channelsDesired = 0;
     
@@ -53,7 +53,7 @@ void SGCore::ITexture2D::load(const std::string& path)
     }
 }
 
-void SGCore::ITexture2D::lazyLoad()
+void SGCore::ITexture2D::doLazyLoad()
 {
     create();
     

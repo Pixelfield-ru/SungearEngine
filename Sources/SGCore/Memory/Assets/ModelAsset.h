@@ -20,8 +20,10 @@ namespace SGCore
     public:
         std::vector<std::shared_ptr<Node>> m_nodes;
 
-        void load(const std::string&) override;
-
+    protected:
+        void doLoad(const std::string&) override;
+        void doLazyLoad() override;
+        
     private:
         // local import flags
         // TODO: maybe reimport after change flags
@@ -33,6 +35,8 @@ namespace SGCore
         std::shared_ptr<Node> processNode(const aiNode*, const aiScene*);
         std::shared_ptr<IMeshData> processMesh(const aiMesh*, const aiScene*);
         void loadTextures(aiMaterial* aiMat, std::shared_ptr<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureType& sgMaterialTextureType);
+        
+        void prepareNodeMeshes(const Ref<Node>& node) noexcept;
     };
 }
 

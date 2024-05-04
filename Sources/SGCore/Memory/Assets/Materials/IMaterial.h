@@ -21,9 +21,6 @@ namespace SGCore
     public:
         std::string m_name;
 
-        // TODO: impl
-        void load(const std::string& path) override;
-
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.
         * @param type - Material type of texture
@@ -106,7 +103,10 @@ namespace SGCore
         float m_shininess               = 32.0f;
         float m_metallicFactor          = 1.0f;
         float m_roughnessFactor         = 1.0f;
-
+        
+        // TODO: impl
+        void doLoad(const std::string& path) override;
+        
         // first - shader name
         // std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;
         // std::shared_ptr<Graphics::IShader> m_currentShader;

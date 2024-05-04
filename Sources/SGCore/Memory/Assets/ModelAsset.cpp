@@ -14,7 +14,7 @@
 
 size_t polygonsNumber = 0;
 
-void SGCore::ModelAsset::load(const std::string& path)
+void SGCore::ModelAsset::doLoad(const std::string& path)
 {
     m_path = path;
 
@@ -271,8 +271,6 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_TRANSMISSION, SGTextureType::SGTT_TRANSMISSION);
     }
 
-    sgMeshData->prepare();
-
     return sgMeshData;
 }
 
@@ -296,5 +294,27 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
         spdlog::info("Loaded material`s '{0}' texture. Raw type name: '{1}', path: {2}", aiMat->GetName().data,
                      sgStandardTextureTypeToString(sgMaterialTextureType), finalPath
         );
+    }
+}
+
+// IN LAZY LOAD BECAUSE MESHES PREPARE NEEDS CALLS OPENGL
+void SGCore::ModelAsset::doLazyLoad()
+{
+    for(const auto& node : m_nodes)
+    {
+        prepareNodeMeshes(node);
+    }
+}
+
+void SGCore::ModelAsset::prepareNodeMeshes(const SGCore::Ref<SGCore::Node>& node) noexcept
+{
+    for(const auto& mesh : node->m_meshesData)
+    {
+        mesh->prepare();
+    }
+    
+    for(const auto& child : node->m_children)
+    {
+        prepareNodeMeshes(child);
     }
 }

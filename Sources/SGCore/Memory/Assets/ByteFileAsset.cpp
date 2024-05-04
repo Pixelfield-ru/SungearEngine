@@ -10,7 +10,7 @@ SGCore::ByteFileAsset::~ByteFileAsset()
     delete m_buffer;
 }
 
-void SGCore::ByteFileAsset::load(const std::string& path)
+void SGCore::ByteFileAsset::doLoad(const std::string& path)
 {
     m_buffer = SGUtils::FileUtils::readBytes(path, m_bufferSize);
     m_path = path;

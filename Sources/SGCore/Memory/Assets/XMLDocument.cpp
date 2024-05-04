@@ -5,7 +5,7 @@
 #include "XMLDocument.h"
 #include <spdlog/spdlog.h>
 
-void SGCore::XMLDocument::load(const std::string& path)
+void SGCore::XMLDocument::doLoad(const std::string& path)
 {
     pugi::xml_parse_result parseResult = m_document.load_file(path.c_str());
     

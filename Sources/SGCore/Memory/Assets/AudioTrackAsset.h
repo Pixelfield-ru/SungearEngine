@@ -12,13 +12,13 @@ namespace SGCore
 {
     struct AudioTrackAsset : public ByteFileAsset
     {
+        AudioTrack& getAudioTrack() noexcept;
+    
+    protected:
+        void doLoad(const std::string& path) override;
+        
     private:
         AudioTrack m_audioTrack;
-    
-    public:
-        void load(const std::string& path) override;
-        
-        AudioTrack& getAudioTrack() noexcept;
     };
 }
 

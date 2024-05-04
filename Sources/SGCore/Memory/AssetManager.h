@@ -29,17 +29,14 @@ namespace SGCore
     class SGCORE_EXPORT AssetManager
     {
     public:
-        AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD;
+        AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
         
         static void init() noexcept;
-
-        /**
-        * Adds asset with loading by path.
-        * If asset already exists then return already loaded asset.
-        * @tparam AssetT - Type of asset
-        * @param path - Asset path
-        * @return Added or already loaded asset
-        */
+        
+        // =================================================================================================
+        // =================================================================================================
+        // =================================================================================================
+        
         template<typename AssetT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, AssetT>)
         std::shared_ptr<AssetT> loadAsset(AssetsLoadPolicy assetsLoadPolicy,
@@ -47,6 +44,8 @@ namespace SGCore
                                           const std::string& path,
                                           AssetCtorArgs&&... assetCtorArgs)
         {
+            std::lock_guard guard(m_mutex);
+            
             entity_t entity;
             
             auto foundEntity = m_entities.find(path);
@@ -97,7 +96,136 @@ namespace SGCore
         {
             return loadAsset<AssetT, AssetCtorArgs...>(m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
         }
-
+        
+        // =================================================================================================
+        // =================================================================================================
+        // =================================================================================================
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        void loadAsset(Ref<AssetT>& assetToLoad,
+                       AssetsLoadPolicy assetsLoadPolicy,
+                       const Ref<Threading::Thread>& lazyLoadInThread,
+                       const std::string& path)
+        {
+            std::lock_guard guard(m_mutex);
+            
+            entity_t entity;
+            
+            auto foundEntity = m_entities.find(path);
+            if(foundEntity != m_entities.end())
+            {
+                entity = foundEntity->second;
+            }
+            else
+            {
+                entity = m_registry->create();
+                m_entities[path] = entity;
+            }
+            
+            Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
+            // asset found
+            if(foundAsset)
+            {
+                assetToLoad = *foundAsset;
+                return;
+            }
+            
+            m_registry->emplace<Ref<AssetT>>(entity, assetToLoad);
+            
+            std::filesystem::path p(path);
+            
+            distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
+            
+            assetToLoad->setRawName(p.stem().string());
+            
+            spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
+        }
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        void loadAsset(Ref<AssetT>& assetToLoad,
+                       AssetsLoadPolicy assetsLoadPolicy,
+                       const std::string& path)
+        {
+            loadAsset<AssetT>(assetToLoad, assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path);
+        }
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        void loadAsset(Ref<AssetT>& assetToLoad,
+                       const std::string& path)
+        {
+            loadAsset<AssetT>(assetToLoad, m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path);
+        }
+        
+        // =================================================================================================
+        // =================================================================================================
+        // =================================================================================================
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        void loadAssetWithAlias(Ref<AssetT>& assetToLoad,
+                                AssetsLoadPolicy assetsLoadPolicy,
+                                const Ref<Threading::Thread>& lazyLoadInThread,
+                                const std::string& alias,
+                                const std::string& path)
+        {
+            std::lock_guard guard(m_mutex);
+            
+            entity_t entity;
+            
+            auto foundEntity = m_entities.find(alias);
+            if(foundEntity != m_entities.end())
+            {
+                entity = foundEntity->second;
+            }
+            else
+            {
+                entity = m_registry->create();
+                m_entities[alias] = entity;
+            }
+            
+            Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
+            // asset found
+            if(foundAsset)
+            {
+                assetToLoad = *foundAsset;
+                return;
+            }
+            
+            m_registry->emplace<Ref<AssetT>>(entity, assetToLoad);
+            
+            distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
+            
+            assetToLoad->setRawName(alias);
+            
+            spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
+        }
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        void loadAssetWithAlias(Ref<AssetT>& assetToLoad,
+                                AssetsLoadPolicy assetsLoadPolicy,
+                                const std::string& alias,
+                                const std::string& path)
+        {
+            loadAssetWithAlias<AssetT>(assetToLoad, assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path);
+        }
+        
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        void loadAssetWithAlias(Ref<AssetT>& assetToLoad,
+                                const std::string& alias,
+                                const std::string& path)
+        {
+            loadAssetWithAlias<AssetT>(assetToLoad, m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path);
+        }
+        
+        // =================================================================================================
+        // =================================================================================================
+        // =================================================================================================
+        
         template<typename AssetT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, AssetT>)
         std::shared_ptr<AssetT> loadAssetWithAlias(AssetsLoadPolicy assetsLoadPolicy,
@@ -106,6 +234,8 @@ namespace SGCore
                                                    const std::string& path,
                                                    AssetCtorArgs&&... assetCtorArgs)
         {
+            std::lock_guard guard(m_mutex);
+            
             entity_t entity;
             
             auto foundEntity = m_entities.find(alias);
@@ -128,8 +258,6 @@ namespace SGCore
             
             Ref<AssetT> newAsset = m_registry->emplace<Ref<AssetT>>(entity,
                                                                     AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...));
-            
-            std::filesystem::path p(path);
             
             distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -159,10 +287,16 @@ namespace SGCore
             return loadAssetWithAlias<AssetT, AssetCtorArgs...>(m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
         }
         
+        // =================================================================================================
+        // =================================================================================================
+        // =================================================================================================
+        
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
         void addAsset(const std::string& alias, const Ref<AssetT>& asset)
         {
+            std::lock_guard guard(m_mutex);
+            
             entity_t entity;
             
             auto foundEntity = m_entities.find(alias);
@@ -196,6 +330,8 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         void addAsset(const Ref<AssetT>& asset)
         {
+            std::lock_guard guard(m_mutex);
+            
             const std::string& assetPath = asset->getPath().string();
             
             entity_t entity;
@@ -237,6 +373,8 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         bool isAssetExists(const std::string& pathOrAlias) noexcept
         {
+            std::lock_guard guard(m_mutex);
+            
             auto foundEntity = m_entities.find(pathOrAlias);
             if(foundEntity == m_entities.end())
             {
@@ -269,6 +407,7 @@ namespace SGCore
                 case PARALLEL_THEN_LAZYLOAD:
                 {
                     auto loadInThread = m_threadsPool.getThread();
+                    loadInThread->m_autoJoinIfNotBusy = true;
                     auto loadAssetTask = loadInThread->createTask();
                     
                     loadAssetTask->setOnExecuteCallback([asset, path]() {
@@ -290,6 +429,7 @@ namespace SGCore
                 case PARALLEL_NO_LAZYLOAD:
                 {
                     auto loadInThread = m_threadsPool.getThread();
+                    loadInThread->m_autoJoinIfNotBusy = true;
                     auto loadAssetTask = loadInThread->createTask();
                     
                     loadAssetTask->setOnExecuteCallback([asset, path]() {
@@ -308,6 +448,8 @@ namespace SGCore
                 lazyLoadInThread->processFinishedTasks();
             }
         }
+        
+        std::mutex m_mutex;
         
         Ref<registry_t> m_registry = MakeRef<registry_t>();
         std::unordered_map<std::string, entity_t> m_entities;

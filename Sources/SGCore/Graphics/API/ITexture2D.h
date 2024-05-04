@@ -54,9 +54,6 @@ namespace SGCore
         bool m_useMultisampling = false;
         std::uint8_t m_multisamplingSamplesCount = 8;
 
-        void load(const std::string& path) override;
-        void lazyLoad() override;
-
         virtual void create() = 0;
 
         template<typename DataType = std::uint8_t>
@@ -122,6 +119,9 @@ namespace SGCore
 
     protected:
         size_t m_pixelSize = 0;
+        
+        void doLoad(const std::string& path) override;
+        void doLazyLoad() override;
         
         virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
         virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;

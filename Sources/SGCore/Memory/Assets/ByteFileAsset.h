@@ -11,17 +11,16 @@ namespace SGCore
 {
     struct ByteFileAsset : public IAsset
     {
-    protected:
-        char* m_buffer = nullptr;
-        size_t m_bufferSize = 0;
-        
-    public:
         ~ByteFileAsset();
-        
-        void load(const std::string& path) override;
         
         [[nodiscard]] char* getBuffer() const noexcept;
         [[nodiscard]] size_t getBufferSize() const noexcept;
+    
+    protected:
+        void doLoad(const std::string& path) override;
+        
+        char* m_buffer = nullptr;
+        size_t m_bufferSize = 0;
     };
 }
 

@@ -27,6 +27,8 @@ namespace SGCore::Threading
          */
         static std::shared_ptr<Thread> create() noexcept;
         
+        std::atomic<bool> m_autoJoinIfNotBusy = false;
+        
         ~Thread();
         
         virtual void start() noexcept;
@@ -82,7 +84,7 @@ namespace SGCore::Threading
         Event<void()> onUpdateCopy;
         
         std::atomic<bool> m_isRunning = false;
-        std::atomic<bool> m_isAlive = false;
+        std::atomic<bool> m_isAlive = true;
         
         std::thread m_thread;
     };

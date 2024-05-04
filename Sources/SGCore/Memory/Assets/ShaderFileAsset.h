@@ -11,10 +11,10 @@
 
 namespace SGCore
 {
-    class ShaderFileAsset : public IAsset
+    struct ShaderFileAsset : public IAsset
     {
-    public:
-        [[nodiscard]] void load(const std::string& path) override;
+    protected:
+        void doLoad(const std::string& path) override;
     };
 }
 

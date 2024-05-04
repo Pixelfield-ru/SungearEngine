@@ -6,7 +6,7 @@
 #include "SGSLETranslator.h"
 #include "SGUtils/FileUtils.h"
 
-void SGCore::ShaderAnalyzedFile::load(const std::string& path)
+void SGCore::ShaderAnalyzedFile::doLoad(const std::string& path)
 {
     SGSLETranslator translator;
     

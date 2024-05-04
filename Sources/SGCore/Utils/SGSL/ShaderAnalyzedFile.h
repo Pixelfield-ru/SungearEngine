@@ -24,8 +24,6 @@ namespace SGCore
         std::unordered_map<std::string, SGSLESubPass> m_subPasses;
         std::vector<std::shared_ptr<ShaderAnalyzedFile>> m_includedFiles;
         
-        void load(const std::string& path) final;
-        
         void includeFile(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
         {
             m_globalCode += analyzedFile->m_globalCode + "\n";
@@ -106,6 +104,9 @@ namespace SGCore
             
             return allCode;
         }
+        
+    protected:
+        void doLoad(const std::string& path) final;
     };
 }
 

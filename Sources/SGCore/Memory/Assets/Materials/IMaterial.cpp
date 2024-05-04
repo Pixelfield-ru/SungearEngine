@@ -3,7 +3,7 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/IShader.h"
 
-void SGCore::IMaterial::load(const std::string& path)
+void SGCore::IMaterial::doLoad(const std::string& path)
 {
 
 }

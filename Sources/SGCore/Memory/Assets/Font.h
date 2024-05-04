@@ -16,8 +16,6 @@ namespace SGCore
 {
     struct Font : public IAsset
     {
-        void load(const std::string& path) override;
-        
         Ref<FontSpecialization> addOrGetSpecialization(const SGCore::FontSpecializationSettings& fontSpecializationSettings);
         Ref<FontSpecialization> getSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
         
@@ -25,6 +23,9 @@ namespace SGCore
         {
             return m_specializations;
         }
+        
+    protected:
+        void doLoad(const std::string& path) override;
         
     private:
         std::unordered_map<FontSpecializationSettings, Ref<FontSpecialization>> m_specializations;

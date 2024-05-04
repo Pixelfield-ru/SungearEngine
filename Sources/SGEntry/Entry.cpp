@@ -89,7 +89,7 @@ void coreInit()
     thread->addTask(task);
     thread->start();
     
-    // SGCore::AssetManager::getInstance()->m_defaultAssetsLoadPolicy = SGCore::AssetsLoadPolicy::SINGLE_THREADED;
+    SGCore::AssetManager::getInstance()->m_defaultAssetsLoadPolicy = SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD;
     
     SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust_prev", "../SGResources/textures/spotted_rust/spotted-rust_preview.jpg");
     SGCore::AssetManager::getInstance()->loadAssetWithAlias<SGCore::ITexture2D>("rust0", "../SGResources/textures/spotted_rust/spotted-rust_albedo.png");
