@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['prepare_770',['prepare',['../classSGCore_1_1GL3MeshData.html#af408afad0774374da3a27d93cb6d70d7',1,'SGCore::GL3MeshData::prepare()'],['../classSGCore_1_1GL4UniformBuffer.html#a65424e4408641d14b2d333b757deeffe',1,'SGCore::GL4UniformBuffer::prepare()'],['../classSGCore_1_1GL46UniformBuffer.html#a8c994cedf47492914b11056f8893044e',1,'SGCore::GL46UniformBuffer::prepare()'],['../classSGCore_1_1IUniformBuffer.html#a0e84119cdeba0f414b010b6849490455',1,'SGCore::IUniformBuffer::prepare()'],['../classSGCore_1_1VkUniformBuffer.html#a6874a93dfede3ca2b3a422587ff4d467',1,'SGCore::VkUniformBuffer::prepare()']]],
-  ['prepareframe_771',['prepareFrame',['../classSGCore_1_1GL4Renderer.html#a807a1487ab56ec48f0a97b2341ed87da',1,'SGCore::GL4Renderer::prepareFrame()'],['../classSGCore_1_1IRenderer.html#a51dbb4e1f9f50b20ce6c7291639488ed',1,'SGCore::IRenderer::prepareFrame()'],['../classSGCore_1_1VkRenderer.html#a98a20687f185d48f37b739ca55493eef',1,'SGCore::VkRenderer::prepareFrame()']]],
-  ['prepareuniformbuffers_772',['prepareUniformBuffers',['../classSGCore_1_1GL4Renderer.html#a29db8663d906f775e37b7fa8f3d7c2c9',1,'SGCore::GL4Renderer::prepareUniformBuffers()'],['../classSGCore_1_1IRenderer.html#af2036f5b211688373b051e04d0609b8e',1,'SGCore::IRenderer::prepareUniformBuffers()']]],
-  ['printinfo_773',['printInfo',['../classSGCore_1_1GL4Renderer.html#aee51037ae35b299e5417b2a6fe699ca5',1,'SGCore::GL4Renderer::printInfo()'],['../classSGCore_1_1IRenderer.html#a6909af43881351007f7e7b4ef2364f22',1,'SGCore::IRenderer::printInfo()'],['../classSGCore_1_1VkRenderer.html#a6d8086f406227585f2b208d3897777b0',1,'SGCore::VkRenderer::printInfo()']]]
+  ['onassetmodified_793',['onAssetModified',['../classSGCore_1_1IShader.html#a7e00330149111be2a1409fda307dbf10',1,'SGCore::IShader']]],
+  ['onassetpathchanged_794',['onAssetPathChanged',['../classSGCore_1_1IShader.html#ae0e5de720440c6cd8fa2a4d1a0af70b0',1,'SGCore::IShader']]],
+  ['onconstruct_795',['onConstruct',['../structSGCore_1_1IPlugin.html#a8afd272113b87f5c1e20d0c01bc1c954',1,'SGCore::IPlugin']]],
+  ['operator_21_3d_796',['operator!=',['../structSGCore_1_1IPlugin.html#ac37f8c1f97b407516f2b23f72666b415',1,'SGCore::IPlugin']]],
+  ['operator_3d_797',['operator=',['../classSGCore_1_1IMaterial.html#ae1bd9a9f25ee383b9849dceee2e651cc',1,'SGCore::IMaterial']]],
+  ['operator_3d_3d_798',['operator==',['../structSGCore_1_1IPlugin.html#a8bbd537eeb6d3441abcc085d48b062ca',1,'SGCore::IPlugin']]]
 ];

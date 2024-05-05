@@ -95,20 +95,15 @@ $(document).ready(function(){initNavTree('structSGCore_1_1DynamicLibrary.html','
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aafc6e77b51bc66abb5ee8cade2d09268"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#aafc6e77b51bc66abb5ee8cade2d09268">~DynamicLibrary</a> ()</td></tr>
-<tr class="memdesc:aafc6e77b51bc66abb5ee8cade2d09268"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor of <a class="el" href="structSGCore_1_1DynamicLibrary.html">DynamicLibrary</a> calls unload function.  <a href="structSGCore_1_1DynamicLibrary.html#aafc6e77b51bc66abb5ee8cade2d09268">More...</a><br /></td></tr>
 <tr class="separator:aafc6e77b51bc66abb5ee8cade2d09268"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f9a86e1fd7b7aadfc8c87e3725448cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#a5f9a86e1fd7b7aadfc8c87e3725448cc">load</a> (const std::string &amp;pluginDLPath, std::string &amp;err) noexcept</td></tr>
-<tr class="memdesc:a5f9a86e1fd7b7aadfc8c87e3725448cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a dynamic library using the pluginDLPath.<br  />
- If the download was not successful, then the native handler is equal to nullptr.  <a href="structSGCore_1_1DynamicLibrary.html#a5f9a86e1fd7b7aadfc8c87e3725448cc">More...</a><br /></td></tr>
 <tr class="separator:a5f9a86e1fd7b7aadfc8c87e3725448cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70f01a85d57531b074c54a9dd3fdb8c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8">unload</a> ()</td></tr>
 <tr class="separator:a70f01a85d57531b074c54a9dd3fdb8c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memTemplParams" colspan="2"><a id="a249f33efbec1ed2ec23e8774b5ac74cd"></a>
-template&lt;typename FuncT &gt; </td></tr>
-<tr class="memitem:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memTemplItemLeft" align="right" valign="top">std::function&lt; FuncT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>loadFunction</b> (const char *funcName, std::string &amp;err) noexcept</td></tr>
+<tr class="memitem:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memTemplParams" colspan="2">template&lt;typename FuncT &gt; </td></tr>
+<tr class="memitem:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memTemplItemLeft" align="right" valign="top">std::function&lt; FuncT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#a249f33efbec1ed2ec23e8774b5ac74cd">loadFunction</a> (const char *funcName, std::string &amp;err) noexcept</td></tr>
 <tr class="separator:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4cf5f912a3d27512e0d3c764cf6032e"><td class="memItemLeft" align="right" valign="top"><a id="ab4cf5f912a3d27512e0d3c764cf6032e"></a>
-native_handler_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNativeHandler</b> () noexcept</td></tr>
+<tr class="memitem:ab4cf5f912a3d27512e0d3c764cf6032e"><td class="memItemLeft" align="right" valign="top">native_handler_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#ab4cf5f912a3d27512e0d3c764cf6032e">getNativeHandler</a> () noexcept</td></tr>
 <tr class="separator:ab4cf5f912a3d27512e0d3c764cf6032e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -137,13 +132,37 @@ Note that the functions you want to load must be marked with SG_DLEXPORT and (in
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Destructor of <a class="el" href="structSGCore_1_1DynamicLibrary.html">DynamicLibrary</a> calls unload function. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8">SGCore::DynamicLibrary::unload</a> </dd></dl>
+<p>Destructor of <a class="el" href="structSGCore_1_1DynamicLibrary.html">DynamicLibrary</a> calls unload function. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8">SGCore::DynamicLibrary::unload</a> </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab4cf5f912a3d27512e0d3c764cf6032e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4cf5f912a3d27512e0d3c764cf6032e">&#9670;&nbsp;</a></span>getNativeHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">native_handler_t SGCore::DynamicLibrary::getNativeHandler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns native handler. </p><dl class="section return"><dt>Returns</dt><dd>Native handler. </dd></dl>
+
+</div>
+</div>
 <a id="a5f9a86e1fd7b7aadfc8c87e3725448cc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5f9a86e1fd7b7aadfc8c87e3725448cc">&#9670;&nbsp;</a></span>load()</h2>
 
@@ -177,10 +196,8 @@ Note that the functions you want to load must be marked with SG_DLEXPORT and (in
   </tr>
 </table>
 </div><div class="memdoc">
-
 <p>Loads a dynamic library using the pluginDLPath.<br  />
- If the download was not successful, then the native handler is equal to nullptr. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+ If the download was not successful, then the native handler is equal to nullptr. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">pluginDLPath</td><td>The path to the dynamic library. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">err</td><td>Error generated while loading the library.<br  />
@@ -188,6 +205,61 @@ Note that the functions you want to load must be marked with SG_DLEXPORT and (in
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a249f33efbec1ed2ec23e8774b5ac74cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a249f33efbec1ed2ec23e8774b5ac74cd">&#9670;&nbsp;</a></span>loadFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FuncT &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt;FuncT&gt; SGCore::DynamicLibrary::loadFunction </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>funcName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>err</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Allows you to load a library function. </p><dl class="section note"><dt>Note</dt><dd>Consider name mangling when loading a function.<br  />
+ System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library. </dd></dl>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">FuncT</td><td>Function declaration. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">funcName</td><td>Name of the function to load. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">err</td><td>Error generated while loading the function.<br  />
+ Remains unchanged if the function was loaded successfully. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::function </dd></dl>
 
 </div>
 </div>
@@ -213,7 +285,7 @@ Note that the functions you want to load must be marked with SG_DLEXPORT and (in
   </tr>
 </table>
 </div><div class="memdoc">
-<p>\brief\details Unloads the dynamic library from memory.<br  />
+<p>Unloads the dynamic library from memory.<br  />
 All static members of the dynamic library are released.<br  />
 The native handler becomes equal to nullptr. </p>
 

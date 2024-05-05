@@ -25,10 +25,10 @@
 var NAVTREE =
 [
   [ "SungearEngine", "index.html", [
+    [ "Todo List", "todo.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
-      [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
         [ "Functions", "functions_func.html", null ],
@@ -37,23 +37,13 @@ var NAVTREE =
     ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ]
-    ] ],
-    [ "Examples", "examples.html", "examples" ]
+    ] ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"AABB_8h_source.html",
-"classSGCore_1_1AssetManager.html#aa7b858e40f11b859ea62fa29438d11a7",
-"classSGCore_1_1IFrameBuffer.html#aa77b3906356b8475b1a639c254f79b13",
-"classSGCore_1_1IUniformBuffer.html",
-"classSGCore_1_1VkVertexArray.html",
-"structSGCore_1_1AudioSource.html#a5052394616ced473eba53e16d40af6df",
-"structSGCore_1_1ImGuiWrap_1_1IView.html#a1191397808d1aec44278f5c80847b89f",
-"structSGCore_1_1SGSLESubShader.html#ade0f3c5304f0bae001ec557c3ea53e12",
-"structSGCore_1_1class__function__traits_3_01Return_07Object_1_1_5_08_07Args_8_8_8_08_01const_01_4.html#a3f310019f96e3d7ab1cd5ea51f571e2a",
-"structSGUtils_1_1Utils_1_1WeakCompare.html#a980aefd029104181411c8fa13b9bbb6c"
+"DynamicLibrary_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

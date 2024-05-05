@@ -24,3 +24,13 @@ std::string SGCore::IPlugin::getLocalPath() const noexcept
 {
     return m_path;
 }
+
+std::string SGCore::IPlugin::getName() const noexcept
+{
+    return m_version;
+}
+
+std::string SGCore::IPlugin::getVersion() const noexcept
+{
+    return m_version;
+}

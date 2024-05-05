@@ -89,14 +89,14 @@ $(document).ready(function(){initNavTree('structSGCore_1_1PluginWrap.html',''); 
 <div class="title">SGCore::PluginWrap Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="PluginWrap_8h_source.html">PluginWrap.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad43accf9095c0d39d5a6c9c11e29de1e"><td class="memItemLeft" align="right" valign="top"><a id="ad43accf9095c0d39d5a6c9c11e29de1e"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>getPluginLib</b> () const noexcept</td></tr>
+<tr class="memitem:ad43accf9095c0d39d5a6c9c11e29de1e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1PluginWrap.html#ad43accf9095c0d39d5a6c9c11e29de1e">getPluginLib</a> () const noexcept</td></tr>
 <tr class="separator:ad43accf9095c0d39d5a6c9c11e29de1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a790c03d4c7d52872d02b7cb9caf993f1"><td class="memItemLeft" align="right" valign="top"><a id="a790c03d4c7d52872d02b7cb9caf993f1"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>getPlugin</b> () const noexcept</td></tr>
+<tr class="memitem:a790c03d4c7d52872d02b7cb9caf993f1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1PluginWrap.html#a790c03d4c7d52872d02b7cb9caf993f1">getPlugin</a> () const noexcept</td></tr>
 <tr class="separator:a790c03d4c7d52872d02b7cb9caf993f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
@@ -105,6 +105,61 @@ Friends</h2></td></tr>
 struct&#160;</td><td class="memItemRight" valign="bottom"><b>PluginsManager</b></td></tr>
 <tr class="separator:aba1cafd3bc43f2e4ab9b611bfd2325f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A wrapper structure containing an <a class="el" href="structSGCore_1_1IPlugin.html">SGCore::IPlugin</a> structure object and the dynamic library (<a class="el" href="structSGCore_1_1DynamicLibrary.html">SGCore::DynamicLibrary</a>) from which the plugin was loaded. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a790c03d4c7d52872d02b7cb9caf993f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a790c03d4c7d52872d02b7cb9caf993f1">&#9670;&nbsp;</a></span>getPlugin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto SGCore::PluginWrap::getPlugin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Plugin (<a class="el" href="structSGCore_1_1IPlugin.html">SGCore::IPlugin</a>). </dd></dl>
+
+</div>
+</div>
+<a id="ad43accf9095c0d39d5a6c9c11e29de1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad43accf9095c0d39d5a6c9c11e29de1e">&#9670;&nbsp;</a></span>getPluginLib()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto SGCore::PluginWrap::getPluginLib </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Dynamic library (<a class="el" href="structSGCore_1_1DynamicLibrary.html">SGCore::DynamicLibrary</a>) of the plugin (<a class="el" href="structSGCore_1_1IPlugin.html">SGCore::IPlugin</a>). </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>Sources/SGCore/PluginsSystem/<a class="el" href="PluginWrap_8h_source.html">PluginWrap.h</a></li>
 </ul>

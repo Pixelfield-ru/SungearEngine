@@ -72,7 +72,7 @@ void coreInit()
 
         // hardcoded sgeditor load
         auto sgEditorPlugin =
-                SGCore::PluginsManager::loadPlugin("SungearEngineEditor", "1.0.0",
+                SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
                                                    SGCore::PluginBuildType::PBT_RELEASE);
@@ -95,7 +95,7 @@ void onUpdate(const double& dt, const double& fixedDt)
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_P))
     {
-        auto sgEditorPlugin = SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", "1.0.0", { }, SGCore::PluginBuildType::PBT_RELEASE);
+        auto sgEditorPlugin = SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", { }, SGCore::PluginBuildType::PBT_RELEASE);
         std::cout << sgEditorPlugin << std::endl;
     }
 }

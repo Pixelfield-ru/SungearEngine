@@ -105,33 +105,35 @@ $(document).ready(function(){initNavTree('PluginsManager_8h_source.html',''); in
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
 <div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="structSGCore_1_1PluginsManager.html">   19</a></span>&#160;    <span class="keyword">struct </span>SGCORE_EXPORT <a class="code" href="structSGCore_1_1PluginsManager.html">PluginsManager</a></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        SG_NOINLINE <span class="keyword">static</span> <span class="keyword">auto</span>&amp; getPlugins() noexcept</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            <span class="keywordflow">return</span> s_plugins;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        }</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keyword">static</span> std::string createPluginProject(<span class="keyword">const</span> std::string&amp; projectPath,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                                               <span class="keyword">const</span> std::string&amp; pluginName,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                                               <span class="keyword">const</span> std::string&amp; cxxStandard);</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structSGCore_1_1PluginsManager.html#aad22104acafa3925c98706e100f96ef1">   25</a></span>&#160;        SG_NOINLINE <span class="keyword">static</span> <span class="keyword">auto</span>&amp; <a class="code" href="structSGCore_1_1PluginsManager.html#aad22104acafa3925c98706e100f96ef1">getPlugins</a>() noexcept</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keywordflow">return</span> s_plugins;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        }</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <span class="keyword">static</span> Ref&lt;PluginWrap&gt; loadPlugin(<span class="keyword">const</span> std::string&amp; pluginName,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                                          <span class="keyword">const</span> std::string&amp; pluginVersion,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                                          <span class="keyword">const</span> std::string&amp; localPluginPath,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                                          <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; entryArgs,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                                          PluginBuildType pluginBuildType);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keyword">static</span> Ref&lt;PluginWrap&gt; reloadPlugin(<span class="keyword">const</span> std::string&amp; pluginName,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                                            <span class="keyword">const</span> std::string&amp; pluginVersion,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                            <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; entryArgs,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                            PluginBuildType pluginBuildType);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keyword">static</span> <span class="keyword">inline</span> std::vector&lt;Ref&lt;PluginWrap&gt;&gt; s_plugins;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    };</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//SUNGEARENGINE_PLUGINSMANAGER_H</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structSGCore_1_1PluginsManager.html#a14d013f273e4f12f4e31d94028454b0d">   47</a></span>&#160;        <span class="keyword">static</span> std::string <a class="code" href="structSGCore_1_1PluginsManager.html#a14d013f273e4f12f4e31d94028454b0d">createPluginProject</a>(<span class="keyword">const</span> std::string&amp; projectPath,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                               <span class="keyword">const</span> std::string&amp; pluginName,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                               <span class="keyword">const</span> std::string&amp; cxxStandard);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        </div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="structSGCore_1_1PluginsManager.html#a1956fc8366817d6be1af34a6e079f015">   61</a></span>&#160;        <span class="keyword">static</span> Ref&lt;PluginWrap&gt; <a class="code" href="structSGCore_1_1PluginsManager.html#a1956fc8366817d6be1af34a6e079f015">loadPlugin</a>(<span class="keyword">const</span> std::string&amp; pluginName,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                                          <span class="keyword">const</span> std::string&amp; localPluginPath,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                          <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; entryArgs,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                          PluginBuildType pluginBuildType);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        </div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="structSGCore_1_1PluginsManager.html#a71c69aeeb68e097e24da873bd711845b">   76</a></span>&#160;        <span class="keyword">static</span> Ref&lt;PluginWrap&gt; <a class="code" href="structSGCore_1_1PluginsManager.html#a71c69aeeb68e097e24da873bd711845b">reloadPlugin</a>(<span class="keyword">const</span> std::string&amp; pluginName,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                                            <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; entryArgs,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                                            PluginBuildType pluginBuildType);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keyword">static</span> <span class="keyword">inline</span> std::vector&lt;Ref&lt;PluginWrap&gt;&gt; s_plugins;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    };</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//SUNGEARENGINE_PLUGINSMANAGER_H</span></div>
 <div class="ttc" id="astructSGCore_1_1PluginsManager_html"><div class="ttname"><a href="structSGCore_1_1PluginsManager.html">SGCore::PluginsManager</a></div><div class="ttdef"><b>Definition:</b> PluginsManager.h:20</div></div>
+<div class="ttc" id="astructSGCore_1_1PluginsManager_html_a14d013f273e4f12f4e31d94028454b0d"><div class="ttname"><a href="structSGCore_1_1PluginsManager.html#a14d013f273e4f12f4e31d94028454b0d">SGCore::PluginsManager::createPluginProject</a></div><div class="ttdeci">static std::string createPluginProject(const std::string &amp;projectPath, const std::string &amp;pluginName, const std::string &amp;cxxStandard)</div></div>
+<div class="ttc" id="astructSGCore_1_1PluginsManager_html_a1956fc8366817d6be1af34a6e079f015"><div class="ttname"><a href="structSGCore_1_1PluginsManager.html#a1956fc8366817d6be1af34a6e079f015">SGCore::PluginsManager::loadPlugin</a></div><div class="ttdeci">static Ref&lt; PluginWrap &gt; loadPlugin(const std::string &amp;pluginName, const std::string &amp;localPluginPath, const std::vector&lt; std::string &gt; &amp;entryArgs, PluginBuildType pluginBuildType)</div></div>
+<div class="ttc" id="astructSGCore_1_1PluginsManager_html_a71c69aeeb68e097e24da873bd711845b"><div class="ttname"><a href="structSGCore_1_1PluginsManager.html#a71c69aeeb68e097e24da873bd711845b">SGCore::PluginsManager::reloadPlugin</a></div><div class="ttdeci">static Ref&lt; PluginWrap &gt; reloadPlugin(const std::string &amp;pluginName, const std::vector&lt; std::string &gt; &amp;entryArgs, PluginBuildType pluginBuildType)</div></div>
+<div class="ttc" id="astructSGCore_1_1PluginsManager_html_aad22104acafa3925c98706e100f96ef1"><div class="ttname"><a href="structSGCore_1_1PluginsManager.html#aad22104acafa3925c98706e100f96ef1">SGCore::PluginsManager::getPlugins</a></div><div class="ttdeci">static SG_NOINLINE auto &amp; getPlugins() noexcept</div><div class="ttdef"><b>Definition:</b> PluginsManager.h:25</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

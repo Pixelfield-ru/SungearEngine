@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_7edynamiclibrary_777',['~DynamicLibrary',['../structSGCore_1_1DynamicLibrary.html#aafc6e77b51bc66abb5ee8cade2d09268',1,'SGCore::DynamicLibrary']]]
+  ['unload_806',['unload',['../structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8',1,'SGCore::DynamicLibrary']]]
 ];

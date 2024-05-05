@@ -91,22 +91,219 @@ $(document).ready(function(){initNavTree('structSGCore_1_1PluginsManager.html','
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aad22104acafa3925c98706e100f96ef1"><td class="memItemLeft" align="right" valign="top"><a id="aad22104acafa3925c98706e100f96ef1"></a>
-static SG_NOINLINE auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPlugins</b> () noexcept</td></tr>
+<tr class="memitem:aad22104acafa3925c98706e100f96ef1"><td class="memItemLeft" align="right" valign="top">static SG_NOINLINE auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1PluginsManager.html#aad22104acafa3925c98706e100f96ef1">getPlugins</a> () noexcept</td></tr>
 <tr class="separator:aad22104acafa3925c98706e100f96ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24bb41899f72cb1c5e74ab93863a4a99"><td class="memItemLeft" align="right" valign="top"><a id="a24bb41899f72cb1c5e74ab93863a4a99"></a>
-static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>createPluginProject</b> (const std::string &amp;projectPath, const std::string &amp;pluginName, const std::string &amp;cxxStandard)</td></tr>
-<tr class="separator:a24bb41899f72cb1c5e74ab93863a4a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab12dd689d60ff818fb4925dc855ef866"><td class="memItemLeft" align="right" valign="top"><a id="ab12dd689d60ff818fb4925dc855ef866"></a>
-static Ref&lt; <a class="el" href="structSGCore_1_1PluginWrap.html">PluginWrap</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>loadPlugin</b> (const std::string &amp;pluginName, const std::string &amp;pluginVersion, const std::string &amp;localPluginPath, const std::vector&lt; std::string &gt; &amp;entryArgs, PluginBuildType pluginBuildType)</td></tr>
-<tr class="separator:ab12dd689d60ff818fb4925dc855ef866"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d30c55c3fe3229c5b62098427d9d814"><td class="memItemLeft" align="right" valign="top"><a id="a1d30c55c3fe3229c5b62098427d9d814"></a>
-static Ref&lt; <a class="el" href="structSGCore_1_1PluginWrap.html">PluginWrap</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>reloadPlugin</b> (const std::string &amp;pluginName, const std::string &amp;pluginVersion, const std::vector&lt; std::string &gt; &amp;entryArgs, PluginBuildType pluginBuildType)</td></tr>
-<tr class="separator:a1d30c55c3fe3229c5b62098427d9d814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14d013f273e4f12f4e31d94028454b0d"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1PluginsManager.html#a14d013f273e4f12f4e31d94028454b0d">createPluginProject</a> (const std::string &amp;projectPath, const std::string &amp;pluginName, const std::string &amp;cxxStandard)</td></tr>
+<tr class="separator:a14d013f273e4f12f4e31d94028454b0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1956fc8366817d6be1af34a6e079f015"><td class="memItemLeft" align="right" valign="top">static Ref&lt; <a class="el" href="structSGCore_1_1PluginWrap.html">PluginWrap</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1PluginsManager.html#a1956fc8366817d6be1af34a6e079f015">loadPlugin</a> (const std::string &amp;pluginName, const std::string &amp;localPluginPath, const std::vector&lt; std::string &gt; &amp;entryArgs, PluginBuildType pluginBuildType)</td></tr>
+<tr class="separator:a1956fc8366817d6be1af34a6e079f015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c69aeeb68e097e24da873bd711845b"><td class="memItemLeft" align="right" valign="top">static Ref&lt; <a class="el" href="structSGCore_1_1PluginWrap.html">PluginWrap</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1PluginsManager.html#a71c69aeeb68e097e24da873bd711845b">reloadPlugin</a> (const std::string &amp;pluginName, const std::vector&lt; std::string &gt; &amp;entryArgs, PluginBuildType pluginBuildType)</td></tr>
+<tr class="separator:a71c69aeeb68e097e24da873bd711845b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following files:<ul>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a14d013f273e4f12f4e31d94028454b0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14d013f273e4f12f4e31d94028454b0d">&#9670;&nbsp;</a></span>createPluginProject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::string SGCore::PluginsManager::createPluginProject </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>projectPath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>pluginName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>cxxStandard</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Creates a standard plugin project.<br  />
+<br  />
+Creates files in the plugin folder: CMakeLists.txt for building the plugin;<br  />
+Sources/PluginMain.h and Sources/PluginMain.cpp for loading the plugin by the engine;<br  />
+Sources/{pluginName}.h and Sources/{pluginName}.cpp to implement a structure called {pluginName} that inherits <a class="el" href="structSGCore_1_1IPlugin.html">SGCore::IPlugin</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Please note that to create a plugin project you must have the SUNGEAR_SOURCES_ROOT environment variable set.<br  />
+It should indicate the path to the Sungear Engine sources.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">projectPath</td><td>Path to the folder in which the folder with the plugin project will be created. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pluginName</td><td>Plugin name.<br  />
+When creating a plugin, a folder with the same name will be created, as well as the name of the structure that inherits <a class="el" href="structSGCore_1_1IPlugin.html">SGCore::IPlugin</a> will be the same. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cxxStandard</td><td>The C++ standard that the plugin will use.<br  />
+Available standards: C++98, C++03, C++11, C++14, C++17, C++20, C++23. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The string containing the error caused when creating the plugin.<br  />
+If the plugin was successfully created, the string is empty. </dd></dl>
+
+</div>
+</div>
+<a id="aad22104acafa3925c98706e100f96ef1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad22104acafa3925c98706e100f96ef1">&#9670;&nbsp;</a></span>getPlugins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static SG_NOINLINE auto&amp; SGCore::PluginsManager::getPlugins </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns a vector of all loaded plugins. </p><dl class="section return"><dt>Returns</dt><dd>Vector of plugins. </dd></dl>
+
+</div>
+</div>
+<a id="a1956fc8366817d6be1af34a6e079f015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1956fc8366817d6be1af34a6e079f015">&#9670;&nbsp;</a></span>loadPlugin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Ref&lt;<a class="el" href="structSGCore_1_1PluginWrap.html">PluginWrap</a>&gt; SGCore::PluginsManager::loadPlugin </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>pluginName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>localPluginPath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>entryArgs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PluginBuildType&#160;</td>
+          <td class="paramname"><em>pluginBuildType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Loads the plugin by local path {localPluginPath} and adds the plugin to the plugin vector upon successful loading. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">pluginName</td><td>Plugin name. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">localPluginPath</td><td>Local path on the device to the plugin folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">entryArgs</td><td>Arguments that will be passed to the <a class="el" href="structSGCore_1_1IPlugin.html#a8afd272113b87f5c1e20d0c01bc1c954">SGCore::IPlugin::onConstruct</a> function. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pluginBuildType</td><td>The plugin build type to load. Depending on the build type, the plugin is loaded along the path {localPluginPath}/cmake-build-{pluginBuildType}/{pluginName}.{dynamic library extension}.<br  />
+See SGCore::PluginBuildType. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Make an error return when loading the plugin. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>SGCore::Ref&lt;<a class="el" href="structSGCore_1_1PluginWrap.html">SGCore::PluginWrap</a>&gt;. </dd></dl>
+
+</div>
+</div>
+<a id="a71c69aeeb68e097e24da873bd711845b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c69aeeb68e097e24da873bd711845b">&#9670;&nbsp;</a></span>reloadPlugin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Ref&lt;<a class="el" href="structSGCore_1_1PluginWrap.html">PluginWrap</a>&gt; SGCore::PluginsManager::reloadPlugin </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>pluginName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>entryArgs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PluginBuildType&#160;</td>
+          <td class="paramname"><em>pluginBuildType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Reloads the plugin named {pluginName}.<br  />
+To reload a plugin, the path that was used to load the plugin is used. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">pluginName</td><td>The name of the plugin that needs to be reloaded. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">entryArgs</td><td>Arguments that will be passed to the <a class="el" href="structSGCore_1_1IPlugin.html#a8afd272113b87f5c1e20d0c01bc1c954">SGCore::IPlugin::onConstruct</a> function. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pluginBuildType</td><td>The plugin build type to load. Depending on the build type, the plugin is loaded along the path {localPluginPath}/cmake-build-{pluginBuildType}/{pluginName}.{dynamic library extension}.<br  />
+See SGCore::PluginBuildType. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Make an error return when loading the plugin. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>SGCore::Ref&lt;<a class="el" href="structSGCore_1_1PluginWrap.html">SGCore::PluginWrap</a>&gt;. </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>Sources/SGCore/PluginsSystem/<a class="el" href="PluginsManager_8h_source.html">PluginsManager.h</a></li>
-<li>Sources/SGCore/PluginsSystem/PluginsManager.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

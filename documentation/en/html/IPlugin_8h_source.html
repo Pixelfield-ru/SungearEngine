@@ -100,35 +100,46 @@ $(document).ready(function(){initNavTree('IPlugin_8h_source.html',''); initResiz
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>SGCore</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">enum</span> PluginBuildType</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        PBT_DEBUG,</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        PBT_RELEASE</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    };</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    </div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html">   22</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structSGCore_1_1IPlugin.html">IPlugin</a></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keyword">friend</span> <span class="keyword">struct </span><a class="code" href="structSGCore_1_1PluginsManager.html">PluginsManager</a>;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keyword">virtual</span> ~<a class="code" href="structSGCore_1_1IPlugin.html">IPlugin</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        std::string m_name;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        std::string m_version;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code" href="structSGCore_1_1IPlugin.html">IPlugin</a>&amp; other) <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <span class="keywordtype">bool</span> operator!=(<span class="keyword">const</span> <a class="code" href="structSGCore_1_1IPlugin.html">IPlugin</a>&amp; other) <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        </div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        [[nodiscard]] std::string getLocalPath() <span class="keyword">const</span> noexcept;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">virtual</span> std::string onConstruct(<span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; args) = 0;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        std::string m_path;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    };</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// SUNGEARENGINE_IPLUGIN_H</span></div>
-<div class="ttc" id="astructSGCore_1_1IPlugin_html"><div class="ttname"><a href="structSGCore_1_1IPlugin.html">SGCore::IPlugin</a></div><div class="ttdef"><b>Definition:</b> IPlugin.h:23</div></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">enum</span> PluginBuildType</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        PBT_DEBUG, </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        PBT_RELEASE </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    };</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    </div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html">   25</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structSGCore_1_1IPlugin.html">IPlugin</a></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        <span class="keyword">friend</span> <span class="keyword">struct </span><a class="code" href="structSGCore_1_1PluginsManager.html">PluginsManager</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        </div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html#a9c7a4a9e8f4b000b6f5759f3776a7411">   35</a></span>&#160;        <span class="keyword">virtual</span> <a class="code" href="structSGCore_1_1IPlugin.html#a9c7a4a9e8f4b000b6f5759f3776a7411">~IPlugin</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        </div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html#a8bbd537eeb6d3441abcc085d48b062ca">   42</a></span>&#160;        <span class="keywordtype">bool</span> <a class="code" href="structSGCore_1_1IPlugin.html#a8bbd537eeb6d3441abcc085d48b062ca">operator==</a>(<span class="keyword">const</span> <a class="code" href="structSGCore_1_1IPlugin.html">IPlugin</a>&amp; other) <span class="keyword">const</span> noexcept;</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html#ac37f8c1f97b407516f2b23f72666b415">   48</a></span>&#160;        <span class="keywordtype">bool</span> <a class="code" href="structSGCore_1_1IPlugin.html#ac37f8c1f97b407516f2b23f72666b415">operator!=</a>(<span class="keyword">const</span> <a class="code" href="structSGCore_1_1IPlugin.html">IPlugin</a>&amp; other) <span class="keyword">const</span> noexcept;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        </div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html#acf350f2a4b804b0aa5ee4fb67cca9c35">   54</a></span>&#160;        [[nodiscard]] std::string <a class="code" href="structSGCore_1_1IPlugin.html#acf350f2a4b804b0aa5ee4fb67cca9c35">getLocalPath</a>() const noexcept;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        </div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html#a84840c10bab432dc53b5b24bfaf5d6cd">   59</a></span>&#160;        [[nodiscard]] std::<span class="keywordtype">string</span> <a class="code" href="structSGCore_1_1IPlugin.html#a84840c10bab432dc53b5b24bfaf5d6cd">getName</a>() const noexcept;</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html#acdaacf512be5bb6e779586b9afa6c299">   63</a></span>&#160;        [[nodiscard]] std::<span class="keywordtype">string</span> <a class="code" href="structSGCore_1_1IPlugin.html#acdaacf512be5bb6e779586b9afa6c299">getVersion</a>() const noexcept;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    protected:</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html#a8afd272113b87f5c1e20d0c01bc1c954">   76</a></span>&#160;        virtual std::<span class="keywordtype">string</span> <a class="code" href="structSGCore_1_1IPlugin.html#a8afd272113b87f5c1e20d0c01bc1c954">onConstruct</a>(const std::vector&lt;std::<span class="keywordtype">string</span>&gt;&amp; args) = 0;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        std::<span class="keywordtype">string</span> m_name;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        std::<span class="keywordtype">string</span> m_version;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        </div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="structSGCore_1_1IPlugin.html#a34f4414a6775b96f1d3e1e7fbeecb0c1">   84</a></span>&#160;        std::<span class="keywordtype">string</span> <a class="code" href="structSGCore_1_1IPlugin.html#a34f4414a6775b96f1d3e1e7fbeecb0c1">m_path</a>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    };</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// SUNGEARENGINE_IPLUGIN_H</span></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html"><div class="ttname"><a href="structSGCore_1_1IPlugin.html">SGCore::IPlugin</a></div><div class="ttdef"><b>Definition:</b> IPlugin.h:26</div></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html_a34f4414a6775b96f1d3e1e7fbeecb0c1"><div class="ttname"><a href="structSGCore_1_1IPlugin.html#a34f4414a6775b96f1d3e1e7fbeecb0c1">SGCore::IPlugin::m_path</a></div><div class="ttdeci">std::string m_path</div><div class="ttdef"><b>Definition:</b> IPlugin.h:84</div></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html_a84840c10bab432dc53b5b24bfaf5d6cd"><div class="ttname"><a href="structSGCore_1_1IPlugin.html#a84840c10bab432dc53b5b24bfaf5d6cd">SGCore::IPlugin::getName</a></div><div class="ttdeci">std::string getName() const noexcept</div></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html_a8afd272113b87f5c1e20d0c01bc1c954"><div class="ttname"><a href="structSGCore_1_1IPlugin.html#a8afd272113b87f5c1e20d0c01bc1c954">SGCore::IPlugin::onConstruct</a></div><div class="ttdeci">virtual std::string onConstruct(const std::vector&lt; std::string &gt; &amp;args)=0</div></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html_a8bbd537eeb6d3441abcc085d48b062ca"><div class="ttname"><a href="structSGCore_1_1IPlugin.html#a8bbd537eeb6d3441abcc085d48b062ca">SGCore::IPlugin::operator==</a></div><div class="ttdeci">bool operator==(const IPlugin &amp;other) const noexcept</div></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html_a9c7a4a9e8f4b000b6f5759f3776a7411"><div class="ttname"><a href="structSGCore_1_1IPlugin.html#a9c7a4a9e8f4b000b6f5759f3776a7411">SGCore::IPlugin::~IPlugin</a></div><div class="ttdeci">virtual ~IPlugin()=default</div></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html_ac37f8c1f97b407516f2b23f72666b415"><div class="ttname"><a href="structSGCore_1_1IPlugin.html#ac37f8c1f97b407516f2b23f72666b415">SGCore::IPlugin::operator!=</a></div><div class="ttdeci">bool operator!=(const IPlugin &amp;other) const noexcept</div></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html_acdaacf512be5bb6e779586b9afa6c299"><div class="ttname"><a href="structSGCore_1_1IPlugin.html#acdaacf512be5bb6e779586b9afa6c299">SGCore::IPlugin::getVersion</a></div><div class="ttdeci">std::string getVersion() const noexcept</div></div>
+<div class="ttc" id="astructSGCore_1_1IPlugin_html_acf350f2a4b804b0aa5ee4fb67cca9c35"><div class="ttname"><a href="structSGCore_1_1IPlugin.html#acf350f2a4b804b0aa5ee4fb67cca9c35">SGCore::IPlugin::getLocalPath</a></div><div class="ttdeci">std::string getLocalPath() const noexcept</div></div>
 <div class="ttc" id="astructSGCore_1_1PluginsManager_html"><div class="ttname"><a href="structSGCore_1_1PluginsManager.html">SGCore::PluginsManager</a></div><div class="ttdef"><b>Definition:</b> PluginsManager.h:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

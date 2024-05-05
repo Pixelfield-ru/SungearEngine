@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['addtexture2d_754',['addTexture2D',['../classSGCore_1_1IMaterial.html#a9843943c2da1960b891bc74bd7cfeef4',1,'SGCore::IMaterial']]]
+  ['createpluginproject_28',['createPluginProject',['../structSGCore_1_1PluginsManager.html#a14d013f273e4f12f4e31d94028454b0d',1,'SGCore::PluginsManager']]]
 ];

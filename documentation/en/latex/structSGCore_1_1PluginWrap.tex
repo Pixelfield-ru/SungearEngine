@@ -1,13 +1,15 @@
 \hypertarget{structSGCore_1_1PluginWrap}{}\doxysection{SGCore\+::Plugin\+Wrap Struct Reference}
 \label{structSGCore_1_1PluginWrap}\index{SGCore::PluginWrap@{SGCore::PluginWrap}}
+
+
+{\ttfamily \#include $<$Plugin\+Wrap.\+h$>$}
+
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{structSGCore_1_1PluginWrap_ad43accf9095c0d39d5a6c9c11e29de1e}\label{structSGCore_1_1PluginWrap_ad43accf9095c0d39d5a6c9c11e29de1e}} 
-auto {\bfseries get\+Plugin\+Lib} () const noexcept
+auto \mbox{\hyperlink{structSGCore_1_1PluginWrap_ad43accf9095c0d39d5a6c9c11e29de1e}{get\+Plugin\+Lib}} () const noexcept
 \item 
-\mbox{\Hypertarget{structSGCore_1_1PluginWrap_a790c03d4c7d52872d02b7cb9caf993f1}\label{structSGCore_1_1PluginWrap_a790c03d4c7d52872d02b7cb9caf993f1}} 
-auto {\bfseries get\+Plugin} () const noexcept
+auto \mbox{\hyperlink{structSGCore_1_1PluginWrap_a790c03d4c7d52872d02b7cb9caf993f1}{get\+Plugin}} () const noexcept
 \end{DoxyCompactItemize}
 \doxysubsection*{Friends}
 \begin{DoxyCompactItemize}
@@ -15,6 +17,30 @@ auto {\bfseries get\+Plugin} () const noexcept
 \mbox{\Hypertarget{structSGCore_1_1PluginWrap_aba1cafd3bc43f2e4ab9b611bfd2325f6}\label{structSGCore_1_1PluginWrap_aba1cafd3bc43f2e4ab9b611bfd2325f6}} 
 struct {\bfseries Plugins\+Manager}
 \end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A wrapper structure containing an \mbox{\hyperlink{structSGCore_1_1IPlugin}{SGCore\+::\+IPlugin}} structure object and the dynamic library (\mbox{\hyperlink{structSGCore_1_1DynamicLibrary}{SGCore\+::\+Dynamic\+Library}}) from which the plugin was loaded. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structSGCore_1_1PluginWrap_a790c03d4c7d52872d02b7cb9caf993f1}\label{structSGCore_1_1PluginWrap_a790c03d4c7d52872d02b7cb9caf993f1}} 
+\index{SGCore::PluginWrap@{SGCore::PluginWrap}!getPlugin@{getPlugin}}
+\index{getPlugin@{getPlugin}!SGCore::PluginWrap@{SGCore::PluginWrap}}
+\doxysubsubsection{\texorpdfstring{getPlugin()}{getPlugin()}}
+{\footnotesize\ttfamily auto SGCore\+::\+Plugin\+Wrap\+::get\+Plugin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\begin{DoxyReturn}{Returns}
+Plugin (\mbox{\hyperlink{structSGCore_1_1IPlugin}{SGCore\+::\+IPlugin}}). 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1PluginWrap_ad43accf9095c0d39d5a6c9c11e29de1e}\label{structSGCore_1_1PluginWrap_ad43accf9095c0d39d5a6c9c11e29de1e}} 
+\index{SGCore::PluginWrap@{SGCore::PluginWrap}!getPluginLib@{getPluginLib}}
+\index{getPluginLib@{getPluginLib}!SGCore::PluginWrap@{SGCore::PluginWrap}}
+\doxysubsubsection{\texorpdfstring{getPluginLib()}{getPluginLib()}}
+{\footnotesize\ttfamily auto SGCore\+::\+Plugin\+Wrap\+::get\+Plugin\+Lib (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\begin{DoxyReturn}{Returns}
+Dynamic library (\mbox{\hyperlink{structSGCore_1_1DynamicLibrary}{SGCore\+::\+Dynamic\+Library}}) of the plugin (\mbox{\hyperlink{structSGCore_1_1IPlugin}{SGCore\+::\+IPlugin}}). 
+\end{DoxyReturn}
 
 
 The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}

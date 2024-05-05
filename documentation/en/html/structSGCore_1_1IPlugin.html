@@ -83,7 +83,8 @@ $(document).ready(function(){initNavTree('structSGCore_1_1IPlugin.html',''); ini
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="structSGCore_1_1IPlugin-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -93,24 +94,34 @@ $(document).ready(function(){initNavTree('structSGCore_1_1IPlugin.html',''); ini
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8bbd537eeb6d3441abcc085d48b062ca"><td class="memItemLeft" align="right" valign="top"><a id="a8bbd537eeb6d3441abcc085d48b062ca"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="structSGCore_1_1IPlugin.html">IPlugin</a> &amp;other) const noexcept</td></tr>
+<tr class="memitem:a9c7a4a9e8f4b000b6f5759f3776a7411"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1IPlugin.html#a9c7a4a9e8f4b000b6f5759f3776a7411">~IPlugin</a> ()=default</td></tr>
+<tr class="separator:a9c7a4a9e8f4b000b6f5759f3776a7411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bbd537eeb6d3441abcc085d48b062ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1IPlugin.html#a8bbd537eeb6d3441abcc085d48b062ca">operator==</a> (const <a class="el" href="structSGCore_1_1IPlugin.html">IPlugin</a> &amp;other) const noexcept</td></tr>
 <tr class="separator:a8bbd537eeb6d3441abcc085d48b062ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac37f8c1f97b407516f2b23f72666b415"><td class="memItemLeft" align="right" valign="top"><a id="ac37f8c1f97b407516f2b23f72666b415"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="structSGCore_1_1IPlugin.html">IPlugin</a> &amp;other) const noexcept</td></tr>
+<tr class="memitem:ac37f8c1f97b407516f2b23f72666b415"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1IPlugin.html#ac37f8c1f97b407516f2b23f72666b415">operator!=</a> (const <a class="el" href="structSGCore_1_1IPlugin.html">IPlugin</a> &amp;other) const noexcept</td></tr>
 <tr class="separator:ac37f8c1f97b407516f2b23f72666b415"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf350f2a4b804b0aa5ee4fb67cca9c35"><td class="memItemLeft" align="right" valign="top"><a id="acf350f2a4b804b0aa5ee4fb67cca9c35"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getLocalPath</b> () const noexcept</td></tr>
+<tr class="memitem:acf350f2a4b804b0aa5ee4fb67cca9c35"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1IPlugin.html#acf350f2a4b804b0aa5ee4fb67cca9c35">getLocalPath</a> () const noexcept</td></tr>
 <tr class="separator:acf350f2a4b804b0aa5ee4fb67cca9c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84840c10bab432dc53b5b24bfaf5d6cd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1IPlugin.html#a84840c10bab432dc53b5b24bfaf5d6cd">getName</a> () const noexcept</td></tr>
+<tr class="separator:a84840c10bab432dc53b5b24bfaf5d6cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdaacf512be5bb6e779586b9afa6c299"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1IPlugin.html#acdaacf512be5bb6e779586b9afa6c299">getVersion</a> () const noexcept</td></tr>
+<tr class="separator:acdaacf512be5bb6e779586b9afa6c299"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a8afd272113b87f5c1e20d0c01bc1c954"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1IPlugin.html#a8afd272113b87f5c1e20d0c01bc1c954">onConstruct</a> (const std::vector&lt; std::string &gt; &amp;args)=0</td></tr>
+<tr class="separator:a8afd272113b87f5c1e20d0c01bc1c954"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
 <tr class="memitem:a63ce37e7c2a59543d65677c9c343ed3c"><td class="memItemLeft" align="right" valign="top"><a id="a63ce37e7c2a59543d65677c9c343ed3c"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_name</b></td></tr>
 <tr class="separator:a63ce37e7c2a59543d65677c9c343ed3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20ab22a9b216f2c17f58914443935b06"><td class="memItemLeft" align="right" valign="top"><a id="a20ab22a9b216f2c17f58914443935b06"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_version</b></td></tr>
 <tr class="separator:a20ab22a9b216f2c17f58914443935b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34f4414a6775b96f1d3e1e7fbeecb0c1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1IPlugin.html#a34f4414a6775b96f1d3e1e7fbeecb0c1">m_path</a></td></tr>
+<tr class="separator:a34f4414a6775b96f1d3e1e7fbeecb0c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -118,9 +129,244 @@ Friends</h2></td></tr>
 struct&#160;</td><td class="memItemRight" valign="bottom"><b>PluginsManager</b></td></tr>
 <tr class="separator:aba1cafd3bc43f2e4ab9b611bfd2325f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following files:<ul>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9c7a4a9e8f4b000b6f5759f3776a7411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c7a4a9e8f4b000b6f5759f3776a7411">&#9670;&nbsp;</a></span>~IPlugin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual SGCore::IPlugin::~IPlugin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Virtual plugin destructor. </p><dl class="section note"><dt>Note</dt><dd>Please note that if you create your own plugin, then you must implement this destructor in the structure of your plugin.<br  />
+In it, you must remove all resources from all collections located directly in the engine, since this process does not happen automatically.<br  />
+For example: you must unsubscribe from all events you subscribed to; you must delete all assets that were loaded by the plugin using the standard SGCore::AssetManager instance (SGCore::AssetsManager::getInstance). </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="acf350f2a4b804b0aa5ee4fb67cca9c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf350f2a4b804b0aa5ee4fb67cca9c35">&#9670;&nbsp;</a></span>getLocalPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string SGCore::IPlugin::getLocalPath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the local path on the device to the plugin folder. </p><dl class="section return"><dt>Returns</dt><dd>Local path to the plugin. </dd></dl>
+
+</div>
+</div>
+<a id="a84840c10bab432dc53b5b24bfaf5d6cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84840c10bab432dc53b5b24bfaf5d6cd">&#9670;&nbsp;</a></span>getName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string SGCore::IPlugin::getName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Plugin name. </dd></dl>
+
+</div>
+</div>
+<a id="acdaacf512be5bb6e779586b9afa6c299"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdaacf512be5bb6e779586b9afa6c299">&#9670;&nbsp;</a></span>getVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string SGCore::IPlugin::getVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Plugin version. </dd></dl>
+
+</div>
+</div>
+<a id="a8afd272113b87f5c1e20d0c01bc1c954"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8afd272113b87f5c1e20d0c01bc1c954">&#9670;&nbsp;</a></span>onConstruct()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string SGCore::IPlugin::onConstruct </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>A function that is guaranteed to be called immediately after calling the plugin structure constructor.<br  />
+It is called in <a class="el" href="structSGCore_1_1PluginsManager.html#a1956fc8366817d6be1af34a6e079f015">SGCore::PluginsManager::loadPlugin</a> and also in <a class="el" href="structSGCore_1_1PluginsManager.html#a71c69aeeb68e097e24da873bd711845b">SGCore::PluginsManager::reloadPlugin</a>.<br  />
+If you create your own plugin, then you must implement this function in the structure of your plugin.<br  />
+When calling <a class="el" href="structSGCore_1_1PluginsManager.html#a14d013f273e4f12f4e31d94028454b0d">SGCore::PluginsManager::createPluginProject</a>, the implementation of this function is generated automatically. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Arguments that will be passed to this function.<br  />
+Using them you can make flags for the plugin. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>String with an error when constructing the plugin.<br  />
+In ANY implementation, the function SHOULD return an EMPTY string when loading the plugin WITHOUT ERROR. </dd></dl>
+
+</div>
+</div>
+<a id="ac37f8c1f97b407516f2b23f72666b415"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac37f8c1f97b407516f2b23f72666b415">&#9670;&nbsp;</a></span>operator!=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SGCore::IPlugin::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structSGCore_1_1IPlugin.html">IPlugin</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Compares the names and versions of the current plugin and the {other} plugin. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>Plugin for comparison. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Are the plugins not equal? </dd></dl>
+
+</div>
+</div>
+<a id="a8bbd537eeb6d3441abcc085d48b062ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bbd537eeb6d3441abcc085d48b062ca">&#9670;&nbsp;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SGCore::IPlugin::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structSGCore_1_1IPlugin.html">IPlugin</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Compares the names and versions of the current plugin and the {other} plugin. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>Plugin for comparison. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Are the plugins equal? </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a34f4414a6775b96f1d3e1e7fbeecb0c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34f4414a6775b96f1d3e1e7fbeecb0c1">&#9670;&nbsp;</a></span>m_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string SGCore::IPlugin::m_path</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Plugin local path on computer. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>Sources/SGCore/PluginsSystem/<a class="el" href="IPlugin_8h_source.html">IPlugin.h</a></li>
-<li>Sources/SGCore/PluginsSystem/IPlugin.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

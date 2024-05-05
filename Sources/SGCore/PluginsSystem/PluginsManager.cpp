@@ -192,7 +192,6 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
 
 SGCore::Ref<SGCore::PluginWrap>
 SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
-                                   const std::string& pluginVersion,
                                    const std::string& localPluginPath,
                                    const std::vector<std::string>& entryArgs,
                                    PluginBuildType pluginBuildType)
@@ -201,8 +200,8 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
     
     Ref<PluginWrap> loadedPlugin;
     
-    auto foundIt = std::find_if(s_plugins.begin(), s_plugins.end(), [&pluginName, &pluginVersion](const Ref<PluginWrap>& pluginWrap) {
-        return pluginWrap->getPlugin()->m_name == pluginName && pluginWrap->getPlugin()->m_version == pluginVersion;
+    auto foundIt = std::find_if(s_plugins.begin(), s_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
+        return pluginWrap->getPlugin()->m_name == pluginName;
     });
     
     if(foundIt != s_plugins.end())
@@ -212,7 +211,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         if(loadedPlugin->getPlugin()->m_path != localPluginPath)
         {
             spdlog::warn("Warning: Plugin '{0}' (ver. {1}) has other path. Requested local load path: '{2}', plugin cached path: '{3}'.",
-                         pluginName,pluginVersion, localPluginPath, loadedPlugin->getPlugin()->m_path);
+                         pluginName, loadedPlugin->m_plugin->m_version, localPluginPath, loadedPlugin->getPlugin()->m_path);
         }
     }
     else
@@ -239,7 +238,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(!pluginDL->getNativeHandler())
         {
-            spdlog::error("Cannot load plugin '{0}' (ver. {1}) by path '{2}'. Error is: {3}", pluginName, pluginVersion, pluginDLPath, dlErr);
+            spdlog::error("Cannot load plugin '{0}' by path '{1}'. Error is: {2}", pluginName, pluginDLPath, dlErr);
             return nullptr;
         }
         
@@ -248,7 +247,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(!pluginEntry)
         {
-            spdlog::error("Cannot load plugin '{0}' (ver. {1}) main function by path '{2}'. Error is: {3}", pluginName, pluginVersion, pluginDLPath, dlEntryErr);
+            spdlog::error("Cannot load plugin '{0}' main function by path '{1}'. Error is: {2}", pluginName, pluginDLPath, dlEntryErr);
             return nullptr;
         }
         
@@ -267,7 +266,6 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
 
 SGCore::Ref<SGCore::PluginWrap>
 SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
-                                     const std::string& pluginVersion,
                                      const std::vector<std::string>& entryArgs,
                                      PluginBuildType pluginBuildType)
 {
@@ -275,8 +273,8 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
     
     Ref<PluginWrap> loadedPlugin;
     
-    auto foundIt = std::find_if(s_plugins.begin(), s_plugins.end(), [&pluginName, &pluginVersion](const Ref<PluginWrap>& pluginWrap) {
-        return pluginWrap->getPlugin()->m_name == pluginName && pluginWrap->getPlugin()->m_version == pluginVersion;
+    auto foundIt = std::find_if(s_plugins.begin(), s_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
+        return pluginWrap->getPlugin()->m_name == pluginName;
     });
     
     if(foundIt != s_plugins.end())
@@ -307,7 +305,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         
         if(!loadedPlugin->m_pluginLib->getNativeHandler())
         {
-            spdlog::error("Cannot reload plugin '{0}' (ver. {1}). Error is: {2}", pluginName, pluginVersion, dlErr);
+            spdlog::error("Cannot reload plugin '{0}'. Error is: {1}", pluginName, dlErr);
             return nullptr;
         }
         
@@ -316,7 +314,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         
         if(!pluginEntry)
         {
-            spdlog::error("Cannot reload plugin '{0}' (ver. {1}) main function. Error is: {2}", pluginName, pluginVersion, dlEntryErr);
+            spdlog::error("Cannot reload plugin '{0}' main function. Error is: {1}", pluginName, dlEntryErr);
             return nullptr;
         }
         
@@ -330,7 +328,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
     }
     else
     {
-        spdlog::error("Cannot reload plugin: The plugin '{0}' (ver. {1}) has not been loaded before.", pluginName, pluginVersion);
+        spdlog::error("Cannot reload plugin: The plugin '{0}' has not been loaded before.", pluginName);
     }
     
     return nullptr;

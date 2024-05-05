@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['destroy_762',['destroy',['../classSGCore_1_1GL4UniformBuffer.html#a540fb632b91edc70df1ea6c9ac0db5da',1,'SGCore::GL4UniformBuffer::destroy()'],['../classSGCore_1_1GL46UniformBuffer.html#a1e7b2c0c1c86e4ff6bdc7210e40226e8',1,'SGCore::GL46UniformBuffer::destroy()'],['../classSGCore_1_1IUniformBuffer.html#ab5404c9dec5e3428bbd157da3c6d4f86',1,'SGCore::IUniformBuffer::destroy()'],['../classSGCore_1_1VkUniformBuffer.html#a86ed24e502f4dd79e06054d36639a1d4',1,'SGCore::VkUniformBuffer::destroy()']]]
+  ['onconstruct_39',['onConstruct',['../structSGCore_1_1IPlugin.html#a8afd272113b87f5c1e20d0c01bc1c954',1,'SGCore::IPlugin']]],
+  ['operator_21_3d_40',['operator!=',['../structSGCore_1_1IPlugin.html#ac37f8c1f97b407516f2b23f72666b415',1,'SGCore::IPlugin']]],
+  ['operator_3d_3d_41',['operator==',['../structSGCore_1_1IPlugin.html#a8bbd537eeb6d3441abcc085d48b062ca',1,'SGCore::IPlugin']]]
 ];

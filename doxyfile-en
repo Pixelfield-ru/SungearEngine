@@ -2,9 +2,13 @@ OUTPUT_LANGUAGE     =   English
 PROJECT_NAME        =   SungearEngine
 EXTRACT_PRIVATE     =   NO
 
-INPUT               =   Sources
+INPUT              +=   Sources/SGCore/PluginsSystem/DynamicLibrary.h
+INPUT              +=   Sources/SGCore/PluginsSystem/IPlugin.h
+INPUT              +=   Sources/SGCore/PluginsSystem/PluginsManager.h
+INPUT              +=   Sources/SGCore/PluginsSystem/PluginWrap.h
+
 OUTPUT_DIRECTORY    =   documentation/en
-RECURSIVE           =   YES
+RECURSIVE           =   NO
 
 DISABLE_INDEX       =   NO
 GENERATE_TREEVIEW   =   YES

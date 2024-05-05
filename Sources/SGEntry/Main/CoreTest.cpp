@@ -126,7 +126,7 @@ void init()
     // std::cout << SGCore::PluginsManager::createPluginProject("F:\\Pixelfield\\test", "TestSGPlugin2", "23") << std::endl;
     
     auto testPlugin =
-            SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "1.0.0", "/home/ilya/pixelfield/test/TestSGPlugin2", { "arg0" },
+            SGCore::PluginsManager::loadPlugin("TestSGPlugin2", "/home/ilya/pixelfield/test/TestSGPlugin2", { "arg0" },
                                                SGCore::PluginBuildType::PBT_DEBUG);
 
     /*auto testPlugin =
@@ -1088,7 +1088,7 @@ void fixedUpdate(const double& dt, const double& fixedDt)
 
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_T))
     {
-        SGCore::PluginsManager::reloadPlugin("TestSGPlugin2", "1.0.0", { "" }, SGCore::PluginBuildType::PBT_DEBUG);
+        SGCore::PluginsManager::reloadPlugin("TestSGPlugin2", { "" }, SGCore::PluginBuildType::PBT_DEBUG);
     }
     
     if(_atmosphereScattering)

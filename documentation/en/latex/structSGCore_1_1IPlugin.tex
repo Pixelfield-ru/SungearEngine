@@ -3,16 +3,24 @@
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{structSGCore_1_1IPlugin_a8bbd537eeb6d3441abcc085d48b062ca}\label{structSGCore_1_1IPlugin_a8bbd537eeb6d3441abcc085d48b062ca}} 
-bool {\bfseries operator==} (const \mbox{\hyperlink{structSGCore_1_1IPlugin}{IPlugin}} \&other) const noexcept
+virtual \mbox{\hyperlink{structSGCore_1_1IPlugin_a9c7a4a9e8f4b000b6f5759f3776a7411}{$\sim$\+IPlugin}} ()=default
 \item 
-\mbox{\Hypertarget{structSGCore_1_1IPlugin_ac37f8c1f97b407516f2b23f72666b415}\label{structSGCore_1_1IPlugin_ac37f8c1f97b407516f2b23f72666b415}} 
-bool {\bfseries operator!=} (const \mbox{\hyperlink{structSGCore_1_1IPlugin}{IPlugin}} \&other) const noexcept
+bool \mbox{\hyperlink{structSGCore_1_1IPlugin_a8bbd537eeb6d3441abcc085d48b062ca}{operator==}} (const \mbox{\hyperlink{structSGCore_1_1IPlugin}{IPlugin}} \&other) const noexcept
 \item 
-\mbox{\Hypertarget{structSGCore_1_1IPlugin_acf350f2a4b804b0aa5ee4fb67cca9c35}\label{structSGCore_1_1IPlugin_acf350f2a4b804b0aa5ee4fb67cca9c35}} 
-std\+::string {\bfseries get\+Local\+Path} () const noexcept
+bool \mbox{\hyperlink{structSGCore_1_1IPlugin_ac37f8c1f97b407516f2b23f72666b415}{operator!=}} (const \mbox{\hyperlink{structSGCore_1_1IPlugin}{IPlugin}} \&other) const noexcept
+\item 
+std\+::string \mbox{\hyperlink{structSGCore_1_1IPlugin_acf350f2a4b804b0aa5ee4fb67cca9c35}{get\+Local\+Path}} () const noexcept
+\item 
+std\+::string \mbox{\hyperlink{structSGCore_1_1IPlugin_a84840c10bab432dc53b5b24bfaf5d6cd}{get\+Name}} () const noexcept
+\item 
+std\+::string \mbox{\hyperlink{structSGCore_1_1IPlugin_acdaacf512be5bb6e779586b9afa6c299}{get\+Version}} () const noexcept
 \end{DoxyCompactItemize}
-\doxysubsection*{Public Attributes}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual std\+::string \mbox{\hyperlink{structSGCore_1_1IPlugin_a8afd272113b87f5c1e20d0c01bc1c954}{on\+Construct}} (const std\+::vector$<$ std\+::string $>$ \&args)=0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\Hypertarget{structSGCore_1_1IPlugin_a63ce37e7c2a59543d65677c9c343ed3c}\label{structSGCore_1_1IPlugin_a63ce37e7c2a59543d65677c9c343ed3c}} 
@@ -20,6 +28,8 @@ std\+::string {\bfseries m\+\_\+name}
 \item 
 \mbox{\Hypertarget{structSGCore_1_1IPlugin_a20ab22a9b216f2c17f58914443935b06}\label{structSGCore_1_1IPlugin_a20ab22a9b216f2c17f58914443935b06}} 
 std\+::string {\bfseries m\+\_\+version}
+\item 
+std\+::string \mbox{\hyperlink{structSGCore_1_1IPlugin_a34f4414a6775b96f1d3e1e7fbeecb0c1}{m\+\_\+path}}
 \end{DoxyCompactItemize}
 \doxysubsection*{Friends}
 \begin{DoxyCompactItemize}
@@ -29,7 +39,106 @@ struct {\bfseries Plugins\+Manager}
 \end{DoxyCompactItemize}
 
 
-The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structSGCore_1_1IPlugin_a9c7a4a9e8f4b000b6f5759f3776a7411}\label{structSGCore_1_1IPlugin_a9c7a4a9e8f4b000b6f5759f3776a7411}} 
+\index{SGCore::IPlugin@{SGCore::IPlugin}!````~IPlugin@{$\sim$IPlugin}}
+\index{````~IPlugin@{$\sim$IPlugin}!SGCore::IPlugin@{SGCore::IPlugin}}
+\doxysubsubsection{\texorpdfstring{$\sim$IPlugin()}{~IPlugin()}}
+{\footnotesize\ttfamily virtual SGCore\+::\+IPlugin\+::$\sim$\+IPlugin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+Virtual plugin destructor. \begin{DoxyNote}{Note}
+Please note that if you create your own plugin, then you must implement this destructor in the structure of your plugin.~\newline
+In it, you must remove all resources from all collections located directly in the engine, since this process does not happen automatically.~\newline
+For example\+: you must unsubscribe from all events you subscribed to; you must delete all assets that were loaded by the plugin using the standard SGCore\+::\+Asset\+Manager instance (SGCore\+::\+Assets\+Manager\+::get\+Instance). 
+\end{DoxyNote}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structSGCore_1_1IPlugin_acf350f2a4b804b0aa5ee4fb67cca9c35}\label{structSGCore_1_1IPlugin_acf350f2a4b804b0aa5ee4fb67cca9c35}} 
+\index{SGCore::IPlugin@{SGCore::IPlugin}!getLocalPath@{getLocalPath}}
+\index{getLocalPath@{getLocalPath}!SGCore::IPlugin@{SGCore::IPlugin}}
+\doxysubsubsection{\texorpdfstring{getLocalPath()}{getLocalPath()}}
+{\footnotesize\ttfamily std\+::string SGCore\+::\+IPlugin\+::get\+Local\+Path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+Returns the local path on the device to the plugin folder. \begin{DoxyReturn}{Returns}
+Local path to the plugin. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1IPlugin_a84840c10bab432dc53b5b24bfaf5d6cd}\label{structSGCore_1_1IPlugin_a84840c10bab432dc53b5b24bfaf5d6cd}} 
+\index{SGCore::IPlugin@{SGCore::IPlugin}!getName@{getName}}
+\index{getName@{getName}!SGCore::IPlugin@{SGCore::IPlugin}}
+\doxysubsubsection{\texorpdfstring{getName()}{getName()}}
+{\footnotesize\ttfamily std\+::string SGCore\+::\+IPlugin\+::get\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\begin{DoxyReturn}{Returns}
+Plugin name. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1IPlugin_acdaacf512be5bb6e779586b9afa6c299}\label{structSGCore_1_1IPlugin_acdaacf512be5bb6e779586b9afa6c299}} 
+\index{SGCore::IPlugin@{SGCore::IPlugin}!getVersion@{getVersion}}
+\index{getVersion@{getVersion}!SGCore::IPlugin@{SGCore::IPlugin}}
+\doxysubsubsection{\texorpdfstring{getVersion()}{getVersion()}}
+{\footnotesize\ttfamily std\+::string SGCore\+::\+IPlugin\+::get\+Version (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\begin{DoxyReturn}{Returns}
+Plugin version. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1IPlugin_a8afd272113b87f5c1e20d0c01bc1c954}\label{structSGCore_1_1IPlugin_a8afd272113b87f5c1e20d0c01bc1c954}} 
+\index{SGCore::IPlugin@{SGCore::IPlugin}!onConstruct@{onConstruct}}
+\index{onConstruct@{onConstruct}!SGCore::IPlugin@{SGCore::IPlugin}}
+\doxysubsubsection{\texorpdfstring{onConstruct()}{onConstruct()}}
+{\footnotesize\ttfamily virtual std\+::string SGCore\+::\+IPlugin\+::on\+Construct (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [pure virtual]}}
+
+A function that is guaranteed to be called immediately after calling the plugin structure constructor.~\newline
+It is called in \mbox{\hyperlink{structSGCore_1_1PluginsManager_a1956fc8366817d6be1af34a6e079f015}{SGCore\+::\+Plugins\+Manager\+::load\+Plugin}} and also in \mbox{\hyperlink{structSGCore_1_1PluginsManager_a71c69aeeb68e097e24da873bd711845b}{SGCore\+::\+Plugins\+Manager\+::reload\+Plugin}}.~\newline
+If you create your own plugin, then you must implement this function in the structure of your plugin.~\newline
+When calling \mbox{\hyperlink{structSGCore_1_1PluginsManager_a14d013f273e4f12f4e31d94028454b0d}{SGCore\+::\+Plugins\+Manager\+::create\+Plugin\+Project}}, the implementation of this function is generated automatically. 
+\begin{DoxyParams}{Parameters}
+{\em args} & Arguments that will be passed to this function.~\newline
+Using them you can make flags for the plugin. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+String with an error when constructing the plugin.~\newline
+In ANY implementation, the function SHOULD return an EMPTY string when loading the plugin WITHOUT ERROR. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1IPlugin_ac37f8c1f97b407516f2b23f72666b415}\label{structSGCore_1_1IPlugin_ac37f8c1f97b407516f2b23f72666b415}} 
+\index{SGCore::IPlugin@{SGCore::IPlugin}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!SGCore::IPlugin@{SGCore::IPlugin}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
+{\footnotesize\ttfamily bool SGCore\+::\+IPlugin\+::operator!= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structSGCore_1_1IPlugin}{IPlugin}} \&}]{other }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+Compares the names and versions of the current plugin and the \{other\} plugin. 
+\begin{DoxyParams}{Parameters}
+{\em other} & Plugin for comparison. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Are the plugins not equal? 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1IPlugin_a8bbd537eeb6d3441abcc085d48b062ca}\label{structSGCore_1_1IPlugin_a8bbd537eeb6d3441abcc085d48b062ca}} 
+\index{SGCore::IPlugin@{SGCore::IPlugin}!operator==@{operator==}}
+\index{operator==@{operator==}!SGCore::IPlugin@{SGCore::IPlugin}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily bool SGCore\+::\+IPlugin\+::operator== (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structSGCore_1_1IPlugin}{IPlugin}} \&}]{other }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+Compares the names and versions of the current plugin and the \{other\} plugin. 
+\begin{DoxyParams}{Parameters}
+{\em other} & Plugin for comparison. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Are the plugins equal? 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structSGCore_1_1IPlugin_a34f4414a6775b96f1d3e1e7fbeecb0c1}\label{structSGCore_1_1IPlugin_a34f4414a6775b96f1d3e1e7fbeecb0c1}} 
+\index{SGCore::IPlugin@{SGCore::IPlugin}!m\_path@{m\_path}}
+\index{m\_path@{m\_path}!SGCore::IPlugin@{SGCore::IPlugin}}
+\doxysubsubsection{\texorpdfstring{m\_path}{m\_path}}
+{\footnotesize\ttfamily std\+::string SGCore\+::\+IPlugin\+::m\+\_\+path\hspace{0.3cm}{\ttfamily [protected]}}
+
+Plugin local path on computer. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-Sources/\+SGCore/\+Plugins\+System/IPlugin.\+h\item 
-Sources/\+SGCore/\+Plugins\+System/IPlugin.\+cpp\end{DoxyCompactItemize}
+Sources/\+SGCore/\+Plugins\+System/IPlugin.\+h\end{DoxyCompactItemize}

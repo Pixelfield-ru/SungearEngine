@@ -1,28 +1,6 @@
 var searchData=
 [
-  ['entitiespool_50',['EntitiesPool',['../structSGCore_1_1EntitiesPool.html',1,'SGCore']]],
-  ['entitybaseinfo_51',['EntityBaseInfo',['../structSGCore_1_1EntityBaseInfo.html',1,'SGCore']]],
-  ['entitycomponentmember_52',['EntityComponentMember',['../structSGCore_1_1EntityComponentMember.html',1,'SGCore']]],
-  ['event_53',['Event',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20return_28args_2e_2e_2e_29_3e_54',['Event&lt; Return(Args...)&gt;',['../structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4.html',1,'SGCore']]],
-  ['event_3c_20void_28_29_3e_55',['Event&lt; void()&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28bool_20lastactive_2c_20bool_20isactive_29_3e_56',['Event&lt; void(bool lastActive, bool isActive)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28const_20double_20_26_2c_20const_20double_20_26_29_3e_57',['Event&lt; void(const double &amp;, const double &amp;)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28const_20ref_3c_20registry_5ft_20_3e_20_26registry_2c_20const_20entity_5ft_20_26_2c_20ref_3c_20const_20sgcore_3a_3atransform_20_3e_29_3e_58',['Event&lt; void(const Ref&lt; registry_t &gt; &amp;registry, const entity_t &amp;, Ref&lt; const SGCore::Transform &gt;)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28const_20std_3a_3astring_20_26newname_29_3e_59',['Event&lt; void(const std::string &amp;newName)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28sgcore_3a_3aaudiosource_20_26source_2c_20audiosourcestate_20laststate_2c_20audiosourcestate_20newstate_29_3e_60',['Event&lt; void(SGCore::AudioSource &amp;source, AudioSourceState lastState, AudioSourceState newState)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28sgcore_3a_3aiasset_20_2aasset_29_3e_61',['Event&lt; void(SGCore::IAsset *asset)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28sgcore_3a_3awindow_20_26_29_3e_62',['Event&lt; void(SGCore::Window &amp;)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28sgcore_3a_3awindow_20_26_2c_20const_20double_20_26_2c_20const_20double_20_26_29_3e_63',['Event&lt; void(SGCore::Window &amp;, const double &amp;, const double &amp;)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28sgcore_3a_3awindow_20_26_2c_20const_20int_20_26_29_3e_64',['Event&lt; void(SGCore::Window &amp;, const int &amp;)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28sgcore_3a_3awindow_20_26_2c_20const_20keyboardkey_20_26_2c_20const_20int_20_26_2c_20const_20keystate_20_26_2c_20const_20int_20_26_29_3e_65',['Event&lt; void(SGCore::Window &amp;, const KeyboardKey &amp;, const int &amp;, const KeyState &amp;, const int &amp;)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['event_3c_20void_28sgcore_3a_3awindow_20_26_2c_20const_20mousebutton_20_26_2c_20const_20keystate_20_26_2c_20const_20int_20_26_29_3e_66',['Event&lt; void(SGCore::Window &amp;, const MouseButton &amp;, const KeyState &amp;, const int &amp;)&gt;',['../structSGCore_1_1Event.html',1,'SGCore']]],
-  ['eventlistener_67',['EventListener',['../structSGCore_1_1EventListener.html',1,'SGCore']]],
-  ['eventlistener_3c_20return_28args_2e_2e_2e_29_3e_68',['EventListener&lt; Return(Args...)&gt;',['../structSGCore_1_1EventListener_3_01Return_07Args_8_8_8_08_4.html',1,'SGCore']]],
-  ['eventlistener_3c_20void_28_29_3e_69',['EventListener&lt; void()&gt;',['../structSGCore_1_1EventListener.html',1,'SGCore']]],
-  ['eventlistener_3c_20void_28const_20double_20_26_2c_20const_20double_20_26_29_3e_70',['EventListener&lt; void(const double &amp;, const double &amp;)&gt;',['../structSGCore_1_1EventListener.html',1,'SGCore']]],
-  ['eventlistener_3c_20void_28const_20ref_3c_20registry_5ft_20_3e_20_26_2c_20const_20entity_5ft_20_26_2c_20ref_3c_20const_20sgcore_3a_3atransform_20_3e_29_3e_71',['EventListener&lt; void(const Ref&lt; registry_t &gt; &amp;, const entity_t &amp;, Ref&lt; const SGCore::Transform &gt;)&gt;',['../structSGCore_1_1EventListener.html',1,'SGCore']]],
-  ['eventlistener_3c_20void_28const_20ref_3c_20registry_5ft_20_3e_20_26registry_2c_20const_20entity_5ft_20_26_2c_20ref_3c_20const_20sgcore_3a_3atransform_20_3e_29_3e_72',['EventListener&lt; void(const Ref&lt; registry_t &gt; &amp;registry, const entity_t &amp;, Ref&lt; const SGCore::Transform &gt;)&gt;',['../structSGCore_1_1EventListener.html',1,'SGCore']]],
-  ['eventlistener_3c_20void_28const_20std_3a_3astring_20_26_29_3e_73',['EventListener&lt; void(const std::string &amp;)&gt;',['../structSGCore_1_1EventListener.html',1,'SGCore']]],
-  ['extract_74',['extract',['../classSGCore_1_1extract.html',1,'SGCore']]]
+  ['load_10',['load',['../structSGCore_1_1DynamicLibrary.html#a5f9a86e1fd7b7aadfc8c87e3725448cc',1,'SGCore::DynamicLibrary']]],
+  ['loadfunction_11',['loadFunction',['../structSGCore_1_1DynamicLibrary.html#a249f33efbec1ed2ec23e8774b5ac74cd',1,'SGCore::DynamicLibrary']]],
+  ['loadplugin_12',['loadPlugin',['../structSGCore_1_1PluginsManager.html#a1956fc8366817d6be1af34a6e079f015',1,'SGCore::PluginsManager']]]
 ];

@@ -10,15 +10,24 @@
 
 namespace SGCore
 {
+    /**
+     * A wrapper structure containing an SGCore::IPlugin structure object and the dynamic library (SGCore::DynamicLibrary) from which the plugin was loaded.
+     */
     struct PluginWrap
     {
         friend struct PluginsManager;
         
+        /**
+         * \return Dynamic library (SGCore::DynamicLibrary) of the plugin (SGCore::IPlugin).
+         */
         [[nodiscard]] auto getPluginLib() const noexcept
         {
             return m_pluginLib;
         }
         
+        /**
+         * \return Plugin (SGCore::IPlugin).
+         */
         [[nodiscard]] auto getPlugin() const noexcept
         {
             return m_plugin;

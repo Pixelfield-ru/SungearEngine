@@ -31,19 +31,18 @@ namespace SGCore
     {
         #ifdef PLATFORM_OS_LINUX
         /**
-         * \brief Native (system) the type of dynamic library handler.
+         * Native (system) the type of dynamic library handler.
          */
         using native_handler_t = void*;
         #elif defined(PLATFORM_OS_WINDOWS)
         /**
-         * \author pfhgil
-         * \brief Native (system) the type of dynamic library handler.
+         * Native (system) the type of dynamic library handler.
          */
         using native_handler_t = HMODULE;
         #endif
 
         /**
-         * \brief Destructor of DynamicLibrary calls unload function.
+         * Destructor of DynamicLibrary calls unload function.
          * \see SGCore::DynamicLibrary::unload
          */
         ~DynamicLibrary()
@@ -52,7 +51,7 @@ namespace SGCore
         }
         
         /**
-         * \brief Loads a dynamic library using the pluginDLPath.\n If the download was not successful, then the native handler is equal to nullptr.
+         * Loads a dynamic library using the pluginDLPath.\n If the download was not successful, then the native handler is equal to nullptr.
          * \param[in] pluginDLPath The path to the dynamic library.
          * \param[out] err Error generated while loading the library.\n Remains unchanged if the library was loaded successfully.
          */
@@ -76,7 +75,7 @@ namespace SGCore
         }
         
         /**
-         * \brief\details Unloads the dynamic library from memory.\n
+         * Unloads the dynamic library from memory.\n
          * All static members of the dynamic library are released.\n
          * The native handler becomes equal to nullptr.
          */
@@ -98,12 +97,11 @@ namespace SGCore
         }
         
         /**
-         * \brief Allows you to load a library function.
+         * Allows you to load a library function.
          * \note Consider name mangling when loading a function.\n System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library.
-         * \example SGCore::DynamicLibrary::loadFunction std::function<float(float, float)> getSum = loadFunction<float(float, float)>("getSum");
          * \tparam FuncT Function declaration.
          * \param[in] funcName Name of the function to load.
-         * \param[out] err
+         * \param[out] err Error generated while loading the function.\n Remains unchanged if the function was loaded successfully.
          * \return std::function
          */
         template<typename FuncT>
@@ -119,6 +117,10 @@ namespace SGCore
             return DLFuncLoader<FuncT>()(m_nativeHandler, funcName, err);
         }
         
+        /**
+         * Returns native handler.
+         * \return Native handler.
+         */
         [[nodiscard]] native_handler_t getNativeHandler() noexcept
         {
             return m_nativeHandler;
@@ -146,6 +148,7 @@ namespace SGCore
 
         template<typename> struct DLFuncLoader;
         
+        // loadFunction helper
         template<typename Result, typename... Args>
         struct DLFuncLoader<Result(Args...)>
         {
