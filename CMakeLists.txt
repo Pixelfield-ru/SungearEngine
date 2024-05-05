@@ -16,11 +16,11 @@ list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/lib)
 list(APPEND CMAKE_MODULE_PATH $ENV{VCPKG_ROOT}/installed/x64-linux/share/entt)]]
 
 #list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-linux/share/openal-soft)
-list(APPEND CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows/share/openal-soft)
+list(APPEND CMAKE_PREFIX_PATH $ENV{VCPKG_ROOT}/installed/x64-windows/share/openal-soft)
 
 message("CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
 
-set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_definitions(-DSUNGEAR_DEBUG)
