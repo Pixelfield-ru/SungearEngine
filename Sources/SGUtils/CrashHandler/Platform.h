@@ -34,7 +34,7 @@
 #endif
 
 #if defined(PLATFORM_OS_WINDOWS) && !defined(PLATFORM_COMPILER_MSVC)
-#error "Unsupported combination of compiler and operating system."
+// #error "Unsupported combination of compiler and operating system."
 #endif
 
 #endif //SUNGEARENGINE_PLATFORM_H

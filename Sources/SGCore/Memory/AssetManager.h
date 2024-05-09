@@ -388,7 +388,7 @@ namespace SGCore
         
         Ref<registry_t> getRegistry() noexcept;
         
-        SG_NOINLINE static Scope<AssetManager>& getInstance() noexcept;
+        SG_NOINLINE static Ref<AssetManager>& getInstance() noexcept;
 
     private:
         void distributeAsset(const Ref<IAsset>& asset,
@@ -456,7 +456,7 @@ namespace SGCore
         
         Threading::ThreadsPool m_threadsPool = Threading::ThreadsPool(Threading::ThreadCreatePolicy::IF_NO_FREE_THREADS);
         
-        static inline Scope<AssetManager> m_instance;
+        static inline Ref<AssetManager> m_instance;
     };
 }
 

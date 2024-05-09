@@ -2,9 +2,9 @@ project(SGEntry)
 
 file(GLOB_RECURSE SGENTRY_SOURCES *.cpp *.h)
 
-find_package(spdlog CONFIG REQUIRED)
-
 set(SG_EXEC_NAME SungearEngine)
+
+find_package(spdlog CONFIG REQUIRED)
 
 add_executable(${SG_EXEC_NAME} ${SGENTRY_SOURCES})
 

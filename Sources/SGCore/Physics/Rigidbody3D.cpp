@@ -3,7 +3,7 @@
 //
 #include "Rigidbody3D.h"
 #include "PhysicsWorld3D.h"
-#include "BulletCollision/btBulletCollisionCommon.h"
+#include "BulletCollision/CollisionShapes/btEmptyShape.h"
 
 SGCore::Rigidbody3D::Rigidbody3D(const SGCore::Ref<PhysicsWorld3D>& parentWorld)
 {

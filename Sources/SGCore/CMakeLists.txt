@@ -2,11 +2,8 @@
  project(SGCore)
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")
- #SET(CMAKE_STATIC_LIBRARY_SUFFIX "")
 
  file(GLOB_RECURSE SGCORE_SOURCES ../SGCore/*.cpp ../SGCore/*.h)
-
- #add_subdirectory(${CMAKE_SOURCE_DIR} Externals/Assimp)
 
  find_package(Bullet REQUIRED)
  find_package(pugixml CONFIG REQUIRED)
@@ -35,10 +32,6 @@
 
  FetchContent_MakeAvailable(glaze)
 
- find_path(PUGIXML_INCLUDE_DIR pugixml.hpp)
- message("PUGIXML_INCLUDE_DIR: " ${PUGIXML_INCLUDE_DIR})
-
- # STATIC FOR LINUX
  add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
 
  include(GenerateExportHeader)
@@ -53,14 +46,9 @@
          $<BUILD_INTERFACE:${Vulkan_INCLUDE_DIR}>
          $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sources>
          $<BUILD_INTERFACE:${BULLET_INCLUDE_DIR}>
-         $<BUILD_INTERFACE:${PUGIXML_INCLUDE_DIR}>
+         #$<BUILD_INTERFACE:${PUGIXML_INCLUDE_DIR}>
          $<BUILD_INTERFACE:${FREETYPE_INCLUDE_DIRS}>
          $<BUILD_INTERFACE:${Stb_INCLUDE_DIR}>
-
-         ${CMAKE_SOURCE_DIR}/Externals/svgpp/include
-
-         #${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include
-         #"C:/VulkanSDK/1.3.250.1/Include"
          )
 
  if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
@@ -75,7 +63,7 @@
 
  message("CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
 
- message("Bullet Include Dir: " ${BULLET_INCLUDE_DIR})
+ message("Bullet Include Dir: " ${BULLET_INCLUDE_DIRS})
  message("Bullet Libraries: " ${SG_BULLET_LIBS})
 
  # TODO: make for linux and mac

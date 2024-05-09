@@ -5,7 +5,6 @@
 #ifndef SUNGEARENGINE_FRUSTUM_H
 #define SUNGEARENGINE_FRUSTUM_H
 
-
 #include <glm/matrix.hpp>
 
 class Frustum

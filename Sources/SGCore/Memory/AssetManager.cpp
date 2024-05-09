@@ -19,7 +19,7 @@ SGCore::Ref<SGCore::registry_t> SGCore::AssetManager::getRegistry() noexcept
     return m_registry;
 }
 
-SGCore::Scope<SGCore::AssetManager>& SGCore::AssetManager::getInstance() noexcept
+SGCore::Ref<SGCore::AssetManager>& SGCore::AssetManager::getInstance() noexcept
 {
     return m_instance;
 }
