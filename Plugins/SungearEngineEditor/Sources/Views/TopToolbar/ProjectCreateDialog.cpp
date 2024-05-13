@@ -56,7 +56,7 @@ void SGE::ProjectCreateDialog::renderBody()
     
     ImGui::SameLine();
     
-    auto asset = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("folder20x20");
+    auto asset = Resources::getMainAssetManager().loadAsset<SGCore::ITexture2D>("folder20x20");
     
     if(ImGuiUtils::ImageButton(asset->getTextureNativeHandler(), ImVec2(20, 20)))
     {
@@ -125,8 +125,8 @@ void SGE::ProjectCreateDialog::renderBody()
             std::filesystem::create_directory(m_dirPath + "/" + m_projectName + "/Resources");
             
             // PROJECT SUCCESSFULLY CREATED ==============
-
-            SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorerWindow()->m_rootPath = m_dirPath + "/" + m_projectName;
+            
+            SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath + "/" + m_projectName;
             
             m_projectName.clear();
             m_dirPath.clear();
@@ -137,7 +137,7 @@ void SGE::ProjectCreateDialog::renderBody()
         }
         else if(std::filesystem::exists(m_dirPath) && m_mode == FileOpenMode::OPEN)
         {
-            SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorerWindow()->m_rootPath = m_dirPath;
+            SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath;
             
             m_projectName.clear();
             m_dirPath.clear();

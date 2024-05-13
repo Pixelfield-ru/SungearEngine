@@ -16,11 +16,9 @@ namespace SGE
         [[nodiscard]] SGCore::Ref<MainView> getMainView() const noexcept;
         
         SG_NOINLINE static SGCore::Ref<SungearEngineEditor> getInstance() noexcept;
-        SG_NOINLINE static SGCore::AssetManager& getAssetManager() noexcept;
         
     private:
         static inline SGCore::Ref<SungearEngineEditor> s_SungearEngineEditorInstance = SGCore::MakeRef<SungearEngineEditor>();
-        static inline SGCore::AssetManager m_assetManager;
         
         void onUpdate(const double&, const double&) const noexcept;
         

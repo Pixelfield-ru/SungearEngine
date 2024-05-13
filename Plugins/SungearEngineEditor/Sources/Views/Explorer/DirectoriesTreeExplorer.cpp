@@ -5,6 +5,7 @@
 #include <imgui.h>
 
 #include "DirectoriesTreeExplorer.h"
+#include "DirectoryExplorer.h"
 #include "ImGuiUtils.h"
 
 void SGE::DirectoriesTreeExplorer::renderBody()
@@ -15,15 +16,22 @@ void SGE::DirectoriesTreeExplorer::renderBody()
     windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
     ImGui::SetNextWindowClass(&windowClass);
     
-    ImGui::Begin("Tree Explorer");
+    ImGui::Begin("Tree Explorer", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
     
-    m_windowSize = ImGui::GetWindowSize();
+    auto windowSize = ImGui::GetWindowSize();
+    m_windowContentRegionMax = ImGui::GetContentRegionAvail();
     m_windowCursorPos = ImGui::GetCursorScreenPos();
     
     ImGui::TreePush("##DirectoryExplorerTree");
     
-    /*auto rust = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>("skybox0");
-    ImGui::Image(rust->getTextureNativeHandler(), ImVec2(rust->m_width, rust->m_height));*/
+    if(m_drawSelectedRect)
+    {
+        ImGui::GetWindowDrawList()->AddRectFilled(m_clickedRowRectMin, m_clickedRowRectMax,
+                                                  ImGui::ColorConvertFloat4ToU32(
+                                                          ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1)), 3.0f);
+    }
+    
+    m_drawSelectedRect = false;
     
     if(std::filesystem::exists(m_rootPath))
     {
@@ -107,30 +115,44 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     
     auto mouseScreenPos = ImGui::GetCursorScreenPos();
     
-    auto rectMin = ImVec2(m_windowCursorPos.x, mouseScreenPos.y - 23.0f);
-    auto rectMax = ImVec2(m_windowCursorPos.x + m_windowSize.x, mouseScreenPos.y - 3.0f);
+    auto rectMin = ImVec2(m_windowCursorPos.x, mouseScreenPos.y - 25.0f);
+    auto rectMax = ImVec2(m_windowCursorPos.x + ImGui::GetScrollX() + m_windowContentRegionMax.x + 3, mouseScreenPos.y - 3.0f);
     
-    bool doubleClicked = ImGui::IsMouseHoveringRect(rectMin, rectMax) &&
-                         ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
+    bool rowDoubleClicked = ImGui::IsMouseHoveringRect(rectMin, rectMax) &&
+                            ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
     
-    bool selected = ImGui::IsMouseHoveringRect(rectMin, rectMax) &&
-                    ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+    bool rowClicked = ImGui::IsMouseHoveringRect(rectMin, rectMax) &&
+                      ImGui::IsMouseClicked(ImGuiMouseButton_Left);
     
-    // TEST
-    // ImGui::GetForegroundDrawList()->AddRectFilled(rectMin, rectMax, ImGui::ColorConvertFloat4ToU32(ImVec4(1, 0, 0, 0.1)));
+    if(rowClicked && isDirectory && !arrowBtnClicked)
+    {
+        SungearEngineEditor::getInstance()->getMainView()->getDirectoryExplorer()->m_currentPath = parent;
+    }
     
-    if(selected)
+    if(rowClicked)
     {
         m_currentPath = parent;
+        
+        if(!arrowBtnClicked)
+        {
+            m_selectedPath = parent;
+        }
+    }
+    
+    if(m_selectedPath == parent)
+    {
+        m_clickedRowRectMin = rectMin;
+        m_clickedRowRectMax = rectMax;
+        m_drawSelectedRect = true;
     }
     
     bool lastIsCurrentNodeOpened = isCurrentNodeOpened;
-    if(doubleClicked || arrowBtnClicked)
+    if(rowDoubleClicked || arrowBtnClicked)
     {
         isCurrentNodeOpened = !isCurrentNodeOpened;
     }
     
-    if(isCurrentNodeOpened)
+    if(isCurrentNodeOpened && isDirectory)
     {
         for(auto it = std::filesystem::directory_iterator(parent); it != std::filesystem::directory_iterator(); ++it)
         {

@@ -8,17 +8,16 @@
 #include <vector>
 #include <imgui.h>
 #include <SGUtils/Utils.h>
+#include <SGCore/Memory/AssetManager.h>
 
 namespace SGE
 {
     struct Resources
     {
-        static void releaseResources() noexcept;
-        
-        SG_NOINLINE static std::vector<ImFont*>& getImGuiFonts() noexcept;
+        SG_NOINLINE static SGCore::AssetManager& getMainAssetManager() noexcept;
         
     private:
-        static inline std::vector<ImFont*> m_imguiFonts;
+        static inline SGCore::AssetManager m_mainAssetManager;
     };
 }
 

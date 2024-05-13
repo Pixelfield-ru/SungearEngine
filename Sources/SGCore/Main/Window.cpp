@@ -293,3 +293,8 @@ double SGCore::Window::getSwapBuffersExecutionTime() const noexcept
 {
     return m_swapBuffersExecutionTime;
 }
+
+int SGCore::Window::getPrimaryMonitorRefreshRate() noexcept
+{
+    return glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;
+}

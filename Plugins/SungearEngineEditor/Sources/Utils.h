@@ -26,9 +26,9 @@ namespace SGE
                 return nullptr;
             }
             
-            if(SungearEngineEditor::getAssetManager().isAssetExists<SGCore::ITexture2D>(alias))
+            if(Resources::getMainAssetManager().isAssetExists<SGCore::ITexture2D>(alias))
             {
-                return SungearEngineEditor::getAssetManager().loadAssetWithAlias<SGCore::ITexture2D>(alias, path);
+                return Resources::getMainAssetManager().loadAssetWithAlias<SGCore::ITexture2D>(alias, path);
             }
             
             auto document = lunasvg::Document::loadFromFile(path);
@@ -38,7 +38,7 @@ namespace SGE
             auto svgTexture = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
             svgTexture->create(bitmap.data(), bitmap.width(), bitmap.height(), 4, SGGColorInternalFormat::SGG_RGBA8, SGGColorFormat::SGG_RGBA);
             
-            SungearEngineEditor::getAssetManager().addAsset(alias, svgTexture);
+            Resources::getMainAssetManager().addAsset(alias, svgTexture);
             
             std::cout << "LOADED SVG: " << path << " WITH ALIAS: " << alias << std::endl;
             

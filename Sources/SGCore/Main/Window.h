@@ -317,6 +317,8 @@ namespace SGCore
         [[nodiscard]] double getSwapBuffersExecutionTime() const noexcept;
         
         static void getPrimaryMonitorSize(int& sizeX, int& sizeY) noexcept;
+        
+        static int getPrimaryMonitorRefreshRate() noexcept;
 
     private:
         WindowConfig m_config;

@@ -20,16 +20,16 @@ SGE::MainView::MainView()
     m_explorerWindow = SGCore::MakeRef<Explorer>();
     m_explorerWindow->m_name = "SGE_EXPLORER_WINDOW";
     
-    m_directoryExplorerWindow = SGCore::MakeRef<DirectoryExplorer>();
-    m_directoryExplorerWindow->m_name = "SGE_DIRECTORY_EXPLORER_WINDOW";
+    m_directoryExplorer = SGCore::MakeRef<DirectoryExplorer>();
+    m_directoryExplorer->m_name = "SGE_DIRECTORY_EXPLORER_WINDOW";
     
-    m_directoriesTreeExplorerWindow = SGCore::MakeRef<DirectoriesTreeExplorer>();
-    m_directoriesTreeExplorerWindow->m_name = "SGE_DIRECTORIES_TREE_EXPLORER_WINDOW";
+    m_directoriesTreeExplorer = SGCore::MakeRef<DirectoriesTreeExplorer>();
+    m_directoriesTreeExplorer->m_name = "SGE_DIRECTORIES_TREE_EXPLORER_WINDOW";
     
     addChild(m_topToolbarView);
     addChild(m_explorerWindow);
-    addChild(m_directoryExplorerWindow);
-    addChild(m_directoriesTreeExplorerWindow);
+    addChild(m_directoryExplorer);
+    addChild(m_directoriesTreeExplorer);
 }
 
 SGE::MainView::~MainView()
@@ -61,7 +61,12 @@ ImGuiID& SGE::MainView::getDockID() noexcept
     return m_dockID;
 }
 
-SGCore::Ref<SGE::DirectoriesTreeExplorer> SGE::MainView::getDirectoriesTreeExplorerWindow() const noexcept
+SGCore::Ref<SGE::DirectoriesTreeExplorer> SGE::MainView::getDirectoriesTreeExplorer() const noexcept
 {
-    return m_directoriesTreeExplorerWindow;
+    return m_directoriesTreeExplorer;
+}
+
+SGCore::Ref<SGE::DirectoryExplorer> SGE::MainView::getDirectoryExplorer() const noexcept
+{
+    return m_directoryExplorer;
 }

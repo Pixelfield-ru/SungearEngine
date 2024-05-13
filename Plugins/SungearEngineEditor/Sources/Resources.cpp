@@ -4,19 +4,7 @@
 
 #include "Resources.h"
 
-void SGE::Resources::releaseResources() noexcept
+SGCore::AssetManager& SGE::Resources::getMainAssetManager() noexcept
 {
-    for(auto& font : m_imguiFonts)
-    {
-        delete font;
-        // ImGui::GetIO().Fonts.Clea
-    }
-    
-    m_imguiFonts.clear();
+    return m_mainAssetManager;
 }
-
-std::vector<ImFont*>& SGE::Resources::getImGuiFonts() noexcept
-{
-    return m_imguiFonts;
-}
-

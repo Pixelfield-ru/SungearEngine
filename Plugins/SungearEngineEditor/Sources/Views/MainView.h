@@ -28,14 +28,15 @@ namespace SGE
         
         ImGuiID& getDockID() noexcept;
         
-        SGCore::Ref<DirectoriesTreeExplorer> getDirectoriesTreeExplorerWindow() const noexcept;
+        SGCore::Ref<DirectoriesTreeExplorer> getDirectoriesTreeExplorer() const noexcept;
+        SGCore::Ref<DirectoryExplorer> getDirectoryExplorer() const noexcept;
         
     private:
         SGCore::Ref<TopToolbarView> m_topToolbarView;
         
         SGCore::Ref<Explorer> m_explorerWindow;
-        SGCore::Ref<DirectoryExplorer> m_directoryExplorerWindow;
-        SGCore::Ref<DirectoriesTreeExplorer> m_directoriesTreeExplorerWindow;
+        SGCore::Ref<DirectoryExplorer> m_directoryExplorer;
+        SGCore::Ref<DirectoriesTreeExplorer> m_directoriesTreeExplorer;
         
         ImGuiID m_dockID = 0;
     };

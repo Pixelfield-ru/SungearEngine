@@ -172,6 +172,7 @@ namespace SGE::EditorStyles
                 Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/more.svg", "more16x16", { 16, 16 });
                 
                 Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/question.svg", "question16x16", { 16, 16 });
+                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/question.svg", "question50x50", { 50, 50 });
                 
                 Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/library.svg", "library16x16", { 16, 16 });
             }

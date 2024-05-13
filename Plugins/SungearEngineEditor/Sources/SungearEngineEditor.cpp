@@ -58,8 +58,4 @@ SGCore::Ref<SGE::SungearEngineEditor> SGE::SungearEngineEditor::getInstance() no
     return s_SungearEngineEditorInstance;
 }
 
-SGCore::AssetManager& SGE::SungearEngineEditor::getAssetManager() noexcept
-{
-    return m_assetManager;
-}
 

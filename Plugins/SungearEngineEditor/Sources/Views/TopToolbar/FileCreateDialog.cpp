@@ -54,7 +54,7 @@ void SGE::FileCreateDialog::renderBody()
     
     ImGui::SameLine();
     
-    auto asset = SungearEngineEditor::getAssetManager().loadAsset<SGCore::ITexture2D>("folder20x20");
+    auto asset = Resources::getMainAssetManager().loadAsset<SGCore::ITexture2D>("folder20x20");
     
     if(ImGuiUtils::ImageButton(asset->getTextureNativeHandler(), ImVec2(20, 20)))
     {

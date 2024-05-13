@@ -65,7 +65,7 @@ void SGCore::CoreMain::start()
 
     m_renderTimer.onUpdate.connect<&updateStart>(0);
     m_renderTimer.onUpdate.connect<&updateEnd>(std::numeric_limits<size_t>::max());
-    m_renderTimer.setTargetFrameRate(1200.0);
+    m_renderTimer.setTargetFrameRate(Window::getPrimaryMonitorRefreshRate());
 
     // -----------------
     
