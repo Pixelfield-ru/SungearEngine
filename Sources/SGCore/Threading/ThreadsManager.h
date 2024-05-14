@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "Thread.h"
+#include "ThreadsPool.h"
 
 namespace SGCore::Threading
 {
@@ -17,12 +18,14 @@ namespace SGCore::Threading
         friend struct Thread;
         
         static std::shared_ptr<Thread> currentThread() noexcept;
-    
-        static std::shared_ptr<Thread> getLessLoadedThread() noexcept;
         
         static std::shared_ptr<Thread> getMainThread() noexcept;
+
+        SG_NOINLINE static ThreadsPool& getGlobalPool() noexcept;
         
     private:
+        static inline ThreadsPool m_globalThreadsPool;
+        
         static inline std::mutex m_threadAccessMutex;
         
         static inline std::vector<std::shared_ptr<Thread>> m_threads;
@@ -32,6 +35,7 @@ namespace SGCore::Threading
         static inline bool m_staticInit = []() {
             m_mainThread = std::shared_ptr<MainThread>(new MainThread);
             m_mainThread->m_nativeThreadID = std::this_thread::get_id();
+            m_mainThread->m_sleepIfNotBusy = false;
             m_threads.push_back(m_mainThread);
             
             return true;

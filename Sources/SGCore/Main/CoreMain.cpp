@@ -84,7 +84,7 @@ void SGCore::CoreMain::start()
 
     while (!m_window.shouldClose())
     {
-        Threading::ThreadsManager::getMainThread()->processFinishedTasks();
+        Threading::ThreadsManager::getMainThread()->processTasks();
         
         m_fixedTimer.startFrame();
         m_renderTimer.startFrame();

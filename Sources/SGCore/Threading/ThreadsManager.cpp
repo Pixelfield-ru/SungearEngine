@@ -15,25 +15,12 @@ std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::ThreadsManager::cu
     return it != m_threads.end() ? *it : nullptr;
 }
 
-std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::ThreadsManager::getLessLoadedThread() noexcept
-{
-    std::shared_ptr<Thread> lessLoadedThread;
-    
-    double minExecutionTime = std::numeric_limits<double>::max();
-    
-    for(const auto& thread : m_threads)
-    {
-        if(thread->getExecutionTime() < minExecutionTime)
-        {
-            minExecutionTime = thread->getExecutionTime();
-            lessLoadedThread = thread;
-        }
-    }
-    
-    return lessLoadedThread;
-}
-
 std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::ThreadsManager::getMainThread() noexcept
 {
     return m_mainThread;
+}
+
+SGCore::Threading::ThreadsPool& SGCore::Threading::ThreadsManager::getGlobalPool() noexcept
+{
+    return m_globalThreadsPool;
 }

@@ -20,7 +20,7 @@ namespace SGCore::Threading
     {
         friend struct Task;
         friend struct ThreadsManager;
-        
+
         /**
          * Creates absolute new thread. It is recommended to use ThreadsPool to reuse threads and set a policy for creating new threads.
          * @return Absolute new thread.
@@ -28,6 +28,7 @@ namespace SGCore::Threading
         static std::shared_ptr<Thread> create() noexcept;
         
         std::atomic<bool> m_autoJoinIfNotBusy = false;
+        std::atomic<bool> m_sleepIfNotBusy = true;
         
         ~Thread();
         
@@ -85,6 +86,7 @@ namespace SGCore::Threading
         
         std::atomic<bool> m_isRunning = false;
         std::atomic<bool> m_isAlive = true;
+        std::atomic<bool> m_hasJoinRequest = false;
         
         std::thread m_thread;
     };

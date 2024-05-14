@@ -20,7 +20,6 @@ std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create() n
 
 SGCore::Threading::Thread::~Thread()
 {
-    m_isAlive = false;
     join();
 }
 
@@ -81,7 +80,11 @@ void SGCore::Threading::Thread::processTasks() noexcept
             });
             ThreadsManager::getMainThread()->addTask(joinThisThreadTask);
         }
-        std::this_thread::sleep_for(100ms);
+        
+        if(m_sleepIfNotBusy)
+        {
+            std::this_thread::sleep_for(100ms);
+        }
     }
     
     auto t1 = now();
@@ -91,7 +94,7 @@ void SGCore::Threading::Thread::processTasks() noexcept
 
 void SGCore::Threading::Thread::start() noexcept
 {
-    if(m_isRunning) return;
+    if(m_isRunning || m_hasJoinRequest) return;
     
     auto internalFunc = [this]() {
         while(m_isAlive && m_isRunning)
@@ -109,9 +112,15 @@ void SGCore::Threading::Thread::start() noexcept
 void SGCore::Threading::Thread::join() noexcept
 {
     if(!m_isRunning) return;
-    
-    m_thread.join();
+
     m_isRunning = false;
+
+    std::cout << "joining thread..." << std::endl;
+
+    // PREVENT FROM CALLING start() WHEN THREAD IS NOT JOINED YET BUT NOT RUNNING
+    m_hasJoinRequest = true;
+    m_thread.join();
+    m_hasJoinRequest = false;
 }
 
 std::shared_ptr<SGCore::Threading::Task> SGCore::Threading::Thread::createTask
