@@ -13,7 +13,6 @@ SGCore::ByteFileAsset::~ByteFileAsset()
 void SGCore::ByteFileAsset::doLoad(const std::string& path)
 {
     m_buffer = SGUtils::FileUtils::readBytes(path, m_bufferSize);
-    m_path = path;
 }
 
 char* SGCore::ByteFileAsset::getBuffer() const noexcept

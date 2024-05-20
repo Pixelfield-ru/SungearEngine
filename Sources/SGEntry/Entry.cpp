@@ -35,27 +35,6 @@ extern "C" {
 
 SGCore::Ref<SGCore::Scene> testScene2;
 
-template<typename RetT>
-struct get_address;
-
-template<typename RetT, typename... Args>
-struct get_address<RetT(Args...)>
-{
-    size_t operator()(std::function<RetT(Args...)> f)
-    {
-        typedef RetT (fnType)(Args...);
-        fnType** fnPointer = f.template target<fnType*>();
-        return (size_t) *fnPointer;
-    }
-};
-
-template<typename RetT, typename T>
-size_t getAddress(std::function<RetT(T &)> f) {
-    typedef void (fnType)(T &);
-    fnType** fnPointer = f.template target<fnType*>();
-    return (size_t) *fnPointer;
-}
-
 void coreInit()
 {
     testScene2 = SGCore::MakeRef<SGCore::Scene>();

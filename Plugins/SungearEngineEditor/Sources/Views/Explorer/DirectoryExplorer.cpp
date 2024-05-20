@@ -8,6 +8,7 @@
 #include "DirectoryExplorer.h"
 #include "Views/MainView.h"
 #include "DirectoriesTreeExplorer.h"
+#include "ImGuiUtils.h"
 
 void SGE::DirectoryExplorer::renderBody()
 {
@@ -31,7 +32,13 @@ void SGE::DirectoryExplorer::renderBody()
             
             bool isDirectory = std::filesystem::is_directory(curFile);
             
+            SGCore::Ref<SGCore::ITexture2D> iconTexture;
             
+            //if()
+            
+            ImGuiUtils::ImageButton(m_unknownFileIcon->getTextureNativeHandler(), ImVec2(50, 50));
+            
+            ImGui::SameLine();
         }
     }
     

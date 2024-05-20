@@ -22,7 +22,7 @@ void SGE::DirectoriesTreeExplorer::renderBody()
     m_windowContentRegionMax = ImGui::GetContentRegionAvail();
     m_windowCursorPos = ImGui::GetCursorScreenPos();
     
-    ImGui::TreePush("##DirectoryExplorerTree");
+    // ImGui::TreePush("##DirectoryExplorerTree");
     
     if(m_drawSelectedRect)
     {
@@ -43,7 +43,7 @@ void SGE::DirectoriesTreeExplorer::renderBody()
         renderTreeNode(m_rootPath);
     }
     
-    ImGui::TreePop();
+    // ImGui::TreePop();
     
     ImGui::End();
     
@@ -53,8 +53,6 @@ void SGE::DirectoriesTreeExplorer::renderBody()
 void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& parent) noexcept
 {
     bool isDirectory = std::filesystem::is_directory(parent);
-    
-    ImGui::Indent();
     
     auto& isCurrentNodeOpened = m_pathsNodes[parent];
     
@@ -82,30 +80,37 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
         
         auto fileExt = parent.extension();
         
+        SGCore::Ref<SGCore::ITexture2D> iconTexture;
+        
         if(fileExt == ".h")
         {
-            ImGui::Image(m_headerIcon->getTextureNativeHandler(), ImVec2(16, 16));
+            iconTexture = m_headerIcon;
         }
         else if(fileExt == ".cpp")
         {
-            ImGui::Image(m_cppIcon->getTextureNativeHandler(), ImVec2(16, 16));
+            iconTexture = m_cppIcon;
         }
         else if(fileExt == ".cmake" || parent.filename() == "CMakeLists.txt")
         {
-            ImGui::Image(m_cmakeIcon->getTextureNativeHandler(), ImVec2(16, 16));
+            iconTexture = m_cmakeIcon;
         }
         else if(fileExt == ".txt" || fileExt == ".log")
         {
-            ImGui::Image(m_txtFileIcon->getTextureNativeHandler(), ImVec2(16, 16));
+            iconTexture = m_txtFileIcon;
         }
         else if(fileExt == ".dll" || fileExt == ".so")
         {
-            ImGui::Image(m_libraryFileIcon->getTextureNativeHandler(), ImVec2(16, 16));
+            iconTexture = m_libraryFileIcon;
         }
-        else
+        
+        onIconRender(iconTexture, fileExt, parent.filename());
+        
+        if(!iconTexture)
         {
-            ImGui::Image(m_unknownFileIcon->getTextureNativeHandler(), ImVec2(16, 16));
+            iconTexture = m_unknownFileIcon;
         }
+        
+        ImGui::Image(iconTexture->getTextureNativeHandler(), ImVec2(16, 16));
         
         ImGui::SameLine();
     }
@@ -156,7 +161,9 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     {
         for(auto it = std::filesystem::directory_iterator(parent); it != std::filesystem::directory_iterator(); ++it)
         {
+            ImGui::Indent();
             renderTreeNode(*it);
+            ImGui::Unindent();
         }
     }
     
@@ -170,6 +177,4 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
             }
         }
     }
-    
-    ImGui::Unindent();
 }

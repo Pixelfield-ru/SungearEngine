@@ -16,8 +16,6 @@ size_t polygonsNumber = 0;
 
 void SGCore::ModelAsset::doLoad(const std::string& path)
 {
-    m_path = path;
-
     m_importerFlags = ModelsImportSettings::IMPORTER_FLAGS;
 
     Assimp::Importer importer;

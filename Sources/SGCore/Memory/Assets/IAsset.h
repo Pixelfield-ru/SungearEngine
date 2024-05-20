@@ -34,6 +34,8 @@ namespace SGCore
 
         void load(const std::string& path)
         {
+            m_path = path;
+            
             doLoad(path);
             
             onLoadDone(this);
@@ -48,6 +50,8 @@ namespace SGCore
             std::cout << "LAZYLOAD DONE" << std::endl;
         }
 
+        // LEGACY CODE ================================
+        
         void addObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
         void removeObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
 
@@ -55,6 +59,8 @@ namespace SGCore
         void onPathChanged();
         void onDeleted();
         void onRestored();
+        
+        // =============================================
 
         long getLastModified() noexcept;
         [[nodiscard]] std::filesystem::path getPath() const noexcept;

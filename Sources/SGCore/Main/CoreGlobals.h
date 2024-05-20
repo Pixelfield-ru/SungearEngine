@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <entt/entt.hpp>
+#include <glm/vec2.hpp>
 
 namespace SGCore
 {
@@ -34,6 +35,26 @@ namespace SGCore
 
     template<typename T>
     using Weak = std::weak_ptr<T>;
+    
+    // ================================ GLM USINGS
+    
+    using uivec2_32 = glm::vec<2, std::uint32_t, glm::defaultp>;
+    using uivec3_32 = glm::vec<3, std::uint32_t, glm::defaultp>;
+    using uivec4_32 = glm::vec<4, std::uint32_t, glm::defaultp>;
+    
+    using uivec2_64 = glm::vec<2, std::uint64_t, glm::defaultp>;
+    using uivec3_64 = glm::vec<3, std::uint64_t, glm::defaultp>;
+    using uivec4_64 = glm::vec<4, std::uint64_t, glm::defaultp>;
+    
+    using ivec2_32 = glm::vec<2, std::int32_t, glm::defaultp>;
+    using ivec3_32 = glm::vec<3, std::int32_t, glm::defaultp>;
+    using ivec4_32 = glm::vec<4, std::int32_t, glm::defaultp>;
+    
+    using ivec2_64 = glm::vec<2, std::int64_t, glm::defaultp>;
+    using ivec3_64 = glm::vec<3, std::int64_t, glm::defaultp>;
+    using ivec4_64 = glm::vec<4, std::int64_t, glm::defaultp>;
+    
+    // ===========================================
 }
 
 #endif //SUNGEARENGINE_COREGLOBALS_H

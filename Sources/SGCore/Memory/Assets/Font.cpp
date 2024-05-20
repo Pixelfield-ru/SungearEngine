@@ -10,7 +10,7 @@
 
 void SGCore::Font::doLoad(const std::string& path)
 {
-    m_path = path;
+
 }
 
 SGCore::Ref<SGCore::FontSpecialization>

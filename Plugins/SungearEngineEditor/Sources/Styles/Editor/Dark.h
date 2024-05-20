@@ -16,6 +16,7 @@
 #include "Utils.h"
 
 #include <lunasvg.h>
+#include <SGCore/Memory/Assets/SVGImage.h>
 
 namespace SGE::EditorStyles
 {
@@ -153,28 +154,45 @@ namespace SGE::EditorStyles
             
             // loading icons
             {
-                static constexpr glm::ivec2 standardSize { 20, 20 };
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("folder",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/folder.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/folder.svg", "folder20x20", standardSize);
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/folder.svg", "folder16x16", { 16, 16 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("chevron_right",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/chevron_right.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/chevron_right.svg", "chevron_right16x16", { 16, 16 });
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/chevron_down.svg", "chevron_down16x16", { 16, 16 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("chevron_down",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/chevron_down.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/header.svg", "header16x16", { 16, 16 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("header",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/header.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/cpp.svg", "cpp16x16", { 16, 16 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("cpp",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/cpp.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/cmake.svg", "cmake16x16", { 16, 16 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("cmake",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/cmake.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/lines.svg", "lines16x16", { 16, 16 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("lines",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/lines.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/more.svg", "more16x16", { 16, 16 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("more",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/more.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/question.svg", "question16x16", { 16, 16 });
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/question.svg", "question50x50", { 50, 50 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("question",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/question.svg");
                 
-                Utils::loadSVG(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/icons/dark_style/library.svg", "library16x16", { 16, 16 });
+                Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>("library",
+                                                                                      SungearEngineEditor::getInstance()->getLocalPath() +
+                                                                                      "/Resources/icons/dark_style/library.svg");
             }
         }
     };

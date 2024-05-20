@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <glm/vec2.hpp>
 
 #include "SGUtils/UUID.h"
 #include "SGUtils/Event.h"
@@ -27,6 +28,8 @@ namespace SGCore::ImGuiWrap
         UniqueName m_name = SGUtils::UUID::generateNew();
         std::string m_tag;
 
+        glm::vec2 m_UIScale { 1, 1 };
+        
         virtual bool begin() { return true; };
         virtual void renderBody() { };
         virtual void end() { };

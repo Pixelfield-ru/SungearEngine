@@ -20,6 +20,7 @@
  find_package(BZip2 REQUIRED)
  find_package(unofficial-brotli CONFIG REQUIRED)
  find_package(OpenAL CONFIG REQUIRED)
+ find_package(unofficial-lunasvg CONFIG REQUIRED)
 
  include(FetchContent)
 
@@ -82,6 +83,8 @@
          SGUtils
          OpenAL::OpenAL
          glaze::glaze
+         unofficial::lunasvg::lunasvg
+
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
          )

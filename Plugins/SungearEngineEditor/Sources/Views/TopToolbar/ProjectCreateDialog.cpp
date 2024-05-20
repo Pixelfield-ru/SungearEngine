@@ -8,6 +8,7 @@
 #include <nfd.h>
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
+#include <SGCore/Memory/Assets/SVGImage.h>
 
 #include "ProjectCreateDialog.h"
 #include "SungearEngineEditor.h"
@@ -56,9 +57,11 @@ void SGE::ProjectCreateDialog::renderBody()
     
     ImGui::SameLine();
     
-    auto asset = Resources::getMainAssetManager().loadAsset<SGCore::ITexture2D>("folder20x20");
+    auto folderTexture = Resources::getMainAssetManager().loadAsset<SGCore::SVGImage>("folder")
+            ->getSpecialization(20, 20)
+            ->getTexture();
     
-    if(ImGuiUtils::ImageButton(asset->getTextureNativeHandler(), ImVec2(20, 20)))
+    if(ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(), ImVec2(folderTexture->m_width, folderTexture->m_height)))
     {
         char* dat = m_dirPath.data();
         nfdresult_t result = NFD_PickFolder("", &dat);

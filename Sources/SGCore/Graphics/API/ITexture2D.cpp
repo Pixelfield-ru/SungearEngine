@@ -20,8 +20,6 @@ void SGCore::ITexture2D::doLoad(const std::string& path)
 {
     int channelsDesired = 0;
     
-    m_path = path;
-    
     if(!std::filesystem::exists(path))
     {
         spdlog::error("Error while loading texture: texture by path {0} does not exist.", path);
