@@ -329,7 +329,7 @@ namespace SGCore
         static void nativeIconifyCallback(GLFWwindow* window, int iconified) noexcept;
         static void nativeKeyboardKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
         static void nativeMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) noexcept;
-        static void nativeMouseButtonCallback(GLFWwindow* window, double xpos, double ypos) noexcept;
+        static void nativeMousePositionCallback(GLFWwindow* window, double xpos, double ypos) noexcept;
         
         static void errorCallback(int errCode, const char* err_msg);
 

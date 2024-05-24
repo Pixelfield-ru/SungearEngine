@@ -10,7 +10,6 @@
 
 std::string SGUtils::FileUtils::readFile(const std::string_view& path)
 {
-    
     constexpr size_t read_size = 4096;
     auto stream = std::ifstream(path.data());
     stream.exceptions(std::ios_base::badbit);

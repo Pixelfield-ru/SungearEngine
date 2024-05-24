@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 #include <SGCore/Graphics/API/ITexture2D.h>
+#include <SGCore/Memory/Assets/SVGImage.h>
 
 namespace SGE
 {
@@ -16,6 +17,17 @@ namespace SGE
         friend struct StylesManager;
         
         std::string m_name;
+        
+        SGCore::Ref<SGCore::SVGImage> m_headerIcon;
+        SGCore::Ref<SGCore::SVGImage> m_cppIcon;
+        SGCore::Ref<SGCore::SVGImage> m_folderIcon;
+        SGCore::Ref<SGCore::SVGImage> m_chevronRightIcon;
+        SGCore::Ref<SGCore::SVGImage> m_chevronDownIcon;
+        SGCore::Ref<SGCore::SVGImage> m_cmakeIcon;
+        SGCore::Ref<SGCore::SVGImage> m_linesIcon;
+        SGCore::Ref<SGCore::SVGImage> m_moreIcon;
+        SGCore::Ref<SGCore::SVGImage> m_questionIcon;
+        SGCore::Ref<SGCore::SVGImage> m_libraryIcon;
         
     private:
         virtual void apply() = 0;

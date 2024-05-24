@@ -7,6 +7,7 @@
 #include "DirectoriesTreeExplorer.h"
 #include "DirectoryExplorer.h"
 #include "ImGuiUtils.h"
+#include "Styles/StylesManager.h"
 
 void SGE::DirectoriesTreeExplorer::renderBody()
 {
@@ -58,20 +59,22 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     
     bool arrowBtnClicked = false;
     
+    auto style = StylesManager::getCurrentStyle();
+    
     if(isDirectory)
     {
         if(isCurrentNodeOpened)
         {
-            arrowBtnClicked = ImGuiUtils::ImageButton(m_chevronDownIcon->getTextureNativeHandler(), ImVec2(16, 16));
+            arrowBtnClicked = ImGuiUtils::ImageButton(style->m_chevronDownIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y));
         }
         else
         {
-            arrowBtnClicked = ImGuiUtils::ImageButton(m_chevronRightIcon->getTextureNativeHandler(), ImVec2(16, 16));
+            arrowBtnClicked = ImGuiUtils::ImageButton(style->m_chevronRightIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y));
         }
         
         ImGui::SameLine();
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 5);
-        ImGui::Image(m_folderIcon->getTextureNativeHandler(), ImVec2(16, 16));
+        ImGui::Image(style->m_folderIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16, 16));
         ImGui::SameLine();
     }
     else
@@ -80,35 +83,7 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
         
         auto fileExt = parent.extension();
         
-        SGCore::Ref<SGCore::ITexture2D> iconTexture;
-        
-        if(fileExt == ".h")
-        {
-            iconTexture = m_headerIcon;
-        }
-        else if(fileExt == ".cpp")
-        {
-            iconTexture = m_cppIcon;
-        }
-        else if(fileExt == ".cmake" || parent.filename() == "CMakeLists.txt")
-        {
-            iconTexture = m_cmakeIcon;
-        }
-        else if(fileExt == ".txt" || fileExt == ".log")
-        {
-            iconTexture = m_txtFileIcon;
-        }
-        else if(fileExt == ".dll" || fileExt == ".so")
-        {
-            iconTexture = m_libraryFileIcon;
-        }
-        
-        onIconRender(iconTexture, fileExt, parent.filename());
-        
-        if(!iconTexture)
-        {
-            iconTexture = m_unknownFileIcon;
-        }
+        SGCore::Ref<SGCore::ITexture2D> iconTexture = ImGuiUtils::getFileIcon(parent, { 16, 16 }, &onIconRender);
         
         ImGui::Image(iconTexture->getTextureNativeHandler(), ImVec2(16, 16));
         

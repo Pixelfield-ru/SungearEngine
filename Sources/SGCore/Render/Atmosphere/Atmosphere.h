@@ -55,8 +55,6 @@ namespace SGCore
 
         glm::vec3 m_rayOrigin { };
         glm::vec3 m_lastRayOrigin { 0, 0, 0 };
-        
-        int* fdf = new int;
 
         // ----
         

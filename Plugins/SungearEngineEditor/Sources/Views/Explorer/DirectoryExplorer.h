@@ -14,6 +14,12 @@
 
 namespace SGE
 {
+    struct DrawableFileNameInfo
+    {
+        ImVec2 m_position = ImVec2(0, 0);
+        bool m_overdraw = false;
+    };
+    
     struct DirectoryExplorer : SGCore::ImGuiWrap::IView
     {
         SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>& iconTexture,
@@ -22,10 +28,16 @@ namespace SGE
         
         void renderBody() override;
         
+        ImVec2 m_iconsPadding = ImVec2(40, 20);
+        
+        std::uint8_t m_nameMaxLinesCount = 3;
+        
         std::filesystem::path m_currentPath;
         
     private:
-        SGCore::Ref<SGCore::ITexture2D> m_unknownFileIcon = Resources::getMainAssetManager().loadAsset<SGCore::SVGImage>("question")->getSpecialization(50, 50)->getTexture();
+        std::unordered_map<std::filesystem::path, DrawableFileNameInfo> m_drawableFilesNames;
+        
+        ImVec2 m_currentItemsSize = ImVec2(0, 0);
     };
 }
 

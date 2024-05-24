@@ -22,7 +22,7 @@ namespace SGCore
         virtual std::shared_ptr<IVertexArray> create() = 0;
         virtual void destroy() = 0;
 
-        virtual std::shared_ptr<IVertexArray>  bind() = 0;
+        virtual std::shared_ptr<IVertexArray> bind() = 0;
     };
 }
 
