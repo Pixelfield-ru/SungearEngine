@@ -15,6 +15,8 @@ SGE::SungearEngineEditor::~SungearEngineEditor()
 
 std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>& args)
 {
+    ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
+
 	m_name = "SungearEngineEditor";
 	m_version = "1.0.0";
     
@@ -22,7 +24,7 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
     
     SGCore::CoreMain::getRenderTimer().onUpdate.connect<&SungearEngineEditor::onUpdate>(*this);
 
-    std::cout << "FIRST" << std::endl;
+    std::cout << "ImGui context: " << ImGui::GetCurrentContext() << std::endl;
 
     StylesManager::init();
 

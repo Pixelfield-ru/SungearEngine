@@ -10,7 +10,10 @@
 void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
 {
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    ImGuiContext* imGuiContext = ImGui::CreateContext();
+    ImGui::SetCurrentContext(imGuiContext);
+    m_currentContext = imGuiContext;
+    std::cout << "ImGui init! imGuiContext: " << m_currentContext << std::endl;
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -75,4 +78,32 @@ void SGCore::ImGuiWrap::ImGuiLayer::endFrame() noexcept
     }
     
     ImGui::EndFrame();
+}
+
+ImGuiContext* SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext() noexcept
+{
+    return m_currentContext;
+}
+
+void SGCore::ImGuiWrap::ImGuiLayer::destroyDeviceObjects() noexcept
+{
+    auto gapiType = SGCore::CoreMain::getRenderer()->getGAPIType();
+
+    switch(gapiType)
+    {
+        case SGCore::SG_API_TYPE_UNKNOWN:
+            break;
+        case SGCore::SG_API_TYPE_GL4:
+            ImGui_ImplOpenGL3_DestroyDeviceObjects();
+            break;
+        case SGCore::SG_API_TYPE_GL46:
+            ImGui_ImplOpenGL3_DestroyDeviceObjects();
+            break;
+        case SGCore::SG_API_TYPE_GLES2:
+            break;
+        case SGCore::SG_API_TYPE_GLES3:
+            break;
+        case SGCore::SG_API_TYPE_VULKAN:
+            break;
+    }
 }

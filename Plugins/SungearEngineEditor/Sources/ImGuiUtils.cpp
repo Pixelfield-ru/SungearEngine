@@ -42,8 +42,8 @@ SGCore::Ref<SGCore::ITexture2D> SGE::ImGuiUtils::getFileIcon(const std::filesyst
 {
     SGCore::Ref<SGCore::ITexture2D> fileIcon;
     
-    std::string fileExtension = filePath.extension();
-    std::string fileName = filePath.stem();
+    std::string fileExtension = filePath.extension().string();
+    std::string fileName = filePath.stem().string();
     
     if(fileExtension == ".h")
     {

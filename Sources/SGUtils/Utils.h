@@ -29,7 +29,7 @@
 #define SG_FORCEINLINE __attribute__((always_inline))
 #endif
 
-#ifdef _MSC_VEC
+#ifdef _MSC_VER
 #define SG_CDECL __cdecl
 #elif defined(__GNUC__)
 #define SG_CDECL __attribute__((cdecl))
@@ -37,16 +37,16 @@
 
 #define SG_NOMANGLING extern "C"
 
-#ifdef _MSC_VEC
-#define SG_DLLEXPORT __declspec(dllexport)
+#ifdef _MSC_VER
+#define SG_DLEXPORT __declspec(dllexport)
 #elif defined(__GNUC__)
 #define SG_DLEXPORT __attribute__((visibility("default")))
 #endif
 
-#ifdef _MSC_VEC
-#define SG_DLLIMPORT __declspec(dllimport)
+#ifdef _MSC_VER
+#define SG_DLIMPORT __declspec(dllimport)
 #elif defined(__GNUC__)
-#define SG_DLLIMPORT
+#define SG_DLIMPORT
 #endif
 
 #include <string>

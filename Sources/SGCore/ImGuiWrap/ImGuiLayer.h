@@ -26,6 +26,13 @@ namespace SGCore::ImGuiWrap
         static void beginFrame() noexcept;
 
         static void endFrame() noexcept;
+
+        SG_NOINLINE static ImGuiContext* getCurrentContext() noexcept;
+
+        SG_NOINLINE static void destroyDeviceObjects() noexcept;
+
+    private:
+        static inline ImGuiContext* m_currentContext = nullptr;
     };
 }
 

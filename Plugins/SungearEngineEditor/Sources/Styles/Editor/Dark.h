@@ -117,26 +117,7 @@ namespace SGE::EditorStyles
             // THE STANDARD OF LOADING FONTS
             if(std::filesystem::exists(SungearEngineEditor::getInstance()->getLocalPath() + "/Resources/fonts/roboto_flex.ttf"))
             {
-
-                auto gapiType = SGCore::CoreMain::getRenderer()->getGAPIType();
-                
-                switch(gapiType)
-                {
-                    case SGCore::SG_API_TYPE_UNKNOWN:
-                        break;
-                    case SGCore::SG_API_TYPE_GL4:
-                        ImGui_ImplOpenGL3_DestroyDeviceObjects();
-                        break;
-                    case SGCore::SG_API_TYPE_GL46:
-                        ImGui_ImplOpenGL3_DestroyDeviceObjects();
-                        break;
-                    case SGCore::SG_API_TYPE_GLES2:
-                        break;
-                    case SGCore::SG_API_TYPE_GLES3:
-                        break;
-                    case SGCore::SG_API_TYPE_VULKAN:
-                        break;
-                }
+                SGCore::ImGuiWrap::ImGuiLayer::destroyDeviceObjects();
 
                 auto& io = ImGui::GetIO();
                 

@@ -54,7 +54,7 @@ void coreInit()
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   SGCore::PluginBuildType::PBT_RELEASE);
+                                                   SGCore::PluginBuildType::PBT_DEBUG);
 
         std::cout << "plugin: " << sgEditorPlugin  << ", sgeditor path: " << sgEditorPath << std::endl;
     }
@@ -74,7 +74,7 @@ void onUpdate(const double& dt, const double& fixedDt)
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_P))
     {
-        auto sgEditorPlugin = SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", { }, SGCore::PluginBuildType::PBT_RELEASE);
+        auto sgEditorPlugin = SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", { }, SGCore::PluginBuildType::PBT_DEBUG);
         std::cout << sgEditorPlugin << std::endl;
     }
 }

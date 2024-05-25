@@ -27,7 +27,7 @@ void SGE::DirectoryExplorer::renderBody()
     
     if(std::filesystem::exists(m_currentPath) && std::filesystem::is_directory(m_currentPath))
     {
-        ImGui::Text(m_currentPath.c_str());
+        ImGui::Text(m_currentPath.string().c_str());
         
         for(auto it = std::filesystem::directory_iterator(m_currentPath);
             it != std::filesystem::directory_iterator(); ++it)
@@ -81,8 +81,8 @@ void SGE::DirectoryExplorer::renderBody()
         auto& path = fileNameInfoPair.first;
         auto& drawableNameInfo = fileNameInfoPair.second;
         
-        std::string fileName = path.stem();
-        std::string fileExt = path.extension();
+        std::string fileName = path.stem().string();
+        std::string fileExt = path.extension().string();
         std::string fullName = fileName + fileExt;
         
         ImVec2 nameSize = ImGui::CalcTextSize(fileName.c_str());
