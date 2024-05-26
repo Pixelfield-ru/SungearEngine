@@ -9,7 +9,6 @@
 
 SGE::SungearEngineEditor::~SungearEngineEditor()
 {
-    SGCore::CoreMain::getRenderTimer().onUpdate.disconnect<&SungearEngineEditor::onUpdate>(*this);
     SGCore::ImGuiWrap::IView::getRoot()->removeChild(m_mainView);
 }
 
@@ -21,8 +20,6 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 	m_version = "1.0.0";
     
     std::cout << "SGEDITOR PATH: " << getLocalPath() << std::endl;
-    
-    SGCore::CoreMain::getRenderTimer().onUpdate.connect<&SungearEngineEditor::onUpdate>(*this);
 
     std::cout << "ImGui context: " << ImGui::GetCurrentContext() << std::endl;
 
@@ -37,17 +34,26 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 	return "";
 }
 
-void SGE::SungearEngineEditor::onUpdate(const double&, const double&) const noexcept
+void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 {
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_R))
     {
+            // CRASH HERE ======================
+            void* ptr = nullptr;
+            *((int*) ptr) = 5;
+            // ==================================
         /*std::ofstream ofs(std::filesystem::current_path().string() + "/imgui.ini", std::ios::trunc | std::ios::out);
-        
+
         SGCore::ImGuiWrap::ImGuiLayer::destroy();
         SGCore::ImGuiWrap::ImGuiLayer::init();
         ImGui::LoadIniSettingsFromDisk((std::filesystem::current_path().string() + "/imgui.ini").c_str());
         StylesManager::init();*/
     }
+}
+
+void SGE::SungearEngineEditor::fixedUpdate(const double& dt, const double& fixedDt)
+{
+
 }
 
 SGCore::Ref<SGE::MainView> SGE::SungearEngineEditor::getMainView() const noexcept

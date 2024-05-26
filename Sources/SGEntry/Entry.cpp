@@ -37,6 +37,8 @@ SGCore::Ref<SGCore::Scene> testScene2;
 
 void coreInit()
 {
+    std::printf("init...\n");
+
     testScene2 = SGCore::MakeRef<SGCore::Scene>();
     testScene2->m_name = "TestScene";
     testScene2->createDefaultSystems();
@@ -54,7 +56,7 @@ void coreInit()
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   SGCore::PluginBuildType::PBT_DEBUG);
+                                                   SGCore::PluginBuildType::PBT_RELEASE);
 
         std::cout << "plugin: " << sgEditorPlugin  << ", sgeditor path: " << sgEditorPath << std::endl;
     }
@@ -62,6 +64,11 @@ void coreInit()
     {
         std::cout << "CANNOT LOAD SUNGEAR EDITOR PLUGIN" << std::endl;
     }
+
+    /*// CRASH HERE ======================
+    void* ptr = nullptr;
+    *((int*) ptr) = 5;
+    // ==================================*/
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -74,9 +81,40 @@ void onUpdate(const double& dt, const double& fixedDt)
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_P))
     {
-        auto sgEditorPlugin = SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", { }, SGCore::PluginBuildType::PBT_DEBUG);
-        std::cout << sgEditorPlugin << std::endl;
+        if(SGCore::PluginsManager::isPluginExists("SungearEngineEditor"))
+        {
+            SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", {}, SGCore::PluginBuildType::PBT_RELEASE);
+        }
+        else
+        {
+            char* sgSourcesPath = std::getenv("SUNGEAR_SOURCES_ROOT");
+
+            if(sgSourcesPath)
+            {
+                std::string sgEditorPath = std::string(sgSourcesPath) + "/Plugins/SungearEngineEditor";
+                SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
+                                                   sgEditorPath,
+                                                   {},
+                                                   SGCore::PluginBuildType::PBT_RELEASE);
+            }
+        }
     }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_O))
+    {
+        std::printf("unloaded plugin\n");
+        SGCore::PluginsManager::unloadPlugin("SungearEngineEditor");
+    }
+
+    /*try
+    {
+        void* ptr = nullptr;
+        *((int*) ptr) = 5;
+    }
+    catch(std::exception e)
+    {
+        std::cout << e.what() << std::endl;
+    }*/
 }
 
 int main()

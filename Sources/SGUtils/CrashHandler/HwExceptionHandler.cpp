@@ -2,9 +2,7 @@
 // Created by Ilya on 15.03.2024.
 //
 
-#ifndef SUNGEARENGINE_HWEXCEPTIONHANDLER_CPP
-#define SUNGEARENGINE_HWEXCEPTIONHANDLER_CPP
+#include <iostream>
 
+#include "HwExceptionHandler.h"
 
-
-#endif //SUNGEARENGINE_HWEXCEPTIONHANDLER_CPP

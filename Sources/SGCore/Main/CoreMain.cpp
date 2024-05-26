@@ -7,15 +7,13 @@
 #include "SGCore/Utils/DefaultShadersPaths.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Memory/AssetManager.h"
-#include "SGConsole/API/Console.h"
-#include "SGCore/Utils/ShadersPaths.h"
 #include "SGCore/Input/InputManager.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
 #include "SGCore/UI/FontsManager.h"
-#include "SGUtils/CrashHandler/HwExcpetionHandler.h"
 #include "SGCore/Audio/AudioDevice.h"
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
+#include "SGCore/PluginsSystem/PluginsManager.h"
 
 void SGCore::CoreMain::start()
 {
@@ -36,7 +34,7 @@ void SGCore::CoreMain::start()
     HwExceptionHandler::setApplicationName("Sungear Engine");
     HwExceptionHandler::setOutputLogFilePath(finalLogName);
     HwExceptionHandler::setupHandler();
-    
+
     m_defaultLogger = spdlog::basic_logger_mt("current_session", finalLogName);
     spdlog::set_default_logger(m_defaultLogger);
 
@@ -51,9 +49,9 @@ void SGCore::CoreMain::start()
     //m_renderer = VkRenderer::getInstance();
 
     m_window.create();
-    
+
     SGCore::ImGuiWrap::ImGuiLayer::init();
-    
+
     AudioDevice::init();
     AudioDevice::getDefaultDevice()->makeCurrent();
 
@@ -68,14 +66,23 @@ void SGCore::CoreMain::start()
     m_renderTimer.setTargetFrameRate(Window::getPrimaryMonitorRefreshRate());
 
     // -----------------
-    
+
     m_fixedTimer.onUpdate.connect<&fixedUpdateStart>(0);
     m_fixedTimer.onUpdate.connect<&fixedUpdateEnd>(std::numeric_limits<size_t>::max());
     // m_fixedTimer.m_useFixedUpdateCatchUp = false;
 
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
-    
-    onInit();
+
+    try
+    {
+        onInit();
+    }
+    catch(const std::exception& e)
+    {
+        std::string what = e.what();
+        std::printf("Error while onInit. Error is: %s\n", what.c_str());
+        spdlog::error("Error while onInit. Error is: {0}", what);
+    }
 
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();
@@ -96,6 +103,20 @@ void SGCore::CoreMain::start()
 void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)
 {
     InputManager::startFrame();
+
+    for(const auto& plugin : PluginsManager::getPlugins())
+    {
+        try
+        {
+            plugin->getPlugin()->fixedUpdate(dt, fixedDt);
+        }
+        catch(const std::exception& e)
+        {
+            std::string what = e.what();
+            std::printf("Error while fixedUpdate plugin. Error is: %s\n", what.c_str());
+            spdlog::error("Error while fixedUpdate plugin. Error is: {0}", what);
+        }
+    }
 }
 
 void SGCore::CoreMain::fixedUpdateEnd(const double& dt, const double& fixedDt)
@@ -108,6 +129,20 @@ void SGCore::CoreMain::updateStart(const double& dt, const double& fixedDt)
     glm::ivec2 windowSize;
     m_window.getSize(windowSize.x, windowSize.y);
     m_renderer->prepareFrame(windowSize);
+
+    for(const auto& plugin : PluginsManager::getPlugins())
+    {
+        try
+        {
+            plugin->getPlugin()->update(dt, fixedDt);
+        }
+        catch(const std::exception& e)
+        {
+            std::string what = e.what();
+            std::printf("Error while update plugin. Error is: %s\n", what.c_str());
+            spdlog::error("Error while update plugin. Error is: {0}", what);
+        }
+    }
 }
 
 void SGCore::CoreMain::updateEnd(const double& dt, const double& fixedDt)

@@ -4,12 +4,14 @@
 #include <sgcore_export.h>
 #include <thread>
 #include <spdlog/logger.h>
+#include <csetjmp>
 
 #include "Window.h"
 #include "SGUtils/Timer.h"
 
 #include "CoreGlobals.h"
 #include "SGUtils/Utils.h"
+#include "SGUtils/CrashHandler/HwExceptionHandler.h"
 
 /*namespace Core::Graphics
 {

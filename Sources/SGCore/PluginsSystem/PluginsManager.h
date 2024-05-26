@@ -24,7 +24,7 @@ namespace SGCore
          */
         SG_NOINLINE static auto& getPlugins() noexcept
         {
-            return s_plugins;
+            return m_plugins;
         }
         
         /**
@@ -76,9 +76,13 @@ namespace SGCore
         static Ref<PluginWrap> reloadPlugin(const std::string& pluginName,
                                             const std::vector<std::string>& entryArgs,
                                             PluginBuildType pluginBuildType);
+
+        static void unloadPlugin(const std::string& pluginName) noexcept;
+
+        static bool isPluginExists(const std::string& pluginName) noexcept;
         
     private:
-        static inline std::vector<Ref<PluginWrap>> s_plugins;
+        static inline std::vector<Ref<PluginWrap>> m_plugins;
     };
 }
 

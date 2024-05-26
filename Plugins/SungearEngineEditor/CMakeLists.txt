@@ -6,19 +6,48 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 if(${CMAKE_COMPILER_IS_GNUCXX})
 	set(CMAKE_CXX_FLAGS "-g -rdynamic -fno-pie -no-pie -fno-gnu-unique")
 elseif(MSVC)
+	add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+	add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
+	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+		set(CXX_COMPILER_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} /Od")
+
+		set(C_COMPILER_FLAGS "${CMAKE_C_FLAGS_DEBUG} /Od")
+	endif()
+
+	if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+		set(CXX_COMPILER_FLAGS "${CMAKE_CXX_FLAGS_RELEASE} /O2")
+
+		set(C_COMPILER_FLAGS "${CMAKE_C_FLAGS_RELEASE} /O2")
+	endif()
+
+	foreach(CompilerFlag ${CXX_COMPILER_FLAGS})
+		string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+	endforeach()
+
+	foreach(CompilerFlag ${C_COMPILER_FLAGS})
+		string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+	endforeach()
+
+	message("cxx compiler flags: ${CXX_COMPILER_FLAGS}, C compiler flags: ${C_COMPILER_FLAGS}")
+
+	set(CMAKE_CXX_FLAGS ${CXX_COMPILER_FLAGS})
+	set(CMAKE_C_FLAGS ${C_COMPILER_FLAGS})
+
+	set(MSVC_RUNTIME "dynamic")
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
-set(SG_BUILD_TYPE "Debug")
+set(SG_BUILD_TYPE "Release")
 
 add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
 add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 
-set(SG_INCLUDE_BULLET ON)
-set(SG_INCLUDE_PUGIXML ON)
-set(SG_INCLUDE_FREETYPE ON)
+set(SG_INCLUDE_BULLET OFF)
+set(SG_INCLUDE_PUGIXML OFF)
+set(SG_INCLUDE_FREETYPE OFF)
 set(SG_INCLUDE_GLM ON)
-set(SG_INCLUDE_ASSIMP ON)
+set(SG_INCLUDE_ASSIMP OFF)
 set(SG_INCLUDE_ENTT ON)
 set(SG_INCLUDE_GLFW ON)
 set(SG_INCLUDE_IMGUI ON)

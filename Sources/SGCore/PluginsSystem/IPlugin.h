@@ -25,7 +25,10 @@ namespace SGCore
     struct IPlugin
     {
         friend struct PluginsManager;
-        
+
+        virtual void update(const double& dt, const double& fixedDt) { }
+        virtual void fixedUpdate(const double& dt, const double& fixedDt) { }
+
         /**
          * Virtual plugin destructor.
          * \note Please note that if you create your own plugin, then you must implement this destructor in the structure of your plugin.\n

@@ -107,7 +107,7 @@ $(document).ready(function(){initNavTree('PluginsManager_8h_source.html',''); in
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    {</div>
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structSGCore_1_1PluginsManager.html#aad22104acafa3925c98706e100f96ef1">   25</a></span>&#160;        SG_NOINLINE <span class="keyword">static</span> <span class="keyword">auto</span>&amp; <a class="code" href="structSGCore_1_1PluginsManager.html#aad22104acafa3925c98706e100f96ef1">getPlugins</a>() noexcept</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keywordflow">return</span> s_plugins;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keywordflow">return</span> m_plugins;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        }</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        </div>
 <div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structSGCore_1_1PluginsManager.html#a14d013f273e4f12f4e31d94028454b0d">   47</a></span>&#160;        <span class="keyword">static</span> std::string <a class="code" href="structSGCore_1_1PluginsManager.html#a14d013f273e4f12f4e31d94028454b0d">createPluginProject</a>(<span class="keyword">const</span> std::string&amp; projectPath,</div>
@@ -124,7 +124,7 @@ $(document).ready(function(){initNavTree('PluginsManager_8h_source.html',''); in
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                                            PluginBuildType pluginBuildType);</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        </div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keyword">static</span> <span class="keyword">inline</span> std::vector&lt;Ref&lt;PluginWrap&gt;&gt; s_plugins;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keyword">static</span> <span class="keyword">inline</span> std::vector&lt;Ref&lt;PluginWrap&gt;&gt; m_plugins;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    };</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>

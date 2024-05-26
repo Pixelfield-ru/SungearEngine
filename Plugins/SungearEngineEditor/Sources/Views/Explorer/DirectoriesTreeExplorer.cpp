@@ -12,42 +12,51 @@
 void SGE::DirectoriesTreeExplorer::renderBody()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
-    
+
     ImGuiWindowClass windowClass;
     windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
     ImGui::SetNextWindowClass(&windowClass);
-    
+
     ImGui::Begin("Tree Explorer", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
-    
+
     auto windowSize = ImGui::GetWindowSize();
     m_windowContentRegionMax = ImGui::GetContentRegionAvail();
     m_windowCursorPos = ImGui::GetCursorScreenPos();
-    
+
     // ImGui::TreePush("##DirectoryExplorerTree");
-    
+
     if(m_drawSelectedRect)
     {
         ImGui::GetWindowDrawList()->AddRectFilled(m_clickedRowRectMin, m_clickedRowRectMax,
                                                   ImGui::ColorConvertFloat4ToU32(
                                                           ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1)), 3.0f);
     }
-    
+
     m_drawSelectedRect = false;
-    
-    if(std::filesystem::exists(m_rootPath))
+
+    try
     {
-        if(std::filesystem::exists(m_currentPath))
+        if (std::filesystem::exists(m_rootPath))
         {
-            ImGui::Text(m_currentPath.string().c_str());
+            if (std::filesystem::exists(m_currentPath))
+            {
+                ImGui::Text(m_currentPath.string().c_str());
+            }
+
+            renderTreeNode(m_rootPath);
         }
-        
-        renderTreeNode(m_rootPath);
     }
-    
+    catch(const std::exception& e)
+    {
+        std::string what = e.what();
+        std::printf("Error while DirectoriesTreeExplorer::renderBody. Error is: %s\n", what.c_str());
+        spdlog::error("Error while DirectoriesTreeExplorer::renderBody. Error is: {0}", what);
+    }
+
     // ImGui::TreePop();
-    
+
     ImGui::End();
-    
+
     ImGui::PopStyleVar();
 }
 

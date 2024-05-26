@@ -200,11 +200,11 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
     
     Ref<PluginWrap> loadedPlugin;
     
-    auto foundIt = std::find_if(s_plugins.begin(), s_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
+    auto foundIt = std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
         return pluginWrap->getPlugin()->m_name == pluginName;
     });
     
-    if(foundIt != s_plugins.end())
+    if(foundIt != m_plugins.end())
     {
         loadedPlugin = *foundIt;
         
@@ -259,7 +259,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         loadedPlugin->m_pluginLib = pluginDL;
     }
     
-    s_plugins.push_back(loadedPlugin);
+    m_plugins.push_back(loadedPlugin);
     
     return loadedPlugin;
 }
@@ -273,11 +273,11 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
     
     Ref<PluginWrap> loadedPlugin;
     
-    auto foundIt = std::find_if(s_plugins.begin(), s_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
+    auto foundIt = std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
         return pluginWrap->getPlugin()->m_name == pluginName;
     });
     
-    if(foundIt != s_plugins.end())
+    if(foundIt != m_plugins.end())
     {
         loadedPlugin = *foundIt;
         
@@ -332,4 +332,27 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
     }
     
     return nullptr;
+}
+
+void SGCore::PluginsManager::unloadPlugin(const std::string& pluginName) noexcept
+{
+    auto foundIt = std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& plugin) {
+        return plugin->m_plugin->m_name == pluginName;
+    });
+
+    if(foundIt != m_plugins.end())
+    {
+        auto plugin = *foundIt;
+
+        plugin->m_plugin = nullptr;
+        plugin->m_pluginLib->unload();
+        m_plugins.erase(foundIt);
+    }
+}
+
+bool SGCore::PluginsManager::isPluginExists(const std::string& pluginName) noexcept
+{
+    return std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& plugin) {
+        return plugin->m_plugin->m_name == pluginName;
+    }) != m_plugins.end();
 }

@@ -5,13 +5,21 @@
 #include <SGCore/Memory/AssetManager.h>
 #include "Views/MainView.h"
 
+#ifdef PLATFORM_OS_WINDOWS
+#include <windows.h>
+#include <winnt.h>
+#endif
+
 namespace SGE
 {
     struct SungearEngineEditor : public SGCore::IPlugin
     {
         ~SungearEngineEditor() override;
-        
-        std::string onConstruct(const std::vector<std::string>& args) override;
+
+        void update(const double& dt, const double& fixedDt) final;
+        void fixedUpdate(const double& dt, const double& fixedDt) final;
+
+        std::string onConstruct(const std::vector<std::string>& args) final;
         
         [[nodiscard]] SGCore::Ref<MainView> getMainView() const noexcept;
         
@@ -19,8 +27,6 @@ namespace SGE
         
     private:
         static inline SGCore::Ref<SungearEngineEditor> s_SungearEngineEditorInstance = SGCore::MakeRef<SungearEngineEditor>();
-        
-        void onUpdate(const double&, const double&) const noexcept;
         
         SGCore::Ref<MainView> m_mainView;
     };
