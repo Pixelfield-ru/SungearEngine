@@ -28,7 +28,8 @@ namespace SGE
         
         void renderBody() override;
         
-        ImVec2 m_iconsPadding = ImVec2(40, 20);
+        ImVec2 m_iconsPadding = ImVec2(40, 70);
+        ImVec2 m_iconsSize = ImVec2(65, 65);
         
         std::uint8_t m_nameMaxLinesCount = 3;
         

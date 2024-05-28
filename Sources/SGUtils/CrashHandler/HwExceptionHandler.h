@@ -136,8 +136,6 @@ namespace SGCore
             auto *u =(ucontext_t *) context;
             void* exAddr = (void*) u->uc_mcontext.gregs[REG_RIP];
 
-            std::cout << "addr: " << exAddr << std::endl;
-
             auto stackTrace = boost::stacktrace::stacktrace();
 
             boost::stacktrace::frame problematicFrame;
@@ -172,7 +170,7 @@ namespace SGCore
         #ifdef __LP64__
             eh_print("*** Arch: x64\n");
         #else
-            hc_print("***          Arch: x86\n");
+            hc_print("*** Arch: x86\n");
         #endif
             eh_print("*** Dump file: %s\n", fnmBuffer);
             eh_print("***\n");
@@ -202,12 +200,31 @@ namespace SGCore
 
             fclose(fpCrash);
 
-            struct sigaction sa;
+            /*struct sigaction sa;
             sa.sa_handler = SIG_DFL;
             sigemptyset(&sa.sa_mask);
             sa.sa_flags = 0;
             sigaction(sig, &sa, 0);
-            raise(sig);
+            
+            raise(sig);*/
+            
+            if(siginfo->si_signo == SIGSEGV)
+            {
+                throw std::runtime_error("Segmentation fault");
+            }
+            else if(siginfo->si_signo == SIGFPE)
+            {
+                throw std::runtime_error("Floating point error");
+            }
+            else if(siginfo->si_signo == SIGILL)
+            {
+                throw std::runtime_error("Illegal instruction");
+            }
+            else
+            {
+                throw std::runtime_error("Unknown signal");
+            }
+            // raise(sig);
         }
         #endif
 
@@ -243,9 +260,18 @@ namespace SGCore
             
             #ifdef PLATFORM_OS_LINUX
             
+            
             #define STACK_SZ (MINSIGSTKSZ + 135 * 1000)
             
-            stack_t ss;
+            struct sigaction act { };
+            act.sa_sigaction = posixHandler;
+            sigemptyset(&act.sa_mask);
+            act.sa_flags = SA_SIGINFO | SA_NODEFER;
+            sigaction(SIGSEGV, &act, 0);
+            sigaction(SIGILL, &act, 0);
+            sigaction(SIGFPE, &act, 0);
+            
+            /*stack_t ss;
             ss.ss_sp = malloc(STACK_SZ);
             ss.ss_size = STACK_SZ;
             ss.ss_flags = 0;
@@ -256,12 +282,9 @@ namespace SGCore
             
             sig_action.sa_flags = SA_SIGINFO | SA_ONSTACK;
             
-            if(sigaction(SIGSEGV, &sig_action, 0) != 0)
-            { err(1, "sigaction"); }
-            if(sigaction(SIGILL, &sig_action, 0) != 0)
-            { err(1, "sigaction"); }
-            if(sigaction(SIGFPE, &sig_action, 0) != 0)
-            { err(1, "sigaction"); }
+            sigaction(SIGSEGV, &sig_action, 0);
+            sigaction(SIGILL, &sig_action, 0);
+            sigaction(SIGFPE, &sig_action, 0);*/
             
             #undef STACK_SZ
             

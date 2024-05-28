@@ -17,6 +17,7 @@ void SGE::DirectoryExplorer::renderBody()
     m_drawableFilesNames.clear();
     
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
+    // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
     
     ImGuiWindowClass windowClass;
     windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
@@ -24,10 +25,29 @@ void SGE::DirectoryExplorer::renderBody()
     
     ImGui::Begin("DirectoryExplorer", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
     // =================================================
-    
+  
     if(std::filesystem::exists(m_currentPath) && std::filesystem::is_directory(m_currentPath))
     {
-        ImGui::Text(m_currentPath.string().c_str());
+        {
+            std::string text = SGUtils::Utils::toUTF8<char16_t>(m_currentPath.u16string());
+            ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
+            
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0, 0 });
+            ImGui::BeginChildFrame(ImGui::GetID("DirectoryExplorerCurrentChosenDir"),
+                                   ImVec2(ImGui::GetContentRegionAvail().x, textSize.y + 2),
+                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration);
+            
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
+            ImGui::Text(text.c_str());
+            
+            ImGui::EndChildFrame();
+            ImGui::PopStyleVar(1);
+        }
+        
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(m_iconsPadding.x * m_UIScale.x, m_iconsPadding.y * m_UIScale.y));
+        ImGui::BeginChildFrame(ImGui::GetID("DirectoryExplorerFilesView"),
+                               ImGui::GetContentRegionAvail(),
+                               ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
         
         for(auto it = std::filesystem::directory_iterator(m_currentPath);
             it != std::filesystem::directory_iterator(); ++it)
@@ -40,89 +60,101 @@ void SGE::DirectoryExplorer::renderBody()
             
             ImVec2 cursorPos = ImGui::GetCursorPos();
             
-            ImVec2 windowSize = ImGui::GetWindowSize();
+            ImVec2 regionMax = ImGui::GetWindowSize();
             
-            if(cursorPos.x + m_currentItemsSize.x >= windowSize.x)
+            // -m_iconsPadding.x / 4, +m_iconsPadding.x / 4 is name of file area
+            // m_iconsPadding is distance between icons
+            if(cursorPos.x + m_currentItemsSize.x + m_iconsPadding.x / 4 >= regionMax.x - ImGui::GetStyle().ScrollbarSize)
             {
-                cursorPos.x = ImGui::GetStyle().WindowPadding.x;
-                cursorPos.y += m_currentItemsSize.y + 3 + m_iconsPadding.y * m_UIScale.y;
+                ImGui::NewLine();
             }
             
-            ImGui::SetCursorPos(ImVec2(cursorPos.x + m_iconsPadding.x * m_UIScale.x, cursorPos.y));
-            
-            ImVec2 nameStartPos = ImGui::GetCursorScreenPos();
+            ImVec2 nameStartPos = ImGui::GetCursorPos();
+            nameStartPos.y += m_iconsSize.y * m_UIScale.y;
             
             m_drawableFilesNames[curPath] = {
                     .m_position = nameStartPos,
                     .m_overdraw = false
             };
             
-            ImGui::SetWindowSize(ImGui::GetWindowContentRegionMax());
-            
             auto fileIcon = ImGuiUtils::getFileIcon(curPath,
-                                                    { (std::uint32_t) (50 * m_UIScale.x),
-                                                      (std::uint32_t) (50 * m_UIScale.y) }, &onIconRender);
+                                                    { (std::uint32_t) (m_iconsSize.x * m_UIScale.x),
+                                                      (std::uint32_t) (m_iconsSize.y * m_UIScale.y) }, &onIconRender);
             
             if(isDirectory)
             {
-                fileIcon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization((std::uint32_t) (50 * m_UIScale.x), (std::uint32_t) (50 * m_UIScale.y))->getTexture();
+                fileIcon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization((std::uint32_t) (m_iconsSize.x * m_UIScale.x), (std::uint32_t) (m_iconsSize.y * m_UIScale.y))->getTexture();
             }
             
-            ImGuiUtils::ImageButton(fileIcon->getTextureNativeHandler(), ImVec2(50 * m_UIScale.x, 50 * m_UIScale.y));
-            
-            m_currentItemsSize = ImVec2(50 * m_UIScale.x + 3 * 2, 50 * m_UIScale.y + 3 * 2);
+            ImGuiUtils::ImageButton(fileIcon->getTextureNativeHandler(), ImVec2(m_iconsSize.y * m_UIScale.x, m_iconsSize.y * m_UIScale.y));
+
+            m_currentItemsSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2, m_iconsSize.y * m_UIScale.y + 3 * 2);
             
             ImGui::SameLine();
         }
-    }
-    
-    for(const auto& fileNameInfoPair : m_drawableFilesNames)
-    {
-        auto& path = fileNameInfoPair.first;
-        auto& drawableNameInfo = fileNameInfoPair.second;
         
-        std::string fileName = path.stem().string();
-        std::string fileExt = path.extension().string();
-        std::string fullName = fileName + fileExt;
-        
-        ImVec2 nameSize = ImGui::CalcTextSize(fileName.c_str());
-        
-        // y = 3 lines
-        ImVec2 maxNameSize = ImVec2(50 * m_UIScale.x + 3 * 2 + m_iconsPadding.x / 4, nameSize.y * m_nameMaxLinesCount);
-        
-        std::string finalFileName;
-        std::string rawFinalFileName;
-        
-        size_t curLine = 1;
-        for(char c : fileName)
+        for(const auto& fileNameInfoPair : m_drawableFilesNames)
         {
-            ImVec2 curNameSize = ImGui::CalcTextSize(rawFinalFileName.c_str());
-            if(curNameSize.x > maxNameSize.x * curLine)
+            try
             {
-                finalFileName += "/";
-                ++curLine;
+                auto& path = fileNameInfoPair.first;
+                auto& drawableNameInfo = fileNameInfoPair.second;
+                
+                std::u16string fileName = path.stem().u16string();
+                std::u16string fileExt = path.extension().u16string();
+                std::u16string fullName = fileName + fileExt;
+                
+                ImVec2 nameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(fileName).c_str());
+                
+                // y = 3 lines
+                ImVec2 maxNameSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2 + m_iconsPadding.x / 4,
+                                            nameSize.y * m_nameMaxLinesCount);
+                
+                std::u16string finalFileName;
+                std::u16string rawFinalFileName;
+                
+                size_t curLine = 1;
+                for(wchar_t c : fileName)
+                {
+                    ImVec2 curNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(rawFinalFileName).c_str());
+                    if(curNameSize.x > maxNameSize.x * curLine)
+                    {
+                        finalFileName += L'\n';
+                        ++curLine;
+                    }
+                    
+                    if(curLine > m_nameMaxLinesCount + 1)
+                    {
+                        size_t sz = finalFileName.length();
+                        
+                        finalFileName[sz - 1] = L'.';
+                        finalFileName[sz - 2] = L'.';
+                        finalFileName[sz - 3] = L'.';
+                        
+                        break;
+                    }
+                    
+                    finalFileName += c;
+                    rawFinalFileName += c;
+                }
+                
+                std::string utf8FinalFileName = SGUtils::Utils::toUTF8<char16_t>(finalFileName);
+                
+                ImGui::SetCursorPos(drawableNameInfo.m_position);
+                ImGui::Text(utf8FinalFileName.c_str());
             }
-            
-            if(curLine > m_nameMaxLinesCount + 1)
+            catch(const std::exception& e)
             {
-                size_t sz = finalFileName.length();
-                
-                finalFileName[sz - 1] = '.';
-                finalFileName[sz - 2] = '.';
-                finalFileName[sz - 3] = '.';
-                
-                break;
+                std::printf("Exception while drawing DirectoriesExplorer: %s\n", e.what());
             }
-            
-            finalFileName += c;
-            rawFinalFileName += c;
         }
         
-        ImGui::GetWindowDrawList()->AddText(drawableNameInfo.m_position, ImGui::ColorConvertFloat4ToU32(ImVec4(1.0, 1.0, 1.0, 1.0)), finalFileName.c_str());
+        ImGui::EndChildFrame();
+        ImGui::PopStyleVar(1);
     }
     
     // =================================================
     ImGui::End();
     
-    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(1);
 }

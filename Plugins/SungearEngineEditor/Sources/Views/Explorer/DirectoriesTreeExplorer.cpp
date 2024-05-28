@@ -11,7 +11,8 @@
 
 void SGE::DirectoriesTreeExplorer::renderBody()
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, { 0.5, 0.5 });
+    // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
 
     ImGuiWindowClass windowClass;
     windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
@@ -19,31 +20,49 @@ void SGE::DirectoriesTreeExplorer::renderBody()
 
     ImGui::Begin("Tree Explorer", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
-    auto windowSize = ImGui::GetWindowSize();
-    m_windowContentRegionMax = ImGui::GetContentRegionAvail();
-    m_windowCursorPos = ImGui::GetCursorScreenPos();
-
-    // ImGui::TreePush("##DirectoryExplorerTree");
-
-    if(m_drawSelectedRect)
-    {
-        ImGui::GetWindowDrawList()->AddRectFilled(m_clickedRowRectMin, m_clickedRowRectMax,
-                                                  ImGui::ColorConvertFloat4ToU32(
-                                                          ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1)), 3.0f);
-    }
-
-    m_drawSelectedRect = false;
-
     try
     {
         if (std::filesystem::exists(m_rootPath))
         {
             if (std::filesystem::exists(m_currentPath))
             {
-                ImGui::Text(m_currentPath.string().c_str());
+                std::string text = SGUtils::Utils::toUTF8<char16_t>(m_currentPath.u16string());
+                ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
+                
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0, 0 });
+                
+                ImGui::BeginChildFrame(ImGui::GetID("DirectoriesExplorerTreeCurrentChosenDir"),
+                                       ImVec2(ImGui::GetContentRegionAvail().x, textSize.y + 2),
+                                       ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration);
+                
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
+                ImGui::Text(text.c_str());
+                
+                ImGui::EndChildFrame();
+                ImGui::PopStyleVar(1);
             }
-
+            
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 5 });
+            ImGui::BeginChildFrame(ImGui::GetID("DirectoriesExplorerTreeFilesView"),
+                                   ImGui::GetContentRegionAvail(),
+                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
+            
+            m_windowCursorPos = ImGui::GetCursorScreenPos();
+            m_windowContentRegionMax = ImGui::GetContentRegionAvail();
+            
+            if(m_drawSelectedRect)
+            {
+                ImGui::GetWindowDrawList()->AddRectFilled(m_clickedRowRectMin, m_clickedRowRectMax,
+                                                          ImGui::ColorConvertFloat4ToU32(
+                                                                  ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1)), 3.0f);
+            }
+            
+            m_drawSelectedRect = false;
+            
             renderTreeNode(m_rootPath);
+            
+            ImGui::EndChildFrame();
+            ImGui::PopStyleVar(1);
         }
     }
     catch(const std::exception& e)
@@ -53,11 +72,8 @@ void SGE::DirectoriesTreeExplorer::renderBody()
         spdlog::error("Error while DirectoriesTreeExplorer::renderBody. Error is: {0}", what);
     }
 
-    // ImGui::TreePop();
-
     ImGui::End();
-
-    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(1);
 }
 
 void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& parent) noexcept
@@ -82,7 +98,6 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
         }
         
         ImGui::SameLine();
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 5);
         ImGui::Image(style->m_folderIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16, 16));
         ImGui::SameLine();
     }
@@ -100,7 +115,7 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     }
     
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 3);
-    ImGui::Text(parent.filename().string().c_str());
+    ImGui::Text(SGUtils::Utils::toUTF8<char16_t>(parent.filename().u16string()).c_str());
     
     auto mouseScreenPos = ImGui::GetCursorScreenPos();
     

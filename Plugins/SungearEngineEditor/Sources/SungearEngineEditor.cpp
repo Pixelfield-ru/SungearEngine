@@ -18,14 +18,10 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 
 	m_name = "SungearEngineEditor";
 	m_version = "1.0.0";
-    
-    std::cout << "SGEDITOR PATH: " << getLocalPath() << std::endl;
 
     std::cout << "ImGui context: " << ImGui::GetCurrentContext() << std::endl;
 
     StylesManager::init();
-
-    std::cout << "SECOND" << std::endl;
     
     m_mainView = SGCore::MakeRef<MainView>();
     SGCore::ImGuiWrap::IView::getRoot()->addChild(m_mainView);
@@ -38,10 +34,17 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 {
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_R))
     {
+        try
+        {
             // CRASH HERE ======================
             void* ptr = nullptr;
             *((int*) ptr) = 5;
             // ==================================
+        }
+        catch(const std::exception& e)
+        {
+            std::printf("Exception: %s\n", e.what());
+        }
         /*std::ofstream ofs(std::filesystem::current_path().string() + "/imgui.ini", std::ios::trunc | std::ios::out);
 
         SGCore::ImGuiWrap::ImGuiLayer::destroy();
