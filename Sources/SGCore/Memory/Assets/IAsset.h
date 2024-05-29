@@ -46,8 +46,6 @@ namespace SGCore
             doLazyLoad();
             
             onLazyLoadDone(this);
-            
-            std::cout << "LAZYLOAD DONE" << std::endl;
         }
 
         // LEGACY CODE ================================

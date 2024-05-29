@@ -355,6 +355,14 @@ namespace SGUtils
         }
         
         static std::string getRealPath(const std::string& path) noexcept;
+        
+        static bool isSubpath(const std::filesystem::path& path,
+                              const std::filesystem::path& base)
+        {
+            // return path.compare(base) < 0;
+            auto rel = std::filesystem::relative(path, base);
+            return !rel.empty() && rel.native()[0] != '.';
+        }
     };
 }
 

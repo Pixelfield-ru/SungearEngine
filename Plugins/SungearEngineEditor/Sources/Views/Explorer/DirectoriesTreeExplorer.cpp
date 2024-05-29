@@ -11,8 +11,16 @@
 
 void SGE::DirectoriesTreeExplorer::renderBody()
 {
+    /*{
+        ImVec2 cursorPos = ImGui::GetCursorPos();
+        ImGui::SetCursorPos(ImVec2(cursorPos.x + 8))
+    }*/
+    
+    ImVec2 originalSpacing = ImGui::GetStyle().ItemSpacing;
+    
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, { 0.5, 0.5 });
-    // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 2));
 
     ImGuiWindowClass windowClass;
     windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
@@ -26,23 +34,39 @@ void SGE::DirectoriesTreeExplorer::renderBody()
         {
             if (std::filesystem::exists(m_currentPath))
             {
+                ImFont* font = StylesManager::getCurrentStyle()->m_fonts["default_18"];
+                
+                assert(font && "Can not find default font (18 px) to render DirectoryExplorer");
+                
                 std::string text = SGUtils::Utils::toUTF8<char16_t>(m_currentPath.u16string());
                 ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
                 
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0, 0 });
+                // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, originalItemsSpacing);
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 4 });
                 
                 ImGui::BeginChildFrame(ImGui::GetID("DirectoriesExplorerTreeCurrentChosenDir"),
-                                       ImVec2(ImGui::GetContentRegionAvail().x, textSize.y + 2),
+                                       ImVec2(ImGui::GetContentRegionAvail().x, textSize.y + 9),
                                        ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration);
+                
+                ImGui::SetScrollY(0);
+                
+                ImGui::PushFont(font);
                 
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
                 ImGui::Text(text.c_str());
                 
+                ImGui::PopFont();
+                
                 ImGui::EndChildFrame();
                 ImGui::PopStyleVar(1);
+                
+                ImGui::Separator();
             }
             
+            ImGui::PopStyleVar(1);
+            
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 5 });
+            
             ImGui::BeginChildFrame(ImGui::GetID("DirectoriesExplorerTreeFilesView"),
                                    ImGui::GetContentRegionAvail(),
                                    ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
@@ -73,7 +97,7 @@ void SGE::DirectoriesTreeExplorer::renderBody()
     }
 
     ImGui::End();
-    ImGui::PopStyleVar(1);
+    ImGui::PopStyleVar(2);
 }
 
 void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& parent) noexcept
@@ -130,7 +154,7 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     
     if(rowClicked && isDirectory && !arrowBtnClicked)
     {
-        SungearEngineEditor::getInstance()->getMainView()->getDirectoryExplorer()->m_currentPath = parent;
+        SungearEngineEditor::getInstance()->getMainView()->getDirectoryExplorer()->setCurrentPath(parent);
     }
     
     if(rowClicked)

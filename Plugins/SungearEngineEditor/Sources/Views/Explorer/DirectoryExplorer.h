@@ -33,9 +33,14 @@ namespace SGE
         
         std::uint8_t m_nameMaxLinesCount = 3;
         
-        std::filesystem::path m_currentPath;
+        void setCurrentPath(const std::filesystem::path& path) noexcept;
+        std::filesystem::path getCurrentPath() const noexcept;
         
     private:
+        std::filesystem::path m_lastPath;
+        std::filesystem::path m_currentPath;
+        std::filesystem::path m_maxPath;
+        
         std::unordered_map<std::filesystem::path, DrawableFileNameInfo> m_drawableFilesNames;
         
         ImVec2 m_currentItemsSize = ImVec2(0, 0);

@@ -53,7 +53,6 @@ namespace SGCore
 #ifdef GENERATOR_PRETTY_FUNCTION
         static constexpr std::size_t id()
         {
-            std::cout << GENERATOR_PRETTY_FUNCTION << std::endl;
             constexpr auto value = constexprHash(GENERATOR_PRETTY_FUNCTION);
             return value;
         }
@@ -72,7 +71,6 @@ namespace SGCore
 #ifdef GENERATOR_PRETTY_FUNCTION
         static constexpr std::size_t id()
         {
-            std::cout << GENERATOR_PRETTY_FUNCTION << std::endl;
             constexpr auto value = constexprHash(GENERATOR_PRETTY_FUNCTION);
             return value;
         }
@@ -84,10 +82,6 @@ namespace SGCore
         }
 #endif
     };
-    
-    struct unknown_type { };
-    struct pointer_type { };
-    struct reference_type { };
     
     template<typename T, size_t RepeatsCnt>
     struct repeated_type

@@ -17,34 +17,97 @@ void SGE::DirectoryExplorer::renderBody()
     m_drawableFilesNames.clear();
     
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
-    // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 2));
     
     ImGuiWindowClass windowClass;
     windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
     ImGui::SetNextWindowClass(&windowClass);
     
     ImGui::Begin("DirectoryExplorer", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+    
     // =================================================
-  
-    if(std::filesystem::exists(m_currentPath) && std::filesystem::is_directory(m_currentPath))
+    
+    if(std::filesystem::exists(m_maxPath) && std::filesystem::is_directory(m_maxPath))
     {
         {
-            std::string text = SGUtils::Utils::toUTF8<char16_t>(m_currentPath.u16string());
-            ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
+            ImFont* font = StylesManager::getCurrentStyle()->m_fonts["default_18"];
             
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0, 0 });
+            assert(font && "Can not find default font (18 px) to render DirectoryExplorer");
+            
+            std::string text = SGUtils::Utils::toUTF8<char16_t>(m_maxPath.u16string());
+            ImVec2 pathSize = ImGui::CalcTextSize(text.c_str());
+            
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 4 });
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
+            
             ImGui::BeginChildFrame(ImGui::GetID("DirectoryExplorerCurrentChosenDir"),
-                                   ImVec2(ImGui::GetContentRegionAvail().x, textSize.y + 2),
+                                   ImVec2(ImGui::GetContentRegionAvail().x, pathSize.y + 11),
                                    ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration);
             
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
-            ImGui::Text(text.c_str());
+            ImGui::SetScrollY(0);
+            
+            std::vector<std::filesystem::path> subpaths(m_maxPath.begin(), m_maxPath.end());
+            
+            std::filesystem::path concatPath;
+            
+            ImGui::PushFont(font);
+            
+            for(auto it = subpaths.begin(); it != subpaths.end(); ++it)
+            {
+                bool isLastDirectory = it == subpaths.end() - 1;
+                
+                concatPath += SGUtils::Utils::toUTF8<char16_t>(it->u16string()) + std::filesystem::path::preferred_separator;
+                
+                std::string u8DirName = SGUtils::Utils::toUTF8<char16_t>(it->filename().u16string());
+                ImVec2 dirNameTextSize = ImGui::CalcTextSize(u8DirName.c_str());
+                
+                ImVec2 curCursorPos = ImGui::GetCursorScreenPos();
+                
+                bool isHovering = ImGui::IsMouseHoveringRect(curCursorPos, { curCursorPos.x + dirNameTextSize.x, curCursorPos.y + dirNameTextSize.y });
+                bool mouseClicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+                
+                std::filesystem::path concatPathCanonical = std::filesystem::canonical(concatPath);
+                
+                if(isHovering && mouseClicked)
+                {
+                    setCurrentPath(concatPathCanonical);
+                }
+                
+                if(concatPathCanonical == m_currentPath)
+                {
+                    ImGui::TextColored(ImVec4(50 / 255.0f, 120 / 255.0f, 170 / 255.0f, 1.0f), u8DirName.c_str());
+                }
+                else if(isHovering)
+                {
+                    ImGui::TextColored(ImVec4(0.8, 0.8, 0.8, 1.0), u8DirName.c_str());
+                }
+                else
+                {
+                    ImGui::TextColored(ImVec4(1.0, 1.0, 1.0, 1.0), u8DirName.c_str());
+                }
+                
+                ImGui::SameLine();
+                if(!isLastDirectory)
+                {
+                    ImGui::Text("/");
+                    ImGui::SameLine();
+                }
+            }
+            
+            ImGui::PopFont();
             
             ImGui::EndChildFrame();
+            
             ImGui::PopStyleVar(1);
+            
+            ImGui::Separator();
         }
         
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 8, 0 });
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, { 0, 0 });
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(m_iconsPadding.x * m_UIScale.x, m_iconsPadding.y * m_UIScale.y));
+        
         ImGui::BeginChildFrame(ImGui::GetID("DirectoryExplorerFilesView"),
                                ImGui::GetContentRegionAvail(),
                                ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
@@ -150,11 +213,27 @@ void SGE::DirectoryExplorer::renderBody()
         }
         
         ImGui::EndChildFrame();
-        ImGui::PopStyleVar(1);
+        ImGui::PopStyleVar(3);
     }
     
     // =================================================
     ImGui::End();
     
-    ImGui::PopStyleVar(1);
+    ImGui::PopStyleVar(2);
+}
+
+void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) noexcept
+{
+    m_lastPath = m_currentPath;
+    m_currentPath = path;
+    
+    if(!SGUtils::Utils::isSubpath(m_maxPath, path))
+    {
+        m_maxPath = path;
+    }
+}
+
+std::filesystem::path SGE::DirectoryExplorer::getCurrentPath() const noexcept
+{
+    return m_currentPath;
 }

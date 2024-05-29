@@ -29,6 +29,8 @@ namespace SGE
         SGCore::Ref<SGCore::SVGImage> m_questionIcon;
         SGCore::Ref<SGCore::SVGImage> m_libraryIcon;
         
+        std::unordered_map<std::string, ImFont*> m_fonts;
+        
     private:
         virtual void apply() = 0;
     };
