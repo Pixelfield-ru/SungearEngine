@@ -308,35 +308,11 @@ namespace SGUtils
             return convertor.from_bytes(source);
         }
 
-        static long long getTimeMilliseconds() noexcept
-        {
-            using namespace std::chrono;
-            auto timepoint = system_clock::now();
-            auto coarse = system_clock::to_time_t(timepoint);
-            auto fine = time_point_cast<std::chrono::milliseconds>(timepoint).time_since_epoch().count();
+        static long long getTimeMilliseconds() noexcept;
 
-            return fine;
-        }
+        static long long getTimeMicros() noexcept;
 
-        static long long getTimeMicros() noexcept
-        {
-            using namespace std::chrono;
-            auto timepoint = system_clock::now();
-            auto coarse = system_clock::to_time_t(timepoint);
-            auto fine = time_point_cast<std::chrono::microseconds>(timepoint).time_since_epoch().count();
-
-            return fine;
-        }
-
-        static long long getTimeNanos() noexcept
-        {
-            using namespace std::chrono;
-            auto timepoint = system_clock::now();
-            auto coarse = system_clock::to_time_t(timepoint);
-            auto fine = time_point_cast<std::chrono::nanoseconds>(timepoint).time_since_epoch().count();
-
-            return fine;
-        }
+        static long long getTimeNanos() noexcept;
         
         static void swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept
         {
@@ -357,12 +333,7 @@ namespace SGUtils
         static std::string getRealPath(const std::string& path) noexcept;
         
         static bool isSubpath(const std::filesystem::path& path,
-                              const std::filesystem::path& base)
-        {
-            // return path.compare(base) < 0;
-            auto rel = std::filesystem::relative(path, base);
-            return !rel.empty() && rel.native()[0] != '.';
-        }
+                              const std::filesystem::path& base) noexcept;
     };
 }
 

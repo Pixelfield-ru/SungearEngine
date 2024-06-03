@@ -56,10 +56,13 @@ void SGE::DirectoryExplorer::renderBody()
             for(auto it = subpaths.begin(); it != subpaths.end(); ++it)
             {
                 bool isLastDirectory = it == subpaths.end() - 1;
+
+                concatPath += *it;
+                concatPath += std::filesystem::path::preferred_separator;
+
+                if(*it == "/" || *it == "\\") continue;
                 
-                concatPath += SGUtils::Utils::toUTF8<char16_t>(it->u16string()) + std::filesystem::path::preferred_separator;
-                
-                std::string u8DirName = SGUtils::Utils::toUTF8<char16_t>(it->filename().u16string());
+                std::string u8DirName = SGUtils::Utils::toUTF8<char16_t>(it->u16string());
                 ImVec2 dirNameTextSize = ImGui::CalcTextSize(u8DirName.c_str());
                 
                 ImVec2 curCursorPos = ImGui::GetCursorScreenPos();
@@ -229,6 +232,8 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
     
     if(!SGUtils::Utils::isSubpath(m_maxPath, path))
     {
+        std::cout << "m_maxPath: " << m_maxPath << ", path: " << path << std::endl;
+
         m_maxPath = path;
     }
 }

@@ -137,10 +137,13 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
         
         ImGui::SameLine();
     }
-    
+
+    std::u16string u16filename = (parent.has_root_name() && !parent.has_filename()) ?
+                                 parent.root_name().u16string() : parent.filename().u16string();
+
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 3);
-    ImGui::Text(SGUtils::Utils::toUTF8<char16_t>(parent.filename().u16string()).c_str());
-    
+    ImGui::Text(SGUtils::Utils::toUTF8<char16_t>(u16filename).c_str());
+
     auto mouseScreenPos = ImGui::GetCursorScreenPos();
     
     auto rectMin = ImVec2(m_windowCursorPos.x, mouseScreenPos.y - 25.0f);

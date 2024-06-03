@@ -21,3 +21,40 @@ std::string SGUtils::Utils::getRealPath(const std::string& path) noexcept
     #endif
     return "";
 }
+
+bool SGUtils::Utils::isSubpath(const std::filesystem::path& path, const std::filesystem::path& base) noexcept
+{
+    // return path.compare(base) < 0;
+    auto rel = std::filesystem::relative(path, base);
+    return !rel.empty() && rel.native()[0] != '.';
+}
+
+long long SGUtils::Utils::getTimeNanos() noexcept
+{
+    using namespace std::chrono;
+    auto timepoint = system_clock::now();
+    auto coarse = system_clock::to_time_t(timepoint);
+    auto fine = time_point_cast<std::chrono::nanoseconds>(timepoint).time_since_epoch().count();
+
+    return fine;
+}
+
+long long SGUtils::Utils::getTimeMicros() noexcept
+{
+    using namespace std::chrono;
+    auto timepoint = system_clock::now();
+    auto coarse = system_clock::to_time_t(timepoint);
+    auto fine = time_point_cast<std::chrono::microseconds>(timepoint).time_since_epoch().count();
+
+    return fine;
+}
+
+long long SGUtils::Utils::getTimeMilliseconds() noexcept
+{
+    using namespace std::chrono;
+    auto timepoint = system_clock::now();
+    auto coarse = system_clock::to_time_t(timepoint);
+    auto fine = time_point_cast<std::chrono::milliseconds>(timepoint).time_since_epoch().count();
+
+    return fine;
+}
