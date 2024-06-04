@@ -114,11 +114,15 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     {
         if(isCurrentNodeOpened)
         {
-            arrowBtnClicked = ImGuiUtils::ImageButton(style->m_chevronDownIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y));
+            arrowBtnClicked = ImGuiUtils::ImageButton(
+                    style->m_chevronDownIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(),
+                    ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y)).m_isClicked;
         }
         else
         {
-            arrowBtnClicked = ImGuiUtils::ImageButton(style->m_chevronRightIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y));
+            arrowBtnClicked = ImGuiUtils::ImageButton(
+                    style->m_chevronRightIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(),
+                    ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y)).m_isClicked;
         }
         
         ImGui::SameLine();

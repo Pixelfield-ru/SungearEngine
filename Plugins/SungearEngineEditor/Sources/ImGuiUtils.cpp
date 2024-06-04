@@ -5,8 +5,9 @@
 #include "ImGuiUtils.h"
 #include "Styles/StylesManager.h"
 
-bool SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& imageSize, const ImVec2& hoverMinOffset,
-                                  const ImVec2& hoverMaxOffset, const ImVec4& hoverBgColor) noexcept
+SGE::ImClickInfo
+SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& imageSize, const ImVec2& hoverMinOffset,
+                             const ImVec2& hoverMaxOffset, const ImVec4& hoverBgColor) noexcept
 {
     ImVec2 cursorPos = ImGui::GetCursorScreenPos();
     
@@ -27,6 +28,7 @@ bool SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& imageS
     ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, cursorPos, ImVec2(cursorPos.x + imageSize.x, cursorPos.y + imageSize.y));
     
     bool clicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+    bool doubleClicked = mouseHoveringBg && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
     
     /*float clickableMinX = cursorPos.x + hoverMinOffset.x;
     float clickableMinY = cursorPos.y + hoverMinOffset.y;
@@ -47,7 +49,13 @@ bool SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& imageS
 
     ImGui::Dummy(imageSize);
     
-    return clicked;
+    ImClickInfo clickInfo {
+        .m_isClicked = clicked,
+        .m_isDoubleClicked = doubleClicked,
+        .m_isHovered = mouseHoveringBg
+    };
+    
+    return clickInfo;
 }
 
 SGCore::Ref<SGCore::ITexture2D> SGE::ImGuiUtils::getFileIcon(const std::filesystem::path& filePath,

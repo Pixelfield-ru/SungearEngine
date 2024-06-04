@@ -16,8 +16,10 @@ namespace SGE
 {
     struct DrawableFileNameInfo
     {
+        // IT IS NOT SCREEN SPACE POSITION
         ImVec2 m_position = ImVec2(0, 0);
-        bool m_overdraw = false;
+        bool m_isFullNameHovered = false;
+        bool m_isIconHovered = false;
     };
     
     struct DirectoryExplorer : SGCore::ImGuiWrap::IView
