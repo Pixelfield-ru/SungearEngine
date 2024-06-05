@@ -9,12 +9,15 @@
 
 SGCore::GL4Texture2D::~GL4Texture2D() noexcept
 {
-    destroy();
+    glDeleteTextures(1, &m_textureHandler);
+    glDeleteBuffers(1, &m_textureBufferHandler);
 }
 
 // migrate to gl46
 void SGCore::GL4Texture2D::create() noexcept
 {
+    destroy();
+    
     if(m_isTextureBuffer)
     {
         glGenBuffers(1, &m_textureBufferHandler);
@@ -90,6 +93,8 @@ void SGCore::GL4Texture2D::create() noexcept
 void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCore::IFrameBuffer>& parentFrameBuffer,
                                                          SGFrameBufferAttachmentType attachmentType)
 {
+    destroy();
+    
     // TODO: MAKE VERIFY INTERNAL FORMAT
     // TODO: MAKE VERIFY SIZE TYPE
 

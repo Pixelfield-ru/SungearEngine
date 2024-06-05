@@ -48,6 +48,7 @@ namespace SGCore
                 if(holder->m_isOwnedByEvent)
                 {
                     delete holder;
+                    holder = nullptr;
                 }
             }
         }
@@ -76,7 +77,7 @@ namespace SGCore
             auto* holder = new holder_t(l);
             holder->m_priority = m_currentMaxPriority;
             holder->m_isOwnedByEvent = true;
-            std::cout << "hash : " << holder->m_hash << std::endl;
+            // std::cout << "hash : " << holder->m_hash << std::endl;
             
             setHolderUnsubscribeFunction(holder);
             

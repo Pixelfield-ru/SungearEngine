@@ -43,6 +43,8 @@ namespace SGE
         std::filesystem::path m_currentPath;
         std::filesystem::path m_maxPath;
         
+        SGCore::AssetManager m_previewAssetManager;
+        
         std::unordered_map<std::filesystem::path, DrawableFileNameInfo> m_drawableFilesNames;
         
         ImVec2 m_currentItemsSize = ImVec2(0, 0);

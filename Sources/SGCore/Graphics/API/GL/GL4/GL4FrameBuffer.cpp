@@ -199,8 +199,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
     auto& newAttachment = m_attachments[attachmentType];
     newAttachment = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
 
-    newAttachment->m_width = m_width;
-    newAttachment->m_height = m_height;
+    newAttachment->resize(m_width, m_height, true);
     newAttachment->m_format = format;
     newAttachment->m_internalFormat = internalFormat;
     newAttachment->m_mipLevel = mipLevel;

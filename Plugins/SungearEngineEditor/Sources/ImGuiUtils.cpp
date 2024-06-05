@@ -30,24 +30,28 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& imageSize, 
     bool clicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
     bool doubleClicked = mouseHoveringBg && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
     
-    /*float clickableMinX = cursorPos.x + hoverMinOffset.x;
-    float clickableMinY = cursorPos.y + hoverMinOffset.y;
-    float clickableMaxX = cursorPos.x + imageSize.x + hoverMaxOffset.x;
-    float clickableMaxY = cursorPos.y + imageSize.y + hoverMaxOffset.y;
+    auto cursorScreenPos = ImGui::GetCursorScreenPos();
     
-    float imageMinX = cursorPos.x;
-    float imageMinY = cursorPos.y;
-    float imageMaxX = cursorPos.x + imageSize.x;
-    float imageMaxY = cursorPos.y + imageSize.y;
+    float clickableMinX = cursorScreenPos.x + hoverMinOffset.x;
+    float clickableMinY = cursorScreenPos.y + hoverMinOffset.y;
+    float clickableMaxX = cursorScreenPos.x + imageSize.x + hoverMaxOffset.x;
+    float clickableMaxY = cursorScreenPos.y + imageSize.y + hoverMaxOffset.y;
+    
+    float imageMinX = cursorScreenPos.x;
+    float imageMinY = cursorScreenPos.y;
+    float imageMaxX = cursorScreenPos.x + imageSize.x;
+    float imageMaxY = cursorScreenPos.y + imageSize.y;
     
     float maxX = clickableMaxX > imageMaxX ? clickableMaxX : imageMaxX;
     float maxY = clickableMaxY > imageMaxY ? clickableMaxY : imageMaxY;
     float minX = clickableMinX < imageMinX ? clickableMinX : imageMinX;
     float minY = clickableMinY < imageMinY ? clickableMinY : imageMinY;
     
-    ImVec2 maxItemArea = ImVec2(maxX - minX, maxY - minY);*/
+    ImVec2 maxItemArea = ImVec2(maxX - minX, maxY - minY);
 
-    ImGui::Dummy(imageSize);
+    // ImGui::Dummy(imageSize);
+    ImGui::Dummy(maxItemArea);
+    //ImGui::Dummy({ imageSize.x + std::abs(hoverMinOffset.x) + std::abs(hoverMaxOffset.x), imageSize.y + std::abs(hoverMinOffset.y) + std::abs(hoverMaxOffset.y) });
     
     ImClickInfo clickInfo {
         .m_isClicked = clicked,

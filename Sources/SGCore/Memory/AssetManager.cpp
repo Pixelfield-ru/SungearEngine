@@ -23,3 +23,11 @@ SGCore::Ref<SGCore::AssetManager>& SGCore::AssetManager::getInstance() noexcept
 {
     return m_instance;
 }
+
+void SGCore::AssetManager::clear() noexcept
+{
+    std::lock_guard guard(m_mutex);
+    
+    m_registry->clear();
+    m_entities.clear();
+}

@@ -22,7 +22,7 @@ namespace SGCore
 
     struct STBITextureDataDeleter
     {
-        void operator()(void* data);
+        void operator()(const std::uint8_t* data);
     };
     
     class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>, public GPUObject
@@ -32,13 +32,13 @@ namespace SGCore
         friend class AssetManager;
 
     public:
-        virtual ~ITexture2D();
+        virtual ~ITexture2D() = default;
+        
+        ITexture2D() = default;
         
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
         SGGColorFormat m_format = SGGColorFormat::SGG_RGBA;
-
-        int m_width = 0;
-        int m_height = 0;
+        
         int m_channelsCount = 1;
 
         int m_mipLevel = 0;
@@ -116,8 +116,17 @@ namespace SGCore
         virtual void* getTextureBufferNativeHandler() const noexcept = 0;
 
         [[nodiscard]] Ref<std::uint8_t[]> getData() noexcept;
+        
+        // TODO: do documentation
+        void resize(std::int32_t newWidth, std::int32_t newHeight, bool noDataResize = false) noexcept;
 
+        [[nodiscard]] std::int32_t getWidth() const noexcept;
+        [[nodiscard]] std::int32_t getHeight() const noexcept;
+        
     protected:
+        std::int32_t m_width = 0;
+        std::int32_t m_height = 0;
+        
         size_t m_pixelSize = 0;
         
         void doLoad(const std::string& path) override;

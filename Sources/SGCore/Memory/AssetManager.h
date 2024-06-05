@@ -386,6 +386,8 @@ namespace SGCore
             }
         }
         
+        void clear() noexcept;
+        
         Ref<registry_t> getRegistry() noexcept;
         
         SG_NOINLINE static Ref<AssetManager>& getInstance() noexcept;

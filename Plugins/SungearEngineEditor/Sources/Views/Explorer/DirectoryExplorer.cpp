@@ -119,6 +119,7 @@ void SGE::DirectoryExplorer::renderBody()
             it != std::filesystem::directory_iterator(); ++it)
         {
             std::filesystem::path curPath = *it;
+            std::filesystem::path extension = curPath.extension();
             
             bool isDirectory = std::filesystem::is_directory(curPath);
             
@@ -141,16 +142,63 @@ void SGE::DirectoryExplorer::renderBody()
             auto& drawableFileNameInfo = m_drawableFilesNames[curPath];
             drawableFileNameInfo.m_position = nameStartPos;
             
-            auto fileIcon = ImGuiUtils::getFileIcon(curPath,
+            SGCore::Ref<SGCore::ITexture2D> fileIcon = ImGuiUtils::getFileIcon(curPath,
                                                     { (std::uint32_t) (m_iconsSize.x * m_UIScale.x),
                                                       (std::uint32_t) (m_iconsSize.y * m_UIScale.y) }, &onIconRender);
+             
+            glm::ivec2 iconSize = { (std::uint32_t) (m_iconsSize.x * m_UIScale.x), (std::uint32_t) (m_iconsSize.y * m_UIScale.y) };
             
             if(isDirectory)
             {
-                fileIcon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization((std::uint32_t) (m_iconsSize.x * m_UIScale.x), (std::uint32_t) (m_iconsSize.y * m_UIScale.y))->getTexture();
+                fileIcon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(iconSize.x, iconSize.y)->getTexture();
             }
             
-            auto clickInfo = ImGuiUtils::ImageButton(fileIcon->getTextureNativeHandler(), ImVec2(m_iconsSize.y * m_UIScale.x, m_iconsSize.y * m_UIScale.y));
+            if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
+            {
+                bool previewExists = m_previewAssetManager.isAssetExists<SGCore::ITexture2D>(curPath);
+                fileIcon = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
+                fileIcon->onLazyLoadDone += [previewExists, iconSize](SGCore::IAsset* self) {
+                    if(!previewExists)
+                    {
+                        auto* tex = (SGCore::ITexture2D*) self;
+                        
+                        if(tex->getWidth() > tex->getHeight())
+                        {
+                            float ratio = (float) tex->getWidth() / (float) tex->getHeight();
+                            
+                            tex->resize(iconSize.x, (std::int32_t) (iconSize.y / ratio));
+                        }
+                        else if(tex->getHeight() > tex->getWidth())
+                        {
+                            float ratio = (float) tex->getHeight() / (float) tex->getWidth();
+                            
+                            tex->resize((std::int32_t) (iconSize.x / ratio), iconSize.y);
+                        }
+                        else
+                        {
+                            tex->resize(iconSize.x, iconSize.y);
+                        }
+                    }
+                };
+                m_previewAssetManager.loadAsset<SGCore::ITexture2D>(fileIcon, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, curPath);
+            }
+            
+            glm::ivec2 requiredIconSize { (std::uint32_t) (m_iconsSize.x * m_UIScale.x),
+                                          (std::uint32_t) (m_iconsSize.y * m_UIScale.y) };
+            
+            glm::ivec2 hoverOffset =
+                    (requiredIconSize - glm::ivec2 { fileIcon->getWidth(), fileIcon->getHeight() }) / 2 + glm::ivec2 { 3, 3 };
+            
+            cursorPos = ImGui::GetCursorPos();
+            ImGui::SetCursorPos({ cursorPos.x + hoverOffset.x, cursorPos.y + hoverOffset.y });
+            
+            ImClickInfo clickInfo = ImGuiUtils::ImageButton(fileIcon->getTextureNativeHandler(),
+                                                            { (float) fileIcon->getWidth(),
+                                                              (float) fileIcon->getHeight() },
+                                                            ImVec2(-hoverOffset.x, -hoverOffset.y),
+                                                            ImVec2(hoverOffset.x, hoverOffset.y));
+            
+            // ImGui::SetCursorPos(cursorPos);
             
             drawableFileNameInfo.m_isIconHovered = clickInfo.m_isHovered;
             
@@ -296,6 +344,7 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
     m_currentPath = path;
     
     m_drawableFilesNames.clear();
+    m_previewAssetManager.clear();
     
     if(!SGUtils::Utils::isSubpath(m_maxPath, path))
     {
