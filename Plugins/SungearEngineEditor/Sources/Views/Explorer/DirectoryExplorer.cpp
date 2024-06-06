@@ -120,6 +120,7 @@ void SGE::DirectoryExplorer::renderBody()
         {
             std::filesystem::path curPath = *it;
             std::filesystem::path extension = curPath.extension();
+            std::string u8curPath = SGUtils::Utils::toUTF8<char16_t>(curPath.u16string());
             
             bool isDirectory = std::filesystem::is_directory(curPath);
             
@@ -155,7 +156,7 @@ void SGE::DirectoryExplorer::renderBody()
             
             if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
             {
-                bool previewExists = m_previewAssetManager.isAssetExists<SGCore::ITexture2D>(curPath);
+                bool previewExists = m_previewAssetManager.isAssetExists<SGCore::ITexture2D>(u8curPath);
                 fileIcon = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
                 fileIcon->onLazyLoadDone += [previewExists, iconSize](SGCore::IAsset* self) {
                     if(!previewExists)
@@ -181,7 +182,9 @@ void SGE::DirectoryExplorer::renderBody()
                     }
                 };
                 
-                m_previewAssetManager.loadAsset<SGCore::ITexture2D>(fileIcon, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, curPath);
+                m_previewAssetManager.loadAsset<SGCore::ITexture2D>(fileIcon,
+                                                                    SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD,
+                                                                    u8curPath);
             }
             
             glm::ivec2 requiredIconSize { (std::uint32_t) (m_iconsSize.x * m_UIScale.x),
