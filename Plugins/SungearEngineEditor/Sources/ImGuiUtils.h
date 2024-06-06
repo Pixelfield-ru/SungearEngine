@@ -17,12 +17,13 @@ namespace SGE
         bool m_isDoubleClicked = false;
         bool m_isHovered = false;
     };
-    
+
     struct ImGuiUtils
     {
-        static ImClickInfo ImageButton(void* imageNativeHandler, const ImVec2& imageSize,
-                                       const ImVec2& hoverMinOffset = ImVec2(-3, -3),
-                                       const ImVec2& hoverMaxOffset = ImVec2(3, 3),
+        static ImClickInfo ImageButton(void* imageNativeHandler,
+                                       const ImVec2& buttonSize,
+                                       const ImVec2& imageSize,
+                                       const ImVec2& imageOffset = ImVec2(-1, -1),    // if using -1, -1, then auto center image
                                        const ImVec4& hoverBgColor = ImVec4(0.3, 0.3, 0.3, 0.3)) noexcept;
         
         static SGCore::Ref<SGCore::ITexture2D> getFileIcon(const std::filesystem::path& filePath,

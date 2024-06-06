@@ -16,8 +16,8 @@
 void SGCore::STBITextureDataDeleter::operator()(const std::uint8_t* data)
 {
     std::printf("deleted texture by address: %ul\n", data);
-    // delete[] data;
-    stbi_image_free((void*) data);
+    delete[] data;
+    // stbi_image_free((void*) data);
 }
 
 // ----------------------------------

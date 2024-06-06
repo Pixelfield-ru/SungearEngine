@@ -6,52 +6,44 @@
 #include "Styles/StylesManager.h"
 
 SGE::ImClickInfo
-SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& imageSize, const ImVec2& hoverMinOffset,
-                             const ImVec2& hoverMaxOffset, const ImVec4& hoverBgColor) noexcept
+SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
+                             const ImVec2& imageSize, const ImVec2& imageOffset,
+                             const ImVec4& hoverBgColor) noexcept
 {
+    assert(buttonSize.x >= imageSize.x && buttonSize.y >= imageSize.y && "Button size must be greater then image size!");
+    
     ImVec2 cursorPos = ImGui::GetCursorScreenPos();
     
+    ImVec2 offset = imageOffset;
+    if(imageOffset.x == -1 && imageOffset.y == -1)
+    {
+        offset = {
+                (buttonSize.x - imageSize.x) / 2.0f,
+                (buttonSize.y - imageSize.y) / 2.0f
+        };
+    }
+    
     bool mouseHoveringBg = ImGui::IsMouseHoveringRect(
-            ImVec2(cursorPos.x + hoverMinOffset.x, cursorPos.y + hoverMinOffset.y),
-            ImVec2(cursorPos.x + imageSize.x + hoverMaxOffset.x,
-                   cursorPos.y + imageSize.y + hoverMaxOffset.y));
+            ImVec2(cursorPos.x, cursorPos.y),
+            ImVec2(cursorPos.x + buttonSize.x,
+                   cursorPos.y + buttonSize.y));
     
     if(mouseHoveringBg)
     {
         // ImGui::GetWindowDrawList()
         ImGui::GetWindowDrawList()->AddRectFilled(
-                ImVec2(cursorPos.x + hoverMinOffset.x, cursorPos.y + hoverMinOffset.y),
-                ImVec2(cursorPos.x + imageSize.x + hoverMaxOffset.x, cursorPos.y + imageSize.y + hoverMaxOffset.y),
+                ImVec2(cursorPos.x, cursorPos.y),
+                ImVec2(cursorPos.x + buttonSize.x, cursorPos.y + buttonSize.y),
                 ImGui::ColorConvertFloat4ToU32(hoverBgColor), 3);
     }
     
-    ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, cursorPos, ImVec2(cursorPos.x + imageSize.x, cursorPos.y + imageSize.y));
+    ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, ImVec2(cursorPos.x + offset.x, cursorPos.y + offset.y),
+                                         ImVec2(cursorPos.x + imageSize.x + offset.x, cursorPos.y + imageSize.y + offset.y));
     
     bool clicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
     bool doubleClicked = mouseHoveringBg && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
-    
-    auto cursorScreenPos = ImGui::GetCursorScreenPos();
-    
-    float clickableMinX = cursorScreenPos.x + hoverMinOffset.x;
-    float clickableMinY = cursorScreenPos.y + hoverMinOffset.y;
-    float clickableMaxX = cursorScreenPos.x + imageSize.x + hoverMaxOffset.x;
-    float clickableMaxY = cursorScreenPos.y + imageSize.y + hoverMaxOffset.y;
-    
-    float imageMinX = cursorScreenPos.x;
-    float imageMinY = cursorScreenPos.y;
-    float imageMaxX = cursorScreenPos.x + imageSize.x;
-    float imageMaxY = cursorScreenPos.y + imageSize.y;
-    
-    float maxX = clickableMaxX > imageMaxX ? clickableMaxX : imageMaxX;
-    float maxY = clickableMaxY > imageMaxY ? clickableMaxY : imageMaxY;
-    float minX = clickableMinX < imageMinX ? clickableMinX : imageMinX;
-    float minY = clickableMinY < imageMinY ? clickableMinY : imageMinY;
-    
-    ImVec2 maxItemArea = ImVec2(maxX - minX, maxY - minY);
 
-    // ImGui::Dummy(imageSize);
-    ImGui::Dummy(maxItemArea);
-    //ImGui::Dummy({ imageSize.x + std::abs(hoverMinOffset.x) + std::abs(hoverMaxOffset.x), imageSize.y + std::abs(hoverMinOffset.y) + std::abs(hoverMaxOffset.y) });
+    ImGui::Dummy(buttonSize);
     
     ImClickInfo clickInfo {
         .m_isClicked = clicked,

@@ -143,11 +143,16 @@ void SGE::DirectoryExplorer::renderBody()
             auto& drawableFileNameInfo = m_drawableFilesNames[curPath];
             drawableFileNameInfo.m_position = nameStartPos;
             
+            ImVec2 requiredIconSize { (m_iconsSize.x * m_UIScale.x),
+                                      (m_iconsSize.y * m_UIScale.y) };
+            
             SGCore::Ref<SGCore::ITexture2D> fileIcon = ImGuiUtils::getFileIcon(curPath,
-                                                    { (std::uint32_t) (m_iconsSize.x * m_UIScale.x),
-                                                      (std::uint32_t) (m_iconsSize.y * m_UIScale.y) }, &onIconRender);
+                                                                               { (std::uint32_t) requiredIconSize.x,
+                                                                                 (std::uint32_t) requiredIconSize.y },
+                                                                               &onIconRender);
              
             glm::ivec2 iconSize = { (std::uint32_t) (m_iconsSize.x * m_UIScale.x), (std::uint32_t) (m_iconsSize.y * m_UIScale.y) };
+            const ImVec2 iconPadding { 3, 3 };
             
             if(isDirectory)
             {
@@ -158,7 +163,7 @@ void SGE::DirectoryExplorer::renderBody()
             {
                 bool previewExists = m_previewAssetManager.isAssetExists<SGCore::ITexture2D>(u8curPath);
                 fileIcon = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
-                fileIcon->onLazyLoadDone += [previewExists, iconSize](SGCore::IAsset* self) {
+                fileIcon->onLazyLoadDone += [previewExists, iconSize, iconPadding](SGCore::IAsset* self) {
                     if(!previewExists)
                     {
                         auto* tex = (SGCore::ITexture2D*) self;
@@ -167,17 +172,19 @@ void SGE::DirectoryExplorer::renderBody()
                         {
                             float ratio = (float) tex->getWidth() / (float) tex->getHeight();
                             
-                            tex->resize(iconSize.x, (std::int32_t) (iconSize.y / ratio));
+                            tex->resize(iconSize.x - iconPadding.x * 2,
+                                        std::max<std::int32_t>((std::int32_t) ((float) iconSize.y / ratio) - iconPadding.y * 2, 1));
                         }
                         else if(tex->getHeight() > tex->getWidth())
                         {
                             float ratio = (float) tex->getHeight() / (float) tex->getWidth();
                             
-                            tex->resize((std::int32_t) (iconSize.x / ratio), iconSize.y);
+                            tex->resize(std::max<std::int32_t>((std::int32_t) ((float) iconSize.x / ratio) - iconPadding.x * 2, 1),
+                                        iconSize.y - iconPadding.y * 2);
                         }
                         else
                         {
-                            tex->resize(iconSize.x, iconSize.y);
+                            tex->resize(iconSize.x - iconPadding.x * 2, iconSize.y - iconPadding.y * 2);
                         }
                     }
                 };
@@ -187,20 +194,10 @@ void SGE::DirectoryExplorer::renderBody()
                                                                     u8curPath);
             }
             
-            glm::ivec2 requiredIconSize { (std::uint32_t) (m_iconsSize.x * m_UIScale.x),
-                                          (std::uint32_t) (m_iconsSize.y * m_UIScale.y) };
-            
-            glm::ivec2 hoverOffset =
-                    (requiredIconSize - glm::ivec2 { fileIcon->getWidth(), fileIcon->getHeight() }) / 2 + glm::ivec2 { 3, 3 };
-            
-            cursorPos = ImGui::GetCursorPos();
-            ImGui::SetCursorPos({ cursorPos.x + hoverOffset.x, cursorPos.y + hoverOffset.y });
-            
             ImClickInfo clickInfo = ImGuiUtils::ImageButton(fileIcon->getTextureNativeHandler(),
+                                                            { (float) requiredIconSize.x, (float) requiredIconSize.y },
                                                             { (float) fileIcon->getWidth(),
-                                                              (float) fileIcon->getHeight() },
-                                                            ImVec2(-hoverOffset.x, -hoverOffset.y),
-                                                            ImVec2(hoverOffset.x, hoverOffset.y));
+                                                              (float) fileIcon->getHeight() });
             
             // ImGui::SetCursorPos(cursorPos);
             

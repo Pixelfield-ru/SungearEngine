@@ -58,7 +58,9 @@ void SGE::FileCreateDialog::renderBody()
             ->getSpecialization(20, 20)
             ->getTexture();
     
-    if(ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(), ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isClicked)
+    if(ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
+                               ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
+                               ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isClicked)
     {
         char* dat = m_dirPath.data();
         nfdresult_t result = NFD_PickFolder("", &dat);
