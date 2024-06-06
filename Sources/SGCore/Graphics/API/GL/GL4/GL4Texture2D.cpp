@@ -6,11 +6,17 @@
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "../GLGraphicsTypesCaster.h"
 #include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
+#include "SGCore/Threading/ThreadsManager.h"
 
 SGCore::GL4Texture2D::~GL4Texture2D() noexcept
 {
-    glDeleteTextures(1, &m_textureHandler);
-    glDeleteBuffers(1, &m_textureBufferHandler);
+    auto deleteTask = MakeRef<Threading::Task>();
+    deleteTask->setOnExecuteCallback([texHandler = this->m_textureHandler, bufHandler = this->m_textureBufferHandler] {
+        glDeleteTextures(1, &texHandler);
+        glDeleteBuffers(1, &bufHandler);
+    });
+    
+    Threading::ThreadsManager::getMainThread()->addTask(deleteTask);
 }
 
 // migrate to gl46

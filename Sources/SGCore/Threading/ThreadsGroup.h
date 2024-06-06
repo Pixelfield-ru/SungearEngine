@@ -12,7 +12,6 @@ namespace SGCore::Threading
     // MAYBE NOT IMPL
 
     template<typename SelectionPolicyT>
-    requires(std::is_base_of_v<ThreadsGroupSelectionPolicy, SelectionPolicyT>)
     struct BaseThreadsGroup
     {
     

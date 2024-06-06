@@ -34,35 +34,35 @@ namespace SGCore::Threading
         void useSingletonGuard(const TaskSingletonGuard taskSingletonGuard) noexcept;
         
         template<typename F, typename... Args>
-        void setOnExecuteCallback(F&& func, const Args&... args)
+        void setOnExecuteCallback(F&& func, Args&&... args)
         {
             std::lock_guard guard(m_listenerMutex);
             
-            m_executableCallback = [func, args...]() {
-                func(args...);
+            m_executableCallback = [func, &args...]() {
+                func(std::forward<Args>(args)...);
             };
         }
         
         template<typename F, typename... Args>
-        void setOnExecutedCallback(F&& func, const Args&... args)
+        void setOnExecutedCallback(F&& func, Args&&... args)
         {
             std::lock_guard guard(m_listenerMutex);
             
-            m_onExecutedCallback = [func, args...]() {
-                func(args...);
+            m_onExecutedCallback = [func, &args...]() {
+                func(std::forward<Args>(args)...);
             };
         }
         
         template<typename F, typename... Args>
-        void setOnExecutedCallback(F&& func, const std::shared_ptr<Thread>& inThread, const Args&... args)
+        void setOnExecutedCallback(F&& func, const std::shared_ptr<Thread>& inThread, Args&&... args)
         {
             std::lock_guard guard(m_listenerMutex);
             
             m_onExecutedCallbackParentThread = inThread;
             m_processFinishInOwnerThread = false;
             
-            m_onExecutedCallback = [func, args...]() {
-                func(args...);
+            m_onExecutedCallback = [func, &args...]() {
+                func(std::forward<Args>(args)...);
             };
         }
         

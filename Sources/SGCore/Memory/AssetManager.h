@@ -408,10 +408,10 @@ namespace SGCore
                 }
                 case PARALLEL_THEN_LAZYLOAD:
                 {
-                    auto loadInThread = Threading::ThreadsManager::getGlobalPool().getThread();
-                    loadInThread->m_autoJoinIfNotBusy = true;
+                    auto loadInThread = m_threadsPool.getThread();
+                    // loadInThread->m_autoJoinIfNotBusy = true;
                     auto loadAssetTask = loadInThread->createTask();
-                    
+        
                     loadAssetTask->setOnExecuteCallback([asset, path]() {
                         asset->load(path);
                     });
@@ -430,8 +430,8 @@ namespace SGCore
                 }
                 case PARALLEL_NO_LAZYLOAD:
                 {
-                    auto loadInThread = Threading::ThreadsManager::getGlobalPool().getThread();
-                    loadInThread->m_autoJoinIfNotBusy = true;
+                    auto loadInThread = m_threadsPool.getThread();
+                    // loadInThread->m_autoJoinIfNotBusy = true;
                     auto loadAssetTask = loadInThread->createTask();
                     
                     loadAssetTask->setOnExecuteCallback([asset, path]() {
@@ -455,6 +455,8 @@ namespace SGCore
         
         Ref<registry_t> m_registry = MakeRef<registry_t>();
         std::unordered_map<std::string, entity_t> m_entities;
+        
+        Threading::BaseThreadsPool<Threading::LeastTasksCount> m_threadsPool { 2, false };
         
         static inline Ref<AssetManager> m_instance;
     };

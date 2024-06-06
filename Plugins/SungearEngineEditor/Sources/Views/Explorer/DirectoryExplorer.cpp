@@ -180,6 +180,7 @@ void SGE::DirectoryExplorer::renderBody()
                         }
                     }
                 };
+                
                 m_previewAssetManager.loadAsset<SGCore::ITexture2D>(fileIcon, SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD, curPath);
             }
             

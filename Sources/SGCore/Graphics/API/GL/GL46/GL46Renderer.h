@@ -25,16 +25,6 @@ namespace SGCore
 
     class GL46Renderer : public GL4Renderer
     {
-    private:
-        // Buffer for storing matrices of the currently rendered model.
-        std::shared_ptr<GL46UniformBuffer> m_modelMatricesBuffer;
-        // Buffer for storing matrices of the currently main camera.
-        std::shared_ptr<GL46UniformBuffer> m_cameraMatricesBuffer;
-
-        GL46Renderer() noexcept = default;
-
-        static inline std::shared_ptr<GL46Renderer> m_instance;
-
     public:
         GL46Renderer(const GL46Renderer&) = delete;
         GL46Renderer(GL46Renderer&&) = delete;
@@ -46,6 +36,16 @@ namespace SGCore
         [[nodiscard]] GL46Texture2D* createTexture2D() const final;
 
         static const std::shared_ptr<GL46Renderer>& getInstance() noexcept;
+    
+    private:
+        // Buffer for storing matrices of the currently rendered model.
+        std::shared_ptr<GL46UniformBuffer> m_modelMatricesBuffer;
+        // Buffer for storing matrices of the currently main camera.
+        std::shared_ptr<GL46UniformBuffer> m_cameraMatricesBuffer;
+        
+        GL46Renderer() noexcept = default;
+        
+        static inline std::shared_ptr<GL46Renderer> m_instance;
     };
 }
 

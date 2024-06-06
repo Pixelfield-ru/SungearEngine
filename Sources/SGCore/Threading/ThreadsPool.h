@@ -16,16 +16,15 @@ namespace SGCore::Threading
         /**
          * Operator to check whether a thread is eligible for thread sampling as free or busy.\n Should return true if the thread is free and false if the thread is busy.
          * @param[in] thread Thread to check.
+         * @param[in] currentPreferableThread Current chosen thread to select.
          * @return <b><em> True </em></b> if the thread is free and <b><em> False </em></b> if the thread is busy.
          */
-        virtual bool operator()(std::weak_ptr<Thread> thread) noexcept = 0;
+        virtual bool operator()(std::weak_ptr<Thread> thread, std::weak_ptr<Thread> currentPreferableThread) noexcept = 0;
     };
 
-    struct ThreadsGroupSelectionPolicy { };
-
-    struct ThreadWithTimeSmallerThan final : ThreadsPoolSelectionPolicy, ThreadsGroupSelectionPolicy
+    struct TimeSmallerThan final : ThreadsPoolSelectionPolicy
     {
-        bool operator()(std::weak_ptr<Thread> thread) noexcept final
+        bool operator()(std::weak_ptr<Thread> thread, std::weak_ptr<Thread> currentPreferableThread) noexcept final
         {
             if(auto lockedThread = thread.lock())
             {
@@ -41,9 +40,9 @@ namespace SGCore::Threading
         double m_maxCycleTime = 0.1;
     };
 
-    struct ThreadWithNoTasks final : ThreadsPoolSelectionPolicy
+    struct ZeroTasks final : ThreadsPoolSelectionPolicy
     {
-        bool operator()(std::weak_ptr<Thread> thread) noexcept final
+        bool operator()(std::weak_ptr<Thread> thread, std::weak_ptr<Thread> currentPreferableThread) noexcept final
         {
             if(auto lockedThread = thread.lock())
             {
@@ -57,9 +56,9 @@ namespace SGCore::Threading
         }
     };
 
-    struct ThreadWithTasksCountLessThan final : ThreadsPoolSelectionPolicy, ThreadsGroupSelectionPolicy
+    struct TasksCountLessThan final : ThreadsPoolSelectionPolicy
     {
-        bool operator()(std::weak_ptr<Thread> thread) noexcept final
+        bool operator()(std::weak_ptr<Thread> thread, std::weak_ptr<Thread> currentPreferableThread) noexcept final
         {
             if(auto lockedThread = thread.lock())
             {
@@ -74,32 +73,84 @@ namespace SGCore::Threading
 
         size_t m_maxTasksCount = 3;
     };
+    
+    struct LeastTasksCount final : ThreadsPoolSelectionPolicy
+    {
+        bool operator()(std::weak_ptr<Thread> thread, std::weak_ptr<Thread> currentPreferableThread) noexcept final
+        {
+            auto lockedThread = thread.lock();
+            auto currentLockedThread = currentPreferableThread.lock();
+            
+            if(!currentLockedThread) return true;
+            
+            if(lockedThread && currentLockedThread)
+            {
+                if(lockedThread->tasksCount() < currentLockedThread->tasksCount())
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+    };
+    
+    struct ShortestTime final : ThreadsPoolSelectionPolicy
+    {
+        bool operator()(std::weak_ptr<Thread> thread, std::weak_ptr<Thread> currentPreferableThread) noexcept final
+        {
+            auto lockedThread = thread.lock();
+            auto currentLockedThread = currentPreferableThread.lock();
+            
+            if(!currentLockedThread) return true;
+            
+            if(lockedThread && currentLockedThread)
+            {
+                if(lockedThread->getExecutionTime() < currentLockedThread->getExecutionTime())
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+    };
 
     template<typename SelectionPolicyT>
     requires(std::is_base_of_v<ThreadsPoolSelectionPolicy, SelectionPolicyT>)
     struct BaseThreadsPool
     {
+        bool m_autoResize = true;
+        
         BaseThreadsPool() noexcept = default;
+        
+        BaseThreadsPool(std::int64_t startThreadsCount) noexcept
+        {
+            resize(startThreadsCount);
+        }
+        
+        BaseThreadsPool(std::int64_t startThreadsCount, bool autoResize) noexcept
+        {
+            m_autoResize = autoResize;
+            resize(startThreadsCount);
+        }
 
         std::shared_ptr<Thread> getThread() noexcept
         {
             std::lock_guard guard(m_mutex);
 
-            std::shared_ptr<Thread> foundThread;
+            if(m_threads.empty()) return nullptr;
+            
+            std::shared_ptr<Thread> currentPreferableThread;
 
             auto threadsIt = m_threads.begin();
             while(threadsIt != m_threads.end())
             {
                 if(auto lockedThread = threadsIt->lock())
                 {
-                    if(m_threadsSelector(lockedThread))
+                    if(m_threadsSelector(lockedThread, currentPreferableThread))
                     {
-                        foundThread = lockedThread;
-                    }
-
-                    if(foundThread)
-                    {
-                        break;
+                        currentPreferableThread = lockedThread;
                     }
 
                     ++threadsIt;
@@ -110,13 +161,13 @@ namespace SGCore::Threading
                 }
             }
 
-            if(!foundThread)
+            if(!currentPreferableThread && m_autoResize)
             {
-                foundThread = Thread::create();
-                m_threads.push_back(foundThread);
+                currentPreferableThread = Thread::create();
+                m_threads.push_back(currentPreferableThread);
             }
 
-            return foundThread;
+            return currentPreferableThread;
         }
 
         // m_threads.size()
@@ -173,6 +224,29 @@ namespace SGCore::Threading
         {
             return m_threadsSelector;
         }
+        
+        void resize(std::int64_t numThreads) noexcept
+        {
+            size_t currentSize = m_threads.size();
+            
+            if(numThreads < currentSize)
+            {
+                m_threads.resize(numThreads);
+            }
+            else if(numThreads > currentSize)
+            {
+                for(std::int32_t i = 0; i < numThreads - currentSize; ++i)
+                {
+                    auto thread = Thread::create();
+                    m_threads.push_back(thread);
+                }
+            }
+        }
+        
+        [[nodiscard]] std::int64_t size() const noexcept
+        {
+            return std::ssize(m_threads);
+        }
 
     private:
         std::mutex m_mutex;
@@ -182,7 +256,7 @@ namespace SGCore::Threading
         std::vector<std::weak_ptr<Thread>> m_threads;
     };
 
-    using ThreadsPool = BaseThreadsPool<ThreadWithTasksCountLessThan>;
+    using ThreadsPool = BaseThreadsPool<TasksCountLessThan>;
 }
 
 #endif //SUNGEARENGINE_THREADSPOOL_H
