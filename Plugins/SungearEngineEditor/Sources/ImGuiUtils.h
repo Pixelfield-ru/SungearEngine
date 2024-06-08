@@ -13,8 +13,10 @@ namespace SGE
 {
     struct ImClickInfo
     {
-        bool m_isClicked = false;
-        bool m_isDoubleClicked = false;
+        bool m_isLMBClicked = false;
+        bool m_isLMBDoubleClicked = false;
+        bool m_isRMBClicked = false;
+        bool m_isRMBDoubleClicked = false;
         bool m_isHovered = false;
     };
 

@@ -27,7 +27,7 @@ namespace SGE
         
         std::string m_error;
         
-        glm::vec2 m_size { 430, 85 };
+        glm::vec2 m_size { 440, 85 };
     };
 }
 

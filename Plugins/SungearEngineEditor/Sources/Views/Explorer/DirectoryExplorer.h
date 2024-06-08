@@ -11,6 +11,8 @@
 
 #include "SungearEngineEditor.h"
 #include "Resources.h"
+#include "Views/Popup.h"
+#include "Styles/StylesManager.h"
 
 namespace SGE
 {
@@ -24,6 +26,8 @@ namespace SGE
     
     struct DirectoryExplorer : SGCore::ImGuiWrap::IView
     {
+        DirectoryExplorer();
+        
         SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>& iconTexture,
                            const std::string& fileExtension,
                            const std::string& fileName)> onIconRender;
@@ -43,7 +47,26 @@ namespace SGE
         std::filesystem::path m_currentPath;
         std::filesystem::path m_maxPath;
         
+        std::filesystem::path m_rightClickedFile;
+        
         SGCore::AssetManager m_previewAssetManager;
+        
+        Popup m_directoriesPopup {
+                "Directory Actions",
+                {
+                        {
+                                .m_name = "Rename",
+                                .m_hint = "Ctrl + R",
+                                .m_icon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(16, 16)->getTexture(),
+                                .m_drawSeparatorAfter = true,
+                        },
+                        {
+                                .m_name = "Delete",
+                                .m_hint = "Ctrl + Delete",
+                                .m_icon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(16, 16)->getTexture(),
+                        }
+                }
+        };
         
         std::unordered_map<std::filesystem::path, DrawableFileNameInfo> m_drawableFilesNames;
         

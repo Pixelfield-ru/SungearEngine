@@ -114,20 +114,23 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     {
         if(isCurrentNodeOpened)
         {
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
             arrowBtnClicked = ImGuiUtils::ImageButton(
                     style->m_chevronDownIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(),
                     ImVec2((16 + 6) * m_UIScale.x, (16 + 6) * m_UIScale.y),
-                    ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y)).m_isClicked;
+                    ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y)).m_isLMBClicked;
         }
         else
         {
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
             arrowBtnClicked = ImGuiUtils::ImageButton(
                     style->m_chevronRightIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(),
                     ImVec2((16 + 6) * m_UIScale.x, (16 + 6) * m_UIScale.y),
-                    ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y)).m_isClicked;
+                    ImVec2(16 * m_UIScale.x, 16 * m_UIScale.y)).m_isLMBClicked;
         }
         
         ImGui::SameLine();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
         ImGui::Image(style->m_folderIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), ImVec2(16, 16));
         ImGui::SameLine();
     }
@@ -148,11 +151,15 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
                                  parent.root_name().u16string() : parent.filename().u16string();
 
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 3);
+    if(isDirectory)
+    {
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+    }
     ImGui::Text(SGUtils::Utils::toUTF8<char16_t>(u16filename).c_str());
 
     auto mouseScreenPos = ImGui::GetCursorScreenPos();
     
-    auto rectMin = ImVec2(m_windowCursorPos.x, mouseScreenPos.y - 25.0f);
+    auto rectMin = ImVec2(m_windowCursorPos.x, mouseScreenPos.y - 25);
     auto rectMax = ImVec2(m_windowCursorPos.x + ImGui::GetScrollX() + m_windowContentRegionMax.x + 3, mouseScreenPos.y - 3.0f);
     
     bool rowDoubleClicked = ImGui::IsMouseHoveringRect(rectMin, rectMax) &&

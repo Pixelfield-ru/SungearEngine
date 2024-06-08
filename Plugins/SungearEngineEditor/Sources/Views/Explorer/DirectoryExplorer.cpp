@@ -12,6 +12,21 @@
 #include "ImGuiUtils.h"
 #include "Styles/StylesManager.h"
 
+SGE::DirectoryExplorer::DirectoryExplorer()
+{
+    m_directoriesPopup.onElementClicked += [this](PopupElement& element) {
+        if(element.m_name == "Delete")
+        {
+            if(std::filesystem::exists(m_rightClickedFile))
+            {
+                std::filesystem::remove_all(m_rightClickedFile);
+                m_drawableFilesNames.clear();
+                m_rightClickedFile = "";
+            }
+        }
+    };
+}
+
 void SGE::DirectoryExplorer::renderBody()
 {
     const ImVec4& frameBgCol = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
@@ -115,6 +130,10 @@ void SGE::DirectoryExplorer::renderBody()
                                ImGui::GetContentRegionAvail(),
                                ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
         
+        // ================ DRAWING POPUP ==================
+        
+        m_directoriesPopup.draw();
+        
         for(auto it = std::filesystem::directory_iterator(m_currentPath);
             it != std::filesystem::directory_iterator(); ++it)
         {
@@ -166,6 +185,7 @@ void SGE::DirectoryExplorer::renderBody()
                 fileIcon->onLazyLoadDone += [previewExists, iconSize, iconPadding](SGCore::IAsset* self) {
                     if(!previewExists)
                     {
+                        // NEXT WE ARE COMPRESSING TEXTURE SAVING ITS ASPECT RATIO
                         auto* tex = (SGCore::ITexture2D*) self;
                         
                         if(tex->getWidth() > tex->getHeight())
@@ -203,10 +223,19 @@ void SGE::DirectoryExplorer::renderBody()
             
             drawableFileNameInfo.m_isIconHovered = clickInfo.m_isHovered;
             
-            if(isDirectory && clickInfo.m_isDoubleClicked)
+            if(isDirectory)
             {
-                setCurrentPath(curPath);
-                break;
+                if(clickInfo.m_isLMBDoubleClicked)
+                {
+                    m_directoriesPopup.setOpened(false);
+                    setCurrentPath(curPath);
+                    break;
+                }
+                else if(clickInfo.m_isRMBClicked)
+                {
+                    m_rightClickedFile = curPath;
+                    m_directoriesPopup.setOpened(true);
+                }
             }
 
             m_currentItemsSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2, m_iconsSize.y * m_UIScale.y + 3 * 2);

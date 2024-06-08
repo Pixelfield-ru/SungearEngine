@@ -2,6 +2,7 @@
 // Created by ilya on 30.04.24.
 //
 
+#include <imgui_internal.h>
 #include "ImGuiUtils.h"
 #include "Styles/StylesManager.h"
 
@@ -12,8 +13,6 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
 {
     assert(buttonSize.x >= imageSize.x && buttonSize.y >= imageSize.y && "Button size must be greater then image size!");
     
-    ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-    
     ImVec2 offset = imageOffset;
     if(imageOffset.x == -1 && imageOffset.y == -1)
     {
@@ -23,31 +22,48 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
         };
     }
     
+    ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
+    
     bool mouseHoveringBg = ImGui::IsMouseHoveringRect(
-            ImVec2(cursorPos.x, cursorPos.y),
-            ImVec2(cursorPos.x + buttonSize.x,
-                   cursorPos.y + buttonSize.y));
+            ImVec2(cursorScreenPos.x, cursorScreenPos.y),
+            ImVec2(cursorScreenPos.x + buttonSize.x,
+                   cursorScreenPos.y + buttonSize.y));
     
     if(mouseHoveringBg)
     {
         // ImGui::GetWindowDrawList()
         ImGui::GetWindowDrawList()->AddRectFilled(
-                ImVec2(cursorPos.x, cursorPos.y),
-                ImVec2(cursorPos.x + buttonSize.x, cursorPos.y + buttonSize.y),
+                ImVec2(cursorScreenPos.x, cursorScreenPos.y),
+                ImVec2(cursorScreenPos.x + buttonSize.x, cursorScreenPos.y + buttonSize.y),
                 ImGui::ColorConvertFloat4ToU32(hoverBgColor), 3);
     }
     
-    ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, ImVec2(cursorPos.x + offset.x, cursorPos.y + offset.y),
-                                         ImVec2(cursorPos.x + imageSize.x + offset.x, cursorPos.y + imageSize.y + offset.y));
+    ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, ImVec2(cursorScreenPos.x + offset.x, cursorScreenPos.y + offset.y),
+                                         ImVec2(cursorScreenPos.x + imageSize.x + offset.x, cursorScreenPos.y + imageSize.y + offset.y));
     
-    bool clicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
-    bool doubleClicked = mouseHoveringBg && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
-
-    ImGui::Dummy(buttonSize);
+    bool leftClicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+    bool leftDoubleClicked = mouseHoveringBg && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
+    
+    bool rightClicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Right);
+    bool rightDoubleClicked = mouseHoveringBg && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Right);
+    
+    // ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offset.y);
+    // ImGui::Dummy(buttonSize);
+    
+    /*ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems) {
+        return { };
+    }*/
+    
+    ImGui::Dummy({ buttonSize.x, buttonSize.y - offset.y });
+    
+    // ImGui::NewLine();
     
     ImClickInfo clickInfo {
-        .m_isClicked = clicked,
-        .m_isDoubleClicked = doubleClicked,
+        .m_isLMBClicked = leftClicked,
+        .m_isLMBDoubleClicked = leftDoubleClicked,
+        .m_isRMBClicked = rightClicked,
+        .m_isRMBDoubleClicked = rightDoubleClicked,
         .m_isHovered = mouseHoveringBg
     };
     

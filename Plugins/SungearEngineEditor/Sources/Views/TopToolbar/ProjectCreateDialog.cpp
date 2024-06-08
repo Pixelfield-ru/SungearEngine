@@ -61,9 +61,10 @@ void SGE::ProjectCreateDialog::renderBody()
             ->getSpecialization(20, 20)
             ->getTexture();
     
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
     if(ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
                                ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
-                               ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isClicked)
+                               ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
     {
         char* dat = m_dirPath.data();
         nfdresult_t result = NFD_PickFolder("", &dat);
