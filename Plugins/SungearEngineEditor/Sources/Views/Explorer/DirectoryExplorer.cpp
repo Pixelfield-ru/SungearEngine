@@ -4,6 +4,8 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <imgui_stdlib.h>
+
 #include <SGUtils/Utils.h>
 
 #include "DirectoryExplorer.h"
@@ -15,10 +17,21 @@
 SGE::DirectoryExplorer::DirectoryExplorer()
 {
     m_directoriesPopup.onElementClicked += [this](PopupElement& element) {
-        if(element.m_name == "Delete")
+        if(std::filesystem::exists(m_rightClickedFile))
         {
-            if(std::filesystem::exists(m_rightClickedFile))
+            auto& fileInfo = m_drawableFilesNames[m_rightClickedFile];
+            if(element.m_name == "Rename")
             {
+                m_currentEditingFileName = fileInfo.m_formattedName;
+                m_currentEditingFile = &fileInfo;
+            }
+            if(element.m_name == "Delete")
+            {
+                if(&fileInfo == m_currentEditingFile)
+                {
+                    m_currentEditingFile = nullptr;
+                }
+                
                 std::filesystem::remove_all(m_rightClickedFile);
                 m_drawableFilesNames.clear();
                 m_rightClickedFile = "";
@@ -248,6 +261,7 @@ void SGE::DirectoryExplorer::renderBody()
             try
             {
                 auto& path = fileNameInfoPair.first;
+                if(!std::filesystem::exists(path)) continue;
                 auto& drawableNameInfo = fileNameInfoPair.second;
                 
                 std::u16string fileName = path.stem().u16string();
@@ -313,48 +327,92 @@ void SGE::DirectoryExplorer::renderBody()
                 std::string utf8FinalFileName = SGUtils::Utils::toUTF8<char16_t>(finalFileName);
                 std::string utf8TransferredFileName = SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName);
                 
+                drawableNameInfo.m_formattedName = utf8TransferredFileName;
+                drawableNameInfo.m_path = path;
+                
                 ImGui::SetCursorPos(drawableNameInfo.m_position);
                 ImVec2 finalTextSize = ImGui::CalcTextSize(utf8FinalFileName.c_str());
                 ImVec2 finalTransferredTextSize = ImGui::CalcTextSize(utf8TransferredFileName.c_str());
                 ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
                 
-                // check if mouse hovering file name. if hovering then we`ll show the full transferred name. if not then we`ll show abbreviated file name
-                if(ImGui::IsMouseHoveringRect(cursorScreenPos, { cursorScreenPos.x + finalTextSize.x,
-                                                                 cursorScreenPos.y + finalTextSize.y }) ||
-                   drawableNameInfo.m_isIconHovered || drawableNameInfo.m_isFullNameHovered)
+                if(m_currentEditingFile != &drawableNameInfo)
                 {
-                    drawableNameInfo.m_isFullNameHovered = ImGui::IsMouseHoveringRect(cursorScreenPos,
-                                                                                      { cursorScreenPos.x + finalTransferredTextSize.x,
-                                                                                        cursorScreenPos.y + finalTransferredTextSize.y });
-                    
-                    ImGui::GetWindowDrawList()->AddRectFilled(cursorScreenPos,
-                                                              { cursorScreenPos.x + finalTransferredTextSize.x,
-                                                                cursorScreenPos.y + finalTransferredTextSize.y },
-                                                              ImGui::ColorConvertFloat4ToU32(frameBgCol));
-                    
-                    ImGui::GetWindowDrawList()->AddText(cursorScreenPos,
-                                                        ImGui::ColorConvertFloat4ToU32({ 1.0, 1.0, 1.0, 1.0 }),
-                                                        utf8TransferredFileName.c_str());
-                    
-                    // TODO: MAKE TEXT IN THE BOTTOM OF WINDOW
-                    /*if(ImGui::GetWindowContentRegionMax().y + ImGui::GetWindowPos().y < drawableNameInfo.m_position.y + finalTransferredTextSize.y)
+                    // check if mouse hovering file name. if hovering then we`ll show the full transferred name. if not then we`ll show abbreviated file name
+                    if(ImGui::IsMouseHoveringRect(cursorScreenPos, { cursorScreenPos.x + finalTextSize.x,
+                                                                     cursorScreenPos.y + finalTextSize.y }) ||
+                       drawableNameInfo.m_isIconHovered || drawableNameInfo.m_isFullNameHovered)
                     {
-                        float diff = (drawableNameInfo.m_position.y + finalTransferredTextSize.y) - ImGui::GetScrollY();
+                        drawableNameInfo.m_isFullNameHovered = ImGui::IsMouseHoveringRect(cursorScreenPos,
+                                                                                          { cursorScreenPos.x +
+                                                                                            finalTransferredTextSize.x,
+                                                                                            cursorScreenPos.y +
+                                                                                            finalTransferredTextSize.y });
                         
-                        ImVec2 lastPos = ImGui::GetCursorPos();
-                        ImGui::SetCursorPos({ lastPos.x, lastPos.y + finalTransferredTextSize.y});
-                        ImGui::Dummy({ finalTransferredTextSize.x, diff });
-                        ImGui::SetCursorPos(lastPos);
-                    }*/
-                }
-                else
-                {
-                    ImGui::Text(utf8FinalFileName.c_str());
+                        ImGui::GetWindowDrawList()->AddRectFilled(cursorScreenPos,
+                                                                  { cursorScreenPos.x + finalTransferredTextSize.x,
+                                                                    cursorScreenPos.y + finalTransferredTextSize.y },
+                                                                  ImGui::ColorConvertFloat4ToU32(frameBgCol));
+                        
+                        ImGui::GetWindowDrawList()->AddText(cursorScreenPos,
+                                                            ImGui::ColorConvertFloat4ToU32({ 1.0, 1.0, 1.0, 1.0 }),
+                                                            utf8TransferredFileName.c_str());
+                        
+                        // TODO: MAKE TEXT IN THE BOTTOM OF WINDOW
+                        /*if(ImGui::GetWindowContentRegionMax().y + ImGui::GetWindowPos().y < drawableNameInfo.m_position.y + finalTransferredTextSize.y)
+                        {
+                            float diff = (drawableNameInfo.m_position.y + finalTransferredTextSize.y) - ImGui::GetScrollY();
+                            
+                            ImVec2 lastPos = ImGui::GetCursorPos();
+                            ImGui::SetCursorPos({ lastPos.x, lastPos.y + finalTransferredTextSize.y});
+                            ImGui::Dummy({ finalTransferredTextSize.x, diff });
+                            ImGui::SetCursorPos(lastPos);
+                        }*/
+                    }
+                    else
+                    {
+                        ImGui::Text(utf8FinalFileName.c_str());
+                    }
                 }
             }
             catch(const std::exception& e)
             {
                 std::printf("Exception while drawing DirectoriesExplorer: %s\n", e.what());
+            }
+        }
+        
+        // WE ARE ITERATING THROUGH INFOS TO CHECK CURRENT EDITING FILE AND OVERDRAW INPUT TEXT
+        for(auto& fileNameInfoPair : m_drawableFilesNames)
+        {
+            auto& path = fileNameInfoPair.first;
+            auto& drawableNameInfo = fileNameInfoPair.second;
+            
+            if(m_currentEditingFile == &drawableNameInfo)
+            {
+                ImVec2 nameSize = ImGui::CalcTextSize(m_currentEditingFileName.c_str());
+                
+                // y = 3 lines
+                ImVec2 maxNameSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2 + m_iconsPadding.x / 4 - ImGui::GetStyle().FramePadding.x + 7,
+                                            nameSize.y);
+                
+                ImGui::SetCursorPos(drawableNameInfo.m_position);
+                ImGui::InputTextMultiline(("##" + drawableNameInfo.m_formattedName).c_str(),
+                                          &m_currentEditingFileName,
+                                          { maxNameSize.x +
+                                            ImGui::GetStyle().FramePadding.x + 13,
+                                            nameSize.y },
+                                          ImGuiInputTextFlags_CallbackAlways,
+                                          onFileNameEditCallback,
+                                          (void*) &maxNameSize.x);
+                
+                if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Enter))
+                {
+                    std::filesystem::path resultPath = drawableNameInfo.m_path.parent_path();
+                    resultPath += std::filesystem::path::preferred_separator + SGUtils::Utils::replaceAll<char>(m_currentEditingFileName, "\n", "");
+                    std::filesystem::rename(drawableNameInfo.m_path, resultPath);
+                    m_currentEditingFile = nullptr;
+                }
+                
+                drawableNameInfo.m_formattedName = m_currentEditingFileName;
             }
         }
         
@@ -375,6 +433,7 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
     
     m_drawableFilesNames.clear();
     m_previewAssetManager.clear();
+    m_currentEditingFile = nullptr;
     
     if(!SGUtils::Utils::isSubpath(m_maxPath, path))
     {
@@ -387,4 +446,78 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
 std::filesystem::path SGE::DirectoryExplorer::getCurrentPath() const noexcept
 {
     return m_currentPath;
+}
+
+int SGE::DirectoryExplorer::onFileNameEditCallback(ImGuiInputTextCallbackData* data) noexcept
+{
+    std::int32_t dif = data->CursorPos - m_lastCursorPositionInFileNameInputBox;
+    
+    // if cursor just moving =================
+    // if cursor going on left
+    /*if(dif < 0 && m_lastTextLenInFileNameInputBox == data->BufTextLen)
+    {
+        if(data->Buf[data->CursorPos] == '\n')
+        {
+            --data->CursorPos;
+        }
+    }
+    else if(dif > 0 && m_lastTextLenInFileNameInputBox == data->BufTextLen) // if cursor going on right
+    {
+        if(data->Buf[data->CursorPos - 1] == '\n')
+        {
+            ++data->CursorPos;
+        }
+    }*/
+    // =========================================
+    
+    float controlWidth = *(float*) data->UserData;
+    float textWidth = ImGui::CalcTextSize(data->Buf).x;
+    
+    int cursorPos = data->CursorPos;
+    
+    std::u16string strBuf = SGUtils::Utils::fromUTF8<char16_t>(std::string(data->Buf, data->BufTextLen));
+    std::u16string finalTransferredFileName;
+    
+    strBuf = SGUtils::Utils::replaceAll<char16_t>(strBuf, u"\n", u"");
+    
+    for(char16_t c : strBuf)
+    {
+        ImVec2 curFullNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8(finalTransferredFileName + c).c_str());
+        
+        if(curFullNameSize.x >= controlWidth)
+        {
+            finalTransferredFileName += u'\n';
+        }
+        
+        finalTransferredFileName += c;
+    }
+    
+    std::string utf8Str = SGUtils::Utils::toUTF8(finalTransferredFileName);
+    
+    bool prettified = false;
+    if(textWidth > controlWidth || m_lastTextLenInFileNameInputBox != data->BufTextLen)
+    {
+        data->DeleteChars(0, data->BufTextLen);
+        data->InsertChars(0, utf8Str.c_str());
+        
+        data->CursorPos = cursorPos;
+        
+        data->BufDirty = true;
+        prettified = true;
+    }
+    
+    if(prettified && data->Buf[data->CursorPos - 1] == '\n')
+    {
+        ++data->CursorPos;
+    }
+    
+    m_lastTextLenInFileNameInputBox = data->BufTextLen;
+    m_lastCursorPositionInFileNameInputBox = data->CursorPos;
+    
+    return 0;
+}
+
+void SGE::DirectoryExplorer::tryMoveCursorOnNewLine(ImGuiInputTextCallbackData* data) noexcept
+{
+
 }

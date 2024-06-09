@@ -17,8 +17,8 @@ SGCore::SGSLETranslator::processCode(const std::string& path, const std::string&
 {
     // std::cout << "loading shader: " << path << std::endl;
     
-    std::string replacedPath = SGUtils::Utils::replaceAll(path, "/", "_");
-    replacedPath = SGUtils::Utils::replaceAll(replacedPath, "\\", "_");
+    std::string replacedPath = SGUtils::Utils::replaceAll<char>(path, "/", "_");
+    replacedPath = SGUtils::Utils::replaceAll<char>(replacedPath, "\\", "_");
     
     if(isRootShader)
     {
@@ -429,16 +429,16 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                     if(splittedBySpaceLine[0] == "struct")
                     {
                         SGSLEStruct sgsleStruct;
-                        sgsleStruct.m_name = SGUtils::Utils::replaceAll(splittedBySpaceLine[1], "{", "");
+                        sgsleStruct.m_name = SGUtils::Utils::replaceAll<char>(splittedBySpaceLine[1], "{", "");
                         
                         for(size_t i = 2; i < splittedBySpaceLine.size(); i += 2)
                         {
                             if(splittedBySpaceLine[i] == "extends")
                             {
-                                std::string clearBaseName = SGUtils::Utils::replaceAll(splittedBySpaceLine[i + 1], "{",
-                                                                                       "");
+                                std::string clearBaseName = SGUtils::Utils::replaceAll<char>(splittedBySpaceLine[i + 1], "{",
+                                                                                             "");
                                 
-                                line = SGUtils::Utils::replaceAll(line, "extends " + clearBaseName, "");
+                                line = SGUtils::Utils::replaceAll<char>(line, "extends " + clearBaseName, "");
                                 line = SGUtils::Utils::reduce(line);
                                 
                                 SGSLEStruct* baseStruct = subShader->tryGetStruct(clearBaseName);

@@ -22,6 +22,8 @@ namespace SGE
         ImVec2 m_position = ImVec2(0, 0);
         bool m_isFullNameHovered = false;
         bool m_isIconHovered = false;
+        std::string m_formattedName;
+        std::filesystem::path m_path;
     };
     
     struct DirectoryExplorer : SGCore::ImGuiWrap::IView
@@ -43,6 +45,12 @@ namespace SGE
         std::filesystem::path getCurrentPath() const noexcept;
         
     private:
+        static int onFileNameEditCallback(ImGuiInputTextCallbackData* data) noexcept;
+        static void tryMoveCursorOnNewLine(ImGuiInputTextCallbackData* data) noexcept;
+        
+        static inline std::int32_t m_lastCursorPositionInFileNameInputBox = 0;
+        static inline std::int32_t m_lastTextLenInFileNameInputBox = 0;
+        
         std::filesystem::path m_lastPath;
         std::filesystem::path m_currentPath;
         std::filesystem::path m_maxPath;
@@ -50,6 +58,10 @@ namespace SGE
         std::filesystem::path m_rightClickedFile;
         
         SGCore::AssetManager m_previewAssetManager;
+        
+        std::string m_currentEditingFileName;
+        
+        DrawableFileNameInfo* m_currentEditingFile = nullptr;
         
         Popup m_directoriesPopup {
                 "Directory Actions",

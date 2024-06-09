@@ -127,31 +127,33 @@ namespace SGCore
     
     template <typename> struct class_function_traits;
     
-    template <typename Return, typename Object, typename... Args>
+    template <typename Object, typename Return, typename... Args>
     struct class_function_traits<Return(Object::*)(Args...)>
     {
         typedef Return return_type;
         typedef Object instance_type;
         typedef Object& instance_reference;
         using function_type = Return(Object::*)(Args...);
+        using not_member_function_type = Return(*)(Args...);
         
         // Can mess with Args... if you need to, for example:
-        static constexpr size_t arguments_count = sizeof...(Args);
+        static constexpr size_t args_count = sizeof...(Args);
         
         template<size_t Idx>
         using get_type = extract<Idx, Args...>;
     };
 
-    template <typename Return, typename Object, typename... Args>
+    template <typename Object, typename Return, typename... Args>
     struct class_function_traits<Return(Object::*)(Args...) const>
     {
         typedef Return return_type;
         typedef Object instance_type;
         typedef Object const& instance_reference;
-        using function_type = Return(Object::*)(Args...);
+        using function_type = Return(Object::*const)(Args...) const;
+        using not_member_function_type = Return(*)(Args...);
         
         // Can mess with Args... if you need to, for example:
-        static constexpr size_t arguments_count = sizeof...(Args);
+        static constexpr size_t args_count = sizeof...(Args);
         
         template<size_t Idx>
         using get_type = extract<Idx, Args...>;
@@ -159,6 +161,21 @@ namespace SGCore
     
     template<auto ClassFuncPtr>
     using make_class_function_traits = class_function_traits<decltype(ClassFuncPtr)>;
+    
+    template<typename>
+    struct function_traits;
+    
+    template<typename RetT, typename... Args>
+    struct function_traits<RetT(Args...)>
+    {
+        using return_type = RetT;
+        using function_type = RetT(Args...);
+        
+        static constexpr size_t args_count = sizeof...(Args);
+        
+        template<size_t Idx>
+        using get_type = extract<Idx, Args...>;
+    };
     
     template <typename T>
     struct func_return_type;

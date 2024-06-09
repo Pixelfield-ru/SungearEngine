@@ -31,7 +31,7 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         auto finalSGPath = CoreMain::m_pathToSungearEngineSDKSources;
         if(std::filesystem::path::preferred_separator == L'\\')
         {
-            finalSGPath = SGUtils::Utils::replaceAll(finalSGPath, R"(\)", R"(\\)");
+            finalSGPath = SGUtils::Utils::replaceAll<char>(finalSGPath, R"(\)", R"(\\)");
         }
 
         const auto pluginDir = projectPath + "/" + pluginName;

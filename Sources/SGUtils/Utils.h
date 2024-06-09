@@ -178,43 +178,51 @@ namespace SGUtils
             return dynamic_cast<const Base*>(ptr) != nullptr;
         }
 
-        static void splitString(const std::string& str, char delim, std::vector<std::string>& words) noexcept
+        template<typename CharT>
+        static void splitString(const std::basic_string<CharT>& str, char delim, std::vector<std::basic_string<CharT>>& words) noexcept
         {
-            std::stringstream ss(str);
-            std::string word;
+            std::basic_stringstream<CharT> ss(str);
+            std::basic_string<CharT> word;
             while(std::getline(ss, word, delim)) {
                 words.push_back(word);
             }
         }
-
-        static std::string replaceAll(const std::string& str, const std::string& from, const std::string& to) noexcept
+        
+        template<typename CharT>
+        static std::basic_string<CharT> replaceAll(const std::basic_string<CharT>& str,
+                                                   const std::basic_string<CharT>& from,
+                                                   const std::basic_string<CharT>& to) noexcept
         {
-            std::string resString = str;
+            std::basic_string<CharT> resString = str;
 
             size_t start_pos = 0;
-            while((start_pos = resString.find(from, start_pos)) != std::string::npos) {
+            while((start_pos = resString.find(from, start_pos)) != std::basic_string<CharT>::npos) {
                 resString.replace(start_pos, from.length(), to);
                 start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
             }
 
             return resString;
         }
-
-        static std::string replaceFirst(const std::string& str, const std::string& from, const std::string& to) noexcept
+        
+        template<typename CharT>
+        static std::basic_string<CharT> replaceFirst(const std::basic_string<CharT>& str,
+                                                     const std::basic_string<CharT>& from,
+                                                     const std::basic_string<CharT>& to) noexcept
         {
             std::string resString = str;
 
             size_t start_pos = 0;
             start_pos = resString.find(from, start_pos);
-            if(start_pos != std::string::npos) {
+            if(start_pos != std::basic_string<CharT>::npos) {
                 resString.replace(start_pos, from.length(), to);
             }
 
             return resString;
         }
-
-        static std::string trim(const std::string& str,
-                                const std::string& whitespace = " \t")
+        
+        template<typename CharT>
+        static std::basic_string<CharT> trim(const std::basic_string<CharT>& str,
+                                             const std::basic_string<CharT>& whitespace = " \t")
         {
             const auto strBegin = str.find_first_not_of(whitespace);
             if(strBegin == std::string::npos)
@@ -225,10 +233,11 @@ namespace SGUtils
             const auto strRange = strEnd - strBegin + 1;
             return str.substr(strBegin, strRange);
         }
-
-        static std::string reduce(const std::string& str,
-                                  const std::string& fill = " ",
-                                  const std::string& whitespace = " \t")
+        
+        template<typename CharT>
+        static std::basic_string<CharT> reduce(const std::basic_string<CharT>& str,
+                                               const std::basic_string<CharT>& fill = " ",
+                                               const std::basic_string<CharT>& whitespace = " \t")
         {
             // trim first
             auto result = trim(str, whitespace);
@@ -244,10 +253,11 @@ namespace SGUtils
             }
             return result;
         }
-
-        static std::string toString(const std::vector<std::string>& vec) noexcept
+        
+        template<typename CharT>
+        static std::basic_string<CharT> toString(const std::vector<std::basic_string<CharT>>& vec) noexcept
         {
-            std::string str;
+            std::basic_string<CharT> str;
 
             for(auto& s : vec)
             {
@@ -284,10 +294,6 @@ namespace SGUtils
         template <typename T>
         static std::string toUTF8(const std::basic_string<T, std::char_traits<T>, std::allocator<T>>& source)
         {
-            /*std::u16string u16str(source.begin(), source.end());
-            std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> convert;
-            std::string utf8 = convert.to_bytes(u16str);
-            return utf8;*/
             std::string result;
             std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
             result = convertor.to_bytes(source);
