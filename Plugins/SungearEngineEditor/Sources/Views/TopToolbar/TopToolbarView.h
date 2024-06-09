@@ -19,7 +19,6 @@ namespace SGE
         void renderBody() final;
         void end() final;
         
-    private:
         SGCore::Ref<FileCreateDialog> m_fileCreateDialog = SGCore::MakeRef<FileCreateDialog>();
         SGCore::Ref<ProjectCreateDialog> m_projectCreateDialog = SGCore::MakeRef<ProjectCreateDialog>();
     };

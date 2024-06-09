@@ -26,6 +26,10 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
             {
                 for(auto& elem : m_elements)
                 {
+                    if(!elem.m_isActive) continue;
+                    
+                    ++parentPopup->m_drawingElementsCount;
+                    
                     ImGui::TableNextRow();
                     
                     // FIRST COLUMN FOR ICON
@@ -137,6 +141,33 @@ void SGE::PopupElement::recursiveClose() noexcept
     }
 }
 
+void SGE::PopupElement::setAllElementsActive(bool isActive) noexcept
+{
+    m_isActive = isActive;
+    for(auto& e : m_elements)
+    {
+        e.m_isActive = isActive;
+    }
+}
+
+SGE::PopupElement* SGE::PopupElement::tryGetElementRecursively(std::string_view id) noexcept
+{
+    PopupElement* element = nullptr;
+
+    for(auto& e : m_elements)
+    {
+        if(e.m_id == id)
+        {
+            element = &e;
+            break;
+        }
+        
+        element = e.tryGetElementRecursively(id);
+    }
+    
+    return element;
+}
+
 SGE::Popup::Popup(const std::string& name, const std::initializer_list<PopupElement>& items) noexcept
 {
     m_name = name;
@@ -149,12 +180,16 @@ SGE::Popup::Popup(const std::string& name, const std::initializer_list<PopupElem
 
 void SGE::Popup::draw() noexcept
 {
+    m_drawingElementsCount = 0;
+    
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 4));
     ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 0);
     
     if(m_isOpened && ImGui::BeginPopup(m_name.c_str(), ImGuiWindowFlags_NoMove))
     {
+        // setOpened(ImGui::BeginPopup(m_name.c_str(), ImGuiWindowFlags_NoMove));
+        
         ImGui::GetWindowDrawList()->AddRectFilled(m_rectToDraw.Min,
                                                   m_rectToDraw.Max,
                                                   ImGui::ColorConvertFloat4ToU32(
@@ -167,34 +202,65 @@ void SGE::Popup::draw() noexcept
         {
             for(auto& elem : m_elements)
             {
+                if(!elem.m_isActive) continue;
+                
+                ++m_drawingElementsCount;
+                
                 ImGui::TableNextRow();
+                
+                float rowHeight = ImGui::GetFrameHeight();
                 
                 // FIRST COLUMN FOR ICON
                 ImGui::TableNextColumn();
                 if(elem.m_icon)
                 {
                     ImGui::Image(elem.m_icon->getTextureNativeHandler(), ImVec2(elem.m_icon->getWidth(), elem.m_icon->getHeight()));
+                    
+                    rowHeight = elem.m_icon->getHeight() > rowHeight ? elem.m_icon->getHeight() : rowHeight;
                 }
                 
                 // SECOND COLUMN FOR NAME
                 ImGui::TableNextColumn();
-                ImGui::Text(elem.m_name.c_str());
+                {
+                    ImVec2 textSize = ImGui::CalcTextSize(elem.m_name.c_str());
+                    if(textSize.y > rowHeight)
+                    {
+                        rowHeight = textSize.y;
+                    }
+                    else
+                    {
+                        float offsetY = (rowHeight - textSize.y) / 2.0f;
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+                    }
+                    ImGui::Text(elem.m_name.c_str());
+                }
                 
                 // THIRD COLUMN FOR HOT KEYS OR CHEVRON ICON
                 ImGui::TableNextColumn();
                 if(elem.m_elements.empty())
                 {
-                    auto textRightAlign = (ImGui::GetCursorPosX() + ImGui::GetColumnWidth() -
-                                       ImGui::CalcTextSize(elem.m_hint.c_str()).x);
+                    ImVec2 textSize = ImGui::CalcTextSize(elem.m_hint.c_str());
+                    auto textRightAlign = (ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - textSize.x);
                     if(textRightAlign > ImGui::GetCursorPosX())
                     {
                         ImGui::SetCursorPosX(textRightAlign);
                     }
+                    
+                    if(textSize.y > rowHeight)
+                    {
+                        rowHeight = textSize.y;
+                    }
+                    else
+                    {
+                        float offsetY = (rowHeight - textSize.y) / 2.0f;
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+                    }
+                    
                     ImGui::TextDisabled(elem.m_hint.c_str());
                 }
                 else
                 {
-                    auto iconRightAlign = ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - 16;
+                    auto iconRightAlign = ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - rowHeight;
                     if(iconRightAlign > ImGui::GetCursorPosX())
                     {
                         ImGui::SetCursorPosX(iconRightAlign);
@@ -202,9 +268,9 @@ void SGE::Popup::draw() noexcept
                     
                     ImGui::Image(StylesManager::getCurrentStyle()
                                          ->m_chevronRightIcon
-                                         ->getSpecialization(16, 16)
+                                         ->getSpecialization((std::int32_t) rowHeight, (std::int32_t) rowHeight)
                                          ->getTexture()->getTextureNativeHandler(),
-                                 { 16, 16 });
+                                 { rowHeight, rowHeight });
                 }
                 
                 ImRect rowStart = ImGui::TableGetCellBgRect(ImGui::GetCurrentContext()->CurrentTable, 0);
@@ -264,6 +330,11 @@ void SGE::Popup::draw() noexcept
     }
 
     ImGui::PopStyleVar(3);
+    
+    if(m_drawingElementsCount == 0)
+    {
+        setOpened(false);
+    }
 }
 
 void SGE::Popup::recursiveClose() noexcept
@@ -274,6 +345,14 @@ void SGE::Popup::recursiveClose() noexcept
     }
 }
 
+void SGE::Popup::setAllElementsActive(bool isActive) noexcept
+{
+    for(auto& e : m_elements)
+    {
+        e.setAllElementsActive(isActive);
+    }
+}
+
 bool SGE::Popup::isOpened() const noexcept
 {
     return m_isOpened;
@@ -281,7 +360,32 @@ bool SGE::Popup::isOpened() const noexcept
 
 void SGE::Popup::setOpened(bool isOpened) noexcept
 {
+    if(m_isOpened != isOpened)
+    {
+        onOpenedChanged(m_isOpened, isOpened);
+    }
+    
     recursiveClose();
     m_isOpened = isOpened;
-    ImGui::OpenPopup(m_name.c_str());
+    if(m_isOpened)
+    {
+        ImGui::OpenPopup(m_name.c_str());
+    }
+}
+
+SGE::PopupElement* SGE::Popup::tryGetElement(std::string_view id) noexcept
+{
+    PopupElement* element = nullptr;
+    for(auto& e : m_elements)
+    {
+        if(e.m_id == id)
+        {
+            element = &e;
+            break;
+        }
+        
+        element = e.tryGetElementRecursively(id);
+    }
+    
+    return element;
 }

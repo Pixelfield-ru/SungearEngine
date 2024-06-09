@@ -70,3 +70,8 @@ SGCore::Ref<SGE::DirectoryExplorer> SGE::MainView::getDirectoryExplorer() const 
 {
     return m_directoryExplorer;
 }
+
+SGCore::Ref<SGE::TopToolbarView> SGE::MainView::getTopToolbarView() const noexcept
+{
+    return m_topToolbarView;
+}

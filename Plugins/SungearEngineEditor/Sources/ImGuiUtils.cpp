@@ -24,12 +24,14 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
     
     ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
     
+    bool isWindowHovered = ImGui::IsWindowHovered();
+    
     bool mouseHoveringBg = ImGui::IsMouseHoveringRect(
             ImVec2(cursorScreenPos.x, cursorScreenPos.y),
             ImVec2(cursorScreenPos.x + buttonSize.x,
                    cursorScreenPos.y + buttonSize.y));
     
-    if(mouseHoveringBg)
+    if(mouseHoveringBg && isWindowHovered)
     {
         // ImGui::GetWindowDrawList()
         ImGui::GetWindowDrawList()->AddRectFilled(
@@ -60,11 +62,13 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
     // ImGui::NewLine();
     
     ImClickInfo clickInfo {
-        .m_isLMBClicked = leftClicked,
-        .m_isLMBDoubleClicked = leftDoubleClicked,
-        .m_isRMBClicked = rightClicked,
-        .m_isRMBDoubleClicked = rightDoubleClicked,
-        .m_isHovered = mouseHoveringBg
+        .m_isLMBClicked = leftClicked && isWindowHovered,
+        .m_isLMBDoubleClicked = leftDoubleClicked && isWindowHovered,
+        .m_isRMBClicked = rightClicked && isWindowHovered,
+        .m_isRMBDoubleClicked = rightDoubleClicked && isWindowHovered,
+        .m_isHovered = mouseHoveringBg,
+        .m_elementPosition = cursorScreenPos,
+        .m_elementClickableSize = buttonSize
     };
     
     return clickInfo;

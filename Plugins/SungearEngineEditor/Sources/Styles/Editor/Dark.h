@@ -187,6 +187,21 @@ namespace SGE::EditorStyles
                         "library",
                         SungearEngineEditor::getInstance()->getLocalPath() +
                         "/Resources/icons/dark_style/library.svg");
+                
+                m_trashBinIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "trash_bin",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/trash_bin.svg");
+                
+                m_pencilIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "pencil",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/pencil.svg");
+                
+                m_dummyIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "dummy",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/dummy.svg");
             }
         }
     };

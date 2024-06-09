@@ -18,6 +18,8 @@ namespace SGE
         bool m_isRMBClicked = false;
         bool m_isRMBDoubleClicked = false;
         bool m_isHovered = false;
+        ImVec2 m_elementPosition { };
+        ImVec2 m_elementClickableSize { };
     };
 
     struct ImGuiUtils

@@ -16,10 +16,12 @@
 
 namespace SGE
 {
-    struct DrawableFileNameInfo
+    struct FileInfo
     {
         // IT IS NOT SCREEN SPACE POSITION
-        ImVec2 m_position = ImVec2(0, 0);
+        ImVec2 m_namePosition { 0, 0 };
+        ImVec2 m_imagePosition { 0, 0 };
+        ImVec2 m_imageClickableSize { 0, 0 };
         bool m_isFullNameHovered = false;
         bool m_isIconHovered = false;
         std::string m_formattedName;
@@ -34,6 +36,8 @@ namespace SGE
                            const std::string& fileExtension,
                            const std::string& fileName)> onIconRender;
         
+        SGCore::Event<void(const std::filesystem::path& filePath)> onRightClick;
+        
         void renderBody() override;
         
         ImVec2 m_iconsPadding = ImVec2(40, 70);
@@ -44,6 +48,44 @@ namespace SGE
         void setCurrentPath(const std::filesystem::path& path) noexcept;
         std::filesystem::path getCurrentPath() const noexcept;
         
+        Popup m_popup {
+                "FilesActions",
+                {
+                        {
+                                .m_name = "New...",
+                                .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18, 18)->getTexture(),
+                                .m_drawSeparatorAfter = true,
+                                .m_elements = {
+                                        {
+                                                .m_name = "C++ Source File",
+                                                .m_icon = StylesManager::getCurrentStyle()->m_cppIcon->getSpecialization(18, 18)->getTexture()
+                                        },
+                                        {
+                                                .m_name = "C++ Header File",
+                                                .m_icon = StylesManager::getCurrentStyle()->m_headerIcon->getSpecialization(18, 18)->getTexture(),
+                                                .m_drawSeparatorAfter = true
+                                        },
+                                        {
+                                                .m_name = "Directory",
+                                                .m_id = "CreateNewDir",
+                                                .m_icon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(18, 18)->getTexture()
+                                        },
+                                }
+                        },
+                        {
+                                .m_name = "Rename",
+                                .m_hint = "Ctrl + R",
+                                .m_icon = StylesManager::getCurrentStyle()->m_pencilIcon->getSpecialization(18, 18)->getTexture(),
+                                .m_drawSeparatorAfter = true
+                        },
+                        {
+                                .m_name = "Delete",
+                                .m_hint = "Delete",
+                                .m_icon = StylesManager::getCurrentStyle()->m_trashBinIcon->getSpecialization(18, 18)->getTexture()
+                        },
+                }
+        };
+        
     private:
         static int onFileNameEditCallback(ImGuiInputTextCallbackData* data) noexcept;
         static void tryMoveCursorOnNewLine(ImGuiInputTextCallbackData* data) noexcept;
@@ -51,36 +93,30 @@ namespace SGE
         static inline std::int32_t m_lastCursorPositionInFileNameInputBox = 0;
         static inline std::int32_t m_lastTextLenInFileNameInputBox = 0;
         
-        std::filesystem::path m_lastPath;
+        // =====================================================================================
+        
+        void renameFile(FileInfo& fileInfo) noexcept;
+        
+        bool m_isSkippingOneFrame = false;
+        
+        bool m_isFilesAreaHovered = false;
+        
+        std::vector<FileInfo*> m_selectedFiles;
+        
         std::filesystem::path m_currentPath;
         std::filesystem::path m_maxPath;
         
         std::filesystem::path m_rightClickedFile;
         
-        SGCore::AssetManager m_previewAssetManager;
+        std::filesystem::path m_currentFileOpsTargetDir;
         
         std::string m_currentEditingFileName;
         
-        DrawableFileNameInfo* m_currentEditingFile = nullptr;
+        SGCore::AssetManager m_previewAssetManager;
         
-        Popup m_directoriesPopup {
-                "Directory Actions",
-                {
-                        {
-                                .m_name = "Rename",
-                                .m_hint = "Ctrl + R",
-                                .m_icon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(16, 16)->getTexture(),
-                                .m_drawSeparatorAfter = true,
-                        },
-                        {
-                                .m_name = "Delete",
-                                .m_hint = "Ctrl + Delete",
-                                .m_icon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(16, 16)->getTexture(),
-                        }
-                }
-        };
+        FileInfo* m_currentEditingFile = nullptr;
         
-        std::unordered_map<std::filesystem::path, DrawableFileNameInfo> m_drawableFilesNames;
+        std::unordered_map<std::filesystem::path, FileInfo> m_drawableFilesNames;
         
         ImVec2 m_currentItemsSize = ImVec2(0, 0);
     };

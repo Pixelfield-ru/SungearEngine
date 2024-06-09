@@ -163,10 +163,11 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     auto rectMax = ImVec2(m_windowCursorPos.x + ImGui::GetScrollX() + m_windowContentRegionMax.x + 3, mouseScreenPos.y - 3.0f);
     
     bool rowDoubleClicked = ImGui::IsMouseHoveringRect(rectMin, rectMax) &&
-                            ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
+                            ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) &&
+                            ImGui::IsWindowHovered();
     
     bool rowClicked = ImGui::IsMouseHoveringRect(rectMin, rectMax) &&
-                      ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+                      ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered();
     
     if(rowClicked && isDirectory && !arrowBtnClicked)
     {

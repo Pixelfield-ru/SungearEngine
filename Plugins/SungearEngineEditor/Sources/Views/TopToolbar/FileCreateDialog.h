@@ -15,6 +15,18 @@ namespace SGE
     {
         FileOpenMode m_mode = FileOpenMode::CREATE;
         
+        /**
+         * Leave empty to use path where current executable file is located
+         */
+        std::string m_defaultPath;
+        std::string m_ext;
+        
+        bool m_isCreatingDirectory = false;
+        
+        std::string m_currentChosenDirPath;
+        
+        std::string m_dialogTitle = "Create File";
+        
         bool begin() final;
         void renderBody() final;
         void end() final;
@@ -22,7 +34,6 @@ namespace SGE
         void onActiveChangedListener() override;
         
     private:
-        std::string m_dirPath;
         std::string m_fileName;
         
         std::string m_error;

@@ -28,12 +28,17 @@ void SGE::FileCreateDialog::renderBody()
 
     if(isActive())
     {
-        ImGui::OpenPopup("Create File");
+        ImGui::OpenPopup(m_dialogTitle.c_str());
     }
     
-    ImGui::BeginPopupModal("Create File", nullptr,
+    ImGui::BeginPopupModal(m_dialogTitle.c_str(), nullptr,
                            ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
                            ImGuiWindowFlags_NoMove);
+    
+    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
+    {
+        ImGui::SetKeyboardFocusHere(1);
+    }
     
     ImGui::SetWindowFocus();
     
@@ -44,7 +49,7 @@ void SGE::FileCreateDialog::renderBody()
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
     ImGui::SetNextItemWidth(320);
-    ImGui::InputText("##DirectoryPath", &m_dirPath);
+    ImGui::InputText("##DirectoryPath", &m_currentChosenDirPath);
     
     if(ImGui::IsItemEdited())
     {
@@ -63,13 +68,14 @@ void SGE::FileCreateDialog::renderBody()
                                ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
                                ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
     {
-        char* dat = m_dirPath.data();
-        nfdresult_t result = NFD_PickFolder("", &dat);
+        char* dat = m_currentChosenDirPath.data();
+        nfdresult_t result = NFD_PickFolder(m_defaultPath.c_str(), &dat);
         if(result == NFD_OKAY)
         {
-            m_dirPath = dat;
+            m_currentChosenDirPath = dat;
         }
     }
+    
     
     ImGui::Text("File Name");
     ImGui::SameLine();
@@ -90,17 +96,29 @@ void SGE::FileCreateDialog::renderBody()
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER))
     {
-        if(!std::filesystem::exists(m_dirPath))
+        if(!std::filesystem::exists(m_currentChosenDirPath))
         {
             m_error = "This directory does not exist!";
             m_size.y = 105;
         }
-        else if(!std::filesystem::exists(m_dirPath + "/" + m_fileName))
+        else if(!std::filesystem::exists(m_currentChosenDirPath + "/" + m_fileName))
         {
-            std::ofstream ofstream(m_dirPath + "/" + m_fileName);
+            std::filesystem::path pathName = m_currentChosenDirPath + "/" + m_fileName;
+            if(pathName.extension() != m_ext)
+            {
+                pathName += m_ext;
+            }
+            if(!m_isCreatingDirectory)
+            {
+                std::ofstream ofstream(pathName);
+            }
+            else
+            {
+                std::filesystem::create_directories(pathName);
+            }
             
             m_fileName.clear();
-            m_dirPath.clear();
+            m_currentChosenDirPath.clear();
             
             m_error = "";
             
@@ -115,7 +133,7 @@ void SGE::FileCreateDialog::renderBody()
     else if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE))
     {
         m_fileName.clear();
-        m_dirPath.clear();
+        m_currentChosenDirPath.clear();
         
         m_error = "";
         

@@ -16,26 +16,105 @@
 
 SGE::DirectoryExplorer::DirectoryExplorer()
 {
-    m_directoriesPopup.onElementClicked += [this](PopupElement& element) {
-        if(std::filesystem::exists(m_rightClickedFile))
+    onRightClick += [this](const std::filesystem::path& filePath) {
+        bool isOneFileSelected = m_selectedFiles.size() <= 1;
+        auto* newFilesElem = m_popup.tryGetElement("New...");
+        
+        if(std::filesystem::is_directory(filePath) && isOneFileSelected)
+        {
+            newFilesElem->setAllElementsActive(true);
+            newFilesElem->m_drawSeparatorAfter = true;
+        }
+        
+        if(m_currentPath != filePath)
+        {
+            if(isOneFileSelected)
+            {
+                m_popup.tryGetElement("Rename")->m_isActive = true;
+            }
+            m_popup.tryGetElement("Delete")->m_isActive = true;
+        }
+        else
+        {
+            newFilesElem->m_drawSeparatorAfter = false;
+        }
+    };
+    
+    m_popup.onElementClicked += [this](PopupElement& element) {
+        bool rightClickedFileExists = std::filesystem::exists(m_rightClickedFile);
+        
+        if(rightClickedFileExists)
         {
             auto& fileInfo = m_drawableFilesNames[m_rightClickedFile];
-            if(element.m_name == "Rename")
+            if(element.m_id == "Rename")
             {
-                m_currentEditingFileName = fileInfo.m_formattedName;
-                m_currentEditingFile = &fileInfo;
+                renameFile(fileInfo);
             }
-            if(element.m_name == "Delete")
+            else if(element.m_id == "Delete")
             {
                 if(&fileInfo == m_currentEditingFile)
                 {
                     m_currentEditingFile = nullptr;
                 }
                 
-                std::filesystem::remove_all(m_rightClickedFile);
+                if(m_selectedFiles.size() > 1)
+                {
+                    for(auto* fi : m_selectedFiles)
+                    {
+                        std::filesystem::remove_all(fi->m_path);
+                    }
+                    
+                    m_selectedFiles.clear();
+                }
+                else
+                {
+                    std::filesystem::remove_all(m_rightClickedFile);
+                    m_rightClickedFile = "";
+                }
+                
                 m_drawableFilesNames.clear();
-                m_rightClickedFile = "";
+                
+                std::erase_if(m_selectedFiles, [&fileInfo](const FileInfo* fi) {
+                    return fi == &fileInfo;
+                });
             }
+        }
+        
+        if(element.m_id == "C++ Source File")
+        {
+            std::string utf8Path = SGUtils::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+            
+            auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
+            fileCreateDialog->m_dialogTitle = "New C++ Source File";
+            fileCreateDialog->m_defaultPath = utf8Path;
+            fileCreateDialog->m_currentChosenDirPath = utf8Path;
+            fileCreateDialog->m_ext = ".cpp";
+            fileCreateDialog->m_isCreatingDirectory = false;
+            fileCreateDialog->setActive(true);
+        }
+        else if(element.m_id == "C++ Header File")
+        {
+            std::string utf8Path = SGUtils::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+            
+            auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
+            fileCreateDialog->m_dialogTitle = "New C++ Header File";
+            fileCreateDialog->m_defaultPath = utf8Path;
+            fileCreateDialog->m_currentChosenDirPath = utf8Path;
+            fileCreateDialog->m_ext = ".h";
+            fileCreateDialog->m_isCreatingDirectory = false;
+            fileCreateDialog->setActive(true);
+        }
+        else if(element.m_id == "CreateNewDir")
+        {
+            std::string utf8Path = SGUtils::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+            
+            auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
+            fileCreateDialog->m_dialogTitle = "New Directory";
+            fileCreateDialog->m_defaultPath = utf8Path;
+            fileCreateDialog->m_currentChosenDirPath = utf8Path;
+            fileCreateDialog->m_ext = "";
+            fileCreateDialog->m_isCreatingDirectory = true;
+            fileCreateDialog->setActive(true);
         }
     };
 }
@@ -100,7 +179,9 @@ void SGE::DirectoryExplorer::renderBody()
                 
                 std::filesystem::path concatPathCanonical = std::filesystem::canonical(concatPath);
                 
-                if(isHovering && mouseClicked)
+                bool isWindowHovered = ImGui::IsWindowHovered();
+                
+                if(isHovering && mouseClicked && isWindowHovered)
                 {
                     setCurrentPath(concatPathCanonical);
                 }
@@ -109,7 +190,7 @@ void SGE::DirectoryExplorer::renderBody()
                 {
                     ImGui::TextColored(ImVec4(50 / 255.0f, 120 / 255.0f, 170 / 255.0f, 1.0f), u8DirName.c_str());
                 }
-                else if(isHovering)
+                else if(isHovering && isWindowHovered)
                 {
                     ImGui::TextColored(ImVec4(0.8, 0.8, 0.8, 1.0), u8DirName.c_str());
                 }
@@ -143,9 +224,44 @@ void SGE::DirectoryExplorer::renderBody()
                                ImGui::GetContentRegionAvail(),
                                ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
         
+        m_isFilesAreaHovered = ImGui::IsWindowHovered();
+        
+        if(ImGui::IsKeyReleased(ImGuiKey_Delete) && m_isFilesAreaHovered)
+        {
+            for(auto* fileInfo : m_selectedFiles)
+            {
+                std::filesystem::remove_all(fileInfo->m_path);
+            }
+            
+            m_drawableFilesNames.clear();
+            m_selectedFiles.clear();
+        }
+        
+        // HOT KEYS FOR RENAMING
+        if((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && ImGui::IsKeyReleased(ImGuiKey_R) && m_isFilesAreaHovered)
+        {
+            if(m_selectedFiles.size() == 1)
+            {
+                renameFile(*m_selectedFiles[0]);
+            }
+        }
+        
+        for(auto* fileInfo : m_selectedFiles)
+        {
+            ImGui::GetWindowDrawList()->AddRectFilled(
+                    ImVec2(fileInfo->m_imagePosition.x, fileInfo->m_imagePosition.y),
+                    ImVec2(fileInfo->m_imagePosition.x + fileInfo->m_imageClickableSize.x, fileInfo->m_imagePosition.y + fileInfo->m_imageClickableSize.y),
+                    ImGui::ColorConvertFloat4ToU32(ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1)), 3);
+        }
+        
         // ================ DRAWING POPUP ==================
         
-        m_directoriesPopup.draw();
+        m_popup.draw();
+        
+        // =================================================
+        
+        bool isAnyFileRightClicked = false;
+        bool isAnyFileHovered = false;
         
         for(auto it = std::filesystem::directory_iterator(m_currentPath);
             it != std::filesystem::directory_iterator(); ++it)
@@ -173,7 +289,7 @@ void SGE::DirectoryExplorer::renderBody()
             nameStartPos.y += m_iconsSize.y * m_UIScale.y;
             
             auto& drawableFileNameInfo = m_drawableFilesNames[curPath];
-            drawableFileNameInfo.m_position = nameStartPos;
+            drawableFileNameInfo.m_namePosition = nameStartPos;
             
             ImVec2 requiredIconSize { (m_iconsSize.x * m_UIScale.x),
                                       (m_iconsSize.y * m_UIScale.y) };
@@ -236,24 +352,92 @@ void SGE::DirectoryExplorer::renderBody()
             
             drawableFileNameInfo.m_isIconHovered = clickInfo.m_isHovered;
             
+            drawableFileNameInfo.m_imagePosition = clickInfo.m_elementPosition;
+            drawableFileNameInfo.m_imageClickableSize = clickInfo.m_elementClickableSize;
+            
             if(isDirectory)
             {
                 if(clickInfo.m_isLMBDoubleClicked)
                 {
-                    m_directoriesPopup.setOpened(false);
+                    // MOVING TO TARGET DOUBLE-CLICKED DIRECTORY
+                    m_popup.setOpened(false);
                     setCurrentPath(curPath);
                     break;
                 }
-                else if(clickInfo.m_isRMBClicked)
+            }
+            
+            if(clickInfo.m_isHovered && m_isFilesAreaHovered)
+            {
+                isAnyFileHovered = true;
+            }
+            
+            if(clickInfo.m_isRMBClicked)
+            {
+                isAnyFileRightClicked = true;
+                
+                m_rightClickedFile = curPath;
+                
+                m_popup.setOpened(true);
+                m_popup.setAllElementsActive(false);
+                
+                m_currentFileOpsTargetDir = m_rightClickedFile;
+                
+                onRightClick(m_rightClickedFile);
+            }
+            
+            if(clickInfo.m_isLMBClicked)
+            {
+                bool leftCtrlDown = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
+                
+                if(!leftCtrlDown)
                 {
-                    m_rightClickedFile = curPath;
-                    m_directoriesPopup.setOpened(true);
+                    m_selectedFiles.clear();
+                }
+                
+                auto foundInfo = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&drawableFileNameInfo](const FileInfo* fileInfo) {
+                    return fileInfo == &drawableFileNameInfo;
+                });
+                
+                if(foundInfo != m_selectedFiles.end())
+                {
+                    m_selectedFiles.erase(foundInfo);
+                }
+                else
+                {
+                    m_selectedFiles.push_back(&drawableFileNameInfo);
                 }
             }
 
             m_currentItemsSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2, m_iconsSize.y * m_UIScale.y + 3 * 2);
             
             ImGui::SameLine();
+        }
+        
+        // IF MOUSE RIGHT-CLICKED ON FILES AREA BUT NOT ON ANY FILE
+        if(!isAnyFileRightClicked && m_isFilesAreaHovered)
+        {
+            if(ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+            {
+                m_selectedFiles.clear();
+                
+                // OPENING POPUP AND DISPLAY ACTIONS THAT CAN BE USED
+                m_popup.setOpened(true);
+                m_popup.setAllElementsActive(false);
+                
+                m_currentFileOpsTargetDir = m_currentPath;
+                
+                onRightClick(m_currentPath);
+            }
+        }
+        
+        if(!isAnyFileHovered && m_isFilesAreaHovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+        {
+            m_selectedFiles.clear();
+        }
+        
+        if(m_isFilesAreaHovered && ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Escape))
+        {
+            m_selectedFiles.clear();
         }
         
         for(auto& fileNameInfoPair : m_drawableFilesNames)
@@ -330,7 +514,7 @@ void SGE::DirectoryExplorer::renderBody()
                 drawableNameInfo.m_formattedName = utf8TransferredFileName;
                 drawableNameInfo.m_path = path;
                 
-                ImGui::SetCursorPos(drawableNameInfo.m_position);
+                ImGui::SetCursorPos(drawableNameInfo.m_namePosition);
                 ImVec2 finalTextSize = ImGui::CalcTextSize(utf8FinalFileName.c_str());
                 ImVec2 finalTransferredTextSize = ImGui::CalcTextSize(utf8TransferredFileName.c_str());
                 ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
@@ -356,6 +540,14 @@ void SGE::DirectoryExplorer::renderBody()
                         ImGui::GetWindowDrawList()->AddText(cursorScreenPos,
                                                             ImGui::ColorConvertFloat4ToU32({ 1.0, 1.0, 1.0, 1.0 }),
                                                             utf8TransferredFileName.c_str());
+                        
+                        if(ImGui::IsMouseHoveringRect(cursorScreenPos,
+                                                      { cursorScreenPos.x + finalTransferredTextSize.x,
+                                                        cursorScreenPos.y + finalTransferredTextSize.y }) &&
+                           ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                        {
+                            renameFile(drawableNameInfo);
+                        }
                         
                         // TODO: MAKE TEXT IN THE BOTTOM OF WINDOW
                         /*if(ImGui::GetWindowContentRegionMax().y + ImGui::GetWindowPos().y < drawableNameInfo.m_position.y + finalTransferredTextSize.y)
@@ -394,7 +586,7 @@ void SGE::DirectoryExplorer::renderBody()
                 ImVec2 maxNameSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2 + m_iconsPadding.x / 4 - ImGui::GetStyle().FramePadding.x + 7,
                                             nameSize.y);
                 
-                ImGui::SetCursorPos(drawableNameInfo.m_position);
+                ImGui::SetCursorPos(drawableNameInfo.m_namePosition);
                 ImGui::InputTextMultiline(("##" + drawableNameInfo.m_formattedName).c_str(),
                                           &m_currentEditingFileName,
                                           { maxNameSize.x +
@@ -403,6 +595,16 @@ void SGE::DirectoryExplorer::renderBody()
                                           ImGuiInputTextFlags_CallbackAlways,
                                           onFileNameEditCallback,
                                           (void*) &maxNameSize.x);
+                
+                if(!m_isSkippingOneFrame)
+                {
+                    if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Escape) ||
+                    (!ImGui::IsItemHovered() &&
+                    (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))))
+                    {
+                        m_currentEditingFile = nullptr;
+                    }
+                }
                 
                 if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Enter))
                 {
@@ -424,16 +626,20 @@ void SGE::DirectoryExplorer::renderBody()
     ImGui::End();
     
     ImGui::PopStyleVar(2);
+    
+    // =================================================
+    m_isSkippingOneFrame = false;
 }
 
 void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) noexcept
 {
-    m_lastPath = m_currentPath;
     m_currentPath = path;
     
     m_drawableFilesNames.clear();
     m_previewAssetManager.clear();
     m_currentEditingFile = nullptr;
+    
+    m_selectedFiles.clear();
     
     if(!SGUtils::Utils::isSubpath(m_maxPath, path))
     {
@@ -520,4 +726,11 @@ int SGE::DirectoryExplorer::onFileNameEditCallback(ImGuiInputTextCallbackData* d
 void SGE::DirectoryExplorer::tryMoveCursorOnNewLine(ImGuiInputTextCallbackData* data) noexcept
 {
 
+}
+
+void SGE::DirectoryExplorer::renameFile(FileInfo& fileInfo) noexcept
+{
+    m_currentEditingFileName = fileInfo.m_formattedName;
+    m_currentEditingFile = &fileInfo;
+    m_isSkippingOneFrame = true;
 }
