@@ -20,6 +20,7 @@ namespace SGE
     {
         // IT IS NOT SCREEN SPACE POSITION
         ImVec2 m_namePosition { 0, 0 };
+        ImVec2 m_nameScreenPosition { 0, 0 };
         ImVec2 m_imagePosition { 0, 0 };
         ImVec2 m_imageClickableSize { 0, 0 };
         bool m_isFullNameHovered = false;
@@ -28,11 +29,19 @@ namespace SGE
         std::filesystem::path m_path;
     };
     
+    struct FoundPathEntry
+    {
+        std::filesystem::path m_path;
+        std::u16string m_subName;
+        std::string::size_type m_entryPosition = 0;
+    };
+    
     struct FileSearchResults
     {
         std::filesystem::path m_directoryExplorerCurrentPath;
         // if field is empty
         std::int32_t m_foundFilesCount = 0;
+        std::vector<FoundPathEntry> m_foundEntries;
     };
     
     struct DirectoryExplorer : SGCore::ImGuiWrap::IView

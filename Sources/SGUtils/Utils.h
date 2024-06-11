@@ -342,21 +342,37 @@ namespace SGUtils
                               const std::filesystem::path& base) noexcept;
         
         template<typename CharT>
-        static bool stringContains(const std::basic_string<CharT>& str,
-                                   const std::basic_string<CharT>& substr,
-                                   bool caseInsensitive = false) noexcept
+        static std::string::size_type findInString(const std::basic_string<CharT>& str,
+                                                   const std::basic_string<CharT>& substr,
+                                                   bool caseInsensitive = false,
+                                                   const std::locale& loc = std::locale()) noexcept
         {
             if(!caseInsensitive)
             {
-                return str.contains(substr);
+                return str.find(substr);
             }
             
             auto it = std::search(
                     str.begin(), str.end(),
                     substr.begin(), substr.end(),
-                    [](const CharT& ch1, const CharT& ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+                    [&loc](const CharT& ch1, const CharT& ch2) {
+                        if constexpr(std::is_same_v<CharT, char>)
+                        {
+                            return std::toupper(ch1) == std::toupper(ch2);
+                        }
+                        else
+                        {
+                            return std::towupper(ch1) == std::towupper(ch2);
+                        }
+                    }
             );
-            return it != str.end();
+           
+            if(it != str.end())
+            {
+                return it - str.begin();
+            }
+
+            return std::string::npos;
         }
     };
 }

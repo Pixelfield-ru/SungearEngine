@@ -398,6 +398,8 @@ void SGE::DirectoryExplorer::renderBody()
             
             auto& drawableFileNameInfo = m_drawableFilesNames[curPath];
             drawableFileNameInfo.m_namePosition = nameStartPos;
+            drawableFileNameInfo.m_nameScreenPosition = ImGui::GetCursorScreenPos();
+            drawableFileNameInfo.m_nameScreenPosition.y += m_iconsSize.y * m_UIScale.y;
             
             ImVec2 requiredIconSize { (m_iconsSize.x * m_UIScale.x),
                                       (m_iconsSize.y * m_UIScale.y) };
@@ -569,25 +571,102 @@ void SGE::DirectoryExplorer::renderBody()
                 std::u16string finalFileName;
                 std::u16string finalTransferredFileName;
                 
+                std::vector<ImRect> foundFilesRects;
+                
+                // FINDING THIS FILE IN SEARCH RESULTS ==============================
+                
+                auto foundFileIt = std::find_if(m_filesSearchResults.m_foundEntries.begin(),
+                                                m_filesSearchResults.m_foundEntries.end(),
+                                                [&path](const FoundPathEntry& foundPathEntry) {
+                                                    return foundPathEntry.m_path == path;
+                                                });
+                
+                // ==================================================================
+                
+                ImFont* font = ImGui::GetFont();
+                
                 size_t curLine = 0;
+                std::string::size_type curCharIdx = 0;
+                ImVec2 charPosOffset { };
+                
                 for(char16_t c : fullName)
                 {
+                    std::string utf8CharStr = SGUtils::Utils::toUTF8<char16_t>({ c });
+                    
+                    ImVec2 charSize = ImGui::CalcTextSize(utf8CharStr.c_str());
+                    charSize.x -= charSize.x - font->GetCharAdvance(c);
+                    
                     ImVec2 curNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalFileName).c_str());
                     ImVec2 curFullNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName).c_str());
                     
                     if(curNameSize.x > maxNameSize.x && curLine <= m_nameMaxLinesCount)
                     {
-                        auto sz = finalFileName.size() - 1;
+                        auto sz = finalFileName.length() - 1;
                         auto lastChar = finalFileName[sz];
                         finalFileName[sz] = L'\n';
                         finalFileName += lastChar;
                         
+                        std::string utf8LastCharStr = SGUtils::Utils::toUTF8<char16_t>({ lastChar });
+                        
+                        ImVec2 prvCharSize = ImGui::CalcTextSize(utf8LastCharStr.c_str());
+                        prvCharSize.x -= prvCharSize.x - font->GetCharAdvance(lastChar);
+                        
+                        charPosOffset.y += curNameSize.y;
+                        charPosOffset.x = 0;
+                        
+                        if(foundFileIt != m_filesSearchResults.m_foundEntries.end())
+                        {
+                            if(curCharIdx - 1 >= foundFileIt->m_entryPosition &&
+                               curCharIdx - 1 < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
+                            {
+                                auto& prevRect = *foundFilesRects.rbegin();
+                                prevRect.Min =
+                                        { drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
+                                          drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
+                                
+                                prevRect.Max =
+                                        { prevRect.Min.x + prvCharSize.x,
+                                          prevRect.Min.y + prvCharSize.y };
+                            }
+                            
+                            charPosOffset.x += prvCharSize.x;
+                            
+                            if(curCharIdx >= foundFileIt->m_entryPosition &&
+                               curCharIdx < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
+                            {
+                                ImRect foundFileHighlightRect;
+                                foundFileHighlightRect.Min = {
+                                        drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
+                                        drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
+                                foundFileHighlightRect.Max = { foundFileHighlightRect.Min.x + charSize.x,
+                                                               foundFileHighlightRect.Min.y + charSize.y };
+                                foundFilesRects.push_back(foundFileHighlightRect);
+                            }
+                        }
+                        
                         ++curLine;
+                    }
+                    else
+                    {
+                        if(foundFileIt != m_filesSearchResults.m_foundEntries.end())
+                        {
+                            if(curCharIdx >= foundFileIt->m_entryPosition &&
+                               curCharIdx < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
+                            {
+                                ImRect foundFileHighlightRect;
+                                foundFileHighlightRect.Min = {
+                                        drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
+                                        drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
+                                foundFileHighlightRect.Max = { foundFileHighlightRect.Min.x + charSize.x,
+                                                               foundFileHighlightRect.Min.y + charSize.y };
+                                foundFilesRects.push_back(foundFileHighlightRect);
+                            }
+                        }
                     }
                     
                     if(curFullNameSize.x > maxNameSize.x)
                     {
-                        auto sz = finalTransferredFileName.size() - 1;
+                        auto sz = finalTransferredFileName.length() - 1;
                         auto lastChar = finalTransferredFileName[sz];
                         finalTransferredFileName[sz] = L'\n';
                         finalTransferredFileName += lastChar;
@@ -610,10 +689,17 @@ void SGE::DirectoryExplorer::renderBody()
                     
                     if(curLine <= m_nameMaxLinesCount)
                     {
+                        ++curCharIdx;
                         finalFileName += c;
+                        charPosOffset.x += charSize.x;
                     }
                     
                     finalTransferredFileName += c;
+                }
+                
+                for(const ImRect& rect : foundFilesRects)
+                {
+                    ImGui::GetWindowDrawList()->AddRectFilled(rect.Min, rect.Max, ImGui::ColorConvertFloat4ToU32({ 0, 1, 0, 0.4 }));
                 }
                 
                 std::string utf8FinalFileName = SGUtils::Utils::toUTF8<char16_t>(finalFileName);
@@ -629,6 +715,8 @@ void SGE::DirectoryExplorer::renderBody()
                 
                 if(m_currentEditingFile != &drawableNameInfo)
                 {
+                    
+                    
                     // check if mouse hovering file name. if hovering then we`ll show the full transferred name. if not then we`ll show abbreviated file name
                     if(ImGui::IsMouseHoveringRect(cursorScreenPos, { cursorScreenPos.x + finalTextSize.x,
                                                                      cursorScreenPos.y + finalTextSize.y }) ||
@@ -846,6 +934,9 @@ int SGE::DirectoryExplorer::onFindFileNameEditCallback(ImGuiInputTextCallbackDat
     
     auto* searchResults = (FileSearchResults*) data->UserData;
     searchResults->m_foundFilesCount = 0;
+    searchResults->m_foundEntries.clear();
+    
+    // std::cout << inputString << std::endl;
     
     for(auto it = std::filesystem::directory_iterator(searchResults->m_directoryExplorerCurrentPath);
         it != std::filesystem::directory_iterator(); ++it)
@@ -853,9 +944,11 @@ int SGE::DirectoryExplorer::onFindFileNameEditCallback(ImGuiInputTextCallbackDat
         const std::filesystem::path& filePath = *it;
         
         std::string utf8Name = SGUtils::Utils::toUTF8<char16_t>(filePath.filename().u16string());
-
-        if(SGUtils::Utils::stringContains(utf8Name, inputString, true))
+        
+        std::string::size_type substrPos = SGUtils::Utils::findInString(filePath.filename().u16string(), SGUtils::Utils::fromUTF8<char16_t>(inputString), true);
+        if(substrPos != std::string::npos)
         {
+            searchResults->m_foundEntries.emplace_back(filePath, SGUtils::Utils::fromUTF8<char16_t>(inputString), substrPos);
             ++searchResults->m_foundFilesCount;
         }
     }
