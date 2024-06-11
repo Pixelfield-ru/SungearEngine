@@ -30,6 +30,7 @@ namespace SGE
         SGCore::Ref<SGCore::SVGImage> m_libraryIcon;
         SGCore::Ref<SGCore::SVGImage> m_trashBinIcon;
         SGCore::Ref<SGCore::SVGImage> m_pencilIcon;
+        SGCore::Ref<SGCore::SVGImage> m_crossIcon;
         SGCore::Ref<SGCore::SVGImage> m_dummyIcon;
         
         std::unordered_map<std::string, ImFont*> m_fonts;

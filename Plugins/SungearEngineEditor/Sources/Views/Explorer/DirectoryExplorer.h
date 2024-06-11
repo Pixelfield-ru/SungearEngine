@@ -28,6 +28,13 @@ namespace SGE
         std::filesystem::path m_path;
     };
     
+    struct FileSearchResults
+    {
+        std::filesystem::path m_directoryExplorerCurrentPath;
+        // if field is empty
+        std::int32_t m_foundFilesCount = 0;
+    };
+    
     struct DirectoryExplorer : SGCore::ImGuiWrap::IView
     {
         DirectoryExplorer();
@@ -88,8 +95,9 @@ namespace SGE
         
     private:
         static int onFileNameEditCallback(ImGuiInputTextCallbackData* data) noexcept;
-        static void tryMoveCursorOnNewLine(ImGuiInputTextCallbackData* data) noexcept;
+        static int onFindFileNameEditCallback(ImGuiInputTextCallbackData* data) noexcept;
         
+        // TODO: MAKE STRUCT
         static inline std::int32_t m_lastCursorPositionInFileNameInputBox = 0;
         static inline std::int32_t m_lastTextLenInFileNameInputBox = 0;
         
@@ -100,6 +108,11 @@ namespace SGE
         bool m_isSkippingOneFrame = false;
         
         bool m_isFilesAreaHovered = false;
+        
+        bool m_showFindFileChild = false;
+        std::int32_t m_currentFindFileIdx = 0;
+        std::string m_findFileName;
+        FileSearchResults m_filesSearchResults;
         
         std::vector<FileInfo*> m_selectedFiles;
         

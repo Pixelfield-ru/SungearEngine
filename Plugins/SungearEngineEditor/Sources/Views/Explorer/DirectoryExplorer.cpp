@@ -121,6 +121,11 @@ SGE::DirectoryExplorer::DirectoryExplorer()
 
 void SGE::DirectoryExplorer::renderBody()
 {
+    if(ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_F))
+    {
+        m_showFindFileChild = true;
+    }
+    
     const ImVec4& frameBgCol = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
     
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
@@ -132,6 +137,8 @@ void SGE::DirectoryExplorer::renderBody()
     ImGui::SetNextWindowClass(&windowClass);
     
     ImGui::Begin("DirectoryExplorer", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+    
+    ImVec2 directoryExplorerWndSize = ImGui::GetWindowSize();
     
     // =================================================
     
@@ -216,8 +223,109 @@ void SGE::DirectoryExplorer::renderBody()
             ImGui::Separator();
         }
         
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 8, 0 });
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, { 0, 0 });
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 8, 5 });
+        
+        if(m_showFindFileChild)
+        {
+            ImGui::BeginChildFrame(ImGui::GetID("DirectoryExplorerFindFile"),
+                                   { ImGui::GetContentRegionAvail().x, 35 },
+                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
+            
+            ImVec2 cursorStartPos = ImGui::GetCursorScreenPos();
+            
+            if(ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_F))
+            {
+                ImGui::SetKeyboardFocusHere(0);
+            }
+            
+            if (ImGui::IsWindowAppearing())
+            {
+                ImGui::SetKeyboardFocusHere(0);
+            }
+            
+            ImVec2 findFileWndSize = ImGui::GetWindowSize();
+            
+            //ImGui::SetWindowPos({ directoryExplorerWndSize.x - 50, 0 });
+            
+            m_filesSearchResults.m_directoryExplorerCurrentPath = m_currentPath;
+   
+            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
+            bool noFilesFound = m_filesSearchResults.m_foundFilesCount == 0;
+            if(noFilesFound)
+            {
+                ImGui::PushStyleColor(ImGuiCol_Text, { 1, 0, 0, 1 });
+                ImGui::PushStyleColor(ImGuiCol_TextDisabled, { 1, 0, 0, 1 });
+            }
+            ImGui::SetNextItemWidth(200);
+            ImGui::InputTextWithHint("##DirectoryExplorer_FindFile", "Search...",
+                                     &m_findFileName, ImGuiInputTextFlags_CallbackAlways,
+                                     onFindFileNameEditCallback,
+                                     &m_filesSearchResults);
+            
+            if(noFilesFound)
+            {
+                ImGui::PopStyleColor(2);
+            }
+            ImGui::PopStyleColor(1);
+            
+            ImGui::SameLine();
+            
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (findFileWndSize.y - 9 * 2 - ImGui::GetStyle().FramePadding.y) / 2);
+            
+            ImClickInfo clearFindNameBtnClickInfo = ImGuiUtils::ImageButton(StylesManager::getCurrentStyle()
+                                                                                    ->m_crossIcon
+                                                                                    ->getSpecialization(16, 16)
+                                                                                    ->getTexture()
+                                                                                    ->getTextureNativeHandler(), 9,
+                                                                            { 16, 16 });
+            
+            ImGui::GetForegroundDrawList()->AddLine({ cursorStartPos.x + 230, cursorStartPos.y - 7 },
+                                                { cursorStartPos.x + 230, cursorStartPos.y + findFileWndSize.y - 2 },
+                                                ImGui::ColorConvertFloat4ToU32({ 0.3, 0.3, 0.3, 1.0 }));
+            
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(250);
+            std::int32_t foundFilesCnt = std::max(m_filesSearchResults.m_foundFilesCount, 0);
+            if(foundFilesCnt == 0)
+            {
+                if(m_filesSearchResults.m_foundFilesCount != -1)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_TextDisabled, { 1, 0, 0, 1 });
+                }
+                ImGui::TextDisabled("0 results");
+                if(m_filesSearchResults.m_foundFilesCount != -1)
+                {
+                    ImGui::PopStyleColor();
+                }
+            }
+            else
+            {
+                ImGui::TextDisabled("%i/%i", m_currentFindFileIdx, std::max(m_filesSearchResults.m_foundFilesCount, 0));
+            }
+            
+            if(clearFindNameBtnClickInfo.m_isLMBClicked)
+            {
+                m_findFileName = "";
+                m_filesSearchResults.m_foundFilesCount = -1;
+            }
+            
+            ImGui::EndChildFrame();
+            
+            ImGui::Separator();
+            
+            if(ImGui::IsKeyPressed(ImGuiKey_Escape))
+            {
+                m_showFindFileChild = false;
+                m_isSkippingOneFrame = true;
+            }
+            
+            // ImGui::EndPopup();
+        }
+        
+        ImGui::PopStyleVar();
+        
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 8, 0 });
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(m_iconsPadding.x * m_UIScale.x, m_iconsPadding.y * m_UIScale.y));
         
         ImGui::BeginChildFrame(ImGui::GetID("DirectoryExplorerFilesView"),
@@ -254,11 +362,11 @@ void SGE::DirectoryExplorer::renderBody()
                     ImGui::ColorConvertFloat4ToU32(ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1)), 3);
         }
         
-        // ================ DRAWING POPUP ==================
+        // ================ DRAWING POPUPS ==================
         
         m_popup.draw();
         
-        // =================================================
+        // ==================================================
         
         bool isAnyFileRightClicked = false;
         bool isAnyFileHovered = false;
@@ -435,7 +543,7 @@ void SGE::DirectoryExplorer::renderBody()
             m_selectedFiles.clear();
         }
         
-        if(m_isFilesAreaHovered && ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Escape))
+        if(m_isFilesAreaHovered && ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Escape) && !m_isSkippingOneFrame)
         {
             m_selectedFiles.clear();
         }
@@ -462,7 +570,7 @@ void SGE::DirectoryExplorer::renderBody()
                 std::u16string finalTransferredFileName;
                 
                 size_t curLine = 0;
-                for(wchar_t c : fullName)
+                for(char16_t c : fullName)
                 {
                     ImVec2 curNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalFileName).c_str());
                     ImVec2 curFullNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName).c_str());
@@ -641,6 +749,8 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
     
     m_selectedFiles.clear();
     
+    m_rightClickedFile = "";
+    
     if(!SGUtils::Utils::isSubpath(m_maxPath, path))
     {
         std::cout << "m_maxPath: " << m_maxPath << ", path: " << path << std::endl;
@@ -723,14 +833,37 @@ int SGE::DirectoryExplorer::onFileNameEditCallback(ImGuiInputTextCallbackData* d
     return 0;
 }
 
-void SGE::DirectoryExplorer::tryMoveCursorOnNewLine(ImGuiInputTextCallbackData* data) noexcept
-{
-
-}
-
 void SGE::DirectoryExplorer::renameFile(FileInfo& fileInfo) noexcept
 {
     m_currentEditingFileName = fileInfo.m_formattedName;
     m_currentEditingFile = &fileInfo;
     m_isSkippingOneFrame = true;
+}
+
+int SGE::DirectoryExplorer::onFindFileNameEditCallback(ImGuiInputTextCallbackData* data) noexcept
+{
+    std::string inputString = data->Buf;
+    
+    auto* searchResults = (FileSearchResults*) data->UserData;
+    searchResults->m_foundFilesCount = 0;
+    
+    for(auto it = std::filesystem::directory_iterator(searchResults->m_directoryExplorerCurrentPath);
+        it != std::filesystem::directory_iterator(); ++it)
+    {
+        const std::filesystem::path& filePath = *it;
+        
+        std::string utf8Name = SGUtils::Utils::toUTF8<char16_t>(filePath.filename().u16string());
+
+        if(SGUtils::Utils::stringContains(utf8Name, inputString, true))
+        {
+            ++searchResults->m_foundFilesCount;
+        }
+    }
+    
+    if(data->BufTextLen == 0)
+    {
+        searchResults->m_foundFilesCount = -1;
+    }
+    
+    return 0;
 }

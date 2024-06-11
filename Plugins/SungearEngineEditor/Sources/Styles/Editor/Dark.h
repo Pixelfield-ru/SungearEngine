@@ -202,6 +202,11 @@ namespace SGE::EditorStyles
                         "dummy",
                         SungearEngineEditor::getInstance()->getLocalPath() +
                         "/Resources/icons/dark_style/dummy.svg");
+                
+                m_crossIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "cross",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/cross.svg");
             }
         }
     };

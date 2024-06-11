@@ -30,6 +30,12 @@ namespace SGE
                                        const ImVec2& imageOffset = ImVec2(-1, -1),    // if using -1, -1, then auto center image
                                        const ImVec4& hoverBgColor = ImVec4(0.3, 0.3, 0.3, 0.3)) noexcept;
         
+        static ImClickInfo ImageButton(void* imageNativeHandler,
+                                       const float& buttonRadius,
+                                       const ImVec2& imageSize,
+                                       const ImVec2& imageOffset = ImVec2(-1, -1),    // if using -1, -1, then auto center image
+                                       const ImVec4& hoverBgColor = ImVec4(0.3, 0.3, 0.3, 0.3)) noexcept;
+        
         static SGCore::Ref<SGCore::ITexture2D> getFileIcon(const std::filesystem::path& filePath,
                                                            const SGCore::ivec2_32& iconSize,
                                                            SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>& iconTexture,

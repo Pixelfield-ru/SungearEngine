@@ -340,6 +340,24 @@ namespace SGUtils
         
         static bool isSubpath(const std::filesystem::path& path,
                               const std::filesystem::path& base) noexcept;
+        
+        template<typename CharT>
+        static bool stringContains(const std::basic_string<CharT>& str,
+                                   const std::basic_string<CharT>& substr,
+                                   bool caseInsensitive = false) noexcept
+        {
+            if(!caseInsensitive)
+            {
+                return str.contains(substr);
+            }
+            
+            auto it = std::search(
+                    str.begin(), str.end(),
+                    substr.begin(), substr.end(),
+                    [](const CharT& ch1, const CharT& ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+            );
+            return it != str.end();
+        }
     };
 }
 
