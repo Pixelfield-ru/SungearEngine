@@ -27,6 +27,7 @@ namespace SGE
         bool m_isIconHovered = false;
         std::string m_formattedName;
         std::filesystem::path m_path;
+        std::int64_t m_index = 0;
     };
     
     struct FoundPathEntry
@@ -114,12 +115,15 @@ namespace SGE
         
         void renameFile(FileInfo& fileInfo) noexcept;
         
+        ImGuiWindow* m_filesViewWindow = nullptr;
+        
         bool m_isSkippingOneFrame = false;
         
         bool m_isFilesAreaHovered = false;
         
         bool m_showFindFileChild = false;
         std::int32_t m_currentFindFileIdx = 0;
+        float m_currentInputTextForFindFileIdxWidth = 25.0f;
         std::string m_findFileName;
         FileSearchResults m_filesSearchResults;
         

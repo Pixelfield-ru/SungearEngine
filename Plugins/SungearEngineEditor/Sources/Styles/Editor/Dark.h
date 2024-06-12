@@ -207,6 +207,26 @@ namespace SGE::EditorStyles
                         "cross",
                         SungearEngineEditor::getInstance()->getLocalPath() +
                         "/Resources/icons/dark_style/cross.svg");
+                
+                m_arrowUpIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "arrow_up",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/arrow_up.svg");
+                
+                m_arrowRightIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "arrow_right",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/arrow_right.svg");
+                
+                m_arrowDownIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "arrow_down",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/arrow_down.svg");
+                
+                m_arrowLeftIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "arrow_left",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/arrow_left.svg");
             }
         }
     };

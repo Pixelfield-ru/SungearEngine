@@ -344,8 +344,7 @@ namespace SGUtils
         template<typename CharT>
         static std::string::size_type findInString(const std::basic_string<CharT>& str,
                                                    const std::basic_string<CharT>& substr,
-                                                   bool caseInsensitive = false,
-                                                   const std::locale& loc = std::locale()) noexcept
+                                                   bool caseInsensitive = false) noexcept
         {
             if(!caseInsensitive)
             {
@@ -355,7 +354,7 @@ namespace SGUtils
             auto it = std::search(
                     str.begin(), str.end(),
                     substr.begin(), substr.end(),
-                    [&loc](const CharT& ch1, const CharT& ch2) {
+                    [](const CharT& ch1, const CharT& ch2) {
                         if constexpr(std::is_same_v<CharT, char>)
                         {
                             return std::toupper(ch1) == std::toupper(ch2);

@@ -35,12 +35,17 @@ namespace SGE
                                        const ImVec2& imageSize,
                                        const ImVec2& imageOffset = ImVec2(-1, -1),    // if using -1, -1, then auto center image
                                        const ImVec4& hoverBgColor = ImVec4(0.3, 0.3, 0.3, 0.3)) noexcept;
+
+        static void TextWithColors(const char* fmt, ...) noexcept;
         
         static SGCore::Ref<SGCore::ITexture2D> getFileIcon(const std::filesystem::path& filePath,
                                                            const SGCore::ivec2_32& iconSize,
                                                            SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>& iconTexture,
                                                                               const std::string& fileExtension,
                                                                               const std::string& fileName)>* onIconSet = nullptr) noexcept;
+        
+    private:
+        static bool ProcessInlineHexColor(const char* start, const char* end, ImVec4& color) noexcept;
     };
 }
 
