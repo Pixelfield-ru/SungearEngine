@@ -112,8 +112,30 @@ namespace SGE
         static inline std::int32_t m_lastTextLenInFileNameInputBox = 0;
         
         // =====================================================================================
+        // =====================================================================================
         
         void renameFile(FileInfo& fileInfo) noexcept;
+        
+        void beginMainWindow();
+        
+        void drawCurrentPathNavigation();
+        void drawFindFilesWindow();
+        
+        void drawIconsAndSetupNames(bool& isAnyFileRightClicked, bool& isAnyFileHovered,
+                                    std::map<std::int64_t, std::int64_t>& highlightNamesIndicesLookup,
+                                    std::int64_t& currentFileIdx,
+                                    std::int64_t& currentHighlightableFileIdx);
+        
+        void drawFileNameInputText();
+        
+        void endMainWindow();
+        
+        // utils ====
+        
+        static void updateSearchResults(FileSearchResults* searchResults, const std::string& inputFileName);
+        
+        // =====================================================================================
+        // =====================================================================================
         
         ImGuiWindow* m_filesViewWindow = nullptr;
         
