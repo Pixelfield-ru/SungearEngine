@@ -260,9 +260,7 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
     m_selectedFileIdx = -1;
     m_shiftClickedFileIdx = -1;
     
-    m_filesSearchResults.m_foundEntries.clear();
     m_filesSearchResults.m_directoryExplorerCurrentPath = m_currentPath;
-    m_filesSearchResults.m_foundFilesCount = 0;
     
     if(m_showFindFileChild)
     {
@@ -365,27 +363,10 @@ int SGE::DirectoryExplorer::onFindFileNameEditCallback(ImGuiInputTextCallbackDat
     std::string inputString = data->Buf;
     
     auto* searchResults = (FileSearchResults*) data->UserData;
-    searchResults->m_foundFilesCount = 0;
-    searchResults->m_foundEntries.clear();
     
     // std::cout << inputString << std::endl;
     
     updateSearchResults(searchResults, inputString);
-    
-    for(auto it = std::filesystem::directory_iterator(searchResults->m_directoryExplorerCurrentPath);
-        it != std::filesystem::directory_iterator(); ++it)
-    {
-        const std::filesystem::path& filePath = *it;
-        
-        std::string utf8Name = SGUtils::Utils::toUTF8<char16_t>(filePath.filename().u16string());
-        
-        std::string::size_type substrPos = SGUtils::Utils::findInString(filePath.filename().u16string(), SGUtils::Utils::fromUTF8<char16_t>(inputString), true);
-        if(substrPos != std::string::npos)
-        {
-            searchResults->m_foundEntries.emplace_back(filePath, SGUtils::Utils::fromUTF8<char16_t>(inputString), substrPos);
-            ++searchResults->m_foundFilesCount;
-        }
-    }
     
     if(data->BufTextLen == 0)
     {
@@ -828,15 +809,17 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             }
             
             auto foundInfo = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&drawableFileNameInfo](const FileInfo* fileInfo) -> bool {
-                return fileInfo == &drawableFileNameInfo;
+                return fileInfo->m_path == drawableFileNameInfo.m_path;
             });
             
+            // erasing info if found (useful for deselecting files with ctrl + lmb)
             if(foundInfo != m_selectedFiles.end())
             {
                 m_selectedFiles.erase(foundInfo);
             }
             else
             {
+                // adding newly selected file if it was not selected earlier
                 m_selectedFiles.push_back(&drawableFileNameInfo);
             }
             
@@ -1267,6 +1250,8 @@ void SGE::DirectoryExplorer::endMainWindow()
 
 void SGE::DirectoryExplorer::updateSearchResults(SGE::FileSearchResults* searchResults, const std::string& inputFileName)
 {
+    searchResults->m_foundEntries.clear();
+    searchResults->m_foundFilesCount = 0;
     
     for(auto it = std::filesystem::directory_iterator(searchResults->m_directoryExplorerCurrentPath);
         it != std::filesystem::directory_iterator(); ++it)
