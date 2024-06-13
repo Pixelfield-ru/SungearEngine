@@ -126,6 +126,8 @@ namespace SGE
                                     std::int64_t& currentFileIdx,
                                     std::int64_t& currentHighlightableFileIdx);
         
+        void drawNamesOfFiles(std::map<std::int64_t, std::int64_t>& highlightNamesIndicesLookup);
+        
         void drawFileNameInputText();
         
         void endMainWindow();
@@ -155,6 +157,10 @@ namespace SGE
         std::filesystem::path m_maxPath;
         
         std::filesystem::path m_rightClickedFile;
+        std::int64_t m_selectedFileIdx = -1;
+        // saves the last file, that was clicked with a shift key down
+        // -1 means, that no file was clicked
+        std::int64_t m_shiftClickedFileIdx = -1;
         
         std::filesystem::path m_currentFileOpsTargetDir;
         
@@ -166,7 +172,7 @@ namespace SGE
         
         std::unordered_map<std::filesystem::path, FileInfo> m_drawableFilesNames;
         
-        ImVec2 m_currentItemsSize = ImVec2(0, 0);
+        ImVec2 m_currentItemsSize { 0, 0 };
     };
 }
 

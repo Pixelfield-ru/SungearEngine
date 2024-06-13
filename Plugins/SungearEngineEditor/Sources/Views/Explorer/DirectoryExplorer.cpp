@@ -171,6 +171,7 @@ void SGE::DirectoryExplorer::renderBody()
             }
         }
         
+        // drawing rects of selected files
         for(auto* fileInfo : m_selectedFiles)
         {
             ImGui::GetWindowDrawList()->AddRectFilled(
@@ -216,302 +217,23 @@ void SGE::DirectoryExplorer::renderBody()
             }
         }
         
+        // if mouse clicked on the empty space
         if(!isAnyFileHovered && m_isFilesAreaHovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
             m_selectedFiles.clear();
+            m_selectedFileIdx = -1;
+            m_shiftClickedFileIdx = -1;
         }
         
+        // if the escape button was pressed and files area is hovering
         if(m_isFilesAreaHovered && ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Escape) && !m_isSkippingOneFrame)
         {
             m_selectedFiles.clear();
+            m_selectedFileIdx = -1;
+            m_shiftClickedFileIdx = -1;
         }
         
-        for(auto& fileNameInfoPair : m_drawableFilesNames)
-        {
-            try
-            {
-                auto& path = fileNameInfoPair.first;
-                if(!std::filesystem::exists(path)) continue;
-                auto& drawableNameInfo = fileNameInfoPair.second;
-                
-                std::u16string fileName = path.stem().u16string();
-                std::u16string fileExt = path.extension().u16string();
-                std::u16string fullName = fileName + fileExt;
-                
-                ImVec2 nameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(fileName).c_str());
-                
-                // y = 3 lines
-                ImVec2 maxNameSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2 + m_iconsPadding.x / 4,
-                                            nameSize.y * m_nameMaxLinesCount);
-                
-                std::u16string finalFileName;
-                std::u16string finalTransferredFileName;
-                
-                std::vector<ImRect> foundFileRects;
-                foundFileRects.reserve(sizeof(ImRect) * 1024);
-                
-                // FINDING THIS FILE IN SEARCH RESULTS ==============================
-                
-                auto foundFileIt = std::find_if(m_filesSearchResults.m_foundEntries.begin(),
-                                                m_filesSearchResults.m_foundEntries.end(),
-                                                [&path](const FoundPathEntry& foundPathEntry) {
-                                                    return foundPathEntry.m_path == path;
-                                                });
-                
-                // ==================================================================
-                
-                ImFont* font = ImGui::GetFont();
-                
-                size_t curLineForFinalName = 0;
-                std::string::size_type curCharIdx = 0;
-                ImVec2 charPosOffset { };
-                
-                bool isTextFits = true;
-                
-                for(char16_t c : fullName)
-                {
-                    std::string utf8CharStr = SGUtils::Utils::toUTF8<char16_t>({ c });
-                    
-                    ImVec2 charSize = ImGui::CalcTextSize(utf8CharStr.c_str());
-                    charSize.x -= charSize.x - font->GetCharAdvance(c);
-                    
-                    ImVec2 curNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalFileName).c_str());
-                    ImVec2 curFullNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName).c_str());
-                    
-                    if(curNameSize.x > maxNameSize.x && curLineForFinalName <= m_nameMaxLinesCount)
-                    {
-                        auto sz = finalFileName.length() - 1;
-                        auto lastChar = finalFileName[sz];
-                        finalFileName[sz] = L'\n';
-                        finalFileName += lastChar;
-                        
-                        ++curLineForFinalName;
-                    }
-                    
-                    if(curFullNameSize.x > maxNameSize.x)
-                    {
-                        auto sz = finalTransferredFileName.length() - 1;
-                        auto lastChar = finalTransferredFileName[sz];
-                        finalTransferredFileName[sz] = L'\n';
-                        finalTransferredFileName += lastChar;
-                        
-                        std::string utf8LastCharStr = SGUtils::Utils::toUTF8<char16_t>({ lastChar });
-                        
-                        ImVec2 prvCharSize = ImGui::CalcTextSize(utf8LastCharStr.c_str());
-                        prvCharSize.x -= prvCharSize.x - font->GetCharAdvance(lastChar);
-                        
-                        charPosOffset.y = curFullNameSize.y;
-                        charPosOffset.x = 0;
-                        
-                        if(foundFileIt != m_filesSearchResults.m_foundEntries.end())
-                        {
-                            if(curCharIdx - 1 >= foundFileIt->m_entryPosition &&
-                               curCharIdx - 1 < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
-                            {
-                                auto& prevRect = *foundFileRects.rbegin();
-                                prevRect.Min =
-                                        { drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
-                                          drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
-                                
-                                prevRect.Max =
-                                        { prevRect.Min.x + prvCharSize.x,
-                                          prevRect.Min.y + prvCharSize.y };
-                            }
-                            
-                            charPosOffset.x += prvCharSize.x;
-                            
-                            if(curCharIdx >= foundFileIt->m_entryPosition &&
-                               curCharIdx < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
-                            {
-                                ImRect foundFileHighlightRect;
-                                foundFileHighlightRect.Min = {
-                                        drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
-                                        drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
-                                foundFileHighlightRect.Max = { foundFileHighlightRect.Min.x + charSize.x,
-                                                               foundFileHighlightRect.Min.y + charSize.y };
-                                foundFileRects.push_back(foundFileHighlightRect);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if(foundFileIt != m_filesSearchResults.m_foundEntries.end())
-                        {
-                            if(curCharIdx >= foundFileIt->m_entryPosition &&
-                               curCharIdx < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
-                            {
-                                ImRect foundFileHighlightRect;
-                                foundFileHighlightRect.Min = {
-                                        drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
-                                        drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
-                                foundFileHighlightRect.Max = { foundFileHighlightRect.Min.x + charSize.x,
-                                                               foundFileHighlightRect.Min.y + charSize.y };
-                                foundFileRects.push_back(foundFileHighlightRect);
-                            }
-                        }
-                    }
-                    
-                    // if formatted name does not fit in (m_nameMaxLinesCount + 1)
-                    if(curLineForFinalName == m_nameMaxLinesCount + 1)
-                    {
-                        size_t sz = finalFileName.length();
-                        
-                        // then we replace last 3 characters by dot
-                        finalFileName[sz - 1] = L'.';
-                        finalFileName[sz - 2] = L'.';
-                        finalFileName[sz - 3] = L'.';
-                        
-                        finalTransferredFileName += c;
-                        
-                        ++curCharIdx;
-                        charPosOffset.x += charSize.x;
-                        
-                        // text does not fit
-                        isTextFits = false;
-                        
-                        continue;
-                    }
-                    
-                    // adding characters to finalFileName if it fits in m_nameMaxLinesCount
-                    if(curLineForFinalName <= m_nameMaxLinesCount)
-                    {
-                        finalFileName += c;
-                    }
-                    
-                    ++curCharIdx;
-                    charPosOffset.x += charSize.x;
-                    
-                    finalTransferredFileName += c;
-                }
-                
-                std::string utf8FinalFileName = SGUtils::Utils::toUTF8<char16_t>(finalFileName);
-                std::u16string oneLineFinalFileName = SGUtils::Utils::replaceAll<char16_t>(finalFileName, u"\n", u"");
-                std::string utf8TransferredFileName = SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName);
-                
-                drawableNameInfo.m_formattedName = utf8TransferredFileName;
-                drawableNameInfo.m_path = path;
-                
-                ImGui::SetCursorPos(drawableNameInfo.m_namePosition);
-                ImVec2 finalTextSize = ImGui::CalcTextSize(utf8FinalFileName.c_str());
-                ImVec2 finalTransferredTextSize = ImGui::CalcTextSize(utf8TransferredFileName.c_str());
-                ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
-                
-                bool isOpenFullName = ImGui::IsMouseHoveringRect(cursorScreenPos, { cursorScreenPos.x + finalTextSize.x,
-                                                                                    cursorScreenPos.y +
-                                                                                    finalTextSize.y }) ||
-                                      drawableNameInfo.m_isIconHovered || drawableNameInfo.m_isFullNameHovered;
-                
-                // if a text not fits in (m_nameMaxLinesCount + 1)
-                // and this file is in search,
-                // and we are not hovered icon of file or name of file by cursor,
-                // then we erase all highlights after ellipsis
-                if(foundFileIt != m_filesSearchResults.m_foundEntries.end() && !isOpenFullName && !isTextFits)
-                {
-                    std::int32_t charPos = foundFileIt->m_entryPosition + foundFileIt->m_subName.length();
-                    std::int32_t elemsToRemoveCnt = charPos - (std::ssize(oneLineFinalFileName) - 3);
-                    if(foundFileRects.size() >= elemsToRemoveCnt)
-                    {
-                        foundFileRects.erase(foundFileRects.end() - elemsToRemoveCnt, foundFileRects.end());
-                    }
-                }
-                
-                // if the final name does not fit in (m_nameMaxLinesCount + 1)
-                // and this file is in search,
-                // and input name for search is longer, then finalFileName,
-                // and we are not hovered icon of file or name of file by cursor,
-                // then we highlight ellipsis
-                if(!isOpenFullName && !isTextFits &&
-                   foundFileIt != m_filesSearchResults.m_foundEntries.end() &&
-                   foundFileIt->m_entryPosition + foundFileIt->m_subName.length() > std::ssize(oneLineFinalFileName) - 3)
-                {
-                    ImVec2 dotSize = ImGui::CalcTextSize(std::string(1, '.').c_str());
-                    dotSize.x -= dotSize.x - font->GetCharAdvance('.');
-                    
-                    ImRect foundFileHighlightRect;
-                    foundFileHighlightRect.Min = {
-                            drawableNameInfo.m_nameScreenPosition.x + finalTextSize.x - dotSize.x * 3,
-                            drawableNameInfo.m_nameScreenPosition.y + finalTextSize.y - dotSize.y };
-                    foundFileHighlightRect.Max = { foundFileHighlightRect.Min.x + dotSize.x * 3,
-                                                   foundFileHighlightRect.Min.y + dotSize.y };
-                    foundFileRects.push_back(foundFileHighlightRect);
-                }
-                
-                // green color
-                ImVec4 highlightColor { 0, 1, 0, 0.4 };
-                if(highlightNamesIndicesLookup[drawableNameInfo.m_index] + 1 == m_currentFindFileIdx)
-                {
-                    // orange color
-                    highlightColor = { 1, 165 / 2.0f / 255.0f, 0, 0.4 };
-                }
-                
-                if(m_currentEditingFile != &drawableNameInfo)
-                {
-                    // check if mouse hovering file name. if hovering then, we'll show the full transferred name. if not, then we'll show abbreviated file name
-                    if(isOpenFullName)
-                    {
-                        drawableNameInfo.m_isFullNameHovered = ImGui::IsMouseHoveringRect(cursorScreenPos,
-                                                                                          { cursorScreenPos.x +
-                                                                                            finalTransferredTextSize.x,
-                                                                                            cursorScreenPos.y +
-                                                                                            finalTransferredTextSize.y });
-                        
-                        ImGui::GetWindowDrawList()->AddRectFilled(cursorScreenPos,
-                                                                  { cursorScreenPos.x + finalTransferredTextSize.x,
-                                                                    cursorScreenPos.y + finalTransferredTextSize.y },
-                                                                  ImGui::ColorConvertFloat4ToU32(frameBgCol));
-                        
-                        // drawing all rects for highlighting found characters of current file name
-                        // we draw all rects before drawing the text to avoid overlapping the text
-                        for(const ImRect& rect : foundFileRects)
-                        {
-                            ImGui::GetWindowDrawList()->AddRectFilled(rect.Min, rect.Max, ImGui::ColorConvertFloat4ToU32(highlightColor));
-                        }
-                        
-                        ImGui::GetWindowDrawList()->AddText(cursorScreenPos,
-                                                            ImGui::ColorConvertFloat4ToU32({ 1.0, 1.0, 1.0, 1.0 }),
-                                                            utf8TransferredFileName.c_str());
-                        
-                        // if mouse double-clicked on file name, then we're renaming file
-                        if(ImGui::IsMouseHoveringRect(cursorScreenPos,
-                                                      { cursorScreenPos.x + finalTransferredTextSize.x,
-                                                        cursorScreenPos.y + finalTransferredTextSize.y }) &&
-                           ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-                        {
-                            renameFile(drawableNameInfo);
-                        }
-                        
-                        // TODO: MAKE TEXT IN THE BOTTOM OF WINDOW
-                        /*if(ImGui::GetWindowContentRegionMax().y + ImGui::GetWindowPos().y < drawableNameInfo.m_position.y + finalTransferredTextSize.y)
-                        {
-                            float diff = (drawableNameInfo.m_position.y + finalTransferredTextSize.y) - ImGui::GetScrollY();
-                            
-                            ImVec2 lastPos = ImGui::GetCursorPos();
-                            ImGui::SetCursorPos({ lastPos.x, lastPos.y + finalTransferredTextSize.y});
-                            ImGui::Dummy({ finalTransferredTextSize.x, diff });
-                            ImGui::SetCursorPos(lastPos);
-                        }*/
-                    }
-                    else
-                    {
-                        for(const ImRect& rect : foundFileRects)
-                        {
-                            ImGui::GetWindowDrawList()->AddRectFilled(rect.Min, rect.Max, ImGui::ColorConvertFloat4ToU32(highlightColor));
-                        }
-                        
-                        ImGui::Text(utf8FinalFileName.c_str());
-                    }
-                }
-                
-                if(foundFileIt != m_filesSearchResults.m_foundEntries.end())
-                {
-                    ++currentHighlightableFileIdx;
-                }
-            }
-            catch(const std::exception& e)
-            {
-                std::printf("Exception while drawing DirectoriesExplorer: %s\n", e.what());
-            }
-        }
+        drawNamesOfFiles(highlightNamesIndicesLookup);
         
         drawFileNameInputText();
         
@@ -535,10 +257,17 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
     
     m_selectedFiles.clear();
     
+    m_selectedFileIdx = -1;
+    m_shiftClickedFileIdx = -1;
+    
     m_filesSearchResults.m_foundEntries.clear();
     m_filesSearchResults.m_directoryExplorerCurrentPath = m_currentPath;
     m_filesSearchResults.m_foundFilesCount = 0;
-    updateSearchResults(&m_filesSearchResults, m_findFileName);
+    
+    if(m_showFindFileChild)
+    {
+        updateSearchResults(&m_filesSearchResults, m_findFileName);
+    }
     
     m_rightClickedFile = "";
     
@@ -672,8 +401,6 @@ void SGE::DirectoryExplorer::beginMainWindow()
     {
         m_showFindFileChild = true;
     }
-    
-    const ImVec4& frameBgCol = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
     
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -1010,6 +737,8 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             fileIcon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(iconSize.x, iconSize.y)->getTexture();
         }
         
+        using t = decltype(extension += std::filesystem::path());
+        
         if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
         {
             bool previewExists = m_previewAssetManager.isAssetExists<SGCore::ITexture2D>(u8curPath);
@@ -1091,15 +820,18 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         if(clickInfo.m_isLMBClicked)
         {
             bool leftCtrlDown = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
+            bool leftShiftDown = ImGui::IsKeyDown(ImGuiKey_LeftShift);
             
-            if(!leftCtrlDown)
+            if(!leftCtrlDown && !leftShiftDown)
             {
                 m_selectedFiles.clear();
             }
             
-            auto foundInfo = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&drawableFileNameInfo](const FileInfo* fileInfo) {
+            auto foundInfo = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&drawableFileNameInfo](const FileInfo* fileInfo) -> bool {
                 return fileInfo == &drawableFileNameInfo;
             });
+            
+            bool selectedFileNotFound = false;
             
             if(foundInfo != m_selectedFiles.end())
             {
@@ -1107,7 +839,64 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             }
             else
             {
+                selectedFileNotFound = true;
                 m_selectedFiles.push_back(&drawableFileNameInfo);
+            }
+            
+            if(leftShiftDown)
+            {
+                if(m_shiftClickedFileIdx == -1 && m_selectedFileIdx == -1)
+                {
+                    m_selectedFileIdx = currentFileIdx;
+                }
+                else if(m_shiftClickedFileIdx == -1)
+                {
+                    m_shiftClickedFileIdx = currentFileIdx;
+                }
+                
+                if(m_shiftClickedFileIdx != -1 && m_selectedFileIdx != -1)
+                {
+                    // adding all files between m_firstShiftClickedFileIdx and m_lastShiftClickedFileIdx
+                    // and include them too
+                    std::int64_t fileIdx = 0;
+                    for(auto selectedFilesIt = std::filesystem::directory_iterator(m_currentPath);
+                        selectedFilesIt != std::filesystem::directory_iterator(); ++selectedFilesIt)
+                    {
+                        auto& selectedFileInfo = m_drawableFilesNames[*selectedFilesIt];
+                        
+                        auto foundInfo0 = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&selectedFileInfo](const FileInfo* fileInfo) -> bool {
+                            return fileInfo == &selectedFileInfo;
+                        });
+                        
+                        if((fileIdx > m_selectedFileIdx && fileIdx < m_shiftClickedFileIdx) ||
+                           (fileIdx > m_shiftClickedFileIdx && fileIdx < m_selectedFileIdx))
+                        {
+                            if(foundInfo0 != m_selectedFiles.end())
+                            {
+                                m_selectedFiles.erase(foundInfo0);
+                            }
+                            else
+                            {
+                                m_selectedFiles.push_back(&selectedFileInfo);
+                            }
+                        }
+                        
+                        ++fileIdx;
+                    }
+                    
+                    m_selectedFileIdx = m_shiftClickedFileIdx;
+                    m_shiftClickedFileIdx = -1;
+                }
+            }
+            else
+            {
+                m_selectedFileIdx = -1;
+                m_shiftClickedFileIdx = -1;
+            }
+            
+            if(selectedFileNotFound)
+            {
+                m_selectedFileIdx = currentFileIdx;
             }
         }
         
@@ -1116,6 +905,303 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         ImGui::SameLine();
         
         ++currentFileIdx;
+    }
+}
+
+void SGE::DirectoryExplorer::drawNamesOfFiles(std::map<std::int64_t, std::int64_t>& highlightNamesIndicesLookup)
+{
+    const ImVec4& frameBgCol = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
+    
+    for(auto& fileNameInfoPair : m_drawableFilesNames)
+    {
+        try
+        {
+            auto& path = fileNameInfoPair.first;
+            if(!std::filesystem::exists(path)) continue;
+            auto& drawableNameInfo = fileNameInfoPair.second;
+            
+            std::u16string fileName = path.stem().u16string();
+            std::u16string fileExt = path.extension().u16string();
+            std::u16string fullName = fileName + fileExt;
+            
+            ImVec2 nameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(fileName).c_str());
+            
+            // y = 3 lines
+            ImVec2 maxNameSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2 + m_iconsPadding.x / 4,
+                                        nameSize.y * m_nameMaxLinesCount);
+            
+            std::u16string finalFileName;
+            std::u16string finalTransferredFileName;
+            
+            std::vector<ImRect> foundFileRects;
+            foundFileRects.reserve(sizeof(ImRect) * 1024);
+            
+            // FINDING THIS FILE IN SEARCH RESULTS ==============================
+            
+            auto foundFileIt = std::find_if(m_filesSearchResults.m_foundEntries.begin(),
+                                            m_filesSearchResults.m_foundEntries.end(),
+                                            [&path](const FoundPathEntry& foundPathEntry) {
+                                                return foundPathEntry.m_path == path;
+                                            });
+            
+            // ==================================================================
+            
+            ImFont* font = ImGui::GetFont();
+            
+            size_t curLineForFinalName = 0;
+            std::string::size_type curCharIdx = 0;
+            ImVec2 charPosOffset { };
+            
+            bool isTextFits = true;
+            
+            for(char16_t c : fullName)
+            {
+                std::string utf8CharStr = SGUtils::Utils::toUTF8<char16_t>({ c });
+                
+                ImVec2 charSize = ImGui::CalcTextSize(utf8CharStr.c_str());
+                charSize.x -= charSize.x - font->GetCharAdvance(c);
+                
+                ImVec2 curNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalFileName).c_str());
+                ImVec2 curFullNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName).c_str());
+                
+                // if the current horizontal text size is bigger than the maximum,
+                // and current lines count in name is lower, then m_nameMaxLinesCount
+                if(curNameSize.x > maxNameSize.x && curLineForFinalName <= m_nameMaxLinesCount)
+                {
+                    auto sz = finalFileName.length() - 1;
+                    auto lastChar = finalFileName[sz];
+                    finalFileName[sz] = L'\n';
+                    finalFileName += lastChar;
+                    
+                    ++curLineForFinalName;
+                }
+                
+                if(curFullNameSize.x > maxNameSize.x)
+                {
+                    auto sz = finalTransferredFileName.length() - 1;
+                    auto lastChar = finalTransferredFileName[sz];
+                    finalTransferredFileName[sz] = L'\n';
+                    finalTransferredFileName += lastChar;
+                    
+                    std::string utf8LastCharStr = SGUtils::Utils::toUTF8<char16_t>({ lastChar });
+                    
+                    ImVec2 prvCharSize = ImGui::CalcTextSize(utf8LastCharStr.c_str());
+                    prvCharSize.x -= prvCharSize.x - font->GetCharAdvance(lastChar);
+                    
+                    charPosOffset.y = curFullNameSize.y;
+                    charPosOffset.x = 0;
+                    
+                    // NEXT CODE IS USES FOR ADDING RECTS TO DRAW WHEN FINDING FILES WITH NAME
+                    // if the name of the current file is matches with required name
+                    if(foundFileIt != m_filesSearchResults.m_foundEntries.end())
+                    {
+                        // if the current character index is fits in range of matched required file name
+                        if(curCharIdx - 1 >= foundFileIt->m_entryPosition &&
+                           curCharIdx - 1 < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
+                        {
+                            // transferring last character on the new line
+                            auto& prevRect = *foundFileRects.rbegin();
+                            prevRect.Min =
+                                    { drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
+                                      drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
+                            
+                            prevRect.Max =
+                                    { prevRect.Min.x + prvCharSize.x,
+                                      prevRect.Min.y + prvCharSize.y };
+                        }
+                        
+                        // offsetting for the new rect
+                        charPosOffset.x += prvCharSize.x;
+                        
+                        // if the current character index is fits in range of matched required file name
+                        if(curCharIdx >= foundFileIt->m_entryPosition &&
+                           curCharIdx < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
+                        {
+                            // adding new rect of current character
+                            ImRect foundFileHighlightRect;
+                            foundFileHighlightRect.Min = {
+                                    drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
+                                    drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
+                            foundFileHighlightRect.Max = { foundFileHighlightRect.Min.x + charSize.x,
+                                                           foundFileHighlightRect.Min.y + charSize.y };
+                            foundFileRects.push_back(foundFileHighlightRect);
+                        }
+                    }
+                }
+                else // just adding new rect
+                {
+                    if(foundFileIt != m_filesSearchResults.m_foundEntries.end())
+                    {
+                        if(curCharIdx >= foundFileIt->m_entryPosition &&
+                           curCharIdx < foundFileIt->m_entryPosition + foundFileIt->m_subName.length())
+                        {
+                            ImRect foundFileHighlightRect;
+                            foundFileHighlightRect.Min = {
+                                    drawableNameInfo.m_nameScreenPosition.x + charPosOffset.x,
+                                    drawableNameInfo.m_nameScreenPosition.y + charPosOffset.y };
+                            foundFileHighlightRect.Max = { foundFileHighlightRect.Min.x + charSize.x,
+                                                           foundFileHighlightRect.Min.y + charSize.y };
+                            foundFileRects.push_back(foundFileHighlightRect);
+                        }
+                    }
+                }
+                
+                // if formatted name does not fit in (m_nameMaxLinesCount + 1)
+                if(curLineForFinalName == m_nameMaxLinesCount + 1)
+                {
+                    size_t sz = finalFileName.length();
+                    
+                    // then we replace last 3 characters by dot
+                    finalFileName[sz - 1] = L'.';
+                    finalFileName[sz - 2] = L'.';
+                    finalFileName[sz - 3] = L'.';
+                    
+                    finalTransferredFileName += c;
+                    
+                    ++curCharIdx;
+                    charPosOffset.x += charSize.x;
+                    
+                    // text does not fit
+                    isTextFits = false;
+                    
+                    continue;
+                }
+                
+                // adding characters to finalFileName if it fits in m_nameMaxLinesCount
+                if(curLineForFinalName <= m_nameMaxLinesCount)
+                {
+                    finalFileName += c;
+                }
+                
+                ++curCharIdx;
+                charPosOffset.x += charSize.x;
+                
+                finalTransferredFileName += c;
+            }
+            
+            std::string utf8FinalFileName = SGUtils::Utils::toUTF8<char16_t>(finalFileName);
+            std::u16string oneLineFinalFileName = SGUtils::Utils::replaceAll<char16_t>(finalFileName, u"\n", u"");
+            std::string utf8TransferredFileName = SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName);
+            
+            drawableNameInfo.m_formattedName = utf8TransferredFileName;
+            drawableNameInfo.m_path = path;
+            
+            ImGui::SetCursorPos(drawableNameInfo.m_namePosition);
+            ImVec2 finalTextSize = ImGui::CalcTextSize(utf8FinalFileName.c_str());
+            ImVec2 finalTransferredTextSize = ImGui::CalcTextSize(utf8TransferredFileName.c_str());
+            ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
+            
+            bool isOpenFullName = ImGui::IsMouseHoveringRect(cursorScreenPos, { cursorScreenPos.x + finalTextSize.x,
+                                                                                cursorScreenPos.y +
+                                                                                finalTextSize.y }) ||
+                                  drawableNameInfo.m_isIconHovered || drawableNameInfo.m_isFullNameHovered;
+            
+            // if a text not fits in (m_nameMaxLinesCount + 1)
+            // and this file is in search,
+            // and we are not hovered icon of file or name of file by cursor,
+            // then we erase all highlights after ellipsis
+            if(foundFileIt != m_filesSearchResults.m_foundEntries.end() && !isOpenFullName && !isTextFits)
+            {
+                std::int32_t charPos = foundFileIt->m_entryPosition + foundFileIt->m_subName.length();
+                std::int32_t elemsToRemoveCnt = charPos - (std::ssize(oneLineFinalFileName) - 3);
+                if(foundFileRects.size() >= elemsToRemoveCnt)
+                {
+                    foundFileRects.erase(foundFileRects.end() - elemsToRemoveCnt, foundFileRects.end());
+                }
+            }
+            
+            // if the final name does not fit in (m_nameMaxLinesCount + 1)
+            // and this file is in search,
+            // and input name for search is longer, then finalFileName,
+            // and we are not hovered icon of file or name of file by cursor,
+            // then we highlight ellipsis
+            if(!isOpenFullName && !isTextFits &&
+               foundFileIt != m_filesSearchResults.m_foundEntries.end() &&
+               foundFileIt->m_entryPosition + foundFileIt->m_subName.length() > std::ssize(oneLineFinalFileName) - 3)
+            {
+                ImVec2 dotSize = ImGui::CalcTextSize(std::string(1, '.').c_str());
+                dotSize.x -= dotSize.x - font->GetCharAdvance('.');
+                
+                ImRect foundFileHighlightRect;
+                foundFileHighlightRect.Min = {
+                        drawableNameInfo.m_nameScreenPosition.x + finalTextSize.x - dotSize.x * 3,
+                        drawableNameInfo.m_nameScreenPosition.y + finalTextSize.y - dotSize.y };
+                foundFileHighlightRect.Max = { foundFileHighlightRect.Min.x + dotSize.x * 3,
+                                               foundFileHighlightRect.Min.y + dotSize.y };
+                foundFileRects.push_back(foundFileHighlightRect);
+            }
+            
+            // green color
+            ImVec4 highlightColor { 0, 1, 0, 0.4 };
+            if(highlightNamesIndicesLookup[drawableNameInfo.m_index] + 1 == m_currentFindFileIdx)
+            {
+                // orange color
+                highlightColor = { 1, 165 / 2.0f / 255.0f, 0, 0.4 };
+            }
+            
+            if(m_currentEditingFile != &drawableNameInfo)
+            {
+                // check if mouse hovering file name. if hovering then, we'll show the full transferred name. if not, then we'll show abbreviated file name
+                if(isOpenFullName)
+                {
+                    drawableNameInfo.m_isFullNameHovered = ImGui::IsMouseHoveringRect(cursorScreenPos,
+                                                                                      { cursorScreenPos.x +
+                                                                                        finalTransferredTextSize.x,
+                                                                                        cursorScreenPos.y +
+                                                                                        finalTransferredTextSize.y });
+                    
+                    ImGui::GetWindowDrawList()->AddRectFilled(cursorScreenPos,
+                                                              { cursorScreenPos.x + finalTransferredTextSize.x,
+                                                                cursorScreenPos.y + finalTransferredTextSize.y },
+                                                              ImGui::ColorConvertFloat4ToU32(frameBgCol));
+                    
+                    // drawing all rects for highlighting found characters of current file name
+                    // we draw all rects before drawing the text to avoid overlapping the text
+                    for(const ImRect& rect : foundFileRects)
+                    {
+                        ImGui::GetWindowDrawList()->AddRectFilled(rect.Min, rect.Max, ImGui::ColorConvertFloat4ToU32(highlightColor));
+                    }
+                    
+                    ImGui::GetWindowDrawList()->AddText(cursorScreenPos,
+                                                        ImGui::ColorConvertFloat4ToU32({ 1.0, 1.0, 1.0, 1.0 }),
+                                                        utf8TransferredFileName.c_str());
+                    
+                    // if mouse double-clicked on file name, then we're renaming file
+                    if(ImGui::IsMouseHoveringRect(cursorScreenPos,
+                                                  { cursorScreenPos.x + finalTransferredTextSize.x,
+                                                    cursorScreenPos.y + finalTransferredTextSize.y }) &&
+                       ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                    {
+                        renameFile(drawableNameInfo);
+                    }
+                    
+                    // TODO: MAKE TEXT IN THE BOTTOM OF WINDOW
+                    /*if(ImGui::GetWindowContentRegionMax().y + ImGui::GetWindowPos().y < drawableNameInfo.m_position.y + finalTransferredTextSize.y)
+                    {
+                        float diff = (drawableNameInfo.m_position.y + finalTransferredTextSize.y) - ImGui::GetScrollY();
+                        
+                        ImVec2 lastPos = ImGui::GetCursorPos();
+                        ImGui::SetCursorPos({ lastPos.x, lastPos.y + finalTransferredTextSize.y});
+                        ImGui::Dummy({ finalTransferredTextSize.x, diff });
+                        ImGui::SetCursorPos(lastPos);
+                    }*/
+                }
+                else
+                {
+                    // drawing all rects for all found characters of current file
+                    for(const ImRect& rect : foundFileRects)
+                    {
+                        ImGui::GetWindowDrawList()->AddRectFilled(rect.Min, rect.Max, ImGui::ColorConvertFloat4ToU32(highlightColor));
+                    }
+                    
+                    ImGui::Text(utf8FinalFileName.c_str());
+                }
+            }
+        }
+        catch(const std::exception& e)
+        {
+            std::printf("Exception while drawing DirectoriesExplorer: %s\n", e.what());
+        }
     }
 }
 
@@ -1180,6 +1266,7 @@ void SGE::DirectoryExplorer::endMainWindow()
 
 void SGE::DirectoryExplorer::updateSearchResults(SGE::FileSearchResults* searchResults, const std::string& inputFileName)
 {
+    
     for(auto it = std::filesystem::directory_iterator(searchResults->m_directoryExplorerCurrentPath);
         it != std::filesystem::directory_iterator(); ++it)
     {
