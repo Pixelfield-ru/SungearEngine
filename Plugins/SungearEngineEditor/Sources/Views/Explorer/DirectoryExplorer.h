@@ -158,9 +158,10 @@ namespace SGE
         
         std::filesystem::path m_rightClickedFile;
         std::int64_t m_selectedFileIdx = -1;
-        // saves the last file, that was clicked with a shift key down
+        // saves the last file index, that was clicked with a shift key down
         // -1 means, that no file was clicked
         std::int64_t m_shiftClickedFileIdx = -1;
+        std::int64_t m_lastShiftClickedFileIdx = -1;
         
         std::filesystem::path m_currentFileOpsTargetDir;
         

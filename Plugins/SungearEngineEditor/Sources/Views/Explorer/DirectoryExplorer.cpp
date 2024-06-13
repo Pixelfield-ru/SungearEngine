@@ -831,15 +831,12 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                 return fileInfo == &drawableFileNameInfo;
             });
             
-            bool selectedFileNotFound = false;
-            
             if(foundInfo != m_selectedFiles.end())
             {
                 m_selectedFiles.erase(foundInfo);
             }
             else
             {
-                selectedFileNotFound = true;
                 m_selectedFiles.push_back(&drawableFileNameInfo);
             }
             
@@ -856,6 +853,8 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                 
                 if(m_shiftClickedFileIdx != -1 && m_selectedFileIdx != -1)
                 {
+                    std::printf("%li, %li, %li\n", m_selectedFileIdx, m_shiftClickedFileIdx, m_lastShiftClickedFileIdx);
+                    
                     // adding all files between m_firstShiftClickedFileIdx and m_lastShiftClickedFileIdx
                     // and include them too
                     std::int64_t fileIdx = 0;
@@ -864,37 +863,39 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                     {
                         auto& selectedFileInfo = m_drawableFilesNames[*selectedFilesIt];
                         
-                        auto foundInfo0 = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&selectedFileInfo](const FileInfo* fileInfo) -> bool {
-                            return fileInfo == &selectedFileInfo;
+                        // erasing all selected files with repeated paths
+                        // that are placed in old selected by user range
+                        std::erase_if(m_selectedFiles, [&selectedFileInfo, &fileIdx, this](const FileInfo* fileInfo) -> bool {
+                            if((fileIdx >= m_selectedFileIdx && fileIdx <= m_lastShiftClickedFileIdx) ||
+                               (fileIdx >= m_lastShiftClickedFileIdx && fileIdx <= m_selectedFileIdx))
+                            {
+                                return fileInfo->m_path == selectedFileInfo.m_path;
+                            }
+                            
+                            return false;
                         });
                         
-                        if((fileIdx > m_selectedFileIdx && fileIdx < m_shiftClickedFileIdx) ||
-                           (fileIdx > m_shiftClickedFileIdx && fileIdx < m_selectedFileIdx))
+                        // adding newly selected files in range that user selected
+                        if((fileIdx >= m_selectedFileIdx && fileIdx <= m_shiftClickedFileIdx) ||
+                           (fileIdx >= m_shiftClickedFileIdx && fileIdx <= m_selectedFileIdx))
                         {
-                            if(foundInfo0 != m_selectedFiles.end())
-                            {
-                                m_selectedFiles.erase(foundInfo0);
-                            }
-                            else
-                            {
-                                m_selectedFiles.push_back(&selectedFileInfo);
-                            }
+                            m_selectedFiles.push_back(&selectedFileInfo);
                         }
                         
                         ++fileIdx;
                     }
                     
-                    m_selectedFileIdx = m_shiftClickedFileIdx;
+                    // storing the last index of file that was clicked with shift pressed
+                    m_lastShiftClickedFileIdx = m_shiftClickedFileIdx;
                     m_shiftClickedFileIdx = -1;
                 }
             }
             else
             {
-                m_selectedFileIdx = -1;
                 m_shiftClickedFileIdx = -1;
             }
             
-            if(selectedFileNotFound)
+            if(!leftShiftDown && !leftCtrlDown)
             {
                 m_selectedFileIdx = currentFileIdx;
             }
