@@ -174,6 +174,13 @@ namespace SGE
         std::unordered_map<std::filesystem::path, FileInfo> m_drawableFilesNames;
         
         ImVec2 m_currentItemsSize { 0, 0 };
+        
+        // =======================================================================
+        // files selection by mouse
+        bool m_isMouseDown = false;
+        bool m_lastIsMouseDown = false;
+        ImVec2 m_selectionQuadStartPos { 0, 0 };
+        ImVec2 m_selectionQuadEndPos { 0, 0 };
     };
 }
 

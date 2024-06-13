@@ -121,8 +121,6 @@ SGE::DirectoryExplorer::DirectoryExplorer()
 
 void SGE::DirectoryExplorer::renderBody()
 {
-    const ImVec4& frameBgCol = ImGui::GetStyle().Colors[ImGuiCol_FrameBg];
-    
     beginMainWindow();
     
     // =================================================
@@ -236,6 +234,45 @@ void SGE::DirectoryExplorer::renderBody()
         drawNamesOfFiles(highlightNamesIndicesLookup);
         
         drawFileNameInputText();
+        
+        // drawing selection quad's rect ===============================
+        
+        if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+        {
+            m_selectionQuadStartPos = ImGui::GetMousePos();
+        }
+        
+        m_lastIsMouseDown = m_isMouseDown;
+        m_isMouseDown = ImGui::IsMouseDown(ImGuiMouseButton_Left);
+        
+        if(m_isMouseDown && m_selectedFiles.empty())
+        {
+            m_selectionQuadEndPos = ImGui::GetMousePos();
+            
+            ImGui::GetWindowDrawList()->AddRectFilled(m_selectionQuadStartPos, m_selectionQuadEndPos,
+                                                      ImGui::ColorConvertFloat4ToU32({ 10 / 255.0f, 80 / 255.0f, 140 / 255.0f, 0.2 }));
+            
+            ImGui::GetWindowDrawList()->AddLine({ m_selectionQuadStartPos.x, m_selectionQuadStartPos.y },
+                                                { m_selectionQuadStartPos.x, m_selectionQuadEndPos.y },
+                                                ImGui::ColorConvertFloat4ToU32({ 10 / 255.0f, 80 / 255.0f, 140 / 255.0f, 1 }), 1);
+            
+            ImGui::GetWindowDrawList()->AddLine({ m_selectionQuadStartPos.x, m_selectionQuadEndPos.y },
+                                                { m_selectionQuadEndPos.x, m_selectionQuadEndPos.y },
+                                                ImGui::ColorConvertFloat4ToU32({ 10 / 255.0f, 80 / 255.0f, 140 / 255.0f, 1 }), 1);
+            
+            ImGui::GetWindowDrawList()->AddLine({ m_selectionQuadEndPos.x, m_selectionQuadEndPos.y },
+                                                { m_selectionQuadEndPos.x, m_selectionQuadStartPos.y },
+                                                ImGui::ColorConvertFloat4ToU32({ 10 / 255.0f, 80 / 255.0f, 140 / 255.0f, 1 }), 1);
+            
+            ImGui::GetWindowDrawList()->AddLine({ m_selectionQuadEndPos.x, m_selectionQuadStartPos.y },
+                                                { m_selectionQuadStartPos.x, m_selectionQuadStartPos.y },
+                                                ImGui::ColorConvertFloat4ToU32({ 10 / 255.0f, 80 / 255.0f, 140 / 255.0f, 1 }), 1);
+        }
+        
+        if(m_lastIsMouseDown && !m_isMouseDown)
+        {
+            // m_selectionQuadEndPos = ImGui::GetMousePos();
+        }
         
         ImGui::EndChildFrame();
         ImGui::PopStyleVar(3);
