@@ -175,10 +175,12 @@ namespace SGE
         
         ImVec2 m_currentItemsSize { 0, 0 };
         
+        bool m_isSomeFileIconHovered = false;
+        
         // =======================================================================
         // files selection by mouse
         bool m_isMouseDown = false;
-        bool m_lastIsMouseDown = false;
+        bool m_isMouseSelectingFilesByQuad = false;
         ImVec2 m_selectionQuadStartPos { 0, 0 };
         ImVec2 m_selectionQuadEndPos { 0, 0 };
     };

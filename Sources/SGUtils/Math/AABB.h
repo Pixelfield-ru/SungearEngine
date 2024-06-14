@@ -14,9 +14,12 @@
 namespace SGCore
 {
     template<typename ScalarT = float>
-    requires(std::is_scalar_v<ScalarT>)
     struct AABB
     {
+        static_assert(std::is_scalar_v<ScalarT> && "ScalarT must be scalar.");
+        
+        using scalar_t = ScalarT;
+        
         using vec2_t = glm::vec<3, ScalarT, glm::defaultp>;
         using vec3_t = glm::vec<3, ScalarT, glm::defaultp>;
         using vec4_t = glm::vec<4, ScalarT, glm::defaultp>;
@@ -48,6 +51,30 @@ namespace SGCore
             return true;
         }
         
+        [[nodiscard]] bool isCollidesWith2D(const AABB& other) const noexcept
+        {
+            vec3_t globalCenter = getGlobalCenter();
+            vec3_t localCenter = getLocalCenter();
+            
+            // 10, 10 - min
+            // 15, 40 - max
+            // 2.5, 15 - local center
+            // 12.5, 25 - global center
+            
+            // 30, 30 - min
+            // 10, 10 - max
+            // -10, -10 - local center
+            // 20, 20 - global center
+            
+            vec3_t otherGlobalCenter = other.getGlobalCenter();
+            vec3_t otherLocalCenter = other.getLocalCenter();
+            
+            if(std::abs(globalCenter.x - otherGlobalCenter.x) > (localCenter.x + otherLocalCenter.x)) return false;
+            if(std::abs(globalCenter.y - otherGlobalCenter.y) > (localCenter.y + otherLocalCenter.y)) return false;
+            
+            return true;
+        }
+        
         [[nodiscard]] bool isOverlappedBy(const AABB& other) const noexcept
         {
             if(m_max.x > other.m_max.x) return false;
@@ -57,6 +84,17 @@ namespace SGCore
             if(m_min.x < other.m_min.x) return false;
             if(m_min.y < other.m_min.y) return false;
             if(m_min.z < other.m_min.z) return false;
+            
+            return true;
+        }
+        
+        [[nodiscard]] bool isOverlappedBy2D(const AABB& other) const noexcept
+        {
+            if(m_max.x > other.m_max.x) return false;
+            if(m_max.y > other.m_max.y) return false;
+            
+            if(m_min.x < other.m_min.x) return false;
+            if(m_min.y < other.m_min.y) return false;
             
             return true;
         }
@@ -136,6 +174,24 @@ namespace SGCore
                 {
                     max.z = point.z;
                 }
+            }
+        }
+        
+        void fixMinMax() noexcept
+        {
+            if(m_max.x < m_min.x)
+            {
+                std::swap(m_max.x, m_min.x);
+            }
+            
+            if(m_max.y < m_min.y)
+            {
+                std::swap(m_max.y, m_min.y);
+            }
+            
+            if(m_max.z < m_min.z)
+            {
+                std::swap(m_max.z, m_min.z);
             }
         }
         

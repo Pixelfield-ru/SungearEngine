@@ -216,7 +216,7 @@ void SGE::DirectoryExplorer::renderBody()
         }
         
         // if mouse clicked on the empty space
-        if(!isAnyFileHovered && m_isFilesAreaHovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+        if(!isAnyFileHovered && m_isFilesAreaHovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && m_isMouseSelectingFilesByQuad)
         {
             m_selectedFiles.clear();
             m_selectedFileIdx = -1;
@@ -235,17 +235,12 @@ void SGE::DirectoryExplorer::renderBody()
         
         drawFileNameInputText();
         
+        // =============================================================
         // drawing selection quad's rect ===============================
-        
-        if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-        {
-            m_selectionQuadStartPos = ImGui::GetMousePos();
-        }
-        
-        m_lastIsMouseDown = m_isMouseDown;
+      
         m_isMouseDown = ImGui::IsMouseDown(ImGuiMouseButton_Left);
         
-        if(m_isMouseDown && m_selectedFiles.empty())
+        if(m_isMouseDown && m_isMouseSelectingFilesByQuad)
         {
             m_selectionQuadEndPos = ImGui::GetMousePos();
             
@@ -269,9 +264,28 @@ void SGE::DirectoryExplorer::renderBody()
                                                 ImGui::ColorConvertFloat4ToU32({ 10 / 255.0f, 80 / 255.0f, 140 / 255.0f, 1 }), 1);
         }
         
-        if(m_lastIsMouseDown && !m_isMouseDown)
+        if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
-            // m_selectionQuadEndPos = ImGui::GetMousePos();
+            m_selectionQuadStartPos = ImGui::GetMousePos();
+            m_selectionQuadEndPos = ImGui::GetMousePos();
+            
+            if(m_isSomeFileIconHovered)
+            {
+                m_isMouseSelectingFilesByQuad = false;
+                m_selectionQuadStartPos = { 0, 0 };
+                m_selectionQuadEndPos = { 0, 0 };
+            }
+            else
+            {
+                m_isMouseSelectingFilesByQuad = true;
+            }
+        }
+        
+        if(!m_isMouseDown)
+        {
+            m_selectionQuadStartPos = { 0, 0 };
+            m_selectionQuadEndPos = { 0, 0 };
+            m_isMouseSelectingFilesByQuad = false;
         }
         
         ImGui::EndChildFrame();
@@ -692,6 +706,8 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                                                     std::int64_t& currentFileIdx,
                                                     std::int64_t& currentHighlightableFileIdx)
 {
+    m_isSomeFileIconHovered = false;
+    
     for(auto it = std::filesystem::directory_iterator(m_currentPath);
         it != std::filesystem::directory_iterator(); ++it)
     {
@@ -804,6 +820,41 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         
         drawableFileNameInfo.m_imagePosition = clickInfo.m_elementPosition;
         drawableFileNameInfo.m_imageClickableSize = clickInfo.m_elementClickableSize;
+        
+        if(clickInfo.m_isHovered)
+        {
+            m_isSomeFileIconHovered = true;
+        }
+        
+        ImVec2 nameSize = ImGui::CalcTextSize(drawableFileNameInfo.m_formattedName.c_str());
+        
+        SGCore::AABB fileAABB;
+        fileAABB.m_min = { drawableFileNameInfo.m_nameScreenPosition.x, drawableFileNameInfo.m_imagePosition.y, 0 };
+        fileAABB.m_max = { fileAABB.m_min.x + (nameSize.x > drawableFileNameInfo.m_imageClickableSize.x ? nameSize.x
+                                                                                                        : drawableFileNameInfo.m_imageClickableSize.x),
+                           drawableFileNameInfo.m_nameScreenPosition.y + nameSize.y, 0 };
+        fileAABB.fixMinMax();
+
+        SGCore::AABB mouseSelectionQuadAABB;
+        mouseSelectionQuadAABB.m_min = { m_selectionQuadStartPos.x, m_selectionQuadStartPos.y, 0 };
+        mouseSelectionQuadAABB.m_max = { m_selectionQuadEndPos.x, m_selectionQuadEndPos.y, 0 };
+        mouseSelectionQuadAABB.fixMinMax();
+        
+        if(m_isMouseSelectingFilesByQuad && !ImGui::IsKeyDown(ImGuiKey_LeftShift) && !ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
+        {
+            std::erase_if(m_selectedFiles, [&drawableFileNameInfo](const FileInfo* fileInfo) -> bool {
+                return fileInfo->m_path == drawableFileNameInfo.m_path;
+            });
+        }
+        
+        if(fileAABB.isCollidesWith2D(mouseSelectionQuadAABB))
+        {
+            std::printf("%f, %f\n", drawableFileNameInfo.m_imagePosition.x, drawableFileNameInfo.m_imagePosition.y);
+            
+            std::cout << "overlapping file: " << drawableFileNameInfo.m_path << std::endl;
+            
+            m_selectedFiles.push_back(&drawableFileNameInfo);
+        }
         
         if(isDirectory)
         {
