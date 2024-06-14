@@ -8,6 +8,7 @@
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
+#include <SGUtils/Utils.h>
 
 #include "SungearEngineEditor.h"
 #include "Resources.h"
@@ -113,7 +114,10 @@ namespace SGE
         
         // =====================================================================================
         // =====================================================================================
-        
+
+        using separator_t = std::remove_const_t<decltype(std::filesystem::path::preferred_separator)>;
+        const std::string m_utf8Separator = SGUtils::Utils::toUTF8<separator_t>(std::basic_string<separator_t>(1, std::filesystem::path::preferred_separator));
+
         void renameFile(FileInfo& fileInfo) noexcept;
         
         void beginMainWindow();

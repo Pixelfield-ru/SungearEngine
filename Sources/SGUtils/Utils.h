@@ -61,6 +61,7 @@
 #include <memory>
 #include <unordered_set>
 #include <filesystem>
+#include <cwctype>
 
 #include "TypeTraits.h"
 #include "CrashHandler/Platform.h"

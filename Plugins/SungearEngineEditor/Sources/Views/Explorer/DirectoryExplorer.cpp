@@ -1316,7 +1316,7 @@ void SGE::DirectoryExplorer::drawFileNameInputText()
             if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Enter))
             {
                 std::filesystem::path resultPath = drawableNameInfo.m_path.parent_path();
-                resultPath += std::filesystem::path::preferred_separator + SGUtils::Utils::replaceAll<char>(m_currentEditingFileName, "\n", "");
+                resultPath += m_utf8Separator + SGUtils::Utils::replaceAll<char>(m_currentEditingFileName, "\n", "");
                 std::filesystem::rename(drawableNameInfo.m_path, resultPath);
                 m_currentEditingFile = nullptr;
             }
