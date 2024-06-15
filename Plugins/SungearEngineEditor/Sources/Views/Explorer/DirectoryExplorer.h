@@ -97,6 +97,17 @@ namespace SGE
                                 .m_drawSeparatorAfter = true
                         },
                         {
+                                .m_name = "Copy",
+                                .m_hint = "Ctrl + C",
+                                .m_icon = StylesManager::getCurrentStyle()->m_copyIcon->getSpecialization(18, 18)->getTexture(),
+                        },
+                        {
+                                .m_name = "Paste",
+                                .m_hint = "Ctrl + V",
+                                .m_icon = StylesManager::getCurrentStyle()->m_pasteIcon->getSpecialization(18, 18)->getTexture(),
+                                .m_drawSeparatorAfter = true
+                        },
+                        {
                                 .m_name = "Delete",
                                 .m_hint = "Delete",
                                 .m_icon = StylesManager::getCurrentStyle()->m_trashBinIcon->getSpecialization(18, 18)->getTexture()
@@ -116,7 +127,8 @@ namespace SGE
         // =====================================================================================
 
         using separator_t = std::remove_const_t<decltype(std::filesystem::path::preferred_separator)>;
-        const std::string m_utf8Separator = SGUtils::Utils::toUTF8<separator_t>(std::basic_string<separator_t>(1, std::filesystem::path::preferred_separator));
+        const std::string m_utf8Separator = std::is_same_v<separator_t, char> ? std::string(1, std::filesystem::path::preferred_separator)
+                                                                              : SGUtils::Utils::toUTF8<separator_t>(std::basic_string<separator_t>(1, std::filesystem::path::preferred_separator));
 
         void renameFile(FileInfo& fileInfo) noexcept;
         
@@ -156,6 +168,10 @@ namespace SGE
         FileSearchResults m_filesSearchResults;
         
         std::vector<FileInfo*> m_selectedFiles;
+        std::vector<FileInfo> m_copyingFiles;
+        
+        void copySelectedFiles() noexcept;
+        void pasteFiles(const std::filesystem::path& toDir) noexcept;
         
         std::filesystem::path m_currentPath;
         std::filesystem::path m_maxPath;

@@ -16,9 +16,12 @@
 
 SGE::DirectoryExplorer::DirectoryExplorer()
 {
+    // TODO: MAKE ON RIGHT CLICK SETTINGS FOR AUTO CONFIGURE POPUP
     onRightClick += [this](const std::filesystem::path& filePath) {
         bool isOneFileSelected = m_selectedFiles.size() <= 1;
         auto* newFilesElem = m_popup.tryGetElement("New...");
+        auto* copyFilesElem = m_popup.tryGetElement("Copy");
+        auto* pasteFilesElem = m_popup.tryGetElement("Paste");
         
         if(std::filesystem::is_directory(filePath) && isOneFileSelected)
         {
@@ -31,12 +34,34 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             if(isOneFileSelected)
             {
                 m_popup.tryGetElement("Rename")->m_isActive = true;
+                
             }
             m_popup.tryGetElement("Delete")->m_isActive = true;
+            copyFilesElem->m_isActive = true;
+            if(std::filesystem::is_directory(filePath))
+            {
+                copyFilesElem->m_drawSeparatorAfter = false;
+                
+                if(isOneFileSelected)
+                {
+                    pasteFilesElem->m_isActive = true;
+                    pasteFilesElem->m_drawSeparatorAfter = true;
+                }
+                else
+                {
+                    copyFilesElem->m_drawSeparatorAfter = true;
+                }
+            }
+            else
+            {
+                copyFilesElem->m_drawSeparatorAfter = true;
+            }
         }
         else
         {
-            newFilesElem->m_drawSeparatorAfter = false;
+            pasteFilesElem->m_isActive = true;
+            pasteFilesElem->m_drawSeparatorAfter = false;
+            newFilesElem->m_drawSeparatorAfter = true;
         }
     };
     
@@ -62,6 +87,11 @@ SGE::DirectoryExplorer::DirectoryExplorer()
                     for(auto* fi : m_selectedFiles)
                     {
                         std::filesystem::remove_all(fi->m_path);
+                        
+                        if(SGUtils::Utils::isSubpath(m_maxPath, fi->m_path) || m_maxPath == fi->m_path)
+                        {
+                            m_maxPath = m_currentPath;
+                        }
                     }
                     
                     m_selectedFiles.clear();
@@ -69,6 +99,12 @@ SGE::DirectoryExplorer::DirectoryExplorer()
                 else
                 {
                     std::filesystem::remove_all(m_rightClickedFile);
+                    
+                    if(SGUtils::Utils::isSubpath(m_maxPath, m_rightClickedFile) || m_maxPath == m_rightClickedFile)
+                    {
+                        m_maxPath = m_currentPath;
+                    }
+                    
                     m_rightClickedFile = "";
                 }
                 
@@ -116,6 +152,14 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_isCreatingDirectory = true;
             fileCreateDialog->setActive(true);
         }
+        else if(element.m_id == "Copy")
+        {
+            copySelectedFiles();
+        }
+        else if(element.m_id == "Paste")
+        {
+            pasteFiles(m_currentFileOpsTargetDir);
+        }
     };
 }
 
@@ -149,11 +193,39 @@ void SGE::DirectoryExplorer::renderBody()
         
         m_isFilesAreaHovered = ImGui::IsWindowHovered();
         
+        // COPYING FILES
+        if(ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_C))
+        {
+            copySelectedFiles();
+        }
+        
+        // PASTING FILES
+        if(ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_V))
+        {
+            if(m_selectedFiles.size() == 1)
+            {
+                if(std::filesystem::is_directory(m_selectedFiles[0]->m_path))
+                {
+                    pasteFiles(m_selectedFiles[0]->m_path);
+                }
+            }
+            else
+            {
+                pasteFiles(m_currentPath);
+            }
+        }
+        
+        // DELETING FILES
         if(ImGui::IsKeyReleased(ImGuiKey_Delete) && m_isFilesAreaHovered)
         {
             for(auto* fileInfo : m_selectedFiles)
             {
                 std::filesystem::remove_all(fileInfo->m_path);
+                
+                if(SGUtils::Utils::isSubpath(m_maxPath, fileInfo->m_path) || m_maxPath == fileInfo->m_path)
+                {
+                    m_maxPath = m_currentPath;
+                }
             }
             
             m_drawableFilesNames.clear();
@@ -849,16 +921,16 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         
         if(fileAABB.isCollidesWith2D(mouseSelectionQuadAABB))
         {
-            std::printf("%f, %f\n", drawableFileNameInfo.m_imagePosition.x, drawableFileNameInfo.m_imagePosition.y);
-            
-            std::cout << "overlapping file: " << drawableFileNameInfo.m_path << std::endl;
-            
             m_selectedFiles.push_back(&drawableFileNameInfo);
         }
         
         if(isDirectory)
         {
-            if(clickInfo.m_isLMBDoubleClicked)
+            std::filesystem::perms dirPermissions = std::filesystem::status(curPath).permissions();
+            
+            // checking permissions for directory
+            if(clickInfo.m_isLMBDoubleClicked &&
+               (dirPermissions & std::filesystem::perms::owner_all) == std::filesystem::perms::owner_all)
             {
                 // MOVING TO TARGET DOUBLE-CLICKED DIRECTORY
                 m_popup.setOpened(false);
@@ -877,6 +949,12 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             isAnyFileRightClicked = true;
             
             m_rightClickedFile = curPath;
+            
+            if(m_selectedFiles.size() == 1)
+            {
+                m_selectedFiles.clear();
+            }
+            m_selectedFiles.push_back(&drawableFileNameInfo);
             
             m_popup.setOpened(true);
             m_popup.setAllElementsActive(false);
@@ -1354,5 +1432,31 @@ void SGE::DirectoryExplorer::updateSearchResults(SGE::FileSearchResults* searchR
             searchResults->m_foundEntries.emplace_back(filePath, SGUtils::Utils::fromUTF8<char16_t>(inputFileName), substrPos);
             ++searchResults->m_foundFilesCount;
         }
+    }
+}
+
+void SGE::DirectoryExplorer::copySelectedFiles() noexcept
+{
+    m_copyingFiles.clear();
+    
+    for(auto* selectedFile : m_selectedFiles)
+    {
+        m_copyingFiles.push_back(*selectedFile);
+    }
+}
+
+void SGE::DirectoryExplorer::pasteFiles(const std::filesystem::path& toDir) noexcept
+{
+    for(auto& copyingFile : m_copyingFiles)
+    {
+        std::filesystem::path to = std::filesystem::path(toDir);
+        to += m_utf8Separator;
+        to += copyingFile.m_path.filename();
+        
+        std::printf("from: %s, to: %s\n", copyingFile.m_path.string().c_str(), to.string().c_str());
+        if(to == copyingFile.m_path) continue;
+        
+        std::filesystem::copy(copyingFile.m_path, to, std::filesystem::copy_options::update_existing |
+                                                       std::filesystem::copy_options::recursive);
     }
 }

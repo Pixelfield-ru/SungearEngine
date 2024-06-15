@@ -227,6 +227,16 @@ namespace SGE::EditorStyles
                         "arrow_left",
                         SungearEngineEditor::getInstance()->getLocalPath() +
                         "/Resources/icons/dark_style/arrow_left.svg");
+                
+                m_copyIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "copy",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/copy.svg");
+                
+                m_pasteIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "paste",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/paste.svg");
             }
         }
     };

@@ -38,6 +38,9 @@ namespace SGE
         SGCore::Ref<SGCore::SVGImage> m_arrowDownIcon;
         SGCore::Ref<SGCore::SVGImage> m_arrowLeftIcon;
         
+        SGCore::Ref<SGCore::SVGImage> m_copyIcon;
+        SGCore::Ref<SGCore::SVGImage> m_pasteIcon;
+        
         SGCore::Ref<SGCore::SVGImage> m_dummyIcon;
         
         std::unordered_map<std::string, ImFont*> m_fonts;
