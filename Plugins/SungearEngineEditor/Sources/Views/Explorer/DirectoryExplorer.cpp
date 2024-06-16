@@ -189,6 +189,11 @@ void SGE::DirectoryExplorer::renderBody()
                                ImGui::GetContentRegionAvail(),
                                ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
         
+        m_lastScroll = m_currentScroll;
+        m_currentScroll = { ImGui::GetScrollX(), ImGui::GetScrollY() };
+        m_scrollDelta.x = m_currentScroll.x - m_lastScroll.x;
+        m_scrollDelta.y = m_currentScroll.y - m_lastScroll.y;
+        
         m_filesViewWindow = ImGui::GetCurrentWindow();
         
         m_isFilesAreaHovered = ImGui::IsWindowHovered();
@@ -288,12 +293,12 @@ void SGE::DirectoryExplorer::renderBody()
         }
         
         // if mouse clicked on the empty space
-        if(!isAnyFileHovered && m_isFilesAreaHovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && m_isMouseSelectingFilesByQuad)
+        /*if(!isAnyFileHovered && m_isFilesAreaHovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && m_isMouseSelectingFilesByQuad)
         {
             m_selectedFiles.clear();
             m_selectedFileIdx = -1;
             m_shiftClickedFileIdx = -1;
-        }
+        }*/
         
         // if the escape button was pressed and files area is hovering
         if(m_isFilesAreaHovered && ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Escape) && !m_isSkippingOneFrame)
@@ -336,10 +341,17 @@ void SGE::DirectoryExplorer::renderBody()
                                                 ImGui::ColorConvertFloat4ToU32({ 10 / 255.0f, 80 / 255.0f, 140 / 255.0f, 1 }), 1);
         }
         
+        // screen position of the window
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        ImVec2 windowSize = ImGui::GetWindowSize();
+        ImVec2 mousePos = ImGui::GetMousePos();
+        
         if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
             m_selectionQuadStartPos = ImGui::GetMousePos();
             m_selectionQuadEndPos = ImGui::GetMousePos();
+            
+            m_isSelectionStartsInFilesWindow = ImGui::IsWindowHovered();
             
             if(m_isSomeFileIconHovered)
             {
@@ -353,18 +365,74 @@ void SGE::DirectoryExplorer::renderBody()
             }
         }
         
-        if(!m_isMouseDown)
+        if(!m_isMouseDown || !m_isSelectionStartsInFilesWindow)
         {
             m_selectionQuadStartPos = { 0, 0 };
             m_selectionQuadEndPos = { 0, 0 };
             m_isMouseSelectingFilesByQuad = false;
         }
         
+        if(m_scrollDelta.y != 0.0f && m_isMouseSelectingFilesByQuad)
+        {
+            m_selectionQuadStartPos.y -= m_scrollDelta.y;
+        }
+        
+        autoScrollWhenSelecting();
+        
         ImGui::EndChildFrame();
         ImGui::PopStyleVar(3);
     }
     
     endMainWindow();
+}
+
+void SGE::DirectoryExplorer::autoScrollWhenSelecting() noexcept
+{
+    ImVec2 windowPos = ImGui::GetWindowPos();
+    ImVec2 windowSize = ImGui::GetWindowSize();
+    ImVec2 mousePos = ImGui::GetMousePos();
+    
+    // CALCULATING AREAS FOR SCROLLING WINDOW WHEN SELECTING FILES BY MOUSE
+    ImRect leftAreaRect;
+    leftAreaRect.Min = { windowPos.x, windowPos.y + windowSize.y };
+    leftAreaRect.Max = { windowPos.x - m_leftAreaSize, windowPos.y };
+    
+    ImRect topAreaRect;
+    topAreaRect.Min = { windowPos.x, windowPos.y - m_topAreaSize };
+    topAreaRect.Max = { windowPos.x + windowSize.x, windowPos.y };
+    
+    ImRect rightAreaRect;
+    rightAreaRect.Min = { windowPos.x + windowSize.x + m_rightAreaSize, windowPos.y + windowSize.y };
+    rightAreaRect.Max = { windowPos.x + windowSize.x, windowPos.y };
+    
+    ImRect bottomAreaRect;
+    bottomAreaRect.Min = { windowPos.x, windowPos.y + windowSize.y };
+    bottomAreaRect.Max = { windowPos.x + windowSize.x, windowPos.y + windowSize.y + m_bottomAreaSize };
+    
+    /*ImGui::GetForegroundDrawList()->AddRectFilled(leftAreaRect.Min, leftAreaRect.Max, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 0.3 }));
+    ImGui::GetForegroundDrawList()->AddRectFilled(topAreaRect.Min, topAreaRect.Max, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 0.3 }));
+    ImGui::GetForegroundDrawList()->AddRectFilled(rightAreaRect.Min, rightAreaRect.Max, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 0.3 }));
+    ImGui::GetForegroundDrawList()->AddRectFilled(bottomAreaRect.Min, bottomAreaRect.Max, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 0.3 }));*/
+    
+    ImVec2 currentAutoScrollSpeed { 0, 0 };
+    
+    ImVec2 relativeToTopMousePos = { topAreaRect.Max.x - mousePos.x, topAreaRect.Max.y - mousePos.y};
+    ImVec2 relativeToBottomMousePos = { mousePos.x - bottomAreaRect.Min.x, mousePos.y - bottomAreaRect.Min.y };
+    
+    if(mousePos.y < topAreaRect.Max.y)
+    {
+        currentAutoScrollSpeed.y = (relativeToTopMousePos.y / (topAreaRect.Max.y - topAreaRect.Min.y)) * m_selectionAutoScrollMaxSpeed.y;
+    }
+    
+    if(relativeToBottomMousePos.y > 0)
+    {
+        currentAutoScrollSpeed.y = -((relativeToBottomMousePos.y / (bottomAreaRect.Max.y - bottomAreaRect.Min.y)) * m_selectionAutoScrollMaxSpeed.y);
+    }
+    
+    if(m_isMouseSelectingFilesByQuad && (m_isFilesAreaHovered || (std::abs(m_selectionQuadStartPos.y - m_selectionQuadEndPos.y) > 0)))
+    {
+        ImGui::SetScrollY(ImGui::GetScrollY() - currentAutoScrollSpeed.y);
+    }
 }
 
 // RENDER BODY END ============================================================================================
@@ -912,7 +980,8 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         mouseSelectionQuadAABB.m_max = { m_selectionQuadEndPos.x, m_selectionQuadEndPos.y, 0 };
         mouseSelectionQuadAABB.fixMinMax();
         
-        if(m_isMouseSelectingFilesByQuad && !ImGui::IsKeyDown(ImGuiKey_LeftShift) && !ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
+        // THIS CODE IS RESPONSIBLE FOR UNSELECTING SELECTED FILES
+        if(m_isMouseSelectingFilesByQuad && !ImGui::IsKeyDown(ImGuiKey_LeftShift) && !ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsWindowHovered())
         {
             std::erase_if(m_selectedFiles, [&drawableFileNameInfo](const FileInfo* fileInfo) -> bool {
                 return fileInfo->m_path == drawableFileNameInfo.m_path;

@@ -132,6 +132,8 @@ namespace SGE
 
         void renameFile(FileInfo& fileInfo) noexcept;
         
+        void autoScrollWhenSelecting() noexcept;
+        
         void beginMainWindow();
         
         void drawCurrentPathNavigation();
@@ -201,8 +203,23 @@ namespace SGE
         // files selection by mouse
         bool m_isMouseDown = false;
         bool m_isMouseSelectingFilesByQuad = false;
+        bool m_isSelectionStartsInFilesWindow = false;
         ImVec2 m_selectionQuadStartPos { 0, 0 };
         ImVec2 m_selectionQuadEndPos { 0, 0 };
+        
+        // scroll speedup areas borders
+        
+        float m_leftAreaSize = 20;
+        float m_topAreaSize = 20;
+        float m_rightAreaSize = 20;
+        float m_bottomAreaSize = 20;
+        
+        ImVec2 m_selectionAutoScrollMaxSpeed = { 8, 8 };
+        
+        // =======================================================================
+        ImVec2 m_lastScroll { 0, 0 };
+        ImVec2 m_currentScroll { 0, 0 };
+        ImVec2 m_scrollDelta { 0, 0 };
     };
 }
 
