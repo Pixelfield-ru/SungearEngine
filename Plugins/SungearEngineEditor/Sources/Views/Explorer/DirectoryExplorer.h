@@ -46,6 +46,11 @@ namespace SGE
         std::vector<FoundPathEntry> m_foundEntries;
     };
     
+    struct SelectedFilesDragNDropData
+    {
+        std::vector<std::filesystem::path> m_paths;
+    };
+    
     struct DirectoryExplorer : SGCore::ImGuiWrap::IView
     {
         DirectoryExplorer();
@@ -175,6 +180,10 @@ namespace SGE
         void copySelectedFiles() noexcept;
         void pasteFiles(const std::filesystem::path& toDir) noexcept;
         
+        void moveSelectedFiles(const std::filesystem::path& toPath) noexcept;
+        
+        void fixMaxPathRelativeToPath(const std::filesystem::path& relativeToPath) noexcept;
+        
         std::filesystem::path m_currentPath;
         std::filesystem::path m_maxPath;
         
@@ -220,6 +229,10 @@ namespace SGE
         ImVec2 m_lastScroll { 0, 0 };
         ImVec2 m_currentScroll { 0, 0 };
         ImVec2 m_scrollDelta { 0, 0 };
+        
+        // =======================================================================
+        bool m_isFilesDragging = false;
+        std::string m_filesDragAndDropPayloadName = "##DirectoryExplorerDragNDrop";
     };
 }
 

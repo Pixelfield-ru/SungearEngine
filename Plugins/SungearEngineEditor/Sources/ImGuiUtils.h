@@ -14,12 +14,50 @@ namespace SGE
     struct ImClickInfo
     {
         bool m_isLMBClicked = false;
+        bool m_isLMBReleased = false;
         bool m_isLMBDoubleClicked = false;
+        
         bool m_isRMBClicked = false;
         bool m_isRMBDoubleClicked = false;
+        
         bool m_isHovered = false;
+        
         ImVec2 m_elementPosition { };
         ImVec2 m_elementClickableSize { };
+    };
+    
+    enum class DragNDropType
+    {
+        SOURCE,
+        TARGET,
+        BOTH,
+        UNKNOWN
+    };
+    
+    enum class DragNDropState
+    {
+        DRAGGING,
+        ACCEPTED,
+        NONE
+    };
+    
+    struct DragNDropInfo
+    {
+        bool m_isEnabled = true; // IN PARAM
+        
+        DragNDropType m_type = DragNDropType::UNKNOWN; // IN PARAM
+        
+        std::function<void()> m_drawSourceFunction; // IN PARAM
+        std::function<void()> m_drawTargetFunction; // IN PARAM
+        std::function<void(const ImGuiPayload*)> m_payloadProcessFunction; // IN PARAM
+        
+        std::string m_name; // IN PARAM
+        void* m_data = nullptr; // IN PARAM
+        size_t m_dataSize = 0; // IN PARAM
+        
+        ImGuiDragDropFlags m_flags = 0; // IN PARAM
+        
+        DragNDropState m_state = DragNDropState::NONE; // OUT PARAM
     };
 
     struct ImGuiUtils
@@ -28,7 +66,9 @@ namespace SGE
                                        const ImVec2& buttonSize,
                                        const ImVec2& imageSize,
                                        const ImVec2& imageOffset = ImVec2(-1, -1),    // if using -1, -1, then auto center image
-                                       const ImVec4& hoverBgColor = ImVec4(0.3, 0.3, 0.3, 0.3)) noexcept;
+                                       const ImVec4& hoverBgColor = ImVec4(0.3, 0.3, 0.3, 0.3),
+                                       DragNDropInfo* dragNDropInfo = nullptr,
+                                       const std::string& name = "##inv") noexcept;
         
         static ImClickInfo ImageButton(void* imageNativeHandler,
                                        const float& buttonRadius,

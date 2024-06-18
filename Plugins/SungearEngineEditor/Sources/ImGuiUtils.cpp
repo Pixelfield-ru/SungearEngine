@@ -9,7 +9,9 @@
 SGE::ImClickInfo
 SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
                              const ImVec2& imageSize, const ImVec2& imageOffset,
-                             const ImVec4& hoverBgColor) noexcept
+                             const ImVec4& hoverBgColor,
+                             DragNDropInfo* dragNDropInfo,
+                             const std::string& name) noexcept
 {
     assert(buttonSize.x >= imageSize.x && buttonSize.y >= imageSize.y && "Button size must be greater then image size!");
     
@@ -42,8 +44,9 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
     
     ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, ImVec2(cursorScreenPos.x + offset.x, cursorScreenPos.y + offset.y),
                                          ImVec2(cursorScreenPos.x + imageSize.x + offset.x, cursorScreenPos.y + imageSize.y + offset.y));
-    
+
     bool leftClicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+    bool leftReleased = mouseHoveringBg && ImGui::IsMouseReleased(ImGuiMouseButton_Left);
     bool leftDoubleClicked = mouseHoveringBg && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
     
     bool rightClicked = mouseHoveringBg && ImGui::IsMouseClicked(ImGuiMouseButton_Right);
@@ -57,19 +60,71 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
         return { };
     }*/
     
-    ImGui::Dummy({ buttonSize.x, buttonSize.y - offset.y });
+    ImGui::InvisibleButton(name.c_str(), { buttonSize.x, buttonSize.y - offset.y });
+    // ImGui::Dummy({ buttonSize.x, buttonSize.y - offset.y });
     
-    // ImGui::NewLine();
+    if(dragNDropInfo)
+    {
+        dragNDropInfo->m_state = DragNDropState::NONE;
+    }
+    
+    if(dragNDropInfo && dragNDropInfo->m_isEnabled && dragNDropInfo->m_type != DragNDropType::UNKNOWN)
+    {
+        if(dragNDropInfo->m_type == DragNDropType::BOTH || dragNDropInfo->m_type == DragNDropType::SOURCE)
+        {
+            if(ImGui::BeginDragDropSource(dragNDropInfo->m_flags))
+            {
+                ImGui::SetDragDropPayload(dragNDropInfo->m_name.c_str(), dragNDropInfo->m_data, dragNDropInfo->m_dataSize);
+                
+                dragNDropInfo->m_state = DragNDropState::DRAGGING;
+                
+                if(dragNDropInfo->m_drawSourceFunction)
+                {
+                    dragNDropInfo->m_drawSourceFunction();
+                }
+                
+                ImGui::EndDragDropSource();
+            }
+        }
+        
+        if(dragNDropInfo->m_type == DragNDropType::BOTH || dragNDropInfo->m_type == DragNDropType::TARGET)
+        {
+            if(ImGui::BeginDragDropTarget())
+            {
+                const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(dragNDropInfo->m_name.c_str());
+                
+                if(payload)
+                {
+                    dragNDropInfo->m_state = DragNDropState::ACCEPTED;
+                    
+                    if(dragNDropInfo->m_payloadProcessFunction)
+                    {
+                        dragNDropInfo->m_payloadProcessFunction(payload);
+                    }
+                }
+                
+                if(dragNDropInfo->m_drawTargetFunction)
+                {
+                    dragNDropInfo->m_drawTargetFunction();
+                }
+                
+                ImGui::EndDragDropTarget();
+            }
+        }
+    }
     
     ImClickInfo clickInfo {
-        .m_isLMBClicked = leftClicked && isWindowHovered,
-        .m_isLMBDoubleClicked = leftDoubleClicked && isWindowHovered,
-        .m_isRMBClicked = rightClicked && isWindowHovered,
-        .m_isRMBDoubleClicked = rightDoubleClicked && isWindowHovered,
-        .m_isHovered = mouseHoveringBg,
-        .m_elementPosition = cursorScreenPos,
-        .m_elementClickableSize = buttonSize
+            .m_isLMBClicked = leftClicked && isWindowHovered,
+            .m_isLMBReleased = leftReleased,
+            .m_isLMBDoubleClicked = leftDoubleClicked && isWindowHovered,
+            .m_isRMBClicked = rightClicked && isWindowHovered,
+            .m_isRMBDoubleClicked = rightDoubleClicked && isWindowHovered,
+            .m_isHovered = mouseHoveringBg,
+            .m_elementPosition = cursorScreenPos,
+            .m_elementClickableSize = buttonSize
     };
+    // ImGui::NewLine();
+    
     
     return clickInfo;
 }

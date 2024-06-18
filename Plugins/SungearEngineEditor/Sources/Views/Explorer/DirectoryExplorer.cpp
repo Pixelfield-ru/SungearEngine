@@ -88,10 +88,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
                     {
                         std::filesystem::remove_all(fi->m_path);
                         
-                        if(SGUtils::Utils::isSubpath(m_maxPath, fi->m_path) || m_maxPath == fi->m_path)
-                        {
-                            m_maxPath = m_currentPath;
-                        }
+                        fixMaxPathRelativeToPath(fi->m_path);
                     }
                     
                     m_selectedFiles.clear();
@@ -100,10 +97,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
                 {
                     std::filesystem::remove_all(m_rightClickedFile);
                     
-                    if(SGUtils::Utils::isSubpath(m_maxPath, m_rightClickedFile) || m_maxPath == m_rightClickedFile)
-                    {
-                        m_maxPath = m_currentPath;
-                    }
+                    fixMaxPathRelativeToPath(m_rightClickedFile);
                     
                     m_rightClickedFile = "";
                 }
@@ -227,10 +221,7 @@ void SGE::DirectoryExplorer::renderBody()
             {
                 std::filesystem::remove_all(fileInfo->m_path);
                 
-                if(SGUtils::Utils::isSubpath(m_maxPath, fileInfo->m_path) || m_maxPath == fileInfo->m_path)
-                {
-                    m_maxPath = m_currentPath;
-                }
+                fixMaxPathRelativeToPath(fileInfo->m_path);
             }
             
             m_drawableFilesNames.clear();
@@ -646,6 +637,20 @@ void SGE::DirectoryExplorer::drawCurrentPathNavigation()
             ImGui::TextColored(ImVec4(1.0, 1.0, 1.0, 1.0), u8DirName.c_str());
         }
         
+        if(ImGui::BeginDragDropTarget())
+        {
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(m_filesDragAndDropPayloadName.c_str());
+            
+            if(payload)
+            {
+                moveSelectedFiles(concatPathCanonical);
+                fixMaxPathRelativeToPath(concatPathCanonical);
+                break;
+            }
+            
+            ImGui::EndDragDropTarget();
+        }
+        
         ImGui::SameLine();
         if(!isLastDirectory)
         {
@@ -847,6 +852,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                                                     std::int64_t& currentHighlightableFileIdx)
 {
     m_isSomeFileIconHovered = false;
+    m_isFilesDragging = false;
     
     for(auto it = std::filesystem::directory_iterator(m_currentPath);
         it != std::filesystem::directory_iterator(); ++it)
@@ -911,8 +917,6 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             fileIcon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(iconSize.x, iconSize.y)->getTexture();
         }
         
-        using t = decltype(extension += std::filesystem::path());
-        
         if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
         {
             bool previewExists = m_previewAssetManager.isAssetExists<SGCore::ITexture2D>(u8curPath);
@@ -949,10 +953,45 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                                                                 u8curPath);
         }
         
+        bool isCurrentFileSelected = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&curPath](const FileInfo* fileInfo) -> bool {
+            return fileInfo->m_path == curPath;
+        }) != m_selectedFiles.end();
+        
+        DragNDropInfo dragNDropInfo;
+        dragNDropInfo.m_isEnabled = !m_selectedFiles.empty();
+        dragNDropInfo.m_type = DragNDropType::BOTH;
+        dragNDropInfo.m_name = m_filesDragAndDropPayloadName;
+        dragNDropInfo.m_drawSourceFunction = [this]() {
+            ImGui::Text((std::to_string(m_selectedFiles.size()) + " file (-s)").c_str());
+        };
+        
         ImClickInfo clickInfo = ImGuiUtils::ImageButton(fileIcon->getTextureNativeHandler(),
                                                         { (float) requiredIconSize.x, (float) requiredIconSize.y },
                                                         { (float) fileIcon->getWidth(),
-                                                          (float) fileIcon->getHeight() });
+                                                          (float) fileIcon->getHeight() },
+                                                        { -1, -1 },
+                                                        { 0.3, 0.3, 0.3, 0.3 },
+                                                        &dragNDropInfo,
+                                                        SGUtils::Utils::toUTF8<char16_t>(curPath.u16string()));
+        
+        switch(dragNDropInfo.m_state)
+        {
+            case DragNDropState::DRAGGING:
+                m_isFilesDragging = true;
+                break;
+            case DragNDropState::ACCEPTED:
+            {
+                if(!isCurrentFileSelected && std::filesystem::is_directory(curPath))
+                {
+                    moveSelectedFiles(curPath);
+                    fixMaxPathRelativeToPath(curPath);
+                }
+                
+                break;
+            }
+            case DragNDropState::NONE:
+                break;
+        }
         
         // ImGui::SetCursorPos(cursorPos);
         
@@ -1033,7 +1072,17 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             onRightClick(m_rightClickedFile);
         }
         
-        if(clickInfo.m_isLMBClicked)
+        bool selectFile = false;
+        if(!isCurrentFileSelected)
+        {
+            selectFile = clickInfo.m_isLMBClicked;
+        }
+        else
+        {
+            selectFile = clickInfo.m_isLMBReleased && !m_isFilesDragging && !m_isMouseSelectingFilesByQuad;
+        }
+        
+        if(selectFile)
         {
             bool leftCtrlDown = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
             bool leftShiftDown = ImGui::IsKeyDown(ImGuiKey_LeftShift);
@@ -1527,5 +1576,30 @@ void SGE::DirectoryExplorer::pasteFiles(const std::filesystem::path& toDir) noex
         
         std::filesystem::copy(copyingFile.m_path, to, std::filesystem::copy_options::update_existing |
                                                        std::filesystem::copy_options::recursive);
+    }
+}
+
+void SGE::DirectoryExplorer::moveSelectedFiles(const std::filesystem::path& toPath) noexcept
+{
+    for(auto* selectedFile : m_selectedFiles)
+    {
+        if(toPath == selectedFile->m_path) continue;
+        
+        auto name = selectedFile->m_path.filename();
+        auto newPath = toPath;
+        newPath += m_utf8Separator;
+        newPath += name;
+        
+        std::filesystem::rename(selectedFile->m_path, newPath);
+    }
+    
+    m_selectedFiles.clear();
+}
+
+void SGE::DirectoryExplorer::fixMaxPathRelativeToPath(const std::filesystem::path& relativeToPath) noexcept
+{
+    if(SGUtils::Utils::isSubpath(m_maxPath, relativeToPath) || m_maxPath == relativeToPath)
+    {
+        m_maxPath = m_currentPath;
     }
 }
