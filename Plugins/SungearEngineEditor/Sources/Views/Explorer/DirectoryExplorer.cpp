@@ -86,9 +86,9 @@ SGE::DirectoryExplorer::DirectoryExplorer()
                 {
                     for(auto* fi : m_selectedFiles)
                     {
-                        std::filesystem::remove_all(fi->m_path);
+                        std::filesystem::remove_all(fi->getPath());
                         
-                        fixMaxPathRelativeToPath(fi->m_path);
+                        fixMaxPathRelativeToPath(fi->getPath());
                     }
                     
                     m_selectedFiles.clear();
@@ -203,9 +203,9 @@ void SGE::DirectoryExplorer::renderBody()
         {
             if(m_selectedFiles.size() == 1)
             {
-                if(std::filesystem::is_directory(m_selectedFiles[0]->m_path))
+                if(std::filesystem::is_directory((*m_selectedFiles.begin())->getPath()))
                 {
-                    pasteFiles(m_selectedFiles[0]->m_path);
+                    pasteFiles((*m_selectedFiles.begin())->getPath());
                 }
             }
             else
@@ -219,9 +219,9 @@ void SGE::DirectoryExplorer::renderBody()
         {
             for(auto* fileInfo : m_selectedFiles)
             {
-                std::filesystem::remove_all(fileInfo->m_path);
+                std::filesystem::remove_all(fileInfo->getPath());
                 
-                fixMaxPathRelativeToPath(fileInfo->m_path);
+                fixMaxPathRelativeToPath(fileInfo->getPath());
             }
             
             m_drawableFilesNames.clear();
@@ -233,7 +233,7 @@ void SGE::DirectoryExplorer::renderBody()
         {
             if(m_selectedFiles.size() == 1)
             {
-                renameFile(*m_selectedFiles[0]);
+                renameFile(*(*m_selectedFiles.begin()));
             }
         }
         
@@ -644,7 +644,10 @@ void SGE::DirectoryExplorer::drawCurrentPathNavigation()
             if(payload)
             {
                 moveSelectedFiles(concatPathCanonical);
-                fixMaxPathRelativeToPath(concatPathCanonical);
+                if(!std::filesystem::exists(m_maxPath))
+                {
+                    fixMaxPathRelativeToPath(concatPathCanonical);
+                }
                 break;
             }
             
@@ -953,9 +956,13 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                                                                 u8curPath);
         }
         
-        bool isCurrentFileSelected = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&curPath](const FileInfo* fileInfo) -> bool {
-            return fileInfo->m_path == curPath;
-        }) != m_selectedFiles.end();
+        /*bool isCurrentFileSelected = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&curPath](const FileInfo* fileInfo) -> bool {
+            return fileInfo->getHashedPath() == std::filesystem::hash_value(curPath);
+        }) != m_selectedFiles.end();*/
+        
+        FileInfo requiredFileInfo;
+        requiredFileInfo.setPath(curPath);
+        bool isCurrentFileSelected = m_selectedFiles.contains(&requiredFileInfo);
         
         DragNDropInfo dragNDropInfo;
         dragNDropInfo.m_isEnabled = !m_selectedFiles.empty();
@@ -977,14 +984,20 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         switch(dragNDropInfo.m_state)
         {
             case DragNDropState::DRAGGING:
+            {
                 m_isFilesDragging = true;
+                m_draggingFileInfo = &drawableFileNameInfo;
                 break;
+            }
             case DragNDropState::ACCEPTED:
             {
                 if(!isCurrentFileSelected && std::filesystem::is_directory(curPath))
                 {
                     moveSelectedFiles(curPath);
-                    fixMaxPathRelativeToPath(curPath);
+                    if(!std::filesystem::exists(m_maxPath))
+                    {
+                        fixMaxPathRelativeToPath(curPath);
+                    }
                 }
                 
                 break;
@@ -1023,13 +1036,13 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         if(m_isMouseSelectingFilesByQuad && !ImGui::IsKeyDown(ImGuiKey_LeftShift) && !ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsWindowHovered())
         {
             std::erase_if(m_selectedFiles, [&drawableFileNameInfo](const FileInfo* fileInfo) -> bool {
-                return fileInfo->m_path == drawableFileNameInfo.m_path;
+                return fileInfo->getPath() == drawableFileNameInfo.getPath();
             });
         }
         
         if(fileAABB.isCollidesWith2D(mouseSelectionQuadAABB))
         {
-            m_selectedFiles.push_back(&drawableFileNameInfo);
+            m_selectedFiles.insert(&drawableFileNameInfo);
         }
         
         if(isDirectory)
@@ -1062,7 +1075,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             {
                 m_selectedFiles.clear();
             }
-            m_selectedFiles.push_back(&drawableFileNameInfo);
+            m_selectedFiles.insert(&drawableFileNameInfo);
             
             m_popup.setOpened(true);
             m_popup.setAllElementsActive(false);
@@ -1073,13 +1086,13 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         }
         
         bool selectFile = false;
-        if(!isCurrentFileSelected)
+        if(!isCurrentFileSelected || ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
         {
             selectFile = clickInfo.m_isLMBClicked;
         }
         else
         {
-            selectFile = clickInfo.m_isLMBReleased && !m_isFilesDragging && !m_isMouseSelectingFilesByQuad;
+            selectFile = clickInfo.m_isLMBReleased && !m_isFilesDragging && !m_isMouseSelectingFilesByQuad && dragNDropInfo.m_state == DragNDropState::NONE && m_draggingFileInfo != &drawableFileNameInfo;
         }
         
         if(selectFile)
@@ -1092,9 +1105,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                 m_selectedFiles.clear();
             }
             
-            auto foundInfo = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&drawableFileNameInfo](const FileInfo* fileInfo) -> bool {
-                return fileInfo->m_path == drawableFileNameInfo.m_path;
-            });
+            auto foundInfo = m_selectedFiles.find(&drawableFileNameInfo);
             
             // erasing info if found (useful for deselecting files with ctrl + lmb)
             if(foundInfo != m_selectedFiles.end())
@@ -1104,7 +1115,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             else
             {
                 // adding newly selected file if it was not selected earlier
-                m_selectedFiles.push_back(&drawableFileNameInfo);
+                m_selectedFiles.insert(&drawableFileNameInfo);
             }
             
             if(leftShiftDown)
@@ -1136,7 +1147,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                             if((fileIdx >= m_selectedFileIdx && fileIdx <= m_lastShiftClickedFileIdx) ||
                                (fileIdx >= m_lastShiftClickedFileIdx && fileIdx <= m_selectedFileIdx))
                             {
-                                return fileInfo->m_path == selectedFileInfo.m_path;
+                                return fileInfo->getPath() == selectedFileInfo.getPath();
                             }
                             
                             return false;
@@ -1146,7 +1157,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                         if((fileIdx >= m_selectedFileIdx && fileIdx <= m_shiftClickedFileIdx) ||
                            (fileIdx >= m_shiftClickedFileIdx && fileIdx <= m_selectedFileIdx))
                         {
-                            m_selectedFiles.push_back(&selectedFileInfo);
+                            m_selectedFiles.insert(&selectedFileInfo);
                         }
                         
                         ++fileIdx;
@@ -1352,7 +1363,7 @@ void SGE::DirectoryExplorer::drawNamesOfFiles(std::map<std::int64_t, std::int64_
             std::string utf8TransferredFileName = SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName);
             
             drawableNameInfo.m_formattedName = utf8TransferredFileName;
-            drawableNameInfo.m_path = path;
+            drawableNameInfo.setPath(path);
             
             ImGui::SetCursorPos(drawableNameInfo.m_namePosition);
             ImVec2 finalTextSize = ImGui::CalcTextSize(utf8FinalFileName.c_str());
@@ -1511,9 +1522,9 @@ void SGE::DirectoryExplorer::drawFileNameInputText()
             
             if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Enter))
             {
-                std::filesystem::path resultPath = drawableNameInfo.m_path.parent_path();
+                std::filesystem::path resultPath = drawableNameInfo.getPath().parent_path();
                 resultPath += m_utf8Separator + SGUtils::Utils::replaceAll<char>(m_currentEditingFileName, "\n", "");
-                std::filesystem::rename(drawableNameInfo.m_path, resultPath);
+                std::filesystem::rename(drawableNameInfo.getPath(), resultPath);
                 m_currentEditingFile = nullptr;
             }
             
@@ -1569,12 +1580,12 @@ void SGE::DirectoryExplorer::pasteFiles(const std::filesystem::path& toDir) noex
     {
         std::filesystem::path to = std::filesystem::path(toDir);
         to += m_utf8Separator;
-        to += copyingFile.m_path.filename();
+        to += copyingFile.getPath().filename();
         
-        std::printf("from: %s, to: %s\n", copyingFile.m_path.string().c_str(), to.string().c_str());
-        if(to == copyingFile.m_path) continue;
+        std::printf("from: %s, to: %s\n", copyingFile.getPath().string().c_str(), to.string().c_str());
+        if(to == copyingFile.getPath()) continue;
         
-        std::filesystem::copy(copyingFile.m_path, to, std::filesystem::copy_options::update_existing |
+        std::filesystem::copy(copyingFile.getPath(), to, std::filesystem::copy_options::update_existing |
                                                        std::filesystem::copy_options::recursive);
     }
 }
@@ -1583,14 +1594,14 @@ void SGE::DirectoryExplorer::moveSelectedFiles(const std::filesystem::path& toPa
 {
     for(auto* selectedFile : m_selectedFiles)
     {
-        if(toPath == selectedFile->m_path) continue;
+        if(toPath == selectedFile->getPath()) continue;
         
-        auto name = selectedFile->m_path.filename();
+        auto name = selectedFile->getPath().filename();
         auto newPath = toPath;
         newPath += m_utf8Separator;
         newPath += name;
         
-        std::filesystem::rename(selectedFile->m_path, newPath);
+        std::filesystem::rename(selectedFile->getPath(), newPath);
     }
     
     m_selectedFiles.clear();
@@ -1602,4 +1613,21 @@ void SGE::DirectoryExplorer::fixMaxPathRelativeToPath(const std::filesystem::pat
     {
         m_maxPath = m_currentPath;
     }
+}
+
+const std::filesystem::path& SGE::FileInfo::getPath() const noexcept
+{
+    return m_path;
+}
+
+void SGE::FileInfo::setPath(const std::filesystem::path& mPath) noexcept
+{
+    m_path = mPath;
+    
+    m_hashedPath = std::hash<std::filesystem::path>()(m_path);
+}
+
+const size_t& SGE::FileInfo::getHashedPath() const noexcept
+{
+    return m_hashedPath;
 }

@@ -27,8 +27,33 @@ namespace SGE
         bool m_isFullNameHovered = false;
         bool m_isIconHovered = false;
         std::string m_formattedName;
-        std::filesystem::path m_path;
         std::int64_t m_index = 0;
+        
+        [[nodiscard]] const std::filesystem::path& getPath() const noexcept;
+        
+        void setPath(const std::filesystem::path& mPath) noexcept;
+        
+        [[nodiscard]] const size_t& getHashedPath() const noexcept;
+        
+    private:
+        size_t m_hashedPath = 0;
+        std::filesystem::path m_path;
+    };
+    
+    struct FileInfoPtrCompare
+    {
+        bool operator()(const FileInfo* lhs, const FileInfo* rhs) const noexcept
+        {
+            return lhs->getHashedPath() == rhs->getHashedPath();
+        }
+    };
+    
+    struct FileInfoPtrHasher
+    {
+        size_t operator()(const FileInfo* fileInfo) const noexcept
+        {
+            return fileInfo->getHashedPath();
+        }
     };
     
     struct FoundPathEntry
@@ -174,7 +199,8 @@ namespace SGE
         std::string m_findFileName;
         FileSearchResults m_filesSearchResults;
         
-        std::vector<FileInfo*> m_selectedFiles;
+        std::unordered_set<FileInfo*, FileInfoPtrHasher, FileInfoPtrCompare> m_selectedFiles;
+        // std::vector<FileInfo*> m_selectedFiles;
         std::vector<FileInfo> m_copyingFiles;
         
         void copySelectedFiles() noexcept;
@@ -233,6 +259,9 @@ namespace SGE
         // =======================================================================
         bool m_isFilesDragging = false;
         std::string m_filesDragAndDropPayloadName = "##DirectoryExplorerDragNDrop";
+        
+        // =======================================================================
+        FileInfo* m_draggingFileInfo = nullptr;
     };
 }
 
