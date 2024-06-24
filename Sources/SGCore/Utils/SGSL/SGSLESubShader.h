@@ -5,8 +5,8 @@
 #ifndef SGSLETRANSLATOR_SGSLESUBSHADER_H
 #define SGSLETRANSLATOR_SGSLESUBSHADER_H
 
-#include <string>
-#include <vector>
+#include <SGCore/pch.h>
+
 #include "SGSLESubShaderType.h"
 #include "SGSLEVariable.h"
 #include "SGSLEBracketsListener.h"

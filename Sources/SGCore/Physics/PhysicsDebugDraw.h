@@ -5,8 +5,7 @@
 #ifndef SUNGEARENGINE_PHYSICSDEBUGDRAW_H
 #define SUNGEARENGINE_PHYSICSDEBUGDRAW_H
 
-#include <LinearMath/btIDebugDraw.h>
-#include <vector>
+#include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/Event.h"

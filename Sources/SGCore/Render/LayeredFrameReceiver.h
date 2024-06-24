@@ -1,7 +1,7 @@
 #ifndef SUNGEARENGINE_CAMERACOMPONENT_H
 #define SUNGEARENGINE_CAMERACOMPONENT_H
 
-#include <set>
+#include <SGCore/pch.h>
 
 #include "SGCore/Render/PostProcess/PostProcessEffect.h"
 #include "SGCore/Graphics/API/IShader.h"

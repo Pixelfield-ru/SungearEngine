@@ -5,9 +5,8 @@
 #ifndef SUNGEARENGINE_IPARALLELSYSTEM_H
 #define SUNGEARENGINE_IPARALLELSYSTEM_H
 
-#include <thread>
-#include <unordered_set>
-#include <mutex>
+#include <SGCore/pch.h>
+
 #include <SGCore/Threading/Thread.h>
 
 #include "ISystem.h"

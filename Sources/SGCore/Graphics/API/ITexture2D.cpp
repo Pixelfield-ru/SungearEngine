@@ -1,10 +1,3 @@
-#define STB_IMAGE_RESIZE_IMPLEMENTATION
-
-#include <spdlog/spdlog.h>
-#include <stb_image.h>
-#include <stb_image_resize2.h>
-//#include <stb_image_resize.h>
-
 #include "ITexture2D.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 
@@ -12,6 +5,9 @@
 
 #include "SGUtils/DDSLoader/dds-ktx.h"
 #include "SGUtils/FileUtils.h"
+
+#include <stb_image.h>
+#include <stb_image_resize2.h>
 
 void SGCore::STBITextureDataDeleter::operator()(const std::uint8_t* data)
 {

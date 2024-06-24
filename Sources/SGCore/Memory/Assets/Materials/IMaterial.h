@@ -1,9 +1,7 @@
 #ifndef SUNGEARENGINE_IMATERIAL_H
 #define SUNGEARENGINE_IMATERIAL_H
 
-#include <map>
-#include <string>
-#include <unordered_map>
+#include <SGCore/pch.h>
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/IAsset.h"

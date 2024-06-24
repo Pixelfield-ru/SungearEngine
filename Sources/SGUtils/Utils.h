@@ -49,19 +49,7 @@
 #define SG_DLIMPORT
 #endif
 
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <sstream>
-#include <source_location>
-#include <chrono>
-#include <locale>
-#include <codecvt>
-#include <memory>
-#include <unordered_set>
-#include <filesystem>
-#include <cwctype>
+#include <SGUtils/pch.h>
 
 #include "TypeTraits.h"
 #include "CrashHandler/Platform.h"

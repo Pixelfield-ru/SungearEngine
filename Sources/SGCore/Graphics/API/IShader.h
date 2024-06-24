@@ -5,9 +5,7 @@
 #ifndef SUNGEARENGINE_ISHADER_H
 #define SUNGEARENGINE_ISHADER_H
 
-#include <unordered_map>
-#include <string>
-#include <glm/glm.hpp>
+#include <SGCore/pch.h>
 
 #include "SGCore/Memory/Assets/IAssetObserver.h"
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"

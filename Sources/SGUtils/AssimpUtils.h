@@ -5,10 +5,7 @@
 #ifndef SUNGEARENGINE_ASSIMPUTILS_H
 #define SUNGEARENGINE_ASSIMPUTILS_H
 
-#include <glm/vec4.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec2.hpp>
-#include <assimp/types.h>
+#include <SGUtils/pch.h>
 
 namespace SGUtils::AssimpUtils
 {

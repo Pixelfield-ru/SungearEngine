@@ -2,13 +2,10 @@
 // Created by stuka on 24.04.2023.
 //
 
-#pragma once
-
 #ifndef NATIVECORE_IINDEXBUFFER_H
 #define NATIVECORE_IINDEXBUFFER_H
 
-#include <vector>
-#include <memory>
+#include <SGCore/pch.h>
 
 #include "GraphicsDataTypes.h"
 

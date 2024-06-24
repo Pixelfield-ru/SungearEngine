@@ -8,8 +8,6 @@
 #include "SGUtils/EventListener.h"
 #include "SGCore/Main/CoreGlobals.h"
 
-#include <string>
-
 namespace SGCore
 {
     struct ShaderComponent;

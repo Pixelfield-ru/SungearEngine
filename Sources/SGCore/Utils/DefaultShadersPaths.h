@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_DEFAULTSHADERPATHES_H
 
 #include <SGUtils/Utils.h>
+
 #include "ShadersPaths.h"
 
 namespace SGCore

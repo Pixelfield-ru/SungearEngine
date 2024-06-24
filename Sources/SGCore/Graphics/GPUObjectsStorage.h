@@ -5,9 +5,7 @@
 #ifndef SUNGEARENGINE_GPUOBJECTSSTORAGE_H
 #define SUNGEARENGINE_GPUOBJECTSSTORAGE_H
 
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/UniqueNamesManager.h"

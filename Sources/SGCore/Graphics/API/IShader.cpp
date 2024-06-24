@@ -4,8 +4,6 @@
 
 #include "IShader.h"
 
-#include <utility>
-
 #include "SGCore/Utils/SGSL/SGSLETranslator.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"

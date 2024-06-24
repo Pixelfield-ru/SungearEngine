@@ -5,9 +5,7 @@
 #ifndef NATIVECORE_IRENDERER_H
 #define NATIVECORE_IRENDERER_H
 
-#include <iostream>
-#include <glm/glm.hpp>
-#include <glm/common.hpp>
+#include <SGCore/pch.h>
 
 #include "GAPIType.h"
 #include "IUniformBuffer.h"

@@ -3,7 +3,6 @@
 //
 
 #include "GL4UniformBuffer.h"
-#include <glad/glad.h>
 
 SGCore::GL4UniformBuffer::~GL4UniformBuffer()
 {

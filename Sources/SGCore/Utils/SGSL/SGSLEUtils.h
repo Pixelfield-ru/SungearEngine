@@ -5,7 +5,7 @@
 #ifndef SGSLETRANSLATOR_SGSLEUTILS_H
 #define SGSLETRANSLATOR_SGSLEUTILS_H
 
-#include <vector>
+#include <SGCore/pch.h>
 
 namespace SGCore::SGSLEUtils
 {

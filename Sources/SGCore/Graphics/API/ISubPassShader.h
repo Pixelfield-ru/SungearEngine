@@ -4,8 +4,8 @@
 #ifndef NATIVECORE_ISHADER_H
 #define NATIVECORE_ISHADER_H
 
-#include <list>
-#include <glm/matrix.hpp>
+#include <SGCore/pch.h>
+
 #include <SGCore/Graphics/ShaderTextureBinding.h>
 
 #include "SGCore/Memory/Assets/TextFileAsset.h"

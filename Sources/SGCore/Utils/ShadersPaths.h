@@ -5,9 +5,7 @@
 #ifndef SUNGEARENGINE_SHADERSPATHS_H
 #define SUNGEARENGINE_SHADERSPATHS_H
 
-#include <unordered_map>
-#include <string>
-#include <regex>
+#include <SGCore/pch.h>
 
 #include "SGUtils/Singleton.h"
 #include "SGCore/Main/CoreGlobals.h"

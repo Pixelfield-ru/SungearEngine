@@ -5,9 +5,8 @@
 #ifndef SUNGEARENGINE_RIGIDBODY3D_H
 #define SUNGEARENGINE_RIGIDBODY3D_H
 
-#include <BulletDynamics/Dynamics/btRigidBody.h>
-#include <LinearMath/btDefaultMotionState.h>
-#include <BulletCollision/CollisionShapes/btSphereShape.h>
+#include <SGCore/pch.h>
+
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/Marker.h"
 

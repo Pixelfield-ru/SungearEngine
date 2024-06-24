@@ -5,9 +5,9 @@
 #ifndef SUNGEARENGINE_UIELEMENT_H
 #define SUNGEARENGINE_UIELEMENT_H
 
+#include <SGCore/pch.h>
+
 #include "SGCore/Main/CoreMain.h"
-#include <entt/entity/entity.hpp>
-#include <pugixml.hpp>
 
 namespace SGCore
 {

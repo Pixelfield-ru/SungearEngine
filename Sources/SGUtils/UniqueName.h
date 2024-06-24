@@ -5,8 +5,7 @@
 #ifndef SUNGEARENGINE_UNIQUENAME_H
 #define SUNGEARENGINE_UNIQUENAME_H
 
-#include <string>
-#include <memory>
+#include <SGUtils/pch.h>
 
 namespace SGCore
 {

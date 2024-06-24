@@ -2,9 +2,6 @@
 
 #include "SGCore/Main/CoreMain.h"
 
-#include <glm/gtc/type_ptr.hpp>
-#include <spdlog/spdlog.h>
-
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Transformations/TransformBase.h"
 

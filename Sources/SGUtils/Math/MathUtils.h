@@ -5,11 +5,7 @@
 #ifndef SUNGEARENGINE_MATHUTILS_H
 #define SUNGEARENGINE_MATHUTILS_H
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-
-#include <memory>
-#include <glm/geometric.hpp>
+#include <SGUtils/pch.h>
 
 #define PI 3.141592
 

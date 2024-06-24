@@ -2,12 +2,10 @@
 // Created by stuka on 21.05.2023.
 //
 
-#pragma once
-
 #ifndef SUNGEARENGINE_IVERTEXATTRIBUTE_H
 #define SUNGEARENGINE_IVERTEXATTRIBUTE_H
 
-#include <string>
+#include <SGCore/pch.h>
 
 #include "GraphicsDataTypes.h"
 //#include "IVertexBufferLayout.h"

@@ -5,10 +5,7 @@
 #ifndef SUNGEARENGINE_CULLABLEMESH_H
 #define SUNGEARENGINE_CULLABLEMESH_H
 
-#include <entt/entity/entity.hpp>
-#include <unordered_set>
-#include <functional>
-#include <set>
+#include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/EventListener.h"

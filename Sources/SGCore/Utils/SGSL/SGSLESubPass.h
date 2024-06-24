@@ -5,8 +5,8 @@
 #ifndef SGSLETRANSLATOR_SGSLESUBPASS_H
 #define SGSLETRANSLATOR_SGSLESUBPASS_H
 
-#include <string>
-#include <unordered_map>
+#include <SGCore/pch.h>
+
 #include "SGSLESubShaderType.h"
 #include "SGSLESubShader.h"
 #include "SGSLEBracketsListener.h"

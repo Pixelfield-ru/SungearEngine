@@ -5,9 +5,7 @@
 #ifndef SGSLETRANSLATOR_SGSLEASSIGNEXPRESSION_H
 #define SGSLETRANSLATOR_SGSLEASSIGNEXPRESSION_H
 
-#include <cstddef>
-#include <vector>
-#include <string>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

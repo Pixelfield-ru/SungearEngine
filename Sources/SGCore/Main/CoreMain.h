@@ -1,10 +1,9 @@
 #ifndef NATIVECORE_COREMAIN_H
 #define NATIVECORE_COREMAIN_H
 
+#include <SGCore/pch.h>
+
 #include <sgcore_export.h>
-#include <thread>
-#include <spdlog/logger.h>
-#include <csetjmp>
 
 #include "Window.h"
 #include "SGUtils/Timer.h"

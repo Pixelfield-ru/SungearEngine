@@ -9,7 +9,6 @@
 #include "GL4Texture2D.h"
 
 #include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
-#include "spdlog/spdlog.h"
 
 void SGCore::GL4FrameBuffer::bindAttachment
 (const SGFrameBufferAttachmentType& attachmentType, const std::uint8_t& textureBlock)

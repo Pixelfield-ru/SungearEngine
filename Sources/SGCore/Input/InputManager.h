@@ -7,14 +7,8 @@
 #ifndef NATIVECORE_INPUTMANAGER_H
 #define NATIVECORE_INPUTMANAGER_H
 
-#include <iostream>
-#include <memory>
-#include <vector>
-#include <mutex>
-#include <list>
-#include <memory>
-#include <algorithm>
-#include <thread>
+#include <SGCore/pch.h>
+
 #include <sgcore_export.h>
 
 #include "SGCore/Main/CoreGlobals.h"

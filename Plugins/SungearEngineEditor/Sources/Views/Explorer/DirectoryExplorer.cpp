@@ -7,6 +7,7 @@
 #include <imgui_stdlib.h>
 
 #include <SGUtils/Utils.h>
+#include <SGCore/Scene/Scene.h>
 
 #include "DirectoryExplorer.h"
 #include "Views/MainView.h"
@@ -62,6 +63,16 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             pasteFilesElem->m_isActive = true;
             pasteFilesElem->m_drawSeparatorAfter = false;
             newFilesElem->m_drawSeparatorAfter = true;
+        }
+    };
+    
+    m_onSceneFileCreated = [](const std::filesystem::path& byPath, bool canceled) {
+        if(SungearEngineEditor::getInstance()->getMainView()
+                   ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgscene" && !canceled)
+        {
+            SGCore::Ref<SGCore::Scene> newScene = SGCore::MakeRef<SGCore::Scene>();
+            newScene->m_name = SGUtils::Utils::toUTF8<char16_t>(byPath.stem().u16string());
+            newScene->saveToFile(byPath);
         }
     };
     
@@ -153,6 +164,20 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         else if(element.m_id == "Paste")
         {
             pasteFiles(m_currentFileOpsTargetDir);
+        }
+        else if(element.m_id == "Scene")
+        {
+            std::string utf8Path = SGUtils::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+            
+            auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
+            fileCreateDialog->m_dialogTitle = "New Scene";
+            fileCreateDialog->m_defaultPath = utf8Path;
+            fileCreateDialog->m_currentChosenDirPath = utf8Path;
+            fileCreateDialog->m_ext = ".sgscene";
+            fileCreateDialog->m_isCreatingDirectory = false;
+            fileCreateDialog->setActive(true);
+            
+            SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog->onOperationEnd += m_onSceneFileCreated;
         }
     };
 }
@@ -624,6 +649,8 @@ void SGE::DirectoryExplorer::drawCurrentPathNavigation()
             setCurrentPath(concatPathCanonical);
         }
         
+        if(concatPathCanonical < SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath) continue;
+        
         if(concatPathCanonical == m_currentPath)
         {
             ImGui::TextColored(ImVec4(50 / 255.0f, 120 / 255.0f, 170 / 255.0f, 1.0f), u8DirName.c_str());
@@ -657,7 +684,11 @@ void SGE::DirectoryExplorer::drawCurrentPathNavigation()
         ImGui::SameLine();
         if(!isLastDirectory)
         {
-            ImGui::Text("/");
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+            ImGui::Image(StylesManager::getCurrentStyle()->m_chevronRightIcon->getSpecialization(16, 16)->getTexture()->getTextureNativeHandler(), { 16, 16 });
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
+            
+            // ImGui::Text("/");
             ImGui::SameLine();
         }
     }

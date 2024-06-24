@@ -5,8 +5,7 @@
 #ifndef SUNGEARENGINE_FONTSPECIALIZATIONRENDERER_H
 #define SUNGEARENGINE_FONTSPECIALIZATIONRENDERER_H
 
-#include <cstdint>
-#include <vector>
+#include <SGCore/pch.h>
 
 #include "Text.h"
 #include "SGCore/Transformations/Transform.h"

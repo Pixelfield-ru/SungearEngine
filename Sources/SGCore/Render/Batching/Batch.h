@@ -5,10 +5,7 @@
 #ifndef SUNGEARENGINE_BATCHING_H
 #define SUNGEARENGINE_BATCHING_H
 
-#include <stack>
-#include <unordered_set>
-#include <vector>
-#include <entt/entity/observer.hpp>
+#include <SGCore/pch.h>
 
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGUtils/EventListener.h"

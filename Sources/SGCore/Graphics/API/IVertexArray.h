@@ -2,13 +2,10 @@
 // Created by stuka on 24.04.2023.
 //
 
-#pragma once
-
 #ifndef NATIVECORE_IVERTEXARRAY_H
 #define NATIVECORE_IVERTEXARRAY_H
 
-#include <memory>
-#include <cstdint>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

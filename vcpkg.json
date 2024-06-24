@@ -57,5 +57,8 @@
   }, {
     "name" : "lunasvg",
     "version>=" : "2.3.8"
+  }, {
+    "name" : "rapidjson",
+    "version>=" : "2023-07-17#1"
   } ]
 }

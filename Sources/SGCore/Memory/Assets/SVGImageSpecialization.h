@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_SVGIMAGESPECIALIZATION_H
 #define SUNGEARENGINE_SVGIMAGESPECIALIZATION_H
 
-#include <lunasvg.h>
+#include <SGCore/pch.h>
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 

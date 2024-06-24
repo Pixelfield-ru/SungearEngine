@@ -5,9 +5,7 @@
 #ifndef SUNGEARENGINE_IMGUILAYER_H
 #define SUNGEARENGINE_IMGUILAYER_H
 
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_glfw.h>
-#include <imgui.h>
+#include <SGCore/pch.h>
 
 #include <sgcore_export.h>
 

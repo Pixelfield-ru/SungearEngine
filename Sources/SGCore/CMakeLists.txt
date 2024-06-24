@@ -21,6 +21,7 @@
  find_package(unofficial-brotli CONFIG REQUIRED)
  find_package(OpenAL CONFIG REQUIRED)
  find_package(unofficial-lunasvg CONFIG REQUIRED)
+ find_package(RapidJSON CONFIG REQUIRED)
 
  include(FetchContent)
 
@@ -34,6 +35,8 @@
  FetchContent_MakeAvailable(glaze)
 
  add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
+
+ target_precompile_headers(${PROJECT_NAME} PUBLIC pch.h)
 
  include(GenerateExportHeader)
  generate_export_header(${PROJECT_NAME})
@@ -84,6 +87,7 @@
          OpenAL::OpenAL
          glaze::glaze
          unofficial::lunasvg::lunasvg
+         rapidjson
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}

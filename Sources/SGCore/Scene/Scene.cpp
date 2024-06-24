@@ -2,20 +2,17 @@
 // Created by stuka on 04.07.2023.
 //
 
-#include <SGCore/Render/Batching/BatchesRenderer.h>
-#include "Scene.h"
+#include <GLFW/glfw3.h>
 
-#include "GLFW/glfw3.h"
+#include "SGCore/Render/Batching/BatchesRenderer.h"
+#include "Scene.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
-#include "EntityBaseInfo.h"
 #include "SGCore/Transformations/TransformationsUpdater.h"
 #include "SGCore/Transformations/Controllables3DUpdater.h"
 #include "SGCore/Render/RenderingBasesUpdater.h"
 #include "SGCore/Render/Gizmos/BoxGizmosRenderer.h"
 #include "SGCore/Render/Gizmos/LineGizmosRenderer.h"
 #include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
-#include "SGCore/Render/PBRRP/PBRRenderPipeline.h"
-#include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 #include "SGCore/Render/Lighting/DirectionalLightsUpdater.h"
 #include "SGCore/Physics/PhysicsWorld3D.h"
@@ -24,6 +21,7 @@
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
+#include "Serializables.h"
 
 SGCore::Scene::Scene()
 {
@@ -268,4 +266,28 @@ void SGCore::Scene::reloadUI() noexcept
     {
         
     }
+}
+
+void SGCore::Scene::saveToFile(const std::string& path) noexcept
+{
+    rapidjson::Document document;
+    document.SetObject();
+    
+    document.AddMember("name", rapidjson::StringRef(m_name.c_str()), document.GetAllocator());
+    
+    // Serializable<glm::vec<2, double, glm::defaultp>>::serialize(document, "sfsdf", { 4, 5 });
+    
+    // Serializer::serialize(document, "dsfsdfsdf", std::string("ssdfsdf"));
+    Serializable<glm::vec<2, double, glm::defaultp>>::serialize(document, "vec", {});
+    
+    getOnSceneSaveEvent()(shared_from_this());
+    
+    rapidjson::StringBuffer stringBuffer;
+    stringBuffer.Clear();
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+    document.Accept(writer);
+    
+    SGUtils::FileUtils::writeToFile(path, stringBuffer.GetString(), false, true);
+    
+    std::printf("scene '%s' saved!\n", m_name.c_str());
 }

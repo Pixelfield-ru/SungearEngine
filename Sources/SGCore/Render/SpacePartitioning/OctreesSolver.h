@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_OCTREESSOLVER_H
 #define SUNGEARENGINE_OCTREESSOLVER_H
 
-#include <thread>
+#include <SGCore/pch.h>
+
 #include "SGCore/Scene/ISystem.h"
 #include "SGUtils/EventListener.h"
 #include "SGUtils/Timer.h"

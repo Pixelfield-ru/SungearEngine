@@ -5,10 +5,8 @@
 #ifndef SGSLETRANSLATOR_SGSLETRANSLATOR_H
 #define SGSLETRANSLATOR_SGSLETRANSLATOR_H
 
-#include <string>
-#include <vector>
-#include <set>
-#include <regex>
+#include <SGCore/pch.h>
+
 #include "SGSLETranslatorConfiguration.h"
 #include "ShaderAnalyzedFile.h"
 

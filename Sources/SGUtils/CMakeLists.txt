@@ -10,6 +10,8 @@ file(GLOB_RECURSE SGUTILS_SOURCES ../SGUtils/*.cpp ../SGUtils/*.h)
 
 add_library(${PROJECT_NAME} SHARED ${SGUTILS_SOURCES})
 
+target_precompile_headers(${PROJECT_NAME} PUBLIC pch.h)
+
 include(GenerateExportHeader)
 generate_export_header(${PROJECT_NAME})
 

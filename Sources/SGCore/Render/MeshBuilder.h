@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_MESHBUILDER_H
 #define SUNGEARENGINE_MESHBUILDER_H
 
-#include <glm/vec3.hpp>
+#include <SGCore/pch.h>
 
 #include "MeshBase.h"
 

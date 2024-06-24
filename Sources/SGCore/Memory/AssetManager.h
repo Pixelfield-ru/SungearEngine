@@ -5,15 +5,13 @@
 #ifndef SUNGEARENGINE_ASSETMANAGER_H
 #define SUNGEARENGINE_ASSETMANAGER_H
 
-#include <iostream>
-#include <memory>
-#include <spdlog/spdlog.h>
+#include <SGCore/pch.h>
+
 #include <sgcore_export.h>
 
 #include "Assets/IAsset.h"
 #include "SGUtils/Utils.h"
 #include "SGCore/Graphics/GPUObject.h"
-#include "entt/entity/registry.hpp"
 #include "SGCore/Threading/ThreadsPool.h"
 #include "SGCore/Threading/ThreadsManager.h"
 

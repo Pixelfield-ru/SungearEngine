@@ -9,7 +9,7 @@
 
 #include "../IVertexArray.h"
 
-#include <glad/glad.h>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

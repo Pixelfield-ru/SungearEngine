@@ -5,11 +5,10 @@
 #ifndef SUNGEARENGINE_ENTITIESPOOL_H
 #define SUNGEARENGINE_ENTITIESPOOL_H
 
-#include <vector>
-#include <entt/entity/entity.hpp>
-#include <mutex>
-#include <SGUtils/EventListener.h>
-#include <SGUtils/Event.h>
+#include <SGCore/pch.h>
+
+#include "SGUtils/EventListener.h"
+#include "SGUtils/Event.h"
 
 #include "SGCore/Main/CoreGlobals.h"
 

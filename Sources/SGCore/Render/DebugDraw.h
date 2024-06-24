@@ -5,14 +5,12 @@
 #ifndef SUNGEARENGINE_DEBUGDRAW_H
 #define SUNGEARENGINE_DEBUGDRAW_H
 
-#include <vector>
-#include <glm/vec3.hpp>
+#include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/Event.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/Scene/ISystem.h"
-#include "glm/vec4.hpp"
 
 namespace SGCore
 {

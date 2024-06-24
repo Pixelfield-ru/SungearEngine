@@ -1,9 +1,7 @@
 #ifndef SUNGEARENGINE_MARKER_H
 #define SUNGEARENGINE_MARKER_H
 
-#include <cstdint>
-#include <iostream>
-#include <memory>
+#include <SGUtils/pch.h>
 
 namespace SGCore
 {

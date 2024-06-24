@@ -5,8 +5,7 @@
 #ifndef NATIVECORE_MODELASSET_H
 #define NATIVECORE_MODELASSET_H
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
+#include <SGCore/pch.h>
 
 #include "IAsset.h"
 

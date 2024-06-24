@@ -1,8 +1,5 @@
 #include "GL46Renderer.h"
 
-#include <thread>
-#include <spdlog/spdlog.h>
-
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/TextFileAsset.h"

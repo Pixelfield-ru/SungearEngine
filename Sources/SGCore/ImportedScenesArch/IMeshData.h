@@ -1,12 +1,7 @@
 #ifndef SUNGEARENGINE_IMESH_H
 #define SUNGEARENGINE_IMESH_H
 
-#include <memory>
-#include <vector>
-#include <cstdint>
-#include <string>
-#include <entt/entity/entity.hpp>
-#include <BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGUtils/Math/AABB.h"

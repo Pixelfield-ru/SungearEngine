@@ -6,8 +6,7 @@
 #define NATIVECORE_TIMERCALLBACK_H
 
 //#include "../Main/Callbacks.h"
-#include <iostream>
-#include <functional>
+#include <SGUtils/pch.h>
 
 namespace SGCore
 {

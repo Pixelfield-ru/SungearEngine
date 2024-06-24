@@ -5,11 +5,7 @@
 #ifndef SUNGEARENGINE_UNIQUENAMESMANAGER_H
 #define SUNGEARENGINE_UNIQUENAMESMANAGER_H
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include <iostream>
-#include <unordered_set>
+#include <SGUtils/pch.h>
 
 #include "UniqueName.h"
 #include "Event.h"

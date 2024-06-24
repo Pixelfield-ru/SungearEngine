@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_BATCHINGRANGE_H
 #define SUNGEARENGINE_BATCHINGRANGE_H
 
-#include <glm/glm.hpp>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

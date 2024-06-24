@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_ENTITYBASEINFO_H
 #define SUNGEARENGINE_ENTITYBASEINFO_H
 
-#include <set>
+#include <SGCore/pch.h>
+
 #include "SGCore/Render/LayeredFrameReceiver.h"
 
 #include "SGCore/Main/CoreGlobals.h"

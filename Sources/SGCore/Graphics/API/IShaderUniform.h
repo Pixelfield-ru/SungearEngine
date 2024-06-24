@@ -1,10 +1,8 @@
-#pragma once
-
 #ifndef SUNGEARENGINE_ISHADERUNIFORM_H
 #define SUNGEARENGINE_ISHADERUNIFORM_H
 
-#include <memory>
-#include <any>
+#include <SGCore/pch.h>
+
 #include "GraphicsDataTypes.h"
 
 namespace SGCore

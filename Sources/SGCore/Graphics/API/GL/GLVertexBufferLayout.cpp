@@ -1,7 +1,6 @@
 //
 // Created by stuka on 22.05.2023.
 //
-#include <glad/glad.h>
 
 #include "GLVertexBufferLayout.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"

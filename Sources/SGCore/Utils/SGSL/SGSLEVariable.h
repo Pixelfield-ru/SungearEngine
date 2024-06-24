@@ -5,9 +5,8 @@
 #ifndef SGSLETRANSLATOR_SGSLEEXPR_H
 #define SGSLETRANSLATOR_SGSLEEXPR_H
 
-#include <string>
-#include <vector>
-#include <functional>
+#include <SGCore/pch.h>
+
 #include "SGSLEAssignExpression.h"
 
 namespace SGCore

@@ -3,7 +3,6 @@
 //
 
 #include "GL46UniformBuffer.h"
-#include <glad/glad.h>
 
 SGCore::GL46UniformBuffer::~GL46UniformBuffer()
 {

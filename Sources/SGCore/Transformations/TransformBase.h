@@ -7,7 +7,7 @@
 #ifndef NATIVECORE_TRANSFORMCOMPONENT_H
 #define NATIVECORE_TRANSFORMCOMPONENT_H
 
-#include <glm/glm.hpp>
+#include <SGCore/pch.h>
 
 #include "SGUtils/Math/MathUtils.h"
 #include "SGUtils/Utils.h"

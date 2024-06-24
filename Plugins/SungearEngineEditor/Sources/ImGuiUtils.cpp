@@ -337,6 +337,10 @@ SGCore::Ref<SGCore::ITexture2D> SGE::ImGuiUtils::getFileIcon(const std::filesyst
     {
         fileIcon = StylesManager::getCurrentStyle()->m_libraryIcon->getSpecialization(iconSize.x, iconSize.y)->getTexture();
     }
+    else if(fileExtension == ".sgscene")
+    {
+        fileIcon = StylesManager::getCurrentStyle()->m_cubesIcon->getSpecialization(iconSize.x, iconSize.y)->getTexture();
+    }
     
     if(onIconSet)
     {

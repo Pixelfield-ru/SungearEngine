@@ -5,9 +5,7 @@
 #ifndef SUNGEARENGINE_COREGLOBALS_H
 #define SUNGEARENGINE_COREGLOBALS_H
 
-#include <memory>
-#include <entt/entt.hpp>
-#include <glm/vec2.hpp>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

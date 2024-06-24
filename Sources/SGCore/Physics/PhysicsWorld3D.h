@@ -5,18 +5,7 @@
 #ifndef SUNGEARENGINE_PHYSICSWORLD3D_H
 #define SUNGEARENGINE_PHYSICSWORLD3D_H
 
-#include <thread>
-#include <mutex>
-#include <BulletCollision/CollisionDispatch/btCollisionConfiguration.h>
-#include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
-#include <BulletCollision/BroadphaseCollision/btDispatcher.h>
-#include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>
-#include <BulletCollision/BroadphaseCollision/btBroadphaseInterface.h>
-#include <BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
-#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
-#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
-#include <LinearMath/btIDebugDraw.h>
-#include <glm/glm.hpp>
+#include <SGCore/pch.h>
 
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Main/CoreGlobals.h"

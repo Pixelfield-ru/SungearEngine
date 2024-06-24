@@ -5,10 +5,9 @@
 #ifndef SGSLETRANSLATOR_SHADERANALYZEDFILE_H
 #define SGSLETRANSLATOR_SHADERANALYZEDFILE_H
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include <SGCore/Memory/Assets/IAsset.h>
+#include <SGCore/pch.h>
+
+#include "SGCore/Memory/Assets/IAsset.h"
 #include "SGSLESubPass.h"
 
 namespace SGCore

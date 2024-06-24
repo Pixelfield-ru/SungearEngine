@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 
-#include <glad/glad.h>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

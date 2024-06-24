@@ -6,7 +6,6 @@
 #define SUNGEARENGINE_XMLDOCUMENT_H
 
 #include "IAsset.h"
-#include <pugixml.hpp>
 
 namespace SGCore
 {

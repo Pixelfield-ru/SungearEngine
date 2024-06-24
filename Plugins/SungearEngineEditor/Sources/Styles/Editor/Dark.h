@@ -237,6 +237,11 @@ namespace SGE::EditorStyles
                         "paste",
                         SungearEngineEditor::getInstance()->getLocalPath() +
                         "/Resources/icons/dark_style/paste.svg");
+                
+                m_cubesIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                        "cubes",
+                        SungearEngineEditor::getInstance()->getLocalPath() +
+                        "/Resources/icons/dark_style/cubes.svg");
             }
         }
     };

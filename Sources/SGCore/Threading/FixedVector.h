@@ -5,8 +5,7 @@
 #ifndef SUNGEARENGINE_FIXEDVECTOR_H
 #define SUNGEARENGINE_FIXEDVECTOR_H
 
-#include <atomic>
-#include <vector>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

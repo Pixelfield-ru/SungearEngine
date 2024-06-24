@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_SINGLETON_H
 #define SUNGEARENGINE_SINGLETON_H
 
-#include <memory>
+#include <SGUtils/pch.h>
+
 #include <sgutils_export.h>
 
 #define SG_FULL_SINGLETON(cls)                          \

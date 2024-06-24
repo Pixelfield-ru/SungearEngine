@@ -1,10 +1,7 @@
 #ifndef SUNGEARENGINE_TIMER_H
 #define SUNGEARENGINE_TIMER_H
 
-#include <iostream>
-#include <memory>
-#include <list>
-#include <cstdint>
+#include <SGUtils/pch.h>
 
 // #include "TimerCallback.h"
 #include "Event.h"

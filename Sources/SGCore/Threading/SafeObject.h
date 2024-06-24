@@ -5,8 +5,8 @@
 #ifndef SUNGEARENGINE_SAFEOBJECT_H
 #define SUNGEARENGINE_SAFEOBJECT_H
 
-#include <atomic>
-#include <vector>
+#include <SGCore/pch.h>
+
 #include "SGUtils/Event.h"
 #include "SGUtils/EventListener.h"
 

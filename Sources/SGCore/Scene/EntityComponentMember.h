@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_ENTITYCOMPONENTMEMBER_H
 #define SUNGEARENGINE_ENTITYCOMPONENTMEMBER_H
 
-#include "entt/entity/entity.hpp"
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

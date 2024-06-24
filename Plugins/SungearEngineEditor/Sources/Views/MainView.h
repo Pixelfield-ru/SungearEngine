@@ -11,6 +11,8 @@
 
 #include "TopToolbar/TopToolbarView.h"
 #include "Explorer/Explorer.h"
+#include "SceneTreeView.h"
+#include "InspectorView.h"
 
 namespace SGE
 {
@@ -38,6 +40,9 @@ namespace SGE
         SGCore::Ref<Explorer> m_explorerWindow;
         SGCore::Ref<DirectoryExplorer> m_directoryExplorer;
         SGCore::Ref<DirectoriesTreeExplorer> m_directoriesTreeExplorer;
+        
+        SGCore::Ref<SceneTreeView> m_sceneTreeView;
+        SGCore::Ref<InspectorView> m_inspectorView;
         
         ImGuiID m_dockID = 0;
     };

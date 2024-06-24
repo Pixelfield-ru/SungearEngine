@@ -1,11 +1,7 @@
 #ifndef FLAT_ARRAY_H
 #define FLAT_ARRAY_H
 
-#include <iostream>
-#include <vector>
-#include <sstream>
-#include <array>
-#include <iomanip>
+#include <SGUtils/pch.h>
 
 template<class T>
 struct reverse_wrapper

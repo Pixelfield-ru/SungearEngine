@@ -43,6 +43,8 @@ namespace SGE
         
         SGCore::Ref<SGCore::SVGImage> m_dummyIcon;
         
+        SGCore::Ref<SGCore::SVGImage> m_cubesIcon;
+        
         std::unordered_map<std::string, ImFont*> m_fonts;
         
     private:

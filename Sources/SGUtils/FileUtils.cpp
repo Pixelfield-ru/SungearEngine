@@ -1,12 +1,9 @@
 //
 // Created by stuka on 11.05.2023.
 //
-#include <fstream>
-#include <filesystem>
-#include <cstdint>
+#include <SGUtils/pch.h>
 
 #include "FileUtils.h"
-#include "spdlog/spdlog.h"
 
 std::string SGUtils::FileUtils::readFile(const std::string_view& path)
 {

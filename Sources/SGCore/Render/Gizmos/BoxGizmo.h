@@ -1,7 +1,8 @@
 #ifndef SUNGEARENGINE_BOXCOMPONENT_H
 #define SUNGEARENGINE_BOXCOMPONENT_H
 
-#include "glm/vec3.hpp"
+#include <SGCore/pch.h>
+
 #include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/MeshBase.h"
 #include "GizmoBase.h"

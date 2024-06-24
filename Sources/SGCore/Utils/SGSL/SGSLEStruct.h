@@ -5,8 +5,7 @@
 #ifndef SGSLETRANSLATOR_SGSLESTRUCT_H
 #define SGSLETRANSLATOR_SGSLESTRUCT_H
 
-#include <string>
-#include <vector>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

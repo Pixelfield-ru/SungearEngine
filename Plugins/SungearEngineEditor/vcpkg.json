@@ -216,5 +216,17 @@
   }, {
     "name" : "lunasvg",
     "version>=" : "2.3.8"
+  }, {
+    "name" : "rapidjson",
+    "version>=" : "2023-07-17#1"
+  }, {
+    "name" : "bullet3",
+    "version>=" : "3.25#1"
+  }, {
+    "name" : "assimp",
+    "version>=" : "5.3.1#4"
+  }, {
+    "name" : "pugixml",
+    "version>=" : "1.14"
   } ]
 }

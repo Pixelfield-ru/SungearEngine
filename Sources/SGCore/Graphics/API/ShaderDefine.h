@@ -7,8 +7,7 @@
 #ifndef NATIVECORE_SHADERDEFINE_H
 #define NATIVECORE_SHADERDEFINE_H
 
-#include <string>
-#include <utility>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

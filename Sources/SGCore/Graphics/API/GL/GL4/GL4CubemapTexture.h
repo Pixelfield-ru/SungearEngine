@@ -5,9 +5,9 @@
 #ifndef SUNGEARENGINE_GL4CUBEMAPTEXTURE_H
 #define SUNGEARENGINE_GL4CUBEMAPTEXTURE_H
 
-#include "SGCore/Graphics/API/ICubemapTexture.h"
+#include <SGCore/pch.h>
 
-#include <glad/glad.h>
+#include "SGCore/Graphics/API/ICubemapTexture.h"
 
 namespace SGCore
 {

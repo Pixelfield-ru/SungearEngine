@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_THREADSPOOL_H
 #define SUNGEARENGINE_THREADSPOOL_H
 
-#include <memory>
+#include <SGCore/pch.h>
 
 #include "Thread.h"
 

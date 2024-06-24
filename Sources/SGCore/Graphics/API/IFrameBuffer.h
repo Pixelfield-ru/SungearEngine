@@ -5,14 +5,7 @@
 #ifndef SUNGEARENGINE_IFRAMEBUFFER_H
 #define SUNGEARENGINE_IFRAMEBUFFER_H
 
-#include <iostream>
-#include <memory>
-#include <list>
-#include <vector>
-#include <glm/glm.hpp>
-#include <initializer_list>
-#include <set>
-#include <unordered_map>
+#include <SGCore/pch.h>
 
 #include "GraphicsDataTypes.h"
 #include "IFrameBufferAttachment.h"

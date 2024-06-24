@@ -5,8 +5,7 @@
 #ifndef SUNGEARENGINE_GRAPHICSDATATYPES_H
 #define SUNGEARENGINE_GRAPHICSDATATYPES_H
 
-#include <iostream>
-#include <cstdint>
+#include <SGCore/pch.h>
 
 enum SGShaderDefineType
 {

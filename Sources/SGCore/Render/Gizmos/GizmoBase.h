@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_GIZMOBASE_H
 #define SUNGEARENGINE_GIZMOBASE_H
 
-#include "glm/glm.hpp"
+#include <SGCore/pch.h>
+
 #include "SGCore/Render/MeshBase.h"
 
 namespace SGCore

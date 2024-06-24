@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_SSAO_H
 #define SUNGEARENGINE_SSAO_H
 
-#include <memory>
+#include <SGCore/pch.h>
+
 #include <SGCore/Render/PostProcess/PostProcessEffect.h>
 #include "SGCore/Graphics/API/ISubPassShader.h"
 

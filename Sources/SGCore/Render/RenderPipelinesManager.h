@@ -1,7 +1,8 @@
 #ifndef SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 #define SUNGEARENGINE_RENDERPIPELINESMANAGER_H
 
-#include <spdlog/spdlog.h>
+#include <SGCore/pch.h>
+
 #include <sgcore_export.h>
 
 #include "SGUtils/Event.h"

@@ -2,8 +2,6 @@
 // Created by stuka on 21.05.2023.
 //
 
-#include <iostream>
-
 #include "GLIndexBuffer.h"
 #include "GLGraphicsTypesCaster.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"

@@ -5,8 +5,7 @@
 #ifndef SUNGEARENGINE_FILEUTILS_H
 #define SUNGEARENGINE_FILEUTILS_H
 
-#include <iostream>
-#include <vector>
+#include <SGUtils/pch.h>
 
 namespace SGUtils::FileUtils
 {

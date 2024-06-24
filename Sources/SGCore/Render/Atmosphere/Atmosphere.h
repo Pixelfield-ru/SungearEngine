@@ -5,9 +5,7 @@
 #ifndef SUNGEARENGINE_ATMOSPHERE_H
 #define SUNGEARENGINE_ATMOSPHERE_H
 
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <map>
+#include <SGCore/pch.h>
 
 #include "SGCore/Render/MeshBase.h"
 

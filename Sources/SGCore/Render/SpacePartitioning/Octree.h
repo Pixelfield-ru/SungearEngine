@@ -5,16 +5,9 @@
 #ifndef SUNGEARENGINE_OCTREE_H
 #define SUNGEARENGINE_OCTREE_H
 
-#include <entt/entity/entity.hpp>
-#include <vector>
-#include <atomic>
-#include <unordered_set>
-#include <array>
-#include <unordered_map>
-#include <set>
+#include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "glm/vec3.hpp"
 #include "SGUtils/Math/AABB.h"
 
 namespace SGCore

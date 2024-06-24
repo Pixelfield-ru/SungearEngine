@@ -5,9 +5,8 @@
 #ifndef SUNGEARENGINE_DEVICEGLINFO_H
 #define SUNGEARENGINE_DEVICEGLINFO_H
 
-#include <cstddef>
-#include <glad/glad.h>
-#include <spdlog/spdlog.h>
+#include <SGCore/pch.h>
+
 #include "SGUtils/Utils.h"
 
 namespace SGCore

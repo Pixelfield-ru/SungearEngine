@@ -5,8 +5,8 @@
 #ifndef SUNGEARENGINE_INPUTLISTENER_H
 #define SUNGEARENGINE_INPUTLISTENER_H
 
-#include <atomic>
-#include <memory>
+#include <SGCore/pch.h>
+
 #include "SGCore/Main/Window.h"
 
 namespace SGCore

@@ -5,8 +5,7 @@
 #ifndef SGSLINTERPRETER_SGSLBRACKETSLISTENER_H
 #define SGSLINTERPRETER_SGSLBRACKETSLISTENER_H
 
-#include <cstddef>
-#include <functional>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

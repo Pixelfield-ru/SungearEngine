@@ -5,12 +5,10 @@
 #ifndef SUNGEARENGINE_FONT_H
 #define SUNGEARENGINE_FONT_H
 
+#include <SGCore/pch.h>
+
 #include "IAsset.h"
 #include "FontSpecialization.h"
-
-#include <freetype/freetype.h>
-#include <map>
-#include <unordered_set>
 
 namespace SGCore
 {

@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_TRANSFORM_H
 #define SUNGEARENGINE_TRANSFORM_H
 
-#include <atomic>
+#include <SGCore/pch.h>
+
 #include "TransformBase.h"
 #include "SGCore/Main/CoreGlobals.h"
 

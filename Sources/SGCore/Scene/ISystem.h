@@ -5,10 +5,7 @@
 #ifndef NATIVECORE_ISYSTEM_H
 #define NATIVECORE_ISYSTEM_H
 
-#include <functional>
-#include <map>
-#include <source_location>
-#include <thread>
+#include <SGCore/pch.h>
 
 #include "SGCore/Threading/ThreadsManager.h"
 #include "SGCore/Threading/Thread.h"
@@ -16,7 +13,6 @@
 #include "SGUtils/Singleton.h"
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "entt/entity/entity.hpp"
 
 namespace SGCore
 {

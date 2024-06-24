@@ -5,9 +5,8 @@
 #ifndef SUNGEARENGINE_TEXT_H
 #define SUNGEARENGINE_TEXT_H
 
-#include <string>
-#include <vector>
-#include <glm/vec4.hpp>
+#include <SGCore/pch.h>
+
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Memory/Assets/FontSpecialization.h"
 

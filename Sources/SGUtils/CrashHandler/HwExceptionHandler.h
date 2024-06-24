@@ -5,10 +5,9 @@
 #ifndef SUNGEARENGINE_HWEXCEPTIONHANDLER_H
 #define SUNGEARENGINE_HWEXCEPTIONHANDLER_H
 
-#include <csetjmp>
-#include <stdexcept>
-#include "sgutils_export.h"
-#include "sgcore_export.h"
+#include <SGUtils/pch.h>
+#include <sgutils_export.h>
+#include <sgcore_export.h>
 
 #include "Platform.h"
 #include "SGUtils/Utils.h"

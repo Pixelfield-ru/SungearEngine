@@ -5,10 +5,7 @@
 #ifndef SUNGEARENGINE_IVIEW_H
 #define SUNGEARENGINE_IVIEW_H
 
-#include <vector>
-#include <string>
-#include <memory>
-#include <glm/vec2.hpp>
+#include <SGCore/pch.h>
 
 #include "SGUtils/UUID.h"
 #include "SGUtils/Event.h"

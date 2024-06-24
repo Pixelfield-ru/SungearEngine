@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_BATCHINGTARGET_H
 #define SUNGEARENGINE_BATCHINGTARGET_H
 
-#include <glm/glm.hpp>
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

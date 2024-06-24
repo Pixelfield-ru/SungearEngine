@@ -3,10 +3,9 @@
 
 #define GLFW_INCLUDE_NONE
 
-#include <iostream>
-#include <utility>
+#include <SGCore/pch.h>
+
 #include <sgcore_export.h>
-#include <GLFW/glfw3.h>
 
 #include "SGUtils/Event.h"
 

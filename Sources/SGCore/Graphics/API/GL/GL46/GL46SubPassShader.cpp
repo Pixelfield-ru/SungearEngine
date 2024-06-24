@@ -1,11 +1,5 @@
 #include "GL46SubPassShader.h"
 
-#include <vector>
-#include <sstream>
-
-#include <glm/gtc/type_ptr.hpp>
-#include <spdlog/spdlog.h>
-
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/SGSL/SGSLESubShader.h"

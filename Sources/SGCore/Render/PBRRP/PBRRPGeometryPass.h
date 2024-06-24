@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_PBRRPGEOMETRYPASS_H
 #define SUNGEARENGINE_PBRRPGEOMETRYPASS_H
 
-#include <entt/entity/registry.hpp>
+#include <SGCore/pch.h>
 
 #include "SGCore/Render/IRenderPass.h"
 #include "SGCore/Transformations/TransformBase.h"

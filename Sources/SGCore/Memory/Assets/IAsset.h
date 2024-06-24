@@ -5,11 +5,7 @@
 #ifndef NATIVECORE_IASSET_H
 #define NATIVECORE_IASSET_H
 
-#include <iostream>
-#include <memory>
-#include <list>
-#include <functional>
-#include <filesystem>
+#include <SGCore/pch.h>
 
 #include "IAssetObserver.h"
 #include "SGCore/Main/CoreGlobals.h"

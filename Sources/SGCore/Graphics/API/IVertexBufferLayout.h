@@ -7,8 +7,7 @@
 #ifndef SUNGEARENGINE_IVERTEXBUFFERLAYOUT_H
 #define SUNGEARENGINE_IVERTEXBUFFERLAYOUT_H
 
-#include <list>
-#include <memory>
+#include <SGCore/pch.h>
 
 #include "IVertexAttribute.h"
 #include "SGCore/Main/CoreGlobals.h"

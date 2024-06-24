@@ -1,9 +1,7 @@
 #ifndef SUNGEARENGINE_EVENTLISTENER_H
 #define SUNGEARENGINE_EVENTLISTENER_H
 
-#include <list>
-#include <functional>
-#include <memory>
+#include <SGUtils/pch.h>
 
 namespace SGCore
 {

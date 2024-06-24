@@ -5,9 +5,7 @@
 #ifndef THREADINGAPI_THREAD_H
 #define THREADINGAPI_THREAD_H
 
-#include <thread>
-#include <functional>
-#include <mutex>
+#include <SGCore/pch.h>
 
 #include "Task.h"
 

@@ -5,12 +5,7 @@
 #ifndef ECS_TYPEMETA_H
 #define ECS_TYPEMETA_H
 
-#include <cstddef>
-#include <set>
-#include <map>
-#include <tuple>
-#include <type_traits>
-#include <iostream>
+#include <SGUtils/pch.h>
 
 #define SGECS_DECLARE_BASE(DerivedType, BaseType) \
 private: \
@@ -175,6 +170,16 @@ namespace SGCore
         
         template<size_t Idx>
         using get_type = extract<Idx, Args...>;
+    };
+    
+    template <typename T>
+    struct always_false : std::false_type
+    {
+    };
+    
+    template <typename T>
+    struct always_true : std::false_type
+    {
     };
     
     template <typename T>

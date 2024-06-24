@@ -123,6 +123,8 @@ void SGE::FileCreateDialog::renderBody()
             m_error = "";
             
             setActive(false);
+            
+            onOperationEnd(pathName, false);
         }
         else
         {
@@ -140,6 +142,8 @@ void SGE::FileCreateDialog::renderBody()
         setActive(false);
         
         m_size.y = 85;
+        
+        onOperationEnd(m_currentChosenDirPath + "/" + m_fileName, true);
     }
     
     ImGui::EndPopup();

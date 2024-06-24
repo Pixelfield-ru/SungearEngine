@@ -7,9 +7,7 @@
 #ifndef NATIVECORE_IVERTEXBUFFER_H
 #define NATIVECORE_IVERTEXBUFFER_H
 
-#include <iostream>
-#include <vector>
-#include <memory>
+#include <SGCore/pch.h>
 
 #include "GraphicsDataTypes.h"
 

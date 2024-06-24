@@ -1,12 +1,10 @@
 #ifndef SUNGEARENGINE_NODE_H
 #define SUNGEARENGINE_NODE_H
 
-#include <entt/entt.hpp>
+#include <SGCore/pch.h>
 
 #include "IMeshData.h"
-#include "glm/detail/type_quat.hpp"
 #include "SGCore/Scene/Scene.h"
-#include "glm/fwd.hpp"
 
 namespace SGCore
 {

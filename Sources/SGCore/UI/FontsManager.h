@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINE_FONTSMANAGER_H
 #define SUNGEARENGINE_FONTSMANAGER_H
 
-#include <freetype/freetype.h>
+#include <SGCore/pch.h>
+
 #include <sgcore_export.h>
 
 namespace SGCore

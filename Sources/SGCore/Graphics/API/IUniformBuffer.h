@@ -1,12 +1,7 @@
 #ifndef SUNGEARENGINE_IUNIFORMBUFFER_H
 #define SUNGEARENGINE_IUNIFORMBUFFER_H
 
-#include <memory>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/common.hpp>
-#include <forward_list>
-#include <cstring>
+#include <SGCore/pch.h>
 
 #include "IShaderUniform.h"
 #include "ISubPassShader.h"

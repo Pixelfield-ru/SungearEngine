@@ -5,8 +5,7 @@
 #ifndef SUNGEARENGINE_GL46SUBPASSSHADER_H
 #define SUNGEARENGINE_GL46SUBPASSSHADER_H
 
-#include <glad/glad.h>
-#include <vector>
+#include <SGCore/pch.h>
 
 #include "SGCore/Graphics/API/ISubPassShader.h"
 

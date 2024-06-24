@@ -16,7 +16,6 @@ endif()
 
 add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
 add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
-add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 add_definitions(-DUSE_LIBPNG)
 add_definitions(-DHC_NO_COMPRESSION)
 add_definitions(-DNOMINMAX)

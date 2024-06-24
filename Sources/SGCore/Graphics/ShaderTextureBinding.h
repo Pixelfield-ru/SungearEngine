@@ -5,9 +5,7 @@
 #ifndef SUNGEARENGINE_TEXTURESBLOCK_H
 #define SUNGEARENGINE_TEXTURESBLOCK_H
 
-#include <string>
-#include <list>
-#include <vector>
+#include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"

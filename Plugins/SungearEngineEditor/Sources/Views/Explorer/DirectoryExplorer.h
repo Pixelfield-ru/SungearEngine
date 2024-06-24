@@ -76,7 +76,7 @@ namespace SGE
         std::vector<std::filesystem::path> m_paths;
     };
     
-    struct DirectoryExplorer : SGCore::ImGuiWrap::IView
+    struct DirectoryExplorer : public SGCore::ImGuiWrap::IView
     {
         DirectoryExplorer();
         
@@ -111,6 +111,11 @@ namespace SGE
                                         {
                                                 .m_name = "C++ Header File",
                                                 .m_icon = StylesManager::getCurrentStyle()->m_headerIcon->getSpecialization(18, 18)->getTexture(),
+                                                .m_drawSeparatorAfter = true
+                                        },
+                                        {
+                                                .m_name = "Scene",
+                                                .m_icon = StylesManager::getCurrentStyle()->m_cubesIcon->getSpecialization(18, 18)->getTexture(),
                                                 .m_drawSeparatorAfter = true
                                         },
                                         {
@@ -262,6 +267,9 @@ namespace SGE
         
         // =======================================================================
         FileInfo* m_draggingFileInfo = nullptr;
+        
+        // =======================================================================
+        SGCore::EventListener<void(const std::filesystem::path& byPath, bool canceled)> m_onSceneFileCreated;
     };
 }
 

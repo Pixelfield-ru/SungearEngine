@@ -5,11 +5,7 @@
 #ifndef SUNGEARENGINE_EVENT_H
 #define SUNGEARENGINE_EVENT_H
 
-#include <list>
-#include <functional>
-#include <map>
-#include <utility>
-#include <iostream>
+#include <SGUtils/pch.h>
 
 #include "EventListener.h"
 #include "TypeTraits.h"

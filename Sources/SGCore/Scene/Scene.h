@@ -1,13 +1,8 @@
 #ifndef SUNGEARENGINE_SCENE_H
 #define SUNGEARENGINE_SCENE_H
 
-#include <vector>
-#include <list>
-#include <memory>
-#include <map>
-#include <variant>
-#include <type_traits>
-#include <entt/entt.hpp>
+#include <SGCore/pch.h>
+
 #include <sgcore_export.h>
 
 #include "Layer.h"
@@ -83,15 +78,6 @@ namespace SGCore
             return m_ecsRegistry;
         }
         
-        static void addScene(const Ref<Scene>& scene) noexcept;
-        static Ref<Scene> getScene(const std::string& sceneName) noexcept;
-        static void setCurrentScene(const std::string& sceneName) noexcept;
-        
-        static const auto& getScenes() noexcept
-        {
-            return m_scenes;
-        }
-        
         /**
          * Creates new layer or returns existing layer.
          * @param name - Name of new layer.
@@ -107,8 +93,26 @@ namespace SGCore
         
         double getUpdateFunctionExecutionTime() const noexcept;
         double getFixedUpdateFunctionExecutionTime() const noexcept;
+        
+        void saveToFile(const std::string& path) noexcept;
+        
+        static void addScene(const Ref<Scene>& scene) noexcept;
+        static Ref<Scene> getScene(const std::string& sceneName) noexcept;
+        static void setCurrentScene(const std::string& sceneName) noexcept;
+        
+        static const auto& getScenes() noexcept
+        {
+            return m_scenes;
+        }
+        
+        SG_NOINLINE static auto& getOnSceneSaveEvent() noexcept
+        {
+            return onSceneSave;
+        }
 
     private:
+        static inline Event<void(const Ref<Scene>& savableScene)> onSceneSave;
+        
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;
         

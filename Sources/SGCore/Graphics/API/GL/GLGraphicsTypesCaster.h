@@ -7,8 +7,8 @@
 #ifndef SUNGEARENGINE_GLGRAPHICSTYPESCASTER_H
 #define SUNGEARENGINE_GLGRAPHICSTYPESCASTER_H
 
-#include <glad/glad.h>
-#include <iostream>
+#include <SGCore/pch.h>
+
 #include "../GraphicsDataTypes.h"
 
 namespace GLGraphicsTypesCaster

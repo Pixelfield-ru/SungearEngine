@@ -12,7 +12,7 @@
 #define SG_CORE_PATCH_VERSION 0
 #define SG_CORE_BUILD_VERSION 8
 
-#include "assimp/postprocess.h"
+#include <SGCore/pch.h>
 
 namespace SGCore
 {

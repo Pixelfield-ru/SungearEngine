@@ -5,8 +5,7 @@
 #ifndef THREADINGAPI_TASK_H
 #define THREADINGAPI_TASK_H
 
-#include <mutex>
-#include <atomic>
+#include <SGCore/pch.h>
 
 #include "SGUtils/Event.h"
 #include "SGUtils/Utils.h"

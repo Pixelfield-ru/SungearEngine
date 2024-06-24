@@ -4,10 +4,7 @@
 
 #pragma once
 
-#include <entt/entity/observer.hpp>
-#include <entt/entity/registry.hpp>
-#include <entt/entity/entity.hpp>
-#include <thread>
+#include <SGCore/pch.h>
 
 #include "SGCore/Scene/ISystem.h"
 #include "SGUtils/Utils.h"

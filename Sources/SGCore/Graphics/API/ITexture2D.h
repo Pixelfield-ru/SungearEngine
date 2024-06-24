@@ -5,7 +5,7 @@
 #ifndef NATIVECORE_ITEXTURE2D_H
 #define NATIVECORE_ITEXTURE2D_H
 
-#include <iostream>
+#include <SGCore/pch.h>
 
 #include "GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"

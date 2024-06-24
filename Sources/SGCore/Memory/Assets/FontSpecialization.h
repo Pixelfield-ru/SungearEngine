@@ -5,13 +5,7 @@
 #ifndef SUNGEARENGINE_FONTSPECIALIZATION_H
 #define SUNGEARENGINE_FONTSPECIALIZATION_H
 
-#include <map>
-#include <cstddef>
-#include <freetype/freetype.h>
-#include <glm/vec2.hpp>
-#include <unordered_map>
-#include <vector>
-#include <string>
+#include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
 
