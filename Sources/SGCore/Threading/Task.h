@@ -7,8 +7,8 @@
 
 #include <SGCore/pch.h>
 
-#include "SGUtils/Event.h"
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace SGCore::Threading
 {

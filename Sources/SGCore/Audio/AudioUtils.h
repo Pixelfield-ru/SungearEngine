@@ -12,8 +12,8 @@
 #include <AL/alext.h>
 #include <spdlog/spdlog.h>
 
-#include "SGUtils/TypeTraits.h"
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/TypeTraits.h"
+#include "SGCore/Utils/Utils.h"
 
 #define AL_CALL(alFunc, ...) SGCore::AudioUtils::alCallImpl(std::source_location::current(), alFunc, __VA_ARGS__)
 #define AL_CALL_E(noError, alFunc, ...) SGCore::AudioUtils::alCallImplE(noError, std::source_location::current(), alFunc, __VA_ARGS__)

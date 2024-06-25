@@ -7,7 +7,7 @@
 
 #include <sgcore_export.h>
 
-#include "SGUtils/Event.h"
+#include "SGCore/Utils/Event.h"
 
 namespace SGCore
 {

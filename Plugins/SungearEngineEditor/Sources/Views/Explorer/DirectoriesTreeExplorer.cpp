@@ -38,7 +38,7 @@ void SGE::DirectoriesTreeExplorer::renderBody()
                 
                 assert(font && "Can not find default font (18 px) to render DirectoryExplorer");
                 
-                std::string text = SGUtils::Utils::toUTF8<char16_t>(m_currentPath.u16string());
+                std::string text = SGCore::Utils::toUTF8<char16_t>(m_currentPath.u16string());
                 ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
                 
                 // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, originalItemsSpacing);
@@ -155,7 +155,7 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
     {
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
     }
-    ImGui::Text(SGUtils::Utils::toUTF8<char16_t>(u16filename).c_str());
+    ImGui::Text(SGCore::Utils::toUTF8<char16_t>(u16filename).c_str());
 
     auto mouseScreenPos = ImGui::GetCursorScreenPos();
     

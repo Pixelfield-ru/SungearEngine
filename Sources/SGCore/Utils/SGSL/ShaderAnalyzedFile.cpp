@@ -4,12 +4,12 @@
 #include "ShaderAnalyzedFile.h"
 
 #include "SGSLETranslator.h"
-#include "SGUtils/FileUtils.h"
+#include "SGCore/Utils/FileUtils.h"
 
 void SGCore::ShaderAnalyzedFile::doLoad(const std::string& path)
 {
     SGSLETranslator translator;
     
-    translator.processCode(path, SGUtils::FileUtils::readFile(path), shared_from_this());
+    translator.processCode(path, SGCore::FileUtils::readFile(path), shared_from_this());
 }
 

@@ -83,7 +83,6 @@
          EnTT::EnTT
          spdlog::spdlog
          glad::glad
-         SGUtils
          OpenAL::OpenAL
          glaze::glaze
          unofficial::lunasvg::lunasvg

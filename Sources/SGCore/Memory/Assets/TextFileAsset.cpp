@@ -4,7 +4,7 @@
 
 void SGCore::TextFileAsset::doLoad(const std::string& path)
 {
-    m_data = SGUtils::FileUtils::readFile(path);
+    m_data = SGCore::FileUtils::readFile(path);
 }
 
 std::string SGCore::TextFileAsset::getData() const noexcept

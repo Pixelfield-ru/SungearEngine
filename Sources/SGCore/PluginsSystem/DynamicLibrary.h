@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_DYNAMICLIBRARY_H
 #define SUNGEARENGINE_DYNAMICLIBRARY_H
 
-#include "SGUtils/CrashHandler/Platform.h"
+#include "SGCore/CrashHandler/Platform.h"
 
 #include <functional>
 

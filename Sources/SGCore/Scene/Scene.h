@@ -7,11 +7,11 @@
 
 #include "Layer.h"
 #include "ISystem.h"
-#include "SGUtils/Utils.h"
-#include "SGUtils/UniqueNamesManager.h"
-#include "SGUtils/Event.h"
-#include "SGUtils/EventListener.h"
-#include "SGUtils/TypeTraits.h"
+#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/UniqueNamesManager.h"
+#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/EventListener.h"
+#include "SGCore/Utils/TypeTraits.h"
 
 namespace SGCore
 {

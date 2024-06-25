@@ -21,7 +21,7 @@
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
-#include "Serializables.h"
+#include "Serializer.h"
 
 SGCore::Scene::Scene()
 {
@@ -273,13 +273,12 @@ void SGCore::Scene::saveToFile(const std::string& path) noexcept
     rapidjson::Document document;
     document.SetObject();
     
-    document.AddMember("name", rapidjson::StringRef(m_name.c_str()), document.GetAllocator());
-    
-    // Serializable<glm::vec<2, double, glm::defaultp>>::serialize(document, "sfsdf", { 4, 5 });
-    
-    // Serializer::serialize(document, "dsfsdfsdf", std::string("ssdfsdf"));
-    Serializable<glm::vec<2, double, glm::defaultp>>::serialize(document, "vec", {});
-    
+    auto* mem = &document.AddMember("name", rapidjson::StringRef(m_name.c_str()), document.GetAllocator());
+    // mem = &document;
+
+    SerializerSpec<glm::vec<4, double, glm::defaultp>>::serialize(document, document, "vec", {});
+    // SerializerSpec<Transform>::serialize(document, document, "transform", {});
+
     getOnSceneSaveEvent()(shared_from_this());
     
     rapidjson::StringBuffer stringBuffer;
@@ -287,7 +286,7 @@ void SGCore::Scene::saveToFile(const std::string& path) noexcept
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
     document.Accept(writer);
     
-    SGUtils::FileUtils::writeToFile(path, stringBuffer.GetString(), false, true);
+    FileUtils::writeToFile(path, stringBuffer.GetString(), false, true);
     
     std::printf("scene '%s' saved!\n", m_name.c_str());
 }

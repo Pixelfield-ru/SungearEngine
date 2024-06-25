@@ -8,7 +8,7 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGUtils/EventListener.h"
+#include "SGCore/Utils/EventListener.h"
 
 namespace SGCore
 {

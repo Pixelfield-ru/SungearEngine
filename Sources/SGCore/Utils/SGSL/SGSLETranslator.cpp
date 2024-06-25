@@ -7,8 +7,8 @@
 
 #include "SGSLETranslator.h"
 #include "SGSLEUtils.h"
-#include "SGUtils/Utils.h"
-#include "SGUtils/FileUtils.h"
+#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/FileUtils.h"
 
 void
 SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code,
@@ -17,8 +17,8 @@ SGCore::SGSLETranslator::processCode(const std::string& path, const std::string&
 {
     // std::cout << "loading shader: " << path << std::endl;
     
-    std::string replacedPath = SGUtils::Utils::replaceAll<char>(path, "/", "_");
-    replacedPath = SGUtils::Utils::replaceAll<char>(replacedPath, "\\", "_");
+    std::string replacedPath = SGCore::Utils::replaceAll<char>(path, "/", "_");
+    replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, "\\", "_");
     
     if(isRootShader)
     {
@@ -31,7 +31,7 @@ SGCore::SGSLETranslator::processCode(const std::string& path, const std::string&
     
     if(translator.m_config.m_useOutputDebug && isRootShader)
     {
-        SGUtils::FileUtils::writeToFile(translator.m_config.m_outputDebugDirectoryPath + "/" + replacedPath + ".txt",
+        SGCore::FileUtils::writeToFile(translator.m_config.m_outputDebugDirectoryPath + "/" + replacedPath + ".txt",
                                         analyzedFile->getAllCode(), false, true);
     }
 }
@@ -117,7 +117,7 @@ std::string SGCore::SGSLETranslator::sgsleCodeCorrector(const std::string& code)
                 currentCharOfStrIdxWOSpaces = 0;
                 preProcDirDeclared = false;
                 currentLine += c;
-                outputStr += SGUtils::Utils::reduce(currentLine);
+                outputStr += SGCore::Utils::reduce(currentLine);
                 currentLine = "";
                 
                 continue;
@@ -128,7 +128,7 @@ std::string SGCore::SGSLETranslator::sgsleCodeCorrector(const std::string& code)
                 currentCharOfStrIdxWOSpaces = 0;
                 currentLine += c;
                 currentLine += '\n';
-                outputStr += SGUtils::Utils::reduce(currentLine);
+                outputStr += SGCore::Utils::reduce(currentLine);
                 currentLine = "";
                 
                 continue;
@@ -139,7 +139,7 @@ std::string SGCore::SGSLETranslator::sgsleCodeCorrector(const std::string& code)
                 currentLine += c;
                 currentLine += '\n';
                 
-                outputStr += SGUtils::Utils::reduce(currentLine);
+                outputStr += SGCore::Utils::reduce(currentLine);
                 currentLine = "";
                 
                 currentCharOfStrIdxWOSpaces = 0;
@@ -181,7 +181,7 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
     while(std::getline(codeStream, line))
     {
         std::vector<std::string> words;
-        SGUtils::Utils::splitString(line, ' ', words);
+        SGCore::Utils::splitString(line, ' ', words);
         
         bool append = true;
         
@@ -199,20 +199,20 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
         
         if(!words.empty() && words[0] == "#sg_include")
         {
-            std::string includedFilePath = SGUtils::Utils::toString(words.begin() + 1, words.end());
+            std::string includedFilePath = SGCore::Utils::toString(words.begin() + 1, words.end());
             std::string finalIncludedFilePath = std::filesystem::path(path).parent_path().string() + "/" +
                                                 std::string(includedFilePath.begin() + 1, includedFilePath.end() - 1);
             
             
             // std::string f = finalIncludedFilePath;
-            finalIncludedFilePath = SGUtils::Utils::getRealPath(finalIncludedFilePath);
+            finalIncludedFilePath = SGCore::Utils::getRealPath(finalIncludedFilePath);
             if(!std::filesystem::exists(finalIncludedFilePath))
             {
                 // trying to include file using relative to executable file path
                 finalIncludedFilePath = std::filesystem::current_path().string() + "/" +
                                         std::string(includedFilePath.begin() + 1, includedFilePath.end() - 1);
                 // f = finalIncludedFilePath;
-                finalIncludedFilePath = SGUtils::Utils::getRealPath(finalIncludedFilePath);
+                finalIncludedFilePath = SGCore::Utils::getRealPath(finalIncludedFilePath);
                 
                 //std::cout << "exec path: " << std::filesystem::current_path().string() << ", f: " << f << ", realpath: " << finalIncludedFilePath << std::endl;
             }
@@ -232,7 +232,7 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
             {
                 auto includedAnalyzedFile = MakeRef<ShaderAnalyzedFile>();
                 
-                translator.processCode(finalIncludedFilePath, SGUtils::FileUtils::readFile(finalIncludedFilePath),
+                translator.processCode(finalIncludedFilePath, SGCore::FileUtils::readFile(finalIncludedFilePath),
                             translator, false, includedAnalyzedFile);
                 
                 analyzedFile->includeFile(includedAnalyzedFile);
@@ -395,7 +395,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
             Ref<SGSLESubShader> subShader = subShaderIter.second;
             
             std::vector<std::string> lines;
-            SGUtils::Utils::splitString(subShader->m_code, '\n', lines);
+            SGCore::Utils::splitString(subShader->m_code, '\n', lines);
             
             subShader->m_code = "";
 
@@ -403,10 +403,10 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
             for(auto& line : lines)
             {
                 std::vector<std::string> splittedBySpaceLine;
-                SGUtils::Utils::splitString(line, ' ', splittedBySpaceLine);
+                SGCore::Utils::splitString(line, ' ', splittedBySpaceLine);
                 
                 std::vector<std::string> assignExprSplitted;
-                SGUtils::Utils::splitString(line, '=', assignExprSplitted);
+                SGCore::Utils::splitString(line, '=', assignExprSplitted);
                 
                 // members calls processing
                 std::smatch variableFuncCallRegexMatch;
@@ -420,7 +420,7 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                     // todo:
                     if(variableFunction == "sg_length()")
                     {
-                        line = SGUtils::Utils::replaceAll(line, fullMatch, variableName + "_CURRENT_COUNT");
+                        line = SGCore::Utils::replaceAll(line, fullMatch, variableName + "_CURRENT_COUNT");
                     }
                 }
                 
@@ -429,17 +429,17 @@ SGCore::SGSLETranslator::sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzed
                     if(splittedBySpaceLine[0] == "struct")
                     {
                         SGSLEStruct sgsleStruct;
-                        sgsleStruct.m_name = SGUtils::Utils::replaceAll<char>(splittedBySpaceLine[1], "{", "");
+                        sgsleStruct.m_name = SGCore::Utils::replaceAll<char>(splittedBySpaceLine[1], "{", "");
                         
                         for(size_t i = 2; i < splittedBySpaceLine.size(); i += 2)
                         {
                             if(splittedBySpaceLine[i] == "extends")
                             {
-                                std::string clearBaseName = SGUtils::Utils::replaceAll<char>(splittedBySpaceLine[i + 1], "{",
+                                std::string clearBaseName = SGCore::Utils::replaceAll<char>(splittedBySpaceLine[i + 1], "{",
                                                                                              "");
                                 
-                                line = SGUtils::Utils::replaceAll<char>(line, "extends " + clearBaseName, "");
-                                line = SGUtils::Utils::reduce(line);
+                                line = SGCore::Utils::replaceAll<char>(line, "extends " + clearBaseName, "");
+                                line = SGCore::Utils::reduce(line);
                                 
                                 SGSLEStruct* baseStruct = subShader->tryGetStruct(clearBaseName);
                                 

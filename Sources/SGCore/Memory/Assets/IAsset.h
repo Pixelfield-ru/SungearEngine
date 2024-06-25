@@ -9,8 +9,8 @@
 
 #include "IAssetObserver.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGUtils/UniqueName.h"
-#include "SGUtils/Event.h"
+#include "SGCore/Utils/UniqueName.h"
+#include "SGCore/Utils/Event.h"
 
 namespace SGCore
 {

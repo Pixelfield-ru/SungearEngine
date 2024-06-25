@@ -5,8 +5,8 @@
 
 #include <sgcore_export.h>
 
-#include "SGUtils/Event.h"
-#include "SGUtils/EventListener.h"
+#include "SGCore/Utils/Event.h"
+#include "SGCore/Utils/EventListener.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "IRenderPipeline.h"
 

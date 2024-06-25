@@ -7,8 +7,8 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/PostProcess/PostProcessFXSubPass.h"
 #include "SGCore/Scene/Layer.h"
-#include "SGUtils/EventListener.h"
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/EventListener.h"
+#include "SGCore/Utils/Utils.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 

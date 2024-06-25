@@ -8,7 +8,7 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
-#include "SGUtils/EventListener.h"
+#include "SGCore/Utils/EventListener.h"
 #include "SGCore/Scene/ISystem.h"
 #include "BatchEntityRanges.h"
 

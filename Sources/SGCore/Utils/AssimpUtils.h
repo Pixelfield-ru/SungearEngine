@@ -5,9 +5,9 @@
 #ifndef SUNGEARENGINE_ASSIMPUTILS_H
 #define SUNGEARENGINE_ASSIMPUTILS_H
 
-#include <SGUtils/pch.h>
+#include <SGCore/pch.h>
 
-namespace SGUtils::AssimpUtils
+namespace SGCore::AssimpUtils
 {
     static glm::vec4 aiVectorToGLM(const aiColor4D& vec)
     {

@@ -57,6 +57,7 @@
 // RAPIDJSON
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/writer.h>
+#include <rapidjson/prettywriter.h>
 #include <rapidjson/reader.h>
 #include <rapidjson/document.h>
 

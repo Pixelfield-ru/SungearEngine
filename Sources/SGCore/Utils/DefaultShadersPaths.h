@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_DEFAULTSHADERPATHES_H
 #define SUNGEARENGINE_DEFAULTSHADERPATHES_H
 
-#include <SGUtils/Utils.h>
+#include "Utils.h"
 
 #include "ShadersPaths.h"
 

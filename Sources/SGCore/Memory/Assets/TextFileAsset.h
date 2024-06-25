@@ -8,7 +8,7 @@
 #define NATIVECORE_SHADERASSET_H
 
 #include "IAsset.h"
-#include "SGUtils/FileUtils.h"
+#include "SGCore/Utils/FileUtils.h"
 
 namespace SGCore
 {

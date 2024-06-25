@@ -9,8 +9,8 @@
 
 #include "SGCore/Threading/ThreadsManager.h"
 #include "SGCore/Threading/Thread.h"
-#include "SGUtils/Marker.h"
-#include "SGUtils/Singleton.h"
+#include "SGCore/Utils/Marker.h"
+#include "SGCore/Utils/Singleton.h"
 
 #include "SGCore/Main/CoreGlobals.h"
 

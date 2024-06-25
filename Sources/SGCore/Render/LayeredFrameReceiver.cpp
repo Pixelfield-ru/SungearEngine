@@ -88,7 +88,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addLayer(con
     if(foundPPLayer)
     {
         spdlog::error("Error: can not add a new post-process layer to the camera. This layer already exists.\n{0}",
-                      SGUtils::Utils::sourceLocationToString(std::source_location::current()));
+                      SGCore::Utils::sourceLocationToString(std::source_location::current()));
         return foundPPLayer;
     }
 
@@ -160,7 +160,7 @@ void SGCore::LayeredFrameReceiver::setLayerShader(const std::string& name,
     if(!foundLayer)
     {
         spdlog::error("Error: can not add a new post-process layer to the camera. This layer does not exist as post-processing layer.\n{0}",
-                      SGUtils::Utils::sourceLocationToString(std::source_location::current()));
+                      Utils::sourceLocationToString(std::source_location::current()));
         return;
     }
     

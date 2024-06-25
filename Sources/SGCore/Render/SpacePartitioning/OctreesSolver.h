@@ -8,8 +8,8 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Scene/ISystem.h"
-#include "SGUtils/EventListener.h"
-#include "SGUtils/Timer.h"
+#include "SGCore/Utils/EventListener.h"
+#include "SGCore/Utils/Timer.h"
 #include "SGCore/Scene/IParallelSystem.h"
 #include "SGCore/Scene/EntityComponentMember.h"
 

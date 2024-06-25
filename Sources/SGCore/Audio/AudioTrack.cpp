@@ -9,7 +9,7 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/Utils.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 #include <stb_vorbis.c>
@@ -63,7 +63,7 @@ void SGCore::AudioTrack::loadFromMemory(const char* buffer, const size_t& buffer
         std::memcpy(tmpBuf, buffer + 16, 4);
         if(!isLittleNative)
         {
-            SGUtils::Utils::swapEndian(tmpBuf, 4);
+            SGCore::Utils::swapEndian(tmpBuf, 4);
         }
         std::memcpy(&subchunk1Size, tmpBuf, 4);
         std::cout << subchunk1Size << std::endl;
@@ -71,42 +71,42 @@ void SGCore::AudioTrack::loadFromMemory(const char* buffer, const size_t& buffer
         std::memcpy(tmpBuf, buffer + 20, 2);
         if(!isLittleNative)
         {
-            SGUtils::Utils::swapEndian(tmpBuf, 2);
+            SGCore::Utils::swapEndian(tmpBuf, 2);
         }
         std::memcpy(&m_audioFormat, tmpBuf, 2);
         
         std::memcpy(tmpBuf, buffer + 22, 2);
         if(!isLittleNative)
         {
-            SGUtils::Utils::swapEndian(tmpBuf, 2);
+            SGCore::Utils::swapEndian(tmpBuf, 2);
         }
         std::memcpy(&m_numChannels, tmpBuf, 2);
         
         std::memcpy(tmpBuf, buffer + 24, 4);
         if(!isLittleNative)
         {
-            SGUtils::Utils::swapEndian(tmpBuf, 4);
+            SGCore::Utils::swapEndian(tmpBuf, 4);
         }
         std::memcpy(&m_sampleRate, tmpBuf, 4);
         
         std::memcpy(tmpBuf, buffer + 28, 4);
         if(!isLittleNative)
         {
-            SGUtils::Utils::swapEndian(tmpBuf, 4);
+            SGCore::Utils::swapEndian(tmpBuf, 4);
         }
         std::memcpy(&m_byteRate, tmpBuf, 4);
         
         std::memcpy(tmpBuf, buffer + 32, 2);
         if(!isLittleNative)
         {
-            SGUtils::Utils::swapEndian(tmpBuf, 2);
+            SGCore::Utils::swapEndian(tmpBuf, 2);
         }
         std::memcpy(&m_blockAlign, tmpBuf, 2);
         
         std::memcpy(tmpBuf, buffer + 34, 2);
         if(!isLittleNative)
         {
-            SGUtils::Utils::swapEndian(tmpBuf, 2);
+            SGCore::Utils::swapEndian(tmpBuf, 2);
         }
         std::memcpy(&m_bitsPerSample, tmpBuf, 2);
         

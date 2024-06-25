@@ -6,7 +6,7 @@
 #include <imgui_internal.h>
 #include <imgui_stdlib.h>
 
-#include <SGUtils/Utils.h>
+#include "SGCore/Utils/Utils.h"
 #include <SGCore/Scene/Scene.h>
 
 #include "DirectoryExplorer.h"
@@ -71,8 +71,8 @@ SGE::DirectoryExplorer::DirectoryExplorer()
                    ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgscene" && !canceled)
         {
             SGCore::Ref<SGCore::Scene> newScene = SGCore::MakeRef<SGCore::Scene>();
-            newScene->m_name = SGUtils::Utils::toUTF8<char16_t>(byPath.stem().u16string());
-            newScene->saveToFile(byPath);
+            newScene->m_name = SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string());
+            newScene->saveToFile(SGCore::Utils::toUTF8<char16_t>(byPath.u16string()));
         }
     };
     
@@ -123,7 +123,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         
         if(element.m_id == "C++ Source File")
         {
-            std::string utf8Path = SGUtils::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+            std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
             auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
             fileCreateDialog->m_dialogTitle = "New C++ Source File";
@@ -135,7 +135,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         }
         else if(element.m_id == "C++ Header File")
         {
-            std::string utf8Path = SGUtils::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+            std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
             auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
             fileCreateDialog->m_dialogTitle = "New C++ Header File";
@@ -147,7 +147,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         }
         else if(element.m_id == "CreateNewDir")
         {
-            std::string utf8Path = SGUtils::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+            std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
             auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
             fileCreateDialog->m_dialogTitle = "New Directory";
@@ -167,7 +167,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         }
         else if(element.m_id == "Scene")
         {
-            std::string utf8Path = SGUtils::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+            std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
             auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
             fileCreateDialog->m_dialogTitle = "New Scene";
@@ -476,7 +476,7 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
     
     m_rightClickedFile = "";
     
-    if(!SGUtils::Utils::isSubpath(m_maxPath, path))
+    if(!SGCore::Utils::isSubpath(m_maxPath, path))
     {
         std::cout << "m_maxPath: " << m_maxPath << ", path: " << path << std::endl;
 
@@ -516,14 +516,14 @@ int SGE::DirectoryExplorer::onFileNameEditCallback(ImGuiInputTextCallbackData* d
     
     int cursorPos = data->CursorPos;
     
-    std::u16string strBuf = SGUtils::Utils::fromUTF8<char16_t>(std::string(data->Buf, data->BufTextLen));
+    std::u16string strBuf = SGCore::Utils::fromUTF8<char16_t>(std::string(data->Buf, data->BufTextLen));
     std::u16string finalTransferredFileName;
     
-    strBuf = SGUtils::Utils::replaceAll<char16_t>(strBuf, u"\n", u"");
+    strBuf = SGCore::Utils::replaceAll<char16_t>(strBuf, u"\n", u"");
     
     for(char16_t c : strBuf)
     {
-        ImVec2 curFullNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8(finalTransferredFileName + c).c_str());
+        ImVec2 curFullNameSize = ImGui::CalcTextSize(SGCore::Utils::toUTF8(finalTransferredFileName + c).c_str());
         
         if(curFullNameSize.x >= controlWidth)
         {
@@ -533,7 +533,7 @@ int SGE::DirectoryExplorer::onFileNameEditCallback(ImGuiInputTextCallbackData* d
         finalTransferredFileName += c;
     }
     
-    std::string utf8Str = SGUtils::Utils::toUTF8(finalTransferredFileName);
+    std::string utf8Str = SGCore::Utils::toUTF8(finalTransferredFileName);
     
     bool prettified = false;
     if(textWidth > controlWidth || m_lastTextLenInFileNameInputBox != data->BufTextLen)
@@ -607,7 +607,7 @@ void SGE::DirectoryExplorer::drawCurrentPathNavigation()
     
     assert(font && "Can not find default font (18 px) to render DirectoryExplorer");
     
-    std::string text = SGUtils::Utils::toUTF8<char16_t>(m_maxPath.u16string());
+    std::string text = SGCore::Utils::toUTF8<char16_t>(m_maxPath.u16string());
     ImVec2 pathSize = ImGui::CalcTextSize(text.c_str());
     
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 4 });
@@ -632,7 +632,7 @@ void SGE::DirectoryExplorer::drawCurrentPathNavigation()
         
         if(*it == "/" || *it == "\\") continue;
         
-        std::string u8DirName = SGUtils::Utils::toUTF8<char16_t>(it->u16string());
+        std::string u8DirName = SGCore::Utils::toUTF8<char16_t>(it->u16string());
         ImVec2 dirNameTextSize = ImGui::CalcTextSize(u8DirName.c_str());
         
         ImVec2 curCursorPos = ImGui::GetCursorScreenPos();
@@ -893,7 +893,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
     {
         std::filesystem::path curPath = *it;
         std::filesystem::path extension = curPath.extension();
-        std::string u8curPath = SGUtils::Utils::toUTF8<char16_t>(curPath.u16string());
+        std::string u8curPath = SGCore::Utils::toUTF8<char16_t>(curPath.u16string());
         
         bool isDirectory = std::filesystem::is_directory(curPath);
         
@@ -1010,7 +1010,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                                                         { -1, -1 },
                                                         { 0.3, 0.3, 0.3, 0.3 },
                                                         &dragNDropInfo,
-                                                        SGUtils::Utils::toUTF8<char16_t>(curPath.u16string()));
+                                                        SGCore::Utils::toUTF8<char16_t>(curPath.u16string()));
         
         switch(dragNDropInfo.m_state)
         {
@@ -1234,7 +1234,7 @@ void SGE::DirectoryExplorer::drawNamesOfFiles(std::map<std::int64_t, std::int64_
             std::u16string fileExt = path.extension().u16string();
             std::u16string fullName = fileName + fileExt;
             
-            ImVec2 nameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(fileName).c_str());
+            ImVec2 nameSize = ImGui::CalcTextSize(SGCore::Utils::toUTF8<char16_t>(fileName).c_str());
             
             // y = 3 lines
             ImVec2 maxNameSize = ImVec2(m_iconsSize.x * m_UIScale.x + 3 * 2 + m_iconsPadding.x / 4,
@@ -1266,13 +1266,13 @@ void SGE::DirectoryExplorer::drawNamesOfFiles(std::map<std::int64_t, std::int64_
             
             for(char16_t c : fullName)
             {
-                std::string utf8CharStr = SGUtils::Utils::toUTF8<char16_t>({ c });
+                std::string utf8CharStr = SGCore::Utils::toUTF8<char16_t>({ c });
                 
                 ImVec2 charSize = ImGui::CalcTextSize(utf8CharStr.c_str());
                 charSize.x -= charSize.x - font->GetCharAdvance(c);
                 
-                ImVec2 curNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalFileName).c_str());
-                ImVec2 curFullNameSize = ImGui::CalcTextSize(SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName).c_str());
+                ImVec2 curNameSize = ImGui::CalcTextSize(SGCore::Utils::toUTF8<char16_t>(finalFileName).c_str());
+                ImVec2 curFullNameSize = ImGui::CalcTextSize(SGCore::Utils::toUTF8<char16_t>(finalTransferredFileName).c_str());
                 
                 // if the current horizontal text size is bigger than the maximum,
                 // and current lines count in name is lower, then m_nameMaxLinesCount
@@ -1293,7 +1293,7 @@ void SGE::DirectoryExplorer::drawNamesOfFiles(std::map<std::int64_t, std::int64_
                     finalTransferredFileName[sz] = L'\n';
                     finalTransferredFileName += lastChar;
                     
-                    std::string utf8LastCharStr = SGUtils::Utils::toUTF8<char16_t>({ lastChar });
+                    std::string utf8LastCharStr = SGCore::Utils::toUTF8<char16_t>({ lastChar });
                     
                     ImVec2 prvCharSize = ImGui::CalcTextSize(utf8LastCharStr.c_str());
                     prvCharSize.x -= prvCharSize.x - font->GetCharAdvance(lastChar);
@@ -1389,9 +1389,9 @@ void SGE::DirectoryExplorer::drawNamesOfFiles(std::map<std::int64_t, std::int64_
                 finalTransferredFileName += c;
             }
             
-            std::string utf8FinalFileName = SGUtils::Utils::toUTF8<char16_t>(finalFileName);
-            std::u16string oneLineFinalFileName = SGUtils::Utils::replaceAll<char16_t>(finalFileName, u"\n", u"");
-            std::string utf8TransferredFileName = SGUtils::Utils::toUTF8<char16_t>(finalTransferredFileName);
+            std::string utf8FinalFileName = SGCore::Utils::toUTF8<char16_t>(finalFileName);
+            std::u16string oneLineFinalFileName = SGCore::Utils::replaceAll<char16_t>(finalFileName, u"\n", u"");
+            std::string utf8TransferredFileName = SGCore::Utils::toUTF8<char16_t>(finalTransferredFileName);
             
             drawableNameInfo.m_formattedName = utf8TransferredFileName;
             drawableNameInfo.setPath(path);
@@ -1554,7 +1554,7 @@ void SGE::DirectoryExplorer::drawFileNameInputText()
             if(ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_Enter))
             {
                 std::filesystem::path resultPath = drawableNameInfo.getPath().parent_path();
-                resultPath += m_utf8Separator + SGUtils::Utils::replaceAll<char>(m_currentEditingFileName, "\n", "");
+                resultPath += m_utf8Separator + SGCore::Utils::replaceAll<char>(m_currentEditingFileName, "\n", "");
                 std::filesystem::rename(drawableNameInfo.getPath(), resultPath);
                 m_currentEditingFile = nullptr;
             }
@@ -1584,12 +1584,12 @@ void SGE::DirectoryExplorer::updateSearchResults(SGE::FileSearchResults* searchR
     {
         const std::filesystem::path& filePath = *it;
         
-        std::string utf8Name = SGUtils::Utils::toUTF8<char16_t>(filePath.filename().u16string());
+        std::string utf8Name = SGCore::Utils::toUTF8<char16_t>(filePath.filename().u16string());
         
-        std::string::size_type substrPos = SGUtils::Utils::findInString(filePath.filename().u16string(), SGUtils::Utils::fromUTF8<char16_t>(inputFileName), true);
+        std::string::size_type substrPos = SGCore::Utils::findInString(filePath.filename().u16string(), SGCore::Utils::fromUTF8<char16_t>(inputFileName), true);
         if(substrPos != std::string::npos)
         {
-            searchResults->m_foundEntries.emplace_back(filePath, SGUtils::Utils::fromUTF8<char16_t>(inputFileName), substrPos);
+            searchResults->m_foundEntries.emplace_back(filePath, SGCore::Utils::fromUTF8<char16_t>(inputFileName), substrPos);
             ++searchResults->m_foundFilesCount;
         }
     }
@@ -1640,7 +1640,7 @@ void SGE::DirectoryExplorer::moveSelectedFiles(const std::filesystem::path& toPa
 
 void SGE::DirectoryExplorer::fixMaxPathRelativeToPath(const std::filesystem::path& relativeToPath) noexcept
 {
-    if(SGUtils::Utils::isSubpath(m_maxPath, relativeToPath) || m_maxPath == relativeToPath)
+    if(SGCore::Utils::isSubpath(m_maxPath, relativeToPath) || m_maxPath == relativeToPath)
     {
         m_maxPath = m_currentPath;
     }

@@ -7,6 +7,10 @@
 
 #define sg_component
 #define sg_system
-#define sg_
+
+// USE FOR VARIABLES THAT MUST BE SERIALIZED
+#define sg_serializable(name)
+// USE FOR CUSTOM SPECIALIZATIONS OF SGCore::SerializerSpec
+#define sg_serializer_spec
 
 #endif //SUNGEARENGINE_ANNOTATIONS_H

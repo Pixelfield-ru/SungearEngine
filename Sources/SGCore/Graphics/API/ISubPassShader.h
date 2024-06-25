@@ -14,10 +14,10 @@
 #include "IUniformBuffer.h"
 #include "ShaderDefine.h"
 
-#include "SGUtils/UniqueName.h"
+#include "SGCore/Utils/UniqueName.h"
 
 #include "SGCore/Utils/SGSL/SGSLESubShaderType.h"
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/Utils.h"
 #include "SGCore/Graphics/GPUObject.h"
 
 namespace SGCore

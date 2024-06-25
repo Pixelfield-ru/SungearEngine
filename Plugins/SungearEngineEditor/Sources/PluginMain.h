@@ -5,7 +5,7 @@
 #include <SGCore/Main/CoreGlobals.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/PluginsSystem/IPlugin.h>
-#include <SGUtils/Singleton.h>
+#include "SGCore/Utils/Singleton.h"
 
 #include "SungearEngineEditor.h"
 

@@ -9,7 +9,7 @@
 
 #include <sgcore_export.h>
 
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace SGCore::ImGuiWrap
 {

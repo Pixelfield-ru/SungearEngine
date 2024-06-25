@@ -2,7 +2,7 @@
 // Created by ilya on 27.03.24.
 //
 
-#include <SGUtils/Singleton.h>
+#include "SGCore/Utils/Singleton.h"
 #include <SGCore/Main/CoreMain.h>
 #include <imgui_internal.h>
 

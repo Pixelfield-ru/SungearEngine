@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_IRENDERPASS_H
 
 #include "SGCore/Graphics/API/ISubPassShader.h"
-#include "SGUtils/Timer.h"
+#include "SGCore/Utils/Timer.h"
 #include "LayeredFrameReceiver.h"
 
 namespace SGCore

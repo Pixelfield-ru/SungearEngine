@@ -228,5 +228,8 @@
   }, {
     "name" : "pugixml",
     "version>=" : "1.14"
+  }, {
+    "name" : "freetype",
+    "version>=" : "2.13.2"
   } ]
 }

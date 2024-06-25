@@ -7,7 +7,7 @@
 
 #include <SGCore/pch.h>
 
-#include "SGUtils/Singleton.h"
+#include "Singleton.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore

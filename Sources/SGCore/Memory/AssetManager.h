@@ -10,7 +10,7 @@
 #include <sgcore_export.h>
 
 #include "Assets/IAsset.h"
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/Utils.h"
 #include "SGCore/Graphics/GPUObject.h"
 #include "SGCore/Threading/ThreadsPool.h"
 #include "SGCore/Threading/ThreadsManager.h"

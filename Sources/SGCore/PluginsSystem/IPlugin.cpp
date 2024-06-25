@@ -2,7 +2,7 @@
 // Created by ilya on 19.03.24.
 //
 #include "IPlugin.h"
-#include "SGUtils/CrashHandler/Platform.h"
+#include "SGCore/CrashHandler/Platform.h"
 
 #include <iostream>
 

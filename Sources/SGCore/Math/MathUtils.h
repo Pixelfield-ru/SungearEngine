@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_MATHUTILS_H
 #define SUNGEARENGINE_MATHUTILS_H
 
-#include <SGUtils/pch.h>
+#include <SGCore/pch.h>
 
 #define PI 3.141592
 

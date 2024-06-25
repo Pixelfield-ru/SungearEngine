@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <imgui.h>
-#include <SGUtils/Utils.h>
+#include "SGCore/Utils/Utils.h"
 #include <SGCore/Memory/AssetManager.h>
 
 namespace SGE

@@ -5,9 +5,9 @@
 #ifndef SUNGEARENGINE_FILEUTILS_H
 #define SUNGEARENGINE_FILEUTILS_H
 
-#include <SGUtils/pch.h>
+#include <SGCore/pch.h>
 
-namespace SGUtils::FileUtils
+namespace SGCore::FileUtils
 {
     std::string readFile(const std::string_view&);
     char* readBytes(const std::string_view& path, size_t& outSize) noexcept;

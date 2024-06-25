@@ -10,9 +10,9 @@
 #include <SGCore/Threading/Thread.h>
 
 #include "ISystem.h"
-#include "SGUtils/Timer.h"
+#include "SGCore/Utils/Timer.h"
 #include "IParallelSystemSubprocess.h"
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/Utils.h"
 
 namespace SGCore
 {

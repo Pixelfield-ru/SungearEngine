@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_MATHPRIMITIVESUTILS_H
 #define SUNGEARENGINE_MATHPRIMITIVESUTILS_H
 
-#include <SGUtils/pch.h>
+#include "SGUtils/pch.h"
 
 #include "AABB.h"
 

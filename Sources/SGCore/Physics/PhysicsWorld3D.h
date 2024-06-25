@@ -10,7 +10,7 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "PhysicsDebugDraw.h"
-#include "SGUtils/Timer.h"
+#include "SGCore/Utils/Timer.h"
 #include "SGCore/Scene/EntityComponentMember.h"
 #include "SGCore/Threading/SafeObject.h"
 #include "SGCore/Threading/FixedVector.h"

@@ -4,7 +4,7 @@
 #include "Server.h"
 
 #include <iostream>
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/Utils.h"
 
 SGCore::Server::Server
 (const SGCore::ConnectionType& connectionType, const std::string& ip, const std::uint16_t& port) noexcept

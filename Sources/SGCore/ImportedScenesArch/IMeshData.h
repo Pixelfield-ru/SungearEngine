@@ -4,7 +4,7 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGUtils/Math/AABB.h"
+#include "SGCore/Math/AABB.h"
 
 namespace SGCore
 {

@@ -8,7 +8,7 @@
 
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGUtils/AssimpUtils.h"
+#include "SGCore/Utils/AssimpUtils.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 
@@ -91,8 +91,8 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
     
     if(aiMesh->mNumVertices > 0)
     {
-        min = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
-        max = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
+        min = SGCore::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
+        max = SGCore::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
     }
 
     for(unsigned i = 0; i < aiMesh->mNumVertices; i++)
@@ -210,22 +210,22 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->setDiffuseColor(SGUtils::AssimpUtils::aiVectorToGLM(diffuseColor));
+            sgMeshData->m_material->setDiffuseColor(AssimpUtils::aiVectorToGLM(diffuseColor));
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_SPECULAR_FACTOR, &specularColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->setSpecularColor(SGUtils::AssimpUtils::aiVectorToGLM(specularColor));
+            sgMeshData->m_material->setSpecularColor(AssimpUtils::aiVectorToGLM(specularColor));
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_AMBIENT, &ambientColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->setAmbientColor(SGUtils::AssimpUtils::aiVectorToGLM(ambientColor));
+            sgMeshData->m_material->setAmbientColor(AssimpUtils::aiVectorToGLM(ambientColor));
         }
 
         if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissionColor) == AI_SUCCESS)
         {
-            sgMeshData->m_material->setEmissionColor(SGUtils::AssimpUtils::aiVectorToGLM(emissionColor));
+            sgMeshData->m_material->setEmissionColor(AssimpUtils::aiVectorToGLM(emissionColor));
         }
 
         if(aiGetMaterialFloat(aiMat, AI_MATKEY_SHININESS, &shininess) == AI_SUCCESS)

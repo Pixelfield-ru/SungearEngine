@@ -5,9 +5,9 @@
 #ifndef SUNGEARENGINE_UUID_H
 #define SUNGEARENGINE_UUID_H
 
-#include <SGUtils/pch.h>
+#include <SGCore/pch.h>
 
-namespace SGUtils
+namespace SGCore
 {
 // UUID STRUCT: 8-4-4-4-12
 // xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx

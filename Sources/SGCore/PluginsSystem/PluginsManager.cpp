@@ -4,7 +4,7 @@
 
 #include "PluginsManager.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGUtils/CrashHandler/Platform.h"
+#include "SGCore/CrashHandler/Platform.h"
 
 #include <filesystem>
 #include <spdlog/fmt/fmt.h>
@@ -31,7 +31,7 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         auto finalSGPath = CoreMain::m_pathToSungearEngineSDKSources;
         if(std::filesystem::path::preferred_separator == L'\\')
         {
-            finalSGPath = SGUtils::Utils::replaceAll<char>(finalSGPath, R"(\)", R"(\\)");
+            finalSGPath = SGCore::Utils::replaceAll<char>(finalSGPath, R"(\)", R"(\\)");
         }
 
         const auto pluginDir = projectPath + "/" + pluginName;
@@ -141,7 +141,7 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         pluginHContent += fmt::format("#define {0}_H\n\n", upperPluginName);
         
         pluginHContent += "#include <SGCore/PluginsSystem/IPlugin.h>\n";
-        pluginHContent += "#include <SGUtils/Utils.h>\n";
+        pluginHContent += "#include <SGCore/Utils/Utils.h>\n";
         pluginHContent += "#include <SGCore/Main/CoreMain.h>\n\n";
         
         pluginHContent += fmt::format("struct {0} : public SGCore::IPlugin\n", pluginName);

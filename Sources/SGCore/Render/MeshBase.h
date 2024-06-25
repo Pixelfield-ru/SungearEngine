@@ -8,7 +8,7 @@
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGUtils/EventListener.h"
+#include "SGCore/Utils/EventListener.h"
 #include "ShadersUtils.h"
 
 namespace SGCore

@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_SHADERSUTILS_H
 #define SUNGEARENGINE_SHADERSUTILS_H
 
-#include "SGUtils/EventListener.h"
+#include "SGCore/Utils/EventListener.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore

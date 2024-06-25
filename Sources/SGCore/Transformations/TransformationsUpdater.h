@@ -7,11 +7,11 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Scene/ISystem.h"
-#include "SGUtils/Utils.h"
-#include "SGUtils/Timer.h"
+#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/Timer.h"
 #include "SGCore/Threading/SafeObject.h"
 #include "SGCore/Scene/EntityComponentMember.h"
-#include "SGUtils/Event.h"
+#include "SGCore/Utils/Event.h"
 #include "Transform.h"
 #include "SGCore/Threading/FixedVector.h"
 #include "SGCore/Scene/IParallelSystem.h"

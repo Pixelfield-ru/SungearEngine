@@ -1,10 +1,8 @@
 #include "IUniformBuffer.h"
 
-#include "SGUtils/MemoryUtils.h"
-
 SGCore::IUniformBuffer::~IUniformBuffer()
 {
-    SG_DELETE(m_buffer)
+    delete m_buffer;
 }
 
 std::uint16_t SGCore::IUniformBuffer::getLayoutLocation() const noexcept

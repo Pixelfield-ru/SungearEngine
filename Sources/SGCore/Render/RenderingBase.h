@@ -7,7 +7,7 @@
 
 #include <SGCore/pch.h>
 
-#include "SGUtils/Math/Frustum.h"
+#include "SGCore/Math/Frustum.h"
 
 //#include "RenderingComponentsSystem.h"
 

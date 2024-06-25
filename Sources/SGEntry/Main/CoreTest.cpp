@@ -685,7 +685,7 @@ void init()
 
     std::string formattedVersion = spdlog::fmt_lib::format("{0}.{1}.{2}.{3}", SG_CORE_MAJOR_VERSION, SG_CORE_MINOR_VERSION, SG_CORE_PATCH_VERSION, SG_CORE_BUILD_VERSION);
     helloWorldUIText.m_text = std::u16string(u"Development build. v") +
-            SGUtils::Utils::fromUTF8<char16_t>(formattedVersion);
+            SGCore::Utils::fromUTF8<char16_t>(formattedVersion);
     helloWorldUIText.m_usedFont = SGCore::AssetManager::getInstance()->loadAsset<SGCore::Font>("font_times_new_roman");
     helloWorldUIText.m_fontSettings.m_height = 34;
     helloWorldUIText.m_fontSettings.m_name = "eng";
@@ -1327,7 +1327,7 @@ void update(const double& dt, const double& fixedDt)
         txt += "Scene info: \n";
         txt += "Rendering objects count: " + std::to_string(meshesCnt);
         
-        sceneInfoText->m_text = SGUtils::Utils::fromUTF8<char16_t>(txt);
+        sceneInfoText->m_text = SGCore::Utils::fromUTF8<char16_t>(txt);
     }
 }
 

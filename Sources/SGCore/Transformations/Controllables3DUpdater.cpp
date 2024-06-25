@@ -7,7 +7,7 @@
 #include "Controllables3DUpdater.h"
 #include "SGCore/Input/InputManager.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGUtils/Math/MathUtils.h"
+#include "SGCore/Math/MathUtils.h"
 #include "SGCore/Scene/Scene.h"
 #include "Transform.h"
 #include "SGCore/Render/RenderingBase.h"

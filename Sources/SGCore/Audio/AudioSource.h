@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_AUDIOSOURCE_H
 
 #include <glm/vec3.hpp>
-#include <SGUtils/Event.h>
+#include "SGCore/Utils/Event.h"
 #include "AudioUtils.h"
 
 #include "SGCore/Main/CoreGlobals.h"

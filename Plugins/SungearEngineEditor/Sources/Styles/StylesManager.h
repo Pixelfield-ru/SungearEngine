@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <SGCore/Main/CoreGlobals.h>
-#include <SGUtils/Utils.h>
+#include "SGCore/Utils/Utils.h"
 
 #include "IStyle.h"
 #include "Styles/Editor/Dark.h"

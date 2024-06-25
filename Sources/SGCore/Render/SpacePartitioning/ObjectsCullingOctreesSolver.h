@@ -8,7 +8,7 @@
 #include "SGCore/Scene/ISystem.h"
 #include "SGCore/Scene/IParallelSystemSubprocess.h"
 #include "OctreesSolver.h"
-#include "SGUtils/Math/Frustum.h"
+#include "SGCore/Math/Frustum.h"
 
 namespace SGCore
 {

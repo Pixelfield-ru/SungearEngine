@@ -5,7 +5,7 @@
 #ifndef ECS_TYPEMETA_H
 #define ECS_TYPEMETA_H
 
-#include <SGUtils/pch.h>
+#include <SGCore/pch.h>
 
 #define SGECS_DECLARE_BASE(DerivedType, BaseType) \
 private: \

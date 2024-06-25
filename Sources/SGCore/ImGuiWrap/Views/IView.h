@@ -7,11 +7,11 @@
 
 #include <SGCore/pch.h>
 
-#include "SGUtils/UUID.h"
-#include "SGUtils/Event.h"
+#include "SGCore/Utils/UUID.h"
+#include "SGCore/Utils/Event.h"
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGUtils/UniqueName.h"
-#include "SGUtils/UniqueNamesManager.h"
+#include "SGCore/Utils/UniqueName.h"
+#include "SGCore/Utils/UniqueNamesManager.h"
 
 namespace SGCore::ImGuiWrap
 {
@@ -22,7 +22,7 @@ namespace SGCore::ImGuiWrap
         Event<void()> onRender;
         Event<void(bool lastActive, bool isActive)> onActiveChanged;
 
-        UniqueName m_name = SGUtils::UUID::generateNew();
+        UniqueName m_name = SGCore::UUID::generateNew();
         std::string m_tag;
 
         glm::vec2 m_UIScale { 1, 1 };

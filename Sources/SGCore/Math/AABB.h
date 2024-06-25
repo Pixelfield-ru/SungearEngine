@@ -5,9 +5,10 @@
 #ifndef SUNGEARENGINE_AABB_H
 #define SUNGEARENGINE_AABB_H
 
-#include <SGUtils/pch.h>
+#include "SGCore/pch.h"
 
 #include "MathUtils.h"
+#include "SGCore/Scene/Serializer.h"
 
 namespace SGCore
 {
@@ -216,6 +217,24 @@ namespace SGCore
             return !(*this == aabb);
         }
     };
+
+    /*template<typename ScalarT>
+    struct SerializerSpec<AABB<ScalarT>>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, const AABB<ScalarT>& value) noexcept
+        {
+            rapidjson::Value k(rapidjson::kStringType);
+            rapidjson::Value v(rapidjson::kObjectType);
+
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+            Serializer::serialize(toDocument, v, "min", value.m_min);
+            Serializer::serialize(toDocument, v, "max", value.m_max);
+
+            parent.AddMember(k, v, toDocument.GetAllocator());
+        }
+    };*/
 }
 
 template<typename ScalarT>
@@ -226,6 +245,5 @@ struct std::hash<SGCore::AABB<ScalarT>>
         return SGCore::MathUtils::hashVector(k.m_min) ^ SGCore::MathUtils::hashVector(k.m_max);
     }
 };
-
 
 #endif //SUNGEARENGINE_AABB_H

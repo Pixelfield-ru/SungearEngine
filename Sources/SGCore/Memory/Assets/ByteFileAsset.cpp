@@ -3,7 +3,7 @@
 //
 
 #include "ByteFileAsset.h"
-#include "SGUtils/FileUtils.h"
+#include "SGCore/Utils/FileUtils.h"
 
 SGCore::ByteFileAsset::~ByteFileAsset()
 {
@@ -12,7 +12,7 @@ SGCore::ByteFileAsset::~ByteFileAsset()
 
 void SGCore::ByteFileAsset::doLoad(const std::string& path)
 {
-    m_buffer = SGUtils::FileUtils::readBytes(path, m_bufferSize);
+    m_buffer = SGCore::FileUtils::readBytes(path, m_bufferSize);
 }
 
 char* SGCore::ByteFileAsset::getBuffer() const noexcept

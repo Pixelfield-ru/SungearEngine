@@ -10,7 +10,7 @@
 #include "SGCore/Render/IRenderPass.h"
 #include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
-#include "SGUtils/Math/Frustum.h"
+#include "SGCore/Math/Frustum.h"
 
 namespace SGCore
 {

@@ -8,7 +8,7 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGUtils/UniqueNamesManager.h"
+#include "SGCore/Utils/UniqueNamesManager.h"
 
 namespace SGCore
 {

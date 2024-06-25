@@ -5,9 +5,9 @@
 #ifndef SUNGEARENGINE_SINGLETON_H
 #define SUNGEARENGINE_SINGLETON_H
 
-#include <SGUtils/pch.h>
+#include <SGCore/pch.h>
 
-#include <sgutils_export.h>
+#include <sgcore_export.h>
 
 #define SG_FULL_SINGLETON(cls)                          \
         friend struct ::SGUtils::Singleton;             \
@@ -49,7 +49,7 @@
 
 namespace SGUtils
 {
-    struct SGUTILS_EXPORT Singleton
+    struct SGCORE_EXPORT Singleton
     {
         template<class T>
         static std::shared_ptr<T> getSharedPtrInstance()

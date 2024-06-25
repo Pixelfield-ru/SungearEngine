@@ -5,15 +5,14 @@
 #ifndef SUNGEARENGINE_HWEXCEPTIONHANDLER_H
 #define SUNGEARENGINE_HWEXCEPTIONHANDLER_H
 
-#include <SGUtils/pch.h>
-#include <sgutils_export.h>
-#include <sgcore_export.h>
+#include "SGCore/pch.h"
+#include "sgcore_export.h"
 
 #include "Platform.h"
-#include "SGUtils/Utils.h"
+#include "SGCore/Utils/Utils.h"
 
 #ifdef PLATFORM_OS_WINDOWS
-#include <windows.h>
+#include <Windows.h>
 #include <winnt.h>
 #endif
 #ifdef PLATFORM_OS_LINUX
@@ -23,7 +22,7 @@
 #include <err.h>
 #endif
 
-#include <boost/stacktrace.hpp>
+#include "boost/stacktrace.hpp"
 
 namespace SGCore
 {

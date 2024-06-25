@@ -42,6 +42,7 @@ set(SG_BUILD_TYPE "Release")
 
 add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
 add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
+add_definitions(-DNOMINMAX)
 
 #[[set(SG_INCLUDE_BULLET ON)
 set(SG_INCLUDE_PUGIXML OFF)

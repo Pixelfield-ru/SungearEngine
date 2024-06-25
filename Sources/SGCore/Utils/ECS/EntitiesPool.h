@@ -7,8 +7,8 @@
 
 #include <SGCore/pch.h>
 
-#include "SGUtils/EventListener.h"
-#include "SGUtils/Event.h"
+#include "SGCore/Utils/EventListener.h"
+#include "SGCore/Utils/Event.h"
 
 #include "SGCore/Main/CoreGlobals.h"
 

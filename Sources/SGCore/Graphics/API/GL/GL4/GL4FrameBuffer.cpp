@@ -180,7 +180,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
                     "It is not possible to add more color attachments for framebuffer. Current color attachments count: {0}. Max color attachments count: {1}.\n{2}",
                     colorAttachments,
                     DeviceGLInfo::getMaxFBColorAttachments(),
-                    SGUtils::Utils::sourceLocationToString(std::source_location::current()));
+                    SGCore::Utils::sourceLocationToString(std::source_location::current()));
             
             return;
         }
@@ -189,7 +189,7 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
         {
             spdlog::error("Error when adding an attachment to the framebuffer: "
                        "an attachment with this type already exists.\n{0}",
-                       SGUtils::Utils::sourceLocationToString(std::source_location::current()));
+                       SGCore::Utils::sourceLocationToString(std::source_location::current()));
 
             return;
         }

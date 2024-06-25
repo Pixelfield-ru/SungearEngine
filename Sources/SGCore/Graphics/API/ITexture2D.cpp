@@ -3,8 +3,8 @@
 
 #define DDSKTX_IMPLEMENT
 
-#include "SGUtils/DDSLoader/dds-ktx.h"
-#include "SGUtils/FileUtils.h"
+#include "SGCore/Utils/DDSLoader/dds-ktx.h"
+#include "SGCore/Utils/FileUtils.h"
 
 #include <stb_image.h>
 #include <stb_image_resize2.h>

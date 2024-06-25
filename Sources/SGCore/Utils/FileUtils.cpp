@@ -1,11 +1,10 @@
 //
 // Created by stuka on 11.05.2023.
 //
-#include <SGUtils/pch.h>
 
 #include "FileUtils.h"
 
-std::string SGUtils::FileUtils::readFile(const std::string_view& path)
+std::string SGCore::FileUtils::readFile(const std::string_view& path)
 {
     constexpr size_t read_size = 4096;
     auto stream = std::ifstream(path.data());
@@ -30,7 +29,7 @@ std::string SGUtils::FileUtils::readFile(const std::string_view& path)
     return out;
 }
 
-char* SGUtils::FileUtils::readBytes(const std::string_view& path, size_t& outSize) noexcept
+char* SGCore::FileUtils::readBytes(const std::string_view& path, size_t& outSize) noexcept
 {
     std::ifstream stream(path.data(), std::ios::binary | std::ios::ate);
     stream.unsetf(std::ios::skipws);
@@ -56,7 +55,7 @@ char* SGUtils::FileUtils::readBytes(const std::string_view& path, size_t& outSiz
     return buffer;
 }
 
-void SGUtils::FileUtils::writeToFile(const std::string_view& path, const std::string& text, bool append, bool createDirectories)
+void SGCore::FileUtils::writeToFile(const std::string_view& path, const std::string& text, bool append, bool createDirectories)
 {
     if(createDirectories)
     {
@@ -80,7 +79,7 @@ void SGUtils::FileUtils::writeToFile(const std::string_view& path, const std::st
     }
 }
 
-void SGUtils::FileUtils::createDirectory(const std::string_view& path, bool createNew) noexcept
+void SGCore::FileUtils::createDirectory(const std::string_view& path, bool createNew) noexcept
 {
     if(std::filesystem::exists(path) && createNew) return;
 

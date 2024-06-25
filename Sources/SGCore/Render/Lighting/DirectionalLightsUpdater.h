@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_DIRECTIONALLIGHTSUPDATER_H
 #define SUNGEARENGINE_DIRECTIONALLIGHTSUPDATER_H
 
-#include "SGUtils/Timer.h"
+#include "SGCore/Utils/Timer.h"
 #include "SGCore/Scene/ISystem.h"
 
 namespace SGCore

@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_FRUSTUM_H
 #define SUNGEARENGINE_FRUSTUM_H
 
-#include <SGUtils/pch.h>
+#include "SGCore/pch.h"
 
 class Frustum
 {

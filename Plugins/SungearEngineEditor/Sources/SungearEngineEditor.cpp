@@ -2,7 +2,7 @@
 #include "PluginMain.h"
 #include "Styles/StylesManager.h"
 
-#include <SGUtils/Singleton.h>
+#include "SGCore/Utils/Singleton.h"
 #include <SGCore/Main/CoreMain.h>
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/ImGuiWrap/ImGuiLayer.h>

@@ -8,7 +8,7 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
-#include "SGUtils/Event.h"
+#include "SGCore/Utils/Event.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/Scene/ISystem.h"
 

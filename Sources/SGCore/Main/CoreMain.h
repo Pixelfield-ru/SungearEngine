@@ -6,11 +6,11 @@
 #include <sgcore_export.h>
 
 #include "Window.h"
-#include "SGUtils/Timer.h"
+#include "SGCore/Utils/Timer.h"
 
 #include "CoreGlobals.h"
-#include "SGUtils/Utils.h"
-#include "SGUtils/CrashHandler/HwExceptionHandler.h"
+#include "SGCore/Utils/Utils.h"
+#include "SGCore/CrashHandler/HwExceptionHandler.h"
 
 /*namespace Core::Graphics
 {

@@ -1,7 +1,7 @@
 #ifndef SUNGEARENGINE_UTILS_H
 #define SUNGEARENGINE_UTILS_H
 
-#define SG_INSTANCEOF(data, type) SGUtils::Utils::instanceof<type>(data)
+#define SG_INSTANCEOF(data, type) SGCore::Utils::instanceof<type>(data)
 
 #define SG_MAY_NORETURN __declspec(noreturn)
 
@@ -13,7 +13,7 @@
 #define SG_NO_COPY(cls) cls(const cls&) = delete;
 #define SG_NO_MOVE(cls) cls(cls&& cls) noexcept = delete;
 
-#define SG_CURRENT_LOCATION_STR SGUtils::Utils::sourceLocationToString(std::source_location::current())
+#define SG_CURRENT_LOCATION_STR SGCore::Utils::sourceLocationToString(std::source_location::current())
 
 #define SG_STRINGIFY(n) #n
 
@@ -49,10 +49,10 @@
 #define SG_DLIMPORT
 #endif
 
-#include <SGUtils/pch.h>
+#include <SGCore/pch.h>
 
 #include "TypeTraits.h"
-#include "CrashHandler/Platform.h"
+#include "SGCore/CrashHandler/Platform.h"
 
 namespace SGCore
 {
@@ -60,13 +60,13 @@ namespace SGCore
     {
         return std::chrono::high_resolution_clock::now();
     }
-    
+
     template<typename ScalarT, typename TimeValT>
     static ScalarT timeDiff(const std::chrono::high_resolution_clock::time_point& begin,
                             const std::chrono::high_resolution_clock::time_point& end) noexcept
     {
         std::chrono::duration<ScalarT, TimeValT> timeSpan = end - begin;
-        
+
         return timeSpan.count();
     }
 
@@ -85,7 +85,8 @@ namespace SGCore
 
     template<auto FuncPtr>
     requires(std::is_member_function_pointer_v<decltype(FuncPtr)>)
-    inline static size_t hashMemberFunction(const typename class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj) noexcept
+    inline static size_t hashMemberFunction(
+            const typename class_function_traits<remove_noexcept_t<decltype(FuncPtr)>>::instance_type& obj) noexcept
     {
         return hashConstexprObject<FuncPtr>() ^ hashObject(&obj);
     }
@@ -93,22 +94,23 @@ namespace SGCore
     template<typename T>
     void exclude(std::vector<T>& vec, std::vector<T>& from)
     {
-        std::unordered_multiset<T> st { };
+        std::unordered_multiset<T> st {};
         st.insert(vec.begin(), vec.end());
         st.insert(from.begin(), from.end());
-        auto predicate = [&st](const T& k){ return st.count(k) > 1; };
+        auto predicate = [&st](const T& k)
+        { return st.count(k) > 1; };
         // a.erase(std::remove_if(a.begin(), a.end(), predicate), a.end());
         from.erase(std::remove_if(from.begin(), from.end(), predicate), from.end());
     }
-}
 
-namespace SGUtils
-{
     struct Utils
     {
         // stores type of T
         template<typename T>
-        struct TypeWrapper { using type = T; };
+        struct TypeWrapper
+        {
+            using type = T;
+        };
 
         template<typename T>
         struct WeakCompare
@@ -122,7 +124,7 @@ namespace SGUtils
                 return lptr.get() < rptr.get();
             }
         };
-        
+
         template<typename T>
         struct RawPointerHash
         {
@@ -131,7 +133,7 @@ namespace SGUtils
                 return std::hash<T*>()(ptr);
             }
         };
-        
+
         /**
          * Hashes result of locked weak pointer get() function.
          * @tparam T
@@ -142,12 +144,12 @@ namespace SGUtils
             size_t operator()(const std::weak_ptr<T>& ptr) const noexcept
             {
                 auto locked = ptr.lock();
-                if(!locked) return 0;
-                
+                if (!locked) return 0;
+
                 return std::hash<T*>()(locked.get());
             }
         };
-        
+
         /**
          * Example
          * forTypes<InTypes...>([](auto t) { using type = typename decltype(t)::type; });
@@ -155,7 +157,7 @@ namespace SGUtils
          * @tparam Func Type of function.
          * @param f Function.
          */
-        template <typename... InTypes, typename Func>
+        template<typename... InTypes, typename Func>
         static void forTypes(Func&& func)
         {
             (func(TypeWrapper<InTypes>()), ...);
@@ -168,15 +170,18 @@ namespace SGUtils
         }
 
         template<typename CharT>
-        static void splitString(const std::basic_string<CharT>& str, char delim, std::vector<std::basic_string<CharT>>& words) noexcept
+        static void
+        splitString(const std::basic_string<CharT>& str, char delim,
+                    std::vector<std::basic_string<CharT>>& words) noexcept
         {
             std::basic_stringstream<CharT> ss(str);
             std::basic_string<CharT> word;
-            while(std::getline(ss, word, delim)) {
+            while (std::getline(ss, word, delim))
+            {
                 words.push_back(word);
             }
         }
-        
+
         template<typename CharT>
         static std::basic_string<CharT> replaceAll(const std::basic_string<CharT>& str,
                                                    const std::basic_string<CharT>& from,
@@ -185,14 +190,15 @@ namespace SGUtils
             std::basic_string<CharT> resString = str;
 
             size_t start_pos = 0;
-            while((start_pos = resString.find(from, start_pos)) != std::basic_string<CharT>::npos) {
+            while ((start_pos = resString.find(from, start_pos)) != std::basic_string<CharT>::npos)
+            {
                 resString.replace(start_pos, from.length(), to);
                 start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
             }
 
             return resString;
         }
-        
+
         template<typename CharT>
         static std::basic_string<CharT> replaceFirst(const std::basic_string<CharT>& str,
                                                      const std::basic_string<CharT>& from,
@@ -202,19 +208,20 @@ namespace SGUtils
 
             size_t start_pos = 0;
             start_pos = resString.find(from, start_pos);
-            if(start_pos != std::basic_string<CharT>::npos) {
+            if (start_pos != std::basic_string<CharT>::npos)
+            {
                 resString.replace(start_pos, from.length(), to);
             }
 
             return resString;
         }
-        
+
         template<typename CharT>
         static std::basic_string<CharT> trim(const std::basic_string<CharT>& str,
                                              const std::basic_string<CharT>& whitespace = " \t")
         {
             const auto strBegin = str.find_first_not_of(whitespace);
-            if(strBegin == std::string::npos)
+            if (strBegin == std::string::npos)
             {
                 return ""; // no content
             }
@@ -222,7 +229,7 @@ namespace SGUtils
             const auto strRange = strEnd - strBegin + 1;
             return str.substr(strBegin, strRange);
         }
-        
+
         template<typename CharT>
         static std::basic_string<CharT> reduce(const std::basic_string<CharT>& str,
                                                const std::basic_string<CharT>& fill = " ",
@@ -242,13 +249,13 @@ namespace SGUtils
             }
             return result;
         }
-        
+
         template<typename CharT>
         static std::basic_string<CharT> toString(const std::vector<std::basic_string<CharT>>& vec) noexcept
         {
             std::basic_string<CharT> str;
 
-            for(auto& s : vec)
+            for (auto& s: vec)
             {
                 str += s;
             }
@@ -256,13 +263,15 @@ namespace SGUtils
             return str;
         }
 
-        static std::string toString(const std::vector<std::string>::iterator& begin, const std::vector<std::string>::iterator& end) noexcept
+        static std::string
+        toString(const std::vector<std::string>::iterator& begin,
+                 const std::vector<std::string>::iterator& end) noexcept
         {
             std::string str;
 
             auto it = begin;
 
-            while(it != end)
+            while (it != end)
             {
                 str += *it;
                 ++it;
@@ -279,8 +288,8 @@ namespace SGUtils
                    std::to_string(location.line()) + "\n" + "\tColumn: " +
                    std::to_string(location.column()) + "\n";
         }
-        
-        template <typename T>
+
+        template<typename T>
         static std::string toUTF8(const std::basic_string<T, std::char_traits<T>, std::allocator<T>>& source)
         {
             std::string result;
@@ -288,15 +297,16 @@ namespace SGUtils
             result = convertor.to_bytes(source);
             return result;
         }
-        
-        template <typename T>
-        static void fromUTF8(const std::string& source, std::basic_string<T, std::char_traits<T>, std::allocator<T>>& result)
+
+        template<typename T>
+        static void
+        fromUTF8(const std::string& source, std::basic_string<T, std::char_traits<T>, std::allocator<T>>& result)
         {
             std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
             result = convertor.from_bytes(source);
         }
-        
-        template <typename T>
+
+        template<typename T>
         static std::basic_string<T, std::char_traits<T>, std::allocator<T>> fromUTF8(const std::string& source)
         {
             std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
@@ -308,54 +318,54 @@ namespace SGUtils
         static long long getTimeMicros() noexcept;
 
         static long long getTimeNanos() noexcept;
-        
+
         static void swapEndian(unsigned char* sourceBuffer, const size_t& bufferSize) noexcept
         {
-            for(size_t i = 0; i < bufferSize; ++i)
+            for (size_t i = 0; i < bufferSize; ++i)
             {
                 sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
             }
         }
-        
+
         static void swapEndian(char* sourceBuffer, const size_t& bufferSize) noexcept
         {
-            for(size_t i = 0; i < bufferSize; ++i)
+            for (size_t i = 0; i < bufferSize; ++i)
             {
                 sourceBuffer[i] = sourceBuffer[bufferSize - i - 1];
             }
         }
-        
+
         static std::string getRealPath(const std::string& path) noexcept;
-        
+
         static bool isSubpath(const std::filesystem::path& path,
                               const std::filesystem::path& base) noexcept;
-        
+
         template<typename CharT>
         static std::string::size_type findInString(const std::basic_string<CharT>& str,
                                                    const std::basic_string<CharT>& substr,
                                                    bool caseInsensitive = false) noexcept
         {
-            if(!caseInsensitive)
+            if (!caseInsensitive)
             {
                 return str.find(substr);
             }
-            
+
             auto it = std::search(
                     str.begin(), str.end(),
                     substr.begin(), substr.end(),
-                    [](const CharT& ch1, const CharT& ch2) {
-                        if constexpr(std::is_same_v<CharT, char>)
+                    [](const CharT& ch1, const CharT& ch2)
+                    {
+                        if constexpr (std::is_same_v<CharT, char>)
                         {
                             return std::toupper(ch1) == std::toupper(ch2);
-                        }
-                        else
+                        } else
                         {
                             return std::towupper(ch1) == std::towupper(ch2);
                         }
                     }
             );
-           
-            if(it != str.end())
+
+            if (it != str.end())
             {
                 return it - str.begin();
             }
