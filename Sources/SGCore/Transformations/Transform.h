@@ -11,24 +11,24 @@
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "SGCore/Scene/Serializer.h"
-#include "SGCore/Annotations/Annotations.h"
+#include "SGAnnotations/Annotations.h"
 
 namespace SGCore
 {
     // sizeof(Transform) = 767
     struct Transform
     {
-        sg_serializable(finalTransform)
+        sg_serializable(key="finalTransform")
         TransformBase m_finalTransform;
 
-        sg_serializable(ownTransform)
+        sg_serializable(key="ownTransform")
         TransformBase m_ownTransform;
 
         // will transform follow parent entity`s translation, rotation and scale
         // x - follow translation
         // y - follow rotation
         // z - follow scale
-        sg_serializable(followParentTRS)
+        sg_serializable(key="followParentTRS")
         glm::vec<3, bool, glm::highp> m_followParentTRS { true, true, true };
         // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
         

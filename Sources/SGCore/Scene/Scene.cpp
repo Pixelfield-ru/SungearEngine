@@ -275,8 +275,8 @@ void SGCore::Scene::saveToFile(const std::string& path) noexcept
     
     auto* mem = &document.AddMember("name", rapidjson::StringRef(m_name.c_str()), document.GetAllocator());
     // mem = &document;
-
-    SerializerSpec<glm::vec<4, double, glm::defaultp>>::serialize(document, document, "vec", {});
+    
+    SerializerSpec<glm::vec<3, double, glm::defaultp>>::serialize(document, document, "vec", {});
     // SerializerSpec<Transform>::serialize(document, document, "transform", {});
 
     getOnSceneSaveEvent()(shared_from_this());

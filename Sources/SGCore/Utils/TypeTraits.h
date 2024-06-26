@@ -175,6 +175,7 @@ namespace SGCore
     template <typename T>
     struct always_false : std::false_type
     {
+        using type = T;
     };
     
     template <typename T>

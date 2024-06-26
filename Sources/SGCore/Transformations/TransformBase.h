@@ -14,7 +14,7 @@
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Scene/Serializer.h"
-#include "SGCore/Annotations/Annotations.h"
+#include "SGAnnotations/Annotations.h"
 
 namespace SGCore
 {
@@ -24,28 +24,28 @@ namespace SGCore
     {
         friend struct TransformationsUpdater;
 
-        sg_serializable(blockTranslation)
+        sg_serializable(key="blockTranslation")
         bool m_blockTranslation = false;
-        sg_serializable(blockRotation)
+        sg_serializable(key="blockRotation")
         bool m_blockRotation = false;
-        sg_serializable(blockScale)
+        sg_serializable(key="blockScale")
         bool m_blockScale = false;
 
-        sg_serializable(aabb)
+        sg_serializable(key="aabb")
         AABB<> m_aabb;
 
-        sg_serializable(position)
+        sg_serializable(key="position")
         glm::vec3 m_position { 0.0 };
-        sg_serializable(rotation)
+        sg_serializable(key="rotation")
         glm::vec3 m_rotation { 0.0 };
-        sg_serializable(scale)
+        sg_serializable(key="scale")
         glm::vec3 m_scale { 1.0 };
 
-        sg_serializable(left)
+        sg_serializable(key="left")
         glm::vec3 m_left = MathUtils::left3;
-        sg_serializable(forward)
+        sg_serializable(key="forward")
         glm::vec3 m_forward = MathUtils::forward3;
-        sg_serializable(up)
+        sg_serializable(key="up")
         glm::vec3 m_up = MathUtils::up3;
 
         glm::mat4 m_translationMatrix = glm::mat4(1);

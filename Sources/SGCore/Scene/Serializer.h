@@ -7,6 +7,10 @@
 
 #include <SGCore/pch.h>
 
+#include "SGCore/Utils/TypeTraits.h"
+
+// HERE IS SPECIALIZATIONS OF SerializerSpec FOR BUILT-IN TYPES OF C++ AND LIBRARIES TYPES
+
 namespace SGCore
 {
     template<typename T>
@@ -141,7 +145,7 @@ namespace SGCore
         }
     };
     
-    template<size_t ScalarsCnt, typename ScalarT, glm::qualifier Qualifier>
+    template<std::int32_t ScalarsCnt, typename ScalarT, glm::qualifier Qualifier>
     struct SerializerSpec<glm::vec<ScalarsCnt, ScalarT, Qualifier>>
     {
         static_assert(ScalarsCnt >= 1 && ScalarsCnt <= 4 && "Scalars count in glm::vec must be in range of 1-4.");

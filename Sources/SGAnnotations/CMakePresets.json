@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "configurePresets": [
+    {
+      "binaryDir": "cmake-build-release",
+      "generator": "Ninja",
+      "name": "release-host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "SG_BUILD_PRESET": "release-host",
+        "CMAKE_TOOLCHAIN_FILE" : "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "binaryDir": "cmake-build-debug",
+      "generator": "Ninja",
+      "name": "debug-host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "SG_BUILD_PRESET": "debug-host",
+        "CMAKE_TOOLCHAIN_FILE" : "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "binaryDir": "cmake-build-release-mingw-x86-64",
+      "generator": "Ninja",
+      "name": "x86-64-mingw-release",
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME" : "MinGW",
+        "CMAKE_SYSTEM_PROCESSOR": "x64",
+        "CMAKE_BUILD_TYPE": "Release",
+        "SG_BUILD_PRESET": "x86-64-mingw-release",
+
+        "VCPKG_OVERLAY_TRIPLETS" : "/home/ilya/pixelfield/test-windows/vcpkg-triplets",
+        "VCPKG_TARGET_TRIPLET" : "sg-x64-mingw-dynamic-release",
+        "CMAKE_TOOLCHAIN_FILE" : "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    }
+  ]
+}

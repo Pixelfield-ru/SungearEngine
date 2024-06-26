@@ -12,7 +12,6 @@
 #include <memory>
 #include <map>
 #include <variant>
-#include <type_traits>
 #include <initializer_list>
 #include <cstddef>
 #include <iostream>
@@ -47,6 +46,7 @@
 #include <cwctype>
 #include <locale>
 #include <random>
+#include <type_traits>
 
 // ENTT
 #include <entt/entt.hpp>
