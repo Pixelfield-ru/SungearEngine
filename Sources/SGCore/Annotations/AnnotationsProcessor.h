@@ -5,14 +5,12 @@
 #ifndef SUNGEARENGINE_ANNOTATIONSPROCESSOR_H
 #define SUNGEARENGINE_ANNOTATIONSPROCESSOR_H
 
-#include <string>
-#include <unordered_map>
-#include <functional>
-#include <any>
-#include <filesystem>
-#include "Utils.h"
+#include <SGCore/pch.h>
 
-namespace SGAnnotations
+#include "SGCore/Utils/FileUtils.h"
+#include "SGCore/Utils/Utils.h"
+
+namespace SGCore
 {
     namespace fs = std::filesystem;
     
@@ -104,7 +102,7 @@ namespace SGAnnotations
                     continue;
                 }
                 
-                std::string fileText = Utils::readFile(u8FilePath);
+                std::string fileText = FileUtils::readFile(u8FilePath);
                 
                 std::vector<std::string> lines;
                 std::vector<std::string> lineWords;

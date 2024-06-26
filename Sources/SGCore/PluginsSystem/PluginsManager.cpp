@@ -68,19 +68,7 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         cmakeListsContent += "add_definitions(-DGLM_ENABLE_EXPERIMENTAL)\n";
         cmakeListsContent += "add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)\n\n";
         
-        cmakeListsContent += "set(SG_INCLUDE_BULLET OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_PUGIXML OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_FREETYPE OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_GLM OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_ASSIMP OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_ENTT OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_GLFW OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_IMGUI OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_SPDLOG OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_STB OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_GLAD OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_OPENAL OFF)\n";
-        cmakeListsContent += "set(SG_INCLUDE_GLAZE OFF)\n\n";
+     
         
         cmakeListsContent += "include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)\n\n";
         

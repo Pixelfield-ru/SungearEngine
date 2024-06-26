@@ -32,8 +32,12 @@ extern "C" {
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/ImGuiWrap/Views/IView.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Utils/Formatter.h"
 
 SGCore::Ref<SGCore::Scene> testScene2;
+
+#define STRINGIZE(...) #__VA_ARGS__
+#define EXPAND_AND_STRINGIZE(...) STRINGIZE(__VA_ARGS__)
 
 void coreInit()
 {
@@ -64,6 +68,11 @@ void coreInit()
     {
         std::cout << "CANNOT LOAD SUNGEAR EDITOR PLUGIN" << std::endl;
     }
+    
+    SGCore::Formatter formatter;
+    formatter["pluginName"] = "dsf";
+    std::cout << formatter.format(SGCore::FileUtils::readFile("/home/ilya/pixelfield/SungearEngine/Sources/SGCore/PluginsSystem/Examples/PluginCMakeListsExample.cmake")) << std::endl;
+    
 
     /*// CRASH HERE ======================
     void* ptr = nullptr;

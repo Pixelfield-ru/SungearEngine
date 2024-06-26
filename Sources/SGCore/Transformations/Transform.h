@@ -11,7 +11,7 @@
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "SGCore/Scene/Serializer.h"
-#include "SGAnnotations/Annotations.h"
+#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {

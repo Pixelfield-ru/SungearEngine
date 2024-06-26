@@ -14,7 +14,7 @@
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Scene/Serializer.h"
-#include "SGAnnotations/Annotations.h"
+#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
