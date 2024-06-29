@@ -11,6 +11,8 @@
 #include <spdlog/spdlog.h>
 
 #include "PluginWrap.h"
+#include "SGCore/Utils/FileUtils.h"
+#include "SGCore/Utils/Formatter.h"
 
 #ifdef PLATFORM_OS_LINUX
 #include <dlfcn.h>
@@ -28,6 +30,8 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
     
     try
     {
+        const std::string sgSourcesRootStr = sgSourcesRoot;
+        
         auto finalSGPath = CoreMain::m_pathToSungearEngineSDKSources;
         if(std::filesystem::path::preferred_separator == L'\\')
         {
@@ -35,7 +39,6 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         }
 
         const auto pluginDir = projectPath + "/" + pluginName;
-        const auto cmakeListsPath = pluginDir + "/CMakeLists.txt";
         const auto pluginSourcesDir = pluginDir + "/Sources";
         
         if(std::filesystem::exists(pluginDir) && !std::filesystem::is_empty(pluginDir))
@@ -50,125 +53,68 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         }
         
         std::filesystem::create_directories(pluginDir);
+        std::filesystem::create_directories(pluginDir + "/.generated");
         std::filesystem::create_directories(pluginSourcesDir);
-        
-        // ====================================== CMakeLists.txt
-        
-        std::string cmakeListsContent;
-        cmakeListsContent += "cmake_minimum_required(VERSION 3.25)\n";
-        cmakeListsContent += fmt::format("project({0})\n\n", pluginName);
-        
-        cmakeListsContent += fmt::format("set(CMAKE_CXX_STANDARD {0})\n", cxxStandard);
-        cmakeListsContent += "set(CMAKE_SHARED_LIBRARY_PREFIX \"\")\n";
-        cmakeListsContent += "if(${CMAKE_COMPILER_IS_GNUCXX})\n";
-        cmakeListsContent += "\tset(CMAKE_CXX_FLAGS \"-g -rdynamic -fno-pie -no-pie -fno-gnu-unique\")\n";
-        cmakeListsContent += "endif()\n\n";
-        
-        cmakeListsContent += "add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)\n";
-        cmakeListsContent += "add_definitions(-DGLM_ENABLE_EXPERIMENTAL)\n";
-        cmakeListsContent += "add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)\n\n";
-        
-     
-        
-        cmakeListsContent += "include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)\n\n";
-        
-        cmakeListsContent += "add_library(${PROJECT_NAME} " +
-                             fmt::format(
-                                     "SHARED Sources/PluginMain.h Sources/PluginMain.cpp Sources/{0}.h Sources/{1}.cpp)\n\n",
-                                     pluginName,
-                                     pluginName);
-        
-        cmakeListsContent += "target_include_directories(${PROJECT_NAME} PRIVATE ${SungearEngine_INCLUDE_DIRS})\n";
-        cmakeListsContent += "target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS})\n";
-        
-        std::ofstream cmakeListsStream(cmakeListsPath);
-        cmakeListsStream << cmakeListsContent;
-        
-        // ====================================== PluginMain.h
         
         std::string upperPluginName = pluginName;
         std::transform(pluginName.begin(), pluginName.end(), upperPluginName.begin(), ::toupper);
         
-        std::string pluginMainHDefine = fmt::format("{0}_PLUGINMAIN_H", upperPluginName);
+        // SETTING UP FORMATTER
         
-        std::string pluginMainHContent;
-        pluginMainHContent += fmt::format("#ifndef {0}\n", pluginMainHDefine);
-        pluginMainHContent += fmt::format("#define {0}\n\n", pluginMainHDefine);
+        Formatter formatter;
         
-        pluginMainHContent += "#include <iostream>\n";
-        pluginMainHContent += "#include <SGCore/Main/CoreGlobals.h>\n";
-        pluginMainHContent += "#include <SGCore/PluginsSystem/PluginsManager.h>\n";
-        pluginMainHContent += "#include <SGCore/PluginsSystem/IPlugin.h>\n\n";
+        formatter["pluginName"] = pluginName;
+        formatter["cxxStandard"] = cxxStandard.substr(3);
+        formatter["upperPluginName"] = upperPluginName;
         
-        pluginMainHContent += fmt::format("#include \"{0}.h\"\n\n", pluginName);
+        // ====================================== CMakeLists.txt
         
-        pluginMainHContent += "extern \"C\" SGCore::Ref<SGCore::IPlugin> SGPluginMain();\n\n";
+        std::string cmakeListsContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/CMakeLists.cmake"));
         
-        pluginMainHContent += fmt::format("#endif // {0}\n", pluginMainHDefine);
+        std::ofstream cmakeListsStream(pluginDir + "/CMakeLists.txt");
+        cmakeListsStream << cmakeListsContent;
+        
+        // ====================================== PluginMain.h
+        
+        std::string pluginMainHContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/PluginMain.h"));
         
         std::ofstream pluginMainHStream(pluginSourcesDir + "/PluginMain.h");
         pluginMainHStream << pluginMainHContent;
         
         // ====================================== PluginMain.cpp
         
-        std::string pluginMainCPPContent;
-        pluginMainCPPContent += "#include \"PluginMain.h\"\n\n";
-        
-        pluginMainCPPContent += "extern \"C\" SGCore::Ref<SGCore::IPlugin> SGPluginMain()\n";
-        pluginMainCPPContent += "{\n";
-        pluginMainCPPContent += fmt::format("\treturn {0}::getInstance();\n", pluginName);
-        pluginMainCPPContent += "}\n";
+        std::string pluginMainCPPContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/PluginMain.cpp"));
         
         std::ofstream pluginMainCPPStream(pluginSourcesDir + "/PluginMain.cpp");
         pluginMainCPPStream << pluginMainCPPContent;
         
         // ====================================== {pluginName}.h
         
-        std::string pluginHContent;
-        pluginHContent += fmt::format("#ifndef {0}_H\n", upperPluginName);
-        pluginHContent += fmt::format("#define {0}_H\n\n", upperPluginName);
-        
-        pluginHContent += "#include <SGCore/PluginsSystem/IPlugin.h>\n";
-        pluginHContent += "#include <SGCore/Utils/Utils.h>\n";
-        pluginHContent += "#include <SGCore/Main/CoreMain.h>\n\n";
-        
-        pluginHContent += fmt::format("struct {0} : public SGCore::IPlugin\n", pluginName);
-        pluginHContent += "{\n";
-        pluginHContent += fmt::format("\t~{0}() override = default;\n\n", pluginName);
-        
-        pluginHContent += "\tstd::string onConstruct(const std::vector<std::string>& args) override;\n\n";
-        
-        pluginHContent += fmt::format("\tSG_NOINLINE static SGCore::Ref<{0}> getInstance() noexcept;\n", pluginName);
-        pluginHContent += "private:\n";
-        pluginHContent += fmt::format("\tstatic inline SGCore::Ref<{0}> s_{1}Instance = SGCore::MakeRef<{2}>();\n", pluginName, pluginName, pluginName);
-        pluginHContent += "};\n\n";
-        
-        pluginHContent += fmt::format("#endif // {0}_H\n", upperPluginName);
+        std::string pluginHContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/PluginOwn.h"));
         
         std::ofstream pluginHStream(pluginSourcesDir + "/" + fmt::format("{0}.h", pluginName));
         pluginHStream << pluginHContent;
         
         // ====================================== {pluginName}.cpp
         
-        std::string pluginCPPContent;
-        pluginCPPContent += fmt::format("#include \"{0}.h\"\n\n", pluginName);
-        
-        pluginCPPContent += fmt::format("std::string {0}::onConstruct(const std::vector<std::string>& args)\n", pluginName);
-        pluginCPPContent += "{\n";
-        pluginCPPContent += fmt::format("\tm_name = \"{0}\";\n", pluginName);
-        pluginCPPContent += "\tm_version = \"1.0.0\";\n\n";
-        
-        pluginCPPContent += "\t// No error.\n";
-        pluginCPPContent += "\treturn \"\";\n";
-        pluginCPPContent += "}\n\n";
-        
-        pluginCPPContent += fmt::format("SGCore::Ref<{0}> {0}::getInstance() noexcept\n", pluginName, pluginName);
-        pluginCPPContent += "{\n";
-        pluginCPPContent += fmt::format("\treturn s_{0}Instance\n", pluginName);
-        pluginCPPContent += "}\n\n";
+        std::string pluginCPPContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/PluginOwn.cpp"));
         
         std::ofstream pluginCPPStream(pluginSourcesDir + "/" + fmt::format("{0}.cpp", pluginName));
         pluginCPPStream << pluginCPPContent;
+        
+        // ====================================== CMakePresets.json
+        
+        std::string cmakePresetsContent = FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/CMakePresets.json");
+        
+        std::ofstream cmakePresetsStream(pluginDir + "/CMakePresets.json");
+        cmakePresetsStream << cmakePresetsContent;
+        
+        // ====================================== vcpkg.json
+        
+        std::string vcpkgContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/vcpkg.json"));
+        
+        std::ofstream vcpkgStream(pluginDir + "/vcpkg.json");
+        vcpkgStream << vcpkgContent;
     }
     catch(const std::filesystem::filesystem_error& err)
     {

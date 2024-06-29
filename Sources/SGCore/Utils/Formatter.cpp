@@ -7,7 +7,7 @@
 
 std::string SGCore::Formatter::format(const std::string& text) const
 {
-    std::string newText;
+    std::string newText = text;
     
     for(const auto& p : m_markup)
     {
@@ -38,7 +38,7 @@ std::string SGCore::Formatter::format(const std::string& text) const
             throw std::runtime_error(fmt::format("Key '{0}' has value with inacceptable type '{1}'", p.first, p.second.type().name()));
         }
         
-        newText = Utils::replaceAll(text, m_keyOpenExpr + p.first + m_keyCloseExpr, value);
+        newText = Utils::replaceAll(newText, m_keyOpenExpr + p.first + m_keyCloseExpr, value);
     }
     
     return newText;

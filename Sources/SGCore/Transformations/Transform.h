@@ -16,6 +16,8 @@
 namespace SGCore
 {
     // sizeof(Transform) = 767
+    sg_struct(fullName="SGCore::Transform")
+    sg_component()
     struct Transform
     {
         sg_serializable(key="finalTransform")

@@ -1,5 +1,5 @@
-#ifndef SUNGEARENGINEEDITOR_PLUGINMAIN_H
-#define SUNGEARENGINEEDITOR_PLUGINMAIN_H
+#ifndef ${upperPluginName}$_PLUGINMAIN_H
+#define ${upperPluginName}$_PLUGINMAIN_H
 
 #include <iostream>
 #include <SGCore/Main/CoreGlobals.h>
@@ -7,8 +7,8 @@
 #include <SGCore/PluginsSystem/IPlugin.h>
 #include "SGCore/Utils/Singleton.h"
 
-#include "SungearEngineEditor.h"
+#include "${pluginName}$.h"
 
 SG_NOMANGLING SG_DLEXPORT SGCore::Ref<SGCore::IPlugin> SGPluginMain();
 
-#endif // SUNGEARENGINEEDITOR_PLUGINMAIN_H
+#endif // ${upperPluginName}$_PLUGINMAIN_H

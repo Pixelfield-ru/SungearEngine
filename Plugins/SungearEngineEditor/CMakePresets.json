@@ -8,6 +8,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "SG_BUILD_PRESET": "release-host",
+        "SG_BUILD_TYPE": "Release",
         "CMAKE_TOOLCHAIN_FILE" : "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
       }
     },
@@ -18,6 +19,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "SG_BUILD_PRESET": "debug-host",
+        "SG_BUILD_TYPE": "Debug",
         "CMAKE_TOOLCHAIN_FILE" : "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
       }
     },
@@ -29,6 +31,7 @@
         "CMAKE_SYSTEM_NAME" : "MinGW",
         "CMAKE_SYSTEM_PROCESSOR": "x64",
         "CMAKE_BUILD_TYPE": "Release",
+        "SG_BUILD_TYPE": "Release",
         "SG_BUILD_PRESET": "x86-64-mingw-release",
 
         "VCPKG_OVERLAY_TRIPLETS" : "/home/ilya/pixelfield/test-windows/vcpkg-triplets",

@@ -18,18 +18,23 @@ namespace SGCore
     {
         struct AnnotationArg
         {
-            std::string m_name;
-            std::any m_value;
+            std::string m_name { };
+            // -1 means for variadic count of arguments
+            std::int64_t m_valuesCnt = 1;
+            std::vector<std::string> m_values;
         };
         
         struct Annotation
         {
-            std::string m_name;
+            std::string m_name { };
             
             // first - name
-            std::unordered_map<std::string, AnnotationArg> m_arguments { };
+            std::unordered_map<std::string, AnnotationArg> m_acceptableArgs { };
+            std::unordered_map<std::string, AnnotationArg> m_currentArgs { };
             
-            std::function<bool()> evaluate { };
+            std::function<std::string(Annotation& annotation)> validate { };
+            
+            std::string validateAcceptableArgs() const noexcept;
         };
         
         struct Member
@@ -40,10 +45,7 @@ namespace SGCore
             // first - name
             std::unordered_map<std::string, Annotation> m_annotations { };
             
-            [[nodiscard]] bool isAnnotationProvided(const std::string& name) const noexcept
-            {
-                return m_annotations.contains(name);
-            }
+            [[nodiscard]] bool isAnnotationProvided(const std::string& name) const noexcept;
         };
         
         struct SourceStruct
@@ -55,110 +57,20 @@ namespace SGCore
             // first - name
             std::unordered_map<std::string, Member> m_members;
             
-            Member* getMember(const std::string& name) noexcept
-            {
-                auto foundIt = m_members.find({ name });
-                if(foundIt != m_members.end())
-                {
-                    return &foundIt->second;
-                }
-                
-                return nullptr;
-            }
+            Member* getMember(const std::string& name) noexcept;
         };
         
-        void processAnnotations(const std::filesystem::path& inDirectory, bool recursively = true)
-        {
-            std::vector<fs::path> files;
-            
-            if(recursively)
-            {
-                for(fs::recursive_directory_iterator i(inDirectory), end; i != end; ++i)
-                {
-                    if(!is_directory(i->path()))
-                    {
-                        files.emplace_back(i->path());
-                    }
-                }
-            }
-            
-            processAnnotations(files);
-        }
+        AnnotationsProcessor() noexcept;
         
-        void processAnnotations(const std::vector<std::filesystem::path>& files)
-        {
-            for(const auto& f : files)
-            {
-                std::string u8FilePath = Utils::toUTF8<char16_t>(f.u16string());
-                if(!fs::exists(f))
-                {
-                    std::printf("File '%s' not exists\n", u8FilePath.c_str());
-                    continue;
-                }
-                
-                if(f.extension() != ".h" && f.extension() != ".hpp" && f.extension() != ".cpp" && f.extension() != ".cxx")
-                {
-                    // std::printf("Not supported extension of file\n", u8FilePath.c_str());
-                    continue;
-                }
-                
-                std::string fileText = FileUtils::readFile(u8FilePath);
-                
-                std::vector<std::string> lines;
-                std::vector<std::string> lineWords;
-                
-                Utils::splitString(fileText, '\n', lines);
-                
-                bool isOneLineComment = false;
-                bool isMultilineComment = false;
-                
-                for(std::uint64_t lI = 0; lI < lines.size(); ++lI)
-                {
-                    const std::string& line = lines[lI];
-                    
-                    Utils::splitString(line, ' ', lineWords);
-                    
-                    for(std::uint64_t wI = 0; wI < lineWords.size(); ++wI)
-                    {
-                        const std::string& word = lineWords[wI];
-                        
-                        if(word.contains("//"))
-                        {
-                            isOneLineComment = true;
-                        }
-                        
-                        if(word.contains("/*"))
-                        {
-                            isMultilineComment = true;
-                        }
-                        
-                        if(word.contains("*/"))
-                        {
-                            isMultilineComment = false;
-                        }
-                        
-                        if(isOneLineComment || isMultilineComment)
-                        {
-                            continue;
-                        }
-                        
-                        if(word.contains("sg_serializable"))
-                        {
-                            std::printf("Serializable detected in file %s!\n", u8FilePath.c_str());
-                        }
-                    }
-                    
-                    isOneLineComment = false;
-                    lineWords.clear();
-                }
-                
-                // std::printf("File '%s' proceed\n", u8FilePath.c_str());
-            }
-        }
+        void processAnnotations(const std::filesystem::path& inDirectory, bool recursively = true);
+        
+        void processAnnotations(const std::vector<std::filesystem::path>& files);
         
     private:
         // first - name
-        static inline std::unordered_map<std::string, Annotation> m_defaultAnnotations;
+        std::unordered_map<std::string, Annotation> m_annotations;
+        
+        static inline std::regex m_annotationRegex = std::regex(R"(([a-zA-Z_0-9]+)[( +]([a-zA-Z_0-9",= \\[\\]]+)[)])");
     };
 }
 
