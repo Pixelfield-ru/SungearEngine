@@ -9,10 +9,12 @@
 
 #include "MathUtils.h"
 #include "SGCore/Scene/Serializer.h"
+#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
     template<typename ScalarT = float>
+    sg_struct(fullName = "SGCore::AABB")
     struct AABB
     {
         static_assert(std::is_scalar_v<ScalarT> && "ScalarT must be scalar.");
@@ -32,7 +34,9 @@ namespace SGCore
         AABB(const AABB&) = default;
         AABB(AABB&) = default;
         
+        sg_serializable(key="min")
         vec3_t m_min = { 0, 0, 0 };
+        sg_serializable(key="max")
         vec3_t m_max = { 0, 0, 0 };
         
         [[nodiscard]] bool isCollidesWith(const AABB& other) const noexcept

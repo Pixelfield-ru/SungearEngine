@@ -20,32 +20,33 @@ namespace SGCore
 {
     // sizeof(TransformBase) == 382
     // todo: make quaternion transformations
+    sg_struct(fullName = "SGCore::TransformBase")
     struct TransformBase
     {
         friend struct TransformationsUpdater;
 
-        sg_serializable(key="blockTranslation")
+        sg_serializable(key = "blockTranslation")
         bool m_blockTranslation = false;
-        sg_serializable(key="blockRotation")
+        sg_serializable(key = "blockRotation")
         bool m_blockRotation = false;
-        sg_serializable(key="blockScale")
+        sg_serializable(key = "blockScale")
         bool m_blockScale = false;
 
-        sg_serializable(key="aabb")
+        sg_serializable(key = "aabb")
         AABB<> m_aabb;
 
-        sg_serializable(key="position")
+        sg_serializable(key = "position")
         glm::vec3 m_position { 0.0 };
-        sg_serializable(key="rotation")
+        sg_serializable(key = "rotation")
         glm::vec3 m_rotation { 0.0 };
-        sg_serializable(key="scale")
+        sg_serializable(key = "scale")
         glm::vec3 m_scale { 1.0 };
 
-        sg_serializable(key="left")
+        sg_serializable(key = "left")
         glm::vec3 m_left = MathUtils::left3;
-        sg_serializable(key="forward")
+        sg_serializable(key = "forward")
         glm::vec3 m_forward = MathUtils::forward3;
-        sg_serializable(key="up")
+        sg_serializable(key = "up")
         glm::vec3 m_up = MathUtils::up3;
 
         glm::mat4 m_translationMatrix = glm::mat4(1);

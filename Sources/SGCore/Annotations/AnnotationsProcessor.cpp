@@ -5,9 +5,11 @@
 
 #include <SGCore/pch.h>
 
-std::string SGCore::AnnotationsProcessor::Annotation::validateAcceptableArgs() const noexcept
+std::string SGCore::AnnotationsProcessor::Annotation::validateAcceptableArgs(const Annotation& annotationToValidate) const noexcept
 {
-    for(const auto& argPair : m_currentArgs)
+    decltype(Annotation::m_acceptableArgs) necessaryArgs = m_acceptableArgs;
+    
+    for(const auto& argPair : annotationToValidate.m_currentArgs)
     {
         auto foundIt = m_acceptableArgs.find(argPair.first);
         
@@ -16,13 +18,55 @@ std::string SGCore::AnnotationsProcessor::Annotation::validateAcceptableArgs() c
             return fmt::format("Error in annotation '{0}'. Unknown argument: {1}", m_name, argPair.first);
         }
         
-        if(foundIt->second.m_valuesCnt != argPair.second.m_valuesCnt && foundIt->second.m_valuesCnt != -1)
+        if(foundIt->second.m_requiredValuesCount < argPair.second.m_values.size() && foundIt->second.m_requiredValuesCount != -1)
         {
-            return fmt::format("Error in annotation '{0}'. Invalid number of arguments {1}. Requires {2} arguments",  m_name, argPair.second.m_valuesCnt, foundIt->second.m_valuesCnt);
+            return fmt::format("Error in annotation '{0}'. Invalid number of arguments {1}. Requires {2} arguments or less", m_name, argPair.second.m_requiredValuesCount, foundIt->second.m_requiredValuesCount);
+        }
+        
+        necessaryArgs.erase(argPair.first);
+    }
+    
+    std::string necessaryArgsErr;
+    
+    for(const auto& argPair : necessaryArgs)
+    {
+        if(!argPair.second.m_isUnnecessary)
+        {
+            necessaryArgsErr += fmt::format("Error in annotation '{0}'. Argument '{1}' is necessary (missing).\n", m_name, argPair.first);
         }
     }
     
+    if(!necessaryArgsErr.empty())
+    {
+        necessaryArgsErr += annotationToValidate.formArgumentsString();
+        
+        return necessaryArgsErr;
+    }
+    
     return "";
+}
+
+std::string SGCore::AnnotationsProcessor::Annotation::formArgumentsString() const noexcept
+{
+    std::string args = "Arguments: ";
+    for(auto i = m_currentArgs.begin(); i != m_currentArgs.end(); ++i)
+    {
+        const auto& arg = i;
+        
+        args += arg->first + " = [";
+        for(const auto& val : arg->second.m_values)
+        {
+            args += val;
+        }
+        args += "], ";
+    }
+    
+    if(m_currentArgs.empty())
+    {
+        args + " no args";
+    }
+    
+    return args;
 }
 
 bool SGCore::AnnotationsProcessor::Member::isAnnotationProvided(const std::string& name) const noexcept
@@ -44,21 +88,95 @@ SGCore::AnnotationsProcessor::SourceStruct::getMember(const std::string& name) n
 
 SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
 {
-    Annotation sgStructAnnotation;
-    sgStructAnnotation.m_name = "sg_struct";
-    
-    sgStructAnnotation.m_acceptableArgs["fullName"].m_name = "fullName";
-    
-    sgStructAnnotation.validate = [](Annotation& annotation) -> std::string {
-        std::string argsAcceptableErr = annotation.validateAcceptableArgs();
+    {
+        Annotation newAnnotation;
+        newAnnotation.m_name = "sg_struct";
         
-        if(!argsAcceptableErr.empty())
-        {
-            return argsAcceptableErr;
-        }
+        newAnnotation.m_acceptableArgs["fullName"].m_name = "fullName";
         
-        return "";
-    };
+        newAnnotation.validate = [newAnnotation, this](Annotation& annotation,
+                                                           const std::vector<std::string>& words, std::int64_t wordIndex) -> std::string {
+            std::string argsAcceptableErr = newAnnotation.validateAcceptableArgs(annotation);
+            
+            std::printf("word: %s\n", words[wordIndex].c_str());
+            
+            std::int64_t parenthesisCnt = 0;
+            bool isAnnotationBegan = false;
+            for(std::int64_t i = wordIndex; i < words.size(); ++i)
+            {
+                const auto& word = words[i];
+                
+                for(const auto& a : m_annotations)
+                {
+                    if(word.contains(a.first))
+                    {
+                        isAnnotationBegan = true;
+                        break;
+                    }
+                }
+                
+                if(isAnnotationBegan)
+                {
+                    for(const auto& c : word)
+                    {
+                        if(c == '(')
+                        {
+                            ++parenthesisCnt;
+                        }
+                        else if(c == ')')
+                        {
+                            --parenthesisCnt;
+                        }
+                    }
+                }
+                
+                if(!isAnnotationBegan)
+                {
+                    std::printf("word11: %s\n", words[i].c_str());
+                    
+                    if(words[i] != "struct")
+                    {
+                        return "sg_struct annotation requires struct declaration after declaration of sg_struct. " + annotation.formArgumentsString();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                
+                if(parenthesisCnt == 0)
+                {
+                    isAnnotationBegan = false;
+                }
+            }
+            
+            if(!argsAcceptableErr.empty())
+            {
+                return argsAcceptableErr;
+            }
+            
+            return "";
+        };
+        
+        m_annotations["sg_struct"] = newAnnotation;
+    }
+    {
+        Annotation newAnnotation;
+        newAnnotation.m_name = "sg_component";
+        
+        newAnnotation.validate = [newAnnotation](Annotation& annotation, const std::vector<std::string>& words, std::int64_t wordIndex) -> std::string {
+            std::string argsAcceptableErr = newAnnotation.validateAcceptableArgs(annotation);
+            
+            if(!argsAcceptableErr.empty())
+            {
+                return argsAcceptableErr;
+            }
+            
+            return "";
+        };
+        
+        m_annotations["sg_component"] = newAnnotation;
+    }
 }
 
 void SGCore::AnnotationsProcessor::processAnnotations(const std::filesystem::path& inDirectory, bool recursively)
@@ -98,57 +216,213 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
         
         std::string fileText = FileUtils::readFile(u8FilePath);
         
-        std::vector<std::string> lines;
+        fileText = prettifyCode(fileText);
+        
         std::vector<std::string> lineWords;
+        Utils::splitString(fileText, ' ', lineWords);
         
-        Utils::splitString(fileText, '\n', lines);
+        auto nameDividerRegexBeginIt =
+                std::sregex_iterator(fileText.begin(), fileText.end(), m_nameAndArgsDivideRegex);
+        auto regexEndIt = std::sregex_iterator();
         
-        bool isOneLineComment = false;
-        bool isMultilineComment = false;
+        bool isParenthesisOpened = false;
         
-        for(std::uint64_t lI = 0; lI < lines.size(); ++lI)
+        for(auto it = nameDividerRegexBeginIt; it != regexEndIt; ++it)
         {
-            const std::string& line = lines[lI];
+            const std::smatch& match = *it;
             
-            Utils::splitString(line, ' ', lineWords);
+            const std::string& annotationName = match[1];
+            const std::string& annotationArgs = match[2];
             
-            for(std::uint64_t wI = 0; wI < lineWords.size(); ++wI)
+            fileText.insert(match.position() + match[0].length(), " ");
+            
+            auto annotationIt = m_annotations.find(annotationName);
+            
+            if(annotationIt != m_annotations.end())
             {
-                const std::string& word = lineWords[wI];
+                Annotation annotation;
+                annotation.m_name = annotationName;
                 
-                if(word.contains("//"))
+                bool isArray = false;
+                bool isString = false;
+                bool enableValueWriting = false;
+                bool isAppendingChar = true;
+                std::string currentValue;
+                std::string currentArg;
+                
+                for(std::uint64_t i = 0; i < annotationArgs.length(); ++i)
                 {
-                    isOneLineComment = true;
+                    isAppendingChar = true;
+                    
+                    const auto& c = annotationArgs[i];
+                    
+                    if(c == '=')
+                    {
+                        enableValueWriting = !enableValueWriting;
+                        isAppendingChar = false;
+                    }
+                    
+                    if(c == '"')
+                    {
+                        isString = !isString;
+                        if(isString)
+                        {
+                            currentValue = "";
+                        }
+                        isAppendingChar = false;
+                    }
+                    
+                    // new argument
+                    if((c == ',' || i == annotationArgs.length() - 1) && !isArray)
+                    {
+                        currentValue = Utils::trim(currentValue);
+                        currentArg = Utils::trim(currentArg);
+                        
+                        annotation.m_currentArgs[currentArg].m_name = currentArg;
+                        annotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
+                        
+                        std::printf("annotation: %s, arg: %s, value: %s\n", annotation.m_name.c_str(), currentArg.c_str(), currentValue.c_str());
+                        
+                        currentArg = "";
+                        currentValue = "";
+                        enableValueWriting = false;
+                        continue;
+                    }
+                    else if((c == ',' || c == ']') && isArray)
+                    {
+                        currentValue = Utils::trim(currentValue);
+                        currentArg = Utils::trim(currentArg);
+                        
+                        annotation.m_currentArgs[currentArg].m_name = currentArg;
+                        annotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
+                        
+                        std::printf("annotation: %s, arg: %s, array value: %s\n", annotation.m_name.c_str(), currentArg.c_str(), currentValue.c_str());
+                        
+                        currentValue = "";
+                        
+                        continue;
+                    }
+                    
+                    if(c == '[')
+                    {
+                        isArray = true;
+                        continue;
+                    }
+                    if(c == ']')
+                    {
+                        isArray = false;
+                        continue;
+                    }
+                    
+                    // writing arg
+                    if(isAppendingChar)
+                    {
+                        if(!enableValueWriting)
+                        {
+                            currentArg += c;
+                        }
+                        else
+                        {
+                            currentValue += c;
+                        }
+                    }
                 }
                 
-                if(word.contains("/*"))
+                std::int64_t wordIndex = 0;
                 {
-                    isMultilineComment = true;
+                    std::int64_t len = 0;
+                    for(const auto& w : lineWords)
+                    {
+                        len += w.length() + 1;
+                        ++wordIndex;
+                        if(len >= match.position())
+                        {
+                            break;
+                        }
+                    }
                 }
                 
-                if(word.contains("*/"))
+                std::string annotationValidationError = m_annotations[annotation.m_name].validate(annotation, lineWords, wordIndex);
+                if(!annotationValidationError.empty())
                 {
-                    isMultilineComment = false;
+                    throw std::runtime_error(annotationValidationError.append("\n\tFile: ").append(u8FilePath));
                 }
-                
-                if(isOneLineComment || isMultilineComment)
-                {
-                    continue;
-                }
-                
-                // NOW WE CAN PARSING
-                
-                // m_annotationRegex.
-                /*if(word.contains("sg_serializable"))
-                {
-                    std::printf("Serializable detected in file %s!\n", u8FilePath.c_str());
-                }*/
             }
-            
-            isOneLineComment = false;
-            lineWords.clear();
         }
         
-        // std::printf("File '%s' proceed\n", u8FilePath.c_str());
+        std::cout << fileText << std::endl;
     }
+}
+
+std::string SGCore::AnnotationsProcessor::prettifyCode(const std::string& code) noexcept
+{
+    std::string outputStr;
+    
+    std::vector<std::string> lines;
+    std::vector<std::string> lineWords;
+    
+    Utils::splitString(code, '\n', lines);
+    
+    bool isOneLineComment = false;
+    bool isMultilineComment = false;
+    
+    for(std::uint64_t lI = 0; lI < lines.size(); ++lI)
+    {
+        const std::string& line = lines[lI];
+        
+        Utils::splitString(line, ' ', lineWords);
+        
+        for(std::uint64_t wI = 0; wI < lineWords.size(); ++wI)
+        {
+            const std::string& word = lineWords[wI];
+            
+            if(word.contains("//"))
+            {
+                isOneLineComment = true;
+            }
+            
+            if(word.contains("/*"))
+            {
+                isMultilineComment = true;
+            }
+            
+            auto foundMultilineCloseBracket = word.find("*/");
+            if(foundMultilineCloseBracket != std::string::npos)
+            {
+                isMultilineComment = false;
+            }
+            
+            if(isOneLineComment || isMultilineComment)
+            {
+                continue;
+            }
+            
+            // NOW WE CAN PARSING
+            
+            if(foundMultilineCloseBracket != std::string::npos)
+            {
+                outputStr += word.substr(foundMultilineCloseBracket + 2, word.length() - (foundMultilineCloseBracket + 2));
+            }
+            else
+            {
+                outputStr += word + " ";
+            }
+        }
+        
+        lineWords.clear();
+        
+        // outputStr += "\n";
+        
+        if(isOneLineComment)
+        {
+            isOneLineComment = false;
+            continue;
+        }
+        
+        isOneLineComment = false;
+    }
+    
+    outputStr = Utils::reduce(outputStr);
+    
+    return outputStr;
 }

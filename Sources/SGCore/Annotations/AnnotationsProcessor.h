@@ -19,8 +19,9 @@ namespace SGCore
         struct AnnotationArg
         {
             std::string m_name { };
+            bool m_isUnnecessary = false;
             // -1 means for variadic count of arguments
-            std::int64_t m_valuesCnt = 1;
+            std::int64_t m_requiredValuesCount = 1;
             std::vector<std::string> m_values;
         };
         
@@ -32,9 +33,11 @@ namespace SGCore
             std::unordered_map<std::string, AnnotationArg> m_acceptableArgs { };
             std::unordered_map<std::string, AnnotationArg> m_currentArgs { };
             
-            std::function<std::string(Annotation& annotation)> validate { };
+            std::function<std::string(Annotation& annotation, const std::vector<std::string>& words, std::int64_t wordIndex)> validate { };
             
-            std::string validateAcceptableArgs() const noexcept;
+            std::string validateAcceptableArgs(const Annotation& annotationToValidate) const noexcept;
+            
+            std::string formArgumentsString() const noexcept;
         };
         
         struct Member
@@ -70,7 +73,10 @@ namespace SGCore
         // first - name
         std::unordered_map<std::string, Annotation> m_annotations;
         
-        static inline std::regex m_annotationRegex = std::regex(R"(([a-zA-Z_0-9]+)[( +]([a-zA-Z_0-9",= \\[\\]]+)[)])");
+        std::string prettifyCode(const std::string& code) noexcept;
+        
+        // dividing name of annotation and arguments of annotation. arguments are fused together in one group
+        static inline std::regex m_nameAndArgsDivideRegex = std::regex(R"(([a-zA-Z_0-9]+) *\(([0-9a-zA-Z=:", \[\]]*)\))");
     };
 }
 

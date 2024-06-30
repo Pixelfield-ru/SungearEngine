@@ -33,11 +33,9 @@ extern "C" {
 #include "SGCore/ImGuiWrap/Views/IView.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Utils/Formatter.h"
+#include "SGCore/Annotations/AnnotationsProcessor.h"
 
 SGCore::Ref<SGCore::Scene> testScene2;
-
-#define STRINGIZE(...) #__VA_ARGS__
-#define EXPAND_AND_STRINGIZE(...) STRINGIZE(__VA_ARGS__)
 
 void coreInit()
 {
@@ -68,6 +66,10 @@ void coreInit()
     {
         std::cout << "CANNOT LOAD SUNGEAR EDITOR PLUGIN" << std::endl;
     }
+    
+    SGCore::AnnotationsProcessor annotationsProcessor;
+    annotationsProcessor.processAnnotations(std::vector<std::filesystem::path> { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h" });
+    // annotationsProcessor.processAnnotations("/home/ilya/pixelfield/SungearEngine/Sources");
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -104,7 +106,7 @@ void onUpdate(const double& dt, const double& fixedDt)
         std::printf("unloaded plugin\n");
         SGCore::PluginsManager::unloadPlugin("SungearEngineEditor");
     }
-
+    
     /*try
     {
         void* ptr = nullptr;
