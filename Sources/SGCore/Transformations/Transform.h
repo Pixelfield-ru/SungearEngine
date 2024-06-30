@@ -16,21 +16,21 @@
 namespace SGCore
 {
     // sizeof(Transform) = 767
-    sg_struct(fullName = "SGCore::Transform")
+    sg_struct()
     sg_component()
     struct Transform
     {
-        sg_serializable(key = "finalTransform")
+        sg_member()
         TransformBase m_finalTransform;
-
-        sg_serializable(key = "ownTransform")
+        
+        sg_member()
         TransformBase m_ownTransform;
 
         // will transform follow parent entity`s translation, rotation and scale
         // x - follow translation
         // y - follow rotation
         // z - follow scale
-        sg_serializable(key = "followParentTRS")
+        sg_member()
         glm::vec<3, bool, glm::highp> m_followParentTRS { true, true, true };
         // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
         

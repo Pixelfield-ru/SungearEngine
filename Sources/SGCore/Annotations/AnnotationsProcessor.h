@@ -16,6 +16,12 @@ namespace SGCore
     
     struct AnnotationsProcessor
     {
+        enum class AnnotationActiveState
+        {
+            INACTIVE,
+            STAY_ACTIVE
+        };
+        
         struct AnnotationArg
         {
             std::string m_name { };
@@ -36,6 +42,8 @@ namespace SGCore
             std::function<std::string(Annotation& annotation, const std::vector<std::string>& words, std::int64_t wordIndex)> validate { };
             
             std::string validateAcceptableArgs(const Annotation& annotationToValidate) const noexcept;
+            
+            std::function<AnnotationActiveState(Annotation& annotation, const std::string& type, const std::string& name)> acceptVariable;
             
             std::string formArgumentsString() const noexcept;
         };
@@ -72,11 +80,15 @@ namespace SGCore
     private:
         // first - name
         std::unordered_map<std::string, Annotation> m_annotations;
+        std::unordered_map<std::string, SourceStruct> m_structs;
+        
+        std::string m_activeStruct;
         
         std::string prettifyCode(const std::string& code) noexcept;
         
         // dividing name of annotation and arguments of annotation. arguments are fused together in one group
         static inline std::regex m_nameAndArgsDivideRegex = std::regex(R"(([a-zA-Z_0-9]+) *\(([0-9a-zA-Z=:", \[\]]*)\))");
+        static inline std::regex m_namespacesRegex = std::regex(R"((namespace|struct) ([a-zA-Z0-9_:]+) *\{ *(.*) *\})");
     };
 }
 

@@ -24,29 +24,29 @@ namespace SGCore
     struct TransformBase
     {
         friend struct TransformationsUpdater;
-
-        sg_serializable(key = "blockTranslation")
+        
+        sg_member()
         bool m_blockTranslation = false;
-        sg_serializable(key = "blockRotation")
+        sg_member()
         bool m_blockRotation = false;
-        sg_serializable(key = "blockScale")
+        sg_member()
         bool m_blockScale = false;
-
-        sg_serializable(key = "aabb")
+        
+        sg_member()
         AABB<> m_aabb;
-
-        sg_serializable(key = "position")
+        
+        sg_member()
         glm::vec3 m_position { 0.0 };
-        sg_serializable(key = "rotation")
+        sg_member()
         glm::vec3 m_rotation { 0.0 };
-        sg_serializable(key = "scale")
+        sg_member()
         glm::vec3 m_scale { 1.0 };
-
-        sg_serializable(key = "left")
+        
+        sg_member()
         glm::vec3 m_left = MathUtils::left3;
-        sg_serializable(key = "forward")
+        sg_member()
         glm::vec3 m_forward = MathUtils::forward3;
-        sg_serializable(key = "up")
+        sg_member()
         glm::vec3 m_up = MathUtils::up3;
 
         glm::mat4 m_translationMatrix = glm::mat4(1);

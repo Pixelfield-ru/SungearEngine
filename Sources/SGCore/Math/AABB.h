@@ -34,9 +34,9 @@ namespace SGCore
         AABB(const AABB&) = default;
         AABB(AABB&) = default;
         
-        sg_serializable(key="min")
+        sg_member()
         vec3_t m_min = { 0, 0, 0 };
-        sg_serializable(key="max")
+        sg_member()
         vec3_t m_max = { 0, 0, 0 };
         
         [[nodiscard]] bool isCollidesWith(const AABB& other) const noexcept

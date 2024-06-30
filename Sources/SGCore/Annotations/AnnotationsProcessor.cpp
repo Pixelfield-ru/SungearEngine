@@ -93,62 +93,11 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         newAnnotation.m_name = "sg_struct";
         
         newAnnotation.m_acceptableArgs["fullName"].m_name = "fullName";
+        newAnnotation.m_acceptableArgs["fullName"].m_isUnnecessary = true;
         
         newAnnotation.validate = [newAnnotation, this](Annotation& annotation,
                                                            const std::vector<std::string>& words, std::int64_t wordIndex) -> std::string {
             std::string argsAcceptableErr = newAnnotation.validateAcceptableArgs(annotation);
-            
-            std::printf("word: %s\n", words[wordIndex].c_str());
-            
-            std::int64_t parenthesisCnt = 0;
-            bool isAnnotationBegan = false;
-            for(std::int64_t i = wordIndex; i < words.size(); ++i)
-            {
-                const auto& word = words[i];
-                
-                for(const auto& a : m_annotations)
-                {
-                    if(word.contains(a.first))
-                    {
-                        isAnnotationBegan = true;
-                        break;
-                    }
-                }
-                
-                if(isAnnotationBegan)
-                {
-                    for(const auto& c : word)
-                    {
-                        if(c == '(')
-                        {
-                            ++parenthesisCnt;
-                        }
-                        else if(c == ')')
-                        {
-                            --parenthesisCnt;
-                        }
-                    }
-                }
-                
-                if(!isAnnotationBegan)
-                {
-                    std::printf("word11: %s\n", words[i].c_str());
-                    
-                    if(words[i] != "struct")
-                    {
-                        return "sg_struct annotation requires struct declaration after declaration of sg_struct. " + annotation.formArgumentsString();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                
-                if(parenthesisCnt == 0)
-                {
-                    isAnnotationBegan = false;
-                }
-            }
             
             if(!argsAcceptableErr.empty())
             {
@@ -156,6 +105,25 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
             }
             
             return "";
+        };
+        
+        newAnnotation.acceptVariable = [](Annotation& annotation, const std::string& type, const std::string& name) -> AnnotationActiveState {
+            std::printf("sg_struct acceptation of %s\n", type.c_str());
+            if(type == "struct" || type == "class")
+            {
+                if(annotation.m_currentArgs.find("fullName") == annotation.m_currentArgs.end())
+                {
+                    auto& fullNameArg = annotation.m_currentArgs["fullName"];
+                    fullNameArg.m_name = "fullName";
+                    fullNameArg.m_values.push_back(name);
+                }
+                
+                std::printf("sg_struct accepted %s %s\n", type.c_str(), name.c_str());
+                
+                return AnnotationActiveState::INACTIVE;
+            }
+            
+            return AnnotationActiveState::STAY_ACTIVE;
         };
         
         m_annotations["sg_struct"] = newAnnotation;
@@ -176,6 +144,59 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         };
         
         m_annotations["sg_component"] = newAnnotation;
+    }
+    
+    {
+        Annotation newAnnotation;
+        newAnnotation.m_name = "sg_member";
+        newAnnotation.m_acceptableArgs["parentNamespace"].m_isUnnecessary = true;
+        newAnnotation.m_acceptableArgs["parentNamespace"].m_name = "parentNamespace";
+        
+        newAnnotation.m_acceptableArgs["varName"].m_name = "varName";
+        newAnnotation.m_acceptableArgs["varName"].m_isUnnecessary = true;
+        
+        newAnnotation.acceptVariable = [](Annotation& annotation, const std::string& type, const std::string& name) -> AnnotationActiveState {
+            std::printf("sg_member acceptation of %s\n", type.c_str());
+            if(type == "struct" || type == "class" || type == "namespace")
+            {
+                if(annotation.m_currentArgs.find("parentNamespace") == annotation.m_currentArgs.end())
+                {
+                    auto& fullNameArg = annotation.m_currentArgs["parentNamespace"];
+                    fullNameArg.m_name = "parentNamespace";
+                    fullNameArg.m_values.push_back(name);
+                }
+                
+                std::printf("sg_member accepted %s %s\n", type.c_str(), name.c_str());
+                
+                return AnnotationActiveState::INACTIVE;
+            }
+            /*else if(type == "variable")
+            {
+                if(annotation.m_currentArgs.find("varName") == annotation.m_currentArgs.end())
+                {
+                    auto& fullNameArg = annotation.m_currentArgs["varName"];
+                    fullNameArg.m_name = "varName";
+                    fullNameArg.m_values.push_back(name);
+                }
+                
+                return AnnotationActiveState::INACTIVE;
+            }*/
+            
+            return AnnotationActiveState::STAY_ACTIVE;
+        };
+        
+        newAnnotation.validate = [newAnnotation](Annotation& annotation, const std::vector<std::string>& words, std::int64_t wordIndex) -> std::string {
+            std::string argsAcceptableErr = newAnnotation.validateAcceptableArgs(annotation);
+            
+            if(!argsAcceptableErr.empty())
+            {
+                return argsAcceptableErr;
+            }
+            
+            return "";
+        };
+        
+        m_annotations["sg_member"] = newAnnotation;
     }
 }
 
@@ -199,6 +220,8 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::filesystem::pat
 
 void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::filesystem::path>& files)
 {
+    auto regexEndIt = std::sregex_iterator();
+    
     for(const auto& f : files)
     {
         std::string u8FilePath = Utils::toUTF8<char16_t>(f.u16string());
@@ -221,133 +244,375 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
         std::vector<std::string> lineWords;
         Utils::splitString(fileText, ' ', lineWords);
         
-        auto nameDividerRegexBeginIt =
-                std::sregex_iterator(fileText.begin(), fileText.end(), m_nameAndArgsDivideRegex);
-        auto regexEndIt = std::sregex_iterator();
-        
-        bool isParenthesisOpened = false;
-        
-        for(auto it = nameDividerRegexBeginIt; it != regexEndIt; ++it)
+        std::int64_t currentWordIdx = 0;
+        std::string currentWord;
+
+        // ==========================================================
+        struct NamedVariableDecl
         {
-            const std::smatch& match = *it;
-            
-            const std::string& annotationName = match[1];
-            const std::string& annotationArgs = match[2];
-            
-            fileText.insert(match.position() + match[0].length(), " ");
-            
-            auto annotationIt = m_annotations.find(annotationName);
-            
-            if(annotationIt != m_annotations.end())
+            std::string m_type;
+            std::string m_name;
+            std::int64_t m_bracesIdx = 0;
+        };
+        
+        std::vector<NamedVariableDecl> namespaces;
+        std::int64_t currentOpenedBracesCnt = 0;
+        
+        std::unordered_map<std::string, Annotation> currentActiveAnnotations;
+        
+        std::string currentExpression;
+        bool skipExprs = false;
+        std::int64_t exprsInOneLineCnt = 0;
+        
+        // ==========================================================
+        
+        std::int64_t currentCharIdx = 0;
+        for(const char& c : fileText)
+        {
+            if(c == '{')
             {
-                Annotation annotation;
-                annotation.m_name = annotationName;
-                
-                bool isArray = false;
-                bool isString = false;
-                bool enableValueWriting = false;
-                bool isAppendingChar = true;
-                std::string currentValue;
-                std::string currentArg;
-                
-                for(std::uint64_t i = 0; i < annotationArgs.length(); ++i)
-                {
-                    isAppendingChar = true;
-                    
-                    const auto& c = annotationArgs[i];
-                    
-                    if(c == '=')
-                    {
-                        enableValueWriting = !enableValueWriting;
-                        isAppendingChar = false;
-                    }
-                    
-                    if(c == '"')
-                    {
-                        isString = !isString;
-                        if(isString)
-                        {
-                            currentValue = "";
-                        }
-                        isAppendingChar = false;
-                    }
-                    
-                    // new argument
-                    if((c == ',' || i == annotationArgs.length() - 1) && !isArray)
-                    {
-                        currentValue = Utils::trim(currentValue);
-                        currentArg = Utils::trim(currentArg);
-                        
-                        annotation.m_currentArgs[currentArg].m_name = currentArg;
-                        annotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
-                        
-                        std::printf("annotation: %s, arg: %s, value: %s\n", annotation.m_name.c_str(), currentArg.c_str(), currentValue.c_str());
-                        
-                        currentArg = "";
-                        currentValue = "";
-                        enableValueWriting = false;
-                        continue;
-                    }
-                    else if((c == ',' || c == ']') && isArray)
-                    {
-                        currentValue = Utils::trim(currentValue);
-                        currentArg = Utils::trim(currentArg);
-                        
-                        annotation.m_currentArgs[currentArg].m_name = currentArg;
-                        annotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
-                        
-                        std::printf("annotation: %s, arg: %s, array value: %s\n", annotation.m_name.c_str(), currentArg.c_str(), currentValue.c_str());
-                        
-                        currentValue = "";
-                        
-                        continue;
-                    }
-                    
-                    if(c == '[')
-                    {
-                        isArray = true;
-                        continue;
-                    }
-                    if(c == ']')
-                    {
-                        isArray = false;
-                        continue;
-                    }
-                    
-                    // writing arg
-                    if(isAppendingChar)
-                    {
-                        if(!enableValueWriting)
-                        {
-                            currentArg += c;
-                        }
-                        else
-                        {
-                            currentValue += c;
-                        }
-                    }
-                }
-                
-                std::int64_t wordIndex = 0;
-                {
-                    std::int64_t len = 0;
-                    for(const auto& w : lineWords)
-                    {
-                        len += w.length() + 1;
-                        ++wordIndex;
-                        if(len >= match.position())
-                        {
-                            break;
-                        }
-                    }
-                }
-                
-                std::string annotationValidationError = m_annotations[annotation.m_name].validate(annotation, lineWords, wordIndex);
-                if(!annotationValidationError.empty())
-                {
-                    throw std::runtime_error(annotationValidationError.append("\n\tFile: ").append(u8FilePath));
-                }
+                ++currentOpenedBracesCnt;
             }
+            
+            if(c == '}')
+            {
+                auto nIt = namespaces.begin();
+                while(nIt != namespaces.end())
+                {
+                    if(nIt->m_bracesIdx == currentOpenedBracesCnt)
+                    {
+                        std::printf("closed %s: %s\n", nIt->m_type.c_str(), nIt->m_name.c_str());
+                        namespaces.erase(nIt);
+                        break;
+                    }
+                    
+                    ++nIt;
+                }
+                
+                --currentOpenedBracesCnt;
+            }
+            
+            if(c == ' ')
+            {
+                if(currentWord == "namespace" || currentWord == "struct" || currentWord == "class")
+                {
+                    std::string namespaceName = lineWords[currentWordIdx + 1];
+                    
+                    std::string finalNamespaceName = !namespaces.empty() ? namespaces.rbegin()->m_name + "::" + namespaceName : namespaceName;
+                    
+                    namespaces.emplace_back(currentWord, finalNamespaceName, currentOpenedBracesCnt + 1);
+                    
+                    auto aIt = currentActiveAnnotations.begin();
+                    while(aIt != currentActiveAnnotations.end())
+                    {
+                        const auto& acceptVariableFunc = m_annotations[aIt->first].acceptVariable;
+                        if(!acceptVariableFunc)
+                        {
+                            ++aIt;
+                            
+                            continue;
+                        }
+                        
+                        AnnotationActiveState result = acceptVariableFunc(aIt->second, currentWord, finalNamespaceName);
+                        switch(result)
+                        {
+                            case AnnotationActiveState::INACTIVE:
+                            {
+                                aIt = currentActiveAnnotations.erase(aIt);
+                                
+                                continue;
+                            }
+                        }
+                        ++aIt;
+                    }
+                    
+                    std::printf("opened %s %s\n", currentWord.c_str(), finalNamespaceName.c_str());
+                }
+                
+                for(const auto& a : m_annotations)
+                {
+                    if(currentWord.contains(a.first))
+                    {
+                        std::int64_t annotationStartCharIdx = currentCharIdx - currentWord.length();
+                        
+                        Annotation newAnnotation;
+                        newAnnotation.m_name = a.first;
+                        
+                        bool enableAnnotationValuesRead = false;
+                        
+                        bool isArray = false;
+                        bool isString = false;
+                        bool enableValueWriting = false;
+                        bool isAppendingChar = true;
+                        std::string currentValue;
+                        std::string currentArg;
+                        
+                        // parsing annotation and arguments of annotation
+                        for(auto i = annotationStartCharIdx; i < fileText.length(); ++i)
+                        {
+                            const auto& aC = fileText[i];
+                            // std::printf("%c", aC);
+                            
+                            if(!isString)
+                            {
+                                if(aC == '(')
+                                {
+                                    enableAnnotationValuesRead = true;
+                                    ++currentCharIdx;
+                                    continue;
+                                }
+                            }
+                            
+                            if(enableAnnotationValuesRead)
+                            {
+                                isAppendingChar = true;
+                                
+                                if(aC == '=')
+                                {
+                                    enableValueWriting = !enableValueWriting;
+                                    isAppendingChar = false;
+                                }
+                                
+                                if(aC == '"')
+                                {
+                                    isString = !isString;
+                                    if(isString)
+                                    {
+                                        currentValue = "";
+                                    }
+                                    isAppendingChar = false;
+                                }
+                                
+                                // new argument
+                                if((aC == ',' || aC == ')') && !isArray)
+                                {
+                                    if(!currentArg.empty())
+                                    {
+                                        currentValue = Utils::trim(currentValue);
+                                        currentArg = Utils::trim(currentArg);
+                                        
+                                        newAnnotation.m_currentArgs[currentArg].m_name = currentArg;
+                                        newAnnotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
+                                        
+                                        std::printf("annotation: %s, arg: %s, value: %s\n",
+                                                    newAnnotation.m_name.c_str(), currentArg.c_str(),
+                                                    currentValue.c_str());
+                                    }
+                                    
+                                    if(aC == ')' && !isString)
+                                    {
+                                        break;
+                                    }
+                                    
+                                    currentArg = "";
+                                    currentValue = "";
+                                    enableValueWriting = false;
+                                    continue;
+                                }
+                                else if((aC == ',' || aC == ']') && isArray)
+                                {
+                                    currentValue = Utils::trim(currentValue);
+                                    currentArg = Utils::trim(currentArg);
+                                    
+                                    newAnnotation.m_currentArgs[currentArg].m_name = currentArg;
+                                    newAnnotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
+                                    
+                                    std::printf("annotation: %s, arg: %s, array value: %s\n", newAnnotation.m_name.c_str(), currentArg.c_str(), currentValue.c_str());
+                                    
+                                    currentValue = "";
+                                    
+                                    continue;
+                                }
+                                
+                                if(aC == '[')
+                                {
+                                    isArray = true;
+                                    continue;
+                                }
+                                if(aC == ']')
+                                {
+                                    isArray = false;
+                                    continue;
+                                }
+                                
+                                // writing arg
+                                if(isAppendingChar)
+                                {
+                                    if(!enableValueWriting)
+                                    {
+                                        currentArg += aC;
+                                    }
+                                    else
+                                    {
+                                        currentValue += aC;
+                                    }
+                                }
+                            }
+                            
+                            if(aC == ')' && !isString)
+                            {
+                                break;
+                            }
+                        }
+                        
+                        if(m_annotations[newAnnotation.m_name].validate)
+                        {
+                            std::string annotationValidationError = m_annotations[newAnnotation.m_name].validate(
+                                    newAnnotation, lineWords, currentWordIdx);
+                            if(!annotationValidationError.empty())
+                            {
+                                throw std::runtime_error(
+                                        annotationValidationError.append("\n\tFile: ").append(u8FilePath));
+                            }
+                        }
+                        
+                        const auto& variableAcceptationFunc = m_annotations[newAnnotation.m_name].acceptVariable;
+                        
+                        currentActiveAnnotations[newAnnotation.m_name] = newAnnotation;
+                        if(variableAcceptationFunc)
+                        {
+                            auto result = variableAcceptationFunc(newAnnotation, namespaces.rbegin()->m_type, namespaces.rbegin()->m_name);
+                            
+                            switch(result)
+                            {
+                                case AnnotationActiveState::INACTIVE:
+                                {
+                                    currentActiveAnnotations.erase(newAnnotation.m_name);
+                                    
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        break;
+                    }
+                }
+                
+                ++currentWordIdx;
+                currentWord = "";
+                
+                currentExpression += ' ';
+                
+                ++currentCharIdx;
+                continue;
+            }
+            
+            if(c == ';' || c == '{' || c == '}')
+            {
+                ++exprsInOneLineCnt;
+                if(exprsInOneLineCnt > 1)
+                {
+                    skipExprs = true;
+                }
+                
+                if(c == ';' /*|| c == '{'*/)
+                {
+                    exprsInOneLineCnt = 0;
+                    skipExprs = false;
+                    std::printf("expr del disabled\n");
+                }
+                
+                if(skipExprs)
+                {
+                    std::printf("expr to del: %s\n", currentExpression.c_str());
+                    // isLastExprHasAssignmentOperator = false;
+                    currentExpression = "";
+                    continue;
+                }
+                
+                
+                std::int64_t bracketsCnt = 0;
+                
+                if(c == ';')
+                {
+                    // currentExpression += ';';
+                }
+                
+                std::printf("expr: %s\n", currentExpression.c_str());
+                
+                bool isExpressionValid = std::count(currentExpression.begin(), currentExpression.end(), ' ') + 1 <= currentExpression.length() - 1;
+                
+                for(std::int64_t k = 0; k < currentExpression.length(); ++k)
+                {
+                    if(currentExpression[k] == '<' || currentExpression[k] == '(')
+                    {
+                        ++bracketsCnt;
+                    }
+                    else if(currentExpression[k] == '>'|| currentExpression[k] == ')')
+                    {
+                        --bracketsCnt;
+                    }
+                    
+                    // examples:
+                    // std::string var = ...;
+                    // MyType<OtherType{}> var = ...;
+                    // MyType<OtherType{}> var { };
+                    // ignoring all in <>
+                    if((currentExpression[k] == '{' || currentExpression[k] == '=' || k == currentExpression.length() - 1) && bracketsCnt == 0)
+                    {
+                        std::string exprCopy = currentExpression;
+                        if(exprCopy[k - 1] == ' ')
+                        {
+                            exprCopy.erase(k - 1);
+                        }
+                        if(exprCopy[k] == ' ')
+                        {
+                            exprCopy.erase(k);
+                        }
+                        if(exprCopy.length() > k + 1 && exprCopy[k + 1] == ' ')
+                        {
+                            exprCopy.erase(k + 1);
+                        }
+                        
+                        std::string variableName;
+                        std::string firstWordBeforeVariable;
+                        // going back to get variable name
+                        for(std::int64_t j = k != currentExpression.length() - 1 ? k - 1 : k;; --j)
+                        {
+                            if(exprCopy[j] == ' ')
+                            {
+                                for(std::int64_t l = j - 1; exprCopy[l] != ' '; --l)
+                                {
+                                    firstWordBeforeVariable += exprCopy[l];
+                                }
+                                
+                                std::reverse(firstWordBeforeVariable.begin(), firstWordBeforeVariable.end());
+                                
+                                break;
+                            }
+                            
+                            variableName += exprCopy[j];
+                        }
+                        std::reverse(variableName.begin(), variableName.end());
+                        
+                        variableName = Utils::reduce(variableName);
+                        
+                        if(isExpressionValid &&
+                            firstWordBeforeVariable != "union" &&
+                                firstWordBeforeVariable != "struct" &&
+                                firstWordBeforeVariable != "class" &&
+                                firstWordBeforeVariable != "namespace" &&
+                                !variableName.empty())
+                        {
+                            std::printf("expr del enabled\n");
+                            //isLastExprHasAssignmentOperator = true;
+                            
+                            std::printf("FOUND VARIABLE: %s\n", variableName.c_str());
+                        }
+                        
+                        break;
+                    }
+                }
+                
+                currentExpression = "";
+            }
+            else
+            {
+                currentExpression += c;
+            }
+            
+            currentWord += c;
+            ++currentCharIdx;
         }
         
         std::cout << fileText << std::endl;
@@ -426,3 +691,4 @@ std::string SGCore::AnnotationsProcessor::prettifyCode(const std::string& code) 
     
     return outputStr;
 }
+

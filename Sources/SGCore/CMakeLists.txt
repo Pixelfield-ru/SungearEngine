@@ -91,6 +91,7 @@
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}
+
          )
 
  if(${CMAKE_COMPILER_IS_GNUCXX})
