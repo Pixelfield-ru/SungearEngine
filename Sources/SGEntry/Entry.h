@@ -2,6 +2,9 @@
 #define SUNGEARENGINE_ENTRY_H
 
 #include <SGCore/Main/CoreMain.h>
+#include <SGCore/Annotations/Annotations.h>
+#include <SGCore/Scene/Serializer.h>
+#include <SGCore/Utils/TypeTraits.h>
 
 void coreInit();
 

@@ -16,8 +16,7 @@
 namespace SGCore
 {
     // sizeof(Transform) = 767
-    sg_struct()
-    sg_component()
+    sg_struct(type="component")
     struct Transform
     {
         sg_member()

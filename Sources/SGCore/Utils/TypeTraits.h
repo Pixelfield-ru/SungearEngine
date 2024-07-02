@@ -183,6 +183,14 @@ namespace SGCore
     {
     };
     
+    template <typename T, std::size_t = sizeof(T)>
+    std::true_type is_complete_impl(T*);
+    
+    std::false_type is_complete_impl(...);
+    
+    template <class T>
+    using is_complete = decltype(is_complete_impl(std::declval<T*>()));
+    
     template <typename T>
     struct func_return_type;
     template <typename R, typename... Args>

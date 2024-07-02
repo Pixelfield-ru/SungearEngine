@@ -69,7 +69,11 @@ void coreInit()
     
     SGCore::AnnotationsProcessor annotationsProcessor;
     annotationsProcessor.processAnnotations(std::vector<std::filesystem::path> { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h" });
-    // annotationsProcessor.processAnnotations("/home/ilya/pixelfield/SungearEngine/Sources");
+    /*annotationsProcessor.processAnnotations("/home/ilya/pixelfield/SungearEngine/Sources",
+                                            { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/Annotations.h",
+                                              "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/AnnotationsProcessor.cpp" });*/
+    
+    std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -120,7 +124,20 @@ void onUpdate(const double& dt, const double& fixedDt)
 
 int main()
 {
+    //std::printf("definitions: %i\n", register_definition<SGCore::SerializerSpec<std::int8_t>>::counter);
+    
     using namespace SGCore;
+    
+    rapidjson::Document document;
+    document.SetObject();
+    
+    /*SGCore::SerializerSpec<std::string>::serialize(document, document, "str", "");*/
+    
+    /*SGCore::SerializerSpec<TestNamespace::TestStruct>::serialize(document, document, "str",
+                                                                 TestNamespace::TestStruct());
+        
+    SGCore::SerializerSpec<decltype(TestNamespace::TestStruct::str)>::serialize(document, document, "str", { });*/
+    SGCore::SerializerSpec<std::int8_t>::serialize(document, document, "str", { });
     
     CoreMain::onInit.connect<&coreInit>();
     CoreMain::getRenderTimer().onUpdate.connect<&onUpdate>();

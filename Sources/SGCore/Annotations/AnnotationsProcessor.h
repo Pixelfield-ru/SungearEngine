@@ -35,6 +35,8 @@ namespace SGCore
         {
             std::string m_name { };
             
+            std::filesystem::path m_filePath;
+            
             // first - name
             std::unordered_map<std::string, AnnotationArg> m_acceptableArgs { };
             std::unordered_map<std::string, AnnotationArg> m_currentArgs { };
@@ -43,7 +45,7 @@ namespace SGCore
             
             std::string validateAcceptableArgs(const Annotation& annotationToValidate) const noexcept;
             
-            std::function<AnnotationActiveState(Annotation& annotation, const std::string& type, const std::string& name)> acceptVariable;
+            std::function<AnnotationActiveState(Annotation& annotation, const std::string& type, const std::string& name, bool isHigher)> acceptVariable;
             
             std::string formArgumentsString() const noexcept;
         };
@@ -51,7 +53,6 @@ namespace SGCore
         struct Member
         {
             std::string m_name;
-            std::string m_type { };
             
             // first - name
             std::unordered_map<std::string, Annotation> m_annotations { };
@@ -73,14 +74,17 @@ namespace SGCore
         
         AnnotationsProcessor() noexcept;
         
-        void processAnnotations(const std::filesystem::path& inDirectory, bool recursively = true);
+        void processAnnotations(const std::filesystem::path& inDirectory, const std::vector<std::filesystem::path>& filesToExclude = { }, bool recursively = true);
         
         void processAnnotations(const std::vector<std::filesystem::path>& files);
         
+        std::string stringifyAnnotations() const noexcept;
+        
     private:
         // first - name
-        std::unordered_map<std::string, Annotation> m_annotations;
-        std::unordered_map<std::string, SourceStruct> m_structs;
+        std::unordered_map<std::string, Annotation> m_supportedAnnotations;
+        std::vector<Annotation> m_currentAnnotations;
+        // std::unordered_map<std::string, SourceStruct> m_structs;
         
         std::string m_activeStruct;
         

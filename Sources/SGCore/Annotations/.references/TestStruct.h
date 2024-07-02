@@ -6,23 +6,38 @@
 #define SUNGEARENGINE_TESTSTRUCT_H
 
 #include "SGCore/Annotations/Annotations.h"
+#include "SGCore/Scene/Serializer.h"
 #include <string>
 #include <vector>
 
 namespace TestNamespace
 {
+    template<typename T>
+    struct MyStruct
+    {
+    
+    };
+    
+    template<>
+    sg_struct()
+    struct MyStruct<std::int8_t>
+    {
+    
+    };
+    
     sg_member()
     int k = 0;
     
-    sg_struct(fullName = "TestNamespace::TestStruct")
-    sg_component()
+    sg_struct(type="component")
     struct TestStruct
     {
-        
         sg_struct()
         struct TestStruct2
         {
-        
+            friend struct TestStruct;
+            
+            sg_member()
+            int a = 32;
         };
         
         struct TestStruct3
@@ -42,12 +57,34 @@ namespace TestNamespace
         // y - follow rotation
         // z - follow scale
         sg_member()
-        std::vector<float> vec { };
+        std::vector<float> vec { 0.5, 5 };
         
-        bool m_transformChanged = { { false } };
+        sg_member()
+        bool m_bool = { { false } };
     };
     
     // sg_struct(fullName = "TestNamespace::TestStruct2")
 }
+
+template<>
+sg_struct(type="serializer")
+struct SGCore::SerializerSpec<TestNamespace::TestStruct>
+{
+    sg_member()
+    int m_amem = 4;
+    
+    static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                          const std::string& varName, const TestNamespace::TestStruct& value) noexcept
+    {
+    }
+};
+
+// здесь используется проверка на то, что такая специализация SGCore::SerializerSpec уже определена
+/*template<>
+struct SGCore::SerializerSpec<std::conditional_t<requires { SGCore::SerializerSpec<decltype(TestNamespace::TestStruct::str)>::serialize; },
+        struct TestNamespace_TestStruct_str_, SGCore::SerializerSpec<decltype(TestNamespace::TestStruct::str)>>>
+{
+
+};*/
 
 #endif //SUNGEARENGINE_TESTSTRUCT_H

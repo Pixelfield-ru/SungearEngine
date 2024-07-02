@@ -16,13 +16,12 @@ namespace SGCore
     template<typename T>
     struct SerializerSpec
     {
-        static_assert(always_false<T>::value, "This type is not serializable. Please, implement specialization of Serializable for this type.");
-        
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const T& value) noexcept
         {
+            static_assert(always_false<T>::value, "This type is not serializable. Please, implement specialization of Serializable for this type.");
         }
     };
-    
+
     struct Serializer
     {
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const auto& value) noexcept
