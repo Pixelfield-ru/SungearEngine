@@ -41,7 +41,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const std::int8_t& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -51,7 +72,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const std::int16_t& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -61,7 +103,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const std::int32_t& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -71,7 +134,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const std::int64_t& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -81,16 +165,58 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const std::uint8_t& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
     template<>
     struct SerializerSpec<std::uint16_t>
     {
-        static void serialize(rapidjson::Document& toDocument, const std::string& varName, const std::int16_t& value) noexcept
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const std::int16_t& value) noexcept
         {
-            toDocument.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -100,7 +226,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const std::uint32_t& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -110,7 +257,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const std::uint64_t& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -120,7 +288,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const double& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -130,7 +319,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const float& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
 
@@ -140,7 +350,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const bool& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -152,7 +383,7 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const glm::vec<ScalarsCnt, ScalarT, Qualifier>& value) noexcept
         {
-            rapidjson::Value k(rapidjson::kObjectType);
+            rapidjson::Value k(rapidjson::kStringType);
             rapidjson::Value v(rapidjson::kObjectType);
             
             k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
@@ -169,7 +400,45 @@ namespace SGCore
             {
                 v.AddMember("w", value.w, toDocument.GetAllocator());
             }
-
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
+        }
+    };
+    
+    template<typename T>
+    struct SerializerSpec<std::vector<T>>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, const std::vector<T>& value) noexcept
+        {
+            rapidjson::Value k(rapidjson::kStringType);
+            rapidjson::Value v(rapidjson::kArrayType);
+            
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            for(const auto& n : value)
+            {
+                Serializer::serialize(toDocument, v, "", n);
+            }
+            
             parent.AddMember(k, v, toDocument.GetAllocator());
         }
     };
@@ -180,7 +449,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const std::string& value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), rapidjson::StringRef(value.c_str()), toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, rapidjson::StringRef(value.c_str()), toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(rapidjson::StringRef(value.c_str()), toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
     
@@ -190,7 +480,28 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                               const std::string& varName, const char* value) noexcept
         {
-            parent.AddMember(rapidjson::StringRef(varName.c_str()), rapidjson::StringRef(value), toDocument.GetAllocator());
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, rapidjson::StringRef(value), toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(rapidjson::StringRef(value), toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
         }
     };
 }

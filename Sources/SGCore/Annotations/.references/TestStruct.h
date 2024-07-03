@@ -28,7 +28,7 @@ namespace TestNamespace
     sg_member()
     int k = 0;
     
-    sg_struct(type="component")
+    sg_struct(fullName = ["TestNamespace::TestStruct", "struct"], type = "component")
     struct TestStruct
     {
         sg_struct()
@@ -40,6 +40,7 @@ namespace TestNamespace
             int a = 32;
         };
         
+        sg_struct()
         struct TestStruct3
         {
             sg_member()
@@ -49,42 +50,21 @@ namespace TestNamespace
         sg_member()
         int i=3;
         
-        sg_member()
+        sg_member(serializableName = "myName")
         std::string str { "sdfsdf" };
         
-        // will transform follow parent entity`s translation, rotation and scale
-        // x - follow translation
-        // y - follow rotation
-        // z - follow scale
         sg_member()
-        std::vector<float> vec { 0.5, 5 };
+        std::vector<float> m_stdvec { 0.5, 5 };
         
         sg_member()
-        bool m_bool = { { false } };
+        glm::vec3 m_glmvec { 0, 1, 0 };
+        
+        sg_member()
+        TestStruct3 m_testStruct3 = { };
+        
+        sg_member()
+        bool m_bool = { false };
     };
-    
-    // sg_struct(fullName = "TestNamespace::TestStruct2")
 }
-
-template<>
-sg_struct(type="serializer")
-struct SGCore::SerializerSpec<TestNamespace::TestStruct>
-{
-    sg_member()
-    int m_amem = 4;
-    
-    static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                          const std::string& varName, const TestNamespace::TestStruct& value) noexcept
-    {
-    }
-};
-
-// здесь используется проверка на то, что такая специализация SGCore::SerializerSpec уже определена
-/*template<>
-struct SGCore::SerializerSpec<std::conditional_t<requires { SGCore::SerializerSpec<decltype(TestNamespace::TestStruct::str)>::serialize; },
-        struct TestNamespace_TestStruct_str_, SGCore::SerializerSpec<decltype(TestNamespace::TestStruct::str)>>>
-{
-
-};*/
 
 #endif //SUNGEARENGINE_TESTSTRUCT_H

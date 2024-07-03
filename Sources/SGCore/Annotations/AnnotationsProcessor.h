@@ -12,8 +12,6 @@
 
 namespace SGCore
 {
-    namespace fs = std::filesystem;
-    
     struct AnnotationsProcessor
     {
         enum class AnnotationActiveState
@@ -80,13 +78,13 @@ namespace SGCore
         
         std::string stringifyAnnotations() const noexcept;
         
+        const std::vector<Annotation>& getAnnotations() const noexcept;
+        
     private:
         // first - name
         std::unordered_map<std::string, Annotation> m_supportedAnnotations;
         std::vector<Annotation> m_currentAnnotations;
         // std::unordered_map<std::string, SourceStruct> m_structs;
-        
-        std::string m_activeStruct;
         
         std::string prettifyCode(const std::string& code) noexcept;
         

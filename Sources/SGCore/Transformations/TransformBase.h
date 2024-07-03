@@ -20,7 +20,7 @@ namespace SGCore
 {
     // sizeof(TransformBase) == 382
     // todo: make quaternion transformations
-    sg_struct(fullName = "SGCore::TransformBase")
+    sg_struct()
     struct TransformBase
     {
         friend struct TransformationsUpdater;

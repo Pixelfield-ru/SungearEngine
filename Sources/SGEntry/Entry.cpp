@@ -34,8 +34,12 @@ extern "C" {
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Utils/Formatter.h"
 #include "SGCore/Annotations/AnnotationsProcessor.h"
+#include "SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.h"
 
 SGCore::Ref<SGCore::Scene> testScene2;
+
+// #include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
+// #include "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h"
 
 void coreInit()
 {
@@ -73,7 +77,26 @@ void coreInit()
                                             { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/Annotations.h",
                                               "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/AnnotationsProcessor.cpp" });*/
     
+    SGCore::CodeGen::SerializersGenerator serializersGenerator;
+    std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./").c_str());
+    
     std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;
+    
+    using namespace SGCore;
+    
+    rapidjson::Document document;
+    document.SetObject();
+    
+    /*Transform testTransform;
+    
+    Serializer::serialize(document, document, "testTransform", testTransform);*/
+    
+    rapidjson::StringBuffer stringBuffer;
+    stringBuffer.Clear();
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+    document.Accept(writer);
+    
+    FileUtils::writeToFile("serializer_test.txt", stringBuffer.GetString(), false, true);
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
@@ -124,20 +147,8 @@ void onUpdate(const double& dt, const double& fixedDt)
 
 int main()
 {
-    //std::printf("definitions: %i\n", register_definition<SGCore::SerializerSpec<std::int8_t>>::counter);
-    
     using namespace SGCore;
-    
-    rapidjson::Document document;
-    document.SetObject();
-    
-    /*SGCore::SerializerSpec<std::string>::serialize(document, document, "str", "");*/
-    
-    /*SGCore::SerializerSpec<TestNamespace::TestStruct>::serialize(document, document, "str",
-                                                                 TestNamespace::TestStruct());
-        
-    SGCore::SerializerSpec<decltype(TestNamespace::TestStruct::str)>::serialize(document, document, "str", { });*/
-    SGCore::SerializerSpec<std::int8_t>::serialize(document, document, "str", { });
+    //std::printf("definitions: %i\n", register_definition<SGCore::SerializerSpec<std::int8_t>>::counter);
     
     CoreMain::onInit.connect<&coreInit>();
     CoreMain::getRenderTimer().onUpdate.connect<&onUpdate>();

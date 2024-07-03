@@ -5,6 +5,8 @@
 
 #include <SGCore/pch.h>
 
+namespace fs = std::filesystem;
+
 std::string SGCore::AnnotationsProcessor::Annotation::validateAcceptableArgs(const Annotation& annotationToValidate) const noexcept
 {
     decltype(Annotation::m_acceptableArgs) necessaryArgs = m_acceptableArgs;
@@ -18,9 +20,10 @@ std::string SGCore::AnnotationsProcessor::Annotation::validateAcceptableArgs(con
             return fmt::format("Error in annotation '{0}'. Unknown argument: {1}", m_name, argPair.first);
         }
         
-        if(foundIt->second.m_requiredValuesCount < argPair.second.m_values.size() && foundIt->second.m_requiredValuesCount != -1)
+        if((foundIt->second.m_requiredValuesCount < argPair.second.m_values.size() || foundIt->second.m_requiredValuesCount > argPair.second.m_values.size()) && foundIt->second.m_requiredValuesCount != -1)
         {
-            return fmt::format("Error in annotation '{0}'. Invalid number of arguments {1}. Requires {2} arguments or less", m_name, argPair.second.m_requiredValuesCount, foundIt->second.m_requiredValuesCount);
+            return fmt::format("Error in annotation '{0}'. Invalid number of values {1}. Argument '{2}' requires {3} values. Annotation: {4}",
+                               m_name, argPair.second.m_values.size(), argPair.first, foundIt->second.m_requiredValuesCount, annotationToValidate.formArgumentsString());
         }
         
         necessaryArgs.erase(argPair.first);
@@ -55,10 +58,20 @@ std::string SGCore::AnnotationsProcessor::Annotation::formArgumentsString() cons
         const auto& arg = i;
         
         args += arg->first + " = [";
+        std::uint32_t curValIdx = 0;
         for(const auto& val : arg->second.m_values)
         {
             // std::printf("%s", val.c_str());
-            args += val;
+            if(curValIdx < arg->second.m_values.size() - 1)
+            {
+                args += val + ", ";
+            }
+            else
+            {
+                args += val;
+            }
+            
+            ++curValIdx;
         }
         if(curArgIdx < m_currentArgs.size() - 1)
         {
@@ -105,7 +118,9 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         
         newAnnotation.m_acceptableArgs["fullName"].m_name = "fullName";
         newAnnotation.m_acceptableArgs["fullName"].m_isUnnecessary = true;
+        newAnnotation.m_acceptableArgs["fullName"].m_requiredValuesCount = 2;
         
+        // type of struct or class
         newAnnotation.m_acceptableArgs["type"].m_name = "type";
         newAnnotation.m_acceptableArgs["type"].m_isUnnecessary = true;
         
@@ -124,11 +139,14 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         newAnnotation.acceptVariable = [](Annotation& annotation, const std::string& type, const std::string& name, bool isHigher) -> AnnotationActiveState {
             if((type == "struct" || type == "class") && !isHigher)
             {
+                // if not specified explicitly
                 if(annotation.m_currentArgs.find("fullName") == annotation.m_currentArgs.end())
                 {
                     auto& arg = annotation.m_currentArgs["fullName"];
                     arg.m_name = "fullName";
                     arg.m_values.push_back(name);
+                    // adding type (class or structure)
+                    arg.m_values.push_back(type);
                 }
                 
                 // std::printf("sg_struct acceptation of %s '%s. Annotation addr: %lu'\n", type.c_str(), name.c_str(), reinterpret_cast<size_t>(&annotation));
@@ -171,10 +189,14 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         newAnnotation.m_acceptableArgs["varName"].m_name = "varName";
         newAnnotation.m_acceptableArgs["varName"].m_isUnnecessary = true;
         
+        newAnnotation.m_acceptableArgs["serializableName"].m_name = "serializableName";
+        newAnnotation.m_acceptableArgs["serializableName"].m_isUnnecessary = true;
+        
         newAnnotation.acceptVariable = [](Annotation& annotation, const std::string& type, const std::string& name, bool isHigher) -> AnnotationActiveState {
             // std::printf("sg_member acceptation of %s\n", type.c_str());
             if(type == "struct" || type == "class" || type == "namespace")
             {
+                // if not specified explicitly
                 if(annotation.m_currentArgs.find("parentNamespace") == annotation.m_currentArgs.end())
                 {
                     auto& arg = annotation.m_currentArgs["parentNamespace"];
@@ -189,10 +211,19 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
             }
             else if(type == "variable")
             {
+                // if not specified explicitly
                 if(annotation.m_currentArgs.find("varName") == annotation.m_currentArgs.end())
                 {
                     auto& arg = annotation.m_currentArgs["varName"];
                     arg.m_name = "varName";
+                    arg.m_values.push_back(name);
+                }
+                
+                // if not specified explicitly
+                if(annotation.m_currentArgs.find("serializableName") == annotation.m_currentArgs.end())
+                {
+                    auto& arg = annotation.m_currentArgs["serializableName"];
+                    arg.m_name = "serializableName";
                     arg.m_values.push_back(name);
                 }
                 
@@ -457,7 +488,7 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
                                     enableValueWriting = false;
                                     continue;
                                 }
-                                else if((aC == ',' || aC == ']') && isArray)
+                                else if((aC == ',') && isArray)
                                 {
                                     currentValue = Utils::trim(currentValue);
                                     currentArg = Utils::trim(currentArg);
@@ -770,5 +801,10 @@ std::string SGCore::AnnotationsProcessor::stringifyAnnotations() const noexcept
     }
     
     return str;
+}
+
+const std::vector<SGCore::AnnotationsProcessor::Annotation>& SGCore::AnnotationsProcessor::getAnnotations() const noexcept
+{
+    return m_currentAnnotations;
 }
 
