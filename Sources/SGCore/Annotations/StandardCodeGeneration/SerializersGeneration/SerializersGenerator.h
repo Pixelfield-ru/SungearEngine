@@ -12,7 +12,7 @@ namespace SGCore::CodeGen
 {
     struct SerializersGenerator
     {
-        [[nodiscard]] std::string generateSerializers(const AnnotationsProcessor& annotationsProcessor, const std::filesystem::path& toPath) const noexcept;
+        [[nodiscard]] std::string generateSerializers(const AnnotationsProcessor& annotationsProcessor, const std::filesystem::path& toPath) const;
     };
 }
 

@@ -13,22 +13,18 @@
 namespace TestNamespace
 {
     template<typename T>
+    // sg_struct(template = [(type = "typename", name = "T"), (type = "std::int8_t", name = "Idx")])
+    sg_struct(template = [(type = "typename", name = "T")])
     struct MyStruct
     {
-    
+        sg_member()
+        T m_myMember;
     };
     
-    template<>
-    sg_struct()
-    struct MyStruct<std::int8_t>
-    {
-    
-    };
-    
-    sg_member()
+    // sg_member()
     int k = 0;
     
-    sg_struct(fullName = ["TestNamespace::TestStruct", "struct"], type = "component")
+    sg_struct(type = "component")
     struct TestStruct
     {
         sg_struct()

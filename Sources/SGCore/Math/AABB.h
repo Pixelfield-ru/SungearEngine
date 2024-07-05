@@ -14,7 +14,7 @@
 namespace SGCore
 {
     template<typename ScalarT = float>
-    sg_struct()
+    sg_struct(template = [(type = "typename", name = "ScalarT")])
     struct AABB
     {
         static_assert(std::is_scalar_v<ScalarT> && "ScalarT must be scalar.");

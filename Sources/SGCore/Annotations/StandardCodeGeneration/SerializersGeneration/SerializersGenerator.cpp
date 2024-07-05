@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 
 std::string
 SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::AnnotationsProcessor& annotationsProcessor,
-                                                           const std::filesystem::path& toPath) const noexcept
+                                                           const std::filesystem::path& toPath) const
 {
     const char* sgSourcesRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
     
@@ -39,18 +39,71 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
             {
                 if(fullNameArg->second.m_values.size() < 2) continue;
                 
-                std::string structName = fullNameArg->second.m_values[0];
-                std::string namespaceType = fullNameArg->second.m_values[1];
+                auto structName = std::any_cast<std::string>(fullNameArg->second.m_values[0]);
+                auto namespaceType = std::any_cast<std::string>(fullNameArg->second.m_values[1]);
                 
                 // not 'struct' or 'class'
                 if(namespaceType == "namespace" || alreadyGeneratedStructs.contains(structName)) continue;
+                
+                std::string templateArgs;
+                std::string templateNames;
+                
+                auto templateArgIt = annotation.m_currentArgs.find("template");
+                bool templateArgProvided = templateArgIt != annotation.m_currentArgs.end();
+                if(templateArgProvided)
+                {
+                    std::int64_t templateArgsCnt = 0;
+                    for(const auto& templateArg : templateArgIt->second.m_values)
+                    {
+                        auto* templateValAsSubAnnotation = std::any_cast<AnnotationsProcessor::Annotation>(&templateArg);
+                        
+                        if(templateValAsSubAnnotation)
+                        {
+                            auto templateArgTypeIt = templateValAsSubAnnotation->m_currentArgs.find("type");
+                            if(templateArgTypeIt == templateValAsSubAnnotation->m_currentArgs.end())
+                            {
+                                throw std::runtime_error(fmt::format(
+                                        "Can not generate serializer code for struct '{0}'. Template argument was provided in 'sg_struct' annotation, but type of this argument was not specified.",
+                                        structName));
+                            }
+                            
+                            templateArgs += std::any_cast<std::string>(templateArgTypeIt->second.m_values[0]);
+                            
+                            auto templateArgNameIt = templateValAsSubAnnotation->m_currentArgs.find("name");
+                            if(templateArgNameIt != templateValAsSubAnnotation->m_currentArgs.end())
+                            {
+                                if(templateArgsCnt < templateArgIt->second.m_values.size() - 2)
+                                {
+                                    templateArgs += " " + std::any_cast<std::string>(templateArgNameIt->second.m_values[0]) + ", ";
+                                    templateNames += std::any_cast<std::string>(templateArgNameIt->second.m_values[0]) + ", ";
+                                }
+                                else
+                                {
+                                    templateArgs += " " + std::any_cast<std::string>(templateArgNameIt->second.m_values[0]);
+                                    templateNames += std::any_cast<std::string>(templateArgNameIt->second.m_values[0]);
+                                }
+                            }
+                        }
+                        
+                        ++templateArgsCnt;
+                    }
+                    
+                    formatter["structureTemplateArgs"] = templateArgs;
+                    formatter["structureTemplateNames"] = templateNames;
+                }
                 
                 formatter["structureName"] = structName;
                 
                 serializersSpecForwardDeclCode += fmt::format("// SERIALIZER FORWARD DECL FOR {0} '{1}'\n", namespaceType, structName);
                 serializersSpecForwardDeclCode += "#include \"" + Utils::toUTF8<char16_t>(annotation.m_filePath.u16string()) + "\"\n";
-                serializersSpecForwardDeclCode += formatter.format(FileUtils::readFile(sgSourcesRootStr +
-                        "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/SerializerSpecForwardDecl.h")) + "\n";
+                serializersSpecForwardDeclCode += formatter.format(
+                        FileUtils::readFile(
+                                sgSourcesRootStr +
+                                (templateArgProvided ?
+                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/TemplatedSerializerSpecForwardDecl.h"
+                                                     :
+                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/NotTemplatedSerializerSpecForwardDecl.h")) +
+                        "\n");
                 serializersSpecForwardDeclCode += "// =================================================================================\n";
                 
                 std::string serializationOps;
@@ -64,7 +117,7 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                         auto parentNamespaceArg = memberAnnotation.m_currentArgs.find("parentNamespace");
                         if(parentNamespaceArg == memberAnnotation.m_currentArgs.end() ||
                            parentNamespaceArg->second.m_values.empty() ||
-                           parentNamespaceArg->second.m_values[0] != structName)
+                           std::any_cast<std::string>(parentNamespaceArg->second.m_values[0]) != structName)
                         {
                             continue;
                         }
@@ -74,8 +127,10 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                         if(varNameArg != memberAnnotation.m_currentArgs.end() &&
                            serializableNameArg != memberAnnotation.m_currentArgs.end())
                         {
-                            serializationOps += fmt::format("\tSGCore::Serializer::serialize(toDocument, v, \"{0}\", value.{1});\n",
-                                                            serializableNameArg->second.m_values[0], varNameArg->second.m_values[0]);
+                            serializationOps += fmt::format(
+                                    "\tSGCore::Serializer::serialize(toDocument, v, \"{0}\", value.{1});\n",
+                                    std::any_cast<std::string>(serializableNameArg->second.m_values[0]),
+                                    std::any_cast<std::string>(varNameArg->second.m_values[0]));
                         }
                     }
                 }
@@ -84,8 +139,13 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                 formatter["valuesAddCode"] = serializationOps;
                 
                 serializersSpecImplCode += fmt::format("// SERIALIZER IMPLEMENTATION FOR {0} '{1}'\n", namespaceType, structName);
-                serializersSpecImplCode += formatter.format(FileUtils::readFile(sgSourcesRootStr +
-                        "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/SerializerSpecImpl.h")) + "\n";
+                serializersSpecImplCode += formatter.format(
+                        FileUtils::readFile(
+                                sgSourcesRootStr +
+                                (templateArgProvided ?
+                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/TemplatedSerializerSpecImpl.h"
+                                                     :
+                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/NotTemplatedSerializerSpecImpl.h"))) + "\n";
                 serializersSpecImplCode += "// =================================================================================\n";
                 
                 alreadyGeneratedStructs.insert(structName);

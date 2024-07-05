@@ -26,7 +26,7 @@ namespace SGCore
             bool m_isUnnecessary = false;
             // -1 means for variadic count of arguments
             std::int64_t m_requiredValuesCount = 1;
-            std::vector<std::string> m_values;
+            std::vector<std::any> m_values;
         };
         
         struct Annotation
@@ -38,6 +38,7 @@ namespace SGCore
             // first - name
             std::unordered_map<std::string, AnnotationArg> m_acceptableArgs { };
             std::unordered_map<std::string, AnnotationArg> m_currentArgs { };
+            std::vector<AnnotationArg> m_anonymousArgs;
             
             std::function<std::string(Annotation& annotation, const std::vector<std::string>& words, std::int64_t wordIndex)> validate { };
             
@@ -81,6 +82,10 @@ namespace SGCore
         const std::vector<Annotation>& getAnnotations() const noexcept;
         
     private:
+        std::int64_t parseAnnotationArgument(Annotation& toAnnotation, const std::int64_t& charIdx,
+                                             const std::string& fileText, const std::vector<std::string>& words,
+                                             const std::int64_t& wordIdx) noexcept;
+        
         // first - name
         std::unordered_map<std::string, Annotation> m_supportedAnnotations;
         std::vector<Annotation> m_currentAnnotations;

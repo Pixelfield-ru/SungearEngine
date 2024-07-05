@@ -61,14 +61,23 @@ std::string SGCore::AnnotationsProcessor::Annotation::formArgumentsString() cons
         std::uint32_t curValIdx = 0;
         for(const auto& val : arg->second.m_values)
         {
-            // std::printf("%s", val.c_str());
-            if(curValIdx < arg->second.m_values.size() - 1)
+            auto* asStr = std::any_cast<std::string>(&val);
+            auto* asSubAnnotation = std::any_cast<Annotation>(&val);
+            
+            if(asStr)
             {
-                args += val + ", ";
+                if(curValIdx < arg->second.m_values.size() - 1)
+                {
+                    args += *asStr + ", ";
+                }
+                else
+                {
+                    args += *asStr;
+                }
             }
-            else
+            else if(asSubAnnotation)
             {
-                args += val;
+                args += "\n\twith sub-annotation " + asSubAnnotation->formArgumentsString();
             }
             
             ++curValIdx;
@@ -80,9 +89,40 @@ std::string SGCore::AnnotationsProcessor::Annotation::formArgumentsString() cons
         else
         {
             args += "]";
+            args += (!m_anonymousArgs.empty() ? ",\n" : "");
         }
         
         ++curArgIdx;
+    }
+    
+    for(const auto& anonymousArg : m_anonymousArgs)
+    {
+        const auto& arg = anonymousArg;
+        
+        std::uint32_t curValIdx = 0;
+        for(const auto& val : anonymousArg.m_values)
+        {
+            auto* asStr = std::any_cast<std::string>(&val);
+            auto* asSubAnnotation = std::any_cast<Annotation>(&val);
+            
+            if(asStr)
+            {
+                if(curValIdx < arg.m_values.size() - 1)
+                {
+                    args += *asStr + ", ";
+                }
+                else
+                {
+                    args += *asStr;
+                }
+            }
+            else if(asSubAnnotation)
+            {
+                args += " \twith sub-annotation '" + asSubAnnotation->formArgumentsString() + "',\n";
+            }
+            
+            ++curValIdx;
+        }
     }
     
     if(m_currentArgs.empty())
@@ -113,6 +153,31 @@ SGCore::AnnotationsProcessor::SourceStruct::getMember(const std::string& name) n
 SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
 {
     {
+        Annotation templateArgumentSubAnnotation;
+        templateArgumentSubAnnotation.m_name = "templateSubArgument";
+        templateArgumentSubAnnotation.m_acceptableArgs["type"].m_name = "type";
+        templateArgumentSubAnnotation.m_acceptableArgs["type"].m_isUnnecessary = false;
+        
+        templateArgumentSubAnnotation.m_acceptableArgs["name"].m_name = "name";
+        templateArgumentSubAnnotation.m_acceptableArgs["name"].m_isUnnecessary = true;
+        
+        templateArgumentSubAnnotation.validate = [templateArgumentSubAnnotation, this](Annotation& annotation,
+                                                                                       const std::vector<std::string>& words,
+                                                                                       std::int64_t wordIndex) -> std::string {
+            std::string argsAcceptableErr = templateArgumentSubAnnotation.validateAcceptableArgs(annotation);
+            
+            if(!argsAcceptableErr.empty())
+            {
+                return argsAcceptableErr;
+            }
+            
+            return "";
+        };
+        
+        m_supportedAnnotations["sg_template_argument"] = templateArgumentSubAnnotation;
+    }
+    
+    {
         Annotation newAnnotation;
         newAnnotation.m_name = "sg_struct";
         
@@ -123,6 +188,10 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         // type of struct or class
         newAnnotation.m_acceptableArgs["type"].m_name = "type";
         newAnnotation.m_acceptableArgs["type"].m_isUnnecessary = true;
+        
+        newAnnotation.m_acceptableArgs["template"].m_name = "template";
+        newAnnotation.m_acceptableArgs["template"].m_isUnnecessary = true;
+        newAnnotation.m_acceptableArgs["template"].m_requiredValuesCount = -1;
         
         newAnnotation.validate = [newAnnotation, this](Annotation& annotation,
                                                            const std::vector<std::string>& words, std::int64_t wordIndex) -> std::string {
@@ -420,119 +489,8 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
                         
                         bool enableAnnotationValuesRead = false;
                         
-                        bool isArray = false;
-                        bool isString = false;
-                        bool enableValueWriting = false;
-                        bool isAppendingChar = true;
-                        std::string currentValue;
-                        std::string currentArg;
-                        
                         // parsing annotation and arguments of annotation
-                        for(auto i = annotationStartCharIdx; i < fileText.length(); ++i)
-                        {
-                            const auto& aC = fileText[i];
-                            // std::printf("%c", aC);
-                            
-                            if(!isString)
-                            {
-                                if(aC == '(')
-                                {
-                                    enableAnnotationValuesRead = true;
-                                    continue;
-                                }
-                            }
-                            
-                            if(enableAnnotationValuesRead)
-                            {
-                                isAppendingChar = true;
-                                
-                                if(aC == '=')
-                                {
-                                    enableValueWriting = !enableValueWriting;
-                                    isAppendingChar = false;
-                                }
-                                
-                                if(aC == '"')
-                                {
-                                    isString = !isString;
-                                    if(isString)
-                                    {
-                                        currentValue = "";
-                                    }
-                                    isAppendingChar = false;
-                                }
-                                
-                                // new argument
-                                if((aC == ',' || aC == ')') && !isArray)
-                                {
-                                    if(!currentArg.empty())
-                                    {
-                                        currentValue = Utils::trim(currentValue);
-                                        currentArg = Utils::trim(currentArg);
-                                        
-                                        newAnnotation.m_currentArgs[currentArg].m_name = currentArg;
-                                        newAnnotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
-                                        
-                                        std::printf("annotation: %s, arg: %s, value: %s\n",
-                                                    newAnnotation.m_name.c_str(), currentArg.c_str(),
-                                                    currentValue.c_str());
-                                    }
-                                    
-                                    if(aC == ')' && !isString)
-                                    {
-                                        break;
-                                    }
-                                    
-                                    currentArg = "";
-                                    currentValue = "";
-                                    enableValueWriting = false;
-                                    continue;
-                                }
-                                else if((aC == ',') && isArray)
-                                {
-                                    currentValue = Utils::trim(currentValue);
-                                    currentArg = Utils::trim(currentArg);
-                                    
-                                    newAnnotation.m_currentArgs[currentArg].m_name = currentArg;
-                                    newAnnotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
-                                    
-                                    std::printf("annotation: %s, arg: %s, array value: %s\n", newAnnotation.m_name.c_str(), currentArg.c_str(), currentValue.c_str());
-                                    
-                                    currentValue = "";
-                                    
-                                    continue;
-                                }
-                                
-                                if(aC == '[')
-                                {
-                                    isArray = true;
-                                    continue;
-                                }
-                                if(aC == ']')
-                                {
-                                    isArray = false;
-                                    continue;
-                                }
-                                
-                                // writing arg
-                                if(isAppendingChar)
-                                {
-                                    if(!enableValueWriting)
-                                    {
-                                        currentArg += aC;
-                                    }
-                                    else
-                                    {
-                                        currentValue += aC;
-                                    }
-                                }
-                            }
-                            
-                            if(aC == ')' && !isString)
-                            {
-                                break;
-                            }
-                        }
+                        parseAnnotationArgument(newAnnotation, annotationStartCharIdx, fileText, lineWords, currentWordIdx);
                         
                         if(m_supportedAnnotations[newAnnotation.m_name].validate)
                         {
@@ -806,5 +764,176 @@ std::string SGCore::AnnotationsProcessor::stringifyAnnotations() const noexcept
 const std::vector<SGCore::AnnotationsProcessor::Annotation>& SGCore::AnnotationsProcessor::getAnnotations() const noexcept
 {
     return m_currentAnnotations;
+}
+
+std::int64_t
+SGCore::AnnotationsProcessor::parseAnnotationArgument(SGCore::AnnotationsProcessor::Annotation& toAnnotation,
+                                                      const int64_t& charIdx, const std::string& fileText,
+                                                      const std::vector<std::string>& words,
+                                                      const std::int64_t& wordIdx) noexcept
+{
+    bool enableAnnotationValuesRead = false;
+    bool isArray = false;
+    bool isString = false;
+    bool enableValueWriting = false;
+    bool isAppendingChar = true;
+    std::string currentValue;
+    std::string currentArg;
+    
+    auto curWordIdx = wordIdx;
+    // auto curCharIdx = charIdx;
+    
+    std::int8_t roundBracketsCnt = 1;
+    
+    for(auto i = charIdx; i < fileText.length(); ++i)
+    {
+        
+        const auto& aC = fileText[i];
+        // std::cout << aC;
+        // std::printf("%c", aC);
+        
+        if(aC == ' ')
+        {
+            ++curWordIdx;
+        }
+        
+        if(aC == '"')
+        {
+            // enableValueWriting = !enableValueWriting;
+            isString = !isString;
+            if(isString)
+            {
+                currentValue = "";
+            }
+            isAppendingChar = false;
+            continue;
+        }
+        
+        if(!isString)
+        {
+            if(aC == '(')
+            {
+                if(roundBracketsCnt > 1)
+                {
+                    std::cout << "arg name: " << currentArg << std::endl;
+                    
+                    std::string annotationName = "anonymousAnnotation";
+                    
+                    Annotation newAnnotation;
+                    newAnnotation.m_name = annotationName;
+                    
+                    i = parseAnnotationArgument(newAnnotation, i, fileText, words, curWordIdx);
+                    
+                    auto validateAnnotationFunc = m_supportedAnnotations[annotationName].validate;
+                    if(validateAnnotationFunc)
+                    {
+                        validateAnnotationFunc(newAnnotation, words, curWordIdx);
+                    }
+                    
+                    if(!newAnnotation.m_currentArgs.empty())
+                    {
+                        toAnnotation.m_currentArgs[Utils::trim(currentArg)].m_values.emplace_back(newAnnotation);
+                        enableAnnotationValuesRead = false;
+                    }
+                    // enableAnnotationValuesRead = true;
+                    continue;
+                }
+                ++roundBracketsCnt;
+                enableAnnotationValuesRead = true;
+                continue;
+            }
+
+            /*if(aC == ')')
+            {
+                break;
+            }*/
+            
+            if(aC == ')')
+            {
+                if(!currentArg.empty())
+                {
+                    currentValue = Utils::trim(currentValue);
+                    currentArg = Utils::trim(currentArg);
+                    
+                    toAnnotation.m_currentArgs[currentArg].m_name = currentArg;
+                    toAnnotation.m_currentArgs[currentArg].m_values.emplace_back(currentValue);
+                    
+                    std::printf("annotation: %s (addr: %lu), arg: %s, value: %s\n",
+                                toAnnotation.m_name.c_str(), reinterpret_cast<unsigned long>(&toAnnotation), currentArg.c_str(),
+                                currentValue.c_str());
+                }
+                
+                return i;
+            }
+        }
+        
+        if(enableAnnotationValuesRead)
+        {
+            isAppendingChar = true;
+            
+            if(aC == '=')
+            {
+                enableValueWriting = true;
+                isAppendingChar = false;
+            }
+            
+            // new argument
+            if((aC == ',' || aC == ')' || aC == ']') && !isString)
+            {
+                if(!currentArg.empty())
+                {
+                    currentValue = Utils::trim(currentValue);
+                    currentArg = Utils::trim(currentArg);
+                    
+                    toAnnotation.m_currentArgs[currentArg].m_name = currentArg;
+                    toAnnotation.m_currentArgs[currentArg].m_values.push_back(currentValue);
+                    
+                    std::printf("annotation: %s (addr: %lu), arg: %s, value: %s\n",
+                                toAnnotation.m_name.c_str(), reinterpret_cast<unsigned long>(&toAnnotation), currentArg.c_str(),
+                                currentValue.c_str());
+                    
+                    if(!isArray || aC == ']' || aC == ')')
+                    {
+                        currentArg = "";
+                        currentValue = "";
+                        enableValueWriting = false;
+                    }
+                }
+                
+                if(aC == ']')
+                {
+                    isArray = false;
+                }
+                
+                if(aC == ')')
+                {
+                    return i;
+                }
+                
+                continue;
+            }
+            
+            if(!isString && aC == '[')
+            {
+                isArray = true;
+                continue;
+            }
+            
+            // writing arg
+            if(isAppendingChar)
+            {
+                if(!enableValueWriting)
+                {
+                    currentArg += aC;
+                }
+                else
+                {
+                    currentValue += aC;
+                }
+            }
+        }
+    }
+    
+    return charIdx;
 }
 

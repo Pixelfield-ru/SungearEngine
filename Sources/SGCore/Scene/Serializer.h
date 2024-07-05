@@ -384,21 +384,65 @@ namespace SGCore
                               const std::string& varName, const glm::vec<ScalarsCnt, ScalarT, Qualifier>& value) noexcept
         {
             rapidjson::Value k(rapidjson::kStringType);
-            rapidjson::Value v(rapidjson::kObjectType);
+            rapidjson::Value v(rapidjson::kArrayType);
             
             k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-            v.AddMember("x", value.x, toDocument.GetAllocator());
+            v.PushBack(value.x, toDocument.GetAllocator());
             if constexpr(ScalarsCnt >= 2)
             {
-                v.AddMember("y", value.y, toDocument.GetAllocator());
+                v.PushBack(value.y, toDocument.GetAllocator());
             }
             if constexpr(ScalarsCnt >= 3)
             {
-                v.AddMember("z", value.z, toDocument.GetAllocator());
+                v.PushBack(value.z, toDocument.GetAllocator());
             }
             if constexpr(ScalarsCnt >= 4)
             {
-                v.AddMember("w", value.w, toDocument.GetAllocator());
+                v.PushBack(value.w, toDocument.GetAllocator());
+            }
+            
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
+        }
+    };
+    
+    template<std::int32_t ColumnsCnt, std::int32_t RowsCnt, typename ScalarT, glm::qualifier Qualifier>
+    struct SerializerSpec<glm::mat<ColumnsCnt, RowsCnt, ScalarT, Qualifier>>
+    {
+        static_assert(ColumnsCnt >= 1 && ColumnsCnt <= 4 && "Columns count in glm::mat must be in range of 1-4.");
+        static_assert(RowsCnt >= 1 && RowsCnt <= 4 && "Rows count in glm::mat must be in range of 1-4.");
+        
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, const glm::mat<ColumnsCnt, RowsCnt, ScalarT, Qualifier>& value) noexcept
+        {
+            rapidjson::Value k(rapidjson::kStringType);
+            rapidjson::Value v(rapidjson::kArrayType);
+            
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            
+            for(std::int32_t c = 0; c < ColumnsCnt; ++c)
+            {
+                for(std::int32_t r = 0; r < RowsCnt; ++r)
+                {
+                    v.PushBack(value[c][r], toDocument.GetAllocator());
+                }
             }
             
             switch(parent.GetType())

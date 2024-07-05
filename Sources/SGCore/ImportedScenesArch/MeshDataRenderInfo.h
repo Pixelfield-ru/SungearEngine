@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_MESHDATARENDERINFO_H
 
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
+#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
@@ -16,9 +17,9 @@ namespace SGCore
         bool m_enableFacesCulling = true;
         SGFaceType m_facesCullingFaceType = SGFaceType::SGG_BACK_FACE;
         SGPolygonsOrder m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
-
+        
         SGDrawMode m_drawMode = SGDrawMode::SGG_TRIANGLES;
-
+        
         float m_linesWidth = 3.0f;
         float m_pointsSize = 3.0f;
     };
