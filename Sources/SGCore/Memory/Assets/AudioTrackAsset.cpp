@@ -12,15 +12,15 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
     std::string extension = m_path.extension().string();
     if(extension == ".wav")
     {
-        trackType = AudioTrackType::ATT_WAV;
+        trackType = AudioTrackType::WAV;
     }
     else if(extension == ".ogg")
     {
-        trackType = AudioTrackType::ATT_OGG;
+        trackType = AudioTrackType::OGG;
     }
     else if(extension == ".mp3")
     {
-        trackType = AudioTrackType::ATT_MP3;
+        trackType = AudioTrackType::MP3;
     }
     else
     {

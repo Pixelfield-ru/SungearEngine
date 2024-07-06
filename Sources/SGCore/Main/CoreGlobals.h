@@ -9,18 +9,6 @@
 
 #include "SGCore/Annotations/Annotations.h"
 
-// TODO: make template declaration as in standard
-// TODO: MAKE NULLABLE CHECK IN ANNOTATIONS
-sg_struct(fullName = ["std::unique_ptr", "class"], template = [(type = "typename", name = "T")])
-// sg_struct(fullName = ["std::weak_ptr", "class"], template = [(type = "typename", name = "T")])
-sg_struct(fullName = ["std::shared_ptr", "struct"], template = [(type = "typename", name = "T")])
-namespace std
-{
-    sg_member(parentNamespace = "std::unique_ptr", varName = "operator*()", serializableName = "sharedValue")
-    sg_member(parentNamespace = "std::shared_ptr", varName = "operator*()", serializableName = "sharedValue")
-    // sg_member(parentNamespace = "std::weak_ptr", varName = "lock().operator*()", serializableName = "sharedValue")
-}
-
 namespace SGCore
 {
     enum class highp_entity : std::uint64_t { };

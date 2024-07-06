@@ -180,7 +180,6 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         };
 
         sgFunctionAnnotation.acceptVariable = [](Annotation& annotation, const std::string& type, const std::string& name, bool isHigher) -> AnnotationActiveState {
-            // std::printf("sg_member acceptation of %s\n", type.c_str());
             if(type == "struct" || type == "class" || type == "namespace")
             {
                 // if not specified explicitly
@@ -214,6 +213,10 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         newAnnotation.m_acceptableArgs["template"].m_name = "template";
         newAnnotation.m_acceptableArgs["template"].m_isUnnecessary = true;
         newAnnotation.m_acceptableArgs["template"].m_requiredValuesCount = -1;
+
+        newAnnotation.m_acceptableArgs["extends"].m_name = "extends";
+        newAnnotation.m_acceptableArgs["extends"].m_isUnnecessary = true;
+        newAnnotation.m_acceptableArgs["extends"].m_requiredValuesCount = -1;
 
         // type of struct or class
         newAnnotation.m_acceptableArgs["type"].m_name = "type";
@@ -448,7 +451,7 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
                     std::string namespaceName;
                     for(auto l0 = currentCharIdx; l0 < fileText.length(); ++l0)
                     {
-                        if(fileText[l0] == ';' || fileText[l0] == '{')
+                        if(fileText[l0] == ';' || fileText[l0] == '{' || fileText[l0] == ':')
                         {
                             if(fileText[l0] == ';')
                             {

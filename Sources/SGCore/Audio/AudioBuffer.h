@@ -7,10 +7,16 @@
 
 #include "AudioUtils.h"
 
+#include "SGCore/Annotations/Annotations.h"
+#include "SGCore/Scene/Serializer.h"
+
 namespace SGCore
 {
+    sg_struct()
     struct AudioBuffer
     {
+        sg_serializer_as_friend(AudioBuffer)
+
         friend struct AudioSource;
         
         ~AudioBuffer();
@@ -30,9 +36,15 @@ namespace SGCore
         [[nodiscard]] std::uint16_t getNumChannels() const noexcept;
         
     private:
+        sg_member()
         std::uint32_t m_frequency = 60;
+        sg_member()
         std::uint16_t m_bitsPerSample = 8;
+        sg_member()
         std::uint16_t m_numChannels = 2;
+
+        sg_member()
+        std::vector<char> m_data;
         
         ALuint m_handler = -1;
         bool m_isValid = false;

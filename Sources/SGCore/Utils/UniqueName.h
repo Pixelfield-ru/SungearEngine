@@ -7,12 +7,18 @@
 
 #include <SGCore/pch.h>
 
+#include "SGCore/Scene/Serializer.h"
+#include "SGCore/Annotations/Annotations.h"
+
 namespace SGCore
 {
     class UniqueNamesManager;
 
+    sg_struct()
     struct UniqueName
     {
+        sg_serializer_as_friend(UniqueName)
+
         friend class UniqueNamesManager;
         
         UniqueName() = default;
@@ -47,17 +53,23 @@ namespace SGCore
     private:
         std::weak_ptr<UniqueNamesManager> m_parentUniqueNamesManager;
 
+        sg_member()
         std::string m_rawName;
         // -1 IS NOT TYPO
+        sg_member()
         size_t m_uniqueID = -1;
         // m_rawName + m_uniqueID
+        sg_member()
         std::string m_name;
     };
 
     // wrapper class for unique name for inheritance
+    sg_struct()
     class UniqueNameWrapper
     {
+        sg_serializer_as_friend(UniqueNameWrapper)
     public:
+
         [[nodiscard]] auto getRawName() const noexcept
         {
             return m_uniqueName.getRawName();
@@ -83,7 +95,8 @@ namespace SGCore
             m_uniqueName.attachToManager(manager);
         }
 
-    private:
+    protected:
+        sg_member()
         UniqueName m_uniqueName;
     };
 }

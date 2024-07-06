@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_ANNOTATIONS_H
 #define SUNGEARENGINE_ANNOTATIONS_H
 
+#define sg_serializer_as_friend(this_struct) friend struct SGCore::SerializerSpec<this_struct>;
+
 #define sg_struct(args, ...)
 #define sg_component(args, ...)
 #define sg_system(args, ...)

@@ -13,11 +13,11 @@
 
 namespace SGCore
 {
-    enum AudioTrackType
+    enum class AudioTrackType
     {
-        ATT_WAV,
-        ATT_OGG,
-        ATT_MP3
+        WAV,
+        OGG,
+        MP3
     };
     
     struct AudioTrack

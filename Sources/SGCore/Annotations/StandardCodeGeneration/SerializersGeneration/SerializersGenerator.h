@@ -13,6 +13,10 @@ namespace SGCore::CodeGen
     struct SerializersGenerator
     {
         [[nodiscard]] std::string generateSerializers(const AnnotationsProcessor& annotationsProcessor, const std::filesystem::path& toPath) const;
+
+    private:
+        [[nodiscard]] std::string generateSerializationOps(const AnnotationsProcessor& annotationsProcessor,
+                                                           const std::string& currentStructName) const noexcept;
     };
 }
 

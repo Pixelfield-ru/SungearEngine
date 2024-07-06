@@ -30,7 +30,7 @@ void SGCore::AudioTrack::loadFromMemory(const char* buffer, const size_t& buffer
     
     char tmpBuf[4];
     
-    if(type == AudioTrackType::ATT_WAV)
+    if(type == AudioTrackType::WAV)
     {
         constexpr bool isLittleNative = std::endian::native == std::endian::little;
         
@@ -143,7 +143,7 @@ void SGCore::AudioTrack::loadFromMemory(const char* buffer, const size_t& buffer
         m_dataBuffer = (char*) std::malloc(m_dataBufferSize);
         std::memcpy(m_dataBuffer, buffer + offsetToData + 8, m_dataBufferSize);
     }
-    else if(type == AudioTrackType::ATT_OGG)
+    else if(type == AudioTrackType::OGG)
     {
         int stbErr;
         stb_vorbis* vorbis = stb_vorbis_open_memory((std::uint8_t*) buffer, bufferSize, &stbErr, nullptr);

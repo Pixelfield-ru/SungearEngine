@@ -26,7 +26,7 @@ namespace SGCore
     {
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const auto& value) noexcept
         {
-            SerializerSpec<std::remove_cvref_t<std::remove_pointer_t<decltype(value)>>>::serialize(toDocument, parent, varName, value);
+            SerializerSpec<std::remove_cvref_t<decltype(value)>>::serialize(toDocument, parent, varName, value);
         }
     };
     
@@ -34,6 +34,231 @@ namespace SGCore
     // ===============================================================================================================================
     // ===============================================================================================================================
     // STANDARD SERIALIZABLES FOR TYPES
+
+    template<typename T>
+    requires(std::is_enum_v<T>)
+    struct SerializerSpec<T>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, T value) noexcept
+        {
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+            switch (parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, static_cast<std::int64_t>(value), toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(static_cast<std::int64_t>(value), toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
+        }
+    };
+
+    template<typename T>
+    struct SerializerSpec<T*>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, T* value) noexcept
+        {
+            if(value)
+            {
+                Serializer::serialize(toDocument, parent, varName, *value);
+            }
+            else
+            {
+                rapidjson::Value k(rapidjson::kStringType);
+                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+                rapidjson::Value v(rapidjson::kNullType);
+
+                switch(parent.GetType())
+                {
+                    case rapidjson::kNullType:
+                        break;
+                    case rapidjson::kFalseType:
+                        break;
+                    case rapidjson::kTrueType:
+                        break;
+                    case rapidjson::kObjectType:
+                        parent.AddMember(k, v, toDocument.GetAllocator());
+                        break;
+                    case rapidjson::kArrayType:
+                        parent.PushBack(v, toDocument.GetAllocator());
+                        break;
+                    case rapidjson::kStringType:
+                        break;
+                    case rapidjson::kNumberType:
+                        break;
+                }
+            }
+        }
+    };
+
+    template<typename T>
+    struct SerializerSpec<std::shared_ptr<T>>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, std::shared_ptr<T> value) noexcept
+        {
+            if(value)
+            {
+                Serializer::serialize(toDocument, parent, varName, *value);
+            }
+            else
+            {
+                rapidjson::Value k(rapidjson::kStringType);
+                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+                rapidjson::Value v(rapidjson::kNullType);
+
+                switch(parent.GetType())
+                {
+                    case rapidjson::kNullType:
+                        break;
+                    case rapidjson::kFalseType:
+                        break;
+                    case rapidjson::kTrueType:
+                        break;
+                    case rapidjson::kObjectType:
+                        parent.AddMember(k, v, toDocument.GetAllocator());
+                        break;
+                    case rapidjson::kArrayType:
+                        parent.PushBack(v, toDocument.GetAllocator());
+                        break;
+                    case rapidjson::kStringType:
+                        break;
+                    case rapidjson::kNumberType:
+                        break;
+                }
+            }
+        }
+    };
+
+    template<typename T>
+    struct SerializerSpec<std::unique_ptr<T>>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, std::unique_ptr<T> value) noexcept
+        {
+            if(value)
+            {
+                Serializer::serialize(toDocument, parent, varName, *value);
+            }
+            else
+            {
+                rapidjson::Value k(rapidjson::kStringType);
+                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+                rapidjson::Value v(rapidjson::kNullType);
+
+                switch(parent.GetType())
+                {
+                    case rapidjson::kNullType:
+                        break;
+                    case rapidjson::kFalseType:
+                        break;
+                    case rapidjson::kTrueType:
+                        break;
+                    case rapidjson::kObjectType:
+                        parent.AddMember(k, v, toDocument.GetAllocator());
+                        break;
+                    case rapidjson::kArrayType:
+                        parent.PushBack(v, toDocument.GetAllocator());
+                        break;
+                    case rapidjson::kStringType:
+                        break;
+                    case rapidjson::kNumberType:
+                        break;
+                }
+            }
+        }
+    };
+
+    template<typename T>
+    struct SerializerSpec<std::weak_ptr<T>>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, std::weak_ptr<T> value) noexcept
+        {
+            auto lockedValue = value.lock();
+
+            if(lockedValue)
+            {
+                Serializer::serialize(toDocument, parent, varName, *lockedValue);
+            }
+            else
+            {
+                rapidjson::Value k(rapidjson::kStringType);
+                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+                rapidjson::Value v(rapidjson::kNullType);
+
+                switch(parent.GetType())
+                {
+                    case rapidjson::kNullType:
+                        break;
+                    case rapidjson::kFalseType:
+                        break;
+                    case rapidjson::kTrueType:
+                        break;
+                    case rapidjson::kObjectType:
+                        parent.AddMember(k, v, toDocument.GetAllocator());
+                        break;
+                    case rapidjson::kArrayType:
+                        parent.PushBack(v, toDocument.GetAllocator());
+                        break;
+                    case rapidjson::kStringType:
+                        break;
+                    case rapidjson::kNumberType:
+                        break;
+                }
+            }
+        }
+    };
+
+    template<>
+    struct SerializerSpec<char>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, const char& value) noexcept
+        {
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(value, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
+        }
+    };
     
     template<>
     struct SerializerSpec<std::int8_t>

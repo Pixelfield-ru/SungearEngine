@@ -53,7 +53,12 @@ void SGCore::AudioBuffer::putData(const uint16_t& numChannels,
         }
         
         AL_CALL(alBufferData, m_handler, alFormat, data, dataSize, sampleRate);
-        
+
+        for(std::uint64_t i = 0; i < dataSize; ++i)
+        {
+            m_data.push_back(*((char*) data + i));
+        }
+
         setFrequency(m_frequency);
         setBitsPerSample(bitsPerSample);
         setNumChannels(numChannels);

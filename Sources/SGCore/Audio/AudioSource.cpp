@@ -162,7 +162,7 @@ void SGCore::AudioSource::setPosition(const glm::vec3& position) noexcept
     AL_CALL(alSource3f, m_handler, AL_POSITION, position.x, position.y, position.z);
 }
 
-glm::vec3 SGCore::AudioSource::getPosition() noexcept
+glm::vec3 SGCore::AudioSource::getPosition() const noexcept
 {
     float x;
     float y;
@@ -178,14 +178,14 @@ void SGCore::AudioSource::setVelocity(const glm::vec3& velocity) noexcept
     AL_CALL(alSource3f, m_handler, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 }
 
-glm::vec3 SGCore::AudioSource::getVelocity() noexcept
+glm::vec3 SGCore::AudioSource::getVelocity() const noexcept
 {
     float x;
     float y;
     float z;
     
     AL_CALL(alGetSource3f, m_handler, AL_VELOCITY, &x, &y, &z);
-    
+
     return { x, y, z };
 }
 
@@ -194,7 +194,7 @@ void SGCore::AudioSource::setDirection(const glm::vec3& direction) noexcept
     AL_CALL(alSource3f, m_handler, AL_DIRECTION, direction.x, direction.y, direction.z);
 }
 
-glm::vec3 SGCore::AudioSource::getDirection() noexcept
+glm::vec3 SGCore::AudioSource::getDirection() const noexcept
 {
     float x;
     float y;

@@ -94,9 +94,6 @@ void coreInit()
     
     std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;
 
-    std::shared_ptr<int> d;
-    d.operator*();
-
     using namespace SGCore;
     
     rapidjson::Document document;
@@ -109,12 +106,23 @@ void coreInit()
     Transform testTransform;
     Mesh mesh;
     RenderingBase renderingBase;
-    
-    // Serializer::serialize(document, document, "testTransform", testTransform);
 
-    std::shared_ptr<int> sharedInt = std::make_shared<int>(3);
+    SGCore::Ref<SGCore::AudioTrackAsset> audio =
+            SGCore::AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("b2.ogg");
+    SGCore::Ref<SGCore::AudioBuffer> audioBuf =
+            SGCore::MakeRef<SGCore::AudioBuffer>();
+    audioBuf->create();
 
-    Serializer::serialize(document, document, "testTransform", sharedInt);
+    audioBuf->putData(audio->getAudioTrack().getNumChannels(),
+                      audio->getAudioTrack().getBitsPerSample(),
+                      audio->getAudioTrack().getDataBuffer(),
+                      audio->getAudioTrack().getDataBufferSize(),
+                      audio->getAudioTrack().getSampleRate());
+
+    AudioSource audioSource;
+    audioSource.attachBuffer(audioBuf);
+
+    Serializer::serialize(document, document, "test", audioSource);
     
     rapidjson::StringBuffer stringBuffer;
     stringBuffer.Clear();
