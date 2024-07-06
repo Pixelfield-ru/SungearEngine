@@ -7,6 +7,20 @@
 
 #include <SGCore/pch.h>
 
+#include "SGCore/Annotations/Annotations.h"
+
+// TODO: make template declaration as in standard
+// TODO: MAKE NULLABLE CHECK IN ANNOTATIONS
+sg_struct(fullName = ["std::unique_ptr", "class"], template = [(type = "typename", name = "T")])
+// sg_struct(fullName = ["std::weak_ptr", "class"], template = [(type = "typename", name = "T")])
+sg_struct(fullName = ["std::shared_ptr", "struct"], template = [(type = "typename", name = "T")])
+namespace std
+{
+    sg_member(parentNamespace = "std::unique_ptr", varName = "operator*()", serializableName = "sharedValue")
+    sg_member(parentNamespace = "std::shared_ptr", varName = "operator*()", serializableName = "sharedValue")
+    // sg_member(parentNamespace = "std::weak_ptr", varName = "lock().operator*()", serializableName = "sharedValue")
+}
+
 namespace SGCore
 {
     enum class highp_entity : std::uint64_t { };
@@ -14,9 +28,10 @@ namespace SGCore
     using entity_t = highp_entity;
     
     using registry_t = entt::basic_registry<entity_t>;
-    
+
     template<typename T>
     using Ref = std::shared_ptr<T>;
+
     template<typename T, typename... Args>
     constexpr Ref<T> MakeRef(Args&&... args)
     {
@@ -25,6 +40,7 @@ namespace SGCore
 
     template<typename T>
     using Scope = std::unique_ptr<T>;
+
     template<typename T, typename... Args>
     constexpr Scope<T> MakeScope(Args&&... args)
     {

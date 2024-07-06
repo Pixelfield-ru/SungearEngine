@@ -13,10 +13,22 @@
 namespace TestNamespace
 {
     template<typename T>
-    // sg_struct(template = [(type = "typename", name = "T"), (type = "std::int8_t", name = "Idx")])
     sg_struct(template = [(type = "typename", name = "T")])
     struct MyStruct
     {
+        sg_function(name = "getMyMember", getterFor = "m_myMember")
+        const T& getMyMember() const noexcept
+        {
+            return m_myMember;
+        }
+
+        sg_function(name = "setMyMember", setterFor = "m_myMember")
+        void setMyMember(const T& val) noexcept
+        {
+            m_myMember = val;
+        }
+
+    private:
         sg_member()
         T m_myMember;
     };

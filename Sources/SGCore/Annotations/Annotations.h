@@ -11,6 +11,7 @@
 
 // USE FOR VARIABLES THAT MUST BE SERIALIZED
 #define sg_member(args, ...)
+#define sg_function(args, ...)
 #define sg_serializable(args, ...)
 // USE FOR CUSTOM SPECIALIZATIONS OF SGCore::SerializerSpec
 #define sg_serializer_spec(args, ...)

@@ -39,11 +39,11 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
             {
                 if(fullNameArg->second.m_values.size() < 2) continue;
                 
-                auto structName = std::any_cast<std::string>(fullNameArg->second.m_values[0]);
+                auto structureFullName = std::any_cast<std::string>(fullNameArg->second.m_values[0]);
                 auto namespaceType = std::any_cast<std::string>(fullNameArg->second.m_values[1]);
                 
                 // not 'struct' or 'class'
-                if(namespaceType == "namespace" || alreadyGeneratedStructs.contains(structName)) continue;
+                if(namespaceType == "namespace" || alreadyGeneratedStructs.contains(structureFullName)) continue;
                 
                 std::string templateArgs;
                 std::string templateNames;
@@ -64,7 +64,7 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                             {
                                 throw std::runtime_error(fmt::format(
                                         "Can not generate serializer code for struct '{0}'. Template argument was provided in 'sg_struct' annotation, but type of this argument was not specified.",
-                                        structName));
+                                        structureFullName));
                             }
                             
                             templateArgs += std::any_cast<std::string>(templateArgTypeIt->second.m_values[0]);
@@ -92,9 +92,9 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                     formatter["structureTemplateNames"] = templateNames;
                 }
                 
-                formatter["structureName"] = structName;
+                formatter["structureName"] = structureFullName;
                 
-                serializersSpecForwardDeclCode += fmt::format("// SERIALIZER FORWARD DECL FOR {0} '{1}'\n", namespaceType, structName);
+                serializersSpecForwardDeclCode += fmt::format("// SERIALIZER FORWARD DECL FOR {0} '{1}'\n", namespaceType, structureFullName);
                 serializersSpecForwardDeclCode += "#include \"" + Utils::toUTF8<char16_t>(annotation.m_filePath.u16string()) + "\"\n";
                 serializersSpecForwardDeclCode += formatter.format(
                         FileUtils::readFile(
@@ -117,7 +117,7 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                         auto parentNamespaceArg = memberAnnotation.m_currentArgs.find("parentNamespace");
                         if(parentNamespaceArg == memberAnnotation.m_currentArgs.end() ||
                            parentNamespaceArg->second.m_values.empty() ||
-                           std::any_cast<std::string>(parentNamespaceArg->second.m_values[0]) != structName)
+                           std::any_cast<std::string>(parentNamespaceArg->second.m_values[0]) != structureFullName)
                         {
                             continue;
                         }
@@ -127,10 +127,53 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                         if(varNameArg != memberAnnotation.m_currentArgs.end() &&
                            serializableNameArg != memberAnnotation.m_currentArgs.end())
                         {
+                            std::string variableGetter = std::any_cast<std::string>(varNameArg->second.m_values[0]);
+
+                            // iterating through functions annotations
+                            for(const auto& functionAnnotation : annotationsProcessor.getAnnotations())
+                            {
+                                if(functionAnnotation.m_name == "sg_function")
+                                {
+                                    auto functionParentNamespace = functionAnnotation.m_currentArgs.find("parentNamespace");
+                                    if(functionParentNamespace == functionAnnotation.m_currentArgs.end())
+                                    {
+                                        continue;
+                                    }
+
+                                    if (std::any_cast<std::string>(functionParentNamespace->second.m_values[0]) !=
+                                        structureFullName)
+                                    {
+                                        continue;
+                                    }
+
+                                    auto functionGetterForArgument = functionAnnotation.m_currentArgs.find(
+                                            "getterFor");
+                                    if (functionGetterForArgument == functionAnnotation.m_currentArgs.end())
+                                    {
+                                        continue;
+                                    }
+
+                                    if (std::any_cast<std::string>(
+                                            functionGetterForArgument->second.m_values[0]) != variableGetter)
+                                    {
+                                        continue;
+                                    }
+
+                                    auto functionNameArgument = functionAnnotation.m_currentArgs.find("name");
+
+                                    if (functionNameArgument == functionAnnotation.m_currentArgs.end())
+                                    {
+                                        continue;
+                                    }
+
+                                    variableGetter = std::any_cast<std::string>(functionNameArgument->second.m_values[0]) + "()";
+                                }
+                            }
+
                             serializationOps += fmt::format(
                                     "\tSGCore::Serializer::serialize(toDocument, v, \"{0}\", value.{1});\n",
                                     std::any_cast<std::string>(serializableNameArg->second.m_values[0]),
-                                    std::any_cast<std::string>(varNameArg->second.m_values[0]));
+                                    variableGetter);
                         }
                     }
                 }
@@ -138,7 +181,7 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                 
                 formatter["valuesAddCode"] = serializationOps;
                 
-                serializersSpecImplCode += fmt::format("// SERIALIZER IMPLEMENTATION FOR {0} '{1}'\n", namespaceType, structName);
+                serializersSpecImplCode += fmt::format("// SERIALIZER IMPLEMENTATION FOR {0} '{1}'\n", namespaceType, structureFullName);
                 serializersSpecImplCode += formatter.format(
                         FileUtils::readFile(
                                 sgSourcesRootStr +
@@ -148,7 +191,7 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                                  "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/NotTemplatedSerializerSpecImpl.h"))) + "\n";
                 serializersSpecImplCode += "// =================================================================================\n";
                 
-                alreadyGeneratedStructs.insert(structName);
+                alreadyGeneratedStructs.insert(structureFullName);
             }
         }
     }

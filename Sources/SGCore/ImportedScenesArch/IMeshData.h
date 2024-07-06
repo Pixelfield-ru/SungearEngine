@@ -15,20 +15,9 @@ namespace SGCore
     class IMaterial;
 
     class Scene;
-    
+
     class IMeshData : public std::enable_shared_from_this<IMeshData>
     {
-    protected:
-        Ref<IVertexArray> m_vertexArray;
-
-        Ref<IVertexBuffer> m_positionsBuffer;
-        Ref<IVertexBuffer> m_uvBuffer;
-        Ref<IVertexBuffer> m_normalsBuffer;
-        Ref<IVertexBuffer> m_tangentsBuffer;
-        Ref<IVertexBuffer> m_bitangentsBuffer;
-
-        Ref<IIndexBuffer> m_indicesBuffer;
-
     public:
         AABB<> m_aabb;
         
@@ -112,6 +101,17 @@ namespace SGCore
         void generatePhysicalMesh() noexcept;
 
         Ref<IVertexArray> getVertexArray() noexcept;
+
+    protected:
+        Ref<IVertexArray> m_vertexArray;
+
+        Ref<IVertexBuffer> m_positionsBuffer;
+        Ref<IVertexBuffer> m_uvBuffer;
+        Ref<IVertexBuffer> m_normalsBuffer;
+        Ref<IVertexBuffer> m_tangentsBuffer;
+        Ref<IVertexBuffer> m_bitangentsBuffer;
+
+        Ref<IIndexBuffer> m_indicesBuffer;
     };
 }
 

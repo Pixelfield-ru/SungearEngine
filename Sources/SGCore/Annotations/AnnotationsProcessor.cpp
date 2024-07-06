@@ -153,18 +153,23 @@ SGCore::AnnotationsProcessor::SourceStruct::getMember(const std::string& name) n
 SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
 {
     {
-        Annotation templateArgumentSubAnnotation;
-        templateArgumentSubAnnotation.m_name = "templateSubArgument";
-        templateArgumentSubAnnotation.m_acceptableArgs["type"].m_name = "type";
-        templateArgumentSubAnnotation.m_acceptableArgs["type"].m_isUnnecessary = false;
-        
-        templateArgumentSubAnnotation.m_acceptableArgs["name"].m_name = "name";
-        templateArgumentSubAnnotation.m_acceptableArgs["name"].m_isUnnecessary = true;
-        
-        templateArgumentSubAnnotation.validate = [templateArgumentSubAnnotation, this](Annotation& annotation,
+        Annotation sgFunctionAnnotation;
+        sgFunctionAnnotation.m_name = "sg_function";
+
+        sgFunctionAnnotation.m_acceptableArgs["name"].m_name = "name";
+
+        sgFunctionAnnotation.m_acceptableArgs["getterFor"].m_name = "getterFor";
+        sgFunctionAnnotation.m_acceptableArgs["getterFor"].m_isUnnecessary = true;
+        sgFunctionAnnotation.m_acceptableArgs["setterFor"].m_name = "setterFor";
+        sgFunctionAnnotation.m_acceptableArgs["setterFor"].m_isUnnecessary = true;
+
+        sgFunctionAnnotation.m_acceptableArgs["parentNamespace"].m_name = "parentNamespace";
+        sgFunctionAnnotation.m_acceptableArgs["parentNamespace"].m_isUnnecessary = true;
+
+        sgFunctionAnnotation.validate = [sgFunctionAnnotation, this](Annotation& annotation,
                                                                                        const std::vector<std::string>& words,
                                                                                        std::int64_t wordIndex) -> std::string {
-            std::string argsAcceptableErr = templateArgumentSubAnnotation.validateAcceptableArgs(annotation);
+            std::string argsAcceptableErr = sgFunctionAnnotation.validateAcceptableArgs(annotation);
             
             if(!argsAcceptableErr.empty())
             {
@@ -173,8 +178,29 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
             
             return "";
         };
-        
-        m_supportedAnnotations["sg_template_argument"] = templateArgumentSubAnnotation;
+
+        sgFunctionAnnotation.acceptVariable = [](Annotation& annotation, const std::string& type, const std::string& name, bool isHigher) -> AnnotationActiveState {
+            // std::printf("sg_member acceptation of %s\n", type.c_str());
+            if(type == "struct" || type == "class" || type == "namespace")
+            {
+                // if not specified explicitly
+                if(annotation.m_currentArgs.find("parentNamespace") == annotation.m_currentArgs.end())
+                {
+                    auto& arg = annotation.m_currentArgs["parentNamespace"];
+                    arg.m_name = "parentNamespace";
+                    arg.m_values.push_back(name);
+
+                    // DEBUG
+                    // std::printf("sg_member accepted %s %s\n", type.c_str(), name.c_str());
+                }
+
+                return AnnotationActiveState::INACTIVE;
+            }
+
+            return AnnotationActiveState::STAY_ACTIVE;
+        };
+
+        m_supportedAnnotations["sg_function"] = sgFunctionAnnotation;
     }
     
     {
@@ -184,14 +210,14 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         newAnnotation.m_acceptableArgs["fullName"].m_name = "fullName";
         newAnnotation.m_acceptableArgs["fullName"].m_isUnnecessary = true;
         newAnnotation.m_acceptableArgs["fullName"].m_requiredValuesCount = 2;
-        
-        // type of struct or class
-        newAnnotation.m_acceptableArgs["type"].m_name = "type";
-        newAnnotation.m_acceptableArgs["type"].m_isUnnecessary = true;
-        
+
         newAnnotation.m_acceptableArgs["template"].m_name = "template";
         newAnnotation.m_acceptableArgs["template"].m_isUnnecessary = true;
         newAnnotation.m_acceptableArgs["template"].m_requiredValuesCount = -1;
+
+        // type of struct or class
+        newAnnotation.m_acceptableArgs["type"].m_name = "type";
+        newAnnotation.m_acceptableArgs["type"].m_isUnnecessary = true;
         
         newAnnotation.validate = [newAnnotation, this](Annotation& annotation,
                                                            const std::vector<std::string>& words, std::int64_t wordIndex) -> std::string {
@@ -206,7 +232,7 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         };
         
         newAnnotation.acceptVariable = [](Annotation& annotation, const std::string& type, const std::string& name, bool isHigher) -> AnnotationActiveState {
-            if((type == "struct" || type == "class") && !isHigher)
+            if((type == "struct" || type == "class" || type == "namespace") && !isHigher)
             {
                 // if not specified explicitly
                 if(annotation.m_currentArgs.find("fullName") == annotation.m_currentArgs.end())
@@ -378,7 +404,7 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
         std::vector<NamedVariableDecl> namespaces;
         std::int64_t currentOpenedBracesCnt = 0;
         
-        std::unordered_map<std::string, Annotation> currentActiveAnnotations;
+        std::unordered_map<std::string, std::vector<Annotation>> currentActiveAnnotations;
         
         std::string currentExpression;
         bool skipExprs = false;
@@ -458,20 +484,26 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
                                 
                                 continue;
                             }
-                            
-                            AnnotationActiveState result = acceptVariableFunc(aIt->second, currentWord,
-                                                                              finalNamespaceName, false);
-                            switch(result)
+
+                            auto annotIt = aIt->second.begin();
+                            while(annotIt != aIt->second.end())
                             {
-                                case AnnotationActiveState::INACTIVE:
+                                AnnotationActiveState result = acceptVariableFunc(*annotIt, currentWord,
+                                                                                  finalNamespaceName, false);
+                                switch (result)
                                 {
-                                    m_currentAnnotations.push_back(aIt->second);
-                                    m_currentAnnotations.rbegin()->m_filePath = f;
-                                    aIt = currentActiveAnnotations.erase(aIt);
-                                    
-                                    
-                                    continue;
+                                    case AnnotationActiveState::INACTIVE:
+                                    {
+                                        annotIt->m_filePath = f;
+                                        m_currentAnnotations.push_back(*annotIt);
+                                        annotIt = aIt->second.erase(annotIt);
+                                        // aIt = currentActiveAnnotations.erase(aIt);
+
+                                        continue;
+                                    }
                                 }
+
+                                ++annotIt;
                             }
                             ++aIt;
                         }
@@ -505,26 +537,33 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
                         
                         const auto& variableAcceptationFunc = m_supportedAnnotations[newAnnotation.m_name].acceptVariable;
                         
-                        currentActiveAnnotations[newAnnotation.m_name] = newAnnotation;
-                        auto& annot = currentActiveAnnotations[newAnnotation.m_name];
+                        currentActiveAnnotations[newAnnotation.m_name].push_back(newAnnotation);
+                        auto& annotations = currentActiveAnnotations[newAnnotation.m_name];
                         if(variableAcceptationFunc)
                         {
-                            if(!namespaces.empty())
+                            auto annotIt = annotations.begin();
+                            while(annotIt != annotations.end())
                             {
-                                auto result = variableAcceptationFunc(annot, namespaces.rbegin()->m_type,
-                                                                      namespaces.rbegin()->m_name, true);
-                                
-                                switch(result)
+                                auto result = variableAcceptationFunc(*annotIt,
+                                                                      !namespaces.empty() ? namespaces.rbegin()->m_type
+                                                                                          : "namespace",
+                                                                      !namespaces.empty() ? namespaces.rbegin()->m_name
+                                                                                          : "", true);
+
+                                switch (result)
                                 {
                                     case AnnotationActiveState::INACTIVE:
                                     {
-                                        annot.m_filePath = f;
-                                        m_currentAnnotations.push_back(annot);
-                                        currentActiveAnnotations.erase(newAnnotation.m_name);
-                                        
-                                        break;
+                                        annotIt->m_filePath = f;
+                                        m_currentAnnotations.push_back(*annotIt);
+                                        annotIt = annotations.erase(annotIt);
+                                        // currentActiveAnnotations.erase(newAnnotation.m_name);
+
+                                        continue;
                                     }
                                 }
+
+                                ++annotIt;
                             }
                         }
                         
@@ -639,18 +678,26 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
                                 
                                 if(acceptVariableFunc)
                                 {
-                                    // variableName.c_str() is necessary
-                                    auto acceptResult = acceptVariableFunc(aIt->second, "variable", variableName.c_str(), false);
-                                    
-                                    switch(acceptResult)
+                                    auto annotIt = aIt->second.begin();
+                                    while(annotIt != aIt->second.end())
                                     {
-                                        case AnnotationActiveState::INACTIVE:
+                                        // variableName.c_str() is necessary
+                                        auto acceptResult = acceptVariableFunc(*annotIt, "variable",
+                                                                               variableName.c_str(), false);
+
+                                        switch (acceptResult)
                                         {
-                                            m_currentAnnotations.push_back(aIt->second);
-                                            m_currentAnnotations.rbegin()->m_filePath = f;
-                                            aIt = currentActiveAnnotations.erase(aIt);
-                                            continue;
+                                            case AnnotationActiveState::INACTIVE:
+                                            {
+                                                annotIt->m_filePath = f;
+                                                m_currentAnnotations.push_back(*annotIt);
+                                                annotIt = aIt->second.erase(annotIt);
+                                                // aIt = currentActiveAnnotations.erase(aIt);
+                                                continue;
+                                            }
                                         }
+
+                                        ++annotIt;
                                     }
                                 }
                                 

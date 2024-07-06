@@ -104,15 +104,15 @@ $(document).ready(function(){initNavTree('AudioSource_8h_source.html',''); initR
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    </div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">enum</span> AudioSourceState</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        SOURCE_PLAYING,</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        SOURCE_PAUSED,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        SOURCE_STOPPED</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        PLAYING,</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        PAUSED,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        STOPPED</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    };</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    </div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">enum</span> AudioSourceType</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        AST_POSITIONAL,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        AST_AMBIENT</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        POSITIONAL,</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        AMBIENT</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    };</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    </div>
 <div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="structSGCore_1_1AudioSource.html">   31</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structSGCore_1_1AudioSource.html">AudioSource</a></div>
@@ -160,8 +160,8 @@ $(document).ready(function(){initNavTree('AudioSource_8h_source.html',''); initR
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <a class="code" href="structSGCore_1_1Event.html">Event</a>&lt;void(<a class="code" href="structSGCore_1_1AudioSource.html">AudioSource</a>&amp; source, AudioSourceState lastState, AudioSourceState newState)&gt; onStateChanged;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        </div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        AudioSourceState m_lastState = AudioSourceState::SOURCE_STOPPED;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        AudioSourceType m_type = AudioSourceType::AST_POSITIONAL;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        AudioSourceState m_lastState = AudioSourceState::STOPPED;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        AudioSourceType m_type = AudioSourceType::POSITIONAL;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        </div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="keywordtype">bool</span> m_isLooping = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        </div>

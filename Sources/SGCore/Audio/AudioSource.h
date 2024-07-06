@@ -15,17 +15,17 @@ namespace SGCore
 {
     struct AudioBuffer;
     
-    enum AudioSourceState
+    enum class AudioSourceState
     {
-        SOURCE_PLAYING,
-        SOURCE_PAUSED,
-        SOURCE_STOPPED
+        PLAYING,
+        PAUSED,
+        STOPPED
     };
     
-    enum AudioSourceType
+    enum class AudioSourceType
     {
-        AST_POSITIONAL,
-        AST_AMBIENT
+        POSITIONAL,
+        AMBIENT
     };
     
     struct AudioSource
@@ -73,14 +73,14 @@ namespace SGCore
         Event<void(AudioSource& source, AudioSourceState lastState, AudioSourceState newState)> onStateChanged;
         
     private:
-        AudioSourceState m_lastState = AudioSourceState::SOURCE_STOPPED;
-        AudioSourceType m_type = AudioSourceType::AST_POSITIONAL;
+        AudioSourceState m_lastState = AudioSourceState::STOPPED;
+        AudioSourceType m_type = AudioSourceType::POSITIONAL;
         
         bool m_isLooping = false;
         
         Weak<AudioBuffer> m_attachedBuffer;
         
-        ALuint m_handler = 0 ;
+        ALuint m_handler = 0;
         bool m_isValid = false;
     };
 }

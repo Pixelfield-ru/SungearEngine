@@ -58,13 +58,13 @@ void SGCore::AudioSource::setState(const SGCore::AudioSourceState& state) noexce
     {
         switch(state)
         {
-            case SOURCE_PLAYING:
+            case AudioSourceState::PLAYING:
                 AL_CALL(alSourcePlay, m_handler);
                 break;
-            case SOURCE_PAUSED:
+            case AudioSourceState::PAUSED:
                 AL_CALL(alSourcePause, m_handler);
                 break;
-            case SOURCE_STOPPED:
+            case AudioSourceState::STOPPED:
                 AL_CALL(alSourceStop, m_handler);
                 break;
         }
@@ -79,14 +79,14 @@ SGCore::AudioSourceState SGCore::AudioSource::getState() const noexcept
     switch(alState)
     {
         case AL_PLAYING:
-            return AudioSourceState::SOURCE_PLAYING;
+            return AudioSourceState::PLAYING;
         case AL_PAUSED:
-            return AudioSourceState::SOURCE_PAUSED;
+            return AudioSourceState::PAUSED;
         case AL_STOPPED:
-            return AudioSourceState::SOURCE_STOPPED;
+            return AudioSourceState::STOPPED;
     }
     
-    return AudioSourceState::SOURCE_STOPPED;
+    return AudioSourceState::STOPPED;
 }
 
 void SGCore::AudioSource::setType(const SGCore::AudioSourceType& type) noexcept
@@ -97,12 +97,12 @@ void SGCore::AudioSource::setType(const SGCore::AudioSourceType& type) noexcept
     {
         switch(type)
         {
-            case AST_POSITIONAL:
+            case AudioSourceType::POSITIONAL:
             {
                 AL_CALL(alSourcei, m_handler, AL_SOURCE_RELATIVE, AL_FALSE);
                 break;
             }
-            case AST_AMBIENT:
+            case AudioSourceType::AMBIENT:
             {
                 AL_CALL(alSourcei, m_handler, AL_SOURCE_RELATIVE, AL_TRUE);
                 setPosition({ 0, 0, 0 });

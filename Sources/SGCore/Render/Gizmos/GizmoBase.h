@@ -11,10 +11,12 @@
 
 namespace SGCore
 {
+    sg_struct()
     struct GizmoBase
     {
         GizmoBase() noexcept;
 
+        sg_member()
         glm::vec4 m_color { 1.0, 0.0, 0.0, 1.0 };
     // private:
         glm::bvec3 m_lastFollowEntityTRS = glm::vec3 { false };

@@ -7,6 +7,7 @@
 
 namespace SGCore
 {
+    sg_struct()
     class UICamera
     {
     private:

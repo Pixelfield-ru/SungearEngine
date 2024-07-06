@@ -93,7 +93,10 @@ void coreInit()
     std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./").c_str());
     
     std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;
-    
+
+    std::shared_ptr<int> d;
+    d.operator*();
+
     using namespace SGCore;
     
     rapidjson::Document document;
@@ -107,7 +110,11 @@ void coreInit()
     Mesh mesh;
     RenderingBase renderingBase;
     
-    Serializer::serialize(document, document, "testTransform", testTransform);
+    // Serializer::serialize(document, document, "testTransform", testTransform);
+
+    std::shared_ptr<int> sharedInt = std::make_shared<int>(3);
+
+    Serializer::serialize(document, document, "testTransform", sharedInt);
     
     rapidjson::StringBuffer stringBuffer;
     stringBuffer.Clear();
