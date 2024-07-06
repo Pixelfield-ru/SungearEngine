@@ -38,8 +38,9 @@ extern "C" {
 
 SGCore::Ref<SGCore::Scene> testScene2;
 
-#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
-#include "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h"
+#include "F:\Pixelfield\SungearEngine\SungearEngine\cmake-build-release\Sources\SGEntry\.generated\Serializers.h"
+/*#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
+#include "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h"*/
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 
@@ -74,11 +75,19 @@ void coreInit()
     }
     
     SGCore::AnnotationsProcessor annotationsProcessor;
+
+    const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
+    std::string sungearRootStr;
+    if(sungearRoot)
+    {
+        sungearRootStr = sungearRoot;
+    }
+
     // annotationsProcessor.processAnnotations(std::vector<std::filesystem::path> { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h" });
-    annotationsProcessor.processAnnotations("/home/ilya/pixelfield/SungearEngine/Sources",
-                                            { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/Annotations.h",
-                                              "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
-                                              "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
+    annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
+                                            { sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
+                                              sungearRootStr + "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
+                                              sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
     
     SGCore::CodeGen::SerializersGenerator serializersGenerator;
     std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./").c_str());
