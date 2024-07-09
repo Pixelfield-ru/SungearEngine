@@ -13,14 +13,14 @@ namespace SGCore
     {
         ~ByteFileAsset();
         
-        [[nodiscard]] char* getBuffer() const noexcept;
-        [[nodiscard]] size_t getBufferSize() const noexcept;
+        [[nodiscard]] char* getDataBuffer() const noexcept;
+        [[nodiscard]] size_t getDataBufferSize() const noexcept;
     
     protected:
         void doLoad(const std::string& path) override;
         
-        char* m_buffer = nullptr;
-        size_t m_bufferSize = 0;
+        char* m_dataBuffer = nullptr;
+        size_t m_dataBufferSize = 0;
     };
 }
 

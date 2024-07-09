@@ -17,6 +17,11 @@ namespace SGCore
     class ModelAsset : public IAsset
     {
     public:
+        // TODO:
+        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        // TODO:
+        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+
         std::vector<std::shared_ptr<Node>> m_nodes;
 
     protected:

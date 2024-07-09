@@ -79,9 +79,9 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_finalFrameFXShader->addTextureBinding("SGLPP_CombinedAttachments[0]", m_layersCombinedBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
 }
 
-SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addLayer(const std::string& name,
-                                                                             const std::uint16_t& fbWidth,
-                                                                             const std::uint16_t& fbHeight)
+SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLayer(const std::string& name,
+                                                                                  const std::uint16_t& fbWidth,
+                                                                                  const std::uint16_t& fbHeight)
 {
     auto foundPPLayer = getLayer(name);
 
@@ -142,7 +142,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addLayer(con
 
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
 
-    return addLayer(name, primaryMonitorWidth, primaryMonitorHeight);
+    return addOrGetLayer(name, primaryMonitorWidth, primaryMonitorHeight);
 }
 
 void SGCore::LayeredFrameReceiver::removeLayer(const std::string& name) noexcept

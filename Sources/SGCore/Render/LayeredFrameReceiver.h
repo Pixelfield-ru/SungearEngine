@@ -163,9 +163,9 @@ namespace SGCore
 
         std::set<SGFrameBufferAttachmentType> m_attachmentsForCombining;
         
-        Ref<PostProcessLayer> addLayer(const std::string& name,
-                                       const std::uint16_t& fbWidth,
-                                       const std::uint16_t& fbHeight);
+        Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
+                                            const std::uint16_t& fbWidth,
+                                            const std::uint16_t& fbHeight);
         
         Ref<PostProcessLayer> addLayer(const std::string& name);
 

@@ -80,3 +80,15 @@ SGCore::IMaterial& SGCore::IMaterial::operator=
 
     return *this;
 }
+
+void
+SGCore::IMaterial::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}
+
+void
+SGCore::IMaterial::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}

@@ -14,6 +14,11 @@ namespace SGCore
 {
     struct TextFileAsset : public IAsset
     {
+        // TODO:
+        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        // TODO:
+        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+
         [[nodiscard]] std::string getData() const noexcept;
     
     protected:

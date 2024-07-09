@@ -316,3 +316,15 @@ void SGCore::ModelAsset::prepareNodeMeshes(const SGCore::Ref<SGCore::Node>& node
         prepareNodeMeshes(child);
     }
 }
+
+void
+SGCore::ModelAsset::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}
+
+void
+SGCore::ModelAsset::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}

@@ -11,6 +11,7 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Utils/Event.h"
+#include "SGCore/Scene/SerializationType.h"
 
 namespace SGCore
 {
@@ -43,6 +44,12 @@ namespace SGCore
             
             onLazyLoadDone(this);
         }
+
+        SerializationType m_serializationType = SerializationType::SERIALIZE_META;
+
+        virtual void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) = 0;
+        virtual void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) = 0;
+
 
         // LEGACY CODE ================================
         
@@ -77,6 +84,9 @@ namespace SGCore
             return MakeRef<InstanceT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
         }
     };
+
+    template <class T>
+    concept DerivedFromIAsset = std::is_base_of_v<IAsset, T>;
 }
 
 #endif //NATIVECORE_IASSET_H

@@ -48,3 +48,13 @@ SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
         return foundSpecIter->second;
     }
 }
+
+void SGCore::Font::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}
+
+void SGCore::Font::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}

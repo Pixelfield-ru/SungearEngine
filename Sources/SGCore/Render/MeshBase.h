@@ -10,6 +10,7 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/EventListener.h"
 #include "ShadersUtils.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 
 namespace SGCore
 {
@@ -21,6 +22,9 @@ namespace SGCore
 
         MeshDataRenderInfo m_meshDataRenderInfo;
         Ref<IMeshData> m_meshData;
+
+        // определяем для каждого ресивера какой слой будет использоваться для данной сущности
+        std::unordered_map<LayeredFrameReceiver*, Weak<PostProcessLayer>> m_layeredFrameReceiversMarkup;
     };
 }
 

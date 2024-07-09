@@ -124,8 +124,8 @@ $(document).ready(function(){initNavTree('AudioSource_8h_source.html',''); initR
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keywordtype">void</span> create() noexcept;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keywordtype">void</span> destroy() noexcept;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordtype">void</span> attachBuffer(<span class="keyword">const</span> Ref&lt;AudioBuffer&gt;&amp; buffer) noexcept;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordtype">void</span> detachBuffer() <span class="keyword">const</span> noexcept;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordtype">void</span> attachAudioTrack(<span class="keyword">const</span> Ref&lt;AudioBuffer&gt;&amp; buffer) noexcept;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordtype">void</span> detachAudioTrack() <span class="keyword">const</span> noexcept;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        </div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordtype">void</span> setPosition(<span class="keyword">const</span> glm::vec3&amp; position) noexcept;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        glm::vec3 getPosition() noexcept;</div>
@@ -167,8 +167,8 @@ $(document).ready(function(){initNavTree('AudioSource_8h_source.html',''); initR
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        </div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        Weak&lt;AudioBuffer&gt; m_attachedBuffer;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        ALuint m_handler = 0 ;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <span class="keywordtype">bool</span> m_isValid = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        ALuint m_alHandler = 0 ;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <span class="keywordtype">bool</span> m_isAlHandlerValid = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    };</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>

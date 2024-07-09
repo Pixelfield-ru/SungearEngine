@@ -7,8 +7,6 @@
 
 #include <SGCore/pch.h>
 
-#include "SGCore/Render/LayeredFrameReceiver.h"
-
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Annotations/Annotations.h"
@@ -26,8 +24,8 @@ namespace SGCore
         sg_member()
         entity_t m_parent = entt::null;
 
+        sg_member()
         Weak<Layer> m_layer;
-        std::unordered_map<LayeredFrameReceiver*, Weak<PostProcessLayer>> m_postProcessLayers;
     };
 }
 

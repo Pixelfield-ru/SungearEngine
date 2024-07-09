@@ -123,3 +123,14 @@ std::int32_t SGCore::ITexture2D::getHeight() const noexcept
 {
     return m_height;
 }
+
+void SGCore::ITexture2D::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}
+
+void
+SGCore::ITexture2D::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}

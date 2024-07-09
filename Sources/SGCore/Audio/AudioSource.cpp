@@ -4,8 +4,6 @@
 
 #include "AudioSource.h"
 
-#include "AudioBuffer.h"
-
 SGCore::AudioSource::~AudioSource()
 {
     destroy();
@@ -18,7 +16,7 @@ void SGCore::AudioSource::create() noexcept
     AL_CALL_E(m_isValid, alGenSources, 1, &m_handler);
     
     // auto attaching to buffer if it is not nullptr
-    attachBuffer(m_attachedBuffer.lock());
+    attachAudioTrack(m_attachedAudioTrack.lock());
     
     setType(getType());
     setState(getState());
@@ -28,23 +26,23 @@ void SGCore::AudioSource::destroy() noexcept
 {
     if(m_isValid)
     {
-        detachBuffer();
+        detachAudioTrack();
         AL_CALL(alDeleteSources, 1, &m_handler);
         m_isValid = false;
     }
 }
 
-void SGCore::AudioSource::attachBuffer(const Ref<AudioBuffer>& buffer) noexcept
+void SGCore::AudioSource::attachAudioTrack(const Ref<AudioTrackAsset>& audioTrackAsset) noexcept
 {
-    m_attachedBuffer = buffer;
+    m_attachedAudioTrack = audioTrackAsset;
     
-    if(m_isValid && buffer)
+    if(m_isValid && audioTrackAsset)
     {
-        AL_CALL(alSourcei, m_handler, AL_BUFFER, buffer->m_handler);
+        AL_CALL(alSourcei, m_handler, AL_BUFFER, audioTrackAsset->getALHandler());
     }
 }
 
-void SGCore::AudioSource::detachBuffer() const noexcept
+void SGCore::AudioSource::detachAudioTrack() const noexcept
 {
     if(m_isValid)
     {
@@ -123,9 +121,9 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(const SGCore::AudioSource& o
     
     if(m_isValid)
     {
-        m_attachedBuffer = other.m_attachedBuffer;
-        
-        attachBuffer(m_attachedBuffer.lock());
+        m_attachedAudioTrack = other.m_attachedAudioTrack;
+
+        attachAudioTrack(m_attachedAudioTrack.lock());
         
         setGain(other.getGain());
         setPitch(other.getPitch());
@@ -144,14 +142,14 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(SGCore::AudioSource&& other)
     if(m_isValid)
     {
         destroy();
-        
-        m_attachedBuffer = other.m_attachedBuffer;
+
+        m_attachedAudioTrack = other.m_attachedAudioTrack;
         m_handler = other.m_handler;
         m_isValid = other.m_isValid;
         m_type = other.m_type;
-        
-        attachBuffer(m_attachedBuffer.lock());
-        other.detachBuffer();
+
+        attachAudioTrack(m_attachedAudioTrack.lock());
+        other.detachAudioTrack();
     }
     
     return *this;

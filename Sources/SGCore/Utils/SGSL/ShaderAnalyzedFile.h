@@ -16,12 +16,16 @@ namespace SGCore
     {
         friend class SGSLETranslator;
         friend class AssetManager;
-        
-        std::string m_path;
+
         std::string m_globalCode;
         
         std::unordered_map<std::string, SGSLESubPass> m_subPasses;
         std::vector<std::shared_ptr<ShaderAnalyzedFile>> m_includedFiles;
+
+        // TODO:
+        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        // TODO:
+        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
         
         void includeFile(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
         {

@@ -65,3 +65,15 @@ void SGCore::SVGImage::removeSpecialization(const uint32_t& width, const uint32_
         return width == specialization->getSize().x && height == specialization->getSize().y;
     });
 }
+
+void
+SGCore::SVGImage::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}
+
+void
+SGCore::SVGImage::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+{
+
+}

@@ -106,7 +106,12 @@ namespace SGCore
         virtual void destroy() = 0;
 
         virtual void bind(const std::uint8_t& textureUnit) = 0;
-        
+
+        // TODO:
+        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        // TODO:
+        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+
         void addToGlobalStorage() noexcept final;
 
         virtual ITexture2D& operator=(const Ref<ITexture2D>& other) = 0;

@@ -14,6 +14,11 @@ namespace SGCore
 {
     struct Font : public IAsset
     {
+        // TODO:
+        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        // TODO:
+        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+
         Ref<FontSpecialization> addOrGetSpecialization(const SGCore::FontSpecializationSettings& fontSpecializationSettings);
         Ref<FontSpecialization> getSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
         

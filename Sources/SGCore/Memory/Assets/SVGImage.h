@@ -15,6 +15,11 @@ namespace SGCore
 {
     struct SVGImage : public IAsset
     {
+        // TODO:
+        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        // TODO:
+        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+
         [[nodiscard]] Ref<SVGImageSpecialization> getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
         void removeSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
     

@@ -77,7 +77,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             if(willRender)
             {
                 EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(meshEntity);
-                Ref<PostProcessLayer> meshPPLayer = entityBaseInfo ? entityBaseInfo->m_postProcessLayers[cameraLayeredFrameReceiver].lock() : nullptr;
+                Ref<PostProcessLayer> meshPPLayer = entityBaseInfo ? mesh.m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock() : nullptr;
                 
                 if(cameraLayeredFrameReceiver)
                 {
@@ -219,7 +219,7 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry
                 ++renderedInOctrees;
                 
                 EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(e);
-                Ref<PostProcessLayer> meshPPLayer = entityBaseInfo ? entityBaseInfo->m_postProcessLayers[cameraLayeredFrameReceiver].lock() : nullptr;
+                Ref<PostProcessLayer> meshPPLayer = entityBaseInfo ? mesh->m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock() : nullptr;
                 
                 if(cameraLayeredFrameReceiver)
                 {

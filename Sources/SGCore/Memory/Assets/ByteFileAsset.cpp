@@ -7,20 +7,20 @@
 
 SGCore::ByteFileAsset::~ByteFileAsset()
 {
-    delete m_buffer;
+    delete m_dataBuffer;
 }
 
 void SGCore::ByteFileAsset::doLoad(const std::string& path)
 {
-    m_buffer = SGCore::FileUtils::readBytes(path, m_bufferSize);
+    m_dataBuffer = SGCore::FileUtils::readBytes(path, m_dataBufferSize);
 }
 
-char* SGCore::ByteFileAsset::getBuffer() const noexcept
+char* SGCore::ByteFileAsset::getDataBuffer() const noexcept
 {
-    return m_buffer;
+    return m_dataBuffer;
 }
 
-size_t SGCore::ByteFileAsset::getBufferSize() const noexcept
+size_t SGCore::ByteFileAsset::getDataBufferSize() const noexcept
 {
-    return m_bufferSize;
+    return m_dataBufferSize;
 }

@@ -9,6 +9,8 @@
 
 #include "SGCore/Utils/TypeTraits.h"
 
+#include "SGCore/Memory/Assets/IAsset.h"
+
 // HERE IS SPECIALIZATIONS OF SerializerSpec FOR BUILT-IN TYPES OF C++ AND LIBRARIES TYPES
 
 namespace SGCore
@@ -28,8 +30,13 @@ namespace SGCore
         {
             SerializerSpec<std::remove_cvref_t<decltype(value)>>::serialize(toDocument, parent, varName, value);
         }
+
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, auto& value) noexcept
+        {
+            SerializerSpec<std::remove_cvref_t<decltype(value)>>::serialize(toDocument, parent, varName, value);
+        }
     };
-    
+
     // ===============================================================================================================================
     // ===============================================================================================================================
     // ===============================================================================================================================
@@ -769,6 +776,32 @@ namespace SGCore
                 case rapidjson::kStringType:
                     break;
                 case rapidjson::kNumberType:
+                    break;
+            }
+        }
+    };
+
+    template<typename T>
+    concept CustomSerializationStruct =
+    requires(T obj, rapidjson::Document& document, rapidjson::Value& parent, const std::string& varName) {
+        obj.serializeData(document, parent, varName);
+        obj.serializeMeta(document, parent, varName);
+        obj.m_serializationType;
+    };
+
+    template<CustomSerializationStruct T>
+    struct SerializerSpec<T>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, T& value) noexcept
+        {
+            switch(value.m_serializationType)
+            {
+                case SerializationType::SERIALIZE_META:
+                    value.serializeMeta(toDocument, parent, varName);
+                    break;
+                case SerializationType::SERIALIZE_DATA:
+                    value.serializeData(toDocument, parent, varName);
                     break;
             }
         }

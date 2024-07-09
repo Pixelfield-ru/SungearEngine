@@ -12,6 +12,7 @@
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "SGCore/Scene/Serializer.h"
+#include "SGCore/Memory/Assets/AudioTrackAsset.h"
 
 namespace SGCore
 {
@@ -42,8 +43,8 @@ namespace SGCore
         void create() noexcept;
         void destroy() noexcept;
         
-        void attachBuffer(const Ref<AudioBuffer>& buffer) noexcept;
-        void detachBuffer() const noexcept;
+        void attachAudioTrack(const Ref<AudioTrackAsset>& audioTrackAsset) noexcept;
+        void detachAudioTrack() const noexcept;
 
         sg_function(name = "setPosition", setterFor = "m_position")
         void setPosition(const glm::vec3& position) noexcept;
@@ -112,7 +113,7 @@ namespace SGCore
         bool m_isLooping = false;
 
         sg_member()
-        Weak<AudioBuffer> m_attachedBuffer;
+        Weak<AudioTrackAsset> m_attachedAudioTrack;
         
         ALuint m_handler = 0;
         bool m_isValid = false;

@@ -19,6 +19,11 @@ namespace SGCore
     public:
         std::string m_name;
 
+        // TODO:
+        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        // TODO:
+        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.
         * @param type - Material type of texture

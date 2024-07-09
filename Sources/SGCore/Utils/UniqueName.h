@@ -7,12 +7,14 @@
 
 #include <SGCore/pch.h>
 
-#include "SGCore/Scene/Serializer.h"
 #include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
     class UniqueNamesManager;
+
+    template<typename T>
+    struct SerializerSpec;
 
     sg_struct()
     struct UniqueName

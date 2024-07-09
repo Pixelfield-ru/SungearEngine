@@ -1,6 +1,5 @@
 #include "Entry.h"
 #include "SGCore/Memory/Assets/AudioTrackAsset.h"
-#include "SGCore/Audio/AudioBuffer.h"
 #include "SGCore/Audio/AudioSource.h"
 #include "SGCore/Audio/AudioDevice.h"
 #include "SGCore/Audio/AudioListener.h"
@@ -107,7 +106,13 @@ void coreInit()
     Mesh mesh;
     RenderingBase renderingBase;
 
-    SGCore::Ref<SGCore::AudioTrackAsset> audio =
+    Ref<AudioTrackAsset> audio = AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("b2.ogg");
+    audio->m_serializationType = SerializationType::SERIALIZE_DATA;
+
+    // SerializerSpec<AudioTrackAsset>::serialize(document, document, "test", *audio);
+    Serializer::serialize(document, document, "test", audio);
+
+    /*SGCore::Ref<SGCore::AudioTrackAsset> audio =
             SGCore::AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("b2.ogg");
     SGCore::Ref<SGCore::AudioBuffer> audioBuf =
             SGCore::MakeRef<SGCore::AudioBuffer>();
@@ -117,12 +122,12 @@ void coreInit()
                       audio->getAudioTrack().getBitsPerSample(),
                       audio->getAudioTrack().getDataBuffer(),
                       audio->getAudioTrack().getDataBufferSize(),
-                      audio->getAudioTrack().getSampleRate());
+                      audio->getAudioTrack().getSampleRate());*/
 
-    AudioSource audioSource;
-    audioSource.attachBuffer(audioBuf);
+    /*AudioSource audioSource;
+    audioSource.attachAudioTrack(audioBuf);
 
-    Serializer::serialize(document, document, "test", audioSource);
+    Serializer::serialize(document, document, "test", audioSource);*/
     
     rapidjson::StringBuffer stringBuffer;
     stringBuffer.Clear();
