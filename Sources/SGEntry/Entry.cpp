@@ -43,6 +43,65 @@ SGCore::Ref<SGCore::Scene> testScene2;
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 
+struct MyStruct
+{
+    std::string m_name = "test";
+    bool m_bool = true;
+};
+
+template<>
+struct SGCore::SerializerSpec<MyStruct>
+{
+    static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const MyStruct& value) noexcept
+    {
+        rapidjson::Value k(rapidjson::kStringType);
+        rapidjson::Value v(rapidjson::kObjectType);
+
+        k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+        SGCore::Serializer::serialize(toDocument, v, "m_name", value.m_name);
+        SGCore::Serializer::serialize(toDocument, v, "m_bool", value.m_bool);
+
+        switch(parent.GetType())
+        {
+            case rapidjson::kNullType:
+                break;
+            case rapidjson::kFalseType:
+                break;
+            case rapidjson::kTrueType:
+                break;
+            case rapidjson::kObjectType:
+                parent.AddMember(k, v, toDocument.GetAllocator());
+                break;
+            case rapidjson::kArrayType:
+                parent.PushBack(v, toDocument.GetAllocator());
+                break;
+            case rapidjson::kStringType:
+                break;
+            case rapidjson::kNumberType:
+                break;
+        }
+    }
+
+    static MyStruct deserialize(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+    {
+        if(!parent.HasMember(varName.c_str()))
+        {
+            Serializer::formNotExistingMemberError(parent, varName, outputLog);
+
+            return {};
+        }
+
+        auto& self = parent[varName.c_str()];
+
+        MyStruct value;
+        value.m_name = Serializer::deserialize<std::string>(self, "m_name", outputLog);
+        value.m_bool = Serializer::deserialize<bool>(self, "m_bool", outputLog);
+
+        return value;
+    }
+};
+
 void coreInit()
 {
     std::printf("init...\n");
@@ -83,7 +142,7 @@ void coreInit()
     }
 
     // annotationsProcessor.processAnnotations(std::vector<std::filesystem::path> { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h" });
-    annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
+    /*annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
                                             { sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
                                               sungearRootStr + "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
                                               sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
@@ -91,7 +150,7 @@ void coreInit()
     SGCore::CodeGen::SerializersGenerator serializersGenerator;
     std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./").c_str());
     
-    std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;
+    std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;*/
 
     using namespace SGCore;
     
@@ -102,15 +161,14 @@ void coreInit()
     
     Serializer::serialize(document, document, "testTransform", testStruct);*/
     
-    Transform testTransform;
+    /*Transform testTransform;
     Mesh mesh;
     RenderingBase renderingBase;
 
     Ref<AudioTrackAsset> audio = AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("b2.ogg");
     audio->m_serializationType = SerializationType::SERIALIZE_DATA;
 
-    // SerializerSpec<AudioTrackAsset>::serialize(document, document, "test", *audio);
-    Serializer::serialize(document, document, "test", audio);
+    Serializer::serialize(document, document, "test", audio);*/
 
     /*SGCore::Ref<SGCore::AudioTrackAsset> audio =
             SGCore::AssetManager::getInstance()->loadAsset<SGCore::AudioTrackAsset>("b2.ogg");
@@ -128,13 +186,27 @@ void coreInit()
     audioSource.attachAudioTrack(audioBuf);
 
     Serializer::serialize(document, document, "test", audioSource);*/
-    
+
+    MyStruct testSerde;
+    testSerde.m_name = "Ilya";
+    testSerde.m_bool = true;
+
+    Serializer::serialize(document, document, "testSerde", testSerde);
+
     rapidjson::StringBuffer stringBuffer;
     stringBuffer.Clear();
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
     document.Accept(writer);
     
     FileUtils::writeToFile("serializer_test.txt", stringBuffer.GetString(), false, true);
+
+    rapidjson::Document fromDocument;
+    fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());
+
+    std::string outputLog;
+    auto deserializedStruct = Serializer::deserialize<MyStruct>(document, "testSerde", outputLog);
+
+    std::printf("deserialized struct: %s, %i\n", deserializedStruct.m_name.c_str(), deserializedStruct.m_bool);
 }
 
 void onUpdate(const double& dt, const double& fixedDt)

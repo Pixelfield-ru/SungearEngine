@@ -83,3 +83,13 @@ SGCore::Ref<SGE::TopToolbarView> SGE::MainView::getTopToolbarView() const noexce
 {
     return m_topToolbarView;
 }
+
+SGCore::Ref<SGE::SceneTreeView> SGE::MainView::getSceneTreeView() const noexcept
+{
+    return m_sceneTreeView;
+}
+
+SGCore::Ref<SGE::InspectorView> SGE::MainView::getInspectorView() const noexcept
+{
+    return m_inspectorView;
+}

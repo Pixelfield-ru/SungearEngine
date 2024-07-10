@@ -10,6 +10,7 @@
 #include "SGCore/Utils/TypeTraits.h"
 
 #include "SGCore/Memory/Assets/IAsset.h"
+#include "SGCore/Annotations/AnnotationsProcessor.h"
 
 // HERE IS SPECIALIZATIONS OF SerializerSpec FOR BUILT-IN TYPES OF C++ AND LIBRARIES TYPES
 
@@ -18,9 +19,14 @@ namespace SGCore
     template<typename T>
     struct SerializerSpec
     {
+        static_assert(always_false<T>::value, "This type is not serializable. Please, implement specialization of SerializerSpec for this type.");
+
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const T& value) noexcept
         {
-            static_assert(always_false<T>::value, "This type is not serializable. Please, implement specialization of Serializable for this type.");
+        }
+
+        static T deserialize(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+        {
         }
     };
 
@@ -34,6 +40,19 @@ namespace SGCore
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, auto& value) noexcept
         {
             SerializerSpec<std::remove_cvref_t<decltype(value)>>::serialize(toDocument, parent, varName, value);
+        }
+
+        template<typename T>
+        static T deserialize(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+        {
+            return SerializerSpec<T>::deserialize(parent, varName, outputLog);
+            // static_assert(always_false<T>::value, "This type is not serializable. Please, implement specialization of Serializable for this type.");
+        }
+
+        static std::string formNotExistingMemberError(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+        {
+            // TODO: MAYBE PARENT NAME
+            outputLog += "Error: member '" + varName + "' does not exist";
         }
     };
 
@@ -574,6 +593,20 @@ namespace SGCore
                     break;
             }
         }
+
+        static float deserialize(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+        {
+            if (!parent.HasMember(varName.c_str()))
+            {
+                Serializer::formNotExistingMemberError(parent, varName, outputLog);
+
+                return {};
+            }
+
+            auto& self = parent[varName.c_str()];
+
+            return self.GetFloat();
+        }
     };
 
     template<>
@@ -604,6 +637,20 @@ namespace SGCore
                 case rapidjson::kNumberType:
                     break;
             }
+        }
+
+        static bool deserialize(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+        {
+            if (!parent.HasMember(varName.c_str()))
+            {
+                Serializer::formNotExistingMemberError(parent, varName, outputLog);
+
+                return {};
+            }
+
+            auto& self = parent[varName.c_str()];
+
+            return self.GetBool();
         }
     };
     
@@ -714,8 +761,66 @@ namespace SGCore
             {
                 Serializer::serialize(toDocument, v, "", n);
             }
-            
-            parent.AddMember(k, v, toDocument.GetAllocator());
+
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
+        }
+    };
+
+    /// KeyT REQUIRES AN IMPLICIT CONVERSION OPERATOR TO std::string OR OTHER TYPES FROM
+    /// WHICH std::string CAN BE CONSTRUCTED OR WHICH CAN BE IMPLICITLY CONVERTED TO std::string
+    template<typename KeyT, typename ValueT>
+    struct SerializerSpec<std::unordered_map<KeyT, ValueT>>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, const std::unordered_map<KeyT, ValueT>& value) noexcept
+        {
+            rapidjson::Value k(rapidjson::kStringType);
+            rapidjson::Value v(rapidjson::kObjectType);
+
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+            for(const auto& n : value)
+            {
+                Serializer::serialize(toDocument, v, n.first, n.second);
+            }
+
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            };
         }
     };
     
@@ -741,6 +846,51 @@ namespace SGCore
                     break;
                 case rapidjson::kArrayType:
                     parent.PushBack(rapidjson::StringRef(value.c_str()), toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
+        }
+
+        static std::string deserialize(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+        {
+            if(!parent.HasMember(varName.c_str()))
+            {
+                Serializer::formNotExistingMemberError(parent, varName, outputLog);
+
+                return {};
+            }
+
+            auto& self = parent[varName.c_str()];
+
+            return self.GetString();
+        }
+    };
+
+    template<>
+    struct SerializerSpec<std::filesystem::path>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, const std::filesystem::path& value) noexcept
+        {
+            rapidjson::Value k(rapidjson::kStringType);
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, rapidjson::StringRef(Utils::toUTF8<char16_t>(value.u16string()).c_str()), toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(rapidjson::StringRef(Utils::toUTF8<char16_t>(value.u16string()).c_str()), toDocument.GetAllocator());
                     break;
                 case rapidjson::kStringType:
                     break;
@@ -805,6 +955,42 @@ namespace SGCore
                     break;
             }
         }
+    };
+
+    template<>
+    struct SerializerSpec<AnnotationsProcessor::AnnotationArg>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
+                              const AnnotationsProcessor::AnnotationArg& value) noexcept;
+
+        static AnnotationsProcessor::AnnotationArg deserialize(const rapidjson::Value& parent, const std::string& varName) noexcept;
+    };
+
+    template<>
+    struct SerializerSpec<AnnotationsProcessor::Annotation>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
+                              const AnnotationsProcessor::Annotation& value) noexcept;
+
+        static AnnotationsProcessor::Annotation deserialize(const rapidjson::Value& parent, const std::string& varName) noexcept;
+    };
+
+    template<>
+    struct SerializerSpec<AnnotationsProcessor::Member>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
+                              const AnnotationsProcessor::Member& value) noexcept;
+
+        static AnnotationsProcessor::Member deserialize(const rapidjson::Value& parent, const std::string& varName) noexcept;
+    };
+
+    template<>
+    struct SerializerSpec<AnnotationsProcessor>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
+                              const AnnotationsProcessor& value) noexcept;
+
+        static AnnotationsProcessor deserialize(const rapidjson::Value& parent, const std::string& varName) noexcept;
     };
 }
 

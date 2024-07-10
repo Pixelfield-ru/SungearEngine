@@ -122,7 +122,7 @@ void init()
     SGCore::CoreMain::m_pathToSungearEngineSDKSources = "/home/ilya/pixelfield/SungearEngine";
     // SGCore::CoreMain::m_pathToSungearEngineSources = "F:\\Pixelfield\\SungearEngine";
     
-    std::cout << SGCore::PluginsManager::createPluginProject("/home/ilya/pixelfield/test", "TestSGPlugin2", "23") << std::endl;
+    // std::cout << SGCore::PluginsManager::createPluginProject("/home/ilya/pixelfield/test", "TestSGPlugin2", "23") << std::endl;
     // std::cout << SGCore::PluginsManager::createPluginProject("F:\\Pixelfield\\test", "TestSGPlugin2", "23") << std::endl;
     
     auto testPlugin =

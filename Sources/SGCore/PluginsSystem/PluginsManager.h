@@ -13,6 +13,7 @@
 #include "SGCore/Utils/Utils.h"
 #include "PluginWrap.h"
 #include "IPlugin.h"
+#include "PluginProject.h"
 
 namespace SGCore
 {
@@ -44,9 +45,10 @@ namespace SGCore
          * \return The string containing the error caused when creating the plugin.\n
          * If the plugin was successfully created, the string is empty.
          */
-        static std::string createPluginProject(const std::string& projectPath,
-                                               const std::string& pluginName,
-                                               const std::string& cxxStandard);
+        static PluginProject createPluginProject(const std::string& projectPath,
+                                                 const std::string& pluginName,
+                                                 const std::string& cxxStandard,
+                                                 std::string& error);
         
         /**
          * Loads the plugin by local path {localPluginPath} and adds the plugin to the plugin vector upon successful loading.

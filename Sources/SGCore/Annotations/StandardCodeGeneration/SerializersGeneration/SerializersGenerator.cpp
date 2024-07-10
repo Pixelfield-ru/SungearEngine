@@ -4,12 +4,13 @@
 
 #include "SerializersGenerator.h"
 #include "SGCore/Utils/Formatter.h"
+#include "SGCore/Annotations/AnnotationsProcessor.h"
 
 namespace fs = std::filesystem;
 
 std::string
 SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::AnnotationsProcessor& annotationsProcessor,
-                                                           const std::filesystem::path& toPath) const
+                                                           const std::filesystem::path& generatedHeaderPath) const
 {
     const char* sgSourcesRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
     
@@ -19,9 +20,8 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
     }
     
     const std::string sgSourcesRootStr = sgSourcesRoot;
-    const std::string generatedCodeDir = Utils::toUTF8<char16_t>(toPath.u16string()) + "/.generated";
     
-    fs::create_directories(generatedCodeDir);
+    fs::create_directories(generatedHeaderPath.parent_path());
     
     std::string serializersSpecForwardDeclCode;
     std::string serializersSpecImplCode;
@@ -120,20 +120,28 @@ SGCore::CodeGen::SerializersGenerator::generateSerializers(const SGCore::Annotat
                         FileUtils::readFile(
                                 sgSourcesRootStr +
                                 (templateArgProvided ?
-                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/TemplatedSerializerSpecImpl.h"
+                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/TemplatedSerializerSpecImpl.cpp"
                                                      :
-                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/NotTemplatedSerializerSpecImpl.h"))) + "\n";
+                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/NotTemplatedSerializerSpecImpl.cpp"))) + "\n";
                 serializersSpecImplCode += "// =================================================================================\n";
                 
                 alreadyGeneratedStructs.insert(structureFullName);
             }
         }
     }
-    
-    std::ofstream serializersH(generatedCodeDir + "/Serializers.h");
+
+    std::ofstream serializersH(generatedHeaderPath);
     serializersH << "#include <SGCore/Scene/Serializer.h>\n";
     serializersH << serializersSpecForwardDeclCode;
-    serializersH << serializersSpecImplCode;
+
+    std::filesystem::path serializersCppPath = generatedHeaderPath.parent_path();
+    serializersCppPath += "/";
+    serializersCppPath += generatedHeaderPath.stem();
+    serializersCppPath += ".cpp";
+
+    std::ofstream serializersCpp(serializersCppPath);
+    serializersCpp << "#include \"" + Utils::toUTF8<char16_t>(generatedHeaderPath.u16string()) + "\"\n";
+    serializersCpp << serializersSpecImplCode;
     
     // no error
     return "";

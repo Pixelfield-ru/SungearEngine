@@ -43,7 +43,7 @@ add_definitions(-DBOOST_STACKTRACE_USE_ADDR2LINE)
 add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DNOMINMAX)
 
-file(GLOB_RECURSE SG_CURRENT_PLUGIN_GENERATED_FILES .generated/src/*.cpp .generated/src/*.h)
+file(GLOB_RECURSE SG_CURRENT_PLUGIN_GENERATED_FILES .SG_GENERATED/*.h .SG_GENERATED/.cpp)
 
 include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)
 

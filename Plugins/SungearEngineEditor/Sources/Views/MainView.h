@@ -33,7 +33,9 @@ namespace SGE
         SGCore::Ref<DirectoriesTreeExplorer> getDirectoriesTreeExplorer() const noexcept;
         SGCore::Ref<DirectoryExplorer> getDirectoryExplorer() const noexcept;
         SGCore::Ref<TopToolbarView> getTopToolbarView() const noexcept;
-        
+        SGCore::Ref<SceneTreeView> getSceneTreeView() const noexcept;
+        SGCore::Ref<InspectorView> getInspectorView() const noexcept;
+
     private:
         SGCore::Ref<TopToolbarView> m_topToolbarView;
         

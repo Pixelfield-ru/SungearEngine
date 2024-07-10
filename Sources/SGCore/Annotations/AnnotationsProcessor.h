@@ -9,11 +9,17 @@
 
 #include "SGCore/Utils/FileUtils.h"
 #include "SGCore/Utils/Utils.h"
+#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
+    template<typename>
+    struct SerializerSpec;
+
     struct AnnotationsProcessor
     {
+        sg_serializer_as_friend(AnnotationsProcessor)
+
         enum class AnnotationActiveState
         {
             INACTIVE,
@@ -22,6 +28,8 @@ namespace SGCore
         
         struct AnnotationArg
         {
+            sg_serializer_as_friend(AnnotationArg)
+
             std::string m_name { };
             bool m_isUnnecessary = false;
             // -1 means for variadic count of arguments
@@ -31,6 +39,8 @@ namespace SGCore
         
         struct Annotation
         {
+            sg_serializer_as_friend(Annotation)
+
             std::string m_name { };
             
             std::filesystem::path m_filePath;
@@ -51,6 +61,8 @@ namespace SGCore
         
         struct Member
         {
+            sg_serializer_as_friend(Member)
+
             std::string m_name;
             
             // first - name
@@ -76,11 +88,16 @@ namespace SGCore
         void processAnnotations(const std::filesystem::path& inDirectory, const std::vector<std::filesystem::path>& filesToExclude = { }, bool recursively = true);
         
         void processAnnotations(const std::vector<std::filesystem::path>& files);
-        
+
+        void saveToFile(const std::filesystem::path& filePath) const noexcept;
+        void loadFromFile(const std::filesystem::path& filePath) const noexcept;
+
         std::string stringifyAnnotations() const noexcept;
         
-        const std::vector<Annotation>& getAnnotations() const noexcept;
-        
+        [[nodiscard]] const std::vector<Annotation>& getAnnotations() const noexcept;
+        [[nodiscard]] std::unordered_map<std::string, Annotation>& getSupportedAnnotations() noexcept;
+        [[nodiscard]] const std::unordered_map<std::string, Annotation>& getSupportedAnnotations() const noexcept;
+
     private:
         std::int64_t parseAnnotationArgument(Annotation& toAnnotation, const std::int64_t& charIdx,
                                              const std::string& fileText, const std::vector<std::string>& words,

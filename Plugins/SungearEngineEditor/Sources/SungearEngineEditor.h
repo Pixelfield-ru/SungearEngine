@@ -8,12 +8,16 @@
 #ifdef PLATFORM_OS_WINDOWS
 #include <windows.h>
 #include <winnt.h>
+#include <SGCore/PluginsSystem/PluginProject.h>
+
 #endif
 
 namespace SGE
 {
     struct SungearEngineEditor : public SGCore::IPlugin
     {
+        SGCore::PluginProject m_currentProject;
+
         ~SungearEngineEditor() override;
 
         void update(const double& dt, const double& fixedDt) final;

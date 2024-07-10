@@ -9,6 +9,8 @@
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
+#include <SGCore/Annotations/AnnotationsProcessor.h>
+#include <SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.h>
 
 #include "ProjectCreateDialog.h"
 #include "SungearEngineEditor.h"
@@ -114,9 +116,10 @@ void SGE::ProjectCreateDialog::renderBody()
         else if(!std::filesystem::exists(m_dirPath + "/" + m_projectName) && m_mode == FileOpenMode::CREATE)
         {
             std::filesystem::create_directory(m_dirPath + "/" + m_projectName);
-            std::string projectSourcesCreateError = SGCore::PluginsManager::createPluginProject(
+            std::string projectSourcesCreateError;
+            SGCore::PluginProject pluginProject = SGCore::PluginsManager::createPluginProject(
                     m_dirPath + "/" + m_projectName + "/Sources", m_projectName,
-                    cppStandards[m_currentSelectedCPPStandard]);
+                    cppStandards[m_currentSelectedCPPStandard], projectSourcesCreateError);
             
             if(!projectSourcesCreateError.empty())
             {
@@ -133,7 +136,41 @@ void SGE::ProjectCreateDialog::renderBody()
             // PROJECT SUCCESSFULLY CREATED ==============
             
             SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath + "/" + m_projectName;
-            
+            SungearEngineEditor::getInstance()->m_currentProject = pluginProject;
+
+            // PARSING SUNGEAR ENGINE ANNOTATIONS AND GENERATING CODE ==========================
+
+            SGCore::AnnotationsProcessor annotationsProcessor;
+
+            const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
+            std::string sungearRootStr;
+            if(sungearRoot)
+            {
+                sungearRootStr = sungearRoot;
+            }
+
+            annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
+                                                    {sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
+                                                     sungearRootStr +
+                                                     "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
+                                                     sungearRootStr +
+                                                     "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
+
+            SGCore::CodeGen::SerializersGenerator serializersGenerator;
+            std::string serializersGenerationError = serializersGenerator.generateSerializers(annotationsProcessor,
+                                                                                              sungearRootStr + "/.SG_GENERATED/Serializers.h");
+
+            annotationsProcessor.saveToFile(sungearRootStr + "/.SG_GENERATED/AnnotationsProcessor.json");
+
+            // TODO: MAKE ERROR DIALOG SHOW IF ERROR
+            if(!serializersGenerationError.empty())
+            {
+                spdlog::error("Error while generating serializers for Sungear Engine: {0}", serializersGenerationError);
+                std::printf("Error while generating serializers for Sungear Engine: %s\n", serializersGenerationError.c_str());
+            }
+
+            // =====================================================================================
+
             m_projectName.clear();
             m_dirPath.clear();
             

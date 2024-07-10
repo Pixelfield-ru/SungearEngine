@@ -18,14 +18,22 @@
 #include <dlfcn.h>
 #endif
 
-std::string SGCore::PluginsManager::createPluginProject(const std::string& projectPath,
-                                                        const std::string& pluginName,
-                                                        const std::string& cxxStandard)
+SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::string& projectPath,
+                                                                  const std::string& pluginName,
+                                                                  const std::string& cxxStandard,
+                                                                  std::string& error)
 {
+    PluginProject pluginProject;
+    pluginProject.m_pluginPath = projectPath + '/' + pluginName;
+    pluginProject.m_parentPath = projectPath;
+    pluginProject.m_name = pluginName;
+    pluginProject.m_cxxStandard = cxxStandard;
+
     const char* sgSourcesRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
     if(!sgSourcesRoot || !std::filesystem::exists(std::string(sgSourcesRoot) + "/cmake/SungearEngineInclude.cmake"))
     {
-        return "Error: Incorrect Sungear Engine sources directory!\nCheck if the 'SUNGEAR_SOURCES_ROOT' environment variable\nexists and correct.";
+        error = "Error: Incorrect Sungear Engine sources directory!\nCheck if the 'SUNGEAR_SOURCES_ROOT' environment variable\nexists and correct.";
+        return pluginProject;
     }
     
     try
@@ -43,13 +51,15 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         
         if(std::filesystem::exists(pluginDir) && !std::filesystem::is_empty(pluginDir))
         {
-            return "Error: Project directory is not empty!";
+            error = "Error: Project directory is not empty!";
+            return pluginProject;
         }
         
         if(cxxStandard != "C++98" && cxxStandard != "C++03" && cxxStandard != "C++11" && cxxStandard != "C++14" &&
            cxxStandard != "C++17" && cxxStandard != "C++20" && cxxStandard != "C++23" && cxxStandard != "C++26")
         {
-            return "Error: Unknown CXX Standard!";
+            error = "Error: Unknown CXX Standard!";
+            return pluginProject;
         }
         
         std::filesystem::create_directories(pluginDir);
@@ -115,13 +125,22 @@ std::string SGCore::PluginsManager::createPluginProject(const std::string& proje
         
         std::ofstream vcpkgStream(pluginDir + "/vcpkg.json");
         vcpkgStream << vcpkgContent;
+
+        // ====================================== .gitignore
+
+        std::string gitignoreContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/.gitignore"));
+
+        std::ofstream gitignoreStream(pluginDir + "/.gitignore");
+        gitignoreStream << gitignoreContent;
     }
     catch(const std::filesystem::filesystem_error& err)
     {
-        return std::string("Error: ") + err.what();
+        error = std::string("Error: ") + err.what();
+        return pluginProject;
     }
-    
-    return "";
+
+    error = "";
+    return pluginProject;
 }
 
 SGCore::Ref<SGCore::PluginWrap>

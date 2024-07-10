@@ -5,6 +5,8 @@
 
 #include <SGCore/pch.h>
 
+#include "SGCore/Scene/Serializer.h"
+
 namespace fs = std::filesystem;
 
 std::string SGCore::AnnotationsProcessor::Annotation::validateAcceptableArgs(const Annotation& annotationToValidate) const noexcept
@@ -985,5 +987,39 @@ SGCore::AnnotationsProcessor::parseAnnotationArgument(SGCore::AnnotationsProcess
     }
     
     return charIdx;
+}
+
+void SGCore::AnnotationsProcessor::saveToFile(const std::filesystem::path& filePath) const noexcept
+{
+    rapidjson::Document document;
+    document.SetObject();
+
+    Serializer::serialize(document, document, "annotationsProcessor", *this);
+
+    rapidjson::StringBuffer stringBuffer;
+    stringBuffer.Clear();
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+    document.Accept(writer);
+
+    FileUtils::writeToFile(filePath, stringBuffer.GetString(), false, true);
+}
+
+void SGCore::AnnotationsProcessor::loadFromFile(const std::filesystem::path& filePath) const noexcept
+{
+    rapidjson::Document document;
+    document.Parse(FileUtils::readFile(filePath).c_str());
+
+    // Serializer::deserialize<AnnotationsProcessor>(document, "annotationsProcessor");
+}
+
+std::unordered_map<std::string, SGCore::AnnotationsProcessor::Annotation>& SGCore::AnnotationsProcessor::getSupportedAnnotations() noexcept
+{
+    return m_supportedAnnotations;
+}
+
+const std::unordered_map<std::string, SGCore::AnnotationsProcessor::Annotation>&
+SGCore::AnnotationsProcessor::getSupportedAnnotations() const noexcept
+{
+    return m_supportedAnnotations;
 }
 
