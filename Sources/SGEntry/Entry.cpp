@@ -37,7 +37,7 @@ extern "C" {
 
 SGCore::Ref<SGCore::Scene> testScene2;
 
-#include "F:\Pixelfield\SungearEngine\SungearEngine\cmake-build-release\Sources\SGEntry\.generated\Serializers.h"
+// #include "F:\Pixelfield\SungearEngine\SungearEngine\cmake-build-release\Sources\SGEntry\.generated\Serializers.h"
 /*#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
 #include "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h"*/
 #include "SGCore/Render/Mesh.h"
@@ -83,22 +83,13 @@ struct SGCore::SerializerSpec<MyStruct>
         }
     }
 
-    static MyStruct deserialize(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+    static MyStruct deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
     {
-        if(!parent.HasMember(varName.c_str()))
-        {
-            Serializer::formNotExistingMemberError(parent, varName, outputLog);
+        MyStruct outputValue;
+        outputValue.m_name = Serializer::deserialize<std::string>(value, "m_name", outputLog);
+        outputValue.m_bool = Serializer::deserialize<bool>(value, "m_bool", outputLog);
 
-            return {};
-        }
-
-        auto& self = parent[varName.c_str()];
-
-        MyStruct value;
-        value.m_name = Serializer::deserialize<std::string>(self, "m_name", outputLog);
-        value.m_bool = Serializer::deserialize<bool>(self, "m_bool", outputLog);
-
-        return value;
+        return outputValue;
     }
 };
 
@@ -142,12 +133,12 @@ void coreInit()
     }
 
     // annotationsProcessor.processAnnotations(std::vector<std::filesystem::path> { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h" });
-    /*annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
+    annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
                                             { sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
                                               sungearRootStr + "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
                                               sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
     
-    SGCore::CodeGen::SerializersGenerator serializersGenerator;
+    /*SGCore::CodeGen::SerializersGenerator serializersGenerator;
     std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./").c_str());
     
     std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;*/
@@ -191,7 +182,7 @@ void coreInit()
     testSerde.m_name = "Ilya";
     testSerde.m_bool = true;
 
-    Serializer::serialize(document, document, "testSerde", testSerde);
+    Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
     rapidjson::StringBuffer stringBuffer;
     stringBuffer.Clear();
@@ -204,9 +195,10 @@ void coreInit()
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());
 
     std::string outputLog;
-    auto deserializedStruct = Serializer::deserialize<MyStruct>(document, "testSerde", outputLog);
+    auto deserializedStruct = Serializer::deserialize<AnnotationsProcessor>(document, "testSerde", outputLog);
 
-    std::printf("deserialized struct: %s, %i\n", deserializedStruct.m_name.c_str(), deserializedStruct.m_bool);
+    std::cout << "hello\n";
+    // std::printf("deserialized struct: %s, %i\n", deserializedStruct.m_name.c_str(), deserializedStruct.m_bool);
 }
 
 void onUpdate(const double& dt, const double& fixedDt)

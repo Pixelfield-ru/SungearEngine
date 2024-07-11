@@ -22,9 +22,7 @@ namespace SGCore
     {
         ~AudioTrackAsset();
 
-        // TODO:
         void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
-        // TODO:
         void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
 
         void createALBuffer() noexcept;

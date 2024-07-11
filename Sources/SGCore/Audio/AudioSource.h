@@ -113,7 +113,7 @@ namespace SGCore
         bool m_isLooping = false;
 
         sg_member()
-        Weak<AudioTrackAsset> m_attachedAudioTrack;
+        Ref<AudioTrackAsset> m_attachedAudioTrack;
         
         ALuint m_handler = 0;
         bool m_isValid = false;

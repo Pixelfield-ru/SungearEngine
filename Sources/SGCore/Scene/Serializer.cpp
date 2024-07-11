@@ -52,17 +52,19 @@ void SGCore::SerializerSpec<SGCore::AnnotationsProcessor>::serialize(rapidjson::
 
 SGCore::AnnotationsProcessor
 SGCore::SerializerSpec<SGCore::AnnotationsProcessor>::deserialize(const rapidjson::Value& parent,
-                                                                  const std::string& varName) noexcept
+                                                                  const rapidjson::Value& value,
+                                                                  std::string& outputLog) noexcept
 {
-    /*auto& self = parent[varName.c_str()];
+    AnnotationsProcessor outputValue;
+    outputValue.m_supportedAnnotations =
+            Serializer::deserialize<std::unordered_map<std::string, AnnotationsProcessor::Annotation>>(value,
+                                                                                                       "m_supportedAnnotations",
+                                                                                                       outputLog);
+    outputValue.m_currentAnnotations = Serializer::deserialize<std::vector<AnnotationsProcessor::Annotation>>(value,
+                                                                                                              "m_currentAnnotations",
+                                                                                                              outputLog);
 
-    AnnotationsProcessor value;
-    value.m_supportedAnnotations = Serializer::deserialize<std::unordered_map<std::string, AnnotationsProcessor::Annotation>>(self, "m_supportedAnnotations");
-    value.m_currentAnnotations = Serializer::deserialize<std::vector<AnnotationsProcessor::Annotation>>(self, "m_currentAnnotations");
-
-    return value;*/
-
-    return { };
+    return outputValue;
 }
 
 void
@@ -100,6 +102,21 @@ SGCore::SerializerSpec<SGCore::AnnotationsProcessor::Member>::serialize(rapidjso
     }
 }
 
+SGCore::AnnotationsProcessor::Member
+SGCore::SerializerSpec<SGCore::AnnotationsProcessor::Member>::deserialize(const rapidjson::Value& parent,
+                                                                          const rapidjson::Value& value,
+                                                                          std::string& outputLog) noexcept
+{
+    AnnotationsProcessor::Member outputValue;
+    outputValue.m_name = Serializer::deserialize<std::string>(value, "m_name", outputLog);
+    outputValue.m_annotations =
+            Serializer::deserialize<std::unordered_map<std::string, AnnotationsProcessor::Annotation>>(value,
+                                                                                                       "m_annotations",
+                                                                                                       outputLog);
+
+    return outputValue;
+}
+
 void SGCore::SerializerSpec<SGCore::AnnotationsProcessor::Annotation>::serialize(rapidjson::Document& toDocument,
                                                                                  rapidjson::Value& parent,
                                                                                  const std::string& varName,
@@ -135,6 +152,31 @@ void SGCore::SerializerSpec<SGCore::AnnotationsProcessor::Annotation>::serialize
         case rapidjson::kNumberType:
             break;
     }
+}
+
+SGCore::AnnotationsProcessor::Annotation
+SGCore::SerializerSpec<SGCore::AnnotationsProcessor::Annotation>::deserialize(const rapidjson::Value& parent,
+                                                                              const rapidjson::Value& value,
+                                                                              std::string& outputLog) noexcept
+{
+    AnnotationsProcessor::Annotation outputValue;
+    outputValue.m_name = Serializer::deserialize<std::string>(value, "m_name", outputLog);
+    outputValue.m_filePath = Serializer::deserialize<std::filesystem::path>(value, "m_filePath", outputLog);
+    outputValue.m_acceptableArgs =
+            Serializer::deserialize<std::unordered_map<std::string, AnnotationsProcessor::AnnotationArg>>(value,
+                                                                                                          "m_acceptableArgs",
+                                                                                                          outputLog);
+    outputValue.m_currentArgs =
+            Serializer::deserialize<std::unordered_map<std::string, AnnotationsProcessor::AnnotationArg>>(value,
+                                                                                                          "m_currentArgs",
+                                                                                                          outputLog);
+
+    outputValue.m_anonymousArgs =
+            Serializer::deserialize<std::vector<AnnotationsProcessor::AnnotationArg>>(value,
+                                                                                      "m_anonymousArgs",
+                                                                                      outputLog);
+
+    return outputValue;
 }
 
 void SGCore::SerializerSpec<SGCore::AnnotationsProcessor::AnnotationArg>::serialize(rapidjson::Document& toDocument,
@@ -204,17 +246,29 @@ void SGCore::SerializerSpec<SGCore::AnnotationsProcessor::AnnotationArg>::serial
 
 SGCore::AnnotationsProcessor::AnnotationArg
 SGCore::SerializerSpec<SGCore::AnnotationsProcessor::AnnotationArg>::deserialize(const rapidjson::Value& parent,
-                                                                                 const std::string& varName) noexcept
+                                                                                 const rapidjson::Value& value,
+                                                                                 std::string& outputLog) noexcept
 {
-    /*auto& self = parent[varName.c_str()];
+    AnnotationsProcessor::AnnotationArg outputValue;
+    outputValue.m_name = Serializer::deserialize<std::string>(value, "m_name", outputLog);
+    outputValue.m_isUnnecessary = Serializer::deserialize<bool>(value, "m_isUnnecessary", outputLog);
+    outputValue.m_requiredValuesCount = Serializer::deserialize<std::int64_t>(value, "m_requiredValuesCount", outputLog);
 
-    AnnotationsProcessor::AnnotationArg value;
-    value.m_name = Serializer::deserialize<std::string>(self, "m_name");
-    value.m_isUnnecessary = Serializer::deserialize<bool>(self, "m_isUnnecessary");
-    value.m_supportedAnnotations = Serializer::deserialize<std::unordered_map<std::string, AnnotationsProcessor::Annotation>>(self, "m_supportedAnnotations");
-    value.m_currentAnnotations = Serializer::deserialize<std::vector<AnnotationsProcessor::Annotation>>(self, "m_currentAnnotations");
+    auto& valuesMember = value["m_values"];
 
-    return value;*/
+    for (rapidjson::Value::ConstMemberIterator iter = valuesMember.MemberBegin(); iter != valuesMember.MemberEnd(); ++iter)
+    {
+        // std::string anyType = iter->value["anyType"].GetString();
 
-    return { };
+        /*if(anyType == "std::string")
+        {
+            outputValue.m_values.emplace_back(SerializerSpec<std::string>::deserialize(iter->value, iter->value["value"], outputLog));
+        }
+        else if(anyType == "SGCore::AnnotationsProcessor::Annotation")
+        {
+            outputValue.m_values.emplace_back(SerializerSpec<AnnotationsProcessor::Annotation>::deserialize(iter->value, iter->value["value"], outputLog));
+        }*/
+    }
+
+    return outputValue;
 }

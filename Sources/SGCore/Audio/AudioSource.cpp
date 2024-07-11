@@ -16,7 +16,7 @@ void SGCore::AudioSource::create() noexcept
     AL_CALL_E(m_isValid, alGenSources, 1, &m_handler);
     
     // auto attaching to buffer if it is not nullptr
-    attachAudioTrack(m_attachedAudioTrack.lock());
+    attachAudioTrack(m_attachedAudioTrack);
     
     setType(getType());
     setState(getState());
@@ -123,7 +123,7 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(const SGCore::AudioSource& o
     {
         m_attachedAudioTrack = other.m_attachedAudioTrack;
 
-        attachAudioTrack(m_attachedAudioTrack.lock());
+        attachAudioTrack(m_attachedAudioTrack);
         
         setGain(other.getGain());
         setPitch(other.getPitch());
@@ -148,7 +148,7 @@ SGCore::AudioSource& SGCore::AudioSource::operator=(SGCore::AudioSource&& other)
         m_isValid = other.m_isValid;
         m_type = other.m_type;
 
-        attachAudioTrack(m_attachedAudioTrack.lock());
+        attachAudioTrack(m_attachedAudioTrack);
         other.detachAudioTrack();
     }
     
