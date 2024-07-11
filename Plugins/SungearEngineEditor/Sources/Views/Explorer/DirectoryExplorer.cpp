@@ -193,7 +193,7 @@ void SGE::DirectoryExplorer::renderBody()
         drawCurrentPathNavigation();
         
         // =======================================================================
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, { 0, 0 });
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 8, 5 });
         
         drawFindFilesWindow();
@@ -697,7 +697,7 @@ void SGE::DirectoryExplorer::drawCurrentPathNavigation()
     
     ImGui::EndChildFrame();
     
-    ImGui::PopStyleVar(1);
+    ImGui::PopStyleVar(2);
     
     ImGui::Separator();
 }
@@ -1567,8 +1567,8 @@ void SGE::DirectoryExplorer::drawFileNameInputText()
 void SGE::DirectoryExplorer::endMainWindow()
 {
     ImGui::End();
-    
-    ImGui::PopStyleVar(2);
+
+    ImGui::PopStyleVar(3);
     
     // =================================================
     m_isSkippingOneFrame = false;

@@ -256,18 +256,20 @@ SGCore::SerializerSpec<SGCore::AnnotationsProcessor::AnnotationArg>::deserialize
 
     auto& valuesMember = value["m_values"];
 
-    for (rapidjson::Value::ConstMemberIterator iter = valuesMember.MemberBegin(); iter != valuesMember.MemberEnd(); ++iter)
+    for(std::uint64_t i = 0; i < valuesMember.Size(); ++i)
     {
-        // std::string anyType = iter->value["anyType"].GetString();
+        auto& anyValue = valuesMember[i];
 
-        /*if(anyType == "std::string")
+        std::string anyType = anyValue["anyType"].GetString();
+
+        if(anyType == "std::string")
         {
-            outputValue.m_values.emplace_back(SerializerSpec<std::string>::deserialize(iter->value, iter->value["value"], outputLog));
+            outputValue.m_values.emplace_back(SerializerSpec<std::string>::deserialize(anyValue, anyValue["value"], outputLog));
         }
         else if(anyType == "SGCore::AnnotationsProcessor::Annotation")
         {
-            outputValue.m_values.emplace_back(SerializerSpec<AnnotationsProcessor::Annotation>::deserialize(iter->value, iter->value["value"], outputLog));
-        }*/
+            outputValue.m_values.emplace_back(SerializerSpec<AnnotationsProcessor::Annotation>::deserialize(anyValue, anyValue["value"], outputLog));
+        }
     }
 
     return outputValue;

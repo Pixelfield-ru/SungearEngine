@@ -646,11 +646,11 @@ void SGCore::AnnotationsProcessor::processAnnotations(const std::vector<std::fil
                         std::string variableName;
                         std::string firstWordBeforeVariable;
                         // going back to get variable name
-                        for(std::int64_t j = k != currentExpression.length() - 1 ? k - 1 : k; k != 0; --j)
+                        for(std::int64_t j = (k != exprCopy.length() - 1 ? k - 1 : k); j != 0; --j)
                         {
                             if(std::isspace(exprCopy[j]))
                             {
-                                for(std::int64_t l = j - 1; exprCopy[l] != ' '; --l)
+                                for(std::int64_t l = std::min((j == 0 ? j : j - 1), std::ssize(exprCopy)); exprCopy[l] != ' ' && l != 0; --l)
                                 {
                                     firstWordBeforeVariable += exprCopy[l];
                                 }

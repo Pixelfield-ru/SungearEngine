@@ -40,8 +40,8 @@ void SGE::DirectoriesTreeExplorer::renderBody()
                 
                 std::string text = SGCore::Utils::toUTF8<char16_t>(m_currentPath.u16string());
                 ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
-                
-                // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, originalItemsSpacing);
+
+                // ImGui::PopStyleVar(1);
                 ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 4 });
                 
                 ImGui::BeginChildFrame(ImGui::GetID("DirectoriesExplorerTreeCurrentChosenDir"),
@@ -64,7 +64,8 @@ void SGE::DirectoriesTreeExplorer::renderBody()
             }
             
             ImGui::PopStyleVar(1);
-            
+
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImGui::GetStyle().ItemSpacing);
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 5 });
             
             ImGui::BeginChildFrame(ImGui::GetID("DirectoriesExplorerTreeFilesView"),
@@ -97,7 +98,7 @@ void SGE::DirectoriesTreeExplorer::renderBody()
     }
 
     ImGui::End();
-    ImGui::PopStyleVar(2);
+    ImGui::PopStyleVar(3);
 }
 
 void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& parent) noexcept

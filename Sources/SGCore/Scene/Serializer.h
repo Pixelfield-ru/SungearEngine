@@ -72,13 +72,13 @@ namespace SGCore
             return SerializerSpec<T>::deserialize(parent, self, outputLog);
         }
 
-        static std::string formNotExistingMemberError(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
+        static void formNotExistingMemberError(const rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
         {
             // TODO: MAYBE PARENT NAME
             outputLog += "Error: member '" + varName + "' does not exist";
         }
 
-        static std::string formNotExistingMemberError(const rapidjson::Value& parent, const std::uint64_t& index, std::string& outputLog) noexcept
+        static void formNotExistingMemberError(const rapidjson::Value& parent, const std::uint64_t& index, std::string& outputLog) noexcept
         {
             // TODO: MAYBE PARENT NAME
             outputLog += "Error: member with index '" + std::to_string(index) + "' does not exist";
@@ -1011,7 +1011,10 @@ namespace SGCore
                               const std::string& varName, const std::string& value) noexcept
         {
             rapidjson::Value k(rapidjson::kStringType);
+            rapidjson::Value v(rapidjson::kStringType);
+
             k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            v.SetString(value.c_str(), value.length(), toDocument.GetAllocator());
             
             switch(parent.GetType())
             {
@@ -1022,10 +1025,10 @@ namespace SGCore
                 case rapidjson::kTrueType:
                     break;
                 case rapidjson::kObjectType:
-                    parent.AddMember(k, rapidjson::StringRef(value.c_str()), toDocument.GetAllocator());
+                    parent.AddMember(k, v, toDocument.GetAllocator());
                     break;
                 case rapidjson::kArrayType:
-                    parent.PushBack(rapidjson::StringRef(value.c_str()), toDocument.GetAllocator());
+                    parent.PushBack(v, toDocument.GetAllocator());
                     break;
                 case rapidjson::kStringType:
                     break;
@@ -1041,13 +1044,18 @@ namespace SGCore
     };
 
     template<>
-    struct SerializerSpec<std::filesystem::path>
+    struct SerializerSpec<std::basic_string<char16_t>>
     {
         static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                              const std::string& varName, const std::filesystem::path& value) noexcept
+                              const std::string& varName, const std::basic_string<char16_t>& value) noexcept
         {
             rapidjson::Value k(rapidjson::kStringType);
+            rapidjson::Value v(rapidjson::kStringType);
+
+            auto asUTF8 = Utils::toUTF8<char16_t>(value);
+
             k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            v.SetString(asUTF8.c_str(), asUTF8.length(), toDocument.GetAllocator());
 
             switch(parent.GetType())
             {
@@ -1058,10 +1066,10 @@ namespace SGCore
                 case rapidjson::kTrueType:
                     break;
                 case rapidjson::kObjectType:
-                    parent.AddMember(k, rapidjson::StringRef(Utils::toUTF8<char16_t>(value.u16string()).c_str()), toDocument.GetAllocator());
+                    parent.AddMember(k, v, toDocument.GetAllocator());
                     break;
                 case rapidjson::kArrayType:
-                    parent.PushBack(rapidjson::StringRef(Utils::toUTF8<char16_t>(value.u16string()).c_str()), toDocument.GetAllocator());
+                    parent.PushBack(v, toDocument.GetAllocator());
                     break;
                 case rapidjson::kStringType:
                     break;
@@ -1070,7 +1078,48 @@ namespace SGCore
             }
         }
 
-        static std::string deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
+        static std::basic_string<char16_t> deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
+        {
+            return Utils::fromUTF8<char16_t>(value.GetString());
+        }
+    };
+
+    template<>
+    struct SerializerSpec<std::filesystem::path>
+    {
+        static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+                              const std::string& varName, const std::filesystem::path& value) noexcept
+        {
+            rapidjson::Value k(rapidjson::kStringType);
+            rapidjson::Value v(rapidjson::kStringType);
+
+            auto asUTF8 = Utils::toUTF8<char16_t>(value.u16string());
+
+            k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            v.SetString(asUTF8.c_str(), asUTF8.length(), toDocument.GetAllocator());
+
+            switch(parent.GetType())
+            {
+                case rapidjson::kNullType:
+                    break;
+                case rapidjson::kFalseType:
+                    break;
+                case rapidjson::kTrueType:
+                    break;
+                case rapidjson::kObjectType:
+                    parent.AddMember(k, v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kArrayType:
+                    parent.PushBack(v, toDocument.GetAllocator());
+                    break;
+                case rapidjson::kStringType:
+                    break;
+                case rapidjson::kNumberType:
+                    break;
+            }
+        }
+
+        static std::filesystem::path deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
         {
             return value.GetString();
         }
