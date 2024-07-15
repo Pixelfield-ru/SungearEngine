@@ -4,6 +4,7 @@
 #include <SGCore/PluginsSystem/IPlugin.h>
 #include <SGCore/Memory/AssetManager.h>
 #include "Views/MainView.h"
+#include "Project/Project.h"
 
 #ifdef PLATFORM_OS_WINDOWS
 #include <windows.h>
@@ -16,7 +17,7 @@ namespace SGE
 {
     struct SungearEngineEditor : public SGCore::IPlugin
     {
-        SGCore::PluginProject m_currentProject;
+        Project m_currentProject;
 
         ~SungearEngineEditor() override;
 

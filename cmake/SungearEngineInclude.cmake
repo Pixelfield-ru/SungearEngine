@@ -119,3 +119,5 @@ endif()
     find_package(RapidJSON CONFIG REQUIRED)
     list(APPEND SungearEngine_LIBS "rapidjson")
 #endif()
+
+list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}")

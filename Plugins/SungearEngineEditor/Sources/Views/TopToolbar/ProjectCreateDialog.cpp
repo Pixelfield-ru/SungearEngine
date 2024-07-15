@@ -18,6 +18,7 @@
 
 #include "Views/Explorer/DirectoryExplorer.h"
 #include "Views/Explorer/DirectoriesTreeExplorer.h"
+#include "Project/CodeGen/CodeGeneration.h"
 
 void SGE::ProjectCreateDialog::renderBody()
 {
@@ -132,11 +133,13 @@ void SGE::ProjectCreateDialog::renderBody()
             }
             
             std::filesystem::create_directory(m_dirPath + "/" + m_projectName + "/Resources");
-            
+
+            auto& currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+
             // PROJECT SUCCESSFULLY CREATED ==============
             
             SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath + "/" + m_projectName;
-            SungearEngineEditor::getInstance()->m_currentProject = pluginProject;
+            currentEditorProject.m_pluginProject = pluginProject;
 
             // PARSING SUNGEAR ENGINE ANNOTATIONS AND GENERATING CODE ==========================
 
@@ -168,6 +171,15 @@ void SGE::ProjectCreateDialog::renderBody()
                 spdlog::error("Error while generating serializers for Sungear Engine: {0}", serializersGenerationError);
                 std::printf("Error while generating serializers for Sungear Engine: %s\n", serializersGenerationError.c_str());
             }
+
+            // CREATING GENERATED CODE ENTRY POINT
+
+            CodeGeneration::generateCode({ annotationsProcessor }, pluginProject.m_pluginPath);
+
+            // =====================================================================================
+            // BUILDING CREATED PROJECT
+
+            // currentEditorProject.m_editorHelper.load("")
 
             // =====================================================================================
 

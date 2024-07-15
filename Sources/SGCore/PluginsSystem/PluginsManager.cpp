@@ -63,7 +63,6 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::str
         }
         
         std::filesystem::create_directories(pluginDir);
-        std::filesystem::create_directories(pluginDir + "/.generated");
         std::filesystem::create_directories(pluginSourcesDir);
         
         std::string upperPluginName = pluginName;
