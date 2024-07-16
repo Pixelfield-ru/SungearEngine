@@ -82,6 +82,12 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::str
         
         std::ofstream cmakeListsStream(pluginDir + "/CMakeLists.txt");
         cmakeListsStream << cmakeListsContent;
+
+        // ====================================== cmake/include_as_plugin.cmake
+
+        std::string includeAsPluginContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/include_as_plugin.cmake"));
+
+        FileUtils::writeToFile(pluginDir + "/cmake/include_as_plugin.cmake", includeAsPluginContent, false, true);
         
         // ====================================== PluginMain.h
         

@@ -12,8 +12,8 @@ void SGE::CodeGeneration::generateCode(const std::vector<SGCore::AnnotationsProc
 {
     // MAKING includes ===========================
     std::string includes;
-    includes += "#include \"" + SungearEngineEditor::getInstance()->getLocalPath() + "/Sources/Views/InspectorView.h\"\n";
-    includes += "#include \"" + SungearEngineEditor::getInstance()->getLocalPath() + "/Sources/SungearEngineEditor.h\"\n";
+    // includes += "#include \"" + SungearEngineEditor::getInstance()->getLocalPath() + "/Sources/Views/InspectorView.h\"\n";
+    // includes += "#include \"" + SungearEngineEditor::getInstance()->getLocalPath() + "/Sources/SungearEngineEditor.h\"\n";
     // ===========================================
 
     // MAKING onInspectorViewComponentsChooseRenderFunctionCode =====

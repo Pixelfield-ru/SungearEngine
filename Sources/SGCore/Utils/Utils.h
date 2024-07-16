@@ -372,6 +372,8 @@ namespace SGCore
 
             return std::string::npos;
         }
+
+        static std::string consoleExecute(const std::string& cmd);
     };
 }
 

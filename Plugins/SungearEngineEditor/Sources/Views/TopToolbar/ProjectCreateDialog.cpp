@@ -19,6 +19,7 @@
 #include "Views/Explorer/DirectoryExplorer.h"
 #include "Views/Explorer/DirectoriesTreeExplorer.h"
 #include "Project/CodeGen/CodeGeneration.h"
+#include "Utils/VisualStudioToolchain.h"
 
 void SGE::ProjectCreateDialog::renderBody()
 {
@@ -178,6 +179,13 @@ void SGE::ProjectCreateDialog::renderBody()
 
             // =====================================================================================
             // BUILDING CREATED PROJECT
+
+            // TEST!!!!!
+            VisualStudioToolchain testToolchain;
+            testToolchain.setPath("F:/VisualStudio/IDE");
+            testToolchain.m_archType = VCArchType::AMD64;
+
+            testToolchain.buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
 
             // currentEditorProject.m_editorHelper.load("")
 

@@ -46,6 +46,7 @@ add_definitions(-DNOMINMAX)
 file(GLOB_RECURSE SG_CURRENT_PLUGIN_GENERATED_FILES .SG_GENERATED/*.h .SG_GENERATED/*.cpp)
 
 include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)
+include($ENV{SUNGEAR_SOURCES_ROOT}/Plugins/SungearEngineEditor/cmake/include_as_plugin.cmake)
 
 add_library(${PROJECT_NAME} SHARED Sources/PluginMain.h Sources/PluginMain.cpp Sources/${pluginName}$.h Sources/${pluginName}$.cpp ${SG_CURRENT_PLUGIN_GENERATED_FILES})
 

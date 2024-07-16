@@ -6,6 +6,9 @@
 #include <imgui_stdlib.h>
 #include <entt/entt.hpp>
 
+#include <Plugins/SungearEngineEditor/Sources/Views/InspectorView.h>
+#include <Plugins/SungearEngineEditor/Sources/SungearEngineEditor.h>
+
 ${includes}$
 
 void onInit()
