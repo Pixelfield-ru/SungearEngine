@@ -43,26 +43,32 @@ void SGE::ProjectCreateDialog::renderBody()
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
     switch(m_mode)
     {
         case OPEN:
             ImGui::BeginPopupModal("Open Project", nullptr,
-                                   ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                                   ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize);
+                                   ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse |
+                                   ImGuiWindowFlags_NoResize |
+                                   ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar |
+                                   ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize);
             break;
         case CREATE:
             ImGui::BeginPopupModal("Create Project", nullptr,
-                                   ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                                   ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize);
+                                   ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse |
+                                   ImGuiWindowFlags_NoResize |
+                                   ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar |
+                                   ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize);
             break;
     }
 
     m_size = ImGui::GetWindowSize();
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 8));
-    ImGui::BeginChild(ImGui::GetID("DialogName"), ImVec2(0, 0),
-                           ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 8));
+    ImGui::BeginChild(ImGui::GetID("DialogName"), ImVec2(ImGui::GetContentRegionAvail().x, 0),
+                      ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY,
+                      ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1);
 
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
@@ -75,17 +81,24 @@ void SGE::ProjectCreateDialog::renderBody()
     ImGui::EndChild();
     ImGui::PopStyleVar();
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(7, 8));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(7, 8));
+
     switch(m_mode)
     {
         case OPEN:
             ImGui::BeginChild(ImGui::GetID("DialogBody_OpenProject"), ImVec2(0, 0),
-                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
-                                           ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY | ImGuiWindowFlags_NoSavedSettings);
+                              ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY |
+                              ImGuiChildFlags_AlwaysUseWindowPadding,
+                              ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
+                              ImGuiWindowFlags_NoSavedSettings);
             break;
         case CREATE:
             ImGui::BeginChild(ImGui::GetID("DialogBody_CreateProject"), ImVec2(0, 0),
-                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
-                                           ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY | ImGuiWindowFlags_NoSavedSettings);
+                              ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY |
+                              ImGuiChildFlags_AlwaysUseWindowPadding,
+                              ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
+                              ImGuiWindowFlags_NoSavedSettings);
             break;
     }
 
@@ -283,7 +296,9 @@ void SGE::ProjectCreateDialog::renderBody()
 
     ImGui::EndChild();
 
+    ImGui::PopStyleVar(2);
+
     ImGui::EndPopup();
 
-    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(2);
 }
