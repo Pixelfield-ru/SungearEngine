@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include "FileUtils.h"
 
 std::string SGCore::Utils::getRealPath(const std::string& path) noexcept
 {
@@ -61,7 +62,15 @@ long long SGCore::Utils::getTimeMilliseconds() noexcept
 
 std::string SGCore::Utils::consoleExecute(const std::string& cmd)
 {
-    std::array<char, 2048> buffer { };
+    /*std::system(fmt::format("{0} > __sg_tmp_console_output.txt", cmd).c_str());
+
+    return FileUtils::readFile("__sg_tmp_console_output.txt");*/
+
+    FileUtils::writeToFile("__sg_tmp_console_command.cmd", cmd, false, true);
+    std::system("__sg_tmp_console_command.cmd > __sg_tmp_console_output.txt");
+    return FileUtils::readFile("__sg_tmp_console_output.txt");
+
+    /*std::array<char, 2048> buffer { };
     std::string result;
     #if defined(PLATFORM_OS_WINDOWS)
     std::unique_ptr<FILE, void (*)(FILE*)> pipe(_popen(cmd.c_str(), "r"),
@@ -87,7 +96,5 @@ std::string SGCore::Utils::consoleExecute(const std::string& cmd)
         result += buffer.data();
     }
 
-    std::cout << std::endl;
-
-    return result;
+    return result;*/
 }

@@ -114,7 +114,7 @@ void coreInit()
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   SGCore::PluginBuildType::PBT_DEBUG);
+                                                   SGCore::PluginBuildType::PBT_RELEASE);
 
         std::cout << "plugin: " << sgEditorPlugin  << ", sgeditor path: " << sgEditorPath << std::endl;
     }

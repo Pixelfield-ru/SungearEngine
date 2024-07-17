@@ -19,26 +19,76 @@
 #include "Views/Explorer/DirectoryExplorer.h"
 #include "Views/Explorer/DirectoriesTreeExplorer.h"
 #include "Project/CodeGen/CodeGeneration.h"
-#include "Utils/VisualStudioToolchain.h"
+#include "Toolchains//VisualStudioToolchain.h"
+#include "Toolchains/Toolchains.h"
 
 void SGE::ProjectCreateDialog::renderBody()
 {
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     
-    ImGui::SetNextWindowSize(ImVec2(m_size.x, m_size.y));
+    // ImGui::SetNextWindowSize(ImVec2(m_size.x, m_size.y));
     ImGui::SetNextWindowPos(ImVec2(center.x - m_size.x / 2.0f, center.y - m_size.y / 2.0f));
-    
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
     
     if(isActive())
     {
-        ImGui::OpenPopup("Create Project");
+        switch(m_mode)
+        {
+            case OPEN:
+                ImGui::OpenPopup("Open Project");
+                break;
+            case CREATE:
+                ImGui::OpenPopup("Create Project");
+                break;
+        }
     }
-    
-    ImGui::BeginPopupModal("Create Project", nullptr,
-                 ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                 ImGuiWindowFlags_NoMove);
-    
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+    switch(m_mode)
+    {
+        case OPEN:
+            ImGui::BeginPopupModal("Open Project", nullptr,
+                                   ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                                   ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize);
+            break;
+        case CREATE:
+            ImGui::BeginPopupModal("Create Project", nullptr,
+                                   ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                                   ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize);
+            break;
+    }
+
+    m_size = ImGui::GetWindowSize();
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 8));
+    ImGui::BeginChild(ImGui::GetID("DialogName"), ImVec2(0, 0),
+                           ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1);
+
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(7, 8));
+    ImGui::Text("Create Project");
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetStyle().WindowPadding.x - 2);
+    ImGui::Separator();
+    ImGui::PopStyleVar();
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar();
+
+    switch(m_mode)
+    {
+        case OPEN:
+            ImGui::BeginChild(ImGui::GetID("DialogBody_OpenProject"), ImVec2(0, 0),
+                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
+                                           ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY | ImGuiWindowFlags_NoSavedSettings);
+            break;
+        case CREATE:
+            ImGui::BeginChild(ImGui::GetID("DialogBody_CreateProject"), ImVec2(0, 0),
+                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
+                                           ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY | ImGuiWindowFlags_NoSavedSettings);
+            break;
+    }
+
     ImVec2 texSize0 = ImGui::CalcTextSize("Location");
     ImVec2 texSize1 = ImGui::CalcTextSize("Project Name");
     ImVec2 texSize2 = ImGui::CalcTextSize("C++ Standard");
@@ -56,7 +106,6 @@ void SGE::ProjectCreateDialog::renderBody()
     if(ImGui::IsItemEdited())
     {
         m_error = "";
-        m_size.y = m_originalSize.y;
     }
     
     ImGui::SameLine();
@@ -89,7 +138,6 @@ void SGE::ProjectCreateDialog::renderBody()
         if(ImGui::IsItemEdited())
         {
             m_error = "";
-            m_size.y = m_originalSize.y;
         }
     }
     
@@ -113,7 +161,6 @@ void SGE::ProjectCreateDialog::renderBody()
         if(!std::filesystem::exists(m_dirPath))
         {
             m_error = "This directory does not exist!";
-            m_size.y = m_originalSize.y + 20;
         }
         else if(!std::filesystem::exists(m_dirPath + "/" + m_projectName) && m_mode == FileOpenMode::CREATE)
         {
@@ -126,7 +173,6 @@ void SGE::ProjectCreateDialog::renderBody()
             if(!projectSourcesCreateError.empty())
             {
                 m_error = projectSourcesCreateError;
-                m_size.y = m_originalSize.y + 20;
                 
                 std::filesystem::remove(m_dirPath + "/" + m_projectName);
                 
@@ -180,12 +226,23 @@ void SGE::ProjectCreateDialog::renderBody()
             // =====================================================================================
             // BUILDING CREATED PROJECT
 
+            if(!Toolchains::getToolchains().empty())
+            {
+                auto firstToolchain = Toolchains::getToolchains()[0];
+                firstToolchain->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
+            }
+            else // TODO: MAKE WARNING DIALOG
+            {
+
+            }
+
             // TEST!!!!!
-            VisualStudioToolchain testToolchain;
+
+            /*VisualStudioToolchain testToolchain;
             testToolchain.setPath("F:/VisualStudio/IDE");
             testToolchain.m_archType = VCArchType::AMD64;
 
-            testToolchain.buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
+            testToolchain.buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");*/
 
             // currentEditorProject.m_editorHelper.load("")
 
@@ -212,7 +269,6 @@ void SGE::ProjectCreateDialog::renderBody()
         else
         {
             m_error = "This project already exists!";
-            m_size.y = m_originalSize.y + 20;
         }
     }
     else if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE))
@@ -223,25 +279,11 @@ void SGE::ProjectCreateDialog::renderBody()
         m_error = "";
         
         setActive(false);
-        
-        m_size.y = m_originalSize.y;
     }
-    
-    ImGui::EndPopup();
-    
-    ImGui::PopStyleVar();
-}
 
-void SGE::ProjectCreateDialog::onActiveChangedListener()
-{
-    if(m_mode == FileOpenMode::OPEN)
-    {
-        m_originalSize.y = 60;
-    }
-    else
-    {
-        m_originalSize.y = 110;
-    }
-    
-    m_size = m_originalSize;
+    ImGui::EndChild();
+
+    ImGui::EndPopup();
+
+    ImGui::PopStyleVar();
 }

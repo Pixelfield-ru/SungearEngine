@@ -16,7 +16,7 @@ target_include_directories(${SG_EXEC_NAME} PRIVATE
 
 target_link_libraries(${SG_EXEC_NAME} PUBLIC
         spdlog::spdlog
-        SGConsoleAPI # includes SGCore
+        SGCore
         )
 
 if (${SG_RESOURCES_COPY_MODELS})

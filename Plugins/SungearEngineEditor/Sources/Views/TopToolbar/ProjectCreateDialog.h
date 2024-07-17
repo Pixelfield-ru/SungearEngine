@@ -17,8 +17,6 @@ namespace SGE
         
         void renderBody() override;
         
-        void onActiveChangedListener() override;
-        
     private:
         int m_currentSelectedCPPStandard = 0;
         
@@ -26,9 +24,8 @@ namespace SGE
         std::string m_projectName;
         
         std::string m_error;
-        
-        glm::vec2 m_originalSize { 465, 170 };
-        glm::vec2 m_size = m_originalSize;
+
+        ImVec2 m_size { };
     };
 }
 

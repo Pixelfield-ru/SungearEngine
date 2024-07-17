@@ -1,5 +1,4 @@
 add_subdirectory(SGCore)
-add_subdirectory(SGConsole)
 add_subdirectory(SGEntry)
 
 #[[

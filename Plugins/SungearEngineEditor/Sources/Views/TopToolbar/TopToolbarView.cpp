@@ -63,7 +63,7 @@ void SGE::TopToolbarView::renderBody()
 
         ImGui::Separator();
         
-        if(ImGui::MenuItem("Settings"))
+        if(ImGui::MenuItem("Engine Settings"))
         {
         
         }

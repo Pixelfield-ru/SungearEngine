@@ -72,44 +72,46 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
     const std::string platformTypeAsString = VCPlatformTypeToString(m_platformType);
 
     // PREPARING ENVIRONMENT
-    const std::string vcvarsallCommand = fmt::format("\"{0}\" {1} {2} {3}",
+    const std::string vcvarsallCommand = fmt::format(R"("{0}" {1} {2} {3})",
                                                      SGCore::Utils::toUTF8(vcvarsallbatPath.u16string()),
                                                      archTypeAsString,
                                                      platformTypeAsString,
                                                      m_winSDKVersion);
 
-    std::printf("Building project '%s' using Visual Studio toolchain: vcvarsall.bat command: '%s'\n",
-                SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                vcvarsallCommand.c_str());
-
-    const std::string envPreparingOutput = SGCore::Utils::consoleExecute(vcvarsallCommand);
-
-    std::printf("Building project '%s' using Visual Studio toolchain: vcvarsall.bat command output:\n%s\n",
-                SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                envPreparingOutput.c_str());
-
-    const std::string cmakeProjectLoadingCommand = fmt::format("\"{0}\" --preset {1} -S \"{2}\"",
+    const std::string cmakeProjectLoadingCommand = fmt::format(R"("{0}" --preset {1} -S {2})",
                                                                SGCore::Utils::toUTF8(m_cmakePath.u16string()),
                                                                cmakePresetName,
                                                                SGCore::Utils::toUTF8(pathToProjectRoot.u16string()));
 
-    std::printf("Building project '%s' using Visual Studio toolchain: cmake project loading command: '%s'\n",
+    const std::string cmakeProjectBuildCommand = fmt::format(R"("{0}" --build "{1}")",
+                                                             SGCore::Utils::toUTF8(m_cmakePath.u16string()),
+                                                             SGCore::Utils::toUTF8(pathToProjectRoot.u16string()) +
+                                                             "/" + m_currentBuildingPresetBinaryDir);
+
+    const std::string finalCommand = fmt::format("{0} & {1} & {2}",
+                                                 vcvarsallCommand,
+                                                 cmakeProjectLoadingCommand,
+                                                 cmakeProjectBuildCommand);
+
+    const auto projectBuildLog = SGCore::Utils::consoleExecute(
+            finalCommand
+    );
+
+    std::printf("Building project '%s' using Visual Studio toolchain: commands:\n%s\n",
                 SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                cmakeProjectLoadingCommand.c_str());
+                finalCommand.c_str());
 
-    const std::string cmakeProjectLoadingOutput = SGCore::Utils::consoleExecute(cmakeProjectLoadingCommand);
-
-    std::printf("Building project '%s' using Visual Studio toolchain: cmake project loading output:\n%s\n",
-                SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                cmakeProjectLoadingOutput.c_str());
-
-    const std::string cmakeProjectBuildOutput = SGCore::Utils::consoleExecute(
-            fmt::format("\"{0}\" --build \"{1}\"", SGCore::Utils::toUTF8(m_cmakePath.u16string()),
-            SGCore::Utils::toUTF8(pathToProjectRoot.u16string()) + "/" + m_currentBuildingPresetBinaryDir));
+    spdlog::info("Building project '{0}' using Visual Studio toolchain: commands:\n{1}\n",
+                 SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
+                 finalCommand.c_str());
 
     std::printf("Building project '%s' using Visual Studio toolchain: project build output:\n%s\n",
                 SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                cmakeProjectBuildOutput.c_str());
+                projectBuildLog.c_str());
+
+    spdlog::info("Building project '{0}' using Visual Studio toolchain: project build output:\n{1}\n",
+                 SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
+                 projectBuildLog.c_str());
 
     // ===============================================================
 }
