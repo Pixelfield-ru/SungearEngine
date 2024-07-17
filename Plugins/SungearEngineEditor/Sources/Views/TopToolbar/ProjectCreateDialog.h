@@ -8,10 +8,11 @@
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include <glm/vec2.hpp>
 #include "FileOpenMode.h"
+#include "Views/Window.h"
 
 namespace SGE
 {
-    struct ProjectCreateDialog : SGCore::ImGuiWrap::IView
+    struct ProjectCreateDialog : Window
     {
         FileOpenMode m_mode = FileOpenMode::CREATE;
         
