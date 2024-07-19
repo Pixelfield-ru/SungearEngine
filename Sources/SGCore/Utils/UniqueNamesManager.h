@@ -19,54 +19,19 @@ namespace SGCore
 
         std::string m_rawName;
         // count of unique names with this raw name
-        size_t m_count = 0;
+        std::int64_t m_count = 0;
+        std::int64_t m_maxCount = 0;
         std::unordered_set<std::string> m_names;
     };
 
     class UniqueNamesManager : public std::enable_shared_from_this<UniqueNamesManager>
     {
     public:
-        UniqueName getUniqueName(const std::string& rawName) noexcept
-        {
-            UniqueName newUniqueName;
+        UniqueName getUniqueName(const std::string& rawName) noexcept;
 
-            auto& uniqueNamesCounter = m_uniqueNamesCounters[rawName];
+        void setUniqueNameRawName(UniqueName& uniqueName, const std::string& newRawName);
 
-            newUniqueName.m_rawName = rawName;
-            newUniqueName.m_uniqueID = uniqueNamesCounter.m_count;
-            newUniqueName.m_name = uniqueNamesCounter.m_count == 0 ?
-                                   rawName :
-                                   rawName + " (" + std::to_string(uniqueNamesCounter.m_count) + ")";
-
-            ++uniqueNamesCounter.m_count;
-
-            // TODO: MAYBE INCORRECT BEHAVIOUR THERE BECAUSE OF COPY OPERATOR
-            return newUniqueName;
-        }
-
-        void setUniqueNameRawName(UniqueName& uniqueName, const std::string& newRawName)
-        {
-            auto& uniqueNamesCounter = m_uniqueNamesCounters[newRawName];
-
-            if(uniqueNamesCounter.m_names.contains(uniqueName.m_rawName + " (" + std::to_string( uniqueName.m_uniqueID) + ")")) return;
-
-            uniqueName.m_rawName = newRawName;
-            uniqueName.m_uniqueID = uniqueNamesCounter.m_count;
-            uniqueName.m_name = uniqueNamesCounter.m_count == 0 ?
-                                uniqueName.m_rawName :
-                                uniqueName.m_rawName + " (" + std::to_string(uniqueNamesCounter.m_count) + ")";
-
-            uniqueNamesCounter.m_names.insert(uniqueName.m_rawName + " (" + std::to_string( uniqueName.m_uniqueID) + ")");
-
-            ++uniqueNamesCounter.m_count;
-
-            onSomeNameChanged(uniqueName.m_name);
-        }
-
-        void subscribeToSomeNameChangedEvent(const EventListener<void(const std::string&)>& eventListener)
-        {
-            onSomeNameChanged += eventListener;
-        }
+        void subscribeToSomeNameChangedEvent(const EventListener<void(const std::string&)>& eventListener);
 
     private:
         Event<void(const std::string& newName)> onSomeNameChanged;

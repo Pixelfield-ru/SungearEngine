@@ -8,6 +8,7 @@
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include "FileCreateDialog.h"
 #include "ProjectCreateDialog.h"
+#include "EngineSettingsView.h"
 
 namespace SGE
 {
@@ -21,6 +22,7 @@ namespace SGE
         
         SGCore::Ref<FileCreateDialog> m_fileCreateDialog = SGCore::MakeRef<FileCreateDialog>();
         SGCore::Ref<ProjectCreateDialog> m_projectCreateDialog = SGCore::MakeRef<ProjectCreateDialog>();
+        SGCore::Ref<EngineSettingsView> m_engineSettingsView = SGCore::MakeRef<EngineSettingsView>();
     };
 }
 

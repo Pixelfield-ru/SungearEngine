@@ -8,10 +8,11 @@
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include <glm/vec2.hpp>
 #include "FileOpenMode.h"
+#include "Views/Window.h"
 
 namespace SGE
 {
-    struct FileCreateDialog : SGCore::ImGuiWrap::IView
+    struct FileCreateDialog : Window
     {
         FileOpenMode m_mode = FileOpenMode::CREATE;
         
@@ -28,11 +29,10 @@ namespace SGE
         std::string m_currentChosenDirPath;
         
         std::string m_dialogTitle = "Create File";
-        
-        bool begin() final;
+
         void renderBody() final;
-        void end() final;
-        
+        void postRenderBody() final;
+
         void onActiveChangedListener() override;
         
     private:

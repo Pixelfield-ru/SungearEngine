@@ -65,6 +65,8 @@ namespace SGE
         static ImClickInfo ImageButton(void* imageNativeHandler,
                                        const ImVec2& buttonSize,
                                        const ImVec2& imageSize,
+                                       const float& buttonRounding = 3.0f,
+                                       bool useDummy = true,
                                        const ImVec2& imageOffset = ImVec2(-1, -1),    // if using -1, -1, then auto center image
                                        const ImVec4& hoverBgColor = ImVec4(0.3, 0.3, 0.3, 0.3),
                                        DragNDropInfo* dragNDropInfo = nullptr,

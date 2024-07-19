@@ -11,9 +11,11 @@ SGE::TopToolbarView::TopToolbarView()
 {
     m_fileCreateDialog->setActive(false);
     m_projectCreateDialog->setActive(false);
-    
+    m_engineSettingsView->setActive(false);
+
     addChild(m_fileCreateDialog);
     addChild(m_projectCreateDialog);
+    addChild(m_engineSettingsView);
 }
 
 bool SGE::TopToolbarView::begin()
@@ -65,7 +67,7 @@ void SGE::TopToolbarView::renderBody()
         
         if(ImGui::MenuItem("Engine Settings"))
         {
-        
+            m_engineSettingsView->setActive(true);
         }
         
         ImGui::EndMenu();

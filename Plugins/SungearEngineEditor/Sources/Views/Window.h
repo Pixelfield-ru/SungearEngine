@@ -13,10 +13,19 @@ namespace SGE
     {
         bool begin() override;
         void end() override;
+        virtual void postRenderBody() { };
+
+        void onActiveChangedListener() override;
 
         bool m_isPopupWindow = false;
+        bool m_enableDocking = false;
+
+        ImGuiDockNodeFlags m_dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 
     protected:
+        ImGuiID m_dockspaceID;
+        ImVec2 m_bodyRegionMax { };
+        ImVec2 m_minSize { };
         ImVec2 m_size { };
     };
 }

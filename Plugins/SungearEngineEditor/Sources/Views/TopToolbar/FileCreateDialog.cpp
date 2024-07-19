@@ -12,29 +12,20 @@
 #include "Styles/StylesManager.h"
 #include "ImGuiUtils.h"
 
-bool SGE::FileCreateDialog::begin()
-{
-    return true;
-}
-
 void SGE::FileCreateDialog::renderBody()
 {
-    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-    
-    ImGui::SetNextWindowSize(ImVec2(m_size.x, m_size.y));
-    ImGui::SetNextWindowPos(ImVec2(center.x - m_size.x / 2.0f, center.y - m_size.y / 2.0f));
-    
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
+    m_isPopupWindow = true;
 
-    if(isActive())
+    switch(m_mode)
     {
-        ImGui::OpenPopup(m_dialogTitle.c_str());
+        case OPEN:
+            m_name = "Open File";
+            break;
+        case CREATE:
+            m_name = "Create File";
+            break;
     }
-    
-    ImGui::BeginPopupModal(m_dialogTitle.c_str(), nullptr,
-                           ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                           ImGuiWindowFlags_NoMove);
-    
+
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
     {
         ImGui::SetKeyboardFocusHere(1);
@@ -54,12 +45,11 @@ void SGE::FileCreateDialog::renderBody()
     if(ImGui::IsItemEdited())
     {
         m_error = "";
-        m_size.y = 85;
     }
     
     ImGui::SameLine();
     
-    auto folderTexture = Resources::getMainAssetManager().loadAsset<SGCore::SVGImage>("folder")
+    auto folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
             ->getSpecialization(20, 20)
             ->getTexture();
     
@@ -86,20 +76,18 @@ void SGE::FileCreateDialog::renderBody()
     if(ImGui::IsItemEdited())
     {
         m_error = "";
-        m_size.y = 85;
     }
     
-    if(!m_error.empty())
+    /*if(!m_error.empty())
     {
         ImGui::TextColored(ImVec4(1, 0, 0, 1), m_error.c_str());
-    }
+    }*/
     
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER))
     {
         if(!std::filesystem::exists(m_currentChosenDirPath))
         {
             m_error = "This directory does not exist!";
-            m_size.y = 105;
         }
         else if(!std::filesystem::exists(m_currentChosenDirPath + "/" + m_fileName))
         {
@@ -129,7 +117,6 @@ void SGE::FileCreateDialog::renderBody()
         else
         {
             m_error = "This file already exists!";
-            m_size.y = 105;
         }
     }
     else if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE))
@@ -141,22 +128,19 @@ void SGE::FileCreateDialog::renderBody()
         
         setActive(false);
         
-        m_size.y = 85;
-        
         onOperationEnd(m_currentChosenDirPath + "/" + m_fileName, true);
     }
-    
-    ImGui::EndPopup();
-    
-    ImGui::PopStyleVar();
-}
-
-void SGE::FileCreateDialog::end()
-{
-    IView::end();
 }
 
 void SGE::FileCreateDialog::onActiveChangedListener()
 {
 
+}
+
+void SGE::FileCreateDialog::postRenderBody()
+{
+    if(!m_error.empty())
+    {
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), m_error.c_str());
+    }
 }

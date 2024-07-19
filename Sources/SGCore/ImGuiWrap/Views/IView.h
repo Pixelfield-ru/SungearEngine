@@ -50,14 +50,17 @@ namespace SGCore::ImGuiWrap
         
         [[nodiscard]] bool isActive() const noexcept;
         void setActive(bool active) noexcept;
+
+        [[nodiscard]] bool isAppearing() const noexcept;
         
         SG_NOINLINE static Ref<IView> getRoot() noexcept;
         
     private:
         static inline Ref<IView> m_rootView = MakeRef<IView>();
-        
+
+        bool m_appearing = true;
         bool m_active = true;
-        
+
         std::vector<Weak<IView>> m_children;
         
         Weak<IView> m_parent;

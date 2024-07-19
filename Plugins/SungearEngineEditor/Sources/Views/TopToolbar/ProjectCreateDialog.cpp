@@ -24,6 +24,8 @@
 
 void SGE::ProjectCreateDialog::renderBody()
 {
+    m_minSize = { 450, 170 };
+
     m_isPopupWindow = true;
 
     switch(m_mode)
@@ -36,67 +38,92 @@ void SGE::ProjectCreateDialog::renderBody()
             break;
     }
 
-    ImVec2 texSize0 = ImGui::CalcTextSize("Location");
-    ImVec2 texSize1 = ImGui::CalcTextSize("Project Name");
-    ImVec2 texSize2 = ImGui::CalcTextSize("C++ Standard");
-    
-    float biggestX = texSize0.x;
-    if(biggestX < texSize1.x) biggestX = texSize1.x;
-    if(biggestX < texSize2.x) biggestX = texSize2.x;
-    
-    ImGui::Text("Location");
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (biggestX - texSize0.x) + 10.0f);
-    ImGui::SetNextItemWidth(320);
-    ImGui::InputText("##DirectoryPath", &m_dirPath);
-    
-    if(ImGui::IsItemEdited())
+    static const char* cppStandards[] = {"C++98", "C++03", "C++11", "C++14", "C++17", "C++20", "C++23"};
+
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 3));
+
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+    if(ImGui::BeginTable((m_name.getName() + "_Table").c_str(), 3, ImGuiTableFlags_SizingStretchProp))
     {
-        m_error = "";
-    }
-    
-    ImGui::SameLine();
-    
-    auto folderTexture = Resources::getMainAssetManager().loadAsset<SGCore::SVGImage>("folder")
-            ->getSpecialization(20, 20)
-            ->getTexture();
-    
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-    if(ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
-                               ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
-                               ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
-    {
-        char* dat = m_dirPath.data();
-        nfdresult_t result = NFD_PickFolder("", &dat);
-        if(result == NFD_OKAY)
+        ImGui::TableNextRow();
         {
-            m_dirPath = dat;
+            ImGui::TableNextColumn();
+            ImGui::Text("Location");
+
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+            ImGui::InputText("##DirectoryPath", &m_dirPath);
+
+            if (ImGui::IsItemEdited())
+            {
+                m_error = "";
+            }
+
+            ImGui::TableNextColumn();
+
+            auto folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
+                    ->getSpecialization(20, 20)
+                    ->getTexture();
+
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+            if (ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
+                                        ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
+                                        ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
+            {
+                char* dat = m_dirPath.data();
+                nfdresult_t result = NFD_PickFolder("", &dat);
+                if (result == NFD_OKAY)
+                {
+                    m_dirPath = dat;
+                }
+            }
         }
-    }
-    
-    if(m_mode == FileOpenMode::CREATE)
-    {
-        ImGui::Text("Project Name");
-        ImGui::SameLine();
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (biggestX - texSize1.x) + 10.0f);
-        ImGui::SetNextItemWidth(320);
-        ImGui::InputText("##FileName", &m_projectName);
-        
-        if(ImGui::IsItemEdited())
+
+        if (m_mode == FileOpenMode::CREATE)
         {
-            m_error = "";
+            ImGui::TableNextRow();
+
+            {
+                ImGui::TableNextColumn();
+                ImGui::Text("Project Name");
+
+                ImGui::TableNextColumn();
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+                ImGui::InputText("##FileName", &m_projectName);
+
+                if (ImGui::IsItemEdited())
+                {
+                    m_error = "";
+                }
+
+                ImGui::TableNextColumn();
+            }
         }
+
+        if (m_mode == FileOpenMode::CREATE)
+        {
+            ImGui::TableNextRow();
+
+            {
+                ImGui::TableNextColumn();
+                ImGui::Text("C++ Standard");
+
+                ImGui::TableNextColumn();
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+                ImGui::Combo("##CreateProject_CPPStandard", &m_currentSelectedCPPStandard, cppStandards, 7);
+
+                ImGui::TableNextColumn();
+            }
+        }
+
+        ImGui::EndTable();
     }
-    
-    static const char* cppStandards[] = { "C++98", "C++03", "C++11", "C++14", "C++17", "C++20", "C++23" };
-    if(m_mode == FileOpenMode::CREATE)
-    {
-        ImGui::Text("C++ Standard");
-        ImGui::SameLine();
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (biggestX - texSize2.x) + 10.0f);
-        
-        ImGui::Combo("##CreateProject_CPPStandard", &m_currentSelectedCPPStandard, cppStandards, 7);
-    }
+
+    ImGui::PopStyleVar();
 
     if(!m_error.empty())
     {

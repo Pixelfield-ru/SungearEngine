@@ -6,14 +6,17 @@
 #define SUNGEARENGINEEDITOR_ENGINESETTINGSVIEW_H
 
 #include <SGCore/ImGuiWrap/Views/IView.h>
+#include "Views/Window.h"
 
 namespace SGE
 {
-    struct EngineSettingsView : SGCore::ImGuiWrap::IView
+    struct EngineSettingsView : Window
     {
-        bool begin() final;
         void renderBody() final;
-        void end() final;
+        void postRenderBody() final;
+
+    private:
+        bool m_firstTime = true;
     };
 }
 

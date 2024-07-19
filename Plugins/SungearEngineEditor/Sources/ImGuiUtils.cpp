@@ -7,8 +7,12 @@
 #include "Styles/StylesManager.h"
 
 SGE::ImClickInfo
-SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
-                             const ImVec2& imageSize, const ImVec2& imageOffset,
+SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
+                             const ImVec2& buttonSize,
+                             const ImVec2& imageSize,
+                             const float& buttonRounding,
+                             bool useDummy,
+                             const ImVec2& imageOffset,
                              const ImVec4& hoverBgColor,
                              DragNDropInfo* dragNDropInfo,
                              const std::string& name) noexcept
@@ -39,7 +43,7 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
         ImGui::GetWindowDrawList()->AddRectFilled(
                 ImVec2(cursorScreenPos.x, cursorScreenPos.y),
                 ImVec2(cursorScreenPos.x + buttonSize.x, cursorScreenPos.y + buttonSize.y),
-                ImGui::ColorConvertFloat4ToU32(hoverBgColor), 3);
+                ImGui::ColorConvertFloat4ToU32(hoverBgColor), buttonRounding);
     }
     
     ImGui::GetWindowDrawList()->AddImage(imageNativeHandler, ImVec2(cursorScreenPos.x + offset.x, cursorScreenPos.y + offset.y),
@@ -59,8 +63,11 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
     if (window->SkipItems) {
         return { };
     }*/
-    
-    ImGui::InvisibleButton(name.c_str(), { buttonSize.x, buttonSize.y - offset.y });
+
+    if(useDummy)
+    {
+        ImGui::InvisibleButton(name.c_str(), {buttonSize.x, buttonSize.y - offset.y});
+    }
     // ImGui::Dummy({ buttonSize.x, buttonSize.y - offset.y });
     
     if(dragNDropInfo)
@@ -124,7 +131,11 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler, const ImVec2& buttonSize,
             .m_elementClickableSize = buttonSize
     };
     // ImGui::NewLine();
-    
+
+    if(!useDummy)
+    {
+        ImGui::NewLine();
+    }
     
     return clickInfo;
 }

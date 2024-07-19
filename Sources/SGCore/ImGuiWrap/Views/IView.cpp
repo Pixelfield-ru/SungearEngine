@@ -28,6 +28,8 @@ void SGCore::ImGuiWrap::IView::render()
         }
         
         end();
+
+        m_appearing = false;
     }
 }
 
@@ -124,7 +126,12 @@ void SGCore::ImGuiWrap::IView::setActive(bool active) noexcept
 {
     bool lastActive = m_active;
     m_active = active;
-    
+
+    if(!lastActive && m_active)
+    {
+        m_appearing = true;
+    }
+
     onActiveChangedListener();
     onActiveChanged(lastActive, m_active);
 }
@@ -132,4 +139,9 @@ void SGCore::ImGuiWrap::IView::setActive(bool active) noexcept
 SGCore::Ref<SGCore::ImGuiWrap::IView> SGCore::ImGuiWrap::IView::getRoot() noexcept
 {
     return m_rootView;
+}
+
+bool SGCore::ImGuiWrap::IView::isAppearing() const noexcept
+{
+    return m_appearing;
 }
