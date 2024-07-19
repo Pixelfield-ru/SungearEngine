@@ -14,6 +14,7 @@ namespace SGE
         bool begin() override;
         void end() override;
         virtual void postRenderBody() { };
+        virtual void footerRender() { };
 
         void onActiveChangedListener() override;
 
@@ -24,9 +25,11 @@ namespace SGE
 
     protected:
         ImGuiID m_dockspaceID;
-        ImVec2 m_bodyRegionMax { };
         ImVec2 m_minSize { };
         ImVec2 m_size { };
+
+    private:
+        ImVec2 m_footerSize { };
     };
 }
 

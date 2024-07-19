@@ -52,7 +52,8 @@ bool SGE::MainView::begin()
 
 void SGE::MainView::renderBody()
 {
-    m_dockID = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    // m_dockID = ImGui::GetID("MainDock");
+    m_dockID = ImGui::DockSpaceOverViewport(m_dockID, ImGui::GetMainViewport());
     
     /*ImGui::Begin("test");
     ImGui::Text("hello!");

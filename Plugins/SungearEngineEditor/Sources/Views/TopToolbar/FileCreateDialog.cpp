@@ -26,10 +26,10 @@ void SGE::FileCreateDialog::renderBody()
             break;
     }
 
-    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
+    /*if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
     {
         ImGui::SetKeyboardFocusHere(1);
-    }
+    }*/
     
     ImGui::SetWindowFocus();
     

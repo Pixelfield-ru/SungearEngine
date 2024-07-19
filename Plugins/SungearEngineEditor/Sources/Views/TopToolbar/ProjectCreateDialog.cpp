@@ -22,12 +22,15 @@
 #include "Toolchains//VisualStudioToolchain.h"
 #include "Toolchains/Toolchains.h"
 
-void SGE::ProjectCreateDialog::renderBody()
+SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
 {
     m_minSize = { 450, 170 };
 
     m_isPopupWindow = true;
+}
 
+void SGE::ProjectCreateDialog::renderBody()
+{
     switch(m_mode)
     {
         case OPEN:
@@ -37,8 +40,6 @@ void SGE::ProjectCreateDialog::renderBody()
             m_name = "Create Project";
             break;
     }
-
-    static const char* cppStandards[] = {"C++98", "C++03", "C++11", "C++14", "C++17", "C++20", "C++23"};
 
     ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 3));
 
@@ -114,7 +115,7 @@ void SGE::ProjectCreateDialog::renderBody()
                 ImGui::TableNextColumn();
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-                ImGui::Combo("##CreateProject_CPPStandard", &m_currentSelectedCPPStandard, cppStandards, 7);
+                ImGui::Combo("##CreateProject_CPPStandard", &m_currentSelectedCPPStandard, m_cppStandards, 7);
 
                 ImGui::TableNextColumn();
             }
@@ -124,134 +125,176 @@ void SGE::ProjectCreateDialog::renderBody()
     }
 
     ImGui::PopStyleVar();
+    
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER))
+    {
+        submit();
+    }
+    else if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE))
+    {
+        cancel();
+    }
+}
+
+void SGE::ProjectCreateDialog::footerRender()
+{
+    const auto buttonsSize = ImVec2(75.0f, 0.0f);
+    const auto regionAvail = ImGui::GetContentRegionAvail();
 
     if(!m_error.empty())
     {
         ImGui::TextColored(ImVec4(1, 0, 0, 1), m_error.c_str());
+        ImGui::SameLine();
     }
-    
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER))
+
+    ImGui::SetCursorPosX(regionAvail.x -
+                         (buttonsSize.x * 2.0f));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 7.0f, 5.0f });
+
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0 / 255.0f, 70 / 255.0f, 110 / 255.0f, 1));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0, 0, 0, 0));
+    if(ImGui::Button("OK", buttonsSize))
     {
-        if(!std::filesystem::exists(m_dirPath))
-        {
-            m_error = "This directory does not exist!";
-        }
-        else if(!std::filesystem::exists(m_dirPath + "/" + m_projectName) && m_mode == FileOpenMode::CREATE)
-        {
-            std::filesystem::create_directory(m_dirPath + "/" + m_projectName);
-            std::string projectSourcesCreateError;
-            SGCore::PluginProject pluginProject = SGCore::PluginsManager::createPluginProject(
-                    m_dirPath + "/" + m_projectName + "/Sources", m_projectName,
-                    cppStandards[m_currentSelectedCPPStandard], projectSourcesCreateError);
-            
-            if(!projectSourcesCreateError.empty())
-            {
-                m_error = projectSourcesCreateError;
-                
-                std::filesystem::remove(m_dirPath + "/" + m_projectName);
-                
-                return;
-            }
-            
-            std::filesystem::create_directory(m_dirPath + "/" + m_projectName + "/Resources");
-
-            auto& currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
-
-            // PROJECT SUCCESSFULLY CREATED ==============
-            
-            SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath + "/" + m_projectName;
-            currentEditorProject.m_pluginProject = pluginProject;
-
-            // PARSING SUNGEAR ENGINE ANNOTATIONS AND GENERATING CODE ==========================
-
-            SGCore::AnnotationsProcessor annotationsProcessor;
-
-            const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
-            std::string sungearRootStr;
-            if(sungearRoot)
-            {
-                sungearRootStr = sungearRoot;
-            }
-
-            annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
-                                                    {sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
-                                                     sungearRootStr +
-                                                     "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
-                                                     sungearRootStr +
-                                                     "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
-
-            SGCore::CodeGen::SerializersGenerator serializersGenerator;
-            std::string serializersGenerationError = serializersGenerator.generateSerializers(annotationsProcessor,
-                                                                                              sungearRootStr + "/.SG_GENERATED/Serializers.h");
-
-            annotationsProcessor.saveToFile(sungearRootStr + "/.SG_GENERATED/AnnotationsProcessor.json");
-
-            // TODO: MAKE ERROR DIALOG SHOW IF ERROR
-            if(!serializersGenerationError.empty())
-            {
-                spdlog::error("Error while generating serializers for Sungear Engine: {0}", serializersGenerationError);
-                std::printf("Error while generating serializers for Sungear Engine: %s\n", serializersGenerationError.c_str());
-            }
-
-            // CREATING GENERATED CODE ENTRY POINT
-
-            CodeGeneration::generateCode({ annotationsProcessor }, pluginProject.m_pluginPath);
-
-            // =====================================================================================
-            // BUILDING CREATED PROJECT
-
-            if(!Toolchains::getToolchains().empty())
-            {
-                auto firstToolchain = Toolchains::getToolchains()[0];
-                firstToolchain->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
-            }
-            else // TODO: MAKE WARNING DIALOG
-            {
-
-            }
-
-            // TEST!!!!!
-
-            /*VisualStudioToolchain testToolchain;
-            testToolchain.setPath("F:/VisualStudio/IDE");
-            testToolchain.m_archType = VCArchType::AMD64;
-
-            testToolchain.buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");*/
-
-            // currentEditorProject.m_editorHelper.load("")
-
-            // =====================================================================================
-
-            m_projectName.clear();
-            m_dirPath.clear();
-            
-            m_error = "";
-            
-            setActive(false);
-        }
-        else if(std::filesystem::exists(m_dirPath) && m_mode == FileOpenMode::OPEN)
-        {
-            SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath;
-            
-            m_projectName.clear();
-            m_dirPath.clear();
-            
-            m_error = "";
-            
-            setActive(false);
-        }
-        else
-        {
-            m_error = "This project already exists!";
-        }
+        submit();
     }
-    else if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE))
+    ImGui::PopStyleColor(4);
+
+    ImGui::SameLine();
+
+    if(ImGui::Button("Cancel", buttonsSize))
     {
+        cancel();
+    }
+
+    ImGui::PopStyleVar(2);
+}
+
+void SGE::ProjectCreateDialog::submit()
+{
+    if(!std::filesystem::exists(m_dirPath))
+    {
+        m_error = "This directory does not exist!";
+    }
+    else if(!std::filesystem::exists(m_dirPath + "/" + m_projectName) && m_mode == FileOpenMode::CREATE)
+    {
+        std::filesystem::create_directory(m_dirPath + "/" + m_projectName);
+        std::string projectSourcesCreateError;
+        SGCore::PluginProject pluginProject = SGCore::PluginsManager::createPluginProject(
+                m_dirPath + "/" + m_projectName + "/Sources", m_projectName,
+                m_cppStandards[m_currentSelectedCPPStandard], projectSourcesCreateError);
+
+        if(!projectSourcesCreateError.empty())
+        {
+            m_error = projectSourcesCreateError;
+
+            std::filesystem::remove(m_dirPath + "/" + m_projectName);
+
+            return;
+        }
+
+        std::filesystem::create_directory(m_dirPath + "/" + m_projectName + "/Resources");
+
+        auto& currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+
+        // PROJECT SUCCESSFULLY CREATED ==============
+
+        SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath + "/" + m_projectName;
+        currentEditorProject.m_pluginProject = pluginProject;
+
+        // PARSING SUNGEAR ENGINE ANNOTATIONS AND GENERATING CODE ==========================
+
+        SGCore::AnnotationsProcessor annotationsProcessor;
+
+        const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
+        std::string sungearRootStr;
+        if(sungearRoot)
+        {
+            sungearRootStr = sungearRoot;
+        }
+
+        annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
+                                                {sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
+                                                 sungearRootStr +
+                                                 "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
+                                                 sungearRootStr +
+                                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
+
+        SGCore::CodeGen::SerializersGenerator serializersGenerator;
+        std::string serializersGenerationError = serializersGenerator.generateSerializers(annotationsProcessor,
+                                                                                          sungearRootStr + "/.SG_GENERATED/Serializers.h");
+
+        annotationsProcessor.saveToFile(sungearRootStr + "/.SG_GENERATED/AnnotationsProcessor.json");
+
+        // TODO: MAKE ERROR DIALOG SHOW IF ERROR
+        if(!serializersGenerationError.empty())
+        {
+            spdlog::error("Error while generating serializers for Sungear Engine: {0}", serializersGenerationError);
+            std::printf("Error while generating serializers for Sungear Engine: %s\n", serializersGenerationError.c_str());
+        }
+
+        // CREATING GENERATED CODE ENTRY POINT
+
+        CodeGeneration::generateCode({ annotationsProcessor }, pluginProject.m_pluginPath);
+
+        // =====================================================================================
+        // BUILDING CREATED PROJECT
+
+        if(!Toolchains::getToolchains().empty())
+        {
+            auto firstToolchain = Toolchains::getToolchains()[0];
+            firstToolchain->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
+        }
+        else // TODO: MAKE WARNING DIALOG
+        {
+
+        }
+
+        // TEST!!!!!
+
+        /*VisualStudioToolchain testToolchain;
+        testToolchain.setPath("F:/VisualStudio/IDE");
+        testToolchain.m_archType = VCArchType::AMD64;
+
+        testToolchain.buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");*/
+
+        // currentEditorProject.m_editorHelper.load("")
+
+        // =====================================================================================
+
         m_projectName.clear();
         m_dirPath.clear();
-        
+
         m_error = "";
-        
+
         setActive(false);
     }
+    else if(std::filesystem::exists(m_dirPath) && m_mode == FileOpenMode::OPEN)
+    {
+        SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath;
+
+        m_projectName.clear();
+        m_dirPath.clear();
+
+        m_error = "";
+
+        setActive(false);
+    }
+    else
+    {
+        m_error = "This project already exists!";
+    }
+}
+
+void SGE::ProjectCreateDialog::cancel()
+{
+    m_projectName.clear();
+    m_dirPath.clear();
+
+    m_error = "";
+
+    setActive(false);
 }

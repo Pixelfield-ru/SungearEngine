@@ -20,11 +20,9 @@ bool SGE::Window::begin()
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, m_minSize);
 
-    if(m_isPopupWindow && isAppearing())
+    if(m_isPopupWindow)
     {
         ImGui::OpenPopup(m_name.getName().c_str());
-
-        std::printf("dfsdfsdfsdfsdf\n");
     }
 
     if(m_isPopupWindow)
@@ -42,22 +40,11 @@ bool SGE::Window::begin()
                      ImGuiWindowFlags_NoSavedSettings);
     }
 
-    // ImGui::PopStyleVar();
-
     m_size = ImGui::GetWindowSize();
-
-    /*if(m_bodyRegionMax.x > m_size.x)
-    {
-        ImGui::SetWindowSize({ m_bodyRegionMax.x, ImGui::GetWindowSize().y });
-    }
-    if(m_bodyRegionMax.y + m_headerRegionMax.y > m_size.y)
-    {
-        ImGui::SetWindowSize({ ImGui::GetWindowSize().x, m_bodyRegionMax.y + m_headerRegionMax.y });
-    }*/
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 8));
     auto wndContentRegionAvail = ImGui::GetContentRegionAvail();
-    ImGui::BeginChild(ImGui::GetID("DialogName"), ImVec2(ImGui::GetContentRegionAvail().x, 0),
+    ImGui::BeginChild(ImGui::GetID((m_name.getName() + "DialogName").c_str()), ImVec2(ImGui::GetContentRegionAvail().x, 0),
                       ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY,
                       ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings);
 
@@ -88,35 +75,24 @@ bool SGE::Window::begin()
         {
             setActive(false);
         }
-
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8);
-    }
-
-    {
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetStyle().WindowPadding.x - 2);
-        ImGui::Separator();
     }
 
     ImGui::PopStyleVar();
-
     ImGui::EndChild();
-
     ImGui::PopStyleVar();
+
+    ImGui::Separator();
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(7, 8));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(7, 8));
-
-    ImGui::BeginChild(ImGui::GetID((m_name.getName() + "_Body").c_str()), ImVec2(0, 0),
+    ImGui::BeginChild(ImGui::GetID((m_name.getName() + "_Body").c_str()),
+                      ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y - m_footerSize.y),
                       ImGuiChildFlags_AlwaysUseWindowPadding,
                       ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
                       ImGuiWindowFlags_NoSavedSettings);
 
-    /*ImGui::BeginChild(ImGui::GetID((m_name.getName() + "_Body").c_str()), ImVec2(0, 0),
-                      ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY,
-                      ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
-                      ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize);*/
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(7, 8));
 
-    if(m_enableDocking)
+    if (m_enableDocking)
     {
         m_dockspaceID = ImGui::GetID((m_name.getName() + "_BodyDockspace").c_str());
 
@@ -128,28 +104,39 @@ bool SGE::Window::begin()
 
 void SGE::Window::end()
 {
-    m_bodyRegionMax = ImGui::GetWindowContentRegionMax();
-    m_bodyRegionMax.x += ImGui::GetScrollMaxX();
-    m_bodyRegionMax.y += ImGui::GetScrollMaxY();
-    m_bodyRegionMax.x += 7;
-    m_bodyRegionMax.y += 8;
-
+    ImGui::PopStyleVar();
     ImGui::EndChild();
+    ImGui::PopStyleVar();
 
     postRenderBody();
 
-    /*if(m_lastBodyRegionMax.x > m_bodyRegionMax.x)
-    {
-        ImGui::SetWindowSize({ m_bodyRegionMax.x, ImGui::GetWindowSize().y });
-        m_size.x = m_bodyRegionMax.x;
-    }
-    if(m_lastBodyRegionMax.y > m_bodyRegionMax.y)
-    {
-        ImGui::SetWindowSize({ ImGui::GetWindowSize().x, m_bodyRegionMax.y + m_headerRegionMax.y });
-        m_size.y = m_bodyRegionMax.y + m_headerRegionMax.y;
-    }*/
+    ImGui::Separator();
 
-    ImGui::PopStyleVar(2);
+    auto footerPadding = ImVec2(7, 8);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, footerPadding);
+
+    ImGui::BeginChild(ImGui::GetID((m_name.getName() + "_Footer").c_str()), ImVec2(0, 0),
+                      ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY,
+                      ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
+                      ImGuiWindowFlags_NoSavedSettings);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(7, 8));
+
+    footerRender();
+
+    m_footerSize = ImGui::GetWindowContentRegionMax();
+    m_footerSize.x -= ImGui::GetWindowContentRegionMin().x;
+    m_footerSize.y -= ImGui::GetWindowContentRegionMin().y;
+
+    m_footerSize.x += ImGui::GetScrollMaxX();
+    m_footerSize.y += ImGui::GetScrollMaxY();
+
+    m_footerSize.x += footerPadding.x * 2;
+    m_footerSize.y += footerPadding.y * 2;
+
+    ImGui::PopStyleVar();
+    ImGui::EndChild();
+    ImGui::PopStyleVar();
 
     if(m_isPopupWindow)
     {
