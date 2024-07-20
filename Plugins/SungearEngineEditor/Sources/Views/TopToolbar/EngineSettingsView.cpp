@@ -7,7 +7,9 @@
 
 SGE::EngineSettingsView::EngineSettingsView()
 {
-    m_bodyPadding = { 0, 0 };
+    m_isPopupWindow = true;
+
+    m_bodyPadding = { 0, 1 };
 
     const auto buttonsSize = ImVec2(75, 0);
 
@@ -71,16 +73,20 @@ void SGE::EngineSettingsView::renderBody()
     ImGui::SetNextWindowClass(&windowClass);
 
 
-    if(m_currentTreeSize.x < 100.0f)
+    /*if(m_currentTreeSize.x < 100.0f)
     {
     }
-    ImGui::SetNextWindowSize({ 100.0f, m_currentTreeSize.y });
+    ImGui::SetNextWindowSize({ 100.0f, m_currentTreeSize.y });*/
 
+    // ImGui::SetNextWindowSizeConstraints(ImVec2(200, 100), ImVec2(FLT_MAX, FLT_MAX));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(7, 8));
     ImGui::Begin("LeftParametersTree", nullptr,
                  ImGuiWindowFlags_NoTitleBar);
     ImGui::Text("sdsdfsfsdfsdfsdfsdfsdfsdf sdg sdfgsd fgd");
     m_currentTreeSize = ImGui::GetWindowSize();
     ImGui::End();
+    ImGui::PopStyleVar();
 
     m_enableDocking = true;
 }
