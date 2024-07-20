@@ -24,9 +24,37 @@
 
 SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
 {
-    m_minSize = { 450, 170 };
-
     m_isPopupWindow = true;
+
+    const auto buttonsSize = ImVec2(75, 0);
+
+    addButton({
+                      .m_text = "OK",
+                      .m_name = "OKButton",
+                      .isFastClicked = [](auto& self) -> bool {
+                          return ImGui::IsKeyPressed(ImGuiKey_Enter);
+                      },
+                      .onClicked = [this](auto& self) {
+                          submit();
+                      },
+                      .m_color = ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1),
+                      .m_hoveredColor = ImVec4(0 / 255.0f, 70 / 255.0f, 110 / 255.0f, 1),
+                      .m_borderColor = { 0, 0, 0, 0 },
+                      .m_borderShadowColor = { 0, 0, 0, 0 },
+                      .m_size = buttonsSize
+              });
+
+    addButton({
+                      .m_text = "Cancel",
+                      .m_name = "CancelButton",
+                      .isFastClicked = [](auto& self) -> bool {
+                          return ImGui::IsKeyPressed(ImGuiKey_Escape);
+                      },
+                      .onClicked = [this](auto& self) {
+                          cancel();
+                      },
+                      .m_size = buttonsSize
+              });
 }
 
 void SGE::ProjectCreateDialog::renderBody()
@@ -34,11 +62,17 @@ void SGE::ProjectCreateDialog::renderBody()
     switch(m_mode)
     {
         case OPEN:
+        {
+            m_bodyMinSize = { 450, 40 };
             m_name = "Open Project";
             break;
+        }
         case CREATE:
+        {
+            m_bodyMinSize = { 450, 90 };
             m_name = "Create Project";
             break;
+        }
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 3));
@@ -125,52 +159,15 @@ void SGE::ProjectCreateDialog::renderBody()
     }
 
     ImGui::PopStyleVar();
-    
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER))
-    {
-        submit();
-    }
-    else if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE))
-    {
-        cancel();
-    }
 }
 
 void SGE::ProjectCreateDialog::footerRender()
 {
-    const auto buttonsSize = ImVec2(75.0f, 0.0f);
-    const auto regionAvail = ImGui::GetContentRegionAvail();
-
     if(!m_error.empty())
     {
         ImGui::TextColored(ImVec4(1, 0, 0, 1), m_error.c_str());
         ImGui::SameLine();
     }
-
-    ImGui::SetCursorPosX(regionAvail.x -
-                         (buttonsSize.x * 2.0f));
-
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 7.0f, 5.0f });
-
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0 / 255.0f, 70 / 255.0f, 110 / 255.0f, 1));
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
-    ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0, 0, 0, 0));
-    if(ImGui::Button("OK", buttonsSize))
-    {
-        submit();
-    }
-    ImGui::PopStyleColor(4);
-
-    ImGui::SameLine();
-
-    if(ImGui::Button("Cancel", buttonsSize))
-    {
-        cancel();
-    }
-
-    ImGui::PopStyleVar(2);
 }
 
 void SGE::ProjectCreateDialog::submit()

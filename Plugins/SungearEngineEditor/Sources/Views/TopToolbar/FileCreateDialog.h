@@ -14,6 +14,10 @@ namespace SGE
 {
     struct FileCreateDialog : Window
     {
+        FileCreateDialog();
+        FileCreateDialog(const FileCreateDialog&) = default;
+        FileCreateDialog(FileCreateDialog&&) = default;
+
         FileOpenMode m_mode = FileOpenMode::CREATE;
         
         SGCore::Event<void(const std::filesystem::path& byPath, bool canceled)> onOperationEnd;
@@ -31,11 +35,14 @@ namespace SGE
         std::string m_dialogTitle = "Create File";
 
         void renderBody() final;
-        void postRenderBody() final;
+        void footerRender() override;
 
         void onActiveChangedListener() override;
         
     private:
+        void submit();
+        void cancel();
+
         std::string m_fileName;
         
         std::string m_error;

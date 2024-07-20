@@ -12,10 +12,16 @@ namespace SGE
 {
     struct EngineSettingsView : Window
     {
+        EngineSettingsView();
+        EngineSettingsView(const EngineSettingsView&) = default;
+        EngineSettingsView(EngineSettingsView&&) = default;
+
         void renderBody() final;
         void postRenderBody() final;
 
     private:
+        ImVec2 m_currentTreeSize { };
+
         bool m_firstTime = true;
     };
 }
