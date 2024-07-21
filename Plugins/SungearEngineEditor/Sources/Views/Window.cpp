@@ -53,6 +53,8 @@ bool SGE::Window::begin()
                      ImGuiWindowFlags_NoSavedSettings);
     }
 
+    ImGui::PopStyleVar();
+
     m_size = ImGui::GetWindowSize();
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 8));
@@ -214,7 +216,7 @@ void SGE::Window::end()
         ImGui::End();
     }
 
-    ImGui::PopStyleVar(3);
+    ImGui::PopStyleVar(2);
 }
 
 void SGE::Window::onActiveChangedListener()
