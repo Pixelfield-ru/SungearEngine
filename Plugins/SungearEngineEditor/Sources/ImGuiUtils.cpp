@@ -20,12 +20,13 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
     assert(buttonSize.x >= imageSize.x && buttonSize.y >= imageSize.y && "Button size must be greater then image size!");
     
     ImVec2 offset = imageOffset;
-    if(imageOffset.x == -1 && imageOffset.y == -1)
+    if(imageOffset.x == -1)
     {
-        offset = {
-                (buttonSize.x - imageSize.x) / 2.0f,
-                (buttonSize.y - imageSize.y) / 2.0f
-        };
+        offset.x = (buttonSize.x - imageSize.x) / 2.0f;
+    }
+    if(imageOffset.y == -1)
+    {
+        offset.y = (buttonSize.y - imageSize.y) / 2.0f;
     }
     
     ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();

@@ -116,13 +116,6 @@ bool SGE::Window::begin()
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(7, 8));
 
-    if (m_enableDocking)
-    {
-        m_dockspaceID = ImGui::GetID((m_name.getName() + "_BodyDockspace").c_str());
-
-        ImGui::DockSpace(m_dockspaceID, ImVec2(0.0f, 0.0f), m_dockspaceFlags);
-    }
-
     return true;
 }
 
@@ -153,6 +146,7 @@ void SGE::Window::end()
     {
         buttonsTotalWidth += btn.m_currentSize.x;
     }
+    buttonsTotalWidth += 7.0f * (m_buttons.size() - 1);
 
     footerRender();
 
@@ -225,18 +219,23 @@ void SGE::Window::onActiveChangedListener()
 
 void SGE::Window::addButton(const SGE::Button& button) noexcept
 {
-    removeButton(button.m_name);
+    if(tryGetButton(button.m_name)) return;
 
     m_buttons.push_back(button);
 }
 
-SGE::Button* SGE::Window::getButton(const std::string& name) noexcept
+bool SGE::Window::tryGetButton(const std::string& name, Button* out) noexcept
 {
     auto foundIt = std::find_if(m_buttons.begin(), m_buttons.end(), [&name](const Button& button) {
         return name == button.m_name;
     });
 
-    return foundIt != m_buttons.end() ? &*foundIt : nullptr;
+    if(out && foundIt != m_buttons.end())
+    {
+        *out = *foundIt;
+    }
+
+    return foundIt != m_buttons.end();
 }
 
 void SGE::Window::removeButton(const std::string& name) noexcept

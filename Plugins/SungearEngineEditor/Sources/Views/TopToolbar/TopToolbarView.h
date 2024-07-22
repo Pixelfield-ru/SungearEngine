@@ -8,7 +8,7 @@
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include "FileCreateDialog.h"
 #include "ProjectCreateDialog.h"
-#include "EngineSettingsView.h"
+#include "Views/TopToolbar/Settings/EngineSettingsView.h"
 
 namespace SGE
 {
