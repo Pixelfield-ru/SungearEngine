@@ -6,6 +6,27 @@
 #include "Styles/StylesManager.h"
 #include "ImGuiUtils.h"
 
+SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
+{
+    m_toolchainsVariantsPopup = Popup {
+            "ToolchainsVariantsPopup",
+            {
+                    {
+                            .m_name = "Visual Studio",
+                            .m_icon = StylesManager::getCurrentStyle()
+                                    ->m_visualStudioIcon->getSpecialization(16, 16)->getTexture(),
+                            .m_drawSeparatorAfter = false
+                    },
+                    {
+                            .m_name = "MinGW",
+                            .m_icon = StylesManager::getCurrentStyle()
+                                    ->m_questionIcon->getSpecialization(18, 18)->getTexture(),
+                            .m_drawSeparatorAfter = false
+                    }
+            }
+    };
+}
+
 void SGE::ToolchainsDockedWindow::renderBody()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 4 });
@@ -14,10 +35,14 @@ void SGE::ToolchainsDockedWindow::renderBody()
                            ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 5, 7 });
 
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 0 });
+    m_toolchainsVariantsPopup.draw();
+    ImGui::PopStyleVar();
+
     auto plusIconSpec = StylesManager::getCurrentStyle()->m_plusIcon->getSpecialization(20, 20);
     if(ImGuiUtils::ImageButton(plusIconSpec->getTexture()->getTextureNativeHandler(), { 26, 26 }, { 20, 20 }).m_isLMBClicked)
     {
-
+        m_toolchainsVariantsPopup.setOpened(true);
     }
 
     ImGui::SameLine();

@@ -228,6 +228,11 @@ void SGE::EditorStyles::Dark::apply()
                 "white_minus_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/minus.svg");
+
+        m_visualStudioIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                "visual_studio_icon",
+                SungearEngineEditor::getInstance()->getLocalPath() +
+                "/Resources/icons/common/visual_studio.svg");
     }
 }
 

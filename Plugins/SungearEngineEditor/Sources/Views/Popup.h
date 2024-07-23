@@ -47,7 +47,11 @@ namespace SGE
     struct Popup
     {
         friend struct PopupElement;
-        
+
+        Popup() = default;
+        Popup(const Popup&) = default;
+        Popup(Popup&&) = default;
+
         Popup(const std::string& name, const std::initializer_list<PopupElement>& items) noexcept;
         
         std::string m_name;
@@ -64,7 +68,10 @@ namespace SGE
         
         [[nodiscard]] bool isOpened() const noexcept;
         void setOpened(bool isOpened) noexcept;
-        
+
+        Popup& operator=(const Popup&) = default;
+        Popup& operator=(Popup&&) = default;
+
     private:
         bool m_isOpened = false;
         std::int32_t m_drawingElementsCount = 0;
