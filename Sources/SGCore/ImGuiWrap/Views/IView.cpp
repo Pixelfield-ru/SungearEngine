@@ -6,6 +6,8 @@
 
 void SGCore::ImGuiWrap::IView::render()
 {
+    if(!m_active) return;
+
     if(begin())
     {
         renderBody();
@@ -15,10 +17,7 @@ void SGCore::ImGuiWrap::IView::render()
         {
             if(auto lockedChild = childrenIt->lock())
             {
-                if(lockedChild->m_active)
-                {
-                    lockedChild->render();
-                }
+                lockedChild->render();
                 ++childrenIt;
             }
             else

@@ -12,10 +12,9 @@ bool SGE::DockedWindow::begin()
     ImGui::SetNextWindowClass(&windowClass);
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, m_padding);
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, m_itemsSpacing);
-
-    ImGui::Begin(m_name.c_str(), nullptr,
+    ImGui::Begin(m_name.getName().c_str(), nullptr,
                  ImGuiWindowFlags_NoTitleBar);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, m_itemsSpacing);
 
     return true;
 }
@@ -24,18 +23,23 @@ void SGE::DockedWindow::end()
 {
     m_currentSize = ImGui::GetWindowSize();
 
+    ImGui::PopStyleVar();
     ImGui::End();
-    ImGui::PopStyleVar(2);
+    ImGui::PopStyleVar();
 
-    if(m_currentSize.x < m_minSize.x)
+    // TODO: WAITING FOR IMGUI IMPLEMENTATION OF MIN SIZE OF DOCKED WINDOW...(
+    /*if(m_currentSize.x < m_minSize.x)
     {
+        std::printf("name: %s. current size: %f, %f\n", m_name.getName().c_str(), m_currentSize.x, m_currentSize.y);
         ImGui::DockBuilderSetNodeSize(m_thisDockNodeID, { m_minSize.x, m_currentSize.y });
+        ImGui::DockBuilderFinish(m_thisDockNodeID);
     }
 
     if(m_currentSize.y < m_minSize.y)
     {
         ImGui::DockBuilderSetNodeSize(m_thisDockNodeID, { m_currentSize.x, m_minSize.y });
-    }
+        ImGui::DockBuilderFinish(m_thisDockNodeID);
+    }*/
 }
 
 void SGE::DockedWindow::split(ImGuiDir splitDir, float sizeRatioForNodeAtDir, SGE::DockedWindow* outDockedWindowAtDir,
@@ -49,12 +53,12 @@ void SGE::DockedWindow::split(ImGuiDir splitDir, float sizeRatioForNodeAtDir, SG
 
         if(outDockedWindowAtDir)
         {
-            ImGui::DockBuilderDockWindow(outDockedWindowAtDir->m_name.c_str(), outDockedWindowAtDir->m_thisDockNodeID);
+            ImGui::DockBuilderDockWindow(outDockedWindowAtDir->m_name.getName().c_str(), outDockedWindowAtDir->m_thisDockNodeID);
         }
 
         if(outDockedWindowAtOppositeDir)
         {
-            ImGui::DockBuilderDockWindow(outDockedWindowAtOppositeDir->m_name.c_str(),
+            ImGui::DockBuilderDockWindow(outDockedWindowAtOppositeDir->m_name.getName().c_str(),
                                          outDockedWindowAtOppositeDir->m_thisDockNodeID);
         }
 

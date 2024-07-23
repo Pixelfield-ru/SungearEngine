@@ -56,74 +56,74 @@ SGE::SettingsView::SettingsView()
 
 bool SGE::SettingsView::begin()
 {
-    if(Window::begin())
+    bool began = Window::begin();
+    if(!began) return false;
+
+    m_dockspaceID = ImGui::GetID((m_name.getName() + "_BodyDockspace").c_str());
+
+    ImGui::DockSpace(m_dockspaceID, ImVec2(0.0f, 0.0f), m_dockspaceFlags);
+
+    if (m_firstTime)
     {
-        m_dockspaceID = ImGui::GetID((m_name.getName() + "_BodyDockspace").c_str());
+        m_firstTime = false;
 
-        ImGui::DockSpace(m_dockspaceID, ImVec2(0.0f, 0.0f), m_dockspaceFlags);
+        m_settingsTreeDockedWindow = SGCore::MakeRef<DockedWindow>();
+        m_settingsTreeDockedWindow->m_name = m_name.getName() + "SettingsTree";
+        m_settingsTreeDockedWindow->m_minSize = { 300.0f, 0.0f };
+        m_settingsTreeDockedWindow->m_padding = { 0.0f, 0.0f };
+        m_settingsTreeDockedWindow->m_itemsSpacing = { 0.0f, 0.0f };
 
-        if(m_firstTime)
-        {
-            m_firstTime = false;
+        m_settingsContentDockedWindow = SGCore::MakeRef<DockedWindow>();
+        m_settingsContentDockedWindow->m_name = m_name.getName() + "SettingsContent";
+        m_settingsContentDockedWindow->m_minSize = { 300.0f, 0.0f };
+        m_settingsContentDockedWindow->m_padding = { 5.0f, 7.0f };
 
-            m_settingsTreeDockedWindow = SGCore::MakeRef<DockedWindow>();
-            m_settingsTreeDockedWindow->m_name = m_name.getName() + "SettingsTree";
-            m_settingsTreeDockedWindow->m_minSize = { 300.0f, 0.0f };
-            m_settingsTreeDockedWindow->m_padding = { 0.0f, 0.0f };
-            m_settingsTreeDockedWindow->m_itemsSpacing = { 0.0f, 0.0f };
+        ImGui::DockBuilderRemoveNode(m_dockspaceID);
+        ImGui::DockBuilderAddNode(m_dockspaceID, m_dockspaceFlags);
+        ImGui::DockBuilderSetNodeSize(m_dockspaceID, ImGui::GetWindowSize());
 
-            m_settingsContentDockedWindow = SGCore::MakeRef<DockedWindow>();
-            m_settingsContentDockedWindow->m_name = m_name.getName() + "SettingsContent";
-            m_settingsContentDockedWindow->m_minSize = { 300.0f, 0.0f };
-            m_settingsContentDockedWindow->m_padding = { 5.0f, 7.0f };
+        ImGui::DockBuilderSplitNode(m_dockspaceID, ImGuiDir_Left, 0.25f, &m_settingsTreeDockedWindow->m_thisDockNodeID,
+                                    &m_settingsContentDockedWindow->m_thisDockNodeID);
 
-            ImGui::DockBuilderRemoveNode(m_dockspaceID);
-            ImGui::DockBuilderAddNode(m_dockspaceID, m_dockspaceFlags);
-            ImGui::DockBuilderSetNodeSize(m_dockspaceID, ImGui::GetWindowSize());
+        ImGui::DockBuilderDockWindow(m_settingsTreeDockedWindow->m_name.getName().c_str(),
+                                     m_settingsTreeDockedWindow->m_thisDockNodeID);
+        ImGui::DockBuilderDockWindow(m_settingsContentDockedWindow->m_name.getName().c_str(),
+                                     m_settingsContentDockedWindow->m_thisDockNodeID);
 
-            ImGui::DockBuilderSplitNode(m_dockspaceID, ImGuiDir_Left, 0.25f, &m_settingsTreeDockedWindow->m_thisDockNodeID,
-                                        &m_settingsContentDockedWindow->m_thisDockNodeID);
+        ImGui::DockBuilderFinish(m_dockspaceID);
 
-            ImGui::DockBuilderDockWindow(m_settingsTreeDockedWindow->m_name.c_str(),
-                                         m_settingsTreeDockedWindow->m_thisDockNodeID);
-            ImGui::DockBuilderDockWindow(m_settingsContentDockedWindow->m_name.c_str(),
-                                         m_settingsContentDockedWindow->m_thisDockNodeID);
+        ImGui::DockBuilderSetNodeSize(m_settingsTreeDockedWindow->m_thisDockNodeID,
+                                      { m_settingsTreeDockedWindow->m_minSize.x, 0 });
 
-            ImGui::DockBuilderFinish(m_dockspaceID);
-
-            ImGui::DockBuilderSetNodeSize(m_settingsTreeDockedWindow->m_thisDockNodeID,
-                                          { m_settingsTreeDockedWindow->m_minSize.x, 0 });
-        }
-
-        if(m_settingsTreeDockedWindow->begin())
-        {
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 5, 7 });
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 7 });
-
-            ImGui::BeginChildFrame(ImGui::GetID("EngineSettingsTree"),
-                                   ImGui::GetContentRegionAvail(),
-                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
-
-            m_settingsTree.draw({ m_UIScale.x, m_UIScale.y });
-
-            ImGui::EndChildFrame();
-            ImGui::PopStyleVar(2);
-
-            m_settingsTreeDockedWindow->end();
-        }
-
-        if(m_settingsContentDockedWindow->begin())
-        {
-            if (onSettingsContentDraw)
-            {
-                onSettingsContentDraw();
-            }
-
-            m_settingsContentDockedWindow->end();
-        }
-
-        return true;
+        ImGui::DockBuilderFinish(m_settingsTreeDockedWindow->m_thisDockNodeID);
     }
 
-    return false;
+    if (m_settingsTreeDockedWindow->begin())
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 5, 7 });
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 5, 7 });
+
+        ImGui::BeginChildFrame(ImGui::GetID("SettingsTreeContent"),
+                               ImGui::GetContentRegionAvail(),
+                               ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
+
+        m_settingsTree.draw({ m_UIScale.x, m_UIScale.y });
+
+        ImGui::EndChildFrame();
+        ImGui::PopStyleVar(2);
+
+        m_settingsTreeDockedWindow->end();
+    }
+
+    if (m_settingsContentDockedWindow->begin())
+    {
+        if (onSettingsContentDraw)
+        {
+            onSettingsContentDraw();
+        }
+
+        m_settingsContentDockedWindow->end();
+    }
+
+    return true;
 }

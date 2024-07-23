@@ -44,6 +44,7 @@ void SGCore::UniqueName::setRawName(const std::string& rawName) noexcept
     else
     {
         m_rawName = rawName;
+        m_name = rawName;;
     }
 }
 

@@ -5,7 +5,8 @@
 #ifndef SUNGEARENGINEEDITOR_ENGINESETTINGSVIEW_H
 #define SUNGEARENGINEEDITOR_ENGINESETTINGSVIEW_H
 
-#include "SettingsView.h"
+#include "Views/TopToolbar/Settings/SettingsView.h"
+#include "ToolchainsDockedWindow.h"
 
 namespace SGE
 {
@@ -14,6 +15,9 @@ namespace SGE
         EngineSettingsView();
         EngineSettingsView(const EngineSettingsView&) = default;
         EngineSettingsView(EngineSettingsView&&) = default;
+
+    private:
+        SGCore::Ref<ToolchainsDockedWindow> m_toolchainsDockedWindow;
     };
 }
 

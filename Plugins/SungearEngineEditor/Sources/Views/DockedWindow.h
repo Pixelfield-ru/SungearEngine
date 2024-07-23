@@ -12,11 +12,10 @@ namespace SGE
 {
     struct DockedWindow : SGCore::ImGuiWrap::IView
     {
-        std::string m_name;
         ImVec2 m_minSize { };
 
-        ImVec2 m_padding { };
-        ImVec2 m_itemsSpacing { };
+        ImVec2 m_padding = ImGui::GetStyle().WindowPadding;
+        ImVec2 m_itemsSpacing = ImGui::GetStyle().ItemSpacing;
 
         bool begin() override;
         void end() override;
