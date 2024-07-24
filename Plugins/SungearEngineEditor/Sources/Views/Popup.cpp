@@ -9,10 +9,10 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
 {
     if(m_isOpened)
     {
-        ImGui::OpenPopup(m_name.c_str());
+        ImGui::OpenPopup(m_name.getName().c_str());
         
         ImGui::SetNextWindowPos(m_popupPos);
-        if(ImGui::BeginPopup(m_name.c_str(), ImGuiWindowFlags_NoMove))
+        if(ImGui::BeginPopup(m_name.getName().c_str(), ImGuiWindowFlags_NoMove))
         {
             ImGui::GetWindowDrawList()->AddRectFilled(m_rectToDraw.Min,
                                                       m_rectToDraw.Max,
@@ -22,11 +22,16 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
             
             m_rectToDraw = { };
             
-            if(ImGui::BeginTable(m_name.c_str(), 3))
+            if(ImGui::BeginTable(m_name.getName().c_str(), 3))
             {
                 for(auto& elem : m_elements)
                 {
                     if(!elem.m_isActive) continue;
+
+                    if(elem.m_name.getNamesManager() != m_namesManager)
+                    {
+                        elem.m_name.attachToManager(m_namesManager);
+                    }
                     
                     ++parentPopup->m_drawingElementsCount;
                     
@@ -41,7 +46,7 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     
                     // SECOND COLUMN FOR NAME
                     ImGui::TableNextColumn();
-                    ImGui::Text(elem.m_name.c_str());
+                    ImGui::Text(elem.m_name.getName().c_str());
                     
                     // THIRD COLUMN FOR HOT KEYS OR CHEVRON ICON
                     ImGui::TableNextColumn();
@@ -203,6 +208,11 @@ void SGE::Popup::draw() noexcept
             for(auto& elem : m_elements)
             {
                 if(!elem.m_isActive) continue;
+
+                if(elem.m_name.getNamesManager() != m_namesManager)
+                {
+                    elem.m_name.attachToManager(m_namesManager);
+                }
                 
                 ++m_drawingElementsCount;
                 
@@ -222,7 +232,7 @@ void SGE::Popup::draw() noexcept
                 // SECOND COLUMN FOR NAME
                 ImGui::TableNextColumn();
                 {
-                    ImVec2 textSize = ImGui::CalcTextSize(elem.m_name.c_str());
+                    ImVec2 textSize = ImGui::CalcTextSize(elem.m_name.getName().c_str());
                     if(textSize.y > rowHeight)
                     {
                         rowHeight = textSize.y;
@@ -232,7 +242,7 @@ void SGE::Popup::draw() noexcept
                         float offsetY = (rowHeight - textSize.y) / 2.0f;
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
                     }
-                    ImGui::Text(elem.m_name.c_str());
+                    ImGui::Text(elem.m_name.getName().c_str());
                 }
                 
                 // THIRD COLUMN FOR HOT KEYS OR CHEVRON ICON

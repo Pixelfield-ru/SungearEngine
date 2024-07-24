@@ -16,7 +16,7 @@ SGCore::UniqueName SGCore::UniqueNamesManager::getUniqueName(const std::string& 
                            rawName :
                            rawName + " (" + std::to_string(uniqueNamesCounter.m_count) + ")";
 
-    ++uniqueNamesCounter.m_count;
+po    ++uniqueNamesCounter.m_count;
 
     // TODO: MAYBE INCORRECT BEHAVIOUR THERE BECAUSE OF COPY OPERATOR
     return newUniqueName;
@@ -27,8 +27,11 @@ void SGCore::UniqueNamesManager::setUniqueNameRawName(UniqueName& uniqueName, co
     auto& uniqueNamesCounter = m_uniqueNamesCounters[newRawName];
     auto& lastUniqueNamesCounter = m_uniqueNamesCounters[uniqueName.m_rawName];
 
-    --lastUniqueNamesCounter.m_count;
-    lastUniqueNamesCounter.m_count = std::max(0ll, lastUniqueNamesCounter.m_count);
+    if(newRawName != uniqueName.m_rawName)
+    {
+        --lastUniqueNamesCounter.m_count;
+        lastUniqueNamesCounter.m_count = std::max(0ll, lastUniqueNamesCounter.m_count);
+    }
 
     if(uniqueNamesCounter.m_names.contains(uniqueName.m_rawName + " (" + std::to_string( uniqueName.m_uniqueID) + ")")) return;
 

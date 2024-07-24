@@ -56,6 +56,11 @@ void SGCore::UniqueName::attachToManager(const std::shared_ptr<UniqueNamesManage
     setRawName(m_rawName);
 }
 
+std::shared_ptr<SGCore::UniqueNamesManager> SGCore::UniqueName::getNamesManager() const noexcept
+{
+    return m_parentUniqueNamesManager.lock();
+}
+
 SGCore::UniqueName& SGCore::UniqueName::operator=(const SGCore::UniqueName& other) noexcept
 {
     if(this == std::addressof(other)) return *this;

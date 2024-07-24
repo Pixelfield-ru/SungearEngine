@@ -19,9 +19,9 @@ namespace SGE
     struct PopupElement
     {
         // INITIALIZE NEXT VARIABLES IN LIST INITIALIZER!
-        std::string m_name;
+        SGCore::UniqueName m_name;
         std::string m_hint;
-        std::string m_id = m_name;
+        std::string m_id = m_name.getName();
         
         SGCore::Ref<SGCore::ITexture2D> m_icon;
         bool m_drawSeparatorAfter = false;
@@ -38,7 +38,9 @@ namespace SGE
         bool m_isHovered = false;
         
         ImRect m_rectToDraw;
-        
+
+        SGCore::Ref<SGCore::UniqueNamesManager> m_namesManager = SGCore::MakeRef<SGCore::UniqueNamesManager>();
+
         void recursiveClose() noexcept;
         void setAllElementsActive(bool isActive) noexcept;
         [[nodiscard]] PopupElement* tryGetElementRecursively(std::string_view id) noexcept;
@@ -55,6 +57,7 @@ namespace SGE
         Popup(const std::string& name, const std::initializer_list<PopupElement>& items) noexcept;
         
         std::string m_name;
+        std::vector<PopupElement> m_elements;
         
         void draw() noexcept;
         
@@ -77,8 +80,8 @@ namespace SGE
         std::int32_t m_drawingElementsCount = 0;
         
         ImRect m_rectToDraw { };
-        
-        std::vector<PopupElement> m_elements;
+
+        SGCore::Ref<SGCore::UniqueNamesManager> m_namesManager = SGCore::MakeRef<SGCore::UniqueNamesManager>();
     };
 }
 

@@ -20,10 +20,25 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
                     {
                             .m_name = "MinGW",
                             .m_icon = StylesManager::getCurrentStyle()
-                                    ->m_questionIcon->getSpecialization(18, 18)->getTexture(),
+                                    ->m_questionIcon->getSpecialization(16, 16)->getTexture(),
                             .m_drawSeparatorAfter = false
                     }
             }
+    };
+
+    m_toolchainsVariantsPopup.onElementClicked += [this](PopupElement& element) {
+        if(element.m_name == "Visual Studio")
+        {
+            m_currentAddedToolchainsTree.addTreeNode({
+                .m_text = "Visual Studio",
+                .m_icon = StylesManager::getCurrentStyle()
+                    ->m_visualStudioIcon->getSpecialization(16, 16)->getTexture(),
+                .onClicked = [this](TreeNode& self) {
+
+                },
+                .m_useNameAsText = true
+            });
+        }
     };
 }
 
@@ -82,7 +97,8 @@ void SGE::ToolchainsDockedWindow::renderBody()
                            ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_HorizontalScrollbar);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 5, 7 });
 
-    ImGui::Text("hello");
+    // ImGui::Text("hello");
+    m_currentAddedToolchainsTree.draw({ m_UIScale.x, m_UIScale.y });
 
     ImGui::PopStyleVar();
     ImGui::EndChildFrame();

@@ -6,21 +6,28 @@
 #define SUNGEARENGINEEDITOR_TREE_H
 
 #include <SGCore/pch.h>
+#include <SGCore/Main/CoreGlobals.h>
+#include <SGCore/Utils/UniqueNamesManager.h>
+#include <SGCore/Graphics/API/ITexture2D.h>
 
 namespace SGE
 {
     struct TreeNode
     {
         std::string m_text;
-        std::string m_name = m_text;
+        SGCore::UniqueName m_name = m_text;
+
+        SGCore::Ref<SGCore::ITexture2D> m_icon;
 
         std::function<void(TreeNode& self)> onClicked;
 
         std::vector<TreeNode> m_children;
 
         bool m_isTree = false;
-
+        bool m_useNameAsText = false;
         bool m_isOpened = false;
+
+        SGCore::Ref<SGCore::UniqueNamesManager> m_childrenNamesManager = SGCore::MakeRef<SGCore::UniqueNamesManager>();
     };
 
     struct Tree
@@ -34,7 +41,7 @@ namespace SGE
         void draw(const ImVec2& uiScale);
 
     private:
-        void drawNodes(std::vector<TreeNode>& nodes, const ImVec2& uiScale);
+        void drawNodes(std::vector<TreeNode>& nodes, Tree* parentTree, TreeNode* parentTreeNode, const ImVec2& uiScale);
 
         std::vector<TreeNode> m_treeNodes;
         std::string m_chosenTreeNodeName;
@@ -44,6 +51,8 @@ namespace SGE
         ImVec2 m_clickedRowRectMax { };
         ImVec2 m_windowCursorPos { };
         ImVec2 m_windowContentRegionMax { };
+
+        SGCore::Ref<SGCore::UniqueNamesManager> m_childrenNamesManager = SGCore::MakeRef<SGCore::UniqueNamesManager>();
     };
 }
 

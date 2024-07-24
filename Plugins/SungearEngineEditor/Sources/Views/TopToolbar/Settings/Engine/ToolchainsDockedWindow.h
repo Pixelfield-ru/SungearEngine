@@ -7,6 +7,7 @@
 
 #include "Views/DockedWindow.h"
 #include "Views/Popup.h"
+#include "Views/Tree.h"
 
 namespace SGE
 {
@@ -20,6 +21,7 @@ namespace SGE
 
     private:
         Popup m_toolchainsVariantsPopup;
+        Tree m_currentAddedToolchainsTree;
     };
 }
 

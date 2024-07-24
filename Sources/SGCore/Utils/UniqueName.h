@@ -38,7 +38,8 @@ namespace SGCore
         void setRawName(const std::string& rawName) noexcept;
 
         void attachToManager(const std::shared_ptr<UniqueNamesManager>& manager) noexcept;
-        
+        std::shared_ptr<UniqueNamesManager> getNamesManager() const noexcept;
+
         UniqueName& operator=(const UniqueName& other) noexcept;
         UniqueName& operator=(UniqueName&&) noexcept = default;
         

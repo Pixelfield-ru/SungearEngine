@@ -8,7 +8,7 @@
 
 void SGE::Tree::addTreeNode(const SGE::TreeNode& treeNode) noexcept
 {
-    if(tryGetTreeNode(treeNode.m_name)) return;
+    // if(tryGetTreeNode(treeNode.m_name.getName())) return;
 
     m_treeNodes.push_back(treeNode);
 }
@@ -16,7 +16,7 @@ void SGE::Tree::addTreeNode(const SGE::TreeNode& treeNode) noexcept
 bool SGE::Tree::tryGetTreeNode(const std::string& name, TreeNode* out) noexcept
 {
     auto foundIt = std::find_if(m_treeNodes.begin(), m_treeNodes.end(), [&name](const TreeNode& node) {
-        return name == node.m_name;
+        return node.m_name == name;
     });
 
     if(out && foundIt != m_treeNodes.end())
@@ -30,7 +30,7 @@ bool SGE::Tree::tryGetTreeNode(const std::string& name, TreeNode* out) noexcept
 void SGE::Tree::removeTreeNode(const std::string& name) noexcept
 {
     std::erase_if(m_treeNodes, [&name](const TreeNode& node) {
-        return name == node.m_name;
+        return node.m_name == name;
     });
 }
 
@@ -48,13 +48,28 @@ void SGE::Tree::draw(const ImVec2& uiScale)
 
     m_drawSelectedNodeRect = false;
 
-    drawNodes(m_treeNodes, uiScale);
+    drawNodes(m_treeNodes, this, nullptr, uiScale);
 }
 
-void SGE::Tree::drawNodes(std::vector<TreeNode>& nodes, const ImVec2& uiScale)
+void SGE::Tree::drawNodes(std::vector<TreeNode>& nodes, Tree* parentTree, TreeNode* parentTreeNode, const ImVec2& uiScale)
 {
     for(auto& node : nodes)
     {
+        if(parentTreeNode)
+        {
+            if (node.m_name.getNamesManager() != parentTreeNode->m_childrenNamesManager)
+            {
+                node.m_name.attachToManager(parentTreeNode->m_childrenNamesManager);
+            }
+        }
+        else if(parentTree)
+        {
+            if (node.m_name.getNamesManager() != m_childrenNamesManager)
+            {
+                node.m_name.attachToManager(m_childrenNamesManager);
+            }
+        }
+
         bool arrowBtnClicked = false;
 
         auto style = StylesManager::getCurrentStyle();
@@ -83,9 +98,36 @@ void SGE::Tree::drawNodes(std::vector<TreeNode>& nodes, const ImVec2& uiScale)
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
         }
 
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 3);
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (node.m_isTree ? 0.0f : 5.0f));
 
-        ImGui::Text(node.m_text.c_str());
+        if(node.m_icon)
+        {
+            if(!node.m_isTree)
+            {
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+            }
+
+            ImGui::Image(node.m_icon->getTextureNativeHandler(),
+                         { (float) node.m_icon->getWidth(), (float) node.m_icon->getHeight() });
+
+            ImGui::SameLine();
+
+            if(node.m_isTree)
+            {
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+            }
+
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 3.0f);
+        }
+
+        if(!node.m_useNameAsText)
+        {
+            ImGui::Text(node.m_text.c_str());
+        }
+        else
+        {
+            ImGui::Text(node.m_name.getName().c_str());
+        }
 
         auto mouseScreenPos = ImGui::GetCursorScreenPos();
 
@@ -102,12 +144,12 @@ void SGE::Tree::drawNodes(std::vector<TreeNode>& nodes, const ImVec2& uiScale)
 
         if(rowClicked && !arrowBtnClicked)
         {
-            m_chosenTreeNodeName = node.m_name;
+            m_chosenTreeNodeName = node.m_name.getName();
 
             node.onClicked(node);
         }
 
-        if(m_chosenTreeNodeName == node.m_name)
+        if(m_chosenTreeNodeName == node.m_name.getName())
         {
             m_clickedRowRectMin = rectMin;
             m_clickedRowRectMax = rectMax;
@@ -119,10 +161,10 @@ void SGE::Tree::drawNodes(std::vector<TreeNode>& nodes, const ImVec2& uiScale)
             node.m_isOpened = !node.m_isOpened;
         }
 
-        if(node.m_isOpened)
+        if(node.m_isOpened && !node.m_children.empty())
         {
             ImGui::Indent(m_indentWidth);
-            drawNodes(node.m_children, uiScale);
+            drawNodes(node.m_children, this, &node, uiScale);
             ImGui::Unindent();
         }
     }
