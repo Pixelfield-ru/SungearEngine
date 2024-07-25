@@ -32,6 +32,8 @@ namespace SGE
         Tree m_currentAddedToolchainsTree;
 
         SGCore::Ref<SelectedToolchainDockedWindow> m_selectedToolchainDockedWindow;
+
+        void refreshToolchainsList();
     };
 }
 

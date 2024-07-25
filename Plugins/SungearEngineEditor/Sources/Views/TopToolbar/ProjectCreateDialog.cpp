@@ -240,9 +240,9 @@ void SGE::ProjectCreateDialog::submit()
         // =====================================================================================
         // BUILDING CREATED PROJECT
 
-        if(!Toolchains::getInstance()->m_toolchains.empty())
+        if(!Toolchains::getInstance()->getToolchains().empty())
         {
-            auto firstToolchain = Toolchains::getInstance()->m_toolchains[0];
+            auto firstToolchain = Toolchains::getInstance()->getToolchains()[0];
             firstToolchain->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
         }
         else // TODO: MAKE WARNING DIALOG

@@ -29,6 +29,8 @@ namespace SGE
         bool m_isOpened = false;
 
         SGCore::Ref<SGCore::UniqueNamesManager> m_childrenNamesManager = SGCore::MakeRef<SGCore::UniqueNamesManager>();
+
+        void clear() noexcept;
     };
 
     struct Tree
@@ -38,14 +40,16 @@ namespace SGE
         void addTreeNode(const TreeNode& treeNode) noexcept;
         [[nodiscard]] bool tryGetTreeNode(const std::string& name, TreeNode* out = nullptr) noexcept;
         void removeTreeNode(const std::string& name) noexcept;
+        void clear() noexcept;
 
         void draw(const ImVec2& uiScale);
+
+        std::string m_chosenTreeNodeName;
 
     private:
         void drawNodes(std::vector<TreeNode>& nodes, Tree* parentTree, TreeNode* parentTreeNode, const ImVec2& uiScale);
 
         std::vector<TreeNode> m_treeNodes;
-        std::string m_chosenTreeNodeName;
 
         bool m_drawSelectedNodeRect = false;
         ImVec2 m_clickedRowRectMin { };

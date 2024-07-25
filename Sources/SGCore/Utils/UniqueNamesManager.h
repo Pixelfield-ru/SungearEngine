@@ -30,8 +30,11 @@ namespace SGCore
         UniqueName getUniqueName(const std::string& rawName) noexcept;
 
         void setUniqueNameRawName(UniqueName& uniqueName, const std::string& newRawName);
+        void onUniqueNameDestroys(UniqueName& uniqueName);
 
         void subscribeToSomeNameChangedEvent(const EventListener<void(const std::string&)>& eventListener);
+
+        void clearCounters() noexcept;
 
     private:
         Event<void(const std::string& newName)> onSomeNameChanged;

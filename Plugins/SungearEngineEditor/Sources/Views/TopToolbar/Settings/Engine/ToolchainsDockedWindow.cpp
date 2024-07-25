@@ -11,6 +11,12 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
 {
     m_selectedToolchainDockedWindow = SGCore::MakeRef<SelectedToolchainDockedWindow>();
     m_selectedToolchainDockedWindow->m_name = "SelectedToolchainDockedWindow";
+    m_selectedToolchainDockedWindow->onToolchainChanged = [this]() {
+        m_currentAddedToolchainsTree.m_chosenTreeNodeName =
+                m_selectedToolchainDockedWindow->getSelectedToolchain()->m_name.getName();
+
+        refreshToolchainsList();
+    };
 
     m_toolchainsVariantsPopup = Popup {
             "ToolchainsVariantsPopup",
@@ -34,18 +40,10 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
         if(element.m_name == "Visual Studio")
         {
             SGCore::Ref<VisualStudioToolchain> vsToolchain = SGCore::MakeRef<VisualStudioToolchain>();
-            m_currentToolchains.m_toolchains.push_back(vsToolchain);
+            vsToolchain->m_name = "Visual Studio";
+            m_currentToolchains.addToolchain(vsToolchain);
 
-            m_currentAddedToolchainsTree.addTreeNode({
-                .m_text = "Visual Studio",
-                .m_icon = StylesManager::getCurrentStyle()
-                    ->m_visualStudioIcon->getSpecialization(16, 16)->getTexture(),
-                .onClicked = [this, vsToolchain](TreeNode& self) {
-                    vsToolchain->m_name = self.m_name;
-                    m_selectedToolchainDockedWindow->m_selectedToolchain = vsToolchain;
-                },
-                .m_useNameAsText = true
-            });
+            refreshToolchainsList();
         }
     };
 }
@@ -73,7 +71,9 @@ void SGE::ToolchainsDockedWindow::renderBody()
     auto minusIconSpec = StylesManager::getCurrentStyle()->m_minusIcon->getSpecialization(20, 20);
     if(ImGuiUtils::ImageButton(minusIconSpec->getTexture()->getTextureNativeHandler(), { 26, 26 }, { 20, 20 }).m_isLMBClicked)
     {
-
+        m_currentToolchains.removeToolchain(m_currentAddedToolchainsTree.m_chosenTreeNodeName);
+        m_selectedToolchainDockedWindow->setSelectedToolchain(nullptr);
+        refreshToolchainsList();
     }
 
     ImGui::SameLine();
@@ -118,6 +118,30 @@ SGCore::Ref<SGE::SelectedToolchainDockedWindow>
 SGE::ToolchainsDockedWindow::getSelectedToolchainDockedWindow() const noexcept
 {
     return m_selectedToolchainDockedWindow;
+}
+
+void SGE::ToolchainsDockedWindow::refreshToolchainsList()
+{
+    m_currentAddedToolchainsTree.clear();
+
+    for(const auto& toolchain : m_currentToolchains.getToolchains())
+    {
+        SGCore::Weak<Toolchain> weakToolchain = toolchain;
+
+        m_currentAddedToolchainsTree.addTreeNode({
+            .m_text = toolchain->m_name.getName(),
+            .m_icon = StylesManager::getCurrentStyle()
+                    ->m_visualStudioIcon->getSpecialization(16,
+                                                            16)->getTexture(),
+            .onClicked = [this, weakToolchain](TreeNode& self) {
+                if(auto lockedToolchain = weakToolchain.lock())
+                {
+                    m_selectedToolchainDockedWindow->setSelectedToolchain(lockedToolchain);
+                }
+            },
+            .m_useNameAsText = true
+        });
+    }
 }
 
 /*bool SGE::ToolchainsDockedWindow::begin()

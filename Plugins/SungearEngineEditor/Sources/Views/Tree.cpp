@@ -6,6 +6,12 @@
 #include "Styles/StylesManager.h"
 #include "ImGuiUtils.h"
 
+void SGE::TreeNode::clear() noexcept
+{
+    m_children.clear();
+    m_childrenNamesManager->clearCounters();
+}
+
 void SGE::Tree::addTreeNode(const SGE::TreeNode& treeNode) noexcept
 {
     // if(tryGetTreeNode(treeNode.m_name.getName())) return;
@@ -168,4 +174,10 @@ void SGE::Tree::drawNodes(std::vector<TreeNode>& nodes, Tree* parentTree, TreeNo
             ImGui::Unindent();
         }
     }
+}
+
+void SGE::Tree::clear() noexcept
+{
+    m_treeNodes.clear();
+    m_childrenNamesManager->clearCounters();
 }

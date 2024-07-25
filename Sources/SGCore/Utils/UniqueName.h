@@ -28,6 +28,7 @@ namespace SGCore
         UniqueName(const char* rawName) noexcept;
         UniqueName(const std::string& rawName) noexcept;
         UniqueName(UniqueName&&) noexcept = default;
+        ~UniqueName() noexcept;
 
         [[nodiscard]] std::string getRawName() const noexcept;
 

@@ -20,6 +20,14 @@ SGCore::UniqueName::UniqueName(const std::string& rawName) noexcept
     setRawName(rawName);
 }
 
+SGCore::UniqueName::~UniqueName() noexcept
+{
+    if(auto lockedManager = m_parentUniqueNamesManager.lock())
+    {
+        lockedManager->onUniqueNameDestroys(*this);
+    }
+}
+
 std::string SGCore::UniqueName::getRawName() const noexcept
 {
     return m_rawName;

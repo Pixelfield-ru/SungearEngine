@@ -14,6 +14,14 @@ namespace SGE
     {
         void renderBody() final;
 
+        void setSelectedToolchain(const SGCore::Ref<Toolchain>& toolchain) noexcept;
+        SGCore::Ref<Toolchain> getSelectedToolchain() const noexcept;
+
+        std::function<void()> onToolchainChanged;
+
+    private:
+        std::string m_currentToolchainName;
+
         SGCore::Ref<Toolchain> m_selectedToolchain;
     };
 }
