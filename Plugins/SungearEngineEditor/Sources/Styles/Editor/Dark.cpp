@@ -233,6 +233,11 @@ void SGE::EditorStyles::Dark::apply()
                 "visual_studio_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/common/visual_studio.svg");
+
+        m_mingwIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                "mingw_icon",
+                SungearEngineEditor::getInstance()->getLocalPath() +
+                "/Resources/icons/dark_style/mingw.svg");
     }
 }
 

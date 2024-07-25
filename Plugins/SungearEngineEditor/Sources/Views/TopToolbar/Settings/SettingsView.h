@@ -19,10 +19,15 @@ namespace SGE
         SettingsView(SettingsView&&) = default;
 
         bool begin() override;
+        void postRender() override;
 
         std::function<void()> onSettingsContentDraw;
 
+        bool m_isSettingsContentViewContainsDockedWindow = false;
+
     protected:
+        virtual void onDock() { };
+
         Tree m_settingsTree;
 
         SGCore::Ref<DockedWindow> m_settingsTreeDockedWindow;

@@ -5,9 +5,13 @@
 #include "ToolchainsDockedWindow.h"
 #include "Styles/StylesManager.h"
 #include "ImGuiUtils.h"
+#include "Toolchains/VisualStudioToolchain.h"
 
 SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
 {
+    m_selectedToolchainDockedWindow = SGCore::MakeRef<SelectedToolchainDockedWindow>();
+    m_selectedToolchainDockedWindow->m_name = "SelectedToolchainDockedWindow";
+
     m_toolchainsVariantsPopup = Popup {
             "ToolchainsVariantsPopup",
             {
@@ -20,7 +24,7 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
                     {
                             .m_name = "MinGW",
                             .m_icon = StylesManager::getCurrentStyle()
-                                    ->m_questionIcon->getSpecialization(16, 16)->getTexture(),
+                                    ->m_mingwIcon->getSpecialization(16, 16)->getTexture(),
                             .m_drawSeparatorAfter = false
                     }
             }
@@ -29,12 +33,16 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
     m_toolchainsVariantsPopup.onElementClicked += [this](PopupElement& element) {
         if(element.m_name == "Visual Studio")
         {
+            SGCore::Ref<VisualStudioToolchain> vsToolchain = SGCore::MakeRef<VisualStudioToolchain>();
+            m_currentToolchains.m_toolchains.push_back(vsToolchain);
+
             m_currentAddedToolchainsTree.addTreeNode({
                 .m_text = "Visual Studio",
                 .m_icon = StylesManager::getCurrentStyle()
                     ->m_visualStudioIcon->getSpecialization(16, 16)->getTexture(),
-                .onClicked = [this](TreeNode& self) {
-
+                .onClicked = [this, vsToolchain](TreeNode& self) {
+                    vsToolchain->m_name = self.m_name;
+                    m_selectedToolchainDockedWindow->m_selectedToolchain = vsToolchain;
                 },
                 .m_useNameAsText = true
             });
@@ -105,3 +113,19 @@ void SGE::ToolchainsDockedWindow::renderBody()
     ImGui::PopStyleVar();
 
 }
+
+SGCore::Ref<SGE::SelectedToolchainDockedWindow>
+SGE::ToolchainsDockedWindow::getSelectedToolchainDockedWindow() const noexcept
+{
+    return m_selectedToolchainDockedWindow;
+}
+
+/*bool SGE::ToolchainsDockedWindow::begin()
+{
+    return true;
+}
+
+void SGE::ToolchainsDockedWindow::end()
+{
+
+}*/

@@ -200,7 +200,7 @@
   }, {
     "name" : "imgui",
     "features" : [ "glfw-binding", "opengl3-binding", "docking-experimental" ],
-    "version>=" : "1.90.7#1"
+    "version>=" : "1.90.7"
   }, {
     "name" : "spdlog",
     "version>=" : "1.13.0"

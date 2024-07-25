@@ -30,6 +30,8 @@ void SGCore::ImGuiWrap::IView::render()
 
         m_appearing = false;
     }
+
+    postRender();
 }
 
 SGCore::Ref<SGCore::ImGuiWrap::IView> SGCore::ImGuiWrap::IView::getViewByName(const std::string& name) const noexcept

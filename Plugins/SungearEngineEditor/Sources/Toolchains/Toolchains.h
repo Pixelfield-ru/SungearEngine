@@ -14,10 +14,12 @@ namespace SGE
 {
     struct Toolchains
     {
-        SG_NOINLINE static std::vector<SGCore::Ref<Toolchain>> getToolchains() noexcept;
+        std::vector<SGCore::Ref<Toolchain>> m_toolchains { };
+
+        static SG_NOINLINE SGCore::Ref<Toolchains> getInstance() noexcept;
 
     private:
-        static inline std::vector<SGCore::Ref<Toolchain>> m_toolchains { };
+        static inline SGCore::Ref<Toolchains> m_instance = SGCore::MakeRef<Toolchains>();
     };
 }
 

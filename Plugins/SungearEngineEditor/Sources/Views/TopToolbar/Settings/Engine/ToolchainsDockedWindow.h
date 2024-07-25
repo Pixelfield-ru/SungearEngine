@@ -8,6 +8,8 @@
 #include "Views/DockedWindow.h"
 #include "Views/Popup.h"
 #include "Views/Tree.h"
+#include "Toolchains/Toolchains.h"
+#include "SelectedToolchainDockedWindow.h"
 
 namespace SGE
 {
@@ -17,11 +19,19 @@ namespace SGE
         ToolchainsDockedWindow(const ToolchainsDockedWindow&) = default;
         ToolchainsDockedWindow(ToolchainsDockedWindow&&) = default;
 
+        // bool begin() final;
         void renderBody() final;
+        // void end() final;
+
+        Toolchains m_currentToolchains;
+
+        SGCore::Ref<SelectedToolchainDockedWindow> getSelectedToolchainDockedWindow() const noexcept;
 
     private:
         Popup m_toolchainsVariantsPopup;
         Tree m_currentAddedToolchainsTree;
+
+        SGCore::Ref<SelectedToolchainDockedWindow> m_selectedToolchainDockedWindow;
     };
 }
 

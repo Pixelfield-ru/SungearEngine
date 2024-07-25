@@ -5,7 +5,8 @@
 #include "SettingsView.h"
 #include "ImGuiUtils.h"
 #include "Styles/StylesManager.h"
-#include <Plugins/SungearEngineEditor/cmake-build-release/vcpkg_installed/x64-windows/include/imgui_internal.h>
+#include <imgui_internal.h>
+#include <imgui.h>
 
 SGE::SettingsView::SettingsView()
 {
@@ -92,8 +93,10 @@ bool SGE::SettingsView::begin()
 
         ImGui::DockBuilderFinish(m_dockspaceID);
 
-        ImGui::DockBuilderSetNodeSize(m_settingsTreeDockedWindow->m_thisDockNodeID,
-                                      { m_settingsTreeDockedWindow->m_minSize.x, 0 });
+        /*ImGui::DockBuilderSetNodeSize(m_settingsTreeDockedWindow->m_thisDockNodeID,
+                                      { m_settingsTreeDockedWindow->m_minSize.x, 0 });*/
+
+        onDock();
 
         ImGui::DockBuilderFinish(m_settingsTreeDockedWindow->m_thisDockNodeID);
     }
@@ -115,7 +118,7 @@ bool SGE::SettingsView::begin()
         m_settingsTreeDockedWindow->end();
     }
 
-    if (m_settingsContentDockedWindow->begin())
+    if (!m_isSettingsContentViewContainsDockedWindow && m_settingsContentDockedWindow->begin())
     {
         if (onSettingsContentDraw)
         {
@@ -125,5 +128,17 @@ bool SGE::SettingsView::begin()
         m_settingsContentDockedWindow->end();
     }
 
+    if(m_isSettingsContentViewContainsDockedWindow)
+    {
+        if (onSettingsContentDraw)
+        {
+            onSettingsContentDraw();
+        }
+    }
+
     return true;
+}
+
+void SGE::SettingsView::postRender()
+{
 }

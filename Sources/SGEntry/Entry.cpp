@@ -114,7 +114,7 @@ void coreInit()
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   SGCore::PluginBuildType::PBT_RELEASE);
+                                                   SGCore::PluginBuildType::PBT_DEBUG);
 
         std::cout << "plugin: " << sgEditorPlugin  << ", sgeditor path: " << sgEditorPath << std::endl;
     }
@@ -213,7 +213,7 @@ void onUpdate(const double& dt, const double& fixedDt)
     {
         if(SGCore::PluginsManager::isPluginExists("SungearEngineEditor"))
         {
-            SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", {}, SGCore::PluginBuildType::PBT_RELEASE);
+            SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", {}, SGCore::PluginBuildType::PBT_DEBUG);
         }
         else
         {
@@ -225,7 +225,7 @@ void onUpdate(const double& dt, const double& fixedDt)
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   SGCore::PluginBuildType::PBT_RELEASE);
+                                                   SGCore::PluginBuildType::PBT_DEBUG);
             }
         }
     }

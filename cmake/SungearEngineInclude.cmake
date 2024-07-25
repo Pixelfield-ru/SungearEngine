@@ -16,14 +16,12 @@ if(${SG_BUILD_TYPE} STREQUAL "Release")
     list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals")
 
     set(SungearEngine_LIBS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-release/Sources/SGCore/SGCore.${SG_DL_EXT}")
-    list(APPEND SungearEngine_LIBS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-release/Sources/SGConsole/API/SGConsoleAPI.${SG_DL_EXT}")
 elseif(${SG_BUILD_TYPE} STREQUAL "Debug")
     set(SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Sources")
     list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-debug/Sources/SGCore")
     list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}/Externals")
 
     set(SungearEngine_LIBS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-debug/Sources/SGCore/SGCore.${SG_DL_EXT}")
-    list(APPEND SungearEngine_LIBS "$ENV{SUNGEAR_SOURCES_ROOT}/cmake-build-debug/Sources/SGConsole/API/SGConsoleAPI.${SG_DL_EXT}")
 endif()
 
 #if(${SG_INCLUDE_BULLET})

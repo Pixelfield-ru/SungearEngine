@@ -49,6 +49,7 @@ namespace SGE
         SGCore::Ref<SGCore::SVGImage> m_minusIcon;
 
         SGCore::Ref<SGCore::SVGImage> m_visualStudioIcon;
+        SGCore::Ref<SGCore::SVGImage> m_mingwIcon;
 
         std::unordered_map<std::string, ImFont*> m_fonts;
         

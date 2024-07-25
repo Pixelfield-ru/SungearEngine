@@ -4,6 +4,7 @@
 
 #include "EngineSettingsView.h"
 #include "imgui_internal.h"
+#include "SungearEngineEditor.h"
 
 SGE::EngineSettingsView::EngineSettingsView()
 {
@@ -15,18 +16,21 @@ SGE::EngineSettingsView::EngineSettingsView()
     m_toolchainsDockedWindow->m_padding = { 0, 0 };
     m_toolchainsDockedWindow->m_itemsSpacing = { 0, 0 };
 
+    /*if(SungearEngineEditor::getInstance()->getMainView())
+    {
+        SungearEngineEditor::getInstance()->getMainView()->addChild(m_toolchainsDockedWindow);
+    }*/
+
     TreeNode toolchainsNode {
             .m_text = "Toolchains",
             .onClicked = [this](TreeNode& self) {
-                m_settingsContentDockedWindow->split(ImGuiDir_Left, 0.3f, m_toolchainsDockedWindow.get(), nullptr);
+                m_toolchainsDockedWindow->setActive(true);
+                m_toolchainsDockedWindow->getSelectedToolchainDockedWindow()->setActive(true);
+                m_isSettingsContentViewContainsDockedWindow = true;
 
                 onSettingsContentDraw = [this]() {
-                    if(m_toolchainsDockedWindow->begin())
-                    {
-                        m_toolchainsDockedWindow->renderBody();
-
-                        m_toolchainsDockedWindow->end();
-                    }
+                    m_toolchainsDockedWindow->getSelectedToolchainDockedWindow()->render();
+                    m_toolchainsDockedWindow->render();
                 };
             }
     };
@@ -34,7 +38,12 @@ SGE::EngineSettingsView::EngineSettingsView()
     TreeNode devAndSupportNode {
             .m_text = "Development and Support",
             .onClicked = [this](TreeNode& self) {
+                m_toolchainsDockedWindow->setActive(false);
+                m_toolchainsDockedWindow->getSelectedToolchainDockedWindow()->setActive(false);
+                m_isSettingsContentViewContainsDockedWindow = false;
+
                 onSettingsContentDraw = [this]() {
+                    ImGui::Text("sdfsdfsf");
                 };
             },
             .m_children = { toolchainsNode },
@@ -42,4 +51,15 @@ SGE::EngineSettingsView::EngineSettingsView()
     };
 
     m_settingsTree.addTreeNode(devAndSupportNode);
+}
+
+void SGE::EngineSettingsView::onActiveChangedListener()
+{
+    m_toolchainsDockedWindow->m_currentToolchains = *Toolchains::getInstance().get();
+}
+
+void SGE::EngineSettingsView::onDock()
+{
+    m_settingsContentDockedWindow->split(ImGuiDir_Left, 0.3f, m_toolchainsDockedWindow.get(),
+                                         m_toolchainsDockedWindow->getSelectedToolchainDockedWindow().get());
 }

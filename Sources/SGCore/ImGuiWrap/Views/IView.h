@@ -34,7 +34,8 @@ namespace SGCore::ImGuiWrap
         virtual void onActiveChangedListener() { };
         
         virtual void render();
-        
+        virtual void postRender() { };
+
         Ref<IView> getViewByName(const std::string& name) const noexcept;
         std::vector<Ref<IView>> getViewsWithTag(const std::string& tag) const noexcept;
 

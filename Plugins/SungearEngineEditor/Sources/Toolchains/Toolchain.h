@@ -8,11 +8,14 @@
 #include "ToolchainType.h"
 
 #include <filesystem>
+#include <SGCore/Utils/UniqueName.h>
 
 namespace SGE
 {
     struct Toolchain
     {
+        SGCore::UniqueName m_name;
+
         [[nodiscard]] ToolchainType getType() const;
         void setType(ToolchainType type);
 

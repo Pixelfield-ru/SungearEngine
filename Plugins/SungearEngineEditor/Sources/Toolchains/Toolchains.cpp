@@ -3,8 +3,7 @@
 //
 #include "Toolchains.h"
 
-std::vector<SGCore::Ref<SGE::Toolchain>> SGE::Toolchains::getToolchains() noexcept
+SGCore::Ref<SGE::Toolchains> SGE::Toolchains::getInstance() noexcept
 {
-    return m_toolchains;
+    return m_instance;
 }
-

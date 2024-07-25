@@ -44,7 +44,7 @@ void SGCore::UniqueName::setRawName(const std::string& rawName) noexcept
     else
     {
         m_rawName = rawName;
-        m_name = rawName;;
+        m_name = (m_uniqueID == 0 ? rawName : rawName + " (" + std::to_string(m_uniqueID) + ")");
     }
 }
 
@@ -65,8 +65,9 @@ SGCore::UniqueName& SGCore::UniqueName::operator=(const SGCore::UniqueName& othe
 {
     if(this == std::addressof(other)) return *this;
     
-    m_parentUniqueNamesManager = other.m_parentUniqueNamesManager;
-    
+    // m_parentUniqueNamesManager = other.m_parentUniqueNamesManager;
+
+    m_uniqueID = other.m_uniqueID;
     setRawName(other.m_rawName);
     
     return *this;

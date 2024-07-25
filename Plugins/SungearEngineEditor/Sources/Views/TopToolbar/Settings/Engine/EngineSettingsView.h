@@ -16,6 +16,11 @@ namespace SGE
         EngineSettingsView(const EngineSettingsView&) = default;
         EngineSettingsView(EngineSettingsView&&) = default;
 
+        void onActiveChangedListener() final;
+
+    protected:
+        void onDock() final;
+
     private:
         SGCore::Ref<ToolchainsDockedWindow> m_toolchainsDockedWindow;
     };
