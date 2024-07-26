@@ -14,6 +14,8 @@
 
 SGE::FileCreateDialog::FileCreateDialog()
 {
+    m_isPopupWindow = true;
+
     const auto buttonsSize = ImVec2(75, 0);
 
     addButton({
@@ -47,8 +49,6 @@ SGE::FileCreateDialog::FileCreateDialog()
 
 void SGE::FileCreateDialog::renderBody()
 {
-    m_isPopupWindow = true;
-
     switch(m_mode)
     {
         case OPEN:
