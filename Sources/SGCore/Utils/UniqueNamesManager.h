@@ -18,10 +18,8 @@ namespace SGCore
         friend class UniqueNamesManager;
 
         std::string m_rawName;
-        // count of unique names with this raw name
-        std::int64_t m_count = 0;
         std::int64_t m_maxCount = 0;
-        std::unordered_set<std::string> m_names;
+        std::unordered_set<std::int64_t> m_existingIds;
     };
 
     class UniqueNamesManager : public std::enable_shared_from_this<UniqueNamesManager>

@@ -61,7 +61,7 @@ namespace SGCore
         std::string m_rawName;
         // -1 IS NOT TYPO
         sg_member()
-        size_t m_uniqueID = -1;
+        std::int64_t m_uniqueID = -1;
         // m_rawName + m_uniqueID
         sg_member()
         std::string m_name;
