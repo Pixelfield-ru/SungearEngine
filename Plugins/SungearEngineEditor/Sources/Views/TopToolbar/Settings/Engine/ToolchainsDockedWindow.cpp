@@ -36,8 +36,8 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
             }
     };
 
-    m_toolchainsVariantsPopup.onElementClicked += [this](PopupElement& element) {
-        if(element.m_name == "Visual Studio")
+    m_toolchainsVariantsPopup.onElementClicked += [this](const SGCore::Ref<PopupElement>& element) {
+        if(element->m_name == "Visual Studio")
         {
             SGCore::Ref<VisualStudioToolchain> vsToolchain = SGCore::MakeRef<VisualStudioToolchain>();
             vsToolchain->m_name = "Visual Studio";

@@ -1,5 +1,6 @@
 #include "ToolchainType.h"
 #include "Toolchain.h"
+#include <SGCore/Exceptions/FileNotFoundException.h>
 
 #include <iostream>
 #include <SGCore/Utils/Utils.h>
@@ -86,8 +87,7 @@ void SGE::Toolchain::configurate()
 
             if (!std::filesystem::exists(m_path))
             {
-                throw std::runtime_error(fmt::format("Path of toolchain {0} does not exist",
-                                                     SGCore::Utils::toUTF8(m_path.u16string())));
+                throw SGCore::FileNotFoundException(m_path, "Path of toolchain does not exist");
             }
 
             // auto vcvarsallbatPath = SGCore::FileUtils::findFile(m_path, "vcvarsall.bat");
@@ -104,7 +104,8 @@ void SGE::Toolchain::configurate()
 
             if(!std::filesystem::exists(cmakePath))
             {
-                throw std::runtime_error("Can not find path to cmake.exe in environment variables or in toolchain files");
+                throw SGCore::FileNotFoundException(m_cmakePath,
+                                                    "Can not find path to cmake.exe in environment variables or in toolchain files");
             }
 
             // ===================================================
@@ -117,7 +118,8 @@ void SGE::Toolchain::configurate()
 
             if(!std::filesystem::exists(buildToolPath))
             {
-                throw std::runtime_error("Can not find path to build tool in environment variables or in toolchain files");
+                throw SGCore::FileNotFoundException(buildToolPath,
+                                                    "Can not find path to build tool in environment variables or in toolchain files");
             }
 
             m_buildToolPath = buildToolPath;

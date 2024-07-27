@@ -20,9 +20,9 @@ SGE::DirectoryExplorer::DirectoryExplorer()
     // TODO: MAKE ON RIGHT CLICK SETTINGS FOR AUTO CONFIGURE POPUP
     onRightClick += [this](const std::filesystem::path& filePath) {
         bool isOneFileSelected = m_selectedFiles.size() <= 1;
-        auto* newFilesElem = m_popup.tryGetElement("New...");
-        auto* copyFilesElem = m_popup.tryGetElement("Copy");
-        auto* pasteFilesElem = m_popup.tryGetElement("Paste");
+        auto newFilesElem = m_popup.tryGetElement("New...");
+        auto copyFilesElem = m_popup.tryGetElement("Copy");
+        auto pasteFilesElem = m_popup.tryGetElement("Paste");
         
         if(std::filesystem::is_directory(filePath) && isOneFileSelected)
         {
@@ -76,17 +76,17 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         }
     };
     
-    m_popup.onElementClicked += [this](PopupElement& element) {
+    m_popup.onElementClicked += [this](const SGCore::Ref<PopupElement>& element) {
         bool rightClickedFileExists = std::filesystem::exists(m_rightClickedFile);
         
         if(rightClickedFileExists)
         {
             auto& fileInfo = m_drawableFilesNames[m_rightClickedFile];
-            if(element.m_id == "Rename")
+            if(element->m_id == "Rename")
             {
                 renameFile(fileInfo);
             }
-            else if(element.m_id == "Delete")
+            else if(element->m_id == "Delete")
             {
                 if(&fileInfo == m_currentEditingFile)
                 {
@@ -121,7 +121,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             }
         }
         
-        if(element.m_id == "C++ Source File")
+        if(element->m_id == "C++ Source File")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
@@ -133,7 +133,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_isCreatingDirectory = false;
             fileCreateDialog->setActive(true);
         }
-        else if(element.m_id == "C++ Header File")
+        else if(element->m_id == "C++ Header File")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
@@ -145,7 +145,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_isCreatingDirectory = false;
             fileCreateDialog->setActive(true);
         }
-        else if(element.m_id == "CreateNewDir")
+        else if(element->m_id == "CreateNewDir")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
@@ -157,15 +157,15 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_isCreatingDirectory = true;
             fileCreateDialog->setActive(true);
         }
-        else if(element.m_id == "Copy")
+        else if(element->m_id == "Copy")
         {
             copySelectedFiles();
         }
-        else if(element.m_id == "Paste")
+        else if(element->m_id == "Paste")
         {
             pasteFiles(m_currentFileOpsTargetDir);
         }
-        else if(element.m_id == "Scene")
+        else if(element->m_id == "Scene")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             

@@ -95,6 +95,8 @@ struct SGCore::SerializerSpec<MyStruct>
 
 void coreInit()
 {
+    ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
+
     std::printf("init...\n");
 
     testScene2 = SGCore::MakeRef<SGCore::Scene>();
@@ -208,8 +210,9 @@ void onUpdate(const double& dt, const double& fixedDt)
     SGCore::ImGuiWrap::ImGuiLayer::beginFrame();
     SGCore::ImGuiWrap::IView::getRoot()->render();
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
-    
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_P))
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_P) &&
+        ImGui::GetCurrentContext() && !ImGui::GetIO().WantTextInput)
     {
         if(SGCore::PluginsManager::isPluginExists("SungearEngineEditor"))
         {
@@ -230,7 +233,8 @@ void onUpdate(const double& dt, const double& fixedDt)
         }
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_O))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_O) &&
+            ImGui::GetCurrentContext() && !ImGui::GetIO().WantTextInput)
     {
         std::printf("unloaded plugin\n");
         SGCore::PluginsManager::unloadPlugin("SungearEngineEditor");

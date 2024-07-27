@@ -13,7 +13,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
     ImGuiContext* imGuiContext = ImGui::CreateContext();
     ImGui::SetCurrentContext(imGuiContext);
     m_currentContext = imGuiContext;
-    std::cout << "ImGui init! imGuiContext: " << m_currentContext << std::endl;
+    std::cout << "ImGui init! imGuiContext: " << ImGui::GetCurrentContext() << std::endl;
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;

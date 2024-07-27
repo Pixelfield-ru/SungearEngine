@@ -6,6 +6,7 @@
 #include "Styles/StylesManager.h"
 #include "ImGuiUtils.h"
 #include "nfd.h"
+#include <SGCore/Exceptions/FileNotFoundException.h>
 
 #include <imgui_stdlib.h>
 
@@ -15,6 +16,14 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
     {
         auto folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
                 ->getSpecialization(20, 20)
+                ->getTexture();
+
+        auto greenCheckMarkTexture = StylesManager::getCurrentStyle()->m_greenCheckmark
+                ->getSpecialization(16, 16)
+                ->getTexture();
+
+        auto redCrossTexture = StylesManager::getCurrentStyle()->m_redCross
+                ->getSpecialization(22, 22)
                 ->getTexture();
 
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 10));
@@ -63,18 +72,35 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
 
                 if(ImGui::IsItemEdited())
                 {
-                    try
-                    {
-                        m_selectedToolchain->setPath(m_currentToolchainPath);
-                    }
-                    catch(const std::exception& e)
-                    {
-                        // TODO: MAKE ERROR SHOW BELOW
-                    }
+                    setSelectedToolchainPath(m_currentToolchainPath);
 
                     if(onToolchainChanged)
                     {
                         onToolchainChanged();
+                    }
+                }
+
+                if (!m_toolchainPathError.empty())
+                {
+                    if(!m_toolchainPathError.contains("Correct toolchain"))
+                    {
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+                        ImGui::Image(redCrossTexture->getTextureNativeHandler(),
+                                     { (float) redCrossTexture->getWidth(),
+                                       (float) redCrossTexture->getHeight() });
+                        ImGui::SameLine();
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+                        ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, m_toolchainPathError.c_str());
+                    }
+                    else
+                    {
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                        ImGui::Image(greenCheckMarkTexture->getTextureNativeHandler(),
+                                     { (float) greenCheckMarkTexture->getWidth(),
+                                       (float) greenCheckMarkTexture->getHeight() });
+                        ImGui::SameLine();
+                        ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, m_toolchainPathError.c_str());
                     }
                 }
 
@@ -86,12 +112,13 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                                             ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
                                             ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
                 {
-                    /*char* dat = m_dirPath.data();
+                    char* dat = m_currentToolchainPath.data();
                     nfdresult_t result = NFD_PickFolder("", &dat);
                     if (result == NFD_OKAY)
                     {
-                        m_dirPath = dat;
-                    }*/
+                        m_currentToolchainPath = dat;
+                        setSelectedToolchainPath(m_currentToolchainPath);
+                    }
                 }
             }
 
@@ -111,10 +138,40 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchain(const SGCore::Ref<
     {
         m_currentToolchainName = toolchain->m_name.getName();
         m_currentToolchainPath = SGCore::Utils::toUTF8(toolchain->getPath().u16string());
+        setSelectedToolchainPath(m_currentToolchainPath);
     }
 }
 
 SGCore::Ref<SGE::Toolchain> SGE::SelectedToolchainDockedWindow::getSelectedToolchain() const noexcept
 {
     return m_selectedToolchain;
+}
+
+void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::filesystem::path& path)
+{
+    try
+    {
+        m_selectedToolchain->setPath(m_currentToolchainPath);
+        m_toolchainPathError = "Correct toolchain";
+    }
+    catch(const SGCore::FileNotFoundException& e)
+    {
+        std::string errWhat = e.what();
+        if(errWhat.contains("cmake.exe"))
+        {
+            m_cmakePathError = errWhat;
+        }
+        else if(errWhat.contains("build tool"))
+        {
+            m_buildToolPathError = errWhat;
+        }
+        else
+        {
+            m_toolchainPathError = errWhat;
+        }
+    }
+    catch(const std::exception& e)
+    {
+        m_toolchainPathError = "Incorrect path";
+    }
 }

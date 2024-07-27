@@ -5,6 +5,8 @@
 
 void SGE::EditorStyles::Dark::apply()
 {
+    IStyle::apply();
+
     ImVec4* colors = ImGui::GetStyle().Colors;
 
     colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
@@ -228,11 +230,6 @@ void SGE::EditorStyles::Dark::apply()
                 "white_minus_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/minus.svg");
-
-        m_visualStudioIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
-                "visual_studio_icon",
-                SungearEngineEditor::getInstance()->getLocalPath() +
-                "/Resources/icons/common/visual_studio.svg");
 
         m_mingwIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "mingw_icon",

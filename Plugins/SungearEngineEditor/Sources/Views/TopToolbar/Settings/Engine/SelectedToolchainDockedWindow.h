@@ -20,8 +20,14 @@ namespace SGE
         std::function<void()> onToolchainChanged;
 
     private:
+        void setSelectedToolchainPath(const std::filesystem::path& path);
+
         std::string m_currentToolchainName;
         std::string m_currentToolchainPath;
+
+        std::string m_toolchainPathError;
+        std::string m_cmakePathError;
+        std::string m_buildToolPathError;
 
         SGCore::Ref<Toolchain> m_selectedToolchain;
     };

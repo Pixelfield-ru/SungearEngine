@@ -42,6 +42,9 @@ namespace SGE
 
         std::string m_winSDKVersion;
 
+        std::filesystem::path m_vcvarsallPath;
+
+        void configurate() final;
         void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName) final;
     };
 }

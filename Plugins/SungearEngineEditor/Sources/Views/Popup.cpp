@@ -26,11 +26,13 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
             {
                 for(auto& elem : m_elements)
                 {
-                    if(!elem.m_isActive) continue;
+                    if(!elem) continue;
+                    
+                    if(!elem->m_isActive) continue;
 
-                    if(elem.m_name.getNamesManager() != m_namesManager)
+                    if(elem->m_name.getNamesManager() != m_namesManager)
                     {
-                        elem.m_name.attachToManager(m_namesManager);
+                        elem->m_name.attachToManager(m_namesManager);
                     }
                     
                     ++parentPopup->m_drawingElementsCount;
@@ -39,28 +41,29 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     
                     // FIRST COLUMN FOR ICON
                     ImGui::TableNextColumn();
-                    if(elem.m_icon)
+                    if(elem->m_icon)
                     {
-                        ImGui::Image(elem.m_icon->getTextureNativeHandler(), ImVec2(elem.m_icon->getWidth(), elem.m_icon->getHeight()));
+                        ImGui::Image(elem->m_icon->getTextureNativeHandler(), ImVec2(elem->m_icon->getWidth(), 
+                                                                                     elem->m_icon->getHeight()));
                     }
                     
                     // SECOND COLUMN FOR NAME
                     ImGui::TableNextColumn();
-                    ImGui::Text(elem.m_name.getName().c_str());
+                    ImGui::Text(elem->m_name.getName().c_str());
                     
                     // THIRD COLUMN FOR HOT KEYS OR CHEVRON ICON
                     ImGui::TableNextColumn();
                     float thirdColumnRightAlign = 0.0f;
-                    if(elem.m_elements.empty())
+                    if(elem->m_elements.empty())
                     {
                         auto textRightAlign = (ImGui::GetCursorPosX() + ImGui::GetColumnWidth() -
-                                               ImGui::CalcTextSize(elem.m_hint.c_str()).x);
+                                               ImGui::CalcTextSize(elem->m_hint.c_str()).x);
                         if(textRightAlign > ImGui::GetCursorPosX())
                         {
                             thirdColumnRightAlign = textRightAlign;
                             ImGui::SetCursorPosX(textRightAlign);
                         }
-                        ImGui::TextDisabled(elem.m_hint.c_str());
+                        ImGui::TextDisabled(elem->m_hint.c_str());
                     }
                     else
                     {
@@ -84,42 +87,42 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     bool hoveringRow = ImGui::IsMouseHoveringRect(rowStart.Min, rowEnd.Max, false);
                     if(hoveringRow)
                     {
-                        if(!elem.m_elements.empty())
+                        if(!elem->m_elements.empty())
                         {
-                            elem.m_popupPos = { rowEnd.Max.x + 6,
+                            elem->m_popupPos = { rowEnd.Max.x + 6,
                                                 rowStart.Min.y };
-                            elem.m_isOpened = true;
+                            elem->m_isOpened = true;
                         }
                         
                         for(auto& e : m_elements)
                         {
                             if(&e != &elem)
                             {
-                                e.recursiveClose();
+                                e->recursiveClose();
                             }
                         }
                         
-                        if(elem.m_elements.empty() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        if(elem->m_elements.empty() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
                         {
                             parentPopup->onElementClicked(elem);
                             
-                            if(elem.m_closePopupWhenClicked)
+                            if(elem->m_closePopupWhenClicked)
                             {
                                 parentPopup->setOpened(false);
                             }
                         }
                     }
                     
-                    elem.m_isHovered = hoveringRow;
+                    elem->m_isHovered = hoveringRow;
                     
-                    if(elem.m_isOpened || elem.m_isHovered)
+                    if(elem->m_isOpened || elem->m_isHovered)
                     {
                         m_rectToDraw = ImRect({ rowStart.Min.x - 4, rowStart.Min.y + 3 }, { rowEnd.Max.x + 4, rowEnd.Max.y - 3 });
                     }
                     
-                    elem.draw(parentPopup, this);
+                    elem->draw(parentPopup, this);
                     
-                    if(elem.m_drawSeparatorAfter)
+                    if(elem->m_drawSeparatorAfter)
                     {
                         ImGui::GetForegroundDrawList()->AddLine({ rowStart.Min.x, rowEnd.Max.y },
                                                                 { rowEnd.Max.x, rowEnd.Max.y },
@@ -141,8 +144,8 @@ void SGE::PopupElement::recursiveClose() noexcept
     m_isOpened = false;
     for(auto& e : m_elements)
     {
-        e.m_isOpened = false;
-        e.recursiveClose();
+        e->m_isOpened = false;
+        e->recursiveClose();
     }
 }
 
@@ -151,26 +154,26 @@ void SGE::PopupElement::setAllElementsActive(bool isActive) noexcept
     m_isActive = isActive;
     for(auto& e : m_elements)
     {
-        e.m_isActive = isActive;
+        e->m_isActive = isActive;
     }
 }
 
-SGE::PopupElement* SGE::PopupElement::tryGetElementRecursively(std::string_view id) noexcept
+SGCore::Ref<SGE::PopupElement> SGE::PopupElement::tryGetElementRecursively(std::string_view id) noexcept
 {
-    PopupElement* element = nullptr;
+    SGCore::Ref<PopupElement> elem;
 
     for(auto& e : m_elements)
     {
-        if(e.m_id == id)
+        if(e->m_id == id)
         {
-            element = &e;
+            elem = e;
             break;
         }
-        
-        element = e.tryGetElementRecursively(id);
+
+        elem = e->tryGetElementRecursively(id);
     }
     
-    return element;
+    return elem;
 }
 
 SGE::Popup::Popup(const std::string& name, const std::initializer_list<PopupElement>& items) noexcept
@@ -179,7 +182,8 @@ SGE::Popup::Popup(const std::string& name, const std::initializer_list<PopupElem
     
     for(auto& data : items)
     {
-        m_elements.push_back(data);
+        auto e = SGCore::MakeRef<PopupElement>(data);
+        m_elements.push_back(e);
     }
 }
 
@@ -207,11 +211,11 @@ void SGE::Popup::draw() noexcept
         {
             for(auto& elem : m_elements)
             {
-                if(!elem.m_isActive) continue;
+                if(!elem->m_isActive) continue;
 
-                if(elem.m_name.getNamesManager() != m_namesManager)
+                if(elem->m_name.getNamesManager() != m_namesManager)
                 {
-                    elem.m_name.attachToManager(m_namesManager);
+                    elem->m_name.attachToManager(m_namesManager);
                 }
                 
                 ++m_drawingElementsCount;
@@ -222,17 +226,17 @@ void SGE::Popup::draw() noexcept
                 
                 // FIRST COLUMN FOR ICON
                 ImGui::TableNextColumn();
-                if(elem.m_icon)
+                if(elem->m_icon)
                 {
-                    ImGui::Image(elem.m_icon->getTextureNativeHandler(), ImVec2(elem.m_icon->getWidth(), elem.m_icon->getHeight()));
+                    ImGui::Image(elem->m_icon->getTextureNativeHandler(), ImVec2(elem->m_icon->getWidth(), elem->m_icon->getHeight()));
                     
-                    rowHeight = elem.m_icon->getHeight() > rowHeight ? elem.m_icon->getHeight() : rowHeight;
+                    rowHeight = elem->m_icon->getHeight() > rowHeight ? elem->m_icon->getHeight() : rowHeight;
                 }
                 
                 // SECOND COLUMN FOR NAME
                 ImGui::TableNextColumn();
                 {
-                    ImVec2 textSize = ImGui::CalcTextSize(elem.m_name.getName().c_str());
+                    ImVec2 textSize = ImGui::CalcTextSize(elem->m_name.getName().c_str());
                     if(textSize.y > rowHeight)
                     {
                         rowHeight = textSize.y;
@@ -242,14 +246,14 @@ void SGE::Popup::draw() noexcept
                         float offsetY = (rowHeight - textSize.y) / 2.0f;
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
                     }
-                    ImGui::Text(elem.m_name.getName().c_str());
+                    ImGui::Text(elem->m_name.getName().c_str());
                 }
                 
                 // THIRD COLUMN FOR HOT KEYS OR CHEVRON ICON
                 ImGui::TableNextColumn();
-                if(elem.m_elements.empty())
+                if(elem->m_elements.empty())
                 {
-                    ImVec2 textSize = ImGui::CalcTextSize(elem.m_hint.c_str());
+                    ImVec2 textSize = ImGui::CalcTextSize(elem->m_hint.c_str());
                     auto textRightAlign = (ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - textSize.x);
                     if(textRightAlign > ImGui::GetCursorPosX())
                     {
@@ -266,7 +270,7 @@ void SGE::Popup::draw() noexcept
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
                     }
                     
-                    ImGui::TextDisabled(elem.m_hint.c_str());
+                    ImGui::TextDisabled(elem->m_hint.c_str());
                 }
                 else
                 {
@@ -289,42 +293,42 @@ void SGE::Popup::draw() noexcept
                 bool hoveringRow = ImGui::IsMouseHoveringRect(rowStart.Min, rowEnd.Max, false);
                 if(hoveringRow)
                 {
-                    if(!elem.m_elements.empty())
+                    if(!elem->m_elements.empty())
                     {
-                        elem.m_popupPos = { rowEnd.Max.x + 6,
+                        elem->m_popupPos = { rowEnd.Max.x + 6,
                                             rowStart.Min.y };
-                        elem.m_isOpened = true;
+                        elem->m_isOpened = true;
                     }
                     
                     for(auto& e : m_elements)
                     {
                         if(&e != &elem)
                         {
-                            e.recursiveClose();
+                            e->recursiveClose();
                         }
                     }
                     
-                    if(elem.m_elements.empty() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                    if(elem->m_elements.empty() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
                     {
                         onElementClicked(elem);
                         
-                        if(elem.m_closePopupWhenClicked)
+                        if(elem->m_closePopupWhenClicked)
                         {
                             setOpened(false);
                         }
                     }
                 }
                 
-                elem.m_isHovered = hoveringRow;
+                elem->m_isHovered = hoveringRow;
                 
-                if(elem.m_isOpened || elem.m_isHovered)
+                if(elem->m_isOpened || elem->m_isHovered)
                 {
                     m_rectToDraw = ImRect({ rowStart.Min.x - 4, rowStart.Min.y + 3 }, { rowEnd.Max.x + 4, rowEnd.Max.y - 3 });
                 }
                 
-                elem.draw(this, &elem);
+                elem->draw(this, elem.get());
                 
-                if(elem.m_drawSeparatorAfter)
+                if(elem->m_drawSeparatorAfter)
                 {
                     ImGui::GetForegroundDrawList()->AddLine({ rowStart.Min.x, rowEnd.Max.y },
                                                             { rowEnd.Max.x, rowEnd.Max.y },
@@ -351,7 +355,7 @@ void SGE::Popup::recursiveClose() noexcept
 {
     for(auto& e : m_elements)
     {
-        e.recursiveClose();
+        e->recursiveClose();
     }
 }
 
@@ -359,7 +363,7 @@ void SGE::Popup::setAllElementsActive(bool isActive) noexcept
 {
     for(auto& e : m_elements)
     {
-        e.setAllElementsActive(isActive);
+        e->setAllElementsActive(isActive);
     }
 }
 
@@ -383,19 +387,20 @@ void SGE::Popup::setOpened(bool isOpened) noexcept
     }
 }
 
-SGE::PopupElement* SGE::Popup::tryGetElement(std::string_view id) noexcept
+SGCore::Ref<SGE::PopupElement> SGE::Popup::tryGetElement(std::string_view id) noexcept
 {
-    PopupElement* element = nullptr;
+    SGCore::Ref<PopupElement> elem;
+
     for(auto& e : m_elements)
     {
-        if(e.m_id == id)
+        if(e->m_id == id)
         {
-            element = &e;
+            elem = e;
             break;
         }
-        
-        element = e.tryGetElementRecursively(id);
+
+        elem = e->tryGetElementRecursively(id);
     }
     
-    return element;
+    return elem;
 }

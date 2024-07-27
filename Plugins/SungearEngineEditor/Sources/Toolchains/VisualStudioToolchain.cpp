@@ -6,6 +6,7 @@
 
 #include <SGCore/Utils/Utils.h>
 #include <SGCore/Utils/FileUtils.h>
+#include <SGCore/Exceptions/FileNotFoundException.h>
 
 std::string SGE::VCArchTypeToString(const SGE::VCArchType& archType) noexcept
 {
@@ -52,28 +53,33 @@ SGE::VisualStudioToolchain::VisualStudioToolchain()
     m_type = ToolchainType::VISUAL_STUDIO;
 }
 
+void SGE::VisualStudioToolchain::configurate()
+{
+    Toolchain::configurate();
+
+    const auto vcvarsallbatPath = SGCore::FileUtils::findFile(m_path, "vcvarsall.bat");
+
+    if(vcvarsallbatPath.filename() != "vcvarsall.bat")
+    {
+        throw SGCore::FileNotFoundException(vcvarsallbatPath,
+                                            "File vcvarsall.bat was not found in Visual Studio toolchain");
+    }
+
+    m_vcvarsallPath = vcvarsallbatPath;
+}
+
 void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathToProjectRoot,
                                               const std::string& cmakePresetName)
 {
     Toolchain::buildProject(pathToProjectRoot, cmakePresetName);
 
     // BUILDING PROJECT
-
-    const auto vcvarsallbatPath = SGCore::FileUtils::findFile(m_path, "vcvarsall.bat");
-
-    if(vcvarsallbatPath.filename() != "vcvarsall.bat")
-    {
-        throw std::runtime_error(fmt::format(
-                "Error while building project '{0}'. File vcvarsall.bat was not found in Visual Studio toolchain",
-                SGCore::Utils::toUTF8(pathToProjectRoot.u16string())));
-    }
-
     const std::string archTypeAsString = VCArchTypeToString(m_archType);
     const std::string platformTypeAsString = VCPlatformTypeToString(m_platformType);
 
     // PREPARING ENVIRONMENT
     const std::string vcvarsallCommand = fmt::format(R"("{0}" {1} {2} {3})",
-                                                     SGCore::Utils::toUTF8(vcvarsallbatPath.u16string()),
+                                                     SGCore::Utils::toUTF8(m_vcvarsallPath.u16string()),
                                                      archTypeAsString,
                                                      platformTypeAsString,
                                                      m_winSDKVersion);

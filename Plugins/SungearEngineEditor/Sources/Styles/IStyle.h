@@ -51,10 +51,13 @@ namespace SGE
         SGCore::Ref<SGCore::SVGImage> m_visualStudioIcon;
         SGCore::Ref<SGCore::SVGImage> m_mingwIcon;
 
+        SGCore::Ref<SGCore::SVGImage> m_greenCheckmark;
+        SGCore::Ref<SGCore::SVGImage> m_redCross;
+
         std::unordered_map<std::string, ImFont*> m_fonts;
-        
-    private:
-        virtual void apply() = 0;
+
+    protected:
+        virtual void apply();
     };
 }
 

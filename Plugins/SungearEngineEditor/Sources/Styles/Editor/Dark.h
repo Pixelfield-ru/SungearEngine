@@ -25,8 +25,8 @@ namespace SGE::EditorStyles
         {
             m_name = "Dark";
         }
-        
-    private:
+
+    protected:
         void apply() override;
     };
 }

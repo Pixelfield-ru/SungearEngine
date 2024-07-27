@@ -87,10 +87,15 @@ void SGCore::FileUtils::createDirectory(const std::string_view& path, bool creat
     std::filesystem::create_directories(path);
 }
 
-std::filesystem::path SGCore::FileUtils::findFile(const std::filesystem::path& relativePath, const std::filesystem::path& fileName) noexcept
+std::filesystem::path
+SGCore::FileUtils::findFile(const std::filesystem::path& relativePath, const std::filesystem::path& fileName)
 {
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(relativePath)) {
-        if (entry.is_regular_file() && entry.path().filename() == fileName) {
+    for (const auto& entry: std::filesystem::recursive_directory_iterator(relativePath,
+                                                                          std::filesystem::directory_options::skip_permission_denied |
+                                                                          std::filesystem::directory_options::follow_directory_symlink))
+    {
+        if(entry.is_regular_file() && entry.path().filename() == fileName)
+        {
             return entry.path();
         }
     }

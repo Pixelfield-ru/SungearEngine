@@ -28,7 +28,7 @@ namespace SGE
         bool m_closePopupWhenClicked = true;
         bool m_isActive = true;
         
-        std::vector<PopupElement> m_elements;
+        std::vector<SGCore::Ref<PopupElement>> m_elements;
         
         void draw(Popup* parentPopup, PopupElement* parentElement) noexcept;
         
@@ -43,7 +43,7 @@ namespace SGE
 
         void recursiveClose() noexcept;
         void setAllElementsActive(bool isActive) noexcept;
-        [[nodiscard]] PopupElement* tryGetElementRecursively(std::string_view id) noexcept;
+        [[nodiscard]] SGCore::Ref<PopupElement> tryGetElementRecursively(std::string_view id) noexcept;
     };
     
     struct Popup
@@ -57,14 +57,14 @@ namespace SGE
         Popup(const std::string& name, const std::initializer_list<PopupElement>& items) noexcept;
         
         std::string m_name;
-        std::vector<PopupElement> m_elements;
+        std::vector<SGCore::Ref<PopupElement>> m_elements;
         
         void draw() noexcept;
         
-        SGCore::Event<void(PopupElement&)> onElementClicked;
+        SGCore::Event<void(const SGCore::Ref<PopupElement>&)> onElementClicked;
         SGCore::Event<void(bool last, bool current)> onOpenedChanged;
-        
-        PopupElement* tryGetElement(std::string_view id) noexcept;
+
+        SGCore::Ref<PopupElement> tryGetElement(std::string_view id) noexcept;
         
         void recursiveClose() noexcept;
         void setAllElementsActive(bool isActive) noexcept;

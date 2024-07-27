@@ -16,7 +16,7 @@ namespace SGCore::FileUtils
 
     void createDirectory(const std::string_view& path, bool createNew) noexcept;
 
-    std::filesystem::path findFile(const std::filesystem::path& relativePath, const std::filesystem::path& fileName) noexcept;
+    std::filesystem::path findFile(const std::filesystem::path& relativePath, const std::filesystem::path& fileName);
 }
 
 #endif // SUNGEARENGINE_FILEUTILS_H

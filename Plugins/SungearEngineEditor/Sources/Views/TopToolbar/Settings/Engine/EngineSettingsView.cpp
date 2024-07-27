@@ -55,7 +55,7 @@ SGE::EngineSettingsView::EngineSettingsView()
 
 void SGE::EngineSettingsView::onActiveChangedListener()
 {
-    m_toolchainsDockedWindow->m_currentToolchains = *Toolchains::getInstance().get();
+    // m_toolchainsDockedWindow->m_currentToolchains = *Toolchains::getInstance().get();
 }
 
 void SGE::EngineSettingsView::onDock()
