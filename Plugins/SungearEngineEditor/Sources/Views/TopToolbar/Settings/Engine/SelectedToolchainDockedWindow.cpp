@@ -17,15 +17,10 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                 ->getSpecialization(20, 20)
                 ->getTexture();
 
-        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 3));
-
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 10));
         ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
         if(ImGui::BeginTable((m_name.getName() + "_Table").c_str(), 3, ImGuiTableFlags_SizingStretchProp))
         {
-            /*ImGui::TableSetupColumn("test", ImGuiTableColumnFlags_WidthStretch);
-            ImGui::TableSetupColumn("test0", ImGuiTableColumnFlags_WidthStretch);
-            ImGui::TableSetupColumn("test1", ImGuiTableColumnFlags_WidthStretch);*/
-
             ImGui::TableNextRow();
             {
                 ImGui::TableNextColumn();
@@ -41,6 +36,41 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                 {
                     m_selectedToolchain->m_name = m_currentToolchainName;
                     m_currentToolchainName = m_selectedToolchain->m_name.getName();
+
+                    if(onToolchainChanged)
+                    {
+                        onToolchainChanged();
+                    }
+                }
+
+                ImGui::TableNextColumn();
+            }
+
+            ImGui::TableNextRow();
+            {
+                ImGui::TableNextColumn();
+                ImGui::GetWindowDrawList()->AddLine({ ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 10 } ,
+                                                    ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetWindowSize().x - 17,
+                                                           ImGui::GetCursorScreenPos().y - 10),
+                                                    ImGui::ColorConvertFloat4ToU32({ 0.60f, 0.60f, 0.60f, 0.29f }));
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+                ImGui::Text("Path");
+
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::InputText("##ToolchainPathInputText", &m_currentToolchainPath, ImGuiInputTextFlags_EnterReturnsTrue);
+
+                if(ImGui::IsItemEdited())
+                {
+                    try
+                    {
+                        m_selectedToolchain->setPath(m_currentToolchainPath);
+                    }
+                    catch(const std::exception& e)
+                    {
+                        // TODO: MAKE ERROR SHOW BELOW
+                    }
 
                     if(onToolchainChanged)
                     {
@@ -65,29 +95,11 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                 }
             }
 
-
-            ImGui::GetWindowDrawList()->AddLine(ImGui::GetCursorPos(),
-                                                ImVec2(ImGui::GetCursorPos().x + ImGui::GetContentRegionAvail().x,
-                                                       ImGui::GetCursorPos().y), ImGui::ColorConvertFloat4ToU32({ 1.0, 1.0, 1.0, 1.0 }));
-
-            /*ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 3));
-            ImGui::TableNextRow();
-            {
-                ImGui::TableNextColumn();
-                ImGui::Separator();
-
-                ImGui::TableNextColumn();
-                ImGui::Separator();
-
-                ImGui::TableNextColumn();
-                ImGui::Separator();
-            }
-            ImGui::PopStyleVar();*/
-
             ImGui::EndTable();
         }
-
         ImGui::PopStyleVar();
+
+        // ImGui::Separator();
     }
 }
 
@@ -98,6 +110,7 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchain(const SGCore::Ref<
     if(m_selectedToolchain)
     {
         m_currentToolchainName = toolchain->m_name.getName();
+        m_currentToolchainPath = SGCore::Utils::toUTF8(toolchain->getPath().u16string());
     }
 }
 

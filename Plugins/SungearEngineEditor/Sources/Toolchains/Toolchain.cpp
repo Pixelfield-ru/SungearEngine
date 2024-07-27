@@ -14,13 +14,6 @@ SGE::ToolchainType SGE::Toolchain::getType() const
     return m_type;
 }
 
-void SGE::Toolchain::setType(SGE::ToolchainType type)
-{
-    m_type = type;
-
-    configurate();
-}
-
 std::filesystem::path SGE::Toolchain::getPath() const
 {
     return m_path;

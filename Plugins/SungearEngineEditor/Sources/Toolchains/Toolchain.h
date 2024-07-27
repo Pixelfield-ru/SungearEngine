@@ -17,7 +17,6 @@ namespace SGE
         SGCore::UniqueName m_name;
 
         [[nodiscard]] ToolchainType getType() const;
-        void setType(ToolchainType type);
 
         [[nodiscard]] std::filesystem::path getPath() const;
         void setPath(const std::filesystem::path& path);

@@ -13,7 +13,7 @@ SGE::SettingsView::SettingsView()
     m_isPopupWindow = true;
 
     m_bodyPadding = { 0, 1 };
-    m_bodyMinSize = { 700, 400 };
+    m_bodyMinSize = { 800, 400 };
 
     const auto buttonsSize = ImVec2(75, 0);
 

@@ -21,6 +21,7 @@ namespace SGE
 
     private:
         std::string m_currentToolchainName;
+        std::string m_currentToolchainPath;
 
         SGCore::Ref<Toolchain> m_selectedToolchain;
     };
