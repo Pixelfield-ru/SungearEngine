@@ -91,18 +91,28 @@ void SGE::Toolchain::setBuildToolPath(const std::filesystem::path& buildToolPath
     // CMAKE TEST
     if(std::filesystem::exists(m_buildToolPath))
     {
-        std::string buildToolTest = SGCore::Utils::consoleExecute(
-                fmt::format("\"{0}\"",
-                            SGCore::Utils::toUTF8(m_cmakePath.u16string()))
-        );
-
-        // BUILD TOOL AS NINJA. TEST PASSED
-        if(buildToolTest.contains("ninja") && buildToolTest.contains("error"))
+        // BUILD TOOL AS NINJA
+        if(SGCore::Utils::toUTF8(m_buildToolPath.u16string()).contains("ninja.exe"))
         {
-            m_buildToolVersion = SGCore::Utils::consoleExecute(
+            std::string versionCommandResult = SGCore::Utils::consoleExecute(
                     fmt::format("\"{0}\" --version",
-                                SGCore::Utils::toUTF8(m_cmakePath.u16string()))
+                                SGCore::Utils::toUTF8(m_buildToolPath.u16string()))
             );
+
+            // SKIPPING FIRST TWO LINES OF OUTPUT (THIS LINES PROVIDES COMMAND THAT WAS PASSED TO CONSOLE)
+            std::vector<std::string> lines;
+            SGCore::Utils::splitString(versionCommandResult, '\n', lines);
+            if(lines.size() < 3)
+            {
+                throw std::exception("Invalid CMake");
+            }
+            std::vector<std::string> thirdLineWords;
+            SGCore::Utils::splitString(lines[2], ' ', thirdLineWords);
+
+            if(!thirdLineWords.empty())
+            {
+                m_buildToolVersion = "Ninja " + thirdLineWords[0];
+            }
         }
         else
         {

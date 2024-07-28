@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINEEDITOR_SELECTEDTOOLCHAINDOCKEDWINDOW_H
 #define SUNGEARENGINEEDITOR_SELECTEDTOOLCHAINDOCKEDWINDOW_H
 
+#include <SGCore/Graphics/API/ITexture2D.h>
 #include "Views/DockedWindow.h"
 #include "Toolchains/Toolchain.h"
 
@@ -31,6 +32,9 @@ namespace SGE
 
         void setSelectedToolchainPath(const std::filesystem::path& path, ToolchainPathType pathType);
 
+        void drawCMakeChooseRow();
+        void drawBuildToolChooseRow();
+
         std::string m_currentToolchainName;
 
         std::string m_currentToolchainPath;
@@ -54,6 +58,12 @@ namespace SGE
         // ==================================================
 
         SGCore::Ref<Toolchain> m_selectedToolchain;
+
+        // USED ICONS =======================================
+        SGCore::Ref<SGCore::ITexture2D> m_folderTexture;
+        SGCore::Ref<SGCore::ITexture2D> m_greenCheckMarkTexture;
+        SGCore::Ref<SGCore::ITexture2D> m_redCrossTexture;
+        SGCore::Ref<SGCore::ITexture2D> m_questionCircledTexture;
     };
 }
 

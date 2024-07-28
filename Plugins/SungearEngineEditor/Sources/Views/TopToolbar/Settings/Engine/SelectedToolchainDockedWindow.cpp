@@ -15,19 +15,19 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
 {
     if(m_selectedToolchain)
     {
-        auto folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
+        m_folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
                 ->getSpecialization(20, 20)
                 ->getTexture();
 
-        auto greenCheckMarkTexture = StylesManager::getCurrentStyle()->m_greenCheckmark
+        m_greenCheckMarkTexture = StylesManager::getCurrentStyle()->m_greenCheckmark
                 ->getSpecialization(16, 16)
                 ->getTexture();
 
-        auto redCrossTexture = StylesManager::getCurrentStyle()->m_redCross
+        m_redCrossTexture = StylesManager::getCurrentStyle()->m_redCross
                 ->getSpecialization(22, 22)
                 ->getTexture();
 
-        auto questionCircledTexture = StylesManager::getCurrentStyle()->m_questionCircledIcon
+        m_questionCircledTexture = StylesManager::getCurrentStyle()->m_questionCircledIcon
                 ->getSpecialization(16, 16)
                 ->getTexture();
 
@@ -99,9 +99,9 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                     {
                         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                        ImGui::Image(redCrossTexture->getTextureNativeHandler(),
-                                     { (float) redCrossTexture->getWidth(),
-                                       (float) redCrossTexture->getHeight() });
+                        ImGui::Image(m_redCrossTexture->getTextureNativeHandler(),
+                                     { (float) m_redCrossTexture->getWidth(),
+                                       (float) m_redCrossTexture->getHeight() });
                         ImGui::SameLine();
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
                         ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, m_toolchainPathError.c_str());
@@ -109,9 +109,9 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                     else
                     {
                         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                        ImGui::Image(greenCheckMarkTexture->getTextureNativeHandler(),
-                                     { (float) greenCheckMarkTexture->getWidth(),
-                                       (float) greenCheckMarkTexture->getHeight() });
+                        ImGui::Image(m_greenCheckMarkTexture->getTextureNativeHandler(),
+                                     { (float) m_greenCheckMarkTexture->getWidth(),
+                                       (float) m_greenCheckMarkTexture->getHeight() });
                         ImGui::SameLine();
                         ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, m_toolchainPathError.c_str());
                     }
@@ -121,9 +121,9 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
 
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                if (ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
-                                            ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
-                                            ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
+                if (ImGuiUtils::ImageButton(m_folderTexture->getTextureNativeHandler(),
+                                            ImVec2(m_folderTexture->getWidth() + 6, m_folderTexture->getHeight() + 6),
+                                            ImVec2(m_folderTexture->getWidth(), m_folderTexture->getHeight())).m_isLMBClicked)
                 {
                     char* dat = m_currentToolchainPath.data();
                     nfdresult_t result = NFD_PickFolder("", &dat);
@@ -238,9 +238,9 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
                         ImGui::Text("SDK Version");
                         ImGui::SameLine();
-                        ImGui::Image(questionCircledTexture->getTextureNativeHandler(), {
-                                (float) questionCircledTexture->getWidth(),
-                                (float) questionCircledTexture->getHeight()
+                        ImGui::Image(m_questionCircledTexture->getTextureNativeHandler(), {
+                                (float) m_questionCircledTexture->getWidth(),
+                                (float) m_questionCircledTexture->getHeight()
                         });
                         if(ImGui::IsItemHovered())
                         {
@@ -287,82 +287,9 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                 break;
             }
 
-            ImGui::TableNextRow();
-            {
-                ImGui::TableNextColumn();
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
-                ImGui::Text("CMake");
-                ImGui::SameLine();
-                ImGui::Image(questionCircledTexture->getTextureNativeHandler(), {
-                        (float) questionCircledTexture->getWidth(),
-                        (float) questionCircledTexture->getHeight()
-                });
-                if(ImGui::IsItemHovered())
-                {
-                    ImGui::SetTooltip("Leave empty to auto-detect");
-                }
+            drawCMakeChooseRow();
 
-                ImGui::TableNextColumn();
-                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                ImGui::InputText("##ToolchainCMakePathInputText", &m_currentToolchainCMakePath,
-                                 ImGuiInputTextFlags_EnterReturnsTrue);
-
-                // m_selectedToolchain->set
-
-                if(ImGui::IsItemEdited())
-                {
-                    setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
-
-                    if(onToolchainChanged)
-                    {
-                        onToolchainChanged();
-                    }
-                }
-
-                if (!m_cmakePathError.empty())
-                {
-                    if(!m_cmakePathError.contains("Version"))
-                    {
-                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                        ImGui::Image(redCrossTexture->getTextureNativeHandler(),
-                                     { (float) redCrossTexture->getWidth(),
-                                       (float) redCrossTexture->getHeight() });
-                        ImGui::SameLine();
-                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
-                        ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, m_cmakePathError.c_str());
-                    }
-                    else
-                    {
-                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                        ImGui::Image(greenCheckMarkTexture->getTextureNativeHandler(),
-                                     { (float) greenCheckMarkTexture->getWidth(),
-                                       (float) greenCheckMarkTexture->getHeight() });
-                        ImGui::SameLine();
-                        ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, m_cmakePathError.c_str());
-                    }
-                }
-
-                ImGui::TableNextColumn();
-
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                if (ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
-                                            ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
-                                            ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
-                {
-                    char* dat = m_currentToolchainCMakePath.data();
-                    nfdresult_t result = NFD_OpenDialog({}, "", &dat);
-                    if (result == NFD_OKAY)
-                    {
-                        m_currentToolchainCMakePath = dat;
-                        setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
-
-                        // std::printf("selected cmake %s\n", SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string()).c_str());
-                    }
-                }
-            }
+            drawBuildToolChooseRow();
 
             ImGui::EndTable();
         }
@@ -406,6 +333,15 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::fil
 
                         std::printf("selected cmake %s\n", m_currentToolchainCMakePath.c_str());
                     }
+                    if(m_currentToolchainBuildToolPath.empty())
+                    {
+                        setSelectedToolchainPath(m_selectedToolchain->getBuildToolPath(),
+                                                 ToolchainPathType::BUILD_TOOL);
+                        m_currentToolchainBuildToolPath = SGCore::Utils::toUTF8(
+                                m_selectedToolchain->getBuildToolPath().u16string());
+
+                        std::printf("selected build tool %s\n", m_currentToolchainBuildToolPath.c_str());
+                    }
                     break;
                 }
                 case ToolchainPathType::CMAKE:
@@ -424,6 +360,13 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::fil
                 }
                 case ToolchainPathType::BUILD_TOOL:
                 {
+                    // AUTO DETECTING BUILD TOOL
+                    if(path.empty())
+                    {
+                        m_selectedToolchain->setBuildToolPath("");
+                        setSelectedToolchainPath(m_selectedToolchain->getPath(), ToolchainPathType::OWN);
+                        break;
+                    }
                     m_selectedToolchain->setBuildToolPath(path);
                     m_buildToolPathError = "Version: " + m_selectedToolchain->getBuildToolVersion();
                     break;
@@ -510,6 +453,166 @@ void SGE::SelectedToolchainDockedWindow::updateSelectedToolchain()
                     }
                 }
                 break;
+            }
+        }
+    }
+}
+
+void SGE::SelectedToolchainDockedWindow::drawCMakeChooseRow()
+{
+    ImGui::TableNextRow();
+    {
+        ImGui::TableNextColumn();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+        ImGui::Text("CMake");
+        ImGui::SameLine();
+        ImGui::Image(m_questionCircledTexture->getTextureNativeHandler(), {
+                (float) m_questionCircledTexture->getWidth(),
+                (float) m_questionCircledTexture->getHeight()
+        });
+        if(ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Leave empty to auto-detect");
+        }
+
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+        ImGui::InputText("##ToolchainCMakePathInputText", &m_currentToolchainCMakePath,
+                         ImGuiInputTextFlags_EnterReturnsTrue);
+
+        // m_selectedToolchain->set
+
+        if(ImGui::IsItemEdited())
+        {
+            setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
+
+            if(onToolchainChanged)
+            {
+                onToolchainChanged();
+            }
+        }
+
+        if (!m_cmakePathError.empty())
+        {
+            if(!m_cmakePathError.contains("Version"))
+            {
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+                ImGui::Image(m_redCrossTexture->getTextureNativeHandler(),
+                             { (float) m_redCrossTexture->getWidth(),
+                               (float) m_redCrossTexture->getHeight() });
+                ImGui::SameLine();
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+                ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, m_cmakePathError.c_str());
+            }
+            else
+            {
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::Image(m_greenCheckMarkTexture->getTextureNativeHandler(),
+                             { (float) m_greenCheckMarkTexture->getWidth(),
+                               (float) m_greenCheckMarkTexture->getHeight() });
+                ImGui::SameLine();
+                ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, m_cmakePathError.c_str());
+            }
+        }
+
+        ImGui::TableNextColumn();
+
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+        if (ImGuiUtils::ImageButton(m_folderTexture->getTextureNativeHandler(),
+                                    ImVec2(m_folderTexture->getWidth() + 6, m_folderTexture->getHeight() + 6),
+                                    ImVec2(m_folderTexture->getWidth(), m_folderTexture->getHeight())).m_isLMBClicked)
+        {
+            char* dat = m_currentToolchainCMakePath.data();
+            nfdresult_t result = NFD_OpenDialog({}, "", &dat);
+            if (result == NFD_OKAY)
+            {
+                m_currentToolchainCMakePath = dat;
+                setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
+
+                // std::printf("selected cmake %s\n", SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string()).c_str());
+            }
+        }
+    }
+}
+
+void SGE::SelectedToolchainDockedWindow::drawBuildToolChooseRow()
+{
+    ImGui::TableNextRow();
+    {
+        ImGui::TableNextColumn();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+        ImGui::Text("Build Tool");
+        ImGui::SameLine();
+        ImGui::Image(m_questionCircledTexture->getTextureNativeHandler(), {
+                (float) m_questionCircledTexture->getWidth(),
+                (float) m_questionCircledTexture->getHeight()
+        });
+        if(ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Leave empty to auto-detect");
+        }
+
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+        ImGui::InputText("##ToolchainBuildToolPathInputText", &m_currentToolchainBuildToolPath,
+                         ImGuiInputTextFlags_EnterReturnsTrue);
+
+        // m_selectedToolchain->set
+
+        if(ImGui::IsItemEdited())
+        {
+            setSelectedToolchainPath(m_currentToolchainBuildToolPath, ToolchainPathType::BUILD_TOOL);
+
+            if(onToolchainChanged)
+            {
+                onToolchainChanged();
+            }
+        }
+
+        if (!m_buildToolPathError.empty())
+        {
+            if(!m_buildToolPathError.contains("Version"))
+            {
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+                ImGui::Image(m_redCrossTexture->getTextureNativeHandler(),
+                             { (float) m_redCrossTexture->getWidth(),
+                               (float) m_redCrossTexture->getHeight() });
+                ImGui::SameLine();
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+                ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, m_buildToolPathError.c_str());
+            }
+            else
+            {
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::Image(m_greenCheckMarkTexture->getTextureNativeHandler(),
+                             { (float) m_greenCheckMarkTexture->getWidth(),
+                               (float) m_greenCheckMarkTexture->getHeight() });
+                ImGui::SameLine();
+                ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, m_buildToolPathError.c_str());
+            }
+        }
+
+        ImGui::TableNextColumn();
+
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+        if (ImGuiUtils::ImageButton(m_folderTexture->getTextureNativeHandler(),
+                                    ImVec2(m_folderTexture->getWidth() + 6, m_folderTexture->getHeight() + 6),
+                                    ImVec2(m_folderTexture->getWidth(), m_folderTexture->getHeight())).m_isLMBClicked)
+        {
+            char* dat = m_currentToolchainBuildToolPath.data();
+            nfdresult_t result = NFD_OpenDialog({}, "", &dat);
+            if (result == NFD_OKAY)
+            {
+                m_currentToolchainBuildToolPath = dat;
+                setSelectedToolchainPath(m_currentToolchainBuildToolPath, ToolchainPathType::BUILD_TOOL);
+
+                // std::printf("selected cmake %s\n", SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string()).c_str());
             }
         }
     }
