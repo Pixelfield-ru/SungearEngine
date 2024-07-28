@@ -161,6 +161,11 @@ void SGE::EditorStyles::Dark::apply()
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/question.svg");
 
+        m_questionCircledIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                "white_question_circled_icon",
+                SungearEngineEditor::getInstance()->getLocalPath() +
+                "/Resources/icons/dark_style/question_circled.svg");
+
         m_libraryIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_library_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +

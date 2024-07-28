@@ -124,7 +124,6 @@ namespace SGE
                                         }),
                                         SGCore::MakeRef<PopupElement>(PopupElement {
                                                 .m_name = "Directory",
-                                                .m_id = "CreateNewDir",
                                                 .m_icon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(
                                                         18, 18)->getTexture()
                                         }),

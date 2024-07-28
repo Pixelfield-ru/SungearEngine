@@ -53,6 +53,10 @@ namespace SGCore
         bool operator!=(const char* name) const noexcept;
         bool operator==(const std::string& name) const noexcept;
         bool operator!=(const std::string& name) const noexcept;
+        bool operator==(std::string_view name) const noexcept;
+        bool operator!=(std::string_view name) const noexcept;
+
+        operator std::string() const noexcept;
 
     private:
         std::weak_ptr<UniqueNamesManager> m_parentUniqueNamesManager;

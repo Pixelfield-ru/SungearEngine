@@ -28,6 +28,7 @@ namespace SGE
         SGCore::Ref<SGCore::SVGImage> m_linesIcon;
         SGCore::Ref<SGCore::SVGImage> m_moreIcon;
         SGCore::Ref<SGCore::SVGImage> m_questionIcon;
+        SGCore::Ref<SGCore::SVGImage> m_questionCircledIcon;
         SGCore::Ref<SGCore::SVGImage> m_libraryIcon;
         SGCore::Ref<SGCore::SVGImage> m_trashBinIcon;
         SGCore::Ref<SGCore::SVGImage> m_pencilIcon;

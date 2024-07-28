@@ -158,19 +158,24 @@ void SGE::PopupElement::setAllElementsActive(bool isActive) noexcept
     }
 }
 
-SGCore::Ref<SGE::PopupElement> SGE::PopupElement::tryGetElementRecursively(std::string_view id) noexcept
+SGCore::Ref<SGE::PopupElement> SGE::PopupElement::tryGetElementRecursively(std::string_view name) noexcept
 {
     SGCore::Ref<PopupElement> elem;
 
     for(auto& e : m_elements)
     {
-        if(e->m_id == id)
+        if(e->m_name.getNamesManager() != m_namesManager)
+        {
+            e->m_name.attachToManager(m_namesManager);
+        }
+
+        if(e->m_name == name)
         {
             elem = e;
             break;
         }
 
-        elem = e->tryGetElementRecursively(id);
+        elem = e->tryGetElementRecursively(name);
     }
     
     return elem;
@@ -387,19 +392,24 @@ void SGE::Popup::setOpened(bool isOpened) noexcept
     }
 }
 
-SGCore::Ref<SGE::PopupElement> SGE::Popup::tryGetElement(std::string_view id) noexcept
+SGCore::Ref<SGE::PopupElement> SGE::Popup::tryGetElement(std::string_view name) noexcept
 {
     SGCore::Ref<PopupElement> elem;
 
     for(auto& e : m_elements)
     {
-        if(e->m_id == id)
+        if(e->m_name.getNamesManager() != m_namesManager)
+        {
+            e->m_name.attachToManager(m_namesManager);
+        }
+
+        if(e->m_name == name)
         {
             elem = e;
             break;
         }
 
-        elem = e->tryGetElementRecursively(id);
+        elem = e->tryGetElementRecursively(name);
     }
     
     return elem;

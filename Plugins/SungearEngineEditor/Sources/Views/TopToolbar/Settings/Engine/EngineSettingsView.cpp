@@ -26,6 +26,7 @@ SGE::EngineSettingsView::EngineSettingsView()
             .onClicked = [this](TreeNode& self) {
                 m_toolchainsDockedWindow->setActive(true);
                 m_toolchainsDockedWindow->getSelectedToolchainDockedWindow()->setActive(true);
+                m_toolchainsDockedWindow->getSelectedToolchainDockedWindow()->updateSelectedToolchain();
                 m_isSettingsContentViewContainsDockedWindow = true;
 
                 onSettingsContentDraw = [this]() {
@@ -43,7 +44,6 @@ SGE::EngineSettingsView::EngineSettingsView()
                 m_isSettingsContentViewContainsDockedWindow = false;
 
                 onSettingsContentDraw = [this]() {
-                    ImGui::Text("sdfsdfsf");
                 };
             },
             .m_children = { toolchainsNode },
@@ -55,6 +55,10 @@ SGE::EngineSettingsView::EngineSettingsView()
 
 void SGE::EngineSettingsView::onActiveChangedListener()
 {
+    if(isActive())
+    {
+        m_toolchainsDockedWindow->getSelectedToolchainDockedWindow()->updateSelectedToolchain();
+    }
     // m_toolchainsDockedWindow->m_currentToolchains = *Toolchains::getInstance().get();
 }
 

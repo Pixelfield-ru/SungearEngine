@@ -124,3 +124,18 @@ bool SGCore::UniqueName::operator!=(const std::string& name) const noexcept
 {
     return m_name != name;
 }
+
+bool SGCore::UniqueName::operator==(std::string_view name) const noexcept
+{
+    return m_name == name;
+}
+
+bool SGCore::UniqueName::operator!=(std::string_view name) const noexcept
+{
+    return m_name != name;
+}
+
+SGCore::UniqueName::operator std::string() const noexcept
+{
+    return m_name;
+}
