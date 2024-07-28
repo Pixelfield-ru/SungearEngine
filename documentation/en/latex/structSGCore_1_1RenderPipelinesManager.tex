@@ -1,0 +1,32 @@
+\hypertarget{structSGCore_1_1RenderPipelinesManager}{}\doxysection{SGCore\+::Render\+Pipelines\+Manager Struct Reference}
+\label{structSGCore_1_1RenderPipelinesManager}\index{SGCore::RenderPipelinesManager@{SGCore::RenderPipelinesManager}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderPipelinesManager_a052e9ffd95d000d33b1006ad9e0db2d1}\label{structSGCore_1_1RenderPipelinesManager_a052e9ffd95d000d33b1006ad9e0db2d1}} 
+{\footnotesize template$<$typename PipelineT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structSGCore_1_1IRenderPipeline}{IRender\+Pipeline}}, PipelineT $>$) static Ref$<$ PipelineT $>$ create\+Render\+Pipeline() noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderPipelinesManager_a6ad82147a877702d332262f2021b7191}\label{structSGCore_1_1RenderPipelinesManager_a6ad82147a877702d332262f2021b7191}} 
+{\footnotesize template$<$typename PipelineT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structSGCore_1_1IRenderPipeline}{IRender\+Pipeline}}, PipelineT $>$) static void set\+Current\+Render\+Pipeline() noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderPipelinesManager_aff406f9f51a1a64c5ca911d82f271faf}\label{structSGCore_1_1RenderPipelinesManager_aff406f9f51a1a64c5ca911d82f271faf}} 
+{\footnotesize template$<$typename PipelineT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structSGCore_1_1IRenderPipeline}{IRender\+Pipeline}}, PipelineT $>$) static void register\+Render\+Pipeline(const Ref$<$ PipelineT $>$ \&render\+Pipeline) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderPipelinesManager_a97287605b7748a4a6105a2baab8254b9}\label{structSGCore_1_1RenderPipelinesManager_a97287605b7748a4a6105a2baab8254b9}} 
+{\footnotesize template$<$typename PipelineT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structSGCore_1_1IRenderPipeline}{IRender\+Pipeline}}, PipelineT $>$) static Ref$<$ PipelineT $>$ get\+Render\+Pipeline() noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderPipelinesManager_a58e5a30ca48dd9685d9e93e578b9289c}\label{structSGCore_1_1RenderPipelinesManager_a58e5a30ca48dd9685d9e93e578b9289c}} 
+static void {\bfseries subscribe\+To\+Render\+Pipeline\+Set\+Event} (const \mbox{\hyperlink{structSGCore_1_1EventListener}{Event\+Listener}}$<$ void()$>$ \&holder)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderPipelinesManager_a87503dc12538d09245a08df23137be3e}\label{structSGCore_1_1RenderPipelinesManager_a87503dc12538d09245a08df23137be3e}} 
+static Ref$<$ \mbox{\hyperlink{structSGCore_1_1IRenderPipeline}{IRender\+Pipeline}} $>$ {\bfseries get\+Current\+Render\+Pipeline} () noexcept
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/Render\+Pipelines\+Manager.\+h\item 
+Sources/\+SGCore/\+Render/Render\+Pipelines\+Manager.\+cpp\end{DoxyCompactItemize}

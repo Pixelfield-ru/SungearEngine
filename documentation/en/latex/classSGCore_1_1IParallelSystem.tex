@@ -1,0 +1,52 @@
+\hypertarget{classSGCore_1_1IParallelSystem}{}\doxysection{SGCore\+::IParallel\+System$<$ Parallel\+SystemT $>$ Class Template Reference}
+\label{classSGCore_1_1IParallelSystem}\index{SGCore::IParallelSystem$<$ ParallelSystemT $>$@{SGCore::IParallelSystem$<$ ParallelSystemT $>$}}
+
+
+Inheritance diagram for SGCore\+::IParallel\+System$<$ Parallel\+SystemT $>$\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IParallel\+System$<$ Parallel\+SystemT $>$\+:
+% FIG 1
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IParallelSystem_a5d1ec3f7d45401f9120f1b88cfa1eff3}\label{classSGCore_1_1IParallelSystem_a5d1ec3f7d45401f9120f1b88cfa1eff3}} 
+using {\bfseries subproc\+\_\+t} = \mbox{\hyperlink{structSGCore_1_1IParallelSystemSubprocess}{IParallel\+System\+Subprocess}}$<$ Parallel\+SystemT $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IParallelSystem_ae12340b60dfaa12336bb1e47393fae75}\label{classSGCore_1_1IParallelSystem_ae12340b60dfaa12336bb1e47393fae75}} 
+void {\bfseries fixed\+Update} (const double \&dt, const double \&fixed\+Dt) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IParallelSystem_a9028b22a044565ef01df4f7f3c0e4ca5}\label{classSGCore_1_1IParallelSystem_a9028b22a044565ef01df4f7f3c0e4ca5}} 
+{\footnotesize template$<$typename SubprocessT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structSGCore_1_1IParallelSystemSubprocess}{subproc\+\_\+t}}, SubprocessT $>$) Ref$<$ SubprocessT $>$ get\+Subprocess()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IParallelSystem_ab9c2e7ed24b2ce9f82c99cb92bad23cf}\label{classSGCore_1_1IParallelSystem_ab9c2e7ed24b2ce9f82c99cb92bad23cf}} 
+void {\bfseries add\+Subprocess} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1IParallelSystemSubprocess}{subproc\+\_\+t}} $>$ \&subprocess) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IParallelSystem_a54a55806ae2e1e8d9ac7d1da1a032a52}\label{classSGCore_1_1IParallelSystem_a54a55806ae2e1e8d9ac7d1da1a032a52}} 
+void {\bfseries remove\+Subprocess} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1IParallelSystemSubprocess}{subproc\+\_\+t}} $>$ \&subprocess) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IParallelSystem_a51b75276ec272eab2d1f773727e3122f}\label{classSGCore_1_1IParallelSystem_a51b75276ec272eab2d1f773727e3122f}} 
+virtual void {\bfseries parallel\+Update} (const double \&dt, const double \&fixed\+Dt) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IParallelSystem_a9baa2c424c6745ac60844de7be8f68b0}\label{classSGCore_1_1IParallelSystem_a9baa2c424c6745ac60844de7be8f68b0}} 
+\mbox{\hyperlink{classSGCore_1_1Timer}{Timer}} {\bfseries m\+\_\+timer}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IParallelSystem_a4e060e34781698d601ee06f8559b9ab5}\label{classSGCore_1_1IParallelSystem_a4e060e34781698d601ee06f8559b9ab5}} 
+{\footnotesize template$<$typename $>$ }\\struct {\bfseries Event}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Scene/IParallel\+System.\+h\end{DoxyCompactItemize}

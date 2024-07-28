@@ -1,0 +1,62 @@
+\hypertarget{structSGCore_1_1Rigidbody3D}{}\doxysection{SGCore\+::Rigidbody3D Struct Reference}
+\label{structSGCore_1_1Rigidbody3D}\index{SGCore::Rigidbody3D@{SGCore::Rigidbody3D}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_acdd8564566627bd94b55b1eb4f4d0d0a}\label{structSGCore_1_1Rigidbody3D_acdd8564566627bd94b55b1eb4f4d0d0a}} 
+{\bfseries Rigidbody3D} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1PhysicsWorld3D}{Physics\+World3D}} $>$ \&physics\+World)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_add7eb3b051e8d331b5ab843933d08937}\label{structSGCore_1_1Rigidbody3D_add7eb3b051e8d331b5ab843933d08937}} 
+{\bfseries Rigidbody3D} (const \mbox{\hyperlink{structSGCore_1_1Rigidbody3D}{Rigidbody3D}} \&other) noexcept=default
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_aab314f7b184002717c4ca5f6f9c7f73b}\label{structSGCore_1_1Rigidbody3D_aab314f7b184002717c4ca5f6f9c7f73b}} 
+{\bfseries Rigidbody3D} (\mbox{\hyperlink{structSGCore_1_1Rigidbody3D}{Rigidbody3D}} \&\&other) noexcept=default
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_a69e096c4c9cfedb1fc5f96d571e2043c}\label{structSGCore_1_1Rigidbody3D_a69e096c4c9cfedb1fc5f96d571e2043c}} 
+void {\bfseries set\+Shape} (const Ref$<$ bt\+Collision\+Shape $>$ \&shape) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_a82c4cbb8096e9b6a13d059a7d0d0ead0}\label{structSGCore_1_1Rigidbody3D_a82c4cbb8096e9b6a13d059a7d0d0ead0}} 
+Ref$<$ bt\+Collision\+Shape $>$ \& {\bfseries get\+Shape} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_af2ac88c934a706a1abf2e8fc6a8bfa97}\label{structSGCore_1_1Rigidbody3D_af2ac88c934a706a1abf2e8fc6a8bfa97}} 
+{\footnotesize template$<$typename ShapeT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ bt\+Collision\+Shape, ShapeT $>$) Ref$<$ ShapeT $>$ get\+Shape\+As() const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_a2f14caba66b90535651df40647887a3a}\label{structSGCore_1_1Rigidbody3D_a2f14caba66b90535651df40647887a3a}} 
+void {\bfseries set\+Parent\+World} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1PhysicsWorld3D}{Physics\+World3D}} $>$ \&world) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_a97bea8fcc5e33ed4268acf31be06d98d}\label{structSGCore_1_1Rigidbody3D_a97bea8fcc5e33ed4268acf31be06d98d}} 
+Weak$<$ \mbox{\hyperlink{structSGCore_1_1PhysicsWorld3D}{Physics\+World3D}} $>$ {\bfseries get\+Parent\+Physics\+World} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_af728114e40f0b6b68042534dbed74ec7}\label{structSGCore_1_1Rigidbody3D_af728114e40f0b6b68042534dbed74ec7}} 
+void {\bfseries update\+Flags} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_a57fa115e1c1c0eb46f99ba5ddc24f093}\label{structSGCore_1_1Rigidbody3D_a57fa115e1c1c0eb46f99ba5ddc24f093}} 
+void {\bfseries re\+Add\+To\+World} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_a3f8ba15ec138365755a4383cdc155924}\label{structSGCore_1_1Rigidbody3D_a3f8ba15ec138365755a4383cdc155924}} 
+void {\bfseries remove\+From\+World} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_a507a4900389e28fdcc43ced89502c92a}\label{structSGCore_1_1Rigidbody3D_a507a4900389e28fdcc43ced89502c92a}} 
+\mbox{\hyperlink{structSGCore_1_1Rigidbody3D}{Rigidbody3D}} \& {\bfseries operator=} (const \mbox{\hyperlink{structSGCore_1_1Rigidbody3D}{Rigidbody3D}} \&other) noexcept=default
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_aec9bbcf6fcb375668a8e42637b74dd4f}\label{structSGCore_1_1Rigidbody3D_aec9bbcf6fcb375668a8e42637b74dd4f}} 
+\mbox{\hyperlink{structSGCore_1_1Rigidbody3D}{Rigidbody3D}} \& {\bfseries operator=} (\mbox{\hyperlink{structSGCore_1_1Rigidbody3D}{Rigidbody3D}} \&\&other) noexcept=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_ab12f7b90ca036cb030c2bf03bfb3cc74}\label{structSGCore_1_1Rigidbody3D_ab12f7b90ca036cb030c2bf03bfb3cc74}} 
+Ref$<$ bt\+Rigid\+Body $>$ {\bfseries m\+\_\+body}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_a70167f3131b5c3a6a57ff832620ee34d}\label{structSGCore_1_1Rigidbody3D_a70167f3131b5c3a6a57ff832620ee34d}} 
+Ref$<$ bt\+Motion\+State $>$ {\bfseries m\+\_\+state}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Rigidbody3D_afe3c51fbedf9c2e2972f58f91b07c3c3}\label{structSGCore_1_1Rigidbody3D_afe3c51fbedf9c2e2972f58f91b07c3c3}} 
+Marker$<$ int $>$ {\bfseries m\+\_\+body\+Flags}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Physics/Rigidbody3\+D.\+h\item 
+Sources/\+SGCore/\+Physics/Rigidbody3\+D.\+cpp\end{DoxyCompactItemize}

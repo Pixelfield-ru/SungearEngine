@@ -1,0 +1,43 @@
+\hypertarget{structSGCore_1_1Threading_1_1Task}{}\doxysection{SGCore\+::Threading\+::Task Struct Reference}
+\label{structSGCore_1_1Threading_1_1Task}\index{SGCore::Threading::Task@{SGCore::Threading::Task}}
+
+
+Inheritance diagram for SGCore\+::Threading\+::Task\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Threading\+::Task\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Task_a1dab4ebe83d9feb74d936f0f8c184d32}\label{structSGCore_1_1Threading_1_1Task_a1dab4ebe83d9feb74d936f0f8c184d32}} 
+void {\bfseries use\+Singleton\+Guard} (const \mbox{\hyperlink{structSGCore_1_1Threading_1_1TaskSingletonGuardImpl}{Task\+Singleton\+Guard}} task\+Singleton\+Guard) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Task_a4e5314d019676e6baccc4377cb1679ad}\label{structSGCore_1_1Threading_1_1Task_a4e5314d019676e6baccc4377cb1679ad}} 
+{\footnotesize template$<$typename F , typename... Args$>$ }\\void {\bfseries set\+On\+Execute\+Callback} (F \&\&func, const Args \&... args)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Task_aea487abdb67b467c0b456f583abff949}\label{structSGCore_1_1Threading_1_1Task_aea487abdb67b467c0b456f583abff949}} 
+{\footnotesize template$<$typename F , typename... Args$>$ }\\void {\bfseries set\+On\+Executed\+Callback} (F \&\&func, const Args \&... args)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Task_aadfb73e565dd5a713b5a4d90125ff694}\label{structSGCore_1_1Threading_1_1Task_aadfb73e565dd5a713b5a4d90125ff694}} 
+{\footnotesize template$<$typename F , typename... Args$>$ }\\void {\bfseries set\+On\+Executed\+Callback} (F \&\&func, const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Thread}} $>$ \&in\+Thread, const Args \&... args)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Task_ac22f443061e9bbb6c5cce8254be85c53}\label{structSGCore_1_1Threading_1_1Task_ac22f443061e9bbb6c5cce8254be85c53}} 
+bool {\bfseries m\+\_\+is\+Static} = false
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1Task_a48a1c8dd913d51ed3b868cd144c11ccf}\label{structSGCore_1_1Threading_1_1Task_a48a1c8dd913d51ed3b868cd144c11ccf}} 
+struct {\bfseries Thread}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Threading/Task.\+h\item 
+Sources/\+SGCore/\+Threading/Task.\+cpp\end{DoxyCompactItemize}

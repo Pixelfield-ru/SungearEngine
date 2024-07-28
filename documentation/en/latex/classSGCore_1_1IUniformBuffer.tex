@@ -1,0 +1,169 @@
+\hypertarget{classSGCore_1_1IUniformBuffer}{}\doxysection{SGCore\+::IUniform\+Buffer Class Reference}
+\label{classSGCore_1_1IUniformBuffer}\index{SGCore::IUniformBuffer@{SGCore::IUniformBuffer}}
+
+
+Inheritance diagram for SGCore\+::IUniform\+Buffer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IUniform\+Buffer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a2e3a7d7d971ac47f5c5fa3f3fe01c0b2}\label{classSGCore_1_1IUniformBuffer_a2e3a7d7d971ac47f5c5fa3f3fe01c0b2}} 
+{\footnotesize template$<$typename Shader\+Uniform  = IShader\+Uniform$>$ }\\{\bfseries IUniform\+Buffer} (std\+::vector$<$ \mbox{\hyperlink{structSGCore_1_1IShaderUniform}{IShader\+Uniform}} $>$ \&\&uniforms)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_ac322ca2ea6b0e8df3f09b8ba8e44aaef}\label{classSGCore_1_1IUniformBuffer_ac322ca2ea6b0e8df3f09b8ba8e44aaef}} 
+{\footnotesize template$<$typename Shader\+Uniform  = IShader\+Uniform$>$ }\\void {\bfseries put\+Uniforms} (std\+::vector$<$ Shader\+Uniform $>$ \&\&uniforms) noexcept
+\item 
+{\footnotesize template$<$typename Scalar $>$ }\\\mbox{\hyperlink{classSGCore_1_1IUniformBuffer_a16c095dcebbdf9c222758813caf4fb6b}{requires}} (std\+::is\+\_\+scalar\+\_\+v$<$ Scalar $>$ \&\&sizeof(Scalar)==4) std
+\item 
+{\footnotesize template$<$typename Scalar $>$ }\\\mbox{\hyperlink{classSGCore_1_1IUniformBuffer_a16c095dcebbdf9c222758813caf4fb6b}{requires}} (std\+::is\+\_\+scalar\+\_\+v$<$ Scalar $>$ \&\&sizeof(Scalar)==4) std
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_aec77c4a2773c060ff6c872e69083470d}\label{classSGCore_1_1IUniformBuffer_aec77c4a2773c060ff6c872e69083470d}} 
+char $\ast$ {\bfseries get\+Uniform} (const std\+::string \&uniform\+Name) const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_ace2bad08c6151bc2e805bbfd7a3963dd}\label{classSGCore_1_1IUniformBuffer_ace2bad08c6151bc2e805bbfd7a3963dd}} 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{IUniform\+Buffer}} $>$ {\bfseries bind} ()=0
+\item 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{IUniform\+Buffer}} $>$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer_a0e84119cdeba0f414b010b6849490455}{prepare}} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a6ef6cf976eabf40255ad760198e1084a}\label{classSGCore_1_1IUniformBuffer_a6ef6cf976eabf40255ad760198e1084a}} 
+std\+::uint16\+\_\+t {\bfseries get\+Layout\+Location} () const noexcept
+\item 
+virtual void \mbox{\hyperlink{classSGCore_1_1IUniformBuffer_a1367cd757a0dc887b23b957502c82266}{set\+Layout\+Location}} (const std\+::uint16\+\_\+t \&location) noexcept=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_aeb4b1aa89fe07115e9d1c01319cfab64}\label{classSGCore_1_1IUniformBuffer_aeb4b1aa89fe07115e9d1c01319cfab64}} 
+bool {\bfseries is\+Bind\+Per\+Uniform} () const noexcept
+\item 
+virtual void \mbox{\hyperlink{classSGCore_1_1IUniformBuffer_ab5404c9dec5e3428bbd157da3c6d4f86}{destroy}} ()=0
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a444cb1faa9eeca4b314ba6b88ffce2cb}\label{classSGCore_1_1IUniformBuffer_a444cb1faa9eeca4b314ba6b88ffce2cb}} 
+std\+::string {\bfseries m\+\_\+block\+Name}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_ab53205a9b2ff3e72cd23825d74d84fce}\label{classSGCore_1_1IUniformBuffer_ab53205a9b2ff3e72cd23825d74d84fce}} 
+virtual void {\bfseries sub\+Data\+On\+GAPISide} (const std\+::int64\+\_\+t \&offset, const int \&size)=0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a0f0997f9bfe7b34a6e9391997d7a40d5}\label{classSGCore_1_1IUniformBuffer_a0f0997f9bfe7b34a6e9391997d7a40d5}} 
+char $\ast$ {\bfseries m\+\_\+buffer} = nullptr
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a5890c5e817916fec4e2445137e46ddd1}\label{classSGCore_1_1IUniformBuffer_a5890c5e817916fec4e2445137e46ddd1}} 
+size\+\_\+t {\bfseries m\+\_\+buffer\+Size} = 0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_afbb96e1fbdc088dd3c89fb2004e22312}\label{classSGCore_1_1IUniformBuffer_afbb96e1fbdc088dd3c89fb2004e22312}} 
+std\+::vector$<$ \mbox{\hyperlink{structSGCore_1_1IShaderUniform}{IShader\+Uniform}} $>$ {\bfseries m\+\_\+uniforms}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a51d48b2e42ec156abd167581a195cdb3}\label{classSGCore_1_1IUniformBuffer_a51d48b2e42ec156abd167581a195cdb3}} 
+std\+::uint16\+\_\+t {\bfseries m\+\_\+layout\+Location} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_ab5404c9dec5e3428bbd157da3c6d4f86}\label{classSGCore_1_1IUniformBuffer_ab5404c9dec5e3428bbd157da3c6d4f86}} 
+\index{SGCore::IUniformBuffer@{SGCore::IUniformBuffer}!destroy@{destroy}}
+\index{destroy@{destroy}!SGCore::IUniformBuffer@{SGCore::IUniformBuffer}}
+\doxysubsubsection{\texorpdfstring{destroy()}{destroy()}}
+{\footnotesize\ttfamily virtual void SGCore\+::\+IUniform\+Buffer\+::destroy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Destroys GPU object 
+
+Implemented in \mbox{\hyperlink{classSGCore_1_1VkUniformBuffer_a86ed24e502f4dd79e06054d36639a1d4}{SGCore\+::\+Vk\+Uniform\+Buffer}}, \mbox{\hyperlink{classSGCore_1_1GL46UniformBuffer_a1e7b2c0c1c86e4ff6bdc7210e40226e8}{SGCore\+::\+GL46\+Uniform\+Buffer}}, and \mbox{\hyperlink{classSGCore_1_1GL4UniformBuffer_a540fb632b91edc70df1ea6c9ac0db5da}{SGCore\+::\+GL4\+Uniform\+Buffer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a0e84119cdeba0f414b010b6849490455}\label{classSGCore_1_1IUniformBuffer_a0e84119cdeba0f414b010b6849490455}} 
+\index{SGCore::IUniformBuffer@{SGCore::IUniformBuffer}!prepare@{prepare}}
+\index{prepare@{prepare}!SGCore::IUniformBuffer@{SGCore::IUniformBuffer}}
+\doxysubsubsection{\texorpdfstring{prepare()}{prepare()}}
+{\footnotesize\ttfamily virtual std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{IUniform\+Buffer}}$>$ SGCore\+::\+IUniform\+Buffer\+::prepare (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Must be called after pu\+Data Will reallocate buffer to resize. Be careful \begin{DoxyReturn}{Returns}
+This 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classSGCore_1_1VkUniformBuffer_a6874a93dfede3ca2b3a422587ff4d467}{SGCore\+::\+Vk\+Uniform\+Buffer}}, \mbox{\hyperlink{classSGCore_1_1GL46UniformBuffer_a8c994cedf47492914b11056f8893044e}{SGCore\+::\+GL46\+Uniform\+Buffer}}, and \mbox{\hyperlink{classSGCore_1_1GL4UniformBuffer_a65424e4408641d14b2d333b757deeffe}{SGCore\+::\+GL4\+Uniform\+Buffer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a16c095dcebbdf9c222758813caf4fb6b}\label{classSGCore_1_1IUniformBuffer_a16c095dcebbdf9c222758813caf4fb6b}} 
+\index{SGCore::IUniformBuffer@{SGCore::IUniformBuffer}!requires@{requires}}
+\index{requires@{requires}!SGCore::IUniformBuffer@{SGCore::IUniformBuffer}}
+\doxysubsubsection{\texorpdfstring{requires()}{requires()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Scalar $>$ \\
+SGCore\+::\+IUniform\+Buffer\+::requires (\begin{DoxyParamCaption}\item[{std\+::is\+\_\+scalar\+\_\+v$<$ Scalar $>$ \&\&}]{sizeofScalar = {\ttfamily =~4} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Method that allows you change some uniform\`{}s data.~\newline
+This method is slower than the put\+Data method, but through put\+Data you cannot substitute data of any uniform.~\newline
+~\newline
+Notice, that your data is copying to buffer.~\newline
+Notice, that you do not need to call prepare after sub\+Data.~\newline
+ 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Scalar} & -\/ Scalars type \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em uniform\+Name} & -\/ The name of the uniform whose values need to be replaced \\
+\hline
+{\em scalars} & -\/ Values (buffer) \\
+\hline
+{\em scalars\+Num} & -\/ Number of values in the buffer \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a16c095dcebbdf9c222758813caf4fb6b}\label{classSGCore_1_1IUniformBuffer_a16c095dcebbdf9c222758813caf4fb6b}} 
+\index{SGCore::IUniformBuffer@{SGCore::IUniformBuffer}!requires@{requires}}
+\index{requires@{requires}!SGCore::IUniformBuffer@{SGCore::IUniformBuffer}}
+\doxysubsubsection{\texorpdfstring{requires()}{requires()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Scalar $>$ \\
+SGCore\+::\+IUniform\+Buffer\+::requires (\begin{DoxyParamCaption}\item[{std\+::is\+\_\+scalar\+\_\+v$<$ Scalar $>$ \&\&}]{sizeofScalar = {\ttfamily =~4} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+sub\+Data(const std\+::string\& uniform\+Name, const Scalar$\ast$ scalars, const int\& scalars\+Num)
+\end{DoxySeeAlso}
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Scalar} & -\/ Scalars type \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em uniform\+Name} & -\/ The name of the uniform whose values need to be replaced \\
+\hline
+{\em scalars} & -\/ Values \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSGCore_1_1IUniformBuffer_a1367cd757a0dc887b23b957502c82266}\label{classSGCore_1_1IUniformBuffer_a1367cd757a0dc887b23b957502c82266}} 
+\index{SGCore::IUniformBuffer@{SGCore::IUniformBuffer}!setLayoutLocation@{setLayoutLocation}}
+\index{setLayoutLocation@{setLayoutLocation}!SGCore::IUniformBuffer@{SGCore::IUniformBuffer}}
+\doxysubsubsection{\texorpdfstring{setLayoutLocation()}{setLayoutLocation()}}
+{\footnotesize\ttfamily virtual void SGCore\+::\+IUniform\+Buffer\+::set\+Layout\+Location (\begin{DoxyParamCaption}\item[{const std\+::uint16\+\_\+t \&}]{location }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
+
+SET LOCATION ONLY BEFORE FIRST PREPARE 
+\begin{DoxyParams}{Parameters}
+{\em location} & \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classSGCore_1_1VkUniformBuffer_a7e4a95173c8bb48336eb6e9e038c0604}{SGCore\+::\+Vk\+Uniform\+Buffer}}, \mbox{\hyperlink{classSGCore_1_1GL46UniformBuffer_a7b495d2f78d15d43beef43751a2fed98}{SGCore\+::\+GL46\+Uniform\+Buffer}}, and \mbox{\hyperlink{classSGCore_1_1GL4UniformBuffer_abc4b37e1d8dfc9b36d7ae49fa2c9a810}{SGCore\+::\+GL4\+Uniform\+Buffer}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/IUniform\+Buffer.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/IUniform\+Buffer.\+cpp\end{DoxyCompactItemize}

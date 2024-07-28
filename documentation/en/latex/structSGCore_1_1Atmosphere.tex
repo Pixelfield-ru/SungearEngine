@@ -1,0 +1,101 @@
+\hypertarget{structSGCore_1_1Atmosphere}{}\doxysection{SGCore\+::Atmosphere Struct Reference}
+\label{structSGCore_1_1Atmosphere}\index{SGCore::Atmosphere@{SGCore::Atmosphere}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a57bae0531fc736c6a05da98b7e1bdde1}\label{structSGCore_1_1Atmosphere_a57bae0531fc736c6a05da98b7e1bdde1}} 
+{\bfseries Atmosphere} (const \mbox{\hyperlink{structSGCore_1_1Atmosphere}{Atmosphere}} \&) noexcept=default
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_ac9ba3da2cd0a7c4040c9082cb6855319}\label{structSGCore_1_1Atmosphere_ac9ba3da2cd0a7c4040c9082cb6855319}} 
+{\bfseries Atmosphere} (\mbox{\hyperlink{structSGCore_1_1Atmosphere}{Atmosphere}} \&\&atmosphere) noexcept=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a04f62a321535e8aacb9803e24fe6eef4}\label{structSGCore_1_1Atmosphere_a04f62a321535e8aacb9803e24fe6eef4}} 
+static auto {\bfseries get\+Sun\+Origin} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a85048c3d88b9f071030a1f8947bf5c67}\label{structSGCore_1_1Atmosphere_a85048c3d88b9f071030a1f8947bf5c67}} 
+glm\+::vec3 {\bfseries m\+\_\+sun\+Position} \{ 0.\+0, 0.\+0, 0.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_ae3a88360c69a3016f9377de825561092}\label{structSGCore_1_1Atmosphere_ae3a88360c69a3016f9377de825561092}} 
+glm\+::vec3 {\bfseries m\+\_\+sun\+Ambient} \{ 0, 0, 0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a1a0d76b49cb75e6c6c96ee05a98aa5f4}\label{structSGCore_1_1Atmosphere_a1a0d76b49cb75e6c6c96ee05a98aa5f4}} 
+glm\+::vec3 {\bfseries m\+\_\+last\+Sun\+Ambient} \{ 0, 0, 0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_ab8f347a5b3f7b7090568e8d27f125849}\label{structSGCore_1_1Atmosphere_ab8f347a5b3f7b7090568e8d27f125849}} 
+glm\+::vec3 {\bfseries m\+\_\+sun\+Rotation} \{ 0.\+0, 0.\+0, 0.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_ac843c263c54f1655e12e1d414e6dcaf0}\label{structSGCore_1_1Atmosphere_ac843c263c54f1655e12e1d414e6dcaf0}} 
+glm\+::vec3 {\bfseries m\+\_\+last\+Sun\+Rotation} \{ -\/1.\+0, 0.\+0, 0.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a92a3f5aa7f3f212bf222460144aacf6f}\label{structSGCore_1_1Atmosphere_a92a3f5aa7f3f212bf222460144aacf6f}} 
+glm\+::vec3 {\bfseries m\+\_\+rayleigh\+Scattering\+Coeff} \{ \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_aff10bfd66bee26d8918d43fbcd5c593d}\label{structSGCore_1_1Atmosphere_aff10bfd66bee26d8918d43fbcd5c593d}} 
+glm\+::vec3 {\bfseries m\+\_\+last\+Rayleigh\+Scattering\+Coeff} \{ 0.\+0, 0.\+0, 0.\+0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a2cb977f60a9e185709af8f8cc46f6393}\label{structSGCore_1_1Atmosphere_a2cb977f60a9e185709af8f8cc46f6393}} 
+float {\bfseries m\+\_\+mie\+Scattering\+Coeff} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_af3f8af737d1b4343998b73dc579b1dc8}\label{structSGCore_1_1Atmosphere_af3f8af737d1b4343998b73dc579b1dc8}} 
+float {\bfseries m\+\_\+last\+Mie\+Scattering\+Coeff} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a297d19397e4a6fc888f050c015a6069f}\label{structSGCore_1_1Atmosphere_a297d19397e4a6fc888f050c015a6069f}} 
+float {\bfseries m\+\_\+rayleigh\+Scale\+Height} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_ac2a5cefe046ce717185609c4aa0877aa}\label{structSGCore_1_1Atmosphere_ac2a5cefe046ce717185609c4aa0877aa}} 
+float {\bfseries m\+\_\+last\+Rayleigh\+Scale\+Height} = 0
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a876a7457e9afb0a0cd5c7be3b0c24902}\label{structSGCore_1_1Atmosphere_a876a7457e9afb0a0cd5c7be3b0c24902}} 
+float {\bfseries m\+\_\+mie\+Scale\+Height} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a7b77669ff8a44bffd91ba49bdacda8a3}\label{structSGCore_1_1Atmosphere_a7b77669ff8a44bffd91ba49bdacda8a3}} 
+float {\bfseries m\+\_\+last\+Mie\+Scale\+Height} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_ac3fa2041feb5d98deea082fea0e4b9aa}\label{structSGCore_1_1Atmosphere_ac3fa2041feb5d98deea082fea0e4b9aa}} 
+float {\bfseries m\+\_\+sun\+Intensity} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a782e4a24d2ea2144b959c155851aab82}\label{structSGCore_1_1Atmosphere_a782e4a24d2ea2144b959c155851aab82}} 
+float {\bfseries m\+\_\+last\+Sun\+Intensity} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_aa747f74790184d169a1a91dfbb7abdd0}\label{structSGCore_1_1Atmosphere_aa747f74790184d169a1a91dfbb7abdd0}} 
+float {\bfseries m\+\_\+planet\+Radius} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_af468e8a91ddfb225130ac39e106a62c6}\label{structSGCore_1_1Atmosphere_af468e8a91ddfb225130ac39e106a62c6}} 
+float {\bfseries m\+\_\+last\+Planet\+Radius} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_ab8e46cd61efb7bb9726dfa92eacecbe4}\label{structSGCore_1_1Atmosphere_ab8e46cd61efb7bb9726dfa92eacecbe4}} 
+float {\bfseries m\+\_\+atmosphere\+Radius} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a246bdf548b60782ef502bcf3e493a7da}\label{structSGCore_1_1Atmosphere_a246bdf548b60782ef502bcf3e493a7da}} 
+float {\bfseries m\+\_\+last\+Atmosphere\+Radius} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a9370989e6858d0fd254afccd502a50ad}\label{structSGCore_1_1Atmosphere_a9370989e6858d0fd254afccd502a50ad}} 
+float {\bfseries m\+\_\+mie\+Preferred\+Scattering\+Direction} = 0.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_adbdccb51526a51a181ad82955ded8c11}\label{structSGCore_1_1Atmosphere_adbdccb51526a51a181ad82955ded8c11}} 
+float {\bfseries m\+\_\+last\+Mie\+Preferred\+Scattering\+Direction} = 0
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_ac94d7a3201ab972bb70f7e52fe295e33}\label{structSGCore_1_1Atmosphere_ac94d7a3201ab972bb70f7e52fe295e33}} 
+glm\+::vec3 {\bfseries m\+\_\+ray\+Origin} \{ \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a46d1ed5b98093e5df667bf6949b3f492}\label{structSGCore_1_1Atmosphere_a46d1ed5b98093e5df667bf6949b3f492}} 
+glm\+::vec3 {\bfseries m\+\_\+last\+Ray\+Origin} \{ 0, 0, 0 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a0f92525c176ec9d385ae6205a7f70fe4}\label{structSGCore_1_1Atmosphere_a0f92525c176ec9d385ae6205a7f70fe4}} 
+int $\ast$ {\bfseries fdf} = new int
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Atmosphere_a71eff773d6ef62ea37ebad009af03cc5}\label{structSGCore_1_1Atmosphere_a71eff773d6ef62ea37ebad009af03cc5}} 
+std\+::map$<$ size\+\_\+t, glm\+::vec3 $>$ {\bfseries m\+\_\+precalculated\+Sun\+Colors}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/\+Atmosphere/Atmosphere.\+h\item 
+Sources/\+SGCore/\+Render/\+Atmosphere/Atmosphere.\+cpp\end{DoxyCompactItemize}

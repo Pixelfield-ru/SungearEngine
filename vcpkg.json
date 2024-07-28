@@ -1,0 +1,64 @@
+{
+  "name" : "sungearengine",
+  "version-string" : "0.14.0.8",
+  "homepage" : "https://github.com/Pixelfield-ru/SungearEngine/tree/main",
+  "builtin-baseline" : "37c3e63a1306562f7f59c4c3c8892ddd50fdf992",
+  "dependencies" : [ {
+    "name" : "assimp",
+    "version>=" : "5.3.1#4"
+  }, {
+    "name" : "boost-stacktrace",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "bullet3",
+    "version>=" : "3.25#1"
+  }, {
+    "name" : "entt",
+    "version>=" : "3.13.1",
+    "host" : true
+  }, {
+    "name" : "freetype",
+    "version>=" : "2.13.2"
+  }, {
+    "name" : "glad",
+    "features" : [ "extensions" ],
+    "version>=" : "0.1.36"
+  }, {
+    "name" : "glm",
+    "version>=" : "1.0.1#1"
+  }, {
+    "name" : "imgui",
+    "features" : [ "glfw-binding", "opengl3-binding", "docking-experimental" ],
+    "version>=" : "1.90.7"
+  }, {
+    "name" : "pugixml",
+    "version>=" : "1.14"
+  }, {
+    "name" : "spdlog",
+    "version>=" : "1.13.0"
+  }, {
+    "name" : "stb",
+    "version>=" : "2023-04-11#1"
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2023-05-04"
+  }, {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2022-02-06#1"
+  }, {
+    "name" : "glfw3",
+    "version>=" : "3.4"
+  }, {
+    "name" : "openal-soft",
+    "version>=" : "1.23.1"
+  }, {
+    "name" : "glaze",
+    "version>=" : "2.1.7"
+  }, {
+    "name" : "lunasvg",
+    "version>=" : "2.3.8"
+  }, {
+    "name" : "rapidjson",
+    "version>=" : "2023-07-17#1"
+  } ]
+}

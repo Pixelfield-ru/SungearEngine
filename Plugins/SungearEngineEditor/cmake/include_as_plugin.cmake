@@ -1,0 +1,5 @@
+if(${SG_BUILD_TYPE} STREQUAL "Release")
+    list(APPEND SungearEngine_LIBS "$ENV{SUNGEAR_SOURCES_ROOT}/Plugins/SungearEngineEditor/cmake-build-release/SungearEngineEditor.${SG_DL_EXT}")
+elseif(${SG_BUILD_TYPE} STREQUAL "Debug")
+    list(APPEND SungearEngine_LIBS "$ENV{SUNGEAR_SOURCES_ROOT}/Plugins/SungearEngineEditor/cmake-build-debug/SungearEngineEditor.${SG_DL_EXT}")
+endif()

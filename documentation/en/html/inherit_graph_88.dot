@@ -1,0 +1,18 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="SGCore::IGeometryPass",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1IGeometryPass.html",tooltip=" "];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="SGCore::PBRRPGeometryPass",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1PBRRPGeometryPass.html",tooltip=" "];
+  Node168 [label="SGCore::IRenderPass",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1IRenderPass.html",tooltip=" "];
+  Node168 -> Node169 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node169 [label="SGCore::PBRRPDirectional\lLightsPass",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1PBRRPDirectionalLightsPass.html",tooltip=" "];
+  Node168 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node168 -> Node170 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node170 [label="SGCore::PostProcessPass",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1PostProcessPass.html",tooltip=" "];
+  Node168 -> Node171 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node171 [label="SGCore::TextRenderPass",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1TextRenderPass.html",tooltip=" "];
+}

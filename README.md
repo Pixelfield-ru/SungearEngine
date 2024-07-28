@@ -1,5 +1,5 @@
-# SGNative
- Native SungearEngine
+# Sungear Engine
+A general purpose game engine written in C++
 
 ## Cloning the repository using console commands:
 Open your console application of choice and run the following console commands:
@@ -15,7 +15,7 @@ Open your console application of choice and run the following console commands:
 ```
 # Reporting Issues
 
-If you encounter any bugs when using SungearEngine, please report them in the bug tracker. This is hosted at:
+If you encounter any bugs when using Sungear Engine, please report them in the bug tracker. This is hosted at:
 
 https://github.com/Pixelfield-ru/SungearEngine/issues
 

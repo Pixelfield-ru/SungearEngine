@@ -1,0 +1,106 @@
+\hypertarget{structSGCore_1_1PluginsManager}{}\doxysection{SGCore\+::Plugins\+Manager Struct Reference}
+\label{structSGCore_1_1PluginsManager}\index{SGCore::PluginsManager@{SGCore::PluginsManager}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static SG\+\_\+\+NOINLINE auto \& \mbox{\hyperlink{structSGCore_1_1PluginsManager_aad22104acafa3925c98706e100f96ef1}{get\+Plugins}} () noexcept
+\item 
+static std\+::string \mbox{\hyperlink{structSGCore_1_1PluginsManager_a14d013f273e4f12f4e31d94028454b0d}{create\+Plugin\+Project}} (const std\+::string \&project\+Path, const std\+::string \&plugin\+Name, const std\+::string \&cxx\+Standard)
+\item 
+static Ref$<$ \mbox{\hyperlink{structSGCore_1_1PluginWrap}{Plugin\+Wrap}} $>$ \mbox{\hyperlink{structSGCore_1_1PluginsManager_a1956fc8366817d6be1af34a6e079f015}{load\+Plugin}} (const std\+::string \&plugin\+Name, const std\+::string \&local\+Plugin\+Path, const std\+::vector$<$ std\+::string $>$ \&entry\+Args, Plugin\+Build\+Type plugin\+Build\+Type)
+\item 
+static Ref$<$ \mbox{\hyperlink{structSGCore_1_1PluginWrap}{Plugin\+Wrap}} $>$ \mbox{\hyperlink{structSGCore_1_1PluginsManager_a71c69aeeb68e097e24da873bd711845b}{reload\+Plugin}} (const std\+::string \&plugin\+Name, const std\+::vector$<$ std\+::string $>$ \&entry\+Args, Plugin\+Build\+Type plugin\+Build\+Type)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structSGCore_1_1PluginsManager_a14d013f273e4f12f4e31d94028454b0d}\label{structSGCore_1_1PluginsManager_a14d013f273e4f12f4e31d94028454b0d}} 
+\index{SGCore::PluginsManager@{SGCore::PluginsManager}!createPluginProject@{createPluginProject}}
+\index{createPluginProject@{createPluginProject}!SGCore::PluginsManager@{SGCore::PluginsManager}}
+\doxysubsubsection{\texorpdfstring{createPluginProject()}{createPluginProject()}}
+{\footnotesize\ttfamily static std\+::string SGCore\+::\+Plugins\+Manager\+::create\+Plugin\+Project (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{project\+Path,  }\item[{const std\+::string \&}]{plugin\+Name,  }\item[{const std\+::string \&}]{cxx\+Standard }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Creates a standard plugin project.~\newline
+~\newline
+Creates files in the plugin folder\+: CMake\+Lists.\+txt for building the plugin;~\newline
+Sources/\+Plugin\+Main.\+h and Sources/\+Plugin\+Main.\+cpp for loading the plugin by the engine;~\newline
+Sources/\{plugin\+Name\}.h and Sources/\{plugin\+Name\}.cpp to implement a structure called \{plugin\+Name\} that inherits \mbox{\hyperlink{structSGCore_1_1IPlugin}{SGCore\+::\+IPlugin}}.
+
+\begin{DoxyNote}{Note}
+Please note that to create a plugin project you must have the SUNGEAR\+\_\+\+SOURCES\+\_\+\+ROOT environment variable set.~\newline
+It should indicate the path to the Sungear Engine sources.
+\end{DoxyNote}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em project\+Path} & Path to the folder in which the folder with the plugin project will be created. \\
+\hline
+\mbox{\texttt{ in}}  & {\em plugin\+Name} & Plugin name.~\newline
+When creating a plugin, a folder with the same name will be created, as well as the name of the structure that inherits \mbox{\hyperlink{structSGCore_1_1IPlugin}{SGCore\+::\+IPlugin}} will be the same. \\
+\hline
+\mbox{\texttt{ in}}  & {\em cxx\+Standard} & The C++ standard that the plugin will use.~\newline
+Available standards\+: C++98, C++03, C++11, C++14, C++17, C++20, C++23. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The string containing the error caused when creating the plugin.~\newline
+If the plugin was successfully created, the string is empty. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1PluginsManager_aad22104acafa3925c98706e100f96ef1}\label{structSGCore_1_1PluginsManager_aad22104acafa3925c98706e100f96ef1}} 
+\index{SGCore::PluginsManager@{SGCore::PluginsManager}!getPlugins@{getPlugins}}
+\index{getPlugins@{getPlugins}!SGCore::PluginsManager@{SGCore::PluginsManager}}
+\doxysubsubsection{\texorpdfstring{getPlugins()}{getPlugins()}}
+{\footnotesize\ttfamily static SG\+\_\+\+NOINLINE auto\& SGCore\+::\+Plugins\+Manager\+::get\+Plugins (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+Returns a vector of all loaded plugins. \begin{DoxyReturn}{Returns}
+Vector of plugins. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1PluginsManager_a1956fc8366817d6be1af34a6e079f015}\label{structSGCore_1_1PluginsManager_a1956fc8366817d6be1af34a6e079f015}} 
+\index{SGCore::PluginsManager@{SGCore::PluginsManager}!loadPlugin@{loadPlugin}}
+\index{loadPlugin@{loadPlugin}!SGCore::PluginsManager@{SGCore::PluginsManager}}
+\doxysubsubsection{\texorpdfstring{loadPlugin()}{loadPlugin()}}
+{\footnotesize\ttfamily static Ref$<$\mbox{\hyperlink{structSGCore_1_1PluginWrap}{Plugin\+Wrap}}$>$ SGCore\+::\+Plugins\+Manager\+::load\+Plugin (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{plugin\+Name,  }\item[{const std\+::string \&}]{local\+Plugin\+Path,  }\item[{const std\+::vector$<$ std\+::string $>$ \&}]{entry\+Args,  }\item[{Plugin\+Build\+Type}]{plugin\+Build\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Loads the plugin by local path \{local\+Plugin\+Path\} and adds the plugin to the plugin vector upon successful loading. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em plugin\+Name} & Plugin name. \\
+\hline
+\mbox{\texttt{ in}}  & {\em local\+Plugin\+Path} & Local path on the device to the plugin folder. \\
+\hline
+\mbox{\texttt{ in}}  & {\em entry\+Args} & Arguments that will be passed to the \mbox{\hyperlink{structSGCore_1_1IPlugin_a8afd272113b87f5c1e20d0c01bc1c954}{SGCore\+::\+IPlugin\+::on\+Construct}} function. \\
+\hline
+\mbox{\texttt{ in}}  & {\em plugin\+Build\+Type} & The plugin build type to load. Depending on the build type, the plugin is loaded along the path \{local\+Plugin\+Path\}/cmake-\/build-\/\{plugin\+Build\+Type\}/\{plugin\+Name\}.\{dynamic library extension\}.~\newline
+See SGCore\+::\+Plugin\+Build\+Type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000001}{Todo}}]Make an error return when loading the plugin. \end{DoxyRefDesc}
+\begin{DoxyReturn}{Returns}
+SGCore\+::\+Ref$<$\mbox{\hyperlink{structSGCore_1_1PluginWrap}{SGCore\+::\+Plugin\+Wrap}}$>$. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1PluginsManager_a71c69aeeb68e097e24da873bd711845b}\label{structSGCore_1_1PluginsManager_a71c69aeeb68e097e24da873bd711845b}} 
+\index{SGCore::PluginsManager@{SGCore::PluginsManager}!reloadPlugin@{reloadPlugin}}
+\index{reloadPlugin@{reloadPlugin}!SGCore::PluginsManager@{SGCore::PluginsManager}}
+\doxysubsubsection{\texorpdfstring{reloadPlugin()}{reloadPlugin()}}
+{\footnotesize\ttfamily static Ref$<$\mbox{\hyperlink{structSGCore_1_1PluginWrap}{Plugin\+Wrap}}$>$ SGCore\+::\+Plugins\+Manager\+::reload\+Plugin (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{plugin\+Name,  }\item[{const std\+::vector$<$ std\+::string $>$ \&}]{entry\+Args,  }\item[{Plugin\+Build\+Type}]{plugin\+Build\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Reloads the plugin named \{plugin\+Name\}.~\newline
+To reload a plugin, the path that was used to load the plugin is used. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em plugin\+Name} & The name of the plugin that needs to be reloaded. \\
+\hline
+\mbox{\texttt{ in}}  & {\em entry\+Args} & Arguments that will be passed to the \mbox{\hyperlink{structSGCore_1_1IPlugin_a8afd272113b87f5c1e20d0c01bc1c954}{SGCore\+::\+IPlugin\+::on\+Construct}} function. \\
+\hline
+\mbox{\texttt{ in}}  & {\em plugin\+Build\+Type} & The plugin build type to load. Depending on the build type, the plugin is loaded along the path \{local\+Plugin\+Path\}/cmake-\/build-\/\{plugin\+Build\+Type\}/\{plugin\+Name\}.\{dynamic library extension\}.~\newline
+See SGCore\+::\+Plugin\+Build\+Type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000002}{Todo}}]Make an error return when loading the plugin. \end{DoxyRefDesc}
+\begin{DoxyReturn}{Returns}
+SGCore\+::\+Ref$<$\mbox{\hyperlink{structSGCore_1_1PluginWrap}{SGCore\+::\+Plugin\+Wrap}}$>$. 
+\end{DoxyReturn}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Plugins\+System/Plugins\+Manager.\+h\end{DoxyCompactItemize}

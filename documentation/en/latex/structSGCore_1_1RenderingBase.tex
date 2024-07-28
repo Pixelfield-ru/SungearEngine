@@ -1,0 +1,83 @@
+\hypertarget{structSGCore_1_1RenderingBase}{}\doxysection{SGCore\+::Rendering\+Base Struct Reference}
+\label{structSGCore_1_1RenderingBase}\index{SGCore::RenderingBase@{SGCore::RenderingBase}}
+
+
+Collaboration diagram for SGCore\+::Rendering\+Base\+:
+% FIG 0
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_acf53c66813eb43243d5f31a95f100256}\label{structSGCore_1_1RenderingBase_acf53c66813eb43243d5f31a95f100256}} 
+float {\bfseries m\+\_\+fov} = 75.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a593f23103623a87cfa351e2103c63f42}\label{structSGCore_1_1RenderingBase_a593f23103623a87cfa351e2103c63f42}} 
+float {\bfseries m\+\_\+aspect} = 16.\+0f / 9.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a2694f18fca51b13403a9ee2e36e93008}\label{structSGCore_1_1RenderingBase_a2694f18fca51b13403a9ee2e36e93008}} 
+float {\bfseries m\+\_\+z\+Near} = 0.\+1
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a9a0ea5cd1d87b08f4ec62f4f2ecb2e96}\label{structSGCore_1_1RenderingBase_a9a0ea5cd1d87b08f4ec62f4f2ecb2e96}} 
+float {\bfseries m\+\_\+z\+Far} = 2000.\+0
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_ae0742cef70031892e0fa87c22aefd46a}\label{structSGCore_1_1RenderingBase_ae0742cef70031892e0fa87c22aefd46a}} 
+float {\bfseries m\+\_\+left} = -\/1280.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a1b9c053c49f1ffabfcb680f51bfdf46c}\label{structSGCore_1_1RenderingBase_a1b9c053c49f1ffabfcb680f51bfdf46c}} 
+float {\bfseries m\+\_\+right} = 1280.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_ab75b2f173be5d1db4fd9d6a4fe7463d0}\label{structSGCore_1_1RenderingBase_ab75b2f173be5d1db4fd9d6a4fe7463d0}} 
+float {\bfseries m\+\_\+bottom} = -\/720.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a5c4c596a0a0c6cdf19f95213108de8e2}\label{structSGCore_1_1RenderingBase_a5c4c596a0a0c6cdf19f95213108de8e2}} 
+float {\bfseries m\+\_\+top} = 720.\+0f
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_aa072c97593dd5c016431cdde96e4520e}\label{structSGCore_1_1RenderingBase_aa072c97593dd5c016431cdde96e4520e}} 
+glm\+::mat4 {\bfseries m\+\_\+projection\+Matrix} = glm\+::perspective$<$float$>$(glm\+::radians(m\+\_\+fov), m\+\_\+aspect, m\+\_\+z\+Near, m\+\_\+z\+Far)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_afc7e794ca0727a71948ac0a4acd9d9d5}\label{structSGCore_1_1RenderingBase_afc7e794ca0727a71948ac0a4acd9d9d5}} 
+glm\+::mat4 {\bfseries m\+\_\+orthographic\+Matrix} = glm\+::ortho$<$float$>$(m\+\_\+left, m\+\_\+right, m\+\_\+bottom, m\+\_\+top)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_ac2c6160c0063f5669b93ae7be59041f0}\label{structSGCore_1_1RenderingBase_ac2c6160c0063f5669b93ae7be59041f0}} 
+glm\+::mat4 {\bfseries m\+\_\+view\+Matrix} \{ 1 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a386c190a4bb1f16bd05c35ba10fb4c19}\label{structSGCore_1_1RenderingBase_a386c190a4bb1f16bd05c35ba10fb4c19}} 
+glm\+::mat4 {\bfseries m\+\_\+projection\+Space\+Matrix} \{ 1 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a0586642d35596dd9379a0e4ec51bb56d}\label{structSGCore_1_1RenderingBase_a0586642d35596dd9379a0e4ec51bb56d}} 
+glm\+::mat4 {\bfseries m\+\_\+orthographic\+Space\+Matrix} \{ 1 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a79a4d8fa51ef06a95d78cd2d7030d658}\label{structSGCore_1_1RenderingBase_a79a4d8fa51ef06a95d78cd2d7030d658}} 
+float {\bfseries m\+\_\+last\+Fov} = m\+\_\+fov
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a9aca3937802cfdf26e05b1122b518ea5}\label{structSGCore_1_1RenderingBase_a9aca3937802cfdf26e05b1122b518ea5}} 
+float {\bfseries m\+\_\+last\+Aspect} = m\+\_\+aspect
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a98eb62e4afd333b6c8db4c84a8431ab3}\label{structSGCore_1_1RenderingBase_a98eb62e4afd333b6c8db4c84a8431ab3}} 
+float {\bfseries m\+\_\+last\+ZNear} = m\+\_\+z\+Near
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_aebb302d15fd84318d760ae4ca0eb48be}\label{structSGCore_1_1RenderingBase_aebb302d15fd84318d760ae4ca0eb48be}} 
+float {\bfseries m\+\_\+last\+ZFar} = m\+\_\+z\+Far
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_af4f6d92c582f9f9430b77f4b30486282}\label{structSGCore_1_1RenderingBase_af4f6d92c582f9f9430b77f4b30486282}} 
+float {\bfseries m\+\_\+last\+Left} = m\+\_\+left
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a0dc95c3503c79f86bf9eafd04adee3d6}\label{structSGCore_1_1RenderingBase_a0dc95c3503c79f86bf9eafd04adee3d6}} 
+float {\bfseries m\+\_\+last\+Right} = m\+\_\+right
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_a2367c51f39c3e039fe4939c0d3a91d10}\label{structSGCore_1_1RenderingBase_a2367c51f39c3e039fe4939c0d3a91d10}} 
+float {\bfseries m\+\_\+last\+Bottom} = m\+\_\+bottom
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_abd9fed8c5e16695dcbf19a44f25a7006}\label{structSGCore_1_1RenderingBase_abd9fed8c5e16695dcbf19a44f25a7006}} 
+float {\bfseries m\+\_\+last\+Top} = m\+\_\+top
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_ad43ea8419e771c581921df1860834a2b}\label{structSGCore_1_1RenderingBase_ad43ea8419e771c581921df1860834a2b}} 
+bool {\bfseries m\+\_\+projection\+Space\+Matrix\+Changed} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1RenderingBase_ac374bc57e5ee434bf3a1c5708a8578aa}\label{structSGCore_1_1RenderingBase_ac374bc57e5ee434bf3a1c5708a8578aa}} 
+\mbox{\hyperlink{classFrustum}{Frustum}} {\bfseries m\+\_\+frustum}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/Rendering\+Base.\+h\end{DoxyCompactItemize}

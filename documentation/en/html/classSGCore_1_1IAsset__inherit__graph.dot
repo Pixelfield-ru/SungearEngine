@@ -1,0 +1,42 @@
+digraph "SGCore::IAsset"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="SGCore::IAsset",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="SGCore::UniqueNameWrapper",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1UniqueNameWrapper.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="SGCore::ByteFileAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1ByteFileAsset.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="SGCore::AudioTrackAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1AudioTrackAsset.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="SGCore::Font",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1Font.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="SGCore::IMaterial",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1IMaterial.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="SGCore::ITexture2D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1ITexture2D.html",tooltip=" "];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="SGCore::GL4Texture2D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL4Texture2D.html",tooltip=" "];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="SGCore::GL46Texture2D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL46Texture2D.html",tooltip=" "];
+  Node7 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="SGCore::ICubemapTexture",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1ICubemapTexture.html",tooltip=" "];
+  Node10 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="SGCore::GL4CubemapTexture",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1GL4CubemapTexture.html",tooltip=" "];
+  Node10 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="SGCore::VkCubemapTexture",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1VkCubemapTexture.html",tooltip=" "];
+  Node7 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="SGCore::VkTexture2D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1VkTexture2D.html",tooltip=" "];
+  Node1 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="SGCore::ModelAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSGCore_1_1ModelAsset.html",tooltip=" "];
+  Node1 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="SGCore::ShaderAnalyzedFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1ShaderAnalyzedFile.html",tooltip=" "];
+  Node1 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="SGCore::ShaderFileAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1ShaderFileAsset.html",tooltip=" "];
+  Node1 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="SGCore::TextFileAsset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1TextFileAsset.html",tooltip=" "];
+  Node1 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="SGCore::XMLDocument",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structSGCore_1_1XMLDocument.html",tooltip=" "];
+}

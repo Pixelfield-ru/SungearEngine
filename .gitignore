@@ -1,0 +1,48 @@
+cmake-build-debug
+cmake-build-release
+release-test
+out
+.vs
+
+# SOURCES ---------------
+Sources/cmake-build-debug
+Sources/SGCore/cmake-build-debug
+Sources/SGConsole/cmake-build-debug
+Sources/SGEntry/cmake-build-debug
+# -----------------------
+
+# RESOURCES -------------
+SGResources/cmake-build-debug
+Resources/SGResources/models/test/sponza
+Resources/SGResources/models/test/sponza_new
+Resources/SGResources/models/test/trees
+Resources/SGResources/models/test/btr_80
+Resources/SGResources/models/test/stalker
+Resources/SGResources/models/test/ak74m
+Resources/SGResources/models/test/lenin
+Resources/SGResources/models/test/train_ep20
+
+Resources/SGResources/models/test/gaz-66.mtl
+Resources/SGResources/models/test/gaz-66.obj
+Resources/SGResources/models/test/plane.obj
+Resources/SGResources/models/test/T34.obj
+Resources/SGResources/models/test/T_34_85.obj
+Resources/SGResources/models/test/Tiger1.obj
+
+Resources/SGResources/models/test
+# -----------------------
+
+Games
+
+CMakeSettings.json
+
+build
+
+.vscode
+.idea
+
+ports
+
+SDK
+
+.SG_GENERATED
