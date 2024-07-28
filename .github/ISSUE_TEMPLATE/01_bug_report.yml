@@ -46,7 +46,7 @@ body:
     attributes:
       label: Configuration
       description: |
-        Please provide more information on your lilac framework configuration:
+        Please provide more information on your engine configuration:
           * Which version of Engine?
           * What OS and version?
           * What is the architecture (x64, x86)?
