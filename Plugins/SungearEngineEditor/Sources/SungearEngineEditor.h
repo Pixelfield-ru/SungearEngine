@@ -9,14 +9,16 @@
 #ifdef PLATFORM_OS_WINDOWS
 #include <windows.h>
 #include <winnt.h>
-#include <SGCore/PluginsSystem/PluginProject.h>
-
 #endif
+
+#include <SGCore/PluginsSystem/PluginProject.h>
 
 namespace SGE
 {
     struct SungearEngineEditor : public SGCore::IPlugin
     {
+        SGCore::Threading::BaseThreadsPool<SGCore::Threading::LeastTasksCount> m_threadsPool { 2, false };
+
         Project m_currentProject;
 
         ~SungearEngineEditor() override;

@@ -25,7 +25,14 @@ void SGCore::CoreMain::start()
 
     const std::string finalLogName = "logs/sg_log_" + timeStringStream.str() + ".log";
 
-    std::filesystem::remove("ConsoleTmp");
+    try
+    {
+        std::filesystem::remove_all("ConsoleTmp");
+    }
+    catch(const std::exception& e)
+    {
+        std::printf("err: %s\n", e.what());
+    }
 
     AssetManager::init();
 

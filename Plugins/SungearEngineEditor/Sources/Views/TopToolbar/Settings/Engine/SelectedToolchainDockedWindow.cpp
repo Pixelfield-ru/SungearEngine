@@ -359,7 +359,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                         m_currentToolchainCMakePath = dat;
                         setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
 
-                        std::printf("selected cmake %s\n", SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string()).c_str());
+                        // std::printf("selected cmake %s\n", SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string()).c_str());
                     }
                 }
             }
@@ -387,7 +387,8 @@ SGCore::Ref<SGE::Toolchain> SGE::SelectedToolchainDockedWindow::getSelectedToolc
 void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::filesystem::path& path,
                                                                   ToolchainPathType pathType)
 {
-    auto worker = SGCore::Threading::Thread::create();
+    auto worker = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
+
     auto task = SGCore::MakeRef<SGCore::Threading::Task>();
     task->setOnExecuteCallback([this, pathType, path]() {
         try
@@ -402,6 +403,8 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::fil
                     {
                         setSelectedToolchainPath(m_selectedToolchain->getCMakePath(), ToolchainPathType::CMAKE);
                         m_currentToolchainCMakePath = SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string());
+
+                        std::printf("selected cmake %s\n", m_currentToolchainCMakePath.c_str());
                     }
                     break;
                 }
@@ -462,7 +465,6 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::fil
     });
 
     worker->addTask(task);
-    worker->m_autoJoinIfNotBusy = true;
     worker->start();
 }
 
@@ -472,6 +474,9 @@ void SGE::SelectedToolchainDockedWindow::updateSelectedToolchain()
     {
         m_currentToolchainName = m_selectedToolchain->m_name.getName();
         m_currentToolchainPath = SGCore::Utils::toUTF8(m_selectedToolchain->getPath().u16string());
+        m_currentToolchainCMakePath = SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string());
+        m_currentToolchainBuildToolPath = SGCore::Utils::toUTF8(m_selectedToolchain->getBuildToolPath().u16string());
+
         setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
         setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
         setSelectedToolchainPath(m_currentToolchainBuildToolPath, ToolchainPathType::BUILD_TOOL);
