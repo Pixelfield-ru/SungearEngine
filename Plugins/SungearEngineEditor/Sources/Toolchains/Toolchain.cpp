@@ -34,9 +34,45 @@ std::filesystem::path SGE::Toolchain::getCMakePath() const
 
 void SGE::Toolchain::setCMakePath(const std::filesystem::path& cmakePath)
 {
+    m_cmakeVersion = "";
+
     m_cmakePath = cmakePath;
 
-    configurate();
+    if(m_cmakePath.empty()) return;
+
+    // CMAKE TEST
+    if(std::filesystem::exists(m_cmakePath))
+    {
+        std::string cmakeTestResult = SGCore::Utils::consoleExecute(
+                fmt::format("\"{0}\" --version",
+                            SGCore::Utils::toUTF8(m_cmakePath.u16string()))
+        );
+
+        // SKIPPING FIRST TWO LINES OF OUTPUT (THIS LINES PROVIDES COMMAND THAT WAS PASSED TO CONSOLE)
+        std::vector<std::string> lines;
+        SGCore::Utils::splitString(cmakeTestResult, '\n', lines);
+        if(lines.size() < 3)
+        {
+            throw std::exception("Invalid CMake");
+        }
+        std::vector<std::string> thirdLineWords;
+        SGCore::Utils::splitString(lines[2], ' ', thirdLineWords);
+
+        if(thirdLineWords.size() >= 3 && thirdLineWords[0] == "cmake" && thirdLineWords[1] == "version")
+        {
+            m_cmakeVersion = thirdLineWords[2];
+        }
+        else
+        {
+            throw std::exception("Invalid CMake");
+        }
+    }
+    else
+    {
+        throw SGCore::FileNotFoundException(m_cmakePath, "Invalid CMake path");
+    }
+
+    // configurate();
 }
 
 std::filesystem::path SGE::Toolchain::getBuildToolPath() const
@@ -46,9 +82,39 @@ std::filesystem::path SGE::Toolchain::getBuildToolPath() const
 
 void SGE::Toolchain::setBuildToolPath(const std::filesystem::path& buildToolPath)
 {
+    m_buildToolVersion = "";
+
     m_buildToolPath = buildToolPath;
 
-    configurate();
+    if(m_buildToolPath.empty()) return;
+
+    // CMAKE TEST
+    if(std::filesystem::exists(m_buildToolPath))
+    {
+        std::string buildToolTest = SGCore::Utils::consoleExecute(
+                fmt::format("\"{0}\"",
+                            SGCore::Utils::toUTF8(m_cmakePath.u16string()))
+        );
+
+        // BUILD TOOL AS NINJA. TEST PASSED
+        if(buildToolTest.contains("ninja") && buildToolTest.contains("error"))
+        {
+            m_buildToolVersion = SGCore::Utils::consoleExecute(
+                    fmt::format("\"{0}\" --version",
+                                SGCore::Utils::toUTF8(m_cmakePath.u16string()))
+            );
+        }
+        else
+        {
+            throw std::exception("Invalid build tool");
+        }
+    }
+    else
+    {
+        throw SGCore::FileNotFoundException(m_cmakePath, "Invalid build tool path");
+    }
+
+    // configurate();
 }
 
 /*std::filesystem::path SGE::Toolchain::getCCompilerPath() const
@@ -93,36 +159,41 @@ void SGE::Toolchain::configurate()
             // auto vcvarsallbatPath = SGCore::FileUtils::findFile(m_path, "vcvarsall.bat");
 
             // FINDING cmake.exe
-
-            std::filesystem::path cmakePath = SGCore::Utils::consoleExecute("where cmake.exe");
-            if(cmakePath.filename() != "cmake.exe")
+            if(m_cmakePath.empty())
             {
-                cmakePath = SGCore::FileUtils::findFile(m_path, "cmake.exe");
-            }
+                std::filesystem::path cmakePath = SGCore::Utils::consoleExecute("where cmake.exe");
+                if (cmakePath.filename() != "cmake.exe")
+                {
+                    cmakePath = SGCore::FileUtils::findFile(m_path, "cmake.exe");
+                }
 
-            m_cmakePath = cmakePath;
+                m_cmakePath = cmakePath;
 
-            if(!std::filesystem::exists(cmakePath))
-            {
-                throw SGCore::FileNotFoundException(m_cmakePath,
-                                                    "Can not find path to cmake.exe in environment variables or in toolchain files");
+                if(!std::filesystem::exists(cmakePath))
+                {
+                    throw SGCore::FileNotFoundException(m_cmakePath,
+                                                        "Can not find path to cmake.exe in environment variables or in toolchain files");
+                }
             }
 
             // ===================================================
 
-            std::filesystem::path buildToolPath = SGCore::Utils::consoleExecute("where ninja.exe");
-            if(buildToolPath.filename() != "ninja.exe")
+            if(m_buildToolPath.empty())
             {
-                buildToolPath = SGCore::FileUtils::findFile(m_path, "ninja.exe");
-            }
+                std::filesystem::path buildToolPath = SGCore::Utils::consoleExecute("where ninja.exe");
+                if (buildToolPath.filename() != "ninja.exe")
+                {
+                    buildToolPath = SGCore::FileUtils::findFile(m_path, "ninja.exe");
+                }
 
-            if(!std::filesystem::exists(buildToolPath))
-            {
-                throw SGCore::FileNotFoundException(buildToolPath,
-                                                    "Can not find path to build tool in environment variables or in toolchain files");
-            }
+                if (!std::filesystem::exists(buildToolPath))
+                {
+                    throw SGCore::FileNotFoundException(buildToolPath,
+                                                        "Can not find path to build tool in environment variables or in toolchain files");
+                }
 
-            m_buildToolPath = buildToolPath;
+                m_buildToolPath = buildToolPath;
+            }
 
             break;
         }
@@ -211,4 +282,14 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
     std::printf("Building project '%s' using Visual Studio toolchain: found binary dir '%s'\n",
                 SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
                 cmakePresetBinaryDir.c_str());
+}
+
+std::string SGE::Toolchain::getCMakeVersion() const
+{
+    return m_cmakeVersion;
+}
+
+std::string SGE::Toolchain::getBuildToolVersion() const
+{
+    return m_buildToolVersion;
 }

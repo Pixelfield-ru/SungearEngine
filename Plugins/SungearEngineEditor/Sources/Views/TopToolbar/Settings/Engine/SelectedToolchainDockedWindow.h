@@ -22,10 +22,20 @@ namespace SGE
         std::function<void()> onToolchainChanged;
 
     private:
-        void setSelectedToolchainPath(const std::filesystem::path& path);
+        enum class ToolchainPathType
+        {
+            OWN,
+            CMAKE,
+            BUILD_TOOL
+        };
+
+        void setSelectedToolchainPath(const std::filesystem::path& path, ToolchainPathType pathType);
 
         std::string m_currentToolchainName;
+
         std::string m_currentToolchainPath;
+        std::string m_currentToolchainCMakePath;
+        std::string m_currentToolchainBuildToolPath;
 
         std::string m_toolchainPathError;
         std::string m_cmakePathError;

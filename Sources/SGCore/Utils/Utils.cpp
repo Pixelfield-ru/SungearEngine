@@ -1,5 +1,6 @@
 #include "Utils.h"
 #include "FileUtils.h"
+#include "UUID.h"
 
 std::string SGCore::Utils::getRealPath(const std::string& path) noexcept
 {
@@ -62,13 +63,11 @@ long long SGCore::Utils::getTimeMilliseconds() noexcept
 
 std::string SGCore::Utils::consoleExecute(const std::string& cmd)
 {
-    /*std::system(fmt::format("{0} > __sg_tmp_console_output.txt", cmd).c_str());
+    UUID execUUID;
 
-    return FileUtils::readFile("__sg_tmp_console_output.txt");*/
-
-    FileUtils::writeToFile("__sg_tmp_console_command.cmd", cmd, false, true);
-    std::system("__sg_tmp_console_command.cmd > __sg_tmp_console_output.txt");
-    return FileUtils::readFile("__sg_tmp_console_output.txt");
+    FileUtils::writeToFile("ConsoleTmp/" + execUUID.getUUID() + ".cmd", cmd, false, true);
+    std::system(fmt::format("cd ConsoleTmp & {0}.cmd > Output/{1}_output.txt", execUUID.getUUID(), execUUID.getUUID()).c_str());
+    return FileUtils::readFile("ConsoleTmp/Output/" + execUUID.getUUID() + "_output.txt");
 
     /*std::array<char, 2048> buffer { };
     std::string result;

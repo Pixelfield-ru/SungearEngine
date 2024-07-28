@@ -27,6 +27,9 @@ namespace SGE
         [[nodiscard]] std::filesystem::path getBuildToolPath() const;
         void setBuildToolPath(const std::filesystem::path& buildToolPath);
 
+        [[nodiscard]] std::string getCMakeVersion() const;
+        [[nodiscard]] std::string getBuildToolVersion() const;
+
         /*[[nodiscard]] std::filesystem::path getCCompilerPath() const;
         void setCCompilerPath(const std::filesystem::path& CCompilerPath);
 
@@ -43,7 +46,10 @@ namespace SGE
         std::filesystem::path m_path;
 
         std::filesystem::path m_cmakePath;
+        std::string m_cmakeVersion;
+
         std::filesystem::path m_buildToolPath;
+        std::string m_buildToolVersion;
 
         // std::filesystem::path m_CCompilerPath;
         // std::filesystem::path m_CXXCompilerPath;

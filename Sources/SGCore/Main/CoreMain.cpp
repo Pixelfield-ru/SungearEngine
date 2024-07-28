@@ -25,6 +25,8 @@ void SGCore::CoreMain::start()
 
     const std::string finalLogName = "logs/sg_log_" + timeStringStream.str() + ".log";
 
+    std::filesystem::remove("ConsoleTmp");
+
     AssetManager::init();
 
     /*CrashHandler::hc_application_name = "Sungear Engine";

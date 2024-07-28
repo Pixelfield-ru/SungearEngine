@@ -85,7 +85,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
 
                 if(ImGui::IsItemEdited())
                 {
-                    setSelectedToolchainPath(m_currentToolchainPath);
+                    setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
 
                     if(onToolchainChanged)
                     {
@@ -130,7 +130,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                     if (result == NFD_OKAY)
                     {
                         m_currentToolchainPath = dat;
-                        setSelectedToolchainPath(m_currentToolchainPath);
+                        setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
                     }
                 }
             }
@@ -287,6 +287,83 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                 break;
             }
 
+            ImGui::TableNextRow();
+            {
+                ImGui::TableNextColumn();
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+                ImGui::Text("CMake");
+                ImGui::SameLine();
+                ImGui::Image(questionCircledTexture->getTextureNativeHandler(), {
+                        (float) questionCircledTexture->getWidth(),
+                        (float) questionCircledTexture->getHeight()
+                });
+                if(ImGui::IsItemHovered())
+                {
+                    ImGui::SetTooltip("Leave empty to auto-detect");
+                }
+
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::InputText("##ToolchainCMakePathInputText", &m_currentToolchainCMakePath,
+                                 ImGuiInputTextFlags_EnterReturnsTrue);
+
+                // m_selectedToolchain->set
+
+                if(ImGui::IsItemEdited())
+                {
+                    setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
+
+                    if(onToolchainChanged)
+                    {
+                        onToolchainChanged();
+                    }
+                }
+
+                if (!m_cmakePathError.empty())
+                {
+                    if(!m_cmakePathError.contains("Version"))
+                    {
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+                        ImGui::Image(redCrossTexture->getTextureNativeHandler(),
+                                     { (float) redCrossTexture->getWidth(),
+                                       (float) redCrossTexture->getHeight() });
+                        ImGui::SameLine();
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+                        ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, m_cmakePathError.c_str());
+                    }
+                    else
+                    {
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                        ImGui::Image(greenCheckMarkTexture->getTextureNativeHandler(),
+                                     { (float) greenCheckMarkTexture->getWidth(),
+                                       (float) greenCheckMarkTexture->getHeight() });
+                        ImGui::SameLine();
+                        ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, m_cmakePathError.c_str());
+                    }
+                }
+
+                ImGui::TableNextColumn();
+
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+                if (ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
+                                            ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
+                                            ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
+                {
+                    char* dat = m_currentToolchainCMakePath.data();
+                    nfdresult_t result = NFD_OpenDialog({}, "", &dat);
+                    if (result == NFD_OKAY)
+                    {
+                        m_currentToolchainCMakePath = dat;
+                        setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
+
+                        std::printf("selected cmake %s\n", SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string()).c_str());
+                    }
+                }
+            }
+
             ImGui::EndTable();
         }
         ImGui::PopStyleVar();
@@ -307,33 +384,86 @@ SGCore::Ref<SGE::Toolchain> SGE::SelectedToolchainDockedWindow::getSelectedToolc
     return m_selectedToolchain;
 }
 
-void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::filesystem::path& path)
+void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::filesystem::path& path,
+                                                                  ToolchainPathType pathType)
 {
-    try
-    {
-        m_selectedToolchain->setPath(m_currentToolchainPath);
-        m_toolchainPathError = "Correct toolchain";
-    }
-    catch(const SGCore::FileNotFoundException& e)
-    {
-        std::string errWhat = e.what();
-        if(errWhat.contains("cmake.exe"))
+    auto worker = SGCore::Threading::Thread::create();
+    auto task = SGCore::MakeRef<SGCore::Threading::Task>();
+    task->setOnExecuteCallback([this, pathType, path]() {
+        try
         {
-            m_cmakePathError = errWhat;
+            switch(pathType)
+            {
+                case ToolchainPathType::OWN:
+                {
+                    m_selectedToolchain->setPath(path);
+                    m_toolchainPathError = "Correct toolchain";
+                    if(m_currentToolchainCMakePath.empty())
+                    {
+                        setSelectedToolchainPath(m_selectedToolchain->getCMakePath(), ToolchainPathType::CMAKE);
+                        m_currentToolchainCMakePath = SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string());
+                    }
+                    break;
+                }
+                case ToolchainPathType::CMAKE:
+                {
+                    // AUTO DETECTING CMAKE
+                    if(path.empty())
+                    {
+                        m_selectedToolchain->setCMakePath("");
+                        setSelectedToolchainPath(m_selectedToolchain->getPath(), ToolchainPathType::OWN);
+                        break;
+                    }
+                    m_selectedToolchain->setCMakePath(path);
+                    m_cmakePathError = "Version: " + m_selectedToolchain->getCMakeVersion();
+                    std::printf("correct cmake\n");
+                    break;
+                }
+                case ToolchainPathType::BUILD_TOOL:
+                {
+                    m_selectedToolchain->setBuildToolPath(path);
+                    m_buildToolPathError = "Version: " + m_selectedToolchain->getBuildToolVersion();
+                    break;
+                }
+            }
         }
-        else if(errWhat.contains("build tool"))
+        catch(const SGCore::FileNotFoundException& e)
         {
-            m_buildToolPathError = errWhat;
+            std::string errWhat = e.what();
+            if(errWhat.contains("cmake") || errWhat.contains("CMake"))
+            {
+                m_cmakePathError = errWhat;
+            }
+            else if(errWhat.contains("build tool"))
+            {
+                m_buildToolPathError = errWhat;
+            }
+            else
+            {
+                m_toolchainPathError = errWhat;
+            }
         }
-        else
+        catch(const std::exception& e)
         {
-            m_toolchainPathError = errWhat;
+            std::string errWhat = e.what();
+            if(errWhat.contains("cmake") || errWhat.contains("CMake"))
+            {
+                m_cmakePathError = errWhat;
+            }
+            else if(errWhat.contains("build tool"))
+            {
+                m_buildToolPathError = errWhat;
+            }
+            else
+            {
+                m_toolchainPathError = errWhat;
+            }
         }
-    }
-    catch(const std::exception& e)
-    {
-        m_toolchainPathError = "Incorrect path";
-    }
+    });
+
+    worker->addTask(task);
+    worker->m_autoJoinIfNotBusy = true;
+    worker->start();
 }
 
 void SGE::SelectedToolchainDockedWindow::updateSelectedToolchain()
@@ -342,8 +472,11 @@ void SGE::SelectedToolchainDockedWindow::updateSelectedToolchain()
     {
         m_currentToolchainName = m_selectedToolchain->m_name.getName();
         m_currentToolchainPath = SGCore::Utils::toUTF8(m_selectedToolchain->getPath().u16string());
-        setSelectedToolchainPath(m_currentToolchainPath);
+        setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
+        setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
+        setSelectedToolchainPath(m_currentToolchainBuildToolPath, ToolchainPathType::BUILD_TOOL);
 
+        // TOOLCHAIN TEST
         switch(m_selectedToolchain->getType())
         {
             case ToolchainType::VISUAL_STUDIO:
@@ -365,7 +498,8 @@ void SGE::SelectedToolchainDockedWindow::updateSelectedToolchain()
                     if (vcvarsallSDKTestResult.contains("ERROR"))
                     {
                         m_toolchainPathError = "Invalid SDK Version";
-                    } else
+                    }
+                    else
                     {
                         m_toolchainPathError = "Correct toolchain";
                     }
