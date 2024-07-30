@@ -39,9 +39,9 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
     m_toolchainsVariantsPopup.onElementClicked += [this](const SGCore::Ref<PopupElement>& element) {
         if(element->m_name == "Visual Studio")
         {
-            SGCore::Ref<VisualStudioToolchain> vsToolchain = SGCore::MakeRef<VisualStudioToolchain>();
+            auto vsToolchain = SGCore::MakeRef<VisualStudioToolchain>();
             vsToolchain->m_name = "Visual Studio";
-            m_currentToolchains.addToolchain(vsToolchain);
+            m_engineSettingsRef->addToolchain(vsToolchain);
 
             refreshToolchainsList();
         }
@@ -71,7 +71,7 @@ void SGE::ToolchainsDockedWindow::renderBody()
     auto minusIconSpec = StylesManager::getCurrentStyle()->m_minusIcon->getSpecialization(20, 20);
     if(ImGuiUtils::ImageButton(minusIconSpec->getTexture()->getTextureNativeHandler(), { 26, 26 }, { 20, 20 }).m_isLMBClicked)
     {
-        m_currentToolchains.removeToolchain(m_currentAddedToolchainsTree.m_chosenTreeNodeName);
+        m_engineSettingsRef->removeToolchain(m_currentAddedToolchainsTree.m_chosenTreeNodeName);
         m_selectedToolchainDockedWindow->setSelectedToolchain(nullptr);
         refreshToolchainsList();
     }
@@ -124,7 +124,7 @@ void SGE::ToolchainsDockedWindow::refreshToolchainsList()
 {
     m_currentAddedToolchainsTree.clear();
 
-    for(const auto& toolchain : m_currentToolchains.getToolchains())
+    for(const auto& toolchain : m_engineSettingsRef->getToolchains())
     {
         SGCore::Weak<Toolchain> weakToolchain = toolchain;
 

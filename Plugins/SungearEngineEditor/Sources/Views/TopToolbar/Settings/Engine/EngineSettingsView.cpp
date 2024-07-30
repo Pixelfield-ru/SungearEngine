@@ -15,6 +15,7 @@ SGE::EngineSettingsView::EngineSettingsView()
     m_toolchainsDockedWindow->m_minSize = { 200, 0 };
     m_toolchainsDockedWindow->m_padding = { 0, 0 };
     m_toolchainsDockedWindow->m_itemsSpacing = { 0, 0 };
+    m_toolchainsDockedWindow->m_engineSettingsRef = m_engineSettingsInstance;
 
     /*if(SungearEngineEditor::getInstance()->getMainView())
     {
@@ -57,6 +58,8 @@ void SGE::EngineSettingsView::onActiveChangedListener()
 {
     if(isActive())
     {
+        *m_engineSettingsInstance = *EngineSettings::getInstance();
+        m_toolchainsDockedWindow->refreshToolchainsList();
         m_toolchainsDockedWindow->getSelectedToolchainDockedWindow()->updateSelectedToolchain();
     }
     // m_toolchainsDockedWindow->m_currentToolchains = *Toolchains::getInstance().get();

@@ -14,6 +14,8 @@ namespace SGE
 {
     struct Toolchain
     {
+        virtual ~Toolchain() = default;
+
         SGCore::UniqueName m_name;
 
         [[nodiscard]] ToolchainType getType() const;
@@ -39,6 +41,8 @@ namespace SGE
         virtual void configurate();
 
         virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName);
+
+        virtual Toolchain* copy() const = 0;
 
     protected:
         ToolchainType m_type = ToolchainType::UNKNOWN;

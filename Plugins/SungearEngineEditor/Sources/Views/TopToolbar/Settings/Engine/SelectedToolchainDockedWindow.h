@@ -57,7 +57,7 @@ namespace SGE
         std::int32_t m_vsCurrentSelectedPlatformTypeInCombo = 0;
         // ==================================================
 
-        SGCore::Ref<Toolchain> m_selectedToolchain;
+        SGCore::Weak<Toolchain> m_selectedToolchain;
 
         // USED ICONS =======================================
         SGCore::Ref<SGCore::ITexture2D> m_folderTexture;

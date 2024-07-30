@@ -8,8 +8,8 @@
 #include "Views/DockedWindow.h"
 #include "Views/Popup.h"
 #include "Views/Tree.h"
-#include "Toolchains/Toolchains.h"
 #include "SelectedToolchainDockedWindow.h"
+#include "Settings/EngineSettings.h"
 
 namespace SGE
 {
@@ -23,17 +23,18 @@ namespace SGE
         void renderBody() final;
         // void end() final;
 
-        Toolchains m_currentToolchains;
+        // ref from EngineSettingsView
+        SGCore::Ref<EngineSettings> m_engineSettingsRef;
 
         SGCore::Ref<SelectedToolchainDockedWindow> getSelectedToolchainDockedWindow() const noexcept;
+
+        void refreshToolchainsList();
 
     private:
         Popup m_toolchainsVariantsPopup;
         Tree m_currentAddedToolchainsTree;
 
         SGCore::Ref<SelectedToolchainDockedWindow> m_selectedToolchainDockedWindow;
-
-        void refreshToolchainsList();
     };
 }
 

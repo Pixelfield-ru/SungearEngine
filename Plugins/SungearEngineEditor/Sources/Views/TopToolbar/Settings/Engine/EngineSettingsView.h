@@ -7,6 +7,7 @@
 
 #include "Views/TopToolbar/Settings/SettingsView.h"
 #include "ToolchainsDockedWindow.h"
+#include "Settings/EngineSettings.h"
 
 namespace SGE
 {
@@ -17,6 +18,8 @@ namespace SGE
         EngineSettingsView(EngineSettingsView&&) = default;
 
         void onActiveChangedListener() final;
+
+        SGCore::Ref<EngineSettings> m_engineSettingsInstance = SGCore::MakeRef<EngineSettings>();
 
     protected:
         void onDock() final;

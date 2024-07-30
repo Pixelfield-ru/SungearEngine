@@ -121,3 +121,10 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
 
     // ===============================================================
 }
+
+SGE::VisualStudioToolchain* SGE::VisualStudioToolchain::copy() const
+{
+    auto* v = new VisualStudioToolchain;
+    *v = *this;
+    return v;
+}

@@ -20,7 +20,6 @@
 #include "Views/Explorer/DirectoriesTreeExplorer.h"
 #include "Project/CodeGen/CodeGeneration.h"
 #include "Toolchains//VisualStudioToolchain.h"
-#include "Toolchains/Toolchains.h"
 
 SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
 {
@@ -240,9 +239,9 @@ void SGE::ProjectCreateDialog::submit()
         // =====================================================================================
         // BUILDING CREATED PROJECT
 
-        if(!Toolchains::getInstance()->getToolchains().empty())
+        if(!EngineSettings::getInstance()->getToolchains().empty())
         {
-            auto firstToolchain = Toolchains::getInstance()->getToolchains()[0];
+            auto firstToolchain = EngineSettings::getInstance()->getToolchains()[0];
             firstToolchain->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
         }
         else // TODO: MAKE WARNING DIALOG

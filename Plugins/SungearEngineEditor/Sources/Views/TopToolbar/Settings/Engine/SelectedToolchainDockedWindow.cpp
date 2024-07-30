@@ -13,290 +13,294 @@
 
 void SGE::SelectedToolchainDockedWindow::renderBody()
 {
-    if(m_selectedToolchain)
+    auto lockedSelectedToolchain = m_selectedToolchain.lock();
+
+    if (!lockedSelectedToolchain) return;
+
+    m_folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
+            ->getSpecialization(20, 20)
+            ->getTexture();
+
+    m_greenCheckMarkTexture = StylesManager::getCurrentStyle()->m_greenCheckmark
+            ->getSpecialization(16, 16)
+            ->getTexture();
+
+    m_redCrossTexture = StylesManager::getCurrentStyle()->m_redCross
+            ->getSpecialization(22, 22)
+            ->getTexture();
+
+    m_questionCircledTexture = StylesManager::getCurrentStyle()->m_questionCircledIcon
+            ->getSpecialization(16, 16)
+            ->getTexture();
+
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 5));
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+    if (ImGui::BeginTable((m_name.getName() + "_Table").c_str(), 3, ImGuiTableFlags_SizingStretchProp))
     {
-        m_folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
-                ->getSpecialization(20, 20)
-                ->getTexture();
-
-        m_greenCheckMarkTexture = StylesManager::getCurrentStyle()->m_greenCheckmark
-                ->getSpecialization(16, 16)
-                ->getTexture();
-
-        m_redCrossTexture = StylesManager::getCurrentStyle()->m_redCross
-                ->getSpecialization(22, 22)
-                ->getTexture();
-
-        m_questionCircledTexture = StylesManager::getCurrentStyle()->m_questionCircledIcon
-                ->getSpecialization(16, 16)
-                ->getTexture();
-
-        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1, 5));
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-        if(ImGui::BeginTable((m_name.getName() + "_Table").c_str(), 3, ImGuiTableFlags_SizingStretchProp))
+        ImGui::TableNextRow();
         {
-            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+            ImGui::Text("Name");
+
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+            ImGui::InputText("##ToolchainNameInputText", &m_currentToolchainName, ImGuiInputTextFlags_EnterReturnsTrue);
+
+            if (ImGui::IsItemEdited())
             {
-                ImGui::TableNextColumn();
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
-                ImGui::Text("Name");
+                lockedSelectedToolchain->m_name = m_currentToolchainName;
+                m_currentToolchainName = lockedSelectedToolchain->m_name.getName();
 
-                ImGui::TableNextColumn();
-                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                ImGui::InputText("##ToolchainNameInputText", &m_currentToolchainName, ImGuiInputTextFlags_EnterReturnsTrue);
-
-                if(ImGui::IsItemEdited())
+                if (onToolchainChanged)
                 {
-                    m_selectedToolchain->m_name = m_currentToolchainName;
-                    m_currentToolchainName = m_selectedToolchain->m_name.getName();
-
-                    if(onToolchainChanged)
-                    {
-                        onToolchainChanged();
-                    }
+                    onToolchainChanged();
                 }
-
-                ImGui::TableNextColumn();
             }
 
-            // DUMMY
-            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+        }
+
+        // DUMMY
+        ImGui::TableNextRow();
+        {
+            ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+        }
+
+        ImGui::TableNextRow();
+        {
+            ImGui::TableNextColumn();
+            ImGui::GetForegroundDrawList()->AddLine(
+                    { ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 10 },
+                    ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetWindowSize().x - 17,
+                           ImGui::GetCursorScreenPos().y - 10),
+                    ImGui::ColorConvertFloat4ToU32({ 0.60f, 0.60f, 0.60f, 0.29f }));
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+            ImGui::Text("Path");
+
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+            ImGui::InputText("##ToolchainPathInputText", &m_currentToolchainPath, ImGuiInputTextFlags_EnterReturnsTrue);
+
+            if (ImGui::IsItemEdited())
             {
-                ImGui::TableNextColumn();
-                ImGui::TableNextColumn();
-                ImGui::TableNextColumn();
-            }
+                setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
 
-            ImGui::TableNextRow();
-            {
-                ImGui::TableNextColumn();
-                ImGui::GetForegroundDrawList()->AddLine({ ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 10 } ,
-                                                    ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetWindowSize().x - 17,
-                                                           ImGui::GetCursorScreenPos().y - 10),
-                                                    ImGui::ColorConvertFloat4ToU32({ 0.60f, 0.60f, 0.60f, 0.29f }));
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
-                ImGui::Text("Path");
-
-                ImGui::TableNextColumn();
-                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                ImGui::InputText("##ToolchainPathInputText", &m_currentToolchainPath, ImGuiInputTextFlags_EnterReturnsTrue);
-
-                if(ImGui::IsItemEdited())
+                if (onToolchainChanged)
                 {
+                    onToolchainChanged();
+                }
+            }
+
+            if (!m_toolchainPathError.empty())
+            {
+                if (!m_toolchainPathError.contains("Correct toolchain"))
+                {
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+                    ImGui::Image(m_redCrossTexture->getTextureNativeHandler(),
+                                 { (float) m_redCrossTexture->getWidth(),
+                                   (float) m_redCrossTexture->getHeight() });
+                    ImGui::SameLine();
+                    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+                    ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, m_toolchainPathError.c_str());
+                } else
+                {
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                    ImGui::Image(m_greenCheckMarkTexture->getTextureNativeHandler(),
+                                 { (float) m_greenCheckMarkTexture->getWidth(),
+                                   (float) m_greenCheckMarkTexture->getHeight() });
+                    ImGui::SameLine();
+                    ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, m_toolchainPathError.c_str());
+                }
+            }
+
+            ImGui::TableNextColumn();
+
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+            if (ImGuiUtils::ImageButton(m_folderTexture->getTextureNativeHandler(),
+                                        ImVec2(m_folderTexture->getWidth() + 6, m_folderTexture->getHeight() + 6),
+                                        ImVec2(m_folderTexture->getWidth(),
+                                               m_folderTexture->getHeight())).m_isLMBClicked)
+            {
+                char* dat = m_currentToolchainPath.data();
+                nfdresult_t result = NFD_PickFolder("", &dat);
+                if (result == NFD_OKAY)
+                {
+                    m_currentToolchainPath = dat;
                     setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
-
-                    if(onToolchainChanged)
-                    {
-                        onToolchainChanged();
-                    }
-                }
-
-                if (!m_toolchainPathError.empty())
-                {
-                    if(!m_toolchainPathError.contains("Correct toolchain"))
-                    {
-                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                        ImGui::Image(m_redCrossTexture->getTextureNativeHandler(),
-                                     { (float) m_redCrossTexture->getWidth(),
-                                       (float) m_redCrossTexture->getHeight() });
-                        ImGui::SameLine();
-                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
-                        ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, m_toolchainPathError.c_str());
-                    }
-                    else
-                    {
-                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                        ImGui::Image(m_greenCheckMarkTexture->getTextureNativeHandler(),
-                                     { (float) m_greenCheckMarkTexture->getWidth(),
-                                       (float) m_greenCheckMarkTexture->getHeight() });
-                        ImGui::SameLine();
-                        ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, m_toolchainPathError.c_str());
-                    }
-                }
-
-                ImGui::TableNextColumn();
-
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-                if (ImGuiUtils::ImageButton(m_folderTexture->getTextureNativeHandler(),
-                                            ImVec2(m_folderTexture->getWidth() + 6, m_folderTexture->getHeight() + 6),
-                                            ImVec2(m_folderTexture->getWidth(), m_folderTexture->getHeight())).m_isLMBClicked)
-                {
-                    char* dat = m_currentToolchainPath.data();
-                    nfdresult_t result = NFD_PickFolder("", &dat);
-                    if (result == NFD_OKAY)
-                    {
-                        m_currentToolchainPath = dat;
-                        setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
-                    }
                 }
             }
+        }
 
-            switch(m_selectedToolchain->getType())
+        switch (lockedSelectedToolchain->getType())
+        {
+            case ToolchainType::VISUAL_STUDIO:
             {
-                case ToolchainType::VISUAL_STUDIO:
+                auto vsToolchain = std::static_pointer_cast<VisualStudioToolchain>(lockedSelectedToolchain);
+
+                ImGui::TableNextRow();
                 {
-                    auto vsToolchain = std::static_pointer_cast<VisualStudioToolchain>(m_selectedToolchain);
+                    ImGui::TableNextColumn();
 
-                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+
+                    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+                    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+                    if (ImGui::BeginTable((m_name.getName() + "_VSTable").c_str(), 2,
+                                          ImGuiTableFlags_SizingStretchProp))
                     {
-                        ImGui::TableNextColumn();
-
-                        ImGui::TableNextColumn();
-
-                        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
-                        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-                        if (ImGui::BeginTable((m_name.getName() + "_VSTable").c_str(), 2,
-                                              ImGuiTableFlags_SizingStretchProp))
+                        ImGui::TableNextRow();
                         {
-                            ImGui::TableNextRow();
-                            {
-                                ImGui::TableNextColumn();
-                                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                                ImGui::Text("Architecture");
-                                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                                ImGui::SetNextItemWidth(130);
-                                if(ImGui::Combo("##VSToolchainArchType", &m_vsCurrentSelectedArchTypeInCombo,
+                            ImGui::TableNextColumn();
+                            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                            ImGui::Text("Architecture");
+                            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                            ImGui::SetNextItemWidth(130);
+                            if (ImGui::Combo("##VSToolchainArchType", &m_vsCurrentSelectedArchTypeInCombo,
                                              m_vsArchTypes,
                                              8))
+                            {
+                                switch (m_vsCurrentSelectedArchTypeInCombo)
                                 {
-                                    switch(m_vsCurrentSelectedArchTypeInCombo)
-                                    {
-                                        case 0:
-                                            vsToolchain->m_archType = VCArchType::X86;
-                                            break;
+                                    case 0:
+                                        vsToolchain->m_archType = VCArchType::X86;
+                                        break;
 
-                                        case 1:
-                                            vsToolchain->m_archType = VCArchType::AMD64;
-                                            break;
+                                    case 1:
+                                        vsToolchain->m_archType = VCArchType::AMD64;
+                                        break;
 
-                                        case 2:
-                                            vsToolchain->m_archType = VCArchType::X86_AMD64;
-                                            break;
+                                    case 2:
+                                        vsToolchain->m_archType = VCArchType::X86_AMD64;
+                                        break;
 
-                                        case 3:
-                                            vsToolchain->m_archType = VCArchType::X86_ARM;
-                                            break;
+                                    case 3:
+                                        vsToolchain->m_archType = VCArchType::X86_ARM;
+                                        break;
 
-                                        case 4:
-                                            vsToolchain->m_archType = VCArchType::X86_ARM64;
-                                            break;
+                                    case 4:
+                                        vsToolchain->m_archType = VCArchType::X86_ARM64;
+                                        break;
 
-                                        case 5:
-                                            vsToolchain->m_archType = VCArchType::AMD64_X86;
-                                            break;
+                                    case 5:
+                                        vsToolchain->m_archType = VCArchType::AMD64_X86;
+                                        break;
 
-                                        case 6:
-                                            vsToolchain->m_archType = VCArchType::AMD64_ARM;
-                                            break;
+                                    case 6:
+                                        vsToolchain->m_archType = VCArchType::AMD64_ARM;
+                                        break;
 
-                                        case 7:
-                                            vsToolchain->m_archType = VCArchType::AMD64_ARM64;
-                                            break;
-                                    }
-                                }
-
-                                ImGui::TableNextColumn();
-                                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
-                                ImGui::Text("Platform");
-                                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                                ImGui::SetNextItemWidth(80);
-                                if(ImGui::Combo("##VSToolchainPlatformType", &m_vsCurrentSelectedPlatformTypeInCombo,
-                                             m_vsPlatformTypes, 3))
-                                {
-                                    switch(m_vsCurrentSelectedPlatformTypeInCombo)
-                                    {
-                                        case 0:
-                                            vsToolchain->m_platformType = VCPlatformType::EMPTY;
-                                            break;
-
-                                        case 1:
-                                            vsToolchain->m_platformType = VCPlatformType::STORE;
-                                            break;
-
-                                        case 2:
-                                            vsToolchain->m_platformType = VCPlatformType::UWP;
-                                            break;
-                                    }
+                                    case 7:
+                                        vsToolchain->m_archType = VCArchType::AMD64_ARM64;
+                                        break;
                                 }
                             }
 
-                            ImGui::EndTable();
-                        }
-                        ImGui::PopStyleVar();
+                            ImGui::TableNextColumn();
+                            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
+                            ImGui::Text("Platform");
+                            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                            ImGui::SetNextItemWidth(80);
+                            if (ImGui::Combo("##VSToolchainPlatformType", &m_vsCurrentSelectedPlatformTypeInCombo,
+                                             m_vsPlatformTypes, 3))
+                            {
+                                switch (m_vsCurrentSelectedPlatformTypeInCombo)
+                                {
+                                    case 0:
+                                        vsToolchain->m_platformType = VCPlatformType::EMPTY;
+                                        break;
 
-                        ImGui::TableNextColumn();
+                                    case 1:
+                                        vsToolchain->m_platformType = VCPlatformType::STORE;
+                                        break;
+
+                                    case 2:
+                                        vsToolchain->m_platformType = VCPlatformType::UWP;
+                                        break;
+                                }
+                            }
+                        }
+
+                        ImGui::EndTable();
+                    }
+                    ImGui::PopStyleVar();
+
+                    ImGui::TableNextColumn();
+                }
+
+                ImGui::TableNextRow();
+                {
+                    ImGui::TableNextColumn();
+                    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+                    ImGui::Text("SDK Version");
+                    ImGui::SameLine();
+                    ImGui::Image(m_questionCircledTexture->getTextureNativeHandler(), {
+                            (float) m_questionCircledTexture->getWidth(),
+                            (float) m_questionCircledTexture->getHeight()
+                    });
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::SetTooltip("Leave empty to use the latest installed version of SDK");
                     }
 
-                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                    ImGui::InputText("##VSToolchainWinSDKVersionInputText", &m_currentVSToolchainWinSDKVersion,
+                                     ImGuiInputTextFlags_EnterReturnsTrue);
+
+                    if (ImGui::IsItemEdited())
                     {
-                        ImGui::TableNextColumn();
-                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
-                        ImGui::Text("SDK Version");
-                        ImGui::SameLine();
-                        ImGui::Image(m_questionCircledTexture->getTextureNativeHandler(), {
-                                (float) m_questionCircledTexture->getWidth(),
-                                (float) m_questionCircledTexture->getHeight()
-                        });
-                        if(ImGui::IsItemHovered())
+                        vsToolchain->m_winSDKVersion = m_currentVSToolchainWinSDKVersion;
+
+                        std::string vcvarsallSDKTestResult;
+
+                        if (std::filesystem::exists(vsToolchain->m_vcvarsallPath))
                         {
-                            ImGui::SetTooltip("Leave empty to use the latest installed version of SDK");
+                            vcvarsallSDKTestResult = SGCore::Utils::consoleExecute(fmt::format("\"{0}\" {1} {2} {3}",
+                                                                                               SGCore::Utils::toUTF8(
+                                                                                                       vsToolchain->m_vcvarsallPath.u16string()),
+                                                                                               VCArchTypeToString(
+                                                                                                       vsToolchain->m_archType),
+                                                                                               VCPlatformTypeToString(
+                                                                                                       vsToolchain->m_platformType),
+                                                                                               vsToolchain->m_winSDKVersion));
+
+                            if (vcvarsallSDKTestResult.contains("ERROR"))
+                            {
+                                m_toolchainPathError = "Invalid SDK Version";
+                            } else
+                            {
+                                m_toolchainPathError = "Correct toolchain";
+                            }
                         }
 
-                        ImGui::TableNextColumn();
-                        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 7);
-                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-                        ImGui::InputText("##VSToolchainWinSDKVersionInputText", &m_currentVSToolchainWinSDKVersion,
-                                         ImGuiInputTextFlags_EnterReturnsTrue);
-
-                        if (ImGui::IsItemEdited())
+                        if (onToolchainChanged)
                         {
-                            vsToolchain->m_winSDKVersion = m_currentVSToolchainWinSDKVersion;
-
-                            std::string vcvarsallSDKTestResult;
-
-                            if(std::filesystem::exists(vsToolchain->m_vcvarsallPath))
-                            {
-                                vcvarsallSDKTestResult = SGCore::Utils::consoleExecute(fmt::format("\"{0}\" {1} {2} {3}",
-                                                                          SGCore::Utils::toUTF8(vsToolchain->m_vcvarsallPath.u16string()),
-                                                                          VCArchTypeToString(vsToolchain->m_archType),
-                                                                          VCPlatformTypeToString(vsToolchain->m_platformType),
-                                                                          vsToolchain->m_winSDKVersion));
-
-                                if(vcvarsallSDKTestResult.contains("ERROR"))
-                                {
-                                    m_toolchainPathError = "Invalid SDK Version";
-                                }
-                                else
-                                {
-                                    m_toolchainPathError = "Correct toolchain";
-                                }
-                            }
-
-                            if (onToolchainChanged)
-                            {
-                                onToolchainChanged();
-                            }
+                            onToolchainChanged();
                         }
                     }
                 }
-                break;
             }
-
-            drawCMakeChooseRow();
-
-            drawBuildToolChooseRow();
-
-            ImGui::EndTable();
+                break;
         }
-        ImGui::PopStyleVar();
 
-        // ImGui::Separator();
+        drawCMakeChooseRow();
+
+        drawBuildToolChooseRow();
+
+        ImGui::EndTable();
     }
+    ImGui::PopStyleVar();
+
+    // ImGui::Separator();
 }
 
 void SGE::SelectedToolchainDockedWindow::setSelectedToolchain(const SGCore::Ref<Toolchain>& toolchain) noexcept
@@ -308,37 +312,41 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchain(const SGCore::Ref<
 
 SGCore::Ref<SGE::Toolchain> SGE::SelectedToolchainDockedWindow::getSelectedToolchain() const noexcept
 {
-    return m_selectedToolchain;
+    return m_selectedToolchain.lock();
 }
 
 void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::filesystem::path& path,
                                                                   ToolchainPathType pathType)
 {
+    if(auto l = m_selectedToolchain.lock(); !l) return;
+
     auto worker = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
 
     auto task = SGCore::MakeRef<SGCore::Threading::Task>();
     task->setOnExecuteCallback([this, pathType, path]() {
+        auto lockedSelectedToolchain = m_selectedToolchain.lock();
+
         try
         {
             switch(pathType)
             {
                 case ToolchainPathType::OWN:
                 {
-                    m_selectedToolchain->setPath(path);
+                    lockedSelectedToolchain->setPath(path);
                     m_toolchainPathError = "Correct toolchain";
                     if(m_currentToolchainCMakePath.empty())
                     {
-                        setSelectedToolchainPath(m_selectedToolchain->getCMakePath(), ToolchainPathType::CMAKE);
-                        m_currentToolchainCMakePath = SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string());
+                        setSelectedToolchainPath(lockedSelectedToolchain->getCMakePath(), ToolchainPathType::CMAKE);
+                        m_currentToolchainCMakePath = SGCore::Utils::toUTF8(lockedSelectedToolchain->getCMakePath().u16string());
 
                         std::printf("selected cmake %s\n", m_currentToolchainCMakePath.c_str());
                     }
                     if(m_currentToolchainBuildToolPath.empty())
                     {
-                        setSelectedToolchainPath(m_selectedToolchain->getBuildToolPath(),
+                        setSelectedToolchainPath(lockedSelectedToolchain->getBuildToolPath(),
                                                  ToolchainPathType::BUILD_TOOL);
                         m_currentToolchainBuildToolPath = SGCore::Utils::toUTF8(
-                                m_selectedToolchain->getBuildToolPath().u16string());
+                                lockedSelectedToolchain->getBuildToolPath().u16string());
 
                         std::printf("selected build tool %s\n", m_currentToolchainBuildToolPath.c_str());
                     }
@@ -349,12 +357,12 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::fil
                     // AUTO DETECTING CMAKE
                     if(path.empty())
                     {
-                        m_selectedToolchain->setCMakePath("");
-                        setSelectedToolchainPath(m_selectedToolchain->getPath(), ToolchainPathType::OWN);
+                        lockedSelectedToolchain->setCMakePath("");
+                        setSelectedToolchainPath(lockedSelectedToolchain->getPath(), ToolchainPathType::OWN);
                         break;
                     }
-                    m_selectedToolchain->setCMakePath(path);
-                    m_cmakePathError = "Version: " + m_selectedToolchain->getCMakeVersion();
+                    lockedSelectedToolchain->setCMakePath(path);
+                    m_cmakePathError = "Version: " + lockedSelectedToolchain->getCMakeVersion();
                     std::printf("correct cmake\n");
                     break;
                 }
@@ -363,12 +371,12 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::fil
                     // AUTO DETECTING BUILD TOOL
                     if(path.empty())
                     {
-                        m_selectedToolchain->setBuildToolPath("");
-                        setSelectedToolchainPath(m_selectedToolchain->getPath(), ToolchainPathType::OWN);
+                        lockedSelectedToolchain->setBuildToolPath("");
+                        setSelectedToolchainPath(lockedSelectedToolchain->getPath(), ToolchainPathType::OWN);
                         break;
                     }
-                    m_selectedToolchain->setBuildToolPath(path);
-                    m_buildToolPathError = "Version: " + m_selectedToolchain->getBuildToolVersion();
+                    lockedSelectedToolchain->setBuildToolPath(path);
+                    m_buildToolPathError = "Version: " + lockedSelectedToolchain->getBuildToolVersion();
                     break;
                 }
             }
@@ -413,47 +421,46 @@ void SGE::SelectedToolchainDockedWindow::setSelectedToolchainPath(const std::fil
 
 void SGE::SelectedToolchainDockedWindow::updateSelectedToolchain()
 {
-    if(m_selectedToolchain)
+    auto lockedSelectedToolchain = m_selectedToolchain.lock();
+    if (!lockedSelectedToolchain) return;
+
+    m_currentToolchainName = lockedSelectedToolchain->m_name.getName();
+    m_currentToolchainPath = SGCore::Utils::toUTF8(lockedSelectedToolchain->getPath().u16string());
+    m_currentToolchainCMakePath = SGCore::Utils::toUTF8(lockedSelectedToolchain->getCMakePath().u16string());
+    m_currentToolchainBuildToolPath = SGCore::Utils::toUTF8(lockedSelectedToolchain->getBuildToolPath().u16string());
+
+    setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
+    setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
+    setSelectedToolchainPath(m_currentToolchainBuildToolPath, ToolchainPathType::BUILD_TOOL);
+
+    // TOOLCHAIN TEST
+    switch (lockedSelectedToolchain->getType())
     {
-        m_currentToolchainName = m_selectedToolchain->m_name.getName();
-        m_currentToolchainPath = SGCore::Utils::toUTF8(m_selectedToolchain->getPath().u16string());
-        m_currentToolchainCMakePath = SGCore::Utils::toUTF8(m_selectedToolchain->getCMakePath().u16string());
-        m_currentToolchainBuildToolPath = SGCore::Utils::toUTF8(m_selectedToolchain->getBuildToolPath().u16string());
-
-        setSelectedToolchainPath(m_currentToolchainPath, ToolchainPathType::OWN);
-        setSelectedToolchainPath(m_currentToolchainCMakePath, ToolchainPathType::CMAKE);
-        setSelectedToolchainPath(m_currentToolchainBuildToolPath, ToolchainPathType::BUILD_TOOL);
-
-        // TOOLCHAIN TEST
-        switch(m_selectedToolchain->getType())
+        case ToolchainType::VISUAL_STUDIO:
         {
-            case ToolchainType::VISUAL_STUDIO:
+            auto vsToolchain = std::static_pointer_cast<VisualStudioToolchain>(lockedSelectedToolchain);
+
+            if (std::filesystem::exists(vsToolchain->m_vcvarsallPath))
             {
-                auto vsToolchain = std::static_pointer_cast<VisualStudioToolchain>(m_selectedToolchain);
+                std::string vcvarsallSDKTestResult = SGCore::Utils::consoleExecute(
+                        fmt::format("\"{0}\" {1} {2} {3}",
+                                    SGCore::Utils::toUTF8(
+                                            vsToolchain->m_vcvarsallPath.u16string()),
+                                    VCArchTypeToString(
+                                            vsToolchain->m_archType),
+                                    VCPlatformTypeToString(
+                                            vsToolchain->m_platformType),
+                                    vsToolchain->m_winSDKVersion));
 
-                if(std::filesystem::exists(vsToolchain->m_vcvarsallPath))
+                if (vcvarsallSDKTestResult.contains("ERROR"))
                 {
-                    std::string vcvarsallSDKTestResult = SGCore::Utils::consoleExecute(
-                            fmt::format("\"{0}\" {1} {2} {3}",
-                                        SGCore::Utils::toUTF8(
-                                                vsToolchain->m_vcvarsallPath.u16string()),
-                                        VCArchTypeToString(
-                                                vsToolchain->m_archType),
-                                        VCPlatformTypeToString(
-                                                vsToolchain->m_platformType),
-                                        vsToolchain->m_winSDKVersion));
-
-                    if (vcvarsallSDKTestResult.contains("ERROR"))
-                    {
-                        m_toolchainPathError = "Invalid SDK Version";
-                    }
-                    else
-                    {
-                        m_toolchainPathError = "Correct toolchain";
-                    }
+                    m_toolchainPathError = "Invalid SDK Version";
+                } else
+                {
+                    m_toolchainPathError = "Correct toolchain";
                 }
-                break;
             }
+            break;
         }
     }
 }

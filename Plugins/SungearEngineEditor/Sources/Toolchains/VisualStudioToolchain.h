@@ -46,6 +46,11 @@ namespace SGE
 
         void configurate() final;
         void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName) final;
+
+        [[nodiscard]] VisualStudioToolchain* copy() const final;
+
+        VisualStudioToolchain& operator=(const VisualStudioToolchain&) = default;
+        VisualStudioToolchain& operator=(VisualStudioToolchain&&) = default;
     };
 }
 
