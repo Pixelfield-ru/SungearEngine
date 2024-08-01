@@ -348,7 +348,7 @@ std::string SGCore::AudioTrackAsset::getSummary() const noexcept
 void SGCore::AudioTrackAsset::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent,
                                             const std::string& varName)
 {
-    rapidjson::Value k(rapidjson::kStringType);
+    /*rapidjson::Value k(rapidjson::kStringType);
     rapidjson::Value v(rapidjson::kObjectType);
 
     k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
@@ -370,18 +370,18 @@ void SGCore::AudioTrackAsset::serializeData(rapidjson::Document& toDocument, rap
 
     Serializer::serialize(toDocument, v, "m_dataBuffer", buf);
 
-    parent.AddMember(k, v, toDocument.GetAllocator());
+    parent.AddMember(k, v, toDocument.GetAllocator());*/
 }
 
 void SGCore::AudioTrackAsset::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent,
                                             const std::string& varName)
 {
-    rapidjson::Value k(rapidjson::kStringType);
+    /*rapidjson::Value k(rapidjson::kStringType);
     rapidjson::Value v(rapidjson::kObjectType);
 
     k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
 
     Serializer::serialize(toDocument, v, "m_path", Utils::toUTF8<char16_t>(m_path.u16string()));
 
-    parent.AddMember(k, v, toDocument.GetAllocator());
+    parent.AddMember(k, v, toDocument.GetAllocator());*/
 }

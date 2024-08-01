@@ -994,7 +994,7 @@ void SGCore::AnnotationsProcessor::saveToFile(const std::filesystem::path& fileP
     rapidjson::Document document;
     document.SetObject();
 
-    Serializer::serialize(document, document, "annotationsProcessor", *this);
+    // Serializer::serialize(document, document, "annotationsProcessor", *this);
 
     rapidjson::StringBuffer stringBuffer;
     stringBuffer.Clear();

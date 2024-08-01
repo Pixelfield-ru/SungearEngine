@@ -6,7 +6,7 @@
 
 // TEMPLATE CODE
 // TODO: MUST BE USED IN SERIALIZERS GENERATION
-void SGCore::SerializerSpec<SGE::Toolchain>::serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
+/*void SGCore::SerializerSpec<SGE::Toolchain>::serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
                                                        const std::string& varName, const SGE::Toolchain& value) noexcept
 {
     auto* dyn0 = dynamic_cast<const SGE::VisualStudioToolchain*>(&value);
@@ -62,4 +62,4 @@ void SGCore::SerializerSpec<SGE::Toolchain>::serializeOnlyValueType(rapidjson::D
                                                                     const SGE::Toolchain& value) noexcept
 {
 
-}
+}*/

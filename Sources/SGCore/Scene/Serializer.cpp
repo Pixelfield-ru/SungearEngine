@@ -16,6 +16,7 @@
     parent.AddMember(rapidjson::StringRef(varName.c_str()), value, toDocument.GetAllocator());
 }*/
 
+/*
 void SGCore::SerializerSpec<SGCore::AnnotationsProcessor>::serialize(rapidjson::Document& toDocument,
                                                                      rapidjson::Value& parent,
                                                                      const std::string& varName,
@@ -273,4 +274,4 @@ SGCore::SerializerSpec<SGCore::AnnotationsProcessor::AnnotationArg>::deserialize
     }
 
     return outputValue;
-}
+}*/

@@ -49,7 +49,7 @@ struct MyStruct
     bool m_bool = true;
 };
 
-template<>
+/*template<>
 struct SGCore::SerializerSpec<MyStruct>
 {
     static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const MyStruct& value) noexcept
@@ -91,7 +91,7 @@ struct SGCore::SerializerSpec<MyStruct>
 
         return outputValue;
     }
-};
+};*/
 
 void coreInit()
 {
@@ -184,7 +184,8 @@ void coreInit()
     testSerde.m_name = "Ilya";
     testSerde.m_bool = true;
 
-    Serializer::serialize(document, document, "testSerde", annotationsProcessor);
+    Serializer::serialize(document, document, "testSerde", (std::int8_t) 3);
+    // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
     rapidjson::StringBuffer stringBuffer;
     stringBuffer.Clear();
@@ -197,9 +198,17 @@ void coreInit()
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());
 
     std::string outputLog;
+    auto deser = Serializer::deserialize<std::int8_t>(document, "testSerde", outputLog);
+
+    std::printf("deser: %i\n", deser);
+
+    /*rapidjson::Document fromDocument;
+    fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());
+
+    std::string outputLog;
     auto deserializedStruct = Serializer::deserialize<AnnotationsProcessor>(document, "testSerde", outputLog);
 
-    std::printf("file path: %s\n", Utils::toUTF8<char16_t>(deserializedStruct.getAnnotations()[0].m_filePath.u16string()).c_str());
+    std::printf("file path: %s\n", Utils::toUTF8<char16_t>(deserializedStruct.getAnnotations()[0].m_filePath.u16string()).c_str());*/
     // std::printf("deserialized struct: %s, %i\n", deserializedStruct.m_name.c_str(), deserializedStruct.m_bool);
 }
 
