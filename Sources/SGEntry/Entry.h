@@ -6,6 +6,81 @@
 #include <SGCore/Scene/Serializer.h>
 #include <SGCore/Utils/TypeTraits.h>
 
+struct Base
+{
+    int a = 3;
+
+    virtual void v()
+    {
+
+    }
+};
+
+struct Derived : Base
+{
+    float b = 3.14f;
+};
+
+template<>
+struct SGCore::SerializerSpec<Derived>
+{
+    static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
+    static inline const std::string type_name = "Derived";
+
+    static void serializeDynamic(rapidjson::Document& toDocument,
+                                 rapidjson::Value& parentKey,
+                                 rapidjson::Value& parent,
+                                 rapidjson::Value& valueTypeName,
+                                 const Derived& value) noexcept;
+
+    static void serializeStatic(rapidjson::Document& toDocument,
+                                rapidjson::Value& parentKey,
+                                rapidjson::Value& parent,
+                                rapidjson::Value& valueTypeName,
+                                const Derived& value) noexcept;
+
+    static void deserializeDynamic(const rapidjson::Value& parent, const rapidjson::Value& value,
+                                   const std::string& typeName,
+                                   std::string& outputLog,
+                                   Derived*& outputValue) noexcept;
+
+    static void deserializeStatic(const rapidjson::Value& parent, const rapidjson::Value& value,
+                                  const std::string& typeName,
+                                  std::string& outputLog,
+                                  Derived& outputValue) noexcept;
+};
+
+template<>
+struct SGCore::SerializerSpec<Base>
+{
+    static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
+    static inline const std::string type_name = "Base";
+
+    static void serializeDynamic(rapidjson::Document& toDocument,
+                                 rapidjson::Value& parentKey,
+                                 rapidjson::Value& parent,
+                                 rapidjson::Value& valueTypeName,
+                                 const Base& value) noexcept;
+
+    static void serializeStatic(rapidjson::Document& toDocument,
+                                rapidjson::Value& parentKey,
+                                rapidjson::Value& parent,
+                                rapidjson::Value& valueTypeName,
+                                const Base& value) noexcept;
+
+    static void deserializeDynamic(const rapidjson::Value& parent,
+                                   const rapidjson::Value& value,
+                                   const std::string& typeName,
+                                   std::string& outputLog,
+                                   Base*& outputValue) noexcept;
+
+    static void deserializeStatic(const rapidjson::Value& parent,
+                                  const rapidjson::Value& value,
+                                  const std::string& typeName,
+                                  std::string& outputLog,
+                                  Base& outputValue) noexcept;
+};
+
 void coreInit();
 
 void onUpdate(const double& dt, const double& fixedDt);

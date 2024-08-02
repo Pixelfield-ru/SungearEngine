@@ -49,49 +49,107 @@ struct MyStruct
     bool m_bool = true;
 };
 
-/*template<>
-struct SGCore::SerializerSpec<MyStruct>
+// ЭТАЛОН!!!!!!!!!!!!!!!!!!!!!
+
+void SGCore::SerializerSpec<Derived>::serializeDynamic(rapidjson::Document& toDocument,
+                                                       rapidjson::Value& parentKey,
+                                                       rapidjson::Value& parent,
+                                                       rapidjson::Value& valueTypeName,
+                                                       const Derived& value) noexcept
 {
-    static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const MyStruct& value) noexcept
+    SGCore::SerializerSpec<Base>::serializeStatic(toDocument, parentKey, parent, valueTypeName, static_cast<const Base&>(value));
+    SGCore::Serializer::serialize(toDocument, parent, "b", value.b);
+}
+
+void SGCore::SerializerSpec<Derived>::serializeStatic(rapidjson::Document& toDocument,
+                                                      rapidjson::Value& parentKey,
+                                                      rapidjson::Value& parent,
+                                                      rapidjson::Value& valueTypeName,
+                                                      const Derived& value) noexcept
+{
+    SGCore::SerializerSpec<Base>::serializeStatic(toDocument, parentKey, parent, valueTypeName, static_cast<const Base&>(value));
+    SGCore::Serializer::serialize(toDocument, parent, "b", value.b);
+}
+
+void SGCore::SerializerSpec<Derived>::deserializeDynamic(const rapidjson::Value& parent,
+                                                         const rapidjson::Value& value,
+                                                         const std::string& typeName,
+                                                         std::string& outputLog,
+                                                         Derived*& outputValue) noexcept
+{
+    outputValue = new Derived();
+
+    SGCore::SerializerSpec<Base>::deserializeStatic(value, value, typeName, outputLog, static_cast<Base&>(*outputValue));
+    outputValue->b = SGCore::Serializer::deserialize<float>(value, "b", outputLog);
+}
+
+void SGCore::SerializerSpec<Derived>::deserializeStatic(const rapidjson::Value& parent,
+                                                        const rapidjson::Value& value,
+                                                        const std::string& typeName,
+                                                        std::string& outputLog,
+                                                        Derived& outputValue) noexcept
+{
+    SGCore::SerializerSpec<Base>::deserializeStatic(value, value, typeName, outputLog, static_cast<Base&>(outputValue));
+    outputValue.b = SGCore::Serializer::deserialize<float>(value, "b", outputLog);
+}
+
+// ============================================================
+// ============================================================
+// ============================================================
+
+void SGCore::SerializerSpec<Base>::serializeDynamic(rapidjson::Document& toDocument,
+                                                    rapidjson::Value& parentKey,
+                                                    rapidjson::Value& parent,
+                                                    rapidjson::Value& valueTypeName,
+                                                    const Base& value) noexcept
+{
+    const auto* cast0 = dynamic_cast<const Derived*>(&value);
+
+    if(cast0)
     {
-        rapidjson::Value k(rapidjson::kStringType);
-        rapidjson::Value v(rapidjson::kObjectType);
-
-        k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-        SGCore::Serializer::serialize(toDocument, v, "m_name", value.m_name);
-        SGCore::Serializer::serialize(toDocument, v, "m_bool", value.m_bool);
-
-        switch(parent.GetType())
-        {
-            case rapidjson::kNullType:
-                break;
-            case rapidjson::kFalseType:
-                break;
-            case rapidjson::kTrueType:
-                break;
-            case rapidjson::kObjectType:
-                parent.AddMember(k, v, toDocument.GetAllocator());
-                break;
-            case rapidjson::kArrayType:
-                parent.PushBack(v, toDocument.GetAllocator());
-                break;
-            case rapidjson::kStringType:
-                break;
-            case rapidjson::kNumberType:
-                break;
-        }
+        valueTypeName.SetString(SGCore::SerializerSpec<Derived>::type_name.c_str(), SGCore::SerializerSpec<Derived>::type_name.length());
+        SGCore::Serializer::serializeUsing3rdPartyDynamicCasts(toDocument, parentKey, parent, valueTypeName, cast0);
+        return;
     }
 
-    static MyStruct deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-    {
-        MyStruct outputValue;
-        outputValue.m_name = Serializer::deserialize<std::string>(value, "m_name", outputLog);
-        outputValue.m_bool = Serializer::deserialize<bool>(value, "m_bool", outputLog);
+    SGCore::Serializer::serialize(toDocument, parent, "a", value.a);
+}
 
-        return outputValue;
+void SGCore::SerializerSpec<Base>::serializeStatic(rapidjson::Document& toDocument,
+                                                   rapidjson::Value& parentKey,
+                                                   rapidjson::Value& parent,
+                                                   rapidjson::Value& valueTypeName,
+                                                   const Base& value) noexcept
+{
+    SGCore::Serializer::serialize(toDocument, parent, "a", value.a);
+}
+
+void SGCore::SerializerSpec<Base>::deserializeDynamic(const rapidjson::Value& parent, const rapidjson::Value& value,
+                                                      const std::string& typeName,
+                                                      std::string& outputLog,
+                                                      Base*& outputValue) noexcept
+{
+    if(typeName == SGCore::SerializerSpec<Derived>::type_name)
+    {
+        outputValue = SGCore::Serializer::deserializeUsing3rdPartyDynamicCasts<Derived*>(parent, value, typeName, outputLog);
+        return;
     }
-};*/
+
+    outputValue = new Base();
+
+    outputValue->a = SGCore::Serializer::deserialize<int>(value, "a", outputLog);
+}
+
+void SGCore::SerializerSpec<Base>::deserializeStatic(const rapidjson::Value& parent,
+                                                     const rapidjson::Value& value,
+                                                     const std::string& typeName,
+                                                     std::string& outputLog,
+                                                     Base& outputValue) noexcept
+{
+    outputValue.a = SGCore::Serializer::deserialize<int>(value, "a", outputLog);
+}
+
+// ==================================================================================
 
 void coreInit()
 {
@@ -184,7 +242,10 @@ void coreInit()
     testSerde.m_name = "Ilya";
     testSerde.m_bool = true;
 
-    Serializer::serialize(document, document, "testSerde", (std::int8_t) 3);
+    std::unique_ptr<Base> tst = std::make_unique<Derived>();
+    tst->a = -1;
+    dynamic_cast<Derived*>(tst.get())->b = 4;
+    Serializer::serialize(document, document, "testSerde", tst);
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
     rapidjson::StringBuffer stringBuffer;
@@ -198,9 +259,11 @@ void coreInit()
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());
 
     std::string outputLog;
-    auto deser = Serializer::deserialize<std::int8_t>(document, "testSerde", outputLog);
+    auto deser = Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 
-    std::printf("deser: %i\n", deser);
+    std::printf("deser: %i, %f\n", deser->a, (dynamic_cast<Derived*>(deser.get()))->b);
+
+    std::printf("deser log: %s\n", outputLog.c_str());
 
     /*rapidjson::Document fromDocument;
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());

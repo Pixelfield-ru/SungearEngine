@@ -1,6 +1,8 @@
 project(SGEntry)
 
 file(GLOB_RECURSE SGENTRY_SOURCES *.cpp *.h)
+list(FILTER SGENTRY_SOURCES EXCLUDE REGEX "CoreTest.cpp")
+list(FILTER SGENTRY_SOURCES EXCLUDE REGEX "CoreTest.h")
 
 set(SG_EXEC_NAME SungearEngine)
 
