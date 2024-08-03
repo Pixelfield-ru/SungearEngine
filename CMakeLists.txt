@@ -1,5 +1,8 @@
 include(cmake/set-toolchain.cmake)
 
+set(CMAKE_CXX_COMPILER "F:\\VisualStudio\\IDE\\VC\\Tools\\MSVC\\14.39.33519\\bin\\Hostx64\\x64\\cl.exe")
+set(CMAKE_C_COMPILER "F:\\VisualStudio\\IDE\\VC\\Tools\\MSVC\\14.39.33519\\bin\\Hostx64\\x64\\cl.exe")
+
 cmake_minimum_required(VERSION 3.22)
 project(SungearEngine)
 
