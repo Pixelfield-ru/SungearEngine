@@ -18,12 +18,30 @@
 
 namespace SGCore
 {
+    template<typename... Cls>
+    struct BaseClasses
+    {
+        static constexpr std::uint64_t base_classes_count = sizeof...(Cls);
+
+        template<std::int64_t Idx>
+        using get_base_type = extract<Idx, Cls...>::type;
+    };
+
+    template<typename... Cls>
+    struct DerivedClasses
+    {
+        static constexpr std::uint64_t derived_classes_count = sizeof...(Cls);
+
+        template<std::int64_t Idx>
+        using get_derived_type = extract<Idx, Cls...>::type;
+    };
+
     /**
      * You must implement rapidjson_type and type_name
      * @tparam T
      */
     template<typename T>
-    struct SerializerSpec
+    struct SerializerSpec : BaseClasses<>, DerivedClasses<>
     {
         static_assert(always_false<T>::value, "This type is not serializable. Please, implement specialization of SerializerSpec for this type.");
 
@@ -32,31 +50,16 @@ namespace SGCore
 
         /**
          * Call this if you want to serialize your value directly in value section\n
-         * Checks for derived types (may provides dynamic casts)
-         * @param toDocument
-         * @param parent
-         * @param value
-         */
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName, // can be modified
-                                     const T& value) noexcept
-        {
-        }
-
-        /**
-         * Call this if you want to serialize your value directly in value section\n
          * Serializes only data of value type without checking for derived types (no dynamic casts)
          * @param toDocument
          * @param parent
          * @param value
          */
-        static void serializeStatic(rapidjson::Document& toDocument,
-                                    rapidjson::Value& parentKey,
-                                    rapidjson::Value& parent,
-                                    rapidjson::Value& valueTypeName, // can be modified
-                                    const T& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName, // can be modified
+                              const T& value) noexcept
         {
         }
 
@@ -120,7 +123,7 @@ namespace SGCore
                                                        const auto& value)
         {
             using type = std::remove_const_t<std::remove_reference_t<decltype(value)>>;
-            using clear_type = std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<type>>>;
+            using clear_type = clear_type_t<type>;
 
             if constexpr(std::is_pointer_v<type> || is_shared_ptr_v<type> || is_unique_ptr_v<type>)
             {
@@ -134,16 +137,24 @@ namespace SGCore
 
                 if constexpr(std::is_same_v<clear_type, const char*>)
                 {
-                    return SerializerSpec<clear_type>::serializeStatic(toDocument, parentKey, parent, valueTypeName, value);
+                    SerializerSpec<clear_type>::serialize(toDocument, parentKey, parent, valueTypeName, value);
                 }
                 else
                 {
-                    return SerializerSpec<type>::serializeDynamic(toDocument, parentKey, parent, valueTypeName, value);
+                    bool isAnyOfDerivedSerialized = false;
+                    if(value)
+                    {
+                        serializeDerivedClasses<clear_type>(toDocument, parentKey, parent, valueTypeName, *value,
+                                                            isAnyOfDerivedSerialized);
+                    }
+
+                    SerializerSpec<type>::serialize(toDocument, parentKey, parent, valueTypeName, value);
                 }
             }
             else
             {
-                return SerializerSpec<clear_type>::serializeStatic(toDocument, parentKey, parent, valueTypeName, value);
+                serializeBaseClasses<clear_type>(toDocument, parentKey, parent, valueTypeName, value);
+                SerializerSpec<clear_type>::serialize(toDocument, parentKey, parent, valueTypeName, value);
             }
         }
 
@@ -436,6 +447,110 @@ namespace SGCore
             // ======================================
             parent.AddMember(valueTypeK, valueTypeV, toDocument.GetAllocator());
         }
+
+    // private:
+        // type and has element_type using
+        template<typename T, bool HasElementType>
+        struct clear_type_impl;
+
+        template<typename T>
+        struct clear_type_impl<T, true>
+        {
+            using type = std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<typename T::element_type>>>;
+        };
+
+        template<typename T>
+        struct clear_type_impl<T, false>
+        {
+            using type = std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<T>>>;
+        };
+
+        template<typename T>
+        using clear_type_t = clear_type_impl<T, requires { typename T::element_type; }>::type;
+
+        template<typename BaseT, typename DerivedT>
+        static void trySerializeDerivedClass(rapidjson::Document& toDocument,
+                                             rapidjson::Value& parentKey,
+                                             rapidjson::Value& parent,
+                                             rapidjson::Value& valueTypeName, // can be modified
+                                             const BaseT& value,
+                                             bool& isAnyOfDerivedSerialized)
+        {
+            const auto* derived = dynamic_cast<const DerivedT*>(&value);
+            if(derived)
+            {
+                isAnyOfDerivedSerialized = true;
+                valueTypeName.SetString(SerializerSpec<DerivedT>::type_name.c_str(),
+                                        SerializerSpec<DerivedT>::type_name.length());
+                // serializing base part
+                /*SerializerSpec<BaseT>::serialize(toDocument, parentKey, parent, valueTypeName, value);
+                // serializing derived part
+                SerializerSpec<DerivedT>::serialize(toDocument, parentKey, parent, valueTypeName, *derived);
+                serializeDerivedClasses<DerivedT>(toDocument, parentKey, parent, valueTypeName, *derived,
+                                                  isAnyOfDerivedSerialized);*/
+
+                serializeUsing3rdPartyDynamicCasts(toDocument, parentKey, parent, valueTypeName, derived);
+            }
+        }
+
+        template<typename T, std::int64_t... Indices>
+        static void serializeDerivedClassesImpl(rapidjson::Document& toDocument,
+                                                rapidjson::Value& parentKey,
+                                                rapidjson::Value& parent,
+                                                rapidjson::Value& valueTypeName, // can be modified
+                                                const T& value,
+                                                bool& isAnyOfDerivedSerialized,
+                                                std::index_sequence<Indices...>)
+        {
+            (trySerializeDerivedClass<T, typename SerializerSpec<T>::template get_derived_type<Indices>>(toDocument,
+                                                                                                         parentKey,
+                                                                                                         parent,
+                                                                                                         valueTypeName,
+                                                                                                         value,
+                                                                                                         isAnyOfDerivedSerialized), ...);
+        }
+
+        template<typename T>
+        static void serializeDerivedClasses(rapidjson::Document& toDocument,
+                                            rapidjson::Value& parentKey,
+                                            rapidjson::Value& parent,
+                                            rapidjson::Value& valueTypeName, // can be modified
+                                            const T& value,
+                                            bool& isAnyOfDerivedSerialized)
+        {
+            if constexpr(requires { SerializerSpec<T>::derived_classes_count && SerializerSpec<T>::get_derived_type; })
+            {
+                serializeDerivedClassesImpl<T>(toDocument, parentKey, parent, valueTypeName, value,
+                                               isAnyOfDerivedSerialized,
+                                               std::make_index_sequence<SerializerSpec<T>::derived_classes_count> {});
+            }
+        }
+
+        template<typename T, std::int64_t... Indices>
+        static void serializeBaseClassesImpl(rapidjson::Document& toDocument,
+                                             rapidjson::Value& parentKey,
+                                             rapidjson::Value& parent,
+                                             rapidjson::Value& valueTypeName, // can be modified
+                                             const T& value,
+                                             std::index_sequence<Indices...>)
+        {
+            (serializeUsing3rdPartyDynamicCasts(toDocument, parentKey, parent, valueTypeName,
+                                               static_cast<const SerializerSpec<T>::template get_base_type<Indices>&>(value)), ...);
+        }
+
+        template<typename T>
+        static void serializeBaseClasses(rapidjson::Document& toDocument,
+                                         rapidjson::Value& parentKey,
+                                         rapidjson::Value& parent,
+                                         rapidjson::Value& valueTypeName, // can be modified
+                                         const T& value)
+        {
+            if constexpr(requires { SerializerSpec<T>::base_classes_count && SerializerSpec<T>::get_base_type; })
+            {
+                serializeBaseClassesImpl<T>(toDocument, parentKey, parent, valueTypeName, value,
+                                            std::make_index_sequence<SerializerSpec<T>::base_classes_count> {});
+            }
+        }
     };
 
     // ===============================================================================================================================
@@ -450,20 +565,11 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
         static inline const std::string type_name = "enum";
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const T& value) noexcept
-        {
-            serializeStatic(toDocument, parentKey, parent, value);
-        }
-
-        static void serializeStatic(rapidjson::Document& toDocument,
-                                    rapidjson::Value& parentKey,
-                                    rapidjson::Value& parent,
-                                    rapidjson::Value& valueTypeName,
-                                    const T& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const T& value) noexcept
         {
             parent.SetInt(static_cast<std::int64_t>(value));
         }
@@ -495,39 +601,20 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = SerializerSpec<element_type>::rapidjson_type;
         static inline const std::string type_name = SerializerSpec<element_type>::type_name;
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const T* value) noexcept
-        {
-            if(value)
-            {
-                SerializerSpec<element_type>::serializeDynamic(toDocument,
-                                                               parentKey,
-                                                               parent,
-                                                               valueTypeName,
-                                                               *value);
-            }
-            else
-            {
-                parent = rapidjson::Value(rapidjson::kNullType);
-            }
-        }
 
-        static void serializeStatic(rapidjson::Document& toDocument,
-                                    rapidjson::Value& parentKey,
-                                    rapidjson::Value& parent,
-                                    rapidjson::Value& valueTypeName,
-                                    const T& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const T* value) noexcept
         {
             if(value)
             {
-                SerializerSpec<element_type>::serializeStatic(toDocument,
-                                                              parentKey,
-                                                              parent,
-                                                              valueTypeName,
-                                                              *value);
+                SerializerSpec<element_type>::serialize(toDocument,
+                                                        parentKey,
+                                                        parent,
+                                                        valueTypeName,
+                                                        *value);
             }
             else
             {
@@ -566,39 +653,19 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = SerializerSpec<element_type>::rapidjson_type;
         static inline const std::string type_name = SerializerSpec<element_type>::type_name;
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const std::shared_ptr<T>& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const std::shared_ptr<T>& value) noexcept
         {
-            if(value)
+            if (value)
             {
-                SerializerSpec<element_type>::serializeDynamic(toDocument,
-                                                               parentKey,
-                                                               parent,
-                                                               valueTypeName,
-                                                               *value);
-            }
-            else
-            {
-                parent = rapidjson::Value(rapidjson::kNullType);
-            }
-        }
-
-        static void serializeStatic(rapidjson::Document& toDocument,
-                                    rapidjson::Value& parentKey,
-                                    rapidjson::Value& parent,
-                                    rapidjson::Value& valueTypeName,
-                                    const std::shared_ptr<T>& value) noexcept
-        {
-            if(value)
-            {
-                SerializerSpec<element_type>::serializeStatic(toDocument,
-                                                              parentKey,
-                                                              parent,
-                                                              valueTypeName,
-                                                              *value);
+                SerializerSpec<element_type>::serialize(toDocument,
+                                                        parentKey,
+                                                        parent,
+                                                        valueTypeName,
+                                                        *value);
             }
             else
             {
@@ -638,39 +705,19 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = SerializerSpec<element_type>::rapidjson_type;
         static inline const std::string type_name = SerializerSpec<element_type>::type_name;
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const std::unique_ptr<T>& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const std::unique_ptr<T>& value) noexcept
         {
-            if(value)
+            if (value)
             {
-                SerializerSpec<element_type>::serializeDynamic(toDocument,
-                                                               parentKey,
-                                                               parent,
-                                                               valueTypeName,
-                                                               *value);
-            }
-            else
-            {
-                parent = rapidjson::Value(rapidjson::kNullType);
-            }
-        }
-
-        static void serializeStatic(rapidjson::Document& toDocument,
-                                    rapidjson::Value& parentKey,
-                                    rapidjson::Value& parent,
-                                    rapidjson::Value& valueTypeName,
-                                    const std::unique_ptr<T>& value) noexcept
-        {
-            if(value)
-            {
-                SerializerSpec<element_type>::serializeStatic(toDocument,
-                                                              parentKey,
-                                                              parent,
-                                                              valueTypeName,
-                                                              *value);
+                SerializerSpec<element_type>::serialize(toDocument,
+                                                        parentKey,
+                                                        parent,
+                                                        valueTypeName,
+                                                        *value);
             }
             else
             {
@@ -708,20 +755,12 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = rapidjson::kStringType;
         static inline const std::string type_name = "char";
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const char& value) noexcept
-        {
-            parent.AddMember(parentKey, value, toDocument.GetAllocator());
-        }
 
-        static void serializeStatic(rapidjson::Document& toDocument,
-                                    rapidjson::Value& parentKey,
-                                    rapidjson::Value& parent,
-                                    rapidjson::Value& valueTypeName,
-                                    const char& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const char& value) noexcept
         {
             parent.AddMember(parentKey, value, toDocument.GetAllocator());
         }
@@ -749,20 +788,11 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
         static inline const std::string type_name = "std::int8_t";
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const std::int8_t& value) noexcept
-        {
-            parent.SetInt(value);
-        }
-
-        static void serializeStatic(rapidjson::Document& toDocument,
-                                    rapidjson::Value& parentKey,
-                                    rapidjson::Value& parent,
-                                    rapidjson::Value& valueTypeName,
-                                    const std::int8_t& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const std::int8_t& value) noexcept
         {
             parent.SetInt(value);
         }
@@ -790,20 +820,11 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
         static inline const std::string type_name = "std::int16_t";
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const std::int16_t& value) noexcept
-        {
-            parent.SetInt(value);
-        }
-
-        static void serializeStatic(rapidjson::Document& toDocument,
-                                    rapidjson::Value& parentKey,
-                                    rapidjson::Value& parent,
-                                    rapidjson::Value& valueTypeName,
-                                    const std::int16_t& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const std::int16_t& value) noexcept
         {
             parent.SetInt(value);
         }
@@ -831,11 +852,11 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
         static inline const std::string type_name = "std::int32_t";
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const std::int32_t& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const std::int32_t& value) noexcept
         {
             parent.SetInt(value);
         }
@@ -872,11 +893,11 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
         static inline const std::string type_name = "std::int64_t";
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const std::int64_t& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const std::int64_t& value) noexcept
         {
             parent.SetInt64(value);
         }
@@ -913,11 +934,11 @@ namespace SGCore
         static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
         static inline const std::string type_name = "float";
 
-        static void serializeDynamic(rapidjson::Document& toDocument,
-                                     rapidjson::Value& parentKey,
-                                     rapidjson::Value& parent,
-                                     rapidjson::Value& valueTypeName,
-                                     const float& value) noexcept
+        static void serialize(rapidjson::Document& toDocument,
+                              rapidjson::Value& parentKey,
+                              rapidjson::Value& parent,
+                              rapidjson::Value& valueTypeName,
+                              const float& value) noexcept
         {
             parent.SetFloat(value);
         }

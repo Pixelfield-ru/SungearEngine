@@ -51,23 +51,12 @@ struct MyStruct
 
 // ЭТАЛОН!!!!!!!!!!!!!!!!!!!!!
 
-void SGCore::SerializerSpec<Derived>::serializeDynamic(rapidjson::Document& toDocument,
-                                                       rapidjson::Value& parentKey,
-                                                       rapidjson::Value& parent,
-                                                       rapidjson::Value& valueTypeName,
-                                                       const Derived& value) noexcept
+void SGCore::SerializerSpec<Derived>::serialize(rapidjson::Document& toDocument,
+                                                rapidjson::Value& parentKey,
+                                                rapidjson::Value& parent,
+                                                rapidjson::Value& valueTypeName,
+                                                const Derived& value) noexcept
 {
-    SGCore::SerializerSpec<Base>::serializeStatic(toDocument, parentKey, parent, valueTypeName, static_cast<const Base&>(value));
-    SGCore::Serializer::serialize(toDocument, parent, "b", value.b);
-}
-
-void SGCore::SerializerSpec<Derived>::serializeStatic(rapidjson::Document& toDocument,
-                                                      rapidjson::Value& parentKey,
-                                                      rapidjson::Value& parent,
-                                                      rapidjson::Value& valueTypeName,
-                                                      const Derived& value) noexcept
-{
-    SGCore::SerializerSpec<Base>::serializeStatic(toDocument, parentKey, parent, valueTypeName, static_cast<const Base&>(value));
     SGCore::Serializer::serialize(toDocument, parent, "b", value.b);
 }
 
@@ -79,7 +68,7 @@ void SGCore::SerializerSpec<Derived>::deserializeDynamic(const rapidjson::Value&
 {
     outputValue = new Derived();
 
-    SGCore::SerializerSpec<Base>::deserializeStatic(value, value, typeName, outputLog, static_cast<Base&>(*outputValue));
+    SGCore::Serializer::deserializeUsing3rdPartyDynamicCasts<Base>(value, value, typeName, outputLog, static_cast<Base&>(*outputValue));
     outputValue->b = SGCore::Serializer::deserialize<float>(value, "b", outputLog);
 }
 
@@ -89,7 +78,7 @@ void SGCore::SerializerSpec<Derived>::deserializeStatic(const rapidjson::Value& 
                                                         std::string& outputLog,
                                                         Derived& outputValue) noexcept
 {
-    SGCore::SerializerSpec<Base>::deserializeStatic(value, value, typeName, outputLog, static_cast<Base&>(outputValue));
+    SGCore::Serializer::deserializeUsing3rdPartyDynamicCasts<Base>(value, value, typeName, outputLog, static_cast<Base&>(outputValue));
     outputValue.b = SGCore::Serializer::deserialize<float>(value, "b", outputLog);
 }
 
@@ -97,29 +86,11 @@ void SGCore::SerializerSpec<Derived>::deserializeStatic(const rapidjson::Value& 
 // ============================================================
 // ============================================================
 
-void SGCore::SerializerSpec<Base>::serializeDynamic(rapidjson::Document& toDocument,
-                                                    rapidjson::Value& parentKey,
-                                                    rapidjson::Value& parent,
-                                                    rapidjson::Value& valueTypeName,
-                                                    const Base& value) noexcept
-{
-    const auto* cast0 = dynamic_cast<const Derived*>(&value);
-
-    if(cast0)
-    {
-        valueTypeName.SetString(SGCore::SerializerSpec<Derived>::type_name.c_str(), SGCore::SerializerSpec<Derived>::type_name.length());
-        SGCore::Serializer::serializeUsing3rdPartyDynamicCasts(toDocument, parentKey, parent, valueTypeName, cast0);
-        return;
-    }
-
-    SGCore::Serializer::serialize(toDocument, parent, "a", value.a);
-}
-
-void SGCore::SerializerSpec<Base>::serializeStatic(rapidjson::Document& toDocument,
-                                                   rapidjson::Value& parentKey,
-                                                   rapidjson::Value& parent,
-                                                   rapidjson::Value& valueTypeName,
-                                                   const Base& value) noexcept
+void SGCore::SerializerSpec<Base>::serialize(rapidjson::Document& toDocument,
+                                             rapidjson::Value& parentKey,
+                                             rapidjson::Value& parent,
+                                             rapidjson::Value& valueTypeName,
+                                             const Base& value) noexcept
 {
     SGCore::Serializer::serialize(toDocument, parent, "a", value.a);
 }
@@ -246,6 +217,7 @@ void coreInit()
     tst->a = -1;
     dynamic_cast<Derived*>(tst.get())->b = 4;
     Serializer::serialize(document, document, "testSerde", tst);
+
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
     rapidjson::StringBuffer stringBuffer;
