@@ -9,7 +9,7 @@
         "CMAKE_BUILD_TYPE": "Release",
         "SG_BUILD_PRESET": "release-host",
         "SG_BUILD_TYPE": "Release",
-        "CMAKE_TOOLCHAIN_FILE" : "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE" : "$env{SUNGEAR_SOURCES_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       }
     },
     {
@@ -20,7 +20,7 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "SG_BUILD_PRESET": "debug-host",
         "SG_BUILD_TYPE": "Debug",
-        "CMAKE_TOOLCHAIN_FILE" : "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE" : "$env{SUNGEAR_SOURCES_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       }
     },
     {
@@ -36,7 +36,7 @@
 
         "VCPKG_OVERLAY_TRIPLETS" : "/home/ilya/pixelfield/test-windows/vcpkg-triplets",
         "VCPKG_TARGET_TRIPLET" : "sg-x64-mingw-dynamic-release",
-        "CMAKE_TOOLCHAIN_FILE" : "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE" : "$env{SUNGEAR_SOURCES_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       }
     }
   ]

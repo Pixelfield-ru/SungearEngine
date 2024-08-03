@@ -18,8 +18,7 @@
     },
     {
       "name": "entt",
-      "version>=": "3.13.1",
-      "host": true
+      "version>=": "3.13.1"
     },
     {
       "name": "freetype",

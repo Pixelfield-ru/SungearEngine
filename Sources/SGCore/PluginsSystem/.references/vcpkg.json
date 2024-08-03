@@ -13,8 +13,7 @@
     "version>=" : "3.25#1"
   }, {
     "name" : "entt",
-    "version>=" : "3.13.1",
-    "host" : true
+    "version>=" : "3.13.1"
   }, {
     "name" : "freetype",
     "version>=" : "2.13.2"
@@ -50,9 +49,6 @@
   }, {
     "name" : "openal-soft",
     "version>=" : "1.23.1"
-  }, {
-    "name" : "glaze",
-    "version>=" : "2.1.7"
   }, {
     "name" : "lunasvg",
     "version>=" : "2.3.8"
