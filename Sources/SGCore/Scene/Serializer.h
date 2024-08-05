@@ -65,29 +65,15 @@ namespace SGCore
 
         /**
          * Call this if you want to deserialize your value directly from value section\n
-         * Checks for derived types (may provides dynamic casts)
-         * @param toDocument
-         * @param parent
-         * @param value
-         */
-        static void deserializeDynamic(const rapidjson::Value& parent, const rapidjson::Value& value,
-                                       const std::string& typeName,
-                                       std::string& outputLog,
-                                       T*& outputValue) noexcept
-        {
-        }
-
-        /**
-         * Call this if you want to deserialize your value directly from value section\n
          * Deserializes only data of value type without checking for derived types (no dynamic casts)
          * @param toDocument
          * @param parent
          * @param value
          */
-        static void deserializeStatic(const rapidjson::Value& parent, const rapidjson::Value& value,
-                                      const std::string& typeName,
-                                      std::string& outputLog,
-                                      T& outputValue) noexcept
+        static void deserialize(const rapidjson::Value& parent, const rapidjson::Value& value,
+                                const std::string& typeName,
+                                std::string& outputLog,
+                                T& outputValue) noexcept
         {
         }
     };
@@ -144,10 +130,15 @@ namespace SGCore
                     bool isAnyOfDerivedSerialized = false;
                     if(value)
                     {
+                        // serializing all derived classes of <clear_type> class
                         serializeDerivedClasses<clear_type>(toDocument, parentKey, parent, valueTypeName, *value,
                                                             isAnyOfDerivedSerialized);
+
+                        // serializing base classes
+                        serializeBaseClasses<clear_type>(toDocument, parentKey, parent, valueTypeName, *value);\
                     }
 
+                    // serializing only data of <type> class
                     SerializerSpec<type>::serialize(toDocument, parentKey, parent, valueTypeName, value);
                 }
             }
@@ -184,16 +175,28 @@ namespace SGCore
 
                 if constexpr(std::is_same_v<T, const char*>)
                 {
-                    return SerializerSpec<clear_type>::deserializeStatic(parent, value, typeName, outputLog, outputValue);
+                    // deserializing only this class`s type (T) types and its base types
+                    SerializerSpec<clear_type>::deserializeStatic(parent, value, typeName, outputLog, outputValue);
                 }
                 else
                 {
-                    return SerializerSpec<T>::deserializeDynamic(parent, value, typeName, outputLog, outputValue);
+                    clear_type* out = nullptr;
+                    tryDeserializeAsOneOfDerived<clear_type>(parent, value, typeName, outputLog, out);
+                    // trying to deserialize only this type (T) value and its base classes values
+                    if(!out)
+                    {
+                        deserializeBaseClasses<clear_type>(parent, value, typeName, outputLog, outputValue);
+
+                        SerializerSpec<T>::deserialize(parent, value, typeName, outputLog, outputValue);
+                    }
                 }
             }
             else
             {
-                return SerializerSpec<clear_type>::deserializeStatic(parent, value, typeName, outputLog, outputValue);
+                // deserializing all base parts of type T
+                deserializeBaseClasses<clear_type>(parent, value, typeName, outputLog, outputValue);
+
+                SerializerSpec<clear_type>::deserialize(parent, value, typeName, outputLog, outputValue);
             }
         }
 
@@ -456,7 +459,7 @@ namespace SGCore
         template<typename T>
         struct clear_type_impl<T, true>
         {
-            using type = std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<typename T::element_type>>>;
+            using type = typename T::element_type;
         };
 
         template<typename T>
@@ -467,6 +470,102 @@ namespace SGCore
 
         template<typename T>
         using clear_type_t = clear_type_impl<T, requires { typename T::element_type; }>::type;
+
+        template<typename DerivedT, typename BaseT>
+        static void deserializeBaseClass(const rapidjson::Value& parent,
+                                         const rapidjson::Value& value,
+                                         const std::string& typeName,
+                                         std::string& outputLog,
+                                         DerivedT*& outputValue)
+        {
+            SerializerSpec<BaseT>::deserialize(parent, value, typeName, outputLog, *outputValue);
+        }
+
+        template<typename DerivedT, std::int64_t... Indices>
+        static void deserializeBaseClassesImpl(const rapidjson::Value& parent,
+                                               const rapidjson::Value& value,
+                                               const std::string& typeName,
+                                               std::string& outputLog,
+                                               DerivedT*& outputValue,
+                                               std::index_sequence<Indices...>)
+        {
+            (deserializeBaseClass<DerivedT, SerializerSpec<DerivedT>::template get_base_type<Indices>>(parent, value,
+                                                                                                       typeName,
+                                                                                                       outputLog,
+                                                                                                       outputValue), ...);
+        }
+
+        template<typename DerivedT>
+        static void deserializeBaseClasses(const rapidjson::Value& parent,
+                                           const rapidjson::Value& value,
+                                           const std::string& typeName,
+                                           std::string& outputLog,
+                                           DerivedT*& outputValue)
+        {
+            if constexpr(requires { SerializerSpec<DerivedT>::base_classes_count && SerializerSpec<DerivedT>::get_base_type; })
+            {
+                deserializeBaseClassesImpl<DerivedT>(parent, value, typeName, outputLog, outputValue,
+                                                     std::make_index_sequence<SerializerSpec<DerivedT>::base_classes_count> {});
+            }
+        }
+
+        template<typename BaseT, typename DerivedT>
+        static void tryDeserializeAsDerived(const rapidjson::Value& parent,
+                                            const rapidjson::Value& value,
+                                            const std::string& typeName,
+                                            std::string& outputLog,
+                                            BaseT*& outputValue)
+        {
+            if(typeName == SerializerSpec<DerivedT>::type_name)
+            {
+                assert(!outputValue && fmt::format(
+                        "Some two or more serializer specializations contain the same value '{0}' for the type_name field."
+                        " The class '{1}' cannot be deserialized correctly.", SerializerSpec<DerivedT>::type_name,
+                        SerializerSpec<BaseT>::type_name));
+
+                // creating instance of derived
+                outputValue = new DerivedT();
+
+                // deserializing all base parts of derived type (DerivedT)
+                deserializeBaseClasses<DerivedT>(parent, value, typeName, outputLog, outputValue);
+
+                // deserializing only values of derived type (DerivedT)
+                SerializerSpec<DerivedT>::deserialize(parent, value, typeName, outputLog, outputValue);
+            }
+            else
+            {
+                // go ahead and try to deserialize as one of DerivedT derived classes
+                tryDeserializeAsOneOfDerived<DerivedT>(parent, value, typeName, outputLog, outputValue);
+            }
+        }
+
+        template<typename BaseT, std::int64_t... Indices>
+        static void tryDeserializeAsOneOfDerivedImpl(const rapidjson::Value& parent,
+                                                     const rapidjson::Value& value,
+                                                     const std::string& typeName,
+                                                     std::string& outputLog,
+                                                     BaseT*& outputValue,
+                                                     std::index_sequence<Indices...>)
+        {
+            (tryDeserializeAsDerived<BaseT, SerializerSpec<BaseT>::template get_derived_type<Indices>>(parent, value,
+                                                                                                       typeName,
+                                                                                                       outputLog,
+                                                                                                       outputValue), ...);
+        }
+
+        template<typename BaseT>
+        static void tryDeserializeAsOneOfDerived(const rapidjson::Value& parent,
+                                                 const rapidjson::Value& value,
+                                                 const std::string& typeName,
+                                                 std::string& outputLog,
+                                                 BaseT*& outputValue)
+        {
+            if constexpr(requires { SerializerSpec<BaseT>::derived_classes_count && SerializerSpec<BaseT>::get_derived_type; })
+            {
+                tryDeserializeAsOneOfDerivedImpl<BaseT>(parent, value, typeName, outputLog, outputValue,
+                                                        std::make_index_sequence<SerializerSpec<BaseT>::derived_classes_count> {});
+            }
+        }
 
         template<typename BaseT, typename DerivedT>
         static void trySerializeDerivedClass(rapidjson::Document& toDocument,
@@ -480,16 +579,16 @@ namespace SGCore
             if(derived)
             {
                 isAnyOfDerivedSerialized = true;
+                // setting new typename
                 valueTypeName.SetString(SerializerSpec<DerivedT>::type_name.c_str(),
                                         SerializerSpec<DerivedT>::type_name.length());
-                // serializing base part
-                /*SerializerSpec<BaseT>::serialize(toDocument, parentKey, parent, valueTypeName, value);
-                // serializing derived part
-                SerializerSpec<DerivedT>::serialize(toDocument, parentKey, parent, valueTypeName, *derived);
-                serializeDerivedClasses<DerivedT>(toDocument, parentKey, parent, valueTypeName, *derived,
-                                                  isAnyOfDerivedSerialized);*/
 
-                serializeUsing3rdPartyDynamicCasts(toDocument, parentKey, parent, valueTypeName, derived);
+                // serializing all derived classes of DerivedT class
+                serializeDerivedClasses<DerivedT>(toDocument, parentKey, parent, valueTypeName, *derived,
+                                                    isAnyOfDerivedSerialized);
+
+                // serializing only data of DerivedT class
+                SerializerSpec<DerivedT>::serialize(toDocument, parentKey, parent, valueTypeName, *derived);
             }
         }
 
