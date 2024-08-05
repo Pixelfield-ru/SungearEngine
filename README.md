@@ -25,5 +25,6 @@ Make sure to first use the search function to see if the bug has already been re
 To build up make sure to:
 1) Build and bootstrap vcpkg.
 2) Set SG_VCPKG_ROOT system variable to bootstraped vcpkg.
-3) Set SUNGEAR_LLVM_MINGW_PATH system variable to your MinGW (cygwin/other-cross-compiler?..) compiler 
+3) Set SUNGEAR_LLVM_MINGW_PATH system variable to your MinGW (cygwin/other-cross-compiler?..) compiler.
+
 Be sure to set up the correct path without illegal-characters (use / in path instead of \ for obvious reasons).
