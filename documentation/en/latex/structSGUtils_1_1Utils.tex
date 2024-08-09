@@ -1,0 +1,100 @@
+\hypertarget{structSGUtils_1_1Utils}{}\doxysection{SGUtils\+::Utils Struct Reference}
+\label{structSGUtils_1_1Utils}\index{SGUtils::Utils@{SGUtils::Utils}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structSGUtils_1_1Utils_1_1RawPointerHash}{Raw\+Pointer\+Hash}}
+\item 
+struct \mbox{\hyperlink{structSGUtils_1_1Utils_1_1TypeWrapper}{Type\+Wrapper}}
+\item 
+struct \mbox{\hyperlink{structSGUtils_1_1Utils_1_1WeakCompare}{Weak\+Compare}}
+\item 
+struct \mbox{\hyperlink{structSGUtils_1_1Utils_1_1WeakPointerHash}{Weak\+Pointer\+Hash}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename... In\+Types, typename Func $>$ }\\static void \mbox{\hyperlink{structSGUtils_1_1Utils_a263a3cb716ed6fd53c437eb7e13c0dd3}{for\+Types}} (Func \&\&func)
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a8a338e6c1ceaf775532f03443e6c996e}\label{structSGUtils_1_1Utils_a8a338e6c1ceaf775532f03443e6c996e}} 
+{\footnotesize template$<$typename Base , typename T $>$ }\\static bool {\bfseries instanceof} (const T $\ast$ptr)
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_ac49b9129349bbdb7b13cd878b3a7f385}\label{structSGUtils_1_1Utils_ac49b9129349bbdb7b13cd878b3a7f385}} 
+static void {\bfseries split\+String} (const std\+::string \&str, char delim, std\+::vector$<$ std\+::string $>$ \&words) noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a1ab912831deb3b969e8b5d7459023633}\label{structSGUtils_1_1Utils_a1ab912831deb3b969e8b5d7459023633}} 
+static std\+::string {\bfseries replace\+All} (const std\+::string \&str, const std\+::string \&from, const std\+::string \&to) noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a6490539ae82a0c2a26e7addc15998cce}\label{structSGUtils_1_1Utils_a6490539ae82a0c2a26e7addc15998cce}} 
+static std\+::string {\bfseries replace\+First} (const std\+::string \&str, const std\+::string \&from, const std\+::string \&to) noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_ac641a0f57d96b750a5ff43e734b2b215}\label{structSGUtils_1_1Utils_ac641a0f57d96b750a5ff43e734b2b215}} 
+static std\+::string {\bfseries trim} (const std\+::string \&str, const std\+::string \&whitespace=\char`\"{} \textbackslash{}t\char`\"{})
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_ad8fc0f0ca364912b52f347f2e33e0bc5}\label{structSGUtils_1_1Utils_ad8fc0f0ca364912b52f347f2e33e0bc5}} 
+static std\+::string {\bfseries reduce} (const std\+::string \&str, const std\+::string \&fill=\char`\"{} \char`\"{}, const std\+::string \&whitespace=\char`\"{} \textbackslash{}t\char`\"{})
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a1695a4a24bbad3b8aaf3de0146d55e74}\label{structSGUtils_1_1Utils_a1695a4a24bbad3b8aaf3de0146d55e74}} 
+static std\+::string {\bfseries to\+String} (const std\+::vector$<$ std\+::string $>$ \&vec) noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a3f35c2fd57799dc60e65fd7409f93526}\label{structSGUtils_1_1Utils_a3f35c2fd57799dc60e65fd7409f93526}} 
+static std\+::string {\bfseries to\+String} (const std\+::vector$<$ std\+::string $>$\+::iterator \&begin, const std\+::vector$<$ std\+::string $>$\+::iterator \&end) noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a9bf4bc3a4bf52fd45e25c5fc1da07e86}\label{structSGUtils_1_1Utils_a9bf4bc3a4bf52fd45e25c5fc1da07e86}} 
+static std\+::string {\bfseries source\+Location\+To\+String} (const std\+::source\+\_\+location \&location) noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a10644c3c4f5bb0bd8be9f29096373e0b}\label{structSGUtils_1_1Utils_a10644c3c4f5bb0bd8be9f29096373e0b}} 
+{\footnotesize template$<$typename T $>$ }\\static std\+::string {\bfseries to\+UTF8} (const std\+::basic\+\_\+string$<$ T, std\+::char\+\_\+traits$<$ T $>$, std\+::allocator$<$ T $>$$>$ \&source)
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a52b1d53e9f3c7bb77bbf8937bb799837}\label{structSGUtils_1_1Utils_a52b1d53e9f3c7bb77bbf8937bb799837}} 
+{\footnotesize template$<$typename T $>$ }\\static void {\bfseries from\+UTF8} (const std\+::string \&source, std\+::basic\+\_\+string$<$ T, std\+::char\+\_\+traits$<$ T $>$, std\+::allocator$<$ T $>$$>$ \&result)
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a6eaf41a49fb2e2e4d2fd831e4d7746ac}\label{structSGUtils_1_1Utils_a6eaf41a49fb2e2e4d2fd831e4d7746ac}} 
+{\footnotesize template$<$typename T $>$ }\\static std\+::basic\+\_\+string$<$ T, std\+::char\+\_\+traits$<$ T $>$, std\+::allocator$<$ T $>$ $>$ {\bfseries from\+UTF8} (const std\+::string \&source)
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_ae7e0f9ea51ad2eafa210f05078efd7b3}\label{structSGUtils_1_1Utils_ae7e0f9ea51ad2eafa210f05078efd7b3}} 
+static long long {\bfseries get\+Time\+Milliseconds} () noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_ae43ba3a01156a7543b38e780aa52981a}\label{structSGUtils_1_1Utils_ae43ba3a01156a7543b38e780aa52981a}} 
+static long long {\bfseries get\+Time\+Micros} () noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a4976fe7681871411e7c14c3a41aecd85}\label{structSGUtils_1_1Utils_a4976fe7681871411e7c14c3a41aecd85}} 
+static long long {\bfseries get\+Time\+Nanos} () noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_ab3bba26acb917a98c0b2993843b7d69a}\label{structSGUtils_1_1Utils_ab3bba26acb917a98c0b2993843b7d69a}} 
+static void {\bfseries swap\+Endian} (unsigned char $\ast$source\+Buffer, const size\+\_\+t \&buffer\+Size) noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_aeb943ffb1015e556171f9fa974dba85a}\label{structSGUtils_1_1Utils_aeb943ffb1015e556171f9fa974dba85a}} 
+static void {\bfseries swap\+Endian} (char $\ast$source\+Buffer, const size\+\_\+t \&buffer\+Size) noexcept
+\item 
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a3f97cba7a3586f2bc0b03ee40721e9d9}\label{structSGUtils_1_1Utils_a3f97cba7a3586f2bc0b03ee40721e9d9}} 
+static std\+::string {\bfseries get\+Real\+Path} (const std\+::string \&path) noexcept
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structSGUtils_1_1Utils_a263a3cb716ed6fd53c437eb7e13c0dd3}\label{structSGUtils_1_1Utils_a263a3cb716ed6fd53c437eb7e13c0dd3}} 
+\index{SGUtils::Utils@{SGUtils::Utils}!forTypes@{forTypes}}
+\index{forTypes@{forTypes}!SGUtils::Utils@{SGUtils::Utils}}
+\doxysubsubsection{\texorpdfstring{forTypes()}{forTypes()}}
+{\footnotesize\ttfamily template$<$typename... In\+Types, typename Func $>$ \\
+static void SGUtils\+::\+Utils\+::for\+Types (\begin{DoxyParamCaption}\item[{Func \&\&}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Example for\+Types$<$\+In\+Types...$>$(\mbox{[}\mbox{]}(auto t) \{ using type = typename decltype(t)\+::type; \}); 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em In\+Types} & Types through which iteration will occur. \\
+\hline
+{\em Func} & Type of function. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em f} & Function. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGUtils/Utils.\+h\item 
+Sources/\+SGUtils/Utils.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,151 @@
+\hypertarget{classflat__array}{}\doxysection{flat\+\_\+array$<$ Elem, Dim, Allocation\+Flag $>$ Class Template Reference}
+\label{classflat__array}\index{flat\_array$<$ Elem, Dim, AllocationFlag $>$@{flat\_array$<$ Elem, Dim, AllocationFlag $>$}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classflat__array_a42a4e43c45e808200a60fdfe9de32c7b}\label{classflat__array_a42a4e43c45e808200a60fdfe9de32c7b}} 
+using {\bfseries size\+\_\+type} = std\+::size\+\_\+t
+\item 
+\mbox{\Hypertarget{classflat__array_ab15f21f325ada59f6d39926aef930429}\label{classflat__array_ab15f21f325ada59f6d39926aef930429}} 
+using {\bfseries dimension\+\_\+index} = int
+\item 
+\mbox{\Hypertarget{classflat__array_adc902c7c0aa9ae2180f6f1bf1344eb35}\label{classflat__array_adc902c7c0aa9ae2180f6f1bf1344eb35}} 
+using {\bfseries iterator} = \mbox{\hyperlink{classIteratorClass}{Iterator\+Class}}$<$ Elem, true $>$
+\item 
+\mbox{\Hypertarget{classflat__array_a7543ace99b7cf46eca12d7930f7cfd2e}\label{classflat__array_a7543ace99b7cf46eca12d7930f7cfd2e}} 
+using {\bfseries const\+\_\+iterator} = \mbox{\hyperlink{classIteratorClass}{Iterator\+Class}}$<$ const Elem, true $>$
+\item 
+\mbox{\Hypertarget{classflat__array_a0c381e20fcedb50bb114e760ae7b138e}\label{classflat__array_a0c381e20fcedb50bb114e760ae7b138e}} 
+using {\bfseries reverse\+\_\+iterator} = \mbox{\hyperlink{classIteratorClass}{Iterator\+Class}}$<$ Elem, false $>$
+\item 
+\mbox{\Hypertarget{classflat__array_a76204b21cdf7b57137206ded94db70d1}\label{classflat__array_a76204b21cdf7b57137206ded94db70d1}} 
+using {\bfseries const\+\_\+reverse\+\_\+iterator} = \mbox{\hyperlink{classIteratorClass}{Iterator\+Class}}$<$ const Elem, false $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classflat__array_a920e4a99685b5264547c87fa2cb0159e}\label{classflat__array_a920e4a99685b5264547c87fa2cb0159e}} 
+{\bfseries flat\+\_\+array} (std\+::initializer\+\_\+list$<$ Elem $>$ list)
+\item 
+\mbox{\Hypertarget{classflat__array_a69b29a5b6e13b13025cc79a95393bf3a}\label{classflat__array_a69b29a5b6e13b13025cc79a95393bf3a}} 
+{\bfseries flat\+\_\+array} (const std\+::vector$<$ Elem $>$ \&list)
+\item 
+\mbox{\Hypertarget{classflat__array_a10423f206f9f6c6c0e3d21f10a341ecd}\label{classflat__array_a10423f206f9f6c6c0e3d21f10a341ecd}} 
+{\bfseries flat\+\_\+array} (std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Elem, Dim -\/ 1 $>$$>$ list)
+\item 
+\mbox{\Hypertarget{classflat__array_a95a994a818f5a4b7f568b47d5418c0c0}\label{classflat__array_a95a994a818f5a4b7f568b47d5418c0c0}} 
+{\footnotesize template$<$class... T$>$ }\\{\bfseries flat\+\_\+array} (size\+\_\+type m1, T... k1)
+\item 
+\mbox{\Hypertarget{classflat__array_ab6907fe68745f4c9a7d51132f193b2ff}\label{classflat__array_ab6907fe68745f4c9a7d51132f193b2ff}} 
+{\bfseries flat\+\_\+array} (const std\+::vector$<$ size\+\_\+type $>$ \&s)
+\item 
+\mbox{\Hypertarget{classflat__array_a4f7db266d380d848b25e1b1d37824a7f}\label{classflat__array_a4f7db266d380d848b25e1b1d37824a7f}} 
+{\footnotesize template$<$class ... T$>$ }\\{\bfseries flat\+\_\+array} (const \mbox{\hyperlink{structDimensions}{Dimensions}}$<$ T... $>$ \&s, Elem $\ast$data)
+\item 
+\mbox{\Hypertarget{classflat__array_aae41dffb90467e5c3e79666b42225716}\label{classflat__array_aae41dffb90467e5c3e79666b42225716}} 
+{\footnotesize template$<$class ... T$>$ }\\{\bfseries flat\+\_\+array} (\mbox{\hyperlink{structDimensions}{Dimensions}}$<$ T... $>$ \&\&s, Elem $\ast$data)
+\item 
+\mbox{\Hypertarget{classflat__array_ab4554abdb8a1511fbcc6be8d716831a9}\label{classflat__array_ab4554abdb8a1511fbcc6be8d716831a9}} 
+{\footnotesize template$<$class... T$>$ }\\void {\bfseries resize} (size\+\_\+type m1, T...\+k1)
+\item 
+\mbox{\Hypertarget{classflat__array_ad1b272cabb7be2ec380797f81bff636d}\label{classflat__array_ad1b272cabb7be2ec380797f81bff636d}} 
+{\bfseries flat\+\_\+array} (const \mbox{\hyperlink{classflat__array}{flat\+\_\+array}} \&x)
+\item 
+\mbox{\Hypertarget{classflat__array_a67de8ac282e37fa70b26bdf710e1cbdb}\label{classflat__array_a67de8ac282e37fa70b26bdf710e1cbdb}} 
+{\footnotesize template$<$bool copy2$>$ }\\{\bfseries flat\+\_\+array} (const \mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Elem, Dim, copy2 $>$ \&x)
+\item 
+\mbox{\Hypertarget{classflat__array_a0db12a1c9a9f4877c01dd989221cdf9d}\label{classflat__array_a0db12a1c9a9f4877c01dd989221cdf9d}} 
+{\bfseries flat\+\_\+array} (\mbox{\hyperlink{classflat__array}{flat\+\_\+array}} \&\&x)
+\item 
+\mbox{\Hypertarget{classflat__array_a882af93559b237714f3f84f25b9143c6}\label{classflat__array_a882af93559b237714f3f84f25b9143c6}} 
+size\+\_\+type {\bfseries length} (size\+\_\+type k) const
+\item 
+\mbox{\Hypertarget{classflat__array_a80ad950b3abea53d100022785aea8e92}\label{classflat__array_a80ad950b3abea53d100022785aea8e92}} 
+\mbox{\hyperlink{classflat__array}{flat\+\_\+array}} \& {\bfseries operator=} (const \mbox{\hyperlink{classflat__array}{flat\+\_\+array}} \&x)
+\item 
+\mbox{\Hypertarget{classflat__array_a37d28607407cf2de2ec4acfcbe5a1a88}\label{classflat__array_a37d28607407cf2de2ec4acfcbe5a1a88}} 
+{\footnotesize template$<$bool copy2$>$ }\\\mbox{\hyperlink{classflat__array}{flat\+\_\+array}} \& {\bfseries operator=} (const \mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Elem, Dim, copy2 $>$ \&x)
+\item 
+\mbox{\Hypertarget{classflat__array_a143cf138a91d319d4ef4cac79823502c}\label{classflat__array_a143cf138a91d319d4ef4cac79823502c}} 
+\mbox{\hyperlink{classflat__array}{flat\+\_\+array}} \& {\bfseries operator=} (\mbox{\hyperlink{classflat__array}{flat\+\_\+array}} \&\&x) noexcept
+\item 
+\mbox{\Hypertarget{classflat__array_a7161c488b13a762bce4afc1398ca32a5}\label{classflat__array_a7161c488b13a762bce4afc1398ca32a5}} 
+void {\bfseries set\+\_\+width} (int w)
+\item 
+\mbox{\Hypertarget{classflat__array_a7c95aed9ccbe3d260f62168d3fa1c92b}\label{classflat__array_a7c95aed9ccbe3d260f62168d3fa1c92b}} 
+int {\bfseries get\+\_\+width} () const
+\item 
+\mbox{\Hypertarget{classflat__array_a3b400b57d099c12171ed22622d68b18f}\label{classflat__array_a3b400b57d099c12171ed22622d68b18f}} 
+decltype(auto) {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+type p)
+\item 
+\mbox{\Hypertarget{classflat__array_a30abcee29fd384f786a3cca762fed3c3}\label{classflat__array_a30abcee29fd384f786a3cca762fed3c3}} 
+decltype(auto) {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+type p) const
+\item 
+\mbox{\Hypertarget{classflat__array_ab6abc88e35d621bedb8e1cece52447c0}\label{classflat__array_ab6abc88e35d621bedb8e1cece52447c0}} 
+{\footnotesize template$<$class ... T$>$ }\\decltype(auto) {\bfseries operator()} (size\+\_\+type k0, T...\+indices)
+\item 
+\mbox{\Hypertarget{classflat__array_a0509841f7b3fddf0a8940e6ea3931647}\label{classflat__array_a0509841f7b3fddf0a8940e6ea3931647}} 
+{\footnotesize template$<$class ... T$>$ }\\decltype(auto) {\bfseries operator()} (size\+\_\+type k0, T...\+indices) const
+\item 
+\mbox{\Hypertarget{classflat__array_ad4b8cbae624db1008c7acab5209dfa56}\label{classflat__array_ad4b8cbae624db1008c7acab5209dfa56}} 
+\mbox{\hyperlink{classIteratorClass}{iterator}} {\bfseries begin} ()
+\item 
+\mbox{\Hypertarget{classflat__array_a16652018d24e244876835d5da909e0ec}\label{classflat__array_a16652018d24e244876835d5da909e0ec}} 
+\mbox{\hyperlink{classIteratorClass}{iterator}} {\bfseries end} ()
+\item 
+\mbox{\Hypertarget{classflat__array_a93b432b400d475e8237217c692bfa99a}\label{classflat__array_a93b432b400d475e8237217c692bfa99a}} 
+\mbox{\hyperlink{classIteratorClass}{const\+\_\+iterator}} {\bfseries begin} () const
+\item 
+\mbox{\Hypertarget{classflat__array_a3ade640f38d97c4d626329f331eb3280}\label{classflat__array_a3ade640f38d97c4d626329f331eb3280}} 
+\mbox{\hyperlink{classIteratorClass}{const\+\_\+iterator}} {\bfseries end} () const
+\item 
+\mbox{\Hypertarget{classflat__array_a31cb1af84964f44cc7e2013f158ea3cb}\label{classflat__array_a31cb1af84964f44cc7e2013f158ea3cb}} 
+\mbox{\hyperlink{classIteratorClass}{reverse\+\_\+iterator}} {\bfseries rbegin} ()
+\item 
+\mbox{\Hypertarget{classflat__array_a3f323af47c1b5f81aee70dff8ff0aaf8}\label{classflat__array_a3f323af47c1b5f81aee70dff8ff0aaf8}} 
+\mbox{\hyperlink{classIteratorClass}{reverse\+\_\+iterator}} {\bfseries rend} ()
+\item 
+\mbox{\Hypertarget{classflat__array_a11aa6709bb066cacd25dada18b8735d9}\label{classflat__array_a11aa6709bb066cacd25dada18b8735d9}} 
+\mbox{\hyperlink{classIteratorClass}{const\+\_\+reverse\+\_\+iterator}} {\bfseries rbegin} () const
+\item 
+\mbox{\Hypertarget{classflat__array_a686be39d39b925810dda6af88f102bad}\label{classflat__array_a686be39d39b925810dda6af88f102bad}} 
+\mbox{\hyperlink{classIteratorClass}{const\+\_\+reverse\+\_\+iterator}} {\bfseries rend} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classflat__array_a7e8f3bca8bc6fe27656d0203afefc320}\label{classflat__array_a7e8f3bca8bc6fe27656d0203afefc320}} 
+class {\bfseries flat\+\_\+array$<$ Elem, Dim -\/ 1, true $>$}
+\item 
+\mbox{\Hypertarget{classflat__array_ab8e6caaf04276aa467c9a0b3bbc66b38}\label{classflat__array_ab8e6caaf04276aa467c9a0b3bbc66b38}} 
+class {\bfseries flat\+\_\+array$<$ Elem, Dim -\/ 1, false $>$}
+\item 
+\mbox{\Hypertarget{classflat__array_a6ae09f37a6505bf42753269dbb73d51a}\label{classflat__array_a6ae09f37a6505bf42753269dbb73d51a}} 
+class {\bfseries flat\+\_\+array$<$ Elem, Dim+1, true $>$}
+\item 
+\mbox{\Hypertarget{classflat__array_a01ddaf4ccf5a17dc520ac0c764a27c67}\label{classflat__array_a01ddaf4ccf5a17dc520ac0c764a27c67}} 
+class {\bfseries flat\+\_\+array$<$ Elem, Dim+1, false $>$}
+\item 
+\mbox{\Hypertarget{classflat__array_ad97aee67b8480980d4bf5d856c3154bb}\label{classflat__array_ad97aee67b8480980d4bf5d856c3154bb}} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const \mbox{\hyperlink{classflat__array}{flat\+\_\+array}} \&a)
+\item 
+\mbox{\Hypertarget{classflat__array_ae52c513ae195df6f9874c5afea4dfe78}\label{classflat__array_ae52c513ae195df6f9874c5afea4dfe78}} 
+{\footnotesize template$<$class Element , int Dim1, bool allocation$>$ }\\void {\bfseries swap} (\mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation $>$ \&x, \mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation $>$ \&y)
+\item 
+\mbox{\Hypertarget{classflat__array_ad0bd927795a723ad964d52eeeace0879}\label{classflat__array_ad0bd927795a723ad964d52eeeace0879}} 
+{\footnotesize template$<$class Element , int Dim1, bool allocation$>$ }\\void {\bfseries swap} (\mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation $>$ \&x, \mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, !allocation $>$ \&y)
+\item 
+\mbox{\Hypertarget{classflat__array_a82b9fc84f7cd1c6301d8efba5cccfc62}\label{classflat__array_a82b9fc84f7cd1c6301d8efba5cccfc62}} 
+{\footnotesize template$<$class Element , int Dim1, bool allocation1, bool allocation2$>$ }\\void {\bfseries swap} (\mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation1 $>$ \&\&x, \mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation2 $>$ \&\&y)
+\item 
+\mbox{\Hypertarget{classflat__array_a2089ec2cc6b8c4cfdc4fb23ce027eb1a}\label{classflat__array_a2089ec2cc6b8c4cfdc4fb23ce027eb1a}} 
+{\footnotesize template$<$class Element , int Dim1, bool allocation1, bool allocation2$>$ }\\void {\bfseries swap} (\mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation1 $>$ \&\&x, \mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation2 $>$ \&y)
+\item 
+\mbox{\Hypertarget{classflat__array_af35f731f8122b9396912adad54f57fdc}\label{classflat__array_af35f731f8122b9396912adad54f57fdc}} 
+{\footnotesize template$<$class Element , int Dim1, bool allocation1, bool allocation2$>$ }\\void {\bfseries swap} (\mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation1 $>$ \&x, \mbox{\hyperlink{classflat__array}{flat\+\_\+array}}$<$ Element, Dim1, allocation2 $>$ \&\&y)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGUtils/flat\+\_\+array.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,32 @@
+\hypertarget{structSGCore_1_1Octree}{}\doxysection{SGCore\+::Octree Struct Reference}
+\label{structSGCore_1_1Octree}\index{SGCore::Octree@{SGCore::Octree}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Octree_a81a68077c2a5e1c3228697c46023dcf9}\label{structSGCore_1_1Octree_a81a68077c2a5e1c3228697c46023dcf9}} 
+bool {\bfseries subdivide} (Ref$<$ \mbox{\hyperlink{structSGCore_1_1OctreeNode}{Octree\+Node}} $>$ node) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Octree_adcdcf2e61dd8e9b7ae18424b1c30a785}\label{structSGCore_1_1Octree_adcdcf2e61dd8e9b7ae18424b1c30a785}} 
+SGCore\+::\+Ref$<$ \mbox{\hyperlink{structSGCore_1_1OctreeNode}{SGCore\+::\+Octree\+Node}} $>$ {\bfseries subdivide\+While\+Overlap} (const entity\+\_\+t \&overlapping\+Entity, const AABB$<$$>$ \&aabb, const Ref$<$ \mbox{\hyperlink{structSGCore_1_1OctreeNode}{Octree\+Node}} $>$ \&node, bool is\+Parent\+Overlapped=true) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Octree_a087ae87e9f6a74f4470b45aed8b29468}\label{structSGCore_1_1Octree_a087ae87e9f6a74f4470b45aed8b29468}} 
+void {\bfseries clear\+Node\+Children} (Ref$<$ \mbox{\hyperlink{structSGCore_1_1OctreeNode}{Octree\+Node}} $>$ node) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Octree_af151cbb813bd12ada1b290bfb10c4d08}\label{structSGCore_1_1Octree_af151cbb813bd12ada1b290bfb10c4d08}} 
+glm\+::vec3 {\bfseries m\+\_\+node\+Min\+Size} \{ 10 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Octree_a51d7c4f1560a6a89966e63ee98b03fdf}\label{structSGCore_1_1Octree_a51d7c4f1560a6a89966e63ee98b03fdf}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1OctreeNode}{Octree\+Node}} $>$ {\bfseries m\+\_\+root} = Make\+Ref$<$\mbox{\hyperlink{structSGCore_1_1OctreeNode}{Octree\+Node}}$>$()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Octree_a93dfc92604175bd0b792663ba4339f88}\label{structSGCore_1_1Octree_a93dfc92604175bd0b792663ba4339f88}} 
+std\+::unordered\+\_\+set$<$ Ref$<$ \mbox{\hyperlink{structSGCore_1_1OctreeNode}{Octree\+Node}} $>$ $>$ {\bfseries m\+\_\+not\+Empty\+Nodes}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/\+Space\+Partitioning/Octree.\+h\item 
+Sources/\+SGCore/\+Render/\+Space\+Partitioning/Octree.\+cpp\end{DoxyCompactItemize}

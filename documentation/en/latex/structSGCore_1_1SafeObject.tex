@@ -1,0 +1,41 @@
+\hypertarget{structSGCore_1_1SafeObject}{}\doxysection{SGCore\+::Safe\+Object$<$ ObjT $>$ Struct Template Reference}
+\label{structSGCore_1_1SafeObject}\index{SGCore::SafeObject$<$ ObjT $>$@{SGCore::SafeObject$<$ ObjT $>$}}
+
+
+Collaboration diagram for SGCore\+::Safe\+Object$<$ ObjT $>$\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1SafeObject_a1b49012074e820919688a5b8e1afea09}\label{structSGCore_1_1SafeObject_a1b49012074e820919688a5b8e1afea09}} 
+void {\bfseries lock} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1SafeObject_a4df8008ca1d74b0fdae387c3f40556b3}\label{structSGCore_1_1SafeObject_a4df8008ca1d74b0fdae387c3f40556b3}} 
+void {\bfseries unlock} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1SafeObject_a001885826327f52c8a2a0b0900deb60a}\label{structSGCore_1_1SafeObject_a001885826327f52c8a2a0b0900deb60a}} 
+ObjT \& {\bfseries get\+Object} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1SafeObject_ae569f8ea79e0fa8d60564835e94596ef}\label{structSGCore_1_1SafeObject_ae569f8ea79e0fa8d60564835e94596ef}} 
+bool {\bfseries is\+Locked} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1SafeObject_aee057a0cc46fe9259e1bc6527f1afded}\label{structSGCore_1_1SafeObject_aee057a0cc46fe9259e1bc6527f1afded}} 
+void {\bfseries subscribe} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1SafeObject_a4d2e093efe9f5fd7c9f470ad4d9f5ac1}\label{structSGCore_1_1SafeObject_a4d2e093efe9f5fd7c9f470ad4d9f5ac1}} 
+void {\bfseries un\+Subscribe} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1SafeObject_af7a0131f34e2a989ca203caab980fb58}\label{structSGCore_1_1SafeObject_af7a0131f34e2a989ca203caab980fb58}} 
+std\+::int64\+\_\+t {\bfseries get\+Subscribers\+Count} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1SafeObject_a98c28947ce768fa128d1659bdd161896}\label{structSGCore_1_1SafeObject_a98c28947ce768fa128d1659bdd161896}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void()$>$ {\bfseries on\+Unlock}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Threading/Safe\+Object.\+h\end{DoxyCompactItemize}

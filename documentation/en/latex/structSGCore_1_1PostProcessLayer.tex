@@ -1,0 +1,92 @@
+\hypertarget{structSGCore_1_1PostProcessLayer}{}\doxysection{SGCore\+::Post\+Process\+Layer Struct Reference}
+\label{structSGCore_1_1PostProcessLayer}\index{SGCore::PostProcessLayer@{SGCore::PostProcessLayer}}
+
+
+Inheritance diagram for SGCore\+::Post\+Process\+Layer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Post\+Process\+Layer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a6914a8eae4f4477ba69ff5c5831f5f49}\label{structSGCore_1_1PostProcessLayer_a6914a8eae4f4477ba69ff5c5831f5f49}} 
+{\footnotesize template$<$typename EffectT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessEffect}{Post\+Process\+Effect}}, EffectT $>$) void add\+Effect(const Ref$<$ EffectT $>$ \&effect) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_af659fdfb55e33a70fc112e14be3702e3}\label{structSGCore_1_1PostProcessLayer_af659fdfb55e33a70fc112e14be3702e3}} 
+{\footnotesize template$<$typename EffectT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessEffect}{Post\+Process\+Effect}}, EffectT $>$) void remove\+Effect() noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a52615878b0de312b2182dfaf53e43a1d}\label{structSGCore_1_1PostProcessLayer_a52615878b0de312b2182dfaf53e43a1d}} 
+{\footnotesize template$<$typename EffectT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessEffect}{Post\+Process\+Effect}}, EffectT $>$) Ref$<$ EffectT $>$ get\+Effect() const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a77d214d06ccf01c531435f11cb49487a}\label{structSGCore_1_1PostProcessLayer_a77d214d06ccf01c531435f11cb49487a}} 
+const auto \& {\bfseries get\+Effects} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_aa8bc91e0cd596640240569db3dead1a7}\label{structSGCore_1_1PostProcessLayer_aa8bc91e0cd596640240569db3dead1a7}} 
+auto {\bfseries get\+FXSub\+Pass\+Shader} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a80fc3d4703393ace5cfd348bf398ab46}\label{structSGCore_1_1PostProcessLayer_a80fc3d4703393ace5cfd348bf398ab46}} 
+void {\bfseries set\+FXSub\+Pass\+Shader} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} $>$ \&FXSub\+Pass\+Shader) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a99a3ce352b8ddc55e4656ee48cc9b723}\label{structSGCore_1_1PostProcessLayer_a99a3ce352b8ddc55e4656ee48cc9b723}} 
+std\+::vector$<$ \mbox{\hyperlink{structSGCore_1_1PostProcessFXSubPass}{Post\+Process\+FXSub\+Pass}} $>$ {\bfseries m\+\_\+sub\+Passes}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a90dc8e81b63261d7ace2017ec93e9a58}\label{structSGCore_1_1PostProcessLayer_a90dc8e81b63261d7ace2017ec93e9a58}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IFrameBuffer}{IFrame\+Buffer}} $>$ {\bfseries m\+\_\+frame\+Buffer}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_ab8bcb1490084a9c1870591a45a8e6378}\label{structSGCore_1_1PostProcessLayer_ab8bcb1490084a9c1870591a45a8e6378}} 
+std\+::string {\bfseries m\+\_\+name}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_ace79cdb6139d089a66d5b3b94b960f37}\label{structSGCore_1_1PostProcessLayer_ace79cdb6139d089a66d5b3b94b960f37}} 
+std\+::uint16\+\_\+t {\bfseries m\+\_\+index} = 0
+\item 
+std\+::vector$<$ SGFrame\+Buffer\+Attachment\+Type $>$ {\bfseries m\+\_\+attachments\+To\+Render\+In}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a428eb135d84563224223c12f5b0c7376}\label{structSGCore_1_1PostProcessLayer_a428eb135d84563224223c12f5b0c7376}} 
+std\+::vector$<$ SGFrame\+Buffer\+Attachment\+Type $>$ {\bfseries m\+\_\+attachments\+To\+Depth\+Test} \{ SGG\+\_\+\+COLOR\+\_\+\+ATTACHMENT1\}
+\item 
+std\+::unordered\+\_\+map$<$ SGFrame\+Buffer\+Attachment\+Type, SGFrame\+Buffer\+Attachment\+Type $>$ {\bfseries m\+\_\+attachments\+For\+Combining}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_abf315629e5087b046844bb1f1bb58032}\label{structSGCore_1_1PostProcessLayer_abf315629e5087b046844bb1f1bb58032}} 
+class {\bfseries Layered\+Frame\+Receiver}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a72128db4cd0ef031d829cf5a417c62c3}\label{structSGCore_1_1PostProcessLayer_a72128db4cd0ef031d829cf5a417c62c3}} 
+\index{SGCore::PostProcessLayer@{SGCore::PostProcessLayer}!m\_attachmentsForCombining@{m\_attachmentsForCombining}}
+\index{m\_attachmentsForCombining@{m\_attachmentsForCombining}!SGCore::PostProcessLayer@{SGCore::PostProcessLayer}}
+\doxysubsubsection{\texorpdfstring{m\_attachmentsForCombining}{m\_attachmentsForCombining}}
+{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$SGFrame\+Buffer\+Attachment\+Type, SGFrame\+Buffer\+Attachment\+Type$>$ SGCore\+::\+Post\+Process\+Layer\+::m\+\_\+attachments\+For\+Combining}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{                \{ SGG\_COLOR\_ATTACHMENT0, SGG\_COLOR\_ATTACHMENT1 \}}
+\DoxyCodeLine{        \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structSGCore_1_1PostProcessLayer_a15949fc0dc0cb765f71def924acf8eab}\label{structSGCore_1_1PostProcessLayer_a15949fc0dc0cb765f71def924acf8eab}} 
+\index{SGCore::PostProcessLayer@{SGCore::PostProcessLayer}!m\_attachmentsToRenderIn@{m\_attachmentsToRenderIn}}
+\index{m\_attachmentsToRenderIn@{m\_attachmentsToRenderIn}!SGCore::PostProcessLayer@{SGCore::PostProcessLayer}}
+\doxysubsubsection{\texorpdfstring{m\_attachmentsToRenderIn}{m\_attachmentsToRenderIn}}
+{\footnotesize\ttfamily std\+::vector$<$SGFrame\+Buffer\+Attachment\+Type$>$ SGCore\+::\+Post\+Process\+Layer\+::m\+\_\+attachments\+To\+Render\+In}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{ SGG\_COLOR\_ATTACHMENT0,    }
+\DoxyCodeLine{                                                                           SGG\_COLOR\_ATTACHMENT1\}}
+
+\end{DoxyCode}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/Layered\+Frame\+Receiver.\+h\end{DoxyCompactItemize}

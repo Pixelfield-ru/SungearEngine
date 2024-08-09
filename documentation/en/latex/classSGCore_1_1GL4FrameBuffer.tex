@@ -1,0 +1,88 @@
+\hypertarget{classSGCore_1_1GL4FrameBuffer}{}\doxysection{SGCore\+::GL4\+Frame\+Buffer Class Reference}
+\label{classSGCore_1_1GL4FrameBuffer}\index{SGCore::GL4FrameBuffer@{SGCore::GL4FrameBuffer}}
+
+
+Inheritance diagram for SGCore\+::GL4\+Frame\+Buffer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::GL4\+Frame\+Buffer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_ac57184397edfb36f62c8c2935f36763f}\label{classSGCore_1_1GL4FrameBuffer_ac57184397edfb36f62c8c2935f36763f}} 
+void {\bfseries bind\+Attachment} (const SGFrame\+Buffer\+Attachment\+Type \&attachment\+Type, const std\+::uint8\+\_\+t \&texture\+Block) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a01643a22311bc4f7f3bf1aa3a184d26d}\label{classSGCore_1_1GL4FrameBuffer_a01643a22311bc4f7f3bf1aa3a184d26d}} 
+void {\bfseries bind\+Attachment\+To\+Read\+From} (const SGFrame\+Buffer\+Attachment\+Type \&attachment\+Type) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_ac35ea6f918b9756319960ba4ed405695}\label{classSGCore_1_1GL4FrameBuffer_ac35ea6f918b9756319960ba4ed405695}} 
+void {\bfseries bind\+Attachment\+To\+Draw\+In} (const SGFrame\+Buffer\+Attachment\+Type \&attachment\+Type) override
+\item 
+void \mbox{\hyperlink{classSGCore_1_1GL4FrameBuffer_a832bd02132c48a6c06c6b524f95283b6}{bind\+Attachments\+To\+Read\+From}} (const std\+::vector$<$ SGFrame\+Buffer\+Attachment\+Type $>$ \&attachments\+Types) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a750c249becf5160140d3860edd3926d7}\label{classSGCore_1_1GL4FrameBuffer_a750c249becf5160140d3860edd3926d7}} 
+void {\bfseries bind\+Attachments\+To\+Draw\+In} (const std\+::vector$<$ SGFrame\+Buffer\+Attachment\+Type $>$ \&attachments\+Types) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a35980e1cf9b835f57de37d9da52b9aff}\label{classSGCore_1_1GL4FrameBuffer_a35980e1cf9b835f57de37d9da52b9aff}} 
+void {\bfseries bind\+Attachments\+To\+Draw\+In} (const std\+::set$<$ SGFrame\+Buffer\+Attachment\+Type $>$ \&attachments\+Types) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a4d2a965329868febc9ba0fd8d683ea1a}\label{classSGCore_1_1GL4FrameBuffer_a4d2a965329868febc9ba0fd8d683ea1a}} 
+void {\bfseries unbind\+Attachment\+To\+Read\+From} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a036c92dac33c03691dfcc8f4ba4b2df5}\label{classSGCore_1_1GL4FrameBuffer_a036c92dac33c03691dfcc8f4ba4b2df5}} 
+void {\bfseries unbind\+Attachment\+To\+Draw\+In} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_ac3f952748941037e8ab905cdb28d4770}\label{classSGCore_1_1GL4FrameBuffer_ac3f952748941037e8ab905cdb28d4770}} 
+void {\bfseries bind} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a618deaeac02787a6645e26521d8c687e}\label{classSGCore_1_1GL4FrameBuffer_a618deaeac02787a6645e26521d8c687e}} 
+void {\bfseries unbind} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_ac98366cdd172fb13052ac5ad8cc0cafe}\label{classSGCore_1_1GL4FrameBuffer_ac98366cdd172fb13052ac5ad8cc0cafe}} 
+void {\bfseries create} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a8e7d7dbaab5a79da46fa18217e7d5a82}\label{classSGCore_1_1GL4FrameBuffer_a8e7d7dbaab5a79da46fa18217e7d5a82}} 
+void {\bfseries destroy} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a3453a571428bec35c3f3a40139e44afd}\label{classSGCore_1_1GL4FrameBuffer_a3453a571428bec35c3f3a40139e44afd}} 
+void {\bfseries clear} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_af1d6eb4a4e0b0b2b237e34667b165352}\label{classSGCore_1_1GL4FrameBuffer_af1d6eb4a4e0b0b2b237e34667b165352}} 
+void {\bfseries clear\+Attachment} (const SGFrame\+Buffer\+Attachment\+Type \&attachment\+Type) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a7d9805cfd8016e5602dba24ec777aace}\label{classSGCore_1_1GL4FrameBuffer_a7d9805cfd8016e5602dba24ec777aace}} 
+void {\bfseries add\+Attachment} (SGFrame\+Buffer\+Attachment\+Type, SGGColor\+Format format, SGGColor\+Internal\+Format internal\+Format, const int \&mip\+Level, const int \&layer) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_aaedcb445aff2a5e416964874a3e5b382}\label{classSGCore_1_1GL4FrameBuffer_aaedcb445aff2a5e416964874a3e5b382}} 
+void {\bfseries add\+Attachment} (SGFrame\+Buffer\+Attachment\+Type attachment\+Type, SGGColor\+Format format, SGGColor\+Internal\+Format internal\+Format, const int \&mip\+Level, const int \&layer, bool use\+Multisampling, std\+::uint8\+\_\+t multisampling\+Samples\+Count) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1GL4FrameBuffer_a832bd02132c48a6c06c6b524f95283b6}\label{classSGCore_1_1GL4FrameBuffer_a832bd02132c48a6c06c6b524f95283b6}} 
+\index{SGCore::GL4FrameBuffer@{SGCore::GL4FrameBuffer}!bindAttachmentsToReadFrom@{bindAttachmentsToReadFrom}}
+\index{bindAttachmentsToReadFrom@{bindAttachmentsToReadFrom}!SGCore::GL4FrameBuffer@{SGCore::GL4FrameBuffer}}
+\doxysubsubsection{\texorpdfstring{bindAttachmentsToReadFrom()}{bindAttachmentsToReadFrom()}}
+{\footnotesize\ttfamily void SGCore\+::\+GL4\+Frame\+Buffer\+::bind\+Attachments\+To\+Read\+From (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ SGFrame\+Buffer\+Attachment\+Type $>$ \&}]{attachments\+Types }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+OPENGL DOES NOT SUPPORT THIS. 
+\begin{DoxyParams}{Parameters}
+{\em attachments\+Types} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IFrameBuffer}{SGCore\+::\+IFrame\+Buffer}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/\+GL4/GL4\+Frame\+Buffer.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/\+GL4/GL4\+Frame\+Buffer.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,37 @@
+\hypertarget{structDimensions}{}\doxysection{Dimensions$<$ T $>$ Struct Template Reference}
+\label{structDimensions}\index{Dimensions$<$ T $>$@{Dimensions$<$ T $>$}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structDimensions_a8e20e5a702e9949caa8337873a74f65d}\label{structDimensions_a8e20e5a702e9949caa8337873a74f65d}} 
+using {\bfseries dimension\+\_\+index} = int
+\item 
+\mbox{\Hypertarget{structDimensions_af0cd53514e52186cc67f2ce91e368ded}\label{structDimensions_af0cd53514e52186cc67f2ce91e368ded}} 
+using {\bfseries size\+\_\+type} = std\+::size\+\_\+t
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structDimensions_af4caf24a4aa4badb0c01fb087dc7f77b}\label{structDimensions_af4caf24a4aa4badb0c01fb087dc7f77b}} 
+{\footnotesize template$<$class... T1$>$ }\\void {\bfseries Set\+Sizes} (dimension\+\_\+index pos, size\+\_\+type m1, T1 ...k1)
+\item 
+\mbox{\Hypertarget{structDimensions_a1bb118a20b9f409baba5fd0e99696057}\label{structDimensions_a1bb118a20b9f409baba5fd0e99696057}} 
+{\bfseries Dimensions} (std\+::size\+\_\+t size0, T... sizes)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structDimensions_a6cd2d2ef17e60aa3e70861a616c899b2}\label{structDimensions_a6cd2d2ef17e60aa3e70861a616c899b2}} 
+dimension\+\_\+index {\bfseries m\+\_\+dim} = static\+\_\+cast$<$dimension\+\_\+index$>$(1 + sizeof...(T))
+\item 
+\mbox{\Hypertarget{structDimensions_a2bcfd9cd1c20cc1450675e8677f885be}\label{structDimensions_a2bcfd9cd1c20cc1450675e8677f885be}} 
+size\+\_\+type $\ast$ {\bfseries m\+\_\+dimensions} = new size\+\_\+type\mbox{[}m\+\_\+dim\mbox{]}
+\item 
+\mbox{\Hypertarget{structDimensions_ad4f783ca9740ecd6e3d145a03f320d85}\label{structDimensions_ad4f783ca9740ecd6e3d145a03f320d85}} 
+size\+\_\+type {\bfseries m\+\_\+data\+Size}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGUtils/flat\+\_\+array.\+h\end{DoxyCompactItemize}

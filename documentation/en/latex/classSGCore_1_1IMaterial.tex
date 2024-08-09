@@ -1,0 +1,171 @@
+\hypertarget{classSGCore_1_1IMaterial}{}\doxysection{SGCore\+::IMaterial Class Reference}
+\label{classSGCore_1_1IMaterial}\index{SGCore::IMaterial@{SGCore::IMaterial}}
+
+
+Inheritance diagram for SGCore\+::IMaterial\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IMaterial\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} $>$ \mbox{\hyperlink{classSGCore_1_1IMaterial_a2e51a4240d442edc10ed89551ecdc89c}{find\+And\+Add\+Texture2D}} (const SGTexture\+Type \&texture\+Type, const std\+::string \&path)
+\item 
+void \mbox{\hyperlink{classSGCore_1_1IMaterial_a9843943c2da1960b891bc74bd7cfeef4}{add\+Texture2D}} (const SGTexture\+Type \&texture\+Type, const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} $>$ \&tex)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_afb040101eaefee8fc81bf49ef1630aa8}\label{classSGCore_1_1IMaterial_afb040101eaefee8fc81bf49ef1630aa8}} 
+void {\bfseries copy\+Textures} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} $>$ \&to) const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_af6d6b77de4d6d406408431575c4ec7fb}\label{classSGCore_1_1IMaterial_af6d6b77de4d6d406408431575c4ec7fb}} 
+void {\bfseries set\+Diffuse\+Color} (const glm\+::vec4 \&col) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a368dbaacfb5b1c9548ea1e9f26084d0e}\label{classSGCore_1_1IMaterial_a368dbaacfb5b1c9548ea1e9f26084d0e}} 
+auto {\bfseries get\+Diffuse\+Color} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a7d1a5281fca447d2faccb7262c7f6425}\label{classSGCore_1_1IMaterial_a7d1a5281fca447d2faccb7262c7f6425}} 
+void {\bfseries set\+Specular\+Color} (const glm\+::vec4 \&col) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a4dbe453f00d5c2c4037abd50c737e853}\label{classSGCore_1_1IMaterial_a4dbe453f00d5c2c4037abd50c737e853}} 
+auto {\bfseries get\+Specular\+Color} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a47dfb5dcdc1d9d57ca5c100bb7660cab}\label{classSGCore_1_1IMaterial_a47dfb5dcdc1d9d57ca5c100bb7660cab}} 
+void {\bfseries set\+Ambient\+Color} (const glm\+::vec4 \&col) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_ae2a5e2064dd5e121e9d857221d8cef17}\label{classSGCore_1_1IMaterial_ae2a5e2064dd5e121e9d857221d8cef17}} 
+auto {\bfseries get\+Ambient\+Color} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_ae01c003bc29b6e9350b70e41986e073b}\label{classSGCore_1_1IMaterial_ae01c003bc29b6e9350b70e41986e073b}} 
+void {\bfseries set\+Emission\+Color} (const glm\+::vec4 \&col) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a0fa9808b970edc76afe0c71f5184b2b3}\label{classSGCore_1_1IMaterial_a0fa9808b970edc76afe0c71f5184b2b3}} 
+auto {\bfseries get\+Emission\+Color} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a5cb0acc1b27758198963a971799d2697}\label{classSGCore_1_1IMaterial_a5cb0acc1b27758198963a971799d2697}} 
+void {\bfseries set\+Transparent\+Color} (const glm\+::vec4 \&col) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a2df74da4a761fc447abf6e1fa17c3a91}\label{classSGCore_1_1IMaterial_a2df74da4a761fc447abf6e1fa17c3a91}} 
+auto {\bfseries get\+Transparent\+Color} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a1b967b9de658d759ed4ad6cb2ad6aab3}\label{classSGCore_1_1IMaterial_a1b967b9de658d759ed4ad6cb2ad6aab3}} 
+void {\bfseries set\+Shininess} (const float \&shininess) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a216bbbaab68bfe6324726147af34f4c8}\label{classSGCore_1_1IMaterial_a216bbbaab68bfe6324726147af34f4c8}} 
+float {\bfseries get\+Shininess} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a038f301140f91fec8517e6558c47cb7a}\label{classSGCore_1_1IMaterial_a038f301140f91fec8517e6558c47cb7a}} 
+void {\bfseries set\+Metallic\+Factor} (const float \&metallic\+Factor) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_afac7b4ef621ed95fbd7a0810e55a754a}\label{classSGCore_1_1IMaterial_afac7b4ef621ed95fbd7a0810e55a754a}} 
+float {\bfseries get\+Metallic\+Factor} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a47d5ffc712114a3f5a8c2b43be45e740}\label{classSGCore_1_1IMaterial_a47d5ffc712114a3f5a8c2b43be45e740}} 
+void {\bfseries set\+Roughness\+Factor} (const float \&roughness\+Factor) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a6760e917fa443d825ab205e417c56184}\label{classSGCore_1_1IMaterial_a6760e917fa443d825ab205e417c56184}} 
+float {\bfseries get\+Roughness\+Factor} () const noexcept
+\item 
+\mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} \& \mbox{\hyperlink{classSGCore_1_1IMaterial_ae1bd9a9f25ee383b9849dceee2e651cc}{operator=}} (const \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} \&other) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_ae6b2b42f241db05a97a4af21e8d2189c}\label{classSGCore_1_1IMaterial_ae6b2b42f241db05a97a4af21e8d2189c}} 
+const auto \& {\bfseries get\+Textures} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a7f45ef0750b789392a46a0cb40cb04f3}\label{classSGCore_1_1IMaterial_a7f45ef0750b789392a46a0cb40cb04f3}} 
+std\+::string {\bfseries m\+\_\+name}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a675d536484f465aaffe69804c4c9c980}\label{classSGCore_1_1IMaterial_a675d536484f465aaffe69804c4c9c980}} 
+void {\bfseries do\+Load} (const std\+::string \&path) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a20772e8e0756c595ee401bf2933fb792}\label{classSGCore_1_1IMaterial_a20772e8e0756c595ee401bf2933fb792}} 
+std\+::unordered\+\_\+map$<$ SGTexture\+Type, std\+::vector$<$ Ref$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} $>$ $>$ $>$ {\bfseries m\+\_\+textures}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a7db6276b162171d12d77fa2c562e5c64}\label{classSGCore_1_1IMaterial_a7db6276b162171d12d77fa2c562e5c64}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IShader}{IShader}} $>$ {\bfseries m\+\_\+shader}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_ac695448c57001423b5aa51e356810c86}\label{classSGCore_1_1IMaterial_ac695448c57001423b5aa51e356810c86}} 
+glm\+::vec4 {\bfseries m\+\_\+diffuse\+Color} = glm\+::vec4(1.\+0f)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_add986275e032887073fd9a0a14e1b39b}\label{classSGCore_1_1IMaterial_add986275e032887073fd9a0a14e1b39b}} 
+glm\+::vec4 {\bfseries m\+\_\+specular\+Color} = glm\+::vec4(1.\+0f)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a78641a213cfd31df72df3c8d37ce557e}\label{classSGCore_1_1IMaterial_a78641a213cfd31df72df3c8d37ce557e}} 
+glm\+::vec4 {\bfseries m\+\_\+ambient\+Color} = glm\+::vec4(0.\+0f)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_ad91c56a0422baa5791be07540c6e317f}\label{classSGCore_1_1IMaterial_ad91c56a0422baa5791be07540c6e317f}} 
+glm\+::vec4 {\bfseries m\+\_\+emission\+Color} = glm\+::vec4(1.\+0f)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a3a621de7ee1120b819f94eb481ec287b}\label{classSGCore_1_1IMaterial_a3a621de7ee1120b819f94eb481ec287b}} 
+glm\+::vec4 {\bfseries m\+\_\+transparent\+Color} = glm\+::vec4(1.\+0f)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a8e7d0051a29154fa4fd1e8de93d09d7a}\label{classSGCore_1_1IMaterial_a8e7d0051a29154fa4fd1e8de93d09d7a}} 
+float {\bfseries m\+\_\+shininess} = 32.\+0f
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a67f025d08ed12d62625873a12fe8cd49}\label{classSGCore_1_1IMaterial_a67f025d08ed12d62625873a12fe8cd49}} 
+float {\bfseries m\+\_\+metallic\+Factor} = 1.\+0f
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a67ccc1b643e6e8d77d6d433f9850b8d3}\label{classSGCore_1_1IMaterial_a67ccc1b643e6e8d77d6d433f9850b8d3}} 
+float {\bfseries m\+\_\+roughness\+Factor} = 1.\+0f
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a9843943c2da1960b891bc74bd7cfeef4}\label{classSGCore_1_1IMaterial_a9843943c2da1960b891bc74bd7cfeef4}} 
+\index{SGCore::IMaterial@{SGCore::IMaterial}!addTexture2D@{addTexture2D}}
+\index{addTexture2D@{addTexture2D}!SGCore::IMaterial@{SGCore::IMaterial}}
+\doxysubsubsection{\texorpdfstring{addTexture2D()}{addTexture2D()}}
+{\footnotesize\ttfamily void SGCore\+::\+IMaterial\+::add\+Texture2D (\begin{DoxyParamCaption}\item[{const SGTexture\+Type \&}]{texture\+Type,  }\item[{const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} $>$ \&}]{tex }\end{DoxyParamCaption})}
+
+Adds texture2D. 
+\begin{DoxyParams}{Parameters}
+{\em texture\+Type} & -\/ Material type of texture \\
+\hline
+{\em tex} & -\/ Texture to add. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_a2e51a4240d442edc10ed89551ecdc89c}\label{classSGCore_1_1IMaterial_a2e51a4240d442edc10ed89551ecdc89c}} 
+\index{SGCore::IMaterial@{SGCore::IMaterial}!findAndAddTexture2D@{findAndAddTexture2D}}
+\index{findAndAddTexture2D@{findAndAddTexture2D}!SGCore::IMaterial@{SGCore::IMaterial}}
+\doxysubsubsection{\texorpdfstring{findAndAddTexture2D()}{findAndAddTexture2D()}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{SGCore\+::\+ITexture2D}} $>$ SGCore\+::\+IMaterial\+::find\+And\+Add\+Texture2D (\begin{DoxyParamCaption}\item[{const SGTexture\+Type \&}]{texture\+Type,  }\item[{const std\+::string \&}]{path }\end{DoxyParamCaption})}
+
+Adds texture2D. Method is copying texture. This method is looking for texture asset by path. 
+\begin{DoxyParams}{Parameters}
+{\em type} & -\/ Material type of texture \\
+\hline
+{\em path} & -\/ Path to texture. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+this 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSGCore_1_1IMaterial_ae1bd9a9f25ee383b9849dceee2e651cc}\label{classSGCore_1_1IMaterial_ae1bd9a9f25ee383b9849dceee2e651cc}} 
+\index{SGCore::IMaterial@{SGCore::IMaterial}!operator=@{operator=}}
+\index{operator=@{operator=}!SGCore::IMaterial@{SGCore::IMaterial}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classSGCore_1_1IMaterial}{SGCore\+::\+IMaterial}} \& SGCore\+::\+IMaterial\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} \&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+Copies all texture assets (textures data is not copied) to another material.~\newline
+Also tries to do the same with unused textures of this material. 
+\begin{DoxyParams}{Parameters}
+{\em other} & -\/ Copied material \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Modified this material 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Memory/\+Assets/\+Materials/IMaterial.\+h\item 
+Sources/\+SGCore/\+Memory/\+Assets/\+Materials/IMaterial.\+cpp\end{DoxyCompactItemize}

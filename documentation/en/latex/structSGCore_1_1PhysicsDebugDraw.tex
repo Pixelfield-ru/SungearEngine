@@ -1,0 +1,64 @@
+\hypertarget{structSGCore_1_1PhysicsDebugDraw}{}\doxysection{SGCore\+::Physics\+Debug\+Draw Struct Reference}
+\label{structSGCore_1_1PhysicsDebugDraw}\index{SGCore::PhysicsDebugDraw@{SGCore::PhysicsDebugDraw}}
+
+
+Inheritance diagram for SGCore\+::Physics\+Debug\+Draw\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Physics\+Debug\+Draw\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a23d0c22f21e50ac8065f922ddb25657d}\label{structSGCore_1_1PhysicsDebugDraw_a23d0c22f21e50ac8065f922ddb25657d}} 
+void {\bfseries draw\+Line} (const bt\+Vector3 \&from, const bt\+Vector3 \&to, const bt\+Vector3 \&color) override
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a47c80787a1beb52719c88f7f93dcf167}\label{structSGCore_1_1PhysicsDebugDraw_a47c80787a1beb52719c88f7f93dcf167}} 
+void {\bfseries draw\+Contact\+Point} (const bt\+Vector3 \&Point\+OnB, const bt\+Vector3 \&normal\+OnB, bt\+Scalar distance, int life\+Time, const bt\+Vector3 \&color) override
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a8b5d9a59e33c3fa65d6f9f90cf81900f}\label{structSGCore_1_1PhysicsDebugDraw_a8b5d9a59e33c3fa65d6f9f90cf81900f}} 
+void {\bfseries report\+Error\+Warning} (const char $\ast$warning\+String) override
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_af9626e42e9c7c4ad34bd47895e0ac8ed}\label{structSGCore_1_1PhysicsDebugDraw_af9626e42e9c7c4ad34bd47895e0ac8ed}} 
+void {\bfseries draw3d\+Text} (const bt\+Vector3 \&location, const char $\ast$text\+String) override
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a7ac113dcc67273b2443ccbc59364bce1}\label{structSGCore_1_1PhysicsDebugDraw_a7ac113dcc67273b2443ccbc59364bce1}} 
+void {\bfseries set\+Debug\+Mode} (int debug\+Mode) override
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a903b6ec59f29e5d30b0db399f13e5fe1}\label{structSGCore_1_1PhysicsDebugDraw_a903b6ec59f29e5d30b0db399f13e5fe1}} 
+int {\bfseries get\+Debug\+Mode} () const override
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_aac07c99d85ed389d93fc47717228d0de}\label{structSGCore_1_1PhysicsDebugDraw_aac07c99d85ed389d93fc47717228d0de}} 
+void {\bfseries draw\+All} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_af4b2289fb6fe18723847beb373aa9bb8}\label{structSGCore_1_1PhysicsDebugDraw_af4b2289fb6fe18723847beb373aa9bb8}} 
+void {\bfseries reset\+Renderer} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a6bfed55212b303cac5df0948b6ae6b5a}\label{structSGCore_1_1PhysicsDebugDraw_a6bfed55212b303cac5df0948b6ae6b5a}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexArray}{IVertex\+Array}} $>$ {\bfseries m\+\_\+lines\+Vertex\+Array}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_ab09da50ff2364e61274c0ddb5457c037}\label{structSGCore_1_1PhysicsDebugDraw_ab09da50ff2364e61274c0ddb5457c037}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+lines\+Positions\+Vertex\+Buffer}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a782b06f8f67f6665a61d3ccea9bedb4b}\label{structSGCore_1_1PhysicsDebugDraw_a782b06f8f67f6665a61d3ccea9bedb4b}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+lines\+Colors\+Vertex\+Buffer}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a1fa86c48849d6f41b78722d3bcadbe4d}\label{structSGCore_1_1PhysicsDebugDraw_a1fa86c48849d6f41b78722d3bcadbe4d}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries m\+\_\+lines\+Index\+Buffer}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_a52c52413285db6afe98dbe7da6028620}\label{structSGCore_1_1PhysicsDebugDraw_a52c52413285db6afe98dbe7da6028620}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IShader}{IShader}} $>$ {\bfseries m\+\_\+lines\+Shader}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1PhysicsDebugDraw_ac631cbd20264c9804cfd86ac523f8a40}\label{structSGCore_1_1PhysicsDebugDraw_ac631cbd20264c9804cfd86ac523f8a40}} 
+\mbox{\hyperlink{structSGCore_1_1MeshDataRenderInfo}{Mesh\+Data\+Render\+Info}} {\bfseries m\+\_\+lines\+Render\+Info}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Physics/Physics\+Debug\+Draw.\+h\item 
+Sources/\+SGCore/\+Physics/Physics\+Debug\+Draw.\+cpp\end{DoxyCompactItemize}

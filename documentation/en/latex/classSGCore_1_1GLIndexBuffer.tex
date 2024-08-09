@@ -1,0 +1,44 @@
+\hypertarget{classSGCore_1_1GLIndexBuffer}{}\doxysection{SGCore\+::GLIndex\+Buffer Class Reference}
+\label{classSGCore_1_1GLIndexBuffer}\index{SGCore::GLIndexBuffer@{SGCore::GLIndexBuffer}}
+
+
+Inheritance diagram for SGCore\+::GLIndex\+Buffer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::GLIndex\+Buffer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLIndexBuffer_a26a2ea915e789753e1fb8c534b67d9cb}\label{classSGCore_1_1GLIndexBuffer_a26a2ea915e789753e1fb8c534b67d9cb}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries create} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLIndexBuffer_ac3c0abf56d796df8a3413070ad26a8a8}\label{classSGCore_1_1GLIndexBuffer_ac3c0abf56d796df8a3413070ad26a8a8}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries create} (const size\+\_\+t \&byte\+Size) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLIndexBuffer_a1e3d50dbc3dc81b592c30bed0b279cf9}\label{classSGCore_1_1GLIndexBuffer_a1e3d50dbc3dc81b592c30bed0b279cf9}} 
+void {\bfseries destroy} () noexcept final
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLIndexBuffer_afd3c1080204140455ac581fbf70bcb4e}\label{classSGCore_1_1GLIndexBuffer_afd3c1080204140455ac581fbf70bcb4e}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries put\+Data} (const std\+::vector$<$ std\+::uint32\+\_\+t $>$ \&data) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLIndexBuffer_aab10f59dc3d971c1d4601402b2129799}\label{classSGCore_1_1GLIndexBuffer_aab10f59dc3d971c1d4601402b2129799}} 
+void {\bfseries sub\+Data} (const std\+::vector$<$ std\+::uint32\+\_\+t $>$ \&data, const int \&offset) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLIndexBuffer_a3f7f0902e9370b99104922533bff6470}\label{classSGCore_1_1GLIndexBuffer_a3f7f0902e9370b99104922533bff6470}} 
+void {\bfseries sub\+Data} (std\+::uint32\+\_\+t $\ast$data, const size\+\_\+t \&elements\+Count, const int \&offset) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLIndexBuffer_acdb06f24d15080c840dc0f9ab469017f}\label{classSGCore_1_1GLIndexBuffer_acdb06f24d15080c840dc0f9ab469017f}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries bind} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GLIndexBuffer_a5ee2360fc27db2e101de469cd73f71a1}\label{classSGCore_1_1GLIndexBuffer_a5ee2360fc27db2e101de469cd73f71a1}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries set\+Usage} (SGGUsage) noexcept override
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/GLIndex\+Buffer.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/GLIndex\+Buffer.\+cpp\end{DoxyCompactItemize}

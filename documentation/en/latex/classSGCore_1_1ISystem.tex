@@ -1,0 +1,60 @@
+\hypertarget{classSGCore_1_1ISystem}{}\doxysection{SGCore\+::ISystem Class Reference}
+\label{classSGCore_1_1ISystem}\index{SGCore::ISystem@{SGCore::ISystem}}
+
+
+Inheritance diagram for SGCore\+::ISystem\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a2fd852ac06fd5d548fd343fa21608be3}\label{classSGCore_1_1ISystem_a2fd852ac06fd5d548fd343fa21608be3}} 
+virtual void {\bfseries fixed\+Update} (const double \&dt, const double \&fixed\+Dt)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_af5cfab83c7936efa66abed392d09251e}\label{classSGCore_1_1ISystem_af5cfab83c7936efa66abed392d09251e}} 
+virtual void {\bfseries update} (const double \&dt, const double \&fixed\+Dt)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a3c26c30c9f2fdd79cac5072a13f2f7b5}\label{classSGCore_1_1ISystem_a3c26c30c9f2fdd79cac5072a13f2f7b5}} 
+virtual void {\bfseries on\+Add\+To\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a3c7a0d6ad36073f47b96c81ef5c6bf87}\label{classSGCore_1_1ISystem_a3c7a0d6ad36073f47b96c81ef5c6bf87}} 
+virtual void {\bfseries on\+Remove\+From\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_ac54bf3b614b4a2ec9eae0cda2b16130b}\label{classSGCore_1_1ISystem_ac54bf3b614b4a2ec9eae0cda2b16130b}} 
+void {\bfseries set\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a95dab640554461d251491d84c53db0ad}\label{classSGCore_1_1ISystem_a95dab640554461d251491d84c53db0ad}} 
+Weak$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ {\bfseries get\+Scene} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a8a07c11868b6cad464e92e2c11dec18e}\label{classSGCore_1_1ISystem_a8a07c11868b6cad464e92e2c11dec18e}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Threading\+::\+Thread}} $>$ {\bfseries get\+Thread} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a0e1864bdd0cd36b5ca32aaec90414c0a}\label{classSGCore_1_1ISystem_a0e1864bdd0cd36b5ca32aaec90414c0a}} 
+bool {\bfseries m\+\_\+active} = true
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_ae5c8adc81461da9127ee6039e70d84b5}\label{classSGCore_1_1ISystem_ae5c8adc81461da9127ee6039e70d84b5}} 
+std\+::unordered\+\_\+map$<$ std\+::string, double $>$ {\bfseries m\+\_\+execution\+Times}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a1a91ff7692a2242cfafc01bb0d999483}\label{classSGCore_1_1ISystem_a1a91ff7692a2242cfafc01bb0d999483}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Threading\+::\+Thread}} $>$ {\bfseries m\+\_\+thread} = Threading\+::\+Threads\+Manager\+::get\+Main\+Thread()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a9c93b137d990f6ce3a18d26d212f9429}\label{classSGCore_1_1ISystem_a9c93b137d990f6ce3a18d26d212f9429}} 
+Weak$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ {\bfseries m\+\_\+scene}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1ISystem_a032858ae1fe02d2d1170981c2af2d67c}\label{classSGCore_1_1ISystem_a032858ae1fe02d2d1170981c2af2d67c}} 
+class {\bfseries Scene}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Scene/ISystem.\+h\item 
+Sources/\+SGCore/\+Scene/ISystem.\+cpp\end{DoxyCompactItemize}

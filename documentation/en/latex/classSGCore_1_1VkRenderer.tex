@@ -1,0 +1,126 @@
+\hypertarget{classSGCore_1_1VkRenderer}{}\doxysection{SGCore\+::Vk\+Renderer Class Reference}
+\label{classSGCore_1_1VkRenderer}\index{SGCore::VkRenderer@{SGCore::VkRenderer}}
+
+
+Inheritance diagram for SGCore\+::Vk\+Renderer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Vk\+Renderer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_afc4e6933197707f810c6cdd0e8efd36b}\label{classSGCore_1_1VkRenderer_afc4e6933197707f810c6cdd0e8efd36b}} 
+{\bfseries Vk\+Renderer} (const \mbox{\hyperlink{classSGCore_1_1VkRenderer}{Vk\+Renderer}} \&)=delete
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a6fa6a1fd579adcb1cdb538b764184c70}\label{classSGCore_1_1VkRenderer_a6fa6a1fd579adcb1cdb538b764184c70}} 
+{\bfseries Vk\+Renderer} (\mbox{\hyperlink{classSGCore_1_1VkRenderer}{Vk\+Renderer}} \&\&)=delete
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_ad8592c1191599a0a1ec18c7374c14fe3}\label{classSGCore_1_1VkRenderer_ad8592c1191599a0a1ec18c7374c14fe3}} 
+void {\bfseries init} () noexcept override
+\item 
+bool \mbox{\hyperlink{classSGCore_1_1VkRenderer_a286a876d535bad628f78178bc2519116}{confirm\+Support}} () noexcept final
+\item 
+void \mbox{\hyperlink{classSGCore_1_1VkRenderer_a98a20687f185d48f37b739ca55493eef}{prepare\+Frame}} (const glm\+::ivec2 \&window\+Size) override
+\item 
+void \mbox{\hyperlink{classSGCore_1_1VkRenderer_a6d8086f406227585f2b208d3897777b0}{print\+Info}} () noexcept override
+\item 
+void \mbox{\hyperlink{classSGCore_1_1VkRenderer_a545b91e6c1d6155a8c91eb2646801d8d}{check\+For\+Errors}} (const std\+::source\+\_\+location \&location=std\+::source\+\_\+location\+::current()) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_afa23fb9a8806de48a101ba5f83a8d28c}\label{classSGCore_1_1VkRenderer_afa23fb9a8806de48a101ba5f83a8d28c}} 
+\mbox{\hyperlink{classSGCore_1_1VkSubPassShader}{Vk\+Sub\+Pass\+Shader}} $\ast$ {\bfseries create\+Sub\+Pass\+Shader} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a527be719c55b54d3136d6d9dc49047ce}\label{classSGCore_1_1VkRenderer_a527be719c55b54d3136d6d9dc49047ce}} 
+\mbox{\hyperlink{classSGCore_1_1VkVertexArray}{Vk\+Vertex\+Array}} $\ast$ {\bfseries create\+Vertex\+Array} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a335b3f3a5584c8ada7d8a75bfe75c78a}\label{classSGCore_1_1VkRenderer_a335b3f3a5584c8ada7d8a75bfe75c78a}} 
+\mbox{\hyperlink{classSGCore_1_1VkVertexBuffer}{Vk\+Vertex\+Buffer}} $\ast$ {\bfseries create\+Vertex\+Buffer} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a2ef5cd79fc7bd75d4aa4ca3765ad95d6}\label{classSGCore_1_1VkRenderer_a2ef5cd79fc7bd75d4aa4ca3765ad95d6}} 
+\mbox{\hyperlink{classSGCore_1_1VkVertexBufferLayout}{Vk\+Vertex\+Buffer\+Layout}} $\ast$ {\bfseries create\+Vertex\+Buffer\+Layout} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a869666e9184b1481bad26701df5554a1}\label{classSGCore_1_1VkRenderer_a869666e9184b1481bad26701df5554a1}} 
+\mbox{\hyperlink{classSGCore_1_1VkIndexBuffer}{Vk\+Index\+Buffer}} $\ast$ {\bfseries create\+Index\+Buffer} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_ab721cdaa1c7a57becd281af63b45a5cd}\label{classSGCore_1_1VkRenderer_ab721cdaa1c7a57becd281af63b45a5cd}} 
+\mbox{\hyperlink{classSGCore_1_1VkTexture2D}{Vk\+Texture2D}} $\ast$ {\bfseries create\+Texture2D} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a73b7410e70acc0d5d05cfa1278b06cdb}\label{classSGCore_1_1VkRenderer_a73b7410e70acc0d5d05cfa1278b06cdb}} 
+\mbox{\hyperlink{classSGCore_1_1VkCubemapTexture}{Vk\+Cubemap\+Texture}} $\ast$ {\bfseries create\+Cubemap\+Texture} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_ab393037a572290a95872adf1c382e693}\label{classSGCore_1_1VkRenderer_ab393037a572290a95872adf1c382e693}} 
+\mbox{\hyperlink{classSGCore_1_1VkUniformBuffer}{Vk\+Uniform\+Buffer}} $\ast$ {\bfseries create\+Uniform\+Buffer} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_aff75c499b033ce8be90564798a85217b}\label{classSGCore_1_1VkRenderer_aff75c499b033ce8be90564798a85217b}} 
+\mbox{\hyperlink{classSGCore_1_1VkFrameBuffer}{Vk\+Frame\+Buffer}} $\ast$ {\bfseries create\+Frame\+Buffer} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a368331d41a770f6169493111977ac243}\label{classSGCore_1_1VkRenderer_a368331d41a770f6169493111977ac243}} 
+\mbox{\hyperlink{classSGCore_1_1VkMeshData}{Vk\+Mesh\+Data}} $\ast$ {\bfseries create\+Mesh\+Data} () const override
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a9a3ed0351764e9226ffe7441d2a136e9}\label{classSGCore_1_1VkRenderer_a9a3ed0351764e9226ffe7441d2a136e9}} 
+static const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1VkRenderer}{Vk\+Renderer}} $>$ \& {\bfseries get\+Instance} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a545b91e6c1d6155a8c91eb2646801d8d}\label{classSGCore_1_1VkRenderer_a545b91e6c1d6155a8c91eb2646801d8d}} 
+\index{SGCore::VkRenderer@{SGCore::VkRenderer}!checkForErrors@{checkForErrors}}
+\index{checkForErrors@{checkForErrors}!SGCore::VkRenderer@{SGCore::VkRenderer}}
+\doxysubsubsection{\texorpdfstring{checkForErrors()}{checkForErrors()}}
+{\footnotesize\ttfamily void SGCore\+::\+Vk\+Renderer\+::check\+For\+Errors (\begin{DoxyParamCaption}\item[{const std\+::source\+\_\+location \&}]{location = {\ttfamily std\+:\+:source\+\_\+location\+:\+:current()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Checks for errors in GAPI. 
+\begin{DoxyParams}{Parameters}
+{\em location} & -\/ Where the function is called from. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer}{SGCore\+::\+IRenderer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a286a876d535bad628f78178bc2519116}\label{classSGCore_1_1VkRenderer_a286a876d535bad628f78178bc2519116}} 
+\index{SGCore::VkRenderer@{SGCore::VkRenderer}!confirmSupport@{confirmSupport}}
+\index{confirmSupport@{confirmSupport}!SGCore::VkRenderer@{SGCore::VkRenderer}}
+\doxysubsubsection{\texorpdfstring{confirmSupport()}{confirmSupport()}}
+{\footnotesize\ttfamily bool SGCore\+::\+Vk\+Renderer\+::confirm\+Support (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [final]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Confirmation of GAPI support by the user\textquotesingle{}s graphics card 
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer_a942839d280f96380cd77409c4986d3a3}{SGCore\+::\+IRenderer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a98a20687f185d48f37b739ca55493eef}\label{classSGCore_1_1VkRenderer_a98a20687f185d48f37b739ca55493eef}} 
+\index{SGCore::VkRenderer@{SGCore::VkRenderer}!prepareFrame@{prepareFrame}}
+\index{prepareFrame@{prepareFrame}!SGCore::VkRenderer@{SGCore::VkRenderer}}
+\doxysubsubsection{\texorpdfstring{prepareFrame()}{prepareFrame()}}
+{\footnotesize\ttfamily void SGCore\+::\+Vk\+Renderer\+::prepare\+Frame (\begin{DoxyParamCaption}\item[{const glm\+::ivec2 \&}]{window\+Size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em window\+Size} & \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer_a51dbb4e1f9f50b20ce6c7291639488ed}{SGCore\+::\+IRenderer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1VkRenderer_a6d8086f406227585f2b208d3897777b0}\label{classSGCore_1_1VkRenderer_a6d8086f406227585f2b208d3897777b0}} 
+\index{SGCore::VkRenderer@{SGCore::VkRenderer}!printInfo@{printInfo}}
+\index{printInfo@{printInfo}!SGCore::VkRenderer@{SGCore::VkRenderer}}
+\doxysubsubsection{\texorpdfstring{printInfo()}{printInfo()}}
+{\footnotesize\ttfamily void SGCore\+::\+Vk\+Renderer\+::print\+Info (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself. 
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer_a6909af43881351007f7e7b4ef2364f22}{SGCore\+::\+IRenderer}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+Vulkan/Vk\+Renderer.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+Vulkan/Vk\+Renderer.\+cpp\end{DoxyCompactItemize}

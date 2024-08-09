@@ -1,0 +1,56 @@
+\hypertarget{classSGCore_1_1GL4Texture2D}{}\doxysection{SGCore\+::GL4\+Texture2D Class Reference}
+\label{classSGCore_1_1GL4Texture2D}\index{SGCore::GL4Texture2D@{SGCore::GL4Texture2D}}
+
+
+Inheritance diagram for SGCore\+::GL4\+Texture2D\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::GL4\+Texture2D\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_ab01610d6edf586e70476c2bc5a4c12db}\label{classSGCore_1_1GL4Texture2D_ab01610d6edf586e70476c2bc5a4c12db}} 
+void {\bfseries create} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_aff04ade592ac81b3b53a2f1a79e30884}\label{classSGCore_1_1GL4Texture2D_aff04ade592ac81b3b53a2f1a79e30884}} 
+void {\bfseries create\+As\+Frame\+Buffer\+Attachment} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IFrameBuffer}{IFrame\+Buffer}} $>$ \&parent\+Frame\+Buffer, SGFrame\+Buffer\+Attachment\+Type attachment\+Type) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_acfb00c61d860d82298edacdebbee2574}\label{classSGCore_1_1GL4Texture2D_acfb00c61d860d82298edacdebbee2574}} 
+void {\bfseries sub\+Texture\+Buffer\+Data\+On\+GAPISide} (const size\+\_\+t \&bytes\+Count, const size\+\_\+t \&bytes\+Offset) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_ae3e6f4c9d1883a51b0764a177036733a}\label{classSGCore_1_1GL4Texture2D_ae3e6f4c9d1883a51b0764a177036733a}} 
+void {\bfseries sub\+Texture\+Data\+On\+GAPISide} (const size\+\_\+t \&bytes\+Count, const size\+\_\+t \&bytes\+Offset) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_a93713e7c12eff5fff016a74de21393fe}\label{classSGCore_1_1GL4Texture2D_a93713e7c12eff5fff016a74de21393fe}} 
+void {\bfseries destroy} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_a1b4e1fd686992a1de4d13e1c882695c3}\label{classSGCore_1_1GL4Texture2D_a1b4e1fd686992a1de4d13e1c882695c3}} 
+void {\bfseries bind} (const std\+::uint8\+\_\+t \&texture\+Unit) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_af4218444dff302ebf3f1893c01b54b2e}\label{classSGCore_1_1GL4Texture2D_af4218444dff302ebf3f1893c01b54b2e}} 
+void $\ast$ {\bfseries get\+Texture\+Native\+Handler} () const noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_aa7877a89cc05d05837559a07d315a042}\label{classSGCore_1_1GL4Texture2D_aa7877a89cc05d05837559a07d315a042}} 
+void $\ast$ {\bfseries get\+Texture\+Buffer\+Native\+Handler} () const noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_ac96e4ab53dfcbb1c00224a07cc1f63f9}\label{classSGCore_1_1GL4Texture2D_ac96e4ab53dfcbb1c00224a07cc1f63f9}} 
+\mbox{\hyperlink{classSGCore_1_1GL4Texture2D}{GL4\+Texture2D}} \& {\bfseries operator=} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ITexture2D}{ITexture2D}} $>$ \&other) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_a19913d1d1e9b3259177794423e1ea563}\label{classSGCore_1_1GL4Texture2D_a19913d1d1e9b3259177794423e1ea563}} 
+GLuint {\bfseries m\+\_\+texture\+Handler} = 0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Texture2D_a8cc732bb3ef12f0883986430ef37a861}\label{classSGCore_1_1GL4Texture2D_a8cc732bb3ef12f0883986430ef37a861}} 
+GLuint {\bfseries m\+\_\+texture\+Buffer\+Handler} = 0
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/\+GL4/GL4\+Texture2\+D.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/\+GL4/GL4\+Texture2\+D.\+cpp\end{DoxyCompactItemize}

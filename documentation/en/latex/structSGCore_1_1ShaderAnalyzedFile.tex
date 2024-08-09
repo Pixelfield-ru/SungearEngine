@@ -1,0 +1,68 @@
+\hypertarget{structSGCore_1_1ShaderAnalyzedFile}{}\doxysection{SGCore\+::Shader\+Analyzed\+File Struct Reference}
+\label{structSGCore_1_1ShaderAnalyzedFile}\index{SGCore::ShaderAnalyzedFile@{SGCore::ShaderAnalyzedFile}}
+
+
+Inheritance diagram for SGCore\+::Shader\+Analyzed\+File\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Shader\+Analyzed\+File\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_aae49f04a2a91f649e9c564af62c4b473}\label{structSGCore_1_1ShaderAnalyzedFile_aae49f04a2a91f649e9c564af62c4b473}} 
+void {\bfseries include\+File} (const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1ShaderAnalyzedFile}{Shader\+Analyzed\+File}} $>$ \&analyzed\+File) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_a33a0ec029eee8bd928b359dfb91c20ba}\label{structSGCore_1_1ShaderAnalyzedFile_a33a0ec029eee8bd928b359dfb91c20ba}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1SGSLESubShader}{SGSLESub\+Shader}} $>$ {\bfseries add\+Or\+Get\+Sub\+Shader} (const std\+::string \&sub\+Pass\+Name, SGSLESub\+Shader\+Type sub\+Shader\+Type)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_ad2301a8e9603d63575666e1705eb811c}\label{structSGCore_1_1ShaderAnalyzedFile_ad2301a8e9603d63575666e1705eb811c}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{structSGCore_1_1ShaderAnalyzedFile}{Shader\+Analyzed\+File}} \&other) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_a85803871934d6e096b9b63a44d131ff0}\label{structSGCore_1_1ShaderAnalyzedFile_a85803871934d6e096b9b63a44d131ff0}} 
+bool {\bfseries operator!=} (const \mbox{\hyperlink{structSGCore_1_1ShaderAnalyzedFile}{Shader\+Analyzed\+File}} \&other) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_a3e5f8914183874cff6844f8eba690542}\label{structSGCore_1_1ShaderAnalyzedFile_a3e5f8914183874cff6844f8eba690542}} 
+std\+::string {\bfseries get\+Sub\+Shader\+Code} (const std\+::string \&sub\+Pass\+Name, SGSLESub\+Shader\+Type sub\+Shader\+Type) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_a200106b4d682c9048fd8c119e4f64068}\label{structSGCore_1_1ShaderAnalyzedFile_a200106b4d682c9048fd8c119e4f64068}} 
+std\+::string {\bfseries get\+All\+Code} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_a1b4b7e26a12939610064a237b89eed9c}\label{structSGCore_1_1ShaderAnalyzedFile_a1b4b7e26a12939610064a237b89eed9c}} 
+std\+::string {\bfseries m\+\_\+path}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_ab7383edf6c4c1a1f5f7e8e1a01e412ff}\label{structSGCore_1_1ShaderAnalyzedFile_ab7383edf6c4c1a1f5f7e8e1a01e412ff}} 
+std\+::string {\bfseries m\+\_\+global\+Code}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_a524a5f749088242d15d1dc79514013fc}\label{structSGCore_1_1ShaderAnalyzedFile_a524a5f749088242d15d1dc79514013fc}} 
+std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{structSGCore_1_1SGSLESubPass}{SGSLESub\+Pass}} $>$ {\bfseries m\+\_\+sub\+Passes}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_a50d354f97a556e6c1d65f993dfae14dd}\label{structSGCore_1_1ShaderAnalyzedFile_a50d354f97a556e6c1d65f993dfae14dd}} 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1ShaderAnalyzedFile}{Shader\+Analyzed\+File}} $>$ $>$ {\bfseries m\+\_\+included\+Files}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_abba7008b334b97378c287058cfd7a4a5}\label{structSGCore_1_1ShaderAnalyzedFile_abba7008b334b97378c287058cfd7a4a5}} 
+void {\bfseries do\+Load} (const std\+::string \&path) final
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_af4b812dd961193be928cb64dff14ca4f}\label{structSGCore_1_1ShaderAnalyzedFile_af4b812dd961193be928cb64dff14ca4f}} 
+class {\bfseries SGSLETranslator}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderAnalyzedFile_aafe72876a584aedb5a5546d4fe7746fb}\label{structSGCore_1_1ShaderAnalyzedFile_aafe72876a584aedb5a5546d4fe7746fb}} 
+class {\bfseries Asset\+Manager}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Utils/\+SGSL/Shader\+Analyzed\+File.\+h\item 
+Sources/\+SGCore/\+Utils/\+SGSL/Shader\+Analyzed\+File.\+cpp\end{DoxyCompactItemize}

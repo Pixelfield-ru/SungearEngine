@@ -1,0 +1,44 @@
+\hypertarget{classSGCore_1_1Node}{}\doxysection{SGCore\+::Node Class Reference}
+\label{classSGCore_1_1Node}\index{SGCore::Node@{SGCore::Node}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_a019425abd1ce4607f775dae5fbae68cb}\label{classSGCore_1_1Node_a019425abd1ce4607f775dae5fbae68cb}} 
+void {\bfseries add\+On\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene, const std\+::string \&layer\+Name, const Each\+Entity\+Func \&each\+Entity\+Func, const Mesh\+Func \&mesh\+Func) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_a43b5b779199f0d3f9818ddc824064b4c}\label{classSGCore_1_1Node_a43b5b779199f0d3f9818ddc824064b4c}} 
+void {\bfseries add\+On\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene, const std\+::string \&layer\+Name, const Each\+Entity\+Func \&each\+Entity\+Func) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_a88b05066a6f4991f9c18c3e700cdd655}\label{classSGCore_1_1Node_a88b05066a6f4991f9c18c3e700cdd655}} 
+void {\bfseries add\+On\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene, const std\+::string \&layer\+Name, const Mesh\+Func \&mesh\+Func) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_a7cec2ccff87089711a9acf93355b0dfd}\label{classSGCore_1_1Node_a7cec2ccff87089711a9acf93355b0dfd}} 
+void {\bfseries add\+On\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene, const std\+::string \&layer\+Name) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_acf2f7526979bdd1cdc57860acc0fcf5a}\label{classSGCore_1_1Node_acf2f7526979bdd1cdc57860acc0fcf5a}} 
+std\+::string {\bfseries m\+\_\+name}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_ae01df6785c530e91be80cc4dca3059bd}\label{classSGCore_1_1Node_ae01df6785c530e91be80cc4dca3059bd}} 
+std\+::vector$<$ Ref$<$ \mbox{\hyperlink{classSGCore_1_1Node}{Node}} $>$ $>$ {\bfseries m\+\_\+children}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_ae27a348906baad0d9470d886f5a9801b}\label{classSGCore_1_1Node_ae27a348906baad0d9470d886f5a9801b}} 
+std\+::vector$<$ Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMeshData}{IMesh\+Data}} $>$ $>$ {\bfseries m\+\_\+meshes\+Data}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_afda9141a587c2782a44463a8f7b6693a}\label{classSGCore_1_1Node_afda9141a587c2782a44463a8f7b6693a}} 
+glm\+::vec3 {\bfseries m\+\_\+position} \{ 1.\+0 \}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_a15cede052bea5aa4815bdbeaac247fb5}\label{classSGCore_1_1Node_a15cede052bea5aa4815bdbeaac247fb5}} 
+glm\+::quat {\bfseries m\+\_\+rotation\+Quaternion} = glm\+::identity$<$glm\+::quat$>$()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Node_a16cf5bef8575ac42ff8e1b5e29de7757}\label{classSGCore_1_1Node_a16cf5bef8575ac42ff8e1b5e29de7757}} 
+glm\+::vec3 {\bfseries m\+\_\+scale} \{ 1.\+0 \}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Imported\+Scenes\+Arch/Node.\+h\item 
+Sources/\+SGCore/\+Imported\+Scenes\+Arch/Node.\+cpp\end{DoxyCompactItemize}

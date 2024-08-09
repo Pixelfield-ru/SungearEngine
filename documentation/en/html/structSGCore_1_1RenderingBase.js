@@ -1,0 +1,26 @@
+var structSGCore_1_1RenderingBase =
+[
+    [ "m_aspect", "structSGCore_1_1RenderingBase.html#a593f23103623a87cfa351e2103c63f42", null ],
+    [ "m_bottom", "structSGCore_1_1RenderingBase.html#ab75b2f173be5d1db4fd9d6a4fe7463d0", null ],
+    [ "m_fov", "structSGCore_1_1RenderingBase.html#acf53c66813eb43243d5f31a95f100256", null ],
+    [ "m_frustum", "structSGCore_1_1RenderingBase.html#ac374bc57e5ee434bf3a1c5708a8578aa", null ],
+    [ "m_lastAspect", "structSGCore_1_1RenderingBase.html#a9aca3937802cfdf26e05b1122b518ea5", null ],
+    [ "m_lastBottom", "structSGCore_1_1RenderingBase.html#a2367c51f39c3e039fe4939c0d3a91d10", null ],
+    [ "m_lastFov", "structSGCore_1_1RenderingBase.html#a79a4d8fa51ef06a95d78cd2d7030d658", null ],
+    [ "m_lastLeft", "structSGCore_1_1RenderingBase.html#af4f6d92c582f9f9430b77f4b30486282", null ],
+    [ "m_lastRight", "structSGCore_1_1RenderingBase.html#a0dc95c3503c79f86bf9eafd04adee3d6", null ],
+    [ "m_lastTop", "structSGCore_1_1RenderingBase.html#abd9fed8c5e16695dcbf19a44f25a7006", null ],
+    [ "m_lastZFar", "structSGCore_1_1RenderingBase.html#aebb302d15fd84318d760ae4ca0eb48be", null ],
+    [ "m_lastZNear", "structSGCore_1_1RenderingBase.html#a98eb62e4afd333b6c8db4c84a8431ab3", null ],
+    [ "m_left", "structSGCore_1_1RenderingBase.html#ae0742cef70031892e0fa87c22aefd46a", null ],
+    [ "m_orthographicMatrix", "structSGCore_1_1RenderingBase.html#afc7e794ca0727a71948ac0a4acd9d9d5", null ],
+    [ "m_orthographicSpaceMatrix", "structSGCore_1_1RenderingBase.html#a0586642d35596dd9379a0e4ec51bb56d", null ],
+    [ "m_projectionMatrix", "structSGCore_1_1RenderingBase.html#aa072c97593dd5c016431cdde96e4520e", null ],
+    [ "m_projectionSpaceMatrix", "structSGCore_1_1RenderingBase.html#a386c190a4bb1f16bd05c35ba10fb4c19", null ],
+    [ "m_projectionSpaceMatrixChanged", "structSGCore_1_1RenderingBase.html#ad43ea8419e771c581921df1860834a2b", null ],
+    [ "m_right", "structSGCore_1_1RenderingBase.html#a1b9c053c49f1ffabfcb680f51bfdf46c", null ],
+    [ "m_top", "structSGCore_1_1RenderingBase.html#a5c4c596a0a0c6cdf19f95213108de8e2", null ],
+    [ "m_viewMatrix", "structSGCore_1_1RenderingBase.html#ac2c6160c0063f5669b93ae7be59041f0", null ],
+    [ "m_zFar", "structSGCore_1_1RenderingBase.html#a9a0ea5cd1d87b08f4ec62f4f2ecb2e96", null ],
+    [ "m_zNear", "structSGCore_1_1RenderingBase.html#a2694f18fca51b13403a9ee2e36e93008", null ]
+];
