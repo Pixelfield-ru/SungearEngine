@@ -1,36 +1,36 @@
-<img src="https://github.com/Pixelfield-ru/SungearEngine/tree/main/documentation/images/mainLogo.png" width="100%">
-# <p align="center">🎮 An Open Source Engine Written in C++! 🎮</p>
+<img src="https://github.com/8bitniksis/SungearEngine/blob/8bitniksis-docs/documentation/images/mainLogo.png" width="100%">
+<p align="center">🎮 An Open Source Engine Written in C++! 🎮</p>
 
 # <p align="center">✨ Features ✨</p>
 
 -   **General:**
--   ECS
--   Audio(OpenAL)
--   Annotation and CodeGen
--   Parallel safety thread physics (Cooliders differents forms, RigidBodys)
+    - ECS
+    - Audio(OpenAL)
+    - Annotation and CodeGen
+    - Parallel safety thread physics (Cooliders differents forms, RigidBodys)
 
 -   **Graphics Rendering:**
--   Shader system(Similiar as Unity)
--   PBR (Physically Based Rendering) using Cook-Torrance BRDF
-        - Albedo Map
-        - Normal Map
-        - Roughness Map
-        - Metallic Map
-        - Ambient Occclusion Map
-        - Emission Map
--   Shadows(Directional Light only)
+    - Shader system(Similiar as Unity)
+    - PBR (Physically Based Rendering) using Cook-Torrance BRDF
+    - Albedo Map
+    - Normal Map
+    - Roughness Map
+    - Metallic Map
+    - Ambient Occclusion Map
+    - Emission Map
+    - Shadows(Directional Light only)
 -   Post Processing
     - Layered postprocessing (you can add different objects to different layers and apply different postprocessing to them, be it bluer, bloom, etc.)
 
 -   **Asset Pipeline:**
--   Plugin Systems(Similiar as Unity)
+    - Plugin Systems(Similiar as Unity)
 
 
 ### Engine
 - 🛠️ Cross Platform
     - ✔️ Windows
     - ❌ MacOS
-    - ❌ Linux
+    - ✔️ Linux
     - ❌ Andriod
     - ❌ iOS
     - ❌ Web
