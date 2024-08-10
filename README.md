@@ -1,4 +1,4 @@
-<img src="https://github.com/8bitniksis/SungearEngine/blob/8bitniksis-docs/documentation/images/mainLogo.png" width="100%">
+<img src="./documentation/images/mainLogo.png" width="100%">
 <p align="center">🎮 An Open Source Engine Written in C++! 🎮</p>
 
 # <p align="center">✨ Features ✨</p>
