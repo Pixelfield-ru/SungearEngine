@@ -22,51 +22,25 @@ struct Derived : Base
 };
 
 template<>
-struct SGCore::SerializerSpec<Derived> : SGCore::BaseClasses<Base>
+struct SGCore::Serde::SerializerSpec<Derived> : SGCore::Serde::BaseClasses<Base>
 {
     static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Derived";
 
-    static void serialize(rapidjson::Document& toDocument,
-                          rapidjson::Value& parentKey,
-                          rapidjson::Value& parent,
-                          rapidjson::Value& valueTypeName,
-                          const Derived& value) noexcept;
+    static void serialize(SGCore::Serde::ValueDataView<Derived>& dataView) noexcept;
 
-    static void deserializeDynamic(const rapidjson::Value& parent, const rapidjson::Value& value,
-                                   const std::string& typeName,
-                                   std::string& outputLog,
-                                   Derived*& outputValue) noexcept;
-
-    static void deserializeStatic(const rapidjson::Value& parent, const rapidjson::Value& value,
-                                  const std::string& typeName,
-                                  std::string& outputLog,
-                                  Derived& outputValue) noexcept;
+    static void deserialize(SGCore::Serde::ValueDataView<Derived>& dataView) noexcept;
 };
 
 template<>
-struct SGCore::SerializerSpec<Base> : SGCore::DerivedClasses<Derived>
+struct SGCore::Serde::SerializerSpec<Base> : SGCore::Serde::DerivedClasses<Derived>
 {
     static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Base";
 
-    static void serialize(rapidjson::Document& toDocument,
-                          rapidjson::Value& parentKey,
-                          rapidjson::Value& parent,
-                          rapidjson::Value& valueTypeName,
-                          const Base& value) noexcept;
+    static void serialize(SGCore::Serde::ValueDataView<Base>& dataView) noexcept;
 
-    static void deserializeDynamic(const rapidjson::Value& parent,
-                                   const rapidjson::Value& value,
-                                   const std::string& typeName,
-                                   std::string& outputLog,
-                                   Base*& outputValue) noexcept;
-
-    static void deserializeStatic(const rapidjson::Value& parent,
-                                  const rapidjson::Value& value,
-                                  const std::string& typeName,
-                                  std::string& outputLog,
-                                  Base& outputValue) noexcept;
+    static void deserialize(SGCore::Serde::ValueDataView<Base>& dataView) noexcept;
 };
 
 void coreInit();

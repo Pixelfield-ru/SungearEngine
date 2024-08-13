@@ -51,73 +51,28 @@ struct MyStruct
 
 // ЭТАЛОН!!!!!!!!!!!!!!!!!!!!!
 
-void SGCore::SerializerSpec<Derived>::serialize(rapidjson::Document& toDocument,
-                                                rapidjson::Value& parentKey,
-                                                rapidjson::Value& parent,
-                                                rapidjson::Value& valueTypeName,
-                                                const Derived& value) noexcept
+void SGCore::Serde::SerializerSpec<Derived>::serialize(SGCore::Serde::ValueDataView<Derived>& dataView) noexcept
 {
-    SGCore::Serializer::serialize(toDocument, parent, "b", value.b);
+    SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_parentValue, "b", dataView.m_outputValue->b);
 }
 
-void SGCore::SerializerSpec<Derived>::deserializeDynamic(const rapidjson::Value& parent,
-                                                         const rapidjson::Value& value,
-                                                         const std::string& typeName,
-                                                         std::string& outputLog,
-                                                         Derived*& outputValue) noexcept
+void SGCore::Serde::SerializerSpec<Derived>::deserialize(SGCore::Serde::ValueDataView<Derived>& dataView) noexcept
 {
-    outputValue = new Derived();
-
-    SGCore::Serializer::deserializeUsing3rdPartyDynamicCasts<Base>(value, value, typeName, outputLog, static_cast<Base&>(*outputValue));
-    outputValue->b = SGCore::Serializer::deserialize<float>(value, "b", outputLog);
-}
-
-void SGCore::SerializerSpec<Derived>::deserializeStatic(const rapidjson::Value& parent,
-                                                        const rapidjson::Value& value,
-                                                        const std::string& typeName,
-                                                        std::string& outputLog,
-                                                        Derived& outputValue) noexcept
-{
-    SGCore::Serializer::deserializeUsing3rdPartyDynamicCasts<Base>(value, value, typeName, outputLog, static_cast<Base&>(outputValue));
-    outputValue.b = SGCore::Serializer::deserialize<float>(value, "b", outputLog);
+    dataView.m_outputValue->b = SGCore::Serde::Serializer::deserialize<float>(*dataView.m_value, "b", *dataView.m_log);
 }
 
 // ============================================================
 // ============================================================
 // ============================================================
 
-void SGCore::SerializerSpec<Base>::serialize(rapidjson::Document& toDocument,
-                                             rapidjson::Value& parentKey,
-                                             rapidjson::Value& parent,
-                                             rapidjson::Value& valueTypeName,
-                                             const Base& value) noexcept
+void SGCore::Serde::SerializerSpec<Base>::serialize(SGCore::Serde::ValueDataView<Base>& dataView) noexcept
 {
-    SGCore::Serializer::serialize(toDocument, parent, "a", value.a);
+    SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_value, "a", dataView.m_outputValue->a);
 }
 
-void SGCore::SerializerSpec<Base>::deserializeDynamic(const rapidjson::Value& parent, const rapidjson::Value& value,
-                                                      const std::string& typeName,
-                                                      std::string& outputLog,
-                                                      Base*& outputValue) noexcept
+void SGCore::Serde::SerializerSpec<Base>::deserialize(SGCore::Serde::ValueDataView<Base>& dataView) noexcept
 {
-    if(typeName == SGCore::SerializerSpec<Derived>::type_name)
-    {
-        outputValue = SGCore::Serializer::deserializeUsing3rdPartyDynamicCasts<Derived*>(parent, value, typeName, outputLog);
-        return;
-    }
-
-    outputValue = new Base();
-
-    outputValue->a = SGCore::Serializer::deserialize<int>(value, "a", outputLog);
-}
-
-void SGCore::SerializerSpec<Base>::deserializeStatic(const rapidjson::Value& parent,
-                                                     const rapidjson::Value& value,
-                                                     const std::string& typeName,
-                                                     std::string& outputLog,
-                                                     Base& outputValue) noexcept
-{
-    outputValue.a = SGCore::Serializer::deserialize<int>(value, "a", outputLog);
+    dataView.m_outputValue->a = SGCore::Serde::Serializer::deserialize<int>(*dataView.m_value, "a", *dataView.m_log);
 }
 
 // ==================================================================================
@@ -215,8 +170,8 @@ void coreInit()
 
     std::unique_ptr<Base> tst = std::make_unique<Derived>();
     tst->a = -1;
-    dynamic_cast<Derived*>(tst.get())->b = 4;
-    Serializer::serialize(document, document, "testSerde", tst);
+    //dynamic_cast<Derived*>(tst)->b = 4;
+    Serde::Serializer::serialize(document, document, "testSerde", tst);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
@@ -231,9 +186,9 @@ void coreInit()
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());
 
     std::string outputLog;
-    auto deser = Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
+    auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 
-    std::printf("deser: %i, %f\n", deser->a, (dynamic_cast<Derived*>(deser.get()))->b);
+    std::printf("deser: %i, %f\n", deser->a, 0.0f);
 
     std::printf("deser log: %s\n", outputLog.c_str());
 
