@@ -6,9 +6,21 @@
 -   **General:**
     - ECS
     - Audio(OpenAL)
-    - Annotation and CodeGen
     - Parallel safety thread physics (Cooliders differents forms, RigidBodys)
-
+    - Octotree with automatic subdivision
+    - Support input from keyboard and mouse
+    - Annotation and CodeGen  
+        > (more information about annotations, see the source code: https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Annotations)
+        ```
+        sg_struct()
+        struct MyStruct
+        {
+            sg_member()
+            float m_myMember = 3.0f;
+        }
+        ```
+    - A set of classes for parallel computing
+      > (more information about parallel computing, see the source code: (https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Threading))
 -   **Graphics Rendering:**
     - Shader system(Similiar as Unity)
     - PBR (Physically Based Rendering) using Cook-Torrance BRDF
@@ -19,11 +31,15 @@
     - Ambient Occclusion Map
     - Emission Map
     - Shadows(Directional Light only)
--   Post Processing
+    - Atmosphere Scattering
+      
+-   **Post Processing:**
     - Layered postprocessing (you can add different objects to different layers and apply different postprocessing to them, be it bluer, bloom, etc.)
 
 -   **Asset Pipeline:**
     - Plugin Systems(Similiar as Unity)
+    - Load Textures and svg files
+    - Load many model formats such as .fbx, .obj, etc.
 
 
 ### Engine
