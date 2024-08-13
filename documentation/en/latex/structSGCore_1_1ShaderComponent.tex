@@ -1,0 +1,42 @@
+\hypertarget{structSGCore_1_1ShaderComponent}{}\doxysection{SGCore\+::Shader\+Component Struct Reference}
+\label{structSGCore_1_1ShaderComponent}\index{SGCore::ShaderComponent@{SGCore::ShaderComponent}}
+
+
+Collaboration diagram for SGCore\+::Shader\+Component\+:
+% FIG 0
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderComponent_ad727d8e9a8787e14d6551f2b3317c736}\label{structSGCore_1_1ShaderComponent_ad727d8e9a8787e14d6551f2b3317c736}} 
+bool {\bfseries m\+\_\+is\+Custom\+Shader} = false
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderComponent_ad86f8679c768065d6e3e2a8743f1a306}\label{structSGCore_1_1ShaderComponent_ad86f8679c768065d6e3e2a8743f1a306}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IShader}{IShader}} $>$ {\bfseries m\+\_\+shader} = SGCore\+::\+Make\+Ref$<$\mbox{\hyperlink{classSGCore_1_1IShader}{IShader}}$>$()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ShaderComponent_a111dd8ce97512e6b0809eb7ab6a6e8a6}\label{structSGCore_1_1ShaderComponent_a111dd8ce97512e6b0809eb7ab6a6e8a6}} 
+std\+::string {\bfseries m\+\_\+shader\+Path}
+\item 
+\mbox{\hyperlink{structSGCore_1_1EventListener}{Event\+Listener}}$<$ void()$>$ {\bfseries m\+\_\+on\+Render\+Pipeline\+Set}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structSGCore_1_1ShaderComponent_a5180e8ffb2a0c62bf2ad8a5d6b3f0c59}\label{structSGCore_1_1ShaderComponent_a5180e8ffb2a0c62bf2ad8a5d6b3f0c59}} 
+\index{SGCore::ShaderComponent@{SGCore::ShaderComponent}!m\_onRenderPipelineSet@{m\_onRenderPipelineSet}}
+\index{m\_onRenderPipelineSet@{m\_onRenderPipelineSet}!SGCore::ShaderComponent@{SGCore::ShaderComponent}}
+\doxysubsubsection{\texorpdfstring{m\_onRenderPipelineSet}{m\_onRenderPipelineSet}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structSGCore_1_1EventListener}{Event\+Listener}}$<$void()$>$ SGCore\+::\+Shader\+Component\+::m\+\_\+on\+Render\+Pipeline\+Set}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= [\textcolor{keyword}{this}]() \{}
+\DoxyCodeLine{            ShadersUtils::onRenderPipelineSet(*\textcolor{keyword}{this});}
+\DoxyCodeLine{        \}}
+
+\end{DoxyCode}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/Shader\+Component.\+h\item 
+Sources/\+SGCore/\+Render/Shader\+Component.\+cpp\end{DoxyCompactItemize}

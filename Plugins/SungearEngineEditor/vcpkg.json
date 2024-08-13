@@ -1,0 +1,235 @@
+{
+  "name" : "sungearengineeditor",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "215a2535590f1f63788ac9bd2ed58ad15e6afdff",
+  "dependencies" : [ {
+    "name" : "boost-algorithm",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-align",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-array",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-asio",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-assert",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-bind",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-build",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-circular-buffer",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-concept-check",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-config",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-container-hash",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-container",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-context",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-conversion",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-core",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-coroutine",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-date-time",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-describe",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-detail",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-exception",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-function-types",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-function",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-functional",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-fusion",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-integer",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-intrusive",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-io",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-iterator",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-lexical-cast",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-modular-build-helper",
+    "version>=" : "1.84.0#2"
+  }, {
+    "name" : "boost-move",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-mp11",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-mpl",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-numeric-conversion",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-optional",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-parameter",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-pool",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-predef",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-preprocessor",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-range",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-regex",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-smart-ptr",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-stacktrace",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-static-assert",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-system",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-throw-exception",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-tokenizer",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-tuple",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-type-traits",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-typeof",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-uninstall",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-unordered",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-utility",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-variant2",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-vcpkg-helpers",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "boost-winapi",
+    "version>=" : "1.84.0"
+  }, {
+    "name" : "cmakerc",
+    "version>=" : "2023-07-24"
+  }, {
+    "name" : "entt",
+    "version>=" : "3.13.1"
+  }, {
+    "name" : "glm",
+    "version>=" : "1.0.1#1"
+  }, {
+    "name" : "pugixml",
+    "version>=" : "1.14"
+  }, {
+    "name" : "stb",
+    "version>=" : "2023-04-11#1"
+  }, {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2022-02-06#1"
+  }, {
+    "name" : "vcpkg-cmake-get-vars",
+    "version>=" : "2023-12-31"
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2023-05-04"
+  }, {
+    "name" : "glfw3",
+    "version>=" : "3.4"
+  }, {
+    "name" : "imgui",
+    "features" : [ "glfw-binding", "opengl3-binding", "docking-experimental" ],
+    "version>=" : "1.90.7"
+  }, {
+    "name" : "spdlog",
+    "version>=" : "1.13.0"
+  }, {
+    "name" : "glad",
+    "version>=" : "0.1.36"
+  }, {
+    "name" : "openal-soft",
+    "version>=" : "1.23.1"
+  }, {
+    "name" : "nativefiledialog",
+    "version>=" : "2022-01-20"
+  }, {
+    "name" : "lunasvg",
+    "version>=" : "2.3.8"
+  }, {
+    "name" : "rapidjson",
+    "version>=" : "2023-07-17#1"
+  }, {
+    "name" : "bullet3",
+    "version>=" : "3.25#1"
+  }, {
+    "name" : "assimp",
+    "version>=" : "5.3.1#4"
+  }, {
+    "name" : "pugixml",
+    "version>=" : "1.14"
+  }, {
+    "name" : "freetype",
+    "version>=" : "2.13.2"
+  } ]
+}

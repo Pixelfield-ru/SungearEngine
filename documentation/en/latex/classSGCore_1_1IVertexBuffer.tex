@@ -1,0 +1,42 @@
+\hypertarget{classSGCore_1_1IVertexBuffer}{}\doxysection{SGCore\+::IVertex\+Buffer Class Reference}
+\label{classSGCore_1_1IVertexBuffer}\index{SGCore::IVertexBuffer@{SGCore::IVertexBuffer}}
+
+
+Inheritance diagram for SGCore\+::IVertex\+Buffer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IVertex\+Buffer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBuffer_a794635764633766c3b60f28da3471480}\label{classSGCore_1_1IVertexBuffer_a794635764633766c3b60f28da3471480}} 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries create} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBuffer_a59ae482b161c9e12f7b4e22a49c04af3}\label{classSGCore_1_1IVertexBuffer_a59ae482b161c9e12f7b4e22a49c04af3}} 
+virtual std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries create} (const size\+\_\+t \&byte\+Size)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBuffer_a83078f499619a15244345dcc35a61c36}\label{classSGCore_1_1IVertexBuffer_a83078f499619a15244345dcc35a61c36}} 
+virtual void {\bfseries destroy} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBuffer_a5b02eb34fcb84bbf3fc308d4acca367e}\label{classSGCore_1_1IVertexBuffer_a5b02eb34fcb84bbf3fc308d4acca367e}} 
+{\footnotesize template$<$typename Data\+Type $>$ }\\virtual requires(std\+::is\+\_\+scalar\+\_\+v$<$ Data\+Type $>$) std std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries set\+Usage} (SGGUsage)=0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBuffer_a0b6b9fa53b909eb040537561cd00a72b}\label{classSGCore_1_1IVertexBuffer_a0b6b9fa53b909eb040537561cd00a72b}} 
+virtual void {\bfseries sub\+Data\+On\+GAPISide} (const void $\ast$data, const size\+\_\+t \&bytes\+Count, const size\+\_\+t \&bytes\+Offset, bool is\+Put\+Data)=0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBuffer_a8bf5fbb63fe9954d0375a9e06ea36112}\label{classSGCore_1_1IVertexBuffer_a8bf5fbb63fe9954d0375a9e06ea36112}} 
+SGGUsage {\bfseries m\+\_\+usage} = SGGUsage\+::\+SGG\+\_\+\+STATIC
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/IVertex\+Buffer.\+h\end{DoxyCompactItemize}

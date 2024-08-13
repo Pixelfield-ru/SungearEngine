@@ -1,0 +1,43 @@
+\hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4}{}\doxysection{SGCore\+::Event$<$ Return(Args...)$>$ Struct Template Reference}
+\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4}\index{SGCore::Event$<$ Return(Args...)$>$@{SGCore::Event$<$ Return(Args...)$>$}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a775c5a6cfe360528712651c60069157a}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a775c5a6cfe360528712651c60069157a}} 
+using {\bfseries holder\+\_\+t} = \mbox{\hyperlink{structSGCore_1_1EventListener}{Event\+Listener}}$<$ Return(Args...)$>$
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a53ebe5c92a0f49b8842b04239c731c62}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a53ebe5c92a0f49b8842b04239c731c62}} 
+using {\bfseries holders\+\_\+container} = std\+::list$<$ \mbox{\hyperlink{structSGCore_1_1EventListener_3_01Return_07Args_8_8_8_08_4}{holder\+\_\+t}} $\ast$ $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a5bc362909524cf0e45147a194705fbf5}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a5bc362909524cf0e45147a194705fbf5}} 
+{\bfseries Event} (const \mbox{\hyperlink{structSGCore_1_1Event}{Event}} \&other)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a4f4c7d18b0e5c3a0f94fa650b76e4f20}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a4f4c7d18b0e5c3a0f94fa650b76e4f20}} 
+{\bfseries Event} (\mbox{\hyperlink{structSGCore_1_1Event}{Event}} \&\&other) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a01f729c4d9a6001d3b55e44ea2b401dd}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a01f729c4d9a6001d3b55e44ea2b401dd}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}} \& {\bfseries operator+=} (\mbox{\hyperlink{structSGCore_1_1EventListener_3_01Return_07Args_8_8_8_08_4}{holder\+\_\+t}} \&holder)
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_ad08812f4109a94eb062504e938ae38cb}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_ad08812f4109a94eb062504e938ae38cb}} 
+{\footnotesize template$<$typename Func $>$ }\\{\bfseries requires} (std\+::is\+\_\+invocable\+\_\+v$<$ Func, Args... $>$) \mbox{\hyperlink{structSGCore_1_1Event}{Event}} \&operator+
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a56c3f3ce11266ab8aab10caaf2b7aa0d}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a56c3f3ce11266ab8aab10caaf2b7aa0d}} 
+void {\bfseries set\+Holder\+Unsubscribe\+Function} (\mbox{\hyperlink{structSGCore_1_1EventListener_3_01Return_07Args_8_8_8_08_4}{holder\+\_\+t}} $\ast$holder) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a89f82e94c455af29b628e8b345aa20b8}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_a89f82e94c455af29b628e8b345aa20b8}} 
+void {\bfseries sort\+By\+Priorities} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_ae2962ac536ffc8aa0ee443f7848f38c6}\label{structSGCore_1_1Event_3_01Return_07Args_8_8_8_08_4_ae2962ac536ffc8aa0ee443f7848f38c6}} 
+holders\+\_\+container {\bfseries m\+\_\+listeners}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGUtils/Event.\+h\end{DoxyCompactItemize}

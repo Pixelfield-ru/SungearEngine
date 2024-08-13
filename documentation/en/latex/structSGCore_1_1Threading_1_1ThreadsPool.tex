@@ -1,0 +1,49 @@
+\hypertarget{structSGCore_1_1Threading_1_1ThreadsPool}{}\doxysection{SGCore\+::Threading\+::Threads\+Pool Struct Reference}
+\label{structSGCore_1_1Threading_1_1ThreadsPool}\index{SGCore::Threading::ThreadsPool@{SGCore::Threading::ThreadsPool}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1ThreadsPool_aa3e34b722ae9f078c6dd786e5970b08e}\label{structSGCore_1_1Threading_1_1ThreadsPool_aa3e34b722ae9f078c6dd786e5970b08e}} 
+{\bfseries Threads\+Pool} (Thread\+Create\+Policy thread\+Create\+Policy) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1ThreadsPool_adb47abc5f7a5943f1b9297ef2b122f7e}\label{structSGCore_1_1Threading_1_1ThreadsPool_adb47abc5f7a5943f1b9297ef2b122f7e}} 
+{\bfseries Threads\+Pool} (Thread\+Create\+Policy thread\+Create\+Policy, const double \&max\+Threads\+Cycle\+Execution\+Pass\+Time) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1ThreadsPool_a367996e56be997b398a043e124a84e32}\label{structSGCore_1_1Threading_1_1ThreadsPool_a367996e56be997b398a043e124a84e32}} 
+{\bfseries Threads\+Pool} (const \mbox{\hyperlink{structSGCore_1_1Threading_1_1ThreadsPool}{Threads\+Pool}} \&) noexcept=default
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1ThreadsPool_a165d1974795a15909f2979528c62e8e1}\label{structSGCore_1_1Threading_1_1ThreadsPool_a165d1974795a15909f2979528c62e8e1}} 
+{\bfseries Threads\+Pool} (\mbox{\hyperlink{structSGCore_1_1Threading_1_1ThreadsPool}{Threads\+Pool}} \&\&) noexcept=default
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1ThreadsPool_aa5845e9c23b337a3bbb32773141cedd8}\label{structSGCore_1_1Threading_1_1ThreadsPool_aa5845e9c23b337a3bbb32773141cedd8}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Thread}} $>$ {\bfseries get\+Thread} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1ThreadsPool_ac0ff3d528145ee566ebd5a978efec979}\label{structSGCore_1_1Threading_1_1ThreadsPool_ac0ff3d528145ee566ebd5a978efec979}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Thread}} $>$ {\bfseries get\+Thread} (Thread\+Create\+Policy thread\+Create\+Policy) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1ThreadsPool_a83c626706e3634377109a0c05f54d824}\label{structSGCore_1_1Threading_1_1ThreadsPool_a83c626706e3634377109a0c05f54d824}} 
+Thread\+Create\+Policy {\bfseries m\+\_\+default\+Threads\+Create\+Policy} = Thread\+Create\+Policy\+::\+IF\+\_\+\+NO\+\_\+\+FREE\+\_\+\+THREADS
+\item 
+double \mbox{\hyperlink{structSGCore_1_1Threading_1_1ThreadsPool_a10a329b74f4a27e78910d3de39c04a81}{m\+\_\+max\+Threads\+Cycle\+Execution\+Pass\+Time}} = 0.\+01f
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structSGCore_1_1Threading_1_1ThreadsPool_a10a329b74f4a27e78910d3de39c04a81}\label{structSGCore_1_1Threading_1_1ThreadsPool_a10a329b74f4a27e78910d3de39c04a81}} 
+\index{SGCore::Threading::ThreadsPool@{SGCore::Threading::ThreadsPool}!m\_maxThreadsCycleExecutionPassTime@{m\_maxThreadsCycleExecutionPassTime}}
+\index{m\_maxThreadsCycleExecutionPassTime@{m\_maxThreadsCycleExecutionPassTime}!SGCore::Threading::ThreadsPool@{SGCore::Threading::ThreadsPool}}
+\doxysubsubsection{\texorpdfstring{m\_maxThreadsCycleExecutionPassTime}{m\_maxThreadsCycleExecutionPassTime}}
+{\footnotesize\ttfamily double SGCore\+::\+Threading\+::\+Threads\+Pool\+::m\+\_\+max\+Threads\+Cycle\+Execution\+Pass\+Time = 0.\+01f}
+
+The maximum time of the update cycle for threads.~\newline
+Used when the IF\+\_\+\+ALL\+\_\+\+THREADS\+\_\+\+VERY\+\_\+\+BUSY policy is selected. ~\newline
+Thus, if no thread in the pool satisfies the time frame when calling get\+Thread() function, then a new free thread is created.~\newline
+Measured in seconds. 
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Threading/Threads\+Pool.\+h\item 
+Sources/\+SGCore/\+Threading/Threads\+Pool.\+cpp\end{DoxyCompactItemize}

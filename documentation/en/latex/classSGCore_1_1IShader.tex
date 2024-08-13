@@ -1,0 +1,77 @@
+\hypertarget{classSGCore_1_1IShader}{}\doxysection{SGCore\+::IShader Class Reference}
+\label{classSGCore_1_1IShader}\index{SGCore::IShader@{SGCore::IShader}}
+
+
+Inheritance diagram for SGCore\+::IShader\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IShader\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_ab5ebd197f02271a51a741a84880733f6}\label{classSGCore_1_1IShader_ab5ebd197f02271a51a741a84880733f6}} 
+void {\bfseries add\+Sub\+Pass\+Shaders\+And\+Compile} (Ref$<$ \mbox{\hyperlink{structSGCore_1_1TextFileAsset}{Text\+File\+Asset}} $>$ asset) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_ac2cae88a7ee000d566f255d81e592e42}\label{classSGCore_1_1IShader_ac2cae88a7ee000d566f255d81e592e42}} 
+void {\bfseries set\+Sub\+Pass\+Shader} (const std\+::string \&sub\+Pass\+Name, const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IShader}{IShader}} $>$ \&from) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_a95b1770f0f38dc9f748cdc23785653bd}\label{classSGCore_1_1IShader_a95b1770f0f38dc9f748cdc23785653bd}} 
+void {\bfseries set\+Sub\+Pass\+Shader} (const std\+::string \&sub\+Pass\+Name, const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} $>$ \&sub\+Pass\+Shader) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_ad1750475aaf2288147e07f4690e9a1f9}\label{classSGCore_1_1IShader_ad1750475aaf2288147e07f4690e9a1f9}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISubPassShader}{ISub\+Pass\+Shader}} $>$ {\bfseries get\+Sub\+Pass\+Shader} (const std\+::string \&sub\+Pass\+Name) noexcept
+\item 
+void \mbox{\hyperlink{classSGCore_1_1IShader_a7e00330149111be2a1409fda307dbf10}{on\+Asset\+Modified}} () override
+\item 
+void \mbox{\hyperlink{classSGCore_1_1IShader_ae0e5de720440c6cd8fa2a4d1a0af70b0}{on\+Asset\+Path\+Changed}} () override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_a94f470f767f8eac4037603706b0dcd4b}\label{classSGCore_1_1IShader_a94f470f767f8eac4037603706b0dcd4b}} 
+const auto \& {\bfseries get\+Sub\+Passes\+Shaders} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_a47b709cefaa2aa56727af73fa959417c}\label{classSGCore_1_1IShader_a47b709cefaa2aa56727af73fa959417c}} 
+void {\bfseries remove\+All\+Sub\+Pass\+Shaders\+By\+Disk\+Path} (const std\+::string \&path) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_afaf3067ce60ede1f666aa3bf479e73b9}\label{classSGCore_1_1IShader_afaf3067ce60ede1f666aa3bf479e73b9}} 
+void {\bfseries remove\+Sub\+Pass} (const std\+::string \&sub\+Pass\+Name) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_accaf43460f46801d093603b9d737c658}\label{classSGCore_1_1IShader_accaf43460f46801d093603b9d737c658}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1ShaderAnalyzedFile}{Shader\+Analyzed\+File}} $>$ {\bfseries m\+\_\+shader\+Analyzed\+File}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IShader_a642923159abbd2fd085d5ce9f634b048}\label{classSGCore_1_1IShader_a642923159abbd2fd085d5ce9f634b048}} 
+Weak$<$ \mbox{\hyperlink{structSGCore_1_1TextFileAsset}{Text\+File\+Asset}} $>$ {\bfseries m\+\_\+file\+Asset}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1IShader_a7e00330149111be2a1409fda307dbf10}\label{classSGCore_1_1IShader_a7e00330149111be2a1409fda307dbf10}} 
+\index{SGCore::IShader@{SGCore::IShader}!onAssetModified@{onAssetModified}}
+\index{onAssetModified@{onAssetModified}!SGCore::IShader@{SGCore::IShader}}
+\doxysubsubsection{\texorpdfstring{onAssetModified()}{onAssetModified()}}
+{\footnotesize\ttfamily void SGCore\+::\+IShader\+::on\+Asset\+Modified (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Calls recompile of shader program. 
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IAssetObserver}{SGCore\+::\+IAsset\+Observer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1IShader_ae0e5de720440c6cd8fa2a4d1a0af70b0}\label{classSGCore_1_1IShader_ae0e5de720440c6cd8fa2a4d1a0af70b0}} 
+\index{SGCore::IShader@{SGCore::IShader}!onAssetPathChanged@{onAssetPathChanged}}
+\index{onAssetPathChanged@{onAssetPathChanged}!SGCore::IShader@{SGCore::IShader}}
+\doxysubsubsection{\texorpdfstring{onAssetPathChanged()}{onAssetPathChanged()}}
+{\footnotesize\ttfamily void SGCore\+::\+IShader\+::on\+Asset\+Path\+Changed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Calls recompile of shader program. 
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IAssetObserver}{SGCore\+::\+IAsset\+Observer}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/IShader.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/IShader.\+cpp\end{DoxyCompactItemize}

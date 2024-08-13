@@ -1,0 +1,94 @@
+\hypertarget{structSGCore_1_1ImGuiWrap_1_1IView}{}\doxysection{SGCore\+::Im\+Gui\+Wrap\+::IView Struct Reference}
+\label{structSGCore_1_1ImGuiWrap_1_1IView}\index{SGCore::ImGuiWrap::IView@{SGCore::ImGuiWrap::IView}}
+
+
+Inheritance diagram for SGCore\+::Im\+Gui\+Wrap\+::IView\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Im\+Gui\+Wrap\+::IView\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_ab25ca462e10a6a34d052fe9f9372b2cf}\label{structSGCore_1_1ImGuiWrap_1_1IView_ab25ca462e10a6a34d052fe9f9372b2cf}} 
+virtual bool {\bfseries begin} ()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a41e8f6059689450855b1208d5dd1640d}\label{structSGCore_1_1ImGuiWrap_1_1IView_a41e8f6059689450855b1208d5dd1640d}} 
+virtual void {\bfseries render\+Body} ()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_af4f70a9472dce752a80f00dbbf5837f3}\label{structSGCore_1_1ImGuiWrap_1_1IView_af4f70a9472dce752a80f00dbbf5837f3}} 
+virtual void {\bfseries end} ()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_aee88e4ac597f900ffa1b820462f02c5f}\label{structSGCore_1_1ImGuiWrap_1_1IView_aee88e4ac597f900ffa1b820462f02c5f}} 
+virtual void {\bfseries on\+Active\+Changed\+Listener} ()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a1c3ac0d78d56b387541afeca75e272e5}\label{structSGCore_1_1ImGuiWrap_1_1IView_a1c3ac0d78d56b387541afeca75e272e5}} 
+virtual void {\bfseries render} ()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a772c075974498b4ddb1713aaa7b577c1}\label{structSGCore_1_1ImGuiWrap_1_1IView_a772c075974498b4ddb1713aaa7b577c1}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$ {\bfseries get\+View\+By\+Name} (const std\+::string \&name) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_ae43631db5c8e437aa9b0b2cf6178fefb}\label{structSGCore_1_1ImGuiWrap_1_1IView_ae43631db5c8e437aa9b0b2cf6178fefb}} 
+std\+::vector$<$ Ref$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$ $>$ {\bfseries get\+Views\+With\+Tag} (const std\+::string \&tag) const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a2c50ba481b68b695e650f70c189ebe04}\label{structSGCore_1_1ImGuiWrap_1_1IView_a2c50ba481b68b695e650f70c189ebe04}} 
+Weak$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$ {\bfseries get\+Parent} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a9855250d5af949fd6dcbb860f3cea1b8}\label{structSGCore_1_1ImGuiWrap_1_1IView_a9855250d5af949fd6dcbb860f3cea1b8}} 
+void {\bfseries set\+Parent} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$ \&view) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_aa026dac92eb9cccab8f19503e9161b2b}\label{structSGCore_1_1ImGuiWrap_1_1IView_aa026dac92eb9cccab8f19503e9161b2b}} 
+std\+::vector$<$ Weak$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$ $>$ \& {\bfseries get\+Children} () noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a98a23ba91ee591c2f6a99c9e5ba9362e}\label{structSGCore_1_1ImGuiWrap_1_1IView_a98a23ba91ee591c2f6a99c9e5ba9362e}} 
+void {\bfseries add\+Child} (const Weak$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$ \&view) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a6a6071c270d39e0143fd83541f352c92}\label{structSGCore_1_1ImGuiWrap_1_1IView_a6a6071c270d39e0143fd83541f352c92}} 
+void {\bfseries add\+Children} (const std\+::vector$<$ Weak$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$$>$ \&views) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_ae382a40bfee96952af0044e3b9b0923e}\label{structSGCore_1_1ImGuiWrap_1_1IView_ae382a40bfee96952af0044e3b9b0923e}} 
+void {\bfseries remove\+Child} (const Weak$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$ \&view) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a7e6e394fa5c9187726ad2d27be0dfecb}\label{structSGCore_1_1ImGuiWrap_1_1IView_a7e6e394fa5c9187726ad2d27be0dfecb}} 
+void {\bfseries remove\+Children} (const std\+::vector$<$ Weak$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$$>$ \&views) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a1191397808d1aec44278f5c80847b89f}\label{structSGCore_1_1ImGuiWrap_1_1IView_a1191397808d1aec44278f5c80847b89f}} 
+bool {\bfseries is\+Active} () const noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_af66aa3574bf1284255d0831adccabaec}\label{structSGCore_1_1ImGuiWrap_1_1IView_af66aa3574bf1284255d0831adccabaec}} 
+void {\bfseries set\+Active} (bool active) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a294b054543302c2663f53b0c4e60d69f}\label{structSGCore_1_1ImGuiWrap_1_1IView_a294b054543302c2663f53b0c4e60d69f}} 
+static SG\+\_\+\+NOINLINE Ref$<$ \mbox{\hyperlink{structSGCore_1_1ImGuiWrap_1_1IView}{IView}} $>$ {\bfseries get\+Root} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_ab4f93366ce8739fd14a70d9277aeb58c}\label{structSGCore_1_1ImGuiWrap_1_1IView_ab4f93366ce8739fd14a70d9277aeb58c}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void()$>$ {\bfseries on\+Render}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a89e5fc075951647646a1676c383e30cb}\label{structSGCore_1_1ImGuiWrap_1_1IView_a89e5fc075951647646a1676c383e30cb}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void(bool last\+Active, bool is\+Active)$>$ {\bfseries on\+Active\+Changed}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a9f08843e1860c648ee222636dee91fc1}\label{structSGCore_1_1ImGuiWrap_1_1IView_a9f08843e1860c648ee222636dee91fc1}} 
+\mbox{\hyperlink{structSGCore_1_1UniqueName}{Unique\+Name}} {\bfseries m\+\_\+name} = SGUtils\+::\+UUID\+::generate\+New()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_a40632a56fa8e3979702d7c2b679c9203}\label{structSGCore_1_1ImGuiWrap_1_1IView_a40632a56fa8e3979702d7c2b679c9203}} 
+std\+::string {\bfseries m\+\_\+tag}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1ImGuiWrap_1_1IView_ad354955cbf08d169740fb517020d01ee}\label{structSGCore_1_1ImGuiWrap_1_1IView_ad354955cbf08d169740fb517020d01ee}} 
+struct {\bfseries Views\+Injector}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Im\+Gui\+Wrap/\+Views/IView.\+h\item 
+Sources/\+SGCore/\+Im\+Gui\+Wrap/\+Views/IView.\+cpp\end{DoxyCompactItemize}

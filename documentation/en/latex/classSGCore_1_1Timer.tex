@@ -1,0 +1,66 @@
+\hypertarget{classSGCore_1_1Timer}{}\doxysection{SGCore\+::Timer Class Reference}
+\label{classSGCore_1_1Timer}\index{SGCore::Timer@{SGCore::Timer}}
+
+
+Collaboration diagram for SGCore\+::Timer\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a772bab029dce65f041e4ef1453b9339b}\label{classSGCore_1_1Timer_a772bab029dce65f041e4ef1453b9339b}} 
+{\bfseries Timer} (const bool \&cyclic) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a6ca42be216e774410200c0f7bd3851eb}\label{classSGCore_1_1Timer_a6ca42be216e774410200c0f7bd3851eb}} 
+{\bfseries Timer} (const bool \&cyclic, const double \&frame\+Rate) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_ae73bce2093b0b3469b0d344978d2db39}\label{classSGCore_1_1Timer_ae73bce2093b0b3469b0d344978d2db39}} 
+void {\bfseries start\+Frame} ()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a067dd33ef1485faf00c8bcdd0314015c}\label{classSGCore_1_1Timer_a067dd33ef1485faf00c8bcdd0314015c}} 
+void {\bfseries reset\+Timer} () noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a4a34551719594063884da48460ec3395}\label{classSGCore_1_1Timer_a4a34551719594063884da48460ec3395}} 
+void {\bfseries first\+Time\+Start} ()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a3efbe8d0bccb3f0f92c7d254a94b52e1}\label{classSGCore_1_1Timer_a3efbe8d0bccb3f0f92c7d254a94b52e1}} 
+std\+::uint16\+\_\+t {\bfseries get\+Frames\+Per\+Second} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a481012ccc34b2d961aaaa27f6420b7bb}\label{classSGCore_1_1Timer_a481012ccc34b2d961aaaa27f6420b7bb}} 
+double {\bfseries get\+Raw\+Delta\+Time} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a9185f640a534cfba8aa7cd947c4eb609}\label{classSGCore_1_1Timer_a9185f640a534cfba8aa7cd947c4eb609}} 
+double {\bfseries get\+Target\+Frame\+Rate} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_adb31c01e111366596a964af3b7b7e83b}\label{classSGCore_1_1Timer_adb31c01e111366596a964af3b7b7e83b}} 
+void {\bfseries set\+Target\+Frame\+Rate} (const double \&frame\+Rate) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_aa1a52ee96a61a1a0e1450bf8fb5e4f4e}\label{classSGCore_1_1Timer_aa1a52ee96a61a1a0e1450bf8fb5e4f4e}} 
+void {\bfseries set\+Target\+Time} (const double \&time\+Seconds) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a9fdcd52ac682eb3c25a1822afadc5b6c}\label{classSGCore_1_1Timer_a9fdcd52ac682eb3c25a1822afadc5b6c}} 
+double {\bfseries get\+Target\+Frame\+Time} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_ada6f205a0ae8b1cda8f0abd7243cb1c6}\label{classSGCore_1_1Timer_ada6f205a0ae8b1cda8f0abd7243cb1c6}} 
+double {\bfseries get\+Fixed\+Update\+Call\+Delta\+Time} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a0e97e080bf19ff9818bae49301afae96}\label{classSGCore_1_1Timer_a0e97e080bf19ff9818bae49301afae96}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void(const double \&, const double \&)$>$ {\bfseries on\+Update}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_af375f3edd7b2ce71d392d17632959ece}\label{classSGCore_1_1Timer_af375f3edd7b2ce71d392d17632959ece}} 
+\mbox{\hyperlink{structSGCore_1_1Event}{Event}}$<$ void()$>$ {\bfseries on\+Start}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a7d4fb089e55e03d726af5f3f3bd1a67f}\label{classSGCore_1_1Timer_a7d4fb089e55e03d726af5f3f3bd1a67f}} 
+bool {\bfseries m\+\_\+active} = true
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Timer_a54c710d42d4e9b9f7b11dd98011a836f}\label{classSGCore_1_1Timer_a54c710d42d4e9b9f7b11dd98011a836f}} 
+bool {\bfseries m\+\_\+cyclic} = false
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGUtils/Timer.\+h\item 
+Sources/\+SGUtils/Timer.\+cpp\end{DoxyCompactItemize}

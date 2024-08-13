@@ -1,0 +1,106 @@
+\hypertarget{classsiv_1_1BasicPerlinNoise}{}\doxysection{siv\+::Basic\+Perlin\+Noise$<$ Float $>$ Class Template Reference}
+\label{classsiv_1_1BasicPerlinNoise}\index{siv::BasicPerlinNoise$<$ Float $>$@{siv::BasicPerlinNoise$<$ Float $>$}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a0b943b30e8f58896fb36fc96f363291e}\label{classsiv_1_1BasicPerlinNoise_a0b943b30e8f58896fb36fc96f363291e}} 
+using {\bfseries state\+\_\+type} = std\+::array$<$ std\+::uint8\+\_\+t, 256 $>$
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_adab434ddc2e1522616e3e0d1f14c1024}\label{classsiv_1_1BasicPerlinNoise_adab434ddc2e1522616e3e0d1f14c1024}} 
+using {\bfseries value\+\_\+type} = Float
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a0c116a3033db7a54fc6d73aad6c184cf}\label{classsiv_1_1BasicPerlinNoise_a0c116a3033db7a54fc6d73aad6c184cf}} 
+using {\bfseries default\+\_\+random\+\_\+engine} = std\+::mt19937
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a0e9251cfc0e063cc6357891af094cb09}\label{classsiv_1_1BasicPerlinNoise_a0e9251cfc0e063cc6357891af094cb09}} 
+using {\bfseries seed\+\_\+type} = typename default\+\_\+random\+\_\+engine\+::result\+\_\+type
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_ac818d68c7e15a76e64d71ca5e3c658f7}\label{classsiv_1_1BasicPerlinNoise_ac818d68c7e15a76e64d71ca5e3c658f7}} 
+SIVPERLIN\+\_\+\+NODISCARD\+\_\+\+CXX20 {\bfseries Basic\+Perlin\+Noise} (seed\+\_\+type seed)
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_ac04b2b5f0f9e2c053570098a63b5a0ca}\label{classsiv_1_1BasicPerlinNoise_ac04b2b5f0f9e2c053570098a63b5a0ca}} 
+SIVPERLIN\+\_\+\+CONCEPT\+\_\+\+URBG SIVPERLIN\+\_\+\+NODISCARD\+\_\+\+CXX20 {\bfseries Basic\+Perlin\+Noise} (URBG \&\&urbg)
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a57b1016cf277fe70731228672163c06a}\label{classsiv_1_1BasicPerlinNoise_a57b1016cf277fe70731228672163c06a}} 
+void {\bfseries reseed} (seed\+\_\+type seed)
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a3549ec8eb3949babec54fea65208d045}\label{classsiv_1_1BasicPerlinNoise_a3549ec8eb3949babec54fea65208d045}} 
+SIVPERLIN\+\_\+\+CONCEPT\+\_\+\+URBG void {\bfseries reseed} (URBG \&\&urbg)
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a15ec1a68df38d98097e3fe5e20691f2e}\label{classsiv_1_1BasicPerlinNoise_a15ec1a68df38d98097e3fe5e20691f2e}} 
+constexpr const state\+\_\+type \& {\bfseries serialize} () const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a4dfbc4459afac610adbc93dd052594f2}\label{classsiv_1_1BasicPerlinNoise_a4dfbc4459afac610adbc93dd052594f2}} 
+constexpr void {\bfseries deserialize} (const state\+\_\+type \&state) noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_ac317c7b4db6cec1ca2ae736d5ea44016}\label{classsiv_1_1BasicPerlinNoise_ac317c7b4db6cec1ca2ae736d5ea44016}} 
+value\+\_\+type {\bfseries noise1D} (value\+\_\+type x) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a5932224416791c5b6d03fcd2eb440367}\label{classsiv_1_1BasicPerlinNoise_a5932224416791c5b6d03fcd2eb440367}} 
+value\+\_\+type {\bfseries noise2D} (value\+\_\+type x, value\+\_\+type y) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a57e63fac64188065437e070d6b06b5ae}\label{classsiv_1_1BasicPerlinNoise_a57e63fac64188065437e070d6b06b5ae}} 
+value\+\_\+type {\bfseries noise3D} (value\+\_\+type x, value\+\_\+type y, value\+\_\+type z) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_abd7881e4c69a16755c7f757a47e430f6}\label{classsiv_1_1BasicPerlinNoise_abd7881e4c69a16755c7f757a47e430f6}} 
+value\+\_\+type {\bfseries noise1\+D\+\_\+01} (value\+\_\+type x) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a31349b5897d43b89a97c89a75b9d5e51}\label{classsiv_1_1BasicPerlinNoise_a31349b5897d43b89a97c89a75b9d5e51}} 
+value\+\_\+type {\bfseries noise2\+D\+\_\+01} (value\+\_\+type x, value\+\_\+type y) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_aeb15a7586375470de2c939993989d6a2}\label{classsiv_1_1BasicPerlinNoise_aeb15a7586375470de2c939993989d6a2}} 
+value\+\_\+type {\bfseries noise3\+D\+\_\+01} (value\+\_\+type x, value\+\_\+type y, value\+\_\+type z) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a169709465e7f338683563080899cfad9}\label{classsiv_1_1BasicPerlinNoise_a169709465e7f338683563080899cfad9}} 
+value\+\_\+type {\bfseries octave1D} (value\+\_\+type x, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a177e090ed08fb8c7419f6cfdd60de0db}\label{classsiv_1_1BasicPerlinNoise_a177e090ed08fb8c7419f6cfdd60de0db}} 
+value\+\_\+type {\bfseries octave2D} (value\+\_\+type x, value\+\_\+type y, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_aa8c62976582c9b6e1e4763f8c4da9964}\label{classsiv_1_1BasicPerlinNoise_aa8c62976582c9b6e1e4763f8c4da9964}} 
+value\+\_\+type {\bfseries octave3D} (value\+\_\+type x, value\+\_\+type y, value\+\_\+type z, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_ab435595249e79e29ed27406c6e94900e}\label{classsiv_1_1BasicPerlinNoise_ab435595249e79e29ed27406c6e94900e}} 
+value\+\_\+type {\bfseries octave1\+D\+\_\+11} (value\+\_\+type x, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a4684bc6076babe2075c59856c7d1762b}\label{classsiv_1_1BasicPerlinNoise_a4684bc6076babe2075c59856c7d1762b}} 
+value\+\_\+type {\bfseries octave2\+D\+\_\+11} (value\+\_\+type x, value\+\_\+type y, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_ad476700e19c7b12f9e57b6b79aa1eaec}\label{classsiv_1_1BasicPerlinNoise_ad476700e19c7b12f9e57b6b79aa1eaec}} 
+value\+\_\+type {\bfseries octave3\+D\+\_\+11} (value\+\_\+type x, value\+\_\+type y, value\+\_\+type z, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_aa6bbbf7e846cd0e93479a9280dda46ce}\label{classsiv_1_1BasicPerlinNoise_aa6bbbf7e846cd0e93479a9280dda46ce}} 
+value\+\_\+type {\bfseries octave1\+D\+\_\+01} (value\+\_\+type x, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a4162c01496581089729d7b5be5edc57e}\label{classsiv_1_1BasicPerlinNoise_a4162c01496581089729d7b5be5edc57e}} 
+value\+\_\+type {\bfseries octave2\+D\+\_\+01} (value\+\_\+type x, value\+\_\+type y, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a484ced9b2077cc6aba5dabc9b12cad2a}\label{classsiv_1_1BasicPerlinNoise_a484ced9b2077cc6aba5dabc9b12cad2a}} 
+value\+\_\+type {\bfseries octave3\+D\+\_\+01} (value\+\_\+type x, value\+\_\+type y, value\+\_\+type z, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a9afed183f6996dbb66f2f9855168a4eb}\label{classsiv_1_1BasicPerlinNoise_a9afed183f6996dbb66f2f9855168a4eb}} 
+value\+\_\+type {\bfseries normalized\+Octave1D} (value\+\_\+type x, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a5eff1b38ec629ee6777380b6b0dcb14b}\label{classsiv_1_1BasicPerlinNoise_a5eff1b38ec629ee6777380b6b0dcb14b}} 
+value\+\_\+type {\bfseries normalized\+Octave2D} (value\+\_\+type x, value\+\_\+type y, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a2d6e6a2311dbac1268c43e4b4f13343b}\label{classsiv_1_1BasicPerlinNoise_a2d6e6a2311dbac1268c43e4b4f13343b}} 
+value\+\_\+type {\bfseries normalized\+Octave3D} (value\+\_\+type x, value\+\_\+type y, value\+\_\+type z, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_aeec9b2949906ff4cc117a2c674d60981}\label{classsiv_1_1BasicPerlinNoise_aeec9b2949906ff4cc117a2c674d60981}} 
+value\+\_\+type {\bfseries normalized\+Octave1\+D\+\_\+01} (value\+\_\+type x, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_aef0edee75e5c2ee211f428dd5434de74}\label{classsiv_1_1BasicPerlinNoise_aef0edee75e5c2ee211f428dd5434de74}} 
+value\+\_\+type {\bfseries normalized\+Octave2\+D\+\_\+01} (value\+\_\+type x, value\+\_\+type y, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\item 
+\mbox{\Hypertarget{classsiv_1_1BasicPerlinNoise_a786b47d43d2cdb7a2b399cd5d4e16295}\label{classsiv_1_1BasicPerlinNoise_a786b47d43d2cdb7a2b399cd5d4e16295}} 
+value\+\_\+type {\bfseries normalized\+Octave3\+D\+\_\+01} (value\+\_\+type x, value\+\_\+type y, value\+\_\+type z, std\+::int32\+\_\+t octaves, value\+\_\+type persistence=value\+\_\+type(0.\+5)) const noexcept
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGUtils/\+Noise/Perlin\+Noise.\+hpp\end{DoxyCompactItemize}

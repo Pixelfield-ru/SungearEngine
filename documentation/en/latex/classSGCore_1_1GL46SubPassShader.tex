@@ -1,0 +1,71 @@
+\hypertarget{classSGCore_1_1GL46SubPassShader}{}\doxysection{SGCore\+::GL46\+Sub\+Pass\+Shader Class Reference}
+\label{classSGCore_1_1GL46SubPassShader}\index{SGCore::GL46SubPassShader@{SGCore::GL46SubPassShader}}
+
+
+Inheritance diagram for SGCore\+::GL46\+Sub\+Pass\+Shader\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::GL46\+Sub\+Pass\+Shader\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a6ee2c34323e87c01ce2a12ce7667568d}\label{classSGCore_1_1GL46SubPassShader_a6ee2c34323e87c01ce2a12ce7667568d}} 
+void {\bfseries compile} (const std\+::string \&sub\+Pass\+Name) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_aa90ee27c385a7c62481862fb2689d6cc}\label{classSGCore_1_1GL46SubPassShader_aa90ee27c385a7c62481862fb2689d6cc}} 
+void {\bfseries bind} () noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a6bbf6357152ccbb34f33e0b085027b46}\label{classSGCore_1_1GL46SubPassShader_a6bbf6357152ccbb34f33e0b085027b46}} 
+void {\bfseries destroy} () noexcept final
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a822f064b44b1e58d4e29f1cf50fab1f7}\label{classSGCore_1_1GL46SubPassShader_a822f064b44b1e58d4e29f1cf50fab1f7}} 
+std\+::int32\+\_\+t {\bfseries get\+Shader\+Uniform\+Location} (const std\+::string \&uniform\+Name) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a90ab5af6bbd1cadc4ecd925f6776c2b9}\label{classSGCore_1_1GL46SubPassShader_a90ab5af6bbd1cadc4ecd925f6776c2b9}} 
+void {\bfseries use\+Uniform\+Buffer} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IUniformBuffer}{IUniform\+Buffer}} $>$ \&) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a54ac8b1f30d93bbb6076199a1695ff6b}\label{classSGCore_1_1GL46SubPassShader_a54ac8b1f30d93bbb6076199a1695ff6b}} 
+void {\bfseries use\+Texture} (const std\+::string \&uniform\+Name, const std\+::uint8\+\_\+t \&tex\+Block) final
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a3a762caf40056b131fed54257c642b79}\label{classSGCore_1_1GL46SubPassShader_a3a762caf40056b131fed54257c642b79}} 
+void {\bfseries use\+Matrix} (const std\+::string \&uniform\+Name, const glm\+::mat4 \&matrix) final
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a451e940a551b4db8a21d08f2ae1100a8}\label{classSGCore_1_1GL46SubPassShader_a451e940a551b4db8a21d08f2ae1100a8}} 
+void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const float \&x, const float \&y) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a134ed926622ff0305a8f5f0814638250}\label{classSGCore_1_1GL46SubPassShader_a134ed926622ff0305a8f5f0814638250}} 
+void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const float \&x, const float \&y, const float \&z) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a4a5ea22baf55c8f1ee8c2d5df8350683}\label{classSGCore_1_1GL46SubPassShader_a4a5ea22baf55c8f1ee8c2d5df8350683}} 
+void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const float \&x, const float \&y, const float \&z, const float \&w) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_ae6349bfa685d2dc6751ce90352436686}\label{classSGCore_1_1GL46SubPassShader_ae6349bfa685d2dc6751ce90352436686}} 
+void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const glm\+::vec2 \&vec) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a37f1becfe11a56239c650e86a328c393}\label{classSGCore_1_1GL46SubPassShader_a37f1becfe11a56239c650e86a328c393}} 
+void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const glm\+::vec3 \&vec) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_ab4192c97c596de6d178d3e2a95ea3a0b}\label{classSGCore_1_1GL46SubPassShader_ab4192c97c596de6d178d3e2a95ea3a0b}} 
+void {\bfseries use\+Vectorf} (const std\+::string \&uniform\+Name, const glm\+::vec4 \&vec) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_af4692dbb38c1053f597556e14913c971}\label{classSGCore_1_1GL46SubPassShader_af4692dbb38c1053f597556e14913c971}} 
+void {\bfseries use\+Float} (const std\+::string \&uniform\+Name, const float \&f) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a2cba00d75176913c8ce086e767e20bac}\label{classSGCore_1_1GL46SubPassShader_a2cba00d75176913c8ce086e767e20bac}} 
+void {\bfseries use\+Integer} (const std\+::string \&uniform\+Name, const size\+\_\+t \&i) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_abb10d7680e8ad22542485c4b7331ad9f}\label{classSGCore_1_1GL46SubPassShader_abb10d7680e8ad22542485c4b7331ad9f}} 
+void {\bfseries use\+Texture\+Block} (const std\+::string \&uniform\+Name, const size\+\_\+t \&texture\+Block) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL46SubPassShader_a6061aa153169a22f6ab2cd1b6b8924ae}\label{classSGCore_1_1GL46SubPassShader_a6061aa153169a22f6ab2cd1b6b8924ae}} 
+bool {\bfseries is\+Uniform\+Exists} (const std\+::string \&uniform\+Name) const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/\+GL46/GL46\+Sub\+Pass\+Shader.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/\+GL46/GL46\+Sub\+Pass\+Shader.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,102 @@
+\hypertarget{structSGCore_1_1DynamicLibrary}{}\doxysection{SGCore\+::Dynamic\+Library Struct Reference}
+\label{structSGCore_1_1DynamicLibrary}\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+
+
+{\ttfamily \#include $<$Dynamic\+Library.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}{$\sim$\+Dynamic\+Library}} ()
+\item 
+void \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a5f9a86e1fd7b7aadfc8c87e3725448cc}{load}} (const std\+::string \&plugin\+DLPath, std\+::string \&err) noexcept
+\item 
+void \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}{unload}} ()
+\item 
+{\footnotesize template$<$typename FuncT $>$ }\\std\+::function$<$ FuncT $>$ \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a249f33efbec1ed2ec23e8774b5ac74cd}{load\+Function}} (const char $\ast$func\+Name, std\+::string \&err) noexcept
+\item 
+native\+\_\+handler\+\_\+t \mbox{\hyperlink{structSGCore_1_1DynamicLibrary_ab4cf5f912a3d27512e0d3c764cf6032e}{get\+Native\+Handler}} () noexcept
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Allows you to load a dynamic library from a local path, load library functions and call them in the future.~\newline
+Note that the functions you want to load must be marked with SG\+\_\+\+DLEXPORT and (in most cases) SG\+\_\+\+NOMANGLING to disable function name mangling. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}\label{structSGCore_1_1DynamicLibrary_aafc6e77b51bc66abb5ee8cade2d09268}} 
+\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}!````~DynamicLibrary@{$\sim$DynamicLibrary}}
+\index{````~DynamicLibrary@{$\sim$DynamicLibrary}!SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsubsection{\texorpdfstring{$\sim$DynamicLibrary()}{~DynamicLibrary()}}
+{\footnotesize\ttfamily SGCore\+::\+Dynamic\+Library\+::$\sim$\+Dynamic\+Library (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Destructor of \mbox{\hyperlink{structSGCore_1_1DynamicLibrary}{Dynamic\+Library}} calls unload function. \begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}{SGCore\+::\+Dynamic\+Library\+::unload}} 
+\end{DoxySeeAlso}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_ab4cf5f912a3d27512e0d3c764cf6032e}\label{structSGCore_1_1DynamicLibrary_ab4cf5f912a3d27512e0d3c764cf6032e}} 
+\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}!getNativeHandler@{getNativeHandler}}
+\index{getNativeHandler@{getNativeHandler}!SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsubsection{\texorpdfstring{getNativeHandler()}{getNativeHandler()}}
+{\footnotesize\ttfamily native\+\_\+handler\+\_\+t SGCore\+::\+Dynamic\+Library\+::get\+Native\+Handler (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Returns native handler. \begin{DoxyReturn}{Returns}
+Native handler. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_a5f9a86e1fd7b7aadfc8c87e3725448cc}\label{structSGCore_1_1DynamicLibrary_a5f9a86e1fd7b7aadfc8c87e3725448cc}} 
+\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}!load@{load}}
+\index{load@{load}!SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily void SGCore\+::\+Dynamic\+Library\+::load (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{plugin\+DLPath,  }\item[{std\+::string \&}]{err }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Loads a dynamic library using the plugin\+DLPath.~\newline
+ If the download was not successful, then the native handler is equal to nullptr. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em plugin\+DLPath} & The path to the dynamic library. \\
+\hline
+\mbox{\texttt{ out}}  & {\em err} & Error generated while loading the library.~\newline
+ Remains unchanged if the library was loaded successfully. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_a249f33efbec1ed2ec23e8774b5ac74cd}\label{structSGCore_1_1DynamicLibrary_a249f33efbec1ed2ec23e8774b5ac74cd}} 
+\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}!loadFunction@{loadFunction}}
+\index{loadFunction@{loadFunction}!SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsubsection{\texorpdfstring{loadFunction()}{loadFunction()}}
+{\footnotesize\ttfamily template$<$typename FuncT $>$ \\
+std\+::function$<$FuncT$>$ SGCore\+::\+Dynamic\+Library\+::load\+Function (\begin{DoxyParamCaption}\item[{const char $\ast$}]{func\+Name,  }\item[{std\+::string \&}]{err }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Allows you to load a library function. \begin{DoxyNote}{Note}
+Consider name mangling when loading a function.~\newline
+ System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library. 
+\end{DoxyNote}
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em FuncT} & Function declaration. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em func\+Name} & Name of the function to load. \\
+\hline
+\mbox{\texttt{ out}}  & {\em err} & Error generated while loading the function.~\newline
+ Remains unchanged if the function was loaded successfully. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::function 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}\label{structSGCore_1_1DynamicLibrary_a70f01a85d57531b074c54a9dd3fdb8c8}} 
+\index{SGCore::DynamicLibrary@{SGCore::DynamicLibrary}!unload@{unload}}
+\index{unload@{unload}!SGCore::DynamicLibrary@{SGCore::DynamicLibrary}}
+\doxysubsubsection{\texorpdfstring{unload()}{unload()}}
+{\footnotesize\ttfamily void SGCore\+::\+Dynamic\+Library\+::unload (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Unloads the dynamic library from memory.~\newline
+All static members of the dynamic library are released.~\newline
+The native handler becomes equal to nullptr. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Plugins\+System/Dynamic\+Library.\+h\end{DoxyCompactItemize}

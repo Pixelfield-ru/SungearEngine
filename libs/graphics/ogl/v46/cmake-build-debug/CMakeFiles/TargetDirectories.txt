@@ -1,3 +1,0 @@
-D:/Pixelfield/NativeSungearEngine/NativeCore/libs/graphics/ogl/v46/cmake-build-debug/CMakeFiles/gl46.dir
-D:/Pixelfield/NativeSungearEngine/NativeCore/libs/graphics/ogl/v46/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Pixelfield/NativeSungearEngine/NativeCore/libs/graphics/ogl/v46/cmake-build-debug/CMakeFiles/rebuild_cache.dir

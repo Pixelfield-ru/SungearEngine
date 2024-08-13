@@ -1,0 +1,238 @@
+\hypertarget{classSGCore_1_1AssetManager}{}\doxysection{SGCore\+::Asset\+Manager Class Reference}
+\label{classSGCore_1_1AssetManager}\index{SGCore::AssetManager@{SGCore::AssetManager}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}\label{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}} 
+{\footnotesize template$<$typename AssetT , typename... Asset\+Ctor\+Args$>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) std
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}\label{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}} 
+{\footnotesize template$<$typename AssetT , typename... Asset\+Ctor\+Args$>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) std
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}\label{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}} 
+{\footnotesize template$<$typename AssetT , typename... Asset\+Ctor\+Args$>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) std
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_ab7819d2a2a4c61172e746a90a58fecfc}\label{classSGCore_1_1AssetManager_ab7819d2a2a4c61172e746a90a58fecfc}} 
+{\footnotesize template$<$typename AssetT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) void load\+Asset(Ref$<$ AssetT $>$ \&asset\+To\+Load
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abdedc83b4eb3ae861d7c947648517cdf}\label{classSGCore_1_1AssetManager_abdedc83b4eb3ae861d7c947648517cdf}} 
+{\bfseries if} (found\+Entity !=m\+\_\+entities.\+end())
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_aa7b858e40f11b859ea62fa29438d11a7}\label{classSGCore_1_1AssetManager_aa7b858e40f11b859ea62fa29438d11a7}} 
+{\bfseries if} (found\+Asset)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a34ebb789a2045a40b942989efc2c88ab}\label{classSGCore_1_1AssetManager_a34ebb789a2045a40b942989efc2c88ab}} 
+m\+\_\+registry {\bfseries emplace} (entity, asset\+To\+Load)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_aa1817288e0082f3b60f02af85e1a408a}\label{classSGCore_1_1AssetManager_aa1817288e0082f3b60f02af85e1a408a}} 
+std\+::filesystem\+::path {\bfseries p} (path)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_aeccff203e6c5cd2055042979cfc30829}\label{classSGCore_1_1AssetManager_aeccff203e6c5cd2055042979cfc30829}} 
+{\bfseries distribute\+Asset} (asset\+To\+Load, path, assets\+Load\+Policy, lazy\+Load\+In\+Thread)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a07dcc5b725fdc9f6dcf8a18022fccb0f}\label{classSGCore_1_1AssetManager_a07dcc5b725fdc9f6dcf8a18022fccb0f}} 
+asset\+To\+Load {\bfseries set\+Raw\+Name} (p.\+stem().string())
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a2392d7eba54bc074602e4dcb31de952c}\label{classSGCore_1_1AssetManager_a2392d7eba54bc074602e4dcb31de952c}} 
+{\bfseries spdlog\+::info} (\char`\"{}Loaded new asset associated by path\+: \{0\}. Asset type\+: \{1\}\char`\"{}, path, typeid(AssetT).name())
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_ab7819d2a2a4c61172e746a90a58fecfc}\label{classSGCore_1_1AssetManager_ab7819d2a2a4c61172e746a90a58fecfc}} 
+{\footnotesize template$<$typename AssetT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) void load\+Asset(Ref$<$ AssetT $>$ \&asset\+To\+Load
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_ab7819d2a2a4c61172e746a90a58fecfc}\label{classSGCore_1_1AssetManager_ab7819d2a2a4c61172e746a90a58fecfc}} 
+{\footnotesize template$<$typename AssetT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) void load\+Asset(Ref$<$ AssetT $>$ \&asset\+To\+Load
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a6414f2efbc3bce550f365fa5e9628044}\label{classSGCore_1_1AssetManager_a6414f2efbc3bce550f365fa5e9628044}} 
+{\footnotesize template$<$typename AssetT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) void load\+Asset\+With\+Alias(Ref$<$ AssetT $>$ \&asset\+To\+Load
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abdedc83b4eb3ae861d7c947648517cdf}\label{classSGCore_1_1AssetManager_abdedc83b4eb3ae861d7c947648517cdf}} 
+{\bfseries if} (found\+Entity !=m\+\_\+entities.\+end())
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_aa7b858e40f11b859ea62fa29438d11a7}\label{classSGCore_1_1AssetManager_aa7b858e40f11b859ea62fa29438d11a7}} 
+{\bfseries if} (found\+Asset)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a34ebb789a2045a40b942989efc2c88ab}\label{classSGCore_1_1AssetManager_a34ebb789a2045a40b942989efc2c88ab}} 
+m\+\_\+registry {\bfseries emplace} (entity, asset\+To\+Load)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_aeccff203e6c5cd2055042979cfc30829}\label{classSGCore_1_1AssetManager_aeccff203e6c5cd2055042979cfc30829}} 
+{\bfseries distribute\+Asset} (asset\+To\+Load, path, assets\+Load\+Policy, lazy\+Load\+In\+Thread)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_ab5df1fd079872a63e0628566e8d2d4ed}\label{classSGCore_1_1AssetManager_ab5df1fd079872a63e0628566e8d2d4ed}} 
+asset\+To\+Load {\bfseries set\+Raw\+Name} (alias)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a2392d7eba54bc074602e4dcb31de952c}\label{classSGCore_1_1AssetManager_a2392d7eba54bc074602e4dcb31de952c}} 
+{\bfseries spdlog\+::info} (\char`\"{}Loaded new asset associated by path\+: \{0\}. Asset type\+: \{1\}\char`\"{}, path, typeid(AssetT).name())
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a6414f2efbc3bce550f365fa5e9628044}\label{classSGCore_1_1AssetManager_a6414f2efbc3bce550f365fa5e9628044}} 
+{\footnotesize template$<$typename AssetT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) void load\+Asset\+With\+Alias(Ref$<$ AssetT $>$ \&asset\+To\+Load
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a6414f2efbc3bce550f365fa5e9628044}\label{classSGCore_1_1AssetManager_a6414f2efbc3bce550f365fa5e9628044}} 
+{\footnotesize template$<$typename AssetT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) void load\+Asset\+With\+Alias(Ref$<$ AssetT $>$ \&asset\+To\+Load
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}\label{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}} 
+{\footnotesize template$<$typename AssetT , typename... Asset\+Ctor\+Args$>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) std
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}\label{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}} 
+{\footnotesize template$<$typename AssetT , typename... Asset\+Ctor\+Args$>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) std
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}\label{classSGCore_1_1AssetManager_abfb79c2788f088654f9bb0d3648fcbe4}} 
+{\footnotesize template$<$typename AssetT , typename... Asset\+Ctor\+Args$>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) std
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a709dcb107a83505372edeef0f73a6555}\label{classSGCore_1_1AssetManager_a709dcb107a83505372edeef0f73a6555}} 
+{\footnotesize template$<$typename AssetT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) void add\+Asset(const std
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a9a85cb2fc2acb5eb540a8edf74086b7d}\label{classSGCore_1_1AssetManager_a9a85cb2fc2acb5eb540a8edf74086b7d}} 
+{\footnotesize template$<$typename AssetT $>$ }\\{\bfseries requires} (std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) void add\+Asset(const Ref$<$ AssetT $>$ \&asset)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a6365bf738b627934cae63c50dc8ff5c8}\label{classSGCore_1_1AssetManager_a6365bf738b627934cae63c50dc8ff5c8}} 
+bool {\bfseries is\+Assets\+Entity\+Exists} (const std\+::string \&path\+Or\+Alias) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a430a4c85e0641c0cf9c71d450c41d295}\label{classSGCore_1_1AssetManager_a430a4c85e0641c0cf9c71d450c41d295}} 
+static void {\bfseries init} () noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a26a1bb9e184e07e9571ecaf6f3081e63}\label{classSGCore_1_1AssetManager_a26a1bb9e184e07e9571ecaf6f3081e63}} 
+{\footnotesize template$<$typename AssetT $>$ }\\requires(std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{classSGCore_1_1IAsset}{IAsset}}, AssetT $>$) bool is\+Asset\+Exists(const std static SG\+\_\+\+NOINLINE Scope$<$ \mbox{\hyperlink{classSGCore_1_1AssetManager}{Asset\+Manager}} $>$ \& {\bfseries get\+Instance} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a9a74d33f7c9c5102f4218648e8caa729}\label{classSGCore_1_1AssetManager_a9a74d33f7c9c5102f4218648e8caa729}} 
+Assets\+Load\+Policy {\bfseries m\+\_\+default\+Assets\+Load\+Policy} = Assets\+Load\+Policy\+::\+SINGLE\+\_\+\+THREADED
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_abcaab35d3f3a25e99886ec1264406643}\label{classSGCore_1_1AssetManager_abcaab35d3f3a25e99886ec1264406643}} 
+Assets\+Load\+Policy {\bfseries assets\+Load\+Policy}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a56c98b7785ba809ebf8c20d4fcd5875a}\label{classSGCore_1_1AssetManager_a56c98b7785ba809ebf8c20d4fcd5875a}} 
+Assets\+Load\+Policy const Ref$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Threading\+::\+Thread}} $>$ \& {\bfseries lazy\+Load\+In\+Thread}
+\item 
+Assets\+Load\+Policy const Ref$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Threading\+::\+Thread}} $>$ const std\+::string \& {\bfseries path}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a28b2b026d02fe299e2738ad4a1038cd0}\label{classSGCore_1_1AssetManager_a28b2b026d02fe299e2738ad4a1038cd0}} 
+entity\+\_\+t {\bfseries entity}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a32dad0bc3fb16d92e1d9eaa2d00c7bb1}\label{classSGCore_1_1AssetManager_a32dad0bc3fb16d92e1d9eaa2d00c7bb1}} 
+auto {\bfseries found\+Entity} = m\+\_\+entities.\+find(path)
+\item 
+{\bfseries else}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a71bca5294d0738b90d02810bdb160611}\label{classSGCore_1_1AssetManager_a71bca5294d0738b90d02810bdb160611}} 
+{\bfseries m\+\_\+entities} \mbox{[}path\mbox{]} = entity
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_aeb45d6b45f18a2f68bf10f4486660746}\label{classSGCore_1_1AssetManager_aeb45d6b45f18a2f68bf10f4486660746}} 
+Ref$<$ AssetT $>$ $\ast$ {\bfseries found\+Asset} = m\+\_\+registry-\/$>$try\+\_\+get$<$Ref$<$AssetT$>$$>$(entity)
+\item 
+Assets\+Load\+Policy const std\+::string \& {\bfseries path}
+\item 
+const std\+::string \& {\bfseries path}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a93e3559c17ca4d0307a70bb80a456e92}\label{classSGCore_1_1AssetManager_a93e3559c17ca4d0307a70bb80a456e92}} 
+Assets\+Load\+Policy const Ref$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Threading\+::\+Thread}} $>$ const std\+::string \& {\bfseries alias}
+\item 
+Assets\+Load\+Policy const Ref$<$ \mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Threading\+::\+Thread}} $>$ const std\+::string const std\+::string \& {\bfseries path}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_ac0d16652c14027647ba4ea0672eefb7a}\label{classSGCore_1_1AssetManager_ac0d16652c14027647ba4ea0672eefb7a}} 
+Assets\+Load\+Policy const std\+::string \& {\bfseries alias}
+\item 
+Assets\+Load\+Policy const std\+::string const std\+::string \& {\bfseries path}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_ae44e02ef17d63e545183b79494fae9a1}\label{classSGCore_1_1AssetManager_ae44e02ef17d63e545183b79494fae9a1}} 
+const std\+::string \& {\bfseries alias}
+\item 
+const std\+::string const std\+::string \& {\bfseries path}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_aa33858b70c7383146621a400395daa71}\label{classSGCore_1_1AssetManager_aa33858b70c7383146621a400395daa71}} 
+\index{SGCore::AssetManager@{SGCore::AssetManager}!else@{else}}
+\index{else@{else}!SGCore::AssetManager@{SGCore::AssetManager}}
+\doxysubsubsection{\texorpdfstring{else}{else}}
+{\footnotesize\ttfamily SGCore\+::\+Asset\+Manager\+::else}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{                entity = m\_registry-\/>create()}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_add0b8dd89ff4dfab97233e6fa6d65ebb}\label{classSGCore_1_1AssetManager_add0b8dd89ff4dfab97233e6fa6d65ebb}} 
+\index{SGCore::AssetManager@{SGCore::AssetManager}!path@{path}}
+\index{path@{path}!SGCore::AssetManager@{SGCore::AssetManager}}
+\doxysubsubsection{\texorpdfstring{path}{path}\hspace{0.1cm}{\footnotesize\ttfamily [1/6]}}
+{\footnotesize\ttfamily Assets\+Load\+Policy const Ref$<$\mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Threading\+::\+Thread}}$>$ const std\+::string\& SGCore\+::\+Asset\+Manager\+::path}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{            std::lock\_guard guard(m\_mutex)}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a8458a343c3526b5ef4018695b2835024}\label{classSGCore_1_1AssetManager_a8458a343c3526b5ef4018695b2835024}} 
+\index{SGCore::AssetManager@{SGCore::AssetManager}!path@{path}}
+\index{path@{path}!SGCore::AssetManager@{SGCore::AssetManager}}
+\doxysubsubsection{\texorpdfstring{path}{path}\hspace{0.1cm}{\footnotesize\ttfamily [2/6]}}
+{\footnotesize\ttfamily Assets\+Load\+Policy const std\+::string\& SGCore\+::\+Asset\+Manager\+::path}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{            loadAsset<AssetT>(assetToLoad, assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path)}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_ad17bcc733baf75aab652f0dcbd4b2fbf}\label{classSGCore_1_1AssetManager_ad17bcc733baf75aab652f0dcbd4b2fbf}} 
+\index{SGCore::AssetManager@{SGCore::AssetManager}!path@{path}}
+\index{path@{path}!SGCore::AssetManager@{SGCore::AssetManager}}
+\doxysubsubsection{\texorpdfstring{path}{path}\hspace{0.1cm}{\footnotesize\ttfamily [3/6]}}
+{\footnotesize\ttfamily const std\+::string\& SGCore\+::\+Asset\+Manager\+::path}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{            loadAsset<AssetT>(assetToLoad, m\_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path)}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a7b60827850c42b417a5011e262beb156}\label{classSGCore_1_1AssetManager_a7b60827850c42b417a5011e262beb156}} 
+\index{SGCore::AssetManager@{SGCore::AssetManager}!path@{path}}
+\index{path@{path}!SGCore::AssetManager@{SGCore::AssetManager}}
+\doxysubsubsection{\texorpdfstring{path}{path}\hspace{0.1cm}{\footnotesize\ttfamily [4/6]}}
+{\footnotesize\ttfamily Assets\+Load\+Policy const Ref$<$\mbox{\hyperlink{structSGCore_1_1Threading_1_1Thread}{Threading\+::\+Thread}}$>$ const std\+::string const std\+::string\& SGCore\+::\+Asset\+Manager\+::path}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{            std::lock\_guard guard(m\_mutex)}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_a7f7a985226e5f7ff17110b294461ad87}\label{classSGCore_1_1AssetManager_a7f7a985226e5f7ff17110b294461ad87}} 
+\index{SGCore::AssetManager@{SGCore::AssetManager}!path@{path}}
+\index{path@{path}!SGCore::AssetManager@{SGCore::AssetManager}}
+\doxysubsubsection{\texorpdfstring{path}{path}\hspace{0.1cm}{\footnotesize\ttfamily [5/6]}}
+{\footnotesize\ttfamily Assets\+Load\+Policy const std\+::string const std\+::string\& SGCore\+::\+Asset\+Manager\+::path}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{            loadAssetWithAlias<AssetT>(assetToLoad, assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path)}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classSGCore_1_1AssetManager_ab3881b0c832658cd316286fa869c022f}\label{classSGCore_1_1AssetManager_ab3881b0c832658cd316286fa869c022f}} 
+\index{SGCore::AssetManager@{SGCore::AssetManager}!path@{path}}
+\index{path@{path}!SGCore::AssetManager@{SGCore::AssetManager}}
+\doxysubsubsection{\texorpdfstring{path}{path}\hspace{0.1cm}{\footnotesize\ttfamily [6/6]}}
+{\footnotesize\ttfamily const std\+::string const std\+::string\& SGCore\+::\+Asset\+Manager\+::path}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{            loadAssetWithAlias<AssetT>(assetToLoad, m\_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path)}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Memory/Asset\+Manager.\+h\item 
+Sources/\+SGCore/\+Memory/Asset\+Manager.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,47 @@
+\hypertarget{structSGCore_1_1OctreeNode}{}\doxysection{SGCore\+::Octree\+Node Struct Reference}
+\label{structSGCore_1_1OctreeNode}\index{SGCore::OctreeNode@{SGCore::OctreeNode}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_a6d0cc33280718f3f721119a5dd336605}\label{structSGCore_1_1OctreeNode_a6d0cc33280718f3f721119a5dd336605}} 
+void {\bfseries draw} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1DebugDraw}{Debug\+Draw}} $>$ \&debug\+Draw) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_af591cb20ebc85c4327213cacd2b48bc6}\label{structSGCore_1_1OctreeNode_af591cb20ebc85c4327213cacd2b48bc6}} 
+bool {\bfseries is\+Subdivided} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_a122415c8bfc879c44c59012f0bd31259}\label{structSGCore_1_1OctreeNode_a122415c8bfc879c44c59012f0bd31259}} 
+AABB {\bfseries m\+\_\+aabb}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_a6d3de5abe2b40a83678aba05724b1eac}\label{structSGCore_1_1OctreeNode_a6d3de5abe2b40a83678aba05724b1eac}} 
+std\+::unordered\+\_\+set$<$ entity\+\_\+t $>$ {\bfseries m\+\_\+overlapped\+Entities}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_a6a80c14eefa998081349e5da3d18673a}\label{structSGCore_1_1OctreeNode_a6a80c14eefa998081349e5da3d18673a}} 
+std\+::unordered\+\_\+set$<$ entity\+\_\+t $>$ {\bfseries m\+\_\+visible\+Receivers}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_aa6ef427bbbaf075c5e8a65979eaa718f}\label{structSGCore_1_1OctreeNode_aa6ef427bbbaf075c5e8a65979eaa718f}} 
+std\+::array$<$ Ref$<$ \mbox{\hyperlink{structSGCore_1_1OctreeNode}{Octree\+Node}} $>$, 8 $>$ {\bfseries m\+\_\+children}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_aa37817402495dfa7b826e3cd9c3eb588}\label{structSGCore_1_1OctreeNode_aa37817402495dfa7b826e3cd9c3eb588}} 
+glm\+::vec4 {\bfseries m\+\_\+not\+Collides\+Debug\+Color} \{ 0, 0, 1, 1 \}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_a49c051220bea11776d3cab044fa51be1}\label{structSGCore_1_1OctreeNode_a49c051220bea11776d3cab044fa51be1}} 
+glm\+::vec4 {\bfseries m\+\_\+collides\+Debug\+Color} \{ 1, 0, 0, 1 \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_ab0f9da51d6681e8636f7706b8f536c25}\label{structSGCore_1_1OctreeNode_ab0f9da51d6681e8636f7706b8f536c25}} 
+class {\bfseries Octrees\+Solver}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1OctreeNode_a92c30017fd3b1e4846a04ea62513b947}\label{structSGCore_1_1OctreeNode_a92c30017fd3b1e4846a04ea62513b947}} 
+struct {\bfseries Octree}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/\+Space\+Partitioning/Octree.\+h\item 
+Sources/\+SGCore/\+Render/\+Space\+Partitioning/Octree.\+cpp\end{DoxyCompactItemize}

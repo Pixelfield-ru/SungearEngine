@@ -1,0 +1,167 @@
+\hypertarget{classSGCore_1_1GL4Renderer}{}\doxysection{SGCore\+::GL4\+Renderer Class Reference}
+\label{classSGCore_1_1GL4Renderer}\index{SGCore::GL4Renderer@{SGCore::GL4Renderer}}
+
+
+Inheritance diagram for SGCore\+::GL4\+Renderer\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::GL4\+Renderer\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_abb76a3415faa331e3d08b7c0bed1ba89}\label{classSGCore_1_1GL4Renderer_abb76a3415faa331e3d08b7c0bed1ba89}} 
+{\bfseries GL4\+Renderer} (const \mbox{\hyperlink{classSGCore_1_1GL4Renderer}{GL4\+Renderer}} \&)=delete
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a314166428451d729ef7eb7dcc021687d}\label{classSGCore_1_1GL4Renderer_a314166428451d729ef7eb7dcc021687d}} 
+{\bfseries GL4\+Renderer} (\mbox{\hyperlink{classSGCore_1_1GL4Renderer}{GL4\+Renderer}} \&\&)=delete
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a24fd1e6494d3ab5d104bf22d3cbd39e8}\label{classSGCore_1_1GL4Renderer_a24fd1e6494d3ab5d104bf22d3cbd39e8}} 
+void {\bfseries init} () noexcept override
+\item 
+bool \mbox{\hyperlink{classSGCore_1_1GL4Renderer_a9e6e43f39422df8eba73cf61e9f95027}{confirm\+Support}} () noexcept override
+\item 
+void \mbox{\hyperlink{classSGCore_1_1GL4Renderer_a807a1487ab56ec48f0a97b2341ed87da}{prepare\+Frame}} (const glm\+::ivec2 \&window\+Size) override
+\item 
+void \mbox{\hyperlink{classSGCore_1_1GL4Renderer_a29db8663d906f775e37b7fa8f3d7c2c9}{prepare\+Uniform\+Buffers}} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1RenderingBase}{Rendering\+Base}} $>$ \&rendering\+Component, const Ref$<$ \mbox{\hyperlink{structSGCore_1_1Transform}{Transform}} $>$ \&transform\+Component) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a897765d149a022888610871a8a2087ce}\label{classSGCore_1_1GL4Renderer_a897765d149a022888610871a8a2087ce}} 
+void {\bfseries render\+Mesh\+Data} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMeshData}{IMesh\+Data}} $>$ \&mesh\+Data, const \mbox{\hyperlink{structSGCore_1_1MeshDataRenderInfo}{Mesh\+Data\+Render\+Info}} \&mesh\+Data\+Render\+Info) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_afb5472c397b4d68aacb68b5dd20b4807}\label{classSGCore_1_1GL4Renderer_afb5472c397b4d68aacb68b5dd20b4807}} 
+void {\bfseries render\+Array} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexArray}{IVertex\+Array}} $>$ \&vertex\+Array, const \mbox{\hyperlink{structSGCore_1_1MeshDataRenderInfo}{Mesh\+Data\+Render\+Info}} \&mesh\+Data\+Render\+Info, const size\+\_\+t \&vertices\+Count, const size\+\_\+t \&indices\+Count) override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_aac8a079642cd1822174dea4b0cfa73bd}\label{classSGCore_1_1GL4Renderer_aac8a079642cd1822174dea4b0cfa73bd}} 
+void {\bfseries render\+Array\+Instanced} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexArray}{IVertex\+Array}} $>$ \&vertex\+Array, const \mbox{\hyperlink{structSGCore_1_1MeshDataRenderInfo}{Mesh\+Data\+Render\+Info}} \&mesh\+Data\+Render\+Info, const size\+\_\+t \&vertices\+Count, const size\+\_\+t \&indices\+Count, const size\+\_\+t \&instances\+Count) override
+\item 
+void \mbox{\hyperlink{classSGCore_1_1GL4Renderer_aee51037ae35b299e5417b2a6fe699ca5}{print\+Info}} () noexcept override
+\item 
+void \mbox{\hyperlink{classSGCore_1_1GL4Renderer_a413482c9611e9376b7598f35c3de394a}{check\+For\+Errors}} (const std\+::source\+\_\+location \&location=std\+::source\+\_\+location\+::current()) noexcept override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a090024898e7cbb2b0d84d628bb0bb14a}\label{classSGCore_1_1GL4Renderer_a090024898e7cbb2b0d84d628bb0bb14a}} 
+\mbox{\hyperlink{classSGCore_1_1GL46SubPassShader}{GL46\+Sub\+Pass\+Shader}} $\ast$ {\bfseries create\+Sub\+Pass\+Shader} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a0d5bd5e056e050e6f241f0c336b52e33}\label{classSGCore_1_1GL4Renderer_a0d5bd5e056e050e6f241f0c336b52e33}} 
+\mbox{\hyperlink{classSGCore_1_1GLVertexArray}{GLVertex\+Array}} $\ast$ {\bfseries create\+Vertex\+Array} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a3fc3e987c5d7ab497c130a6070de14de}\label{classSGCore_1_1GL4Renderer_a3fc3e987c5d7ab497c130a6070de14de}} 
+\mbox{\hyperlink{classSGCore_1_1GLVertexBuffer}{GLVertex\+Buffer}} $\ast$ {\bfseries create\+Vertex\+Buffer} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_ad446c4991e04ef4657593e02442008e6}\label{classSGCore_1_1GL4Renderer_ad446c4991e04ef4657593e02442008e6}} 
+\mbox{\hyperlink{classSGCore_1_1GLVertexBufferLayout}{GLVertex\+Buffer\+Layout}} $\ast$ {\bfseries create\+Vertex\+Buffer\+Layout} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a0d8ba12ec9a17e28c53ea664f7330d49}\label{classSGCore_1_1GL4Renderer_a0d8ba12ec9a17e28c53ea664f7330d49}} 
+\mbox{\hyperlink{classSGCore_1_1GLIndexBuffer}{GLIndex\+Buffer}} $\ast$ {\bfseries create\+Index\+Buffer} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_ab031f553051f7b9009804452a653d6b1}\label{classSGCore_1_1GL4Renderer_ab031f553051f7b9009804452a653d6b1}} 
+\mbox{\hyperlink{classSGCore_1_1GL4Texture2D}{GL4\+Texture2D}} $\ast$ {\bfseries create\+Texture2D} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_aca422a89c6fdd814060596a9a5eb0ae6}\label{classSGCore_1_1GL4Renderer_aca422a89c6fdd814060596a9a5eb0ae6}} 
+\mbox{\hyperlink{classSGCore_1_1GL4CubemapTexture}{GL4\+Cubemap\+Texture}} $\ast$ {\bfseries create\+Cubemap\+Texture} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_aca1cd1c29fcb9431dcbf47b0d44c7d2c}\label{classSGCore_1_1GL4Renderer_aca1cd1c29fcb9431dcbf47b0d44c7d2c}} 
+\mbox{\hyperlink{classSGCore_1_1GL4UniformBuffer}{GL4\+Uniform\+Buffer}} $\ast$ {\bfseries create\+Uniform\+Buffer} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a7214a23c9b5a9fbc1520993f24514047}\label{classSGCore_1_1GL4Renderer_a7214a23c9b5a9fbc1520993f24514047}} 
+\mbox{\hyperlink{classSGCore_1_1GL4FrameBuffer}{GL4\+Frame\+Buffer}} $\ast$ {\bfseries create\+Frame\+Buffer} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a6bbeb0dea05ec5cd0d8d13a759dc47ac}\label{classSGCore_1_1GL4Renderer_a6bbeb0dea05ec5cd0d8d13a759dc47ac}} 
+\mbox{\hyperlink{classSGCore_1_1GL3MeshData}{GL3\+Mesh\+Data}} $\ast$ {\bfseries create\+Mesh\+Data} () const override
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a92974ec783f777fb3124b21ea651ceca}\label{classSGCore_1_1GL4Renderer_a92974ec783f777fb3124b21ea651ceca}} 
+void {\bfseries set\+Depth\+Testing\+Enabled} (const bool \&enabled) const noexcept override
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a17756724c69647605a14e6691ab1bbe3}\label{classSGCore_1_1GL4Renderer_a17756724c69647605a14e6691ab1bbe3}} 
+static const Ref$<$ \mbox{\hyperlink{classSGCore_1_1GL4Renderer}{GL4\+Renderer}} $>$ \& {\bfseries get\+Instance} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a2820347165507ccf5acdb50948e6dd3d}\label{classSGCore_1_1GL4Renderer_a2820347165507ccf5acdb50948e6dd3d}} 
+static Ref$<$ \mbox{\hyperlink{classSGCore_1_1GL4Renderer}{GL4\+Renderer}} $>$ {\bfseries m\+\_\+instance}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a413482c9611e9376b7598f35c3de394a}\label{classSGCore_1_1GL4Renderer_a413482c9611e9376b7598f35c3de394a}} 
+\index{SGCore::GL4Renderer@{SGCore::GL4Renderer}!checkForErrors@{checkForErrors}}
+\index{checkForErrors@{checkForErrors}!SGCore::GL4Renderer@{SGCore::GL4Renderer}}
+\doxysubsubsection{\texorpdfstring{checkForErrors()}{checkForErrors()}}
+{\footnotesize\ttfamily void SGCore\+::\+GL4\+Renderer\+::check\+For\+Errors (\begin{DoxyParamCaption}\item[{const std\+::source\+\_\+location \&}]{location = {\ttfamily std\+:\+:source\+\_\+location\+:\+:current()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Checks for errors in GAPI. 
+\begin{DoxyParams}{Parameters}
+{\em location} & -\/ Where the function is called from. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer}{SGCore\+::\+IRenderer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a9e6e43f39422df8eba73cf61e9f95027}\label{classSGCore_1_1GL4Renderer_a9e6e43f39422df8eba73cf61e9f95027}} 
+\index{SGCore::GL4Renderer@{SGCore::GL4Renderer}!confirmSupport@{confirmSupport}}
+\index{confirmSupport@{confirmSupport}!SGCore::GL4Renderer@{SGCore::GL4Renderer}}
+\doxysubsubsection{\texorpdfstring{confirmSupport()}{confirmSupport()}}
+{\footnotesize\ttfamily bool SGCore\+::\+GL4\+Renderer\+::confirm\+Support (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Confirmation of GAPI support by the user\textquotesingle{}s graphics card 
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer_a942839d280f96380cd77409c4986d3a3}{SGCore\+::\+IRenderer}}.
+
+
+
+Reimplemented in \mbox{\hyperlink{classSGCore_1_1GL46Renderer_ad4139d73ff500280c52fd046e0891a4d}{SGCore\+::\+GL46\+Renderer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a807a1487ab56ec48f0a97b2341ed87da}\label{classSGCore_1_1GL4Renderer_a807a1487ab56ec48f0a97b2341ed87da}} 
+\index{SGCore::GL4Renderer@{SGCore::GL4Renderer}!prepareFrame@{prepareFrame}}
+\index{prepareFrame@{prepareFrame}!SGCore::GL4Renderer@{SGCore::GL4Renderer}}
+\doxysubsubsection{\texorpdfstring{prepareFrame()}{prepareFrame()}}
+{\footnotesize\ttfamily void SGCore\+::\+GL4\+Renderer\+::prepare\+Frame (\begin{DoxyParamCaption}\item[{const glm\+::ivec2 \&}]{window\+Size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em window\+Size} & \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer_a51dbb4e1f9f50b20ce6c7291639488ed}{SGCore\+::\+IRenderer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_a29db8663d906f775e37b7fa8f3d7c2c9}\label{classSGCore_1_1GL4Renderer_a29db8663d906f775e37b7fa8f3d7c2c9}} 
+\index{SGCore::GL4Renderer@{SGCore::GL4Renderer}!prepareUniformBuffers@{prepareUniformBuffers}}
+\index{prepareUniformBuffers@{prepareUniformBuffers}!SGCore::GL4Renderer@{SGCore::GL4Renderer}}
+\doxysubsubsection{\texorpdfstring{prepareUniformBuffers()}{prepareUniformBuffers()}}
+{\footnotesize\ttfamily void SGCore\+::\+GL4\+Renderer\+::prepare\+Uniform\+Buffers (\begin{DoxyParamCaption}\item[{const Ref$<$ \mbox{\hyperlink{structSGCore_1_1RenderingBase}{Rendering\+Base}} $>$ \&}]{rendering\+Base,  }\item[{const Ref$<$ \mbox{\hyperlink{structSGCore_1_1Transform}{Transform}} $>$ \&}]{transform }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Preparing uniform buffers for render 
+\begin{DoxyParams}{Parameters}
+{\em rendering\+Component} & -\/ The component that will be used as a \char`\"{}camera\char`\"{} for rendering entities. \\
+\hline
+{\em transform\+Component} & -\/ The transform component of this \char`\"{}camera\char`\"{}. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer_af2036f5b211688373b051e04d0609b8e}{SGCore\+::\+IRenderer}}.
+
+\mbox{\Hypertarget{classSGCore_1_1GL4Renderer_aee51037ae35b299e5417b2a6fe699ca5}\label{classSGCore_1_1GL4Renderer_aee51037ae35b299e5417b2a6fe699ca5}} 
+\index{SGCore::GL4Renderer@{SGCore::GL4Renderer}!printInfo@{printInfo}}
+\index{printInfo@{printInfo}!SGCore::GL4Renderer@{SGCore::GL4Renderer}}
+\doxysubsubsection{\texorpdfstring{printInfo()}{printInfo()}}
+{\footnotesize\ttfamily void SGCore\+::\+GL4\+Renderer\+::print\+Info (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself. 
+
+Reimplemented from \mbox{\hyperlink{classSGCore_1_1IRenderer_a6909af43881351007f7e7b4ef2364f22}{SGCore\+::\+IRenderer}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/\+GL4/GL4\+Renderer.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/\+GL/\+GL4/GL4\+Renderer.\+cpp\end{DoxyCompactItemize}

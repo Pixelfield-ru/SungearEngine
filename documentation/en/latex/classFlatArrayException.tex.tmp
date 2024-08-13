@@ -1,0 +1,24 @@
+\hypertarget{classFlatArrayException}{}\doxysection{Flat\+Array\+Exception Class Reference}
+\label{classFlatArrayException}\index{FlatArrayException@{FlatArrayException}}
+
+
+Inheritance diagram for Flat\+Array\+Exception\+:
+% FIG 0
+
+
+Collaboration diagram for Flat\+Array\+Exception\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFlatArrayException_aa80e4514e8651c6ee0f87b94a25d29dd}\label{classFlatArrayException_aa80e4514e8651c6ee0f87b94a25d29dd}} 
+{\bfseries Flat\+Array\+Exception} (const std\+::string \&message)
+\item 
+\mbox{\Hypertarget{classFlatArrayException_ad7fd3676229a1b7be073c4cf7e1cec86}\label{classFlatArrayException_ad7fd3676229a1b7be073c4cf7e1cec86}} 
+virtual char const  $\ast$ {\bfseries what} () const noexcept
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGUtils/flat\+\_\+array.\+h\end{DoxyCompactItemize}

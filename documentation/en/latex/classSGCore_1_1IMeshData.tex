@@ -1,0 +1,146 @@
+\hypertarget{classSGCore_1_1IMeshData}{}\doxysection{SGCore\+::IMesh\+Data Class Reference}
+\label{classSGCore_1_1IMeshData}\index{SGCore::IMeshData@{SGCore::IMeshData}}
+
+
+Inheritance diagram for SGCore\+::IMesh\+Data\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IMesh\+Data\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_ae33c2c9217a408d123e89695f0cfa46a}\label{classSGCore_1_1IMeshData_ae33c2c9217a408d123e89695f0cfa46a}} 
+{\bfseries IMesh\+Data} (const \mbox{\hyperlink{classSGCore_1_1IMeshData}{IMesh\+Data}} \&)=default
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_acb0f8e27e057fb4bcc29fa251feb0555}\label{classSGCore_1_1IMeshData_acb0f8e27e057fb4bcc29fa251feb0555}} 
+{\bfseries IMesh\+Data} (\mbox{\hyperlink{classSGCore_1_1IMeshData}{IMesh\+Data}} \&\&) noexcept=default
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a3f0c25f9b649fefdf79c18cd3e2a9118}\label{classSGCore_1_1IMeshData_a3f0c25f9b649fefdf79c18cd3e2a9118}} 
+virtual void {\bfseries prepare} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_ac543cf1a203fcf4b297c332615d0e044}\label{classSGCore_1_1IMeshData_ac543cf1a203fcf4b297c332615d0e044}} 
+void {\bfseries set\+Vertex\+Position} (const std\+::uint64\+\_\+t \&vertex\+Idx, const float \&x, const float \&y, const float \&z) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_adb608e2018e3e54f26d008325c0502b8}\label{classSGCore_1_1IMeshData_adb608e2018e3e54f26d008325c0502b8}} 
+void {\bfseries get\+Vertex\+Position} (const std\+::uint64\+\_\+t \&vertex\+Idx, float \&outX, float \&outY, float \&outZ) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_afaeb64ba71849c931d5950aa8bba09e4}\label{classSGCore_1_1IMeshData_afaeb64ba71849c931d5950aa8bba09e4}} 
+void {\bfseries set\+Vertex\+UV} (const std\+::uint64\+\_\+t \&vertex\+Idx, const float \&x, const float \&y, const float \&z) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a3d270e1524e60608d492c2430f978540}\label{classSGCore_1_1IMeshData_a3d270e1524e60608d492c2430f978540}} 
+void {\bfseries get\+Vertex\+UV} (const std\+::uint64\+\_\+t \&vertex\+Idx, float \&outX, float \&outY, float \&outZ) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_acfeacf458def3a06e3abbbe22e72bf25}\label{classSGCore_1_1IMeshData_acfeacf458def3a06e3abbbe22e72bf25}} 
+void {\bfseries set\+Vertex\+Normal} (const std\+::uint64\+\_\+t \&vertex\+Idx, const float \&x, const float \&y, const float \&z) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a71ec13c89fe934c6c44c10dbaabe5077}\label{classSGCore_1_1IMeshData_a71ec13c89fe934c6c44c10dbaabe5077}} 
+void {\bfseries get\+Vertex\+Normal} (const std\+::uint64\+\_\+t \&vertex\+Idx, float \&outX, float \&outY, float \&outZ) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_adc57472b26ef8624753dec2caebae710}\label{classSGCore_1_1IMeshData_adc57472b26ef8624753dec2caebae710}} 
+void {\bfseries set\+Index} (const std\+::uint64\+\_\+t \&face\+Idx, const std\+::uint64\+\_\+t \&index\+Idx, const std\+::uint64\+\_\+t \&value) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a840b5a779f53cfce87b3c1a14dd6b402}\label{classSGCore_1_1IMeshData_a840b5a779f53cfce87b3c1a14dd6b402}} 
+void {\bfseries get\+Face\+Indices} (const std\+::uint64\+\_\+t \&face\+Idx, std\+::uint64\+\_\+t \&out\+Idx0, std\+::uint64\+\_\+t \&out\+Idx1, std\+::uint64\+\_\+t \&out\+Idx2) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_acc9377f0b141886b664a3b002f114fc9}\label{classSGCore_1_1IMeshData_acc9377f0b141886b664a3b002f114fc9}} 
+void {\bfseries set\+Data} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMeshData}{IMesh\+Data}} $>$ \&other) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_aa6097c556884b3f12bbbff6f09cb4785}\label{classSGCore_1_1IMeshData_aa6097c556884b3f12bbbff6f09cb4785}} 
+entity\+\_\+t {\bfseries add\+On\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene, const std\+::string \&layer\+Name) noexcept
+\item 
+void \mbox{\hyperlink{classSGCore_1_1IMeshData_ad34e883d60fc9601a2b4c7bf5874c33a}{migrate\+And\+Set\+New\+Material}} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} $>$ \&new\+Material) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_ac0403bedece1a2eb74f8968fdb982436}\label{classSGCore_1_1IMeshData_ac0403bedece1a2eb74f8968fdb982436}} 
+void {\bfseries generate\+Physical\+Mesh} () noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_aef0e77013783c6f44307de9e37012e5c}\label{classSGCore_1_1IMeshData_aef0e77013783c6f44307de9e37012e5c}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexArray}{IVertex\+Array}} $>$ {\bfseries get\+Vertex\+Array} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a352494e2758ffb462e83d6feae6a1136}\label{classSGCore_1_1IMeshData_a352494e2758ffb462e83d6feae6a1136}} 
+{\footnotesize template$<$typename VScalarT , typename IScalarT $>$ }\\static Ref$<$ bt\+Triangle\+Mesh $>$ {\bfseries generate\+Physical\+Mesh} (const std\+::vector$<$ VScalarT $>$ \&vertices, const std\+::vector$<$ IScalarT $>$ \&indices) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a272502e3b4500d260def5b89334abc77}\label{classSGCore_1_1IMeshData_a272502e3b4500d260def5b89334abc77}} 
+AABB {\bfseries m\+\_\+aabb}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_aefe36d97d965a49a8c9cd40633b7f7ff}\label{classSGCore_1_1IMeshData_aefe36d97d965a49a8c9cd40633b7f7ff}} 
+std\+::string {\bfseries m\+\_\+name}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_aa74e94ee5a239b9e18da9d43560f991a}\label{classSGCore_1_1IMeshData_aa74e94ee5a239b9e18da9d43560f991a}} 
+std\+::vector$<$ std\+::uint32\+\_\+t $>$ {\bfseries m\+\_\+indices}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a317f498d4fcbdec9d93f048e3ca29dc8}\label{classSGCore_1_1IMeshData_a317f498d4fcbdec9d93f048e3ca29dc8}} 
+std\+::vector$<$ float $>$ {\bfseries m\+\_\+positions}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a336e2ea4e5541c65a9014ab93b014b35}\label{classSGCore_1_1IMeshData_a336e2ea4e5541c65a9014ab93b014b35}} 
+std\+::vector$<$ float $>$ {\bfseries m\+\_\+uv}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a25f6edb991e61efd3d604b5fb6df29cc}\label{classSGCore_1_1IMeshData_a25f6edb991e61efd3d604b5fb6df29cc}} 
+std\+::vector$<$ float $>$ {\bfseries m\+\_\+normals}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a18c7ff05c4be2a5e032fb2d69cf628c9}\label{classSGCore_1_1IMeshData_a18c7ff05c4be2a5e032fb2d69cf628c9}} 
+std\+::vector$<$ float $>$ {\bfseries m\+\_\+tangents}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a8e80873c2b35802427d639f75873739a}\label{classSGCore_1_1IMeshData_a8e80873c2b35802427d639f75873739a}} 
+std\+::vector$<$ float $>$ {\bfseries m\+\_\+bitangents}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a8a357f5bdb328387bd52da68f70f3e9d}\label{classSGCore_1_1IMeshData_a8a357f5bdb328387bd52da68f70f3e9d}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} $>$ {\bfseries m\+\_\+material}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a9520fabdb622f73ef2a53e8699861546}\label{classSGCore_1_1IMeshData_a9520fabdb622f73ef2a53e8699861546}} 
+Ref$<$ bt\+Triangle\+Mesh $>$ {\bfseries m\+\_\+physical\+Mesh}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_af39080e13f3ed08853b38cc44663ca09}\label{classSGCore_1_1IMeshData_af39080e13f3ed08853b38cc44663ca09}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexArray}{IVertex\+Array}} $>$ {\bfseries m\+\_\+vertex\+Array}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a6fc3647a47447da2cd753778e339770f}\label{classSGCore_1_1IMeshData_a6fc3647a47447da2cd753778e339770f}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+positions\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_ae7d21b8050ccb89523310e9e64ccccd6}\label{classSGCore_1_1IMeshData_ae7d21b8050ccb89523310e9e64ccccd6}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+uv\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_ae43670c37577c495043b8e966a4e7d10}\label{classSGCore_1_1IMeshData_ae43670c37577c495043b8e966a4e7d10}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+normals\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_a61aca0965c2249491485e773b879a8cd}\label{classSGCore_1_1IMeshData_a61aca0965c2249491485e773b879a8cd}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+tangents\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_aab43e0e286e23ed6fee96e6764eafc70}\label{classSGCore_1_1IMeshData_aab43e0e286e23ed6fee96e6764eafc70}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBuffer}{IVertex\+Buffer}} $>$ {\bfseries m\+\_\+bitangents\+Buffer}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_ac15085683f453b7ce1426172afc84b86}\label{classSGCore_1_1IMeshData_ac15085683f453b7ce1426172afc84b86}} 
+Ref$<$ \mbox{\hyperlink{classSGCore_1_1IIndexBuffer}{IIndex\+Buffer}} $>$ {\bfseries m\+\_\+indices\+Buffer}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1IMeshData_ad34e883d60fc9601a2b4c7bf5874c33a}\label{classSGCore_1_1IMeshData_ad34e883d60fc9601a2b4c7bf5874c33a}} 
+\index{SGCore::IMeshData@{SGCore::IMeshData}!migrateAndSetNewMaterial@{migrateAndSetNewMaterial}}
+\index{migrateAndSetNewMaterial@{migrateAndSetNewMaterial}!SGCore::IMeshData@{SGCore::IMeshData}}
+\doxysubsubsection{\texorpdfstring{migrateAndSetNewMaterial()}{migrateAndSetNewMaterial()}}
+{\footnotesize\ttfamily void SGCore\+::\+IMesh\+Data\+::migrate\+And\+Set\+New\+Material (\begin{DoxyParamCaption}\item[{const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IMaterial}{IMaterial}} $>$ \&}]{new\+Material }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+Moves all textures of the current material to the new material and sets the new material as the current one. \begin{DoxySeeAlso}{See also}
+Core\+::\+Memory\+::\+Assets\+::\+IMaterial\+::copy\+Textures 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em new\+Material} & The material to which the textures will be moved and which will be set as the current one. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Imported\+Scenes\+Arch/IMesh\+Data.\+h\item 
+Sources/\+SGCore/\+Imported\+Scenes\+Arch/IMesh\+Data.\+cpp\end{DoxyCompactItemize}

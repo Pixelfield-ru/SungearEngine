@@ -1,0 +1,40 @@
+\hypertarget{structSGCore_1_1IRenderPipeline}{}\doxysection{SGCore\+::IRender\+Pipeline Struct Reference}
+\label{structSGCore_1_1IRenderPipeline}\index{SGCore::IRenderPipeline@{SGCore::IRenderPipeline}}
+
+
+Inheritance diagram for SGCore\+::IRender\+Pipeline\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IRender\+Pipeline\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1IRenderPipeline_a365a807c00233cd860d52d13378322ec}\label{structSGCore_1_1IRenderPipeline_a365a807c00233cd860d52d13378322ec}} 
+virtual void {\bfseries render} (Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ scene) noexcept
+\item 
+\mbox{\Hypertarget{structSGCore_1_1IRenderPipeline_a4a815c5123867fe59afb1e8779855071}\label{structSGCore_1_1IRenderPipeline_a4a815c5123867fe59afb1e8779855071}} 
+{\footnotesize template$<$typename Render\+PassT $>$ }\\Ref$<$ Render\+PassT $>$ {\bfseries get\+Render\+Pass} ()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1IRenderPipeline_a40dcb509f3de03bfe7f6492fbb5c11d7}\label{structSGCore_1_1IRenderPipeline_a40dcb509f3de03bfe7f6492fbb5c11d7}} 
+{\footnotesize template$<$typename Render\+PassT $>$ }\\std\+::vector$<$ Ref$<$ Render\+PassT $>$ $>$ {\bfseries get\+Render\+Passes} ()
+\item 
+\mbox{\Hypertarget{structSGCore_1_1IRenderPipeline_a991e40093e8f9b9580aafcb6512faf1a}\label{structSGCore_1_1IRenderPipeline_a991e40093e8f9b9580aafcb6512faf1a}} 
+double {\bfseries get\+Render\+Passes\+Execution\+Time} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1IRenderPipeline_ad76702beeb7a58d7eecf97c55321437a}\label{structSGCore_1_1IRenderPipeline_ad76702beeb7a58d7eecf97c55321437a}} 
+\mbox{\hyperlink{structSGCore_1_1ShadersPaths}{Shaders\+Paths}} {\bfseries m\+\_\+shaders\+Paths}
+\item 
+\mbox{\Hypertarget{structSGCore_1_1IRenderPipeline_ae57e2020b4bbfcec72d9d3cf7cb70e6e}\label{structSGCore_1_1IRenderPipeline_ae57e2020b4bbfcec72d9d3cf7cb70e6e}} 
+std\+::vector$<$ Ref$<$ \mbox{\hyperlink{structSGCore_1_1IRenderPass}{IRender\+Pass}} $>$ $>$ {\bfseries m\+\_\+render\+Passes}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Render/IRender\+Pipeline.\+h\item 
+Sources/\+SGCore/\+Render/IRender\+Pipeline.\+cpp\end{DoxyCompactItemize}

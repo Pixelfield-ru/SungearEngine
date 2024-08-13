@@ -1,0 +1,107 @@
+\hypertarget{classSGCore_1_1Scene}{}\doxysection{SGCore\+::Scene Class Reference}
+\label{classSGCore_1_1Scene}\index{SGCore::Scene@{SGCore::Scene}}
+
+
+Inheritance diagram for SGCore\+::Scene\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::Scene\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a90848fcbfee13070613ba704ee6a6bc0}\label{classSGCore_1_1Scene_a90848fcbfee13070613ba704ee6a6bc0}} 
+void {\bfseries create\+Default\+Systems} ()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_ad336d518f2d55a81379a449f9f6d3325}\label{classSGCore_1_1Scene_ad336d518f2d55a81379a449f9f6d3325}} 
+void {\bfseries update} (const double \&dt, const double \&fixed\+Dt)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a5859305ffdcaa4c3b815af2fe516badf}\label{classSGCore_1_1Scene_a5859305ffdcaa4c3b815af2fe516badf}} 
+void {\bfseries fixed\+Update} (const double \&dt, const double \&fixed\+Dt)
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_ad848a23397d87a9d740ebb0a5796077a}\label{classSGCore_1_1Scene_ad848a23397d87a9d740ebb0a5796077a}} 
+{\footnotesize template$<$typename SystemT $>$ }\\Ref$<$ SystemT $>$ {\bfseries get\+System} ()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a5ab16ffc78a1e51a577d65054ac69600}\label{classSGCore_1_1Scene_a5ab16ffc78a1e51a577d65054ac69600}} 
+{\footnotesize template$<$typename SystemT $>$ }\\std\+::vector$<$ Ref$<$ SystemT $>$ $>$ {\bfseries get\+Systems} ()
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a8bf172e52ac014b53996ca647a13939f}\label{classSGCore_1_1Scene_a8bf172e52ac014b53996ca647a13939f}} 
+void {\bfseries add\+System} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISystem}{ISystem}} $>$ \&system) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a180a02e9e97aeb753441b1e5c1b23978}\label{classSGCore_1_1Scene_a180a02e9e97aeb753441b1e5c1b23978}} 
+const std\+::vector$<$ Ref$<$ \mbox{\hyperlink{classSGCore_1_1ISystem}{ISystem}} $>$ $>$ \& {\bfseries get\+All\+Systems} () noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a2eabe3a413f08aaf4d41aed904b5d5fd}\label{classSGCore_1_1Scene_a2eabe3a413f08aaf4d41aed904b5d5fd}} 
+auto {\bfseries get\+Unique\+Names\+Manager} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_adb90646ab8c8d5b2b5acd39aa423c767}\label{classSGCore_1_1Scene_adb90646ab8c8d5b2b5acd39aa423c767}} 
+auto \& {\bfseries get\+ECSRegistry} () noexcept
+\item 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1Layer}{Layer}} $>$ \mbox{\hyperlink{classSGCore_1_1Scene_af8ebc5f905864d5a9a64f5034934dca9}{create\+Layer}} (const std\+::string \&name) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a9f30ab1744522242ad2387b47f3d8d50}\label{classSGCore_1_1Scene_a9f30ab1744522242ad2387b47f3d8d50}} 
+Ref$<$ \mbox{\hyperlink{structSGCore_1_1Layer}{Layer}} $>$ {\bfseries get\+Layer} (const std\+::string \&name) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a23559ebca9bcf31ee74581ebda21f3a0}\label{classSGCore_1_1Scene_a23559ebca9bcf31ee74581ebda21f3a0}} 
+void {\bfseries set\+UIXMLDocument} (const Ref$<$ \mbox{\hyperlink{structSGCore_1_1XMLDocument}{XMLDocument}} $>$ \&xml\+Document) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a7fba7cd628321fdb2c99860695a99fcb}\label{classSGCore_1_1Scene_a7fba7cd628321fdb2c99860695a99fcb}} 
+Weak$<$ \mbox{\hyperlink{structSGCore_1_1XMLDocument}{XMLDocument}} $>$ {\bfseries get\+UIXMLDocument} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a4e15bc55585cb0a3a9af60936d1acdca}\label{classSGCore_1_1Scene_a4e15bc55585cb0a3a9af60936d1acdca}} 
+void {\bfseries reload\+UI} () noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_ae4ff9b76880b79e14cb11ead9b7d81a0}\label{classSGCore_1_1Scene_ae4ff9b76880b79e14cb11ead9b7d81a0}} 
+double {\bfseries get\+Update\+Function\+Execution\+Time} () const noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_af2fd28ca927fa5595c9fa66ab48e9d48}\label{classSGCore_1_1Scene_af2fd28ca927fa5595c9fa66ab48e9d48}} 
+double {\bfseries get\+Fixed\+Update\+Function\+Execution\+Time} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a93476bf4535293551ac9373f417b5daa}\label{classSGCore_1_1Scene_a93476bf4535293551ac9373f417b5daa}} 
+static Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ {\bfseries get\+Current\+Scene} () noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a7e85daf0c98a4dd614c03592b5653352}\label{classSGCore_1_1Scene_a7e85daf0c98a4dd614c03592b5653352}} 
+static void {\bfseries add\+Scene} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ \&scene) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a4b2080e0ba65b5c60aa0f38d7e764cca}\label{classSGCore_1_1Scene_a4b2080e0ba65b5c60aa0f38d7e764cca}} 
+static Ref$<$ \mbox{\hyperlink{classSGCore_1_1Scene}{Scene}} $>$ {\bfseries get\+Scene} (const std\+::string \&scene\+Name) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a6b05179bd160243bb78ff63cd74cb5b5}\label{classSGCore_1_1Scene_a6b05179bd160243bb78ff63cd74cb5b5}} 
+static void {\bfseries set\+Current\+Scene} (const std\+::string \&scene\+Name) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a33a4c67a01f3465869f9d011e371e48e}\label{classSGCore_1_1Scene_a33a4c67a01f3465869f9d011e371e48e}} 
+static const auto \& {\bfseries get\+Scenes} () noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1Scene_a84715d43a10a046fbf814a8ed9916a36}\label{classSGCore_1_1Scene_a84715d43a10a046fbf814a8ed9916a36}} 
+std\+::string {\bfseries m\+\_\+name}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSGCore_1_1Scene_af8ebc5f905864d5a9a64f5034934dca9}\label{classSGCore_1_1Scene_af8ebc5f905864d5a9a64f5034934dca9}} 
+\index{SGCore::Scene@{SGCore::Scene}!createLayer@{createLayer}}
+\index{createLayer@{createLayer}!SGCore::Scene@{SGCore::Scene}}
+\doxysubsubsection{\texorpdfstring{createLayer()}{createLayer()}}
+{\footnotesize\ttfamily SGCore\+::\+Ref$<$ \mbox{\hyperlink{structSGCore_1_1Layer}{SGCore\+::\+Layer}} $>$ SGCore\+::\+Scene\+::create\+Layer (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+Creates new layer or returns existing layer. 
+\begin{DoxyParams}{Parameters}
+{\em name} & -\/ Name of new layer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structSGCore_1_1Layer}{Layer}}. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Scene/Scene.\+h\item 
+Sources/\+SGCore/\+Scene/Scene.\+cpp\end{DoxyCompactItemize}

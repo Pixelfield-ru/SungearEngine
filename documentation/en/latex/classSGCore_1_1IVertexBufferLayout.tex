@@ -1,0 +1,58 @@
+\hypertarget{classSGCore_1_1IVertexBufferLayout}{}\doxysection{SGCore\+::IVertex\+Buffer\+Layout Class Reference}
+\label{classSGCore_1_1IVertexBufferLayout}\index{SGCore::IVertexBufferLayout@{SGCore::IVertexBufferLayout}}
+
+
+Inheritance diagram for SGCore\+::IVertex\+Buffer\+Layout\+:
+% FIG 0
+
+
+Collaboration diagram for SGCore\+::IVertex\+Buffer\+Layout\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_a2452bf5aefb2c5737297ed2f2c07a649}\label{classSGCore_1_1IVertexBufferLayout_a2452bf5aefb2c5737297ed2f2c07a649}} 
+virtual Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries prepare} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_a4d6b5e30d6da9cecef8da287dbef681f}\label{classSGCore_1_1IVertexBufferLayout_a4d6b5e30d6da9cecef8da287dbef681f}} 
+virtual Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries reset} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_a79924a96bb65d483cd05a6cb7642d196}\label{classSGCore_1_1IVertexBufferLayout_a79924a96bb65d483cd05a6cb7642d196}} 
+virtual \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_a2ac8ec54ff5df7351c70fc9a6d3066ee}\label{classSGCore_1_1IVertexBufferLayout_a2ac8ec54ff5df7351c70fc9a6d3066ee}} 
+virtual \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, bool normalized)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_ab6e27b4588688158d945a8c5bc11e0c6}\label{classSGCore_1_1IVertexBufferLayout_ab6e27b4588688158d945a8c5bc11e0c6}} 
+virtual \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, bool normalized, const size\+\_\+t \&divisor)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_a1506f6fe248ce3681e8fd56d7b0fab27}\label{classSGCore_1_1IVertexBufferLayout_a1506f6fe248ce3681e8fd56d7b0fab27}} 
+virtual \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, const size\+\_\+t \&divisor)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_ac9d85a7990f5a5b46283b7de256632bc}\label{classSGCore_1_1IVertexBufferLayout_ac9d85a7990f5a5b46283b7de256632bc}} 
+virtual \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $\ast$ {\bfseries create\+Vertex\+Attribute} (std\+::uint16\+\_\+t ID, std\+::string name, SGGData\+Type data\+Type, const std\+::uint16\+\_\+t \&scalars\+Count, bool normalized, const size\+\_\+t \&stride, const size\+\_\+t \&offset, const size\+\_\+t \&divisor)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_a9b5e184a94a2c693a7f4c4c16ac9b2ab}\label{classSGCore_1_1IVertexBufferLayout_a9b5e184a94a2c693a7f4c4c16ac9b2ab}} 
+virtual Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries enable\+Attribute} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $>$ \&)=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_afbc46817268c3bb2126d4ab99c6eb53d}\label{classSGCore_1_1IVertexBufferLayout_afbc46817268c3bb2126d4ab99c6eb53d}} 
+virtual Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries enable\+Attributes} ()=0
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_a68c3e37dfa12ff4765a3a6513be82b62}\label{classSGCore_1_1IVertexBufferLayout_a68c3e37dfa12ff4765a3a6513be82b62}} 
+virtual Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexBufferLayout}{IVertex\+Buffer\+Layout}} $>$ {\bfseries add\+Attribute} (Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $>$) noexcept
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_ab17701dd949813f4b93621d48aadd0d5}\label{classSGCore_1_1IVertexBufferLayout_ab17701dd949813f4b93621d48aadd0d5}} 
+virtual void {\bfseries remove\+Attribute} (const Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $>$ \&) noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSGCore_1_1IVertexBufferLayout_a3131e65eec95ee7709609e12eeee3098}\label{classSGCore_1_1IVertexBufferLayout_a3131e65eec95ee7709609e12eeee3098}} 
+std\+::list$<$ Ref$<$ \mbox{\hyperlink{classSGCore_1_1IVertexAttribute}{IVertex\+Attribute}} $>$ $>$ {\bfseries m\+\_\+attributes}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sources/\+SGCore/\+Graphics/\+API/IVertex\+Buffer\+Layout.\+h\item 
+Sources/\+SGCore/\+Graphics/\+API/IVertex\+Buffer\+Layout.\+cpp\end{DoxyCompactItemize}
