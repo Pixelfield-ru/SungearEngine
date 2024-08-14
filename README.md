@@ -6,7 +6,7 @@
 -   **General:**
     - ECS
     - Audio(OpenAL)
-    - Parallel safety thread physics (Cooliders differents forms, RigidBodys)
+    - Parallel safety thread physics (Cooliders differents forms, RigidBodies)
     - Octotree with automatic subdivision
     - Support input from keyboard and mouse
     - Annotation and CodeGen  
@@ -26,13 +26,13 @@
     - Preparation for multi-GAPI (GAPI - graphical api) (using only abstractions and avoiding native api functions in external code (outside the implementation of abstract classes for different gapi))
     - Аn additional add-on to the glsl shader language for dividing shaders into render passes, specifying pass parameters, including shaders, as well as writing different shaders (fragment, vertex, geometric, etc.) in one file
     - PBR (Physically Based Rendering) using Cook-Torrance BRDF
-    - Albedo Map
-    - Normal Map
-    - Roughness Map
-    - Metallic Map
-    - Ambient Occclusion Map
-    - Emission Map
-    - Shadows(Directional Light only)
+        - Albedo Map
+        - Normal Map
+        - Roughness Map
+        - Metallic Map
+        - Ambient Occclusion Map
+        - Emission Map
+    - Shadows (Directional Light only)
     - Atmosphere Scattering
       
 -   **Post Processing:**
