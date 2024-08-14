@@ -6,11 +6,25 @@
 -   **General:**
     - ECS
     - Audio(OpenAL)
-    - Annotation and CodeGen
     - Parallel safety thread physics (Cooliders differents forms, RigidBodys)
-
+    - Octotree with automatic subdivision
+    - Support input from keyboard and mouse
+    - Annotation and CodeGen  
+        > (more information about annotations, see the source code: https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Annotations)
+        ```
+        sg_struct()
+        struct MyStruct
+        {
+            sg_member()
+            float m_myMember = 3.0f;
+        }
+        ```
+    - A set of classes for parallel computing
+      > (more information about parallel computing, see the source code: (https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Threading))
+    - Small developments in the in-game UI (loading ttf fonts, creating text)
 -   **Graphics Rendering:**
-    - Shader system(Similiar as Unity)
+    - Preparation for multi-GAPI (GAPI - graphical api) (using only abstractions and avoiding native api functions in external code (outside the implementation of abstract classes for different gapi))
+    - Аn additional add-on to the glsl shader language for dividing shaders into render passes, specifying pass parameters, including shaders, as well as writing different shaders (fragment, vertex, geometric, etc.) in one file
     - PBR (Physically Based Rendering) using Cook-Torrance BRDF
     - Albedo Map
     - Normal Map
@@ -19,11 +33,15 @@
     - Ambient Occclusion Map
     - Emission Map
     - Shadows(Directional Light only)
--   Post Processing
+    - Atmosphere Scattering
+      
+-   **Post Processing:**
     - Layered postprocessing (you can add different objects to different layers and apply different postprocessing to them, be it bluer, bloom, etc.)
 
 -   **Asset Pipeline:**
-    - Plugin Systems(Similiar as Unity)
+    - Plugin Systems(generating a plugin project, connecting plugins to the engine in runtime)
+    - Load Textures and svg files
+    - Load many model formats such as .fbx, .obj, etc.
 
 
 ### Engine
