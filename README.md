@@ -36,7 +36,7 @@
     - Atmosphere Scattering
       
 -   **Post Processing:**
-    - Layered postprocessing (you can add different objects to different layers and apply different postprocessing to them, be it bluer, bloom, etc.)
+    - Layered postprocessing (you can add different objects to different layers and apply different postprocessing to them, be it blur, bloom, etc.)
 
 -   **Asset Pipeline:**
     - Plugin Systems(generating a plugin project, connecting plugins to the engine in runtime)
