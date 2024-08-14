@@ -9,7 +9,7 @@
     - Parallel safety thread physics (Cooliders differents forms, RigidBodies)
     - Octotree with automatic subdivision
     - Support input from keyboard and mouse
-    - Annotation and CodeGen  
+    - Annotations and code generation
         > (more information about annotations, see the source code: https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Annotations)
         ```
         sg_struct()
@@ -25,7 +25,7 @@
 -   **Graphics Rendering:**
     - Preparation for multi-GAPI (GAPI - graphical api) (using only abstractions and avoiding native api functions in external code (outside the implementation of abstract classes for different gapi))
     - Аn additional add-on to the glsl shader language for dividing shaders into render passes, specifying pass parameters, including shaders, as well as writing different shaders (fragment, vertex, geometric, etc.) in one file
-    - PBR (Physically Based Rendering) using Cook-Torrance BRDF
+    - PBR (Physically Based Rendering) using Cook-Torrance BRDF. Different maps are supporting:
         - Albedo Map
         - Normal Map
         - Roughness Map
