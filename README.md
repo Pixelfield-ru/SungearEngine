@@ -6,7 +6,7 @@
 -   **General:**
     - ECS
     - Audio(OpenAL)
-    - Parallel safety thread physics (Cooliders differents forms, RigidBodies)
+    - Parallel safety thread physics (colliders differents forms, RigidBodies)
     - Octotree with automatic subdivision
     - Support input from keyboard and mouse
     - Annotations and code generation
