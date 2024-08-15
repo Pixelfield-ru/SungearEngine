@@ -5,6 +5,7 @@
 #include <SGCore/Annotations/Annotations.h>
 #include <SGCore/Scene/Serializer.h>
 #include <SGCore/Utils/TypeTraits.h>
+#include "SGCore/Scene/NewSerializer.h"
 
 struct Base
 {
@@ -22,25 +23,27 @@ struct Derived : Base
 };
 
 template<>
-struct SGCore::Serde::SerializerSpec<Derived> : SGCore::Serde::BaseClasses<Base>
+struct SGCore::NewSerde::SerdeSpec<Derived> : SGCore::NewSerde::BaseTypes<Base>
 {
     static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Derived";
+    static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::ValueDataView<Derived>& dataView) noexcept;
+    static void serialize(SGCore::NewSerde::ISerializableValueView<Derived>& valueView) noexcept;
 
-    static void deserialize(SGCore::Serde::ValueDataView<Derived>& dataView) noexcept;
+    static void deserialize(SGCore::NewSerde::IDeserializableValueView<Derived>& valueView) noexcept;
 };
 
 template<>
-struct SGCore::Serde::SerializerSpec<Base> : SGCore::Serde::DerivedClasses<Derived>
+struct SGCore::NewSerde::SerdeSpec<Base> : SGCore::NewSerde::DerivedTypes<Derived>
 {
     static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Base";
+    static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::ValueDataView<Base>& dataView) noexcept;
+    static void serialize(SGCore::NewSerde::ISerializableValueView<Base>& valueView) noexcept;
 
-    static void deserialize(SGCore::Serde::ValueDataView<Base>& dataView) noexcept;
+    static void deserialize(SGCore::NewSerde::IDeserializableValueView<Base>& valueView) noexcept;
 };
 
 void coreInit();

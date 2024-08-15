@@ -3,5 +3,3 @@
 //
 
 #include "NewSerializer.h"
-
-SGCore::NewSerde::FormatType SGCore::NewSerde::Serializer::m_defaultFormatType = FormatType::JSON;

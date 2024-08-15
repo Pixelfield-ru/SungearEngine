@@ -51,28 +51,28 @@ struct MyStruct
 
 // ЭТАЛОН!!!!!!!!!!!!!!!!!!!!!
 
-void SGCore::Serde::SerializerSpec<Derived>::serialize(SGCore::Serde::ValueDataView<Derived>& dataView) noexcept
+void SGCore::NewSerde::SerdeSpec<Derived>::serialize(SGCore::NewSerde::ISerializableValueView<Derived>& valueView) noexcept
 {
-    SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_parentValue, "b", dataView.m_outputValue->b);
+    // SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_parentValue, "b", dataView.m_outputValue->b);
 }
 
-void SGCore::Serde::SerializerSpec<Derived>::deserialize(SGCore::Serde::ValueDataView<Derived>& dataView) noexcept
+void SGCore::NewSerde::SerdeSpec<Derived>::deserialize(SGCore::NewSerde::IDeserializableValueView<Derived>& valueView) noexcept
 {
-    dataView.m_outputValue->b = SGCore::Serde::Serializer::deserialize<float>(*dataView.m_value, "b", *dataView.m_log);
+    // dataView.m_outputValue->b = SGCore::Serde::Serializer::deserialize<float>(*dataView.m_value, "b", *dataView.m_log);
 }
 
 // ============================================================
 // ============================================================
 // ============================================================
 
-void SGCore::Serde::SerializerSpec<Base>::serialize(SGCore::Serde::ValueDataView<Base>& dataView) noexcept
+void SGCore::NewSerde::SerdeSpec<Base>::serialize(SGCore::NewSerde::ISerializableValueView<Base>& valueView) noexcept
 {
-    SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_value, "a", dataView.m_outputValue->a);
+    // SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_value, "a", dataView.m_outputValue->a);
 }
 
-void SGCore::Serde::SerializerSpec<Base>::deserialize(SGCore::Serde::ValueDataView<Base>& dataView) noexcept
+void SGCore::NewSerde::SerdeSpec<Base>::deserialize(SGCore::NewSerde::IDeserializableValueView<Base>& valueView) noexcept
 {
-    dataView.m_outputValue->a = SGCore::Serde::Serializer::deserialize<int>(*dataView.m_value, "a", *dataView.m_log);
+    // dataView.m_outputValue->a = SGCore::Serde::Serializer::deserialize<int>(*dataView.m_value, "a", *dataView.m_log);
 }
 
 // ==================================================================================
@@ -171,7 +171,7 @@ void coreInit()
     std::unique_ptr<Base> tst = std::make_unique<Derived>();
     tst->a = -1;
     //dynamic_cast<Derived*>(tst)->b = 4;
-    Serde::Serializer::serialize(document, document, "testSerde", tst);
+    NewSerde::Serializer::toFormat(tst);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
@@ -186,9 +186,9 @@ void coreInit()
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());
 
     std::string outputLog;
-    auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
+    // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 
-    std::printf("deser: %i, %f\n", deser->a, 0.0f);
+    // std::printf("deser: %i, %f\n", deser->a, 0.0f);
 
     std::printf("deser log: %s\n", outputLog.c_str());
 
