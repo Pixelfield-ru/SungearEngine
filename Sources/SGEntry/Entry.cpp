@@ -49,36 +49,6 @@ struct MyStruct
     bool m_bool = true;
 };
 
-// ЭТАЛОН!!!!!!!!!!!!!!!!!!!!!
-
-void SGCore::NewSerde::SerdeSpec<Derived>::serialize(SGCore::NewSerde::ISerializableValueView<Derived>& valueView) noexcept
-{
-    std::printf("derived serializing\n");
-    // SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_parentValue, "b", dataView.m_outputValue->b);
-}
-
-void SGCore::NewSerde::SerdeSpec<Derived>::deserialize(SGCore::NewSerde::IDeserializableValueView<Derived>& valueView) noexcept
-{
-    // dataView.m_outputValue->b = SGCore::Serde::Serializer::deserialize<float>(*dataView.m_value, "b", *dataView.m_log);
-}
-
-// ============================================================
-// ============================================================
-// ============================================================
-
-void SGCore::NewSerde::SerdeSpec<Base>::serialize(SGCore::NewSerde::ISerializableValueView<Base>& valueView) noexcept
-{
-    std::printf("base serializing\n");
-    // SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_value, "a", dataView.m_outputValue->a);
-}
-
-void SGCore::NewSerde::SerdeSpec<Base>::deserialize(SGCore::NewSerde::IDeserializableValueView<Base>& valueView) noexcept
-{
-    // dataView.m_outputValue->a = SGCore::Serde::Serializer::deserialize<int>(*dataView.m_value, "a", *dataView.m_log);
-}
-
-// ==================================================================================
-
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
