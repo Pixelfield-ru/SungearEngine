@@ -171,16 +171,9 @@ void coreInit()
     std::unique_ptr<Base> tst = std::make_unique<Derived>();
     tst->a = -1;
     //dynamic_cast<Derived*>(tst)->b = 4;
-    NewSerde::Serializer::toFormat(tst);
+    FileUtils::writeToFile("serializer_test.txt", NewSerde::Serializer::toFormat(tst), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
-
-    rapidjson::StringBuffer stringBuffer;
-    stringBuffer.Clear();
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
-    document.Accept(writer);
-    
-    FileUtils::writeToFile("serializer_test.txt", stringBuffer.GetString(), false, true);
 
     rapidjson::Document fromDocument;
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());

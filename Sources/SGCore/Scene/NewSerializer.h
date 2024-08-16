@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_NEWSERIALIZER_H
 
 #include "SGCore/Utils/TypeTraits.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore::NewSerde
 {
@@ -16,8 +17,7 @@ namespace SGCore::NewSerde
         YAML
     };
 
-    // DO NOT STORE ANYWHERE
-    // DOES NOT OWN ANYTHING
+    // DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING
     template<typename T>
     struct IDeserializableValueView
     {
@@ -27,24 +27,34 @@ namespace SGCore::NewSerde
     template<typename T>
     struct JSONSerializableValueView;
 
-    struct ISerializableValueViewFormatPointers
+    template<FormatType TFormatType>
+    struct SerializableValueViewFormatPointers
     {
-        virtual void copyFormatPointers(ISerializableValueViewFormatPointers* to) const noexcept = 0;
+        static_assert(always_false<decltype(TFormatType)>::value,
+                      "This format is not implemented. (For engine devs: please, implement this format)");
+
+        // must be implemented
+        void copyFormatPointers(SerializableValueViewFormatPointers<TFormatType>& to) const noexcept
+        {
+
+        }
     };
 
-    struct JSONSerializableValueViewFormatPointers final : ISerializableValueViewFormatPointers
+    template<>
+    struct SerializableValueViewFormatPointers<FormatType::JSON>
     {
-        void copyFormatPointers(ISerializableValueViewFormatPointers* to) const noexcept final
+        void copyFormatPointers(SerializableValueViewFormatPointers<FormatType::JSON>& to) const noexcept
         {
-            to->m_document = m_document;
+            to.m_document = m_document;
+
+            std::printf("called json copyFormatPointersImpl\n");
         }
 
     protected:
         rapidjson::Document* m_document { };
     };
 
-    // DO NOT STORE ANYWHERE
-    // DOES NOT OWN ANYTHING
+    // DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING
     template<typename T>
     struct ISerializableValueView
     {
@@ -61,12 +71,13 @@ namespace SGCore::NewSerde
         void copyFormatPointers(ISerializableValueView<T0>& to) noexcept
         {
             assert(to.getFormatType() == m_formatType &&
-                   "SGCore::Serde::ISerializableValueView::copyFormatPointers: to format and from format types are not equal.");
+                   "SGCore::Serde::ISerializableValueView::copyFormatPointers: [to] format and [from] format types are not equal.");
 
             switch(to.getFormatType())
             {
                 case FormatType::JSON:
-                    copyFormatPointersImpl(static_cast<JSONSerializableValueView<T0>&>(to));
+                    reinterpret_cast<SerializableValueViewFormatPointers<FormatType::JSON>*>(this)->copyFormatPointers(
+                            reinterpret_cast<SerializableValueViewFormatPointers<FormatType::JSON>&>(to));
                     break;
                 case FormatType::BSON:
                     break;
@@ -76,28 +87,19 @@ namespace SGCore::NewSerde
         }
 
     protected:
-        virtual void copyFormatPointersImpl(ISerializableValueView<T>& to) noexcept = 0;
-
         FormatType m_formatType = FormatType::JSON;
         Ref<ISerializableValueView<T>> m_parent;
     };
 
     template<typename T>
-    struct JSONSerializableValueView final : public ISerializableValueView<T>
+    struct JSONSerializableValueView final : public ISerializableValueView<T>,
+                                             public SerializableValueViewFormatPointers<FormatType::JSON>
     {
         friend struct Serializer;
 
         JSONSerializableValueView()
         {
             this->m_formatType = FormatType::JSON;
-        }
-
-    protected:
-        void copyFormatPointersImpl(ISerializableValueView<T>& to) noexcept final
-        {
-            //to.m_document = m_document;
-
-            std::printf("called json copyFormatPointersImpl\n");
         }
     };
 
@@ -106,6 +108,10 @@ namespace SGCore::NewSerde
     // ==============================================================================
 
     // USE THAT STRUCTS TO DEFINE BASE CLASSES OF SERIALIZABLE TYPE AND DERIVED CLASSES
+    /**
+     * Contains base types
+     * @tparam Cls
+     */
     template<typename... Cls>
     struct BaseTypes
     {
@@ -115,6 +121,10 @@ namespace SGCore::NewSerde
         using get_base_type = extract<Idx, Cls...>::type;
     };
 
+    /**
+     * Contains derived types
+     * @tparam Cls
+     */
     template<typename... Cls>
     struct DerivedTypes
     {
@@ -128,22 +138,42 @@ namespace SGCore::NewSerde
     // ==============================================================================
     // ==============================================================================
 
+    /**
+     * Primary SerdeSpec structure. Use this structure body as example to implement custom SerdeSpec.\n
+     * @tparam T
+     */
     template<typename T>
     struct SerdeSpec : BaseTypes<>, DerivedTypes<>
     {
         static_assert(always_false<T>::value,
                       "This type is not serializable. Please, implement specialization of SerdeSpec for this type.");
 
-        // the type name of T
+        /**
+         * The type name of T
+         */
         static inline const std::string type_name = "unknown";
-        // is T is pointer type
+        /**
+         * Is T is pointer type
+         */
         static inline constexpr bool is_pointer_type = false;
+        /**
+         * OPTIONAL (IF TYPES IS POINTER): type that pointer points to
+         */
+        using element_type = void;
 
+        /**
+         * Serializes only T type members.
+         * @param valueView
+         */
         static void serialize(ISerializableValueView<T>& valueView)
         {
 
         }
 
+        /**
+         * Dserializes only T type members.
+         * @param valueView
+         */
         static void deserialize(IDeserializableValueView<T>& valueView)
         {
 
@@ -152,8 +182,15 @@ namespace SGCore::NewSerde
 
     struct Serializer
     {
+        /**
+         * Converts object to some format (JSON, BSON, YAML, etc)
+         * @tparam T
+         * @param value
+         * @param formatType
+         * @return
+         */
         template<typename T>
-        static void toFormat(T& value, FormatType formatType = m_defaultFormatType) noexcept
+        static std::string toFormat(T& value, FormatType formatType = m_defaultFormatType) noexcept
         {
             switch (m_defaultFormatType)
             {
@@ -162,14 +199,15 @@ namespace SGCore::NewSerde
                     rapidjson::Document document;
                     document.SetObject();
 
-                    toJSON(document, value);
-                    break;
+                    return toJSON(document, value);
                 }
                 case FormatType::BSON:
                     break;
                 case FormatType::YAML:
                     break;
             }
+
+            return "";
         }
 
         template<typename T>
@@ -180,6 +218,12 @@ namespace SGCore::NewSerde
 
         }
 
+        /**
+         * Creates value view for serializable value depending on current format type
+         * @tparam T
+         * @param formatType
+         * @return
+         */
         template<typename T>
         static Ref<ISerializableValueView<T>> createSerializableValueView(FormatType formatType) noexcept
         {
@@ -199,39 +243,100 @@ namespace SGCore::NewSerde
     private:
         static inline FormatType m_defaultFormatType = SGCore::NewSerde::FormatType::JSON;
 
+        /**
+         * Converts object to JSON format
+         * @tparam T
+         * @param toDocument
+         * @param value
+         * @return
+         */
         template<typename T>
-        static void toJSON(rapidjson::Document& toDocument,
-                           const T& value)
+        static std::string toJSON(rapidjson::Document& toDocument,
+                                  const T& value)
         {
+            // adding version of document
             toDocument.AddMember("version", 1, toDocument.GetAllocator());
 
+            // adding type name of T
             rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
             typeNameSectionValue.SetString(SerdeSpec<T>::type_name.c_str(), SerdeSpec<T>::type_name.length());
             toDocument.AddMember("typeName", typeNameSectionValue, toDocument.GetAllocator());
 
+            // creating section that will contain all members of T
             rapidjson::Value valueSectionValue(rapidjson::kObjectType);
 
             // ==== serialization code
 
+            // creating view of value with format pointers
             auto valueView = MakeRef<JSONSerializableValueView<T>>();
             valueView->m_data = &value;
             valueView->m_document = &toDocument;
 
-            SerdeSpec<T>::serialize(*valueView);
+            // serializing value with attempt at dynamic casts to derived types
+            serializeWithDynamicChecks<T>(*valueView);
 
             // =======================
 
+            // adding value section to document
             toDocument.AddMember("value", valueSectionValue, toDocument.GetAllocator());
+
+            // converting to string
+            rapidjson::StringBuffer stringBuffer;
+            stringBuffer.Clear();
+            rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+            toDocument.Accept(writer);
+
+            return stringBuffer.GetString();
+        }
+
+        /**
+         * Serializes value with attempt at dynamic casts to derived types.\n
+         * If all attempts of casting value to derived types are failed than serializing only T type members and members of all base types.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T>
+        static void serializeWithDynamicChecks(ISerializableValueView<T>& valueView)
+        {
+            if constexpr(SerdeSpec<T>::is_pointer_type) // serializing value using dynamic checks
+            {
+                // getting element_type that pointer contains
+                using ptr_element_type = SerdeSpec<T>::element_type;
+
+                // creating view that contains element_type object
+                auto tmpView = Serializer::createSerializableValueView<ptr_element_type>(valueView.getFormatType());
+                valueView.template copyFormatPointers<ptr_element_type>(*tmpView);
+                tmpView->m_data = &(**valueView.m_data);
+
+                // todo: serializing base types
+
+                // todo: serializing derived types
+
+                // serializing element_type type members
+                SerdeSpec<T>::serialize(valueView);
+
+                return;
+            }
+
+            // serialize without dynamic checks (static serialization)
+
+            // TODO: serializing base types
+
+            // serializing only T type members
+            SerdeSpec<T>::serialize(valueView);
         }
     };
+
+    // =========================================================================================
+    // STANDARD SerdeSpec IMPLEMENTATIONS
+    // =========================================================================================
 
     template<typename T>
     struct SerdeSpec<std::unique_ptr<T>> : BaseTypes<>, DerivedTypes<>
     {
-        // the type name of T
         static inline const std::string type_name = SerdeSpec<T>::type_name;
-        // is T is pointer type
         static inline constexpr bool is_pointer_type = true;
+        using element_type = T;
 
         static void serialize(ISerializableValueView<std::unique_ptr<T>>& valueView)
         {
