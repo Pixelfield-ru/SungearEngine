@@ -29,12 +29,12 @@ struct SGCore::NewSerde::SerdeSpec<Derived, TFormatType> : SGCore::NewSerde::Bas
     static inline const std::string type_name = "Derived";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::NewSerde::ISerializableValueView<Derived>& valueView) noexcept
+    static void serialize(SGCore::NewSerde::SerializableValueView<Derived, TFormatType>& valueView) noexcept
     {
         std::printf("derived serializing\n");
     }
 
-    static void deserialize(SGCore::NewSerde::IDeserializableValueView<Derived>& valueView) noexcept
+    static void deserialize(SGCore::NewSerde::DeserializableValueView<Derived, TFormatType>& valueView) noexcept
     {
 
     }
@@ -47,12 +47,12 @@ struct SGCore::NewSerde::SerdeSpec<Base, TFormatType> : SGCore::NewSerde::Derive
     static inline const std::string type_name = "Base";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::NewSerde::ISerializableValueView<Base>& valueView) noexcept
+    static void serialize(SGCore::NewSerde::SerializableValueView<Base, TFormatType>& valueView) noexcept
     {
         std::printf("base serializing\n");
     }
 
-    static void deserialize(SGCore::NewSerde::IDeserializableValueView<Base>& valueView) noexcept
+    static void deserialize(SGCore::NewSerde::DeserializableValueView<Base, TFormatType>& valueView) noexcept
     {
 
     }
