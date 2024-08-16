@@ -180,6 +180,45 @@ namespace SGCore::NewSerde
         }
     };
 
+    // ================================================================
+    // ================================================================
+    // ================================================================
+
+    struct Utils
+    {
+        /**
+         * Is SerdeSpec of T provides base types.
+         * @tparam T
+         * @return
+         */
+        template<typename T>
+        static consteval bool isBaseTypesProvided()
+        {
+            return requires {
+                SerdeSpec<T>::base_classes_count,
+                SerdeSpec<T>::get_base_type;
+            };
+        }
+
+        /**
+        * Is SerdeSpec of T provides derived types.
+        * @tparam T
+        * @return
+        */
+        template<typename T>
+        static consteval bool isDerivedTypesProvided()
+        {
+            return requires {
+                SerdeSpec<T>::derived_classes_count,
+                SerdeSpec<T>::get_derived_type;
+            };
+        }
+    };
+
+    // ================================================================
+    // ================================================================
+    // ================================================================
+
     struct Serializer
     {
         /**
@@ -308,9 +347,11 @@ namespace SGCore::NewSerde
                 valueView.template copyFormatPointers<ptr_element_type>(*tmpView);
                 tmpView->m_data = &(**valueView.m_data);
 
-                // todo: serializing base types
+                // serializing base types
+                serializeBaseTypes(*tmpView);
 
-                // todo: serializing derived types
+                // serializing derived types
+                serializeDerivedTypes(*tmpView);
 
                 // serializing element_type type members
                 SerdeSpec<T>::serialize(valueView);
@@ -320,10 +361,125 @@ namespace SGCore::NewSerde
 
             // serialize without dynamic checks (static serialization)
 
-            // TODO: serializing base types
+            // serializing base types
+            serializeBaseTypes(valueView);
 
             // serializing only T type members
             SerdeSpec<T>::serialize(valueView);
+        }
+
+        // =====================================================================================
+        // =====================================================================================
+        // =====================================================================================
+
+        /**
+         * Serializes base type (BaseT) of parent type (OriginalT)
+         * @tparam OriginalT
+         * @tparam BaseT
+         * @param valueView
+         */
+        template<typename OriginalT, typename BaseT>
+        static void serializeBaseType(ISerializableValueView<OriginalT>& valueView) noexcept
+        {
+            // converting OriginalT value view to BaseT value view to pass into SerdeSpec
+            auto tmpView = Serializer::createSerializableValueView<BaseT>(valueView.getFormatType());
+            valueView.template copyFormatPointers<BaseT>(*tmpView);
+            tmpView->m_data = &(static_cast<const BaseT&>(*valueView.m_data));
+
+            // serialize BaseT`s base types
+            serializeBaseTypes(*tmpView);
+
+            // passing tmpView with BaseT to SerdeSpec
+            SerdeSpec<BaseT>::serialize(*tmpView);
+        }
+
+        /**
+         * Implementation of serializing base types of T. Uses unpacking.
+         * @tparam T
+         * @tparam Indices
+         * @param valueView
+         */
+        template<typename T, std::size_t... Indices>
+        static void serializeBaseTypesImpl(ISerializableValueView<T>& valueView,
+                                           std::index_sequence<Indices...>) noexcept
+        {
+            // unpacking variadic template
+            (serializeBaseType<T, typename SerdeSpec<T>::template get_base_type<Indices>>(valueView), ...);
+        }
+
+        /**
+         * Serializes all base types of T.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T>
+        static void serializeBaseTypes(ISerializableValueView<T>& valueView) noexcept
+        {
+            // serializing base types only if information of them was provided
+            if constexpr(Utils::isBaseTypesProvided<T>())
+            {
+                serializeBaseTypesImpl(valueView, std::make_index_sequence<SerdeSpec<T>::base_classes_count> {});
+            }
+        }
+
+        // =====================================================================================
+        // =====================================================================================
+        // =====================================================================================
+
+        /**
+         * Serializes derived type (BaseT) of parent type (OriginalT)
+         * @tparam OriginalT
+         * @tparam BaseT
+         * @param valueView
+         */
+        template<typename OriginalT, typename DerivedT>
+        static void serializeDerivedType(ISerializableValueView<OriginalT>& valueView) noexcept
+        {
+            const auto* derivedTypeObj = dynamic_cast<const DerivedT*>(valueView.m_data);
+            if(derivedTypeObj)
+            {
+                // converting OriginalT value view to DerivedT value view to pass into SerdeSpec
+                auto tmpView = Serializer::createSerializableValueView<DerivedT>(valueView.getFormatType());
+                valueView.template copyFormatPointers<DerivedT>(*tmpView);
+                tmpView->m_data = derivedTypeObj;
+
+                // todo: setting new type of value in typeName section
+
+                // trying to serialize as one of DerivedT`s derived types
+                serializeDerivedTypes(*tmpView);
+
+                // passing tmpView with DerivedT to SerdeSpec
+                SerdeSpec<DerivedT>::serialize(*tmpView);
+            }
+        }
+
+        /**
+         * Implementation of serializing derived types of T. Uses unpacking.
+         * @tparam T
+         * @tparam Indices
+         * @param valueView
+         */
+        template<typename T, std::size_t... Indices>
+        static void serializeDerivedTypesImpl(ISerializableValueView <T>& valueView,
+                                              std::index_sequence<Indices...>) noexcept
+        {
+            // unpacking variadic template
+            (serializeDerivedType<T, typename SerdeSpec<T>::template get_derived_type<Indices>>(valueView), ...);
+        }
+
+        /**
+         * Serializes all derived types of T.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T>
+        static void serializeDerivedTypes(ISerializableValueView<T>& valueView) noexcept
+        {
+            // serializing derived types only if information of them was provided
+            if constexpr(Utils::isDerivedTypesProvided<T>())
+            {
+                serializeDerivedTypesImpl(valueView, std::make_index_sequence<SerdeSpec<T>::derived_classes_count> {});
+            }
         }
     };
 

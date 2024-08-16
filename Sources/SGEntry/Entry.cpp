@@ -53,6 +53,7 @@ struct MyStruct
 
 void SGCore::NewSerde::SerdeSpec<Derived>::serialize(SGCore::NewSerde::ISerializableValueView<Derived>& valueView) noexcept
 {
+    std::printf("derived serializing\n");
     // SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_parentValue, "b", dataView.m_outputValue->b);
 }
 
@@ -67,6 +68,7 @@ void SGCore::NewSerde::SerdeSpec<Derived>::deserialize(SGCore::NewSerde::IDeseri
 
 void SGCore::NewSerde::SerdeSpec<Base>::serialize(SGCore::NewSerde::ISerializableValueView<Base>& valueView) noexcept
 {
+    std::printf("base serializing\n");
     // SGCore::Serde::Serializer::serialize(*dataView.m_document, *dataView.m_value, "a", dataView.m_outputValue->a);
 }
 
@@ -169,7 +171,7 @@ void coreInit()
     testSerde.m_bool = true;
 
     std::unique_ptr<Base> tst = std::make_unique<Derived>();
-    tst->a = -1;
+    // tst->a = -1;
     //dynamic_cast<Derived*>(tst)->b = 4;
     FileUtils::writeToFile("serializer_test.txt", NewSerde::Serializer::toFormat(tst), false, true);
 
