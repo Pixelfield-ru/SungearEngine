@@ -31,6 +31,7 @@ struct SGCore::NewSerde::SerdeSpec<Derived, TFormatType> : SGCore::NewSerde::Bas
 
     static void serialize(SGCore::NewSerde::SerializableValueView<Derived, TFormatType>& valueView) noexcept
     {
+        valueView.getValueContainer().addMember("b", valueView.m_data->b);
         std::printf("derived serializing\n");
     }
 
@@ -49,6 +50,7 @@ struct SGCore::NewSerde::SerdeSpec<Base, TFormatType> : SGCore::NewSerde::Derive
 
     static void serialize(SGCore::NewSerde::SerializableValueView<Base, TFormatType>& valueView) noexcept
     {
+        valueView.getValueContainer().addMember("a", valueView.m_data->a);
         std::printf("base serializing\n");
     }
 
