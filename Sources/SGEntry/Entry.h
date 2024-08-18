@@ -37,7 +37,13 @@ struct SGCore::NewSerde::SerdeSpec<Derived, TFormatType> : SGCore::NewSerde::Bas
 
     static void deserialize(SGCore::NewSerde::DeserializableValueView<Derived, TFormatType>& valueView) noexcept
     {
+        const auto b = valueView.getValueContainer().template getMember<float>("b");
+        if(b)
+        {
+            valueView.m_data->b = *b;
+        }
 
+        std::printf("derived deserializing\n");
     }
 };
 
@@ -56,7 +62,12 @@ struct SGCore::NewSerde::SerdeSpec<Base, TFormatType> : SGCore::NewSerde::Derive
 
     static void deserialize(SGCore::NewSerde::DeserializableValueView<Base, TFormatType>& valueView) noexcept
     {
-
+        const auto a = valueView.getValueContainer().template getMember<std::int32_t>("a");
+        if(a)
+        {
+            valueView.m_data->a = *a;
+        }
+        std::printf("base deserializing\n");
     }
 };
 
