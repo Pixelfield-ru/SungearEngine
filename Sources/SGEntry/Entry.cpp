@@ -140,7 +140,7 @@ void coreInit()
     testSerde.m_name = "Ilya";
     testSerde.m_bool = true;
 
-    std::unique_ptr<Base> tst = std::make_unique<Derived>();
+    std::unique_ptr<Base> tst = std::make_unique<Derived0>();
     tst->a = -1;
     dynamic_cast<Derived*>(tst.get())->b = 20.1f;
     //dynamic_cast<Derived*>(tst)->b = 4;
@@ -158,9 +158,14 @@ void coreInit()
     // std::printf("deser: %i, %f\n", deser->a, 0.0f);
 
     auto* derDeser = dynamic_cast<Derived*>(deser.get());
+    auto* derDeser0 = dynamic_cast<Derived0*>(deser.get());
     if(derDeser)
     {
         std::printf("deserialized derived: %s\n", fmt::format("a: {0}, b: {1}", derDeser->a, derDeser->b).c_str());
+    }
+    if(derDeser0)
+    {
+        std::printf("deserialized derived0: %s\n", fmt::format("a: {0}, b: {1}, c: {2}", derDeser0->a, derDeser0->b, derDeser0->c).c_str());
     }
     else
     {

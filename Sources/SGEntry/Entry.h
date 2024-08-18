@@ -22,8 +22,38 @@ struct Derived : Base
     float b = 3.14f;
 };
 
+struct Derived0 : Derived
+{
+    float c = 5.1f;
+};
+
 template<SGCore::NewSerde::FormatType TFormatType>
-struct SGCore::NewSerde::SerdeSpec<Derived, TFormatType> : SGCore::NewSerde::BaseTypes<Base>
+struct SGCore::NewSerde::SerdeSpec<Derived0, TFormatType> : SGCore::NewSerde::BaseTypes<Derived>
+{
+    static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
+    static inline const std::string type_name = "Derived0";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::NewSerde::SerializableValueView<Derived0, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("c", valueView.m_data->c);
+        std::printf("derived0 serializing\n");
+    }
+
+    static void deserialize(SGCore::NewSerde::DeserializableValueView<Derived0, TFormatType>& valueView) noexcept
+    {
+        const auto c = valueView.getValueContainer().template getMember<float>("c");
+        if(c)
+        {
+            valueView.m_data->c = *c;
+        }
+
+        std::printf("derived0 deserializing\n");
+    }
+};
+
+template<SGCore::NewSerde::FormatType TFormatType>
+struct SGCore::NewSerde::SerdeSpec<Derived, TFormatType> : SGCore::NewSerde::BaseTypes<Base>, SGCore::NewSerde::DerivedTypes<Derived0>
 {
     static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Derived";

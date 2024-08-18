@@ -1075,6 +1075,9 @@ namespace SGCore::NewSerde
 
             // if DerivedT is not suitable than continue to search
             deserializeAsOneOfDerivedTypes(tmpView);
+
+            // assigning allocated pointer to original valueView
+            valueView.m_data = tmpView.m_data;
         }
 
         template<typename T, FormatType TFormatType, std::size_t... Indices>
@@ -1175,7 +1178,6 @@ namespace SGCore::NewSerde
 
         static void serialize(SerializableValueView<float, TFormatType>& valueView)
         {
-            std::printf("called float serialize\n");
             valueView.getValueContainer().setAsFloat(*valueView.m_data);
         }
 
@@ -1195,7 +1197,6 @@ namespace SGCore::NewSerde
 
         static void serialize(SerializableValueView<std::int32_t, TFormatType>& valueView)
         {
-            std::printf("called int32 serialize\n");
             valueView.getValueContainer().setAsInt64(*valueView.m_data);
         }
 
