@@ -144,14 +144,14 @@ void coreInit()
     tst->a = -1;
     dynamic_cast<Derived*>(tst.get())->b = 20.1f;
     //dynamic_cast<Derived*>(tst)->b = 4;
-    FileUtils::writeToFile("serializer_test.txt", NewSerde::Serializer::toFormat(tst), false, true);
+    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat(tst), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
     std::string outputLog;
 
     std::unique_ptr<Base> deser;
-    NewSerde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
+    Serde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
 
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 
@@ -159,20 +159,6 @@ void coreInit()
 
     auto* derDeser = dynamic_cast<Derived*>(deser.get());
     auto* derDeser0 = dynamic_cast<Derived0*>(deser.get());
-    if(derDeser)
-    {
-        std::printf("deserialized derived: %s\n", fmt::format("a: {0}, b: {1}", derDeser->a, derDeser->b).c_str());
-    }
-    if(derDeser0)
-    {
-        std::printf("deserialized derived0: %s\n", fmt::format("a: {0}, b: {1}, c: {2}", derDeser0->a, derDeser0->b, derDeser0->c).c_str());
-    }
-    else
-    {
-        std::printf("deserialized base: %s\n", fmt::format("a: {0}", deser->a).c_str());
-    }
-
-    std::printf("deser log: %s\n", outputLog.c_str());
 
     /*rapidjson::Document fromDocument;
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());

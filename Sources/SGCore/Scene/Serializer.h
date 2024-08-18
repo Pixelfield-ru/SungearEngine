@@ -1,1676 +1,1239 @@
 //
-// Created by ilya on 24.06.24.
+// Created by Ilya on 14.08.2024.
 //
 
 #ifndef SUNGEARENGINE_SERIALIZER_H
 #define SUNGEARENGINE_SERIALIZER_H
 
-#include <SGCore/pch.h>
-
 #include "SGCore/Utils/TypeTraits.h"
+#include "SGCore/Main/CoreGlobals.h"
 
-#include "SGCore/Memory/Assets/IAsset.h"
-#include "SGCore/Annotations/AnnotationsProcessor.h"
-
-#include "SGCore/Utils/Event.h"
-
-// HERE IS SPECIALIZATIONS OF SerializerSpec FOR BUILT-IN TYPES OF C++ AND LIBRARIES TYPES
-
-namespace SGCore
+namespace SGCore::Serde
 {
-    namespace Serde
+    enum class FormatType
     {
-        template<typename... Cls>
-        struct BaseClasses
-        {
-            static constexpr std::uint64_t base_classes_count = sizeof...(Cls);
+        JSON,
+        BSON,
+        YAML
+    };
 
-            template<std::int64_t Idx>
-            using get_base_type = extract<Idx, Cls...>::type;
-        };
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
 
-        template<typename... Cls>
-        struct DerivedClasses
-        {
-            static constexpr std::uint64_t derived_classes_count = sizeof...(Cls);
+    // USE THAT STRUCTS TO DEFINE BASE CLASSES OF SERIALIZABLE TYPE AND DERIVED CLASSES
+    /**
+     * Contains base types
+     * @tparam Cls
+     */
+    template<typename... Cls>
+    struct BaseTypes
+    {
+        static constexpr std::uint64_t base_classes_count = sizeof...(Cls);
 
-            template<std::int64_t Idx>
-            using get_derived_type = extract<Idx, Cls...>::type;
-        };
+        template<std::int64_t Idx>
+        using get_base_type = extract<Idx, Cls...>::type;
+    };
 
-        // DO NOT STORE ANYWHERE
-        // THIS STRUCT DOES NOT OWN ANYTHING
+    /**
+     * Contains derived types
+     * @tparam Cls
+     */
+    template<typename... Cls>
+    struct DerivedTypes
+    {
+        static constexpr std::uint64_t derived_classes_count = sizeof...(Cls);
+
+        template<std::int64_t Idx>
+        using get_derived_type = extract<Idx, Cls...>::type;
+    };
+
+    template<typename T, FormatType TFormatType>
+    struct SerdeSpec;
+
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
+
+    /**
+     * Container that contains pointers to object format specific types.\n
+     * You must implement all next functions and members in your specialization of this struct.\n
+     * DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING.
+     * @tparam T
+     * @tparam TFormatType
+     */
+    template<FormatType TFormatType>
+    struct DeserializableValueContainer
+    {
+        friend struct Serializer;
+
+        template<typename T0, FormatType TFormatType0>
+        friend struct DeserializableValueView;
+
         template<typename T>
-        struct ValueDataView
+        T getMember(const std::string& memberName) noexcept
         {
-            rapidjson::Document*    /*const*/ m_document {};
-            rapidjson::Value*       /*const*/ m_parentKey {};
-            rapidjson::Value*       /*const*/ m_parentValue {};
-            rapidjson::Value*       /*const*/ m_valueTypeName {};
-            rapidjson::Value*       /*const*/ m_value {};
-            std::string* m_log { };
-            T* m_outputValue {};
 
-            ValueDataView() = default;
-            ValueDataView(const ValueDataView&) = default;
-            ValueDataView(ValueDataView&&) = default;
-
-            template<typename T0>
-            ValueDataView(const ValueDataView<T0>& rhs) noexcept
-            {
-                *this = rhs;
-            }
-
-            template<typename T0>
-            ValueDataView<T>& operator=(ValueDataView<T0>& rhs) noexcept
-            {
-                m_document = rhs.m_document;
-                m_parentKey = rhs.m_parentKey;
-                m_parentValue = rhs.m_parentValue;
-                m_valueTypeName = rhs.m_valueTypeName;
-                m_value = rhs.m_value;
-                m_log = rhs.m_log;
-                m_outputValue = (T*) rhs.m_outputValue;
-
-                return *this;
-            }
-
-            template<typename T0>
-            ValueDataView<T0> copyMeta() noexcept
-            {
-                ValueDataView<T0> tmp { };
-                tmp.m_document = m_document;
-                tmp.m_parentKey = m_parentKey;
-                tmp.m_parentValue = m_parentValue;
-                tmp.m_valueTypeName = m_valueTypeName;
-                tmp.m_value = m_value;
-                tmp.m_log = m_log;
-
-                return tmp;
-            }
-        };
+        }
 
         /**
-         * You must implement rapidjson_type and type_name
-         * @tparam T
+         * Getting this container value as array.
+         * @param f
          */
         template<typename T>
-        struct SerializerSpec : BaseClasses<>, DerivedClasses<>
+        [[nodiscard]] std::vector<T> getAsArray() noexcept
         {
-            static_assert(always_false<T>::value,
-                          "This type is not serializable. Please, implement specialization of SerializerSpec for this type.");
 
-            static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
-            static inline const std::string type_name = "unknown";
+        }
 
-            /**
-             * Call this if you want to serialize your value directly in value section\n
-             * Serializes only data of value type
-             */
-            static void serialize(ValueDataView<T>& valueData) noexcept
+        [[nodiscard]] std::int64_t getAsInt64() const noexcept
+        {
+
+        }
+
+        [[nodiscard]] float getAsFloat() const noexcept
+        {
+
+        }
+
+        [[nodiscard]] bool isNull() const noexcept
+        {
+
+        }
+
+    private:
+        DeserializableValueContainer<TFormatType>* m_parent { };
+        std::string* m_outputLog { };
+    };
+
+    template<>
+    struct DeserializableValueContainer<FormatType::JSON>
+    {
+        friend struct Serializer;
+
+        template<typename T0, FormatType TFormatType0>
+        friend struct DeserializableValueView;
+
+        template<typename T>
+        std::optional<T> getMember(const std::string& memberName) noexcept
+        {
+            if(!(m_thisValue || m_document))
             {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': m_thisValue or m_document is null.\n";
+                }
+
+                return std::nullopt;
             }
 
-            /**
-             * Call this if you want to deserialize your value directly from value section\n
-             * Deserializes only data of value type without checking for derived types (no dynamic casts)
-             * @param toDocument
-             * @param parent
-             * @param value
-             */
-            static void deserialize(ValueDataView<T>& valueData) noexcept
+            if(!m_thisValue->HasMember(memberName.c_str()))
             {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not exist.\n";
+                }
+
+                return std::nullopt;
             }
-        };
 
-        struct Serializer
-        {
-            template<typename T>
-            struct Common
+            // getting member
+            auto& member = (*m_thisValue)[memberName.c_str()];
+
+            if(!member.HasMember("typeName"))
             {
-                static Event<void(rapidjson::Document& toDocument,
-                                  rapidjson::Value& parent,
-                                  const T& value,
-                                  bool& isDynamicCastSuccessful)> doDynamicCasts;
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not have 'typeName' section.\n";
+                }
 
-                static Event<void(rapidjson::Value& parent,
-                                  rapidjson::Value& value,
-                                  const std::string& typeName,
-                                  bool& isTypeNamesChecksSuccessful,
-                                  T*& outputCastedValue)> doTypeNameChecks;
+                return std::nullopt;
+            }
+
+            // getting typeName section of member
+            const std::string& typeName = member["typeName"].GetString();
+
+            if(!member.HasMember("value"))
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not have 'value' section.\n";
+                }
+
+                return std::nullopt;
+            }
+
+            // getting value section of member
+            auto& memberValue = member["value"];
+
+            T outputValue { };
+
+            // creating value view of member
+            DeserializableValueView<T, FormatType::JSON> valueView { };
+            valueView.getValueContainer().m_document = m_document;
+            valueView.getValueContainer().m_thisValue = &memberValue;
+            valueView.getValueContainer().m_parent = this;
+            valueView.getValueContainer().m_outputLog = m_outputLog;
+            valueView.getValueContainer().m_typeName = typeName;
+            valueView.m_data = &outputValue;
+
+            // deserializing member with dynamic checks
+            Serializer::deserializeWithDynamicChecks(valueView);
+
+            return outputValue;
+        }
+
+        template<typename T>
+        [[nodiscard]] std::vector<T> getAsArray() noexcept
+        {
+            if(!(m_thisValue || m_document))
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get value as array: m_thisValue or m_document is null.\n";
+                }
+
+                return { };
+            }
+
+            if(!m_thisValue->IsArray())
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get value as array: value is not an array.\n";
+                }
+
+                return { };
+            }
+
+            std::vector<T> outputValue;
+
+            for(std::size_t i = 0; i < m_thisValue->Size(); ++i)
+            {
+                T tmpVal { };
+
+                auto& rootValue = (*m_thisValue)[i];
+
+                if(!rootValue.HasMember("typeName"))
+                {
+                    if(m_outputLog)
+                    {
+                        *m_outputLog = "Error: Can not get member with index '" + std::to_string(i) +
+                                       "' from array: this member does not have 'typeName' section.\n";
+                    }
+
+                    continue;
+                }
+
+                // getting 'typeName' section
+                const std::string typeNameSection = rootValue["typeName"].GetString();
+
+                if(!rootValue.HasMember("value"))
+                {
+                    if(m_outputLog)
+                    {
+                        *m_outputLog = "Error: Can not get member with index '" + std::to_string(i) +
+                                       "' from array: this member does not have 'value' section.\n";
+                    }
+
+                    continue;
+                }
+
+                auto& valueSection = rootValue["value"];
+
+                // creating value view of member
+                DeserializableValueView<T, FormatType::JSON> valueView { };
+                valueView.getValueContainer().m_document = m_document;
+                valueView.getValueContainer().m_thisValue = &valueSection;
+                valueView.getValueContainer().m_parent = this;
+                valueView.getValueContainer().m_outputLog = m_outputLog;
+                valueView.getValueContainer().m_typeName = typeNameSection;
+                valueView.m_data = &tmpVal;
+
+                Serializer::deserializeWithDynamicChecks(valueView);
+
+                outputValue.push_back(tmpVal);
+            }
+
+            return outputValue;
+        }
+
+        [[nodiscard]] std::int64_t getAsInt64() const noexcept
+        {
+            if(!m_thisValue)
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get value as int64: m_thisValue is null.\n";
+                }
+
+                return { };
+            }
+
+            return m_thisValue->GetInt64();
+        }
+
+        [[nodiscard]] float getAsFloat() const noexcept
+        {
+            if(!m_thisValue)
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get value as float: m_thisValue is null.\n";
+                }
+
+                return { };
+            }
+
+            return m_thisValue->GetFloat();
+        }
+
+        [[nodiscard]] bool isNull() const noexcept
+        {
+            return m_thisValue && m_thisValue->IsNull();
+        }
+
+    private:
+        DeserializableValueContainer<FormatType::JSON>* m_parent { };
+        rapidjson::Document* m_document { };
+        rapidjson::Value* m_thisValue { };
+        std::string* m_outputLog { };
+        std::string m_typeName;
+    };
+
+    /**
+     * Container that contains pointers to object format specific types.\n
+     * You must implement all next functions and members in your specialization of this struct.\n
+     * DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING.
+     * @tparam T
+     * @tparam TFormatType
+     */
+    template<FormatType TFormatType>
+    struct SerializableValueContainer
+    {
+        friend struct Serializer;
+
+        template<typename T0, FormatType TFormatType0>
+        friend struct SerializableValueView;
+
+        /**
+         * Add member to this container.\n
+         * If member with that name is already exists than value of this member will be changed.
+         * @tparam T
+         * @param name
+         * @param value
+         */
+        template<typename T>
+        void addMember(const std::string& name, const T& value) noexcept
+        {
+
+        }
+
+        /**
+         * Add value in this container if it is array.
+         * @tparam T
+         * @param name
+         * @param value
+         */
+        template<typename T>
+        void pushBack(const T& value) noexcept
+        {
+
+        }
+
+        /**
+         * Setting this container value as null.
+         * @param f
+         */
+        void setAsNull() noexcept
+        {
+
+        }
+
+        /**
+         * Setting this container value as float.
+         * @param f
+         */
+        void setAsFloat(const float& f) noexcept
+        {
+
+        }
+
+        /**
+         * Setting this container value as int64.
+         * @param f
+         */
+        void setAsInt64(const std::int64_t& i) noexcept
+        {
+
+        }
+
+        /**
+         * Setting this container value as array.\n
+         * After calling this function you can call function pushBack.
+         * @param f
+         */
+        void setAsArray() noexcept
+        {
+
+        }
+
+        /**
+         * Setter for type name of value.
+         * @param typeName
+         */
+        void setTypeName(const std::string& typeName) noexcept
+        {
+
+        }
+
+        /**
+         * Getter for type name of value.
+         * @param typeName
+         */
+        [[nodiscard]] std::string getTypeName(const std::string& typeName) const noexcept
+        {
+
+        }
+
+        /**
+         * Returning parent container.
+         * @return
+         */
+        auto& getParent() noexcept
+        {
+            return *m_parent;
+        }
+
+    private:
+        SerializableValueContainer<TFormatType>* m_parent { };
+    };
+
+    /**
+     * Value container for JSON format.
+     */
+    template<>
+    struct SerializableValueContainer<FormatType::JSON>
+    {
+        friend struct Serializer;
+
+        template<typename T0, FormatType TFormatType0>
+        friend struct SerializableValueView;
+
+        template<typename T>
+        void addMember(const std::string& name, const T& value) noexcept
+        {
+            if (!(m_thisValue || m_document)) return;
+
+            // removing member with this name if it is already exists
+            if (m_thisValue->IsObject() && m_thisValue->HasMember(name.c_str()))
+            {
+                m_thisValue->RemoveMember(name.c_str());
+            }
+
+            // creating key that contains passed name
+            rapidjson::Value valueNameKey(rapidjson::kStringType);
+            // creating value root section
+            rapidjson::Value valueRootSection(rapidjson::kObjectType);
+
+            // setting name
+            valueNameKey.SetString(name.c_str(), name.length(), m_document->GetAllocator());
+
+            // creating type name of T value
+            rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
+            typeNameSectionValue.SetString(SerdeSpec<T, FormatType::JSON>::type_name.c_str(),
+                                           SerdeSpec<T, FormatType::JSON>::type_name.length());
+
+            // creating section that will contain all members of T0
+            rapidjson::Value valueSectionValue(rapidjson::kObjectType);
+
+            // ==== value serialization code
+
+            // creating view of value with format pointers
+            SerializableValueView<T, FormatType::JSON> valueView {};
+            valueView.m_data = &value;
+            valueView.getValueContainer().m_document = m_document;
+            valueView.getValueContainer().m_thisValue = &valueSectionValue;
+            valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
+            valueView.getValueContainer().m_parent = this;
+
+            // serializing value with attempt at dynamic casts to derived types
+            Serializer::serializeWithDynamicChecks<T, FormatType::JSON>(valueView);
+
+            // =======================
+
+            // adding typeName section
+            valueRootSection.AddMember("typeName", typeNameSectionValue, m_document->GetAllocator());
+
+            // adding value section
+            valueRootSection.AddMember("value", valueSectionValue, m_document->GetAllocator());
+
+            if(m_thisValue->IsArray())
+            {
+                m_thisValue->PushBack(valueRootSection, m_document->GetAllocator());
+
+                return;
+            }
+
+            // adding value section to document
+            m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
+        }
+
+        template<typename T>
+        void pushBack(const T& value) noexcept
+        {
+            addMember("", value);
+        }
+
+        void setAsNull() noexcept
+        {
+            if(!m_thisValue) return;
+
+            m_thisValue->SetNull();
+        }
+
+        void setAsFloat(const float& f) noexcept
+        {
+            if(!m_thisValue) return;
+
+            m_thisValue->SetFloat(f);
+        }
+
+        void setAsInt64(const std::int64_t& i) noexcept
+        {
+            if(!m_thisValue) return;
+
+            m_thisValue->SetInt64(i);
+        }
+
+        void setAsArray() noexcept
+        {
+            if(!m_thisValue) return;
+
+            m_thisValue->SetArray();
+        }
+
+        void setTypeName(const std::string& typeName) noexcept
+        {
+            if(!(m_typeNameValue || m_document)) return;
+
+            m_typeNameValue->SetString(typeName.c_str(), typeName.length(), m_document->GetAllocator());
+        }
+
+        [[nodiscard]] std::string getTypeName(const std::string& typeName) const noexcept
+        {
+            if(!m_typeNameValue) return "";
+
+            return m_typeNameValue->GetString();
+        }
+
+        auto& getParent() noexcept
+        {
+            return *m_parent;
+        }
+
+    private:
+        SerializableValueContainer<FormatType::JSON>* m_parent { };
+        rapidjson::Document* m_document { };
+        rapidjson::Value* m_thisValue { };
+        rapidjson::Value* m_typeNameValue { };
+    };
+
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
+
+    /**
+     * View of value with format type`s specific members. Contains serializable value info container.\n
+     * You must implement all next functions and members in your specialization of this struct.\n
+     * DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING.
+     * @tparam T
+     * @tparam TFormatType
+     */
+    template<typename T, FormatType TFormatType>
+    struct SerializableValueView
+    {
+        friend struct Serializer;
+
+        // making all SerializableValueView as friends
+        template<typename T0, FormatType TFormatType0>
+        friend struct SerializableValueView;
+
+        static inline constexpr FormatType format_type = TFormatType;
+
+        const T* m_data { };
+
+        auto& getValueContainer() noexcept
+        {
+            return m_valueContainer;
+        }
+
+    private:
+        std::string m_version;
+
+        SerializableValueContainer<TFormatType> m_valueContainer { };
+    };
+
+    /**
+     * View of value with format type`s specific members. Contains deserializable value info container.\n
+     * You must implement all next functions and members in your specialization of this struct.\n
+     * DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING.
+     * @tparam T
+     * @tparam TFormatType
+     */
+    template<typename T, FormatType TFormatType>
+    struct DeserializableValueView
+    {
+        friend struct Serializer;
+
+        // making all SerializableValueView as friends
+        template<typename T0, FormatType TFormatType0>
+        friend struct DeserializableValueView;
+
+        static inline constexpr FormatType format_type = TFormatType;
+
+        T* m_data { };
+
+        auto& getValueContainer() noexcept
+        {
+            return m_valueContainer;
+        }
+
+    private:
+        std::string m_version;
+
+        DeserializableValueContainer<TFormatType> m_valueContainer { };
+    };
+
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
+
+    /**
+     * Primary SerdeSpec structure. Use this structure body as example to implement custom SerdeSpec.\n
+     * @tparam T
+     */
+    template<typename T, FormatType TFormatType>
+    struct SerdeSpec : BaseTypes<>, DerivedTypes<>
+    {
+        static_assert(always_false<T>::value,
+                      "This type is not serializable. Please, implement specialization of SerdeSpec for this type.");
+
+        /**
+         * The type name of T
+         */
+        static inline const std::string type_name = "unknown";
+        /**
+         * Is T is pointer type
+         */
+        static inline constexpr bool is_pointer_type = false;
+        /**
+         * OPTIONAL (IF TYPE IS POINTER): type that pointer points to
+         */
+        using element_type = void;
+
+        /**
+         * Serializes only T type members.
+         * @param valueView
+         */
+        static void serialize(SerializableValueView<T, TFormatType>& valueView)
+        {
+
+        }
+
+        /**
+         * Deserializes only T type members.
+         * @param valueView
+         */
+        static void deserialize(DeserializableValueView<T, TFormatType>& valueView)
+        {
+
+        }
+
+        /**
+         * OPTIONAL (IF TYPE IS POINTER): getting raw pointer to object
+         * @param valueView
+         */
+        template<typename ValueViewT>
+        static T* getObjectRawPointer(ValueViewT& valueView) noexcept
+        {
+
+        }
+
+        /**
+         * OPTIONAL (IF TYPE IS POINTER): setting raw pointer to object
+         * @param valueView
+         */
+        template<typename ValueViewT, typename T0>
+        static void setObjectRawPointer(ValueViewT& valueView, T0* pointer) noexcept
+        {
+
+        }
+    };
+
+
+    // ================================================================
+    // ================================================================
+    // ================================================================
+
+    struct Utils
+    {
+        /**
+         * Is SerdeSpec of T provides base types.
+         * @tparam T
+         * @return
+         */
+        template<typename T, FormatType TFormatType>
+        static consteval bool isBaseTypesProvided()
+        {
+            return requires {
+                SerdeSpec<T, TFormatType>::base_classes_count,
+                SerdeSpec<T, TFormatType>::get_base_type;
             };
+        }
 
-            /**
-             * Use if you want to serialize your data with 3rd party dynamic casts or type-checking before
-             */
-            template<typename T>
-            static void serializeUsing3rdPartyDynamicCasts(ValueDataView<T>& valueData)
+        /**
+        * Is SerdeSpec of T provides derived types.
+        * @tparam T
+        * @return
+        */
+        template<typename T, FormatType TFormatType>
+        static consteval bool isDerivedTypesProvided()
+        {
+            return requires {
+                SerdeSpec<T, TFormatType>::derived_classes_count,
+                SerdeSpec<T, TFormatType>::get_derived_type;
+            };
+        }
+    };
+
+    // ================================================================
+    // ================================================================
+    // ================================================================
+
+    struct Serializer
+    {
+        template<typename T, FormatType TFormatType>
+        friend struct SerializableValueView;
+
+        template<FormatType TFormatType>
+        friend struct SerializableValueContainer;
+
+        template<FormatType TFormatType>
+        friend struct DeserializableValueContainer;
+
+        /**
+         * Converts object to some format (JSON, BSON, YAML, etc)
+         * @tparam T
+         * @param value
+         * @param formatType
+         * @return
+         */
+        template<typename T>
+        static std::string toFormat(T& value, FormatType formatType = m_defaultFormatType) noexcept
+        {
+            switch (formatType)
             {
-                using clear_type = clear_type_t<T>;
-
-                if constexpr (std::is_pointer_v<T> || is_shared_ptr_v<T> || is_unique_ptr_v<T>)
+                case FormatType::JSON:
                 {
-                    if constexpr (std::is_class_v<clear_type>)
-                    {
-                        bool dynamicCastsSuccessful = false;
-                        // Common<clear_type>::doDynamicCasts(toDocument, parent, value, dynamicCastsSuccessful);
+                    rapidjson::Document document;
+                    document.SetObject();
 
-                        if (dynamicCastsSuccessful) return;
-                    }
-
-                    if constexpr (std::is_same_v<clear_type, const char*>)
-                    {
-                        SerializerSpec<clear_type>::serialize(valueData);
-                    }
-                    else
-                    {
-                        bool isAnyOfDerivedSerialized = false;
-                        if (valueData.m_outputValue)
-                        {
-                            ValueDataView<clear_type> tmpData = valueData.template copyMeta<clear_type>();
-                            tmpData.m_outputValue = &*valueData.m_outputValue;
-
-                            // serializing all derived classes of <clear_type> class
-                            serializeDerivedClasses<clear_type>(tmpData,
-                                                                isAnyOfDerivedSerialized);
-
-                            // serializing base classes
-                            serializeBaseClasses<clear_type>(tmpData);
-
-                        }
-
-                        // serializing only data of <type> class
-                        SerializerSpec<T>::serialize(valueData);
-                    }
+                    return toJSON(document, value);
                 }
-                else
-                {
-                    serializeBaseClasses<clear_type>(valueData);
-                    SerializerSpec<clear_type>::serialize(valueData);
-                }
+                case FormatType::BSON:
+                    break;
+                case FormatType::YAML:
+                    break;
             }
 
-            template<typename T>
-            static void deserializeUsing3rdPartyDynamicCasts(ValueDataView<T>& valueData)
+            return "";
+        }
+
+        /**
+         * Deserializes object from some format (JSON, BSON, YAML, etc)
+         * @tparam T
+         * @param value
+         * @param formatType
+         * @return
+         */
+        template<typename T>
+        static void fromFormat(const std::string& formattedText,
+                               T& outValue,
+                               std::string& outputLog,
+                               FormatType formatType = m_defaultFormatType) noexcept
+        {
+            switch (formatType)
             {
-                using clear_type = clear_type_t<T>;
-                // using clear_type = std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<T>>>;
-
-                if constexpr (std::is_pointer_v<T> || is_shared_ptr_v<T> || is_unique_ptr_v<T>)
+                case FormatType::JSON:
                 {
-                    if constexpr (std::is_class_v<clear_type>)
-                    {
-                        bool typeNameChecksSuccessful = false;
-                        T outputDynamicCastedPtr = nullptr;
-                        // Common<clear_type>::doTypeNameChecks(parent, value, typeName, typeNameChecksSuccessful, outputDynamicCastedPtr);
+                    rapidjson::Document document;
+                    document.Parse(formattedText.c_str());
 
-                        if (typeNameChecksSuccessful && outputDynamicCastedPtr)
-                        {
-                            // valueData.m_outputValue = outputDynamicCastedPtr;
-                            return;
-                        }
-                    }
+                    fromJSON(document, outputLog, outValue);
 
-                    if constexpr (std::is_same_v<T, const char*>)
-                    {
-                        // deserializing only this class`s type (T) types and its base types
-                        SerializerSpec<T>::deserializeStatic(valueData);
-                    }
-                    else
-                    {
-                        ValueDataView<clear_type> tmpData = valueData.template copyMeta<clear_type>();
-                        tmpData.m_outputValue = valueData.m_outputValue;
-
-                        // first trying to deserialize as one of deriving types
-                        tryDeserializeAsOneOfDerived<clear_type>(tmpData);
-                        // trying to deserialize only this type (T) value and its base classes values
-                        if (!*tmpData.m_outputValue)
-                        {
-                            // trying to deserialize only if type_name's equal
-                            if (SerializerSpec<clear_type>::type_name == valueData.m_valueTypeName->GetString())
-                            {
-                                // allocating
-                                // tmpData.m_outputValue = new clear_type();
-
-                                SerializerSpec<clear_type>::deserialize(tmpData);
-
-                                deserializeBaseClasses<clear_type>(tmpData);
-                            }
-                        }
-
-                        if constexpr (std::is_pointer_v<T>)
-                        {
-                            valueData.m_outputValue = tmpData.m_outputValue;
-                        }
-                        else // if other pointer type
-                        {
-                            valueData.m_outputValue = std::move(T(tmpData.m_outputValue));
-                        }
-                    }
+                    break;
                 }
-                else
-                {
-                    // deserializing all base parts of type T
-                    deserializeBaseClasses<clear_type>(valueData);
-
-                    SerializerSpec<clear_type>::deserialize(valueData);
-                }
+                case FormatType::BSON:
+                    break;
+                case FormatType::YAML:
+                    break;
             }
+        }
 
-            /**
-             * Use if you want to serialize data with generation of sections "typename" and "value"
-             */
-            template<typename T>
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
+    private:
+        static inline FormatType m_defaultFormatType = SGCore::Serde::FormatType::JSON;
+
+        /**
+         * Converts object to JSON format
+         * @tparam T
+         * @param toDocument
+         * @param value
+         * @return
+         */
+        template<typename T>
+        static std::string toJSON(rapidjson::Document& toDocument,
                                   const T& value) noexcept
-            {
-                using serializer_spec_t = SerializerSpec<std::remove_cvref_t<decltype(value)>>;
-
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kObjectType);
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                addSections(toDocument, v, serializer_spec_t::type_name, value);
-
-                switch (parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            /**
-             * Use if you want to serialize data with generation of sections "typename" and "value"
-             * @param toDocument
-             * @param parent
-             * @param varName
-             * @param value
-             */
-            template<typename T>
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
-                                  T& value) noexcept
-            {
-                using serializer_spec_t = SerializerSpec<std::remove_cvref_t<decltype(value)>>;
-
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kObjectType);
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                addSections(toDocument, v, serializer_spec_t::type_name, value);
-
-                switch (parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            /**
-             * Use if you want to deserialize data with sections "typename" and "value"
-             * @param toDocument
-             * @param parent
-             * @param varName
-             * @param value
-             */
-            template<typename T>
-            static void deserialize(rapidjson::Value& parent, const std::string& varName, std::string& outputLog,
-                                    T& outputValue) noexcept
-            {
-                if (!parent.HasMember(varName.c_str()))
-                {
-                    Serializer::formNotExistingMemberError(parent, varName, outputLog);
-
-                    return;
-                }
-
-                auto& self = parent[varName.c_str()];
-
-                if (!self.HasMember("typename"))
-                {
-                    Serializer::formNotExistingMemberError(parent, "typename", outputLog);
-
-                    return;
-                }
-
-                if (!self.HasMember("value"))
-                {
-                    Serializer::formNotExistingMemberError(parent, "value", outputLog);
-
-                    return;
-                }
-
-                auto& typenameSection = self["typename"];
-                auto& valueSection = self["value"];
-
-                ValueDataView<T> outputValueData;
-                outputValueData.m_parentValue = &parent;
-                outputValueData.m_valueTypeName = &typenameSection;
-                outputValueData.m_value = &valueSection;
-                outputValueData.m_log = &outputLog;
-                outputValueData.m_outputValue = &outputValue;
-
-                deserializeUsing3rdPartyDynamicCasts<T>(outputValueData);
-            }
-
-            template<typename T>
-            static T deserialize(rapidjson::Value& parent, const std::string& varName, std::string& outputLog) noexcept
-            {
-                T out { };
-                deserialize<T>(parent, varName, outputLog, out);
-
-                return out;
-            }
-
-            /**
-             * Use if you want to deserialize data with sections "typename" and "value"
-             * @param toDocument
-             * @param parent
-             * @param varName
-             * @param value
-             */
-            template<typename T>
-            static void deserialize(rapidjson::Value& parent, const std::uint64_t& index, std::string& outputLog,
-                                    T& outputValue) noexcept
-            {
-                if (parent.Size() <= index)
-                {
-                    Serializer::formNotExistingMemberError(parent, index, outputLog);
-
-                    return;
-                }
-
-                auto& self = parent[index];
-
-                if (!self.HasMember("typename"))
-                {
-                    Serializer::formNotExistingMemberError(parent, "typename", outputLog);
-
-                    return;
-                }
-
-                if (!self.HasMember("value"))
-                {
-                    Serializer::formNotExistingMemberError(parent, "value", outputLog);
-
-                    return;
-                }
-
-                auto& typenameSection = self["typename"];
-                auto& valueSection = self["value"];
-
-                ValueDataView<T> outputValueData;
-                outputValueData.m_parentValue = &parent;
-                outputValueData.m_valueTypeName = &typenameSection;
-                outputValueData.m_value = &valueSection;
-                outputValueData.m_log = &outputLog;
-                outputValueData.m_outputValue = &outputValue;
-
-                deserializeUsing3rdPartyDynamicCasts<T>(outputValueData);
-            }
-
-            template<typename T>
-            static T deserialize(rapidjson::Value& parent, const std::uint64_t& index, std::string& outputLog) noexcept
-            {
-                T out { };
-                deserialize<T>(parent, index, outputLog, out);
-
-                return out;
-            }
-
-            static void formNotExistingMemberError(const rapidjson::Value& parent, const std::string& varName,
-                                                   std::string& outputLog) noexcept
-            {
-                // TODO: MAYBE PARENT NAME
-                outputLog += "Error: member '" + varName + "' does not exist";
-            }
-
-            static void formNotExistingMemberError(const rapidjson::Value& parent, const std::uint64_t& index,
-                                                   std::string& outputLog) noexcept
-            {
-                // TODO: MAYBE PARENT NAME
-                outputLog += "Error: member with index '" + std::to_string(index) + "' does not exist";
-            }
-
-            template<typename T>
-            static void
-            addSections(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& typeName,
-                        T& value) noexcept
-            {
-                rapidjson::Value valueTypeK(rapidjson::kStringType);
-                rapidjson::Value valueTypeV(rapidjson::kObjectType);
-
-                valueTypeK.SetString("typename", 8, toDocument.GetAllocator());
-                valueTypeV.SetString(typeName.c_str(), typeName.length(), toDocument.GetAllocator());
-                // ======================================
-
-                // adding value section. value section can modify content of typename section
-                using value_t = std::remove_cvref_t<decltype(value)>;
-
-                rapidjson::Value valueK(rapidjson::kStringType);
-                rapidjson::Value valueV(rapidjson::kObjectType);
-
-                valueK.SetString("value", 5, toDocument.GetAllocator());
-
-                ValueDataView<T> outputValueData;
-                outputValueData.m_document = &toDocument;
-                outputValueData.m_parentKey = &valueK;
-                outputValueData.m_parentValue = &parent;
-                outputValueData.m_valueTypeName = &valueTypeV;
-                outputValueData.m_value = &valueV;
-                outputValueData.m_outputValue = &value;
-
-                serializeUsing3rdPartyDynamicCasts(outputValueData);
-
-                parent.AddMember(valueK, valueV, toDocument.GetAllocator());
-
-                // ======================================
-                parent.AddMember(valueTypeK, valueTypeV, toDocument.GetAllocator());
-            }
-
-            // private:
-            // type and has element_type using
-            template<typename T, bool HasElementType>
-            struct clear_type_impl;
-
-            template<typename T>
-            struct clear_type_impl<T, true>
-            {
-                using type = typename T::element_type;
-            };
-
-            template<typename T>
-            struct clear_type_impl<T, false>
-            {
-                using type = T;
-                // using type = std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<T>>>;
-            };
-
-            template<typename T>
-            using clear_type_t = clear_type_impl<T,
-                    requires { typename T::element_type; }>::type;
-
-            template<typename DerivedT, typename BaseT>
-            static void deserializeBaseClass(ValueDataView<DerivedT>& valueData)
-            {
-                SerializerSpec<BaseT>::deserialize(valueData);
-            }
-
-            template<typename DerivedT, std::int64_t... Indices>
-            static void deserializeBaseClassesImpl(ValueDataView<DerivedT>& valueData,
-                                                   std::index_sequence<Indices...>)
-            {
-                (deserializeBaseClass<DerivedT, typename SerializerSpec<DerivedT>::template get_base_type<Indices>>(
-                        valueData), ...);
-            }
-
-            template<typename DerivedT>
-            static void deserializeBaseClasses(ValueDataView<DerivedT>& valueData)
-            {
-                if constexpr (requires { SerializerSpec<DerivedT>::base_classes_count&& SerializerSpec<DerivedT>::get_base_type; })
-                {
-                    deserializeBaseClassesImpl<DerivedT>(valueData,
-                                                         std::make_index_sequence<SerializerSpec<DerivedT>::base_classes_count> {});
-                }
-            }
-
-            template<typename BaseT, typename DerivedT>
-            static void tryDeserializeAsDerived(ValueDataView<BaseT>& valueData)
-            {
-                ValueDataView<DerivedT> tmpData = valueData;
-
-                if (SerializerSpec<DerivedT>::type_name == valueData.m_valueTypeName->GetString())
-                {
-                    /*assert(!outputValue && fmt::format(
-                            "Some two or more serializer specializations contain the same value '{0}' for the type_name field."
-                            " The class '{1}' cannot be deserialized correctly.", SerializerSpec<DerivedT>::type_name,
-                            SerializerSpec<BaseT>::type_name));*/
-
-                    // creating instance of derived
-                    auto* tmp = new DerivedT();
-
-                    tmpData.m_outputValue = tmp;
-
-                    // deserializing all base parts of derived type (DerivedT)
-                    deserializeBaseClasses<DerivedT>(tmpData);
-
-                    // deserializing only values of derived type (DerivedT)
-                    SerializerSpec<DerivedT>::deserialize(tmpData);
-
-                    return;
-                }
-
-                // go ahead and try to deserialize as one of DerivedT derived classes
-                tryDeserializeAsOneOfDerived<DerivedT>(tmpData);
-
-                valueData.m_outputValue = tmpData.m_value;
-            }
-
-            template<typename BaseT, std::int64_t... Indices>
-            static void tryDeserializeAsOneOfDerivedImpl(ValueDataView<BaseT>& valueData,
-                                                         std::index_sequence<Indices...>)
-            {
-                (tryDeserializeAsDerived<BaseT, typename SerializerSpec<BaseT>::template get_derived_type<Indices>>(
-                        valueData), ...);
-            }
-
-            template<typename BaseT>
-            static void tryDeserializeAsOneOfDerived(ValueDataView<BaseT>& valueData)
-            {
-                if constexpr (requires { SerializerSpec<BaseT>::derived_classes_count&& SerializerSpec<BaseT>::get_derived_type; })
-                {
-                    tryDeserializeAsOneOfDerivedImpl<BaseT>(valueData,
-                                                            std::make_index_sequence<SerializerSpec<BaseT>::derived_classes_count> {});
-                }
-            }
-
-            template<typename BaseT, typename DerivedT>
-            static void trySerializeDerivedClass(ValueDataView<BaseT>& valueData,
-                                                 bool& isAnyOfDerivedSerialized)
-            {
-                const auto* derived = dynamic_cast<const DerivedT*>(valueData.m_outputValue);
-                if (derived)
-                {
-                    // setting new typename
-                    valueData.m_valueTypeName->SetString(SerializerSpec<DerivedT>::type_name.c_str(),
-                                                         SerializerSpec<DerivedT>::type_name.length());
-
-                    ValueDataView<DerivedT> tmpData = valueData;
-                    tmpData.m_outputValue = derived;
-
-                    // serializing all derived classes of DerivedT class
-                    serializeDerivedClasses<DerivedT>(tmpData,
-                                                      isAnyOfDerivedSerialized);
-
-                    // serializing only data of DerivedT class
-                    SerializerSpec<DerivedT>::serialize(tmpData);
-
-                    isAnyOfDerivedSerialized = true;
-                }
-            }
-
-            template<typename T, std::int64_t... Indices>
-            static void serializeDerivedClassesImpl(ValueDataView<T>& valueData,
-                                                    bool& isAnyOfDerivedSerialized,
-                                                    std::index_sequence<Indices...>)
-            {
-                (trySerializeDerivedClass<T, typename SerializerSpec<T>::template get_derived_type<Indices>>(valueData,
-                                                                                                             isAnyOfDerivedSerialized), ...);
-            }
-
-            template<typename T>
-            static void serializeDerivedClasses(ValueDataView<T>& valueData,
-                                                bool& isAnyOfDerivedSerialized)
-            {
-                if constexpr (requires { SerializerSpec<T>::derived_classes_count&& SerializerSpec<T>::get_derived_type; })
-                {
-                    serializeDerivedClassesImpl<T>(valueData,
-                                                   isAnyOfDerivedSerialized,
-                                                   std::make_index_sequence<SerializerSpec<T>::derived_classes_count> {});
-                }
-            }
-
-            template<typename T, std::int64_t... Indices>
-            static void serializeBaseClassesImpl(ValueDataView<T>& valueData,
-                                                 std::index_sequence<Indices...>)
-            {
-                (serializeUsing3rdPartyDynamicCasts<typename SerializerSpec<T>::template get_base_type<Indices>>(
-                        valueData),
-                        ...);
-            }
-
-            template<typename T>
-            static void serializeBaseClasses(ValueDataView<T>& valueData)
-            {
-                if constexpr (requires { SerializerSpec<T>::base_classes_count&& SerializerSpec<T>::get_base_type; })
-                {
-                    serializeBaseClassesImpl<T>(valueData,
-                                                std::make_index_sequence<SerializerSpec<T>::base_classes_count> {});
-                }
-            }
-        };
-
-        // ===============================================================================================================================
-        // ===============================================================================================================================
-        // ===============================================================================================================================
-        // STANDARD SERIALIZABLES FOR TYPES
-
-        template<typename T>
-        requires(std::is_enum_v<T>)
-        struct SerializerSpec<T>
         {
-            static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
-            static inline const std::string type_name = "enum";
+            // adding version of document
+            toDocument.AddMember("version", "1", toDocument.GetAllocator());
 
-            static void serialize(ValueDataView<T>& valueData) noexcept
-            {
-                valueData.m_value->SetInt(static_cast<std::int64_t>(*valueData.m_outputValue));
-            }
+            // adding type name of T
+            rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
+            typeNameSectionValue.SetString(SerdeSpec<T, FormatType::JSON>::type_name.c_str(),
+                                           SerdeSpec<T, FormatType::JSON>::type_name.length());
 
-            static void deserialize(ValueDataView<T>& valueData) noexcept
-            {
-                *valueData.m_outputValue = static_cast<T>(valueData.m_value->GetInt64());
-            }
-        };
+            // creating section that will contain all members of T
+            rapidjson::Value valueSectionValue(rapidjson::kObjectType);
 
+            // ==== serialization code
+
+            // creating view of value with format pointers
+            SerializableValueView<T, FormatType::JSON> valueView  { };
+            valueView.m_data = &value;
+            valueView.m_version = "1";
+            valueView.getValueContainer().m_document = &toDocument;
+            valueView.getValueContainer().m_thisValue = &valueSectionValue;
+            valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
+
+            // serializing value with attempt at dynamic casts to derived types
+            serializeWithDynamicChecks<T, FormatType::JSON>(valueView);
+
+            // =======================
+
+            // adding type name of T after serializing (because type name can be changed)
+            toDocument.AddMember("typeName", typeNameSectionValue, toDocument.GetAllocator());
+
+            // adding value section to document
+            toDocument.AddMember("value", valueSectionValue, toDocument.GetAllocator());
+
+            // converting to string
+            rapidjson::StringBuffer stringBuffer;
+            stringBuffer.Clear();
+            rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+            toDocument.Accept(writer);
+
+            return stringBuffer.GetString();
+        }
+
+        /**
+         * Converts JSON document to object.
+         * @tparam T
+         * @param toDocument
+         * @param value
+         * @return
+         */
         template<typename T>
-        struct SerializerSpec<T*>
+        static void fromJSON(rapidjson::Document& document,
+                             std::string& outputLog,
+                             T& outValue) noexcept
         {
-            // using element_type = std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<T>>>;
-
-            static inline const rapidjson::Type rapidjson_type = SerializerSpec<T>::rapidjson_type;
-            static inline const std::string type_name = SerializerSpec<T>::type_name;
-
-
-            static void serialize(ValueDataView<T*>& dataView) noexcept
+            // trying to get 'version' member from document
+            if(!document.HasMember("version"))
             {
-                if (dataView.m_outputValue)
-                {
-                    ValueDataView<T> tmpView = dataView.template copyMeta<T>();
-                    tmpView.m_outputValue = *dataView.m_outputValue;
+                outputLog = "Error: Broken JSON document: root member 'version' does not exist.\n";
+                return;
+            }
 
-                    SerializerSpec<T>::serialize(tmpView);
+            // getting 'version' member from document
+            const std::string version = document["version"].GetString();
+
+            // trying to get 'typeName' member from document
+            if(!document.HasMember("typeName"))
+            {
+                outputLog = "Error: Broken JSON document: root member 'typeName' does not exist.\n";
+                return;
+            }
+
+            // getting 'typeName' member from document
+            const std::string typeName = document["typeName"].GetString();
+
+            // trying to get 'value' member from document
+            if(!document.HasMember("value"))
+            {
+                outputLog = "Error: Broken JSON document: root member 'value' does not exist.\n";
+                return;
+            }
+
+            // getting 'value' member from document
+            auto& jsonValue = document["value"];
+
+            DeserializableValueView<T, FormatType::JSON> valueView;
+            valueView.m_data = &outValue;
+            valueView.m_version = version;
+            valueView.getValueContainer().m_document = &document;
+            valueView.getValueContainer().m_thisValue = &jsonValue;
+            valueView.getValueContainer().m_typeName = typeName;
+            valueView.getValueContainer().m_outputLog = &outputLog;
+
+            deserializeWithDynamicChecks(valueView);
+        }
+
+        /**
+         * Serializes value with attempt at dynamic casts to derived types.\n
+         * If all attempts of casting value to derived types are failed than serializing only T type members and members of all base types.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType>
+        static void serializeWithDynamicChecks(SerializableValueView<T, TFormatType>& valueView)
+        {
+            if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks
+            {
+                // getting element_type that pointer contains
+                using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
+
+                // creating view that contains element_type object
+                SerializableValueView<ptr_element_type, TFormatType> tmpView { };
+                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.m_version = valueView.m_version;
+                tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
+
+                // serializing base types
+                serializeBaseTypes(tmpView);
+
+                // serializing derived types
+                serializeDerivedTypes(tmpView);
+
+                // serializing element_type type members
+                SerdeSpec<T, TFormatType>::serialize(valueView);
+
+                return;
+            }
+
+            // serialize without dynamic checks (static serialization)
+
+            // serializing base types
+            serializeBaseTypes(valueView);
+
+            // serializing only T type members
+            SerdeSpec<T, TFormatType>::serialize(valueView);
+        }
+
+        /**
+         * Deserializes value with attempt at dynamic casts to derived types.\n
+         * If all attempts of casting value to derived types are failed than serializing only T type members and members of all base types.\n
+         * If one of derived types is matches to typeName than it will be deserialized.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType>
+        static void deserializeWithDynamicChecks(DeserializableValueView<T, TFormatType>& valueView)
+        {
+            if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // deserializing value using dynamic checks
+            {
+                // getting element_type that pointer contains
+                using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
+
+                // creating view that contains element_type object
+                DeserializableValueView<ptr_element_type, TFormatType> tmpView { };
+                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.m_version = valueView.m_version;
+
+                // trying to deserialize T as one of its derived types
+                deserializeAsOneOfDerivedTypes(tmpView);
+
+                // if one of derived types T was deserialized
+                if(tmpView.m_data)
+                {
+                    // setting new raw pointer to value view
+                    SerdeSpec<T, TFormatType>::setObjectRawPointer(valueView, tmpView.m_data);
                 }
                 else
                 {
-                    *dataView.m_parentValue = rapidjson::Value(rapidjson::kNullType);
-                }
-            }
+                    // deserializing element_type type members. SerdeSpec deserialize of pointer must allocate pointer
+                    SerdeSpec<T, TFormatType>::deserialize(valueView);
 
-            static void deserialize(ValueDataView<T*>& dataView) noexcept
-            {
-                if (dataView.m_value->IsNull())
-                {
-                    dataView.m_outputValue = nullptr;
-                    return;
+                    // assigning allocated pointer
+                    tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
+
+                    // deserializing base types of T
+                    deserializeBaseTypes(tmpView);
                 }
 
-                ValueDataView<T> tmpView = dataView.template copyMeta<T>();
-                //tmpView.m_outputValue = *dataView.m_outputValue;
-                tmpView.m_outputValue = new T();
-                // SerializerSpec<element_type>::deserializeDynamic(parent, value, typeName, outputLog, outputValue);
-                SerializerSpec<T>::deserialize(tmpView);
-                *dataView.m_outputValue = tmpView.m_outputValue;
-                // dataView.m_outputValue = &tmpView.m_outputValue;
+                return;
             }
-        };
 
-        template<typename T>
-        struct SerializerSpec<std::shared_ptr<T>>
+            // deserialize without dynamic checks (static deserialization)
+
+            // deserializing base types
+            deserializeBaseTypes(valueView);
+
+            // deserializing only T type members
+            SerdeSpec<T, TFormatType>::deserialize(valueView);
+        }
+
+        // =====================================================================================
+        // =====================================================================================
+        // =====================================================================================
+
+        /**
+         * Serializes base type (BaseT) of parent type (OriginalT)
+         * @tparam OriginalT
+         * @tparam BaseT
+         * @param valueView
+         */
+        template<typename OriginalT, typename BaseT, FormatType TFormatType>
+        static void serializeBaseType(SerializableValueView<OriginalT, TFormatType>& valueView) noexcept
         {
-            using element_type = T;
+            // converting OriginalT value view to BaseT value view to pass into SerdeSpec
+            SerializableValueView<BaseT, TFormatType> tmpView { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_version = valueView.m_version;
+            tmpView.m_data = &(static_cast<const BaseT&>(*valueView.m_data));
 
-            static inline const rapidjson::Type rapidjson_type = SerializerSpec<element_type>::rapidjson_type;
-            static inline const std::string type_name = SerializerSpec<element_type>::type_name;
+            // serialize BaseT`s base types
+            serializeBaseTypes(tmpView);
 
-            static void serialize(ValueDataView<std::shared_ptr<T>>& dataView) noexcept
-            {
-                if (dataView.m_outputValue)
-                {
-                    ValueDataView<T> tmpView = dataView.template copyMeta<T>();
-                    tmpView.m_outputValue = &*dataView.m_outputValue;
+            // passing tmpView with BaseT to SerdeSpec
+            SerdeSpec<BaseT, TFormatType>::serialize(tmpView);
+        }
 
-                    SerializerSpec<T>::serialize(tmpView);
-                }
-                else
-                {
-                    *dataView.m_parentValue = rapidjson::Value(rapidjson::kNullType);
-                }
-            }
-
-            static void deserialize(ValueDataView<std::shared_ptr<T>>& dataView) noexcept
-            {
-                if (dataView.m_value->IsNull())
-                {
-                    dataView.m_outputValue = nullptr;
-                    return;
-                }
-
-                ValueDataView<T> tmpView = dataView.template copyMeta<T>();
-                tmpView.m_outputValue = &*dataView.m_outputValue;
-
-                // element_type* tmp = nullptr;
-                SerializerSpec<T>::deserialize(tmpView);
-                // outputValue = std::shared_ptr<T>(tmp);
-            }
-        };
-
-        template<typename T>
-        struct SerializerSpec<std::unique_ptr<T>>
+        /**
+         * Implementation of serializing base types of T. Uses unpacking.
+         * @tparam T
+         * @tparam Indices
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, std::size_t... Indices>
+        static void serializeBaseTypesImpl(SerializableValueView<T, TFormatType>& valueView,
+                                           std::index_sequence<Indices...>) noexcept
         {
-            using element_type = T;
+            // unpacking variadic template
+            (serializeBaseType<T,
+                    typename SerdeSpec<T, TFormatType>::template get_base_type<Indices>,
+                    TFormatType>(valueView), ...);
+        }
 
-            static inline const rapidjson::Type rapidjson_type = SerializerSpec<element_type>::rapidjson_type;
-            static inline const std::string type_name = SerializerSpec<element_type>::type_name;
-
-            static void serialize(ValueDataView<std::unique_ptr<T>>& dataView) noexcept
-            {
-                if (dataView.m_outputValue)
-                {
-                    ValueDataView<T> tmpView = dataView.template copyMeta<T>();
-                    tmpView.m_outputValue = &*dataView.m_outputValue;
-
-                    SerializerSpec<T>::serialize(tmpView);
-
-                    SerializerSpec<element_type>::serialize(tmpView);
-                }
-                else
-                {
-                    *dataView.m_parentValue = rapidjson::Value(rapidjson::kNullType);
-                }
-            }
-
-            static void deserialize(ValueDataView<std::unique_ptr<T>>& dataView) noexcept
-            {
-                if (dataView.m_value->IsNull())
-                {
-                    dataView.m_outputValue = nullptr;
-                    return;
-                }
-
-                ValueDataView<T> tmpView = dataView.template copyMeta<T>();
-                tmpView.m_outputValue = &*dataView.m_outputValue;
-
-                // element_type* tmp = nullptr;
-                SerializerSpec<T>::deserialize(tmpView);
-                // outputValue = std::unique_ptr<element_type>(tmp);
-            }
-        };
-
-        template<>
-        struct SerializerSpec<char>
+        /**
+         * Serializes all base types of T.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType>
+        static void serializeBaseTypes(SerializableValueView<T, TFormatType>& valueView) noexcept
         {
-            static inline const rapidjson::Type rapidjson_type = rapidjson::kStringType;
-            static inline const std::string type_name = "char";
-
-
-            static void serialize(ValueDataView<char>& dataView) noexcept
+            // serializing base types only if information of them was provided
+            if constexpr(Utils::isBaseTypesProvided<T, TFormatType>())
             {
-                dataView.m_value->AddMember(*dataView.m_parentKey, *dataView.m_value, dataView.m_document->GetAllocator());
+                serializeBaseTypesImpl<T, TFormatType>
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::base_classes_count> {});
             }
+        }
 
-            static void deserialize(ValueDataView<char>& dataView) noexcept
-            {
-                *dataView.m_outputValue = dataView.m_value->GetStringLength() > 0 ? dataView.m_value->GetString()[0] : ' ';
-            }
-        };
+        // =====================================================================================
+        // =====================================================================================
+        // =====================================================================================
 
-        template<>
-        struct SerializerSpec<std::int8_t>
+        /**
+         * Serializes derived type (BaseT) of parent type (OriginalT)
+         * @tparam OriginalT
+         * @tparam BaseT
+         * @param valueView
+         */
+        template<typename OriginalT, typename DerivedT, FormatType TFormatType>
+        static void serializeDerivedType(SerializableValueView<OriginalT, TFormatType>& valueView) noexcept
         {
-            static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
-            static inline const std::string type_name = "std::int8_t";
-
-            static void serialize(rapidjson::Document& toDocument,
-                                  rapidjson::Value& parentKey,
-                                  rapidjson::Value& parent,
-                                  rapidjson::Value& valueTypeName,
-                                  const std::int8_t& value) noexcept
+            const auto* derivedTypeObj = dynamic_cast<const DerivedT*>(valueView.m_data);
+            if(derivedTypeObj)
             {
-                parent.SetInt(value);
-            }
+                // converting OriginalT value view to DerivedT value view to pass into SerdeSpec
+                SerializableValueView<DerivedT, TFormatType> tmpView { };
+                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.m_version = valueView.m_version;
+                tmpView.m_data = derivedTypeObj;
 
-            static void deserialize(const rapidjson::Value& parent,
-                                    const rapidjson::Value& value,
-                                    const std::string& typeName,
-                                    std::string& outputLog,
-                                    std::int8_t& outputValue) noexcept
-            {
-                outputValue = value.GetInt();
-            }
-        };
+                // setting new type name
+                tmpView.getValueContainer().setTypeName(SerdeSpec<DerivedT, TFormatType>::type_name);
 
-        template<>
-        struct SerializerSpec<std::int16_t>
+                // trying to serialize as one of DerivedT`s derived types
+                serializeDerivedTypes<DerivedT, TFormatType>(tmpView);
+
+                // passing tmpView with DerivedT to SerdeSpec
+                SerdeSpec<DerivedT, TFormatType>::serialize(tmpView);
+            }
+        }
+
+        /**
+         * Implementation of serializing derived types of T. Uses unpacking.
+         * @tparam T
+         * @tparam Indices
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, std::size_t... Indices>
+        static void serializeDerivedTypesImpl(SerializableValueView<T, TFormatType>& valueView,
+                                              std::index_sequence<Indices...>) noexcept
         {
-            static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
-            static inline const std::string type_name = "std::int16_t";
+            // unpacking variadic template
+            (serializeDerivedType<T,
+                    typename SerdeSpec<T, TFormatType>::template get_derived_type<Indices>,
+                    TFormatType>(valueView), ...);
+        }
 
-            static void serialize(rapidjson::Document& toDocument,
-                                  rapidjson::Value& parentKey,
-                                  rapidjson::Value& parent,
-                                  rapidjson::Value& valueTypeName,
-                                  const std::int16_t& value) noexcept
-            {
-                parent.SetInt(value);
-            }
-
-            static void deserialize(const rapidjson::Value& parent,
-                                    const rapidjson::Value& value,
-                                    const std::string& typeName,
-                                    std::string& outputLog,
-                                    std::int16_t& outputValue) noexcept
-            {
-                outputValue = value.GetInt();
-            }
-        };
-
-        template<>
-        struct SerializerSpec<std::int32_t>
+        /**
+         * Serializes all derived types of T.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType>
+        static void serializeDerivedTypes(SerializableValueView<T, TFormatType>& valueView) noexcept
         {
-            static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
-            static inline const std::string type_name = "std::int32_t";
-
-            static void serialize(ValueDataView<int32_t>& dataView) noexcept
+            // serializing derived types only if information of them was provided
+            if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
             {
-                dataView.m_value->SetInt(*dataView.m_outputValue);
+                serializeDerivedTypesImpl<T, TFormatType>
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> {});
             }
+        }
 
-            static void deserialize(ValueDataView<int32_t>& dataView) noexcept
-            {
-                *dataView.m_outputValue = dataView.m_value->GetInt();
-            }
-        };
+        // =====================================================================================
+        // =====================================================================================
+        // =====================================================================================
 
-        template<>
-        struct SerializerSpec<std::int64_t>
+        /**
+         * Serializes base type (BaseT) of parent type (OriginalT)
+         * @tparam OriginalT
+         * @tparam BaseT
+         * @param valueView
+         */
+        template<typename OriginalT, typename BaseT, FormatType TFormatType>
+        static void deserializeBaseType(DeserializableValueView<OriginalT, TFormatType>& valueView) noexcept
         {
-            static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
-            static inline const std::string type_name = "std::int64_t";
+            // converting OriginalT value view to BaseT value view to pass into SerdeSpec
+            DeserializableValueView<BaseT, TFormatType> tmpView { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_version = valueView.m_version;
+            tmpView.m_data = &(static_cast<BaseT&>(*valueView.m_data));
 
-            static void serialize(rapidjson::Document& toDocument,
-                                  rapidjson::Value& parentKey,
-                                  rapidjson::Value& parent,
-                                  rapidjson::Value& valueTypeName,
-                                  const std::int64_t& value) noexcept
-            {
-                parent.SetInt64(value);
-            }
+            // serialize BaseT`s base types
+            deserializeBaseTypes(tmpView);
 
-            static void deserialize(const rapidjson::Value& parent,
-                                    const rapidjson::Value& value,
-                                    const std::string& typeName,
-                                    std::string& outputLog,
-                                    std::int64_t& outputValue) noexcept
-            {
+            // passing tmpView with BaseT to SerdeSpec
+            SerdeSpec<BaseT, TFormatType>::deserialize(tmpView);
+        }
 
-            }
-        };
-
-        template<>
-        struct SerializerSpec<float>
+        /**
+         * Implementation of serializing base types of T. Uses unpacking.
+         * @tparam T
+         * @tparam Indices
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, std::size_t... Indices>
+        static void deserializeBaseTypesImpl(DeserializableValueView<T, TFormatType>& valueView,
+                                             std::index_sequence<Indices...>) noexcept
         {
-            static inline const rapidjson::Type rapidjson_type = rapidjson::kNumberType;
-            static inline const std::string type_name = "float";
+            // unpacking variadic template
+            (deserializeBaseType<T,
+                    typename SerdeSpec<T, TFormatType>::template get_base_type<Indices>,
+                    TFormatType>(valueView), ...);
+        }
 
-            static void serialize(ValueDataView<float>& dataView) noexcept
-            {
-                dataView.m_value->SetFloat(*dataView.m_outputValue);
-            }
-
-            static void deserialize(ValueDataView<float>& dataView) noexcept
-            {
-                *dataView.m_outputValue = dataView.m_value->GetFloat();
-            }
-        };
-
-        /*
-
-        template<>
-        struct SerializerSpec<std::uint8_t>
+        /**
+         * Deserializes all base types of T.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType>
+        static void deserializeBaseTypes(DeserializableValueView<T, TFormatType>& valueView) noexcept
         {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const std::uint8_t& value) noexcept
+            // deserializing base types only if information of them was provided
+            if constexpr(Utils::isBaseTypesProvided<T, TFormatType>())
             {
-                rapidjson::Value k(rapidjson::kStringType);
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
+                deserializeBaseTypesImpl<T, TFormatType>
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::base_classes_count> {});
             }
+        }
 
-            static std::uint8_t deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetUint();
-            }
-        };
+        // =========================================================================
 
-        template<>
-        struct SerializerSpec<std::uint16_t>
+        /**
+         * Tries to deserialize value in OriginalT value view as DerivedT.
+         * @tparam OriginalT
+         * @tparam DerivedT
+         * @tparam TFormatType
+         * @param valueView
+         */
+        template<typename OriginalT, typename DerivedT, FormatType TFormatType>
+        static void deserializeAsDerivedType(DeserializableValueView<OriginalT, TFormatType>& valueView) noexcept
         {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const std::int16_t& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            // creating temporary view that contains pointer to DerivedT
+            DeserializableValueView<DerivedT, TFormatType> tmpView { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_version = valueView.m_version;
 
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
+            // typeNames are equal. DerivedT is suitable
+            if(valueView.getValueContainer().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
+            {
+                // allocating object of DerivedT
+                auto* derivedObject = new DerivedT();
+                tmpView.m_data = derivedObject;
+
+                // deserializing base types of DerivedT
+                deserializeBaseTypes(tmpView);
+
+                // deserializing members of DerivedT
+                SerdeSpec<DerivedT, TFormatType>::deserialize(tmpView);
+
+                // assigning allocated pointer to original valueView
+                valueView.m_data = derivedObject;
+
+                return;
             }
 
-            static std::uint16_t deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetUint();
-            }
-        };
+            // if DerivedT is not suitable than continue to search
+            deserializeAsOneOfDerivedTypes(tmpView);
 
-        template<>
-        struct SerializerSpec<std::uint32_t>
+            // assigning allocated pointer to original valueView
+            valueView.m_data = tmpView.m_data;
+        }
+
+        template<typename T, FormatType TFormatType, std::size_t... Indices>
+        static void deserializeAsOneOfDerivedTypesImpl(DeserializableValueView<T, TFormatType>& valueView,
+                                                       std::index_sequence<Indices...>) noexcept
         {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const std::uint32_t& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
+            // unpacking variadic template
+            (deserializeAsDerivedType<T,
+                    typename SerdeSpec<T, TFormatType>::template get_derived_type<Indices>,
+                    TFormatType>(valueView), ...);
+        }
 
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static std::uint32_t deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetUint();
-            }
-        };
-
-        template<>
-        struct SerializerSpec<std::uint64_t>
+        /**
+         * Tries to deserialize document value in valueView as one of derived types of T.
+         * @tparam T
+         * @tparam TFormatType
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType>
+        static void deserializeAsOneOfDerivedTypes(DeserializableValueView<T, TFormatType>& valueView) noexcept
         {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const std::uint64_t& value) noexcept
+            // deserializing base types only if information of them was provided
+            if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
             {
-                rapidjson::Value k(rapidjson::kStringType);
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
+                deserializeAsOneOfDerivedTypesImpl<T, TFormatType>
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> {});
             }
-
-            static std::uint64_t deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetUint64();
-            }
-        };
-
-        template<>
-        struct SerializerSpec<double>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const double& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static double deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetDouble();
-            }
-        };
-
-        template<>
-        struct SerializerSpec<float>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const float& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static float deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetFloat();
-            }
-        };
-
-        template<>
-        struct SerializerSpec<bool>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const bool& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(value, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static bool deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetBool();
-            }
-        };
-
-        template<std::int32_t ScalarsCnt, typename ScalarT, glm::qualifier Qualifier>
-        struct SerializerSpec<glm::vec<ScalarsCnt, ScalarT, Qualifier>>
-        {
-            using vec_t = glm::vec<ScalarsCnt, ScalarT, Qualifier>;
-
-            static_assert(ScalarsCnt >= 1 && ScalarsCnt <= 4 && "Scalars count in glm::vec must be in range of 1-4.");
-
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const vec_t& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kArrayType);
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-                v.PushBack(value.x, toDocument.GetAllocator());
-                if constexpr(ScalarsCnt >= 2)
-                {
-                    v.PushBack(value.y, toDocument.GetAllocator());
-                }
-                if constexpr(ScalarsCnt >= 3)
-                {
-                    v.PushBack(value.z, toDocument.GetAllocator());
-                }
-                if constexpr(ScalarsCnt >= 4)
-                {
-                    v.PushBack(value.w, toDocument.GetAllocator());
-                }
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static vec_t deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                vec_t outputValue;
-
-                outputValue.x = value["x"];
-                if constexpr(ScalarsCnt >= 2)
-                {
-                    outputValue.y = value["y"];
-                }
-                if constexpr(ScalarsCnt >= 3)
-                {
-                    outputValue.z = value["z"];
-                }
-                if constexpr(ScalarsCnt >= 4)
-                {
-                    outputValue.w = value["w"];
-                }
-
-                return outputValue;
-            }
-        };
-
-        template<std::int32_t ColumnsCnt, std::int32_t RowsCnt, typename ScalarT, glm::qualifier Qualifier>
-        struct SerializerSpec<glm::mat<ColumnsCnt, RowsCnt, ScalarT, Qualifier>>
-        {
-            using mat_t = glm::mat<ColumnsCnt, RowsCnt, ScalarT, Qualifier>;
-
-            static_assert(ColumnsCnt >= 1 && ColumnsCnt <= 4 && "Columns count in glm::mat must be in range of 1-4.");
-            static_assert(RowsCnt >= 1 && RowsCnt <= 4 && "Rows count in glm::mat must be in range of 1-4.");
-
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const mat_t& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kArrayType);
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                for(std::int32_t c = 0; c < ColumnsCnt; ++c)
-                {
-                    for(std::int32_t r = 0; r < RowsCnt; ++r)
-                    {
-                        v.PushBack(value[c][r], toDocument.GetAllocator());
-                    }
-                }
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static mat_t deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                mat_t outputValue;
-
-                for(std::int32_t c = 0; c < ColumnsCnt; ++c)
-                {
-                    for(std::int32_t r = 0; r < RowsCnt; ++r)
-                    {
-                        outputValue[c][r] = value[c * ColumnsCnt + r];
-                    }
-                }
-
-                return outputValue;
-            }
-        };
-
-        template<typename T>
-        struct SerializerSpec<std::vector<T>>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const std::vector<T>& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kArrayType);
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                for(const auto& n : value)
-                {
-                    Serializer::serialize(toDocument, v, "", n);
-                }
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static std::vector<T> deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                std::vector<T> outputValue;
-
-                for(std::uint64_t i = 0; i < value.Size(); ++i)
-                {
-                    outputValue.push_back(SerializerSpec<T>::deserialize(value, value[i], outputLog));
-                }
-
-                return outputValue;
-            }
-        };
-
-        /// KeyT REQUIRES AN IMPLICIT CONVERSION OPERATOR TO std::string OR OTHER TYPES FROM
-        /// WHICH std::string CAN BE CONSTRUCTED OR WHICH CAN BE IMPLICITLY CONVERTED TO std::string
-        template<typename KeyT, typename ValueT>
-        struct SerializerSpec<std::unordered_map<KeyT, ValueT>>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const std::unordered_map<KeyT, ValueT>& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kObjectType);
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                for(const auto& n : value)
-                {
-                    Serializer::serialize(toDocument, v, n.first, n.second);
-                }
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                };
-            }
-
-            static std::unordered_map<KeyT, ValueT> deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                std::unordered_map<KeyT, ValueT> outputValue;
-
-                for (rapidjson::Value::ConstMemberIterator iter = value.MemberBegin(); iter != value.MemberEnd(); ++iter)
-                {
-                    outputValue[iter->name.GetString()] = SerializerSpec<ValueT>::deserialize(value, iter->value, outputLog);
-                }
-
-                return outputValue;
-            }
-        };
-
-        template<>
-        struct SerializerSpec<std::string>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const std::string& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kStringType);
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-                v.SetString(value.c_str(), value.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static std::string deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetString();
-            }
-        };
-
-        template<>
-        struct SerializerSpec<std::basic_string<char16_t>>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const std::basic_string<char16_t>& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kStringType);
-
-                auto asUTF8 = Utils::toUTF8<char16_t>(value);
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-                v.SetString(asUTF8.c_str(), asUTF8.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static std::basic_string<char16_t> deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return Utils::fromUTF8<char16_t>(value.GetString());
-            }
-        };
-
-        template<>
-        struct SerializerSpec<std::filesystem::path>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const std::filesystem::path& value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                rapidjson::Value v(rapidjson::kStringType);
-
-                auto asUTF8 = Utils::toUTF8<char16_t>(value.u16string());
-
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-                v.SetString(asUTF8.c_str(), asUTF8.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(v, toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static std::filesystem::path deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetString();
-            }
-        };
-
-        template<>
-        struct SerializerSpec<const char*>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, const char* value) noexcept
-            {
-                rapidjson::Value k(rapidjson::kStringType);
-                k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-                switch(parent.GetType())
-                {
-                    case rapidjson::kNullType:
-                        break;
-                    case rapidjson::kFalseType:
-                        break;
-                    case rapidjson::kTrueType:
-                        break;
-                    case rapidjson::kObjectType:
-                        parent.AddMember(k, rapidjson::StringRef(value), toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kArrayType:
-                        parent.PushBack(rapidjson::StringRef(value), toDocument.GetAllocator());
-                        break;
-                    case rapidjson::kStringType:
-                        break;
-                    case rapidjson::kNumberType:
-                        break;
-                }
-            }
-
-            static const char* deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                return value.GetString();
-            }
-        };
-
-        template<typename T>
-        concept CustomSerializationStruct =
-        requires(T obj,
-                rapidjson::Document& document,
-                rapidjson::Value& parent,
-                const std::string& varName,
-                const rapidjson::Value& jsonValue,
-                std::string& outputLog) {
-            obj.serializeData(document, parent, varName);
-            obj.serializeMeta(document, parent, varName);
-            obj.deserializeData(parent, jsonValue, outputLog);
-            obj.deserializeMeta(parent, jsonValue, outputLog);
-            obj.m_serializationType;
-        };
-
-        template<CustomSerializationStruct T>
-        struct SerializerSpec<T>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                  const std::string& varName, T& value) noexcept
-            {
-                switch(value.m_serializationType)
-                {
-                    case SerializationType::SERIALIZE_META:
-                        value.serializeMeta(toDocument, parent, varName);
-                        break;
-                    case SerializationType::SERIALIZE_DATA:
-                        value.serializeData(toDocument, parent, varName);
-                        break;
-                }
-            }
-
-            static T deserialize(const rapidjson::Value& parent, const rapidjson::Value& value, std::string& outputLog) noexcept
-            {
-                T outputValue;
-
-                switch(outputValue.m_serializationType)
-                {
-                    case SerializationType::SERIALIZE_META:
-                        outputValue.deserializeMeta(parent, value, outputLog);
-                        break;
-                    case SerializationType::SERIALIZE_DATA:
-                        outputValue.deserializeData(parent, value, outputLog);
-                        break;
-                }
-
-                return outputValue;
-            }
-        };
-
-        template<>
-        struct SerializerSpec<AnnotationsProcessor::AnnotationArg>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
-                                  const AnnotationsProcessor::AnnotationArg& value) noexcept;
-
-            static AnnotationsProcessor::AnnotationArg deserialize(const rapidjson::Value& parent,
-                                                                   const rapidjson::Value& value,
-                                                                   std::string& outputLog) noexcept;
-        };
-
-        template<>
-        struct SerializerSpec<AnnotationsProcessor::Annotation>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
-                                  const AnnotationsProcessor::Annotation& value) noexcept;
-
-            static AnnotationsProcessor::Annotation deserialize(const rapidjson::Value& parent,
-                                                                const rapidjson::Value& value,
-                                                                std::string& outputLog) noexcept;
-        };
-
-        template<>
-        struct SerializerSpec<AnnotationsProcessor::Member>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
-                                  const AnnotationsProcessor::Member& value) noexcept;
-
-            static AnnotationsProcessor::Member deserialize(const rapidjson::Value& parent,
-                                                            const rapidjson::Value& value,
-                                                            std::string& outputLog) noexcept;
-        };
-
-        template<>
-        struct SerializerSpec<AnnotationsProcessor>
-        {
-            static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName,
-                                  const AnnotationsProcessor& value) noexcept;
-
-            static AnnotationsProcessor deserialize(const rapidjson::Value& parent,
-                                                    const rapidjson::Value& value,
-                                                    std::string& outputLog) noexcept;
-        };*/
-    }
+        }
+    };
 }
 
 #endif //SUNGEARENGINE_SERIALIZER_H
