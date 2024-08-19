@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_STANDARDSERDESPECS_H
 
 #include "Serializer.h"
+#include <glm/glm.hpp>
 
 namespace SGCore::Serde
 {
@@ -71,6 +72,123 @@ namespace SGCore::Serde
 
     // ====================================================================================
 
+    template<typename T, FormatType TFormatType>
+    struct SerdeSpec<std::shared_ptr<T>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = SerdeSpec<T, TFormatType>::type_name;
+        static inline constexpr bool is_pointer_type = true;
+        using element_type = T;
+
+        static void serialize(SerializableValueView<std::shared_ptr<T>, TFormatType>& valueView)
+        {
+            if(!*valueView.m_data)
+            {
+                valueView.getValueContainer().setAsNull();
+                return;
+            }
+
+            SerializableValueView<T, TFormatType> tmpView = { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_data = valueView.m_data->get();
+
+            // serializing values of T
+            SerdeSpec<T, TFormatType>::serialize(tmpView);
+        }
+
+        static void deserialize(DeserializableValueView<std::shared_ptr<T>, TFormatType>& valueView)
+        {
+            // if value is null then doing nothing
+            if(valueView.getValueContainer().isNull())
+            {
+                return;
+            }
+
+            // allocating object
+            *valueView.m_data = std::make_shared<T>();
+
+            // creating temporary value view that contains object with type T
+            DeserializableValueView<T, TFormatType> tmpView = { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_data = valueView.m_data->get();
+
+            // deserializing values of T
+            SerdeSpec<T, TFormatType>::deserialize(tmpView);
+        }
+
+        template<typename ValueViewT>
+        static T* getObjectRawPointer(ValueViewT& valueView)
+        {
+            return (*valueView.m_data).get();
+        }
+
+        template<typename ValueViewT, typename T0>
+        static void setObjectRawPointer(ValueViewT& valueView, T0* pointer) noexcept
+        {
+            *valueView.m_data = std::move(std::shared_ptr<T0>(pointer));
+        }
+    };
+
+    // ====================================================================================
+
+    template<typename T, FormatType TFormatType>
+    struct SerdeSpec<T*, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = SerdeSpec<T, TFormatType>::type_name;
+        static inline constexpr bool is_pointer_type = true;
+        using element_type = T;
+
+        static void serialize(SerializableValueView<T*, TFormatType>& valueView)
+        {
+            // if value is null then doing nothing
+            if(!*valueView.m_data)
+            {
+                valueView.getValueContainer().setAsNull();
+                return;
+            }
+
+            SerializableValueView<T, TFormatType> tmpView = { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_data = *valueView.m_data;
+
+            // serializing values of T
+            SerdeSpec<T, TFormatType>::serialize(tmpView);
+        }
+
+        static void deserialize(DeserializableValueView<T*, TFormatType>& valueView)
+        {
+            // if value is null then doing nothing
+            if(valueView.getValueContainer().isNull())
+            {
+                return;
+            }
+
+            // allocating object
+            *valueView.m_data = new T();
+
+            // creating temporary value view that contains object with type T
+            DeserializableValueView<T, TFormatType> tmpView = { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_data = *valueView.m_data;
+
+            // deserializing values of T
+            SerdeSpec<T, TFormatType>::deserialize(tmpView);
+        }
+
+        template<typename ValueViewT>
+        static T* getObjectRawPointer(ValueViewT& valueView)
+        {
+            return (*valueView.m_data);
+        }
+
+        template<typename ValueViewT, typename T0>
+        static void setObjectRawPointer(ValueViewT& valueView, T0* pointer) noexcept
+        {
+            *valueView.m_data = pointer;
+        }
+    };
+
+    // ====================================================================================
+
     template<std::floating_point FloatingT, FormatType TFormatType>
     struct SerdeSpec<FloatingT, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
@@ -107,6 +225,8 @@ namespace SGCore::Serde
         }
     };
 
+    // ====================================================================================
+
     template<typename T, FormatType TFormatType>
     struct SerdeSpec<std::vector<T>, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
@@ -126,6 +246,55 @@ namespace SGCore::Serde
         static void deserialize(DeserializableValueView<std::vector<T>, TFormatType>& valueView)
         {
             *valueView.m_data = valueView.getValueContainer().template getAsArray<T>();
+        }
+    };
+
+    // ====================================================================================
+
+    template<typename CharT, FormatType TFormatType>
+    struct SerdeSpec<std::basic_string<CharT>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "std::basic_string";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<std::basic_string<CharT>, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().setAsString(*valueView.m_data);
+        }
+
+        static void deserialize(DeserializableValueView<std::basic_string<CharT>, TFormatType>& valueView)
+        {
+            *valueView.m_data = valueView.getValueContainer().template getAsString<CharT>();
+        }
+    };
+
+    // ====================================================================================
+
+    template<glm::length_t Length, typename T, glm::qualifier Qualifier, FormatType TFormatType>
+    struct SerdeSpec<glm::vec<Length, T, Qualifier>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "glm::vec";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<glm::vec<Length, T, Qualifier>, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().setAsArray();
+
+            for(std::size_t i = 0; i < Length; ++i)
+            {
+                valueView.getValueContainer().pushBack((*valueView.m_data)[i]);
+            }
+        }
+
+        static void deserialize(DeserializableValueView<glm::vec<Length, T, Qualifier>, TFormatType>& valueView)
+        {
+            const std::vector<T> vec =
+                    valueView.getValueContainer().template getAsArray<T>();
+
+            for(std::size_t i = 0; i < vec.size(); ++i)
+            {
+                (*valueView.m_data)[i] = vec[i];
+            }
         }
     };
 }

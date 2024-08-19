@@ -20,12 +20,15 @@ struct Base
 struct Derived : Base
 {
     float b = 3.14f;
+    std::string str0 = "hello utf8";
+    std::basic_string<char16_t> str1 = u"hello utf16";
 };
 
 struct Derived0 : Derived
 {
     float c = 5.1f;
     std::vector<float> floats { 1, 2, 3, 51.1f };
+    glm::vec3 myVec3 { 3.0, 1.0, -1.0 };
 };
 
 template<SGCore::Serde::FormatType TFormatType>
@@ -39,6 +42,7 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
     {
         valueView.getValueContainer().addMember("c", valueView.m_data->c);
         valueView.getValueContainer().addMember("floats", valueView.m_data->floats);
+        valueView.getValueContainer().addMember("myVec3", valueView.m_data->myVec3);
 
         std::printf("derived0 serializing\n");
     }
@@ -57,6 +61,12 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
             valueView.m_data->floats = *floats;
         }
 
+        const auto myVec3 = valueView.getValueContainer().template getMember<glm::vec3>("myVec3");
+        if(myVec3)
+        {
+            valueView.m_data->myVec3 = *myVec3;
+        }
+
         std::printf("derived0 deserializing\n");
     }
 };
@@ -71,6 +81,8 @@ struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes
     static void serialize(SGCore::Serde::SerializableValueView<Derived, TFormatType>& valueView) noexcept
     {
         valueView.getValueContainer().addMember("b", valueView.m_data->b);
+        valueView.getValueContainer().addMember("str0", valueView.m_data->str0);
+        valueView.getValueContainer().addMember("str1", valueView.m_data->str1);
         std::printf("derived serializing\n");
     }
 
@@ -80,6 +92,18 @@ struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes
         if(b)
         {
             valueView.m_data->b = *b;
+        }
+
+        const auto str0 = valueView.getValueContainer().template getMember<std::string>("str0");
+        if(str0)
+        {
+            valueView.m_data->str0 = *str0;
+        }
+
+        const auto str1 = valueView.getValueContainer().template getMember<std::basic_string<char16_t>>("str1");
+        if(str1)
+        {
+            valueView.m_data->str1 = *str1;
         }
 
         std::printf("derived deserializing\n");

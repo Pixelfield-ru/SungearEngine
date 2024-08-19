@@ -140,9 +140,14 @@ void coreInit()
     testSerde.m_name = "Ilya";
     testSerde.m_bool = true;
 
-    std::unique_ptr<Base> tst = std::make_unique<Derived0>();
+    std::shared_ptr<Base> tst = std::make_shared<Derived0>();
+    // Base* tst = new Derived0();
     tst->a = -1;
-    dynamic_cast<Derived*>(tst.get())->b = 20.1f;
+    dynamic_cast<Derived0*>(tst.get())->b = 20.1f;
+    dynamic_cast<Derived0*>(tst.get())->str1 = u"abra";
+    dynamic_cast<Derived0*>(tst.get())->myVec3 = { -3, 5, 1 };
+    /*dynamic_cast<Derived0*>(tst)->b = 20.1f;
+    dynamic_cast<Derived0*>(tst)->str1 = u"abra";*/
     //dynamic_cast<Derived*>(tst)->b = 4;
     FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat(tst), false, true);
 
@@ -150,15 +155,13 @@ void coreInit()
 
     std::string outputLog;
 
-    std::unique_ptr<Base> deser;
+    std::shared_ptr<Base> deser;
+    // Base* deser;
     Serde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
 
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 
     // std::printf("deser: %i, %f\n", deser->a, 0.0f);
-
-    auto* derDeser = dynamic_cast<Derived*>(deser.get());
-    auto* derDeser0 = dynamic_cast<Derived0*>(deser.get());
 
     /*rapidjson::Document fromDocument;
     fromDocument.Parse(FileUtils::readFile("serializer_test.txt").c_str());

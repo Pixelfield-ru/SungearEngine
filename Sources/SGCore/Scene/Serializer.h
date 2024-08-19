@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_SERIALIZER_H
 
 #include "SGCore/Utils/TypeTraits.h"
+#include "SGCore/Utils/Utils.h"
 #include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore::Serde
@@ -92,6 +93,12 @@ namespace SGCore::Serde
         }
 
         [[nodiscard]] float getAsFloat() const noexcept
+        {
+
+        }
+
+        template<typename CharT>
+        [[nodiscard]] std::basic_string<CharT> getAsString() const noexcept
         {
 
         }
@@ -288,6 +295,22 @@ namespace SGCore::Serde
             return m_thisValue->GetFloat();
         }
 
+        template<typename CharT>
+        [[nodiscard]] std::basic_string<CharT> getAsString() const noexcept
+        {
+            if(!m_thisValue)
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get value as float: m_thisValue is null.\n";
+                }
+
+                return { };
+            }
+
+            return SGCore::Utils::template fromUTF8<CharT>(m_thisValue->GetString());
+        }
+
         [[nodiscard]] bool isNull() const noexcept
         {
             return m_thisValue && m_thisValue->IsNull();
@@ -364,6 +387,16 @@ namespace SGCore::Serde
          * @param f
          */
         void setAsInt64(const std::int64_t& i) noexcept
+        {
+
+        }
+
+        /**
+         * Setting this container value as string.
+         * @param str
+         */
+        template<typename CharT>
+        void setAsString(const std::basic_string<CharT>& str) noexcept
         {
 
         }
@@ -504,6 +537,16 @@ namespace SGCore::Serde
             if(!m_thisValue) return;
 
             m_thisValue->SetInt64(i);
+        }
+
+        template<typename CharT>
+        void setAsString(const std::basic_string<CharT>& str) noexcept
+        {
+            if(!(m_thisValue || m_document)) return;
+
+            const std::string utf8String = SGCore::Utils::toUTF8(str);
+
+            m_thisValue->SetString(utf8String.c_str(), utf8String.length(), m_document->GetAllocator());
         }
 
         void setAsArray() noexcept
