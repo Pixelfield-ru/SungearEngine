@@ -13,15 +13,14 @@
 #define SG_LAYER_OPAQUE_NAME        "Opaque"
 #define SG_LAYER_TRANSPARENT_NAME   "Transparent"
 
+sg_predeclare_serdespec()
+
 namespace SGCore
 {
-    template<typename>
-    struct SerializerSpec;
-
     sg_struct()
     struct Layer
     {
-        sg_serializer_as_friend(Layer)
+        sg_serdespec_as_friend()
 
         friend class Scene;
         friend class ISystem;

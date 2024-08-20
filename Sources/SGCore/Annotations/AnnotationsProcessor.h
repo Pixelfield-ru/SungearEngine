@@ -11,14 +11,13 @@
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Annotations/Annotations.h"
 
+sg_predeclare_serdespec()
+
 namespace SGCore
 {
-    template<typename>
-    struct SerializerSpec;
-
     struct AnnotationsProcessor
     {
-        sg_serializer_as_friend(AnnotationsProcessor)
+        sg_serdespec_as_friend()
 
         enum class AnnotationActiveState
         {
@@ -28,7 +27,7 @@ namespace SGCore
         
         struct AnnotationArg
         {
-            sg_serializer_as_friend(AnnotationArg)
+            sg_serdespec_as_friend()
 
             std::string m_name { };
             bool m_isUnnecessary = false;
@@ -39,7 +38,7 @@ namespace SGCore
         
         struct Annotation
         {
-            sg_serializer_as_friend(Annotation)
+            sg_serdespec_as_friend()
 
             std::string m_name { };
             
@@ -61,7 +60,7 @@ namespace SGCore
         
         struct Member
         {
-            sg_serializer_as_friend(Member)
+            sg_serdespec_as_friend()
 
             std::string m_name;
             

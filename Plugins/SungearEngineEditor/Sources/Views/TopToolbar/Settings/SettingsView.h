@@ -25,6 +25,10 @@ namespace SGE
 
         bool m_isSettingsContentViewContainsDockedWindow = false;
 
+        virtual void onOKPressed() noexcept { };
+        virtual void onApplyPressed() noexcept { };
+        virtual void onCancelPressed() noexcept { };
+
     protected:
         virtual void onDock() { };
 

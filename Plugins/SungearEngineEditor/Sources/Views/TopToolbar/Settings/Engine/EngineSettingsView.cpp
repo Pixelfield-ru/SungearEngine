@@ -70,3 +70,20 @@ void SGE::EngineSettingsView::onDock()
     m_settingsContentDockedWindow->split(ImGuiDir_Left, 0.3f, m_toolchainsDockedWindow.get(),
                                          m_toolchainsDockedWindow->getSelectedToolchainDockedWindow().get());
 }
+
+void SGE::EngineSettingsView::onOKPressed() noexcept
+{
+    onApplyPressed();
+    onCancelPressed();
+}
+
+void SGE::EngineSettingsView::onApplyPressed() noexcept
+{
+    *EngineSettings::getInstance() = *m_engineSettingsInstance;
+    EngineSettings::getInstance()->save("configs/engine_settings.json");
+}
+
+void SGE::EngineSettingsView::onCancelPressed() noexcept
+{
+    setActive(false);
+}

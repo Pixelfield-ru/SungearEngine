@@ -19,6 +19,8 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 	m_name = "SungearEngineEditor";
 	m_version = "1.0.0";
 
+    EngineSettings::getInstance()->load("configs/engine_settings.json");
+
     StylesManager::init();
     
     m_mainView = SGCore::MakeRef<MainView>();

@@ -10,7 +10,7 @@
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
 #include <SGCore/Annotations/AnnotationsProcessor.h>
-#include <SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.h>
+#include <SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.h>
 
 #include "ProjectCreateDialog.h"
 #include "SungearEngineEditor.h"
@@ -217,9 +217,9 @@ void SGE::ProjectCreateDialog::submit()
                                                  sungearRootStr +
                                                  "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
                                                  sungearRootStr +
-                                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
+                                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp"});
 
-        SGCore::CodeGen::SerializersGenerator serializersGenerator;
+        SGCore::CodeGen::SerdeSpecsGenerator serializersGenerator;
         std::string serializersGenerationError = serializersGenerator.generateSerializers(annotationsProcessor,
                                                                                           sungearRootStr + "/.SG_GENERATED/Serializers.h");
 

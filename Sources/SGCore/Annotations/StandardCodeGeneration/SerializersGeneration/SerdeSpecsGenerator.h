@@ -2,8 +2,8 @@
 // Created by ilya on 03.07.24.
 //
 
-#ifndef SUNGEARENGINE_SERIALIZERSGENERATOR_H
-#define SUNGEARENGINE_SERIALIZERSGENERATOR_H
+#ifndef SUNGEARENGINE_SERDESPECSGENERATOR_H
+#define SUNGEARENGINE_SERDESPECSGENERATOR_H
 
 #include "SGCore/pch.h"
 
@@ -14,7 +14,7 @@ namespace SGCore
 
 namespace SGCore::CodeGen
 {
-    struct SerializersGenerator
+    struct SerdeSpecsGenerator
     {
         [[nodiscard]] std::string generateSerializers(const AnnotationsProcessor& annotationsProcessor,
                                                       const std::filesystem::path& generatedHeaderPath);
@@ -31,4 +31,4 @@ namespace SGCore::CodeGen
     };
 }
 
-#endif //SUNGEARENGINE_SERIALIZERSGENERATOR_H
+#endif //SUNGEARENGINE_SERDESPECSGENERATOR_H

@@ -10,10 +10,14 @@
 #include <filesystem>
 #include <SGCore/Utils/UniqueName.h>
 
+sg_predeclare_serdespec()
+
 namespace SGE
 {
     struct Toolchain
     {
+        sg_serdespec_as_friend()
+
         virtual ~Toolchain() = default;
 
         SGCore::UniqueName m_name;

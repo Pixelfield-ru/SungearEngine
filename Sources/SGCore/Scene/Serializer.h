@@ -116,6 +116,15 @@ namespace SGCore::Serde
         }
 
         /**
+        * Getting this container value as bool.
+        * @param f
+        */
+        [[nodiscard]] bool getAsBool() const noexcept
+        {
+
+        }
+
+        /**
          * Getting first iterator of members container.
          * @return First iterator of members container (begin).
          */
@@ -363,6 +372,13 @@ namespace SGCore::Serde
             return SGCore::Utils::template fromUTF8<CharT>(m_thisValue->GetString());
         }
 
+        [[nodiscard]] bool getAsBool() const noexcept
+        {
+            if(!m_thisValue) return false;
+
+            return m_thisValue->GetBool();
+        }
+
         [[nodiscard]] rapidjson::Value::MemberIterator memberBegin() const noexcept
         {
             if(!m_thisValue) return { };
@@ -545,6 +561,15 @@ namespace SGCore::Serde
         }
 
         /**
+         * Setting this container value as bool.
+         * @param str
+         */
+        void setAsBool(bool b) noexcept
+        {
+
+        }
+
+        /**
          * Setter for type name of value.
          * @param typeName
          */
@@ -687,6 +712,13 @@ namespace SGCore::Serde
             if(!m_thisValue) return;
 
             m_thisValue->SetArray();
+        }
+
+        void setAsBool(bool b) noexcept
+        {
+            if(!m_thisValue) return;
+
+            m_thisValue->SetBool(b);
         }
 
         void setTypeName(const std::string& typeName) noexcept

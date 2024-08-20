@@ -45,8 +45,11 @@ namespace SGCore::Serde
                 return;
             }
 
-            // allocating object
-            *valueView.m_data = std::make_unique<T>();
+            if constexpr(!std::is_abstract_v<T>)
+            {
+                // allocating object
+                *valueView.m_data = std::make_unique<T>();
+            }
 
             // creating temporary value view that contains object with type T
             DeserializableValueView<T, TFormatType> tmpView = { };
@@ -103,8 +106,11 @@ namespace SGCore::Serde
                 return;
             }
 
-            // allocating object
-            *valueView.m_data = std::make_shared<T>();
+            if constexpr(!std::is_abstract_v<T>)
+            {
+                // allocating object
+                *valueView.m_data = std::make_shared<T>();
+            }
 
             // creating temporary value view that contains object with type T
             DeserializableValueView<T, TFormatType> tmpView = { };
@@ -162,8 +168,11 @@ namespace SGCore::Serde
                 return;
             }
 
-            // allocating object
-            *valueView.m_data = new T();
+            if constexpr(!std::is_abstract_v<T>)
+            {
+                // allocating object
+                *valueView.m_data = new T();
+            }
 
             // creating temporary value view that contains object with type T
             DeserializableValueView<T, TFormatType> tmpView = { };
@@ -298,6 +307,8 @@ namespace SGCore::Serde
         }
     };
 
+    // ====================================================================================
+
     /**
      * KeyT REQUIRES AN IMPLICIT CONVERSION OPERATOR TO std::string OR OTHER TYPES FROM
      * WHICH std::string CAN BE CONSTRUCTED OR WHICH CAN BE IMPLICITLY CONVERTED TO std::string
@@ -328,6 +339,66 @@ namespace SGCore::Serde
                     (*valueView.m_data)[valueView.getValueContainer().getMemberName(it)] = *val;
                 }
             }
+        }
+    };
+
+    // ====================================================================================
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<bool, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "bool";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<bool, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().setAsBool(*valueView.m_data);
+        }
+
+        static void deserialize(DeserializableValueView<bool, TFormatType>& valueView)
+        {
+            *valueView.m_data = valueView.getValueContainer().getAsBool();
+        }
+    };
+
+    // ====================================================================================
+
+    template<typename T, FormatType TFormatType>
+    requires(std::is_enum_v<T>)
+    struct SerdeSpec<T, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "enum";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<T, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().setAsInt64(static_cast<std::underlying_type_t<T>>(*valueView.m_data));
+        }
+
+        static void deserialize(DeserializableValueView<T, TFormatType>& valueView)
+        {
+            *valueView.m_data = (T) valueView.getValueContainer().getAsInt64();
+        }
+    };
+
+    // ====================================================================================
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<std::filesystem::path, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "std::filesystem::path";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<std::filesystem::path, TFormatType>& valueView)
+        {
+            const std::string u8Path = SGCore::Utils::toUTF8(valueView.m_data->u16string());
+            valueView.getValueContainer().setAsString(u8Path);
+        }
+
+        static void deserialize(DeserializableValueView<std::filesystem::path, TFormatType>& valueView)
+        {
+            const std::u16string tmpPath = valueView.getValueContainer().template getAsString<char16_t>();
+            *valueView.m_data = tmpPath;
         }
     };
 }

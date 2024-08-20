@@ -33,11 +33,11 @@ extern "C" {
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Utils/Formatter.h"
 #include "SGCore/Annotations/AnnotationsProcessor.h"
-#include "SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.h"
+#include "SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.h"
 
 SGCore::Ref<SGCore::Scene> testScene2;
 
-// #include "SGCore/GeneratedSerializers.h"
+#include "SGCore/Scene/GeneratedSerdeSpecs.h"
 
 // #include "F:\Pixelfield\SungearEngine\SungearEngine\cmake-build-release\Sources\SGEntry\.generated\Serializers.h"
 /*#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
@@ -99,9 +99,9 @@ void coreInit()
     annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
                                             { sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
                                               sungearRootStr + "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
-                                              sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
+                                              sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp"});
     
-    SGCore::CodeGen::SerializersGenerator serializersGenerator;
+    SGCore::CodeGen::SerdeSpecsGenerator serializersGenerator;
     std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./.generated/GeneratedSerializers.h").c_str());
     
     std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;
@@ -159,8 +159,8 @@ void coreInit()
     //dynamic_cast<Derived*>(tst)->b = 4;
     FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat(tst), false, true);
 
-    SGCore::EntityBaseInfo entityBaseInfo;
-    // FileUtils::writeToFile("serializer_test_1.txt", Serde::Serializer::toFormat(entityBaseInfo), false, true);
+    Ref<UniqueNameWrapper> entityBaseInfo = MakeRef<EntityBaseInfo>();
+    FileUtils::writeToFile("serializer_test_1.txt", Serde::Serializer::toFormat(entityBaseInfo), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
@@ -168,7 +168,7 @@ void coreInit()
 
     std::shared_ptr<Base> deser;
     // Base* deser;
-    Serde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
+    // Serde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
 
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 

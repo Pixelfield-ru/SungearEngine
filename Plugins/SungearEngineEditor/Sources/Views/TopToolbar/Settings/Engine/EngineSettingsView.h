@@ -21,6 +21,10 @@ namespace SGE
 
         SGCore::Ref<EngineSettings> m_engineSettingsInstance = SGCore::MakeRef<EngineSettings>();
 
+        void onOKPressed() noexcept override;
+        void onApplyPressed() noexcept override;
+        void onCancelPressed() noexcept override;
+
     protected:
         void onDock() final;
 

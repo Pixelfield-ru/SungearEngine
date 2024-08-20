@@ -4,6 +4,12 @@
 
 #include "EngineSettings.h"
 
+#include <SGCore/Scene/Serializer.h>
+#include <SGCore/Scene/StandardSerdeSpecs.h>
+#include <SGCore/Scene/GeneratedSerdeSpecs.h>
+
+#include "Utils/Serializers.h"
+
 SGCore::Ref<SGE::EngineSettings> SGE::EngineSettings::getInstance() noexcept
 {
     return m_instance;
@@ -56,4 +62,23 @@ SGE::EngineSettings& SGE::EngineSettings::operator=(const SGE::EngineSettings& r
     }
 
     return *this;
+}
+
+void SGE::EngineSettings::save(const std::filesystem::path& toPath) const noexcept
+{
+    const std::string savedSettings = SGCore::Serde::Serializer::toFormat(*this);
+    SGCore::FileUtils::writeToFile(toPath, savedSettings, false, true);
+}
+
+void SGE::EngineSettings::load(const std::filesystem::path& fromPath) noexcept
+{
+    const std::string settingsContent = SGCore::FileUtils::readFile(fromPath);
+
+    std::string outputLog;
+    SGCore::Serde::Serializer::fromFormat<EngineSettings>(settingsContent, *this, outputLog);
+
+    if(!outputLog.empty())
+    {
+        // todo: show error dialog
+    }
 }

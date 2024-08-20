@@ -5,7 +5,13 @@
 #ifndef SUNGEARENGINE_ANNOTATIONS_H
 #define SUNGEARENGINE_ANNOTATIONS_H
 
-#define sg_serializer_as_friend(this_struct) friend struct SGCore::SerializerSpec<this_struct>;
+#define sg_serdespec_as_friend() template<typename T, SGCore::Serde::FormatType TFormatType> friend struct SGCore::Serde::SerdeSpec;
+#define sg_predeclare_serdespec() namespace SGCore::Serde   \
+{                                                   \
+    enum class FormatType;                          \
+    template<typename T, FormatType TFormatType>    \
+    struct SerdeSpec;                               \
+}
 
 #define sg_struct(args, ...)
 #define sg_component(args, ...)

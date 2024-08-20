@@ -19,12 +19,12 @@ namespace SGCore
     // sizeof
     struct EntityBaseInfo : public UniqueNameWrapper
     {
-        sg_serializer_as_friend(EntityBaseInfo)
+        sg_serdespec_as_friend()
 
         sg_member()
         entity_t m_parent = entt::null;
 
-        sg_member()
+        // sg_member()
         Weak<Layer> m_layer;
     };
 }

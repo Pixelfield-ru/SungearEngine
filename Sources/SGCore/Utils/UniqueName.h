@@ -9,20 +9,19 @@
 
 #include "SGCore/Annotations/Annotations.h"
 
+sg_predeclare_serdespec()
+
 namespace SGCore
 {
     class UniqueNamesManager;
 
-    template<typename T>
-    struct SerializerSpec;
-
     sg_struct()
     struct UniqueName
     {
-        sg_serializer_as_friend(UniqueName)
+        sg_serdespec_as_friend()
 
         friend class UniqueNamesManager;
-        
+
         UniqueName() = default;
         UniqueName(const UniqueName& other) noexcept;
         UniqueName(const char* rawName) noexcept;
@@ -43,10 +42,10 @@ namespace SGCore
 
         UniqueName& operator=(const UniqueName& other) noexcept;
         UniqueName& operator=(UniqueName&&) noexcept = default;
-        
+
         UniqueName& operator=(const char* rawName) noexcept;
         UniqueName& operator=(const std::string& rawName) noexcept;
-        
+
         bool operator==(const UniqueName& other) const noexcept;
         bool operator!=(const UniqueName& other) const noexcept;
         bool operator==(const char* name) const noexcept;
@@ -75,7 +74,7 @@ namespace SGCore
     sg_struct()
     class UniqueNameWrapper
     {
-        sg_serializer_as_friend(UniqueNameWrapper)
+        sg_serdespec_as_friend()
     public:
 
         [[nodiscard]] auto getRawName() const noexcept
@@ -106,6 +105,9 @@ namespace SGCore
     protected:
         sg_member()
         UniqueName m_uniqueName;
+
+    private:
+        virtual void dummy() const noexcept { }
     };
 }
 

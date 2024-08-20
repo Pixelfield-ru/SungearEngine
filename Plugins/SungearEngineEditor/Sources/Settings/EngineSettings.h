@@ -11,10 +11,14 @@
 #include <SGCore/Main/CoreGlobals.h>
 #include "Toolchains/Toolchain.h"
 
+sg_predeclare_serdespec()
+
 namespace SGE
 {
     struct EngineSettings
     {
+        sg_serdespec_as_friend()
+
         static SG_NOINLINE SGCore::Ref<EngineSettings> getInstance() noexcept;
 
         void addToolchain(const SGCore::Ref<Toolchain>& toolchain) noexcept;
@@ -23,6 +27,9 @@ namespace SGE
         void clearToolchains() noexcept;
 
         [[nodiscard]] const std::vector<SGCore::Ref<Toolchain>>& getToolchains() const noexcept;
+
+        void save(const std::filesystem::path& toPath) const noexcept;
+        void load(const std::filesystem::path& fromPath) noexcept;
 
         EngineSettings& operator=(const EngineSettings&) noexcept;
 

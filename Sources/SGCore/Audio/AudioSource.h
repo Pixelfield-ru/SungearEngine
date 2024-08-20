@@ -34,7 +34,7 @@ namespace SGCore
     sg_struct(type = "component")
     struct AudioSource
     {
-        sg_serializer_as_friend(AudioSource)
+        sg_serdespec_as_friend()
 
         friend struct AudioProcessor;
         
