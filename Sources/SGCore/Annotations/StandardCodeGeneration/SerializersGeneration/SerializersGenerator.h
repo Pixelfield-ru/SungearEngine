@@ -17,11 +17,17 @@ namespace SGCore::CodeGen
     struct SerializersGenerator
     {
         [[nodiscard]] std::string generateSerializers(const AnnotationsProcessor& annotationsProcessor,
-                                                      const std::filesystem::path& generatedHeaderPath) const;
+                                                      const std::filesystem::path& generatedHeaderPath);
 
     private:
-        [[nodiscard]] std::string generateSerializationOps(const AnnotationsProcessor& annotationsProcessor,
-                                                           const std::string& currentStructName) const noexcept;
+        void analyzeStruct(const AnnotationsProcessor& annotationsProcessor,
+                           const std::string& currentStructName,
+                           std::string& serializationOps,
+                           std::string& deserializationOps,
+                           std::string& outputLog) noexcept;
+
+        std::unordered_map<std::string, std::vector<std::string>> m_structsBaseTypes;
+        std::unordered_map<std::string, std::vector<std::string>> m_structsDerivedTypes;
     };
 }
 

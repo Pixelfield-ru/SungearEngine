@@ -1,5 +1,11 @@
-template<>
-struct SGCore::SerializerSpec<${structureName}$>
+template<SGCore::Serde::FormatType TFormatType>
+struct SGCore::Serde::SerdeSpec<${structureName}$, TFormatType> : SGCore::Serde::BaseTypes<${structureBaseTypes}$>,
+        SGCore::Serde::DerivedTypes<${structureDerivedTypes}$>
 {
-    static void serialize(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName, const ${structureName}$& value) noexcept;
+    static inline const std::string type_name = "${structureName}$";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<${structureName}$, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<${structureName}$, TFormatType>& valueView) noexcept;
 };

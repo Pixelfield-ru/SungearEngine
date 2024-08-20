@@ -37,6 +37,8 @@ extern "C" {
 
 SGCore::Ref<SGCore::Scene> testScene2;
 
+// #include "SGCore/GeneratedSerializers.h"
+
 // #include "F:\Pixelfield\SungearEngine\SungearEngine\cmake-build-release\Sources\SGEntry\.generated\Serializers.h"
 /*#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
 #include "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h"*/
@@ -47,6 +49,9 @@ struct MyStruct
 {
     std::string m_name = "test";
     bool m_bool = true;
+
+private:
+    int gg = 0;
 };
 
 void coreInit()
@@ -96,10 +101,10 @@ void coreInit()
                                               sungearRootStr + "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
                                               sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerializersGenerator.cpp"});
     
-    /*SGCore::CodeGen::SerializersGenerator serializersGenerator;
-    std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./").c_str());
+    SGCore::CodeGen::SerializersGenerator serializersGenerator;
+    std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./.generated/GeneratedSerializers.h").c_str());
     
-    std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;*/
+    std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;
 
     using namespace SGCore;
     
@@ -140,6 +145,8 @@ void coreInit()
     testSerde.m_name = "Ilya";
     testSerde.m_bool = true;
 
+    using a = decltype(testSerde.m_name);
+
     std::shared_ptr<Base> tst = std::make_shared<Derived0>();
     // Base* tst = new Derived0();
     tst->a = -1;
@@ -151,6 +158,9 @@ void coreInit()
     dynamic_cast<Derived0*>(tst)->str1 = u"abra";*/
     //dynamic_cast<Derived*>(tst)->b = 4;
     FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat(tst), false, true);
+
+    SGCore::EntityBaseInfo entityBaseInfo;
+    // FileUtils::writeToFile("serializer_test_1.txt", Serde::Serializer::toFormat(entityBaseInfo), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 

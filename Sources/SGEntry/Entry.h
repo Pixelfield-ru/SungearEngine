@@ -6,6 +6,7 @@
 #include <SGCore/Scene/Serializer.h>
 #include <SGCore/Utils/TypeTraits.h>
 #include "SGCore/Scene/StandardSerdeSpecs.h"
+// #include "SGCore/GeneratedSerializers.h"
 
 struct Base
 {
