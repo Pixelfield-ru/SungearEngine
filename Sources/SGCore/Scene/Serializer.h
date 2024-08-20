@@ -72,7 +72,7 @@ namespace SGCore::Serde
         friend struct DeserializableValueView;
 
         template<typename T>
-        T getMember(const std::string& memberName) noexcept
+        std::optional<T> getMember(const std::string& memberName) noexcept
         {
 
         }
@@ -87,18 +87,70 @@ namespace SGCore::Serde
 
         }
 
+        /**
+        * Getting this container value as int64.
+        * @param f
+        */
         [[nodiscard]] std::int64_t getAsInt64() const noexcept
         {
 
         }
 
+        /**
+        * Getting this container value as float.
+        * @param f
+        */
         [[nodiscard]] float getAsFloat() const noexcept
         {
 
         }
 
+        /**
+        * Getting this container value as string.
+        * @param f
+        */
         template<typename CharT>
         [[nodiscard]] std::basic_string<CharT> getAsString() const noexcept
+        {
+
+        }
+
+        /**
+         * Getting first iterator of members container.
+         * @return First iterator of members container (begin).
+         */
+        [[nodiscard]] int memberBegin() const noexcept
+        {
+
+        }
+
+        /**
+         * Getting last iterator of members container.
+         * @return Last iterator of members container (end).
+         */
+        [[nodiscard]] int memberEnd() const noexcept
+        {
+
+        }
+
+        /**
+         * Getting member by iterator.
+         * @tparam T - Type of member.
+         * @param iterator - Member iterator.
+         * @return Value of member.
+         */
+        template<typename T>
+        T getMember(const int& iterator) noexcept
+        {
+
+        }
+
+        /**
+         * Getting name of member by iterator.
+         * @param memberIterator
+         * @return
+         */
+        [[nodiscard]] std::string getMemberName(const int& memberIterator) const noexcept
         {
 
         }
@@ -309,6 +361,87 @@ namespace SGCore::Serde
             }
 
             return SGCore::Utils::template fromUTF8<CharT>(m_thisValue->GetString());
+        }
+
+        [[nodiscard]] rapidjson::Value::MemberIterator memberBegin() const noexcept
+        {
+            if(!m_thisValue) return { };
+
+            return m_thisValue->MemberBegin();
+        }
+
+        [[nodiscard]] rapidjson::Value::MemberIterator memberEnd() const noexcept
+        {
+            if(!m_thisValue) return { };
+
+            return m_thisValue->MemberEnd();
+        }
+
+        template<typename T>
+        std::optional<T> getMember(const rapidjson::Value::MemberIterator& memberIterator) noexcept
+        {
+            if(!(m_thisValue || m_document))
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
+                            "': m_thisValue or m_document is null.\n";
+                }
+
+                return std::nullopt;
+            }
+
+            // getting member
+            auto& member = memberIterator->value;
+
+            if(!member.HasMember("typeName"))
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
+                            "': this member does not have 'typeName' section.\n";
+                }
+
+                return std::nullopt;
+            }
+
+            // getting typeName section of member
+            const std::string& typeName = member["typeName"].GetString();
+
+            if(!member.HasMember("value"))
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
+                            "': this member does not have 'value' section.\n";
+                }
+
+                return std::nullopt;
+            }
+
+            // getting value section of member
+            auto& memberValue = member["value"];
+
+            T outputValue { };
+
+            // creating value view of member
+            DeserializableValueView<T, FormatType::JSON> valueView { };
+            valueView.getValueContainer().m_document = m_document;
+            valueView.getValueContainer().m_thisValue = &memberValue;
+            valueView.getValueContainer().m_parent = this;
+            valueView.getValueContainer().m_outputLog = m_outputLog;
+            valueView.getValueContainer().m_typeName = typeName;
+            valueView.m_data = &outputValue;
+
+            // deserializing member with dynamic checks
+            Serializer::deserializeWithDynamicChecks(valueView);
+
+            return outputValue;
+        }
+
+        [[nodiscard]] std::string getMemberName(const rapidjson::Value::MemberIterator& memberIterator) const noexcept
+        {
+            return memberIterator->name.GetString();
         }
 
         [[nodiscard]] bool isNull() const noexcept

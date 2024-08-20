@@ -146,6 +146,7 @@ void coreInit()
     dynamic_cast<Derived0*>(tst.get())->b = 20.1f;
     dynamic_cast<Derived0*>(tst.get())->str1 = u"abra";
     dynamic_cast<Derived0*>(tst.get())->myVec3 = { -3, 5, 1 };
+    dynamic_cast<Derived0*>(tst.get())->unMap["v0"] = 20.0f;
     /*dynamic_cast<Derived0*>(tst)->b = 20.1f;
     dynamic_cast<Derived0*>(tst)->str1 = u"abra";*/
     //dynamic_cast<Derived*>(tst)->b = 4;

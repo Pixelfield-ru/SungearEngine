@@ -297,6 +297,39 @@ namespace SGCore::Serde
             }
         }
     };
+
+    /**
+     * KeyT REQUIRES AN IMPLICIT CONVERSION OPERATOR TO std::string OR OTHER TYPES FROM
+     * WHICH std::string CAN BE CONSTRUCTED OR WHICH CAN BE IMPLICITLY CONVERTED TO std::string
+     *
+    **/
+    template<typename KeyT, typename ValueT, FormatType TFormatType>
+    struct SerdeSpec<std::unordered_map<KeyT, ValueT>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "std::unordered_map";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView)
+        {
+            for(const auto& [key, value] : *valueView.m_data)
+            {
+                valueView.getValueContainer().addMember(key, value);
+            }
+        }
+
+        static void deserialize(DeserializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView)
+        {
+            for(auto it = valueView.getValueContainer().memberBegin(); it != valueView.getValueContainer().memberEnd(); ++it)
+            {
+                const auto val = valueView.getValueContainer().template getMember<ValueT>(it);
+
+                if(val)
+                {
+                    (*valueView.m_data)[valueView.getValueContainer().getMemberName(it)] = *val;
+                }
+            }
+        }
+    };
 }
 
 #endif //SUNGEARENGINE_STANDARDSERDESPECS_H

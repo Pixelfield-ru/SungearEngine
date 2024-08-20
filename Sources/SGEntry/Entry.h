@@ -29,6 +29,7 @@ struct Derived0 : Derived
     float c = 5.1f;
     std::vector<float> floats { 1, 2, 3, 51.1f };
     glm::vec3 myVec3 { 3.0, 1.0, -1.0 };
+    std::unordered_map<std::string, float> unMap { { "v0", 1.0f }, { "v1", -5.0f } };
 };
 
 template<SGCore::Serde::FormatType TFormatType>
@@ -43,6 +44,7 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
         valueView.getValueContainer().addMember("c", valueView.m_data->c);
         valueView.getValueContainer().addMember("floats", valueView.m_data->floats);
         valueView.getValueContainer().addMember("myVec3", valueView.m_data->myVec3);
+        valueView.getValueContainer().addMember("unMap", valueView.m_data->unMap);
 
         std::printf("derived0 serializing\n");
     }
@@ -65,6 +67,12 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
         if(myVec3)
         {
             valueView.m_data->myVec3 = *myVec3;
+        }
+
+        const auto unMap = valueView.getValueContainer().template getMember<decltype(Derived0::unMap)>("unMap");
+        if(unMap)
+        {
+            valueView.m_data->unMap = *unMap;
         }
 
         std::printf("derived0 deserializing\n");
