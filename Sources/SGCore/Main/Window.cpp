@@ -1,4 +1,5 @@
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "Window.h"
@@ -13,16 +14,16 @@ void SGCore::Window::create()
 
     if(!glfwInit())
     {
-        spdlog::error("Failed to initialize GLFW!\n{0}", SG_CURRENT_LOCATION_STR);
+        LOG_E("Failed to initialize GLFW!\n{0}", SG_CURRENT_LOCATION_STR);
     }
 
-    spdlog::info("-----------------------------------");
-    spdlog::info("GLFW info:");
-    spdlog::info("GLFW version is {0}.{1}.{2}",
-                 GLFW_VERSION_MAJOR,
-                 GLFW_VERSION_MINOR,
-                 GLFW_VERSION_REVISION);
-    spdlog::info("-----------------------------------");
+    LOG_I("-----------------------------------");
+    LOG_I("GLFW info:");
+    LOG_I("GLFW version is {}.{}.{}",
+          GLFW_VERSION_MAJOR,
+          GLFW_VERSION_MINOR,
+          GLFW_VERSION_REVISION);
+    LOG_I("-----------------------------------");
 
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -37,7 +38,8 @@ void SGCore::Window::create()
 
     if(!m_handler)
     {
-        spdlog::error("Failed to initialize GLFW Window!\n{0}", SG_CURRENT_LOCATION_STR);
+        LOG_E("Failed to initialize GLFW Window!\n{}", SG_CURRENT_LOCATION_STR);
+        return;
     }
     
     glfwSetWindowCloseCallback(m_handler, nativeCloseCallback);
@@ -223,14 +225,14 @@ void SGCore::Window::nativeCloseCallback(GLFWwindow* window) noexcept
 {
     onClose(*((Window*) glfwGetWindowUserPointer(window)));
 
-    spdlog::info("GLFW window closed.");
+    LOG_I("GLFW window closed.");
 }
 
 void SGCore::Window::nativeIconifyCallback(GLFWwindow* window, int iconified) noexcept
 {
     onIconify(*((Window*) glfwGetWindowUserPointer(window)), iconified);
 
-    spdlog::info("GLFW window iconified.");
+    LOG_I("GLFW window iconified.");
 }
 
 void SGCore::Window::nativeKeyboardKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept
@@ -250,7 +252,7 @@ void SGCore::Window::nativeMousePositionCallback(GLFWwindow* window, double xpos
 
 void SGCore::Window::errorCallback(int errCode, const char* err_msg)
 {
-    spdlog::error("GLFW error (code {0}): {1}\n{2}", errCode, err_msg, SG_CURRENT_LOCATION_STR);
+    LOG_E("GLFW error (code {}): {}\n{}", errCode, err_msg, SG_CURRENT_LOCATION_STR);
 }
 
 void SGCore::Window::swapBuffers()

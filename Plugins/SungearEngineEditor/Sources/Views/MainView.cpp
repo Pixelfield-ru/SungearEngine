@@ -31,6 +31,9 @@ SGE::MainView::MainView()
     
     m_inspectorView = SGCore::MakeRef<InspectorView>();
     m_inspectorView->m_name = "SGE_INSPECTOR_VIEW_WINDOW";
+
+    m_logsWindow = SGCore::MakeRef<LogsWindow>();
+    m_logsWindow->m_name = "SGE_LOGS_WINDOW";
     
     addChild(m_topToolbarView);
     addChild(m_explorerWindow);
@@ -38,12 +41,13 @@ SGE::MainView::MainView()
     addChild(m_directoriesTreeExplorer);
     addChild(m_sceneTreeView);
     addChild(m_inspectorView);
+    addChild(m_logsWindow);
 }
 
-SGE::MainView::~MainView()
+/*SGE::MainView::~MainView()
 {
     removeChild(m_topToolbarView);
-}
+}*/
 
 bool SGE::MainView::begin()
 {

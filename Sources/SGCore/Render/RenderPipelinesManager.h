@@ -34,7 +34,7 @@ namespace SGCore
 
             if(!renderPipeline)
             {
-                spdlog::error("Cannot set render pipeline with type '{0}'. It is not exists.", typeid(PipelineT).name());
+                LOG_E("Cannot set render pipeline with type '{}'. It is not exists.", typeid(PipelineT).name());
 
                 return;
             }
@@ -52,7 +52,7 @@ namespace SGCore
         {
             if(getRenderPipeline<PipelineT>())
             {
-                spdlog::error("Cannot register render pipeline with type '{0}'. It is already exists.", typeid(PipelineT).name());
+                LOG_E("Cannot register render pipeline with type '{}'. It is already exists.", typeid(PipelineT).name());
                 
                 return;
             }

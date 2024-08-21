@@ -3,6 +3,7 @@
 #include <locale>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <SGCore/Logger/Logger.h>
 
 #include "SGCore/Utils/DefaultShadersPaths.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
@@ -17,13 +18,7 @@
 
 void SGCore::CoreMain::start()
 {
-    const auto now = std::chrono::system_clock::now();
-    auto in_time_t = std::chrono::system_clock::to_time_t(now);
-
-    std::ostringstream timeStringStream;
-    timeStringStream << std::put_time(std::localtime(&in_time_t), "%Y_%m_%d_%H_%M_%S");
-
-    const std::string finalLogName = "logs/sg_log_" + timeStringStream.str() + ".log";
+    const std::string finalLogFileName = "logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
 
     try
     {
@@ -41,13 +36,11 @@ void SGCore::CoreMain::start()
     CrashHandler::hc_install();*/
 
     HwExceptionHandler::setApplicationName("Sungear Engine");
-    HwExceptionHandler::setOutputLogFilePath(finalLogName);
+    HwExceptionHandler::setOutputLogFilePath(finalLogFileName);
     HwExceptionHandler::setupHandler();
 
-    m_defaultLogger = spdlog::basic_logger_mt("current_session", finalLogName);
-    spdlog::set_default_logger(m_defaultLogger);
-
-    spdlog::flush_on(spdlog::level::info);
+    auto defaultLogger = Logger::createLogger("current_session", finalLogFileName);
+    Logger::setDefaultLogger(defaultLogger);
 
     // todo: move
     /*system("chcp 65001");
@@ -89,8 +82,7 @@ void SGCore::CoreMain::start()
     catch(const std::exception& e)
     {
         std::string what = e.what();
-        std::printf("Error while onInit. Error is: %s\n", what.c_str());
-        spdlog::error("Error while onInit. Error is: {0}", what);
+        LOG_E("Error while onInit. Error is: {}", what);
     }
 
     m_fixedTimer.resetTimer();
@@ -122,8 +114,7 @@ void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)
         catch(const std::exception& e)
         {
             std::string what = e.what();
-            std::printf("Error while fixedUpdate plugin. Error is: %s\n", what.c_str());
-            spdlog::error("Error while fixedUpdate plugin. Error is: {0}", what);
+            LOG_E("Error while fixedUpdate plugin. Error is: {}", what);
         }
     }
 }
@@ -148,8 +139,7 @@ void SGCore::CoreMain::updateStart(const double& dt, const double& fixedDt)
         catch(const std::exception& e)
         {
             std::string what = e.what();
-            std::printf("Error while update plugin. Error is: %s\n", what.c_str());
-            spdlog::error("Error while update plugin. Error is: {0}", what);
+            LOG_E("Error while update plugin. Error is: {}", what);
         }
     }
 }

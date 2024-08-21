@@ -5,6 +5,7 @@
 #include "ModelAsset.h"
 
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Main/CoreMain.h"
@@ -25,9 +26,9 @@ void SGCore::ModelAsset::doLoad(const std::string& path)
 
     if(!aiImportedScene || aiImportedScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiImportedScene->mRootNode)
     {
-        spdlog::error("Assimp error (while importing scene): {0}\n{1}",
-                      importer.GetErrorString(),
-                      SG_CURRENT_LOCATION_STR);
+        LOG_E("Assimp error (while importing scene): {}\n{}",
+              importer.GetErrorString(),
+              SG_CURRENT_LOCATION_STR);
         return;
     }
 
@@ -35,7 +36,7 @@ void SGCore::ModelAsset::doLoad(const std::string& path)
 
     m_nodes.push_back(processNode(aiImportedScene->mRootNode, aiImportedScene));
 
-    spdlog::info("Loaded model '{0}'. Nodes count: {1}", m_name, m_nodes.size());
+    LOG_I("Loaded model '{}'. Nodes count: {}", m_name, m_nodes.size());
 }
 
 SGCore::Ref<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
@@ -244,8 +245,8 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
         }
 
         sgMeshData->m_material->m_name = aiMat->GetName().data;
-        
-        spdlog::info("Current object: {0}", sgMeshData->m_material->m_name);
+
+        LOG_I("Current object: {}", sgMeshData->m_material->m_name);
 
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureType::SGTT_EMISSIVE);
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureType::SGTT_AMBIENT_OCCLUSION);
@@ -289,8 +290,8 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
 
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 
-        spdlog::info("Loaded material`s '{0}' texture. Raw type name: '{1}', path: {2}", aiMat->GetName().data,
-                     sgStandardTextureTypeToString(sgMaterialTextureType), finalPath
+        LOG_I("Loaded material`s '{}' texture. Raw type name: '{}', path: {}", aiMat->GetName().data,
+              sgStandardTextureTypeToString(sgMaterialTextureType), finalPath
         );
     }
 }

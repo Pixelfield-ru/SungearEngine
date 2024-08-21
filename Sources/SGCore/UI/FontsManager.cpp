@@ -4,13 +4,14 @@
 #include "FontsManager.h"
 
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 
 void SGCore::FontsManager::init() noexcept
 {
     int errCode = FT_Init_FreeType(&m_FTLib);
     if(errCode)
     {
-        spdlog::error("Could not init FreeType! FreeType error code is: {0}", errCode);
+        LOG_E("Could not init FreeType! FreeType error code is: {}", errCode);
         return;
     }
 }

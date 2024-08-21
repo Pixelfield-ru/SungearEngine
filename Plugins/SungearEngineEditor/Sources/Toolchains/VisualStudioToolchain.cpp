@@ -7,6 +7,7 @@
 #include <SGCore/Utils/Utils.h>
 #include <SGCore/Utils/FileUtils.h>
 #include <SGCore/Exceptions/FileNotFoundException.h>
+#include <SGCore/Logger/Logger.h>
 
 std::string SGE::VCArchTypeToString(const SGE::VCArchType& archType) noexcept
 {
@@ -103,21 +104,13 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
             finalCommand
     );
 
-    std::printf("Building project '%s' using Visual Studio toolchain: commands:\n%s\n",
-                SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                finalCommand.c_str());
+    LOG_I("Building project '{0}' using Visual Studio toolchain: commands:\n{1}\n",
+          SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
+          finalCommand.c_str());
 
-    spdlog::info("Building project '{0}' using Visual Studio toolchain: commands:\n{1}\n",
-                 SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                 finalCommand.c_str());
-
-    std::printf("Building project '%s' using Visual Studio toolchain: project build output:\n%s\n",
-                SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                projectBuildLog.c_str());
-
-    spdlog::info("Building project '{0}' using Visual Studio toolchain: project build output:\n{1}\n",
-                 SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                 projectBuildLog.c_str());
+    LOG_I("Building project '{0}' using Visual Studio toolchain: project build output:\n{1}\n",
+          SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
+          projectBuildLog.c_str());
 
     // ===============================================================
 }

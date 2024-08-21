@@ -4,6 +4,7 @@
 
 #include "XMLDocument.h"
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 
 void SGCore::XMLDocument::doLoad(const std::string& path)
 {
@@ -11,7 +12,7 @@ void SGCore::XMLDocument::doLoad(const std::string& path)
     
     if(!parseResult)
     {
-        spdlog::error("Error while parsing XML document by path '{0}': {1}", path, parseResult.description());
+        LOG_E("Error while parsing XML document by path '{}': {}", path, parseResult.description());
         return;
     }
 }

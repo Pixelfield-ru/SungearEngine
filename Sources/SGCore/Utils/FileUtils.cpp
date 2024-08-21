@@ -2,6 +2,7 @@
 // Created by stuka on 11.05.2023.
 //
 
+#include <SGCore/Logger/Logger.h>
 #include "FileUtils.h"
 #include "Utils.h"
 
@@ -13,7 +14,7 @@ std::string SGCore::FileUtils::readFile(const std::filesystem::path& path)
     
     if(!stream)
     {
-        spdlog::error("Read file error: File does not exist. Path: {0}", Utils::toUTF8<char16_t>(path.u16string()));
+        LOG_E("Read file error: File does not exist. Path: {}", Utils::toUTF8<char16_t>(path.u16string()));
         return "";
     }
     
@@ -38,7 +39,7 @@ char* SGCore::FileUtils::readBytes(const std::string_view& path, size_t& outSize
     
     if(!stream)
     {
-        spdlog::error("Read file error: File does not exist. Path: {0}", path);
+        LOG_E("Read file error: File does not exist. Path: {}", path);
         return nullptr;
     }
     
@@ -76,7 +77,7 @@ void SGCore::FileUtils::writeToFile(const std::filesystem::path& path, const std
     }
     catch(const std::ios_base::failure& e)
     {
-        spdlog::error("Write to file error: {0}. Path: {1}", e.what(), Utils::toUTF8<char16_t>(path.u16string()));
+        LOG_E("Write to file error: {}. Path: {}", e.what(), Utils::toUTF8<char16_t>(path.u16string()));
     }
 }
 

@@ -15,20 +15,20 @@
 
 void SGCore::GL4Renderer::init() noexcept
 {
-    spdlog::info("-----------------------------------");
-    spdlog::info("GLRenderer initializing...");
+    LOG_I("-----------------------------------");
+    LOG_I("GLRenderer initializing...");
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        spdlog::info("Failed to initialize GLRenderer.");
+        LOG_I("Failed to initialize GLRenderer.");
     }
     else
     {
-        spdlog::info("GLRenderer initialized!");
+        LOG_I("GLRenderer initialized!");
     }
 
     printInfo();
-    spdlog::info("-----------------------------------");
+    LOG_I("-----------------------------------");
 
     // -------------------------------------
     
@@ -92,7 +92,7 @@ bool SGCore::GL4Renderer::confirmSupport() noexcept
 
     if(glMajorVersion < 4)
     {
-        spdlog::error("OpengGL 4.0 is not supported!\n{0}", SG_CURRENT_LOCATION_STR);
+        LOG_E("OpengGL 4.0 is not supported!\n{}", SG_CURRENT_LOCATION_STR);
 
         return false;
     }
@@ -121,7 +121,7 @@ void SGCore::GL4Renderer::checkForErrors(const std::source_location& location) n
 
     if(errCode != 0)
     {
-        spdlog::error("OpenGL error (code: {0}): {1}", errCode, errStr);
+        LOG_E("OpenGL error (code: {}): {}", errCode, errStr);
     }
 }
 

@@ -3,6 +3,7 @@
 //
 
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 
 #include "AudioDevice.h"
 #include "AudioUtils.h"
@@ -25,7 +26,7 @@ SGCore::AudioDevice::AudioDevice(const char* deviceName)
     }
     else
     {
-        spdlog::error("Could not load a sound device with the name '{0}'.", deviceName);
+        LOG_E("Could not load a sound device with the name '{}'.", deviceName);
     }
 }
 
@@ -71,7 +72,7 @@ void SGCore::AudioDevice::makeCurrent() const noexcept
         }
         else
         {
-            spdlog::error("OpenAL error: could not make device`s '{0}' context as current. Device: {1}, context: {2}.", m_name, (void*) m_handler, (void*) m_context);
+            LOG_E("OpenAL error: could not make device`s '{}' context as current. Device: {}, context: {}.", m_name, (void*) m_handler, (void*) m_context);
         }
         
         std::cout << "current context: " << alcGetCurrentContext() << std::endl;

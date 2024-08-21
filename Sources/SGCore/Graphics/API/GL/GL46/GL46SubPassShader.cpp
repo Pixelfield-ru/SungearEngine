@@ -1,3 +1,4 @@
+#include <SGCore/Logger/Logger.h>
 #include "GL46SubPassShader.h"
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
@@ -17,13 +18,13 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
     
     if(!lockedFileAsset)
     {
-        spdlog::error("Can not compile subpass shader! File asset is nullptr. Please set m_fileAsset before compiling.\n{0}", SG_CURRENT_LOCATION_STR);
+        LOG_E("Can not compile subpass shader! File asset is nullptr. Please set m_fileAsset before compiling.\n{}", SG_CURRENT_LOCATION_STR);
         return;
     }
 
     if(m_subShaders.empty())
     {
-        spdlog::error("No sub shaders to compile! Shader path: {0}\n{1}", lockedFileAsset->getPath().string(), SG_CURRENT_LOCATION_STR);
+        LOG_E("No sub shaders to compile! Shader path: {}\n{}", lockedFileAsset->getPath().string(), SG_CURRENT_LOCATION_STR);
         return;
     }
     
@@ -43,10 +44,10 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
     {
         if(!subShadersIter.second)
         {
-            spdlog::error("Can not compile sub shader with type '{0}' for sub pass '{1}' shader by path '{2}'. Sub shader with this type does not exist.",
-                          sgsleSubShaderTypeToString(subShadersIter.first),
-                          m_subPassName,
-                          lockedFileAsset->getPath().string());
+            LOG_E("Can not compile sub shader with type '{}' for sub pass '{}' shader by path '{}'. Sub shader with this type does not exist.",
+                  sgsleSubShaderTypeToString(subShadersIter.first),
+                  m_subPassName,
+                  lockedFileAsset->getPath().string());
             continue;
         }
         m_subShadersHandlers.push_back(compileSubShader(subShadersIter.first, definesCode + "\n" + subShadersIter.second->m_code));
@@ -76,9 +77,9 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
 
         destroy();
 
-        spdlog::error("Error in shader by path: {0}\n{1}",
-                      m_fileAsset.lock()->getPath().string(),
-                      infoLog.data());
+        LOG_E("Error in shader by path: {}\n{}",
+              m_fileAsset.lock()->getPath().string(),
+              infoLog.data());
     }
 
     for(const GLuint shaderHandler : m_subShadersHandlers)
@@ -134,7 +135,7 @@ GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLESubShaderType sh
 
     if(glShaderType == -1)
     {
-        spdlog::error("Error while compiling subshader! Unknown type of subshader.\n{0}", SG_CURRENT_LOCATION_STR);
+        LOG_E("Error while compiling subshader! Unknown type of subshader.\n{}", SG_CURRENT_LOCATION_STR);
 
         return -1;
     }
@@ -160,9 +161,9 @@ GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLESubShaderType sh
 
         glDeleteShader(shaderPartHandler);
 
-        spdlog::error("Error in shader by path: {0}\n{1}",
-                      m_fileAsset.lock()->getPath().string(),
-                      infoLog.data());
+        LOG_E("Error in shader by path: {}\n{}",
+             m_fileAsset.lock()->getPath().string(),
+             infoLog.data());
 
         return -1;
     }

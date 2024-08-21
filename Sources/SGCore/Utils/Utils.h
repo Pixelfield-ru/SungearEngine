@@ -150,6 +150,17 @@ namespace SGCore
             }
         };
 
+        static std::string getTimeAsString(const std::string& format) noexcept
+        {
+            const auto now = std::chrono::system_clock::now();
+            auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+            std::ostringstream timeStringStream;
+            timeStringStream << std::put_time(std::localtime(&in_time_t), format.c_str());
+
+            return timeStringStream.str();
+        }
+
         /**
          * Example
          * forTypes<InTypes...>([](auto t) { using type = typename decltype(t)::type; });

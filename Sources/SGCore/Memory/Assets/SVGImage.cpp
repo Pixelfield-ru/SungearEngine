@@ -3,6 +3,7 @@
 //
 
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 #include "SVGImage.h"
 
 void SGCore::SVGImage::doLoad(const std::string& path)
@@ -14,11 +15,10 @@ SGCore::Ref<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(
 {
     if(!m_document)
     {
-        spdlog::error(
-                "Cannot create specialization (with width: '{0}', height: '{1}') of SVGImage loaded at path '{2}': document equals nullptr (SVGImage was not successfully loaded previously).",
-                m_path.string(),
-                width,
-                height);
+        LOG_E("Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': document equals to nullptr (SVGImage was not successfully loaded previously).",
+              m_path.string(),
+              width,
+              height);
         
         return nullptr;
     }
@@ -36,11 +36,10 @@ SGCore::Ref<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(
         
         if(!bitmap.valid())
         {
-            spdlog::error(
-                    "Cannot create specialization (with width: '{0}', height: '{1}') of SVGImage loaded at path '{2}': bitmap was not loaded successfully (not valid).",
-                    m_path.string(),
-                    width,
-                    height);
+            LOG_E("Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': bitmap was not loaded successfully (not valid).",
+                  m_path.string(),
+                  width,
+                  height);
             
             return nullptr;
         }

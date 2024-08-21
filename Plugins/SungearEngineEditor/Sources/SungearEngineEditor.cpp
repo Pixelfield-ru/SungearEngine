@@ -6,6 +6,7 @@
 #include <SGCore/Main/CoreMain.h>
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/ImGuiWrap/ImGuiLayer.h>
+#include <SGCore/Logger/Logger.h>
 
 SGE::SungearEngineEditor::~SungearEngineEditor()
 {
@@ -25,7 +26,13 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
     
     m_mainView = SGCore::MakeRef<MainView>();
     SGCore::ImGuiWrap::IView::getRoot()->addChild(m_mainView);
-    
+
+    LOG_I("Info msg")
+    LOG_D("Debug msg")
+    LOG_W("Warning msg")
+    LOG_E("Error msg")
+    LOG_C("Critical msg")
+
 	// No error.
 	return "";
 }

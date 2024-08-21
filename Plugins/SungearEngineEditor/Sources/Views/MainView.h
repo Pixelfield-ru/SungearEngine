@@ -13,6 +13,7 @@
 #include "Explorer/Explorer.h"
 #include "SceneTreeView.h"
 #include "InspectorView.h"
+#include "Logs/LogsWindow.h"
 
 namespace SGE
 {
@@ -22,7 +23,7 @@ namespace SGE
     struct MainView : SGCore::ImGuiWrap::IView
     {
         MainView();
-        ~MainView();
+        // ~MainView();
         
         bool begin() override;
         void renderBody() override;
@@ -45,7 +46,8 @@ namespace SGE
         
         SGCore::Ref<SceneTreeView> m_sceneTreeView;
         SGCore::Ref<InspectorView> m_inspectorView;
-        
+        SGCore::Ref<LogsWindow> m_logsWindow;
+
         ImGuiID m_dockID = 0;
     };
 }

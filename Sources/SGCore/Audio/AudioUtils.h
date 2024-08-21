@@ -11,6 +11,7 @@
 #include <AL/alc.h>
 #include <AL/alext.h>
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 
 #include "SGCore/Utils/TypeTraits.h"
 #include "SGCore/Utils/Utils.h"
@@ -46,18 +47,11 @@ namespace SGCore::AudioUtils
                 default:
                     errorString = "UNKNOWN AL ERROR: " + std::to_string(error);
             }
-            
-            std::string formatted = fmt::format("OpenAL error ({0}) (in {1} : {2}): {3}", error,
-                                                sourceLocation.file_name(),
-                                                sourceLocation.line(),
-                                                errorString);
-            
-            std::cout << formatted << std::endl;
-            
-            if(spdlog::default_logger())
-            {
-                spdlog::error(formatted);
-            }
+
+            LOG_E("OpenAL error ({}) (in {} : {}): {}", error,
+                  sourceLocation.file_name(),
+                  sourceLocation.line(),
+                  errorString);
             
             return false;
         }

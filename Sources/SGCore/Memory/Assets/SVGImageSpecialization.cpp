@@ -2,6 +2,7 @@
 // Created by ilya on 21.05.24.
 //
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 #include "SVGImageSpecialization.h"
 
 void SGCore::SVGImageSpecialization::regenerate(std::uint8_t channelsCount,
@@ -10,10 +11,9 @@ void SGCore::SVGImageSpecialization::regenerate(std::uint8_t channelsCount,
 {
     if(!m_bitmap.valid())
     {
-        spdlog::error(
-                "Cannot create specialization (with width: '{0}', height: '{1}'): bitmap was not loaded successfully (not valid).",
-                m_bitmap.width(),
-                m_bitmap.height());
+        LOG_E("Cannot create specialization (with width: '{}', height: '{}'): bitmap was not loaded successfully (not valid).",
+              m_bitmap.width(),
+              m_bitmap.height());
         
         return;
     }

@@ -28,8 +28,6 @@ namespace SGCore
         
         static inline std::string m_pathToSungearEngineSDKSources;
         
-        static inline Ref<spdlog::logger> m_defaultLogger;
-        
         CoreMain() = delete;
 
         static void start();

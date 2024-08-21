@@ -8,6 +8,7 @@
 
 #include <stb_image.h>
 #include <stb_image_resize2.h>
+#include <SGCore/Logger/Logger.h>
 
 void SGCore::STBITextureDataDeleter::operator()(const std::uint8_t* data)
 {
@@ -24,7 +25,7 @@ void SGCore::ITexture2D::doLoad(const std::string& path)
     
     if(!std::filesystem::exists(path))
     {
-        spdlog::error("Error while loading texture: texture by path {0} does not exist.", path);
+        LOG_E("Error while loading texture: texture by path {} does not exist.", path);
         return;
     }
     
@@ -58,20 +59,13 @@ void SGCore::ITexture2D::doLazyLoad()
     create();
     
     addToGlobalStorage();
-    
-    std::cout << fmt::format("Loaded texture (in lazy load). Width: {0}, height: {1}, MB size: {2}, channels: {3}, path: {4}",
-                             m_width,
-                             m_height,
-                             m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
-                             m_channelsCount,
-                             m_path.string()) << std::endl;
-    
-    spdlog::info("Loaded texture (in lazy load). Width: {0}, height: {1}, MB size: {2}, channels: {3}, path: {4}",
-                 m_width,
-                 m_height,
-                 m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
-                 m_channelsCount,
-                 m_path.string());
+
+    LOG_I("Loaded texture (in lazy load). Width: {}, height: {}, MB size: {}, channels: {}, path: {}",
+          m_width,
+          m_height,
+          m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
+          m_channelsCount,
+          m_path.string());
 }
 
 void SGCore::ITexture2D::addToGlobalStorage() noexcept

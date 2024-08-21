@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_DEVICEGLINFO_H
 
 #include <SGCore/pch.h>
+#include <SGCore/Logger/Logger.h>
 
 #include "SGCore/Utils/Utils.h"
 
@@ -38,14 +39,14 @@ namespace SGCore
             GLint extensionsNum = 0;
             glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
             
-            spdlog::info("OpenGL supporting extensions count: {0}", extensionsNum);
-            spdlog::info("OpenGL supporting extensions:");
+            LOG_I("OpenGL supporting extensions count: {}", extensionsNum);
+            LOG_I("OpenGL supporting extensions:");
             
             for(int i = 0; i < extensionsNum; i++)
             {
                 const char* extName = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
                 s_supportingExtensions.insert(extName);
-                spdlog::info(extName);
+                LOG_I(extName);
             }
             
             VERSION = reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -65,18 +66,18 @@ namespace SGCore
                 MAX_TEXTURE_MAX_ANISOTROPY = 0.0f;
             }
 
-            spdlog::info("============== DEVICE OPENGL INFO ==============");
+            LOG_I("============== DEVICE OPENGL INFO ==============");
 
-            spdlog::info("GL_VERSION: {0}\n", VERSION);
+            LOG_I("GL_VERSION: {}\n", VERSION);
 
-            spdlog::info("GL_MAX_COLOR_ATTACHMENTS: {0}", MAX_FB_COLOR_ATTACHMENTS);
-            spdlog::info("GL_MAX_UNIFORM_BUFFER_BINDINGS: {0}", MAX_UNIFORM_BUFFER_BINDINGS);
-            spdlog::info("GL_MAX_TEXTURE_IMAGE_UNITS: {0}", MAX_TEXTURE_IMAGE_UNITS);
-            spdlog::info("GL_MAX_TEXTURE_MAX_ANISOTROPY: {0}", MAX_TEXTURE_MAX_ANISOTROPY);
-            spdlog::info("GL_MAX_TEXTURE_BUFFER_SUZE: {0}", MAX_TEXTURE_BUFFER_SIZE);
-            spdlog::info("GL_MAX_TEXTURE_SIZE: {0}", MAX_TEXTURE_SIZE);
+            LOG_I("GL_MAX_COLOR_ATTACHMENTS: {}", MAX_FB_COLOR_ATTACHMENTS);
+            LOG_I("GL_MAX_UNIFORM_BUFFER_BINDINGS: {}", MAX_UNIFORM_BUFFER_BINDINGS);
+            LOG_I("GL_MAX_TEXTURE_IMAGE_UNITS: {}", MAX_TEXTURE_IMAGE_UNITS);
+            LOG_I("GL_MAX_TEXTURE_MAX_ANISOTROPY: {}", MAX_TEXTURE_MAX_ANISOTROPY);
+            LOG_I("GL_MAX_TEXTURE_BUFFER_SUZE: {}", MAX_TEXTURE_BUFFER_SIZE);
+            LOG_I("GL_MAX_TEXTURE_SIZE: {}", MAX_TEXTURE_SIZE);
 
-            spdlog::info("================================================");
+            LOG_I("================================================");
         }
 
         [[maybe_unused]] [[nodiscard]] static auto getMaxFBColorAttachments() noexcept

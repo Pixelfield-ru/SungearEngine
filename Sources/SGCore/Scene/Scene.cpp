@@ -3,6 +3,7 @@
 //
 
 #include <GLFW/glfw3.h>
+#include <SGCore/Logger/Logger.h>
 
 #include "SGCore/Render/Batching/BatchesRenderer.h"
 #include "Scene.h"
@@ -244,7 +245,7 @@ void SGCore::Scene::setCurrentScene(const std::string& sceneName) noexcept
     }
     else
     {
-        spdlog::error("Cannot set scene '{0}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
+        LOG_E("Cannot set scene '{}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
     }
 }
 

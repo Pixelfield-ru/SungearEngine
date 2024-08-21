@@ -14,6 +14,7 @@
 #include "SGCore/Graphics/GPUObject.h"
 #include "SGCore/Threading/ThreadsPool.h"
 #include "SGCore/Threading/ThreadsManager.h"
+#include "SGCore/Logger/Logger.h"
 
 namespace SGCore
 {
@@ -72,8 +73,8 @@ namespace SGCore
             distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
             
             newAsset->setRawName(p.stem().string());
-            
-            spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
+
+            LOG_I("Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
             
             return newAsset;
         }
@@ -136,8 +137,8 @@ namespace SGCore
             distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
             
             assetToLoad->setRawName(p.stem().string());
-            
-            spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
+
+            LOG_I("Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
         }
         
         template<typename AssetT>
@@ -197,8 +198,8 @@ namespace SGCore
             distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
             
             assetToLoad->setRawName(alias);
-            
-            spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
+
+            LOG_I("Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
         }
         
         template<typename AssetT>
@@ -260,8 +261,8 @@ namespace SGCore
             distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
             
             newAsset->setRawName(alias);
-            
-            spdlog::info("Loaded new asset associated by path: {0}. Asset type: {1}", path, typeid(AssetT).name());
+
+            LOG_I("Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
             
             return newAsset;
         }

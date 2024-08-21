@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
+#include <SGCore/Logger/Logger.h>
 
 #include "PluginWrap.h"
 #include "SGCore/Utils/FileUtils.h"
@@ -168,8 +169,8 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(loadedPlugin->getPlugin()->m_path != localPluginPath)
         {
-            spdlog::warn("Warning: Plugin '{0}' (ver. {1}) has other path. Requested local load path: '{2}', plugin cached path: '{3}'.",
-                         pluginName, loadedPlugin->m_plugin->m_version, localPluginPath, loadedPlugin->getPlugin()->m_path);
+            LOG_W("Warning: Plugin '{}' (ver. {}) has other path. Requested local load path: '{}', plugin cached path: '{}'.",
+                  pluginName, loadedPlugin->m_plugin->m_version, localPluginPath, loadedPlugin->getPlugin()->m_path);
         }
     }
     else
@@ -196,7 +197,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(!pluginDL->getNativeHandler())
         {
-            spdlog::error("Cannot load plugin '{0}' by path '{1}'. Error is: {2}", pluginName, pluginDLPath, dlErr);
+            LOG_E("Cannot load plugin '{}' by path '{}'. Error is: {}", pluginName, pluginDLPath, dlErr);
             return nullptr;
         }
         
@@ -205,7 +206,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         
         if(!pluginEntry)
         {
-            spdlog::error("Cannot load plugin '{0}' main function by path '{1}'. Error is: {2}", pluginName, pluginDLPath, dlEntryErr);
+            LOG_E("Cannot load plugin '{}' main function by path '{}'. Error is: {}", pluginName, pluginDLPath, dlEntryErr);
             return nullptr;
         }
         
@@ -263,7 +264,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         
         if(!loadedPlugin->m_pluginLib->getNativeHandler())
         {
-            spdlog::error("Cannot reload plugin '{0}'. Error is: {1}", pluginName, dlErr);
+            LOG_E("Cannot reload plugin '{}'. Error is: {}", pluginName, dlErr);
             return nullptr;
         }
         
@@ -272,7 +273,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         
         if(!pluginEntry)
         {
-            spdlog::error("Cannot reload plugin '{0}' main function. Error is: {1}", pluginName, dlEntryErr);
+            LOG_E("Cannot reload plugin '{}' main function. Error is: {}", pluginName, dlEntryErr);
             return nullptr;
         }
         
@@ -280,13 +281,11 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         loadedPlugin->m_plugin->m_path = pluginSrcPath;
         loadedPlugin->m_plugin->onConstruct(entryArgs);
         
-        std::cout << "loadedPlugin: " << loadedPlugin->getPlugin() << std::endl;
-        
         return loadedPlugin;
     }
     else
     {
-        spdlog::error("Cannot reload plugin: The plugin '{0}' has not been loaded before.", pluginName);
+        LOG_E("Cannot reload plugin: The plugin '{}' has not been loaded before.", pluginName);
     }
     
     return nullptr;

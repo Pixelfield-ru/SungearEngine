@@ -595,7 +595,7 @@ void SGE::DirectoryExplorer::beginMainWindow()
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 2));
     
     ImGuiWindowClass windowClass;
-    windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
+    windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_PassthruCentralNode;
     ImGui::SetNextWindowClass(&windowClass);
     
     ImGui::Begin("DirectoryExplorer", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
