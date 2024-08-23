@@ -6,6 +6,25 @@
 #include <SGCore/Utils/Utils.h>
 #include "Logger.h"
 
+std::string SGCore::Logger::levelToString(SGCore::Logger::Level level) noexcept
+{
+    switch (level)
+    {
+        case Level::LVL_INFO:
+            return "info";
+        case Level::LVL_DEBUG:
+            return "debug";
+        case Level::LVL_WARN:
+            return "warn";
+        case Level::LVL_ERROR:
+            return "error";
+        case Level::LVL_CRITICAL:
+            return "critical";
+    }
+
+    return "";
+}
+
 SGCore::Ref<SGCore::Logger>
 SGCore::Logger::createLogger(const std::string& loggerName, const std::filesystem::path& filePath,
                              bool saveMessages) noexcept
@@ -35,32 +54,49 @@ SGCore::Ref<SGCore::Logger> SGCore::Logger::getDefaultLogger() noexcept
     return m_defaultLogger;
 }
 
-const std::vector<std::string>& SGCore::Logger::getInfoMessages() const noexcept
-{
-    return m_infoMessages;
-}
-
-const std::vector<std::string>& SGCore::Logger::getDebugMessages() const noexcept
-{
-    return m_debugMessages;
-}
-
-const std::vector<std::string>& SGCore::Logger::getWarnMessages() const noexcept
-{
-    return m_warnMessages;
-}
-
-const std::vector<std::string>& SGCore::Logger::getErrorMessages() const noexcept
-{
-    return m_errorMessages;
-}
-
-const std::vector<std::string>& SGCore::Logger::getCriticalMessages() const noexcept
-{
-    return m_criticalMessages;
-}
-
-const std::vector<SGCore::LogMessage>& SGCore::Logger::getAllMessages() const noexcept
+const std::vector<SGCore::Logger::LogMessage>& SGCore::Logger::getAllMessages() const noexcept
 {
     return m_allMessages;
+}
+
+std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getMessagesWithLevel(SGCore::Logger::Level lvl) const noexcept
+{
+    std::vector<LogMessage> messages;
+
+    for(const auto& [key, msg] : m_sortedMessages)
+    {
+        if(key.first == lvl)
+        {
+            messages.insert(messages.cend(), msg.begin(), msg.end());
+        }
+    }
+
+    return messages;
+}
+
+std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getMessagesWithTag(const std::string& tag) const noexcept
+{
+    std::vector<LogMessage> messages;
+
+    for(const auto& [key, msg] : m_sortedMessages)
+    {
+        if(key.second == tag)
+        {
+            messages.insert(messages.cend(), msg.begin(), msg.end());
+        }
+    }
+
+    return messages;
+}
+
+std::vector<SGCore::Logger::LogMessage>
+SGCore::Logger::getMessagesWithLevelAndTag(SGCore::Logger::Level lvl, const std::string& tag) const noexcept
+{
+    auto it = m_sortedMessages.find(make_messages_key(lvl, tag));
+    if(it != m_sortedMessages.end())
+    {
+        return it->second;
+    }
+
+    return { };
 }

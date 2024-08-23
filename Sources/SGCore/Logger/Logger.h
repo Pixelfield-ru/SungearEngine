@@ -5,136 +5,142 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/TypeTraits.h"
 
-#define LOG_I(msg, ...) SGCore::Logger::getDefaultLogger()->info(msg, ##__VA_ARGS__);
-#define LOG_D(msg, ...) SGCore::Logger::getDefaultLogger()->debug(msg, ##__VA_ARGS__);
-#define LOG_W(msg, ...) SGCore::Logger::getDefaultLogger()->warn(msg, ##__VA_ARGS__);
-#define LOG_E(msg, ...) SGCore::Logger::getDefaultLogger()->error(msg, ##__VA_ARGS__);
-#define LOG_C(msg, ...) SGCore::Logger::getDefaultLogger()->critical(msg, ##__VA_ARGS__);
+#define LOG_I(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info(tag, msg, ##__VA_ARGS__);
+#define LOG_D(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug(tag, msg, ##__VA_ARGS__);
+#define LOG_W(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn(tag, msg, ##__VA_ARGS__);
+#define LOG_E(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error(tag, msg, ##__VA_ARGS__);
+#define LOG_C(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical(tag, msg, ##__VA_ARGS__);
+
+#define SGCORE_TAG "SGCore"
 
 namespace SGCore
 {
-    enum class LogMessageType
-    {
-        T_INFO,
-        T_DEBUG,
-        T_WARN,
-        T_ERROR,
-        T_CRITICAL
-    };
-
-    struct LogMessage
-    {
-        LogMessageType m_type = LogMessageType::T_INFO;
-        std::string m_message;
-    };
-
     struct Logger
     {
+        enum class Level
+        {
+            LVL_INFO,
+            LVL_DEBUG,
+            LVL_WARN,
+            LVL_ERROR,
+            LVL_CRITICAL
+        };
+
+        static std::string levelToString(Level level) noexcept;
+
+        struct LogMessage
+        {
+            Level m_level = Level::LVL_INFO;
+            std::string m_tag;
+            std::string m_message;
+        };
+
+        using messages_key = std::pair<Level, std::string>;
+
+        static messages_key make_messages_key(Level lvl, const std::string& tag) noexcept
+        {
+            return std::make_pair(lvl, tag);
+        }
+
+        struct MessageKeyHash
+        {
+            inline std::size_t operator()(const messages_key& messagesKey) const noexcept
+            {
+                size_t h = std::hash<Level>()(messagesKey.first) ^ std::hash<std::string>()(messagesKey.second);
+                return h;
+            }
+        };
+
         static Ref<Logger> createLogger(const std::string& loggerName, const std::filesystem::path& filePath, bool saveMessages = true) noexcept;
 
         template<typename... Args>
-        void info(std::string_view msg, Args&&... args) noexcept
+        void info(const std::string& tag, std::string_view msg, Args&&... args) noexcept
         {
-            // std::cout << "msg before fmt: " << msg << std::endl;
-            std::string formattedMsg = fmt::vformat(msg, fmt::make_format_args(args...));
-            m_spdlogLogger->info(formattedMsg);
+            log(Level::LVL_INFO, tag, msg, std::forward<Args>(args)...);
+        }
 
-            if(m_saveMessages)
+        template<typename... Args>
+        void debug(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        {
+            log(Level::LVL_DEBUG, tag, msg, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void warn(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        {
+            log(Level::LVL_WARN, tag, msg, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void error(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        {
+            log(Level::LVL_ERROR, tag, msg, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void critical(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        {
+            log(Level::LVL_CRITICAL, tag, msg, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        void log(Level level, const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        {
+            std::string formattedMsg = fmt::vformat(msg, fmt::make_format_args(args...));
+            std::string levelStr = levelToString(level);
+            switch (level)
+            {
+                case Level::LVL_INFO:
+                {
+                    m_spdlogLogger->info(formattedMsg);
+                    break;
+                }
+                case Level::LVL_DEBUG:
+                {
+                    m_spdlogLogger->debug(formattedMsg);
+                    break;
+                }
+                case Level::LVL_WARN:
+                {
+                    m_spdlogLogger->warn(formattedMsg);
+                    break;
+                }
+                case Level::LVL_ERROR:
+                {
+                    m_spdlogLogger->error(formattedMsg);
+                    break;
+                }
+                case Level::LVL_CRITICAL:
+                {
+                    m_spdlogLogger->critical(formattedMsg);
+                    break;
+                }
+            }
+
+            if (m_saveMessages)
             {
                 LogMessage logMessage {
-                    .m_type = LogMessageType::T_INFO,
-                    .m_message = fmt::format("[{}] [logger: {}] [info] {}", Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"), m_name,
+                    .m_level = level,
+                    .m_tag = tag,
+                    .m_message = fmt::format("[{}] [logger: {}] [{}] [tag: {}] {}",
+                                             Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"),
+                                             m_name,
+                                             levelStr,
+                                             tag,
                                              formattedMsg)
                 };
 
-                m_infoMessages.push_back(logMessage.m_message);
+                m_sortedMessages[make_messages_key(level, tag)].push_back(logMessage);
                 m_allMessages.push_back(logMessage);
             }
         }
 
-        template<typename... Args>
-        void debug(std::string_view msg, Args&&... args) noexcept
-        {
-            std::string formattedMsg = fmt::vformat(msg, fmt::make_format_args(args...));
-            m_spdlogLogger->debug(formattedMsg);
-
-            if(m_saveMessages)
-            {
-                LogMessage logMessage {
-                        .m_type = LogMessageType::T_DEBUG,
-                        .m_message = fmt::format("[{}] [logger: {}] [debug] {}", Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"), m_name,
-                                                 formattedMsg)
-                };
-
-                m_debugMessages.push_back(logMessage.m_message);
-                m_allMessages.push_back(logMessage);
-            }
-        }
-
-        template<typename... Args>
-        void warn(std::string_view msg, Args&&... args) noexcept
-        {
-            std::string formattedMsg = fmt::vformat(msg, fmt::make_format_args(args...));
-            m_spdlogLogger->warn(formattedMsg);
-
-            if (m_saveMessages)
-            {
-                LogMessage logMessage {
-                        .m_type = LogMessageType::T_WARN,
-                        .m_message = fmt::format("[{}] [logger: {}] [warn] {}", Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"), m_name,
-                                                 formattedMsg)
-                };
-
-                m_warnMessages.push_back(logMessage.m_message);
-                m_allMessages.push_back(logMessage);
-            }
-        }
-
-        template<typename... Args>
-        void error(std::string_view msg, Args&&... args) noexcept
-        {
-            std::string formattedMsg = fmt::vformat(msg, fmt::make_format_args(args...));
-            m_spdlogLogger->error(formattedMsg);
-
-            if (m_saveMessages)
-            {
-                LogMessage logMessage {
-                        .m_type = LogMessageType::T_ERROR,
-                        .m_message = fmt::format("[{}] [logger: {}] [error] {}", Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"), m_name,
-                                                 formattedMsg)
-                };
-
-                m_errorMessages.push_back(logMessage.m_message);
-                m_allMessages.push_back(logMessage);
-            }
-        }
-
-        template<typename... Args>
-        void critical(std::string_view msg, Args&&... args) noexcept
-        {
-            std::string formattedMsg = fmt::vformat(msg, fmt::make_format_args(args...));
-            m_spdlogLogger->critical(formattedMsg);
-
-            if (m_saveMessages)
-            {
-                LogMessage logMessage {
-                        .m_type = LogMessageType::T_CRITICAL,
-                        .m_message = fmt::format("[{}] [logger: {}] [critical] {}", Utils::getTimeAsString("%Y-%m-%d %H:%M:%S"), m_name,
-                                                 formattedMsg)
-                };
-
-                m_criticalMessages.push_back(logMessage.m_message);
-                m_allMessages.push_back(logMessage);
-            }
-        }
-
-        [[nodiscard]] const std::vector<std::string>& getInfoMessages() const noexcept;
-        [[nodiscard]] const std::vector<std::string>& getDebugMessages() const noexcept;
-        [[nodiscard]] const std::vector<std::string>& getWarnMessages() const noexcept;
-        [[nodiscard]] const std::vector<std::string>& getErrorMessages() const noexcept;
-        [[nodiscard]] const std::vector<std::string>& getCriticalMessages() const noexcept;
         [[nodiscard]] const std::vector<LogMessage>& getAllMessages() const noexcept;
+        [[nodiscard]] std::vector<LogMessage> getMessagesWithLevel(Level lvl) const noexcept;
+        [[nodiscard]] std::vector<LogMessage> getMessagesWithTag(const std::string& tag) const noexcept;
+        [[nodiscard]] std::vector<LogMessage> getMessagesWithLevelAndTag(Level lvl, const std::string& tag) const noexcept;
 
         static void setDefaultLogger(const Ref<Logger>& logger) noexcept;
         static Ref<Logger> getDefaultLogger() noexcept;
@@ -148,12 +154,7 @@ namespace SGCore
         bool m_saveMessages = true;
         std::string m_name;
 
-        std::vector<std::string> m_infoMessages;
-        std::vector<std::string> m_debugMessages;
-        std::vector<std::string> m_warnMessages;
-        std::vector<std::string> m_errorMessages;
-        std::vector<std::string> m_criticalMessages;
-
+        std::unordered_map<messages_key, std::vector<LogMessage>, MessageKeyHash> m_sortedMessages;
         std::vector<LogMessage> m_allMessages;
     };
 }

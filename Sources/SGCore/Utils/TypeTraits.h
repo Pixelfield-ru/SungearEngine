@@ -22,6 +22,20 @@ private: \
 #   define GENERATOR_PRETTY_FUNCTION __PRETTY_FUNCTION__
 #endif
 
+/*namespace std
+{
+    template<typename T>
+    requires(std::is_enum_v<T>)
+    struct std::hash<T>
+    {
+        inline size_t operator()(const T& value) const noexcept
+        {
+            using underlying_t = std::underlying_type_t<T>;
+            return std::hash<underlying_t>()(static_cast<underlying_t>(value));
+        }
+    };
+}*/
+
 namespace SGCore
 {
     unsigned constexpr constexprHash(char const* input)

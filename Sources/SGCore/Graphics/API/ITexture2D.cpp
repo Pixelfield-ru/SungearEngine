@@ -60,7 +60,8 @@ void SGCore::ITexture2D::doLazyLoad()
     
     addToGlobalStorage();
 
-    LOG_I("Loaded texture (in lazy load). Width: {}, height: {}, MB size: {}, channels: {}, path: {}",
+    LOG_I(SGCORE_TAG,
+          "Loaded texture (in lazy load). Width: {}, height: {}, MB size: {}, channels: {}, path: {}",
           m_width,
           m_height,
           m_width * m_height * m_channelsCount / 1024.0 / 1024.0,

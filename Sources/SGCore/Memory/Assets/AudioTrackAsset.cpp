@@ -90,7 +90,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
     }
     else
     {
-        LOG_E("Audio file with extension '{}' is not supported. Path to audio file: '{}'", extension, path);
+        LOG_E(SGCORE_TAG, "Audio file with extension '{}' is not supported. Path to audio file: '{}'", extension, path);
         return;
     }
     
@@ -98,7 +98,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
 
     if(!m_dataBuffer)
     {
-        LOG_E("Could not load audio from memory: Buffer is nullptr.");
+        LOG_E(SGCORE_TAG, "Could not load audio from memory: Buffer is nullptr.");
         return;
     }
 
@@ -114,7 +114,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
         std::memcpy(tmpBuf, m_dataBuffer, 4);
         if(std::strncmp(tmpBuf, "RIFF", 4) != 0)
         {
-            LOG_E("Could not load WAV audio from memory: ChunkID does not contain 'RIFF' letters.");
+            LOG_E(SGCORE_TAG, "Could not load WAV audio from memory: ChunkID does not contain 'RIFF' letters.");
             return;
         }
 
@@ -122,7 +122,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
         std::memcpy(tmpBuf, m_dataBuffer + 8, 4);
         if(std::strncmp(tmpBuf, "WAVE", 4) != 0)
         {
-            LOG_E("Could not load WAV audio from memory: Format does not contain 'WAVE' letters.");
+            LOG_E(SGCORE_TAG, "Could not load WAV audio from memory: Format does not contain 'WAVE' letters.");
             return;
         }
 
@@ -130,7 +130,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
         std::memcpy(tmpBuf, m_dataBuffer + 12, 4);
         if(std::strncmp(tmpBuf, "fmt ", 4) != 0)
         {
-            LOG_E("Could not load WAV audio from memory: Subchunk1ID does not contain 'fmt ' letters.");
+            LOG_E(SGCORE_TAG, "Could not load WAV audio from memory: Subchunk1ID does not contain 'fmt ' letters.");
             return;
         }
 
@@ -210,7 +210,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
 
         if(!dataFound)
         {
-            LOG_E("Could not load WAV audio from memory: Unable to find 'data' chunk.");
+            LOG_E(SGCORE_TAG, "Could not load WAV audio from memory: Unable to find 'data' chunk.");
             return;
         }
 
@@ -226,7 +226,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
 
         if(stbErr != STBVorbisError::VORBIS__no_error)
         {
-            LOG_E("Could not load ogg from memory. Error is: {0}", stbErr);
+            LOG_E(SGCORE_TAG, "Could not load ogg from memory. Error is: {0}", stbErr);
             stb_vorbis_close(vorbis);
             return;
         }
@@ -242,7 +242,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
 
         int samplesCount = stb_vorbis_decode_memory((std::uint8_t*) m_dataBuffer, trackByteSize, &m_numChannels, &m_sampleRate, (short**) &m_dataBuffer);
 
-        LOG_I("Loaded audio: samples count: {}, stream length: {}, track byte size: {}", samplesCount, vorbis->stream_len, trackByteSize);
+        LOG_I(SGCORE_TAG, "Loaded audio: samples count: {}, stream length: {}, track byte size: {}", samplesCount, vorbis->stream_len, trackByteSize);
 
         stb_vorbis_close(vorbis);
     }

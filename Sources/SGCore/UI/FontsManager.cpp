@@ -11,7 +11,7 @@ void SGCore::FontsManager::init() noexcept
     int errCode = FT_Init_FreeType(&m_FTLib);
     if(errCode)
     {
-        LOG_E("Could not init FreeType! FreeType error code is: {}", errCode);
+        LOG_E(SGCORE_TAG, "Could not init FreeType! FreeType error code is: {}", errCode);
         return;
     }
 }

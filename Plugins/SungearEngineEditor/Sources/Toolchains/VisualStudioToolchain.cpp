@@ -108,11 +108,11 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                 finalCommand
         );
 
-        LOG_I("Building project '{0}' using Visual Studio toolchain: commands:\n{1}\n",
+        LOG_I(SGEDITOR_TAG, "Building project '{0}' using Visual Studio toolchain: commands:\n{1}\n",
               SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
               finalCommand.c_str());
 
-        LOG_I("Building project '{0}' using Visual Studio toolchain: project build output:\n{1}\n",
+        LOG_I(SGEDITOR_TAG, "Building project '{0}' using Visual Studio toolchain: project build output:\n{1}\n",
               SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
               projectBuildLog.c_str());
     };

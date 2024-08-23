@@ -176,7 +176,8 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
 
         if (colorAttachments >= DeviceGLInfo::getMaxFBColorAttachments())
         {
-            LOG_E("It is not possible to add more color attachments for framebuffer. Current color attachments count: {}. Max color attachments count: {}.\n{}",
+            LOG_E(SGCORE_TAG,
+                  "It is not possible to add more color attachments for framebuffer. Current color attachments count: {}. Max color attachments count: {}.\n{}",
                   colorAttachments,
                   DeviceGLInfo::getMaxFBColorAttachments(),
                   SGCore::Utils::sourceLocationToString(std::source_location::current()));
@@ -186,7 +187,8 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
 
         if(curAttachmentType == attachmentType)
         {
-            LOG_E("Error when adding an attachment to the framebuffer: "
+            LOG_E(SGCORE_TAG,
+                  "Error when adding an attachment to the framebuffer: "
                   "an attachment with this type already exists.\n{}",
                   SGCore::Utils::sourceLocationToString(std::source_location::current()));
 

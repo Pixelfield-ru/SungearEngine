@@ -48,7 +48,9 @@ namespace SGCore::AudioUtils
                     errorString = "UNKNOWN AL ERROR: " + std::to_string(error);
             }
 
-            LOG_E("OpenAL error ({}) (in {} : {}): {}", error,
+            LOG_E("SGCore",
+                  "OpenAL error ({}) (in {} : {}): {}",
+                  error,
                   sourceLocation.file_name(),
                   sourceLocation.line(),
                   errorString);

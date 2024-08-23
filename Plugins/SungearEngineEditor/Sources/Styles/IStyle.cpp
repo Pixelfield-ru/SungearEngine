@@ -21,5 +21,10 @@ void SGE::IStyle::apply()
             "red_cross",
             SungearEngineEditor::getInstance()->getLocalPath() +
             "/Resources/icons/common/red_cross.svg");
+
+    m_greenDebugRun = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+            "green_debug_run",
+            SungearEngineEditor::getInstance()->getLocalPath() +
+            "/Resources/icons/common/green_debug_run.svg");
 }
 

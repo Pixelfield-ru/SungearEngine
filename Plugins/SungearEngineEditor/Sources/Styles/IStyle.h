@@ -55,6 +55,13 @@ namespace SGE
         SGCore::Ref<SGCore::SVGImage> m_greenCheckmark;
         SGCore::Ref<SGCore::SVGImage> m_redCross;
 
+        SGCore::Ref<SGCore::SVGImage> m_infoIcon;
+        SGCore::Ref<SGCore::SVGImage> m_warningIcon;
+        SGCore::Ref<SGCore::SVGImage> m_errorIcon;
+        SGCore::Ref<SGCore::SVGImage> m_criticalIcon;
+        SGCore::Ref<SGCore::SVGImage> m_greenBugIcon;
+        SGCore::Ref<SGCore::SVGImage> m_greenDebugRun;
+
         std::unordered_map<std::string, ImFont*> m_fonts;
 
     protected:

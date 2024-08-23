@@ -39,14 +39,14 @@ namespace SGCore
             GLint extensionsNum = 0;
             glGetIntegerv(GL_NUM_EXTENSIONS, &extensionsNum);
             
-            LOG_I("OpenGL supporting extensions count: {}", extensionsNum);
-            LOG_I("OpenGL supporting extensions:");
+            LOG_I(SGCORE_TAG, "OpenGL supporting extensions count: {}", extensionsNum);
+            LOG_I(SGCORE_TAG, "OpenGL supporting extensions:");
             
             for(int i = 0; i < extensionsNum; i++)
             {
                 const char* extName = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
                 s_supportingExtensions.insert(extName);
-                LOG_I(extName);
+                LOG_I(SGCORE_TAG, extName);
             }
             
             VERSION = reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -66,18 +66,18 @@ namespace SGCore
                 MAX_TEXTURE_MAX_ANISOTROPY = 0.0f;
             }
 
-            LOG_I("============== DEVICE OPENGL INFO ==============");
+            LOG_I(SGCORE_TAG, "============== DEVICE OPENGL INFO ==============");
 
-            LOG_I("GL_VERSION: {}\n", VERSION);
+            LOG_I(SGCORE_TAG, "GL_VERSION: {}\n", VERSION);
 
-            LOG_I("GL_MAX_COLOR_ATTACHMENTS: {}", MAX_FB_COLOR_ATTACHMENTS);
-            LOG_I("GL_MAX_UNIFORM_BUFFER_BINDINGS: {}", MAX_UNIFORM_BUFFER_BINDINGS);
-            LOG_I("GL_MAX_TEXTURE_IMAGE_UNITS: {}", MAX_TEXTURE_IMAGE_UNITS);
-            LOG_I("GL_MAX_TEXTURE_MAX_ANISOTROPY: {}", MAX_TEXTURE_MAX_ANISOTROPY);
-            LOG_I("GL_MAX_TEXTURE_BUFFER_SUZE: {}", MAX_TEXTURE_BUFFER_SIZE);
-            LOG_I("GL_MAX_TEXTURE_SIZE: {}", MAX_TEXTURE_SIZE);
+            LOG_I(SGCORE_TAG, "GL_MAX_COLOR_ATTACHMENTS: {}", MAX_FB_COLOR_ATTACHMENTS);
+            LOG_I(SGCORE_TAG, "GL_MAX_UNIFORM_BUFFER_BINDINGS: {}", MAX_UNIFORM_BUFFER_BINDINGS);
+            LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_IMAGE_UNITS: {}", MAX_TEXTURE_IMAGE_UNITS);
+            LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_MAX_ANISOTROPY: {}", MAX_TEXTURE_MAX_ANISOTROPY);
+            LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_BUFFER_SUZE: {}", MAX_TEXTURE_BUFFER_SIZE);
+            LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_SIZE: {}", MAX_TEXTURE_SIZE);
 
-            LOG_I("================================================");
+            LOG_I(SGCORE_TAG, "================================================");
         }
 
         [[maybe_unused]] [[nodiscard]] static auto getMaxFBColorAttachments() noexcept

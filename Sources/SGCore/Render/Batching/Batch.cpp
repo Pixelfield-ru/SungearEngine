@@ -198,13 +198,13 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
     
     if(!lockedScene)
     {
-        LOG_E("Batching error: can not add entity. Parent scene is not set.");
+        LOG_E(SGCORE_TAG, "Batching error: can not add entity. Parent scene is not set.");
         return;
     }
     
     if(!lockedScene->getECSRegistry()->all_of<Mesh, Ref<Transform>>(entity))
     {
-        LOG_E("Batching error: can not add entity. One of Mesh or Transform components is not set.");
+        LOG_E(SGCORE_TAG, "Batching error: can not add entity. One of Mesh or Transform components is not set.");
         return;
     }
     
@@ -212,7 +212,7 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
     
     if(entityMesh.m_base.m_meshData->m_positions.empty())
     {
-        LOG_E("Batching error: can not add entity. Entity`s mesh does not have vertices.");
+        LOG_E(SGCORE_TAG, "Batching error: can not add entity. Entity`s mesh does not have vertices.");
         return;
     }
     
@@ -235,7 +235,7 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
     
     if(indicesCount == 0)
     {
-        LOG_W("Batching warning: Entity`s mesh does not have indices.");
+        LOG_W(SGCORE_TAG, "Batching warning: Entity`s mesh does not have indices.");
     }
     
     BatchEntityRanges newRanges;
@@ -265,13 +265,13 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
     
     if(newRanges.m_verticesRange.y > m_maxVerticesCount * 3)
     {
-        LOG_E("Batching error: can not add entity. Not enough space for vertices.");
+        LOG_E(SGCORE_TAG, "Batching error: can not add entity. Not enough space for vertices.");
         return;
     }
     
     if(newRanges.m_indicesRange.y > m_maxIndicesCount)
     {
-        LOG_E("Batching error: can not add entity. Not enough space for indices.");
+        LOG_E(SGCORE_TAG, "Batching error: can not add entity. Not enough space for indices.");
         return;
     }
     
@@ -317,7 +317,7 @@ void SGCore::Batch::removeEntity(const entity_t& entity) noexcept
     
     if(!lockedScene)
     {
-        LOG_E("Batching error: can not remove entity. Parent scene is not set.");
+        LOG_E(SGCORE_TAG, "Batching error: can not remove entity. Parent scene is not set.");
         return;
     }
     

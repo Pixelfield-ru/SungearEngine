@@ -240,6 +240,31 @@ void SGE::EditorStyles::Dark::apply()
                 "mingw_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/mingw.svg");
+
+        m_infoIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                "info_icon",
+                SungearEngineEditor::getInstance()->getLocalPath() +
+                "/Resources/icons/dark_style/info.svg");
+
+        m_warningIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                "warning_icon",
+                SungearEngineEditor::getInstance()->getLocalPath() +
+                "/Resources/icons/dark_style/warning.svg");
+
+        m_errorIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                "error_icon",
+                SungearEngineEditor::getInstance()->getLocalPath() +
+                "/Resources/icons/dark_style/error.svg");
+
+        m_criticalIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                "critical_icon",
+                SungearEngineEditor::getInstance()->getLocalPath() +
+                "/Resources/icons/dark_style/critical.svg");
+
+        m_greenBugIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+                "bug",
+                SungearEngineEditor::getInstance()->getLocalPath() +
+                "/Resources/icons/dark_style/bug.svg");
     }
 }
 

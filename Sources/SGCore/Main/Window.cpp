@@ -14,16 +14,17 @@ void SGCore::Window::create()
 
     if(!glfwInit())
     {
-        LOG_E("Failed to initialize GLFW!\n{0}", SG_CURRENT_LOCATION_STR);
+        LOG_E(SGCORE_TAG, "Failed to initialize GLFW!\n{0}", SG_CURRENT_LOCATION_STR);
     }
 
-    LOG_I("-----------------------------------");
-    LOG_I("GLFW info:");
-    LOG_I("GLFW version is {}.{}.{}",
+    LOG_I(SGCORE_TAG, "-----------------------------------");
+    LOG_I(SGCORE_TAG, "GLFW info:");
+    LOG_I(SGCORE_TAG,
+          "GLFW version is {}.{}.{}",
           GLFW_VERSION_MAJOR,
           GLFW_VERSION_MINOR,
           GLFW_VERSION_REVISION);
-    LOG_I("-----------------------------------");
+    LOG_I(SGCORE_TAG, "-----------------------------------");
 
     glfwDefaultWindowHints(); // установка для будущего окна дефолтных настроек
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -38,7 +39,7 @@ void SGCore::Window::create()
 
     if(!m_handler)
     {
-        LOG_E("Failed to initialize GLFW Window!\n{}", SG_CURRENT_LOCATION_STR);
+        LOG_E(SGCORE_TAG, "Failed to initialize GLFW Window!\n{}", SG_CURRENT_LOCATION_STR);
         return;
     }
     
@@ -225,14 +226,14 @@ void SGCore::Window::nativeCloseCallback(GLFWwindow* window) noexcept
 {
     onClose(*((Window*) glfwGetWindowUserPointer(window)));
 
-    LOG_I("GLFW window closed.");
+    LOG_I(SGCORE_TAG, "GLFW window closed.");
 }
 
 void SGCore::Window::nativeIconifyCallback(GLFWwindow* window, int iconified) noexcept
 {
     onIconify(*((Window*) glfwGetWindowUserPointer(window)), iconified);
 
-    LOG_I("GLFW window iconified.");
+    LOG_I(SGCORE_TAG, "GLFW window iconified.");
 }
 
 void SGCore::Window::nativeKeyboardKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept
@@ -252,7 +253,7 @@ void SGCore::Window::nativeMousePositionCallback(GLFWwindow* window, double xpos
 
 void SGCore::Window::errorCallback(int errCode, const char* err_msg)
 {
-    LOG_E("GLFW error (code {}): {}\n{}", errCode, err_msg, SG_CURRENT_LOCATION_STR);
+    LOG_E(SGCORE_TAG, "GLFW error (code {}): {}\n{}", errCode, err_msg, SG_CURRENT_LOCATION_STR);
 }
 
 void SGCore::Window::swapBuffers()

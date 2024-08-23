@@ -13,6 +13,8 @@
 
 #include <SGCore/PluginsSystem/PluginProject.h>
 
+#define SGEDITOR_TAG "SGEditor"
+
 namespace SGE
 {
     struct SungearEngineEditor : public SGCore::IPlugin

@@ -74,7 +74,7 @@ namespace SGCore
             
             newAsset->setRawName(p.stem().string());
 
-            LOG_I("Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
             
             return newAsset;
         }
@@ -138,7 +138,7 @@ namespace SGCore
             
             assetToLoad->setRawName(p.stem().string());
 
-            LOG_I("Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
         }
         
         template<typename AssetT>
@@ -199,7 +199,7 @@ namespace SGCore
             
             assetToLoad->setRawName(alias);
 
-            LOG_I("Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
         }
         
         template<typename AssetT>
@@ -262,7 +262,7 @@ namespace SGCore
             
             newAsset->setRawName(alias);
 
-            LOG_I("Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
             
             return newAsset;
         }

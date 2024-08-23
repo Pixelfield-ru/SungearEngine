@@ -44,7 +44,7 @@ void SGCore::FontSpecialization::prepareToBuild(const std::string& path)
     int faceCreateErrCode = FT_New_Face(FontsManager::getFTLibrary(), path.c_str(), 0, &m_face);
     if(faceCreateErrCode)
     {
-        LOG_E("Could not create face by path '{}'. FreeType error code: {}", path, faceCreateErrCode);
+        LOG_E(SGCORE_TAG, "Could not create face by path '{}'. FreeType error code: {}", path, faceCreateErrCode);
         return;
     }
     
@@ -59,7 +59,7 @@ void SGCore::FontSpecialization::destroyFace()
         int errCode = FT_Done_Face(m_face);
         if(errCode)
         {
-            LOG_E("Could not delete face. FreeType error code: {}", errCode);
+            LOG_E(SGCORE_TAG, "Could not delete face. FreeType error code: {}", errCode);
             return;
         }
         
@@ -136,7 +136,7 @@ bool SGCore::FontSpecialization::parse(const uint16_t& character) noexcept
     int loadGlyphErrCode = FT_Load_Char(m_face, c, FT_LOAD_RENDER);
     if(loadGlyphErrCode)
     {
-        LOG_E("Could not load glyph with index '{}. FreeType error code: {}", (char) c, loadGlyphErrCode);
+        LOG_E(SGCORE_TAG, "Could not load glyph with index '{}. FreeType error code: {}", (char) c, loadGlyphErrCode);
         return false;
     }
     
@@ -200,7 +200,7 @@ void SGCore::FontSpecialization::createAtlas() noexcept
         int loadGlyphErrCode = FT_Load_Char(m_face, g.first, FT_LOAD_RENDER);
         if(loadGlyphErrCode)
         {
-            LOG_E("Could not load glyph with index '{}. FreeType error code: {}", (char) g.first, loadGlyphErrCode);
+            LOG_E(SGCORE_TAG, "Could not load glyph with index '{}. FreeType error code: {}", (char) g.first, loadGlyphErrCode);
             continue;
         }
         

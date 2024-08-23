@@ -39,7 +39,7 @@ char* SGCore::FileUtils::readBytes(const std::string_view& path, size_t& outSize
     
     if(!stream)
     {
-        LOG_E("Read file error: File does not exist. Path: {}", path);
+        LOG_E(SGCORE_TAG, "Read file error: File does not exist. Path: {}", path);
         return nullptr;
     }
     
