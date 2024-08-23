@@ -214,7 +214,7 @@ void SGE::Toolchain::configurate()
     }
 }
 
-void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName)
+void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool doInBackground)
 {
     // Configuring incomplete
 

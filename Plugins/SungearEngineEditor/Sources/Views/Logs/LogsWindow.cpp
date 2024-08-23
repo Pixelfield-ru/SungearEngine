@@ -28,21 +28,31 @@ void SGE::LogsWindow::renderBody()
         switch (logMessage.m_type)
         {
             case SGCore::LogMessageType::T_INFO:
-                ImGui::TextColored({ 1.0, 1.0, 1.0, 1.0 }, logMessage.m_message.c_str());
+            {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 1.0, 1.0, 1.0, 1.0 }));
+                ImGui::TextUnformatted(logMessage.m_message.c_str());
                 break;
+            }
             case SGCore::LogMessageType::T_DEBUG:
-                ImGui::TextColored({ 0.0, 1.0, 0.0, 1.0 }, logMessage.m_message.c_str());
+                ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 0.0, 1.0, 0.0, 1.0 }));
+                ImGui::TextUnformatted(logMessage.m_message.c_str());
                 break;
             case SGCore::LogMessageType::T_WARN:
-                ImGui::TextColored({ 233.0f / 255.0f, 213.0f / 255.0f, 2.0f / 255.0f, 1.0 }, logMessage.m_message.c_str());
+                ImGui::PushStyleColor(ImGuiCol_Text,
+                                      ImGui::ColorConvertFloat4ToU32({ 233.0f / 255.0f, 213.0f / 255.0f, 2.0f / 255.0f, 1.0 }));
+                ImGui::TextUnformatted(logMessage.m_message.c_str());
                 break;
             case SGCore::LogMessageType::T_ERROR:
-                ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, logMessage.m_message.c_str());
+                ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 1.0 }));
+                ImGui::TextUnformatted(logMessage.m_message.c_str());
                 break;
             case SGCore::LogMessageType::T_CRITICAL:
-                ImGui::TextColored({ 1.0, 0.0, 0.0, 1.0 }, logMessage.m_message.c_str());
+                ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 1.0 }));
+                ImGui::TextUnformatted(logMessage.m_message.c_str());
                 break;
         }
+
+        ImGui::PopStyleColor();
     }
 
     ImGui::End();

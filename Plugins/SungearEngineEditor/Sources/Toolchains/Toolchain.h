@@ -44,7 +44,7 @@ namespace SGE
 
         virtual void configurate();
 
-        virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName);
+        virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool doInBackground = true);
 
         virtual Toolchain* copy() const = 0;
 

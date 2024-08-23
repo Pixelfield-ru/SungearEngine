@@ -1,6 +1,4 @@
 //
-// Created by Ilya on 21.08.2024.
-//
 
 #ifndef SUNGEARENGINE_LOGGER_H
 #define SUNGEARENGINE_LOGGER_H
@@ -38,6 +36,7 @@ namespace SGCore
         template<typename... Args>
         void info(std::string_view msg, Args&&... args) noexcept
         {
+            // std::cout << "msg before fmt: " << msg << std::endl;
             std::string formattedMsg = fmt::vformat(msg, fmt::make_format_args(args...));
             m_spdlogLogger->info(formattedMsg);
 
