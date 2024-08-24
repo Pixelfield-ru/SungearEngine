@@ -6,6 +6,36 @@
 #include "ImGuiUtils.h"
 #include "Styles/StylesManager.h"
 
+void SGE::ImGuiUtils::BeginCheckboxesGroup(const std::string& name,
+                                           const ImVec4& checkedCheckboxesColor,
+                                           bool onlyOneCanBeChecked) noexcept
+{
+    assert(!m_isCheckBoxesGroupBegan && "The number of EndCheckboxGroup and BeginCheckboxGroup called does not match.");
+
+    m_isCheckBoxesGroupBegan = true;
+    m_lastCheckboxesGroupName = name;
+    m_isLastCheckBoxesGroupOnlyOneCanBeChecked = onlyOneCanBeChecked;
+
+    auto& checkboxes = m_checkedCheckBoxes[name];
+
+    for(const auto& [checkboxName, checkbox] : checkboxes)
+    {
+        if(checkbox.m_clicked)
+        {
+            ImGui::GetWindowDrawList()->AddRectFilled(
+                    ImVec2(checkbox.m_screenPosition.x, checkbox.m_screenPosition.y),
+                    ImVec2(checkbox.m_screenPosition.x + checkbox.m_clickableSize.x,
+                           checkbox.m_screenPosition.y + checkbox.m_clickableSize.y),
+                    ImGui::ColorConvertFloat4ToU32(checkedCheckboxesColor), checkbox.m_rounding);
+        }
+    }
+}
+
+void SGE::ImGuiUtils::EndCheckboxesGroup() noexcept
+{
+    m_isCheckBoxesGroupBegan = false;
+}
+
 SGE::ImClickInfo
 SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
                              const ImVec2& buttonSize,
@@ -120,7 +150,27 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
             }
         }
     }
-    
+
+    if(m_isCheckBoxesGroupBegan)
+    {
+        auto& checkboxes = m_checkedCheckBoxes[m_lastCheckboxesGroupName];
+        if(m_isLastCheckBoxesGroupOnlyOneCanBeChecked && leftClicked)
+        {
+            std::erase_if(checkboxes, [&name](const std::pair<std::string, ImCheckboxInfo>& p) {
+                return p.second.m_name != name;
+            });
+        }
+        auto& checkboxInfo = checkboxes[name];
+        checkboxInfo.m_screenPosition = cursorScreenPos;
+        checkboxInfo.m_clickableSize = buttonSize;
+        checkboxInfo.m_rounding = buttonRounding;
+        checkboxInfo.m_name = name;
+        if(leftClicked)
+        {
+            checkboxInfo.m_clicked = !checkboxInfo.m_clicked;
+        }
+    }
+
     ImClickInfo clickInfo {
             .m_isLMBClicked = leftClicked && isWindowHovered,
             .m_isLMBReleased = leftReleased,
@@ -139,6 +189,19 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
     }
     
     return clickInfo;
+}
+
+SGE::ImClickInfo SGE::ImGuiUtils::ImageButton(const SGE::ImRectangleButtonInfo& rectangleButtonInfo) noexcept
+{
+    return ImageButton(rectangleButtonInfo.m_imageNativeHandler,
+                       rectangleButtonInfo.m_buttonSize,
+                       rectangleButtonInfo.m_imageSize,
+                       rectangleButtonInfo.m_buttonRounding,
+                       rectangleButtonInfo.m_useDummy,
+                       rectangleButtonInfo.m_imageOffset,
+                       rectangleButtonInfo.m_hoverBgColor,
+                       rectangleButtonInfo.m_dragNDropInfo,
+                       rectangleButtonInfo.m_name);
 }
 
 SGE::ImClickInfo SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,

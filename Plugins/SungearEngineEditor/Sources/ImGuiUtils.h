@@ -60,8 +60,35 @@ namespace SGE
         DragNDropState m_state = DragNDropState::NONE; // OUT PARAM
     };
 
+    struct ImRectangleButtonInfo
+    {
+        void* m_imageNativeHandler { };
+        ImVec2 m_buttonSize { };
+        ImVec2 m_imageSize { };
+        float m_buttonRounding = 3.0f;
+        bool m_useDummy = true;
+        ImVec2 m_imageOffset { -1, -1 };                    // if using -1, -1, then auto center image
+        ImVec4 m_hoverBgColor { 0.3f, 0.3f, 0.3f, 0.3f };
+        DragNDropInfo* m_dragNDropInfo { };
+        std::string m_name = "##inv";
+    };
+
+    struct ImCheckboxInfo
+    {
+        std::string m_name;
+        bool m_clicked = false;
+        ImVec2 m_screenPosition { };
+        ImVec2 m_clickableSize { };
+        float m_rounding = 3.0f;
+    };
+
     struct ImGuiUtils
     {
+        static void BeginCheckboxesGroup(const std::string& name,
+                                         const ImVec4& checkedCheckboxesColor = ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1.0f),
+                                         bool onlyOneCanBeChecked = true) noexcept;
+        static void EndCheckboxesGroup() noexcept;
+
         static ImClickInfo ImageButton(void* imageNativeHandler,
                                        const ImVec2& buttonSize,
                                        const ImVec2& imageSize,
@@ -71,6 +98,8 @@ namespace SGE
                                        const ImVec4& hoverBgColor = ImVec4(0.3, 0.3, 0.3, 0.3),
                                        DragNDropInfo* dragNDropInfo = nullptr,
                                        const std::string& name = "##inv") noexcept;
+
+        static ImClickInfo ImageButton(const ImRectangleButtonInfo& rectangleButtonInfo) noexcept;
         
         static ImClickInfo ImageButton(void* imageNativeHandler,
                                        const float& buttonRadius,
@@ -88,6 +117,10 @@ namespace SGE
         
     private:
         static bool ProcessInlineHexColor(const char* start, const char* end, ImVec4& color) noexcept;
+        static inline bool m_isCheckBoxesGroupBegan = false;
+        static inline bool m_isLastCheckBoxesGroupOnlyOneCanBeChecked = false;
+        static inline std::string m_lastCheckboxesGroupName;
+        static inline std::unordered_map<std::string, std::unordered_map<std::string, ImCheckboxInfo>> m_checkedCheckBoxes;
     };
 }
 

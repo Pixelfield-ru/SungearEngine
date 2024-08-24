@@ -52,11 +52,15 @@ void SGE::LogsWindow::renderBody()
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 0));
         if (ImGui::BeginChildFrame(ImGui::GetID("LogLevelTypeButtonsView"), { ImGui::GetContentRegionAvail().x, 41 }))
         {
-            auto infoMsgsButtonClickInfo = ImGuiUtils::ImageButton(m_infoIcon->getTextureNativeHandler(),
-                                                                   ImVec2(m_infoIcon->getWidth() + 6,
-                                                                          m_infoIcon->getHeight() + 6),
-                                                                   ImVec2(m_infoIcon->getWidth(),
-                                                                          m_infoIcon->getHeight()));
+            ImGuiUtils::BeginCheckboxesGroup("LogLevelTypeCheckboxes");
+
+            ImRectangleButtonInfo infoMsgsButtonInfo {
+                .m_imageNativeHandler = m_infoIcon->getTextureNativeHandler(),
+                .m_buttonSize = ImVec2(m_infoIcon->getWidth() + 6, m_infoIcon->getHeight() + 6),
+                .m_imageSize = ImVec2(m_infoIcon->getWidth(), m_infoIcon->getHeight()),
+                .m_name = "InfoLevelButton"
+            };
+            auto infoMsgsButtonClickInfo = ImGuiUtils::ImageButton(infoMsgsButtonInfo);
             if (infoMsgsButtonClickInfo.m_isLMBClicked)
             {
                 setCurrentLevel(SGCore::Logger::Level::LVL_INFO);
@@ -73,12 +77,13 @@ void SGE::LogsWindow::renderBody()
 
             // ==================================================================
 
-            auto debugMsgsButtonClickInfo = ImGuiUtils::ImageButton(m_debugIcon->getTextureNativeHandler(),
-                                                                    ImVec2(m_debugIcon->getWidth() + 6,
-                                                                           m_debugIcon->getHeight() + 6),
-                                                                    ImVec2(m_debugIcon->getWidth(),
-                                                                           m_debugIcon->getHeight()));
-
+            ImRectangleButtonInfo debugMsgsButtonInfo {
+                    .m_imageNativeHandler = m_debugIcon->getTextureNativeHandler(),
+                    .m_buttonSize = ImVec2(m_debugIcon->getWidth() + 6, m_debugIcon->getHeight() + 6),
+                    .m_imageSize = ImVec2(m_debugIcon->getWidth(), m_debugIcon->getHeight()),
+                    .m_name = "DebugLevelButton"
+            };
+            auto debugMsgsButtonClickInfo = ImGuiUtils::ImageButton(debugMsgsButtonInfo);
             if (debugMsgsButtonClickInfo.m_isLMBClicked)
             {
                 setCurrentLevel(SGCore::Logger::Level::LVL_DEBUG);
@@ -95,12 +100,13 @@ void SGE::LogsWindow::renderBody()
 
             // ==================================================================
 
-            auto warningMsgsButtonClickInfo = ImGuiUtils::ImageButton(m_warnIcon->getTextureNativeHandler(),
-                                                                      ImVec2(m_warnIcon->getWidth() + 6,
-                                                                             m_warnIcon->getHeight() + 6),
-                                                                      ImVec2(m_warnIcon->getWidth(),
-                                                                             m_warnIcon->getHeight()));
-
+            ImRectangleButtonInfo warningMsgsButtonInfo {
+                    .m_imageNativeHandler = m_warnIcon->getTextureNativeHandler(),
+                    .m_buttonSize = ImVec2(m_warnIcon->getWidth() + 6, m_warnIcon->getHeight() + 6),
+                    .m_imageSize = ImVec2(m_warnIcon->getWidth(), m_warnIcon->getHeight()),
+                    .m_name = "WarnLevelButton"
+            };
+            auto warningMsgsButtonClickInfo = ImGuiUtils::ImageButton(warningMsgsButtonInfo);
             if (warningMsgsButtonClickInfo.m_isLMBClicked)
             {
                 setCurrentLevel(SGCore::Logger::Level::LVL_WARN);
@@ -117,18 +123,20 @@ void SGE::LogsWindow::renderBody()
 
             // ==================================================================
 
-            auto errorsMsgsButtonClickInfo = ImGuiUtils::ImageButton(m_errorIcon->getTextureNativeHandler(),
-                                                                     ImVec2(m_errorIcon->getWidth() + 6,
-                                                                            m_errorIcon->getHeight() + 6),
-                                                                     ImVec2(m_errorIcon->getWidth(),
-                                                                            m_errorIcon->getHeight()));
+            ImRectangleButtonInfo errorMsgsButtonInfo {
+                    .m_imageNativeHandler = m_errorIcon->getTextureNativeHandler(),
+                    .m_buttonSize = ImVec2(m_errorIcon->getWidth() + 6, m_errorIcon->getHeight() + 6),
+                    .m_imageSize = ImVec2(m_errorIcon->getWidth(), m_errorIcon->getHeight()),
+                    .m_name = "ErrorLevelButton"
+            };
+            auto errorMsgsButtonClickInfo = ImGuiUtils::ImageButton(errorMsgsButtonInfo);
 
-            if (errorsMsgsButtonClickInfo.m_isLMBClicked)
+            if (errorMsgsButtonClickInfo.m_isLMBClicked)
             {
                 setCurrentLevel(SGCore::Logger::Level::LVL_ERROR);
             }
 
-            if(errorsMsgsButtonClickInfo.m_isHovered)
+            if(errorMsgsButtonClickInfo.m_isHovered)
             {
                 ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
                 ImGui::SetTooltip("Error messages");
@@ -139,12 +147,13 @@ void SGE::LogsWindow::renderBody()
 
             // ==================================================================
 
-            auto criticalMsgsButtonClickInfo = ImGuiUtils::ImageButton(m_criticalIcon->getTextureNativeHandler(),
-                                                                       ImVec2(m_criticalIcon->getWidth() + 6,
-                                                                              m_criticalIcon->getHeight() + 6),
-                                                                       ImVec2(m_criticalIcon->getWidth(),
-                                                                              m_criticalIcon->getHeight()));
-
+            ImRectangleButtonInfo criticalMsgsButtonInfo {
+                    .m_imageNativeHandler = m_criticalIcon->getTextureNativeHandler(),
+                    .m_buttonSize = ImVec2(m_criticalIcon->getWidth() + 6, m_criticalIcon->getHeight() + 6),
+                    .m_imageSize = ImVec2(m_criticalIcon->getWidth(), m_criticalIcon->getHeight()),
+                    .m_name = "CriticalLevelButton"
+            };
+            auto criticalMsgsButtonClickInfo = ImGuiUtils::ImageButton(criticalMsgsButtonInfo);
             if (criticalMsgsButtonClickInfo.m_isLMBClicked)
             {
                 setCurrentLevel(SGCore::Logger::Level::LVL_CRITICAL);
@@ -156,6 +165,8 @@ void SGE::LogsWindow::renderBody()
                 ImGui::SetTooltip("Critical messages");
                 ImGui::PopStyleVar();
             }
+
+            ImGuiUtils::EndCheckboxesGroup();
         }
         ImGui::EndChildFrame();
         ImGui::PopStyleVar(2);
