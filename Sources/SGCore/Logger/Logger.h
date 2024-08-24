@@ -7,11 +7,17 @@
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/TypeTraits.h"
 
-#define LOG_I(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info(tag, msg, ##__VA_ARGS__);
-#define LOG_D(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug(tag, msg, ##__VA_ARGS__);
-#define LOG_W(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn(tag, msg, ##__VA_ARGS__);
-#define LOG_E(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error(tag, msg, ##__VA_ARGS__);
-#define LOG_C(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical(tag, msg, ##__VA_ARGS__);
+#define LOG_I(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<true>(tag, msg, ##__VA_ARGS__);
+#define LOG_D(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<true>(tag, msg, ##__VA_ARGS__);
+#define LOG_W(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<true>(tag, msg, ##__VA_ARGS__);
+#define LOG_E(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<true>(tag, msg, ##__VA_ARGS__);
+#define LOG_C(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<true>(tag, msg, ##__VA_ARGS__);
+
+#define LOG_I_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<false>(tag, msg, ##__VA_ARGS__);
+#define LOG_D_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<false>(tag, msg, ##__VA_ARGS__);
+#define LOG_W_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<false>(tag, msg, ##__VA_ARGS__);
+#define LOG_E_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<false>(tag, msg, ##__VA_ARGS__);
+#define LOG_C_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critica<false>l(tag, msg, ##__VA_ARGS__);
 
 #define SGCORE_TAG "SGCore"
 
@@ -19,6 +25,11 @@ namespace SGCore
 {
     struct Logger
     {
+    private:
+        template<bool UseStaticFormatting, typename... Args>
+        using msg_t = std::conditional_t<UseStaticFormatting, fmt::format_string<Args...>, std::string_view>;
+
+    public:
         enum class Level
         {
             LVL_INFO,
@@ -55,40 +66,50 @@ namespace SGCore
 
         static Ref<Logger> createLogger(const std::string& loggerName, const std::filesystem::path& filePath, bool saveMessages = true) noexcept;
 
-        template<typename... Args>
-        void info(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        template<bool UseStaticFormatting, typename... Args>
+        void info(const std::string& tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log(Level::LVL_INFO, tag, msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_INFO, tag, msg, std::forward<Args>(args)...);
         }
 
-        template<typename... Args>
-        void debug(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        template<bool UseStaticFormatting, typename... Args>
+        void debug(const std::string& tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log(Level::LVL_DEBUG, tag, msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_DEBUG, tag, msg, std::forward<Args>(args)...);
         }
 
-        template<typename... Args>
-        void warn(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        template<bool UseStaticFormatting, typename... Args>
+        void warn(const std::string& tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log(Level::LVL_WARN, tag, msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_WARN, tag, msg, std::forward<Args>(args)...);
         }
 
-        template<typename... Args>
-        void error(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        template<bool UseStaticFormatting, typename... Args>
+        void error(const std::string& tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log(Level::LVL_ERROR, tag, msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_ERROR, tag, msg, std::forward<Args>(args)...);
         }
 
-        template<typename... Args>
-        void critical(const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        template<bool UseStaticFormatting, typename... Args>
+        void critical(const std::string& tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            log(Level::LVL_CRITICAL, tag, msg, std::forward<Args>(args)...);
+            log<UseStaticFormatting>(Level::LVL_CRITICAL, tag, msg, std::forward<Args>(args)...);
         }
 
-        template<typename... Args>
-        void log(Level level, const std::string& tag, std::string_view msg, Args&&... args) noexcept
+        template<bool UseStaticFormatting, typename... Args>
+        void log(Level level, const std::string& tag, msg_t<UseStaticFormatting, Args...> msg, Args&&... args) noexcept
         {
-            std::string formattedMsg = fmt::vformat(msg, fmt::make_format_args(args...));
+            std::lock_guard lock(m_mutex);
+
+            std::string formattedMsg;
+            if constexpr(UseStaticFormatting)
+            {
+                formattedMsg = fmt::format(msg, std::forward<Args>(args)...);
+            }
+            else
+            {
+                formattedMsg = msg;
+            }
             std::string levelStr = levelToString(level);
             switch (level)
             {
@@ -137,10 +158,10 @@ namespace SGCore
             }
         }
 
-        [[nodiscard]] const std::vector<LogMessage>& getAllMessages() const noexcept;
-        [[nodiscard]] std::vector<LogMessage> getMessagesWithLevel(Level lvl) const noexcept;
-        [[nodiscard]] std::vector<LogMessage> getMessagesWithTag(const std::string& tag) const noexcept;
-        [[nodiscard]] std::vector<LogMessage> getMessagesWithLevelAndTag(Level lvl, const std::string& tag) const noexcept;
+        [[nodiscard]] std::vector<LogMessage> getAllMessages() noexcept;
+        [[nodiscard]] std::vector<LogMessage> getMessagesWithLevel(Level lvl) noexcept;
+        [[nodiscard]] std::vector<LogMessage> getMessagesWithTag(const std::string& tag) noexcept;
+        [[nodiscard]] std::vector<LogMessage> getMessagesWithLevelAndTag(Level lvl, const std::string& tag) noexcept;
 
         static void setDefaultLogger(const Ref<Logger>& logger) noexcept;
         static Ref<Logger> getDefaultLogger() noexcept;
@@ -150,6 +171,8 @@ namespace SGCore
 
         static inline Ref<Logger> m_defaultLogger;
         Ref<spdlog::logger> m_spdlogLogger;
+
+        std::mutex m_mutex;
 
         bool m_saveMessages = true;
         std::string m_name;

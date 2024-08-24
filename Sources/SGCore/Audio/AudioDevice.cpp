@@ -26,7 +26,7 @@ SGCore::AudioDevice::AudioDevice(const char* deviceName)
     }
     else
     {
-        LOG_E("Could not load a sound device with the name '{}'.", deviceName);
+        LOG_E(SGCORE_TAG, "Could not load a sound device with the name '{}'.", deviceName);
     }
 }
 
@@ -72,7 +72,8 @@ void SGCore::AudioDevice::makeCurrent() const noexcept
         }
         else
         {
-            LOG_E("OpenAL error: could not make device`s '{}' context as current. Device: {}, context: {}.", m_name, (void*) m_handler, (void*) m_context);
+            LOG_E(SGCORE_TAG, "OpenAL error: could not make device`s '{}' context as current. Device: {}, context: {}.",
+                  m_name, (void*) m_handler, (void*) m_context)
         }
         
         std::cout << "current context: " << alcGetCurrentContext() << std::endl;

@@ -11,6 +11,8 @@
 #include <SGCore/Logger/Logger.h>
 #include <SGCore/Threading/Thread.h>
 
+#include <chrono>
+
 std::string SGE::VCArchTypeToString(const SGE::VCArchType& archType) noexcept
 {
     switch(archType)
@@ -105,29 +107,32 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                                                      cmakeProjectBuildCommand);
 
         bool buildFinished = false;
-        std::filesystem::path buildOutputLog;
+        std::filesystem::path buildOutputLogFile;
 
         auto thread = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
         auto task = thread->createTask();
-        task->setOnExecuteCallback([&buildFinished, &buildOutputLog, pathToProjectRoot, finalCommand]() {
-            LOG_I("Build", "Building project '{0}' using Visual Studio toolchain: commands:\n{1}\n",
+        task->setOnExecuteCallback([&buildFinished, &buildOutputLogFile, pathToProjectRoot, finalCommand]() {
+            LOG_I("Build", "Building project '{}' using Visual Studio toolchain: commands:\n{}\n",
                   SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
                   finalCommand.c_str())
 
-            LOG_I("Build", "Building project '{0}' using Visual Studio toolchain:",
+            LOG_I("Build", "Building project '{}' using Visual Studio toolchain:",
                   SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str())
 
             std::string logContent;
+            std::string lastLogContent;
             while(!buildFinished)
             {
-                if(std::filesystem::exists(buildOutputLog))
+                if(std::filesystem::exists(buildOutputLogFile))
                 {
-                    logContent = SGCore::FileUtils::readFile(buildOutputLog);
-                    if(!logContent.empty())
+                    logContent = SGCore::FileUtils::readFile(buildOutputLogFile);
+                    if(logContent.size() != lastLogContent.size())
                     {
-                        SGCore::FileUtils::clearFile(buildOutputLog);
-                        logContent = "";
-                        LOG_I("Build", logContent);
+                        size_t lastLogContentSize = lastLogContent.size();
+                        lastLogContent = logContent;
+                        logContent = logContent.substr(lastLogContentSize, logContent.size() - lastLogContentSize);
+
+                        LOG_I_UNFORMATTED("Build", logContent);
                     }
                 }
             }
@@ -137,14 +142,15 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
 
         const auto projectBuildLog = SGCore::Utils::consoleExecute(
                 finalCommand,
-                &buildOutputLog
+                &buildOutputLogFile
         );
 
         buildFinished = true;
 
-        LOG_I(SGEDITOR_TAG, "Building project '{0}' using Visual Studio toolchain: project build output:\n{1}\n",
-              SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-              projectBuildLog.c_str());
+        using namespace std::chrono_literals;
+
+        // waiting for task that reading build output log file
+        std::this_thread::sleep_for(1000ms);
     };
 
     // ===============================================================

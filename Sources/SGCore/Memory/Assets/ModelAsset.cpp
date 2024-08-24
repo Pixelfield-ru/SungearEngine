@@ -26,7 +26,8 @@ void SGCore::ModelAsset::doLoad(const std::string& path)
 
     if(!aiImportedScene || aiImportedScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiImportedScene->mRootNode)
     {
-        LOG_E("Assimp error (while importing scene): {}\n{}",
+        LOG_E(SGCORE_TAG,
+              "Assimp error (while importing scene): {}\n{}",
               importer.GetErrorString(),
               SG_CURRENT_LOCATION_STR);
         return;
@@ -36,7 +37,8 @@ void SGCore::ModelAsset::doLoad(const std::string& path)
 
     m_nodes.push_back(processNode(aiImportedScene->mRootNode, aiImportedScene));
 
-    LOG_I("Loaded model '{}'. Nodes count: {}", m_name, m_nodes.size());
+    LOG_I(SGCORE_TAG,
+          "Loaded model '{}'. Nodes count: {}", m_name, m_nodes.size());
 }
 
 SGCore::Ref<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
@@ -246,7 +248,9 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
 
         sgMeshData->m_material->m_name = aiMat->GetName().data;
 
-        LOG_I("Current object: {}", sgMeshData->m_material->m_name);
+        LOG_I(SGCORE_TAG,
+              "Current object: {}",
+              sgMeshData->m_material->m_name);
 
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureType::SGTT_EMISSIVE);
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureType::SGTT_AMBIENT_OCCLUSION);
@@ -290,7 +294,9 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
 
         sgMaterial->findAndAddTexture2D(sgMaterialTextureType, finalPath);
 
-        LOG_I("Loaded material`s '{}' texture. Raw type name: '{}', path: {}", aiMat->GetName().data,
+        LOG_I(SGCORE_TAG,
+              "Loaded material`s '{}' texture. Raw type name: '{}', path: {}",
+              aiMat->GetName().data,
               sgStandardTextureTypeToString(sgMaterialTextureType), finalPath
         );
     }

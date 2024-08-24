@@ -15,7 +15,8 @@ SGCore::Ref<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(
 {
     if(!m_document)
     {
-        LOG_E("Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': document equals to nullptr (SVGImage was not successfully loaded previously).",
+        LOG_E(SGCORE_TAG,
+              "Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': document equals to nullptr (SVGImage was not successfully loaded previously).",
               m_path.string(),
               width,
               height);
@@ -36,7 +37,8 @@ SGCore::Ref<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(
         
         if(!bitmap.valid())
         {
-            LOG_E("Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': bitmap was not loaded successfully (not valid).",
+            LOG_E(SGCORE_TAG,
+                  "Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': bitmap was not loaded successfully (not valid).",
                   m_path.string(),
                   width,
                   height);

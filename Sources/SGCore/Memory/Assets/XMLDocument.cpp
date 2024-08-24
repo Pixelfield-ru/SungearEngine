@@ -12,7 +12,7 @@ void SGCore::XMLDocument::doLoad(const std::string& path)
     
     if(!parseResult)
     {
-        LOG_E("Error while parsing XML document by path '{}': {}", path, parseResult.description());
+        LOG_E(SGCORE_TAG, "Error while parsing XML document by path '{}': {}", path, parseResult.description());
         return;
     }
 }

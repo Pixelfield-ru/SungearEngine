@@ -25,7 +25,8 @@ void SGCore::ITexture2D::doLoad(const std::string& path)
     
     if(!std::filesystem::exists(path))
     {
-        LOG_E("Error while loading texture: texture by path {} does not exist.", path);
+        LOG_E(SGCORE_TAG,
+              "Error while loading texture: texture by path {} does not exist.", path);
         return;
     }
     

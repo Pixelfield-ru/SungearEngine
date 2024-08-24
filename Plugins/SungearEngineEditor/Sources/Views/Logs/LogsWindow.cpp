@@ -204,6 +204,15 @@ void SGE::LogsWindow::renderBody()
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 0));
         if (ImGui::BeginChildFrame(ImGui::GetID("LogMessages"), ImGui::GetContentRegionAvail()))
         {
+            if(ImGui::GetScrollY() == m_logsCurrentScrollY)
+            {
+                m_enableAutoScroll = true;
+            }
+            else
+            {
+                m_enableAutoScroll = false;
+            }
+
             for (const SGCore::Logger::LogMessage& logMessage : messages)
             {
                 switch (logMessage.m_level)
@@ -215,26 +224,41 @@ void SGE::LogsWindow::renderBody()
                         break;
                     }
                     case SGCore::Logger::Level::LVL_DEBUG:
+                    {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 0.0, 1.0, 0.0, 1.0 }));
                         ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
+                    }
                     case SGCore::Logger::Level::LVL_WARN:
+                    {
                         ImGui::PushStyleColor(ImGuiCol_Text,
                                               ImGui::ColorConvertFloat4ToU32(
                                                       { 233.0f / 255.0f, 213.0f / 255.0f, 2.0f / 255.0f, 1.0 }));
                         ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
+                    }
                     case SGCore::Logger::Level::LVL_ERROR:
+                    {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 1.0 }));
                         ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
+                    }
                     case SGCore::Logger::Level::LVL_CRITICAL:
+                    {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 1.0 }));
                         ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
+                    }
                 }
 
                 ImGui::PopStyleColor();
+            }
+
+            m_logsCurrentScrollY = ImGui::GetScrollMaxY();
+
+            if(m_enableAutoScroll)
+            {
+                ImGui::SetScrollY(m_logsCurrentScrollY);
             }
         }
         ImGui::EndChildFrame();

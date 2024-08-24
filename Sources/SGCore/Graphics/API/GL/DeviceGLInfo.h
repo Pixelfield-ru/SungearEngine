@@ -46,7 +46,7 @@ namespace SGCore
             {
                 const char* extName = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
                 s_supportingExtensions.insert(extName);
-                LOG_I(SGCORE_TAG, extName);
+                LOG_I_UNFORMATTED(SGCORE_TAG, extName);
             }
             
             VERSION = reinterpret_cast<const char*>(glGetString(GL_VERSION));

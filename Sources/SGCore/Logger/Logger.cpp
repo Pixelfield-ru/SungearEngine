@@ -54,13 +54,16 @@ SGCore::Ref<SGCore::Logger> SGCore::Logger::getDefaultLogger() noexcept
     return m_defaultLogger;
 }
 
-const std::vector<SGCore::Logger::LogMessage>& SGCore::Logger::getAllMessages() const noexcept
+std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getAllMessages() noexcept
 {
+    std::lock_guard lock(m_mutex);
     return m_allMessages;
 }
 
-std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getMessagesWithLevel(SGCore::Logger::Level lvl) const noexcept
+std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getMessagesWithLevel(SGCore::Logger::Level lvl) noexcept
 {
+    std::lock_guard lock(m_mutex);
+
     std::vector<LogMessage> messages;
 
     for(const auto& [key, msg] : m_sortedMessages)
@@ -74,8 +77,10 @@ std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getMessagesWithLevel(SGC
     return messages;
 }
 
-std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getMessagesWithTag(const std::string& tag) const noexcept
+std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getMessagesWithTag(const std::string& tag) noexcept
 {
+    std::lock_guard lock(m_mutex);
+
     std::vector<LogMessage> messages;
 
     for(const auto& [key, msg] : m_sortedMessages)
@@ -90,8 +95,10 @@ std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getMessagesWithTag(const
 }
 
 std::vector<SGCore::Logger::LogMessage>
-SGCore::Logger::getMessagesWithLevelAndTag(SGCore::Logger::Level lvl, const std::string& tag) const noexcept
+SGCore::Logger::getMessagesWithLevelAndTag(SGCore::Logger::Level lvl, const std::string& tag) noexcept
 {
+    std::lock_guard lock(m_mutex);
+
     auto it = m_sortedMessages.find(make_messages_key(lvl, tag));
     if(it != m_sortedMessages.end())
     {

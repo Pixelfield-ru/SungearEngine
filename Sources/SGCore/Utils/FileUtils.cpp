@@ -14,7 +14,7 @@ std::string SGCore::FileUtils::readFile(const std::filesystem::path& path)
     
     if(!stream)
     {
-        LOG_E("Read file error: File does not exist. Path: {}", Utils::toUTF8<char16_t>(path.u16string()));
+        LOG_E(SGCORE_TAG, "Read file error: File does not exist. Path: {}", Utils::toUTF8<char16_t>(path.u16string()));
         return "";
     }
     
@@ -77,7 +77,7 @@ void SGCore::FileUtils::writeToFile(const std::filesystem::path& path, const std
     }
     catch(const std::ios_base::failure& e)
     {
-        LOG_E("Write to file error: {}. Path: {}", e.what(), Utils::toUTF8<char16_t>(path.u16string()));
+        LOG_E(SGCORE_TAG, "Write to file error: {}. Path: {}", e.what(), Utils::toUTF8<char16_t>(path.u16string()));
     }
 }
 

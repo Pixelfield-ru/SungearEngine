@@ -245,7 +245,8 @@ void SGCore::Scene::setCurrentScene(const std::string& sceneName) noexcept
     }
     else
     {
-        LOG_E("Cannot set scene '{}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
+        LOG_E(SGCORE_TAG,
+              "Cannot set scene '{}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
     }
 }
 

@@ -10,7 +10,9 @@ bool SGCore::GL46Renderer::confirmSupport() noexcept
     std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     if(!glVersion.starts_with("4.6"))
     {
-        LOG_I("OpenGL 4.6 is not supported!\n{0}", SG_CURRENT_LOCATION_STR);
+        LOG_I(SGCORE_TAG,
+              "OpenGL 4.6 is not supported!\n{0}",
+              SG_CURRENT_LOCATION_STR);
 
         return false;
     }

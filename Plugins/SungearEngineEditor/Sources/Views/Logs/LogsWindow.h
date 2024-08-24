@@ -31,6 +31,9 @@ namespace SGE
         SGCore::Ref<SGCore::ITexture2D> m_criticalIcon;
 
         std::string m_currentChosenLevel;
+
+        bool m_enableAutoScroll = false;
+        float m_logsCurrentScrollY = 0.0f;
     };
 }
 

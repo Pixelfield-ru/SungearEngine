@@ -82,7 +82,8 @@ void SGCore::CoreMain::start()
     catch(const std::exception& e)
     {
         std::string what = e.what();
-        LOG_E("Error while onInit. Error is: {}", what);
+        LOG_E(SGCORE_TAG,
+              "Error while onInit. Error is: {}", what);
     }
 
     m_fixedTimer.resetTimer();
@@ -114,7 +115,8 @@ void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)
         catch(const std::exception& e)
         {
             std::string what = e.what();
-            LOG_E("Error while fixedUpdate plugin. Error is: {}", what);
+            LOG_E(SGCORE_TAG,
+                  "Error while fixedUpdate plugin. Error is: {}", what);
         }
     }
 }
@@ -139,7 +141,7 @@ void SGCore::CoreMain::updateStart(const double& dt, const double& fixedDt)
         catch(const std::exception& e)
         {
             std::string what = e.what();
-            LOG_E("Error while update plugin. Error is: {}", what);
+            LOG_E(SGCORE_TAG, "Error while update plugin. Error is: {}", what);
         }
     }
 }

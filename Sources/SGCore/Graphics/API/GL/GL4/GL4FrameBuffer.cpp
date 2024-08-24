@@ -217,47 +217,57 @@ void SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmen
         {
             case GL_FRAMEBUFFER_UNDEFINED:
                 // Обработка ошибки: Фреймбуфер не определен
-                LOG_E("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNDEFINED.\n{0}",
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNDEFINED.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
                 // Обработка ошибки: Неполное прикрепление
-                LOG_E("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT.\n{0}",
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
                 // Обработка ошибки: Отсутствует прикрепление
-                LOG_E("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT.\n{0}",
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
                 // Обработка ошибки: Неправильный буфер рисования
-                LOG_E("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER.\n{0}",
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
                 // Обработка ошибки: Неправильный буфер чтения
-                LOG_E("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER.\n{0}",
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_UNSUPPORTED:
                 // Обработка ошибки: Неподдерживаемый формат фреймбуфера
-                LOG_E("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNSUPPORTED.\n{0}",
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_UNSUPPORTED.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
                 // Обработка ошибки: Неправильное мультисэмплирование
-                LOG_E("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE.\n{0}",
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
                 // Обработка ошибки: Неправильные цели слоя
-                LOG_E("Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS.\n{0}",
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS.\n{0}",
                       SG_CURRENT_LOCATION_STR);
                 break;
             default:
                 // Обработка ошибки: Неизвестная ошибка
-                LOG_E("Error when adding attachment to framebuffer: unknown error.", SG_CURRENT_LOCATION_STR);
+                LOG_E(SGCORE_TAG,
+                      "Error when adding attachment to framebuffer: unknown error.\n{}",
+                      SG_CURRENT_LOCATION_STR);
                 break;
         }
 
