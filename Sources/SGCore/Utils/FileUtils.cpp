@@ -81,6 +81,13 @@ void SGCore::FileUtils::writeToFile(const std::filesystem::path& path, const std
     }
 }
 
+void SGCore::FileUtils::clearFile(const std::filesystem::path& path) noexcept
+{
+    std::ofstream ofs;
+    ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+    ofs.close();
+}
+
 void SGCore::FileUtils::createDirectory(const std::string_view& path, bool createNew) noexcept
 {
     if(std::filesystem::exists(path) && createNew) return;

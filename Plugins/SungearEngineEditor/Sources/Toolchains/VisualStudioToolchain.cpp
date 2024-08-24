@@ -104,13 +104,43 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                                                      cmakeProjectLoadingCommand,
                                                      cmakeProjectBuildCommand);
 
+        bool buildFinished = false;
+        std::filesystem::path buildOutputLog;
+
+        auto thread = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
+        auto task = thread->createTask();
+        task->setOnExecuteCallback([&buildFinished, &buildOutputLog, pathToProjectRoot, finalCommand]() {
+            LOG_I("Build", "Building project '{0}' using Visual Studio toolchain: commands:\n{1}\n",
+                  SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
+                  finalCommand.c_str())
+
+            LOG_I("Build", "Building project '{0}' using Visual Studio toolchain:",
+                  SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str())
+
+            std::string logContent;
+            while(!buildFinished)
+            {
+                if(std::filesystem::exists(buildOutputLog))
+                {
+                    logContent = SGCore::FileUtils::readFile(buildOutputLog);
+                    if(!logContent.empty())
+                    {
+                        SGCore::FileUtils::clearFile(buildOutputLog);
+                        logContent = "";
+                        LOG_I("Build", logContent);
+                    }
+                }
+            }
+        });
+        thread->addTask(task);
+        thread->start();
+
         const auto projectBuildLog = SGCore::Utils::consoleExecute(
-                finalCommand
+                finalCommand,
+                &buildOutputLog
         );
 
-        LOG_I(SGEDITOR_TAG, "Building project '{0}' using Visual Studio toolchain: commands:\n{1}\n",
-              SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-              finalCommand.c_str());
+        buildFinished = true;
 
         LOG_I(SGEDITOR_TAG, "Building project '{0}' using Visual Studio toolchain: project build output:\n{1}\n",
               SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),

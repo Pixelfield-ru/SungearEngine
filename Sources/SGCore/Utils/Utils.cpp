@@ -61,15 +61,16 @@ long long SGCore::Utils::getTimeMilliseconds() noexcept
     return fine;
 }
 
-std::string SGCore::Utils::consoleExecute(const std::string& cmd)
+std::string SGCore::Utils::consoleExecute(const std::string& cmd, std::filesystem::path* outputFile)
 {
     UUID execUUID;
 
     // if(std::filesystem::exists("ConsoleTmp/"))
     FileUtils::createDirectory("ConsoleTmp/Output", false);
     FileUtils::writeToFile("ConsoleTmp/" + execUUID.getUUID() + ".cmd", cmd, false, true);
+    *outputFile = "ConsoleTmp/Output/" + execUUID.getUUID() + "_output.txt";
     std::system(fmt::format("cd ConsoleTmp & {0}.cmd > Output/{1}_output.txt", execUUID.getUUID(), execUUID.getUUID()).c_str());
-    return FileUtils::readFile("ConsoleTmp/Output/" + execUUID.getUUID() + "_output.txt");
+    return FileUtils::readFile(*outputFile);
 
     /*std::array<char, 2048> buffer { };
     std::string result;

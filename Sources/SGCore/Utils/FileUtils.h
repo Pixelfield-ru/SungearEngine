@@ -14,6 +14,8 @@ namespace SGCore::FileUtils
 
     void writeToFile(const std::filesystem::path& path, const std::string& text, bool append, bool createDirectories);
 
+    void clearFile(const std::filesystem::path& path) noexcept;
+
     void createDirectory(const std::string_view& path, bool createNew) noexcept;
 
     std::filesystem::path findFile(const std::filesystem::path& relativePath, const std::filesystem::path& fileName);

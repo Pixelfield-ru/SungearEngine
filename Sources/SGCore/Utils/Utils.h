@@ -384,7 +384,7 @@ namespace SGCore
             return std::string::npos;
         }
 
-        static std::string consoleExecute(const std::string& cmd);
+        static std::string consoleExecute(const std::string& cmd, std::filesystem::path* outputFile = nullptr);
     };
 }
 
