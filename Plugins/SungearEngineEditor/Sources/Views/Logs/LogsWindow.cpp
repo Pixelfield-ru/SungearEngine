@@ -8,6 +8,8 @@
 #include "ImGuiUtils.h"
 #include "Styles/StylesManager.h"
 
+#include <imgui_stdlib.h>
+
 SGE::LogsWindow::LogsWindow()
 {
     m_infoIcon = StylesManager::getCurrentStyle()->m_infoIcon
@@ -213,9 +215,12 @@ void SGE::LogsWindow::renderBody()
 
             ImGui::SameLine();
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
-            if(ImGuiUtils::ImageButton(m_clearLogsIcon->getTextureNativeHandler(),
-                                       ImVec2(m_clearLogsIcon->getWidth() + 6, m_clearLogsIcon->getHeight() + 6),
-                                       ImVec2(m_clearLogsIcon->getWidth(), m_clearLogsIcon->getHeight())).m_isLMBClicked)
+            auto clearLogsButtonClickInfo = ImGuiUtils::ImageButton(m_clearLogsIcon->getTextureNativeHandler(),
+                                                                    ImVec2(m_clearLogsIcon->getWidth() + 6,
+                                                                           m_clearLogsIcon->getHeight() + 6),
+                                                                    ImVec2(m_clearLogsIcon->getWidth(),
+                                                                           m_clearLogsIcon->getHeight()));
+            if(clearLogsButtonClickInfo.m_isLMBClicked)
             {
                 SGCore::Logger::Level currentLevel = SGCore::Logger::Level::LVL_INFO;
 
@@ -262,6 +267,11 @@ void SGE::LogsWindow::renderBody()
                         SGCore::Logger::getDefaultLogger()->clearMessagesWithLevelAndTag(currentLevel, m_logTags[m_currentSelectedTagIndex]);
                     }
                 }
+            }
+
+            if(clearLogsButtonClickInfo.m_isHovered)
+            {
+                ImGui::SetTooltip("Clear logs");
             }
         }
         ImGui::EndChildFrame();
@@ -333,20 +343,18 @@ void SGE::LogsWindow::renderBody()
                 m_enableAutoScroll = false;
             }
 
-            for (const SGCore::Logger::LogMessage& logMessage : messages)
+            for (SGCore::Logger::LogMessage& logMessage : messages)
             {
                 switch (logMessage.m_level)
                 {
                     case SGCore::Logger::Level::LVL_INFO:
                     {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 1.0, 1.0, 1.0, 1.0 }));
-                        ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
                     }
                     case SGCore::Logger::Level::LVL_DEBUG:
                     {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 0.0, 1.0, 0.0, 1.0 }));
-                        ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
                     }
                     case SGCore::Logger::Level::LVL_WARN:
@@ -354,23 +362,21 @@ void SGE::LogsWindow::renderBody()
                         ImGui::PushStyleColor(ImGuiCol_Text,
                                               ImGui::ColorConvertFloat4ToU32(
                                                       { 233.0f / 255.0f, 213.0f / 255.0f, 2.0f / 255.0f, 1.0 }));
-                        ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
                     }
                     case SGCore::Logger::Level::LVL_ERROR:
                     {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 1.0 }));
-                        ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
                     }
                     case SGCore::Logger::Level::LVL_CRITICAL:
                     {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertFloat4ToU32({ 1.0, 0.0, 0.0, 1.0 }));
-                        ImGui::TextUnformatted(logMessage.m_message.c_str());
                         break;
                     }
                 }
 
+                ImGui::TextUnformatted(logMessage.m_message.c_str());
                 ImGui::PopStyleColor();
             }
 
