@@ -158,10 +158,17 @@ namespace SGCore
             }
         }
 
+        [[nodiscard]] std::vector<std::string> getAllTags() noexcept;
+
         [[nodiscard]] std::vector<LogMessage> getAllMessages() noexcept;
         [[nodiscard]] std::vector<LogMessage> getMessagesWithLevel(Level lvl) noexcept;
         [[nodiscard]] std::vector<LogMessage> getMessagesWithTag(const std::string& tag) noexcept;
         [[nodiscard]] std::vector<LogMessage> getMessagesWithLevelAndTag(Level lvl, const std::string& tag) noexcept;
+
+        [[nodiscard]] void clearAllMessages() noexcept;
+        [[nodiscard]] void clearMessagesWithLevel(Level lvl) noexcept;
+        [[nodiscard]] void clearMessagesWithTag(const std::string& tag) noexcept;
+        [[nodiscard]] void clearMessagesWithLevelAndTag(Level lvl, const std::string& tag) noexcept;
 
         static void setDefaultLogger(const Ref<Logger>& logger) noexcept;
         static Ref<Logger> getDefaultLogger() noexcept;

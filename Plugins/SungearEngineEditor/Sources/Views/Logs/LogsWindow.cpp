@@ -29,6 +29,10 @@ SGE::LogsWindow::LogsWindow()
     m_criticalIcon = StylesManager::getCurrentStyle()->m_criticalIcon
             ->getSpecialization(24, 24)
             ->getTexture();
+
+    m_clearLogsIcon = StylesManager::getCurrentStyle()->m_trashBinIcon
+            ->getSpecialization(20, 20)
+            ->getTexture();
 }
 
 bool SGE::LogsWindow::begin()
@@ -167,6 +171,98 @@ void SGE::LogsWindow::renderBody()
             }
 
             ImGuiUtils::EndCheckboxesGroup();
+
+            // ===============================================================================
+            // ===============================================================================
+            // ===============================================================================
+
+            m_logTags = SGCore::Logger::getDefaultLogger()->getAllTags();
+            m_logTags.insert(m_logTags.begin(), "all");
+
+            m_currentSelectedTagIndex = (m_currentSelectedTagIndex >= m_logTags.size() || m_currentSelectedTagIndex < 0)
+                                         ? 0 : m_currentSelectedTagIndex;
+
+            const float rightContentWidth = 300.0f;
+
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x - rightContentWidth);
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
+            ImGui::Text("Tag: ");
+            ImGui::SameLine();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+            ImGui::SetNextItemWidth(rightContentWidth - ImGui::CalcTextSize("Tag: ").x - 15.0f -
+                                            (m_clearLogsIcon->getWidth() + 6) - 10.0f);
+            if(ImGui::BeginCombo("##LogTags", m_logTags[m_currentSelectedTagIndex].c_str()))
+            {
+                for(std::int64_t i = 0; i < m_logTags.size(); ++i)
+                {
+                    bool isTagSelected = (m_logTags[m_currentSelectedTagIndex] == m_logTags[i]);
+                    if (ImGui::Selectable(m_logTags[i].c_str(), isTagSelected))
+                    {
+                        m_currentSelectedTagIndex = i;
+                    }
+                    if (isTagSelected)
+                    {
+                        // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+
+                ImGui::EndCombo();
+            }
+
+            ImGui::SameLine();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+            if(ImGuiUtils::ImageButton(m_clearLogsIcon->getTextureNativeHandler(),
+                                       ImVec2(m_clearLogsIcon->getWidth() + 6, m_clearLogsIcon->getHeight() + 6),
+                                       ImVec2(m_clearLogsIcon->getWidth(), m_clearLogsIcon->getHeight())).m_isLMBClicked)
+            {
+                SGCore::Logger::Level currentLevel = SGCore::Logger::Level::LVL_INFO;
+
+                if (m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_INFO))
+                {
+                    currentLevel = SGCore::Logger::Level::LVL_INFO;
+                }
+                else if (m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_DEBUG))
+                {
+                    currentLevel = SGCore::Logger::Level::LVL_DEBUG;
+                }
+                else if (m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_WARN))
+                {
+                    currentLevel = SGCore::Logger::Level::LVL_WARN;
+                }
+                else if (m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_ERROR))
+                {
+                    currentLevel = SGCore::Logger::Level::LVL_ERROR;
+                }
+                else if (m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_CRITICAL))
+                {
+                    currentLevel = SGCore::Logger::Level::LVL_CRITICAL;
+                }
+                else
+                {
+                    if(m_logTags[m_currentSelectedTagIndex] == "all")
+                    {
+                        SGCore::Logger::getDefaultLogger()->clearAllMessages();
+                    }
+                    else
+                    {
+                        SGCore::Logger::getDefaultLogger()->clearMessagesWithTag(m_logTags[m_currentSelectedTagIndex]);
+                    }
+                }
+
+                if(!m_currentChosenLevel.empty())
+                {
+                    if(m_logTags[m_currentSelectedTagIndex] == "all")
+                    {
+                        SGCore::Logger::getDefaultLogger()->clearMessagesWithLevel(currentLevel);
+                    }
+                    else
+                    {
+                        SGCore::Logger::getDefaultLogger()->clearMessagesWithLevelAndTag(currentLevel, m_logTags[m_currentSelectedTagIndex]);
+                    }
+                }
+            }
         }
         ImGui::EndChildFrame();
         ImGui::PopStyleVar(2);
@@ -175,30 +271,54 @@ void SGE::LogsWindow::renderBody()
         // ==================================================================
         // ==================================================================
 
+        const std::string& currentTag = m_logTags[m_currentSelectedTagIndex];
+        SGCore::Logger::Level currentLevel = SGCore::Logger::Level::LVL_INFO;
+
         std::vector<SGCore::Logger::LogMessage> messages;
         if(m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_INFO))
         {
-            messages = SGCore::Logger::getDefaultLogger()->getMessagesWithLevel(SGCore::Logger::Level::LVL_INFO);
+            currentLevel = SGCore::Logger::Level::LVL_INFO;
         }
         else if(m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_DEBUG))
         {
-            messages = SGCore::Logger::getDefaultLogger()->getMessagesWithLevel(SGCore::Logger::Level::LVL_DEBUG);
+            currentLevel = SGCore::Logger::Level::LVL_DEBUG;
         }
         else if(m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_WARN))
         {
-            messages = SGCore::Logger::getDefaultLogger()->getMessagesWithLevel(SGCore::Logger::Level::LVL_WARN);
+            currentLevel = SGCore::Logger::Level::LVL_WARN;
         }
         else if(m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_ERROR))
         {
-            messages = SGCore::Logger::getDefaultLogger()->getMessagesWithLevel(SGCore::Logger::Level::LVL_ERROR);
+            currentLevel = SGCore::Logger::Level::LVL_ERROR;
         }
         else if(m_currentChosenLevel == SGCore::Logger::levelToString(SGCore::Logger::Level::LVL_CRITICAL))
         {
-            messages = SGCore::Logger::getDefaultLogger()->getMessagesWithLevel(SGCore::Logger::Level::LVL_CRITICAL);
+            currentLevel = SGCore::Logger::Level::LVL_CRITICAL;
         }
         else
         {
-            messages = SGCore::Logger::getDefaultLogger()->getAllMessages();
+            if(currentTag == "all")
+            {
+                messages = SGCore::Logger::getDefaultLogger()->getAllMessages();
+            }
+            else
+            {
+                messages =
+                        SGCore::Logger::getDefaultLogger()->getMessagesWithTag(currentTag);
+            }
+        }
+
+        if(messages.empty())
+        {
+            if(currentTag == "all")
+            {
+                messages = SGCore::Logger::getDefaultLogger()->getMessagesWithLevel(currentLevel);
+            }
+            else
+            {
+                messages =
+                        SGCore::Logger::getDefaultLogger()->getMessagesWithLevelAndTag(currentLevel, currentTag);
+            }
         }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 0));

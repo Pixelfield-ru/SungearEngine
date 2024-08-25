@@ -30,10 +30,15 @@ namespace SGE
         SGCore::Ref<SGCore::ITexture2D> m_errorIcon;
         SGCore::Ref<SGCore::ITexture2D> m_criticalIcon;
 
+        SGCore::Ref<SGCore::ITexture2D> m_clearLogsIcon;
+
         std::string m_currentChosenLevel;
 
         bool m_enableAutoScroll = false;
         float m_logsCurrentScrollY = 0.0f;
+
+        std::int64_t m_currentSelectedTagIndex = 0;
+        std::vector<std::string> m_logTags;
     };
 }
 

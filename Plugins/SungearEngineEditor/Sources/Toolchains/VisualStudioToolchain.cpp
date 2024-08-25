@@ -112,6 +112,8 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
         auto thread = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
         auto task = thread->createTask();
         task->setOnExecuteCallback([&buildFinished, &buildOutputLogFile, pathToProjectRoot, finalCommand]() {
+            LOG_I("Build", "================================== BUILD START ================================");
+
             LOG_I("Build", "Building project '{}' using Visual Studio toolchain: commands:\n{}\n",
                   SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
                   finalCommand.c_str())
@@ -136,6 +138,8 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                     }
                 }
             }
+
+            LOG_I("Build", "================================== BUILD END ==================================");
         });
         thread->addTask(task);
         thread->start();

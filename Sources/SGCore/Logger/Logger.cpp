@@ -54,6 +54,25 @@ SGCore::Ref<SGCore::Logger> SGCore::Logger::getDefaultLogger() noexcept
     return m_defaultLogger;
 }
 
+std::vector<std::string> SGCore::Logger::getAllTags() noexcept
+{
+    std::lock_guard lock(m_mutex);
+
+    std::vector<std::string> tags;
+
+    for(const auto& [key, msg] : m_sortedMessages)
+    {
+        if(std::find_if(tags.begin(), tags.end(), [&key](const std::string& tag) {
+            return tag == key.second;
+        }) == tags.end())
+        {
+            tags.push_back(key.second);
+        }
+    }
+
+    return tags;
+}
+
 std::vector<SGCore::Logger::LogMessage> SGCore::Logger::getAllMessages() noexcept
 {
     std::lock_guard lock(m_mutex);
@@ -106,4 +125,43 @@ SGCore::Logger::getMessagesWithLevelAndTag(SGCore::Logger::Level lvl, const std:
     }
 
     return { };
+}
+
+void SGCore::Logger::clearAllMessages() noexcept
+{
+    m_allMessages.clear();
+    m_sortedMessages.clear();
+}
+
+void SGCore::Logger::clearMessagesWithLevel(SGCore::Logger::Level lvl) noexcept
+{
+    std::erase_if(m_allMessages, [&lvl](const LogMessage& logMessage) {
+        return logMessage.m_level == lvl;
+    });
+
+    std::erase_if(m_sortedMessages, [&lvl](const std::pair<messages_key, std::vector<LogMessage>>& p) {
+        return p.first.first == lvl;
+    });
+}
+
+void SGCore::Logger::clearMessagesWithTag(const std::string& tag) noexcept
+{
+    std::erase_if(m_allMessages, [&tag](const LogMessage& logMessage) {
+        return logMessage.m_tag == tag;
+    });
+
+    std::erase_if(m_sortedMessages, [&tag](const std::pair<messages_key, std::vector<LogMessage>>& p) {
+        return p.first.second == tag;
+    });
+}
+
+void SGCore::Logger::clearMessagesWithLevelAndTag(SGCore::Logger::Level lvl, const std::string& tag) noexcept
+{
+    std::erase_if(m_allMessages, [&lvl, &tag](const LogMessage& logMessage) {
+        return logMessage.m_level == lvl && logMessage.m_tag == tag;
+    });
+
+    std::erase_if(m_sortedMessages, [&lvl, &tag](const std::pair<messages_key, std::vector<LogMessage>>& p) {
+        return p.first.first == lvl && p.first.second == tag;
+    });
 }
