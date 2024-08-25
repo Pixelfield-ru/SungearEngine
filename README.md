@@ -10,8 +10,9 @@
     - Octotree with automatic subdivision
     - Support input from keyboard and mouse
     - Annotations and code generation
-        > (more information about annotations, see the source code: https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Annotations)
-        ```
+        > more information about annotations, see the source code: [Annotation](https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Annotations)  
+        > example annotation
+        ```cpp
         sg_struct()
         struct MyStruct
         {
@@ -20,7 +21,7 @@
         }
         ```
     - A set of classes for parallel computing
-      > (more information about parallel computing, see the source code: (https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Threading))
+      > more information about parallel computing, see the source code: [Parallel computing](https://github.com/Pixelfield-ru/SungearEngine/tree/main/Sources/SGCore/Threading)
     - Small developments in the in-game UI (loading ttf fonts, creating text)
 -   **Graphics Rendering:**
     - Preparation for multi-GAPI (GAPI - graphical api) (using only abstractions and avoiding native api functions in external code (outside the implementation of abstract classes for different gapi))
@@ -46,8 +47,8 @@
 | **Octree** | **PBR** |
 |:-:|:-:|
 | <img src="./documentation/images/octree.jpg"/><br>Octree demonstartion | <img src="./documentation/images/pbr2.jpg"/><br>Demonstration pbr shading with shadows |
-| **Post-Processing** |
-| <img src="./documentation/images/pp.jpg"/><br> <img src="./documentation/images/pp2.jpg"/><br> Demonstration of layered post-processing |
+| **Post-Processing** | **Post-Processing** |
+| <img src="./documentation/images/pp.jpg"/><br> Demonstration of layered post-processing (bloom) | <img src="./documentation/images/pp2.jpg"/><br> Demonstration of layered post-processing |
 
 ### Engine
 - 🛠️ Cross Platform
