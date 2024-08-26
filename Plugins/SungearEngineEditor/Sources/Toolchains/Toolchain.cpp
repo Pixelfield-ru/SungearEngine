@@ -5,6 +5,8 @@
 #include <iostream>
 #include <SGCore/Utils/Utils.h>
 #include <SGCore/Utils/FileUtils.h>
+#include <SGCore/PluginsSystem/DynamicLibrary.h>
+#include <SGCore/Logger/Logger.h>
 
 //
 // Created by Ilya on 16.07.2024.
@@ -214,18 +216,19 @@ void SGE::Toolchain::configurate()
     }
 }
 
-void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool doInBackground)
+void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName)
 {
     // Configuring incomplete
 
     auto cmakePresetsPath = pathToProjectRoot;
     cmakePresetsPath += "/CMakePresets.json";
 
+    const std::string projectName = SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string());
+
     if(!std::filesystem::exists(cmakePresetsPath))
     {
         throw std::runtime_error(fmt::format("Error while building project '{0}'. File CMakePresets.json was not found in project directory '{1}'",
-                                             SGCore::Utils::toUTF8(
-                                                     pathToProjectRoot.filename().u16string()),
+                                             projectName,
                                              SGCore::Utils::toUTF8(
                                                      pathToProjectRoot.u16string())));
     }
@@ -236,8 +239,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
     if(!cmakePresetsDocument.HasMember("configurePresets"))
     {
         throw std::runtime_error(fmt::format("Error while building project '{0}'. Section 'configurePresets' was not found in CMakePresets.json",
-                                             SGCore::Utils::toUTF8(
-                                                     pathToProjectRoot.filename().u16string()),
+                                             projectName,
                                              SGCore::Utils::toUTF8(
                                                      pathToProjectRoot.u16string())));
     }
@@ -254,8 +256,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
         {
             throw std::runtime_error(fmt::format(
                     "Error while building project '{0}'. Section 'name' was not found in one of presets provided in CMakePresets.json file",
-                    SGCore::Utils::toUTF8(
-                            pathToProjectRoot.filename().u16string())));
+                    projectName));
         }
 
         std::string currentPresetName = currentPreset["name"].GetString();
@@ -268,8 +269,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
         {
             throw std::runtime_error(fmt::format(
                     "Error while building project '{0}'. Section 'binaryDir' was not found in preset '{1}' provided in CMakePresets.json file",
-                    SGCore::Utils::toUTF8(
-                            pathToProjectRoot.filename().u16string()),
+                    projectName,
                     currentPresetName));
         }
 
@@ -280,8 +280,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
     {
         throw std::runtime_error(fmt::format(
                 "Error while building project '{0}'. Preset '{1}' was not found in CMakePresets.json",
-                SGCore::Utils::toUTF8(
-                        pathToProjectRoot.filename().u16string()),
+                projectName,
                 cmakePresetName));
     }
 
@@ -289,7 +288,11 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
 
     m_currentBuildingPresetBinaryDir = cmakePresetBinaryDir;
 
-    std::printf("Building project '%s' using Visual Studio toolchain: found binary dir '%s'\n",
+    m_builtDynamicLibraryPath = pathToProjectRoot;
+    m_builtDynamicLibraryPath += '/' + cmakePresetBinaryDir + '/' + projectName + DL_POSTFIX;
+    m_projectName = projectName;
+
+    LOG_I(PROJECT_BUILD_TAG, "Building project '{}' using Visual Studio toolchain: found binary dir '{}'.\n",
                 SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
                 cmakePresetBinaryDir.c_str());
 }

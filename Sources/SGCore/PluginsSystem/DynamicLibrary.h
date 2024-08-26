@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_DYNAMICLIBRARY_H
 
 #include "SGCore/CrashHandler/Platform.h"
+#include "SGCore/Utils/Utils.h"
 
 #include <functional>
 
@@ -55,18 +56,20 @@ namespace SGCore
          * \param[in] pluginDLPath The path to the dynamic library.
          * \param[out] err Error generated while loading the library.\n Remains unchanged if the library was loaded successfully.
          */
-        void load(const std::string& pluginDLPath, std::string& err) noexcept
+        void load(const std::filesystem::path& pluginDLPath, std::string& err) noexcept
         {
             unload();
+
+            const std::string u8Path = Utils::toUTF8(pluginDLPath.u16string());
             
             #ifdef PLATFORM_OS_LINUX
-            m_nativeHandler = dlopen(pluginDLPath.c_str(), RTLD_NOW | RTLD_GLOBAL);
+            m_nativeHandler = dlopen(u8Path.c_str(), RTLD_NOW | RTLD_GLOBAL);
             if(!m_nativeHandler)
             {
                 err = dlerror();
             }
             #elif defined(PLATFORM_OS_WINDOWS)
-            m_nativeHandler = LoadLibraryA(pluginDLPath.c_str());
+            m_nativeHandler = LoadLibraryA(u8Path.c_str());
             if(!m_nativeHandler)
             {
                 err = getLastWindowsError();

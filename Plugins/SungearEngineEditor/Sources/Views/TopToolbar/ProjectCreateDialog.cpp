@@ -242,7 +242,33 @@ void SGE::ProjectCreateDialog::submit()
         if(!EngineSettings::getInstance()->getToolchains().empty())
         {
             auto firstToolchain = EngineSettings::getInstance()->getToolchains()[0];
-            firstToolchain->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
+            char* sgSourcesPath = std::getenv("SUNGEAR_SOURCES_ROOT");
+            if(!sgSourcesPath)
+            {
+                LOG_E(SGEDITOR_TAG, "Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'.");
+                return;
+            }
+
+            // building the Sungear Engine
+            firstToolchain->buildProject(sgSourcesPath, "release-host");
+            firstToolchain->onProjectBuilt = [&currentEditorProject, firstToolchain](
+                    const std::filesystem::path& projectDynamicLibraryPath,
+                    const std::filesystem::path& projectName,
+                    const std::string& binaryDir) {
+                // building new project after building the Sungear Engine
+                firstToolchain->onProjectBuilt = [&currentEditorProject, firstToolchain](const std::filesystem::path& projectDynamicLibraryPath,
+                                                                         const std::filesystem::path& projectName,
+                                                                         const std::string& binaryDir) {
+                    std::string projectDynamicLibraryLoadError;
+
+                    currentEditorProject.m_loadedPlugin = SGCore::PluginsManager::loadPlugin(
+                            SGCore::Utils::toUTF8(projectName.u16string()),
+                            currentEditorProject.m_pluginProject.m_pluginPath,
+                            {},
+                            binaryDir);
+                };
+                firstToolchain->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
+            };
         }
         else // TODO: MAKE WARNING DIALOG
         {

@@ -74,10 +74,10 @@ void SGE::VisualStudioToolchain::configurate()
 }
 
 void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathToProjectRoot,
-                                              const std::string& cmakePresetName, bool doInBackground)
+                                              const std::string& cmakePresetName)
 {
-    auto buildLambda = [this, pathToProjectRoot, cmakePresetName, doInBackground]() {
-        Toolchain::buildProject(pathToProjectRoot, cmakePresetName, doInBackground);
+    auto buildLambda = [this, pathToProjectRoot, cmakePresetName]() {
+        Toolchain::buildProject(pathToProjectRoot, cmakePresetName);
 
         // BUILDING PROJECT
         const std::string archTypeAsString = VCArchTypeToString(m_archType);
@@ -112,13 +112,13 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
         auto thread = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
         auto task = thread->createTask();
         task->setOnExecuteCallback([&buildFinished, &buildOutputLogFile, pathToProjectRoot, finalCommand]() {
-            LOG_I("Build", "================================== BUILD START ================================");
+            LOG_I(PROJECT_BUILD_TAG, "================================== BUILD START ================================");
 
-            LOG_I("Build", "Building project '{}' using Visual Studio toolchain: commands:\n{}\n",
+            LOG_I(PROJECT_BUILD_TAG, "Building project '{}' using Visual Studio toolchain: commands:\n{}\n",
                   SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
                   finalCommand.c_str())
 
-            LOG_I("Build", "Building project '{}' using Visual Studio toolchain:",
+            LOG_I(PROJECT_BUILD_TAG, "Building project '{}' using Visual Studio toolchain:",
                   SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str())
 
             std::string logContent;
@@ -134,12 +134,10 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                         lastLogContent = logContent;
                         logContent = logContent.substr(lastLogContentSize, logContent.size() - lastLogContentSize);
 
-                        LOG_I_UNFORMATTED("Build", logContent);
+                        LOG_I_UNFORMATTED(PROJECT_BUILD_TAG, logContent);
                     }
                 }
             }
-
-            LOG_I("Build", "================================== BUILD END ==================================");
         });
         thread->addTask(task);
         thread->start();
@@ -159,11 +157,16 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
 
     // ===============================================================
 
-    if(doInBackground)
+    if(m_doInBackground)
     {
         auto thread = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
         auto task = thread->createTask();
         task->setOnExecuteCallback(buildLambda);
+        task->setOnExecutedCallback([this]() {
+            onProjectBuilt(m_builtDynamicLibraryPath, m_projectName, m_currentBuildingPresetBinaryDir);
+
+            LOG_I(PROJECT_BUILD_TAG, "================================== BUILD END ==================================");
+        });
         thread->addTask(task);
         thread->start();
     }

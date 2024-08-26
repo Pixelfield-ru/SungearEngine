@@ -20,6 +20,7 @@
 #define LOG_C_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critica<false>l(tag, msg, ##__VA_ARGS__);
 
 #define SGCORE_TAG "SGCore"
+#define PROJECT_BUILD_TAG "Project Build"
 
 namespace SGCore
 {

@@ -8,13 +8,14 @@
 #include <SGCore/PluginsSystem/PluginProject.h>
 #include <functional>
 #include <SGCore/PluginsSystem/DynamicLibrary.h>
+#include <SGCore/PluginsSystem/PluginWrap.h>
 
 namespace SGE
 {
     struct Project
     {
         SGCore::PluginProject m_pluginProject;
-        SGCore::DynamicLibrary m_editorHelper;
+        SGCore::Ref<SGCore::PluginWrap> m_loadedPlugin;
         std::function<void()> m_editorHelperEntryPoint;
         std::function<void()> m_editorHelperExitPoint;
     };

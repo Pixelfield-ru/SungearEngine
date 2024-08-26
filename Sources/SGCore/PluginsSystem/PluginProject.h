@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_PLUGINPROJECT_H
 
 #include <filesystem>
+#include "DynamicLibrary.h"
 
 namespace SGCore
 {

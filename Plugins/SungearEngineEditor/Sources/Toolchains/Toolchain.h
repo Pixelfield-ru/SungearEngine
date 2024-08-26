@@ -18,6 +18,11 @@ namespace SGE
     {
         sg_serdespec_as_friend()
 
+        bool m_doInBackground = true;
+        std::function<void(const std::filesystem::path& projectDynamicLibraryPath,
+                           const std::filesystem::path& m_projectName,
+                           const std::string& binaryDir)> onProjectBuilt;
+
         virtual ~Toolchain() = default;
 
         SGCore::UniqueName m_name;
@@ -44,7 +49,7 @@ namespace SGE
 
         virtual void configurate();
 
-        virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName, bool doInBackground = true);
+        virtual void buildProject(const std::filesystem::path& pathToProjectRoot, const std::string& cmakePresetName);
 
         virtual Toolchain* copy() const = 0;
 
@@ -64,6 +69,8 @@ namespace SGE
 
         // TEMP DATA
         std::string m_currentBuildingPresetBinaryDir;
+        std::filesystem::path m_builtDynamicLibraryPath;
+        std::filesystem::path m_projectName;
     };
 }
 
