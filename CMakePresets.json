@@ -9,7 +9,7 @@
         "SG_BUILD_TYPE": "Release",
         "CMAKE_BUILD_TYPE": "Release",
         "SG_BUILD_PRESET": "release-host",
-        "CMAKE_TOOLCHAIN_FILE" : "vcpkg/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake"
       }
     },
     {

@@ -72,6 +72,8 @@ void SGE::EngineSettings::save(const std::filesystem::path& toPath) const noexce
 
 void SGE::EngineSettings::load(const std::filesystem::path& fromPath) noexcept
 {
+    if(!std::filesystem::exists(fromPath)) return;
+
     const std::string settingsContent = SGCore::FileUtils::readFile(fromPath);
 
     std::string outputLog;
