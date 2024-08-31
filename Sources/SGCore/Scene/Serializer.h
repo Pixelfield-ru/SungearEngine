@@ -895,7 +895,7 @@ namespace SGCore::Serde
         static consteval bool isBaseTypesProvided()
         {
             return requires {
-                SerdeSpec<T, TFormatType>::base_classes_count,
+                SerdeSpec<T, TFormatType>::base_classes_count;
                 SerdeSpec<T, TFormatType>::get_base_type;
             };
         }
@@ -909,7 +909,7 @@ namespace SGCore::Serde
         static consteval bool isDerivedTypesProvided()
         {
             return requires {
-                SerdeSpec<T, TFormatType>::derived_classes_count,
+                SerdeSpec<T, TFormatType>::derived_classes_count;
                 SerdeSpec<T, TFormatType>::get_derived_type;
             };
         }
@@ -1309,6 +1309,7 @@ namespace SGCore::Serde
             // serializing derived types only if information of them was provided
             if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
             {
+                std::printf("as derived\n");
                 serializeDerivedTypesImpl<T, TFormatType>
                         (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> {});
             }

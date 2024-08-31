@@ -206,6 +206,11 @@ void coreInit()
 
     using a = decltype(testSerde.m_name);
 
+    if constexpr(SGCore::Serde::Utils::isDerivedTypesProvided<Base, SGCore::Serde::FormatType::JSON>())
+    {
+        std::printf("derived types provided\n");
+    }
+
     std::shared_ptr<Base> tst = std::make_shared<Derived0>();
     // Base* tst = new Derived0();
     tst->a = -1;
