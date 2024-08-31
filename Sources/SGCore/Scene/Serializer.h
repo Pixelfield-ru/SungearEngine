@@ -894,10 +894,18 @@ namespace SGCore::Serde
         template<typename T, FormatType TFormatType>
         static consteval bool isBaseTypesProvided()
         {
-            return requires {
-                SerdeSpec<T, TFormatType>::base_classes_count;
-                SerdeSpec<T, TFormatType>::get_base_type;
-            };
+            if constexpr(requires { SerdeSpec<T, TFormatType>::base_classes_count; })
+            {
+                if constexpr(SerdeSpec<T, TFormatType>::base_classes_count > 0)
+                {
+                    if constexpr(requires { typename SerdeSpec<T, TFormatType>::template get_base_type<0>; })
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /**
@@ -908,10 +916,18 @@ namespace SGCore::Serde
         template<typename T, FormatType TFormatType>
         static consteval bool isDerivedTypesProvided()
         {
-            return requires {
-                SerdeSpec<T, TFormatType>::derived_classes_count;
-                SerdeSpec<T, TFormatType>::get_derived_type;
-            };
+            if constexpr(requires { SerdeSpec<T, TFormatType>::derived_classes_count; })
+            {
+                if constexpr(SerdeSpec<T, TFormatType>::derived_classes_count > 0)
+                {
+                    if constexpr(requires { typename SerdeSpec<T, TFormatType>::template get_derived_type<0>; })
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     };
 

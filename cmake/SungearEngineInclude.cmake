@@ -1,5 +1,11 @@
 set(SG_DL_EXT ???)
 
+add_definitions(-DSG_BUILD_PRESET="${SG_BUILD_PRESET}")
+
+if(NOT DEFINED SG_BUILD_PRESET)
+    message(FATAL_ERROR "Your preset does not have 'SG_BUILD_PRESET' in 'cacheVariables' section.")
+endif()
+
 if(MSVC)
     set(SG_DL_EXT lib)
 elseif(${CMAKE_COMPILER_IS_GNUCXX})

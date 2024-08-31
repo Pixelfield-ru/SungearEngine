@@ -11,6 +11,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "MinGW")
     list(APPEND CMAKE_CXX_FLAGS "-static")
 endif()
 
+add_definitions(-DSG_BUILD_PRESET="${SG_BUILD_PRESET}")
+
 #set(ZLIB_ROOT ${CMAKE_SOURCE_DIR}/Externals/zlib)
 #set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/Externals/zlib)
 

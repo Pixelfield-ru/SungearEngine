@@ -180,7 +180,7 @@ void SGE::ProjectCreateDialog::submit()
         std::filesystem::create_directory(m_dirPath + "/" + m_projectName);
         std::string projectSourcesCreateError;
         SGCore::PluginProject pluginProject = SGCore::PluginsManager::createPluginProject(
-                m_dirPath + "/" + m_projectName + "/Sources", m_projectName,
+                m_dirPath, m_projectName,
                 m_cppStandards[m_currentSelectedCPPStandard], projectSourcesCreateError);
 
         if(!projectSourcesCreateError.empty())
@@ -192,7 +192,6 @@ void SGE::ProjectCreateDialog::submit()
             return;
         }
 
-        std::filesystem::create_directory(m_dirPath + "/" + m_projectName + "/Resources");
 
         auto& currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
 
@@ -206,11 +205,13 @@ void SGE::ProjectCreateDialog::submit()
         SGCore::AnnotationsProcessor annotationsProcessor;
 
         const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
-        std::string sungearRootStr;
-        if(sungearRoot)
+        if(!sungearRoot)
         {
-            sungearRootStr = sungearRoot;
+            LOG_E(SGEDITOR_TAG, "Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'.");
+            return;
         }
+        const std::string sungearRootStr = sungearRoot;
+        const std::string sungearPluginsPathStr = sungearRootStr + "/Plugins";
 
         annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
                                                 {sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
@@ -242,23 +243,23 @@ void SGE::ProjectCreateDialog::submit()
         if(!EngineSettings::getInstance()->getToolchains().empty())
         {
             auto firstToolchain = EngineSettings::getInstance()->getToolchains()[0];
-            char* sgSourcesPath = std::getenv("SUNGEAR_SOURCES_ROOT");
-            if(!sgSourcesPath)
-            {
-                LOG_E(SGEDITOR_TAG, "Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'.");
-                return;
-            }
 
-            // building the Sungear Engine
-            firstToolchain->buildProject(sgSourcesPath, "release-host");
-            firstToolchain->onProjectBuilt = [&currentEditorProject, firstToolchain](
+            firstToolchain->onProjectBuilt = [&currentEditorProject, firstToolchainPtr = firstToolchain.get(), sungearPluginsPathStr](
                     const std::filesystem::path& projectDynamicLibraryPath,
                     const std::filesystem::path& projectName,
                     const std::string& binaryDir) {
+                // building all plugins
+                for(const auto& dirEntry : std::filesystem::directory_iterator(sungearPluginsPathStr))
+                {
+                    std::printf("plugin name: %s\n", SGCore::Utils::toUTF8(dirEntry.path().filename().u16string()).c_str());
+                }
+
                 // building new project after building the Sungear Engine
-                firstToolchain->onProjectBuilt = [&currentEditorProject, firstToolchain](const std::filesystem::path& projectDynamicLibraryPath,
-                                                                         const std::filesystem::path& projectName,
-                                                                         const std::string& binaryDir) {
+                firstToolchainPtr->onProjectBuilt = [&currentEditorProject, firstToolchainPtr]
+                        (const std::filesystem::path& projectDynamicLibraryPath,
+                         const std::filesystem::path& projectName,
+                         const std::string& binaryDir)
+                {
                     std::string projectDynamicLibraryLoadError;
 
                     currentEditorProject.m_loadedPlugin = SGCore::PluginsManager::loadPlugin(
@@ -267,8 +268,10 @@ void SGE::ProjectCreateDialog::submit()
                             {},
                             binaryDir);
                 };
-                firstToolchain->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
+                firstToolchainPtr->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
             };
+            // building the Sungear Engine
+            firstToolchain->buildProject(sungearRootStr, "release-host");
         }
         else // TODO: MAKE WARNING DIALOG
         {

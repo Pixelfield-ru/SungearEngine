@@ -96,7 +96,7 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
                                                                    SGCore::Utils::toUTF8(
                                                                            pathToProjectRoot.u16string()));
 
-        const std::string cmakeProjectBuildCommand = fmt::format(R"("{0}" --build "{1}")",
+        const std::string cmakeProjectBuildCommand = fmt::format(R"("{0}" --build {1})",
                                                                  SGCore::Utils::toUTF8(m_cmakePath.u16string()),
                                                                  SGCore::Utils::toUTF8(pathToProjectRoot.u16string()) +
                                                                  "/" + m_currentBuildingPresetBinaryDir);

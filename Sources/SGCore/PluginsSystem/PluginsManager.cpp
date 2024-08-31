@@ -140,6 +140,9 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::fil
 
         std::ofstream gitignoreStream(pluginDir + "/.gitignore");
         gitignoreStream << gitignoreContent;
+
+        // ====================================== Resources directory
+        std::filesystem::create_directory(pluginDir + "/Resources");
     }
     catch(const std::filesystem::filesystem_error& err)
     {

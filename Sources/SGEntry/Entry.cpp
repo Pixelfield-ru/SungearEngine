@@ -54,30 +54,21 @@ private:
     int gg = 0;
 };
 
-/*SGCore::DynamicLibrary zlib1Lib;
-SGCore::DynamicLibrary libpng16Lib;
-SGCore::DynamicLibrary assimpLib;
-SGCore::DynamicLibrary brotlicommonLib;
-SGCore::DynamicLibrary brotlidecLib;
-SGCore::DynamicLibrary bz2Lib;
-SGCore::DynamicLibrary fmtLib;
-SGCore::DynamicLibrary freetypeLib;
-SGCore::DynamicLibrary glfw3Lib;
-SGCore::DynamicLibrary lunasvgLib;
-SGCore::DynamicLibrary minizipLib;
-SGCore::DynamicLibrary openal32Lib;
-SGCore::DynamicLibrary poly2triLib;
-SGCore::DynamicLibrary pugixmlLib;
-SGCore::DynamicLibrary spdlogLib;
-SGCore::DynamicLibrary sgCoreLib;*/
-
-void printLibError(const std::string& libName, const std::string& err)
+template<typename T>
+consteval bool checkReq()
 {
-    if(!err.empty())
-    {
-        LOG_E("SGCore", "Error while loading library '{}': {}", libName, err);
-    }
+    return requires {
+        T::m_int;
+        typename T::template m_using<int>;
+    };
 }
+
+struct TestStructReq
+{
+    static constexpr int m_int = 3;
+    template<typename T>
+    using m_using = T;
+};
 
 void coreInit()
 {
@@ -96,40 +87,6 @@ void coreInit()
     if(sgSourcesPath)
     {
         std::string sgEditorPath = std::string(sgSourcesPath) + "/Plugins/SungearEngineEditor";
-
-        /*std::string dynLibsErrs;
-        zlib1Lib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/zlib1.dll", dynLibsErrs);
-        printLibError("zlib1", dynLibsErrs);
-        libpng16Lib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/libpng16.dll", dynLibsErrs);
-        printLibError("libpng16", dynLibsErrs);
-        assimpLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/assimp-vc143-mt.dll", dynLibsErrs);
-        printLibError("assimp", dynLibsErrs);
-        brotlicommonLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/brotlicommon.dll", dynLibsErrs);
-        printLibError("brotlicommon", dynLibsErrs);
-        brotlidecLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/brotlidec.dll", dynLibsErrs);
-        printLibError("brotlidec", dynLibsErrs);
-        bz2Lib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/bz2.dll", dynLibsErrs);
-        printLibError("bz2", dynLibsErrs);
-        fmtLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/fmt.dll", dynLibsErrs);
-        printLibError("fmt", dynLibsErrs);
-        freetypeLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/freetype.dll", dynLibsErrs);
-        printLibError("freetype", dynLibsErrs);
-        glfw3Lib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/glfw3.dll", dynLibsErrs);
-        printLibError("glfw3", dynLibsErrs);
-        lunasvgLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/lunasvg.dll", dynLibsErrs);
-        printLibError("lunasvg", dynLibsErrs);
-        minizipLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/minizip.dll", dynLibsErrs);
-        printLibError("minizip", dynLibsErrs);
-        openal32Lib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/OpenAL32.dll", dynLibsErrs);
-        printLibError("openal32", dynLibsErrs);
-        poly2triLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/poly2tri.dll", dynLibsErrs);
-        printLibError("poly2tri", dynLibsErrs);
-        pugixmlLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/pugixml.dll", dynLibsErrs);
-        printLibError("pugixml", dynLibsErrs);
-        spdlogLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/spdlog.dll", dynLibsErrs);
-        printLibError("spdlog", dynLibsErrs);
-        sgCoreLib.load(std::string(sgSourcesPath) + "/cmake-build-release/Sources/SGCore/SGCore.dll", dynLibsErrs);
-        printLibError("SGCore", dynLibsErrs);*/
 
         // hardcoded sgeditor load
         auto sgEditorPlugin =
@@ -207,6 +164,7 @@ void coreInit()
     using a = decltype(testSerde.m_name);
 
     if constexpr(SGCore::Serde::Utils::isDerivedTypesProvided<Base, SGCore::Serde::FormatType::JSON>())
+    // if constexpr(checkReq<TestStructReq>())
     {
         std::printf("derived types provided\n");
     }

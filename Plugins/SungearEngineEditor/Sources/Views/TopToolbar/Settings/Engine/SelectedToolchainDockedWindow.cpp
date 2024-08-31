@@ -164,7 +164,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                             ImGui::SetNextItemWidth(130);
                             if (ImGui::Combo("##VSToolchainArchType", &m_vsCurrentSelectedArchTypeInCombo,
                                              m_vsArchTypes,
-                                             8))
+                                             m_vsArchTypesCount))
                             {
                                 switch (m_vsCurrentSelectedArchTypeInCombo)
                                 {
@@ -209,7 +209,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                             ImGui::SetNextItemWidth(80);
                             if (ImGui::Combo("##VSToolchainPlatformType", &m_vsCurrentSelectedPlatformTypeInCombo,
-                                             m_vsPlatformTypes, 3))
+                                             m_vsPlatformTypes, m_vsArchTypesCount))
                             {
                                 switch (m_vsCurrentSelectedPlatformTypeInCombo)
                                 {
@@ -306,6 +306,35 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
 void SGE::SelectedToolchainDockedWindow::setSelectedToolchain(const SGCore::Ref<Toolchain>& toolchain) noexcept
 {
     m_selectedToolchain = toolchain;
+
+    // if visual studio toolchain
+    if(toolchain->getType() == ToolchainType::VISUAL_STUDIO)
+    {
+        auto* vsToolchain = static_cast<VisualStudioToolchain*>(toolchain.get());
+
+        const std::string vcArchTypeStr = VCArchTypeToString(vsToolchain->m_archType);
+        const std::string vcPlatformTypeStr = VCPlatformTypeToString(vsToolchain->m_platformType);
+
+        // selecting necessary arch type that equals to toolchain->m_archType
+        for(std::uint8_t i = 0; i < m_vsArchTypesCount; ++i)
+        {
+            if(vcArchTypeStr == m_vsArchTypes[i])
+            {
+                m_vsCurrentSelectedArchTypeInCombo = i;
+                break;
+            }
+        }
+
+        // selecting necessary platform type that equals to toolchain->m_platformType
+        for(std::uint8_t i = 0; i < m_vsPlatformTypesCount; ++i)
+        {
+            if(vcPlatformTypeStr == m_vsPlatformTypes[i])
+            {
+                m_vsCurrentSelectedPlatformTypeInCombo = i;
+                break;
+            }
+        }
+    }
 
     updateSelectedToolchain();
 }
