@@ -171,7 +171,7 @@ void SGE::Window::end()
 
         if(ImGui::Button(btn.m_text.c_str(), btn.m_size) || (btn.isFastClicked && btn.isFastClicked(btn)))
         {
-            btn.onClicked(btn);
+            btn.onClicked(btn, this);
         }
 
         btn.m_currentSize = ImGui::GetItemRectSize();

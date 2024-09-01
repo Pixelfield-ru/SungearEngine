@@ -41,7 +41,7 @@ ${onInspectorViewComponentsChooseRenderFunctionCode}$
 
 SG_NOMANGLING SG_DLEXPORT void EditorGeneratedCodeEntry()
 {
-    SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRender += onInspectorViewRender;
+    SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRenderBody += onInspectorViewRender;
 
     SGCore::CoreMain::onInit += onInit;
     SGCore::CoreMain::getFixedTimer().onUpdate += fixedUpdate;
@@ -50,7 +50,7 @@ SG_NOMANGLING SG_DLEXPORT void EditorGeneratedCodeEntry()
 
 SG_NOMANGLING SG_DLEXPORT void EditorGeneratedCodeExit()
 {
-    SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRender -= onInspectorViewRender;
+    SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRenderBody -= onInspectorViewRender;
 
     SGCore::CoreMain::onInit -= onInit;
     SGCore::CoreMain::getFixedTimer().onUpdate -= fixedUpdate;

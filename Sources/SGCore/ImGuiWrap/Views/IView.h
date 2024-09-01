@@ -19,7 +19,7 @@ namespace SGCore::ImGuiWrap
     {
         friend struct ViewsInjector;
 
-        Event<void()> onRender;
+        Event<void()> onRenderBody;
         Event<void(bool lastActive, bool isActive)> onActiveChanged;
 
         UniqueName m_name = SGCore::UUID::generateNew();

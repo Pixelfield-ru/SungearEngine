@@ -77,6 +77,8 @@ namespace SGCore
                                             const std::vector<std::string>& entryArgs,
                                             const std::string& cmakeBuildDir);
 
+        static void unloadAllPlugins() noexcept;
+
         static void unloadPlugin(const std::string& pluginName) noexcept;
 
         static bool isPluginExists(const std::string& pluginName) noexcept;

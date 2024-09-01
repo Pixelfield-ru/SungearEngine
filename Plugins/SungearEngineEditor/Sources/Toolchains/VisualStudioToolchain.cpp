@@ -149,6 +149,18 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
 
         buildFinished = true;
 
+        if(onProjectBuilt)
+        {
+            ProjectBuildOutput buildOutput;
+            buildOutput.m_projectDynamicLibraryPath = m_builtDynamicLibraryPath;
+            buildOutput.m_projectName = m_projectName;
+            buildOutput.m_binaryDir = m_currentBuildingPresetBinaryDir;
+
+            onProjectBuilt(buildOutput);
+        }
+
+        LOG_I(PROJECT_BUILD_TAG, "================================== BUILD END ==================================");
+
         using namespace std::chrono_literals;
 
         // waiting for task that reading build output log file
@@ -163,9 +175,15 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
         auto task = thread->createTask();
         task->setOnExecuteCallback(buildLambda);
         task->setOnExecutedCallback([this]() {
-            onProjectBuilt(m_builtDynamicLibraryPath, m_projectName, m_currentBuildingPresetBinaryDir);
+            if(onProjectBuiltSynchronized)
+            {
+                ProjectBuildOutput buildOutput;
+                buildOutput.m_projectDynamicLibraryPath = m_builtDynamicLibraryPath;
+                buildOutput.m_projectName = m_projectName;
+                buildOutput.m_binaryDir = m_currentBuildingPresetBinaryDir;
 
-            LOG_I(PROJECT_BUILD_TAG, "================================== BUILD END ==================================");
+                onProjectBuiltSynchronized(buildOutput);
+            }
         });
         thread->addTask(task);
         thread->start();

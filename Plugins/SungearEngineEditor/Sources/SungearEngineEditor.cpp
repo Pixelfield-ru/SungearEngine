@@ -3,6 +3,7 @@
 #include "Styles/StylesManager.h"
 
 #include "SGCore/Utils/Singleton.h"
+#include "Views/DialogWindowsManager.h"
 #include <SGCore/Main/CoreMain.h>
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/ImGuiWrap/ImGuiLayer.h>
@@ -23,6 +24,7 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
     EngineSettings::getInstance()->load("configs/engine_settings.json");
 
     StylesManager::init();
+    DialogWindowsManager::init();
     
     m_mainView = SGCore::MakeRef<MainView>();
     SGCore::ImGuiWrap::IView::getRoot()->addChild(m_mainView);

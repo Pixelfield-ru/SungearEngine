@@ -21,7 +21,7 @@ namespace SGE
     {
         SGCore::Threading::BaseThreadsPool<SGCore::Threading::LeastTasksCount> m_threadsPool { 2, false };
 
-        Project m_currentProject;
+        SGCore::Ref<Project> m_currentProject;
 
         ~SungearEngineEditor() override;
 

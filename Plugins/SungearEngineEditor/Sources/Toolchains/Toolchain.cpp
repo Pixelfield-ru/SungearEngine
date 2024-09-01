@@ -1,5 +1,7 @@
 #include "ToolchainType.h"
 #include "Toolchain.h"
+#include "SungearEngineEditor.h"
+#include "Views/DialogWindowsManager.h"
 #include <SGCore/Exceptions/FileNotFoundException.h>
 
 #include <iostream>
@@ -7,6 +9,7 @@
 #include <SGCore/Utils/FileUtils.h>
 #include <SGCore/PluginsSystem/DynamicLibrary.h>
 #include <SGCore/Logger/Logger.h>
+#include <SGCore/PluginsSystem/PluginsManager.h>
 
 //
 // Created by Ilya on 16.07.2024.
@@ -305,4 +308,81 @@ std::string SGE::Toolchain::getCMakeVersion() const
 std::string SGE::Toolchain::getBuildToolVersion() const
 {
     return m_buildToolVersion;
+}
+
+void SGE::Toolchain::ProjectSpecific::setCurrentCMakePreset(const std::string& presetName) noexcept
+{
+    m_currentCMakePreset = presetName;
+}
+
+std::string SGE::Toolchain::ProjectSpecific::getCurrentCMakePreset() noexcept
+{
+    return m_currentCMakePreset;
+}
+
+void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolchain>& toolchain) noexcept
+{
+    auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+
+    const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
+    if(!sungearRoot)
+    {
+        LOG_E(SGEDITOR_TAG, "Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'.");
+        return;
+    }
+    const std::string sungearRootStr = sungearRoot;
+    const std::string sungearPluginsPathStr = sungearRootStr + "/Plugins";
+
+    const bool isPresetsEquals = m_currentCMakePreset == SG_BUILD_PRESET;
+
+    toolchain->onProjectBuiltSynchronized = [](const Toolchain::ProjectBuildOutput& buildOutput) {
+        auto projectBuiltDialogWindow = DialogWindowsManager::createOneButtonWindow("Project Build", "OK");
+        DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
+        // todo: MAKE INFO DIALOG THAT PROJECT WAS BUILT. ALSO PRINT INFO THAT USER NEED TO RESTART ENGINE IF SOURCE CODE OF PLUGINS WAS CHANGED
+    };
+    toolchain->onProjectBuilt = [currentEditorProject,
+            toolchainPtr = toolchain.get(),
+            sungearPluginsPathStr,
+            isPresetsEquals]
+            (const Toolchain::ProjectBuildOutput& buildOutput)
+    {
+        toolchainPtr->m_doInBackground = false;
+        // copying toolchain for building plugins and project
+        auto toolchainCopy = SGCore::Ref<Toolchain>(toolchainPtr->copy());
+        toolchainCopy->onProjectBuilt = nullptr;
+        toolchainCopy->onProjectBuiltSynchronized = nullptr;
+
+        // building all plugins
+        for(const auto& dirEntry : std::filesystem::directory_iterator(sungearPluginsPathStr))
+        {
+            // building plugin after building the Sungear Engine
+            toolchainCopy->buildProject(dirEntry.path(), m_currentCMakePreset);
+        }
+
+        // IF CURRENT ENGINE INSTANCE IS BUILT BY THE SAME PRESET
+        if(isPresetsEquals)
+        {
+            toolchainCopy->onProjectBuilt = [&currentEditorProject, toolchainPtr]
+                    (const Toolchain::ProjectBuildOutput& buildOutput)
+            {
+                std::string projectDynamicLibraryLoadError;
+
+                currentEditorProject->m_loadedPlugin = SGCore::PluginsManager::loadPlugin(
+                        SGCore::Utils::toUTF8(buildOutput.m_projectName.u16string()),
+                        currentEditorProject->m_pluginProject.m_pluginPath,
+                        {},
+                        buildOutput.m_binaryDir
+                );
+            };
+        }
+        else
+        {
+            // TODO: MAKE MIGRATION TO OTHER ENGINE BUILD DIALOG
+        }
+
+        // building new project after building the Sungear Engine
+        toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath, m_currentCMakePreset);
+    };
+    // building the Sungear Engine
+    toolchain->buildProject(sungearRootStr, m_currentCMakePreset);
 }

@@ -11,6 +11,7 @@
 
 #include "Views/Explorer/DirectoryExplorer.h"
 #include "Views/Explorer/DirectoriesTreeExplorer.h"
+#include "DialogWindowsManager.h"
 
 SGE::MainView::MainView()
 {
@@ -56,6 +57,8 @@ bool SGE::MainView::begin()
 
 void SGE::MainView::renderBody()
 {
+    DialogWindowsManager::renderWindows();
+
     // m_dockID = ImGui::GetID("MainDock");
     m_dockID = ImGui::DockSpaceOverViewport(m_dockID, ImGui::GetMainViewport());
     

@@ -240,7 +240,7 @@ void onUpdate(const double& dt, const double& fixedDt)
             ImGui::GetCurrentContext() && !ImGui::GetIO().WantTextInput)
     {
         std::printf("unloaded plugin\n");
-        SGCore::PluginsManager::unloadPlugin("SungearEngineEditor");
+        SGCore::PluginsManager::unloadAllPlugins();
     }
     
     /*try

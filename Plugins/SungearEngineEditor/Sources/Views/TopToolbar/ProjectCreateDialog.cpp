@@ -33,7 +33,7 @@ SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
                       .isFastClicked = [](auto& self) -> bool {
                           return ImGui::IsKeyPressed(ImGuiKey_Enter);
                       },
-                      .onClicked = [this](auto& self) {
+                      .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           submit();
                       },
                       .m_color = ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1),
@@ -49,7 +49,7 @@ SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
                       .isFastClicked = [](auto& self) -> bool {
                           return ImGui::IsKeyPressed(ImGuiKey_Escape);
                       },
-                      .onClicked = [this](auto& self) {
+                      .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           cancel();
                       },
                       .m_size = buttonsSize
@@ -192,13 +192,13 @@ void SGE::ProjectCreateDialog::submit()
             return;
         }
 
-
-        auto& currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+        SungearEngineEditor::getInstance()->m_currentProject = SGCore::MakeRef<Project>();
+        auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
 
         // PROJECT SUCCESSFULLY CREATED ==============
 
         SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath + "/" + m_projectName;
-        currentEditorProject.m_pluginProject = pluginProject;
+        currentEditorProject->m_pluginProject = pluginProject;
 
         // PARSING SUNGEAR ENGINE ANNOTATIONS AND GENERATING CODE ==========================
 
@@ -242,36 +242,7 @@ void SGE::ProjectCreateDialog::submit()
 
         if(!EngineSettings::getInstance()->getToolchains().empty())
         {
-            auto firstToolchain = EngineSettings::getInstance()->getToolchains()[0];
-
-            firstToolchain->onProjectBuilt = [&currentEditorProject, firstToolchainPtr = firstToolchain.get(), sungearPluginsPathStr](
-                    const std::filesystem::path& projectDynamicLibraryPath,
-                    const std::filesystem::path& projectName,
-                    const std::string& binaryDir) {
-                // building all plugins
-                for(const auto& dirEntry : std::filesystem::directory_iterator(sungearPluginsPathStr))
-                {
-                    std::printf("plugin name: %s\n", SGCore::Utils::toUTF8(dirEntry.path().filename().u16string()).c_str());
-                }
-
-                // building new project after building the Sungear Engine
-                firstToolchainPtr->onProjectBuilt = [&currentEditorProject, firstToolchainPtr]
-                        (const std::filesystem::path& projectDynamicLibraryPath,
-                         const std::filesystem::path& projectName,
-                         const std::string& binaryDir)
-                {
-                    std::string projectDynamicLibraryLoadError;
-
-                    currentEditorProject.m_loadedPlugin = SGCore::PluginsManager::loadPlugin(
-                            SGCore::Utils::toUTF8(projectName.u16string()),
-                            currentEditorProject.m_pluginProject.m_pluginPath,
-                            {},
-                            binaryDir);
-                };
-                firstToolchainPtr->buildProject(currentEditorProject.m_pluginProject.m_pluginPath, "release-host");
-            };
-            // building the Sungear Engine
-            firstToolchain->buildProject(sungearRootStr, "release-host");
+            Toolchain::ProjectSpecific::buildProject(EngineSettings::getInstance()->getToolchains()[0]);
         }
         else // TODO: MAKE WARNING DIALOG
         {

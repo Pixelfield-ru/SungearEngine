@@ -9,6 +9,8 @@
 
 #include <filesystem>
 #include <SGCore/Utils/UniqueName.h>
+#include <SGCore/Utils/Utils.h>
+#include <SGCore/Main/CoreGlobals.h>
 
 sg_predeclare_serdespec()
 
@@ -16,12 +18,30 @@ namespace SGE
 {
     struct Toolchain
     {
+        struct ProjectSpecific
+        {
+            static void buildProject(const SGCore::Ref<Toolchain>& toolchain) noexcept;
+
+            static void setCurrentCMakePreset(const std::string& presetName) noexcept;
+            SG_NOINLINE static std::string getCurrentCMakePreset() noexcept;
+
+        private:
+            static inline std::string m_currentCMakePreset = SG_BUILD_PRESET;
+        };
+
+        struct ProjectBuildOutput
+        {
+            std::filesystem::path m_projectDynamicLibraryPath;
+            std::filesystem::path m_projectName;
+            std::string m_binaryDir;
+        };
+
         sg_serdespec_as_friend()
 
         bool m_doInBackground = true;
-        std::function<void(const std::filesystem::path& projectDynamicLibraryPath,
-                           const std::filesystem::path& m_projectName,
-                           const std::string& binaryDir)> onProjectBuilt;
+        std::function<void(const ProjectBuildOutput& buildOutput)> onProjectBuilt;
+        // callback in main thread
+        std::function<void(const ProjectBuildOutput& buildOutput)> onProjectBuiltSynchronized;
 
         virtual ~Toolchain() = default;
 

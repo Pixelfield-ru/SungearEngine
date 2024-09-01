@@ -25,11 +25,13 @@ namespace SGCore
         Event() = default;
         Event(const Event& other)
         {
-            *this = std::forward<Event>(other);
+            this->operator=(other);
+            // *this = std::forward<Event>(other);
         }
         Event(Event&& other) noexcept
         {
-            *this = std::forward<Event>(other);
+            this->operator=(std::forward<Event>(other));
+            // *this = std::forward<Event>(other);
         }
         
         ~Event()

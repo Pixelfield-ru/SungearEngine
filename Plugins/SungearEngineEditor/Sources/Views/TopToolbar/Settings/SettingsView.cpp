@@ -23,7 +23,7 @@ SGE::SettingsView::SettingsView()
                       .isFastClicked = [](auto& self) -> bool {
                           return ImGui::IsKeyPressed(ImGuiKey_Enter);
                       },
-                      .onClicked = [this](auto& self) {
+                      .onClicked = [this](auto& self,SGCore::ImGuiWrap::IView* parentView) {
                           onOKPressed();
                       },
                       .m_color = ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1),
@@ -36,7 +36,7 @@ SGE::SettingsView::SettingsView()
     addButton({
                       .m_text = "Apply",
                       .m_name = "ApplyButton",
-                      .onClicked = [this](auto& self) {
+                      .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           onApplyPressed();
                       },
                       .m_size = buttonsSize
@@ -48,7 +48,7 @@ SGE::SettingsView::SettingsView()
                       .isFastClicked = [](auto& self) -> bool {
                           return ImGui::IsKeyPressed(ImGuiKey_Escape);
                       },
-                      .onClicked = [this](auto& self) {
+                      .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           onCancelPressed();
                       },
                       .m_size = buttonsSize

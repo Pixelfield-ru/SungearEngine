@@ -8,6 +8,7 @@
 #include <string>
 #include <functional>
 #include <imgui.h>
+#include <SGCore/ImGuiWrap/Views/IView.h>
 
 namespace SGE
 {
@@ -17,7 +18,7 @@ namespace SGE
         std::string m_name = m_text;
 
         std::function<bool(Button& self)> isFastClicked;
-        std::function<void(Button& self)> onClicked;
+        std::function<void(Button& self, SGCore::ImGuiWrap::IView* parentView)> onClicked;
 
         ImVec4 m_color = ImGui::GetStyle().Colors[ImGuiCol_Button];
         ImVec4 m_hoveredColor = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];

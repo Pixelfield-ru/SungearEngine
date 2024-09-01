@@ -300,3 +300,14 @@ bool SGCore::PluginsManager::isPluginExists(const std::string& pluginName) noexc
         return plugin->m_plugin->m_name == pluginName;
     }) != m_plugins.end();
 }
+
+void SGCore::PluginsManager::unloadAllPlugins() noexcept
+{
+    for(auto& plugin : m_plugins)
+    {
+        plugin->m_plugin = nullptr;
+        plugin->m_pluginLib->unload();
+    }
+
+    m_plugins.clear();
+}
