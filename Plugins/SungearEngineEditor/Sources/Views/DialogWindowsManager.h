@@ -48,6 +48,8 @@ namespace SGE
         static inline SGCore::Ref<SGCore::ITexture2D> m_criticalIcon;
 
         static inline std::vector<DialogWindow> m_dialogWindows;
+
+        static inline SGCore::Ref<SGCore::UniqueNamesManager> m_windowsNamesManager;
     };
 }
 

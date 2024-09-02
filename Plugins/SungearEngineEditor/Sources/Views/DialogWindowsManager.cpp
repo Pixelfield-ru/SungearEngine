@@ -26,6 +26,8 @@ void SGE::DialogWindowsManager::init() noexcept
     m_criticalIcon = StylesManager::getCurrentStyle()->m_criticalIcon
             ->getSpecialization(24, 24)
             ->getTexture();
+
+    m_windowsNamesManager = SGCore::MakeRef<SGCore::UniqueNamesManager>();
 }
 
 void SGE::DialogWindowsManager::renderWindows() noexcept
@@ -55,6 +57,7 @@ void SGE::DialogWindowsManager::addDialogWindow(SGE::DialogWindow& dialogWindow)
         {
             case SGCore::Logger::Level::LVL_INFO:
             {
+                LOG_I("Hui", "DIALOG WINDOW WITH LVL INFO")
                 ImGui::Image(m_infoIcon->getTextureNativeHandler(),
                              ImVec2(m_infoIcon->getWidth(), m_infoIcon->getHeight()));
 
@@ -84,6 +87,7 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
 {
     DialogWindow window;
 
+    window.m_name.attachToManager(m_windowsNamesManager);
     window.m_name = windowName;
 
     window.addButton({
@@ -166,6 +170,7 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
 {
     DialogWindow window;
 
+    window.m_name.attachToManager(m_windowsNamesManager);
     window.m_name = windowName;
 
     window.addButton({
@@ -224,6 +229,7 @@ SGE::DialogWindow SGE::DialogWindowsManager::createOneButtonWindow(const std::st
 {
     DialogWindow window;
 
+    window.m_name.attachToManager(m_windowsNamesManager);
     window.m_name = windowName;
 
     window.addButton({

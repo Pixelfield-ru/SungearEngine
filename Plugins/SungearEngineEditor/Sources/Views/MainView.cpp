@@ -43,6 +43,9 @@ SGE::MainView::MainView()
     addChild(m_sceneTreeView);
     addChild(m_inspectorView);
     addChild(m_logsWindow);
+
+    auto projectBuiltDialogWindow = DialogWindowsManager::createOneButtonWindow("Project Build", "OK");
+    DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
 }
 
 /*SGE::MainView::~MainView()

@@ -28,7 +28,7 @@ namespace SGCore::ImGuiWrap
         glm::vec2 m_UIScale { 1, 1 };
         
         virtual bool begin() { return true; };
-        virtual void renderBody() { };
+        virtual void renderBody();
         virtual void end() { };
         
         virtual void onActiveChangedListener() { };

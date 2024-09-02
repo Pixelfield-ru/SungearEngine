@@ -146,3 +146,8 @@ bool SGCore::ImGuiWrap::IView::isAppearing() const noexcept
 {
     return m_appearing;
 }
+
+void SGCore::ImGuiWrap::IView::renderBody()
+{
+    onRenderBody();
+}
