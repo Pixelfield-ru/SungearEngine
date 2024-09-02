@@ -8,23 +8,23 @@
 void SGE::DialogWindowsManager::init() noexcept
 {
     m_infoIcon = StylesManager::getCurrentStyle()->m_infoIcon
-            ->getSpecialization(24, 24)
+            ->getSpecialization(30, 30)
             ->getTexture();
 
     m_debugIcon = StylesManager::getCurrentStyle()->m_greenBugIcon
-            ->getSpecialization(24, 24)
+            ->getSpecialization(30, 30)
             ->getTexture();
 
     m_warnIcon = StylesManager::getCurrentStyle()->m_warningIcon
-            ->getSpecialization(24, 24)
+            ->getSpecialization(30, 30)
             ->getTexture();
 
     m_errorIcon = StylesManager::getCurrentStyle()->m_errorIcon
-            ->getSpecialization(24, 24)
+            ->getSpecialization(30, 30)
             ->getTexture();
 
     m_criticalIcon = StylesManager::getCurrentStyle()->m_criticalIcon
-            ->getSpecialization(24, 24)
+            ->getSpecialization(30, 30)
             ->getTexture();
 
     m_windowsNamesManager = SGCore::MakeRef<SGCore::UniqueNamesManager>();
@@ -52,12 +52,11 @@ void SGE::DialogWindowsManager::addDialogWindow(SGE::DialogWindow& dialogWindow)
     m_dialogWindows.push_back(dialogWindow);
     auto& lastDialogWnd = *m_dialogWindows.rbegin();
     // adding listener to onRenderBody for rendering image
-    SGCore::EventListener<void()> onRenderListener = [&lastDialogWnd]() {
+    lastDialogWnd.onIconRenderListener = [&lastDialogWnd]() {
         switch(lastDialogWnd.m_level)
         {
             case SGCore::Logger::Level::LVL_INFO:
             {
-                LOG_I("Hui", "DIALOG WINDOW WITH LVL INFO")
                 ImGui::Image(m_infoIcon->getTextureNativeHandler(),
                              ImVec2(m_infoIcon->getWidth(), m_infoIcon->getHeight()));
 
@@ -69,9 +68,17 @@ void SGE::DialogWindowsManager::addDialogWindow(SGE::DialogWindow& dialogWindow)
             case SGCore::Logger::Level::LVL_CRITICAL:break;
         }
     };
-    onRenderListener.m_priority = 0;
+    lastDialogWnd.onIconRenderListener.m_priority = 0;
+    lastDialogWnd.onRenderBody += lastDialogWnd.onIconRenderListener;
 
-    lastDialogWnd.onRenderBody += onRenderListener;
+    // adding custom body render (user-defined)
+    if(lastDialogWnd.onCustomBodyRenderListener)
+    {
+        LOG_I("onCustomBodyRenderListener", "onCustomBodyRenderListener IS NOT NULL")
+        lastDialogWnd.onCustomBodyRenderEventListener = lastDialogWnd.onCustomBodyRenderListener;
+        lastDialogWnd.onCustomBodyRenderEventListener.m_priority = 1;
+        lastDialogWnd.onRenderBody += lastDialogWnd.onCustomBodyRenderEventListener;
+    }
 }
 
 const std::vector<SGE::DialogWindow>& SGE::DialogWindowsManager::getDialogWindows() noexcept
@@ -135,31 +142,6 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
                      }
     );
 
-    /*Button firstButton;
-    firstButton.m_text = firstButtonText;
-    firstButton.onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parentView) {
-        // closing parent window
-        parentView->setActive(false);
-    };
-
-    Button secondButton;
-    secondButton.m_text = secondButtonText;
-    secondButton.onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parentView) {
-        // closing parent window
-        parentView->setActive(false);
-    };
-
-    Button thirdButton;
-    thirdButton.m_text = thirdButtonText;
-    thirdButton.onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parentView) {
-        // closing parent window
-        parentView->setActive(false);
-    };*/
-
-    /*window.addButton(firstButton);
-    window.addButton(secondButton);
-    window.addButton(thirdButton);*/
-
     return window;
 }
 
@@ -207,20 +189,6 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
                      }
     );
 
-    /*Button firstButton;
-    firstButton.m_text = firstButtonText;
-    firstButton.onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parentView) {
-        // closing parent window
-        parentView->setActive(false);
-    };
-
-    Button secondButton;
-    secondButton.m_text = secondButtonText;
-    secondButton.onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parentView) {
-        // closing parent window
-        parentView->setActive(false);
-    };*/
-
     return window;
 }
 
@@ -250,13 +218,6 @@ SGE::DialogWindow SGE::DialogWindowsManager::createOneButtonWindow(const std::st
                              .m_size = {75, 0}
                      }
     );
-
-    /*Button firstButton;
-    firstButton.m_text = firstButtonText;
-    firstButton.onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parentView) {
-        // closing parent window
-        parentView->setActive(false);
-    };*/
 
     return window;
 }

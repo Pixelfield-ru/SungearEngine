@@ -337,6 +337,9 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 
     toolchain->onProjectBuiltSynchronized = [](const Toolchain::ProjectBuildOutput& buildOutput) {
         auto projectBuiltDialogWindow = DialogWindowsManager::createOneButtonWindow("Project Build", "OK");
+        projectBuiltDialogWindow.onCustomBodyRenderListener = []() {
+            ImGui::Text("Hello info text!");
+        };
         DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
         // todo: MAKE INFO DIALOG THAT PROJECT WAS BUILT. ALSO PRINT INFO THAT USER NEED TO RESTART ENGINE IF SOURCE CODE OF PLUGINS WAS CHANGED
     };

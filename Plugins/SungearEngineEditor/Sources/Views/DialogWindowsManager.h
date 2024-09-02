@@ -17,6 +17,12 @@ namespace SGE
         friend struct DialogWindowsManager;
 
         SGCore::Logger::Level m_level = SGCore::Logger::Level::LVL_INFO;
+
+        std::function<void()> onCustomBodyRenderListener;
+
+    private:
+        SGCore::EventListener<void()> onIconRenderListener;
+        SGCore::EventListener<void()> onCustomBodyRenderEventListener;
     };
 
     struct DialogWindowsManager
