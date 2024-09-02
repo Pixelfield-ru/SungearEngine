@@ -5,6 +5,11 @@
 
 namespace SGCore
 {
+    namespace Threading
+    {
+        struct Task;
+    }
+
     template<typename Return>
     struct Event;
     
@@ -15,9 +20,9 @@ namespace SGCore
     struct EventListener<Return(Args...)>
     {
         friend struct Event<Return(Args...)>;
+        friend struct Threading::Task;
         
         size_t m_priority = 0;
-        size_t m_hash = reinterpret_cast<std::intptr_t>(this);
         
         EventListener() = default;
         
@@ -79,6 +84,11 @@ namespace SGCore
                 m_func(std::forward<Args0>(args)...);
             }
         }
+
+        [[nodiscard]] size_t getHash() const noexcept
+        {
+            return m_hash;
+        }
     
     private:
         std::function<void(Args...)> m_func;
@@ -86,6 +96,8 @@ namespace SGCore
         std::function<void(const EventListener* from, EventListener* to)> m_copyToEventsFunc;
         std::list<Event<Return(Args...)>*> m_listeningEvents;
         bool m_isOwnedByEvent = false;
+
+        size_t m_hash = reinterpret_cast<std::intptr_t>(this);
     };
 }
 

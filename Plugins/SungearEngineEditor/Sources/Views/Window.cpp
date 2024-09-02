@@ -86,7 +86,7 @@ bool SGE::Window::begin()
                                     0,
                                     false,
                                     ImVec2(-1, -1),
-                                    ImVec4(1.0, 0.0, 0.0, 1.0)).m_isLMBClicked)
+                                    ImVec4(1.0, 0.0, 0.0, 1.0)).m_isLMBClicked || (m_enableEscapeToCloseWindow && ImGui::IsKeyPressed(ImGuiKey_Escape)))
         {
             setActive(false);
         }
@@ -237,6 +237,18 @@ bool SGE::Window::tryGetButton(const std::string& name, Button* out) noexcept
 
     return foundIt != m_buttons.end();
 }
+
+bool SGE::Window::tryGetButton(const size_t& index, SGE::Button* out) noexcept
+{
+    if(index >= m_buttons.size())
+    {
+        return false;
+    }
+
+    *out = m_buttons[index];
+    return true;
+}
+
 
 void SGE::Window::removeButton(const std::string& name) noexcept
 {

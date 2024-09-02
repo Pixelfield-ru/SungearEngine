@@ -22,11 +22,13 @@ namespace SGE
         void onActiveChangedListener() override;
 
         bool m_isPopupWindow = false;
+        bool m_enableEscapeToCloseWindow = true;
 
         ImGuiDockNodeFlags m_dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 
         void addButton(const Button& button) noexcept;
         [[nodiscard]] bool tryGetButton(const std::string& name, Button* out = nullptr) noexcept;
+        [[nodiscard]] bool tryGetButton(const std::size_t& index, Button* out = nullptr) noexcept;
         void removeButton(const std::string& name) noexcept;
 
     protected:

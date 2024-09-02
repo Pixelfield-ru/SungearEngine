@@ -15,6 +15,7 @@
 SGE::FileCreateDialog::FileCreateDialog()
 {
     m_isPopupWindow = true;
+    m_enableEscapeToCloseWindow = false;
 
     const auto buttonsSize = ImVec2(75, 0);
 

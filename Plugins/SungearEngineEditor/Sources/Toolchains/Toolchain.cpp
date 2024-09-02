@@ -335,14 +335,18 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 
     const bool isPresetsEquals = m_currentCMakePreset == SG_BUILD_PRESET;
 
-    toolchain->onProjectBuiltSynchronized = [](const Toolchain::ProjectBuildOutput& buildOutput) {
+    const std::string projectName = currentEditorProject->m_pluginProject.m_name;
+    toolchain->onProjectBuiltSynchronized = [projectName](const Toolchain::ProjectBuildOutput& buildOutput) {
         auto projectBuiltDialogWindow = DialogWindowsManager::createOneButtonWindow("Project Build", "OK");
-        projectBuiltDialogWindow.onCustomBodyRenderListener = []() {
-            ImGui::Text("Hello info text!");
+        projectBuiltDialogWindow.onCustomBodyRenderListener = [projectName]() {
+            ImGui::SameLine();
+            ImGui::TextWrapped(fmt::format("The project '{}' has been built. "
+                                           "Check the logs for more details. "
+                                           "Also, if you or someone else has changed the source code of plugins or Sungear Engine, it is recommended to restart the engine.", projectName).c_str());
         };
         DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
-        // todo: MAKE INFO DIALOG THAT PROJECT WAS BUILT. ALSO PRINT INFO THAT USER NEED TO RESTART ENGINE IF SOURCE CODE OF PLUGINS WAS CHANGED
     };
+
     toolchain->onProjectBuilt = [currentEditorProject,
             toolchainPtr = toolchain.get(),
             sungearPluginsPathStr,

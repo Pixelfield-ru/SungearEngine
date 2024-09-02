@@ -62,23 +62,41 @@ void SGE::DialogWindowsManager::addDialogWindow(SGE::DialogWindow& dialogWindow)
 
                 break;
             }
-            case SGCore::Logger::Level::LVL_DEBUG:break;
-            case SGCore::Logger::Level::LVL_WARN:break;
-            case SGCore::Logger::Level::LVL_ERROR:break;
-            case SGCore::Logger::Level::LVL_CRITICAL:break;
+            case SGCore::Logger::Level::LVL_DEBUG:
+            {
+                ImGui::Image(m_debugIcon->getTextureNativeHandler(),
+                             ImVec2(m_debugIcon->getWidth(), m_debugIcon->getHeight()));
+
+                break;
+            }
+            case SGCore::Logger::Level::LVL_WARN:
+            {
+                ImGui::Image(m_warnIcon->getTextureNativeHandler(),
+                             ImVec2(m_warnIcon->getWidth(), m_warnIcon->getHeight()));
+
+                break;
+            }
+            case SGCore::Logger::Level::LVL_ERROR:
+            {
+                ImGui::Image(m_errorIcon->getTextureNativeHandler(),
+                             ImVec2(m_errorIcon->getWidth(), m_errorIcon->getHeight()));
+
+                break;
+            }
+            case SGCore::Logger::Level::LVL_CRITICAL:
+            {
+                ImGui::Image(m_criticalIcon->getTextureNativeHandler(),
+                             ImVec2(m_criticalIcon->getWidth(), m_criticalIcon->getHeight()));
+
+                break;
+            }
         }
     };
     lastDialogWnd.onIconRenderListener.m_priority = 0;
     lastDialogWnd.onRenderBody += lastDialogWnd.onIconRenderListener;
 
-    // adding custom body render (user-defined)
-    if(lastDialogWnd.onCustomBodyRenderListener)
-    {
-        LOG_I("onCustomBodyRenderListener", "onCustomBodyRenderListener IS NOT NULL")
-        lastDialogWnd.onCustomBodyRenderEventListener = lastDialogWnd.onCustomBodyRenderListener;
-        lastDialogWnd.onCustomBodyRenderEventListener.m_priority = 1;
-        lastDialogWnd.onRenderBody += lastDialogWnd.onCustomBodyRenderEventListener;
-    }
+    lastDialogWnd.onCustomBodyRenderListener.m_priority = 1;
+    lastDialogWnd.onRenderBody += lastDialogWnd.onCustomBodyRenderListener;
 }
 
 const std::vector<SGE::DialogWindow>& SGE::DialogWindowsManager::getDialogWindows() noexcept
@@ -96,6 +114,8 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
 
     window.m_name.attachToManager(m_windowsNamesManager);
     window.m_name = windowName;
+    window.m_isPopupWindow = true;
+    window.m_bodyMinSize = { 400, 100 };
 
     window.addButton({
                              .m_text = firstButtonText,
@@ -154,6 +174,8 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
 
     window.m_name.attachToManager(m_windowsNamesManager);
     window.m_name = windowName;
+    window.m_isPopupWindow = true;
+    window.m_bodyMinSize = { 400, 100 };
 
     window.addButton({
                              .m_text = firstButtonText,
@@ -199,6 +221,8 @@ SGE::DialogWindow SGE::DialogWindowsManager::createOneButtonWindow(const std::st
 
     window.m_name.attachToManager(m_windowsNamesManager);
     window.m_name = windowName;
+    window.m_isPopupWindow = true;
+    window.m_bodyMinSize = { 400, 100 };
 
     window.addButton({
                              .m_text = firstButtonText,
