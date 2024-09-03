@@ -1,7 +1,7 @@
 <img src="./documentation/images/mainLogo.png" width="100%">
 <p align="center">🎮 An Open Source Engine Written in C++! 🎮</p>
 
-# <p align="center">✨ Features ✨</p>
+# <p align="center"> Features </p>
 
 -   **General:**
     - ECS

@@ -93,7 +93,7 @@ void coreInit()
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   "cmake-build-debug");
+                                                   "cmake-build-release");
 
         std::cout << "plugin: " << sgEditorPlugin  << ", sgeditor path: " << sgEditorPath << std::endl;
     }
@@ -231,7 +231,7 @@ void onUpdate(const double& dt, const double& fixedDt)
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   "cmake-build-debug");
+                                                   "cmake-build-release");
             }
         }
     }
