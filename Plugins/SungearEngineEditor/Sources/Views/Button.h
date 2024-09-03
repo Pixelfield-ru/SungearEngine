@@ -9,6 +9,7 @@
 #include <functional>
 #include <imgui.h>
 #include <SGCore/ImGuiWrap/Views/IView.h>
+#include "Styles/StylesManager.h"
 
 namespace SGE
 {
@@ -20,12 +21,12 @@ namespace SGE
         std::function<bool(Button& self)> isFastClicked;
         std::function<void(Button& self, SGCore::ImGuiWrap::IView* parentView)> onClicked;
 
-        ImVec4 m_color = ImGui::GetStyle().Colors[ImGuiCol_Button];
-        ImVec4 m_hoveredColor = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
-        ImVec4 m_activeColor = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
+        ImVec4 m_color = StylesManager::getCurrentStyle()->m_initialColors[ImGuiCol_Button];
+        ImVec4 m_hoveredColor = StylesManager::getCurrentStyle()->m_initialColors[ImGuiCol_ButtonHovered];
+        ImVec4 m_activeColor = StylesManager::getCurrentStyle()->m_initialColors[ImGuiCol_ButtonActive];
 
-        ImVec4 m_borderColor = ImGui::GetStyle().Colors[ImGuiCol_Border];
-        ImVec4 m_borderShadowColor = ImGui::GetStyle().Colors[ImGuiCol_BorderShadow];
+        ImVec4 m_borderColor = StylesManager::getCurrentStyle()->m_initialColors[ImGuiCol_Border];
+        ImVec4 m_borderShadowColor = StylesManager::getCurrentStyle()->m_initialColors[ImGuiCol_BorderShadow];
 
         ImVec2 m_padding = { 7, 5 };
         ImVec2 m_size = { 0, 0 };

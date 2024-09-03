@@ -9,6 +9,7 @@
 #include <string>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
+#include <array>
 
 namespace SGE
 {
@@ -64,7 +65,11 @@ namespace SGE
 
         std::unordered_map<std::string, ImFont*> m_fonts;
 
+        std::array<ImVec4, ImGuiCol_COUNT> m_initialColors;
+
     protected:
+        void fillInitialColors() noexcept;
+
         virtual void apply();
     };
 }

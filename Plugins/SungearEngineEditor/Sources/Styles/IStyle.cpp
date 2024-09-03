@@ -28,3 +28,11 @@ void SGE::IStyle::apply()
             "/Resources/icons/common/green_debug_run.svg");
 }
 
+void SGE::IStyle::fillInitialColors() noexcept
+{
+    for(std::int64_t i = 0; i < m_initialColors.size(); ++i)
+    {
+        m_initialColors[i] = ImGui::GetStyle().Colors[i];
+    }
+}
+

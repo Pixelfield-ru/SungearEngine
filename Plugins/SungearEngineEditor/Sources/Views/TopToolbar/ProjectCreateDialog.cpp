@@ -20,6 +20,7 @@
 #include "Views/Explorer/DirectoriesTreeExplorer.h"
 #include "Project/CodeGen/CodeGeneration.h"
 #include "Toolchains//VisualStudioToolchain.h"
+#include "Views/DialogWindowsManager.h"
 
 SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
 {
@@ -245,9 +246,17 @@ void SGE::ProjectCreateDialog::submit()
         {
             Toolchain::ProjectSpecific::buildProject(EngineSettings::getInstance()->getToolchains()[0]);
         }
-        else // TODO: MAKE WARNING DIALOG
+        else
         {
-
+            // showing warning dialog that no toolchains were added
+            auto projectBuiltDialogWindow = DialogWindowsManager::createTwoButtonsWindow("Project Build", "Create Toolchain", "OK");
+            projectBuiltDialogWindow.m_level = SGCore::Logger::Level::LVL_WARN;
+            projectBuiltDialogWindow.onCustomBodyRenderListener = [currentEditorProject]() {
+                ImGui::SameLine();
+                ImGui::TextWrapped(fmt::format("The project '{}' cannot be built: no toolchain has been added. "
+                                               "Go to the <Engine Settings - Development and Support - Toolchains> and add your first toolchain.", currentEditorProject->m_pluginProject.m_name).c_str());
+            };
+            DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
         }
 
         // TEST!!!!!

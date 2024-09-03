@@ -3,6 +3,17 @@
 //
 #include "Dark.h"
 
+#include <imgui.h>
+#include <SGCore/ImGuiWrap/ImGuiLayer.h>
+#include <SGCore/Main/CoreMain.h>
+#include <SGCore/Graphics/API/IRenderer.h>
+
+#include "PluginMain.h"
+#include "Resources.h"
+
+#include <lunasvg.h>
+#include <SGCore/Memory/Assets/SVGImage.h>
+
 void SGE::EditorStyles::Dark::apply()
 {
     IStyle::apply();
@@ -89,6 +100,8 @@ void SGE::EditorStyles::Dark::apply()
     style.GrabRounding                      = 0;
     style.LogSliderDeadzone                 = 4;
     style.TabRounding                       = 0;
+
+    fillInitialColors();
 
     // bebas_kai
     // roboto_flex

@@ -8,46 +8,21 @@
 #include <vector>
 #include <SGCore/Main/CoreGlobals.h>
 #include "SGCore/Utils/Utils.h"
-
 #include "IStyle.h"
-#include "Styles/Editor/Dark.h"
 
 namespace SGE
 {
     struct StylesManager
     {
-        static void init() noexcept
-        {
-            SGCore::Ref<IStyle> darkStyle = SGCore::MakeRef<EditorStyles::Dark>();
-            setCurrentStyle(darkStyle);
-            
-            m_styles.push_back(darkStyle);
-        }
+        static void init() noexcept;
         
-        SG_NOINLINE static void setCurrentStyle(const SGCore::Ref<IStyle>& style) noexcept
-        {
-            m_currentStyle = style;
-            m_currentStyle->apply();
-        }
+        SG_NOINLINE static void setCurrentStyle(const SGCore::Ref<IStyle>& style) noexcept;
         
-        SG_NOINLINE static SGCore::Ref<IStyle> getCurrentStyle() noexcept
-        {
-            return m_currentStyle;
-        }
+        SG_NOINLINE static SGCore::Ref<IStyle> getCurrentStyle() noexcept;
         
-        static SGCore::Ref<IStyle> getStyle(const std::string& name) noexcept
-        {
-            auto foundIt = std::find_if(m_styles.begin(), m_styles.end(), [&name](const SGCore::Ref<IStyle>& style) {
-                return style->m_name == name;
-            });
-            
-            return foundIt != m_styles.end() ? *foundIt : nullptr;
-        }
+        static SGCore::Ref<IStyle> getStyle(const std::string& name) noexcept;
         
-        SG_NOINLINE static auto& getStyles() noexcept
-        {
-            return m_styles;
-        }
+        SG_NOINLINE static auto& getStyles() noexcept;
         
     private:
         static inline SGCore::Ref<IStyle> m_currentStyle;

@@ -192,7 +192,7 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
                              .m_hoveredColor = ImVec4(0 / 255.0f, 70 / 255.0f, 110 / 255.0f, 1),
                              .m_borderColor = {0, 0, 0, 0},
                              .m_borderShadowColor = {0, 0, 0, 0},
-                             .m_size = {75, 0}
+                             .m_size = {150, 0}
                      }
     );
 
