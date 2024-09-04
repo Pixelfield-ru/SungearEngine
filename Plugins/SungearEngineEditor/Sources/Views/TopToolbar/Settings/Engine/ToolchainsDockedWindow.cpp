@@ -41,7 +41,7 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
         {
             auto vsToolchain = SGCore::MakeRef<VisualStudioToolchain>();
             vsToolchain->m_name = "Visual Studio";
-            m_engineSettingsRef->addToolchain(vsToolchain);
+            m_engineSettingsCopyRef->addToolchain(vsToolchain);
 
             refreshToolchainsList();
         }
@@ -71,7 +71,7 @@ void SGE::ToolchainsDockedWindow::renderBody()
     auto minusIconSpec = StylesManager::getCurrentStyle()->m_minusIcon->getSpecialization(20, 20);
     if(ImGuiUtils::ImageButton(minusIconSpec->getTexture()->getTextureNativeHandler(), { 26, 26 }, { 20, 20 }).m_isLMBClicked)
     {
-        m_engineSettingsRef->removeToolchain(m_currentAddedToolchainsTree.m_chosenTreeNodeName);
+        m_engineSettingsCopyRef->removeToolchain(m_currentAddedToolchainsTree.m_chosenTreeNodeName);
         m_selectedToolchainDockedWindow->setSelectedToolchain(nullptr);
         refreshToolchainsList();
     }
@@ -124,23 +124,24 @@ void SGE::ToolchainsDockedWindow::refreshToolchainsList()
 {
     m_currentAddedToolchainsTree.clear();
 
-    for(const auto& toolchain : m_engineSettingsRef->getToolchains())
+    for(const auto& toolchain : m_engineSettingsCopyRef->getToolchains())
     {
         SGCore::Weak<Toolchain> weakToolchain = toolchain;
 
-        m_currentAddedToolchainsTree.addTreeNode({
-            .m_text = toolchain->m_name.getName(),
-            .m_icon = StylesManager::getCurrentStyle()
-                    ->m_visualStudioIcon->getSpecialization(16,
-                                                            16)->getTexture(),
-            .onClicked = [this, weakToolchain](TreeNode& self) {
-                if(auto lockedToolchain = weakToolchain.lock())
-                {
-                    m_selectedToolchainDockedWindow->setSelectedToolchain(lockedToolchain);
-                }
-            },
-            .m_useNameAsText = true
-        });
+        TreeNode toolchainTreeNode;
+        toolchainTreeNode.setText(toolchain->m_name.getName());
+        toolchainTreeNode.m_icon = StylesManager::getCurrentStyle()
+                ->m_visualStudioIcon->getSpecialization(16, 16)
+                ->getTexture();
+        toolchainTreeNode.onClicked = [this, weakToolchain](TreeNode& self) {
+            if(auto lockedToolchain = weakToolchain.lock())
+            {
+                m_selectedToolchainDockedWindow->setSelectedToolchain(lockedToolchain);
+            }
+        };
+        toolchainTreeNode.m_useNameAsText = true;
+
+        m_currentAddedToolchainsTree.addTreeNode(toolchainTreeNode);
     }
 }
 

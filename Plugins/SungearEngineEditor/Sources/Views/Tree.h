@@ -14,8 +14,9 @@ namespace SGE
 {
     struct TreeNode
     {
-        std::string m_text;
-        SGCore::UniqueName m_name = m_text;
+        friend struct Tree;
+
+        SGCore::UniqueName m_name;
 
         SGCore::Ref<SGCore::ITexture2D> m_icon;
         std::any m_userData;
@@ -30,7 +31,35 @@ namespace SGE
 
         SGCore::Ref<SGCore::UniqueNamesManager> m_childrenNamesManager = SGCore::MakeRef<SGCore::UniqueNamesManager>();
 
+        /**
+         * Copies the found button to 'out' tree node.\n
+         * Recursively iterates through all nodes.
+         * @param name
+         * @param out
+         * @return
+         */
+        [[nodiscard]] bool tryCopyGetTreeNodeRecursively(const std::string& name, TreeNode* out = nullptr) const noexcept;
+
         void clear() noexcept;
+        void click() noexcept;
+
+        void openBranchToThis() noexcept;
+        void openBranchAndSelectThis() noexcept;
+
+        void setText(const std::string& text) noexcept;
+        [[nodiscard]] std::string getText() const noexcept;
+
+        void setParentTree(Tree* parentTree) noexcept;
+
+    private:
+        bool m_isTextFirstAssignment = true;
+
+        std::string m_text;
+
+        void updateChildrenParentPointers() noexcept;
+
+        Tree* m_parentTree { };
+        TreeNode* m_parentNode { };
     };
 
     struct Tree
@@ -38,7 +67,21 @@ namespace SGE
         float m_indentWidth = 40.0f;
 
         void addTreeNode(const TreeNode& treeNode) noexcept;
-        [[nodiscard]] bool tryGetTreeNode(const std::string& name, TreeNode* out = nullptr) noexcept;
+        /**
+         * Copies the found button to 'out' tree node.
+         * @param name
+         * @param out
+         * @return
+         */
+        [[nodiscard]] bool tryCopyGetTreeNode(const std::string& name, TreeNode* out = nullptr) noexcept;
+        /**
+         * Copies the found button to 'out' tree node.\n
+         * Recursively iterates through all nodes.
+         * @param name
+         * @param out
+         * @return
+         */
+        [[nodiscard]] bool tryCopyGetTreeNodeRecursively(const std::string& name, TreeNode* out = nullptr) noexcept;
         void removeTreeNode(const std::string& name) noexcept;
         void clear() noexcept;
 

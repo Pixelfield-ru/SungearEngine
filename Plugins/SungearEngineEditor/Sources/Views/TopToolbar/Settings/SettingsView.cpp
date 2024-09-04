@@ -7,6 +7,7 @@
 #include "Styles/StylesManager.h"
 #include <imgui_internal.h>
 #include <imgui.h>
+#include <SGCore/Input/InputManager.h>
 
 SGE::SettingsView::SettingsView()
 {
@@ -22,9 +23,10 @@ SGE::SettingsView::SettingsView()
                       .m_text = "OK",
                       .m_name = "OKButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return ImGui::IsKeyPressed(ImGuiKey_Enter);
+                          return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
                       },
                       .onClicked = [this](auto& self,SGCore::ImGuiWrap::IView* parentView) {
+                          std::printf("engine settings ok clicked\n");
                           onOKPressed();
                       },
                       .m_color = ImVec4(10 / 255.0f, 80 / 255.0f, 120 / 255.0f, 1),
@@ -47,7 +49,7 @@ SGE::SettingsView::SettingsView()
                       .m_text = "Cancel",
                       .m_name = "CancelButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return ImGui::IsKeyPressed(ImGuiKey_Escape);
+                          return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ESCAPE);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           onCancelPressed();

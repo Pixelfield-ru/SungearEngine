@@ -19,7 +19,7 @@ namespace SGE
 
         void onActiveChangedListener() final;
 
-        SGCore::Ref<EngineSettings> m_engineSettingsInstance = SGCore::MakeRef<EngineSettings>();
+        SGCore::Ref<EngineSettings> m_engineSettingsCopy = SGCore::MakeRef<EngineSettings>();
 
         void onOKPressed() noexcept override;
         void onApplyPressed() noexcept override;

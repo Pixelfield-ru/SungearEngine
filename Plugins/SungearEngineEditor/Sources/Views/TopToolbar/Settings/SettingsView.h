@@ -14,6 +14,12 @@ namespace SGE
 {
     struct SettingsView : Window
     {
+        Tree m_settingsTree;
+
+        std::function<void()> onSettingsContentDraw;
+
+        bool m_isSettingsContentViewContainsDockedWindow = false;
+
         SettingsView();
         SettingsView(const SettingsView&) = default;
         SettingsView(SettingsView&&) = default;
@@ -21,18 +27,12 @@ namespace SGE
         bool begin() override;
         void postRender() override;
 
-        std::function<void()> onSettingsContentDraw;
-
-        bool m_isSettingsContentViewContainsDockedWindow = false;
-
         virtual void onOKPressed() noexcept { };
         virtual void onApplyPressed() noexcept { };
         virtual void onCancelPressed() noexcept { };
 
     protected:
         virtual void onDock() { };
-
-        Tree m_settingsTree;
 
         SGCore::Ref<DockedWindow> m_settingsTreeDockedWindow;
         SGCore::Ref<DockedWindow> m_settingsContentDockedWindow;

@@ -4,6 +4,7 @@
 
 #include "DialogWindowsManager.h"
 #include "Styles/StylesManager.h"
+#include <SGCore/Input/InputManager.h>
 
 void SGE::DialogWindowsManager::init() noexcept
 {
@@ -122,7 +123,7 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return ImGui::IsKeyPressed(ImGuiKey_Enter);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -152,7 +153,7 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
                              .m_name = thirdButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return ImGui::IsKeyPressed(ImGuiKey_Escape);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ESCAPE);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -182,7 +183,7 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return ImGui::IsKeyPressed(ImGuiKey_Enter);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -201,7 +202,7 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
                              .m_name = secondButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return ImGui::IsKeyPressed(ImGuiKey_Escape);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ESCAPE);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -229,7 +230,7 @@ SGE::DialogWindow SGE::DialogWindowsManager::createOneButtonWindow(const std::st
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return ImGui::IsKeyPressed(ImGuiKey_Enter);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {

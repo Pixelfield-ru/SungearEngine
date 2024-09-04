@@ -12,14 +12,100 @@ void SGE::TreeNode::clear() noexcept
     m_childrenNamesManager->clearCounters();
 }
 
-void SGE::Tree::addTreeNode(const SGE::TreeNode& treeNode) noexcept
+void SGE::TreeNode::click() noexcept
 {
-    // if(tryGetTreeNode(treeNode.m_name.getName())) return;
-
-    m_treeNodes.push_back(treeNode);
+    onClicked(*this);
+    if(m_parentTree)
+    {
+        m_parentTree->m_chosenTreeNodeName = m_name;
+        std::printf("toolchains node clicked\n");
+    }
 }
 
-bool SGE::Tree::tryGetTreeNode(const std::string& name, TreeNode* out) noexcept
+void SGE::TreeNode::openBranchToThis() noexcept
+{
+    if(m_isTree)
+    {
+        m_isOpened = true;
+    }
+
+    if(m_parentNode)
+    {
+        m_parentNode->openBranchToThis();
+    }
+}
+
+void SGE::TreeNode::openBranchAndSelectThis() noexcept
+{
+    openBranchToThis();
+    click();
+}
+
+void SGE::TreeNode::setText(const std::string& text) noexcept
+{
+    m_text = text;
+    if(m_isTextFirstAssignment)
+    {
+        m_name = m_text;
+        m_isTextFirstAssignment = false;
+    }
+}
+
+std::string SGE::TreeNode::getText() const noexcept
+{
+    return m_text;
+}
+
+bool SGE::TreeNode::tryCopyGetTreeNodeRecursively(const std::string& name, SGE::TreeNode* out) const noexcept
+{
+    auto foundIt = std::find_if(m_children.begin(), m_children.end(), [&name](const TreeNode& node) {
+        return node.m_name == name;
+    });
+
+    if(out && foundIt != m_children.end())
+    {
+        *out = *foundIt;
+    }
+    else
+    {
+        for(const auto& node : m_children)
+        {
+            return node.tryCopyGetTreeNodeRecursively(name, out);
+        }
+    }
+
+    return foundIt != m_children.end();
+}
+
+void SGE::TreeNode::setParentTree(SGE::Tree* parentTree) noexcept
+{
+    m_parentTree = parentTree;
+    for(auto& child : m_children)
+    {
+        child.setParentTree(parentTree);
+    }
+}
+
+void SGE::TreeNode::updateChildrenParentPointers() noexcept
+{
+    for(auto& child : m_children)
+    {
+        child.m_parentNode = this;
+        child.updateChildrenParentPointers();
+    }
+}
+
+void SGE::Tree::addTreeNode(const SGE::TreeNode& treeNode) noexcept
+{
+    // if(tryCopyGetTreeNode(treeNode.m_name.getName())) return;
+
+    m_treeNodes.push_back(treeNode);
+    auto& addedNode = *m_treeNodes.rbegin();
+    addedNode.setParentTree(this);
+    addedNode.updateChildrenParentPointers();
+}
+
+bool SGE::Tree::tryCopyGetTreeNode(const std::string& name, TreeNode* out) noexcept
 {
     auto foundIt = std::find_if(m_treeNodes.begin(), m_treeNodes.end(), [&name](const TreeNode& node) {
         return node.m_name == name;
@@ -28,6 +114,27 @@ bool SGE::Tree::tryGetTreeNode(const std::string& name, TreeNode* out) noexcept
     if(out && foundIt != m_treeNodes.end())
     {
         *out = *foundIt;
+    }
+
+    return foundIt != m_treeNodes.end();
+}
+
+bool SGE::Tree::tryCopyGetTreeNodeRecursively(const std::string& name, SGE::TreeNode* out) noexcept
+{
+    auto foundIt = std::find_if(m_treeNodes.begin(), m_treeNodes.end(), [&name](const TreeNode& node) {
+        return node.m_name == name;
+    });
+
+    if(out && foundIt != m_treeNodes.end())
+    {
+        *out = *foundIt;
+    }
+    else
+    {
+        for(const auto& node : m_treeNodes)
+        {
+            return node.tryCopyGetTreeNodeRecursively(name, out);
+        }
     }
 
     return foundIt != m_treeNodes.end();

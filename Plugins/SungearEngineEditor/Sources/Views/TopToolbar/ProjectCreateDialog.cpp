@@ -33,7 +33,7 @@ SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
                       .m_text = "OK",
                       .m_name = "OKButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return ImGui::IsKeyPressed(ImGuiKey_Enter);
+                          return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           submit();
@@ -49,7 +49,7 @@ SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
                       .m_text = "Cancel",
                       .m_name = "CancelButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return ImGui::IsKeyPressed(ImGuiKey_Escape);
+                          return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ESCAPE);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           cancel();
@@ -250,11 +250,27 @@ void SGE::ProjectCreateDialog::submit()
         {
             // showing warning dialog that no toolchains were added
             auto projectBuiltDialogWindow = DialogWindowsManager::createTwoButtonsWindow("Project Build", "Create Toolchain", "OK");
+            // getting "Create Toolchain" button
+            Button* createToolchainButton = projectBuiltDialogWindow.tryGetButton(0);
+            createToolchainButton->onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parent) {
+                // opening the engine settings window in toolchains tab
+                auto engineSettingsView = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_engineSettingsView;
+                engineSettingsView->setActive(true);
+                TreeNode engineSettingsToolchainsNode;
+                if(engineSettingsView->m_settingsTree.tryCopyGetTreeNodeRecursively("Toolchains", &engineSettingsToolchainsNode))
+                {
+                    engineSettingsToolchainsNode.openBranchAndSelectThis();
+                }
+
+                // closing the dialog window
+                parent->setActive(false);
+            };
             projectBuiltDialogWindow.m_level = SGCore::Logger::Level::LVL_WARN;
             projectBuiltDialogWindow.onCustomBodyRenderListener = [currentEditorProject]() {
                 ImGui::SameLine();
                 ImGui::TextWrapped(fmt::format("The project '{}' cannot be built: no toolchain has been added. "
-                                               "Go to the <Engine Settings - Development and Support - Toolchains> and add your first toolchain.", currentEditorProject->m_pluginProject.m_name).c_str());
+                                               "Go to the <Engine Settings - Development and Support - Toolchains> and add your first toolchain.",
+                                               currentEditorProject->m_pluginProject.m_name).c_str());
             };
             DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
         }

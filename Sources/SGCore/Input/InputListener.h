@@ -11,24 +11,8 @@
 
 namespace SGCore
 {
-    class InputListener : public std::enable_shared_from_this<InputListener>
+    struct InputListener : public std::enable_shared_from_this<InputListener>
     {
-    private:
-        KeyState m_keyboardKeysStates[std::to_underlying(KeyboardKey::KEY_LAST) + 1];
-        KeyState m_mouseButtonsStates[std::to_underlying(MouseButton::MOUSE_BUTTON_LAST) + 1];
-
-        double m_cursorPositionLastX = 0;
-        double m_cursorPositionLastY = 0;
-
-        double m_cursorPositionX = 0;
-        double m_cursorPositionY = 0;
-
-        double m_cursorPositionDeltaX = 0;
-        double m_cursorPositionDeltaY = 0;
-
-        Window* m_focusedWindow = nullptr;
-
-    public:
         InputListener() noexcept;
 
         void startFrame() noexcept;
@@ -37,11 +21,19 @@ namespace SGCore
 
         void notifyMouse(Window&, const MouseButton& button, const KeyState& state) noexcept;
 
-        bool keyboardKeyDown(const KeyboardKey&) noexcept;
+        bool keyboardKeyDown(const KeyboardKey& key) noexcept;
 
-        bool keyboardKeyPressed(const KeyboardKey&) noexcept;
+        bool keyboardKeyPressed(const KeyboardKey& key) noexcept;
 
-        bool keyboardKeyReleased(const KeyboardKey&) noexcept;
+        bool keyboardKeyReleased(const KeyboardKey& key) noexcept;
+
+        void keyboardKeySkipFrame(const KeyboardKey& key) noexcept;
+
+        bool keyboardKeySkipFrameIfDown(const KeyboardKey& key) noexcept;
+
+        bool keyboardKeySkipFrameIfPressed(const KeyboardKey& key) noexcept;
+
+        bool keyboardKeySkipFrameIfReleased(const KeyboardKey& key) noexcept;
 
         bool mouseButtonDown(const MouseButton&) noexcept;
 
@@ -62,6 +54,25 @@ namespace SGCore
         double getCursorPositionDeltaY() const noexcept;
 
         void updateCursorPosition() noexcept;
+
+    private:
+        KeyState m_keyboardKeysStates[std::to_underlying(KeyboardKey::KEY_LAST) + 1];
+        bool m_keyboardKeysFrameSkipStates[std::to_underlying(KeyboardKey::KEY_LAST) + 1];
+        KeyState m_mouseButtonsStates[std::to_underlying(MouseButton::MOUSE_BUTTON_LAST) + 1];
+
+        double m_cursorPositionLastX = 0;
+        double m_cursorPositionLastY = 0;
+
+        double m_cursorPositionX = 0;
+        double m_cursorPositionY = 0;
+
+        double m_cursorPositionDeltaX = 0;
+        double m_cursorPositionDeltaY = 0;
+
+        Window* m_focusedWindow = nullptr;
+
+        std::size_t m_currentSkippedFrame = 0;
+        std::size_t m_skipFramesTargetCount = 10;
     };
 }
 

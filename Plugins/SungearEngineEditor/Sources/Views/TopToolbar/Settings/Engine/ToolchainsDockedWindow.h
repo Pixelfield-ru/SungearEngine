@@ -24,7 +24,7 @@ namespace SGE
         // void end() final;
 
         // ref from EngineSettingsView
-        SGCore::Ref<EngineSettings> m_engineSettingsRef;
+        SGCore::Ref<EngineSettings> m_engineSettingsCopyRef;
 
         SGCore::Ref<SelectedToolchainDockedWindow> getSelectedToolchainDockedWindow() const noexcept;
 

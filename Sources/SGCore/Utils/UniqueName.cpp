@@ -52,7 +52,7 @@ void SGCore::UniqueName::setRawName(const std::string& rawName) noexcept
     else
     {
         m_rawName = rawName;
-        m_name = (m_uniqueID == 0 ? rawName : rawName + " (" + std::to_string(m_uniqueID) + ")");
+        m_name = ((m_uniqueID == 0 || m_uniqueID == -1) ? rawName : rawName + " (" + std::to_string(m_uniqueID) + ")");
     }
 }
 

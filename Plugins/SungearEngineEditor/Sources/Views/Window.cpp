@@ -59,7 +59,7 @@ bool SGE::Window::begin()
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 8));
     auto wndContentRegionAvail = ImGui::GetContentRegionAvail();
-    ImGui::BeginChild(ImGui::GetID((m_name.getName() + "Footer").c_str()), ImVec2(ImGui::GetContentRegionAvail().x, 0),
+    ImGui::BeginChild(ImGui::GetID((m_name.getName() + "_Header").c_str()), ImVec2(ImGui::GetContentRegionAvail().x, 0),
                       ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY,
                       ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings);
 
@@ -176,9 +176,9 @@ void SGE::Window::end()
 
         btn.m_currentSize = ImGui::GetItemRectSize();
 
-        ImGui::PopStyleColor(5);
-
         ImGui::PopStyleVar(2);
+
+        ImGui::PopStyleColor(5);
 
         ImGui::SameLine();
     }
@@ -219,12 +219,12 @@ void SGE::Window::onActiveChangedListener()
 
 void SGE::Window::addButton(const SGE::Button& button) noexcept
 {
-    if(tryGetButton(button.m_name)) return;
+    if(tryCopyGetButton(button.m_name)) return;
 
     m_buttons.push_back(button);
 }
 
-bool SGE::Window::tryGetButton(const std::string& name, Button* out) noexcept
+bool SGE::Window::tryCopyGetButton(const std::string& name, Button* out) noexcept
 {
     auto foundIt = std::find_if(m_buttons.begin(), m_buttons.end(), [&name](const Button& button) {
         return name == button.m_name;
@@ -238,7 +238,7 @@ bool SGE::Window::tryGetButton(const std::string& name, Button* out) noexcept
     return foundIt != m_buttons.end();
 }
 
-bool SGE::Window::tryGetButton(const size_t& index, SGE::Button* out) noexcept
+bool SGE::Window::tryCopyGetButton(const std::size_t& index, Button* out) noexcept
 {
     if(index >= m_buttons.size())
     {
@@ -249,10 +249,28 @@ bool SGE::Window::tryGetButton(const size_t& index, SGE::Button* out) noexcept
     return true;
 }
 
-
 void SGE::Window::removeButton(const std::string& name) noexcept
 {
     std::erase_if(m_buttons, [&name](const Button& button) {
         return name == button.m_name;
     });
+}
+
+SGE::Button* SGE::Window::tryGetButton(const std::string& name) noexcept
+{
+    auto foundIt = std::find_if(m_buttons.begin(), m_buttons.end(), [&name](const Button& button) {
+        return name == button.m_name;
+    });
+
+    return foundIt != m_buttons.end() ? &*foundIt : nullptr;
+}
+
+SGE::Button* SGE::Window::tryGetButton(const size_t& index) noexcept
+{
+    if(index >= m_buttons.size())
+    {
+        return nullptr;
+    }
+
+    return &m_buttons[index];
 }

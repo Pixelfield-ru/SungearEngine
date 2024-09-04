@@ -27,8 +27,34 @@ namespace SGE
         ImGuiDockNodeFlags m_dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 
         void addButton(const Button& button) noexcept;
-        [[nodiscard]] bool tryGetButton(const std::string& name, Button* out = nullptr) noexcept;
-        [[nodiscard]] bool tryGetButton(const std::size_t& index, Button* out = nullptr) noexcept;
+        /**
+         * Copies the found button to 'out' button.
+         * @param name
+         * @param out
+         * @return
+         */
+        [[nodiscard]] bool tryCopyGetButton(const std::string& name, Button* out = nullptr) noexcept;
+        /**
+         * Copies the found button to 'out' button.
+         * @param index
+         * @param out
+         * @return
+         */
+        [[nodiscard]] bool tryCopyGetButton(const std::size_t& index, Button* out = nullptr) noexcept;
+        /**
+         * Returns pointer to original button instance in vector of buttons. Returns nullptr if button was not found.
+         * @param index
+         * @param out
+         * @return
+         */
+        [[nodiscard]] Button* tryGetButton(const std::string& name) noexcept;
+        /**
+         * Returns pointer to original button instance in vector of buttons. Returns nullptr if button was not found.
+         * @param index
+         * @param out
+         * @return
+         */
+        [[nodiscard]] Button* tryGetButton(const std::size_t& index) noexcept;
         void removeButton(const std::string& name) noexcept;
 
     protected:

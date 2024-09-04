@@ -6,6 +6,7 @@
 #include <nfd.h>
 
 #include "TopToolbarView.h"
+#include "SungearEngineEditor.h"
 
 SGE::TopToolbarView::TopToolbarView()
 {
