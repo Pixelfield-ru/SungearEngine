@@ -15,11 +15,20 @@
 
 namespace SGCore
 {
+    namespace Serde
+    {
+        enum class FormatType;
+        template<typename T, FormatType TFormatType>
+        struct SerializableValueView;
+    }
+
     struct XMLDocument;
     
     class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
     {
     public:
+        sg_serdespec_as_friend()
+
         Scene();
         
         std::string m_name;
@@ -94,7 +103,7 @@ namespace SGCore
         double getUpdateFunctionExecutionTime() const noexcept;
         double getFixedUpdateFunctionExecutionTime() const noexcept;
         
-        void saveToFile(const std::string& path) noexcept;
+        void saveToFile(const std::filesystem::path& path) noexcept;
         
         static void addScene(const Ref<Scene>& scene) noexcept;
         static Ref<Scene> getScene(const std::string& sceneName) noexcept;
@@ -110,9 +119,19 @@ namespace SGCore
             return onSceneSave;
         }
 
+        template<Serde::FormatType TFormatType>
+        SG_NOINLINE static auto& getOnEntitySave() noexcept
+        {
+            return onEntitySave<TFormatType>;
+        }
+
     private:
         static inline Event<void(const Ref<Scene>& savableScene)> onSceneSave;
-        
+        template<Serde::FormatType TFormatType>
+        static inline Event<void(const Scene& savableScene,
+                                 const entity_t& savableEntity,
+                                 Serde::SerializableValueView<registry_t, TFormatType>& valueView)> onEntitySave;
+
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;
         

@@ -7,6 +7,8 @@
 
 #include "Serializer.h"
 #include <glm/glm.hpp>
+#include "Scene.h"
+#include "EntityBaseInfo.h"
 
 namespace SGCore::Serde
 {
@@ -399,6 +401,46 @@ namespace SGCore::Serde
         {
             const std::u16string tmpPath = valueView.getValueContainer().template getAsString<char16_t>();
             *valueView.m_data = tmpPath;
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<registry_t, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::registry_t";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<registry_t, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().setAsArray();
+        }
+
+        static void deserialize(DeserializableValueView<registry_t, TFormatType>& valueView)
+        {
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Scene, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Scene";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<Scene, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+            auto registryView = valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry);
+
+            // saving only entities that has standard component EntityBaseInfo
+            auto entitiesView = valueView.m_data->m_ecsRegistry->template view<EntityBaseInfo>();
+            for(const auto& entity : entitiesView)
+            {
+                valueView.m_data->template getOnEntitySave<TFormatType>()(*valueView.m_data, entity, registryView);
+            }
+        }
+
+        static void deserialize(DeserializableValueView<Scene, TFormatType>& valueView)
+        {
         }
     };
 }

@@ -273,7 +273,7 @@ namespace SGE
         FileInfo* m_draggingFileInfo = nullptr;
         
         // =======================================================================
-        SGCore::EventListener<void(const std::filesystem::path& byPath, bool canceled)> m_onSceneFileCreated;
+        SGCore::EventListener<void(const std::filesystem::path& byPath, bool canceled)> onSceneFileCreatedListener;
     };
 }
 

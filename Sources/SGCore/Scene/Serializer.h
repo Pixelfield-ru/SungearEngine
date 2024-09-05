@@ -496,7 +496,7 @@ namespace SGCore::Serde
          * @param value
          */
         template<typename T>
-        void addMember(const std::string& name, const T& value) noexcept
+        SerializableValueView<T, TFormatType> addMember(const std::string& name, const T& value) noexcept
         {
 
         }
@@ -612,9 +612,9 @@ namespace SGCore::Serde
         friend struct SerializableValueView;
 
         template<typename T>
-        void addMember(const std::string& name, const T& value) noexcept
+        SerializableValueView<T, FormatType::JSON> addMember(const std::string& name, const T& value) noexcept
         {
-            if (!(m_thisValue || m_document)) return;
+            if (!(m_thisValue || m_document)) return { };
 
             // removing member with this name if it is already exists
             if (m_thisValue->IsObject() && m_thisValue->HasMember(name.c_str()))
@@ -663,11 +663,13 @@ namespace SGCore::Serde
             {
                 m_thisValue->PushBack(valueRootSection, m_document->GetAllocator());
 
-                return;
+                return valueView;
             }
 
             // adding value section to document
             m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
+
+            return valueView;
         }
 
         template<typename T>

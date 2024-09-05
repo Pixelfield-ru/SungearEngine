@@ -14,6 +14,7 @@
 #include "DirectoriesTreeExplorer.h"
 #include "ImGuiUtils.h"
 #include "Styles/StylesManager.h"
+#include "EditorScene.h"
 
 SGE::DirectoryExplorer::DirectoryExplorer()
 {
@@ -65,14 +66,22 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             newFilesElem->m_drawSeparatorAfter = true;
         }
     };
-    
-    m_onSceneFileCreated = [](const std::filesystem::path& byPath, bool canceled) {
+
+    onSceneFileCreatedListener = [](const std::filesystem::path& byPath, bool canceled) {
         if(SungearEngineEditor::getInstance()->getMainView()
                    ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgscene" && !canceled)
         {
             SGCore::Ref<SGCore::Scene> newScene = SGCore::MakeRef<SGCore::Scene>();
             newScene->m_name = SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string());
             newScene->saveToFile(SGCore::Utils::toUTF8<char16_t>(byPath.u16string()));
+            SGCore::Scene::addScene(newScene);
+
+            SGCore::Ref<EditorScene> editorScene = SGCore::MakeRef<EditorScene>();
+            editorScene->m_scene = newScene;
+            if(!EditorScene::getCurrentScene())
+            {
+                EditorScene::setCurrentScene(editorScene);
+            }
         }
     };
     
@@ -145,7 +154,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_isCreatingDirectory = false;
             fileCreateDialog->setActive(true);
         }
-        else if(element->m_name == "CreateNewDir")
+        else if(element->m_name == "Directory")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
@@ -176,8 +185,8 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_ext = ".sgscene";
             fileCreateDialog->m_isCreatingDirectory = false;
             fileCreateDialog->setActive(true);
-            
-            SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog->onOperationEnd += m_onSceneFileCreated;
+
+            SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog->onOperationEnd += onSceneFileCreatedListener;
         }
     };
 }
@@ -185,7 +194,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
 void SGE::DirectoryExplorer::renderBody()
 {
     beginMainWindow();
-    
+
     // =================================================
     
     if(std::filesystem::exists(m_maxPath) && std::filesystem::is_directory(m_maxPath))

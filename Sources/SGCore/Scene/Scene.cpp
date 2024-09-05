@@ -23,6 +23,7 @@
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
 #include "Serializer.h"
+#include "StandardSerdeSpecs.h"
 
 SGCore::Scene::Scene()
 {
@@ -270,25 +271,9 @@ void SGCore::Scene::reloadUI() noexcept
     }
 }
 
-void SGCore::Scene::saveToFile(const std::string& path) noexcept
+void SGCore::Scene::saveToFile(const std::filesystem::path& path) noexcept
 {
-    rapidjson::Document document;
-    document.SetObject();
-    
-    auto* mem = &document.AddMember("name", rapidjson::StringRef(m_name.c_str()), document.GetAllocator());
-    // mem = &document;
-    
-    // SerializerSpec<glm::vec<3, double, glm::defaultp>>::serialize(document, document, "vec", {});
-    // SerializerSpec<Transform>::serialize(document, document, "transform", {});
+    FileUtils::writeToFile(path, Serde::Serializer::toFormat(*this), false, true);
 
-    getOnSceneSaveEvent()(shared_from_this());
-    
-    rapidjson::StringBuffer stringBuffer;
-    stringBuffer.Clear();
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
-    document.Accept(writer);
-    
-    FileUtils::writeToFile(path, stringBuffer.GetString(), false, true);
-    
-    std::printf("scene '%s' saved!\n", m_name.c_str());
+    LOG_I(SGCORE_TAG, "Scene '{}' has been saved!", m_name)
 }
