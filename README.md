@@ -25,13 +25,13 @@
     - Small developments in the in-game UI (loading TTF fonts, creating text)
 -   **Graphics Rendering:**
     - Preparation for multi-GAPI (GAPI - graphics API) (using only abstractions and avoiding native API functions in external code (outside the implementation of abstract classes for different GAPI))
-    - Аn additional add-on to the glsl shader language for dividing shaders into render passes, specifying pass parameters, including shaders, as well as writing different shaders (fragment, vertex, geometric, etc.) in one file
+    - Аn additional add-on to the GLSL shader language for dividing shaders into render passes, specifying pass parameters, including shaders, as well as writing different shaders (fragment, vertex, geometric, etc.) in one file
     - PBR (Physically Based Rendering) using Cook-Torrance BRDF. Different maps are supporting:
         - Albedo Map
         - Normal Map
         - Roughness Map
         - Metallic Map
-        - Ambient Occclusion Map
+        - Ambient Occlusion Map
         - Emission Map
     - Shadows (Directional Light only)
     - Atmosphere Scattering
@@ -61,9 +61,9 @@
 
 ## Contributors 🌟
 
-- [Ilia (pfhgil)](https://github.com/pfhgil)
+- [Ilya (pfhgil)](https://github.com/pfhgil)
 - [Nikita (8bitniksis)](https://github.com/8bitniksis)
-- [MisterChoose](https://github.com/MisterChoose)
+- [Vlad (MisterChoose)](https://github.com/MisterChoose)
 
 # License 📜
 Distributed under the MIT License. See `LICENSE.txt` for more information.
@@ -75,7 +75,7 @@ Open your console application of choice and run the following console commands:
 ```
 \> cd <Path to your folder>
 
-\> git clone https://github.com/Pixelfield-ru/SungearEngine
+\> git clone --recurse-submodules -j8 https://github.com/Pixelfield-ru/SungearEngine
 
 \> cd SungearEngine
 
