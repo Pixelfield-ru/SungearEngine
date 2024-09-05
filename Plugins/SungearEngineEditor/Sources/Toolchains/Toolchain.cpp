@@ -342,7 +342,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
             ImGui::SameLine();
             ImGui::TextWrapped(fmt::format("The project '{}' has been built. "
                                            "Check the logs for more details. "
-                                           "Also, if you or someone else has changed the source code of plugins or Sungear Engine, it is recommended to restart the engine.", projectName).c_str());
+                                           "Also, if you or someone else has changed the source code of plugins or Sungear Engine, it is recommended to exit the engine, build Sungear Engine and plugins source code of wich was changed and then start the engine again..", projectName).c_str());
         };
         DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
     };
