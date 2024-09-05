@@ -17,7 +17,7 @@
 #define LOG_D_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<false>(tag, msg, ##__VA_ARGS__);
 #define LOG_W_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<false>(tag, msg, ##__VA_ARGS__);
 #define LOG_E_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<false>(tag, msg, ##__VA_ARGS__);
-#define LOG_C_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critica<false>l(tag, msg, ##__VA_ARGS__);
+#define LOG_C_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<false>(tag, msg, ##__VA_ARGS__);
 
 #define SGCORE_TAG "SGCore"
 #define PROJECT_BUILD_TAG "Project Build"

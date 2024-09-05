@@ -45,31 +45,6 @@ SGCore::Ref<SGCore::Scene> testScene2;
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 
-struct MyStruct
-{
-    std::string m_name = "test";
-    bool m_bool = true;
-
-private:
-    int gg = 0;
-};
-
-template<typename T>
-consteval bool checkReq()
-{
-    return requires {
-        T::m_int;
-        typename T::template m_using<int>;
-    };
-}
-
-struct TestStructReq
-{
-    static constexpr int m_int = 3;
-    template<typename T>
-    using m_using = T;
-};
-
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
@@ -82,25 +57,47 @@ void coreInit()
     SGCore::Scene::addScene(testScene2);
     SGCore::Scene::setCurrentScene("TestScene");
 
-    char* sgSourcesPath = std::getenv("SUNGEAR_SOURCES_ROOT");
-    
-    if(sgSourcesPath)
+    const char* sungearEngineRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
+    if(!sungearEngineRoot)
     {
-        std::string sgEditorPath = std::string(sgSourcesPath) + "/Plugins/SungearEngineEditor";
+        const std::string errorMsg = "The 'SUNGEAR_SOURCES_ROOT' environment variable does not exist. "
+                                     "Make sure that you have added 'SUNGEAR_SOURCES_ROOT' to the environment variables. "
+                                     "In the variable value, specify the path to the Sungear Engine. "
+                                     "Until then, you will not be able to build the project, as well as some other features of the engine.";
 
-        // hardcoded sgeditor load
-        auto sgEditorPlugin =
-                SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
-                                                   sgEditorPath,
-                                                   {},
-                                                   "cmake-build-debug");
-
-        std::cout << "plugin: " << sgEditorPlugin  << ", sgeditor path: " << sgEditorPath << std::endl;
+        LOG_C_UNFORMATTED("SGEditor", errorMsg)
+        assert(errorMsg.c_str());
+        std::exit(0);
     }
     else
     {
-        std::cout << "CANNOT LOAD SUNGEAR EDITOR PLUGIN" << std::endl;
+        const std::filesystem::path sungearEngineRootPath = sungearEngineRoot;
+        const std::filesystem::path sungearEngineIncludeCMakeFile = sungearEngineRootPath / "cmake/SungearEngineInclude.cmake";
+        if (!std::filesystem::exists(sungearEngineRootPath) ||
+            !std::filesystem::exists(sungearEngineIncludeCMakeFile))
+        {
+            const std::string errorMsg = "The 'SUNGEAR_SOURCES_ROOT' environment variable contains an invalid value. "
+                                         "Make sure that the 'SUNGEAR_SOURCES_ROOT' environment variable contains the correct value and indeed points to the Sungear Engine root folder. "
+                                         "Until then, you will not be able to build the project, as well as some other features of the engine.";
+
+            LOG_C_UNFORMATTED("SGEditor", errorMsg)
+            assert(errorMsg.c_str());
+            std::exit(0);
+        }
     }
+
+    const std::filesystem::path sungearEngineRootPath = sungearEngineRoot;
+
+    const std::filesystem::path sgEditorPath = sungearEngineRootPath / "Plugins/SungearEngineEditor";
+
+    // hardcoded sgeditor load
+    auto sgEditorPlugin =
+            SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
+                                               sgEditorPath,
+                                               {},
+                                               "cmake-build-debug");
+
+    std::cout << "plugin: " << sgEditorPlugin << ", sgeditor path: " << sgEditorPath << std::endl;
     
     SGCore::AnnotationsProcessor annotationsProcessor;
 
@@ -156,18 +153,6 @@ void coreInit()
     audioSource.attachAudioTrack(audioBuf);
 
     Serializer::serialize(document, document, "test", audioSource);*/
-
-    MyStruct testSerde;
-    testSerde.m_name = "Ilya";
-    testSerde.m_bool = true;
-
-    using a = decltype(testSerde.m_name);
-
-    if constexpr(SGCore::Serde::Utils::isDerivedTypesProvided<Base, SGCore::Serde::FormatType::JSON>())
-    // if constexpr(checkReq<TestStructReq>())
-    {
-        std::printf("derived types provided\n");
-    }
 
     std::shared_ptr<Base> tst = std::make_shared<Derived0>();
     // Base* tst = new Derived0();

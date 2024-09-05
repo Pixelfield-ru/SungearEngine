@@ -206,27 +206,25 @@ void SGE::ProjectCreateDialog::submit()
 
         SGCore::AnnotationsProcessor annotationsProcessor;
 
-        const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
-        if(!sungearRoot)
+        if(!SungearEngineEditor::checkSungearEngineEnvironmentRootPathValidity("Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'."))
         {
-            LOG_E(SGEDITOR_TAG, "Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'.");
             return;
         }
-        const std::string sungearRootStr = sungearRoot;
-        const std::string sungearPluginsPathStr = sungearRootStr + "/Plugins";
+        const auto& sungearRootStr = SungearEngineEditor::getSungearEngineRootPath();
+        const std::filesystem::path sungearPluginsPathStr = SungearEngineEditor::getSungearEngineRootPath() / "Plugins";
 
-        annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
-                                                {sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
-                                                 sungearRootStr +
-                                                 "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
-                                                 sungearRootStr +
-                                                 "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp"});
+        annotationsProcessor.processAnnotations(sungearRootStr / "Sources",
+                                                {sungearRootStr / "Sources/SGCore/Annotations/Annotations.h",
+                                                 sungearRootStr /
+                                                 "Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
+                                                 sungearRootStr /
+                                                 "Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp"});
 
         SGCore::CodeGen::SerdeSpecsGenerator serializersGenerator;
         std::string serializersGenerationError = serializersGenerator.generateSerializers(annotationsProcessor,
-                                                                                          sungearRootStr + "/.SG_GENERATED/Serializers.h");
+                                                                                          sungearRootStr / ".SG_GENERATED/Serializers.h");
 
-        annotationsProcessor.saveToFile(sungearRootStr + "/.SG_GENERATED/AnnotationsProcessor.json");
+        annotationsProcessor.saveToFile(sungearRootStr / ".SG_GENERATED/AnnotationsProcessor.json");
 
         // TODO: MAKE ERROR DIALOG SHOW IF ERROR
         if(!serializersGenerationError.empty())

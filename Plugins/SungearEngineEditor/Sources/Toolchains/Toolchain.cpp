@@ -223,8 +223,7 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
 {
     // Configuring incomplete
 
-    auto cmakePresetsPath = pathToProjectRoot;
-    cmakePresetsPath += "/CMakePresets.json";
+    const std::filesystem::path cmakePresetsPath = pathToProjectRoot / "CMakePresets.json";
 
     const std::string projectName = SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string());
 
@@ -324,14 +323,12 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 {
     auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
 
-    const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
-    if(!sungearRoot)
+    if(!SungearEngineEditor::checkSungearEngineEnvironmentRootPathValidity("Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'."))
     {
-        LOG_E(SGEDITOR_TAG, "Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'.");
         return;
     }
-    const std::string sungearRootStr = sungearRoot;
-    const std::string sungearPluginsPathStr = sungearRootStr + "/Plugins";
+
+    const std::filesystem::path sungearPluginsPathStr = SungearEngineEditor::getSungearEngineRootPath() / "Plugins";
 
     const bool isPresetsEquals = m_currentCMakePreset == SG_BUILD_PRESET;
 
@@ -385,11 +382,12 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
         else
         {
             // TODO: MAKE MIGRATION TO OTHER ENGINE BUILD DIALOG
+            buildOutput.m_binaryDir;
         }
 
         // building new project after building the Sungear Engine
         toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath, m_currentCMakePreset);
     };
     // building the Sungear Engine
-    toolchain->buildProject(sungearRootStr, m_currentCMakePreset);
+    toolchain->buildProject(SungearEngineEditor::getSungearEngineRootPath(), m_currentCMakePreset);
 }
