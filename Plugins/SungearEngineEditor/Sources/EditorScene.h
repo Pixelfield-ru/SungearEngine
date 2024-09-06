@@ -10,12 +10,19 @@
 
 namespace SGE
 {
+    struct EditorSceneData
+    {
+        SGCore::entity_t m_editorCamera { };
+        SGCore::entity_t m_editorGrid { };
+    };
+
     struct EditorScene
     {
         SGCore::Ref<SGCore::Scene> m_scene;
 
-        SGCore::entity_t m_editorCamera { };
-        SGCore::entity_t m_editorGrid { };
+        EditorSceneData m_data;
+
+        void saveByPath(const std::filesystem::path& toPath, const std::filesystem::path& fileName) const noexcept;
 
         static void setCurrentScene(const SGCore::Ref<EditorScene>& scene) noexcept;
         SG_NOINLINE static SGCore::Ref<EditorScene> getCurrentScene() noexcept;

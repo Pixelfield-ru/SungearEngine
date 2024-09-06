@@ -611,6 +611,8 @@ namespace SGCore::Serde
         template<typename T0, FormatType TFormatType0>
         friend struct SerializableValueView;
 
+        // todo: ADD createMember FUNCTION
+
         template<typename T>
         SerializableValueView<T, FormatType::JSON> addMember(const std::string& name, const T& value) noexcept
         {

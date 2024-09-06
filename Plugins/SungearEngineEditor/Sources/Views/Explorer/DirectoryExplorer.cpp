@@ -73,11 +73,11 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         {
             SGCore::Ref<SGCore::Scene> newScene = SGCore::MakeRef<SGCore::Scene>();
             newScene->m_name = SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string());
-            newScene->saveToFile(SGCore::Utils::toUTF8<char16_t>(byPath.u16string()));
             SGCore::Scene::addScene(newScene);
 
             SGCore::Ref<EditorScene> editorScene = SGCore::MakeRef<EditorScene>();
             editorScene->m_scene = newScene;
+            editorScene->saveByPath(byPath.parent_path(), byPath.stem());
             if(!EditorScene::getCurrentScene())
             {
                 EditorScene::setCurrentScene(editorScene);
