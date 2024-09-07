@@ -55,7 +55,7 @@ namespace SGCore
         [[nodiscard]] std::string getSummary() const noexcept;
     
     protected:
-        void doLoad(const std::string& path) override;
+        void doLoad(const std::filesystem::path& path) override;
         
     private:
         AudioTrackType m_audioTrackType = AudioTrackType::UNKNOWN;

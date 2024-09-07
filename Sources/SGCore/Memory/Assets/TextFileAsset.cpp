@@ -2,7 +2,7 @@
 
 #include "TextFileAsset.h"
 
-void SGCore::TextFileAsset::doLoad(const std::string& path)
+void SGCore::TextFileAsset::doLoad(const std::filesystem::path& path)
 {
     m_data = SGCore::FileUtils::readFile(path);
 }

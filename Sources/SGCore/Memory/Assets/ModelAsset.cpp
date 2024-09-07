@@ -15,14 +15,16 @@
 
 size_t polygonsNumber = 0;
 
-void SGCore::ModelAsset::doLoad(const std::string& path)
+void SGCore::ModelAsset::doLoad(const std::filesystem::path& path)
 {
     m_importerFlags = ModelsImportSettings::IMPORTER_FLAGS;
 
     Assimp::Importer importer;
 
+    const std::string u8Path = Utils::toUTF8(m_path.u16string());
+
     // TODO: maybe shared_ptr
-    const aiScene* aiImportedScene(importer.ReadFile(m_path.string(), m_importerFlags));
+    const aiScene* aiImportedScene(importer.ReadFile(u8Path, m_importerFlags));
 
     if(!aiImportedScene || aiImportedScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiImportedScene->mRootNode)
     {

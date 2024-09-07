@@ -21,10 +21,19 @@ namespace SGCore
         MeshBase(MeshBase&&) noexcept = default;
 
         MeshDataRenderInfo m_meshDataRenderInfo;
-        Ref<IMeshData> m_meshData;
 
         // определяем для каждого ресивера какой слой будет использоваться для данной сущности
         std::unordered_map<LayeredFrameReceiver*, Weak<PostProcessLayer>> m_layeredFrameReceiversMarkup;
+
+        void setMeshData(const Ref<IMeshData>& meshData) noexcept;
+        Ref<IMeshData> getMeshData() const noexcept;
+
+        void setMaterial(const Ref<IMaterial>& material) noexcept;
+        Ref<IMaterial> getMaterial() const noexcept;
+
+    private:
+        Ref<IMeshData> m_meshData;
+        Ref<IMaterial> m_material;
     };
 }
 

@@ -109,7 +109,7 @@ namespace SGCore
         }
         
     protected:
-        void doLoad(const std::string& path) final;
+        void doLoad(const std::filesystem::path& path) final;
     };
 }
 

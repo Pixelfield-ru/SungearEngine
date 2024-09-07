@@ -3,17 +3,18 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/IShader.h"
 
-void SGCore::IMaterial::doLoad(const std::string& path)
+void SGCore::IMaterial::doLoad(const std::filesystem::path& path)
 {
 
 }
 
 std::shared_ptr<SGCore::ITexture2D>
 SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
-                                                     const std::string& path)
+                                       const std::string& path,
+                                       AssetManager& toAssetManager)
 {
     auto foundTex =
-            AssetManager::getInstance()->loadAsset<ITexture2D>(path);
+            toAssetManager.loadAsset<ITexture2D>(path);
 
     m_textures[textureType].push_back(foundTex);
 

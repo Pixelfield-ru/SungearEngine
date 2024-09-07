@@ -15,13 +15,13 @@ namespace SGCore
     class SGSLETranslator
     {
     public:
-        void processCode(const std::string& path, const std::string& code, SGSLETranslator& translator, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
-        void processCode(const std::string& path, const std::string& code, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
+        void processCode(const std::filesystem::path& path, const std::string& code, SGSLETranslator& translator, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
+        void processCode(const std::filesystem::path& path, const std::string& code, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept;
 
         SGSLETranslatorConfiguration m_config;
 
     private:
-        void processCode(const std::string& path,
+        void processCode(const std::filesystem::path& path,
                          const std::string& code,
                          SGSLETranslator& translator,
                          bool isRootShader,

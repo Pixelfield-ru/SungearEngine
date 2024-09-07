@@ -19,14 +19,14 @@ void SGCore::STBITextureDataDeleter::operator()(const std::uint8_t* data)
 
 // ----------------------------------
 
-void SGCore::ITexture2D::doLoad(const std::string& path)
+void SGCore::ITexture2D::doLoad(const std::filesystem::path& path)
 {
     int channelsDesired = 0;
     
     if(!std::filesystem::exists(path))
     {
         LOG_E(SGCORE_TAG,
-              "Error while loading texture: texture by path {} does not exist.", path);
+              "Error while loading texture: texture by path {} does not exist.", Utils::toUTF8(path.u16string()));
         return;
     }
     

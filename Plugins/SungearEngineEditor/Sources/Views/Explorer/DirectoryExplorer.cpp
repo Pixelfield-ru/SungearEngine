@@ -71,12 +71,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         if(SungearEngineEditor::getInstance()->getMainView()
                    ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgscene" && !canceled)
         {
-            SGCore::Ref<SGCore::Scene> newScene = SGCore::MakeRef<SGCore::Scene>();
-            newScene->m_name = SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string());
-            SGCore::Scene::addScene(newScene);
-
-            SGCore::Ref<EditorScene> editorScene = SGCore::MakeRef<EditorScene>();
-            editorScene->m_scene = newScene;
+            auto editorScene = EditorScene::createSceneForEditor(SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string()));
             editorScene->saveByPath(byPath.parent_path(), byPath.stem());
             if(!EditorScene::getCurrentScene())
             {

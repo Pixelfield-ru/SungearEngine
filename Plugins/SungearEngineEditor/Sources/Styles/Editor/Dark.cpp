@@ -129,152 +129,152 @@ void SGE::EditorStyles::Dark::apply()
 
     // loading icons
     {
-        m_folderIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_folderIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_folder_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/folder.svg");
 
-        m_chevronRightIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_chevronRightIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_chevron_right_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/chevron_right.svg");
 
-        m_chevronDownIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_chevronDownIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_chevron_down_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/chevron_down.svg");
 
-        m_headerIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_headerIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_header_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/header.svg");
 
-        m_cppIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_cppIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_cpp_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/cpp.svg");
 
-        m_cmakeIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_cmakeIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_cmake_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/cmake.svg");
 
-        m_linesIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_linesIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_lines_",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/lines.svg");
 
-        m_moreIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_moreIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_more_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/more.svg");
 
-        m_questionIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_questionIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_question_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/question.svg");
 
-        m_questionCircledIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_questionCircledIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_question_circled_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/question_circled.svg");
 
-        m_libraryIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_libraryIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_library_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/library.svg");
 
-        m_trashBinIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_trashBinIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_trash_bin_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/trash_bin.svg");
 
-        m_pencilIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_pencilIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_pencil_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/pencil.svg");
 
-        m_dummyIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_dummyIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_dummy_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/dummy.svg");
 
-        m_crossIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_crossIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_cross_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/cross.svg");
 
-        m_arrowUpIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_arrowUpIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_arrow_up_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/arrow_up.svg");
 
-        m_arrowRightIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_arrowRightIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_arrow_right_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/arrow_right.svg");
 
-        m_arrowDownIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_arrowDownIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_arrow_down_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/arrow_down.svg");
 
-        m_arrowLeftIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_arrowLeftIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_arrow_left_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/arrow_left.svg");
 
-        m_copyIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_copyIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_copy_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/copy.svg");
 
-        m_pasteIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_pasteIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_paste_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/paste.svg");
 
-        m_cubesIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_cubesIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_cubes_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/cubes.svg");
 
-        m_plusIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_plusIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_plus_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/plus.svg");
 
-        m_minusIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_minusIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "white_minus_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/minus.svg");
 
-        m_mingwIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_mingwIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "mingw_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/mingw.svg");
 
-        m_infoIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_infoIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "info_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/info.svg");
 
-        m_warningIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_warningIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "warning_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/warning.svg");
 
-        m_errorIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_errorIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "error_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/error.svg");
 
-        m_criticalIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_criticalIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "critical_icon",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/critical.svg");
 
-        m_greenBugIcon = Resources::getMainAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
+        m_greenBugIcon = Resources::getEditorOnlyAssetManager().loadAssetWithAlias<SGCore::SVGImage>(
                 "bug",
                 SungearEngineEditor::getInstance()->getLocalPath() +
                 "/Resources/icons/dark_style/bug.svg");

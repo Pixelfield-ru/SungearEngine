@@ -134,7 +134,7 @@ namespace SGCore
         
         size_t m_pixelSize = 0;
         
-        void doLoad(const std::string& path) override;
+        void doLoad(const std::filesystem::path& path) override;
         void doLazyLoad() override;
         
         virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }

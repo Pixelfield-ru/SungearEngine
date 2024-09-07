@@ -14,10 +14,12 @@ namespace SGE
 {
     struct Resources
     {
-        SG_NOINLINE static SGCore::AssetManager& getMainAssetManager() noexcept;
+        static void loadStandardResources(SGCore::AssetManager& toManager = *SGCore::AssetManager::getInstance()) noexcept;
+
+        SG_NOINLINE static SGCore::AssetManager& getEditorOnlyAssetManager() noexcept;
         
     private:
-        static inline SGCore::AssetManager m_mainAssetManager;
+        static inline SGCore::AssetManager m_editorOnlyAssetManager;
     };
 }
 

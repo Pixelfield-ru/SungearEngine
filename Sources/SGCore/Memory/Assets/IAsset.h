@@ -29,7 +29,7 @@ namespace SGCore
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
         Event<void(IAsset* asset)> onLazyLoadDone;
 
-        void load(const std::string& path)
+        void load(const std::filesystem::path& path)
         {
             m_path = path;
             
@@ -67,7 +67,7 @@ namespace SGCore
         [[nodiscard]] std::filesystem::path getPath() const noexcept;
 
     protected:
-        virtual void doLoad(const std::string& path) = 0;
+        virtual void doLoad(const std::filesystem::path& path) = 0;
         virtual void doLazyLoad() { };
         
         long m_lastModified = -1;

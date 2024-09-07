@@ -130,7 +130,7 @@ SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const st
     // NOT STANDARD
     // auto cullableMesh = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
     // maybe can load the ram
-    meshEntityMesh.m_base.m_meshData = shared_from_this();
+    meshEntityMesh.m_base.setMeshData(shared_from_this());
     
     // meshEntityMesh.m_base.m_meshData = shared_from_this();
     

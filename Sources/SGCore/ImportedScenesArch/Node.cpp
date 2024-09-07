@@ -55,7 +55,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
         Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
         // NOT STANDARD
         // auto cullable = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
-        meshEntityMesh.m_base.m_meshData = mesh;
+        meshEntityMesh.m_base.setMeshData(mesh);
         // meshEntityMesh.m_base.m_meshData->setData(mesh);
 
         // meshComponent->addRequiredShaderPath("GeometryShader");

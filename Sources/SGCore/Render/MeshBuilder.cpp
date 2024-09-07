@@ -14,95 +14,103 @@ void SGCore::MeshBuilder::buildBox3D(SGCore::MeshBase& meshBase, const glm::vec3
 {
     // building a cube ------------------------------
 
-    meshBase.m_meshData->m_positions.clear();
+    auto meshData = meshBase.getMeshData();
 
-    meshBase.m_meshData->m_positions.push_back(-size.x / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(-size.y / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(size.z / 2.0f);
+    if(!meshData) return;
 
-    meshBase.m_meshData->m_positions.push_back(-size.x / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(-size.y / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(-size.z / 2.0f);
+    meshData->m_positions.clear();
 
-    meshBase.m_meshData->m_positions.push_back(-size.x / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(size.y / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(-size.z / 2.0f);
+    meshData->m_positions.push_back(-size.x / 2.0f);
+    meshData->m_positions.push_back(-size.y / 2.0f);
+    meshData->m_positions.push_back(size.z / 2.0f);
 
-    meshBase.m_meshData->m_positions.push_back(-size.x / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(size.y / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(size.z / 2.0f);
+    meshData->m_positions.push_back(-size.x / 2.0f);
+    meshData->m_positions.push_back(-size.y / 2.0f);
+    meshData->m_positions.push_back(-size.z / 2.0f);
+
+    meshData->m_positions.push_back(-size.x / 2.0f);
+    meshData->m_positions.push_back(size.y / 2.0f);
+    meshData->m_positions.push_back(-size.z / 2.0f);
+
+    meshData->m_positions.push_back(-size.x / 2.0f);
+    meshData->m_positions.push_back(size.y / 2.0f);
+    meshData->m_positions.push_back(size.z / 2.0f);
 
 
 
-    meshBase.m_meshData->m_positions.push_back(size.x / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(-size.y / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(size.z / 2.0f);
+    meshData->m_positions.push_back(size.x / 2.0f);
+    meshData->m_positions.push_back(-size.y / 2.0f);
+    meshData->m_positions.push_back(size.z / 2.0f);
 
-    meshBase.m_meshData->m_positions.push_back(size.x / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(-size.y / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(-size.z / 2.0f);
+    meshData->m_positions.push_back(size.x / 2.0f);
+    meshData->m_positions.push_back(-size.y / 2.0f);
+    meshData->m_positions.push_back(-size.z / 2.0f);
 
-    meshBase.m_meshData->m_positions.push_back(size.x / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(size.y / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(-size.z / 2.0f);
+    meshData->m_positions.push_back(size.x / 2.0f);
+    meshData->m_positions.push_back(size.y / 2.0f);
+    meshData->m_positions.push_back(-size.z / 2.0f);
 
-    meshBase.m_meshData->m_positions.push_back(size.x / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(size.y / 2.0f);
-    meshBase.m_meshData->m_positions.push_back(size.z / 2.0f);
+    meshData->m_positions.push_back(size.x / 2.0f);
+    meshData->m_positions.push_back(size.y / 2.0f);
+    meshData->m_positions.push_back(size.z / 2.0f);
 
     // --------------------------------
 
-    meshBase.m_meshData->m_indices.clear();
+    meshData->m_indices.clear();
 
-    meshBase.m_meshData->m_indices.push_back(0);
-    meshBase.m_meshData->m_indices.push_back(1);
+    meshData->m_indices.push_back(0);
+    meshData->m_indices.push_back(1);
 
-    meshBase.m_meshData->m_indices.push_back(1);
-    meshBase.m_meshData->m_indices.push_back(2);
+    meshData->m_indices.push_back(1);
+    meshData->m_indices.push_back(2);
 
-    meshBase.m_meshData->m_indices.push_back(2);
-    meshBase.m_meshData->m_indices.push_back(3);
+    meshData->m_indices.push_back(2);
+    meshData->m_indices.push_back(3);
 
-    meshBase.m_meshData->m_indices.push_back(3);
-    meshBase.m_meshData->m_indices.push_back(0);
-
-
-
-    meshBase.m_meshData->m_indices.push_back(4);
-    meshBase.m_meshData->m_indices.push_back(5);
-
-    meshBase.m_meshData->m_indices.push_back(5);
-    meshBase.m_meshData->m_indices.push_back(6);
-
-    meshBase.m_meshData->m_indices.push_back(6);
-    meshBase.m_meshData->m_indices.push_back(7);
-
-    meshBase.m_meshData->m_indices.push_back(7);
-    meshBase.m_meshData->m_indices.push_back(4);
+    meshData->m_indices.push_back(3);
+    meshData->m_indices.push_back(0);
 
 
 
-    meshBase.m_meshData->m_indices.push_back(0);
-    meshBase.m_meshData->m_indices.push_back(4);
+    meshData->m_indices.push_back(4);
+    meshData->m_indices.push_back(5);
 
-    meshBase.m_meshData->m_indices.push_back(3);
-    meshBase.m_meshData->m_indices.push_back(7);
+    meshData->m_indices.push_back(5);
+    meshData->m_indices.push_back(6);
 
-    meshBase.m_meshData->m_indices.push_back(2);
-    meshBase.m_meshData->m_indices.push_back(6);
+    meshData->m_indices.push_back(6);
+    meshData->m_indices.push_back(7);
 
-    meshBase.m_meshData->m_indices.push_back(1);
-    meshBase.m_meshData->m_indices.push_back(5);
+    meshData->m_indices.push_back(7);
+    meshData->m_indices.push_back(4);
 
-    meshBase.m_meshData->prepare();
+
+
+    meshData->m_indices.push_back(0);
+    meshData->m_indices.push_back(4);
+
+    meshData->m_indices.push_back(3);
+    meshData->m_indices.push_back(7);
+
+    meshData->m_indices.push_back(2);
+    meshData->m_indices.push_back(6);
+
+    meshData->m_indices.push_back(1);
+    meshData->m_indices.push_back(5);
+
+    meshData->prepare();
 }
 
 void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const float& radius,
                                               const float& angleIncrement) noexcept
 {
+    auto meshData = meshBase.getMeshData();
+
+    if(!meshData) return;
+
     // clear
-    meshBase.m_meshData->m_positions.clear();
-    meshBase.m_meshData->m_indices.clear();
+    meshData->m_positions.clear();
+    meshData->m_indices.clear();
 
 
     // degrees left to iterate through every circle point
@@ -132,9 +140,9 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
 
             degLeft -= angleIncrement;
 
-            meshBase.m_meshData->m_positions.push_back(curPos.x + curCircleOffset);
-            meshBase.m_meshData->m_positions.push_back(curPos.y);
-            meshBase.m_meshData->m_positions.push_back(curPos.z);
+            meshData->m_positions.push_back(curPos.x + curCircleOffset);
+            meshData->m_positions.push_back(curPos.y);
+            meshData->m_positions.push_back(curPos.z);
         }
         degLeft = 360.0f;
     }
@@ -144,14 +152,14 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
     size_t k = 0;
 
     // pushing first index
-    meshBase.m_meshData->m_indices.push_back(0);
+    meshData->m_indices.push_back(0);
 
     // creating the right end of the sphere
     for(i = 0; i < circleVerticesNum; i++)
     {
-        meshBase.m_meshData->m_positions.push_back(radius);
-        meshBase.m_meshData->m_positions.push_back(0);
-        meshBase.m_meshData->m_positions.push_back(0);
+        meshData->m_positions.push_back(radius);
+        meshData->m_positions.push_back(0);
+        meshData->m_positions.push_back(0);
     }
 
     size_t resultIndex = 0;
@@ -167,8 +175,8 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
             {
                 resultIndex = i + k * circleVerticesNum;
 
-                meshBase.m_meshData->m_indices.push_back(resultIndex);
-                meshBase.m_meshData->m_indices.push_back(resultIndex);
+                meshData->m_indices.push_back(resultIndex);
+                meshData->m_indices.push_back(resultIndex);
             }
         }
         else
@@ -177,8 +185,8 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
             {
                 resultIndex = i + k * circleVerticesNum;
 
-                meshBase.m_meshData->m_indices.push_back(resultIndex);
-                meshBase.m_meshData->m_indices.push_back(resultIndex);
+                meshData->m_indices.push_back(resultIndex);
+                meshData->m_indices.push_back(resultIndex);
             }
         }
 
@@ -192,13 +200,13 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
         {
             resultIndex = k + i * circleVerticesNum;
 
-            meshBase.m_meshData->m_indices.push_back(resultIndex);
-            meshBase.m_meshData->m_indices.push_back(resultIndex);
+            meshData->m_indices.push_back(resultIndex);
+            meshData->m_indices.push_back(resultIndex);
         }
 
-        meshBase.m_meshData->m_indices.push_back(i * circleVerticesNum);
+        meshData->m_indices.push_back(i * circleVerticesNum);
     }
 
     // preparing mesh
-    meshBase.m_meshData->prepare();
+    meshData->prepare();
 }

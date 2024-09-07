@@ -9,6 +9,8 @@
 #include <SGCore/ImGuiWrap/ImGuiLayer.h>
 #include <SGCore/Logger/Logger.h>
 
+#include "Resources.h"
+
 SGE::SungearEngineEditor::~SungearEngineEditor()
 {
     SGCore::ImGuiWrap::IView::getRoot()->removeChild(m_mainView);
@@ -42,6 +44,8 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
     }
 
     checkSungearEngineEnvironmentRootPathValidity();
+
+    Resources::loadStandardResources();
 
 	// No error.
 	return "";

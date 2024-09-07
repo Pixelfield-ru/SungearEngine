@@ -40,7 +40,7 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         std::shared_ptr<AssetT> loadAsset(AssetsLoadPolicy assetsLoadPolicy,
                                           const Ref<Threading::Thread>& lazyLoadInThread,
-                                          const std::string& path,
+                                          const std::filesystem::path& path,
                                           AssetCtorArgs&&... assetCtorArgs)
         {
             std::lock_guard guard(m_mutex);
@@ -74,7 +74,7 @@ namespace SGCore
             
             newAsset->setRawName(p.stem().string());
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name());
             
             return newAsset;
         }
@@ -82,7 +82,7 @@ namespace SGCore
         template<typename AssetT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, AssetT>)
         std::shared_ptr<AssetT> loadAsset(AssetsLoadPolicy assetsLoadPolicy,
-                                          const std::string& path,
+                                          const std::filesystem::path& path,
                                           AssetCtorArgs&&... assetCtorArgs)
         {
             return loadAsset<AssetT, AssetCtorArgs...>(assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
@@ -90,7 +90,7 @@ namespace SGCore
         
         template<typename AssetT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        std::shared_ptr<AssetT> loadAsset(const std::string& path,
+        std::shared_ptr<AssetT> loadAsset(const std::filesystem::path& path,
                                           AssetCtorArgs&&... assetCtorArgs)
         {
             return loadAsset<AssetT, AssetCtorArgs...>(m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
@@ -105,7 +105,7 @@ namespace SGCore
         void loadAsset(Ref<AssetT>& assetToLoad,
                        AssetsLoadPolicy assetsLoadPolicy,
                        const Ref<Threading::Thread>& lazyLoadInThread,
-                       const std::string& path)
+                       const std::filesystem::path& path)
         {
             std::lock_guard guard(m_mutex);
             
@@ -138,14 +138,14 @@ namespace SGCore
             
             assetToLoad->setRawName(p.stem().string());
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name());
         }
         
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
         void loadAsset(Ref<AssetT>& assetToLoad,
                        AssetsLoadPolicy assetsLoadPolicy,
-                       const std::string& path)
+                       const std::filesystem::path& path)
         {
             loadAsset<AssetT>(assetToLoad, assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path);
         }
@@ -153,7 +153,7 @@ namespace SGCore
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
         void loadAsset(Ref<AssetT>& assetToLoad,
-                       const std::string& path)
+                       const std::filesystem::path& path)
         {
             loadAsset<AssetT>(assetToLoad, m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), path);
         }
@@ -168,7 +168,7 @@ namespace SGCore
                                 AssetsLoadPolicy assetsLoadPolicy,
                                 const Ref<Threading::Thread>& lazyLoadInThread,
                                 const std::string& alias,
-                                const std::string& path)
+                                const std::filesystem::path& path)
         {
             std::lock_guard guard(m_mutex);
             
@@ -199,7 +199,7 @@ namespace SGCore
             
             assetToLoad->setRawName(alias);
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name());
         }
         
         template<typename AssetT>
@@ -207,7 +207,7 @@ namespace SGCore
         void loadAssetWithAlias(Ref<AssetT>& assetToLoad,
                                 AssetsLoadPolicy assetsLoadPolicy,
                                 const std::string& alias,
-                                const std::string& path)
+                                const std::filesystem::path& path)
         {
             loadAssetWithAlias<AssetT>(assetToLoad, assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path);
         }
@@ -216,7 +216,7 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         void loadAssetWithAlias(Ref<AssetT>& assetToLoad,
                                 const std::string& alias,
-                                const std::string& path)
+                                const std::filesystem::path& path)
         {
             loadAssetWithAlias<AssetT>(assetToLoad, m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path);
         }
@@ -230,7 +230,7 @@ namespace SGCore
         std::shared_ptr<AssetT> loadAssetWithAlias(AssetsLoadPolicy assetsLoadPolicy,
                                                    const Ref<Threading::Thread>& lazyLoadInThread,
                                                    const std::string& alias,
-                                                   const std::string& path,
+                                                   const std::filesystem::path& path,
                                                    AssetCtorArgs&&... assetCtorArgs)
         {
             std::lock_guard guard(m_mutex);
@@ -262,7 +262,7 @@ namespace SGCore
             
             newAsset->setRawName(alias);
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", path, typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name());
             
             return newAsset;
         }
@@ -323,6 +323,8 @@ namespace SGCore
             {
                 std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
             }
+
+            LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'", alias, Utils::toUTF8(asset->getPath().u16string()), typeid(AssetT).name())
         }
         
         template<typename AssetT>
@@ -359,6 +361,8 @@ namespace SGCore
             {
                 std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
             }
+
+            LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'", asset->m_name, Utils::toUTF8(asset->getPath().u16string()), typeid(AssetT).name())
         }
         
         bool isAssetsEntityExists(const std::string& pathOrAlias) noexcept
@@ -393,7 +397,7 @@ namespace SGCore
 
     private:
         void distributeAsset(const Ref<IAsset>& asset,
-                             const std::string& path,
+                             const std::filesystem::path& path,
                              AssetsLoadPolicy loadPolicy,
                              const Ref<Threading::Thread>& lazyLoadInThread) noexcept
         {
@@ -453,7 +457,7 @@ namespace SGCore
         std::mutex m_mutex;
         
         Ref<registry_t> m_registry = MakeRef<registry_t>();
-        std::unordered_map<std::string, entity_t> m_entities;
+        std::unordered_map<std::filesystem::path, entity_t> m_entities;
         
         Threading::BaseThreadsPool<Threading::LeastTasksCount> m_threadsPool { 2, false };
         

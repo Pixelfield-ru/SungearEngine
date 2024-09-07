@@ -5,6 +5,6 @@
 #include "ShaderFileAsset.h"
 #include "SGCore/Main/CoreMain.h"
 
-void SGCore::ShaderFileAsset::doLoad(const std::string& path)
+void SGCore::ShaderFileAsset::doLoad(const std::filesystem::path& path)
 {
 }

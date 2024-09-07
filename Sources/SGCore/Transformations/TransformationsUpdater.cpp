@@ -244,7 +244,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                                perspective);
                 
                 finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
-                                                           mesh->m_base.m_meshData->m_aabb);
+                                                           mesh->m_base.getMeshData()->m_aabb);
                 
                 glm::vec3 eulerRotation = glm::eulerAngles(rotation);
                 
@@ -296,7 +296,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                                perspective);
                 
                 finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
-                                                           mesh->m_base.m_meshData->m_aabb);
+                                                           mesh->m_base.getMeshData()->m_aabb);
                 
                 glm::vec3 eulerRotation = glm::eulerAngles(rotation);
                 

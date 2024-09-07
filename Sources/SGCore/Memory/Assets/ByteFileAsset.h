@@ -17,7 +17,7 @@ namespace SGCore
         [[nodiscard]] size_t getDataBufferSize() const noexcept;
     
     protected:
-        void doLoad(const std::string& path) override;
+        void doLoad(const std::filesystem::path& path) override;
         
         char* m_dataBuffer = nullptr;
         size_t m_dataBufferSize = 0;

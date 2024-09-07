@@ -25,7 +25,7 @@ namespace SGCore
         std::vector<std::shared_ptr<Node>> m_nodes;
 
     protected:
-        void doLoad(const std::string&) override;
+        void doLoad(const std::filesystem::path& path) override;
         void doLazyLoad() override;
         
     private:

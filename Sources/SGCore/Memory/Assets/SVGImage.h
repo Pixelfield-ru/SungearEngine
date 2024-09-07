@@ -24,7 +24,7 @@ namespace SGCore
         void removeSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
     
     protected:
-        void doLoad(const std::string& path) override;
+        void doLoad(const std::filesystem::path& path) override;
         
         std::vector<Ref<SVGImageSpecialization>> m_specializations;
         

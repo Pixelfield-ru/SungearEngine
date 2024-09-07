@@ -10,7 +10,7 @@
 namespace SGCore::FileUtils
 {
     std::string readFile(const std::filesystem::path& path);
-    char* readBytes(const std::string_view& path, size_t& outSize) noexcept;
+    char* readBytes(const std::filesystem::path& path, size_t& outSize) noexcept;
 
     void writeToFile(const std::filesystem::path& path, const std::string& text, bool append, bool createDirectories);
 

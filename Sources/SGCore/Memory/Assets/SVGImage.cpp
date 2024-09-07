@@ -6,9 +6,9 @@
 #include <SGCore/Logger/Logger.h>
 #include "SVGImage.h"
 
-void SGCore::SVGImage::doLoad(const std::string& path)
+void SGCore::SVGImage::doLoad(const std::filesystem::path& path)
 {
-    m_document = lunasvg::Document::loadFromFile(path);
+    m_document = lunasvg::Document::loadFromFile(Utils::toUTF8(path.u16string()));
 }
 
 SGCore::Ref<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept

@@ -22,7 +22,7 @@ namespace SGCore
         [[nodiscard]] std::string getData() const noexcept;
     
     protected:
-        void doLoad(const std::string& path) override;
+        void doLoad(const std::filesystem::path& path) override;
         
     private:
         std::string m_data;

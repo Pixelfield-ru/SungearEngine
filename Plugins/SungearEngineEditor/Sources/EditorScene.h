@@ -27,6 +27,8 @@ namespace SGE
         static void setCurrentScene(const SGCore::Ref<EditorScene>& scene) noexcept;
         SG_NOINLINE static SGCore::Ref<EditorScene> getCurrentScene() noexcept;
 
+        static SGCore::Ref<EditorScene> createSceneForEditor(const std::string& name) noexcept;
+
     private:
         static inline SGCore::Ref<EditorScene> s_currentScene;
     };

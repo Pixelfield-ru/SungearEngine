@@ -11,13 +11,13 @@
 #include "SGCore/Utils/FileUtils.h"
 
 void
-SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code,
+SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const std::string& code,
                                      SGCore::SGSLETranslator& translator, bool isRootShader,
                                      const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
     // std::cout << "loading shader: " << path << std::endl;
     
-    std::string replacedPath = SGCore::Utils::replaceAll<char>(path, "/", "_");
+    std::string replacedPath = Utils::toUTF8(SGCore::Utils::replaceAll<char16_t>(path.u16string(), u"/", u"_"));
     replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, "\\", "_");
     
     if(isRootShader)
@@ -26,7 +26,7 @@ SGCore::SGSLETranslator::processCode(const std::string& path, const std::string&
     }
     
     std::string correctedCode = sgsleCodeCorrector(code);
-    sgslePreprocessor(path, correctedCode, analyzedFile);
+    sgslePreprocessor(Utils::toUTF8(path.u16string()), correctedCode, analyzedFile);
     sgsleMainProcessor(analyzedFile, translator);
     
     if(translator.m_config.m_useOutputDebug && isRootShader)
@@ -37,13 +37,13 @@ SGCore::SGSLETranslator::processCode(const std::string& path, const std::string&
 }
 
 void
-SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code, SGSLETranslator& translator, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
+SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const std::string& code, SGSLETranslator& translator, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
     processCode(path, code, translator, true, analyzedFile);
 }
 
 void
-SGCore::SGSLETranslator::processCode(const std::string& path, const std::string& code, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
+SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const std::string& code, const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
     processCode(path, code, *this, analyzedFile);
 }

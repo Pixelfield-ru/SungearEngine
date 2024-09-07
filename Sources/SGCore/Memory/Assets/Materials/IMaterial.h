@@ -31,7 +31,8 @@ namespace SGCore
         * @return this
         */
         Ref<ITexture2D> findAndAddTexture2D(const SGTextureType& textureType,
-                                              const std::string& path);
+                                            const std::string& path,
+                                            AssetManager& toAssetManager = *AssetManager::getInstance());
 
         /**
          * Adds texture2D.
@@ -39,7 +40,7 @@ namespace SGCore
          * @param tex - Texture to add.
          */
         void addTexture2D(const SGTextureType& textureType,
-                                     const Ref<ITexture2D>& tex);
+                          const Ref<ITexture2D>& tex);
 
         void copyTextures(const Ref<IMaterial>& to) const noexcept;
 
@@ -108,7 +109,7 @@ namespace SGCore
         float m_roughnessFactor         = 1.0f;
         
         // TODO: impl
-        void doLoad(const std::string& path) override;
+        void doLoad(const std::filesystem::path& path) override;
         
         // first - shader name
         // std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;

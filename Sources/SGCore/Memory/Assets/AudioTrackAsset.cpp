@@ -70,7 +70,7 @@ void SGCore::AudioTrackAsset::putData(const uint16_t& numChannels, const uint16_
     setNumChannels(numChannels);
 }
 
-void SGCore::AudioTrackAsset::doLoad(const std::string& path)
+void SGCore::AudioTrackAsset::doLoad(const std::filesystem::path& path)
 {
     m_serializationType = SerializationType::SERIALIZE_META;
 
@@ -90,7 +90,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::string& path)
     }
     else
     {
-        LOG_E(SGCORE_TAG, "Audio file with extension '{}' is not supported. Path to audio file: '{}'", extension, path);
+        LOG_E(SGCORE_TAG, "Audio file with extension '{}' is not supported. Path to audio file: '{}'", extension, Utils::toUTF8(path.u16string()));
         return;
     }
     

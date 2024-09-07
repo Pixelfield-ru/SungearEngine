@@ -210,7 +210,7 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
     
     Mesh& entityMesh = lockedScene->getECSRegistry()->get<Mesh>(entity);
     
-    if(entityMesh.m_base.m_meshData->m_positions.empty())
+    if(entityMesh.m_base.getMeshData()->m_positions.empty())
     {
         LOG_E(SGCORE_TAG, "Batching error: can not add entity. Entity`s mesh does not have vertices.");
         return;
@@ -222,9 +222,9 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
         lastRanges = &*m_entitiesRanges.rbegin();
     }
     
-    size_t positionsCount = entityMesh.m_base.m_meshData->m_positions.size();
-    size_t uvsCount = entityMesh.m_base.m_meshData->m_uv.size();
-    size_t indicesCount = entityMesh.m_base.m_meshData->m_indices.size();
+    size_t positionsCount = entityMesh.m_base.getMeshData()->m_positions.size();
+    size_t uvsCount = entityMesh.m_base.getMeshData()->m_uv.size();
+    size_t indicesCount = entityMesh.m_base.getMeshData()->m_indices.size();
     
     /*std::cout << "========================" << std::endl;
     for(size_t i = 0; i < entityMesh.m_base.m_meshData->m_indices.size(); ++i)
@@ -371,13 +371,13 @@ void SGCore::Batch::updateArraysForEntity(const Ref<Scene>& lockedScene, const e
     Ref<Transform>& entityTransform = lockedScene->getECSRegistry()->get<Ref<Transform>>(entity);
     BatchEntityRanges& ranges = m_entitiesRanges[entityIdx];
     
-    size_t positionsCount = entityMesh.m_base.m_meshData->m_positions.size();
-    size_t uvsCount = entityMesh.m_base.m_meshData->m_uv.size();
-    size_t indicesCount = entityMesh.m_base.m_meshData->m_indices.size();
+    size_t positionsCount = entityMesh.m_base.getMeshData()->m_positions.size();
+    size_t uvsCount = entityMesh.m_base.getMeshData()->m_uv.size();
+    size_t indicesCount = entityMesh.m_base.getMeshData()->m_indices.size();
     
     for(size_t v = ranges.m_verticesRange.x; v < ranges.m_verticesRange.y; ++v)
     {
-        m_verticesPositions[v] = entityMesh.m_base.m_meshData->m_positions[v - ranges.m_verticesRange.x];
+        m_verticesPositions[v] = entityMesh.m_base.getMeshData()->m_positions[v - ranges.m_verticesRange.x];
         
         if(v % 2 == 0)
         {
@@ -406,7 +406,7 @@ void SGCore::Batch::updateArraysForEntity(const Ref<Scene>& lockedScene, const e
         }
         else
         {
-            m_UVs[uv] = entityMesh.m_base.m_meshData->m_uv[uv - ranges.m_UVsRange.x];
+            m_UVs[uv] = entityMesh.m_base.getMeshData()->m_uv[uv - ranges.m_UVsRange.x];
         }
     }
     
@@ -418,7 +418,7 @@ void SGCore::Batch::updateArraysForEntity(const Ref<Scene>& lockedScene, const e
         }
         else
         {
-            m_indices[i] = (ranges.m_verticesRange.x / 3) + entityMesh.m_base.m_meshData->m_indices[i - ranges.m_indicesRange.x];
+            m_indices[i] = (ranges.m_verticesRange.x / 3) + entityMesh.m_base.getMeshData()->m_indices[i - ranges.m_indicesRange.x];
         }
     }
     

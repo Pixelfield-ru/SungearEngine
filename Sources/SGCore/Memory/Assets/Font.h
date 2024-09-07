@@ -28,7 +28,7 @@ namespace SGCore
         }
         
     protected:
-        void doLoad(const std::string& path) override;
+        void doLoad(const std::filesystem::path& path) override;
         
     private:
         std::unordered_map<FontSpecializationSettings, Ref<FontSpecialization>> m_specializations;

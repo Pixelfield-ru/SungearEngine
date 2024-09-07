@@ -14,7 +14,7 @@ namespace SGCore
     struct ShaderFileAsset : public IAsset
     {
     protected:
-        void doLoad(const std::string& path) override;
+        void doLoad(const std::filesystem::path& path) override;
     };
 }
 

@@ -31,15 +31,15 @@ std::string SGCore::FileUtils::readFile(const std::filesystem::path& path)
     return out;
 }
 
-char* SGCore::FileUtils::readBytes(const std::string_view& path, size_t& outSize) noexcept
+char* SGCore::FileUtils::readBytes(const std::filesystem::path& path, size_t& outSize) noexcept
 {
-    std::ifstream stream(path.data(), std::ios::binary | std::ios::ate);
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
     stream.unsetf(std::ios::skipws);
     stream.exceptions(std::ios_base::badbit);
     
     if(!stream)
     {
-        LOG_E(SGCORE_TAG, "Read file error: File does not exist. Path: {}", path);
+        LOG_E(SGCORE_TAG, "Read file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
         return nullptr;
     }
     

@@ -6,13 +6,15 @@
 #include <spdlog/spdlog.h>
 #include <SGCore/Logger/Logger.h>
 
-void SGCore::XMLDocument::doLoad(const std::string& path)
+void SGCore::XMLDocument::doLoad(const std::filesystem::path& path)
 {
-    pugi::xml_parse_result parseResult = m_document.load_file(path.c_str());
+    const std::string u8Path = Utils::toUTF8(path.u16string());
+
+    pugi::xml_parse_result parseResult = m_document.load_file(u8Path.c_str());
     
     if(!parseResult)
     {
-        LOG_E(SGCORE_TAG, "Error while parsing XML document by path '{}': {}", path, parseResult.description());
+        LOG_E(SGCORE_TAG, "Error while parsing XML document by path '{}': {}", u8Path, parseResult.description());
         return;
     }
 }

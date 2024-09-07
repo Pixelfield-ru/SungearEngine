@@ -63,3 +63,34 @@ void SGE::EditorScene::saveByPath(const std::filesystem::path& toPath, const std
 
     SGCore::FileUtils::writeToFile(editorScenePath, SGCore::Serde::Serializer::toFormat(m_data), false, true);
 }
+
+SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::string& name) noexcept
+{
+    auto newScene = SGCore::MakeRef<SGCore::Scene>();
+    newScene->m_name = name;
+    SGCore::Scene::addScene(newScene);
+
+    auto editorScene = SGCore::MakeRef<EditorScene>();
+    editorScene->m_scene = newScene;
+
+    // adding standard entities with components
+    // adding editor-only camera
+    editorScene->m_data.m_editorCamera = newScene->getECSRegistry()->create();
+    {
+
+    }
+
+    // adding editor-only grid
+    editorScene->m_data.m_editorGrid = newScene->getECSRegistry()->create();
+    {
+
+    }
+
+    // adding scene atmosphere
+    auto atmosphereEntity = newScene->getECSRegistry()->create();
+    {
+
+    }
+
+    return editorScene;
+}
