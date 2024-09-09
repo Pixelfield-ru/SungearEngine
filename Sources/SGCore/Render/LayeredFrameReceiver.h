@@ -149,7 +149,7 @@ namespace SGCore
 
     public:
         LayeredFrameReceiver();
-        
+
         // contains only PostProcessFinalFXPass
         Ref<ISubPassShader> m_finalFrameFXShader;
         
@@ -187,11 +187,20 @@ namespace SGCore
         void clearPostProcessFrameBuffers() const noexcept;
         
         void attachmentDepthPass(const SGCore::Ref<SGCore::PostProcessLayer>& layer, SGFrameBufferAttachmentType attachmentType) noexcept;
+
+        void setRenderOverlayInSeparateFrameBuffer(bool renderOverlayInSeparateFrameBuffer) noexcept;
+        [[nodiscard]] bool isRenderOverlayInSeparateFrameBuffer() const noexcept;
+
+        [[nodiscard]] Ref<IFrameBuffer> getOverlayFrameBuffer() const noexcept;
         
     private:
         MeshDataRenderInfo m_postProcessQuadRenderInfo;
         Ref<IMeshData> m_postProcessQuad;
-        
+
+        bool m_renderOverlayInSeparateFrameBuffer = false;
+        // may be nullptr. this frame buffer has only one attachment (COLOR). not nullptr if m_renderOverlayInSeparateFrameBuffer == true
+        Ref<IFrameBuffer> m_overlayFrameBuffer;
+
         Ref<PostProcessLayer> m_defaultLayer;
         
         std::vector<Ref<PostProcessLayer>> m_layers;

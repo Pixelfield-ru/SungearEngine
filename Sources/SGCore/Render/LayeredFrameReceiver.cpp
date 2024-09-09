@@ -262,3 +262,45 @@ void SGCore::LayeredFrameReceiver::attachmentDepthPass
     
     // layer->m_frameBuffer->unbind();
 }
+
+void
+SGCore::LayeredFrameReceiver::setRenderOverlayInSeparateFrameBuffer(bool renderOverlayInSeparateFrameBuffer) noexcept
+{
+    m_renderOverlayInSeparateFrameBuffer = renderOverlayInSeparateFrameBuffer;
+
+    if(renderOverlayInSeparateFrameBuffer)
+    {
+        int primaryMonitorWidth;
+        int primaryMonitorHeight;
+
+        Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
+
+        m_overlayFrameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer());
+        m_overlayFrameBuffer->setSize(primaryMonitorWidth, primaryMonitorHeight);
+        m_overlayFrameBuffer->create();
+        m_overlayFrameBuffer->bind();
+        m_overlayFrameBuffer->addAttachment(
+                SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
+                SGGColorFormat::SGG_RGB,
+                SGGColorInternalFormat::SGG_RGB8,
+                0,
+                0
+        );
+
+        m_overlayFrameBuffer->unbind();
+    }
+    else
+    {
+        m_overlayFrameBuffer = nullptr;
+    }
+}
+
+bool SGCore::LayeredFrameReceiver::isRenderOverlayInSeparateFrameBuffer() const noexcept
+{
+    return m_renderOverlayInSeparateFrameBuffer;
+}
+
+SGCore::Ref<SGCore::IFrameBuffer> SGCore::LayeredFrameReceiver::getOverlayFrameBuffer() const noexcept
+{
+    return m_overlayFrameBuffer;
+}

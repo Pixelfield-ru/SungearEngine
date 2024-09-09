@@ -5,11 +5,15 @@
 #ifndef SUNGEARENGINEEDITOR_SCENEVIEW_H
 #define SUNGEARENGINEEDITOR_SCENEVIEW_H
 
+#include <SGCore/ImGuiWrap/Views/IView.h>
+
 namespace SGE
 {
-    struct SceneView
+    struct SceneView : public SGCore::ImGuiWrap::IView
     {
-
+        bool begin() final;
+        void renderBody() final;
+        void end() final;
     };
 }
 

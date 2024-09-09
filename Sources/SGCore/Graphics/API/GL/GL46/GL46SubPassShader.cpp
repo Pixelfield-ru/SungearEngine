@@ -75,15 +75,18 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
         GLint maxLogLength = 0;
         glGetProgramiv(m_programHandler, GL_INFO_LOG_LENGTH, &maxLogLength);
 
-        std::vector<GLchar> infoLog(maxLogLength);
-        glGetProgramInfoLog(m_programHandler, maxLogLength, &maxLogLength, &infoLog[0]);
+        if(maxLogLength > 0)
+        {
+            std::vector<GLchar> infoLog(maxLogLength);
+            glGetProgramInfoLog(m_programHandler, maxLogLength, &maxLogLength, &infoLog[0]);
+
+            LOG_E(SGCORE_TAG,
+                  "Error in shader by path: {}\n{}",
+                  m_fileAsset.lock()->getPath().string(),
+                  infoLog.data());
+        }
 
         destroy();
-
-        LOG_E(SGCORE_TAG,
-              "Error in shader by path: {}\n{}",
-              m_fileAsset.lock()->getPath().string(),
-              infoLog.data());
     }
 
     for(const GLuint shaderHandler : m_subShadersHandlers)

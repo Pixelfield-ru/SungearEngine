@@ -14,6 +14,7 @@
 #include "SceneTreeView.h"
 #include "InspectorView.h"
 #include "Logs/LogsWindow.h"
+#include "SceneView.h"
 
 namespace SGE
 {
@@ -45,6 +46,7 @@ namespace SGE
         SGCore::Ref<DirectoriesTreeExplorer> m_directoriesTreeExplorer;
         
         SGCore::Ref<SceneTreeView> m_sceneTreeView;
+        SGCore::Ref<SceneView> m_sceneView;
         SGCore::Ref<InspectorView> m_inspectorView;
         SGCore::Ref<LogsWindow> m_logsWindow;
 

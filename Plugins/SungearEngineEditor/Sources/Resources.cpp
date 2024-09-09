@@ -51,6 +51,11 @@ void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noex
     );
 }
 
+void SGE::Resources::unloadStandardResources(SGCore::AssetManager& fromManager) noexcept
+{
+    // fromManager.
+}
+
 SGCore::AssetManager& SGE::Resources::getEditorOnlyAssetManager() noexcept
 {
     return m_editorOnlyAssetManager;

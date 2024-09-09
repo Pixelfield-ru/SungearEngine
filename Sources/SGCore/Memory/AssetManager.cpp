@@ -31,3 +31,14 @@ void SGCore::AssetManager::clear() noexcept
     m_registry->clear();
     m_entities.clear();
 }
+
+void SGCore::AssetManager::fullRemoveAsset(const std::filesystem::path& aliasOrPath) noexcept
+{
+    auto foundIt = m_entities.find(aliasOrPath);
+    if(foundIt == m_entities.end()) return;
+
+    const auto& e = foundIt->second;
+    m_registry->destroy(e);
+
+    m_entities.erase(foundIt);
+}

@@ -35,8 +35,6 @@ extern "C" {
 #include "SGCore/Annotations/AnnotationsProcessor.h"
 #include "SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.h"
 
-SGCore::Ref<SGCore::Scene> testScene2;
-
 #include "SGCore/Scene/GeneratedSerdeSpecs.h"
 
 // #include "F:\Pixelfield\SungearEngine\SungearEngine\cmake-build-release\Sources\SGEntry\.generated\Serializers.h"
@@ -63,11 +61,10 @@ void coreInit()
 
     std::printf("init...\n");
 
-    testScene2 = SGCore::MakeRef<SGCore::Scene>();
-    testScene2->m_name = "TestScene";
-    testScene2->createDefaultSystems();
-    SGCore::Scene::addScene(testScene2);
-    SGCore::Scene::setCurrentScene("TestScene");
+    // fixme: FOR TEST
+    auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
+    SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
+    SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
 
     const char* sungearEngineRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
     if(!sungearEngineRoot)
@@ -203,10 +200,16 @@ void coreInit()
     // std::printf("deserialized struct: %s, %i\n", deserializedStruct.m_name.c_str(), deserializedStruct.m_bool);
 }
 
+void onFixedUpdate(const double& dt, const double& fixedDt)
+{
+    if(SGCore::Scene::getCurrentScene())
+    {
+        SGCore::Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
+    }
+}
+
 void onUpdate(const double& dt, const double& fixedDt)
 {
-    testScene2->update(dt, fixedDt);
-    
     SGCore::ImGuiWrap::ImGuiLayer::beginFrame();
     SGCore::ImGuiWrap::IView::getRoot()->render();
     SGCore::ImGuiWrap::ImGuiLayer::endFrame();
@@ -239,6 +242,11 @@ void onUpdate(const double& dt, const double& fixedDt)
         std::printf("unloaded plugin\n");
         SGCore::PluginsManager::unloadAllPlugins();
     }
+
+    if(SGCore::Scene::getCurrentScene())
+    {
+        SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
+    }
     
     /*try
     {
@@ -258,7 +266,8 @@ int main()
     
     CoreMain::onInit.connect<&coreInit>();
     CoreMain::getRenderTimer().onUpdate.connect<&onUpdate>();
-    
+    CoreMain::getFixedTimer().onUpdate.connect<&onFixedUpdate>();
+
     CoreMain::start();
     
     return 0;

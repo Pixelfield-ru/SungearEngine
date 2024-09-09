@@ -4,10 +4,10 @@
 
 #define SG_NOT_INCLUDE_LIGHTS
 
-#sg_include "../uniform_bufs_decl.glsl"
-#sg_include "../color_correction/aces.glsl"
-#sg_include "../defines.glsl"
-#sg_include "../primitives.glsl"
+#sg_include "../../uniform_bufs_decl.glsl"
+#sg_include "../../color_correction/aces.glsl"
+#sg_include "../../defines.glsl"
+#sg_include "../../primitives.glsl"
 
 // this subpass compares data from the depth attachment of the current layer and data from the depth attachments of other layers.
 // if a nearer pixel is found, then the color of the attachment that passes the depth check using this subpass is set to vec4(0, 0, 0, 1) (black)

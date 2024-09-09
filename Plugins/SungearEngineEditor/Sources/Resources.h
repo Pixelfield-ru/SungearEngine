@@ -15,6 +15,7 @@ namespace SGE
     struct Resources
     {
         static void loadStandardResources(SGCore::AssetManager& toManager = *SGCore::AssetManager::getInstance()) noexcept;
+        static void unloadStandardResources(SGCore::AssetManager& fromManager = *SGCore::AssetManager::getInstance()) noexcept;
 
         SG_NOINLINE static SGCore::AssetManager& getEditorOnlyAssetManager() noexcept;
         

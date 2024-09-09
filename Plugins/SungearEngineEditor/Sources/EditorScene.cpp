@@ -7,6 +7,19 @@
 #include <SGCore/Scene/Serializer.h>
 #include <SGCore/Scene/StandardSerdeSpecs.h>
 #include <SGCore/Utils/FileUtils.h>
+#include <SGCore/Transformations/Transform.h>
+#include <SGCore/Render/Camera3D.h>
+#include <SGCore/Transformations/Controllable3D.h>
+#include <SGCore/Render/RenderingBase.h>
+#include <SGCore/Render/LayeredFrameReceiver.h>
+#include <SGCore/Memory/AssetManager.h>
+#include <SGCore/Memory/Assets/ModelAsset.h>
+#include <SGCore/Render/SpacePartitioning/IgnoreOctrees.h>
+#include <SGCore/Render/Mesh.h>
+#include <SGCore/Render/Atmosphere/Atmosphere.h>
+#include <SGCore/Render/ShaderComponent.h>
+#include <SGCore/Memory/Assets/Materials/IMaterial.h>
+#include <SGCore/Graphics/API/ICubemapTexture.h>
 
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : BaseTypes<>, DerivedTypes<>
@@ -68,6 +81,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
 {
     auto newScene = SGCore::MakeRef<SGCore::Scene>();
     newScene->m_name = name;
+    newScene->createDefaultSystems();
     SGCore::Scene::addScene(newScene);
 
     auto editorScene = SGCore::MakeRef<EditorScene>();
@@ -77,7 +91,17 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
     // adding editor-only camera
     editorScene->m_data.m_editorCamera = newScene->getECSRegistry()->create();
     {
+        const auto& camera = editorScene->m_data.m_editorCamera;
 
+        SGCore::EntityBaseInfo& cameraBaseInfo = newScene->getECSRegistry()->emplace<SGCore::EntityBaseInfo>(camera);
+        cameraBaseInfo.setRawName("SGMainCamera");
+
+        newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(camera, SGCore::MakeRef<SGCore::Transform>());
+        newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Camera3D>>(camera, SGCore::MakeRef<SGCore::Camera3D>());
+        newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::RenderingBase>>(camera, SGCore::MakeRef<SGCore::RenderingBase>());
+        newScene->getECSRegistry()->emplace<SGCore::Controllable3D>(camera);
+        auto& layeredFrameReceiver = newScene->getECSRegistry()->emplace<SGCore::LayeredFrameReceiver>(camera);
+        layeredFrameReceiver.setRenderOverlayInSeparateFrameBuffer(true);
     }
 
     // adding editor-only grid
@@ -89,7 +113,29 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
     // adding scene atmosphere
     auto atmosphereEntity = newScene->getECSRegistry()->create();
     {
+        std::vector<SGCore::entity_t> skyboxEntities;
+        auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("cube_model");
+        cubeModel->m_nodes[0]->addOnScene(newScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities, newScene](const auto& entity) {
+            skyboxEntities.push_back(entity);
+            newScene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
+        });
 
+        atmosphereEntity = skyboxEntities[2];
+
+        SGCore::Mesh& skyboxMesh = newScene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
+        SGCore::ShaderComponent& skyboxShaderComponent = newScene->getECSRegistry()->emplace<SGCore::ShaderComponent>(atmosphereEntity);
+        SGCore::Atmosphere& atmosphereScattering = newScene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
+        // atmosphereScattering.m_sunRotation.z = 90.0;
+        skyboxMesh.m_base.getMaterial()->addTexture2D(SGTextureType::SGTT_SKYBOX,
+                                                      SGCore::AssetManager::getInstance()->loadAsset<SGCore::ICubemapTexture>("standard_skybox0")
+        );
+        // это топ пж
+        SGCore::ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
+        skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
+
+        auto& skyboxTransform = newScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(atmosphereEntity);
+
+        skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
     }
 
     return editorScene;

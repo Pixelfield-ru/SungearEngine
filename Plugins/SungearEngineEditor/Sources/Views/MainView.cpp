@@ -29,6 +29,9 @@ SGE::MainView::MainView()
     
     m_sceneTreeView = SGCore::MakeRef<SceneTreeView>();
     m_sceneTreeView->m_name = "SGE_SCENE_TREE_VIEW_WINDOW";
+
+    m_sceneView = SGCore::MakeRef<SceneView>();
+    m_sceneView->m_name = "SGE_SCENE_VIEW_WINDOW";
     
     m_inspectorView = SGCore::MakeRef<InspectorView>();
     m_inspectorView->m_name = "SGE_INSPECTOR_VIEW_WINDOW";
@@ -41,6 +44,7 @@ SGE::MainView::MainView()
     addChild(m_directoryExplorer);
     addChild(m_directoriesTreeExplorer);
     addChild(m_sceneTreeView);
+    addChild(m_sceneView);
     addChild(m_inspectorView);
     addChild(m_logsWindow);
 

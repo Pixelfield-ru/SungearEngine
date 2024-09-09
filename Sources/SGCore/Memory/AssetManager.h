@@ -388,7 +388,30 @@ namespace SGCore
                 return m_registry->try_get<Ref<AssetT>>(foundEntity->second) != nullptr;
             }
         }
-        
+
+        /**
+         * Completely deletes the asset (deletes all copies of the asset that were loaded as different types).
+         * @param aliasOrPath
+         */
+        void fullRemoveAsset(const std::filesystem::path& aliasOrPath) noexcept;
+
+        /**
+         * Deletes only one copy of an asset that was loaded as type AssetT.
+         * @tparam AssetT
+         * @param aliasOrPath
+         */
+        template<typename AssetT>
+        void removeAssetLoadedByType(const std::filesystem::path& aliasOrPath) noexcept
+        {
+            auto foundIt = m_entities.find(aliasOrPath);
+            if(foundIt == m_entities.end()) return;
+
+            const auto& e = foundIt->second;
+            m_registry->remove<SGCore::Ref<AssetT>>(e);
+
+            m_entities.erase(foundIt);
+        }
+
         void clear() noexcept;
         
         Ref<registry_t> getRegistry() noexcept;

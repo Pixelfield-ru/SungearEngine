@@ -21,6 +21,8 @@ namespace SGCore
     class IFrameBuffer : public UniqueNameWrapper, public std::enable_shared_from_this<IFrameBuffer>
     {
     public:
+        virtual ~IFrameBuffer() = default;
+
         glm::vec4 m_bgColor { 0.0, 0.0, 0.0, 1.0 };
         
         virtual void bindAttachment(const SGFrameBufferAttachmentType& attachmentType,

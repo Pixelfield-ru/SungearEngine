@@ -146,6 +146,7 @@ struct SGCore::Serde::SerdeSpec<Base, TFormatType> : SGCore::Serde::DerivedTypes
 void coreInit();
 
 void onUpdate(const double& dt, const double& fixedDt);
+void onFixedUpdate(const double& dt, const double& fixedDt);
 
 int main();
 

@@ -8,6 +8,7 @@
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Utils/EventListener.h"
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Logger/Logger.h"
 #include "IRenderPipeline.h"
 
 namespace SGCore
@@ -34,7 +35,7 @@ namespace SGCore
 
             if(!renderPipeline)
             {
-                LOG_E("Cannot set render pipeline with type '{}'. It is not exists.", typeid(PipelineT).name());
+                LOG_E(SGCORE_TAG, "Cannot set render pipeline with type '{}'. It is not exists.", typeid(PipelineT).name());
 
                 return;
             }
@@ -52,7 +53,7 @@ namespace SGCore
         {
             if(getRenderPipeline<PipelineT>())
             {
-                LOG_E("Cannot register render pipeline with type '{}'. It is already exists.", typeid(PipelineT).name());
+                LOG_E(SGCORE_TAG,"Cannot register render pipeline with type '{}'. It is already exists.", typeid(PipelineT).name());
                 
                 return;
             }

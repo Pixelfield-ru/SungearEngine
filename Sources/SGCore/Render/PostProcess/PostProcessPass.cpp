@@ -280,7 +280,13 @@ void SGCore::PostProcessPass::finalFrameFXPass
     auto ppFinalFXShader = receiver.m_finalFrameFXShader;
 
     if(!ppFinalFXShader) return;
-    
+
+    if(receiver.isRenderOverlayInSeparateFrameBuffer())
+    {
+        receiver.getOverlayFrameBuffer()->bind();
+        receiver.getOverlayFrameBuffer()->bindAttachmentToDrawIn(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
+    }
+
     ppFinalFXShader->bind();
 
     // binding all attachments from camera.m_ppLayersCombinedBuffer. these attachments are the assembled layer attachments
@@ -288,16 +294,23 @@ void SGCore::PostProcessPass::finalFrameFXPass
 
     CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
     ppFinalFXShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
-    
+
     CoreMain::getRenderer()->renderMeshData(
             m_postProcessQuad,
             m_postProcessQuadRenderInfo
     );
+
+    if(receiver.isRenderOverlayInSeparateFrameBuffer())
+    {
+        receiver.getOverlayFrameBuffer()->unbind();
+    }
     
     for(const auto& ppLayer : receiver.getLayers())
     {
         ppLayer->m_frameBuffer->bind();
         ppLayer->m_frameBuffer->clearAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
+        // TODO: MAY CAUSE ARTIFACTS ??? OR NOT??? CHECK IN FUTURE
+        ppLayer->m_frameBuffer->unbind();
     }
 }
 
