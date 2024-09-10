@@ -6,7 +6,7 @@
 
 #include "AudioTrackAsset.h"
 #include "SGCore/Audio/AudioUtils.h"
-#include "SGCore/Scene/Serializer.h"
+#include "SGCore/Serde/Serde.h"
 #include <stb_vorbis.c>
 
 SGCore::AudioTrackAsset::~AudioTrackAsset()

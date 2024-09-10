@@ -15,6 +15,7 @@ sg_predeclare_serdespec()
 
 namespace SGCore
 {
+    // todo: make variadic args in annotations
     struct AnnotationsProcessor
     {
         sg_serdespec_as_friend()

@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINEEDITOR_SERIALIZERS_H
 #define SUNGEARENGINEEDITOR_SERIALIZERS_H
 
-#include <SGCore/Scene/Serializer.h>
+#include <SGCore/Serde/Serde.h>
 #include "Toolchains/Toolchain.h"
 #include "Toolchains/VisualStudioToolchain.h"
 #include "Settings/EngineSettings.h"

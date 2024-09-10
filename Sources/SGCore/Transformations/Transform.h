@@ -10,13 +10,13 @@
 #include "TransformBase.h"
 #include "SGCore/Main/CoreGlobals.h"
 
-#include "SGCore/Scene/Serializer.h"
+#include "SGCore/Serde/Serde.h"
 #include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
     // sizeof(Transform) = 767
-    sg_struct(type = "component")
+    sg_struct(type = "component", getFromRegistryBy = "SGCore::Ref<SGCore::Transform>")
     struct Transform
     {
         sg_member()

@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_TESTSTRUCT_H
 
 #include "SGCore/Annotations/Annotations.h"
-#include "SGCore/Scene/Serializer.h"
+#include "SGCore/Serde/Serde.h"
 #include <string>
 #include <vector>
 

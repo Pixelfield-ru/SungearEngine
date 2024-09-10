@@ -82,7 +82,7 @@ namespace SGCore
 
         // size_t createBaseEntity() noexcept;
 
-        auto& getECSRegistry() noexcept
+        auto getECSRegistry() const noexcept
         {
             return m_ecsRegistry;
         }

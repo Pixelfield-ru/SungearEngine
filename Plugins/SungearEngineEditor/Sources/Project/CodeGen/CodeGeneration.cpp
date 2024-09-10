@@ -18,6 +18,7 @@ void SGE::CodeGeneration::generateCode(const std::vector<SGCore::AnnotationsProc
 
     // MAKING onInspectorViewComponentsChooseRenderFunctionCode =====
     std::string onInspectorViewComponentsChooseRenderFunctionCode;
+    std::string onEntitySaveFunctionCode;
 
     for(const auto& annotationsProcessor : annotationsProcessors)
     {
@@ -35,6 +36,8 @@ void SGE::CodeGeneration::generateCode(const std::vector<SGCore::AnnotationsProc
                         {
                             std::string structNameStr = std::any_cast<std::string>(structName->second.m_values[0]);
                             onInspectorViewComponentsChooseRenderFunctionCode += fmt::format("\t\tImGui::Text(\"{0}\");\n", structNameStr);
+
+                            onEntitySaveFunctionCode +=
                         }
                     }
                 }

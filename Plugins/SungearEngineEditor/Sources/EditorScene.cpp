@@ -4,8 +4,8 @@
 
 #include "EditorScene.h"
 
-#include <SGCore/Scene/Serializer.h>
-#include <SGCore/Scene/StandardSerdeSpecs.h>
+#include <SGCore/Serde/Serde.h>
+#include <SGCore/Serde/StandardSerdeSpecs.h>
 #include <SGCore/Utils/FileUtils.h>
 #include <SGCore/Transformations/Transform.h>
 #include <SGCore/Render/Camera3D.h>

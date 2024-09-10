@@ -5,7 +5,7 @@
 
 #include <SGCore/pch.h>
 
-#include "SGCore/Scene/Serializer.h"
+#include "SGCore/Serde/Serde.h"
 
 namespace fs = std::filesystem;
 
@@ -223,7 +223,10 @@ SGCore::AnnotationsProcessor::AnnotationsProcessor() noexcept
         // type of struct or class
         newAnnotation.m_acceptableArgs["type"].m_name = "type";
         newAnnotation.m_acceptableArgs["type"].m_isUnnecessary = true;
-        
+
+        newAnnotation.m_acceptableArgs["getFromRegistryBy"].m_name = "getFromRegistryBy";
+        newAnnotation.m_acceptableArgs["getFromRegistryBy"].m_isUnnecessary = true;
+
         newAnnotation.validate = [newAnnotation, this](Annotation& annotation,
                                                            const std::vector<std::string>& words, std::int64_t wordIndex) -> std::string {
             std::string argsAcceptableErr = newAnnotation.validateAcceptableArgs(annotation);

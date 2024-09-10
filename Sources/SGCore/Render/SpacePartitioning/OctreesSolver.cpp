@@ -38,7 +38,7 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
     
     if(!lockedScene) return;
     
-    auto& registry = lockedScene->getECSRegistry();
+    auto registry = lockedScene->getECSRegistry();
     
     auto octreesView = registry->view<Ref<Octree>>();
     

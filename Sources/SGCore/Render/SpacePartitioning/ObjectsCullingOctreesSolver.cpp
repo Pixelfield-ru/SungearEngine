@@ -16,7 +16,7 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
     
     if(!lockedScene) return;
     
-    auto& registry = lockedScene->getECSRegistry();
+    auto registry = lockedScene->getECSRegistry();
 
     auto objectsCullingOctrees = registry->view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
     auto camerasView = registry->view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();

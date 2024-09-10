@@ -2,8 +2,8 @@
 // Created by Ilya on 14.08.2024.
 //
 
-#ifndef SUNGEARENGINE_SERIALIZER_H
-#define SUNGEARENGINE_SERIALIZER_H
+#ifndef SUNGEARENGINE_SERDE_H
+#define SUNGEARENGINE_SERDE_H
 
 #include "SGCore/Utils/TypeTraits.h"
 #include "SGCore/Utils/Utils.h"
@@ -1465,4 +1465,4 @@ namespace SGCore::Serde
     };
 }
 
-#endif //SUNGEARENGINE_SERIALIZER_H
+#endif //SUNGEARENGINE_SERDE_H

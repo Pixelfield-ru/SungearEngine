@@ -11,7 +11,7 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Utils/Event.h"
-#include "SGCore/Scene/SerializationType.h"
+#include "SGCore/Serde/SerializationType.h"
 
 namespace SGCore
 {

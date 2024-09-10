@@ -38,7 +38,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
 
     if(m_changedModelMatrices.isLocked() || m_entitiesForPhysicsUpdateToCheck.isLocked()) return;
 
-    auto& registry = m_sharedScene->getECSRegistry();
+    auto registry = m_sharedScene->getECSRegistry();
     
     auto transformsView = registry->view<Ref<Transform>>();
     

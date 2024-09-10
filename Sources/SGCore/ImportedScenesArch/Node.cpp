@@ -21,7 +21,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
     // if(!layer) return entt::null;
 
-    auto& registry = scene->getECSRegistry();
+    auto registry = scene->getECSRegistry();
 
     entity_t parentEntity = registry->create();
 

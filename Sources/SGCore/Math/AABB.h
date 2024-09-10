@@ -8,7 +8,7 @@
 #include "SGCore/pch.h"
 
 #include "MathUtils.h"
-#include "SGCore/Scene/Serializer.h"
+#include "SGCore/Serde/Serde.h"
 #include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore

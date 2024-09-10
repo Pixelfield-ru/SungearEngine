@@ -11,7 +11,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 
-#include "SGCore/Scene/Serializer.h"
+#include "SGCore/Serde/Serde.h"
 #include "SGCore/Memory/Assets/AudioTrackAsset.h"
 
 namespace SGCore

@@ -4,9 +4,9 @@
 
 #include "EngineSettings.h"
 
-#include <SGCore/Scene/Serializer.h>
-#include <SGCore/Scene/StandardSerdeSpecs.h>
-#include <SGCore/Scene/GeneratedSerdeSpecs.h>
+#include <SGCore/Serde/Serde.h>
+#include <SGCore/Serde/StandardSerdeSpecs.h>
+#include <SGCore/Serde/GeneratedSerdeSpecs.h>
 
 #include "Utils/Serializers.h"
 

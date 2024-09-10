@@ -65,7 +65,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
     if(lockedScene)
     {
-        auto& registry = lockedScene->getECSRegistry();
+        auto registry = lockedScene->getECSRegistry();
         
         Ref<TransformationsUpdater> transformationsUpdater = lockedScene->getSystem<TransformationsUpdater>();
         

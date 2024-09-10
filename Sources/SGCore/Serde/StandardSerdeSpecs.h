@@ -5,10 +5,10 @@
 #ifndef SUNGEARENGINE_STANDARDSERDESPECS_H
 #define SUNGEARENGINE_STANDARDSERDESPECS_H
 
-#include "Serializer.h"
+#include "Serde.h"
 #include <glm/glm.hpp>
-#include "Scene.h"
-#include "EntityBaseInfo.h"
+#include "SGCore/Scene/Scene.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
 
 namespace SGCore::Serde
 {

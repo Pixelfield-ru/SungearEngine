@@ -120,7 +120,7 @@ void SGCore::IMeshData::setData(const Ref<IMeshData>& other) noexcept
 
 SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
 {
-    auto& registry = scene->getECSRegistry();
+    auto registry = scene->getECSRegistry();
     
     auto meshEntity = registry->create();
     

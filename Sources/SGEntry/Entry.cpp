@@ -35,7 +35,7 @@ extern "C" {
 #include "SGCore/Annotations/AnnotationsProcessor.h"
 #include "SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.h"
 
-#include "SGCore/Scene/GeneratedSerdeSpecs.h"
+#include "SGCore/Serde/GeneratedSerdeSpecs.h"
 
 // #include "F:\Pixelfield\SungearEngine\SungearEngine\cmake-build-release\Sources\SGEntry\.generated\Serializers.h"
 /*#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"

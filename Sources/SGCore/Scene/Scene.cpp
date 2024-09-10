@@ -22,8 +22,8 @@
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
-#include "Serializer.h"
-#include "StandardSerdeSpecs.h"
+#include "SGCore/Serde/Serde.h"
+#include "SGCore/Serde/StandardSerdeSpecs.h"
 
 SGCore::Scene::Scene()
 {

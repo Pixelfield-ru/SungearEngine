@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Serializer.h"
+#include "Serde.h"
 // SERIALIZER FORWARD DECL FOR struct 'TestNamespace::MyStruct'
 #include "SGCore/Annotations/.references/TestStruct.h"
 template<typename T, SGCore::Serde::FormatType TFormatType>
@@ -214,7 +214,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::UICamera, TFormatType> : SGCore::Serde::
 };
 // =================================================================================
 // SERIALIZER FORWARD DECL FOR struct 'SGCore::EntityBaseInfo'
-#include "EntityBaseInfo.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType> : SGCore::Serde::BaseTypes<SGCore::UniqueNameWrapper>,
         SGCore::Serde::DerivedTypes<>
@@ -228,7 +228,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType> : SGCore::S
 };
 // =================================================================================
 // SERIALIZER FORWARD DECL FOR struct 'SGCore::Layer'
-#include "Layer.h"
+#include "SGCore/Scene/Layer.h"
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<SGCore::Layer, TFormatType> : SGCore::Serde::BaseTypes<>,
         SGCore::Serde::DerivedTypes<>
