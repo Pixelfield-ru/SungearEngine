@@ -34,6 +34,7 @@ extern "C" {
 #include "SGCore/Utils/Formatter.h"
 #include "SGCore/Annotations/AnnotationsProcessor.h"
 #include "SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.h"
+#include "SGCore/Annotations/StandardCodeGeneration/CodeGeneration.h"
 
 #include "SGCore/Serde/GeneratedSerdeSpecs.h"
 
@@ -122,7 +123,9 @@ void coreInit()
                                             { sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
                                               sungearRootStr + "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
                                               sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp"});
-    
+
+    SGCore::CodeGen::Generator generator;
+    generator.generate(annotationsProcessor, sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/TemplatedSerializerSpecForwardDecl.h", "");
     SGCore::CodeGen::SerdeSpecsGenerator serializersGenerator;
     std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./.generated/GeneratedSerializers.h").c_str());
     
