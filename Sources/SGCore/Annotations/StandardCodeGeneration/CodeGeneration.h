@@ -16,18 +16,23 @@ namespace SGCore::CodeGen
             K_FILESTART,
             K_EOF,
             K_STARTEXPR,
-            K_LINEEND,
+            K_ENDEXPR,
             K_FOR,
             K_ENDFOR,
             K_IN,
             K_IF,
+            K_ELSE,
             K_ENDIF,
+            K_VARIABLE_PLACE_START,
+            K_VARIABLE_PLACE_END,
+            K_VAR,
 
             // char-tokens
             K_LPAREN,
             K_RPAREN,
             K_LBLOCK,
             K_RBLOCK,
+            K_DOT,
 
             K_UNKNOWN
         };
@@ -35,6 +40,8 @@ namespace SGCore::CodeGen
         struct ASTToken
         {
             Tokens m_type = Tokens::K_EOF;
+            // optional
+            std::string m_name;
             std::shared_ptr<Lang::ASTToken> m_parent;
             std::vector<std::shared_ptr<Lang::ASTToken>> m_children;
         };
@@ -53,19 +60,31 @@ namespace SGCore::CodeGen
                 { "endfor", Lang::Tokens::K_ENDFOR },
                 { "in", Lang::Tokens::K_IN },
                 { "if", Lang::Tokens::K_IF },
+                { "else", Lang::Tokens::K_ELSE },
                 { "endif", Lang::Tokens::K_ENDIF },
                 { "(", Lang::Tokens::K_LPAREN },
                 { ")", Lang::Tokens::K_RPAREN },
                 { "{", Lang::Tokens::K_LBLOCK },
-                { "}", Lang::Tokens::K_RBLOCK }
+                { "}", Lang::Tokens::K_RBLOCK },
+                { ".", Lang::Tokens::K_DOT }
         };
 
         std::shared_ptr<Lang::ASTToken> m_AST = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_FILESTART);
+
+        void analyzeCurrentWordAndCharForTokens(std::shared_ptr<Lang::ASTToken>& currentToken,
+                                                std::string& word, char curChar) noexcept;
 
         std::shared_ptr<Lang::ASTToken> addToken(const std::shared_ptr<Lang::ASTToken>& toToken,
                                                  Lang::Tokens tokenType) noexcept;
 
         Lang::Tokens getTokenByName(const std::string& tokenName) const noexcept;
+
+        void gotoParent(std::shared_ptr<Lang::ASTToken>& token) const noexcept;
+
+        [[nodiscard]] bool isSpace(char c) noexcept;
+
+        // tmp variables
+        bool m_isExprStarted = false;
     };
 }
 
