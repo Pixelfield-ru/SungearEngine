@@ -7,7 +7,7 @@
 
 #include "{{ struct.filePath }}"
 
-template<{{ struct.templates.place(separator: ", ") }} SGCore::Serde::FormatType TFormatType>
+template<{{struct.templates.place(separator: ", ") }} SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType> : SGCore::Serde::BaseTypes<{{ struct.baseTypes.place(separator: ", ") }}>,
     SGCore::Serde::DerivedTypes<{{ struct.derivedTypes.place(separator: ", ") }}>
 {

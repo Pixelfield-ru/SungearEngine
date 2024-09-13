@@ -9,6 +9,8 @@ void SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotati
                                           const std::filesystem::path& outputFile) noexcept
 {
     std::string templateFileText = Utils::reduce(FileUtils::readFile(templateFile));
+    // instead of EOF
+    templateFileText += '\n';
 
     if(templateFileText.empty())
     {
@@ -23,11 +25,20 @@ void SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotati
 
     for(size_t ci = 0; ci < templateFileText.size(); ++ci)
     {
-        char curChar = templateFileText[ci];
+        const char& curChar = templateFileText[ci];
+
+        if(currentToken)
+        {
+            if(!m_skipCodeCopy)
+            {
+                currentToken->m_text += curChar;
+            }
+        }
 
         if(curChar == '\n')
         {
-            analyzeCurrentWordAndCharForTokens(currentToken, currentWord, curChar);
+            m_skipCodeCopy = false;
+            analyzeCurrentWordAndCharForTokens(currentToken, currentWord, templateFileText, ci);
             currentWord = "";
             m_isExprStarted = false;
 
@@ -36,14 +47,14 @@ void SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotati
 
         if(curChar == ' ')
         {
-            analyzeCurrentWordAndCharForTokens(currentToken, currentWord, curChar);
+            analyzeCurrentWordAndCharForTokens(currentToken, currentWord, templateFileText, ci);
             currentWord = "";
             continue;
         }
 
         currentWord += curChar;
 
-        analyzeCurrentWordAndCharForTokens(currentToken, currentWord, curChar);
+        analyzeCurrentWordAndCharForTokens(currentToken, currentWord, templateFileText, ci);
 
         // always in the end of this cycle
         if(ci == templateFileText.size() - 1)
@@ -56,13 +67,26 @@ void SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotati
 }
 
 void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_ptr<Lang::ASTToken>& currentToken,
-                                                                    std::string& word, char curChar) noexcept
+                                                                    std::string& word,
+                                                                    const std::string& text,
+                                                                    std::size_t& curCharIdx,
+                                                                    bool forceAddAsWord) noexcept
 {
-    Lang::Tokens currentWordTokenType = getTokenByName(word);
-    Lang::Tokens currentCharTokenType = getTokenByName(std::string() + curChar);
+    size_t nextCharIdx = curCharIdx + 1;
+
+    const char& curChar = text[curCharIdx];
+    char nextChar = '\0';
+    if(curCharIdx + 1 < text.size())
+    {
+        nextChar = text[curCharIdx + 1];
+    }
+
+    Lang::Tokens currentWordTokenType = getTokenTypeByName(word);
+    Lang::Tokens currentCharTokenType = getTokenTypeByName(std::string() + curChar);
 
     if(currentWordTokenType == Lang::Tokens::K_STARTEXPR)
     {
+        m_skipCodeCopy = true;
         m_isExprStarted = true;
         // auto newBranch = addToken(currentToken, Lang::Tokens::K_STARTEXPR);
         // currentToken = newBranch;
@@ -70,33 +94,66 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
     }
     else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_FOR && std::isspace(curChar))
     {
+        if(m_isPlacementStarted)
+        {
+            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
+            return;
+        }
+
         currentToken = addToken(currentToken, Lang::Tokens::K_FOR);
+        currentToken->m_isExprToken = true;
         word = "";
     }
     else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_ENDFOR && isSpace(curChar))
     {
-        addToken(currentToken, Lang::Tokens::K_ENDFOR);
+        if(m_isPlacementStarted)
+        {
+            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
+            return;
+        }
+
+        addToken(currentToken, Lang::Tokens::K_ENDFOR)->m_isExprToken = true;
         gotoParent(currentToken);
         word = "";
     }
     else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_IF && isSpace(curChar))
     {
+        if(m_isPlacementStarted)
+        {
+            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
+            return;
+        }
+
         currentToken = addToken(currentToken, Lang::Tokens::K_IF);
+        currentToken->m_isExprToken = true;
         word = "";
     }
     else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_ELSE && isSpace(curChar))
     {
+        if(m_isPlacementStarted)
+        {
+            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
+            return;
+        }
+
         currentToken = addToken(currentToken, Lang::Tokens::K_ELSE);
+        currentToken->m_isExprToken = true;
         word = "";
     }
     else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_ENDIF && isSpace(curChar))
     {
+        if(m_isPlacementStarted)
+        {
+            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
+            return;
+        }
+
         if(currentToken->m_type == Lang::Tokens::K_ELSE)
         {
             gotoParent(currentToken);
         }
-        addToken(currentToken, Lang::Tokens::K_ENDIF);
-        currentToken = currentToken->m_parent;
+        addToken(currentToken, Lang::Tokens::K_ENDIF)->m_isExprToken = true;
+        gotoParent(currentToken);
         word = "";
     }
     else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_IN && isSpace(curChar))
@@ -104,40 +161,56 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         addToken(currentToken, Lang::Tokens::K_IN);
         word = "";
     }
-    else if(m_isExprStarted && currentCharTokenType == Lang::Tokens::K_LPAREN)
+    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_LPAREN)
     {
         //addToken(currentToken, Lang::Tokens::K_LPAREN);
         if(currentWordTokenType != currentCharTokenType)
         {
             std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, ' ');
+            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
         }
         addToken(currentToken, Lang::Tokens::K_LPAREN);
         word = "";
     }
-    else if(m_isExprStarted && currentCharTokenType == Lang::Tokens::K_RPAREN)
+    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_RPAREN)
     {
         if(currentWordTokenType != currentCharTokenType)
         {
             std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, ' ');
+            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
         }
         addToken(currentToken, Lang::Tokens::K_RPAREN);
         word = "";
     }
-    else if(m_isExprStarted && currentCharTokenType == Lang::Tokens::K_DOT)
+    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_DOT)
     {
         if(currentWordTokenType != currentCharTokenType)
         {
             std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, ' ');
+            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
         }
         addToken(currentToken, Lang::Tokens::K_DOT);
         word = "";
     }
+    else if(getTokenTypeByName(std::string({curChar, nextChar})) == Lang::Tokens::K_START_PLACEMENT)
+    {
+        ++curCharIdx;
+        m_skipCodeCopy = true;
+        m_isPlacementStarted = true;
+        currentToken = addToken(currentToken, Lang::Tokens::K_START_PLACEMENT);
+        word = "";
+    }
+    else if(currentWordTokenType == Lang::Tokens::K_END_PLACEMENT)
+    {
+        m_skipCodeCopy = false;
+        m_isPlacementStarted = false;
+        addToken(currentToken, Lang::Tokens::K_END_PLACEMENT);
+        gotoParent(currentToken);
+        word = "";
+    }
     else
     {
-        if((isSpace(curChar) || curChar == '.') && m_isExprStarted && !word.empty())
+        if((isSpace(curChar) || forceAddAsWord) && (m_isExprStarted || m_isPlacementStarted) && !word.empty())
         {
             addToken(currentToken, Lang::Tokens::K_VAR)->m_name = std::string(word.begin(), word.end());
         }
@@ -155,7 +228,7 @@ SGCore::CodeGen::Generator::addToken(const std::shared_ptr<Lang::ASTToken>& toTo
     return newToken;
 }
 
-SGCore::CodeGen::Lang::Tokens SGCore::CodeGen::Generator::getTokenByName(const std::string& tokenName) const noexcept
+SGCore::CodeGen::Lang::Tokens SGCore::CodeGen::Generator::getTokenTypeByName(const std::string& tokenName) const noexcept
 {
     const auto foundIt = m_tokensLookup.find(tokenName);
     if(foundIt == m_tokensLookup.end())
@@ -168,7 +241,7 @@ SGCore::CodeGen::Lang::Tokens SGCore::CodeGen::Generator::getTokenByName(const s
 
 bool SGCore::CodeGen::Generator::isSpace(char c) noexcept
 {
-    return c == ' ' || c == '\n';
+    return c == ' ' || c == '\n' || c == '\0';
 }
 
 void SGCore::CodeGen::Generator::gotoParent(std::shared_ptr<Lang::ASTToken>& token) const noexcept

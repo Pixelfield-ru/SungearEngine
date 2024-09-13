@@ -11,6 +11,7 @@ namespace SGCore::CodeGen
 {
     namespace Lang
     {
+        // TODO:: ADD K_CPP_CODE_LINE
         enum class Tokens
         {
             K_FILESTART,
@@ -23,8 +24,8 @@ namespace SGCore::CodeGen
             K_IF,
             K_ELSE,
             K_ENDIF,
-            K_VARIABLE_PLACE_START,
-            K_VARIABLE_PLACE_END,
+            K_START_PLACEMENT,
+            K_END_PLACEMENT,
             K_VAR,
 
             // char-tokens
@@ -42,6 +43,8 @@ namespace SGCore::CodeGen
             Tokens m_type = Tokens::K_EOF;
             // optional
             std::string m_name;
+            std::string m_text;
+            bool m_isExprToken = false;
             std::shared_ptr<Lang::ASTToken> m_parent;
             std::vector<std::shared_ptr<Lang::ASTToken>> m_children;
         };
@@ -56,6 +59,8 @@ namespace SGCore::CodeGen
     private:
         std::unordered_map<std::string, Lang::Tokens> m_tokensLookup {
                 { "##", Lang::Tokens::K_STARTEXPR },
+                { "{{", Lang::Tokens::K_START_PLACEMENT },
+                { "}}", Lang::Tokens::K_END_PLACEMENT },
                 { "for", Lang::Tokens::K_FOR },
                 { "endfor", Lang::Tokens::K_ENDFOR },
                 { "in", Lang::Tokens::K_IN },
@@ -72,12 +77,15 @@ namespace SGCore::CodeGen
         std::shared_ptr<Lang::ASTToken> m_AST = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_FILESTART);
 
         void analyzeCurrentWordAndCharForTokens(std::shared_ptr<Lang::ASTToken>& currentToken,
-                                                std::string& word, char curChar) noexcept;
+                                                std::string& word,
+                                                const std::string& text,
+                                                std::size_t& curCharIdx,
+                                                bool forceAddAsWord = false) noexcept;
 
         std::shared_ptr<Lang::ASTToken> addToken(const std::shared_ptr<Lang::ASTToken>& toToken,
                                                  Lang::Tokens tokenType) noexcept;
 
-        Lang::Tokens getTokenByName(const std::string& tokenName) const noexcept;
+        Lang::Tokens getTokenTypeByName(const std::string& tokenName) const noexcept;
 
         void gotoParent(std::shared_ptr<Lang::ASTToken>& token) const noexcept;
 
@@ -85,6 +93,10 @@ namespace SGCore::CodeGen
 
         // tmp variables
         bool m_isExprStarted = false;
+        bool m_isPlacementStarted = false;
+
+        // skipping this lang exprs to copy only c++ code
+        bool m_skipCodeCopy = false;
     };
 }
 
