@@ -11,7 +11,6 @@ namespace SGCore::CodeGen
 {
     namespace Lang
     {
-        // TODO:: ADD K_CPP_CODE_LINE
         enum class Tokens
         {
             K_FILESTART,
@@ -27,6 +26,7 @@ namespace SGCore::CodeGen
             K_START_PLACEMENT,
             K_END_PLACEMENT,
             K_VAR,
+            K_CPP_CODE_LINE,
 
             // char-tokens
             K_LPAREN,
@@ -43,18 +43,17 @@ namespace SGCore::CodeGen
             Tokens m_type = Tokens::K_EOF;
             // optional
             std::string m_name;
-            std::string m_text;
+            std::string m_cppCode;
             bool m_isExprToken = false;
-            std::shared_ptr<Lang::ASTToken> m_parent;
+            std::weak_ptr<Lang::ASTToken> m_parent;
             std::vector<std::shared_ptr<Lang::ASTToken>> m_children;
         };
     }
 
     struct Generator
     {
-        void generate(AnnotationsProcessor& annotationsProcessor,
-                      const std::filesystem::path& templateFile,
-                      const std::filesystem::path& outputFile) noexcept;
+        [[nodiscard]] std::string generate(AnnotationsProcessor& annotationsProcessor,
+                                           const std::filesystem::path& templateFile) noexcept;
 
     private:
         std::unordered_map<std::string, Lang::Tokens> m_tokensLookup {
@@ -75,6 +74,11 @@ namespace SGCore::CodeGen
         };
 
         std::shared_ptr<Lang::ASTToken> m_AST = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_FILESTART);
+        std::shared_ptr<Lang::ASTToken> m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CPP_CODE_LINE);
+
+        void buildAST(const std::string& templateFileText) noexcept;
+        void generateCodeUsingAST(const std::shared_ptr<Lang::ASTToken>& token,
+                                  std::string& outputString) noexcept;
 
         void analyzeCurrentWordAndCharForTokens(std::shared_ptr<Lang::ASTToken>& currentToken,
                                                 std::string& word,

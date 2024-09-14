@@ -125,7 +125,8 @@ void coreInit()
                                               sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp"});
 
     SGCore::CodeGen::Generator generator;
-    generator.generate(annotationsProcessor, sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/TemplatedSerializerSpecForwardDecl.h", "");
+    std::string generated = generator.generate(annotationsProcessor, sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/TemplatedSerializerSpecForwardDecl.h");
+    SGCore::FileUtils::writeToFile("generated.h", generated, false, true);
     SGCore::CodeGen::SerdeSpecsGenerator serializersGenerator;
     std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./.generated/GeneratedSerializers.h").c_str());
     

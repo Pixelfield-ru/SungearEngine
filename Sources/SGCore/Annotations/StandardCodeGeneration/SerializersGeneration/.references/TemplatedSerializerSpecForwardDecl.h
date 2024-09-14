@@ -7,7 +7,7 @@
 
 #include "{{ struct.filePath }}"
 
-template<{{struct.templates.place(separator: ", ") }} SGCore::Serde::FormatType TFormatType>
+template<{{struct.templates.place(separator: ", ") }}SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType> : SGCore::Serde::BaseTypes<{{ struct.baseTypes.place(separator: ", ") }}>,
     SGCore::Serde::DerivedTypes<{{ struct.derivedTypes.place(separator: ", ") }}>
 {
@@ -25,7 +25,7 @@ struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>
 
 ## for struct in structs
 
-template<{{ struct.templates.place(separator: ", ") }}, SGCore::Serde::FormatType TFormatType>
+template<{{ struct.templates.place(separator: ", ") }}SGCore::Serde::FormatType TFormatType>
 void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::serialize(SGCore::Serde::SerializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept
 {
     ## for member in struct.members
@@ -35,7 +35,7 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
     ## endfor
 }
 
-template<{{ struct.templates.place(separator: ", ") }}, SGCore::Serde::FormatType TFormatType>
+template<{{ struct.templates.place(separator: ", ") }}SGCore::Serde::FormatType TFormatType>
 void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept
 {
     ## for member in struct.members

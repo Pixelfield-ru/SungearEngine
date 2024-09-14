@@ -4,14 +4,25 @@
 
 #include "CodeGeneration.h"
 
-void SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotationsProcessor,
-                                          const std::filesystem::path& templateFile,
-                                          const std::filesystem::path& outputFile) noexcept
+std::string SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotationsProcessor,
+                                                 const std::filesystem::path& templateFile) noexcept
 {
     std::string templateFileText = Utils::reduce(FileUtils::readFile(templateFile));
     // instead of EOF
     templateFileText += '\n';
 
+    std::string outputString;
+
+    buildAST(templateFileText);
+    generateCodeUsingAST(m_AST, outputString);
+
+    std::printf("end\n");
+
+    return outputString;
+}
+
+void SGCore::CodeGen::Generator::buildAST(const std::string& templateFileText) noexcept
+{
     if(templateFileText.empty())
     {
         m_AST->m_type = Lang::Tokens::K_EOF;
@@ -27,16 +38,19 @@ void SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotati
     {
         const char& curChar = templateFileText[ci];
 
-        if(currentToken)
+        if(m_currentCPPCodeToken && !m_skipCodeCopy)
         {
-            if(!m_skipCodeCopy)
-            {
-                currentToken->m_text += curChar;
-            }
+            m_currentCPPCodeToken->m_cppCode += curChar;
         }
 
         if(curChar == '\n')
         {
+            if(m_currentCPPCodeToken)
+            {
+                currentToken->m_children.push_back(m_currentCPPCodeToken);
+            }
+            m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CPP_CODE_LINE);
+
             m_skipCodeCopy = false;
             analyzeCurrentWordAndCharForTokens(currentToken, currentWord, templateFileText, ci);
             currentWord = "";
@@ -57,13 +71,61 @@ void SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotati
         analyzeCurrentWordAndCharForTokens(currentToken, currentWord, templateFileText, ci);
 
         // always in the end of this cycle
-        if(ci == templateFileText.size() - 1)
+        /*if(ci == templateFileText.size() - 1)
         {
 
+        }*/
+    }
+}
+
+void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang::ASTToken>& token,
+                                                      std::string& outputString) noexcept
+{
+    for(const auto& child : token->m_children)
+    {
+        switch(child->m_type)
+        {
+            case Lang::Tokens::K_STARTEXPR:break;
+            case Lang::Tokens::K_ENDEXPR:break;
+            case Lang::Tokens::K_FOR:
+            {
+                generateCodeUsingAST(child, outputString);
+                break;
+            }
+            case Lang::Tokens::K_ENDFOR:break;
+            case Lang::Tokens::K_IN:break;
+            case Lang::Tokens::K_IF:
+            {
+                generateCodeUsingAST(child, outputString);
+                break;
+            }
+            case Lang::Tokens::K_ELSE:
+            {
+                generateCodeUsingAST(child, outputString);
+                break;
+            }
+            case Lang::Tokens::K_ENDIF:break;
+            case Lang::Tokens::K_START_PLACEMENT:
+            {
+                generateCodeUsingAST(child, outputString);
+                break;
+            }
+            case Lang::Tokens::K_END_PLACEMENT:break;
+            case Lang::Tokens::K_VAR:break;
+            case Lang::Tokens::K_CPP_CODE_LINE:
+            {
+                outputString += child->m_cppCode;
+
+                break;
+            }
+            case Lang::Tokens::K_LPAREN:break;
+            case Lang::Tokens::K_RPAREN:break;
+            case Lang::Tokens::K_LBLOCK:break;
+            case Lang::Tokens::K_RBLOCK:break;
+            case Lang::Tokens::K_DOT:break;
+            case Lang::Tokens::K_UNKNOWN:break;
         }
     }
-
-    std::printf("end\n");
 }
 
 void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_ptr<Lang::ASTToken>& currentToken,
@@ -86,6 +148,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
 
     if(currentWordTokenType == Lang::Tokens::K_STARTEXPR)
     {
+        m_currentCPPCodeToken = nullptr;
         m_skipCodeCopy = true;
         m_isExprStarted = true;
         // auto newBranch = addToken(currentToken, Lang::Tokens::K_STARTEXPR);
@@ -194,6 +257,10 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
     }
     else if(getTokenTypeByName(std::string({curChar, nextChar})) == Lang::Tokens::K_START_PLACEMENT)
     {
+        m_currentCPPCodeToken->m_cppCode.erase(m_currentCPPCodeToken->m_cppCode.size() - 1);
+        currentToken->m_children.push_back(m_currentCPPCodeToken);
+        m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CPP_CODE_LINE);
+
         ++curCharIdx;
         m_skipCodeCopy = true;
         m_isPlacementStarted = true;
@@ -246,8 +313,9 @@ bool SGCore::CodeGen::Generator::isSpace(char c) noexcept
 
 void SGCore::CodeGen::Generator::gotoParent(std::shared_ptr<Lang::ASTToken>& token) const noexcept
 {
-    if(token && token->m_parent)
+    auto lockedParent = token->m_parent.lock();
+    if(token && lockedParent)
     {
-        token = token->m_parent;
+        token = lockedParent;
     }
 }
