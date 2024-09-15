@@ -319,3 +319,75 @@ void SGCore::CodeGen::Generator::gotoParent(std::shared_ptr<Lang::ASTToken>& tok
         token = lockedParent;
     }
 }
+
+bool SGCore::CodeGen::Lang::Type::instanceof(const SGCore::CodeGen::Lang::Type& other) const noexcept
+{
+    if(m_extends.empty()) return false;
+
+    auto it = std::find_if(m_extends.begin(), m_extends.end(), [&other](const Type& t) {
+        return t.m_name == other.m_name;
+    });
+
+    if(it == m_extends.end())
+    {
+        for(const auto& t : m_extends)
+        {
+            return t.instanceof(other);
+        }
+    }
+
+    return true;
+}
+
+bool SGCore::CodeGen::Lang::Type::instanceof(const std::string& typeName) const noexcept
+{
+    if(m_extends.empty()) return false;
+
+    auto it = std::find_if(m_extends.begin(), m_extends.end(), [&typeName](const Type& t) {
+        return t.m_name == typeName;
+    });
+
+    if(it == m_extends.end())
+    {
+        for(const auto& t : m_extends)
+        {
+            return t.instanceof(typeName);
+        }
+    }
+
+    return true;
+}
+
+SGCore::CodeGen::Lang::Type* SGCore::CodeGen::Lang::Type::tryGetMember(const std::string& name) noexcept
+{
+    if(m_members.empty() && m_extends.empty()) return nullptr;
+
+    auto it = m_members.find(name);
+
+    if(it == m_members.end())
+    {
+        for(auto& t : m_extends)
+        {
+            return t.tryGetMember(name);
+        }
+    }
+
+    return &it->second;
+}
+
+SGCore::CodeGen::Lang::Function* SGCore::CodeGen::Lang::Type::tryGetFunction(const std::string& name) noexcept
+{
+    if(m_functions.empty() && m_extends.empty()) return nullptr;
+
+    auto it = m_functions.find(name);
+
+    if(it == m_functions.end())
+    {
+        for(auto& t : m_extends)
+        {
+            return t.tryGetFunction(name);
+        }
+    }
+
+    return &it->second;
+}

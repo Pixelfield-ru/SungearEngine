@@ -38,11 +38,51 @@ namespace SGCore::CodeGen
             K_UNKNOWN
         };
 
+        struct Type;
+        struct Function;
+
+        struct Type
+        {
+            friend struct Generator;
+
+            std::string m_name;
+            std::vector<Type> m_extends;
+
+            [[nodiscard]] bool instanceof(const Type& other) const noexcept;
+            [[nodiscard]] bool instanceof(const std::string& typeName) const noexcept;
+
+            [[nodiscard]] Type* tryGetMember(const std::string& name) noexcept;
+            [[nodiscard]] Function* tryGetFunction(const std::string& name) noexcept;
+
+        private:
+            // first - name, second - type
+            std::unordered_map<std::string, Type> m_members;
+            // first - name, second - function
+            std::unordered_map<std::string, Function> m_functions;
+        };
+
+        struct FunctionArgument
+        {
+            std::string m_name;
+            bool m_isNecessary = true;
+            Type m_acceptableType;
+        };
+
+        struct Function
+        {
+            std::string m_name;
+            Type m_returnType;
+            std::vector<FunctionArgument> m_arguments;
+
+            std::function<void()> m_functor;
+        };
+
         struct ASTToken
         {
             Tokens m_type = Tokens::K_EOF;
             // optional
             std::string m_name;
+            // optional
             std::string m_cppCode;
             bool m_isExprToken = false;
             std::weak_ptr<Lang::ASTToken> m_parent;
@@ -56,6 +96,23 @@ namespace SGCore::CodeGen
                                            const std::filesystem::path& templateFile) noexcept;
 
     private:
+        /*std::vector<Lang::Type> m_currentTypes {
+                {
+                    .m_name = "vector",
+                    .m_extends = {
+                            {
+                                    .m_name = "iterable"
+                            }
+                    }
+                },
+                {
+                    .m_name = "bool"
+                },
+                {
+                    .m_name = "uint64"
+                }
+        };*/
+
         std::unordered_map<std::string, Lang::Tokens> m_tokensLookup {
                 { "##", Lang::Tokens::K_STARTEXPR },
                 { "{{", Lang::Tokens::K_START_PLACEMENT },
