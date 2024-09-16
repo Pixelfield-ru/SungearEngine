@@ -9,6 +9,8 @@
 
 namespace SGCore::CodeGen
 {
+    struct Generator;
+
     namespace Lang
     {
         enum class Tokens
@@ -43,7 +45,7 @@ namespace SGCore::CodeGen
 
         struct Type
         {
-            friend struct Generator;
+            friend struct SGCore::CodeGen::Generator;
 
             std::string m_name;
             std::vector<Type> m_extends;
@@ -84,6 +86,7 @@ namespace SGCore::CodeGen
             std::string m_name;
             // optional
             std::string m_cppCode;
+            std::unordered_map<std::string, std::shared_ptr<Type>> m_scope;
             bool m_isExprToken = false;
             std::weak_ptr<Lang::ASTToken> m_parent;
             std::vector<std::shared_ptr<Lang::ASTToken>> m_children;
@@ -92,26 +95,19 @@ namespace SGCore::CodeGen
 
     struct Generator
     {
-        [[nodiscard]] std::string generate(AnnotationsProcessor& annotationsProcessor,
-                                           const std::filesystem::path& templateFile) noexcept;
+        Generator();
+        Generator(const Generator&) = default;
+        Generator(Generator&&)  noexcept = default;
+
+        /**
+         * @param annotationsProcessor - AnnotationsProcessor whose types (and their fields and functions) are to be added.
+         */
+        void addVariablesFromAnnotationsProcessor(SGCore::AnnotationsProcessor& annotationsProcessor) noexcept;
+
+        [[nodiscard]] std::string generate(const std::filesystem::path& templateFile) noexcept;
 
     private:
-        /*std::vector<Lang::Type> m_currentTypes {
-                {
-                    .m_name = "vector",
-                    .m_extends = {
-                            {
-                                    .m_name = "iterable"
-                            }
-                    }
-                },
-                {
-                    .m_name = "bool"
-                },
-                {
-                    .m_name = "uint64"
-                }
-        };*/
+        std::vector<Lang::Type> m_currentTypes;
 
         std::unordered_map<std::string, Lang::Tokens> m_tokensLookup {
                 { "##", Lang::Tokens::K_STARTEXPR },
@@ -147,6 +143,8 @@ namespace SGCore::CodeGen
                                                  Lang::Tokens tokenType) noexcept;
 
         Lang::Tokens getTokenTypeByName(const std::string& tokenName) const noexcept;
+
+        [[nodiscard]] std::optional<Lang::Type> getTypeByName(const std::string& typeName) const noexcept;
 
         void gotoParent(std::shared_ptr<Lang::ASTToken>& token) const noexcept;
 

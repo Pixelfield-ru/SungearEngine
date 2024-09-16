@@ -40,14 +40,14 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
 {
     ## for member in struct.members
 
-    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.name }}");
-    if({{ member.name }})
+    const auto {{ member.struct.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.struct.name }}");
+    if({{ member.struct.name }})
     {
         ## if member.hasSetter
-        valueView.m_data->{{ member.setter }}(*{{ member.name }});
+        valueView.m_data->{{ member.setter }}(*{{ member.struct.name }});
         ## else
         ## if member.gavnishe
-        valueView.m_data->{{ member.name }} = *{{ member.name }};
+        valueView.m_data->{{ member.struct.name }} = *{{ member.struct.name }};
         ## endif
         ## endif
     }

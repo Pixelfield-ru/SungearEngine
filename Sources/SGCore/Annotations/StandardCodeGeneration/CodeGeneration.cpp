@@ -4,8 +4,66 @@
 
 #include "CodeGeneration.h"
 
-std::string SGCore::CodeGen::Generator::generate(SGCore::AnnotationsProcessor& annotationsProcessor,
-                                                 const std::filesystem::path& templateFile) noexcept
+SGCore::CodeGen::Generator::Generator()
+{
+    Lang::Type iterableType;
+    iterableType.m_name = "iterable";
+    m_currentTypes.push_back(iterableType);
+
+    Lang::Type genericVectorType;
+    genericVectorType.m_name = "generic_vector";
+    genericVectorType.m_extends.push_back(iterableType);
+    m_currentTypes.push_back(genericVectorType);
+
+    Lang::Type boolType;
+    boolType.m_name = "bool";
+
+    Lang::Type stringType;
+    stringType.m_name = "string";
+    stringType.m_extends.push_back(iterableType);
+    m_currentTypes.push_back(stringType);
+
+    Lang::Type uintType;
+    uintType.m_name = "uint";
+    m_currentTypes.push_back(boolType);
+
+    Lang::Type intType;
+    intType.m_name = "int";
+    m_currentTypes.push_back(intType);
+
+    // adding annotations processor types
+    Lang::Type cppStructType;
+    cppStructType.m_name = "cpp_struct";
+    cppStructType.m_members["name"] = stringType;
+    cppStructType.m_members["filePath"] = stringType;
+    cppStructType.m_members["templates"] = genericVectorType;
+    cppStructType.m_members["fullNameWithTemplates"] = stringType;
+    cppStructType.m_members["baseTypes"] = genericVectorType;
+    cppStructType.m_members["derivedTypes"] = genericVectorType;
+    cppStructType.m_members["members"] = genericVectorType;
+    m_currentTypes.push_back(cppStructType);
+
+    Lang::Type cppMemberType;
+    cppMemberType.m_name = "cpp_struct_member";
+    cppMemberType.m_members["setter"] = stringType;
+    cppMemberType.m_members["getter"] = stringType;
+    cppMemberType.m_members["hasSetter"] = boolType;
+    cppMemberType.m_members["struct"] = cppStructType;
+    m_currentTypes.push_back(cppMemberType);
+}
+
+void SGCore::CodeGen::Generator::addVariablesFromAnnotationsProcessor(SGCore::AnnotationsProcessor& annotationsProcessor) noexcept
+{
+    // todo: add variable 'structs' of type 'vector'
+    m_AST->m_scope["structs"] = std::make_shared<Lang::Type>(*getTypeByName("generic_vector"));
+
+    for(const auto& annotation : annotationsProcessor.getAnnotations())
+    {
+
+    }
+}
+
+std::string SGCore::CodeGen::Generator::generate(const std::filesystem::path& templateFile) noexcept
 {
     std::string templateFileText = Utils::reduce(FileUtils::readFile(templateFile));
     // instead of EOF
@@ -318,6 +376,20 @@ void SGCore::CodeGen::Generator::gotoParent(std::shared_ptr<Lang::ASTToken>& tok
     {
         token = lockedParent;
     }
+}
+
+std::optional<SGCore::CodeGen::Lang::Type> SGCore::CodeGen::Generator::getTypeByName(const std::string& typeName) const noexcept
+{
+    auto it = std::find_if(m_currentTypes.begin(), m_currentTypes.end(), [&typeName](const Lang::Type& t) {
+        return t.m_name == typeName;
+    });
+
+    if(it == m_currentTypes.end())
+    {
+        return std::nullopt;
+    }
+
+    return *it;
 }
 
 bool SGCore::CodeGen::Lang::Type::instanceof(const SGCore::CodeGen::Lang::Type& other) const noexcept
