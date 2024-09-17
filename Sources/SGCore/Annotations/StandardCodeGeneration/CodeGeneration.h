@@ -49,6 +49,8 @@ namespace SGCore::CodeGen
 
             std::string m_name;
             std::vector<Type> m_extends;
+            // value that will be inserted in result document
+            std::string m_insertedValue;
 
             [[nodiscard]] bool instanceof(const Type& other) const noexcept;
             [[nodiscard]] bool instanceof(const std::string& typeName) const noexcept;
@@ -150,12 +152,16 @@ namespace SGCore::CodeGen
 
         [[nodiscard]] bool isSpace(char c) noexcept;
 
-        // tmp variables
+        // tmp variables ===================
         bool m_isExprStarted = false;
         bool m_isPlacementStarted = false;
 
         // skipping this lang exprs to copy only c++ code
         bool m_skipCodeCopy = false;
+
+        Lang::Type* m_currentUsedVariable = nullptr;
+
+        // =================================
     };
 }
 

@@ -4,6 +4,8 @@
 
 #include "CodeGeneration.h"
 
+#include "SGCore/Logger/Logger.h"
+
 SGCore::CodeGen::Generator::Generator()
 {
     Lang::Type iterableType;
@@ -54,12 +56,87 @@ SGCore::CodeGen::Generator::Generator()
 
 void SGCore::CodeGen::Generator::addVariablesFromAnnotationsProcessor(SGCore::AnnotationsProcessor& annotationsProcessor) noexcept
 {
-    // todo: add variable 'structs' of type 'vector'
     m_AST->m_scope["structs"] = std::make_shared<Lang::Type>(*getTypeByName("generic_vector"));
 
+    size_t currentStructIdx = 0;
     for(const auto& annotation : annotationsProcessor.getAnnotations())
     {
+        if(annotation.m_name == "sg_struct")
+        {
+            auto structFullNameArgIt = annotation.m_currentArgs.find("fullName");
+            // todo: make error
+            if(structFullNameArgIt == annotation.m_currentArgs.end() || structFullNameArgIt->second.m_values.size() < 2) continue;
 
+            auto structureFullName = std::any_cast<std::string>(structFullNameArgIt->second.m_values[0]);
+            auto namespaceType = std::any_cast<std::string>(structFullNameArgIt->second.m_values[1]);
+
+            // skipping namespaces
+            if(namespaceType == "namespace") continue;
+
+            std::string structFullNameWithTemplates = structureFullName;
+
+            // finding sg_struct annotation 'template' argument (must be declared as 'template = [(type = "typename", name = "T")]')
+            auto templateArgIt = annotation.m_currentArgs.find("template");
+            if(templateArgIt != annotation.m_currentArgs.end())
+            {
+                bool isTemplateArgumentEmpty = !templateArgIt->second.m_values.empty();
+
+                if(isTemplateArgumentEmpty)
+                {
+                    structFullNameWithTemplates += '<';
+                }
+
+                size_t templateArgsCnt = 0;
+                for(const auto& templateArg : templateArgIt->second.m_values)
+                {
+                    auto* templateValAsSubAnnotation = std::any_cast<AnnotationsProcessor::Annotation>(&templateArg);
+
+                    if(templateValAsSubAnnotation)
+                    {
+                        // finding type of one of template arguments
+                        auto templateArgTypeIt = templateValAsSubAnnotation->m_currentArgs.find("type");
+                        if(templateArgTypeIt == templateValAsSubAnnotation->m_currentArgs.end())
+                        {
+                            // todo: make error
+                            /*return fmt::format(
+                                    "Can not generate serializer code for struct '{0}'. Template argument was provided in 'sg_struct' annotation, but type of this argument was not specified.",
+                                    structureFullName);*/
+                            continue;
+                        }
+
+                        structFullNameWithTemplates += std::any_cast<std::string>(templateArgTypeIt->second.m_values[0]);
+
+                        auto templateArgNameIt = templateValAsSubAnnotation->m_currentArgs.find("name");
+                        if(templateArgNameIt != templateValAsSubAnnotation->m_currentArgs.end())
+                        {
+                            if(templateArgsCnt < templateArgIt->second.m_values.size() - 2)
+                            {
+                                structFullNameWithTemplates += std::any_cast<std::string>(templateArgNameIt->second.m_values[0]) + ", ";
+                            }
+                            else
+                            {
+                                structFullNameWithTemplates += std::any_cast<std::string>(templateArgNameIt->second.m_values[0]);
+                            }
+                        }
+                    }
+
+                    ++templateArgsCnt;
+                }
+
+                if(isTemplateArgumentEmpty)
+                {
+                    structFullNameWithTemplates += '>';
+                }
+            }
+
+            auto structMember = *getTypeByName("cpp_struct");
+            structMember.m_members["fullName"].m_insertedValue = structureFullName;
+            structMember.m_members["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
+
+            m_AST->m_scope["structs"]->m_members[std::to_string(currentStructIdx)] = structMember;
+
+            ++currentStructIdx;
+        }
     }
 }
 
@@ -139,19 +216,88 @@ void SGCore::CodeGen::Generator::buildAST(const std::string& templateFileText) n
 void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang::ASTToken>& token,
                                                       std::string& outputString) noexcept
 {
+    size_t currentChildTokenIdx = 0;
     for(const auto& child : token->m_children)
     {
+        switch(child->m_type)
+        {
+            case Lang::Tokens::K_VAR: break;
+            // saving m_currentUsedVariable if dot is after variable in template file (appeal to a member)
+            case Lang::Tokens::K_DOT: break;
+            default:
+            {
+                if(m_currentUsedVariable)
+                {
+                    // placing variable
+                    outputString += m_currentUsedVariable->m_insertedValue;
+                }
+
+                m_currentUsedVariable = nullptr;
+
+                break;
+            }
+        }
+
         switch(child->m_type)
         {
             case Lang::Tokens::K_STARTEXPR:break;
             case Lang::Tokens::K_ENDEXPR:break;
             case Lang::Tokens::K_FOR:
             {
-                generateCodeUsingAST(child, outputString);
+                // getting variable that we will iterate
+                auto forInVariableToken = child->m_children[2];
+                if(forInVariableToken->m_type != Lang::Tokens::K_VAR)
+                {
+                    // todo: make error that token is not variable
+
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate not variable type.")
+                    ++currentChildTokenIdx;
+                    continue;
+                }
+
+                auto forInVariable = child->m_scope.find(forInVariableToken->m_name);
+
+                if(forInVariable == child->m_scope.end())
+                {
+                    // todo: make error that variable does not exist
+
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that does not exist.", forInVariableToken->m_name)
+                    ++currentChildTokenIdx;
+                    continue;
+                }
+
+                if(!forInVariable->second->instanceof("iterable"))
+                {
+                    // todo: make error that variable is not instance of iterable
+
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", forInVariableToken->m_name)
+                    ++currentChildTokenIdx;
+                    continue;
+                }
+
+                LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'...", forInVariableToken->m_name)
+
+                size_t iterationsCount = forInVariable->second->m_members.size();
+
+                for(size_t i = 0; i < iterationsCount; ++i)
+                {
+                    LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'", forInVariableToken->m_name, i)
+                    generateCodeUsingAST(child, outputString);
+                }
+
                 break;
             }
             case Lang::Tokens::K_ENDFOR:break;
-            case Lang::Tokens::K_IN:break;
+            case Lang::Tokens::K_IN:
+            {
+                auto prevToken = token->m_children[currentChildTokenIdx - 1];
+                if(prevToken->m_type == Lang::Tokens::K_VAR)
+                {
+                    // token->m_scope[prevToken->m_name] =
+                }
+
+                break;
+            }
             case Lang::Tokens::K_IF:
             {
                 generateCodeUsingAST(child, outputString);
@@ -169,7 +315,28 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 break;
             }
             case Lang::Tokens::K_END_PLACEMENT:break;
-            case Lang::Tokens::K_VAR:break;
+            case Lang::Tokens::K_VAR:
+            {
+                if(m_currentUsedVariable)
+                {
+                    m_currentUsedVariable = &m_currentUsedVariable->m_members[child->m_name];
+                }
+                else
+                {
+                    auto foundVarIt = child->m_scope.find(child->m_name);
+                    if(foundVarIt == child->m_scope.end())
+                    {
+                        // todo: make error
+
+                        ++currentChildTokenIdx;
+                        continue;
+                    }
+
+                    m_currentUsedVariable = foundVarIt->second.get();
+                }
+
+                break;
+            }
             case Lang::Tokens::K_CPP_CODE_LINE:
             {
                 outputString += child->m_cppCode;
@@ -183,6 +350,8 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             case Lang::Tokens::K_DOT:break;
             case Lang::Tokens::K_UNKNOWN:break;
         }
+
+        ++currentChildTokenIdx;
     }
 }
 
@@ -348,6 +517,8 @@ SGCore::CodeGen::Generator::addToken(const std::shared_ptr<Lang::ASTToken>& toTo
 {
     auto newToken = std::make_shared<Lang::ASTToken>(tokenType);
     newToken->m_parent = toToken;
+    // copying scope
+    newToken->m_scope.insert(toToken->m_scope.begin(), toToken->m_scope.end());
     toToken->m_children.push_back(newToken);
 
     return newToken;

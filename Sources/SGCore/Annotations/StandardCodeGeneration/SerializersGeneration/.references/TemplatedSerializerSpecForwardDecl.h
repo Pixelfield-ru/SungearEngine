@@ -11,7 +11,7 @@ template<{{struct.templates.place(separator: ", ") }}SGCore::Serde::FormatType T
 struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType> : SGCore::Serde::BaseTypes<{{ struct.baseTypes.place(separator: ", ") }}>,
     SGCore::Serde::DerivedTypes<{{ struct.derivedTypes.place(separator: ", ") }}>
 {
-    static inline const std::string type_name = "{{ struct.name }}";
+    static inline const std::string type_name = "{{ struct.fullName }}";
     static inline constexpr bool is_pointer_type = false;
 
     static void serialize(SGCore::Serde::SerializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept;
@@ -40,14 +40,14 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
 {
     ## for member in struct.members
 
-    const auto {{ member.struct.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.struct.name }}");
-    if({{ member.struct.name }})
+    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.struct.fullName }}");
+    if({{ member.name }})
     {
         ## if member.hasSetter
-        valueView.m_data->{{ member.setter }}(*{{ member.struct.name }});
+        valueView.m_data->{{ member.setter }}(*{{ member.name }});
         ## else
         ## if member.gavnishe
-        valueView.m_data->{{ member.struct.name }} = *{{ member.struct.name }};
+        valueView.m_data->{{ member.name }} = *{{ member.name }};
         ## endif
         ## endif
     }
