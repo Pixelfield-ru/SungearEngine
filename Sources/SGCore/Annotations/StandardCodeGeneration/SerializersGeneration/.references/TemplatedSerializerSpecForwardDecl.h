@@ -40,7 +40,7 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
 {
     ## for member in struct.members
 
-    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.struct.fullName }}");
+    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.struct.name }}");
     if({{ member.name }})
     {
         ## if member.hasSetter

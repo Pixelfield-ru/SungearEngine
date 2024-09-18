@@ -122,7 +122,8 @@ void coreInit()
     annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
                                             { sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
                                               sungearRootStr + "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
-                                              sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp"});
+                                              sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp",
+                                              sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/CodeGeneration.cpp" });
 
     SGCore::CodeGen::Generator generator;
     generator.addVariablesFromAnnotationsProcessor(annotationsProcessor);

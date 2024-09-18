@@ -9,33 +9,33 @@
 SGCore::CodeGen::Generator::Generator()
 {
     Lang::Type iterableType;
-    iterableType.m_name = "iterable";
+    iterableType.m_typeName = "iterable";
     m_currentTypes.push_back(iterableType);
 
     Lang::Type genericVectorType;
-    genericVectorType.m_name = "generic_vector";
+    genericVectorType.m_typeName = "generic_vector";
     genericVectorType.m_extends.push_back(iterableType);
     m_currentTypes.push_back(genericVectorType);
 
     Lang::Type boolType;
-    boolType.m_name = "bool";
+    boolType.m_typeName = "bool";
 
     Lang::Type stringType;
-    stringType.m_name = "string";
+    stringType.m_typeName = "string";
     stringType.m_extends.push_back(iterableType);
     m_currentTypes.push_back(stringType);
 
     Lang::Type uintType;
-    uintType.m_name = "uint";
+    uintType.m_typeName = "uint";
     m_currentTypes.push_back(boolType);
 
     Lang::Type intType;
-    intType.m_name = "int";
+    intType.m_typeName = "int";
     m_currentTypes.push_back(intType);
 
     // adding annotations processor types
     Lang::Type cppStructType;
-    cppStructType.m_name = "cpp_struct";
+    cppStructType.m_typeName = "cpp_struct";
     cppStructType.m_members["name"] = stringType;
     cppStructType.m_members["filePath"] = stringType;
     cppStructType.m_members["templates"] = genericVectorType;
@@ -46,10 +46,12 @@ SGCore::CodeGen::Generator::Generator()
     m_currentTypes.push_back(cppStructType);
 
     Lang::Type cppMemberType;
-    cppMemberType.m_name = "cpp_struct_member";
+    cppMemberType.m_typeName = "cpp_struct_member";
+    cppMemberType.m_members["name"] = stringType;
     cppMemberType.m_members["setter"] = stringType;
     cppMemberType.m_members["getter"] = stringType;
     cppMemberType.m_members["hasSetter"] = boolType;
+    cppMemberType.m_members["hasGetter"] = boolType;
     cppMemberType.m_members["struct"] = cppStructType;
     m_currentTypes.push_back(cppMemberType);
 }
@@ -57,6 +59,8 @@ SGCore::CodeGen::Generator::Generator()
 void SGCore::CodeGen::Generator::addVariablesFromAnnotationsProcessor(SGCore::AnnotationsProcessor& annotationsProcessor) noexcept
 {
     m_AST->m_scope["structs"] = std::make_shared<Lang::Type>(*getTypeByName("generic_vector"));
+
+    std::unordered_map<std::string, Lang::Type> detectedStructs;
 
     size_t currentStructIdx = 0;
     for(const auto& annotation : annotationsProcessor.getAnnotations())
@@ -104,7 +108,7 @@ void SGCore::CodeGen::Generator::addVariablesFromAnnotationsProcessor(SGCore::An
                             continue;
                         }
 
-                        structFullNameWithTemplates += std::any_cast<std::string>(templateArgTypeIt->second.m_values[0]);
+                        // structFullNameWithTemplates += std::any_cast<std::string>(templateArgTypeIt->second.m_values[0]);
 
                         auto templateArgNameIt = templateValAsSubAnnotation->m_currentArgs.find("name");
                         if(templateArgNameIt != templateValAsSubAnnotation->m_currentArgs.end())
@@ -129,14 +133,140 @@ void SGCore::CodeGen::Generator::addVariablesFromAnnotationsProcessor(SGCore::An
                 }
             }
 
-            auto structMember = *getTypeByName("cpp_struct");
-            structMember.m_members["fullName"].m_insertedValue = structureFullName;
-            structMember.m_members["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
+            auto newStruct = *getTypeByName("cpp_struct");
+            newStruct.m_members["fullName"].m_insertedValue = structureFullName;
+            newStruct.m_members["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
 
-            m_AST->m_scope["structs"]->m_members[std::to_string(currentStructIdx)] = structMember;
+            detectedStructs[structureFullName] = newStruct;
 
             ++currentStructIdx;
         }
+    }
+
+    for(const auto& annotation : annotationsProcessor.getAnnotations())
+    {
+        if(annotation.m_name == "sg_member")
+        {
+            auto parentNamespaceArg = annotation.m_currentArgs.find("parentNamespace");
+            // if argument 'parentNamespace' was not found or its value contains 0 values
+            if(parentNamespaceArg == annotation.m_currentArgs.end() ||
+               parentNamespaceArg->second.m_values.empty())
+            {
+                // LOG_E(SGCORE_TAG, "Error in CodeGenerator: 'sg_member' annotation does not contain argument ")
+
+                continue;
+            }
+
+            auto currentStructName = std::any_cast<std::string>(parentNamespaceArg->second.m_values[0]);
+
+            auto currentStructIt = detectedStructs.find(currentStructName);
+            if(currentStructIt == detectedStructs.end())
+            {
+                continue;
+            }
+
+            auto& currentStruct = currentStructIt->second;
+
+            // getting real name of variable
+            auto varNameArg = annotation.m_currentArgs.find("varName");
+            // getting name of variable in JSON file
+            auto serializableNameArg = annotation.m_currentArgs.find("serializableName");
+            if(varNameArg != annotation.m_currentArgs.end() &&
+               serializableNameArg != annotation.m_currentArgs.end())
+            {
+                // first just assigning variable name as getter (direct access to member)
+                std::string variableGetter = std::any_cast<std::string>(varNameArg->second.m_values[0]);
+                std::string variableSetter = std::any_cast<std::string>(varNameArg->second.m_values[0]);
+
+                bool isVariableSetterFound = false;
+                bool isVariableGetterFound = false;
+
+                // iterating through functions annotations
+                for(const auto& functionAnnotation : annotationsProcessor.getAnnotations())
+                {
+                    if(functionAnnotation.m_name == "sg_function")
+                    {
+                        // if sg_functions annotation doest not have argument 'parentNamespace'
+                        auto functionParentNamespace = functionAnnotation.m_currentArgs.find("parentNamespace");
+                        if(functionParentNamespace == functionAnnotation.m_currentArgs.end())
+                        {
+                            continue;
+                        }
+
+                        // if annotation is not in struct %currentStructName%
+                        if (std::any_cast<std::string>(functionParentNamespace->second.m_values[0]) !=
+                            currentStructName)
+                        {
+                            continue;
+                        }
+
+                        // if sg_functions annotation doest not have argument 'name'
+                        auto functionNameArgument = functionAnnotation.m_currentArgs.find("name");
+                        if (functionNameArgument == functionAnnotation.m_currentArgs.end())
+                        {
+                            continue;
+                        }
+
+                        auto functionGetterForArgument = functionAnnotation.m_currentArgs.find(
+                                "getterFor");
+                        if (functionGetterForArgument != functionAnnotation.m_currentArgs.end())
+                        {
+                            // check if this is getter for %variableGetter% variable (variableGetter contains name of variable first)
+                            if (std::any_cast<std::string>(
+                                    functionGetterForArgument->second.m_values[0]) != variableGetter)
+                            {
+                                continue;
+                            }
+
+                            variableGetter = std::any_cast<std::string>(functionNameArgument->second.m_values[0]) + "()";
+                            isVariableGetterFound = true;
+
+                            continue;
+                        }
+
+                        auto functionSetterForArgument = functionAnnotation.m_currentArgs.find(
+                                "setterFor");
+                        if (functionSetterForArgument != functionAnnotation.m_currentArgs.end())
+                        {
+                            // check if this is setter for %variableGetter% variable (variableSetter contains name of variable first)
+                            if (std::any_cast<std::string>(
+                                    functionSetterForArgument->second.m_values[0]) != variableSetter)
+                            {
+                                continue;
+                            }
+
+                            variableSetter = std::any_cast<std::string>(functionNameArgument->second.m_values[0]);
+                            isVariableSetterFound = true;
+                        }
+                    }
+                }
+
+                const std::string memberVariableName = std::any_cast<std::string>(serializableNameArg->second.m_values[0]);
+
+                currentStruct.m_members["members"].m_members[memberVariableName] = *getTypeByName("cpp_struct_member");
+                auto& newMember = currentStruct.m_members["members"].m_members[memberVariableName];
+
+                newMember.m_members["name"].m_insertedValue = memberVariableName;
+
+                newMember.m_members["hasSetter"].m_insertedValue = isVariableSetterFound ? "true" : "false";
+                newMember.m_members["hasGetter"].m_insertedValue = isVariableGetterFound ? "true" : "false";
+
+                newMember.m_members["setter"].m_insertedValue = isVariableSetterFound ? variableSetter : memberVariableName;
+                newMember.m_members["getter"].m_insertedValue = isVariableGetterFound ? variableGetter : memberVariableName;
+            }
+        }
+    }
+
+    currentStructIdx = 0;
+    for(auto& s : detectedStructs)
+    {
+        for(auto& member : s.second.m_members)
+        {
+            member.second.m_members["struct"] = s.second;
+        }
+
+        m_AST->m_scope["structs"]->m_members[std::to_string(currentStructIdx)] = s.second;
+        ++currentStructIdx;
     }
 }
 
@@ -219,7 +349,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
     size_t currentChildTokenIdx = 0;
     for(const auto& child : token->m_children)
     {
-        switch(child->m_type)
+        /*switch(child->m_type)
         {
             case Lang::Tokens::K_VAR: break;
             // saving m_currentUsedVariable if dot is after variable in template file (appeal to a member)
@@ -236,7 +366,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
 
                 break;
             }
-        }
+        }*/
 
         switch(child->m_type)
         {
@@ -244,45 +374,63 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             case Lang::Tokens::K_ENDEXPR:break;
             case Lang::Tokens::K_FOR:
             {
-                // getting variable that we will iterate
-                auto forInVariableToken = child->m_children[2];
-                if(forInVariableToken->m_type != Lang::Tokens::K_VAR)
+                // getting last token in variable tokens sequence (example: var0.var1.var2)
+                token_and_var tokenAndVariableToForIn = getLastVariable(child, 2);
+
+                // getting variable that we will use to bind to every element in iterable variable
+                auto bindableVariableToken = child->m_children[0];
+                if(tokenAndVariableToForIn.first->m_type != Lang::Tokens::K_VAR)
                 {
                     // todo: make error that token is not variable
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate not variable type.")
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate not variable type.")
                     ++currentChildTokenIdx;
                     continue;
                 }
 
-                auto forInVariable = child->m_scope.find(forInVariableToken->m_name);
+                if(bindableVariableToken->m_type != Lang::Tokens::K_VAR)
+                {
+                    // todo: make error that token is not variable
 
-                if(forInVariable == child->m_scope.end())
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to bind not variable type.")
+                    ++currentChildTokenIdx;
+                    continue;
+                }
+
+                auto newBindableVariable = std::make_shared<Lang::Type>();
+                token->m_scope[bindableVariableToken->m_name] =  newBindableVariable;
+
+                if(!tokenAndVariableToForIn.second)
                 {
                     // todo: make error that variable does not exist
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that does not exist.", forInVariableToken->m_name)
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate variable '{}' that does not exist.", tokenAndVariableToForIn.first->m_name)
                     ++currentChildTokenIdx;
                     continue;
                 }
 
-                if(!forInVariable->second->instanceof("iterable"))
+                if(!tokenAndVariableToForIn.second->instanceof("iterable"))
                 {
                     // todo: make error that variable is not instance of iterable
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", forInVariableToken->m_name)
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", tokenAndVariableToForIn.first->m_name)
                     ++currentChildTokenIdx;
                     continue;
                 }
 
-                LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'...", forInVariableToken->m_name)
+                LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'...", tokenAndVariableToForIn.first->m_name)
 
-                size_t iterationsCount = forInVariable->second->m_members.size();
+                size_t iterationsCount = tokenAndVariableToForIn.second->m_members.size();
 
-                for(size_t i = 0; i < iterationsCount; ++i)
+                size_t curElemIdx = 0;
+                for(const auto& elem : tokenAndVariableToForIn.second->m_members)
                 {
-                    LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'", forInVariableToken->m_name, i)
+                    *newBindableVariable = elem.second;
+
+                    LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'", tokenAndVariableToForIn.first->m_name, curElemIdx)
                     generateCodeUsingAST(child, outputString);
+
+                    ++curElemIdx;
                 }
 
                 break;
@@ -311,20 +459,26 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             case Lang::Tokens::K_ENDIF:break;
             case Lang::Tokens::K_START_PLACEMENT:
             {
-                generateCodeUsingAST(child, outputString);
+                token_and_var tokenAndVar = getLastVariable(child, 0);
+
+                if(tokenAndVar.second)
+                {
+                    outputString += tokenAndVar.second->m_insertedValue;
+                }
+                // generateCodeUsingAST(child, outputString);
                 break;
             }
             case Lang::Tokens::K_END_PLACEMENT:break;
             case Lang::Tokens::K_VAR:
             {
-                if(m_currentUsedVariable)
+                /*if(m_currentUsedVariable)
                 {
                     m_currentUsedVariable = &m_currentUsedVariable->m_members[child->m_name];
                 }
                 else
                 {
-                    auto foundVarIt = child->m_scope.find(child->m_name);
-                    if(foundVarIt == child->m_scope.end())
+                    auto foundVar = child->getScopeVariable(child->m_name);
+                    if(!foundVar)
                     {
                         // todo: make error
 
@@ -332,8 +486,8 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                         continue;
                     }
 
-                    m_currentUsedVariable = foundVarIt->second.get();
-                }
+                    m_currentUsedVariable = foundVar.get();
+                }*/
 
                 break;
             }
@@ -552,7 +706,7 @@ void SGCore::CodeGen::Generator::gotoParent(std::shared_ptr<Lang::ASTToken>& tok
 std::optional<SGCore::CodeGen::Lang::Type> SGCore::CodeGen::Generator::getTypeByName(const std::string& typeName) const noexcept
 {
     auto it = std::find_if(m_currentTypes.begin(), m_currentTypes.end(), [&typeName](const Lang::Type& t) {
-        return t.m_name == typeName;
+        return t.m_typeName == typeName;
     });
 
     if(it == m_currentTypes.end())
@@ -563,12 +717,76 @@ std::optional<SGCore::CodeGen::Lang::Type> SGCore::CodeGen::Generator::getTypeBy
     return *it;
 }
 
+SGCore::CodeGen::Generator::token_and_var
+SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken>& from,
+                                            const size_t& begin) noexcept
+{
+    token_and_var out;
+    bool isDotWas = false;
+
+    auto& outToken = out.first;
+    auto& outVariable = out.second;
+
+    for(size_t i = begin; i < from->m_children.size(); ++i)
+    {
+        const auto& child = from->m_children[i];
+        if(child->m_type == Lang::Tokens::K_VAR)
+        {
+            auto lastToken = outToken;
+            outToken = child;
+            // getting variable from scope because it is first iteration
+            if(i == begin)
+            {
+                outVariable = from->getScopeVariable(child->m_name);
+            }
+            else // iteration continues (accessing to member variables)
+            {
+                if(outVariable)
+                {
+                    auto foundMember = outVariable->tryGetMember(child->m_name);
+                    if(!foundMember)
+                    {
+                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: member '{}' does not exist in '{}' type (variable: '{}').",
+                              child->m_name,
+                              outVariable->m_typeName,
+                              lastToken->m_name)
+                    }
+                    else
+                    {
+                        // if member with this name was found then assigning new variable pointer to out.second
+                        outVariable = std::make_shared<Lang::Type>(*foundMember);
+                    }
+                }
+            }
+
+            isDotWas = false;
+        }
+        else if(child->m_type == Lang::Tokens::K_DOT)
+        {
+            isDotWas = true;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if(isDotWas)
+    {
+        LOG_E(SGCORE_TAG, "Error in CodeGenerator: unknown member variable ''. (DOT token found but VAR token was not found after DOT)")
+        outToken = nullptr;
+        outVariable = nullptr;
+    }
+
+    return out;
+}
+
 bool SGCore::CodeGen::Lang::Type::instanceof(const SGCore::CodeGen::Lang::Type& other) const noexcept
 {
     if(m_extends.empty()) return false;
 
     auto it = std::find_if(m_extends.begin(), m_extends.end(), [&other](const Type& t) {
-        return t.m_name == other.m_name;
+        return t.m_typeName == other.m_typeName;
     });
 
     if(it == m_extends.end())
@@ -587,7 +805,7 @@ bool SGCore::CodeGen::Lang::Type::instanceof(const std::string& typeName) const 
     if(m_extends.empty()) return false;
 
     auto it = std::find_if(m_extends.begin(), m_extends.end(), [&typeName](const Type& t) {
-        return t.m_name == typeName;
+        return t.m_typeName == typeName;
     });
 
     if(it == m_extends.end())
@@ -613,6 +831,8 @@ SGCore::CodeGen::Lang::Type* SGCore::CodeGen::Lang::Type::tryGetMember(const std
         {
             return t.tryGetMember(name);
         }
+
+        return nullptr;
     }
 
     return &it->second;
@@ -630,7 +850,30 @@ SGCore::CodeGen::Lang::Function* SGCore::CodeGen::Lang::Type::tryGetFunction(con
         {
             return t.tryGetFunction(name);
         }
+
+        return nullptr;
     }
 
     return &it->second;
+}
+
+std::shared_ptr<SGCore::CodeGen::Lang::Type> SGCore::CodeGen::Lang::ASTToken::getScopeVariable(const std::string& variableName) const noexcept
+{
+    if(m_scope.empty()) return nullptr;
+
+    auto var = m_scope.find(variableName);
+
+    if(var == m_scope.end())
+    {
+        if(auto lockedParent = m_parent.lock())
+        {
+            return lockedParent->getScopeVariable(variableName);
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    return var->second;
 }

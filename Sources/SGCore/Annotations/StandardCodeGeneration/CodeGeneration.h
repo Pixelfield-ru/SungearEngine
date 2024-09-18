@@ -47,7 +47,7 @@ namespace SGCore::CodeGen
         {
             friend struct SGCore::CodeGen::Generator;
 
-            std::string m_name;
+            std::string m_typeName;
             std::vector<Type> m_extends;
             // value that will be inserted in result document
             std::string m_insertedValue;
@@ -92,6 +92,8 @@ namespace SGCore::CodeGen
             bool m_isExprToken = false;
             std::weak_ptr<Lang::ASTToken> m_parent;
             std::vector<std::shared_ptr<Lang::ASTToken>> m_children;
+
+            [[nodiscard]] std::shared_ptr<Type> getScopeVariable(const std::string& variableName) const noexcept;
         };
     }
 
@@ -109,6 +111,8 @@ namespace SGCore::CodeGen
         [[nodiscard]] std::string generate(const std::filesystem::path& templateFile) noexcept;
 
     private:
+        using token_and_var = std::pair<std::shared_ptr<Lang::ASTToken>, std::shared_ptr<Lang::Type>>;
+
         std::vector<Lang::Type> m_currentTypes;
 
         std::unordered_map<std::string, Lang::Tokens> m_tokensLookup {
@@ -150,7 +154,9 @@ namespace SGCore::CodeGen
 
         void gotoParent(std::shared_ptr<Lang::ASTToken>& token) const noexcept;
 
-        [[nodiscard]] bool isSpace(char c) noexcept;
+        [[nodiscard]] static bool isSpace(char c) noexcept;
+
+        [[nodiscard]] static token_and_var getLastVariable(const std::shared_ptr<Lang::ASTToken>& from, const size_t& begin) noexcept;
 
         // tmp variables ===================
         bool m_isExprStarted = false;
