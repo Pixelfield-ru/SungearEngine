@@ -2,7 +2,6 @@
 #define SUNGEARENGINE_ENTRY_H
 
 #include <SGCore/Main/CoreMain.h>
-#include <SGCore/Annotations/Annotations.h>
 #include <SGCore/Serde/Serde.h>
 #include <SGCore/Utils/TypeTraits.h>
 #include "SGCore/Serde/StandardSerdeSpecs.h"

@@ -32,8 +32,6 @@ extern "C" {
 #include "SGCore/ImGuiWrap/Views/IView.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Utils/Formatter.h"
-#include "SGCore/Annotations/AnnotationsProcessor.h"
-#include "SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.h"
 #include "SGCore/Annotations/StandardCodeGeneration/CodeGeneration.h"
 
 #include "SGCore/Serde/GeneratedSerdeSpecs.h"
@@ -108,8 +106,6 @@ void coreInit()
                                                "cmake-build-debug");
 
     std::cout << "plugin: " << sgEditorPlugin << ", sgeditor path: " << sgEditorPath << std::endl;
-    
-    SGCore::AnnotationsProcessor annotationsProcessor;
 
     const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
     std::string sungearRootStr;
@@ -118,21 +114,9 @@ void coreInit()
         sungearRootStr = sungearRoot;
     }
 
-    // annotationsProcessor.processAnnotations(std::vector<std::filesystem::path> { "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.references/TestStruct.h" });
-    annotationsProcessor.processAnnotations(sungearRootStr + "/Sources",
-                                            { sungearRootStr + "/Sources/SGCore/Annotations/Annotations.h",
-                                              sungearRootStr + "/Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
-                                              sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.cpp",
-                                              sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/CodeGeneration.cpp" });
-
     SGCore::CodeGen::Generator generator;
-    generator.addVariablesFromAnnotationsProcessor(annotationsProcessor);
     std::string generated = generator.generate(sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.references/TemplatedSerializerSpecForwardDecl.h");
     SGCore::FileUtils::writeToFile("generated.h", generated, false, true);
-    SGCore::CodeGen::SerdeSpecsGenerator serializersGenerator;
-    std::printf("Error of serializers generator: %s\n", serializersGenerator.generateSerializers(annotationsProcessor, "./.generated/GeneratedSerializers.h").c_str());
-    
-    std::cout << annotationsProcessor.stringifyAnnotations() << std::endl;
 
     using namespace SGCore;
     

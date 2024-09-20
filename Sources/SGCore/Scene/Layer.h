@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_LAYER_H
 
 #include <SGCore/pch.h>
-#include "SGCore/Annotations/Annotations.h"
+#include "SGCore/Serde/Defines.h"
 
 // STANDARD LAYERS DEFINES
 
@@ -17,7 +17,6 @@ sg_predeclare_serdespec()
 
 namespace SGCore
 {
-    sg_struct()
     struct Layer
     {
         sg_serdespec_as_friend()
@@ -25,14 +24,11 @@ namespace SGCore
         friend class Scene;
         friend class ISystem;
 
-        sg_member()
         std::string m_name;
 
-        sg_member()
         bool m_isOpaque = true;
 
     private:
-        sg_member()
         size_t m_index = 0;
     };
 }

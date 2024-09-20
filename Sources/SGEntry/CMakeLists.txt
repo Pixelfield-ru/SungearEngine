@@ -8,7 +8,7 @@ set(SG_EXEC_NAME SungearEngine)
 
 find_package(spdlog CONFIG REQUIRED)
 
-add_executable(${SG_EXEC_NAME} ${SGENTRY_SOURCES} ../Meta/Meta.cpp)
+add_executable(${SG_EXEC_NAME} ${SGENTRY_SOURCES})
 
 target_include_directories(${SG_EXEC_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/Sources

@@ -6,7 +6,6 @@
 #define SUNGEARENGINE_MESHDATARENDERINFO_H
 
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
-#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {

@@ -5,8 +5,6 @@
 #ifndef SUNGEARENGINE_CODEGENERATION_H
 #define SUNGEARENGINE_CODEGENERATION_H
 
-#include <SGCore/Annotations/AnnotationsProcessor.h>
-
 namespace SGCore::CodeGen
 {
     struct Generator;
@@ -40,27 +38,61 @@ namespace SGCore::CodeGen
             K_UNKNOWN
         };
 
-        struct Type;
+        struct Variable;
         struct Function;
 
         struct Type
         {
-            friend struct SGCore::CodeGen::Generator;
-
-            std::string m_typeName;
+            std::string m_name;
             std::vector<Type> m_extends;
-            // value that will be inserted in result document
-            std::string m_insertedValue;
+            // first - name, second - type
+            std::unordered_map<std::string, Type> m_members;
+            // first - name, second - function
+            std::unordered_map<std::string, Function> m_functions;
 
             [[nodiscard]] bool instanceof(const Type& other) const noexcept;
             [[nodiscard]] bool instanceof(const std::string& typeName) const noexcept;
+        };
 
-            [[nodiscard]] Type* tryGetMember(const std::string& name) noexcept;
+        struct Variable
+        {
+            // friend struct Generator;
+
+            Variable() = default;
+            Variable(const Variable&) = default;
+            Variable(Variable&&) noexcept = default;
+
+            explicit Variable(const Type& withType) noexcept;
+
+            std::string m_name;
+            // value that will be inserted in result document
+            std::string m_insertedValue;
+
+            [[nodiscard]] std::shared_ptr<Variable> getMember(const std::string& name) noexcept;
             [[nodiscard]] Function* tryGetFunction(const std::string& name) noexcept;
 
+            [[nodiscard]] const Type& getTypeInfo() const noexcept;
+
+            [[nodiscard]] bool hasMember(const std::string& memberName) const noexcept;
+
+            [[nodiscard]] size_t membersCount() const noexcept;
+
+            [[nodiscard]] const std::unordered_map<std::string, std::shared_ptr<Variable>>& getMembers() const noexcept;
+
+            Variable& operator=(const Variable&) noexcept = default;
+            Variable& operator=(Variable&&) noexcept = default;
+
+            Variable& operator[](const std::string& memberName) noexcept;
+
+            void setMemberPtr(const std::string& memberName,
+                              const std::shared_ptr<Variable>& memberValue) noexcept;
+
         private:
+            Type m_typeInfo;
+            std::unordered_map<std::string, std::shared_ptr<Variable>> m_inheritanceMap;
+
             // first - name, second - type
-            std::unordered_map<std::string, Type> m_members;
+            std::unordered_map<std::string, std::shared_ptr<Variable>> m_members;
             // first - name, second - function
             std::unordered_map<std::string, Function> m_functions;
         };
@@ -88,12 +120,12 @@ namespace SGCore::CodeGen
             std::string m_name;
             // optional
             std::string m_cppCode;
-            std::unordered_map<std::string, std::shared_ptr<Type>> m_scope;
+            std::unordered_map<std::string, std::shared_ptr<Variable>> m_scope;
             bool m_isExprToken = false;
             std::weak_ptr<Lang::ASTToken> m_parent;
             std::vector<std::shared_ptr<Lang::ASTToken>> m_children;
 
-            [[nodiscard]] std::shared_ptr<Type> getScopeVariable(const std::string& variableName) const noexcept;
+            [[nodiscard]] std::shared_ptr<Variable> getScopeVariable(const std::string& variableName) const noexcept;
         };
     }
 
@@ -103,15 +135,10 @@ namespace SGCore::CodeGen
         Generator(const Generator&) = default;
         Generator(Generator&&)  noexcept = default;
 
-        /**
-         * @param annotationsProcessor - AnnotationsProcessor whose types (and their fields and functions) are to be added.
-         */
-        void addVariablesFromAnnotationsProcessor(SGCore::AnnotationsProcessor& annotationsProcessor) noexcept;
-
         [[nodiscard]] std::string generate(const std::filesystem::path& templateFile) noexcept;
 
     private:
-        using token_and_var = std::pair<std::shared_ptr<Lang::ASTToken>, std::shared_ptr<Lang::Type>>;
+        using token_and_var = std::pair<std::shared_ptr<Lang::ASTToken>, std::shared_ptr<Lang::Variable>>;
 
         std::vector<Lang::Type> m_currentTypes;
 
@@ -165,7 +192,7 @@ namespace SGCore::CodeGen
         // skipping this lang exprs to copy only c++ code
         bool m_skipCodeCopy = false;
 
-        Lang::Type* m_currentUsedVariable = nullptr;
+        Lang::Variable* m_currentUsedVariable = nullptr;
 
         // =================================
     };

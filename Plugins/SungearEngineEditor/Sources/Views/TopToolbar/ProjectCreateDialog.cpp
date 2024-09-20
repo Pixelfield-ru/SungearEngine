@@ -9,8 +9,6 @@
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
-#include <SGCore/Annotations/AnnotationsProcessor.h>
-#include <SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/SerdeSpecsGenerator.h>
 
 #include "ProjectCreateDialog.h"
 #include "SungearEngineEditor.h"
@@ -18,7 +16,6 @@
 
 #include "Views/Explorer/DirectoryExplorer.h"
 #include "Views/Explorer/DirectoriesTreeExplorer.h"
-#include "Project/CodeGen/CodeGeneration.h"
 #include "Toolchains//VisualStudioToolchain.h"
 #include "Views/DialogWindowsManager.h"
 
@@ -204,7 +201,8 @@ void SGE::ProjectCreateDialog::submit()
 
         // PARSING SUNGEAR ENGINE ANNOTATIONS AND GENERATING CODE ==========================
 
-        SGCore::AnnotationsProcessor annotationsProcessor;
+        // TODO: make codegen
+        // SGCore::AnnotationsProcessor annotationsProcessor;
 
         if(!SungearEngineEditor::checkSungearEngineEnvironmentRootPathValidity("Can not build Sungear Engine: missing environment variable 'SUNGEAR_SOURCES_ROOT'."))
         {
@@ -213,7 +211,7 @@ void SGE::ProjectCreateDialog::submit()
         const auto& sungearRootStr = SungearEngineEditor::getSungearEngineRootPath();
         const std::filesystem::path sungearPluginsPathStr = SungearEngineEditor::getSungearEngineRootPath() / "Plugins";
 
-        annotationsProcessor.processAnnotations(sungearRootStr / "Sources",
+        /*annotationsProcessor.processAnnotations(sungearRootStr / "Sources",
                                                 {sungearRootStr / "Sources/SGCore/Annotations/Annotations.h",
                                                  sungearRootStr /
                                                  "Sources/SGCore/Annotations/AnnotationsProcessor.cpp",
@@ -236,7 +234,7 @@ void SGE::ProjectCreateDialog::submit()
         // CREATING GENERATED CODE ENTRY POINT
 
         CodeGeneration::generateCode({ annotationsProcessor }, pluginProject.m_pluginPath);
-
+*/
         // =====================================================================================
         // BUILDING CREATED PROJECT
 

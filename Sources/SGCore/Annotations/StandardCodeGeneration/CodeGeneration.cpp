@@ -2,261 +2,114 @@
 // Created by stuka on 10.09.2024.
 //
 
+#include <SGCore/Utils/FileUtils.h>
 #include "CodeGeneration.h"
 
 #include "SGCore/Logger/Logger.h"
+#include "SGCore/MetaInfo/MetaInfo.h"
 
 SGCore::CodeGen::Generator::Generator()
 {
-    Lang::Type iterableType;
-    iterableType.m_typeName = "iterable";
-    m_currentTypes.push_back(iterableType);
+    // creating standard types
+    {
+        Lang::Type iterableType;
+        iterableType.m_name = "iterable";
+        m_currentTypes.push_back(iterableType);
 
-    Lang::Type genericVectorType;
-    genericVectorType.m_typeName = "generic_vector";
-    genericVectorType.m_extends.push_back(iterableType);
-    m_currentTypes.push_back(genericVectorType);
+        Lang::Type genericVectorType;
+        genericVectorType.m_name = "generic_vector";
+        genericVectorType.m_extends.push_back(iterableType);
+        m_currentTypes.push_back(genericVectorType);
 
-    Lang::Type boolType;
-    boolType.m_typeName = "bool";
+        Lang::Type boolType;
+        boolType.m_name = "bool";
 
-    Lang::Type stringType;
-    stringType.m_typeName = "string";
-    stringType.m_extends.push_back(iterableType);
-    m_currentTypes.push_back(stringType);
+        Lang::Type stringType;
+        stringType.m_name = "string";
+        stringType.m_extends.push_back(iterableType);
+        m_currentTypes.push_back(stringType);
 
-    Lang::Type uintType;
-    uintType.m_typeName = "uint";
-    m_currentTypes.push_back(boolType);
+        Lang::Type uintType;
+        uintType.m_name = "uint";
+        m_currentTypes.push_back(boolType);
 
-    Lang::Type intType;
-    intType.m_typeName = "int";
-    m_currentTypes.push_back(intType);
+        Lang::Type intType;
+        intType.m_name = "int";
+        m_currentTypes.push_back(intType);
 
-    // adding annotations processor types
-    Lang::Type cppStructType;
-    cppStructType.m_typeName = "cpp_struct";
-    cppStructType.m_members["name"] = stringType;
-    cppStructType.m_members["filePath"] = stringType;
-    cppStructType.m_members["templates"] = genericVectorType;
-    cppStructType.m_members["fullNameWithTemplates"] = stringType;
-    cppStructType.m_members["baseTypes"] = genericVectorType;
-    cppStructType.m_members["derivedTypes"] = genericVectorType;
-    cppStructType.m_members["members"] = genericVectorType;
-    m_currentTypes.push_back(cppStructType);
+        // adding annotations processor types
+        Lang::Type cppStructType;
+        cppStructType.m_name = "cpp_struct";
+        cppStructType.m_members["name"] = stringType;
+        cppStructType.m_members["filePath"] = stringType;
+        cppStructType.m_members["templates"] = genericVectorType;
+        cppStructType.m_members["fullNameWithTemplates"] = stringType;
+        cppStructType.m_members["baseTypes"] = genericVectorType;
+        cppStructType.m_members["derivedTypes"] = genericVectorType;
+        cppStructType.m_members["members"] = genericVectorType;
+        m_currentTypes.push_back(cppStructType);
 
-    Lang::Type cppMemberType;
-    cppMemberType.m_typeName = "cpp_struct_member";
-    cppMemberType.m_members["name"] = stringType;
-    cppMemberType.m_members["setter"] = stringType;
-    cppMemberType.m_members["getter"] = stringType;
-    cppMemberType.m_members["hasSetter"] = boolType;
-    cppMemberType.m_members["hasGetter"] = boolType;
-    cppMemberType.m_members["struct"] = cppStructType;
-    m_currentTypes.push_back(cppMemberType);
-}
+        Lang::Type cppMemberType;
+        cppMemberType.m_name = "cpp_struct_member";
+        cppMemberType.m_members["name"] = stringType;
+        cppMemberType.m_members["setter"] = stringType;
+        cppMemberType.m_members["getter"] = stringType;
+        cppMemberType.m_members["hasSetter"] = boolType;
+        cppMemberType.m_members["hasGetter"] = boolType;
+        cppMemberType.m_members["struct"] = cppStructType;
+        m_currentTypes.push_back(cppMemberType);
+    }
 
-void SGCore::CodeGen::Generator::addVariablesFromAnnotationsProcessor(SGCore::AnnotationsProcessor& annotationsProcessor) noexcept
-{
-    m_AST->m_scope["structs"] = std::make_shared<Lang::Type>(*getTypeByName("generic_vector"));
-
-    std::unordered_map<std::string, Lang::Type> detectedStructs;
+    // adding structs from meta info
+    m_AST->m_scope["structs"] = std::make_shared<Lang::Variable>(*getTypeByName("generic_vector"));
 
     size_t currentStructIdx = 0;
-    for(const auto& annotation : annotationsProcessor.getAnnotations())
+    for(auto& metaStruct : MetaInfo::getMeta()["structs"])
     {
-        if(annotation.m_name == "sg_struct")
+        auto newStruct = std::make_shared<Lang::Variable>(*getTypeByName("cpp_struct"));
+
+        (*newStruct)["fullName"].m_insertedValue = metaStruct["fullName"].getValue();
+
+        auto& structMembers = metaStruct["members"];
+
+        for(auto& memberIt : structMembers.getChildren())
         {
-            auto structFullNameArgIt = annotation.m_currentArgs.find("fullName");
-            // todo: make error
-            if(structFullNameArgIt == annotation.m_currentArgs.end() || structFullNameArgIt->second.m_values.size() < 2) continue;
+            auto& memberName = memberIt.first;
+            auto& member = memberIt.second;
 
-            auto structureFullName = std::any_cast<std::string>(structFullNameArgIt->second.m_values[0]);
-            auto namespaceType = std::any_cast<std::string>(structFullNameArgIt->second.m_values[1]);
+            // getting variables from meta
+            const bool hasSetter = member.hasChild("setter");
+            const bool hasGetter = member.hasChild("getter");
+            const std::string serializableName = member.hasChild("serializableName") ? member["serializableName"].getValue() : memberName;
+            const std::string setter = hasSetter ? member["setter"].getValue() : memberName;
+            const std::string getter = hasSetter ? member["getter"].getValue() : memberName;
 
-            // skipping namespaces
-            if(namespaceType == "namespace") continue;
+            // creating new generator variable
+            (*newStruct)["members"][memberName] = Lang::Variable(*getTypeByName("cpp_struct_member"));
+            auto& newGenMember = (*newStruct)["members"][memberName];
 
-            std::string structFullNameWithTemplates = structureFullName;
+            newGenMember["name"].m_insertedValue = memberName;
 
-            // finding sg_struct annotation 'template' argument (must be declared as 'template = [(type = "typename", name = "T")]')
-            auto templateArgIt = annotation.m_currentArgs.find("template");
-            if(templateArgIt != annotation.m_currentArgs.end())
-            {
-                bool isTemplateArgumentEmpty = !templateArgIt->second.m_values.empty();
+            newGenMember["hasSetter"].m_insertedValue = hasSetter ? "true" : "false";
+            newGenMember["hasGetter"].m_insertedValue = hasGetter ? "true" : "false";
 
-                if(isTemplateArgumentEmpty)
-                {
-                    structFullNameWithTemplates += '<';
-                }
+            newGenMember["setter"].m_insertedValue = setter;
+            newGenMember["getter"].m_insertedValue = getter;
 
-                size_t templateArgsCnt = 0;
-                for(const auto& templateArg : templateArgIt->second.m_values)
-                {
-                    auto* templateValAsSubAnnotation = std::any_cast<AnnotationsProcessor::Annotation>(&templateArg);
+            newGenMember["serializableName"].m_insertedValue = serializableName;
 
-                    if(templateValAsSubAnnotation)
-                    {
-                        // finding type of one of template arguments
-                        auto templateArgTypeIt = templateValAsSubAnnotation->m_currentArgs.find("type");
-                        if(templateArgTypeIt == templateValAsSubAnnotation->m_currentArgs.end())
-                        {
-                            // todo: make error
-                            /*return fmt::format(
-                                    "Can not generate serializer code for struct '{0}'. Template argument was provided in 'sg_struct' annotation, but type of this argument was not specified.",
-                                    structureFullName);*/
-                            continue;
-                        }
-
-                        // structFullNameWithTemplates += std::any_cast<std::string>(templateArgTypeIt->second.m_values[0]);
-
-                        auto templateArgNameIt = templateValAsSubAnnotation->m_currentArgs.find("name");
-                        if(templateArgNameIt != templateValAsSubAnnotation->m_currentArgs.end())
-                        {
-                            if(templateArgsCnt < templateArgIt->second.m_values.size() - 2)
-                            {
-                                structFullNameWithTemplates += std::any_cast<std::string>(templateArgNameIt->second.m_values[0]) + ", ";
-                            }
-                            else
-                            {
-                                structFullNameWithTemplates += std::any_cast<std::string>(templateArgNameIt->second.m_values[0]);
-                            }
-                        }
-                    }
-
-                    ++templateArgsCnt;
-                }
-
-                if(isTemplateArgumentEmpty)
-                {
-                    structFullNameWithTemplates += '>';
-                }
-            }
-
-            auto newStruct = *getTypeByName("cpp_struct");
-            newStruct.m_members["fullName"].m_insertedValue = structureFullName;
-            newStruct.m_members["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
-
-            detectedStructs[structureFullName] = newStruct;
-
-            ++currentStructIdx;
+            newGenMember.setMemberPtr("struct", newStruct);
         }
+
+        m_AST->m_scope["structs"]->setMemberPtr(std::to_string(currentStructIdx), newStruct);
+
+        ++currentStructIdx;
+        // newStruct.m_members["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
     }
+}
 
-    for(const auto& annotation : annotationsProcessor.getAnnotations())
-    {
-        if(annotation.m_name == "sg_member")
-        {
-            auto parentNamespaceArg = annotation.m_currentArgs.find("parentNamespace");
-            // if argument 'parentNamespace' was not found or its value contains 0 values
-            if(parentNamespaceArg == annotation.m_currentArgs.end() ||
-               parentNamespaceArg->second.m_values.empty())
-            {
-                // LOG_E(SGCORE_TAG, "Error in CodeGenerator: 'sg_member' annotation does not contain argument ")
-
-                continue;
-            }
-
-            auto currentStructName = std::any_cast<std::string>(parentNamespaceArg->second.m_values[0]);
-
-            auto currentStructIt = detectedStructs.find(currentStructName);
-            if(currentStructIt == detectedStructs.end())
-            {
-                continue;
-            }
-
-            auto& currentStruct = currentStructIt->second;
-
-            // getting real name of variable
-            auto varNameArg = annotation.m_currentArgs.find("varName");
-            // getting name of variable in JSON file
-            auto serializableNameArg = annotation.m_currentArgs.find("serializableName");
-            if(varNameArg != annotation.m_currentArgs.end() &&
-               serializableNameArg != annotation.m_currentArgs.end())
-            {
-                // first just assigning variable name as getter (direct access to member)
-                std::string variableGetter = std::any_cast<std::string>(varNameArg->second.m_values[0]);
-                std::string variableSetter = std::any_cast<std::string>(varNameArg->second.m_values[0]);
-
-                bool isVariableSetterFound = false;
-                bool isVariableGetterFound = false;
-
-                // iterating through functions annotations
-                for(const auto& functionAnnotation : annotationsProcessor.getAnnotations())
-                {
-                    if(functionAnnotation.m_name == "sg_function")
-                    {
-                        // if sg_functions annotation doest not have argument 'parentNamespace'
-                        auto functionParentNamespace = functionAnnotation.m_currentArgs.find("parentNamespace");
-                        if(functionParentNamespace == functionAnnotation.m_currentArgs.end())
-                        {
-                            continue;
-                        }
-
-                        // if annotation is not in struct %currentStructName%
-                        if (std::any_cast<std::string>(functionParentNamespace->second.m_values[0]) !=
-                            currentStructName)
-                        {
-                            continue;
-                        }
-
-                        // if sg_functions annotation doest not have argument 'name'
-                        auto functionNameArgument = functionAnnotation.m_currentArgs.find("name");
-                        if (functionNameArgument == functionAnnotation.m_currentArgs.end())
-                        {
-                            continue;
-                        }
-
-                        auto functionGetterForArgument = functionAnnotation.m_currentArgs.find(
-                                "getterFor");
-                        if (functionGetterForArgument != functionAnnotation.m_currentArgs.end())
-                        {
-                            // check if this is getter for %variableGetter% variable (variableGetter contains name of variable first)
-                            if (std::any_cast<std::string>(
-                                    functionGetterForArgument->second.m_values[0]) != variableGetter)
-                            {
-                                continue;
-                            }
-
-                            variableGetter = std::any_cast<std::string>(functionNameArgument->second.m_values[0]) + "()";
-                            isVariableGetterFound = true;
-
-                            continue;
-                        }
-
-                        auto functionSetterForArgument = functionAnnotation.m_currentArgs.find(
-                                "setterFor");
-                        if (functionSetterForArgument != functionAnnotation.m_currentArgs.end())
-                        {
-                            // check if this is setter for %variableGetter% variable (variableSetter contains name of variable first)
-                            if (std::any_cast<std::string>(
-                                    functionSetterForArgument->second.m_values[0]) != variableSetter)
-                            {
-                                continue;
-                            }
-
-                            variableSetter = std::any_cast<std::string>(functionNameArgument->second.m_values[0]);
-                            isVariableSetterFound = true;
-                        }
-                    }
-                }
-
-                const std::string memberVariableName = std::any_cast<std::string>(serializableNameArg->second.m_values[0]);
-
-                currentStruct.m_members["members"].m_members[memberVariableName] = *getTypeByName("cpp_struct_member");
-                auto& newMember = currentStruct.m_members["members"].m_members[memberVariableName];
-
-                newMember.m_members["name"].m_insertedValue = memberVariableName;
-
-                newMember.m_members["hasSetter"].m_insertedValue = isVariableSetterFound ? "true" : "false";
-                newMember.m_members["hasGetter"].m_insertedValue = isVariableGetterFound ? "true" : "false";
-
-                newMember.m_members["setter"].m_insertedValue = isVariableSetterFound ? variableSetter : memberVariableName;
-                newMember.m_members["getter"].m_insertedValue = isVariableGetterFound ? variableGetter : memberVariableName;
-            }
-        }
-    }
-
+/*void SGCore::CodeGen::Generator::addVariablesFromAnnotationsProcessor(SGCore::AnnotationsProcessor& annotationsProcessor) noexcept
+{
     currentStructIdx = 0;
     for(auto& s : detectedStructs)
     {
@@ -268,7 +121,7 @@ void SGCore::CodeGen::Generator::addVariablesFromAnnotationsProcessor(SGCore::An
         m_AST->m_scope["structs"]->m_members[std::to_string(currentStructIdx)] = s.second;
         ++currentStructIdx;
     }
-}
+}*/
 
 std::string SGCore::CodeGen::Generator::generate(const std::filesystem::path& templateFile) noexcept
 {
@@ -397,8 +250,8 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     continue;
                 }
 
-                auto newBindableVariable = std::make_shared<Lang::Type>();
-                token->m_scope[bindableVariableToken->m_name] =  newBindableVariable;
+                auto newBindableVariable = std::make_shared<Lang::Variable>();
+                token->m_scope[bindableVariableToken->m_name] = newBindableVariable;
 
                 if(!tokenAndVariableToForIn.second)
                 {
@@ -409,7 +262,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     continue;
                 }
 
-                if(!tokenAndVariableToForIn.second->instanceof("iterable"))
+                if(!tokenAndVariableToForIn.second->getTypeInfo().instanceof("iterable"))
                 {
                     // todo: make error that variable is not instance of iterable
 
@@ -420,12 +273,12 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
 
                 LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'...", tokenAndVariableToForIn.first->m_name)
 
-                size_t iterationsCount = tokenAndVariableToForIn.second->m_members.size();
+                size_t iterationsCount = tokenAndVariableToForIn.second->membersCount();
 
                 size_t curElemIdx = 0;
-                for(const auto& elem : tokenAndVariableToForIn.second->m_members)
+                for(const auto& elem : tokenAndVariableToForIn.second->getMembers())
                 {
-                    *newBindableVariable = elem.second;
+                    newBindableVariable = elem.second;
 
                     LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'", tokenAndVariableToForIn.first->m_name, curElemIdx)
                     generateCodeUsingAST(child, outputString);
@@ -706,7 +559,7 @@ void SGCore::CodeGen::Generator::gotoParent(std::shared_ptr<Lang::ASTToken>& tok
 std::optional<SGCore::CodeGen::Lang::Type> SGCore::CodeGen::Generator::getTypeByName(const std::string& typeName) const noexcept
 {
     auto it = std::find_if(m_currentTypes.begin(), m_currentTypes.end(), [&typeName](const Lang::Type& t) {
-        return t.m_typeName == typeName;
+        return t.m_name == typeName;
     });
 
     if(it == m_currentTypes.end())
@@ -743,18 +596,18 @@ SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken
             {
                 if(outVariable)
                 {
-                    auto foundMember = outVariable->tryGetMember(child->m_name);
+                    auto foundMember = outVariable->getMember(child->m_name);
                     if(!foundMember)
                     {
                         LOG_E(SGCORE_TAG, "Error in CodeGenerator: member '{}' does not exist in '{}' type (variable: '{}').",
                               child->m_name,
-                              outVariable->m_typeName,
+                              outVariable->getTypeInfo().m_name,
                               lastToken->m_name)
                     }
                     else
                     {
                         // if member with this name was found then assigning new variable pointer to out.second
-                        outVariable = std::make_shared<Lang::Type>(*foundMember);
+                        outVariable = foundMember;
                     }
                 }
             }
@@ -786,7 +639,7 @@ bool SGCore::CodeGen::Lang::Type::instanceof(const SGCore::CodeGen::Lang::Type& 
     if(m_extends.empty()) return false;
 
     auto it = std::find_if(m_extends.begin(), m_extends.end(), [&other](const Type& t) {
-        return t.m_typeName == other.m_typeName;
+        return t.m_name == other.m_name;
     });
 
     if(it == m_extends.end())
@@ -805,7 +658,7 @@ bool SGCore::CodeGen::Lang::Type::instanceof(const std::string& typeName) const 
     if(m_extends.empty()) return false;
 
     auto it = std::find_if(m_extends.begin(), m_extends.end(), [&typeName](const Type& t) {
-        return t.m_typeName == typeName;
+        return t.m_name == typeName;
     });
 
     if(it == m_extends.end())
@@ -819,36 +672,56 @@ bool SGCore::CodeGen::Lang::Type::instanceof(const std::string& typeName) const 
     return true;
 }
 
-SGCore::CodeGen::Lang::Type* SGCore::CodeGen::Lang::Type::tryGetMember(const std::string& name) noexcept
+SGCore::CodeGen::Lang::Variable::Variable(const SGCore::CodeGen::Lang::Type& withType) noexcept
 {
-    if(m_members.empty() && m_extends.empty()) return nullptr;
+    m_typeInfo = withType;
+
+    for(const auto& member : withType.m_members)
+    {
+        m_members[member.first] = std::make_shared<Variable>(member.second);
+    }
+
+    for(const auto& type : withType.m_extends)
+    {
+        m_inheritanceMap[type.m_name] = std::make_shared<Variable>(type);
+    }
+}
+
+const SGCore::CodeGen::Lang::Type& SGCore::CodeGen::Lang::Variable::getTypeInfo() const noexcept
+{
+    return m_typeInfo;
+}
+
+std::shared_ptr<SGCore::CodeGen::Lang::Variable> SGCore::CodeGen::Lang::Variable::getMember(const std::string& name) noexcept
+{
+    if(m_members.empty() && m_inheritanceMap.empty()) return nullptr;
 
     auto it = m_members.find(name);
 
     if(it == m_members.end())
     {
-        for(auto& t : m_extends)
+        for(auto& t : m_inheritanceMap)
         {
-            return t.tryGetMember(name);
+            return t.second->getMember(name);
         }
 
         return nullptr;
     }
 
-    return &it->second;
+    return it->second;
 }
 
-SGCore::CodeGen::Lang::Function* SGCore::CodeGen::Lang::Type::tryGetFunction(const std::string& name) noexcept
+SGCore::CodeGen::Lang::Function* SGCore::CodeGen::Lang::Variable::tryGetFunction(const std::string& name) noexcept
 {
-    if(m_functions.empty() && m_extends.empty()) return nullptr;
+    if(m_functions.empty() && m_inheritanceMap.empty()) return nullptr;
 
     auto it = m_functions.find(name);
 
     if(it == m_functions.end())
     {
-        for(auto& t : m_extends)
+        for(auto& t : m_inheritanceMap)
         {
-            return t.tryGetFunction(name);
+            return t.second->tryGetFunction(name);
         }
 
         return nullptr;
@@ -857,7 +730,45 @@ SGCore::CodeGen::Lang::Function* SGCore::CodeGen::Lang::Type::tryGetFunction(con
     return &it->second;
 }
 
-std::shared_ptr<SGCore::CodeGen::Lang::Type> SGCore::CodeGen::Lang::ASTToken::getScopeVariable(const std::string& variableName) const noexcept
+SGCore::CodeGen::Lang::Variable& SGCore::CodeGen::Lang::Variable::operator[](const std::string& memberName) noexcept
+{
+    if(hasMember(memberName))
+    {
+        return *m_members[memberName];
+    }
+    else
+    {
+        auto newMember = std::make_shared<Variable>();
+        newMember->m_name = memberName;
+
+        m_members[memberName] = newMember;
+
+        return *newMember;
+    }
+}
+
+bool SGCore::CodeGen::Lang::Variable::hasMember(const std::string& memberName) const noexcept
+{
+    return m_members.contains(memberName);
+}
+
+size_t SGCore::CodeGen::Lang::Variable::membersCount() const noexcept
+{
+    return m_members.size();
+}
+
+const std::unordered_map<std::string, std::shared_ptr<SGCore::CodeGen::Lang::Variable>>&
+SGCore::CodeGen::Lang::Variable::getMembers() const noexcept
+{
+    return m_members;
+}
+
+void SGCore::CodeGen::Lang::Variable::setMemberPtr(const std::string& memberName, const std::shared_ptr<Variable>& value) noexcept
+{
+    m_members[memberName] = value;
+}
+
+std::shared_ptr<SGCore::CodeGen::Lang::Variable> SGCore::CodeGen::Lang::ASTToken::getScopeVariable(const std::string& variableName) const noexcept
 {
     if(m_scope.empty()) return nullptr;
 

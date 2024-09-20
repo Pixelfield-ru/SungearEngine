@@ -9,12 +9,10 @@
 
 namespace SGCore
 {
-    sg_struct()
     struct DirectionalLight
     {
         DirectionalLight() noexcept;
 
-        sg_member()
         LightBase m_base;
     };
 }

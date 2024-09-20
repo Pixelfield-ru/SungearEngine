@@ -15,6 +15,7 @@
 #include "SGCore/Audio/AudioDevice.h"
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/PluginsSystem/PluginsManager.h"
+#include "SGCore/MetaInfo/MetaInfo.h"
 
 void SGCore::CoreMain::start()
 {
@@ -28,6 +29,8 @@ void SGCore::CoreMain::start()
     {
         std::printf("err: %s\n", e.what());
     }
+
+    MetaInfo::addStandardMetaInfo();
 
     AssetManager::init();
 

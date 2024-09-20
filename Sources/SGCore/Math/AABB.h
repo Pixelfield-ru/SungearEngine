@@ -9,12 +9,10 @@
 
 #include "MathUtils.h"
 #include "SGCore/Serde/Serde.h"
-#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
     template<typename ScalarT = float>
-    sg_struct(template = [(type = "typename", name = "ScalarT")])
     struct AABB
     {
         static_assert(std::is_scalar_v<ScalarT> && "ScalarT must be scalar.");
@@ -33,10 +31,8 @@ namespace SGCore
         AABB() = default;
         AABB(const AABB&) = default;
         AABB(AABB&) = default;
-        
-        sg_member()
+
         vec3_t m_min = { 0, 0, 0 };
-        sg_member()
         vec3_t m_max = { 0, 0, 0 };
         
         [[nodiscard]] bool isCollidesWith(const AABB& other) const noexcept

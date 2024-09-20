@@ -9,15 +9,11 @@
 
 namespace SGCore
 {
-    sg_member()
     struct SphereGizmo
     {
-        sg_member()
         GizmoBase m_base;
 
-        sg_member()
         float m_radius = 5.0;
-        sg_member()
         float m_angleIncrement = 18.0;
 
         float m_lastRadius = 0.0;

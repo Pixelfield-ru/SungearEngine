@@ -7,8 +7,6 @@
 
 #include <SGCore/pch.h>
 
-#include "SGCore/Annotations/Annotations.h"
-
 namespace SGCore
 {
     enum class highp_entity : std::uint64_t { };

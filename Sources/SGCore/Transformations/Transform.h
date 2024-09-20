@@ -11,25 +11,20 @@
 #include "SGCore/Main/CoreGlobals.h"
 
 #include "SGCore/Serde/Serde.h"
-#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
     // sizeof(Transform) = 767
-    sg_struct(type = "component", getFromRegistryBy = "SGCore::Ref<SGCore::Transform>")
     struct Transform
     {
-        sg_member()
         TransformBase m_finalTransform;
-        
-        sg_member()
+
         TransformBase m_ownTransform;
 
         // will transform follow parent entity`s translation, rotation and scale
         // x - follow translation
         // y - follow rotation
         // z - follow scale
-        sg_member()
         glm::vec<3, bool, glm::highp> m_followParentTRS { true, true, true };
         // glm::bvec3 m_lastFollowParentTRS = glm::vec3 { false };
         

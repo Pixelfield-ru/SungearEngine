@@ -6,8 +6,7 @@
 #define SUNGEARENGINE_UNIQUENAME_H
 
 #include <SGCore/pch.h>
-
-#include "SGCore/Annotations/Annotations.h"
+#include "SGCore/Serde/Defines.h"
 
 sg_predeclare_serdespec()
 
@@ -15,7 +14,6 @@ namespace SGCore
 {
     class UniqueNamesManager;
 
-    sg_struct()
     struct UniqueName
     {
         sg_serdespec_as_friend()
@@ -60,18 +58,14 @@ namespace SGCore
     private:
         std::weak_ptr<UniqueNamesManager> m_parentUniqueNamesManager;
 
-        sg_member()
         std::string m_rawName;
         // -1 IS NOT TYPO
-        sg_member()
         std::int64_t m_uniqueID = -1;
         // m_rawName + m_uniqueID
-        sg_member()
         std::string m_name;
     };
 
     // wrapper class for unique name for inheritance
-    sg_struct()
     class UniqueNameWrapper
     {
         sg_serdespec_as_friend()
@@ -103,7 +97,6 @@ namespace SGCore
         }
 
     protected:
-        sg_member()
         UniqueName m_uniqueName;
 
     private:

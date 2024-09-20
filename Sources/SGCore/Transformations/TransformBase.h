@@ -14,39 +14,27 @@
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Serde/Serde.h"
-#include "SGCore/Annotations/Annotations.h"
 
 namespace SGCore
 {
     // sizeof(TransformBase) == 382
     // todo: make quaternion transformations
-    sg_struct()
     struct TransformBase
     {
         friend struct TransformationsUpdater;
-        
-        sg_member()
+
         bool m_blockTranslation = false;
-        sg_member()
         bool m_blockRotation = false;
-        sg_member()
         bool m_blockScale = false;
-        
-        sg_member()
+
         AABB<> m_aabb;
-        
-        sg_member()
+
         glm::vec3 m_position { 0.0 };
-        sg_member()
         glm::vec3 m_rotation { 0.0 };
-        sg_member()
         glm::vec3 m_scale { 1.0 };
-        
-        sg_member()
+
         glm::vec3 m_left = MathUtils::left3;
-        sg_member()
         glm::vec3 m_forward = MathUtils::forward3;
-        sg_member()
         glm::vec3 m_up = MathUtils::up3;
 
         glm::mat4 m_translationMatrix = glm::mat4(1);
