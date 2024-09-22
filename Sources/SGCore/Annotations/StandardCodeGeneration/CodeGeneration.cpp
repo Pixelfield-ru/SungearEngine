@@ -31,7 +31,7 @@ SGCore::CodeGen::Generator::Generator()
 
         Lang::Type uintType;
         uintType.m_name = "uint";
-        m_currentTypes.push_back(boolType);
+        m_currentTypes.push_back(uintType);
 
         Lang::Type intType;
         intType.m_name = "int";
@@ -67,6 +67,7 @@ SGCore::CodeGen::Generator::Generator()
     for(auto& metaStruct : MetaInfo::getMeta()["structs"])
     {
         auto newStruct = std::make_shared<Lang::Variable>(*getTypeByName("cpp_struct"));
+        (*newStruct)["members"] = Lang::Variable(*getTypeByName("generic_vector"));
 
         (*newStruct)["fullName"].m_insertedValue = metaStruct["fullName"].getValue();
 
@@ -155,6 +156,45 @@ void SGCore::CodeGen::Generator::buildAST(const std::string& templateFileText) n
     for(size_t ci = 0; ci < templateFileText.size(); ++ci)
     {
         const char& curChar = templateFileText[ci];
+
+        // checking for comment
+        if(curChar == '\\')
+        {
+            if(ci + 1 < templateFileText.size())
+            {
+                if(templateFileText[ci + 1] == '\\')
+                {
+                    m_currentCommentType = CommentType::ONE_LINE;
+                }
+                else if(templateFileText[ci + 1] == '*')
+                {
+                    m_currentCommentType = CommentType::MULTILINE;
+                }
+            }
+
+            if(ci - 1 > 0)
+            {
+                if(templateFileText[ci - 1] == '*')
+                {
+                    m_currentCommentType = CommentType::NO_COMMENT;
+                    continue;
+                }
+            }
+        }
+
+        if(curChar == '\n')
+        {
+            if(m_currentCommentType == CommentType::ONE_LINE)
+            {
+                m_currentCommentType = CommentType::NO_COMMENT;
+            }
+        }
+
+        // skipping characters if there is comment lines (comments: \\ - one line, \* - start multiline comment, *\ - end multiline comment)
+        if(m_currentCommentType != CommentType::NO_COMMENT)
+        {
+            continue;
+        }
 
         if(m_currentCPPCodeToken && !m_skipCodeCopy)
         {
@@ -278,7 +318,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 size_t curElemIdx = 0;
                 for(const auto& elem : tokenAndVariableToForIn.second->getMembers())
                 {
-                    newBindableVariable = elem.second;
+                    token->m_scope[bindableVariableToken->m_name] = elem.second;
 
                     LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'", tokenAndVariableToForIn.first->m_name, curElemIdx)
                     generateCodeUsingAST(child, outputString);
@@ -301,15 +341,60 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             }
             case Lang::Tokens::K_IF:
             {
-                generateCodeUsingAST(child, outputString);
+                // getting last variable in sequence of variables
+                token_and_var tokenAndVar = getLastVariable(child, 0);
+
+                if(tokenAndVar.first->m_type != Lang::Tokens::K_VAR)
+                {
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not variable type (maybe keyword).")
+                    ++currentChildTokenIdx;
+                    continue;
+                }
+
+                if(tokenAndVar.second->getTypeInfo().m_name != "bool")
+                {
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not boolean type.")
+                    ++currentChildTokenIdx;
+                    continue;
+                }
+
+                std::shared_ptr<Lang::ASTToken> elseToken;
+
+                // finding 'else' branch
+                for(size_t i = 0; i < child->m_children.size(); ++i)
+                {
+                    const auto& childOfChild = child->m_children[i];
+
+                    if(childOfChild->m_type == Lang::Tokens::K_ELSE)
+                    {
+                        if(i != child->m_children.size() - 2)
+                        {
+                            LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) 'else' branch is not last in 'if'-'else if' sequence.")
+                            break;
+                        }
+
+                        // else branch was successfully found and 'else' branch is last in 'if'-'else if' sequence
+                        elseToken = childOfChild;
+                        break;
+                    }
+                }
+
+                if(tokenAndVar.second->m_insertedValue == "true")
+                {
+                    generateCodeUsingAST(child, outputString);
+                }
+                else
+                {
+                    if(elseToken)
+                    {
+                        generateCodeUsingAST(elseToken, outputString);
+                    }
+                }
+
                 break;
             }
-            case Lang::Tokens::K_ELSE:
-            {
-                generateCodeUsingAST(child, outputString);
-                break;
-            }
-            case Lang::Tokens::K_ENDIF:break;
+            case Lang::Tokens::K_ELSE: break; // nothing to do
+            case Lang::Tokens::K_ENDIF:break; // nothing to do
             case Lang::Tokens::K_START_PLACEMENT:
             {
                 token_and_var tokenAndVar = getLastVariable(child, 0);
@@ -766,6 +851,7 @@ SGCore::CodeGen::Lang::Variable::getMembers() const noexcept
 void SGCore::CodeGen::Lang::Variable::setMemberPtr(const std::string& memberName, const std::shared_ptr<Variable>& value) noexcept
 {
     m_members[memberName] = value;
+    value->m_name = memberName;
 }
 
 std::shared_ptr<SGCore::CodeGen::Lang::Variable> SGCore::CodeGen::Lang::ASTToken::getScopeVariable(const std::string& variableName) const noexcept

@@ -138,6 +138,13 @@ namespace SGCore::CodeGen
         [[nodiscard]] std::string generate(const std::filesystem::path& templateFile) noexcept;
 
     private:
+        enum class CommentType
+        {
+            NO_COMMENT,
+            ONE_LINE,
+            MULTILINE
+        };
+
         using token_and_var = std::pair<std::shared_ptr<Lang::ASTToken>, std::shared_ptr<Lang::Variable>>;
 
         std::vector<Lang::Type> m_currentTypes;
@@ -188,6 +195,7 @@ namespace SGCore::CodeGen
         // tmp variables ===================
         bool m_isExprStarted = false;
         bool m_isPlacementStarted = false;
+        CommentType m_currentCommentType = CommentType::NO_COMMENT;
 
         // skipping this lang exprs to copy only c++ code
         bool m_skipCodeCopy = false;

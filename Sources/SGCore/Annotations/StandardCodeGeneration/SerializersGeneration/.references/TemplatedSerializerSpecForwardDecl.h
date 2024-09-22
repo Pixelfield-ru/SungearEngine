@@ -46,9 +46,7 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
         ## if member.hasSetter
         valueView.m_data->{{ member.setter }}(*{{ member.name }});
         ## else
-        ## if member.gavnishe
         valueView.m_data->{{ member.name }} = *{{ member.name }};
-        ## endif
         ## endif
     }
 
