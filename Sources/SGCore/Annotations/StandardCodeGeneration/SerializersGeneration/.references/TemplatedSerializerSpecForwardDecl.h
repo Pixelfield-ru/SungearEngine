@@ -17,7 +17,7 @@ struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>
     static void serialize(SGCore::Serde::SerializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept;
-}
+};
 
 ## endfor
 
@@ -40,7 +40,7 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
 {
     ## for member in struct.members
 
-    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.struct.name }}");
+    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.name }}");
     if({{ member.name }})
     {
         ## if member.hasSetter

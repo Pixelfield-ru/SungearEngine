@@ -40,7 +40,7 @@ SGCore::CodeGen::Generator::Generator()
         // adding annotations processor types
         Lang::Type cppStructType;
         cppStructType.m_name = "cpp_struct";
-        cppStructType.m_members["name"] = stringType;
+        cppStructType.m_members["fullName"] = stringType;
         cppStructType.m_members["filePath"] = stringType;
         cppStructType.m_members["templates"] = genericVectorType;
         cppStructType.m_members["fullNameWithTemplates"] = stringType;
@@ -72,11 +72,30 @@ SGCore::CodeGen::Generator::Generator()
         (*newStruct)["fullName"].m_insertedValue = metaStruct["fullName"].getValue();
 
         auto& structMembers = metaStruct["members"];
+        auto& structTemplateArgs = metaStruct["template_args"];
+
+        // doing some actions with templates ==================
+        // structFullNameWithTemplates == structName or structFullNameWithTemplates == structName<allTemplateArgs> (if template exists)
+        std::string structFullNameWithTemplates = metaStruct["fullName"].getValue();
+        const bool hasTemplateArgs = !structTemplateArgs.getChildren().empty();
+        if(hasTemplateArgs)
+        {
+            structFullNameWithTemplates += '<';
+        }
+        for(const auto& structTemplateArg : structTemplateArgs.getChildren())
+        {
+            structFullNameWithTemplates += structTemplateArg->first;
+        }
+        if(hasTemplateArgs)
+        {
+            structFullNameWithTemplates += '>';
+        }
+        // =====================================================
 
         for(auto& memberIt : structMembers.getChildren())
         {
-            auto& memberName = memberIt.first;
-            auto& member = memberIt.second;
+            auto& memberName = memberIt->first;
+            auto& member = memberIt->second;
 
             // getting variables from meta
             const bool hasSetter = member.hasChild("setter");
@@ -101,6 +120,9 @@ SGCore::CodeGen::Generator::Generator()
 
             newGenMember.setMemberPtr("struct", newStruct);
         }
+
+        (*newStruct)["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
+        (*newStruct)["filePath"].m_insertedValue = metaStruct["filePath"].getValue();
 
         m_AST->m_scope["structs"]->setMemberPtr(std::to_string(currentStructIdx), newStruct);
 

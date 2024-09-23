@@ -24,24 +24,24 @@ namespace SGCore
             Meta& operator[](const std::string& childName) noexcept
             {
                 auto it = std::find_if(m_children.begin(), m_children.end(), [&childName](const auto& child) {
-                    return childName == child.first;
+                    return childName == child->first;
                 });
 
                 if(it == m_children.end())
                 {
-                    m_children.push_back({ childName, { } });
-                    return m_children.rbegin()->second;
+                    m_children.emplace_back(std::make_shared<std::pair<std::string, Meta>>(childName, Meta()));
+                    return (*m_children.rbegin())->second;
                 }
                 else
                 {
-                    return it->second;
+                    return (*it)->second;
                 }
             }
 
             [[nodiscard]] bool hasChild(const std::string& childName) const noexcept
             {
                 auto it = std::find_if(m_children.begin(), m_children.end(), [&childName](const auto& child) {
-                    return childName == child.first;
+                    return childName == child->first;
                 });
 
                 return it != m_children.end();
@@ -68,7 +68,7 @@ namespace SGCore
 
         private:
             std::string m_value;
-            std::vector<std::pair<std::string, Meta>> m_children;
+            std::vector<std::shared_ptr<std::pair<std::string, Meta>>> m_children;
         };
 
         SG_NOINLINE static auto& getMeta() noexcept
@@ -78,10 +78,19 @@ namespace SGCore
 
         static void addStandardMetaInfo() noexcept
         {
+            const char* sgSourcesPath = std::getenv("SUNGEAR_SOURCES_ROOT");
+            if(!sgSourcesPath)
+            {
+                return;
+            }
+
+            const std::string sgSourcesPathStr = sgSourcesPath;
+
             // SGCore::AudioSource
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::AudioSource";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Audio/AudioSource.h";
                 meta["type"] = "component";
 
                 meta["members"]["m_rolloffFactor"]["setter"] = "setRolloffFactor";
@@ -120,6 +129,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::UniqueName";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Utils/UniqueName.h";
 
                 meta["members"]["m_rawName"];
                 meta["members"]["m_uniqueID"];
@@ -132,6 +142,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::UniqueNameWrapper";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Utils/UniqueName.h";
 
                 meta["members"]["m_uniqueName"];
 
@@ -142,8 +153,9 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::AABB";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Math/AABB.h";
                 meta["type"] = "component";
-                meta["templates"]["ScalarT"] = "typename";
+                meta["template_args"]["ScalarT"] = "typename";
 
                 meta["members"]["m_min"];
                 meta["members"]["m_max"];
@@ -155,6 +167,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::Layer";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/Layer.h";
 
                 meta["members"]["m_name"];
                 meta["members"]["m_isOpaque"];
@@ -167,6 +180,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::TransformBase";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/TransformBase.h";
 
                 meta["members"]["m_blockTranslation"];
                 meta["members"]["m_blockRotation"];
@@ -186,6 +200,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::Transform";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/Transform.h";
                 meta["type"] = "component";
                 meta["getFromRegistryBy"] = "SGCore::Ref<SGCore::Transform>";
 
@@ -200,6 +215,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::EntityBaseInfo";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/EntityBaseInfo.h";
                 meta["type"] = "component";
 
                 meta["extends"]["SGCore::UniqueNameWrapper"];
@@ -213,6 +229,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::MeshDataRenderInfo";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/ImportedScenesArch/MeshDataRenderInfo.h";
 
                 meta["members"]["m_useIndices"];
                 meta["members"]["m_enableFacesCulling"];
@@ -229,6 +246,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::RenderingBase";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/RenderingBase.h";
                 meta["type"] = "component";
 
                 meta["members"]["m_fov"];
@@ -252,6 +270,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::Camera3D";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Camera3D.h";
                 meta["type"] = "component";
 
                 m_meta["structs"].push_back(meta);
@@ -261,6 +280,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::GizmoBase";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/GizmoBase.h";
 
                 meta["members"]["m_color"];
                 meta["members"]["m_meshBase"];
@@ -272,6 +292,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::SphereGizmo";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/SphereGizmo.h";
                 meta["type"] = "component";
 
                 meta["members"]["m_base"];
@@ -285,6 +306,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::BoxGizmo";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/BoxGizmo.h";
                 meta["type"] = "component";
 
                 meta["members"]["m_base"];
@@ -298,6 +320,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::LineGizmo";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/LineGizmo.h";
                 meta["type"] = "component";
 
                 meta["members"]["m_base"];
@@ -311,6 +334,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::MeshBase";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/MeshBase.h";
 
                 meta["members"]["m_meshDataRenderInfo"];
 
@@ -327,6 +351,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::LightBase";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Lighting/LightBase.h";
 
                 meta["members"]["m_color"];
                 meta["members"]["m_intensity"];
@@ -339,6 +364,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::DirectionalLight";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Lighting/DirectionalLight.h";
                 meta["type"] = "component";
 
                 meta["members"]["m_base"];
@@ -346,10 +372,11 @@ namespace SGCore
                 m_meta["structs"].push_back(meta);
             }
 
-            // SGCore::DirectionalLight
+            // SGCore::Atmosphere
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::Atmosphere";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Atmosphere/Atmosphere.h";
                 meta["type"] = "component";
 
                 meta["members"]["m_sunPosition"];
@@ -394,6 +421,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::Controllable3D";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/Controllable3D.h";
                 meta["type"] = "component";
 
                 meta["members"]["m_movementSpeed"];
@@ -406,6 +434,7 @@ namespace SGCore
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::UICamera";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/UICamera.h";
                 meta["type"] = "component";
 
                 m_meta["structs"].push_back(meta);
