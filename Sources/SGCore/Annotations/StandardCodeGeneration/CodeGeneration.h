@@ -27,6 +27,7 @@ namespace SGCore::CodeGen
             K_END_PLACEMENT,
             K_VAR,
             K_CPP_CODE_LINE,
+            K_CHAR_SEQ,
 
             // char-tokens
             K_LPAREN,
@@ -34,6 +35,7 @@ namespace SGCore::CodeGen
             K_LBLOCK,
             K_RBLOCK,
             K_DOT,
+            K_COLON,
 
             K_UNKNOWN
         };
@@ -163,7 +165,8 @@ namespace SGCore::CodeGen
                 { ")", Lang::Tokens::K_RPAREN },
                 { "{", Lang::Tokens::K_LBLOCK },
                 { "}", Lang::Tokens::K_RBLOCK },
-                { ".", Lang::Tokens::K_DOT }
+                { ".", Lang::Tokens::K_DOT },
+                { ":", Lang::Tokens::K_COLON }
         };
 
         std::shared_ptr<Lang::ASTToken> m_AST = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_FILESTART);

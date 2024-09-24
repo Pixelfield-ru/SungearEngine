@@ -351,16 +351,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 break;
             }
             case Lang::Tokens::K_ENDFOR:break;
-            case Lang::Tokens::K_IN:
-            {
-                auto prevToken = token->m_children[currentChildTokenIdx - 1];
-                if(prevToken->m_type == Lang::Tokens::K_VAR)
-                {
-                    // token->m_scope[prevToken->m_name] =
-                }
-
-                break;
-            }
+            case Lang::Tokens::K_IN: break;
             case Lang::Tokens::K_IF:
             {
                 // getting last variable in sequence of variables
@@ -594,6 +585,16 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
             analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
         }
         addToken(currentToken, Lang::Tokens::K_DOT);
+        word = "";
+    }
+    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_COLON)
+    {
+        if(currentWordTokenType != currentCharTokenType)
+        {
+            std::string tmpWord = std::string(word.begin(), word.end() - 1);
+            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
+        }
+        addToken(currentToken, Lang::Tokens::K_COLON);
         word = "";
     }
     else if(getTokenTypeByName(std::string({curChar, nextChar})) == Lang::Tokens::K_START_PLACEMENT)
