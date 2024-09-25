@@ -15,6 +15,7 @@
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/AssetManager.h>
+#include <SGCore/Memory/Assets/ModelAsset.h>
 
 #ifdef PLATFORM_OS_WINDOWS
 #ifdef __cplusplus
@@ -105,7 +106,7 @@ void coreInit()
                                                {},
                                                "cmake-build-debug");
 
-    std::cout << "plugin: " << sgEditorPlugin << ", sgeditor path: " << sgEditorPath << std::endl;
+    // std::cout << "plugin: " << sgEditorPlugin << ", sgeditor path: " << sgEditorPath << std::endl;
 
     const char* sungearRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
     std::string sungearRootStr;

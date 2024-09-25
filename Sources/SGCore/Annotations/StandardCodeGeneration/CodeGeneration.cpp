@@ -223,6 +223,11 @@ void SGCore::CodeGen::Generator::buildAST(const std::string& templateFileText) n
             m_currentCPPCodeToken->m_cppCode += curChar;
         }
 
+        if(m_writeCharSeq)
+        {
+            m_currentCharSeqToken->m_cppCode += curChar;
+        }
+
         if(curChar == '\n')
         {
             if(m_currentCPPCodeToken)
@@ -290,11 +295,11 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             case Lang::Tokens::K_FOR:
             {
                 // getting last token in variable tokens sequence (example: var0.var1.var2)
-                token_and_var tokenAndVariableToForIn = getLastVariable(child, 2);
+                VariableFindResult tokenAndVariableToForIn = getLastVariable(child, 2);
 
                 // getting variable that we will use to bind to every element in iterable variable
                 auto bindableVariableToken = child->m_children[0];
-                if(tokenAndVariableToForIn.first->m_type != Lang::Tokens::K_VAR)
+                if(tokenAndVariableToForIn.m_token->m_type != Lang::Tokens::K_VAR)
                 {
                     // todo: make error that token is not variable
 
@@ -315,34 +320,34 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 auto newBindableVariable = std::make_shared<Lang::Variable>();
                 token->m_scope[bindableVariableToken->m_name] = newBindableVariable;
 
-                if(!tokenAndVariableToForIn.second)
+                if(!tokenAndVariableToForIn.m_variable)
                 {
                     // todo: make error that variable does not exist
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate variable '{}' that does not exist.", tokenAndVariableToForIn.first->m_name)
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate variable '{}' that does not exist.", tokenAndVariableToForIn.m_token->m_name)
                     ++currentChildTokenIdx;
                     continue;
                 }
 
-                if(!tokenAndVariableToForIn.second->getTypeInfo().instanceof("iterable"))
+                if(!tokenAndVariableToForIn.m_variable->getTypeInfo().instanceof("iterable"))
                 {
                     // todo: make error that variable is not instance of iterable
 
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", tokenAndVariableToForIn.first->m_name)
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", tokenAndVariableToForIn.m_token->m_name)
                     ++currentChildTokenIdx;
                     continue;
                 }
 
-                LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'...", tokenAndVariableToForIn.first->m_name)
+                LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'...", tokenAndVariableToForIn.m_token->m_name)
 
-                size_t iterationsCount = tokenAndVariableToForIn.second->membersCount();
+                size_t iterationsCount = tokenAndVariableToForIn.m_variable->membersCount();
 
                 size_t curElemIdx = 0;
-                for(const auto& elem : tokenAndVariableToForIn.second->getMembers())
+                for(const auto& elem : tokenAndVariableToForIn.m_variable->getMembers())
                 {
                     token->m_scope[bindableVariableToken->m_name] = elem.second;
 
-                    LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'", tokenAndVariableToForIn.first->m_name, curElemIdx)
+                    LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'", tokenAndVariableToForIn.m_token->m_name, curElemIdx)
                     generateCodeUsingAST(child, outputString);
 
                     ++curElemIdx;
@@ -355,16 +360,16 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             case Lang::Tokens::K_IF:
             {
                 // getting last variable in sequence of variables
-                token_and_var tokenAndVar = getLastVariable(child, 0);
+                VariableFindResult tokenAndVar = getLastVariable(child, 0);
 
-                if(tokenAndVar.first->m_type != Lang::Tokens::K_VAR)
+                if(tokenAndVar.m_token->m_type != Lang::Tokens::K_VAR)
                 {
                     LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not variable type (maybe keyword).")
                     ++currentChildTokenIdx;
                     continue;
                 }
 
-                if(tokenAndVar.second->getTypeInfo().m_name != "bool")
+                if(tokenAndVar.m_variable->getTypeInfo().m_name != "bool")
                 {
                     LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not boolean type.")
                     ++currentChildTokenIdx;
@@ -392,7 +397,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     }
                 }
 
-                if(tokenAndVar.second->m_insertedValue == "true")
+                if(tokenAndVar.m_variable->m_insertedValue == "true")
                 {
                     generateCodeUsingAST(child, outputString);
                 }
@@ -410,11 +415,11 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             case Lang::Tokens::K_ENDIF:break; // nothing to do
             case Lang::Tokens::K_START_PLACEMENT:
             {
-                token_and_var tokenAndVar = getLastVariable(child, 0);
+                VariableFindResult tokenAndVar = getLastVariable(child, 0);
 
-                if(tokenAndVar.second)
+                if(tokenAndVar.m_variable)
                 {
-                    outputString += tokenAndVar.second->m_insertedValue;
+                    outputString += tokenAndVar.m_variable->m_insertedValue;
                 }
                 // generateCodeUsingAST(child, outputString);
                 break;
@@ -478,7 +483,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
     Lang::Tokens currentWordTokenType = getTokenTypeByName(word);
     Lang::Tokens currentCharTokenType = getTokenTypeByName(std::string() + curChar);
 
-    if(currentWordTokenType == Lang::Tokens::K_STARTEXPR)
+    if(currentWordTokenType == Lang::Tokens::K_STARTEXPR && !m_writeCharSeq)
     {
         m_currentCPPCodeToken = nullptr;
         m_skipCodeCopy = true;
@@ -487,7 +492,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         // currentToken = newBranch;
         word = "";
     }
-    else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_FOR && std::isspace(curChar))
+    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Lang::Tokens::K_FOR && std::isspace(curChar))
     {
         if(m_isPlacementStarted)
         {
@@ -499,7 +504,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         currentToken->m_isExprToken = true;
         word = "";
     }
-    else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_ENDFOR && isSpace(curChar))
+    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Lang::Tokens::K_ENDFOR && isSpace(curChar))
     {
         if(m_isPlacementStarted)
         {
@@ -511,7 +516,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         gotoParent(currentToken);
         word = "";
     }
-    else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_IF && isSpace(curChar))
+    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Lang::Tokens::K_IF && isSpace(curChar))
     {
         if(m_isPlacementStarted)
         {
@@ -523,7 +528,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         currentToken->m_isExprToken = true;
         word = "";
     }
-    else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_ELSE && isSpace(curChar))
+    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Lang::Tokens::K_ELSE && isSpace(curChar))
     {
         if(m_isPlacementStarted)
         {
@@ -535,7 +540,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         currentToken->m_isExprToken = true;
         word = "";
     }
-    else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_ENDIF && isSpace(curChar))
+    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Lang::Tokens::K_ENDIF && isSpace(curChar))
     {
         if(m_isPlacementStarted)
         {
@@ -543,7 +548,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
             return;
         }
 
-        if(currentToken->m_type == Lang::Tokens::K_ELSE)
+        if(currentToken->m_type == Lang::Tokens::K_ELSE && !m_writeCharSeq)
         {
             gotoParent(currentToken);
         }
@@ -551,12 +556,12 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         gotoParent(currentToken);
         word = "";
     }
-    else if(m_isExprStarted && currentWordTokenType == Lang::Tokens::K_IN && isSpace(curChar))
+    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Lang::Tokens::K_IN && isSpace(curChar))
     {
         addToken(currentToken, Lang::Tokens::K_IN);
         word = "";
     }
-    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_LPAREN)
+    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Lang::Tokens::K_LPAREN)
     {
         //addToken(currentToken, Lang::Tokens::K_LPAREN);
         if(currentWordTokenType != currentCharTokenType)
@@ -567,7 +572,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         addToken(currentToken, Lang::Tokens::K_LPAREN);
         word = "";
     }
-    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_RPAREN)
+    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Lang::Tokens::K_RPAREN)
     {
         if(currentWordTokenType != currentCharTokenType)
         {
@@ -577,7 +582,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         addToken(currentToken, Lang::Tokens::K_RPAREN);
         word = "";
     }
-    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_DOT)
+    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Lang::Tokens::K_DOT)
     {
         if(currentWordTokenType != currentCharTokenType)
         {
@@ -587,7 +592,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         addToken(currentToken, Lang::Tokens::K_DOT);
         word = "";
     }
-    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_COLON)
+    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Lang::Tokens::K_COLON)
     {
         if(currentWordTokenType != currentCharTokenType)
         {
@@ -597,8 +602,34 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         addToken(currentToken, Lang::Tokens::K_COLON);
         word = "";
     }
-    else if(getTokenTypeByName(std::string({curChar, nextChar})) == Lang::Tokens::K_START_PLACEMENT)
+    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Lang::Tokens::K_QUOTE)
     {
+        /*if(currentWordTokenType != currentCharTokenType)
+        {
+            std::string tmpWord = std::string(word.begin(), word.end() - 1);
+            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
+        }*/
+
+        if(!m_writeCharSeq)
+        {
+            m_currentCharSeqToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CHAR_SEQ);
+        }
+
+        // if we are writing char seq now then adding current char seq token to AST
+        if(m_writeCharSeq)
+        {
+            // removing last character (because it is redundant character: it can be character of K_QUOTE)
+            m_currentCharSeqToken->m_cppCode.erase(m_currentCharSeqToken->m_cppCode.size() - 1);
+
+            currentToken->m_children.push_back(m_currentCharSeqToken);
+        }
+
+        m_writeCharSeq = !m_writeCharSeq;
+        word = "";
+    }
+    else if(getTokenTypeByName(std::string({curChar, nextChar})) == Lang::Tokens::K_START_PLACEMENT && !m_writeCharSeq)
+    {
+        // removing last character (because it is redundant character: it can be character of next line)
         m_currentCPPCodeToken->m_cppCode.erase(m_currentCPPCodeToken->m_cppCode.size() - 1);
         currentToken->m_children.push_back(m_currentCPPCodeToken);
         m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CPP_CODE_LINE);
@@ -609,7 +640,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         currentToken = addToken(currentToken, Lang::Tokens::K_START_PLACEMENT);
         word = "";
     }
-    else if(currentWordTokenType == Lang::Tokens::K_END_PLACEMENT)
+    else if(currentWordTokenType == Lang::Tokens::K_END_PLACEMENT && !m_writeCharSeq)
     {
         m_skipCodeCopy = false;
         m_isPlacementStarted = false;
@@ -619,7 +650,7 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
     }
     else
     {
-        if((isSpace(curChar) || forceAddAsWord) && (m_isExprStarted || m_isPlacementStarted) && !word.empty())
+        if((isSpace(curChar) || forceAddAsWord) && (m_isExprStarted || m_isPlacementStarted) && !m_writeCharSeq && !word.empty())
         {
             addToken(currentToken, Lang::Tokens::K_VAR)->m_name = std::string(word.begin(), word.end());
         }
@@ -678,15 +709,15 @@ std::optional<SGCore::CodeGen::Lang::Type> SGCore::CodeGen::Generator::getTypeBy
     return *it;
 }
 
-SGCore::CodeGen::Generator::token_and_var
+SGCore::CodeGen::Generator::VariableFindResult
 SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken>& from,
                                             const size_t& begin) noexcept
 {
-    token_and_var out;
+    VariableFindResult out;
     bool isDotWas = false;
 
-    auto& outToken = out.first;
-    auto& outVariable = out.second;
+    auto& outToken = out.m_token;
+    auto& outVariable = out.m_variable;
 
     for(size_t i = begin; i < from->m_children.size(); ++i)
     {

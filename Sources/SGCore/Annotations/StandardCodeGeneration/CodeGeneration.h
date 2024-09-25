@@ -36,6 +36,7 @@ namespace SGCore::CodeGen
             K_RBLOCK,
             K_DOT,
             K_COLON,
+            K_QUOTE, // "
 
             K_UNKNOWN
         };
@@ -147,7 +148,15 @@ namespace SGCore::CodeGen
             MULTILINE
         };
 
-        using token_and_var = std::pair<std::shared_ptr<Lang::ASTToken>, std::shared_ptr<Lang::Variable>>;
+        struct VariableFindResult
+        {
+            std::shared_ptr<Lang::ASTToken> m_token;
+            std::size_t m_tokenIndex = 0;
+            // can be not provided
+            std::shared_ptr<Lang::Variable> m_variable;
+            // can be not provided
+            std::optional<Lang::Function> m_function;
+        };
 
         std::vector<Lang::Type> m_currentTypes;
 
@@ -166,11 +175,13 @@ namespace SGCore::CodeGen
                 { "{", Lang::Tokens::K_LBLOCK },
                 { "}", Lang::Tokens::K_RBLOCK },
                 { ".", Lang::Tokens::K_DOT },
-                { ":", Lang::Tokens::K_COLON }
+                { ":", Lang::Tokens::K_COLON },
+                { "\"", Lang::Tokens::K_QUOTE }
         };
 
         std::shared_ptr<Lang::ASTToken> m_AST = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_FILESTART);
         std::shared_ptr<Lang::ASTToken> m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CPP_CODE_LINE);
+        std::shared_ptr<Lang::ASTToken> m_currentCharSeqToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CHAR_SEQ);
 
         void buildAST(const std::string& templateFileText) noexcept;
         void generateCodeUsingAST(const std::shared_ptr<Lang::ASTToken>& token,
@@ -193,7 +204,7 @@ namespace SGCore::CodeGen
 
         [[nodiscard]] static bool isSpace(char c) noexcept;
 
-        [[nodiscard]] static token_and_var getLastVariable(const std::shared_ptr<Lang::ASTToken>& from, const size_t& begin) noexcept;
+        [[nodiscard]] static VariableFindResult getLastVariable(const std::shared_ptr<Lang::ASTToken>& from, const size_t& begin) noexcept;
 
         // tmp variables ===================
         bool m_isExprStarted = false;
@@ -202,6 +213,9 @@ namespace SGCore::CodeGen
 
         // skipping this lang exprs to copy only c++ code
         bool m_skipCodeCopy = false;
+
+        // can we write char sequence or not (example: "hello world")
+        bool m_writeCharSeq = false;
 
         Lang::Variable* m_currentUsedVariable = nullptr;
 
