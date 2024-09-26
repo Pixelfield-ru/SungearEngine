@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_CODEGENERATION_H
 #define SUNGEARENGINE_CODEGENERATION_H
 
+#include <any>
+
 namespace SGCore::CodeGen
 {
     struct Generator;
@@ -53,6 +55,8 @@ namespace SGCore::CodeGen
             // first - name, second - function
             std::unordered_map<std::string, Function> m_functions;
 
+            [[nodiscard]] std::optional<Function> tryGetFunction(const std::string& name) const noexcept;
+
             [[nodiscard]] bool instanceof(const Type& other) const noexcept;
             [[nodiscard]] bool instanceof(const std::string& typeName) const noexcept;
         };
@@ -72,7 +76,6 @@ namespace SGCore::CodeGen
             std::string m_insertedValue;
 
             [[nodiscard]] std::shared_ptr<Variable> getMember(const std::string& name) noexcept;
-            [[nodiscard]] Function* tryGetFunction(const std::string& name) noexcept;
 
             [[nodiscard]] const Type& getTypeInfo() const noexcept;
 
@@ -96,8 +99,6 @@ namespace SGCore::CodeGen
 
             // first - name, second - type
             std::unordered_map<std::string, std::shared_ptr<Variable>> m_members;
-            // first - name, second - function
-            std::unordered_map<std::string, Function> m_functions;
         };
 
         struct FunctionArgument
@@ -105,6 +106,7 @@ namespace SGCore::CodeGen
             std::string m_name;
             bool m_isNecessary = true;
             Type m_acceptableType;
+            std::any m_data;
         };
 
         struct Function
@@ -112,8 +114,13 @@ namespace SGCore::CodeGen
             std::string m_name;
             Type m_returnType;
             std::vector<FunctionArgument> m_arguments;
+            std::weak_ptr<Lang::Variable> m_parentVariable;
 
-            std::function<void()> m_functor;
+            std::function<std::any(const Type& owner,
+                                   Variable* operableVariable,
+                                   const size_t& curLine,
+                                   std::string& outputText,
+                                   const std::vector<FunctionArgument>& args)> m_functor;
         };
 
         struct ASTToken

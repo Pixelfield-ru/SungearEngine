@@ -37,6 +37,45 @@ SGCore::CodeGen::Generator::Generator()
         intType.m_name = "int";
         m_currentTypes.push_back(intType);
 
+        Lang::Function hasMemberFunc;
+        hasMemberFunc.m_name = "hasMember";
+        hasMemberFunc.m_arguments.push_back({
+                                                    .m_name = "name",
+                                                    .m_isNecessary = true,
+                                                    .m_acceptableType = stringType
+                                            });
+        hasMemberFunc.m_functor = [hasMemberFunc](const Lang::Type& owner, Lang::Variable* operableVariable, const size_t& curLine,
+                                     std::string& outputText, const std::vector<Lang::FunctionArgument>& args) {
+            if(args.size() != 1)
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'hasMember': bad count of passed arguments (required: {}, provided: {})",
+                      curLine, hasMemberFunc.m_arguments.size(), args.size());
+                // outputValue = false;
+                return false;
+            }
+
+            if(args[0].m_name != "memberName")
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'hasMember': unknown argument '{}'",
+                      curLine, args[0].m_name);
+                return false;
+            }
+
+            if(args[0].m_acceptableType.m_name != "string")
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'hasMember': type of argument '{}' is not string",
+                      curLine, args[0].m_name);
+                return false;
+            }
+
+            const auto& memberNameArg = std::any_cast<std::string>(args[0].m_data);
+
+            return owner.m_members.contains(memberNameArg);
+        };
+
         // adding annotations processor types
         Lang::Type cppStructType;
         cppStructType.m_name = "cpp_struct";
@@ -47,6 +86,7 @@ SGCore::CodeGen::Generator::Generator()
         cppStructType.m_members["baseTypes"] = genericVectorType;
         cppStructType.m_members["derivedTypes"] = genericVectorType;
         cppStructType.m_members["members"] = genericVectorType;
+        cppStructType.m_functions["hasMember"] = hasMemberFunc;
         m_currentTypes.push_back(cppStructType);
 
         Lang::Type cppMemberType;
@@ -57,6 +97,7 @@ SGCore::CodeGen::Generator::Generator()
         cppMemberType.m_members["hasSetter"] = boolType;
         cppMemberType.m_members["hasGetter"] = boolType;
         cppMemberType.m_members["struct"] = cppStructType;
+        cppMemberType.m_functions["hasMember"] = hasMemberFunc;
         m_currentTypes.push_back(cppMemberType);
     }
 
@@ -369,9 +410,63 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     continue;
                 }
 
-                if(tokenAndVar.m_variable->getTypeInfo().m_name != "bool")
+                std::any funcOutput;
+
+                if(tokenAndVar.m_variable)
                 {
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not boolean type.")
+                    if(tokenAndVar.m_variable->getTypeInfo().m_name != "bool")
+                    {
+                        LOG_E(SGCORE_TAG,
+                              "Error in CodeGenerator: (if branch) trying to test variable that is not boolean type.")
+                        ++currentChildTokenIdx;
+                        continue;
+                    }
+                }
+                else if(tokenAndVar.m_function)
+                {
+                    bool lparenFound = false;
+                    bool rparenFound = false;
+
+                    std::vector<Lang::FunctionArgument> funcArguments;
+
+                    // analyzing next token
+                    for(size_t j = tokenAndVar.m_tokenIndex; j < child->m_children.size(); ++j)
+                    {
+                        const auto& curFuncToken = child->m_children[j];
+
+                        if(curFuncToken->m_type == Lang::Tokens::K_LPAREN)
+                        {
+                            lparenFound = true;
+                            continue;
+                        }
+                        if(curFuncToken->m_type == Lang::Tokens::K_RPAREN)
+                        {
+                            rparenFound = true;
+                            continue;
+                        }
+                    }
+
+                    if(!lparenFound || !rparenFound)
+                    {
+                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: in function '{}': parens mismatch.", tokenAndVar.m_function->m_name);
+                    }
+
+                    if(auto lockedParentLockedVar = tokenAndVar.m_function->m_parentVariable.lock())
+                    {
+                        funcOutput = tokenAndVar.m_function->m_functor(lockedParentLockedVar->getTypeInfo(),
+                                                                       lockedParentLockedVar.get(), 0, outputString,
+                                                                       funcArguments);
+
+                        if(!funcOutput.has_value() || funcOutput.type() != typeid(bool))
+                        {
+                            LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'bool' type.",
+                                  tokenAndVar.m_function->m_name);
+                            continue;
+                        }
+                    }
+                }
+                else
+                {
                     ++currentChildTokenIdx;
                     continue;
                 }
@@ -397,7 +492,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     }
                 }
 
-                if(tokenAndVar.m_variable->m_insertedValue == "true")
+                if((tokenAndVar.m_variable && tokenAndVar.m_variable->m_insertedValue == "true") && std::any_cast<bool>(funcOutput))
                 {
                     generateCodeUsingAST(child, outputString);
                 }
@@ -718,6 +813,7 @@ SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken
 
     auto& outToken = out.m_token;
     auto& outVariable = out.m_variable;
+    auto& outFunc = out.m_function;
 
     for(size_t i = begin; i < from->m_children.size(); ++i)
     {
@@ -736,17 +832,31 @@ SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken
                 if(outVariable)
                 {
                     auto foundMember = outVariable->getMember(child->m_name);
-                    if(!foundMember)
+                    auto foundFunction = outVariable->getTypeInfo().tryGetFunction(child->m_name);
+                    if(!foundMember && !foundFunction)
                     {
-                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: member '{}' does not exist in '{}' type (variable: '{}').",
+                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: member or function '{}' does not exist in '{}' type (variable: '{}').",
                               child->m_name,
                               outVariable->getTypeInfo().m_name,
                               lastToken->m_name)
                     }
                     else
                     {
-                        // if member with this name was found then assigning new variable pointer to out.second
-                        outVariable = foundMember;
+                        if(foundMember)
+                        {
+                            // if member with this name was found then assigning new variable pointer to out.second
+                            outVariable = foundMember;
+                            // function and member with the same names can not exist
+                            outFunc = std::nullopt;
+                        }
+                        else
+                        {
+                            // if member with this name was found then assigning found function to outFunc
+                            outFunc = foundFunction;
+                            outFunc->m_parentVariable = outVariable;
+                            // function and member with the same names can not exist
+                            outVariable = nullptr;
+                        }
                     }
                 }
             }
@@ -759,6 +869,7 @@ SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken
         }
         else
         {
+            out.m_tokenIndex = i;
             break;
         }
     }
@@ -850,23 +961,23 @@ std::shared_ptr<SGCore::CodeGen::Lang::Variable> SGCore::CodeGen::Lang::Variable
     return it->second;
 }
 
-SGCore::CodeGen::Lang::Function* SGCore::CodeGen::Lang::Variable::tryGetFunction(const std::string& name) noexcept
+std::optional<SGCore::CodeGen::Lang::Function> SGCore::CodeGen::Lang::Type::tryGetFunction(const std::string& name) const noexcept
 {
-    if(m_functions.empty() && m_inheritanceMap.empty()) return nullptr;
+    if(m_functions.empty() && m_extends.empty()) return std::nullopt;
 
     auto it = m_functions.find(name);
 
     if(it == m_functions.end())
     {
-        for(auto& t : m_inheritanceMap)
+        for(auto& t : m_extends)
         {
-            return t.second->tryGetFunction(name);
+            return t.tryGetFunction(name);
         }
 
-        return nullptr;
+        return std::nullopt;
     }
 
-    return &it->second;
+    return it->second;
 }
 
 SGCore::CodeGen::Lang::Variable& SGCore::CodeGen::Lang::Variable::operator[](const std::string& memberName) noexcept
