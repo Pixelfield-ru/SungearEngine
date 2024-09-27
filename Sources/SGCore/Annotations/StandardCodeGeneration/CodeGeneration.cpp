@@ -16,11 +16,6 @@ SGCore::CodeGen::Generator::Generator()
         iterableType.m_name = "iterable";
         m_currentTypes.push_back(iterableType);
 
-        Lang::Type genericVectorType;
-        genericVectorType.m_name = "generic_vector";
-        genericVectorType.m_extends.push_back(iterableType);
-        m_currentTypes.push_back(genericVectorType);
-
         Lang::Type boolType;
         boolType.m_name = "bool";
 
@@ -36,6 +31,28 @@ SGCore::CodeGen::Generator::Generator()
         Lang::Type intType;
         intType.m_name = "int";
         m_currentTypes.push_back(intType);
+
+        Lang::Type genericVectorType;
+        genericVectorType.m_name = "generic_vector";
+        genericVectorType.m_extends.push_back(iterableType);
+
+        Lang::Function placeFunc;
+        placeFunc.m_name = "place";
+        placeFunc.m_arguments.push_back({
+                                                    .m_name = "name",
+                                                    .m_isNecessary = true,
+                                                    .m_acceptableType = stringType
+                                            });
+        placeFunc.m_functor = [placeFunc](const Lang::Type& owner, Lang::Variable* operableVariable, const size_t& curLine,
+                std::string& outputText, const std::vector<Lang::FunctionArgument>& args) -> std::string {
+            return "ТОП";
+        };
+
+        genericVectorType.m_functions["place"] = placeFunc;
+
+        m_currentTypes.push_back(genericVectorType);
+
+        // =====================================================
 
         Lang::Function hasMemberFunc;
         hasMemberFunc.m_name = "hasMember";
@@ -55,7 +72,7 @@ SGCore::CodeGen::Generator::Generator()
                 return false;
             }
 
-            if(args[0].m_name != "memberName")
+            if(args[0].m_name != "name")
             {
                 LOG_E(SGCORE_TAG,
                       "Error in CodeGenerator (line: {}): in function 'hasMember': unknown argument '{}'",
@@ -73,7 +90,7 @@ SGCore::CodeGen::Generator::Generator()
 
             const auto& memberNameArg = std::any_cast<std::string>(args[0].m_data);
 
-            return owner.m_members.contains(memberNameArg);
+            return operableVariable->getMembers().contains(memberNameArg);
         };
 
         // adding annotations processor types
@@ -151,11 +168,23 @@ SGCore::CodeGen::Generator::Generator()
 
             newGenMember["name"].m_insertedValue = memberName;
 
-            newGenMember["hasSetter"].m_insertedValue = hasSetter ? "true" : "false";
-            newGenMember["hasGetter"].m_insertedValue = hasGetter ? "true" : "false";
+            if(!hasSetter)
+            {
+                newGenMember.removeMember("setter");
+            }
+            else
+            {
+                newGenMember["setter"].m_insertedValue = setter;
+            }
 
-            newGenMember["setter"].m_insertedValue = setter;
-            newGenMember["getter"].m_insertedValue = getter;
+            if(!hasSetter)
+            {
+                newGenMember.removeMember("getter");
+            }
+            else
+            {
+                newGenMember["getter"].m_insertedValue = getter;
+            }
 
             newGenMember["serializableName"].m_insertedValue = serializableName;
 
@@ -424,45 +453,15 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 }
                 else if(tokenAndVar.m_function)
                 {
-                    bool lparenFound = false;
-                    bool rparenFound = false;
+                    funcOutput = processFunctionTokensAndCallFunc(child, tokenAndVar.m_tokenIndex,
+                                                                  *tokenAndVar.m_function, outputString);
 
-                    std::vector<Lang::FunctionArgument> funcArguments;
-
-                    // analyzing next token
-                    for(size_t j = tokenAndVar.m_tokenIndex; j < child->m_children.size(); ++j)
+                    if(!std::any_cast<bool>(&funcOutput))
                     {
-                        const auto& curFuncToken = child->m_children[j];
+                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'bool' type.",
+                              tokenAndVar.m_function->m_name);
 
-                        if(curFuncToken->m_type == Lang::Tokens::K_LPAREN)
-                        {
-                            lparenFound = true;
-                            continue;
-                        }
-                        if(curFuncToken->m_type == Lang::Tokens::K_RPAREN)
-                        {
-                            rparenFound = true;
-                            continue;
-                        }
-                    }
-
-                    if(!lparenFound || !rparenFound)
-                    {
-                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: in function '{}': parens mismatch.", tokenAndVar.m_function->m_name);
-                    }
-
-                    if(auto lockedParentLockedVar = tokenAndVar.m_function->m_parentVariable.lock())
-                    {
-                        funcOutput = tokenAndVar.m_function->m_functor(lockedParentLockedVar->getTypeInfo(),
-                                                                       lockedParentLockedVar.get(), 0, outputString,
-                                                                       funcArguments);
-
-                        if(!funcOutput.has_value() || funcOutput.type() != typeid(bool))
-                        {
-                            LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'bool' type.",
-                                  tokenAndVar.m_function->m_name);
-                            continue;
-                        }
+                        continue;
                     }
                 }
                 else
@@ -492,7 +491,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     }
                 }
 
-                if((tokenAndVar.m_variable && tokenAndVar.m_variable->m_insertedValue == "true") && std::any_cast<bool>(funcOutput))
+                if((tokenAndVar.m_variable && tokenAndVar.m_variable->m_insertedValue == "true") || std::any_cast<bool>(funcOutput))
                 {
                     generateCodeUsingAST(child, outputString);
                 }
@@ -515,6 +514,17 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 if(tokenAndVar.m_variable)
                 {
                     outputString += tokenAndVar.m_variable->m_insertedValue;
+                }
+                else if(tokenAndVar.m_function)
+                {
+                    std::any funcOutput = processFunctionTokensAndCallFunc(child, tokenAndVar.m_tokenIndex, *tokenAndVar.m_function, outputString);
+                    if(!std::any_cast<std::string>(&funcOutput))
+                    {
+                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'string' type.", tokenAndVar.m_function->m_name);
+                        continue;
+                    }
+
+                    outputString += std::any_cast<std::string>(funcOutput);
                 }
                 // generateCodeUsingAST(child, outputString);
                 break;
@@ -884,6 +894,103 @@ SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken
     return out;
 }
 
+std::any SGCore::CodeGen::Generator::processFunctionTokensAndCallFunc(const std::shared_ptr<Lang::ASTToken>& inToken,
+                                                                      const size_t& tokenOffset,
+                                                                      SGCore::CodeGen::Lang::Function& callableFunction,
+                                                                      std::string& outputString) const noexcept
+{
+    std::any funcOutput;
+
+    bool lparenFound = false;
+    bool rparenFound = false;
+
+    std::vector<Lang::FunctionArgument> funcArguments;
+    std::shared_ptr<Lang::ASTToken> currentArgToken;
+
+    // analyzing next token
+    for(size_t j = tokenOffset; j < inToken->m_children.size(); ++j)
+    {
+        const auto& curFuncToken = inToken->m_children[j];
+        std::shared_ptr<Lang::ASTToken> nextFuncToken;
+        if(j + 1 < inToken->m_children.size())
+        {
+            nextFuncToken = inToken->m_children[j + 1];
+        }
+
+        if(curFuncToken->m_type == Lang::Tokens::K_LPAREN)
+        {
+            lparenFound = true;
+            continue;
+        }
+        if(curFuncToken->m_type == Lang::Tokens::K_RPAREN)
+        {
+            rparenFound = true;
+            break; // arguments acceptance ending
+        }
+
+        if((curFuncToken->m_type == Lang::Tokens::K_VAR ||
+            curFuncToken->m_type == Lang::Tokens::K_CHAR_SEQ) &&
+           currentArgToken)
+        {
+            Lang::FunctionArgument funcArg;
+            funcArg.m_name = currentArgToken->m_name;
+
+            if(curFuncToken->m_type == Lang::Tokens::K_CHAR_SEQ)
+            {
+                funcArg.m_acceptableType = *getTypeByName("string");
+                funcArg.m_data = curFuncToken->m_cppCode;
+            }
+            else
+            {
+                auto scopeVariable = inToken->getScopeVariable(curFuncToken->m_cppCode);
+                if(!scopeVariable)
+                {
+                    LOG_E(SGCORE_TAG,
+                          "Error in CodeGenerator: unknown scope variable '{}' in function argument '{}'.",
+                          curFuncToken->m_name, currentArgToken->m_name);
+                    continue;
+                }
+
+                funcArg.m_acceptableType = scopeVariable->getTypeInfo();
+                funcArg.m_data = scopeVariable->m_insertedValue;
+            }
+
+            funcArguments.push_back(funcArg);
+
+            currentArgToken = nullptr;
+        }
+
+        if(curFuncToken->m_type == Lang::Tokens::K_VAR)
+        {
+            if(nextFuncToken && nextFuncToken->m_type == Lang::Tokens::K_COLON)
+            {
+                currentArgToken = curFuncToken;
+            }
+            else
+            {
+                if(currentArgToken)
+                {
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator (in function call): unknown token with name '{}'.", curFuncToken->m_name);
+                }
+            }
+        }
+    }
+
+    if(!lparenFound || !rparenFound)
+    {
+        LOG_E(SGCORE_TAG, "Error in CodeGenerator: in function '{}': parens mismatch.", callableFunction.m_name);
+    }
+
+    if(auto lockedParentLockedVar = callableFunction.m_parentVariable.lock())
+    {
+        funcOutput = callableFunction.m_functor(lockedParentLockedVar->getTypeInfo(),
+                                                       lockedParentLockedVar.get(), 0, outputString,
+                                                       funcArguments);
+    }
+
+    return funcOutput;
+}
+
 bool SGCore::CodeGen::Lang::Type::instanceof(const SGCore::CodeGen::Lang::Type& other) const noexcept
 {
     if(m_extends.empty()) return false;
@@ -1000,6 +1107,11 @@ SGCore::CodeGen::Lang::Variable& SGCore::CodeGen::Lang::Variable::operator[](con
 bool SGCore::CodeGen::Lang::Variable::hasMember(const std::string& memberName) const noexcept
 {
     return m_members.contains(memberName);
+}
+
+void SGCore::CodeGen::Lang::Variable::removeMember(const std::string& memberName) noexcept
+{
+    m_members.erase(memberName);
 }
 
 size_t SGCore::CodeGen::Lang::Variable::membersCount() const noexcept

@@ -30,7 +30,11 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
 {
     ## for member in struct.members
 
+    ## if member.hasMember(name: "getter")
     valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.getter }});
+    ## else
+    valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.name }});
+    ## endif
 
     ## endfor
 }
@@ -40,7 +44,12 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
 {
     ## for member in struct.members
 
+    ## if member.hasMember(name: "getter")
     const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.name }}");
+    ## else
+    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.name }})>>>("{{ member.name }}");
+    ## endif
+
     if({{ member.name }})
     {
         ## if member.hasMember(name: "setter")

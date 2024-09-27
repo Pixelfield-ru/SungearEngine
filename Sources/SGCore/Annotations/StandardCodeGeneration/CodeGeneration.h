@@ -80,6 +80,7 @@ namespace SGCore::CodeGen
             [[nodiscard]] const Type& getTypeInfo() const noexcept;
 
             [[nodiscard]] bool hasMember(const std::string& memberName) const noexcept;
+            void removeMember(const std::string& memberName) noexcept;
 
             [[nodiscard]] size_t membersCount() const noexcept;
 
@@ -212,6 +213,11 @@ namespace SGCore::CodeGen
         [[nodiscard]] static bool isSpace(char c) noexcept;
 
         [[nodiscard]] static VariableFindResult getLastVariable(const std::shared_ptr<Lang::ASTToken>& from, const size_t& begin) noexcept;
+
+        [[nodiscard]] std::any processFunctionTokensAndCallFunc(const std::shared_ptr<Lang::ASTToken>& inToken,
+                                                                const size_t& tokenOffset,
+                                                                Lang::Function& callableFunction,
+                                                                std::string& outputString) const noexcept;
 
         // tmp variables ===================
         bool m_isExprStarted = false;
