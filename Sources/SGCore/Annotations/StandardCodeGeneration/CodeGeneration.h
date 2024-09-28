@@ -39,6 +39,7 @@ namespace SGCore::CodeGen
             K_DOT,
             K_COLON,
             K_QUOTE, // "
+            K_NOT, // !
 
             K_UNKNOWN
         };

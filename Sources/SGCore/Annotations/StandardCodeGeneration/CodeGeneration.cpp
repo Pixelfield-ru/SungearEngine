@@ -32,25 +32,77 @@ SGCore::CodeGen::Generator::Generator()
         intType.m_name = "int";
         m_currentTypes.push_back(intType);
 
-        Lang::Type genericVectorType;
-        genericVectorType.m_name = "generic_vector";
-        genericVectorType.m_extends.push_back(iterableType);
+        Lang::Type genericMapType;
+        genericMapType.m_name = "generic_map";
+        genericMapType.m_extends.push_back(iterableType);
 
         Lang::Function placeFunc;
         placeFunc.m_name = "place";
         placeFunc.m_arguments.push_back({
-                                                    .m_name = "name",
+                                                    .m_name = "separator",
                                                     .m_isNecessary = true,
                                                     .m_acceptableType = stringType
                                             });
-        placeFunc.m_functor = [placeFunc](const Lang::Type& owner, Lang::Variable* operableVariable, const size_t& curLine,
-                std::string& outputText, const std::vector<Lang::FunctionArgument>& args) -> std::string {
-            return "ТОП";
+        placeFunc.m_functor = [placeFunc](const Lang::Type& owner, Lang::Variable* operableVariable,
+                                          const size_t& curLine,
+                                          std::string& outputText,
+                                          const std::vector<Lang::FunctionArgument>& args) -> std::string {
+            if(args.size() != 1)
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'place': bad count of passed arguments (required: {}, provided: {})",
+                      curLine, placeFunc.m_arguments.size(), args.size());
+                // outputValue = false;
+                return "";
+            }
+
+            if(args[0].m_name != "separator")
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'place': unknown argument '{}'",
+                      curLine, args[0].m_name);
+                return "";
+            }
+
+            if(args[0].m_acceptableType.m_name != "string")
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'place': type of argument '{}' is not string",
+                      curLine, args[0].m_name);
+                return "";
+            }
+
+            const auto& separatorArg = std::any_cast<std::string>(args[0].m_data);
+
+            std::string outputString;
+
+            size_t elemIdx = 0;
+            for(const auto& elem: operableVariable->getMembers())
+            {
+                outputString += elem.second->m_insertedValue;
+                if(elemIdx < operableVariable->getMembers().size() - 1)
+                {
+                    outputString += separatorArg;
+                }
+
+                ++elemIdx;
+            }
+
+            return outputString;
         };
 
-        genericVectorType.m_functions["place"] = placeFunc;
+        genericMapType.m_functions["place"] = placeFunc;
 
-        m_currentTypes.push_back(genericVectorType);
+        Lang::Function isEmptyFunc;
+        isEmptyFunc.m_name = "empty";
+        isEmptyFunc.m_functor = [](const Lang::Type& owner, Lang::Variable* operableVariable, const size_t& curLine,
+                                   std::string& outputText, const std::vector<Lang::FunctionArgument>& args) {
+            return operableVariable->getMembers().empty();
+        };
+
+        genericMapType.m_functions["empty"] = isEmptyFunc;
+
+        m_currentTypes.push_back(genericMapType);
 
         // =====================================================
 
@@ -98,11 +150,11 @@ SGCore::CodeGen::Generator::Generator()
         cppStructType.m_name = "cpp_struct";
         cppStructType.m_members["fullName"] = stringType;
         cppStructType.m_members["filePath"] = stringType;
-        cppStructType.m_members["templates"] = genericVectorType;
-        cppStructType.m_members["fullNameWithTemplates"] = stringType;
-        cppStructType.m_members["baseTypes"] = genericVectorType;
-        cppStructType.m_members["derivedTypes"] = genericVectorType;
-        cppStructType.m_members["members"] = genericVectorType;
+        cppStructType.m_members["templateDecl"] = stringType;
+        cppStructType.m_members["fullNameWithTemplate"] = stringType;
+        cppStructType.m_members["baseTypes"] = genericMapType;
+        cppStructType.m_members["derivedTypes"] = genericMapType;
+        cppStructType.m_members["members"] = genericMapType;
         cppStructType.m_functions["hasMember"] = hasMemberFunc;
         m_currentTypes.push_back(cppStructType);
 
@@ -119,15 +171,51 @@ SGCore::CodeGen::Generator::Generator()
     }
 
     // adding structs from meta info
-    m_AST->m_scope["structs"] = std::make_shared<Lang::Variable>(*getTypeByName("generic_vector"));
+    m_AST->m_scope["structs"] = std::make_shared<Lang::Variable>(*getTypeByName("generic_map"));
 
     size_t currentStructIdx = 0;
     for(auto& metaStruct : MetaInfo::getMeta()["structs"])
     {
-        auto newStruct = std::make_shared<Lang::Variable>(*getTypeByName("cpp_struct"));
-        (*newStruct)["members"] = Lang::Variable(*getTypeByName("generic_vector"));
+        std::shared_ptr<Lang::Variable> newStruct;
+        // if base type struct was already created then taking existing struct
+        if(m_AST->m_scope["structs"]->hasMember(metaStruct["fullName"].getValue()))
+        {
+            newStruct = m_AST->m_scope["structs"]->getMember(metaStruct["fullName"].getValue());
+        }
+        else // if base type struct was not created then create base type struct
+        {
+            newStruct = std::make_shared<Lang::Variable>(*getTypeByName("cpp_struct"));
+        }
+
+        (*newStruct)["members"] = Lang::Variable(*getTypeByName("generic_map"));
 
         (*newStruct)["fullName"].m_insertedValue = metaStruct["fullName"].getValue();
+
+        (*newStruct)["baseTypes"] = Lang::Variable(*getTypeByName("generic_map"));
+
+        // adding baseTypes of struct ==========
+        auto& structExtends = metaStruct["extends"];
+
+        for(const auto& baseType : structExtends.getChildren())
+        {
+            (*newStruct)["baseTypes"][baseType->first].m_insertedValue = baseType->first;
+            // if base type struct was not created then create base type struct
+            if(!m_AST->m_scope["structs"]->hasMember(baseType->first))
+            {
+                auto newBaseStruct = std::make_shared<Lang::Variable>(*getTypeByName("cpp_struct"));
+
+                (*newBaseStruct)["derivedTypes"][metaStruct["fullName"].getValue()].m_insertedValue = metaStruct["fullName"].getValue();
+
+                m_AST->m_scope["structs"]->setMemberPtr(baseType->first, newBaseStruct);
+            }
+            else // if base type struct was already created then taking existing struct
+            {
+                auto& newBaseStruct = (*m_AST->m_scope["structs"])[baseType->first];
+
+                newBaseStruct["derivedTypes"][metaStruct["fullName"].getValue()].m_insertedValue = metaStruct["fullName"].getValue();
+            }
+        }
+        // =====================================
 
         auto& structMembers = metaStruct["members"];
         auto& structTemplateArgs = metaStruct["template_args"];
@@ -135,14 +223,23 @@ SGCore::CodeGen::Generator::Generator()
         // doing some actions with templates ==================
         // structFullNameWithTemplates == structName or structFullNameWithTemplates == structName<allTemplateArgs> (if template exists)
         std::string structFullNameWithTemplates = metaStruct["fullName"].getValue();
+        std::string structTemplateDecl;
         const bool hasTemplateArgs = !structTemplateArgs.getChildren().empty();
         if(hasTemplateArgs)
         {
             structFullNameWithTemplates += '<';
         }
-        for(const auto& structTemplateArg : structTemplateArgs.getChildren())
+        for(size_t i = 0; i < structTemplateArgs.getChildren().size(); ++i)
         {
+            const auto& structTemplateArg = structTemplateArgs.getChildren()[i];
             structFullNameWithTemplates += structTemplateArg->first;
+            structTemplateDecl += structTemplateArg->second.getValue() + " " + structTemplateArg->first;
+
+            if(i < structTemplateArgs.getChildren().size() - 1)
+            {
+                structFullNameWithTemplates += ", ";
+                structTemplateDecl += ", ";
+            }
         }
         if(hasTemplateArgs)
         {
@@ -191,10 +288,18 @@ SGCore::CodeGen::Generator::Generator()
             newGenMember.setMemberPtr("struct", newStruct);
         }
 
-        (*newStruct)["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
+        (*newStruct)["fullNameWithTemplate"].m_insertedValue = structFullNameWithTemplates;
+        if(structTemplateDecl.empty())
+        {
+            newStruct->removeMember("templateDecl");
+        }
+        else
+        {
+            (*newStruct)["templateDecl"].m_insertedValue = structTemplateDecl;
+        }
         (*newStruct)["filePath"].m_insertedValue = metaStruct["filePath"].getValue();
 
-        m_AST->m_scope["structs"]->setMemberPtr(std::to_string(currentStructIdx), newStruct);
+        m_AST->m_scope["structs"]->setMemberPtr(metaStruct["fullName"].getValue(), newStruct);
 
         ++currentStructIdx;
         // newStruct.m_members["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
@@ -336,9 +441,10 @@ void SGCore::CodeGen::Generator::buildAST(const std::string& templateFileText) n
 void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang::ASTToken>& token,
                                                       std::string& outputString) noexcept
 {
-    size_t currentChildTokenIdx = 0;
-    for(const auto& child : token->m_children)
+    for(size_t childIdx = 0; childIdx < token->m_children.size(); ++childIdx)
     {
+        const auto& child = token->m_children[childIdx];
+
         /*switch(child->m_type)
         {
             case Lang::Tokens::K_VAR: break;
@@ -374,7 +480,6 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     // todo: make error that token is not variable
 
                     LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate not variable type.")
-                    ++currentChildTokenIdx;
                     continue;
                 }
 
@@ -383,7 +488,6 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     // todo: make error that token is not variable
 
                     LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to bind not variable type.")
-                    ++currentChildTokenIdx;
                     continue;
                 }
 
@@ -395,7 +499,6 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     // todo: make error that variable does not exist
 
                     LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate variable '{}' that does not exist.", tokenAndVariableToForIn.m_token->m_name)
-                    ++currentChildTokenIdx;
                     continue;
                 }
 
@@ -404,7 +507,6 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     // todo: make error that variable is not instance of iterable
 
                     LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", tokenAndVariableToForIn.m_token->m_name)
-                    ++currentChildTokenIdx;
                     continue;
                 }
 
@@ -435,7 +537,6 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 if(tokenAndVar.m_token->m_type != Lang::Tokens::K_VAR)
                 {
                     LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not variable type (maybe keyword).")
-                    ++currentChildTokenIdx;
                     continue;
                 }
 
@@ -447,7 +548,6 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     {
                         LOG_E(SGCORE_TAG,
                               "Error in CodeGenerator: (if branch) trying to test variable that is not boolean type.")
-                        ++currentChildTokenIdx;
                         continue;
                     }
                 }
@@ -466,7 +566,6 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 }
                 else
                 {
-                    ++currentChildTokenIdx;
                     continue;
                 }
 
@@ -491,7 +590,22 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     }
                 }
 
-                if((tokenAndVar.m_variable && tokenAndVar.m_variable->m_insertedValue == "true") || std::any_cast<bool>(funcOutput))
+                bool isNotSignFound = false;
+                // if 'not' sign found. reversing values
+                if(token->m_children[childIdx - 1]->m_type == Lang::Tokens::K_NOT)
+                {
+                    isNotSignFound = true;
+                }
+
+                const bool& funcOutputVal = funcOutput.has_value() && std::any_cast<bool>(funcOutput);
+
+                if((tokenAndVar.m_variable &&
+                    (tokenAndVar.m_variable->m_insertedValue == "true" ||
+                     (isNotSignFound && tokenAndVar.m_variable->m_insertedValue == "false"))) ||
+
+                   (funcOutput.has_value() &&
+                    (funcOutputVal ||
+                    (isNotSignFound && !funcOutputVal))))
                 {
                     generateCodeUsingAST(child, outputString);
                 }
@@ -565,8 +679,6 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             case Lang::Tokens::K_DOT:break;
             case Lang::Tokens::K_UNKNOWN:break;
         }
-
-        ++currentChildTokenIdx;
     }
 }
 
@@ -751,6 +863,16 @@ void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_
         m_isPlacementStarted = false;
         addToken(currentToken, Lang::Tokens::K_END_PLACEMENT);
         gotoParent(currentToken);
+        word = "";
+    }
+    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Lang::Tokens::K_NOT)
+    {
+        /*if(currentWordTokenType != currentCharTokenType)
+        {
+            std::string tmpWord = std::string(word.begin(), word.end() - 1);
+            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
+        }*/
+        addToken(currentToken, Lang::Tokens::K_NOT);
         word = "";
     }
     else

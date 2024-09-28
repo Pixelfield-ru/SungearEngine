@@ -7,16 +7,21 @@
 
 #include "{{ struct.filePath }}"
 
-template<{{struct.templates.place(separator: ", ") }}SGCore::Serde::FormatType TFormatType>
-struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType> : SGCore::Serde::BaseTypes<{{ struct.baseTypes.place(separator: ", ") }}>,
+template<
+## if struct.hasMember(name: "templateDecl")
+        {{ struct.templateDecl }},
+## endif
+        SGCore::Serde::FormatType TFormatType
+        >
+struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType> : SGCore::Serde::BaseTypes<{{ struct.baseTypes.place(separator: ", ") }}>,
     SGCore::Serde::DerivedTypes<{{ struct.derivedTypes.place(separator: ", ") }}>
 {
     static inline const std::string type_name = "{{ struct.fullName }}";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<{{ struct.fullNameWithTemplate }}, TFormatType>& valueView) noexcept;
 
-    static void deserialize(SGCore::Serde::DeserializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept;
+    static void deserialize(SGCore::Serde::DeserializableValueView<{{ struct.fullNameWithTemplate }}, TFormatType>& valueView) noexcept;
 };
 
 ## endfor
@@ -25,8 +30,13 @@ struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>
 
 ## for struct in structs
 
-template<{{ struct.templates.place(separator: ", ") }}SGCore::Serde::FormatType TFormatType>
-void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::serialize(SGCore::Serde::SerializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept
+template<
+## if struct.hasMember(name: "templateDecl")
+        {{ struct.templateDecl }},
+## endif
+        SGCore::Serde::FormatType TFormatType
+        >
+void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType>::serialize(SGCore::Serde::SerializableValueView<{{ struct.fullNameWithTemplate }}, TFormatType>& valueView) noexcept
 {
     ## for member in struct.members
 
@@ -39,8 +49,13 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::
     ## endfor
 }
 
-template<{{ struct.templates.place(separator: ", ") }}SGCore::Serde::FormatType TFormatType>
-void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplates }}, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<{{ struct.fullNameWithTemplates }}, TFormatType>& valueView) noexcept
+template<
+## if struct.hasMember(name: "templateDecl")
+        {{ struct.templateDecl }},
+## endif
+        SGCore::Serde::FormatType TFormatType
+        >
+void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<{{ struct.fullNameWithTemplate }}, TFormatType>& valueView) noexcept
 {
     ## for member in struct.members
 

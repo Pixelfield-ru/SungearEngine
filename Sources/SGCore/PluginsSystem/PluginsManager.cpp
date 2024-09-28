@@ -81,62 +81,62 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::fil
         
         // ====================================== CMakeLists.txt
         
-        std::string cmakeListsContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/CMakeLists.cmake"));
+        std::string cmakeListsContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/CMakeLists.cmake"));
         
         std::ofstream cmakeListsStream(pluginDir + "/CMakeLists.txt");
         cmakeListsStream << cmakeListsContent;
 
         // ====================================== cmake/include_as_plugin.cmake
 
-        std::string includeAsPluginContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/include_as_plugin.cmake"));
+        std::string includeAsPluginContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/include_as_plugin.cmake"));
 
         FileUtils::writeToFile(pluginDir + "/cmake/include_as_plugin.cmake", includeAsPluginContent, false, true);
         
         // ====================================== PluginMain.h
         
-        std::string pluginMainHContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/PluginMain.h"));
+        std::string pluginMainHContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/PluginMain.h"));
         
         std::ofstream pluginMainHStream(pluginSourcesDir + "/PluginMain.h");
         pluginMainHStream << pluginMainHContent;
         
         // ====================================== PluginMain.cpp
         
-        std::string pluginMainCPPContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/PluginMain.cpp"));
+        std::string pluginMainCPPContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/PluginMain.cpp"));
         
         std::ofstream pluginMainCPPStream(pluginSourcesDir + "/PluginMain.cpp");
         pluginMainCPPStream << pluginMainCPPContent;
         
         // ====================================== {pluginName}.h
         
-        std::string pluginHContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/PluginOwn.h"));
+        std::string pluginHContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/PluginOwn.h"));
         
         std::ofstream pluginHStream(pluginSourcesDir + "/" + fmt::format("{0}.h", pluginName));
         pluginHStream << pluginHContent;
         
         // ====================================== {pluginName}.cpp
         
-        std::string pluginCPPContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/PluginOwn.cpp"));
+        std::string pluginCPPContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/PluginOwn.cpp"));
         
         std::ofstream pluginCPPStream(pluginSourcesDir + "/" + fmt::format("{0}.cpp", pluginName));
         pluginCPPStream << pluginCPPContent;
         
         // ====================================== CMakePresets.json
         
-        std::string cmakePresetsContent = FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/CMakePresets.json");
+        std::string cmakePresetsContent = FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/CMakePresets.json");
         
         std::ofstream cmakePresetsStream(pluginDir + "/CMakePresets.json");
         cmakePresetsStream << cmakePresetsContent;
         
         // ====================================== vcpkg.json
         
-        std::string vcpkgContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/vcpkg.json"));
+        std::string vcpkgContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/vcpkg.json"));
         
         std::ofstream vcpkgStream(pluginDir + "/vcpkg.json");
         vcpkgStream << vcpkgContent;
 
         // ====================================== .gitignore
 
-        std::string gitignoreContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.references/.gitignore"));
+        std::string gitignoreContent = formatter.format(FileUtils::readFile(sgSourcesRootStr + "/Sources/SGCore/PluginsSystem/.templates/.gitignore"));
 
         std::ofstream gitignoreStream(pluginDir + "/.gitignore");
         gitignoreStream << gitignoreContent;
