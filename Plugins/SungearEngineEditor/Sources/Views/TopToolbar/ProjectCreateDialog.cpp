@@ -196,8 +196,11 @@ void SGE::ProjectCreateDialog::submit()
 
         // PROJECT SUCCESSFULLY CREATED ==============
 
-        SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath + "/" + m_projectName;
+        const std::filesystem::path projectPath = m_dirPath + "/" + m_projectName;
+        SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = projectPath;
         currentEditorProject->m_pluginProject = pluginProject;
+
+
 
         // PARSING SUNGEAR ENGINE ANNOTATIONS AND GENERATING CODE ==========================
 
@@ -208,6 +211,7 @@ void SGE::ProjectCreateDialog::submit()
         {
             return;
         }
+
         const auto& sungearRootStr = SungearEngineEditor::getSungearEngineRootPath();
         const std::filesystem::path sungearPluginsPathStr = SungearEngineEditor::getSungearEngineRootPath() / "Plugins";
 

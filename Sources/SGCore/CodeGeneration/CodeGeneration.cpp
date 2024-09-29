@@ -323,7 +323,8 @@ SGCore::CodeGen::Generator::Generator()
 
 std::string SGCore::CodeGen::Generator::generate(const std::filesystem::path& templateFile) noexcept
 {
-    std::string templateFileText = Utils::reduce(FileUtils::readFile(templateFile));
+    // std::string templateFileText = Utils::reduce(FileUtils::readFile(templateFile));
+    std::string templateFileText = FileUtils::readFile(templateFile);
     // instead of EOF
     templateFileText += '\n';
 

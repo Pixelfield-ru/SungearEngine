@@ -7,6 +7,8 @@
 
 #include "{{ struct.filePath }}"
 
+// SERDE FORWARD DECL FOR struct '{{ struct.fullName }}'
+// =================================================================================
 template<
 ## if struct.hasMember(name: "templateDecl")
         {{ struct.templateDecl }},
@@ -23,6 +25,7 @@ struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType> 
 
     static void deserialize(SGCore::Serde::DeserializableValueView<{{ struct.fullNameWithTemplate }}, TFormatType>& valueView) noexcept;
 };
+// =================================================================================
 
 ## endfor
 
@@ -30,6 +33,8 @@ struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType> 
 
 ## for struct in structs
 
+// SERDE IMPL FOR struct '{{ struct.fullName }}'
+// =================================================================================
 template<
 ## if struct.hasMember(name: "templateDecl")
         {{ struct.templateDecl }},
@@ -76,5 +81,6 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType>::d
 
     ## endfor
 }
+// =================================================================================
 
 ## endfor

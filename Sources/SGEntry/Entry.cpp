@@ -33,11 +33,11 @@ extern "C" {
 #include "SGCore/ImGuiWrap/Views/IView.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Utils/Formatter.h"
-#include "SGCore/Annotations/StandardCodeGeneration/CodeGeneration.h"
+#include "SGCore/CodeGeneration/CodeGeneration.h"
 
 #include "SGCore/Serde/GeneratedSerdeSpecs.h"
 
-// #include "F:\Pixelfield\SungearEngine\SungearEngine\cmake-build-release\Sources\SGEntry\.generated\Serializers.h"
+// #include "D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\cmake-build-debug\Sources\SGEntry\generated.h"
 /*#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
 #include "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.templates/TestStruct.h"*/
 #include "SGCore/Render/Mesh.h"
@@ -116,7 +116,7 @@ void coreInit()
     }
 
     SGCore::CodeGen::Generator generator;
-    std::string generated = generator.generate(sungearRootStr + "/Sources/SGCore/Annotations/StandardCodeGeneration/SerializersGeneration/.templates/SerdeSpec.h");
+    std::string generated = generator.generate(sungearRootStr + "/Sources/SGCore/CodeGeneration/SerdeGeneration/.templates/SerdeSpec.h");
     SGCore::FileUtils::writeToFile("generated.h", generated, false, true);
 
     using namespace SGCore;
