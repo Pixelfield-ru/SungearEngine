@@ -95,6 +95,8 @@ void coreInit()
         }
     }
 
+    LOG_E(SGCORE_TAG, "Русский язык");
+
     const std::filesystem::path sungearEngineRootPath = sungearEngineRoot;
 
     const std::filesystem::path sgEditorPath = sungearEngineRootPath / "Plugins/SungearEngineEditor";

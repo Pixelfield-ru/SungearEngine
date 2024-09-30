@@ -21,6 +21,7 @@ add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DUSE_LIBPNG)
 add_definitions(-DHC_NO_COMPRESSION)
 add_definitions(-DNOMINMAX)
+add_definitions(-DSPDLOG_WCHAR_TO_UTF8_SUPPORT)
 
 set(CMAKE_CXX_STANDARD 23)
 

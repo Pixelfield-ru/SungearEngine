@@ -177,7 +177,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         if(loadedPlugin->getPlugin()->m_path != localPluginPath)
         {
             LOG_W(SGCORE_TAG, "Warning: Plugin '{}' (ver. {}) has other path. Requested local load path: '{}', plugin cached path: '{}'.",
-                  pluginName, loadedPlugin->m_plugin->m_version, u8Path, loadedPlugin->getPlugin()->m_path);
+                  pluginName, loadedPlugin->m_plugin->m_version, u8Path, Utils::toUTF8(loadedPlugin->getPlugin()->m_path.u16string()));
         }
     }
     else
@@ -198,7 +198,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
         }
         
         std::string dlEntryErr;
-        auto pluginEntry = pluginDL->loadFunction<Ref<IPlugin>()>("SGPluginMain", dlEntryErr);
+        auto pluginEntry = pluginDL->loadSymbol<Ref<IPlugin>()>("SGPluginMain", dlEntryErr);
         
         if(!pluginEntry)
         {
@@ -226,8 +226,6 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
                                      const std::vector<std::string>& entryArgs,
                                      const std::string& cmakeBuildDir)
 {
-    const auto& sep = (char) std::filesystem::path::preferred_separator;
-    
     Ref<PluginWrap> loadedPlugin;
     
     auto foundIt = std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
@@ -241,8 +239,8 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         std::string dlErr;
         std::string dlEntryErr;
         
-        std::string pluginSrcPath = loadedPlugin->m_plugin->m_path;
-        std::string pluginDLPath = pluginSrcPath + sep + cmakeBuildDir + sep + pluginName + DL_POSTFIX;
+        const std::filesystem::path pluginSrcPath = loadedPlugin->m_plugin->m_path;
+        const std::filesystem::path pluginDLPath = pluginSrcPath / cmakeBuildDir / pluginName / DL_POSTFIX;
         
         loadedPlugin->m_plugin = nullptr;
         
@@ -256,7 +254,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         }
         
         // auto pluginEntry = std::function<Ref<IPlugin>()>((Ref<IPlugin>(*)()) dlsym(loadedPlugin->m_pluginLib->getNativeHandler(), "SGPluginMain"));
-        auto pluginEntry = loadedPlugin->m_pluginLib->loadFunction<Ref<IPlugin>()>("SGPluginMain", dlEntryErr);
+        auto pluginEntry = loadedPlugin->m_pluginLib->loadSymbol<Ref<IPlugin>()>("SGPluginMain", dlEntryErr);
         
         if(!pluginEntry)
         {

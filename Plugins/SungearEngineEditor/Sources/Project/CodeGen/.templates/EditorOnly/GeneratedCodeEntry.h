@@ -9,7 +9,7 @@ void update(const double& dt, const double& fixedDt);
 void fixedUpdate(const double& dt, const double& fixedDt);
 void onInspectorViewRender();
 
-SG_NOMANGLING SG_DLEXPORT void EditorGeneratedCodeEntry();
-SG_NOMANGLING SG_DLEXPORT void EditorGeneratedCodeExit();
+SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry();
+SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeExit();
 
 #endif // GENERATEDCODECONNECTION_H

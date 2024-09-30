@@ -9,6 +9,7 @@
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
+#include <SGCore/Utils/Formatter.h>
 
 #include "ProjectCreateDialog.h"
 #include "SungearEngineEditor.h"
@@ -200,7 +201,49 @@ void SGE::ProjectCreateDialog::submit()
         SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = projectPath;
         currentEditorProject->m_pluginProject = pluginProject;
 
+        const std::filesystem::path metaInfoProjectPath = projectPath / "MetaInfo";
 
+        // creating meta info project that describes structs etc. of user project
+        {
+            // creating Meta.h
+            SGCore::FileUtils::writeToFile(metaInfoProjectPath / "Meta.h",
+                                           SGCore::FileUtils::readFile(
+                                                   SungearEngineEditor::getInstance()->getLocalPath() /
+                                                   "Sources/Project/CodeGen/.templates/ProjectMeta/Meta.h"
+                                           ), false, true
+            );
+
+            // creating Meta.cpp
+            SGCore::FileUtils::writeToFile(metaInfoProjectPath / "Meta.cpp",
+                                           SGCore::FileUtils::readFile(
+                                                   SungearEngineEditor::getInstance()->getLocalPath() /
+                                                   "Sources/Project/CodeGen/.templates/ProjectMeta/Meta.cpp"
+                                           ), false, true
+            );
+
+            // creating CMakePresets.json
+            SGCore::FileUtils::writeToFile(metaInfoProjectPath / "CMakePresets.json",
+                                           SGCore::FileUtils::readFile(
+                                                   SungearEngineEditor::getInstance()->getLocalPath() /
+                                                   "Sources/Project/CodeGen/.templates/ProjectMeta/CMakePresets.json"
+                                           ), false, true
+            );
+
+            std::string metaInfoProjectCMakeLists = SGCore::FileUtils::readFile(
+                    SungearEngineEditor::getInstance()->getLocalPath() /
+                    "Sources/Project/CodeGen/.templates/ProjectMeta/CMakeLists.txt"
+            );
+
+            SGCore::Formatter metaInfoProjectFormatter;
+            metaInfoProjectFormatter["cxxStandard"] = std::string(m_cppStandards[m_currentSelectedCPPStandard]).substr(3);
+
+            metaInfoProjectCMakeLists = metaInfoProjectFormatter.format(metaInfoProjectCMakeLists);
+
+            // writing CMakeLists.txt
+            SGCore::FileUtils::writeToFile(metaInfoProjectPath / "CMakeLists.txt",
+                                           metaInfoProjectCMakeLists, false, true
+            );
+        }
 
         // PARSING SUNGEAR ENGINE ANNOTATIONS AND GENERATING CODE ==========================
 

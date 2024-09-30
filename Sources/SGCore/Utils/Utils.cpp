@@ -73,7 +73,7 @@ std::string SGCore::Utils::consoleExecute(const std::string& cmd, std::filesyste
     {
         *outputFile = outputFilePath;
     }
-    std::system(fmt::format("cd ConsoleTmp & {0}.cmd > Output/{1}_output.txt", execUUID.getUUID(), execUUID.getUUID()).c_str());
+    std::system(fmt::format("chcp 65001 & cd ConsoleTmp & {0}.cmd > Output/{1}_output.txt", execUUID.getUUID(), execUUID.getUUID()).c_str());
     return FileUtils::readFile(outputFilePath);
 
     /*std::array<char, 2048> buffer { };

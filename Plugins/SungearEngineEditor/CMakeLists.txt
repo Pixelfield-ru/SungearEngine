@@ -48,7 +48,7 @@ find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)
 
 file(GLOB_RECURSE SGE_SOURCES Sources/*.cpp Sources/*.h)
-list(FILTER SGE_SOURCES EXCLUDE REGEX ".references")
+list(FILTER SGE_SOURCES EXCLUDE REGEX ".templates")
 
 add_library(${PROJECT_NAME} SHARED ${SGE_SOURCES})
 

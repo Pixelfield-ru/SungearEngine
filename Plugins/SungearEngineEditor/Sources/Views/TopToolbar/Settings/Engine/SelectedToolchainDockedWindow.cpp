@@ -210,7 +210,7 @@ void SGE::SelectedToolchainDockedWindow::renderBody()
                             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                             ImGui::SetNextItemWidth(80);
                             if (ImGui::Combo("##VSToolchainPlatformType", &m_vsCurrentSelectedPlatformTypeInCombo,
-                                             m_vsPlatformTypes, m_vsArchTypesCount))
+                                             m_vsPlatformTypes, m_vsPlatformTypesCount))
                             {
                                 switch (m_vsCurrentSelectedPlatformTypeInCombo)
                                 {

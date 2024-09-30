@@ -271,7 +271,7 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         std::shared_ptr<AssetT> loadAssetWithAlias(AssetsLoadPolicy assetsLoadPolicy,
                                                    const std::string& alias,
-                                                   const std::string& path,
+                                                   const std::filesystem::path& path,
                                                    AssetCtorArgs&&... assetCtorArgs)
         {
             return loadAssetWithAlias<AssetT, AssetCtorArgs...>(assetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path, std::forward<AssetCtorArgs>(assetCtorArgs)...);
@@ -280,7 +280,7 @@ namespace SGCore
         template<typename AssetT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, AssetT>)
         std::shared_ptr<AssetT> loadAssetWithAlias(const std::string& alias,
-                                                   const std::string& path,
+                                                   const std::filesystem::path& path,
                                                    AssetCtorArgs&&... assetCtorArgs)
         {
             return loadAssetWithAlias<AssetT, AssetCtorArgs...>(m_defaultAssetsLoadPolicy, Threading::ThreadsManager::getMainThread(), alias, path, std::forward<AssetCtorArgs>(assetCtorArgs)...);

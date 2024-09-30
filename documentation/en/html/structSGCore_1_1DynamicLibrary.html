@@ -101,7 +101,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a70f01a85d57531b074c54a9dd3fdb8c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#a70f01a85d57531b074c54a9dd3fdb8c8">unload</a> ()</td></tr>
 <tr class="separator:a70f01a85d57531b074c54a9dd3fdb8c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memTemplParams" colspan="2">template&lt;typename FuncT &gt; </td></tr>
-<tr class="memitem:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memTemplItemLeft" align="right" valign="top">std::function&lt; FuncT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#a249f33efbec1ed2ec23e8774b5ac74cd">loadFunction</a> (const char *funcName, std::string &amp;err) noexcept</td></tr>
+<tr class="memitem:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memTemplItemLeft" align="right" valign="top">std::function&lt; FuncT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#a249f33efbec1ed2ec23e8774b5ac74cd">loadSymbol</a> (const char *funcName, std::string &amp;err) noexcept</td></tr>
 <tr class="separator:a249f33efbec1ed2ec23e8774b5ac74cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4cf5f912a3d27512e0d3c764cf6032e"><td class="memItemLeft" align="right" valign="top">native_handler_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSGCore_1_1DynamicLibrary.html#ab4cf5f912a3d27512e0d3c764cf6032e">getNativeHandler</a> () noexcept</td></tr>
 <tr class="separator:ab4cf5f912a3d27512e0d3c764cf6032e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -209,7 +209,7 @@ Note that the functions you want to load must be marked with SG_DLEXPORT and (in
 </div>
 </div>
 <a id="a249f33efbec1ed2ec23e8774b5ac74cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a249f33efbec1ed2ec23e8774b5ac74cd">&#9670;&nbsp;</a></span>loadFunction()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a249f33efbec1ed2ec23e8774b5ac74cd">&#9670;&nbsp;</a></span>loadSymbol()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -220,7 +220,7 @@ template&lt;typename FuncT &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::function&lt;FuncT&gt; SGCore::DynamicLibrary::loadFunction </td>
+          <td class="memname">std::function&lt;FuncT&gt; SGCore::DynamicLibrary::loadSymbol </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>funcName</em>, </td>

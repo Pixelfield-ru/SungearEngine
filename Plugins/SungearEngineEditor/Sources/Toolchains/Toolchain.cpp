@@ -347,14 +347,77 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
     toolchain->onProjectBuilt = [currentEditorProject,
             toolchainPtr = toolchain.get(),
             sungearPluginsPathStr,
-            isPresetsEquals]
+            isPresetsEquals,
+            projectName]
             (const Toolchain::ProjectBuildOutput& buildOutput)
     {
+        // disable creating new thread because currently we are not in main thread (already parallel build)
         toolchainPtr->m_doInBackground = false;
         // copying toolchain for building plugins and project
         auto toolchainCopy = SGCore::Ref<Toolchain>(toolchainPtr->copy());
         toolchainCopy->onProjectBuilt = nullptr;
         toolchainCopy->onProjectBuiltSynchronized = nullptr;
+
+        // building meta info project
+        try
+        {
+            toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath / "MetaInfo",
+                                        m_currentCMakePreset);
+        }
+        catch(const std::runtime_error& e)
+        {
+            LOG_E(SGEDITOR_TAG, "Can not build meta info project of project '{}'. Error is: {}", projectName, e.what());
+        }
+
+        toolchainCopy->onProjectBuilt = [&currentEditorProject, projectName]
+                (const Toolchain::ProjectBuildOutput& buildOutput) {
+            // after building meta info project we are loading the dynamic library of meta project and setting path to current user project
+            auto metaInfoProjectDL = SGCore::MakeRef<SGCore::DynamicLibrary>();
+
+            std::string metaInfoProjectDLLoadOutput;
+            metaInfoProjectDL->load(
+                    currentEditorProject->m_pluginProject.m_pluginPath / "MetaInfo" / buildOutput.m_binaryDir /
+                    (std::string("MetaInfo") + DL_POSTFIX),
+                    metaInfoProjectDLLoadOutput
+            );
+
+            if(!metaInfoProjectDLLoadOutput.empty())
+            {
+                // printing error of meta info project loading
+                LOG_E(SGEDITOR_TAG, "Important! Can not load meta info project of project '{}'. Error is: {}",
+                      projectName, metaInfoProjectDLLoadOutput);
+            }
+            else
+            {
+                LOG_D(SGEDITOR_TAG, "Meta info project of project '{}' was successfully loaded.",
+                      projectName);
+
+                std::string symbolsLoadingErr;
+
+                // loading function 'addMetaInfo' to add user`s meta info
+                std::function<void()> metaInfoEntry = metaInfoProjectDL->loadSymbol<void()>("addMetaInfo", symbolsLoadingErr);
+                // loading myProjectPath to set pointer to current user project path
+                auto** currentProjectPath = metaInfoProjectDL->loadSymbol<std::filesystem::path*>("myProjectPath", symbolsLoadingErr);
+
+                if(!symbolsLoadingErr.empty())
+                {
+                    LOG_E(SGEDITOR_TAG, "Important! Can not load meta info project symbols (symbols 'addMetaInfo' and 'myProjectPath') of project '{}'. Error is: {}",
+                          projectName, symbolsLoadingErr);
+                }
+                else
+                {
+                    *currentProjectPath = &currentEditorProject->m_pluginProject.m_pluginPath;
+                    metaInfoEntry();
+
+                    currentEditorProject->m_metaInfoProjectEntryPoint = metaInfoEntry;
+
+                    LOG_D(SGEDITOR_TAG, "Meta info project symbols of project '{}' were successfully set.",
+                          projectName);
+                }
+            }
+
+            currentEditorProject->m_metaInfoProjectDL = metaInfoProjectDL;
+        };
 
         // building all plugins
         for(const auto& dirEntry : std::filesystem::directory_iterator(sungearPluginsPathStr))

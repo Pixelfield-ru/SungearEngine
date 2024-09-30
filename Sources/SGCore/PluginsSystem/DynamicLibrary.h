@@ -100,25 +100,62 @@ namespace SGCore
         }
         
         /**
-         * Allows you to load a library function.
-         * \note Consider name mangling when loading a function.\n System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library.
-         * \tparam FuncT Function declaration.
-         * \param[in] funcName Name of the function to load.
-         * \param[out] err Error generated while loading the function.\n Remains unchanged if the function was loaded successfully.
-         * \return std::function
+         * Allows you to load a library symbol.
+         * \note Consider name mangling when loading a symbol.\n System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library.
+         * \tparam T Symbol type.
+         * \param[in] symbolName Name of the symbol to load.
+         * \param[out] err Error generated while loading the symbol.\n Remains unchanged if the symbol was loaded successfully.
+         * \return std::function if the T is function and T* in other cases.
          */
-        template<typename FuncT>
-        std::function<FuncT> loadFunction(const char* funcName, std::string& err) noexcept
+        template<typename T>
+        auto loadSymbol(const char* symbolName, std::string& err) noexcept
         {
             if(!m_nativeHandler)
             {
                 err = "The function cannot be loaded: the library is not loaded.";
-                
-                return nullptr;
+
+                return (std::conditional_t<std::is_function_v<T>, std::function<T>, T*>) nullptr;
             }
-            
-            return DLFuncLoader<FuncT>()(m_nativeHandler, funcName, err);
+
+            if constexpr(std::is_function_v<T>)
+            {
+                return DLFuncLoader<T>()(m_nativeHandler, symbolName, err);
+            }
+            else
+            {
+                #ifdef PLATFORM_OS_LINUX
+                T* field  = (T*) dlsym(nativeHandler, funcName);
+                if(!field)
+                {
+                    err = dlerror();
+                }
+                #elif defined(PLATFORM_OS_WINDOWS)
+                T* field = (T*) GetProcAddress(m_nativeHandler, symbolName);
+                if(!field)
+                {
+                    err = DynamicLibrary::getLastWindowsError();
+                }
+                #endif
+
+                return field;
+            }
         }
+
+        /*template<typename T>
+        void writeSymbol(const char* symbolName, const T& value, std::string& err) noexcept
+        {
+            if(!m_nativeHandler)
+            {
+                err = "The function cannot be loaded: the library is not loaded.";
+
+                return;
+            }
+
+            if constexpr(std::is_function_v<T>)
+            {
+                static_assert();
+            }
+        }*/
         
         /**
          * Returns native handler.

@@ -86,7 +86,7 @@ $(document).ready(function(){initNavTree('std_1_1function-example.html',''); ini
 </div><!--header-->
 <div class="contents">
 <p>Allows you to load a library function. </p><dl class="section note"><dt>Note</dt><dd>Consider name mangling when loading a function.<br  />
- System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library. &lt;float(float, float)&gt; getSum = loadFunction&lt;float(float, float)&gt;("getSum"); </dd></dl>
+ System commands (for example dumpbin in Windows) will help you find out the exported symbols of the loaded library. &lt;float(float, float)&gt; getSum = loadSymbol&lt;float(float, float)&gt;("getSum"); </dd></dl>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">FuncT</td><td>Function declaration. </td></tr>

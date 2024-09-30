@@ -54,7 +54,7 @@ namespace SGCore
          * Returns the local path on the device to the plugin folder.
          * \return Local path to the plugin.
          */
-        [[nodiscard]] std::string getLocalPath() const noexcept;
+        [[nodiscard]] std::filesystem::path getLocalPath() const noexcept;
         
         /**
          * \return Plugin name.
@@ -84,7 +84,7 @@ namespace SGCore
         /**
          * Plugin local path on computer.
          */
-        std::string m_path;
+        std::filesystem::path m_path;
     };
 }
 

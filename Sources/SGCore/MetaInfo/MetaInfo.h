@@ -5,7 +5,17 @@
 #ifndef SUNGEARENGINE_METAINFO_H
 #define SUNGEARENGINE_METAINFO_H
 
-#include "SGCore/Utils/Utils.h"
+#ifdef _MSC_VER
+#define MI_NOINLINE __declspec(noinline)
+#elif defined(__GNUC__)
+#define MI_NOINLINE __attribute__((noinline))
+#endif
+
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <memory>
+#include <cstdlib>
 
 namespace SGCore
 {
@@ -71,7 +81,7 @@ namespace SGCore
             std::vector<std::shared_ptr<std::pair<std::string, Meta>>> m_children;
         };
 
-        SG_NOINLINE static auto& getMeta() noexcept
+        MI_NOINLINE static auto& getMeta() noexcept
         {
             return m_meta;
         }
@@ -450,5 +460,7 @@ namespace SGCore
         static inline std::unordered_map<std::string, std::vector<Meta>> m_meta;
     };
 }
+
+#undef MI_NOINLINE
 
 #endif //SUNGEARENGINE_METAINFO_H

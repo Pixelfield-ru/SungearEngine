@@ -55,7 +55,7 @@ ${onInspectorViewComponentsChooseRenderFunctionCode}$
     }
 }
 
-SG_NOMANGLING SG_DLEXPORT void EditorGeneratedCodeEntry()
+SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 {
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
@@ -68,7 +68,7 @@ SG_NOMANGLING SG_DLEXPORT void EditorGeneratedCodeEntry()
     SGCore::CoreMain::getRenderTimer().onUpdate += update;
 }
 
-SG_NOMANGLING SG_DLEXPORT void EditorGeneratedCodeExit()
+SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeExit()
 {
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() -= onEntitySave<SGCore::Serde::FormatType::JSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() -= onEntitySave<SGCore::Serde::FormatType::BSON>;

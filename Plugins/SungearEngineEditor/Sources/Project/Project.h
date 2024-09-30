@@ -16,6 +16,10 @@ namespace SGE
     {
         SGCore::PluginProject m_pluginProject;
         SGCore::Ref<SGCore::PluginWrap> m_loadedPlugin;
+
+        SGCore::Ref<SGCore::DynamicLibrary> m_metaInfoProjectDL;
+        std::function<void()> m_metaInfoProjectEntryPoint;
+
         std::function<void()> m_editorHelperEntryPoint;
         std::function<void()> m_editorHelperExitPoint;
     };
