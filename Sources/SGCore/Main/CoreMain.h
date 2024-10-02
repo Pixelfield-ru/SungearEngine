@@ -26,8 +26,6 @@ namespace SGCore
     public:
         static inline Event<void()> onInit;
         
-        static inline std::string m_pathToSungearEngineSDKSources;
-        
         CoreMain() = delete;
 
         static void start();
@@ -40,8 +38,12 @@ namespace SGCore
         static Timer& getFixedTimer() noexcept;
         
         static std::uint16_t getFPS() noexcept;
+
+        SG_NOINLINE static std::filesystem::path getSungearEngineRootPath() noexcept;
     
     private:
+        static inline std::filesystem::path s_sungearEngineRootPath;
+
         static inline Window m_window {};
         static inline Ref<IRenderer> m_renderer;
         

@@ -19,7 +19,8 @@ SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const st
     
     std::string replacedPath = Utils::toUTF8(SGCore::Utils::replaceAll<char16_t>(path.u16string(), u"/", u"_"));
     replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, "\\", "_");
-    
+    replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, ":", "_");
+
     if(isRootShader)
     {
         translator.m_config.m_outputDebugDirectoryPath += "/" + replacedPath;

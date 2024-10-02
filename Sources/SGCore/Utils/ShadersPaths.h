@@ -16,10 +16,10 @@ namespace SGCore
     {
         std::string m_virtualPath;
 
-        std::string m_GLSL4RealizationPath;
-        std::string m_GLSL46RealizationPath;
+        std::filesystem::path m_GLSL4RealizationPath;
+        std::filesystem::path m_GLSL46RealizationPath;
 
-        std::string m_HLSLRealizationPath;
+        std::filesystem::path m_HLSLRealizationPath;
 
         ShadersPaths& operator[](const std::string& path) noexcept;
 
@@ -27,7 +27,7 @@ namespace SGCore
 
         // ---------------
 
-        [[nodiscard]] std::string getCurrentRealization() const noexcept;
+        [[nodiscard]] std::filesystem::path getCurrentRealization() const noexcept;
 
         // ---------------
 

@@ -9,6 +9,8 @@ Sources/cmake-build-debug
 Sources/SGCore/cmake-build-debug
 Sources/SGConsole/cmake-build-debug
 Sources/SGEntry/cmake-build-debug
+Tests/Physics/cmake-build-debug
+Tests/Physics/cmake-build-release
 # -----------------------
 
 # RESOURCES -------------

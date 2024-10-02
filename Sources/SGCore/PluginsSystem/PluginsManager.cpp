@@ -42,12 +42,6 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::fil
     try
     {
         const std::string sgSourcesRootStr = sgSourcesRoot;
-        
-        auto finalSGPath = CoreMain::m_pathToSungearEngineSDKSources;
-        if(std::filesystem::path::preferred_separator == L'\\')
-        {
-            finalSGPath = SGCore::Utils::replaceAll<char>(finalSGPath, R"(\)", R"(\\)");
-        }
 
         const auto pluginDir = u8Path + "/" + pluginName;
         const auto pluginSourcesDir = pluginDir + "/Sources";

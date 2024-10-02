@@ -49,7 +49,7 @@ SGCore::ShadersPaths& SGCore::ShadersPaths::getByVirtualPath(const std::string& 
     return *curShadersPaths;
 }
 
-std::string SGCore::ShadersPaths::getCurrentRealization() const noexcept
+std::filesystem::path SGCore::ShadersPaths::getCurrentRealization() const noexcept
 {
     auto gapiType = SGCore::CoreMain::getRenderer()->getGAPIType();
 

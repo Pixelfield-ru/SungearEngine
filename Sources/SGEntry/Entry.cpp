@@ -66,40 +66,9 @@ void coreInit()
     SGCore::RenderPipelinesManager::registerRenderPipeline(pbrrpPipeline);
     SGCore::RenderPipelinesManager::setCurrentRenderPipeline<SGCore::PBRRenderPipeline>();
 
-    const char* sungearEngineRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
-    if(!sungearEngineRoot)
-    {
-        const std::string errorMsg = "The 'SUNGEAR_SOURCES_ROOT' environment variable does not exist. "
-                                     "Make sure that you have added 'SUNGEAR_SOURCES_ROOT' to the environment variables. "
-                                     "In the variable value, specify the path to the Sungear Engine. "
-                                     "Until then, you will not be able to build the project, as well as some other features of the engine.";
-
-        LOG_C_UNFORMATTED("SGEditor", errorMsg)
-        assert(errorMsg.c_str());
-        std::exit(0);
-    }
-    else
-    {
-        const std::filesystem::path sungearEngineRootPath = sungearEngineRoot;
-        const std::filesystem::path sungearEngineIncludeCMakeFile = sungearEngineRootPath / "cmake/SungearEngineInclude.cmake";
-        if (!std::filesystem::exists(sungearEngineRootPath) ||
-            !std::filesystem::exists(sungearEngineIncludeCMakeFile))
-        {
-            const std::string errorMsg = "The 'SUNGEAR_SOURCES_ROOT' environment variable contains an invalid value. "
-                                         "Make sure that the 'SUNGEAR_SOURCES_ROOT' environment variable contains the correct value and indeed points to the Sungear Engine root folder. "
-                                         "Until then, you will not be able to build the project, as well as some other features of the engine.";
-
-            LOG_C_UNFORMATTED("SGEditor", errorMsg)
-            assert(errorMsg.c_str());
-            std::exit(0);
-        }
-    }
-
     LOG_E(SGCORE_TAG, "Русский язык");
 
-    const std::filesystem::path sungearEngineRootPath = sungearEngineRoot;
-
-    const std::filesystem::path sgEditorPath = sungearEngineRootPath / "Plugins/SungearEngineEditor";
+    const std::filesystem::path sgEditorPath = SGCore::CoreMain::getSungearEngineRootPath() / "Plugins/SungearEngineEditor";
 
     // hardcoded sgeditor load
     auto sgEditorPlugin =

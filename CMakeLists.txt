@@ -73,7 +73,8 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
 # options --------------------------
 
 # TODO: make SG_BUILD_EDITOR
-set(SG_BUILD_TESTS OFF)
+set(SG_BUILD_TESTS ON)
+set(SG_BUILD_ENTRY OFF)
 
 set(SG_RESOURCES_COPY_MODELS ON)
 set(SG_RESOURCES_COPY_SHADERS ON)

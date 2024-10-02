@@ -1,5 +1,7 @@
 add_subdirectory(SGCore)
-add_subdirectory(SGEntry)
+if(${SG_BUILD_TESTS})
+    add_subdirectory(SGEntry)
+endif()
 
 #[[
 # installing targets
