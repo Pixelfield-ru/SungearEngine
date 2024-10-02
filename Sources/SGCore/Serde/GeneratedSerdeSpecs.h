@@ -5,7 +5,7 @@
 #include <SGCore/Serde/StandardSerdeSpecs.h>
 
 
-#include "../Utils/UniqueName.h"
+#include "SGCore/Utils/UniqueName.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::UniqueNameWrapper'
 // =================================================================================
@@ -25,7 +25,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::UniqueNameWrapper, TFormatType> : SGCore
 // =================================================================================
 
 
-#include "../Audio/AudioSource.h"
+#include "SGCore/Audio/AudioSource.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::AudioSource'
 // =================================================================================
@@ -45,7 +45,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::AudioSource, TFormatType> : SGCore::Serd
 // =================================================================================
 
 
-#include "../Transformations/Transform.h"
+#include "SGCore/Transformations/Transform.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::Transform'
 // =================================================================================
@@ -65,7 +65,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Transform, TFormatType> : SGCore::Serde:
 // =================================================================================
 
 
-#include "../Utils/UniqueName.h"
+#include "SGCore/Utils/UniqueName.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::UniqueName'
 // =================================================================================
@@ -85,7 +85,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::UniqueName, TFormatType> : SGCore::Serde
 // =================================================================================
 
 
-#include "../Math/AABB.h"
+#include "SGCore/Math/AABB.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::AABB'
 // =================================================================================
@@ -106,7 +106,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::AABB<ScalarT>, TFormatType> : SGCore::Se
 // =================================================================================
 
 
-#include "../Scene/Layer.h"
+#include "SGCore/Scene/Layer.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::Layer'
 // =================================================================================
@@ -126,7 +126,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Layer, TFormatType> : SGCore::Serde::Bas
 // =================================================================================
 
 
-#include "../Transformations/TransformBase.h"
+#include "SGCore/Transformations/TransformBase.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::TransformBase'
 // =================================================================================
@@ -146,7 +146,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::TransformBase, TFormatType> : SGCore::Se
 // =================================================================================
 
 
-#include "../Scene/EntityBaseInfo.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::EntityBaseInfo'
 // =================================================================================
@@ -166,7 +166,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType> : SGCore::S
 // =================================================================================
 
 
-#include "../ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::MeshDataRenderInfo'
 // =================================================================================
@@ -186,7 +186,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::MeshDataRenderInfo, TFormatType> : SGCor
 // =================================================================================
 
 
-#include "../Render/RenderingBase.h"
+#include "SGCore/Render/RenderingBase.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::RenderingBase'
 // =================================================================================
@@ -206,7 +206,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::RenderingBase, TFormatType> : SGCore::Se
 // =================================================================================
 
 
-#include "../Render/Camera3D.h"
+#include "SGCore/Render/Camera3D.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::Camera3D'
 // =================================================================================
@@ -226,7 +226,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType> : SGCore::Serde::
 // =================================================================================
 
 
-#include "../Render/Gizmos/GizmoBase.h"
+#include "SGCore/Render/Gizmos/GizmoBase.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::GizmoBase'
 // =================================================================================
@@ -246,7 +246,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::GizmoBase, TFormatType> : SGCore::Serde:
 // =================================================================================
 
 
-#include "../Render/Gizmos/SphereGizmo.h"
+#include "SGCore/Render/Gizmos/SphereGizmo.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::SphereGizmo'
 // =================================================================================
@@ -266,7 +266,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::SphereGizmo, TFormatType> : SGCore::Serd
 // =================================================================================
 
 
-#include "../Render/Gizmos/BoxGizmo.h"
+#include "SGCore/Render/Gizmos/BoxGizmo.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::BoxGizmo'
 // =================================================================================
@@ -286,7 +286,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::BoxGizmo, TFormatType> : SGCore::Serde::
 // =================================================================================
 
 
-#include "../Render/Gizmos/LineGizmo.h"
+#include "SGCore/Render/Gizmos/LineGizmo.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::LineGizmo'
 // =================================================================================
@@ -306,7 +306,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::LineGizmo, TFormatType> : SGCore::Serde:
 // =================================================================================
 
 
-#include "../Render/Atmosphere/Atmosphere.h"
+#include "SGCore/Render/Atmosphere/Atmosphere.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::Atmosphere'
 // =================================================================================
@@ -326,7 +326,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType> : SGCore::Serde
 // =================================================================================
 
 
-#include "../Render/MeshBase.h"
+#include "SGCore/Render/MeshBase.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::MeshBase'
 // =================================================================================
@@ -346,7 +346,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType> : SGCore::Serde::
 // =================================================================================
 
 
-#include "../Render/Lighting/LightBase.h"
+#include "SGCore/Render/Lighting/LightBase.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::LightBase'
 // =================================================================================
@@ -366,7 +366,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::LightBase, TFormatType> : SGCore::Serde:
 // =================================================================================
 
 
-#include "../Render/Lighting/DirectionalLight.h"
+#include "SGCore/Render/Lighting/DirectionalLight.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::DirectionalLight'
 // =================================================================================
@@ -386,7 +386,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::DirectionalLight, TFormatType> : SGCore:
 // =================================================================================
 
 
-#include "../Transformations/Controllable3D.h"
+#include "SGCore/Transformations/Controllable3D.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::Controllable3D'
 // =================================================================================
@@ -406,7 +406,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Controllable3D, TFormatType> : SGCore::S
 // =================================================================================
 
 
-#include "../Render/UICamera.h"
+#include "SGCore/Render/UICamera.h"
 
 // SERDE FORWARD DECL FOR struct 'SGCore::UICamera'
 // =================================================================================
