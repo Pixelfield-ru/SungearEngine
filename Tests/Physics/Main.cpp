@@ -15,6 +15,11 @@
 #include <SGCore/Render/RenderingBase.h>
 #include <SGCore/Memory/Assets/ModelAsset.h>
 #include <SGCore/Memory/AssetManager.h>
+#include <SGCore/Graphics/API/ICubemapTexture.h>
+#include <SGCore/Memory/Assets/Materials/IMaterial.h>
+#include <SGCore/Render/ShaderComponent.h>
+#include <SGCore/Render/Mesh.h>
+#include <SGCore/Render/Atmosphere/Atmosphere.h>
 
 // #include <SGCore/
 
@@ -22,14 +27,16 @@ using namespace SGCore;
 
 // VARIABLES =================================================
 
-Ref<ModelAsset> cubeModel;
+Ref<ModelAsset> skyboxCube;
+Ref<ModelAsset> floorCube;
 Ref<ModelAsset> sphereModel;
+Ref<ICubemapTexture> cubemapTexture;
 
 Ref<Scene> testScene;
 
-highp_entity testCameraEntity;
+entity_t testCameraEntity;
 
-highp_entity planeEntity;
+entity_t planeEntity;
 
 // ===========================================================
 
@@ -59,19 +66,83 @@ void coreInit()
     auto& cameraEntityControllable = testScene->getECSRegistry()->emplace<Controllable3D>(testCameraEntity);
     auto& cameraRenderingBase = testScene->getECSRegistry()->emplace<Ref<RenderingBase>>(testCameraEntity, MakeRef<RenderingBase>());
 
-    // loading models ==============================================
+    // loading assets =============================================
 
-    cubeModel = AssetManager::getInstance()->loadAsset<ModelAsset>(
-            "../../Sources/SGResources/models/standard/cube.obj"
+    skyboxCube = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
+            "skybox_cube",
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/cube.obj"
+    );
+
+    floorCube = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
+            "floor_cube",
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/cube.obj"
     );
 
     sphereModel = AssetManager::getInstance()->loadAsset<ModelAsset>(
-            "../../Sources/SGResources/models/standard/sphere.obj"
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/sphere.obj"
     );
 
+    // =====
+
+    cubemapTexture = Ref<ICubemapTexture>(CoreMain::getRenderer()->createCubemapTexture());
+
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+    ));
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
+    ));
+
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
+    ));
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+    ));
+
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+    ));
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+    ));
+
+    cubemapTexture->setRawName("standard_skybox0");
+    cubemapTexture->create();
+    AssetManager::getInstance()->addAsset("standard_skybox0", cubemapTexture);
+
+    auto standardCubemapMaterial = SGCore::MakeRef<SGCore::IMaterial>();
+    standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, cubemapTexture);
+    AssetManager::getInstance()->addAsset("standard_skybox_material0", standardCubemapMaterial);
+
+    // adding skybox with atmosphere
+    {
+        std::vector<entity_t> skyboxEntities;
+        skyboxCube->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
+            skyboxEntities.push_back(entity);
+        });
+
+        const entity_t& skyboxMeshEntity = skyboxEntities[2];
+
+        Mesh& skyboxMesh = testScene->getECSRegistry()->get<Mesh>(skyboxMeshEntity);
+        ShaderComponent& skyboxShaderComponent = testScene->getECSRegistry()->emplace<ShaderComponent>(skyboxMeshEntity);
+        Atmosphere& atmosphereScattering = testScene->getECSRegistry()->emplace<Atmosphere>(skyboxMeshEntity);
+
+        // setting material
+        skyboxMesh.m_base.setMaterial(AssetManager::getInstance()->loadAsset<IMaterial>("standard_skybox_material0"));
+
+        ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
+        skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
+
+        auto& skyboxTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(skyboxMeshEntity);
+
+        skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
+    }
+
     // adding entities on scene ===================================
-    std::vector<highp_entity> floorEntities;
-    cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+
+    std::vector<entity_t> floorEntities;
+    floorCube->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
                                       [&floorEntities](const entity_t& entity)
                                       {
                                           floorEntities.push_back(entity);
