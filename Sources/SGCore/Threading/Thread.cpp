@@ -8,12 +8,8 @@
 
 std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create() noexcept
 {
-    std::lock_guard threadsAccessGuard(ThreadsManager::m_threadAccessMutex);
-    
-    auto thread = std::shared_ptr<Thread>(new Thread);
-    ThreadsManager::m_threads.push_back(thread);
-    
-    return thread;
+    std::lock_guard threadsAccessGuard(ThreadsManager::m_threads);
+    return ThreadsManager::m_threads.getWrapped().emplace_back(std::move(std::shared_ptr<Thread>(new Thread)));
 }
 
 SGCore::Threading::Thread::~Thread()

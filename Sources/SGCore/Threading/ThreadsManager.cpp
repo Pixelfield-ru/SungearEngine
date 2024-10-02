@@ -6,13 +6,16 @@
 
 std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::ThreadsManager::currentThread() noexcept
 {
-    std::lock_guard guard(m_threadAccessMutex);
-    
-    auto it = std::find_if(m_threads.begin(), m_threads.end(), [](const std::shared_ptr<Thread>& thread) {
-        return thread->m_nativeThreadID == std::this_thread::get_id();
-    });
-    
-    return it != m_threads.end() ? *it : nullptr;
+    std::lock_guard guard(m_threads);
+
+    const std::thread::id& currId = std::this_thread::get_id();
+    auto& wrapped = m_threads.getWrapped();
+
+    auto it = std::find_if(wrapped.begin(), wrapped.end(), [&currId](const std::shared_ptr<Thread>& thread) {
+        return thread->getNativeID() == currId;
+       });
+
+    return (it == wrapped.end()) ? nullptr : *it;
 }
 
 std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::ThreadsManager::getMainThread() noexcept
