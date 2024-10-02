@@ -21,14 +21,11 @@
 #include <SGCore/Render/Mesh.h>
 #include <SGCore/Render/Atmosphere/Atmosphere.h>
 
-// #include <SGCore/
-
 using namespace SGCore;
 
 // VARIABLES =================================================
 
-Ref<ModelAsset> skyboxCube;
-Ref<ModelAsset> floorCube;
+Ref<ModelAsset> cubeModel;
 Ref<ModelAsset> sphereModel;
 Ref<ICubemapTexture> cubemapTexture;
 
@@ -68,13 +65,8 @@ void coreInit()
 
     // loading assets =============================================
 
-    skyboxCube = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
-            "skybox_cube",
-            CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/cube.obj"
-    );
-
-    floorCube = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
-            "floor_cube",
+    cubeModel = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
+            "cube_model",
             CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/cube.obj"
     );
 
@@ -118,7 +110,7 @@ void coreInit()
     // adding skybox with atmosphere
     {
         std::vector<entity_t> skyboxEntities;
-        skyboxCube->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
+        cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
             skyboxEntities.push_back(entity);
         });
 
@@ -142,7 +134,7 @@ void coreInit()
     // adding entities on scene ===================================
 
     std::vector<entity_t> floorEntities;
-    floorCube->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+    cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
                                       [&floorEntities](const entity_t& entity)
                                       {
                                           floorEntities.push_back(entity);
