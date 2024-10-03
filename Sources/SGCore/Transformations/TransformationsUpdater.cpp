@@ -22,9 +22,6 @@
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
     m_thread->start();
-    // startThread();
-    
-    // m_updaterThread.detach();
 }
 
 void SGCore::TransformationsUpdater::onAddToScene(const Ref<Scene>& scene)
@@ -42,7 +39,11 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
     
     auto transformsView = registry->view<Ref<Transform>>();
     
-    transformsView.each([&registry, this](const entity_t& entity, Ref<Transform> transform) {
+    auto& matrices = m_changedModelMatrices.getWrapped();
+    auto& notPhysicalEntities = m_calculatedNotPhysicalEntities.getWrapped();
+    auto& physicEntitiesToCheck = m_entitiesForPhysicsUpdateToCheck.getWrapped();
+
+    transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck, this](const entity_t& entity, Ref<Transform> transform) {
         if(transform)
         {
             EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(entity);
@@ -183,15 +184,12 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
                     finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
                 }
                 
-                m_changedModelMatrices.getObject().push_back({ entity, finalTransform.m_modelMatrix });
-                
-                // std::cout << "dkkdd" << std::endl;
-                
-                m_calculatedNotPhysicalEntities.getObject().push_back({ entity, transform });
+                matrices.push_back({ entity, finalTransform.m_modelMatrix });
+                notPhysicalEntities.push_back({ entity, transform });
             }
             else
             {
-                m_entitiesForPhysicsUpdateToCheck.getObject().push_back(entity);
+                physicEntitiesToCheck.push_back(entity);
             }
         }
     });
@@ -201,8 +199,8 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
         m_canCopyEntities = false;
         if(m_calculatedNotPhysicalEntitiesCopy.empty())
         {
-            m_calculatedNotPhysicalEntitiesCopy = m_calculatedNotPhysicalEntities.getObject();
-            m_calculatedNotPhysicalEntities.getObject().clear();
+            m_calculatedNotPhysicalEntitiesCopy = notPhysicalEntities;
+            notPhysicalEntities.clear();
         }
         m_canCopyEntities = true;
     }
@@ -213,9 +211,6 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    // updateTransformations(dt, fixedDt);
-    // dispatch transformations
-    
     if(!m_sharedScene) return;
     
     if(m_canCopyEntities)

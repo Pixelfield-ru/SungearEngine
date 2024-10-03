@@ -11,7 +11,7 @@
 #include "PhysicsDebugDraw.h"
 #include "Rigidbody3D.h"
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/Threading/SafeObject.h"
+#include "SGCore/Threading/WrappedObject.h"
 #include "SGCore/Transformations/TransformationsUpdater.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
@@ -73,7 +73,8 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
         {
             if(transformationsUpdater->m_changedModelMatrices.isLocked())
             {
-                for(const auto& val : transformationsUpdater->m_changedModelMatrices.getObject())
+                auto& transformations = transformationsUpdater->m_changedModelMatrices.getWrapped();
+                for(const auto& val : transformations)
                 {
                     Ref<Rigidbody3D>* tmpRigidbody3D = lockedScene->getECSRegistry()->try_get<Ref<Rigidbody3D>>(val.m_owner);
                     Ref<Rigidbody3D> rigidbody3D = (tmpRigidbody3D ? *tmpRigidbody3D : nullptr);
@@ -89,13 +90,14 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     }
                 }
                 
-                transformationsUpdater->m_changedModelMatrices.getObject().clear();
+                transformations.clear();
                 transformationsUpdater->m_changedModelMatrices.unlock();
             }
             
             if(transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.isLocked())
             {
-                for(const auto& entity : transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getObject())
+                auto& entities = transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getWrapped();
+                for(const auto& entity : entities)
                 {
                     if(registry->any_of<Ref<Rigidbody3D>>(entity))
                     {
@@ -237,7 +239,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                                     finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
                                 }
                                 
-                                transformationsUpdater->m_calculatedPhysicalEntities.getObject().push_back({ entity, transform });
+                                transformationsUpdater->m_calculatedPhysicalEntities.getWrapped().push_back({ entity, transform });
                             }
                         }
                     }
@@ -248,44 +250,19 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     transformationsUpdater->m_canCopyEntities = false;
                     if(transformationsUpdater->m_calculatedPhysicalEntitiesCopy.empty())
                     {
-                        transformationsUpdater->m_calculatedPhysicalEntitiesCopy = transformationsUpdater->m_calculatedPhysicalEntities.getObject();
-                        transformationsUpdater->m_calculatedPhysicalEntities.getObject().clear();
+                        transformationsUpdater->m_calculatedPhysicalEntitiesCopy = transformationsUpdater->m_calculatedPhysicalEntities.getWrapped();
+                        transformationsUpdater->m_calculatedPhysicalEntities.getWrapped().clear();
                     }
                     transformationsUpdater->m_canCopyEntities = true;
                 }
                 
-                transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getObject().clear();
+                transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getWrapped().clear();
                 transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.unlock();
             }
         }
     }
     
     m_dynamicsWorld->stepSimulation(dt, 12, dt);
-
-    /*size_t manifoldsCnt = m_dynamicsWorld->getDispatcher()->getNumManifolds();
-    for(size_t m = 0; m < manifoldsCnt; ++m)
-    {
-        btPersistentManifold* contactManifold = m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(m);
-        const btCollisionObject* objA = contactManifold->getBody0();
-        const btCollisionObject* objB = contactManifold->getBody1();
-
-        size_t contactsCnt = contactManifold->getNumContacts();
-        for(size_t c = 0; c < contactsCnt; ++c)
-        {
-            btManifoldPoint& point = contactManifold->getContactPoint(c);
-            if(point.getDistance() < 0.0f)
-            {
-                // std::cout << "contacted" << std::endl;
-
-                const btVector3& posA = point.getPositionWorldOnA();
-                const btVector3& posB = point.getPositionWorldOnB();
-                const btVector3& normalOnB = point.m_normalWorldOnB;
-
-                std::cout << "posA: " << posA.x() << ", " << posA.y() << ", " << posA.z() <<
-                ", posB: " << posB.x() << ", " << posB.y() << ", " << posB.z() << std::endl;
-            }
-        }
-    }*/
 }
 
 void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
