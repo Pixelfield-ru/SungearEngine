@@ -36,6 +36,7 @@ Ref<ICubemapTexture> cubemapTexture;
 Ref<Scene> testScene;
 
 entity_t testCameraEntity;
+entity_t testPlayerEntity;
 
 entity_t planeEntity;
 
@@ -44,8 +45,6 @@ entity_t planeEntity;
 void createBallAndApplyImpulse(const glm::vec3& spherePos,
                                const glm::vec3& impulse) noexcept
 {
-    auto sphereModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("sphere_model");
-
     std::vector<SGCore::entity_t> sphereEntities;
     sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
                                         [&sphereEntities](const SGCore::entity_t& entity)
@@ -97,6 +96,9 @@ void coreInit()
     cameraBaseInfo.setRawName("SGMainCamera");
 
     auto& cameraTransform = testScene->getECSRegistry()->emplace<Ref<Transform>>(testCameraEntity, MakeRef<Transform>());
+    cameraTransform->m_ownTransform.m_position.y = 10.0f;
+    cameraTransform->m_ownTransform.m_position.z = -10.0f;
+    //cameraTransform->m_ownTransform.m_rotation.y = 180.0f;
 
     auto& cameraEntityCamera3D = testScene->getECSRegistry()->emplace<Ref<Camera3D>>(testCameraEntity, MakeRef<Camera3D>());
     auto& cameraEntityControllable = testScene->getECSRegistry()->emplace<Controllable3D>(testCameraEntity);
@@ -171,6 +173,42 @@ void coreInit()
         skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
     }
 
+    // creating player ===================
+    std::vector<entity_t> playerEntities;
+    cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                      [&playerEntities](const entity_t& entity)
+                                      {
+                                          playerEntities.push_back(entity);
+                                          //testScene->getECSRegistry()->emplace<EntityBaseInfo>(meshEntity);
+                                      }
+    );
+
+    testPlayerEntity = playerEntities[2];
+
+    // cameraBaseInfo.m_parent = testPlayerEntity;
+
+    auto playerTransform = testScene->getECSRegistry()->get<Ref<Transform>>(playerEntities[0]);
+
+    playerTransform->m_ownTransform.m_position = { 0.8f, 10.0f, 0.0f };
+    playerTransform->m_ownTransform.m_scale = { 1.0f, 1.8f, 1.0f };
+
+    // creating rigidbody and box shape for player
+    auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(playerEntities[0],
+                                                                                    MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
+    SGCore::Ref<btBoxShape> playerRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1.0, 1.8, 1.0));
+    playerRigidbody3D->setShape(playerRigidbody3DShape);
+    playerRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+    playerRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+    playerRigidbody3D->m_body->setRestitution(0.1);
+    btScalar mass = 70.0f;
+    btVector3 inertia(0, 0, 0);
+    playerRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+    playerRigidbody3D->m_body->setMassProps(mass, inertia);
+    playerRigidbody3D->updateFlags();
+    playerRigidbody3D->reAddToWorld();
+
+    // ===================================
+
     // adding entities on scene ===================================
 
     std::vector<entity_t> floorEntities;
@@ -182,9 +220,9 @@ void coreInit()
                                       }
     );
 
-    auto transform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
+    auto floorTransform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
 
-    transform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
+    floorTransform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
 
     // creating rigidbody and box shape for floor
     auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(floorEntities[0],
@@ -216,9 +254,9 @@ void onUpdate(const double& dt, const double& fixedDt)
         }
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_4))
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_4))
     {
-        auto& cameraTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(testCameraEntity);
+        auto& cameraTransform = testScene->getECSRegistry()->get<Ref<Transform>>(testCameraEntity);
         createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
 }
@@ -229,6 +267,30 @@ void onFixedUpdate(const double& dt, const double& fixedDt)
     {
         Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
     }
+
+    const float playerSpeed = 10.0f;
+
+    auto playerTransform = testScene->getECSRegistry()->get<Ref<SGCore::Transform>>(testCameraEntity);
+
+    /*if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_W))
+    {
+        playerTransform->m_ownTransform.m_position.z += playerSpeed * dt;
+    }
+
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_S))
+    {
+        playerTransform->m_ownTransform.m_position.z += -playerSpeed * dt;
+    }
+
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_D))
+    {
+        playerTransform->m_ownTransform.m_position.x += -playerSpeed * dt;
+    }
+
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_A))
+    {
+        playerTransform->m_ownTransform.m_position.x += playerSpeed * dt;
+    }*/
 }
 
 int main()

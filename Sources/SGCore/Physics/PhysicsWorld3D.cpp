@@ -225,7 +225,8 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                                 ownTransform.m_modelMatrix =
                                         ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix *
                                         ownTransform.m_scaleMatrix;
-                                
+
+                                // todo: make finalTransform position, rotation and scale calculation
                                 if(parentTransform)
                                 {
                                     finalTransform.m_modelMatrix =
@@ -236,6 +237,19 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                                 {
                                     finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
                                 }
+
+                                glm::vec3 finalScale;
+                                glm::quat finalRotation;
+                                glm::vec3 finalTranslation;
+                                glm::vec3 finalSkew;
+                                glm::vec4 finalPerspective;
+
+                                glm::decompose(finalTransform.m_modelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
+                                               finalPerspective);
+
+                                finalTransform.m_position = finalTranslation;
+                                finalTransform.m_rotation = glm::degrees(glm::eulerAngles(finalRotation));
+                                finalTransform.m_scale = finalScale;
                                 
                                 transformationsUpdater->m_calculatedPhysicalEntities.getObject().push_back({ entity, transform });
                             }

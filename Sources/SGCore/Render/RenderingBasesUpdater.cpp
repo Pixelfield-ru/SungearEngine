@@ -20,25 +20,25 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
     auto renderingBasesView = lockedScene->getECSRegistry()->view<Ref<RenderingBase>, Ref<Transform>>();
 
     renderingBasesView.each([](Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
-        TransformBase& ownTransform = transform->m_ownTransform;
+        TransformBase& finalTransform = transform->m_finalTransform;
 
-        bool viewMatrixChanged = ownTransform.m_rotationChanged ||
-                                 ownTransform.m_positionChanged ||
-                                 ownTransform.m_scaleChanged;
+        bool viewMatrixChanged = finalTransform.m_rotationChanged ||
+                                 finalTransform.m_positionChanged ||
+                                 finalTransform.m_scaleChanged;
 
         glm::quat rotationQuat;
         // if(viewMatrixChanged)
         {
             rotationQuat = glm::angleAxis(
-                    glm::radians(ownTransform.m_rotation.x),
+                    glm::radians(finalTransform.m_rotation.x),
                     glm::vec3(1, 0, 0)
             );
             rotationQuat *= glm::angleAxis(
-                    glm::radians(ownTransform.m_rotation.y),
+                    glm::radians(finalTransform.m_rotation.y),
                     glm::vec3(0, 1, 0)
             );
             rotationQuat *= glm::angleAxis(
-                    glm::radians(ownTransform.m_rotation.z),
+                    glm::radians(finalTransform.m_rotation.z),
                     glm::vec3(0, 0, 1)
             );
         }
@@ -52,10 +52,10 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
         {
             renderingBase->m_viewMatrix = glm::toMat4(rotationQuat);
             renderingBase->m_viewMatrix = glm::translate(renderingBase->m_viewMatrix,
-                                                        -ownTransform.m_position
+                                                         -finalTransform.m_position
             );
             renderingBase->m_viewMatrix =
-                    glm::scale(renderingBase->m_viewMatrix, ownTransform.m_scale);
+                    glm::scale(renderingBase->m_viewMatrix, transform->m_ownTransform.m_scale);
         }
 
         // if some part of projection matrix of camera is changed
