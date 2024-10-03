@@ -66,7 +66,7 @@ void SGCore::Threading::Thread::processTasks() noexcept
     }
     
     processFinishedTasks();
-    
+
     // THREAD IS FULL FREE
     if(tasksCount == 0 && onUpdateEventListenersCount == 0)
     {
@@ -84,7 +84,7 @@ void SGCore::Threading::Thread::processTasks() noexcept
             std::this_thread::sleep_for(100ms);
         }
     }
-    
+
     auto t1 = now();
     
     m_executionTime = timeDiff<double, std::milli>(t0, t1);

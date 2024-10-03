@@ -20,6 +20,10 @@
 #include <SGCore/Render/ShaderComponent.h>
 #include <SGCore/Render/Mesh.h>
 #include <SGCore/Render/Atmosphere/Atmosphere.h>
+#include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <SGCore/Physics/Rigidbody3D.h>
+#include <SGCore/Physics/PhysicsWorld3D.h>
+#include <SGCore/Input/InputManager.h>
 
 using namespace SGCore;
 
@@ -36,6 +40,41 @@ entity_t testCameraEntity;
 entity_t planeEntity;
 
 // ===========================================================
+
+void createBallAndApplyImpulse(const glm::vec3& spherePos,
+                               const glm::vec3& impulse) noexcept
+{
+    auto sphereModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("sphere_model");
+
+    std::vector<SGCore::entity_t> sphereEntities;
+    sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                        [&sphereEntities](const SGCore::entity_t& entity)
+                                        {
+                                            sphereEntities.push_back(entity);
+                                        }
+    );
+
+    auto sphereRigidbody3D = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Rigidbody3D>>(sphereEntities[2],
+                                                                                                    SGCore::MakeRef<SGCore::Rigidbody3D>(
+                                                                                                            testScene->getSystem<SGCore::PhysicsWorld3D>()));
+    SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
+    sphereRigidbody3D->setShape(sphereRigidbody3DShape);
+    sphereRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+    sphereRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+    sphereRigidbody3D->m_body->setRestitution(0.9);
+    btScalar mass = 100.0f;
+    btVector3 inertia(0, 0, 0);
+    sphereRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+    sphereRigidbody3D->m_body->setMassProps(mass, inertia);
+    sphereRigidbody3D->updateFlags();
+    sphereRigidbody3D->reAddToWorld();
+
+    glm::vec3 finalImpulse = impulse;
+    sphereRigidbody3D->m_body->applyCentralImpulse({ finalImpulse.x, finalImpulse.y, finalImpulse.z });
+
+    SGCore::Ref<SGCore::Transform>& sphereTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(sphereEntities[0]);
+    sphereTransform->m_ownTransform.m_position = spherePos;
+}
 
 void coreInit()
 {
@@ -70,7 +109,8 @@ void coreInit()
             CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/cube.obj"
     );
 
-    sphereModel = AssetManager::getInstance()->loadAsset<ModelAsset>(
+    sphereModel = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
+            "sphere_model",
             CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/sphere.obj"
     );
 
@@ -145,21 +185,49 @@ void coreInit()
     auto transform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
 
     transform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
+
+    // creating rigidbody and box shape for floor
+    auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(floorEntities[0],
+            MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
+    SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(250, 1, 250.0));
+    floorRigidbody3D->setShape(floorRigidbody3DShape);
+    floorRigidbody3D->m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
+    floorRigidbody3D->m_body->setRestitution(0.9);
+    floorRigidbody3D->reAddToWorld();
 }
 
 void onUpdate(const double& dt, const double& fixedDt)
 {
-    if(SGCore::Scene::getCurrentScene())
+    if(Scene::getCurrentScene())
     {
-        SGCore::Scene::getCurrentScene()->update(dt, fixedDt);
+        Scene::getCurrentScene()->update(dt, fixedDt);
+    }
+
+    if(InputManager::getMainInputListener()->keyboardKeyReleased(KeyboardKey::KEY_F12))
+    {
+        auto& physicsWorld3DDebug = testScene->getSystem<PhysicsWorld3D>()->getDebugDraw();
+        if(physicsWorld3DDebug->getDebugMode() == btIDebugDraw::DBG_NoDebug)
+        {
+            physicsWorld3DDebug->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+        }
+        else
+        {
+            physicsWorld3DDebug->setDebugMode(btIDebugDraw::DBG_NoDebug);
+        }
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_4))
+    {
+        auto& cameraTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(testCameraEntity);
+        createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
 }
 
 void onFixedUpdate(const double& dt, const double& fixedDt)
 {
-    if(SGCore::Scene::getCurrentScene())
+    if(Scene::getCurrentScene())
     {
-        SGCore::Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
+        Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
     }
 }
 
