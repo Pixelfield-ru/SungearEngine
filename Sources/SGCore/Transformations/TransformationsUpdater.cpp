@@ -21,6 +21,7 @@
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
+    m_thread->setSleepTime(std::chrono::milliseconds(5));
     m_thread->start();
 }
 
