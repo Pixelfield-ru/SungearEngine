@@ -1,10 +1,10 @@
-#include "GeneratedCodeEntry.h"
+#include "EditorHelper.h"
+#include "../Serde.h"
 
 #include <SGCore/Main/CoreMain.h>
 #include <SGCore/Scene/Scene.h>
 #include <SGCore/Serde/Components/NonSavable.h>
 #include <SGCore/Logger/Logger.h>
-#include <.SG_GENERATED/Serializers.h>
 
 #include <imgui.h>
 #include <imgui_stdlib.h>
@@ -13,18 +13,36 @@
 #include <Plugins/SungearEngineEditor/Sources/Views/InspectorView.h>
 #include <Plugins/SungearEngineEditor/Sources/SungearEngineEditor.h>
 
-${includes}$
+// including all structs
+## for struct in structs
+#include "{{ struct.filePath }}"
+## endfor
+
+// ${includes}$
 
 template<SGCore::Serde::FormatType TFormatType>
 void onEntitySave(const SGCore::Scene& savableScene,
                   const SGCore::entity_t& savableEntity,
-                  SGCore::Serde::SerializableValueView<SGCore::registry_t, TFormatType>& registryView) noexcept
+                  SGCore::Serde::SerializableValueView<SGCore::entity_t, TFormatType>& entityComponentsView) noexcept
 {
     if(savableScene.getECSRegistry()->all_of<SGCore::NonSavable>(savableEntity)) return;
 
     LOG_I("GENERATED", "Saving entity '{}'...", std::to_underlying(savableEntity));
 
-${componentsSave}$
+    ## for struct in structs
+
+    // TODO: FIX
+    if(std::string("{{ struct.type }}") == "component")
+    {
+        auto* component = savableScene.getECSRegistry()->try_get<{{ struct.getFromRegistryBy }}>(savableEntity);
+
+        if(component)
+        {
+            entityComponentsView.getValueContainer().pushBack(*component);
+        }
+    }
+
+    ## endfor
 }
 
 void onInit()
@@ -51,15 +69,16 @@ void onInspectorViewRender()
     // TODO: MAKE PREDICATE THAT IT IS NEEDS TO BE RENDERED
     if(currentSceneRegistry->valid(currentChosenEntity))
     {
-${onInspectorViewComponentsChooseRenderFunctionCode}$
+
     }
 }
 
 SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 {
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
-    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;
+    // TODO: supporting BSON and YAML
+    /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
+    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;*/
 
     SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRenderBody += onInspectorViewRender;
 
@@ -71,8 +90,9 @@ SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeExit()
 {
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() -= onEntitySave<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() -= onEntitySave<SGCore::Serde::FormatType::BSON>;
-    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() -= onEntitySave<SGCore::Serde::FormatType::YAML>;
+    // TODO: supporting BSON and YAML
+    /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() -= onEntitySave<SGCore::Serde::FormatType::BSON>;
+    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() -= onEntitySave<SGCore::Serde::FormatType::YAML>;*/
 
     SGE::SungearEngineEditor::getInstance()->getMainView()->getInspectorView()->onRenderBody -= onInspectorViewRender;
 

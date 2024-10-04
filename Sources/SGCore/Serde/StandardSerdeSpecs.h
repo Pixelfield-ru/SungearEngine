@@ -435,7 +435,10 @@ namespace SGCore::Serde
             auto entitiesView = valueView.m_data->m_ecsRegistry->template view<EntityBaseInfo>();
             for(const auto& entity : entitiesView)
             {
-                valueView.m_data->template getOnEntitySave<TFormatType>()(*valueView.m_data, entity, registryView);
+                auto componentsArray = registryView.getValueContainer().pushBack(entity);
+                componentsArray.getValueContainer().setAsArray();
+
+                valueView.m_data->template getOnEntitySave<TFormatType>()(*valueView.m_data, entity, componentsArray);
             }
         }
 

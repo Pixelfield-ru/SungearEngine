@@ -3,7 +3,7 @@
 //
 
 #include <SGCore/Utils/FileUtils.h>
-#include "CodeGeneration.h"
+#include "CodeGenerator.h"
 
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/MetaInfo/MetaInfo.h"
@@ -39,10 +39,10 @@ SGCore::CodeGen::Generator::Generator()
         Lang::Function placeFunc;
         placeFunc.m_name = "place";
         placeFunc.m_arguments.push_back({
-                                                    .m_name = "separator",
-                                                    .m_isNecessary = true,
-                                                    .m_acceptableType = stringType
-                                            });
+                                                .m_name = "separator",
+                                                .m_isNecessary = true,
+                                                .m_acceptableType = stringType
+                                        });
         placeFunc.m_functor = [placeFunc](const Lang::Type& owner, Lang::Variable* operableVariable,
                                           const size_t& curLine,
                                           std::string& outputText,
@@ -114,7 +114,7 @@ SGCore::CodeGen::Generator::Generator()
                                                     .m_acceptableType = stringType
                                             });
         hasMemberFunc.m_functor = [hasMemberFunc](const Lang::Type& owner, Lang::Variable* operableVariable, const size_t& curLine,
-                                     std::string& outputText, const std::vector<Lang::FunctionArgument>& args) {
+                                                  std::string& outputText, const std::vector<Lang::FunctionArgument>& args) {
             if(args.size() != 1)
             {
                 LOG_E(SGCORE_TAG,
@@ -170,6 +170,11 @@ SGCore::CodeGen::Generator::Generator()
         m_currentTypes.push_back(cppMemberType);
     }
 
+    addBuiltinVariables();
+}
+
+void SGCore::CodeGen::Generator::addBuiltinVariables() noexcept
+{
     // adding structs from meta info
     m_AST->m_scope["structs"] = std::make_shared<Lang::Variable>(*getTypeByName("generic_map"));
 
@@ -191,7 +196,18 @@ SGCore::CodeGen::Generator::Generator()
 
         (*newStruct)["fullName"].m_insertedValue = metaStruct["fullName"].getValue();
 
+        (*newStruct)["type"].m_insertedValue = metaStruct["type"].getValue();
+
         (*newStruct)["baseTypes"] = Lang::Variable(*getTypeByName("generic_map"));
+
+        if(metaStruct.hasChild("getFromRegistryBy"))
+        {
+            (*newStruct)["getFromRegistryBy"].m_insertedValue = metaStruct["getFromRegistryBy"].getValue();
+        }
+        else
+        {
+            (*newStruct)["getFromRegistryBy"].m_insertedValue = (*newStruct)["fullName"].m_insertedValue;
+        }
 
         // adding baseTypes of struct ==========
         auto& structExtends = metaStruct["extends"];
@@ -334,6 +350,22 @@ std::string SGCore::CodeGen::Generator::generate(const std::filesystem::path& te
     generateCodeUsingAST(m_AST, outputString);
 
     std::printf("end\n");
+
+    // clearing tmp variables
+    m_isExprStarted = false;
+    m_isPlacementStarted = false;
+    m_currentCommentType = CommentType::NO_COMMENT;
+
+    m_skipCodeCopy = false;
+    m_writeCharSeq = false;
+
+    m_currentUsedVariable = nullptr;
+
+    m_AST = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_FILESTART);
+    m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CPP_CODE_LINE);
+    m_currentCharSeqToken = std::make_shared<Lang::ASTToken>(Lang::Tokens::K_CHAR_SEQ);
+
+    addBuiltinVariables();
 
     return outputString;
 }

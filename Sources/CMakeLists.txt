@@ -1,5 +1,5 @@
 add_subdirectory(SGCore)
-if(${SG_BUILD_TESTS})
+if(${SG_BUILD_ENTRY})
     add_subdirectory(SGEntry)
 endif()
 

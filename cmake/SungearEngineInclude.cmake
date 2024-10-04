@@ -1,16 +1,10 @@
-set(SG_DL_EXT ???)
+include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/utils.cmake)
 
 add_definitions(-DSG_BUILD_PRESET="${SG_BUILD_PRESET}")
 
 if(NOT DEFINED SG_BUILD_PRESET)
     message(FATAL_ERROR "Your preset does not have 'SG_BUILD_PRESET' in 'cacheVariables' section.")
 endif()
-
-if(MSVC)
-    set(SG_DL_EXT lib)
-elseif(${CMAKE_COMPILER_IS_GNUCXX})
-    set(SG_DL_EXT so)
-endif ()
 
 if(${SG_BUILD_TYPE} STREQUAL "")
     set(SG_BUILD_TYPE "Release")

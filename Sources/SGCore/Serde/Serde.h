@@ -508,7 +508,7 @@ namespace SGCore::Serde
          * @param value
          */
         template<typename T>
-        void pushBack(const T& value) noexcept
+        SerializableValueView<T, TFormatType> pushBack(const T& value) noexcept
         {
 
         }
@@ -675,9 +675,9 @@ namespace SGCore::Serde
         }
 
         template<typename T>
-        void pushBack(const T& value) noexcept
+        SerializableValueView<T, FormatType::JSON> pushBack(const T& value) noexcept
         {
-            addMember("", value);
+            return addMember("", value);
         }
 
         void setAsNull() noexcept

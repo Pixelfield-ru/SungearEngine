@@ -66,13 +66,13 @@ namespace SGCore
             m_nativeHandler = dlopen(u8Path.c_str(), RTLD_NOW | RTLD_GLOBAL);
             if(!m_nativeHandler)
             {
-                err = dlerror();
+                err += dlerror();
             }
             #elif defined(PLATFORM_OS_WINDOWS)
             m_nativeHandler = LoadLibraryA(u8Path.c_str());
             if(!m_nativeHandler)
             {
-                err = getLastWindowsError();
+                err += getLastWindowsError();
             }
             #endif
         }
@@ -112,7 +112,7 @@ namespace SGCore
         {
             if(!m_nativeHandler)
             {
-                err = "The function cannot be loaded: the library is not loaded.";
+                err += "The function cannot be loaded: the library is not loaded.";
 
                 return (std::conditional_t<std::is_function_v<T>, std::function<T>, T*>) nullptr;
             }
@@ -127,13 +127,13 @@ namespace SGCore
                 T* field  = (T*) dlsym(nativeHandler, funcName);
                 if(!field)
                 {
-                    err = dlerror();
+                    err += dlerror();
                 }
                 #elif defined(PLATFORM_OS_WINDOWS)
                 T* field = (T*) GetProcAddress(m_nativeHandler, symbolName);
                 if(!field)
                 {
-                    err = DynamicLibrary::getLastWindowsError();
+                    err += DynamicLibrary::getLastWindowsError();
                 }
                 #endif
 
@@ -206,13 +206,13 @@ namespace SGCore
                 func = (func_t) dlsym(nativeHandler, funcName);
                 if(!func)
                 {
-                    err = dlerror();
+                    err += dlerror();
                 }
                 #elif defined(PLATFORM_OS_WINDOWS)
                 func = (func_t) GetProcAddress(nativeHandler, funcName);
                 if(!func)
                 {
-                    err = DynamicLibrary::getLastWindowsError();
+                    err += DynamicLibrary::getLastWindowsError();
                 }
                 #endif
                 

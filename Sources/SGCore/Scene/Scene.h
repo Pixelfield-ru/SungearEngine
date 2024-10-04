@@ -130,7 +130,7 @@ namespace SGCore
         template<Serde::FormatType TFormatType>
         static inline Event<void(const Scene& savableScene,
                                  const entity_t& savableEntity,
-                                 Serde::SerializableValueView<registry_t, TFormatType>& valueView)> onEntitySave;
+                                 Serde::SerializableValueView<entity_t, TFormatType>& entityComponentsView)> onEntitySave;
 
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;

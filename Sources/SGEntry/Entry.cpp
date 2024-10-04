@@ -33,7 +33,7 @@ extern "C" {
 #include "SGCore/ImGuiWrap/Views/IView.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Utils/Formatter.h"
-#include "SGCore/CodeGeneration/CodeGeneration.h"
+#include "SGCore/CodeGeneration/CodeGenerator.h"
 
 #include "SGCore/Serde/GeneratedSerdeSpecs.h"
 
@@ -59,7 +59,7 @@ void coreInit()
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;*/
 
-    std::printf("init...\n");
+    // std::printf("init...\n");
 
     // fixme: FOR TEST
     auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();

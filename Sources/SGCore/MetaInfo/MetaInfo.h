@@ -160,7 +160,7 @@ namespace SGCore
             }
 
             // SGCore::AABB
-            {
+            /*{
                 Meta meta;
                 meta["fullName"] = "SGCore::AABB";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Math/AABB.h";
@@ -171,7 +171,7 @@ namespace SGCore
                 meta["members"]["m_max"];
 
                 m_meta["structs"].push_back(meta);
-            }
+            }*/
 
             // SGCore::Layer
             {

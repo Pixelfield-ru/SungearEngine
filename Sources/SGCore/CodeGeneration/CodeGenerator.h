@@ -2,8 +2,8 @@
 // Created by stuka on 10.09.2024.
 //
 
-#ifndef SUNGEARENGINE_CODEGENERATION_H
-#define SUNGEARENGINE_CODEGENERATION_H
+#ifndef SUNGEARENGINE_CODEGENERATOR_H
+#define SUNGEARENGINE_CODEGENERATOR_H
 
 #include <any>
 
@@ -220,6 +220,8 @@ namespace SGCore::CodeGen
                                                                 Lang::Function& callableFunction,
                                                                 std::string& outputString) const noexcept;
 
+        void addBuiltinVariables() noexcept;
+
         // tmp variables ===================
         bool m_isExprStarted = false;
         bool m_isPlacementStarted = false;
@@ -237,4 +239,4 @@ namespace SGCore::CodeGen
     };
 }
 
-#endif //SUNGEARENGINE_CODEGENERATION_H
+#endif //SUNGEARENGINE_CODEGENERATOR_H

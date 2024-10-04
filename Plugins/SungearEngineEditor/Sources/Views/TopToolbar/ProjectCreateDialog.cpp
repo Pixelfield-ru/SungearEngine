@@ -10,6 +10,7 @@
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
 #include <SGCore/Utils/Formatter.h>
+#include <SGCore/CodeGeneration/CodeGenerator.h>
 
 #include "ProjectCreateDialog.h"
 #include "SungearEngineEditor.h"
@@ -200,6 +201,29 @@ void SGE::ProjectCreateDialog::submit()
         const std::filesystem::path projectPath = m_dirPath + "/" + m_projectName;
         SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = projectPath;
         currentEditorProject->m_pluginProject = pluginProject;
+
+        const std::filesystem::path generatedFilesPath = projectPath / ".SG_GENERATED";
+
+        // creating editor helper code
+        {
+            SGCore::CodeGen::Generator codeGenerator;
+
+            const std::string editorHelperCPPGeneratedCode = codeGenerator.generate(
+                    SungearEngineEditor::getInstance()->getLocalPath() /
+                    "Sources/Project/CodeGen/.templates/EditorOnly/EditorHelper.cpp"
+            );
+
+            const std::string editorHelperHGeneratedCode = SGCore::FileUtils::readFile(
+                    SungearEngineEditor::getInstance()->getLocalPath() /
+                    "Sources/Project/CodeGen/.templates/EditorOnly/EditorHelper.h"
+            );
+
+            const std::string serdeH = codeGenerator.generate(SGCore::CoreMain::getSungearEngineRootPath() / "Sources/SGCore/CodeGeneration/SerdeGeneration/.templates/SerdeSpec.h");
+
+            SGCore::FileUtils::writeToFile(generatedFilesPath / "Editor" / "EditorHelper.h", editorHelperHGeneratedCode, false, true);
+            SGCore::FileUtils::writeToFile(generatedFilesPath / "Editor" / "EditorHelper.cpp", editorHelperCPPGeneratedCode, false, true);
+            SGCore::FileUtils::writeToFile(generatedFilesPath / "Serde.h", serdeH, false, true);
+        }
 
         const std::filesystem::path metaInfoProjectPath = projectPath / "MetaInfo";
 
