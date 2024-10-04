@@ -73,8 +73,6 @@ namespace SGCore
         Scope<PhysicsDebugDraw> m_debugDraw;
         
         std::mutex m_bodiesCountChangeMutex;
-        
-        Threading::WrappedObject<std::vector<EntityComponentMember<glm::mat4>>> m_physicalMatricesVector;
     };
 }
 

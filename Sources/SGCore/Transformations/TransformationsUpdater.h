@@ -43,13 +43,11 @@ namespace SGCore
         Threading::WrappedObject<std::vector<entity_t>> m_entitiesForPhysicsUpdateToCheck;
         
         // TODO: FIX. MAY PRODUCE SIGSEGV WHEN ITERATING THROUGH IN ONE THREAD AND push_back IN OTHER
+        // Reviewed MisterElect 04.10.2024: no sigsegv found
         Threading::WrappedObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;
         Threading::WrappedObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntities;
-        
-        std::atomic<bool> m_canCopyEntities = true;
-        std::vector<EntityComponentMember<Ref<const Transform>>> m_calculatedNotPhysicalEntitiesCopy;
-        
-        std::atomic<bool> m_canCopyNotPhysicalEntities = true;
-        std::vector<EntityComponentMember<Ref<const Transform>>> m_calculatedPhysicalEntitiesCopy;
+
+        Threading::WrappedObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntitiesCopy;
+        Threading::WrappedObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntitiesCopy;
     };
 }

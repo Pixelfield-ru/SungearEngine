@@ -43,6 +43,10 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
     auto& notPhysicalEntities = m_calculatedNotPhysicalEntities.getWrapped();
     auto& physicEntitiesToCheck = m_entitiesForPhysicsUpdateToCheck.getWrapped();
 
+    matrices.reserve(transformsView.size());
+    notPhysicalEntities.reserve(transformsView.size());
+    physicEntitiesToCheck.reserve(transformsView.size());
+
     transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck, this](const entity_t& entity, Ref<Transform> transform) {
         if(transform)
         {
@@ -194,15 +198,14 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
         }
     });
     
-    if(m_canCopyEntities)
+    if(!m_calculatedNotPhysicalEntitiesCopy.isLocked())
     {
-        m_canCopyEntities = false;
-        if(m_calculatedNotPhysicalEntitiesCopy.empty())
+        std::lock_guard guard(m_calculatedNotPhysicalEntitiesCopy);
+        auto& vec = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
+        if(vec.empty())
         {
-            m_calculatedNotPhysicalEntitiesCopy = notPhysicalEntities;
-            notPhysicalEntities.clear();
+            vec = std::move(notPhysicalEntities);
         }
-        m_canCopyEntities = true;
     }
     
     m_changedModelMatrices.lock();
@@ -213,13 +216,14 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
 {
     if(!m_sharedScene) return;
     
-    if(m_canCopyEntities)
+    if(!m_calculatedNotPhysicalEntitiesCopy.isLocked())
     {
-        m_canCopyEntities = false;
+        std::lock_guard guard(m_calculatedNotPhysicalEntitiesCopy);
         
         size_t i = 0;
         
-        for(const auto& t : m_calculatedNotPhysicalEntitiesCopy)
+        auto& entitiesCopy = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
+        for(const auto& t : entitiesCopy)
         {
             auto* tmpNonConstTransform = m_sharedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
@@ -260,18 +264,16 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             ++i;
         }
         
-        m_calculatedNotPhysicalEntitiesCopy.clear();
-        
-        m_canCopyEntities = true;
+        entitiesCopy.clear();
     }
     
     // std::cout << "calculatedNotPhysEntitiesLastSize - 1: " << (calculatedNotPhysEntitiesLastSize - 1) << std::endl;
     
-    if(m_canCopyEntities)
+    if(!m_calculatedPhysicalEntitiesCopy.isLocked())
     {
-        m_canCopyEntities = false;
-        
-        for(const auto& t : m_calculatedPhysicalEntitiesCopy)
+        std::lock_guard guard(m_calculatedPhysicalEntitiesCopy);
+        auto& entitiesCopy = m_calculatedPhysicalEntitiesCopy.getWrapped();
+        for(const auto& t : entitiesCopy)
         {
             auto* tmpNonConstTransform = m_sharedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
@@ -310,8 +312,6 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             onTransformChanged(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
         }
         
-        m_calculatedPhysicalEntitiesCopy.clear();
-        
-        m_canCopyEntities = true;
+        entitiesCopy.clear();
     }
 }

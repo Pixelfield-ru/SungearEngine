@@ -6,11 +6,12 @@
 
 #include "ThreadsManager.h"
 
-std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create() noexcept
+std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::Thread::create(const std::chrono::milliseconds& sleepTime) noexcept
 {
     std::lock_guard threadsAccessGuard(ThreadsManager::m_threadAccessMutex);
     
     auto thread = std::shared_ptr<Thread>(new Thread);
+    thread->m_sleepTime = sleepTime;
     ThreadsManager::m_threads.push_back(thread);
     
     return thread;
@@ -45,11 +46,13 @@ void SGCore::Threading::Thread::processTasks() noexcept
     {
         std::lock_guard copyGuard(m_threadProcessMutex);
         
+        // #TODO
         onTasksProcess.exclude(onTasksProcessCopy);
         
         // exclude from vector
         {
             size_t curIdx = 0;
+            // #TODO 
             for(const auto& task : m_tasksCopy)
             {
                 if(curIdx == m_tasks.size()) break;
@@ -68,32 +71,25 @@ void SGCore::Threading::Thread::processTasks() noexcept
     processFinishedTasks();
     
     // THREAD IS FULL FREE
-    if(tasksCount == 0 && onUpdateEventListenersCount == 0)
+    if(tasksCount == 0 && onUpdateEventListenersCount == 0 && m_autoJoinIfNotBusy)
     {
-        if(m_autoJoinIfNotBusy)
-        {
-            auto joinThisThreadTask = ThreadsManager::getMainThread()->createTask();
-            joinThisThreadTask->setOnExecuteCallback([threadToJoin = shared_from_this()]() {
-                threadToJoin->join();
+        auto joinThisThreadTask = ThreadsManager::getMainThread()->createTask();
+        joinThisThreadTask->setOnExecuteCallback([threadToJoin = shared_from_this()]() {
+             threadToJoin->join();
             });
-            ThreadsManager::getMainThread()->addTask(joinThisThreadTask);
-        }
-        
-        if(m_sleepIfNotBusy)
-        {
-            std::this_thread::sleep_for(100ms);
-        }
+        ThreadsManager::getMainThread()->addTask(joinThisThreadTask);
     }
-    
-    auto t1 = now();
-    
-    m_executionTime = timeDiff<double, std::milli>(t0, t1);
+
+    if (m_sleepIfNotBusy)
+        std::this_thread::sleep_for(m_sleepTime);
+
+    m_executionTime = timeDiff<double, std::milli>(t0, now());
 }
 
 void SGCore::Threading::Thread::start() noexcept
 {
     if(m_isRunning || m_hasJoinRequest) return;
-    
+
     auto internalFunc = [this]() {
         while(m_isAlive && m_isRunning)
         {
@@ -200,17 +196,17 @@ void SGCore::Threading::Thread::processFinishedTasks() noexcept
     }
 }
 
-double SGCore::Threading::Thread::getExecutionTime() const noexcept
+const double& SGCore::Threading::Thread::getExecutionTime() const noexcept
 {
     return m_executionTime.load();
 }
 
-std::thread::id SGCore::Threading::Thread::getNativeID() const noexcept
+const std::thread::id& SGCore::Threading::Thread::getNativeID() const noexcept
 {
     return m_nativeThreadID.load();
 }
 
-bool SGCore::Threading::Thread::isRunning() const noexcept
+const bool& SGCore::Threading::Thread::isRunning() const noexcept
 {
     return m_isRunning;
 }
