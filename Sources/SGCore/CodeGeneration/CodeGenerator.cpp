@@ -6,7 +6,6 @@
 #include "CodeGenerator.h"
 
 #include "SGCore/Logger/Logger.h"
-#include "SGCore/MetaInfo/MetaInfo.h"
 
 SGCore::CodeGen::Generator::Generator()
 {
@@ -102,10 +101,6 @@ SGCore::CodeGen::Generator::Generator()
 
         genericMapType.m_functions["empty"] = isEmptyFunc;
 
-        m_currentTypes.push_back(genericMapType);
-
-        // =====================================================
-
         Lang::Function hasMemberFunc;
         hasMemberFunc.m_name = "hasMember";
         hasMemberFunc.m_arguments.push_back({
@@ -145,27 +140,33 @@ SGCore::CodeGen::Generator::Generator()
             return operableVariable->getMembers().contains(memberNameArg);
         };
 
+        genericMapType.m_functions["hasMember"] = hasMemberFunc;
+
+        m_currentTypes.push_back(genericMapType);
+
+        // =====================================================
+
         // adding annotations processor types
         Lang::Type cppStructType;
         cppStructType.m_name = "cpp_struct";
-        cppStructType.m_members["fullName"] = stringType;
+        /*cppStructType.m_members["fullName"] = stringType;
         cppStructType.m_members["filePath"] = stringType;
         cppStructType.m_members["templateDecl"] = stringType;
         cppStructType.m_members["fullNameWithTemplate"] = stringType;
         cppStructType.m_members["baseTypes"] = genericMapType;
         cppStructType.m_members["derivedTypes"] = genericMapType;
-        cppStructType.m_members["members"] = genericMapType;
+        cppStructType.m_members["members"] = genericMapType;*/
         cppStructType.m_functions["hasMember"] = hasMemberFunc;
         m_currentTypes.push_back(cppStructType);
 
         Lang::Type cppMemberType;
         cppMemberType.m_name = "cpp_struct_member";
-        cppMemberType.m_members["name"] = stringType;
+        /*cppMemberType.m_members["name"] = stringType;
         cppMemberType.m_members["setter"] = stringType;
         cppMemberType.m_members["getter"] = stringType;
         cppMemberType.m_members["hasSetter"] = boolType;
         cppMemberType.m_members["hasGetter"] = boolType;
-        cppMemberType.m_members["struct"] = cppStructType;
+        cppMemberType.m_members["struct"] = cppStructType;*/
         cppMemberType.m_functions["hasMember"] = hasMemberFunc;
         m_currentTypes.push_back(cppMemberType);
     }
@@ -192,25 +193,13 @@ void SGCore::CodeGen::Generator::addBuiltinVariables() noexcept
             newStruct = std::make_shared<Lang::Variable>(*getTypeByName("cpp_struct"));
         }
 
-        (*newStruct)["members"] = Lang::Variable(*getTypeByName("generic_map"));
+        // adding all variables of meta
+        addVariableFields(*newStruct, metaStruct);
 
-        (*newStruct)["fullName"].m_insertedValue = metaStruct["fullName"].getValue();
-
-        (*newStruct)["type"].m_insertedValue = metaStruct["type"].getValue();
-
-        (*newStruct)["baseTypes"] = Lang::Variable(*getTypeByName("generic_map"));
-
-        if(metaStruct.hasChild("getFromRegistryBy"))
-        {
-            (*newStruct)["getFromRegistryBy"].m_insertedValue = metaStruct["getFromRegistryBy"].getValue();
-        }
-        else
-        {
-            (*newStruct)["getFromRegistryBy"].m_insertedValue = (*newStruct)["fullName"].m_insertedValue;
-        }
+        // adding some other builtin members of struct ==============================================
 
         // adding baseTypes of struct ==========
-        auto& structExtends = metaStruct["extends"];
+        auto& structExtends = metaStruct["baseTypes"];
 
         for(const auto& baseType : structExtends.getChildren())
         {
@@ -220,6 +209,7 @@ void SGCore::CodeGen::Generator::addBuiltinVariables() noexcept
             {
                 auto newBaseStruct = std::make_shared<Lang::Variable>(*getTypeByName("cpp_struct"));
 
+                (*newBaseStruct)["derivedTypes"] = Lang::Variable(*getTypeByName("generic_map"));
                 (*newBaseStruct)["derivedTypes"][metaStruct["fullName"].getValue()].m_insertedValue = metaStruct["fullName"].getValue();
 
                 m_AST->m_scope["structs"]->setMemberPtr(baseType->first, newBaseStruct);
@@ -228,12 +218,12 @@ void SGCore::CodeGen::Generator::addBuiltinVariables() noexcept
             {
                 auto& newBaseStruct = (*m_AST->m_scope["structs"])[baseType->first];
 
+                newBaseStruct["derivedTypes"] = Lang::Variable(*getTypeByName("generic_map"));
                 newBaseStruct["derivedTypes"][metaStruct["fullName"].getValue()].m_insertedValue = metaStruct["fullName"].getValue();
             }
         }
         // =====================================
 
-        auto& structMembers = metaStruct["members"];
         auto& structTemplateArgs = metaStruct["template_args"];
 
         // doing some actions with templates ==================
@@ -263,62 +253,40 @@ void SGCore::CodeGen::Generator::addBuiltinVariables() noexcept
         }
         // =====================================================
 
-        for(auto& memberIt : structMembers.getChildren())
-        {
-            auto& memberName = memberIt->first;
-            auto& member = memberIt->second;
-
-            // getting variables from meta
-            const bool hasSetter = member.hasChild("setter");
-            const bool hasGetter = member.hasChild("getter");
-            const std::string serializableName = member.hasChild("serializableName") ? member["serializableName"].getValue() : memberName;
-            const std::string setter = hasSetter ? member["setter"].getValue() : memberName;
-            const std::string getter = hasSetter ? member["getter"].getValue() : memberName;
-
-            // creating new generator variable
-            (*newStruct)["members"][memberName] = Lang::Variable(*getTypeByName("cpp_struct_member"));
-            auto& newGenMember = (*newStruct)["members"][memberName];
-
-            newGenMember["name"].m_insertedValue = memberName;
-
-            if(!hasSetter)
-            {
-                newGenMember.removeMember("setter");
-            }
-            else
-            {
-                newGenMember["setter"].m_insertedValue = setter;
-            }
-
-            if(!hasSetter)
-            {
-                newGenMember.removeMember("getter");
-            }
-            else
-            {
-                newGenMember["getter"].m_insertedValue = getter;
-            }
-
-            newGenMember["serializableName"].m_insertedValue = serializableName;
-
-            newGenMember.setMemberPtr("struct", newStruct);
-        }
-
         (*newStruct)["fullNameWithTemplate"].m_insertedValue = structFullNameWithTemplates;
-        if(structTemplateDecl.empty())
-        {
-            newStruct->removeMember("templateDecl");
-        }
-        else
+        if(!structTemplateDecl.empty())
         {
             (*newStruct)["templateDecl"].m_insertedValue = structTemplateDecl;
         }
-        (*newStruct)["filePath"].m_insertedValue = metaStruct["filePath"].getValue();
 
         m_AST->m_scope["structs"]->setMemberPtr(metaStruct["fullName"].getValue(), newStruct);
 
         ++currentStructIdx;
         // newStruct.m_members["fullNameWithTemplates"].m_insertedValue = structFullNameWithTemplates;
+    }
+}
+
+void SGCore::CodeGen::Generator::addVariableFields
+        (Lang::Variable& var, SGCore::MetaInfo::Meta& meta)
+{
+    for(auto& p : meta.getChildren())
+    {
+        auto& childMeta = p->second;
+
+        if(childMeta.getChildren().empty())
+        {
+            auto& varMember = var[childMeta.getName()];
+            varMember = Lang::Variable(*getTypeByName("generic_map"));
+            varMember.m_insertedValue = childMeta.getValue();
+            varMember["name"].m_insertedValue = childMeta.getName();
+        }
+        else
+        {
+            auto& varMember = var[childMeta.getName()];
+            varMember = Lang::Variable(*getTypeByName("generic_map"));
+            varMember["name"].m_insertedValue = childMeta.getName();
+            addVariableFields(varMember, childMeta);
+        }
     }
 }
 

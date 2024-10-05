@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_CODEGENERATOR_H
 
 #include <any>
+#include "SGCore/MetaInfo/MetaInfo.h"
 
 namespace SGCore::CodeGen
 {
@@ -221,6 +222,7 @@ namespace SGCore::CodeGen
                                                                 std::string& outputString) const noexcept;
 
         void addBuiltinVariables() noexcept;
+        void addVariableFields(Lang::Variable& var, MetaInfo::Meta& meta);
 
         // tmp variables ===================
         bool m_isExprStarted = false;

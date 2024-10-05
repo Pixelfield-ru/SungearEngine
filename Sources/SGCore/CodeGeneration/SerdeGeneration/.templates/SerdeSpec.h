@@ -15,8 +15,17 @@ template<
 ## endif
         SGCore::Serde::FormatType TFormatType
         >
-struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType> : SGCore::Serde::BaseTypes<{{ struct.baseTypes.place(separator: ", ") }}>,
-    SGCore::Serde::DerivedTypes<{{ struct.derivedTypes.place(separator: ", ") }}>
+struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType> :
+        SGCore::Serde::BaseTypes<
+## if struct.hasMember(name: "baseTypes")
+                {{ struct.baseTypes.place(separator: ", ") }}
+## endif
+        >,
+        SGCore::Serde::DerivedTypes<
+## if struct.hasMember(name: "derivedTypes")
+            {{ struct.derivedTypes.place(separator: ", ") }}
+## endif
+        >
 {
     static inline const std::string type_name = "{{ struct.fullName }}";
     static inline constexpr bool is_pointer_type = false;

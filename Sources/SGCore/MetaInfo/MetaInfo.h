@@ -33,13 +33,14 @@ namespace SGCore
 
             Meta& operator[](const std::string& childName) noexcept
             {
-                auto it = std::find_if(m_children.begin(), m_children.end(), [&childName](const auto& child) {
+                auto it = std::find_if(m_children.begin(), m_children.end(), [&childName](auto child) {
                     return childName == child->first;
                 });
 
                 if(it == m_children.end())
                 {
                     m_children.emplace_back(std::make_shared<std::pair<std::string, Meta>>(childName, Meta()));
+                    (*m_children.rbegin())->second.m_name = childName;
                     return (*m_children.rbegin())->second;
                 }
                 else
@@ -76,7 +77,13 @@ namespace SGCore
                 return m_children;
             }
 
+            [[nodiscard]] std::string getName() const noexcept
+            {
+                return m_name;
+            }
+
         private:
+            std::string m_name;
             std::string m_value;
             std::vector<std::shared_ptr<std::pair<std::string, Meta>>> m_children;
         };
@@ -228,7 +235,7 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/EntityBaseInfo.h";
                 meta["type"] = "component";
 
-                meta["extends"]["SGCore::UniqueNameWrapper"];
+                meta["baseTypes"]["SGCore::UniqueNameWrapper"];
 
                 meta["members"]["m_parent"];
 
