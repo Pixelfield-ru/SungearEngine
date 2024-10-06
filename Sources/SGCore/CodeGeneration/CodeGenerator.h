@@ -76,6 +76,7 @@ namespace SGCore::CodeGen
             std::string m_name;
             // value that will be inserted in result document
             std::string m_insertedValue;
+            bool m_isBuiltin = false;
 
             [[nodiscard]] std::shared_ptr<Variable> getMember(const std::string& name) noexcept;
 

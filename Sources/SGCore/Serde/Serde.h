@@ -496,7 +496,7 @@ namespace SGCore::Serde
          * @param value
          */
         template<typename T>
-        SerializableValueView<T, TFormatType> addMember(const std::string& name, const T& value) noexcept
+        void addMember(const std::string& name, const T& value) noexcept
         {
 
         }
@@ -508,7 +508,7 @@ namespace SGCore::Serde
          * @param value
          */
         template<typename T>
-        SerializableValueView<T, TFormatType> pushBack(const T& value) noexcept
+        void pushBack(const T& value) noexcept
         {
 
         }
@@ -614,9 +614,9 @@ namespace SGCore::Serde
         // todo: ADD createMember FUNCTION
 
         template<typename T>
-        SerializableValueView<T, FormatType::JSON> addMember(const std::string& name, const T& value) noexcept
+        void addMember(const std::string& name, const T& value) noexcept
         {
-            if (!(m_thisValue || m_document)) return { };
+            if (!(m_thisValue || m_document)) return;
 
             // removing member with this name if it is already exists
             if (m_thisValue->IsObject() && m_thisValue->HasMember(name.c_str()))
@@ -665,19 +665,17 @@ namespace SGCore::Serde
             {
                 m_thisValue->PushBack(valueRootSection, m_document->GetAllocator());
 
-                return valueView;
+                return;
             }
 
             // adding value section to document
             m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
-
-            return valueView;
         }
 
         template<typename T>
-        SerializableValueView<T, FormatType::JSON> pushBack(const T& value) noexcept
+        void pushBack(const T& value) noexcept
         {
-            return addMember("", value);
+            addMember("", value);
         }
 
         void setAsNull() noexcept

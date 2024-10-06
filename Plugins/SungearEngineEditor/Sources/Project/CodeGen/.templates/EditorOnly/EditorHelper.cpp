@@ -23,7 +23,7 @@
 template<SGCore::Serde::FormatType TFormatType>
 void onEntitySave(const SGCore::Scene& savableScene,
                   const SGCore::entity_t& savableEntity,
-                  SGCore::Serde::SerializableValueView<SGCore::entity_t, TFormatType>& entityComponentsView) noexcept
+                  SGCore::Serde::SerializableValueView<SGCore::SceneEntitySaveInfo, TFormatType>& entityView) noexcept
 {
     if(savableScene.getECSRegistry()->all_of<SGCore::NonSavable>(savableEntity)) return;
 
@@ -32,15 +32,21 @@ void onEntitySave(const SGCore::Scene& savableScene,
     ## for struct in structs
 
     // TODO: FIX
+    ## if struct.hasMember(name: "type")
     if(std::string("{{ struct.type }}") == "component")
     {
+        ## if struct.hasMember(name: "getFromRegistryBy")
         auto* component = savableScene.getECSRegistry()->try_get<{{ struct.getFromRegistryBy }}>(savableEntity);
+        ## else
+        auto* component = savableScene.getECSRegistry()->try_get<{{ struct.fullName }}>(savableEntity);
+        ## endif
 
         if(component)
         {
-            entityComponentsView.getValueContainer().pushBack(*component);
+            entityView.getValueContainer().pushBack(*component);
         }
     }
+    ## endif
 
     ## endfor
 }
@@ -75,6 +81,8 @@ void onInspectorViewRender()
 
 SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 {
+    LOG_I("GENERATED", "Calling editorGeneratedCodeEntry()...");
+
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
     // TODO: supporting BSON and YAML
     /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;

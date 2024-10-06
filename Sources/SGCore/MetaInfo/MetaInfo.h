@@ -131,7 +131,8 @@ namespace SGCore
                 meta["members"]["m_isLooping"]["setter"] = "setIsLooping";
                 meta["members"]["m_isLooping"]["getter"] = "isLooping";
 
-                meta["members"]["m_attachedAudioTrack"];
+                // TODO: add
+                // meta["members"]["m_attachedAudioTrack"];
 
                 meta["members"]["m_lastState"]["setter"] = "setState";
                 meta["members"]["m_lastState"]["getter"] = "getState";
@@ -167,18 +168,19 @@ namespace SGCore
             }
 
             // SGCore::AABB
-            /*{
+            {
                 Meta meta;
                 meta["fullName"] = "SGCore::AABB";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Math/AABB.h";
                 meta["type"] = "component";
+                meta["getFromRegistryBy"] = "SGCore::AABB<float>";
                 meta["template_args"]["ScalarT"] = "typename";
 
                 meta["members"]["m_min"];
                 meta["members"]["m_max"];
 
                 m_meta["structs"].push_back(meta);
-            }*/
+            }
 
             // SGCore::Layer
             {
@@ -355,11 +357,12 @@ namespace SGCore
 
                 meta["members"]["m_meshDataRenderInfo"];
 
-                meta["members"]["m_meshData"]["setter"] = "setMeshData";
-                meta["members"]["m_meshData"]["getter"] = "getMeshData";
+                /*meta["members"]["m_meshData"]["setter"] = "setMeshData";
+                meta["members"]["m_meshData"]["getter"] = "getMeshData";*/
 
-                meta["members"]["m_material"]["setter"] = "setMaterial";
-                meta["members"]["m_material"]["getter"] = "getMaterial";
+                // TODO: add
+                /*meta["members"]["m_material"]["setter"] = "setMaterial";
+                meta["members"]["m_material"]["getter"] = "getMaterial";*/
 
                 m_meta["structs"].push_back(meta);
             }

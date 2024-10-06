@@ -23,6 +23,12 @@ namespace SGCore
     }
 
     struct XMLDocument;
+
+    struct SceneEntitySaveInfo
+    {
+        Scene* m_savableScene { };
+        entity_t m_savableEntity { };
+    };
     
     class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
     {
@@ -130,7 +136,7 @@ namespace SGCore
         template<Serde::FormatType TFormatType>
         static inline Event<void(const Scene& savableScene,
                                  const entity_t& savableEntity,
-                                 Serde::SerializableValueView<entity_t, TFormatType>& entityComponentsView)> onEntitySave;
+                                 Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView)> onEntitySave;
 
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;

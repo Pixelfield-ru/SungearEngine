@@ -18,7 +18,7 @@ template<
 struct SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType> :
         SGCore::Serde::BaseTypes<
 ## if struct.hasMember(name: "baseTypes")
-                {{ struct.baseTypes.place(separator: ", ") }}
+            {{ struct.baseTypes.place(separator: ", ") }}
 ## endif
         >,
         SGCore::Serde::DerivedTypes<
@@ -52,15 +52,17 @@ template<
         >
 void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType>::serialize(SGCore::Serde::SerializableValueView<{{ struct.fullNameWithTemplate }}, TFormatType>& valueView) noexcept
 {
+    ## if struct.hasMember(name: "members")
     ## for member in struct.members
 
     ## if member.hasMember(name: "getter")
-    valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.getter }});
+    valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.getter }}());
     ## else
     valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.name }});
     ## endif
 
     ## endfor
+    ## endif
 }
 
 template<
@@ -71,12 +73,13 @@ template<
         >
 void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<{{ struct.fullNameWithTemplate }}, TFormatType>& valueView) noexcept
 {
+    ## if struct.hasMember(name: "members")
     ## for member in struct.members
 
     ## if member.hasMember(name: "getter")
-    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }})>>>("{{ member.name }}");
+    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.getter }}())>>>("{{ member.name }}");
     ## else
-    const auto {{ member.name }} = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->{{ member.name }})>>>("{{ member.name }}");
+    const auto {{ member.name }} = valueView.getValueContainer().template getMember<decltype(valueView.m_data->{{ member.name }})>("{{ member.name }}");
     ## endif
 
     if({{ member.name }})
@@ -89,6 +92,7 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType>::d
     }
 
     ## endfor
+    ## endif
 }
 // =================================================================================
 

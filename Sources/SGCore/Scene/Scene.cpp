@@ -28,6 +28,9 @@
 SGCore::Scene::Scene()
 {
    createLayer(SG_LAYER_OPAQUE_NAME);
+
+   auto sceneEntity = m_ecsRegistry->create();
+   m_ecsRegistry->emplace<Scene*>(sceneEntity, this);
 }
 
 void SGCore::Scene::createDefaultSystems()

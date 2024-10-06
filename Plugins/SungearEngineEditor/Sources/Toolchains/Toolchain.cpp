@@ -441,23 +441,31 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
                         buildOutput.m_binaryDir
                 );
 
-                std::string userProjectEntriesLoadingErr;
-                currentEditorProject->m_editorHelperEntryPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>("editorGeneratedCodeEntry", userProjectEntriesLoadingErr);
-                currentEditorProject->m_editorHelperExitPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>("editorGeneratedCodeExit", userProjectEntriesLoadingErr);
+                // if plugin was successfully loaded
+                if(currentEditorProject->m_loadedPlugin)
+                {
+                    std::string userProjectEntriesLoadingErr;
+                    currentEditorProject->m_editorHelperEntryPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>(
+                            "editorGeneratedCodeEntry", userProjectEntriesLoadingErr
+                    );
+                    currentEditorProject->m_editorHelperExitPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>(
+                            "editorGeneratedCodeExit", userProjectEntriesLoadingErr
+                    );
 
-                if(!userProjectEntriesLoadingErr.empty())
-                {
-                    LOG_E(SGEDITOR_TAG,
-                          "Important! Can not load project' symbols (symbols 'editorGeneratedCodeEntry' and 'editorGeneratedCodeExit') of project '{}'. This project will not work correct. Error is: {}",
-                          projectName,
-                          userProjectEntriesLoadingErr);
-                }
-                else
-                {
-                    if(currentEditorProject->m_editorHelperEntryPoint)
+                    if(!userProjectEntriesLoadingErr.empty())
                     {
-                        // calling editor helper entry point
-                        currentEditorProject->m_editorHelperEntryPoint();
+                        LOG_E(SGEDITOR_TAG,
+                              "Important! Can not load project' symbols (symbols 'editorGeneratedCodeEntry' and 'editorGeneratedCodeExit') of project '{}'. This project will not work correct. Error is: {}",
+                              projectName,
+                              userProjectEntriesLoadingErr);
+                    }
+                    else
+                    {
+                        if(currentEditorProject->m_editorHelperEntryPoint)
+                        {
+                            // calling editor helper entry point
+                            currentEditorProject->m_editorHelperEntryPoint();
+                        }
                     }
                 }
             };

@@ -78,6 +78,12 @@ SGCore::CodeGen::Generator::Generator()
             size_t elemIdx = 0;
             for(const auto& elem: operableVariable->getMembers())
             {
+                if(elem.second->m_isBuiltin)
+                {
+                    ++elemIdx;
+                    continue;
+                }
+
                 outputString += elem.second->m_insertedValue;
                 if(elemIdx < operableVariable->getMembers().size() - 1)
                 {
@@ -279,12 +285,14 @@ void SGCore::CodeGen::Generator::addVariableFields
             varMember = Lang::Variable(*getTypeByName("generic_map"));
             varMember.m_insertedValue = childMeta.getValue();
             varMember["name"].m_insertedValue = childMeta.getName();
+            varMember["name"].m_isBuiltin = true;
         }
         else
         {
             auto& varMember = var[childMeta.getName()];
             varMember = Lang::Variable(*getTypeByName("generic_map"));
             varMember["name"].m_insertedValue = childMeta.getName();
+            varMember["name"].m_isBuiltin = true;
             addVariableFields(varMember, childMeta);
         }
     }
@@ -518,9 +526,11 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                 size_t curElemIdx = 0;
                 for(const auto& elem : tokenAndVariableToForIn.m_variable->getMembers())
                 {
+                    if(elem.second->m_isBuiltin) continue;
+
                     token->m_scope[bindableVariableToken->m_name] = elem.second;
 
-                    LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'", tokenAndVariableToForIn.m_token->m_name, curElemIdx)
+                    LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'. Current member: '{}'", tokenAndVariableToForIn.m_token->m_name, curElemIdx, elem.second->m_name);
                     generateCodeUsingAST(child, outputString);
 
                     ++curElemIdx;
