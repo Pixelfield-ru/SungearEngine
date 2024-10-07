@@ -32,6 +32,15 @@ namespace SGCore
     
     class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
     {
+    private:
+        template<Serde::FormatType TFormatType>
+        struct SGCORE_EXPORT EntitySaveEvent
+        {
+            static inline Event<void(const Scene& savableScene,
+                                     const entity_t& savableEntity,
+                                     Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView)> onEntitySave;
+        };
+
     public:
         sg_serdespec_as_friend()
 
@@ -128,15 +137,11 @@ namespace SGCore
         template<Serde::FormatType TFormatType>
         SG_NOINLINE static auto& getOnEntitySave() noexcept
         {
-            return onEntitySave<TFormatType>;
+            return EntitySaveEvent<TFormatType>::onEntitySave;
         }
 
     private:
         static inline Event<void(const Ref<Scene>& savableScene)> onSceneSave;
-        template<Serde::FormatType TFormatType>
-        static inline Event<void(const Scene& savableScene,
-                                 const entity_t& savableEntity,
-                                 Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView)> onEntitySave;
 
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;

@@ -43,20 +43,20 @@ extern "C" {
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 
-/*template<SGCore::Serde::FormatType TFormatType>
+template<SGCore::Serde::FormatType TFormatType>
 void onEntitySave(const SGCore::Scene& savableScene,
                   const SGCore::entity_t& savableEntity,
-                  SGCore::Serde::SerializableValueView<SGCore::registry_t, TFormatType>& valueView) noexcept
+                  SGCore::Serde::SerializableValueView<SGCore::SceneEntitySaveInfo, TFormatType>& entityView) noexcept
 {
-
-}*/
+    LOG_W("SGENTRY", "Saving entity");
+}
 
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
-    /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
+    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
+    /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;*/
 
     std::printf("init...\n");
