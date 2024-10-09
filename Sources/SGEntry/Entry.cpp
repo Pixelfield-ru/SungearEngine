@@ -44,7 +44,7 @@ extern "C" {
 #include "SGCore/Render/RenderingBase.h"
 
 template<SGCore::Serde::FormatType TFormatType>
-void onEntitySave(const SGCore::Scene& savableScene,
+void onEntitySave(SGCore::Scene& savableScene,
                   const SGCore::entity_t& savableEntity,
                   SGCore::Serde::SerializableValueView<SGCore::SceneEntitySaveInfo, TFormatType>& entityView) noexcept
 {
@@ -136,9 +136,6 @@ void coreInit()
     dynamic_cast<Derived0*>(tst)->str1 = u"abra";*/
     //dynamic_cast<Derived*>(tst)->b = 4;
     FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat(tst), false, true);
-
-    Ref<UniqueNameWrapper> entityBaseInfo = MakeRef<EntityBaseInfo>();
-    FileUtils::writeToFile("serializer_test_1.txt", Serde::Serializer::toFormat(entityBaseInfo), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 

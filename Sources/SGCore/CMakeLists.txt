@@ -1,6 +1,6 @@
-include(../../cmake/utils.cmake)
+ include(../../cmake/utils.cmake)
 
-cmake_minimum_required(VERSION 3.11)
+ cmake_minimum_required(VERSION 3.11)
  project(SGCore)
 
  SET(CMAKE_SHARED_LIBRARY_PREFIX "")

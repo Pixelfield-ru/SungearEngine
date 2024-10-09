@@ -25,7 +25,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
     entity_t parentEntity = registry->create();
 
-    EntityBaseInfo& nodeBaseInfo = registry->emplace<EntityBaseInfo>(parentEntity);
+    EntityBaseInfo& nodeBaseInfo = registry->emplace<EntityBaseInfo>(parentEntity, parentEntity);
     Ref<Transform> nodeTransform = registry->emplace<Ref<Transform>>(parentEntity, MakeRef<Transform>());
     nodeTransform->m_ownTransform.m_position = m_position;
     // auto eulerRot = glm::eulerAngles(m_rotationQuaternion);
@@ -50,7 +50,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     {
         entity_t meshEntity = registry->create();
 
-        EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity);
+        EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity, meshEntity);
         Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
         Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
         // NOT STANDARD
@@ -62,7 +62,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
         // meshEntityBaseInfo.m_layer = layer;
 
-        meshEntityBaseInfo.m_parent = parentEntity;
+        meshEntityBaseInfo.setParent(parentEntity, registry);
 
         meshFunc(parentEntity, meshEntity);
         eachEntityFunc(meshEntity);
@@ -72,7 +72,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     {
         auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
         EntityBaseInfo& childEntityBaseInfo = registry->get<EntityBaseInfo>(childNodeEntity);
-        childEntityBaseInfo.m_parent = parentEntity;
+        childEntityBaseInfo.setParent(parentEntity, registry);
         // parentEntity->addChild(childNodeEntity);
     }
 

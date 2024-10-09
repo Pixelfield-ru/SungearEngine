@@ -36,7 +36,7 @@ namespace SGCore
         template<Serde::FormatType TFormatType>
         struct SGCORE_EXPORT EntitySaveEvent
         {
-            static inline Event<void(const Scene& savableScene,
+            static inline Event<void(Scene& savableScene,
                                      const entity_t& savableEntity,
                                      Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView)> onEntitySave;
         };
@@ -129,9 +129,9 @@ namespace SGCore
             return m_scenes;
         }
         
-        SG_NOINLINE static auto& getOnSceneSaveEvent() noexcept
+        SG_NOINLINE static auto& getOnSceneSavedEvent() noexcept
         {
-            return onSceneSave;
+            return onSceneSaved;
         }
 
         template<Serde::FormatType TFormatType>
@@ -141,7 +141,7 @@ namespace SGCore
         }
 
     private:
-        static inline Event<void(const Ref<Scene>& savableScene)> onSceneSave;
+        static inline Event<void(Scene& savedScene)> onSceneSaved;
 
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;

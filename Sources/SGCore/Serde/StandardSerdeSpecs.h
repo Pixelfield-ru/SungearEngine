@@ -475,32 +475,43 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().setAsArray();
 
-            Scene* savableEntity { };
+            Scene* savableScene { };
 
             // getting scene
             auto sceneEntitiesView = valueView.m_data->template view<Scene*>();
-            sceneEntitiesView.each([&savableEntity](Scene* scene) {
-                savableEntity = scene;
+            sceneEntitiesView.each([&savableScene](Scene* scene) {
+                savableScene = scene;
             });
 
-            if(!savableEntity)
+            if(!savableScene)
             {
                 LOG_E(SGCORE_TAG, "Can not save null scene!");
                 return;
             }
 
             SceneEntitySaveInfo sceneEntitySaveInfo;
-            sceneEntitySaveInfo.m_savableScene = savableEntity;
+            sceneEntitySaveInfo.m_savableScene = savableScene;
 
             auto entitiesView = valueView.m_data->template view<EntityBaseInfo>();
             for(const auto& entity : entitiesView)
             {
+                // if current savable entity has parent the skip saving this entity because parent saves children entities himself
+                EntityBaseInfo* entityBaseInfo = savableScene->getECSRegistry()->try_get<EntityBaseInfo>(entity);
+                if(entityBaseInfo &&
+                   entityBaseInfo->getParent() != entt::null &&
+                   savableScene->getECSRegistry()->valid(entityBaseInfo->getParent()))
+                {
+                    continue;
+                }
+
                 LOG_I(SGCORE_TAG, "Saving entity '{}'...", std::to_underlying(entity));
 
                 sceneEntitySaveInfo.m_savableEntity = entity;
 
                 valueView.getValueContainer().pushBack(sceneEntitySaveInfo);
             }
+
+            Scene::getOnSceneSavedEvent()(*savableScene);
         }
 
         static void deserialize(DeserializableValueView<registry_t, TFormatType>& valueView)

@@ -1,3 +1,5 @@
+#include <set>
+
 #include "EditorHelper.h"
 #include "../Serde.h"
 
@@ -5,6 +7,7 @@
 #include <SGCore/Scene/Scene.h>
 #include <SGCore/Serde/Components/NonSavable.h>
 #include <SGCore/Logger/Logger.h>
+#include <SGCore/Scene/EntityBaseInfo.h>
 
 #include <imgui.h>
 #include <imgui_stdlib.h>
@@ -18,16 +21,54 @@
 #include "{{ struct.filePath }}"
 ## endfor
 
-// ${includes}$
+// BARRIER FOR STATIC ANALYZER (FOR HIGHLIGHTING)
+void DO_NOT_USE()
+{
+
+}
+
+/*void addChildrenEntitiesToAlreadySavedEntities(const SGCore::entity_t& parentEntity,
+                                               SGCore::Scene& savableScene) noexcept
+{
+    auto* entityBaseInfo = savableScene.getECSRegistry()->try_get<SGCore::EntityBaseInfo>(parentEntity);
+    if(entityBaseInfo)
+    {
+        // saving all children entities
+        for(const auto& childEntity : entityBaseInfo->getChildren())
+        {
+            savableScene.m_alreadySavedEntities.insert(childEntity);
+
+            addChildrenEntitiesToAlreadySavedEntities(childEntity, savableScene);
+        }
+    }
+}*/
 
 template<SGCore::Serde::FormatType TFormatType>
-void onEntitySave(const SGCore::Scene& savableScene,
+void onEntitySave(SGCore::Scene& savableScene,
                   const SGCore::entity_t& savableEntity,
                   SGCore::Serde::SerializableValueView<SGCore::SceneEntitySaveInfo, TFormatType>& entityView) noexcept
 {
     if(savableScene.getECSRegistry()->all_of<SGCore::NonSavable>(savableEntity)) return;
 
+    auto* entityBaseInfo = savableScene.getECSRegistry()->try_get<SGCore::EntityBaseInfo>(savableEntity);
+    if(entityBaseInfo)
+    {
+        // saving all children entities
+        for(const auto& childEntity : entityBaseInfo->getChildren())
+        {
+            LOG_I("GENERATED", "Saving CHILD entity '{}'...", std::to_underlying(childEntity));
+
+            SGCore::SceneEntitySaveInfo childSaveInfo;
+            childSaveInfo.m_savableScene = &savableScene;
+            childSaveInfo.m_savableEntity = childEntity;
+
+            entityView.getValueContainer().pushBack(childSaveInfo);
+        }
+    }
+
     LOG_I("GENERATED", "Saving entity '{}'...", std::to_underlying(savableEntity));
+
+    // saving components of savableEntity
 
     ## for struct in structs
 
