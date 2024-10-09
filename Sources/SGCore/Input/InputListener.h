@@ -29,12 +29,6 @@ namespace SGCore
 
         void keyboardKeySkipFrame(const KeyboardKey& key) noexcept;
 
-        bool keyboardKeySkipFrameIfDown(const KeyboardKey& key) noexcept;
-
-        bool keyboardKeySkipFrameIfPressed(const KeyboardKey& key) noexcept;
-
-        bool keyboardKeySkipFrameIfReleased(const KeyboardKey& key) noexcept;
-
         bool mouseButtonDown(const MouseButton&) noexcept;
 
         bool mouseButtonPressed(const MouseButton&) noexcept;
@@ -57,7 +51,6 @@ namespace SGCore
 
     private:
         KeyState m_keyboardKeysStates[std::to_underlying(KeyboardKey::KEY_LAST) + 1];
-        bool m_keyboardKeysFrameSkipStates[std::to_underlying(KeyboardKey::KEY_LAST) + 1];
         KeyState m_mouseButtonsStates[std::to_underlying(MouseButton::MOUSE_BUTTON_LAST) + 1];
 
         double m_cursorPositionLastX = 0;
@@ -70,9 +63,6 @@ namespace SGCore
         double m_cursorPositionDeltaY = 0;
 
         Window* m_focusedWindow = nullptr;
-
-        std::size_t m_currentSkippedFrame = 0;
-        std::size_t m_skipFramesTargetCount = 10;
     };
 }
 

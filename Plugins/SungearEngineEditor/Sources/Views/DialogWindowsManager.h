@@ -7,6 +7,8 @@
 
 #include "Window.h"
 
+#include <queue>
+
 #include <SGCore/Logger/Logger.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 
@@ -30,20 +32,20 @@ namespace SGE
 
         static void renderWindows() noexcept;
 
-        static DialogWindow createThreeButtonsWindow(const std::string& windowName,
-                                                     const std::string& firstButtonText,
-                                                     const std::string& secondButtonText,
-                                                     const std::string& thirdButtonText) noexcept;
+        static SGCore::Ref<DialogWindow> createThreeButtonsWindow(const std::string& windowName,
+                                                                  const std::string& firstButtonText,
+                                                                  const std::string& secondButtonText,
+                                                                  const std::string& thirdButtonText) noexcept;
 
-        static DialogWindow createTwoButtonsWindow(const std::string& windowName,
-                                                   const std::string& firstButtonText,
-                                                   const std::string& secondButtonText) noexcept;
+        static SGCore::Ref<DialogWindow> createTwoButtonsWindow(const std::string& windowName,
+                                                                const std::string& firstButtonText,
+                                                                const std::string& secondButtonText) noexcept;
 
-        static DialogWindow createOneButtonWindow(const std::string& windowName,
-                                                  const std::string& firstButtonText) noexcept;
+        static SGCore::Ref<DialogWindow> createOneButtonWindow(const std::string& windowName,
+                                                               const std::string& firstButtonText) noexcept;
 
-        static void addDialogWindow(DialogWindow& dialogWindow) noexcept;
-        SG_NOINLINE static const std::vector<DialogWindow>& getDialogWindows() noexcept;
+        static void addDialogWindow(const SGCore::Ref<DialogWindow>& dialogWindow) noexcept;
+        SG_NOINLINE static const std::deque<SGCore::Ref<DialogWindow>>& getDialogWindows() noexcept;
 
     private:
         static inline SGCore::Ref<SGCore::ITexture2D> m_infoIcon;
@@ -52,7 +54,7 @@ namespace SGE
         static inline SGCore::Ref<SGCore::ITexture2D> m_errorIcon;
         static inline SGCore::Ref<SGCore::ITexture2D> m_criticalIcon;
 
-        static inline std::vector<DialogWindow> m_dialogWindows;
+        static inline std::deque<SGCore::Ref<DialogWindow>> m_dialogWindows;
 
         static inline SGCore::Ref<SGCore::UniqueNamesManager> m_windowsNamesManager;
     };

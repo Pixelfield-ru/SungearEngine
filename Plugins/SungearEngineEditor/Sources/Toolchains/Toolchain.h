@@ -21,6 +21,8 @@ namespace SGE
         struct ProjectSpecific
         {
             static void buildProject(const SGCore::Ref<Toolchain>& toolchain) noexcept;
+            // build project using first toolchain
+            static void buildProject() noexcept;
 
             static void setCurrentCMakePreset(const std::string& presetName) noexcept;
             SG_NOINLINE static std::string getCurrentCMakePreset() noexcept;

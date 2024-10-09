@@ -10,6 +10,7 @@
 #include <SGCore/PluginsSystem/DynamicLibrary.h>
 #include <SGCore/Logger/Logger.h>
 #include <SGCore/PluginsSystem/PluginsManager.h>
+#include <SGCore/Utils/CMakeUtils.h>
 
 //
 // Created by Ilya on 16.07.2024.
@@ -229,74 +230,43 @@ void SGE::Toolchain::buildProject(const std::filesystem::path& pathToProjectRoot
 
     if(!std::filesystem::exists(cmakePresetsPath))
     {
-        throw std::runtime_error(fmt::format("Error while building project '{0}'. File CMakePresets.json was not found in project directory '{1}'",
-                                             projectName,
-                                             SGCore::Utils::toUTF8(
-                                                     pathToProjectRoot.u16string())));
+        LOG_E(SGEDITOR_TAG,
+              "Error while building project '{}'. File CMakePresets.json was not found in project directory '{}'",
+              projectName, SGCore::Utils::toUTF8(pathToProjectRoot.u16string()));
+
+        return;
     }
 
-    rapidjson::Document cmakePresetsDocument;
-    cmakePresetsDocument.Parse(SGCore::FileUtils::readFile(cmakePresetsPath).c_str());
-
-    if(!cmakePresetsDocument.HasMember("configurePresets"))
+    SGCore::CMakePresetsFileInfo projectCMakePresetsFileInfo(cmakePresetsPath);
+    const SGCore::CMakePresetsFileInfo::Preset* projectPreset = projectCMakePresetsFileInfo.getPreset(cmakePresetName);
+    if(!projectPreset)
     {
-        throw std::runtime_error(fmt::format("Error while building project '{0}'. Section 'configurePresets' was not found in CMakePresets.json",
-                                             projectName,
-                                             SGCore::Utils::toUTF8(
-                                                     pathToProjectRoot.u16string())));
+        LOG_E(SGEDITOR_TAG,
+              "Error while building project '{}'. Preset '{}' was not found in CMakePreset.json file of project.",
+              projectName, cmakePresetName);
+
+        return;
     }
 
-    std::string cmakePresetBinaryDir;
-
-    auto& presets = cmakePresetsDocument["configurePresets"];
-
-    for(std::size_t i = 0; i < presets.Size(); ++i)
+    if(projectPreset->m_binaryDir.empty())
     {
-        auto& currentPreset = presets[i];
+        LOG_E(SGEDITOR_TAG, "Error while building project '{}'. Preset '{}' was not found in CMakePresets.json",
+              projectName, cmakePresetName);
 
-        if(!currentPreset.HasMember("name"))
-        {
-            throw std::runtime_error(fmt::format(
-                    "Error while building project '{0}'. Section 'name' was not found in one of presets provided in CMakePresets.json file",
-                    projectName));
-        }
-
-        std::string currentPresetName = currentPreset["name"].GetString();
-        if(currentPresetName != cmakePresetName)
-        {
-            continue;
-        }
-
-        if(!currentPreset.HasMember("binaryDir"))
-        {
-            throw std::runtime_error(fmt::format(
-                    "Error while building project '{0}'. Section 'binaryDir' was not found in preset '{1}' provided in CMakePresets.json file",
-                    projectName,
-                    currentPresetName));
-        }
-
-        cmakePresetBinaryDir = currentPreset["binaryDir"].GetString();
-    }
-
-    if(cmakePresetBinaryDir.empty())
-    {
-        throw std::runtime_error(fmt::format(
-                "Error while building project '{0}'. Preset '{1}' was not found in CMakePresets.json",
-                projectName,
-                cmakePresetName));
+        return;
     }
 
     // PRESET AND ITS BINARY DIR WERE SUCCESSFULLY FOUND
 
-    m_currentBuildingPresetBinaryDir = cmakePresetBinaryDir;
+    m_currentBuildingPresetBinaryDir = projectPreset->m_binaryDir;
 
     m_builtDynamicLibraryPath = pathToProjectRoot;
-    m_builtDynamicLibraryPath += '/' + cmakePresetBinaryDir + '/' + projectName + DL_POSTFIX;
+    m_builtDynamicLibraryPath += '/' + projectPreset->m_binaryDir + '/' + projectName + DL_POSTFIX;
     m_projectName = projectName;
 
     LOG_I(PROJECT_BUILD_TAG, "Building project '{}' using Visual Studio toolchain: found binary dir '{}'.\n",
-                SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
-                cmakePresetBinaryDir.c_str());
+          SGCore::Utils::toUTF8(pathToProjectRoot.filename().u16string()).c_str(),
+          projectPreset->m_binaryDir.c_str());
 }
 
 std::string SGE::Toolchain::getCMakeVersion() const
@@ -335,7 +305,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
     const std::string projectName = currentEditorProject->m_pluginProject.m_name;
     toolchain->onProjectBuiltSynchronized = [projectName](const Toolchain::ProjectBuildOutput& buildOutput) {
         auto projectBuiltDialogWindow = DialogWindowsManager::createOneButtonWindow("Project Build", "OK");
-        projectBuiltDialogWindow.onCustomBodyRenderListener = [projectName]() {
+        projectBuiltDialogWindow->onCustomBodyRenderListener = [projectName]() {
             ImGui::SameLine();
             ImGui::TextWrapped(fmt::format("The project '{}' has been built. "
                                            "Check the logs for more details. "
@@ -359,15 +329,8 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
         toolchainCopy->onProjectBuiltSynchronized = nullptr;
 
         // building meta info project
-        try
-        {
-            toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath / "MetaInfo",
-                                        m_currentCMakePreset);
-        }
-        catch(const std::runtime_error& e)
-        {
-            LOG_E(SGEDITOR_TAG, "Can not build meta info project of project '{}'. Error is: {}", projectName, e.what());
-        }
+        toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath / "MetaInfo",
+                                    m_currentCMakePreset);
 
         toolchainCopy->onProjectBuilt = [&currentEditorProject, projectName]
                 (const Toolchain::ProjectBuildOutput& buildOutput) {
@@ -478,7 +441,46 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
 
         // building new project after building the Sungear Engine
         toolchainCopy->buildProject(currentEditorProject->m_pluginProject.m_pluginPath, m_currentCMakePreset);
+
+        // restore state of m_doInBackground to use parallel building in next project builds
+        toolchainPtr->m_doInBackground = true;
     };
     // building the Sungear Engine
     toolchain->buildProject(SungearEngineEditor::getSungearEngineRootPath(), m_currentCMakePreset);
+}
+
+void SGE::Toolchain::ProjectSpecific::buildProject() noexcept
+{
+    if(!EngineSettings::getInstance()->getToolchains().empty())
+    {
+        buildProject(EngineSettings::getInstance()->getToolchains()[0]);
+    }
+    else
+    {
+        // showing warning dialog that no toolchains were added
+        auto projectBuiltDialogWindow = DialogWindowsManager::createTwoButtonsWindow("Project Build", "Create Toolchain", "OK");
+        // getting "Create Toolchain" button
+        Button* createToolchainButton = projectBuiltDialogWindow->tryGetButton(0);
+        createToolchainButton->onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parent) {
+            // opening the engine settings window in toolchains tab
+            auto engineSettingsView = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_engineSettingsView;
+            engineSettingsView->setActive(true);
+            TreeNode engineSettingsToolchainsNode;
+            if(engineSettingsView->m_settingsTree.tryCopyGetTreeNodeRecursively("Toolchains", &engineSettingsToolchainsNode))
+            {
+                engineSettingsToolchainsNode.openBranchAndSelectThis();
+            }
+
+            // closing the dialog window
+            parent->setActive(false);
+        };
+        projectBuiltDialogWindow->m_level = SGCore::Logger::Level::LVL_WARN;
+        projectBuiltDialogWindow->onCustomBodyRenderListener = []() {
+            ImGui::SameLine();
+            ImGui::TextWrapped(fmt::format("The project '{}' cannot be built: no toolchain has been added. "
+                                           "Go to the <Engine Settings - Development and Support - Toolchains> and add your first toolchain.",
+                                           SungearEngineEditor::getInstance()->m_currentProject->m_pluginProject.m_name).c_str());
+        };
+        DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
+    }
 }

@@ -33,28 +33,26 @@ void SGE::DialogWindowsManager::init() noexcept
 
 void SGE::DialogWindowsManager::renderWindows() noexcept
 {
-    auto it = m_dialogWindows.begin();
-    while(it != m_dialogWindows.end())
+    if(m_dialogWindows.empty()) return;
+
+    auto firstWindow = *m_dialogWindows.begin();
+    if(!firstWindow->isActive())
     {
-        if(!it->isActive())
-        {
-            it = m_dialogWindows.erase(it);
-            continue;
-        }
-
-        it->render();
-
-        ++it;
+        m_dialogWindows.pop_front();
+    }
+    else
+    {
+        firstWindow->render();
     }
 }
 
-void SGE::DialogWindowsManager::addDialogWindow(SGE::DialogWindow& dialogWindow) noexcept
+void SGE::DialogWindowsManager::addDialogWindow(const SGCore::Ref<DialogWindow>& dialogWindow) noexcept
 {
-    m_dialogWindows.push_back(dialogWindow);
-    auto& lastDialogWnd = *m_dialogWindows.rbegin();
+    m_dialogWindows.push_front(dialogWindow);
+    auto lastDialogWnd = *m_dialogWindows.begin();
     // adding listener to onRenderBody for rendering image
-    lastDialogWnd.onIconRenderListener = [&lastDialogWnd]() {
-        switch(lastDialogWnd.m_level)
+    lastDialogWnd->onIconRenderListener = [lastDialogWndPtr = lastDialogWnd.get()]() {
+        switch(lastDialogWndPtr->m_level)
         {
             case SGCore::Logger::Level::LVL_INFO:
             {
@@ -93,37 +91,37 @@ void SGE::DialogWindowsManager::addDialogWindow(SGE::DialogWindow& dialogWindow)
             }
         }
     };
-    lastDialogWnd.onIconRenderListener.m_priority = 0;
-    lastDialogWnd.onRenderBody += lastDialogWnd.onIconRenderListener;
+    lastDialogWnd->onIconRenderListener.m_priority = 0;
+    lastDialogWnd->onRenderBody += lastDialogWnd->onIconRenderListener;
 
-    lastDialogWnd.onCustomBodyRenderListener.m_priority = 1;
-    lastDialogWnd.onRenderBody += lastDialogWnd.onCustomBodyRenderListener;
+    lastDialogWnd->onCustomBodyRenderListener.m_priority = 1;
+    lastDialogWnd->onRenderBody += lastDialogWnd->onCustomBodyRenderListener;
 }
 
-const std::vector<SGE::DialogWindow>& SGE::DialogWindowsManager::getDialogWindows() noexcept
+const std::deque<SGCore::Ref<SGE::DialogWindow>>& SGE::DialogWindowsManager::getDialogWindows() noexcept
 {
     return m_dialogWindows;
 }
 
-SGE::DialogWindow
+SGCore::Ref<SGE::DialogWindow>
 SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowName,
                                                     const std::string& firstButtonText,
                                                     const std::string& secondButtonText,
                                                     const std::string& thirdButtonText) noexcept
 {
-    DialogWindow window;
+    SGCore::Ref<DialogWindow> window = SGCore::MakeRef<DialogWindow>();
 
-    window.m_name.attachToManager(m_windowsNamesManager);
-    window.m_name = windowName;
-    window.m_isPopupWindow = true;
-    window.m_bodyMinSize = { 400, 100 };
+    window->m_name.attachToManager(m_windowsNamesManager);
+    window->m_name = windowName;
+    window->m_isPopupWindow = true;
+    window->m_bodyMinSize = { 400, 100 };
 
-    window.addButton({
+    window->addButton({
                              .m_text = firstButtonText,
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -137,7 +135,7 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
                      }
     );
 
-    window.addButton({
+    window->addButton({
                              .m_text = secondButtonText,
                              .m_name = secondButtonText,
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
@@ -148,12 +146,12 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
                      }
     );
 
-    window.addButton({
+    window->addButton({
                              .m_text = thirdButtonText,
                              .m_name = thirdButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ESCAPE);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -166,24 +164,24 @@ SGE::DialogWindowsManager::createThreeButtonsWindow(const std::string& windowNam
     return window;
 }
 
-SGE::DialogWindow
+SGCore::Ref<SGE::DialogWindow>
 SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
                                                   const std::string& firstButtonText,
                                                   const std::string& secondButtonText) noexcept
 {
-    DialogWindow window;
+    SGCore::Ref<DialogWindow> window = SGCore::MakeRef<DialogWindow>();
 
-    window.m_name.attachToManager(m_windowsNamesManager);
-    window.m_name = windowName;
-    window.m_isPopupWindow = true;
-    window.m_bodyMinSize = { 400, 100 };
+    window->m_name.attachToManager(m_windowsNamesManager);
+    window->m_name = windowName;
+    window->m_isPopupWindow = true;
+    window->m_bodyMinSize = { 400, 100 };
 
-    window.addButton({
+    window->addButton({
                              .m_text = firstButtonText,
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -197,12 +195,12 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
                      }
     );
 
-    window.addButton({
+    window->addButton({
                              .m_text = secondButtonText,
                              .m_name = secondButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ESCAPE);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {
@@ -215,22 +213,22 @@ SGE::DialogWindowsManager::createTwoButtonsWindow(const std::string& windowName,
     return window;
 }
 
-SGE::DialogWindow SGE::DialogWindowsManager::createOneButtonWindow(const std::string& windowName,
-                                                                   const std::string& firstButtonText) noexcept
+SGCore::Ref<SGE::DialogWindow> SGE::DialogWindowsManager::createOneButtonWindow(const std::string& windowName,
+                                                                                const std::string& firstButtonText) noexcept
 {
-    DialogWindow window;
+    SGCore::Ref<DialogWindow> window = SGCore::MakeRef<DialogWindow>();
 
-    window.m_name.attachToManager(m_windowsNamesManager);
-    window.m_name = windowName;
-    window.m_isPopupWindow = true;
-    window.m_bodyMinSize = { 400, 100 };
+    window->m_name.attachToManager(m_windowsNamesManager);
+    window->m_name = windowName;
+    window->m_isPopupWindow = true;
+    window->m_bodyMinSize = { 400, 100 };
 
-    window.addButton({
+    window->addButton({
                              .m_text = firstButtonText,
                              .m_name = firstButtonText,
                              .isFastClicked = [](auto& self) -> bool
                              {
-                                 return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
+                                 return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
                              },
                              .onClicked = [](auto& self, SGCore::ImGuiWrap::IView* parentView)
                              {

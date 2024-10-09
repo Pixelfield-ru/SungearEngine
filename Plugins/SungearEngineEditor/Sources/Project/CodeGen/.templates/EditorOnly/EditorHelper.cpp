@@ -27,22 +27,6 @@ void DO_NOT_USE()
 
 }
 
-/*void addChildrenEntitiesToAlreadySavedEntities(const SGCore::entity_t& parentEntity,
-                                               SGCore::Scene& savableScene) noexcept
-{
-    auto* entityBaseInfo = savableScene.getECSRegistry()->try_get<SGCore::EntityBaseInfo>(parentEntity);
-    if(entityBaseInfo)
-    {
-        // saving all children entities
-        for(const auto& childEntity : entityBaseInfo->getChildren())
-        {
-            savableScene.m_alreadySavedEntities.insert(childEntity);
-
-            addChildrenEntitiesToAlreadySavedEntities(childEntity, savableScene);
-        }
-    }
-}*/
-
 template<SGCore::Serde::FormatType TFormatType>
 void onEntitySave(SGCore::Scene& savableScene,
                   const SGCore::entity_t& savableEntity,

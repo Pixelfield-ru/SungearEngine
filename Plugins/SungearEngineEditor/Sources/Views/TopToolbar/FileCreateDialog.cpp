@@ -23,7 +23,7 @@ SGE::FileCreateDialog::FileCreateDialog()
                       .m_text = "OK",
                       .m_name = "OKButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
+                          return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           submit();
@@ -39,7 +39,7 @@ SGE::FileCreateDialog::FileCreateDialog()
                       .m_text = "Cancel",
                       .m_name = "CancelButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ESCAPE);
+                          return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           cancel();
