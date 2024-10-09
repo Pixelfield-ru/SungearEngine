@@ -8,7 +8,7 @@
 void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
                                        const SGCore::Ref<SGCore::registry_t>& inRegistry) noexcept
 {
-    if(inRegistry->valid(m_thisEntity))
+    if(!inRegistry->valid(m_thisEntity))
     {
         LOG_E(SGCORE_TAG, "Can not set parent for entity '{}'. Entity '{}' (current) is not valid.",
               std::to_underlying(m_thisEntity),
@@ -25,7 +25,7 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
             return;
         }
 
-        if(inRegistry->valid(m_parent))
+        if(!inRegistry->valid(m_parent))
         {
             LOG_E(SGCORE_TAG, "Can not detach entity '{}' from entity '{}'. Entity '{}' (parent) is not valid.",
                   std::to_underlying(m_thisEntity),
@@ -56,7 +56,7 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
     // firstly detaching this entity from old parent
     setParent(entt::null, inRegistry);
 
-    if(inRegistry->valid(parent))
+    if(!inRegistry->valid(parent))
     {
         LOG_E(SGCORE_TAG, "Can not attach entity '{}' to entity '{}'. Entity '{}' (parent) is not valid.",
               std::to_underlying(m_thisEntity),
@@ -93,7 +93,7 @@ void SGCore::EntityBaseInfo::addChild(const SGCore::entity_t& child,
         return;
     }
 
-    if(inRegistry->valid(m_thisEntity))
+    if(!inRegistry->valid(m_thisEntity))
     {
         LOG_E(SGCORE_TAG, "Can not add child entity '{}' to entity '{}'. Entity '{}' (parent) is not valid.",
               std::to_underlying(child),
@@ -102,7 +102,7 @@ void SGCore::EntityBaseInfo::addChild(const SGCore::entity_t& child,
         return;
     }
 
-    if(inRegistry->valid(child))
+    if(!inRegistry->valid(child))
     {
         LOG_E(SGCORE_TAG, "Can not add child entity '{}' to entity '{}'. Entity '{}' (child) is not valid.",
               std::to_underlying(child),
@@ -133,7 +133,7 @@ void SGCore::EntityBaseInfo::removeChild(const SGCore::entity_t& child,
         return;
     }
 
-    if(inRegistry->valid(m_thisEntity))
+    if(!inRegistry->valid(m_thisEntity))
     {
         LOG_E(SGCORE_TAG, "Can not remove child entity '{}' from entity '{}'. Entity '{}' (parent) is not valid.",
               std::to_underlying(child),
@@ -142,7 +142,7 @@ void SGCore::EntityBaseInfo::removeChild(const SGCore::entity_t& child,
         return;
     }
 
-    if(inRegistry->valid(child))
+    if(!inRegistry->valid(child))
     {
         LOG_E(SGCORE_TAG, "Can not remove child entity '{}' from entity '{}'. Entity '{}' (child) is not valid.",
               std::to_underlying(child),

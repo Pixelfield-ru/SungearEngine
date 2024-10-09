@@ -149,7 +149,7 @@ void SGE::ProjectCreateDialog::renderBody()
                 ImGui::TableNextColumn();
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-                ImGui::Combo("##CreateProject_CPPStandard", &m_currentSelectedCPPStandard, m_cppStandards, 7);
+                ImGui::Combo("##CreateProject_CPPStandard", &m_currentSelectedCPPStandard, m_cppStandards, m_cppStandardsCount);
 
                 ImGui::TableNextColumn();
             }

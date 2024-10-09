@@ -99,7 +99,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
         cameraBaseInfo.setRawName("SGMainCamera");
 
         newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(camera, SGCore::MakeRef<SGCore::Transform>());
-        // newScene->getECSRegistry()->emplace<SGCore::NonSavable>(camera);
+        newScene->getECSRegistry()->emplace<SGCore::NonSavable>(camera);
         newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Camera3D>>(camera, SGCore::MakeRef<SGCore::Camera3D>());
         newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::RenderingBase>>(camera, SGCore::MakeRef<SGCore::RenderingBase>());
         newScene->getECSRegistry()->emplace<SGCore::Controllable3D>(camera);
@@ -124,9 +124,6 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
         });
 
         atmosphereEntity = skyboxEntities[2];
-
-        LOG_I(SGEDITOR_TAG, "Setting parent for skybox...");
-        newScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(atmosphereEntity).setParent(editorScene->m_data.m_editorCamera, newScene->getECSRegistry());
 
         SGCore::Mesh& skyboxMesh = newScene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
         SGCore::ShaderComponent& skyboxShaderComponent = newScene->getECSRegistry()->emplace<SGCore::ShaderComponent>(atmosphereEntity);
