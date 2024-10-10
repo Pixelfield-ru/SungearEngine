@@ -14,959 +14,262 @@ std::string SGCore::CodeGen::Generator::generate(const std::filesystem::path& te
     // std::string templateFileText = Utils::reduce(FileUtils::readFile(templateFile));
     std::string templateFileText = FileUtils::readFile(templateFile);
     // instead of EOF
-    templateFileText += '\n';
+    // templateFileText += '\n';
 
     std::string outputString;
 
-    buildAST(templateFileText);
-    generateCodeUsingAST(m_AST, outputString);
+    // buildAST(templateFileText);
+    // generateCodeUsingAST(m_AST, outputString);
 
-    std::printf("end\n");
+    // std::printf("end\n");
 
-    // clearing tmp variables
-    m_isExprStarted = false;
-    m_isPlacementStarted = false;
-    m_currentCommentType = CommentType::NO_COMMENT;
-
-    m_skipCodeCopy = false;
-    m_writeCharSeq = false;
-
-    m_currentUsedVariable = nullptr;
-
-    m_AST = std::make_shared<Lang::ASTToken>(Tokens::K_FILESTART);
+    /*m_AST = std::make_shared<Lang::ASTToken>(Tokens::K_FILESTART);
     m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Tokens::K_CPP_CODE_LINE);
-    m_currentCharSeqToken = std::make_shared<Lang::ASTToken>(Tokens::K_CHAR_SEQ);
+    m_currentCharSeqToken = std::make_shared<Lang::ASTToken>(Tokens::K_CHAR_SEQ);*/
 
-    addBuiltinVariables();
+    //addBuiltinVariables();
 
     return outputString;
 }
 
-void SGCore::CodeGen::Generator::buildAST(const std::string& templateFileText) noexcept
+char SGCore::CodeGen::Generator::SourceCodeReader::lnext(std::string excpected)
 {
-    if(templateFileText.empty())
-    {
-        m_AST->m_type = Tokens::K_EOF;
+    if (!hasNext())
+        throw ParseException(excpected + " excpected.");
 
-        return;
-    }
-
-    std::string currentWord;
-
-    auto currentToken = m_AST;
-
-    for(size_t ci = 0; ci < templateFileText.size(); ++ci)
-    {
-        const char& curChar = templateFileText[ci];
-
-        // checking for comment
-        if(curChar == '\\')
-        {
-            if(ci + 1 < templateFileText.size())
-            {
-                if(templateFileText[ci + 1] == '\\')
-                {
-                    m_currentCommentType = CommentType::ONE_LINE;
-                }
-                else if(templateFileText[ci + 1] == '*')
-                {
-                    m_currentCommentType = CommentType::MULTILINE;
-                }
-            }
-
-            if(ci - 1 > 0)
-            {
-                if(templateFileText[ci - 1] == '*')
-                {
-                    m_currentCommentType = CommentType::NO_COMMENT;
-                    continue;
-                }
-            }
-        }
-
-        if(curChar == '\n')
-        {
-            if(m_currentCommentType == CommentType::ONE_LINE)
-            {
-                m_currentCommentType = CommentType::NO_COMMENT;
-            }
-        }
-
-        // skipping characters if there is comment lines (comments: \\ - one line, \* - start multiline comment, *\ - end multiline comment)
-        if(m_currentCommentType != CommentType::NO_COMMENT)
-        {
-            continue;
-        }
-
-        if(m_currentCPPCodeToken && !m_skipCodeCopy)
-        {
-            m_currentCPPCodeToken->m_cppCode += curChar;
-        }
-
-        if(m_writeCharSeq)
-        {
-            m_currentCharSeqToken->m_cppCode += curChar;
-        }
-
-        if(curChar == '\n')
-        {
-            if(m_currentCPPCodeToken)
-            {
-                currentToken->m_children.push_back(m_currentCPPCodeToken);
-            }
-            m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Tokens::K_CPP_CODE_LINE);
-
-            m_skipCodeCopy = false;
-            analyzeCurrentWordAndCharForTokens(currentToken, currentWord, templateFileText, ci);
-            currentWord = "";
-            m_isExprStarted = false;
-
-            continue;
-        }
-
-        if(curChar == ' ')
-        {
-            analyzeCurrentWordAndCharForTokens(currentToken, currentWord, templateFileText, ci);
-            currentWord = "";
-            continue;
-        }
-
-        currentWord += curChar;
-
-        analyzeCurrentWordAndCharForTokens(currentToken, currentWord, templateFileText, ci);
-
-        // always in the end of this cycle
-        /*if(ci == templateFileText.size() - 1)
-        {
-
-        }*/
-    }
+    return source.source[cursor];
 }
 
-void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang::ASTToken>& token,
-                                                      std::string& outputString) noexcept
+char SGCore::CodeGen::Generator::SourceCodeReader::next(std::string excpected)
 {
-    for(size_t childIdx = 0; childIdx < token->m_children.size(); ++childIdx)
-    {
-        const auto& child = token->m_children[childIdx];
-
-        /*switch(child->m_type)
-        {
-            case Tokens::K_VAR: break;
-            // saving m_currentUsedVariable if dot is after variable in template file (appeal to a member)
-            case Tokens::K_DOT: break;
-            default:
-            {
-                if(m_currentUsedVariable)
-                {
-                    // placing variable
-                    outputString += m_currentUsedVariable->m_value;
-                }
-
-                m_currentUsedVariable = nullptr;
-
-                break;
-            }
-        }*/
-
-        switch(child->m_type)
-        {
-            case Tokens::K_STARTEXPR:break;
-            case Tokens::K_ENDEXPR:break;
-            case Tokens::K_FOR:
-            {
-                // getting last token in variable tokens sequence (example: var0.var1.var2)
-                VariableFindResult tokenAndVariableToForIn = getLastVariable(child, 2);
-
-                // getting variable that we will use to bind to every element in iterable variable
-                auto bindableVariableToken = child->m_children[0];
-                if(tokenAndVariableToForIn.m_token->m_type != Tokens::K_VAR)
-                {
-                    // todo: make error that token is not variable
-
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate not variable type.")
-                    continue;
-                }
-
-                if(bindableVariableToken->m_type != Tokens::K_VAR)
-                {
-                    // todo: make error that token is not variable
-
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to bind not variable type.")
-                    continue;
-                }
-
-                auto newBindableVariable = std::make_shared<Lang::Table>();
-                m_baseScope[bindableVariableToken->m_name] = newBindableVariable;
-
-                if(!tokenAndVariableToForIn.m_variable)
-                {
-                    // todo: make error that variable does not exist
-
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (for cycle) trying to iterate variable '{}' that does not exist.", tokenAndVariableToForIn.m_token->m_name)
-                    continue;
-                }
-
-                //if(!tokenAndVariableToForIn.m_variable->getTypeInfo().instanceof("iterable"))
-                //{
-                //    // todo: make error that variable is not instance of iterable
-
-                //    LOG_E(SGCORE_TAG, "Error in CodeGenerator: trying to iterate variable '{}' that is not instance of 'iterable'.", tokenAndVariableToForIn.m_token->m_name)
-                //    continue;
-                //}
-
-                LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'...", tokenAndVariableToForIn.m_token->m_name)
-
-                size_t iterationsCount = tokenAndVariableToForIn.m_variable->membersCount();
-
-                size_t curElemIdx = 0;
-                for(const auto& elem : tokenAndVariableToForIn.m_variable->getMembers())
-                {
-                    //if(elem.second->m_isBuiltin) continue;
-
-                    m_baseScope[bindableVariableToken->m_name] = elem.second;
-
-                    //FIXME: take log back 
-                    // LOG_I(SGCORE_TAG, "CodeGenerator: iterating variable '{}'. Iteration '{}'. Current member: '{}'", tokenAndVariableToForIn.m_token->m_name, curElemIdx, elem.second->m_name);
-                    generateCodeUsingAST(child, outputString);
-
-                    ++curElemIdx;
-                }
-
-                break;
-            }
-            case Tokens::K_ENDFOR: break;
-            case Tokens::K_IN: break;
-            case Tokens::K_IF:
-            {
-                // getting last variable in sequence of variables
-                VariableFindResult tokenAndVar = getLastVariable(child, 0);
-
-                if(tokenAndVar.m_token->m_type != Tokens::K_VAR)
-                {
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not variable type (maybe keyword).")
-                    continue;
-                }
-
-                std::any funcOutput;
-
-                if(tokenAndVar.m_variable)
-                {
-                    /*if(tokenAndVar.m_variable->getTypeInfo().m_name != "bool")
-                    {
-                        LOG_E(SGCORE_TAG,
-                              "Error in CodeGenerator: (if branch) trying to test variable that is not boolean type.")
-                        continue;
-                    }*/
-                }
-                else if(tokenAndVar.m_function)
-                {
-                    funcOutput = processFunctionTokensAndCallFunc(child, tokenAndVar.m_tokenIndex,
-                                                                  *tokenAndVar.m_function, outputString);
-
-                    /*if(!std::any_cast<bool>(&funcOutput))
-                    {
-                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'bool' type.",
-                              tokenAndVar.m_function->m_name);
-
-                        continue;
-                    }*/
-                }
-                else
-                {
-                    continue;
-                }
-
-                std::shared_ptr<Lang::ASTToken> elseToken;
-
-                // finding 'else' branch
-                for(size_t i = 0; i < child->m_children.size(); ++i)
-                {
-                    const auto& childOfChild = child->m_children[i];
-
-                    if(childOfChild->m_type == Tokens::K_ELSE)
-                    {
-                        if(i != child->m_children.size() - 2)
-                        {
-                            LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) 'else' branch is not last in 'if'-'else if' sequence.")
-                            break;
-                        }
-
-                        // else branch was successfully found and 'else' branch is last in 'if'-'else if' sequence
-                        elseToken = childOfChild;
-                        break;
-                    }
-                }
-
-                bool isNotSignFound = false;
-                // if 'not' sign found. reversing values
-                if(token->m_children[childIdx - 1]->m_type == Tokens::K_NOT)
-                {
-                    isNotSignFound = true;
-                }
-
-                const bool& funcOutputVal = funcOutput.has_value() && std::any_cast<bool>(funcOutput);
-
-                if((tokenAndVar.m_variable &&
-                    (tokenAndVar.m_variable->m_value == "true" ||
-                     (isNotSignFound && tokenAndVar.m_variable->m_value == "false"))) ||
-
-                   (funcOutput.has_value() &&
-                    (funcOutputVal ||
-                    (isNotSignFound && !funcOutputVal))))
-                {
-                    generateCodeUsingAST(child, outputString);
-                }
-                else
-                {
-                    if(elseToken)
-                    {
-                        generateCodeUsingAST(elseToken, outputString);
-                    }
-                }
-
-                break;
-            }
-            case Tokens::K_ELSE: break; // nothing to do
-            case Tokens::K_ENDIF:break; // nothing to do
-            case Tokens::K_START_PLACEMENT:
-            {
-                VariableFindResult tokenAndVar = getLastVariable(child, 0);
-
-                if(tokenAndVar.m_variable)
-                {
-                    outputString += tokenAndVar.m_variable->m_value;
-                }
-                else if(tokenAndVar.m_function)
-                {
-                    std::any funcOutput = processFunctionTokensAndCallFunc(child, tokenAndVar.m_tokenIndex, *tokenAndVar.m_function, outputString);
-                    if(!std::any_cast<std::string>(&funcOutput))
-                    {
-                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'string' type.", tokenAndVar.m_function->m_name);
-                        continue;
-                    }
-
-                    outputString += std::any_cast<std::string>(funcOutput);
-                }
-                // generateCodeUsingAST(child, outputString);
-                break;
-            }
-            case Tokens::K_END_PLACEMENT:break;
-            case Tokens::K_VAR:
-            {
-                /*if(m_currentUsedVariable)
-                {
-                    m_currentUsedVariable = &m_currentUsedVariable->m_members[child->m_name];
-                }
-                else
-                {
-                    auto foundVar = child->getScopeVariable(child->m_name);
-                    if(!foundVar)
-                    {
-                        // todo: make error
-
-                        ++currentChildTokenIdx;
-                        continue;
-                    }
-
-                    m_currentUsedVariable = foundVar.get();
-                }*/
-
-                break;
-            }
-            case Tokens::K_CPP_CODE_LINE:
-            {
-                outputString += child->m_cppCode;
-
-                break;
-            }
-            case Tokens::K_LPAREN:break;
-            case Tokens::K_RPAREN:break;
-            case Tokens::K_LBLOCK:break;
-            case Tokens::K_RBLOCK:break;
-            case Tokens::K_DOT:break;
-            case Tokens::K_UNKNOWN:break;
-        }
-    }
+    if (!hasNext())
+        throw ParseException(excpected + " excpected.");
+    
+    return source.source[cursor++];
 }
 
-void SGCore::CodeGen::Generator::analyzeCurrentWordAndCharForTokens(std::shared_ptr<Lang::ASTToken>& currentToken,
-                                                                    std::string& word,
-                                                                    const std::string& text,
-                                                                    std::size_t& curCharIdx,
-                                                                    bool forceAddAsWord) noexcept
+std::string SGCore::CodeGen::Generator::SourceCodeReader::next(int count, std::string excpected)
 {
-    size_t nextCharIdx = curCharIdx + 1;
+    if (!hasNext(count))
+        throw ParseException(excpected + " excpected.");
 
-    const char& curChar = text[curCharIdx];
-    char nextChar = '\0';
-    if(curCharIdx + 1 < text.size())
-    {
-        nextChar = text[curCharIdx + 1];
-    }
-
-    Tokens currentWordTokenType = getTokenTypeByName(word);
-    Tokens currentCharTokenType = getTokenTypeByName(std::string() + curChar);
-
-    if(currentWordTokenType == Tokens::K_STARTEXPR && !m_writeCharSeq)
-    {
-        m_currentCPPCodeToken = nullptr;
-        m_skipCodeCopy = true;
-        m_isExprStarted = true;
-        // auto newBranch = addToken(currentToken, Tokens::K_STARTEXPR);
-        // currentToken = newBranch;
-        word = "";
-    }
-    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Tokens::K_FOR && std::isspace(curChar))
-    {
-        if(m_isPlacementStarted)
-        {
-            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
-            return;
-        }
-
-        currentToken = addToken(currentToken, Tokens::K_FOR);
-        currentToken->m_isExprToken = true;
-        word = "";
-    }
-    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Tokens::K_ENDFOR && isSpace(curChar))
-    {
-        if(m_isPlacementStarted)
-        {
-            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
-            return;
-        }
-
-        addToken(currentToken, Tokens::K_ENDFOR)->m_isExprToken = true;
-        gotoParent(currentToken);
-        word = "";
-    }
-    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Tokens::K_IF && isSpace(curChar))
-    {
-        if(m_isPlacementStarted)
-        {
-            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
-            return;
-        }
-
-        currentToken = addToken(currentToken, Tokens::K_IF);
-        currentToken->m_isExprToken = true;
-        word = "";
-    }
-    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Tokens::K_ELSE && isSpace(curChar))
-    {
-        if(m_isPlacementStarted)
-        {
-            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
-            return;
-        }
-
-        currentToken = addToken(currentToken, Tokens::K_ELSE);
-        currentToken->m_isExprToken = true;
-        word = "";
-    }
-    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Tokens::K_ENDIF && isSpace(curChar))
-    {
-        if(m_isPlacementStarted)
-        {
-            // TODO: ERROR: "'for' keyword must be in line where starts expression (line that begins with '##')"
-            return;
-        }
-
-        if(currentToken->m_type == Tokens::K_ELSE && !m_writeCharSeq)
-        {
-            gotoParent(currentToken);
-        }
-        addToken(currentToken, Tokens::K_ENDIF)->m_isExprToken = true;
-        gotoParent(currentToken);
-        word = "";
-    }
-    else if(m_isExprStarted && !m_writeCharSeq && currentWordTokenType == Tokens::K_IN && isSpace(curChar))
-    {
-        addToken(currentToken, Tokens::K_IN);
-        word = "";
-    }
-    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Tokens::K_LPAREN)
-    {
-        //addToken(currentToken, Tokens::K_LPAREN);
-        if(currentWordTokenType != currentCharTokenType)
-        {
-            std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
-        }
-        addToken(currentToken, Tokens::K_LPAREN);
-        word = "";
-    }
-    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Tokens::K_RPAREN)
-    {
-        if(currentWordTokenType != currentCharTokenType)
-        {
-            std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
-        }
-        addToken(currentToken, Tokens::K_RPAREN);
-        word = "";
-    }
-    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Tokens::K_DOT)
-    {
-        if(currentWordTokenType != currentCharTokenType)
-        {
-            std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
-        }
-        addToken(currentToken, Tokens::K_DOT);
-        word = "";
-    }
-    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Tokens::K_COLON)
-    {
-        if(currentWordTokenType != currentCharTokenType)
-        {
-            std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
-        }
-        addToken(currentToken, Tokens::K_COLON);
-        word = "";
-    }
-    else if((m_isPlacementStarted || m_isExprStarted) && currentCharTokenType == Tokens::K_QUOTE)
-    {
-        /*if(currentWordTokenType != currentCharTokenType)
-        {
-            std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
-        }*/
-
-        if(!m_writeCharSeq)
-        {
-            m_currentCharSeqToken = std::make_shared<Lang::ASTToken>(Tokens::K_CHAR_SEQ);
-        }
-
-        // if we are writing char seq now then adding current char seq token to AST
-        if(m_writeCharSeq)
-        {
-            // removing last character (because it is redundant character: it can be character of K_QUOTE)
-            m_currentCharSeqToken->m_cppCode.erase(m_currentCharSeqToken->m_cppCode.size() - 1);
-
-            currentToken->m_children.push_back(m_currentCharSeqToken);
-        }
-
-        m_writeCharSeq = !m_writeCharSeq;
-        word = "";
-    }
-    else if(getTokenTypeByName(std::string({curChar, nextChar})) == Tokens::K_START_PLACEMENT && !m_writeCharSeq)
-    {
-        // removing last character (because it is redundant character: it can be character of next line)
-        m_currentCPPCodeToken->m_cppCode.erase(m_currentCPPCodeToken->m_cppCode.size() - 1);
-        currentToken->m_children.push_back(m_currentCPPCodeToken);
-        m_currentCPPCodeToken = std::make_shared<Lang::ASTToken>(Tokens::K_CPP_CODE_LINE);
-
-        ++curCharIdx;
-        m_skipCodeCopy = true;
-        m_isPlacementStarted = true;
-        currentToken = addToken(currentToken, Tokens::K_START_PLACEMENT);
-        word = "";
-    }
-    else if(currentWordTokenType == Tokens::K_END_PLACEMENT && !m_writeCharSeq)
-    {
-        m_skipCodeCopy = false;
-        m_isPlacementStarted = false;
-        addToken(currentToken, Tokens::K_END_PLACEMENT);
-        gotoParent(currentToken);
-        word = "";
-    }
-    else if((m_isPlacementStarted || m_isExprStarted) && !m_writeCharSeq && currentCharTokenType == Tokens::K_NOT)
-    {
-        /*if(currentWordTokenType != currentCharTokenType)
-        {
-            std::string tmpWord = std::string(word.begin(), word.end() - 1);
-            analyzeCurrentWordAndCharForTokens(currentToken, tmpWord, text, nextCharIdx, true);
-        }*/
-        addToken(currentToken, Tokens::K_NOT);
-        word = "";
-    }
-    else
-    {
-        if((isSpace(curChar) || forceAddAsWord) && (m_isExprStarted || m_isPlacementStarted) && !m_writeCharSeq && !word.empty())
-        {
-            addToken(currentToken, Tokens::K_VAR)->m_name = std::string(word.begin(), word.end());
-        }
-    }
+    return source.source.substr(cursor, cursor += count);
 }
 
-std::shared_ptr<SGCore::CodeGen::Lang::ASTToken>
-SGCore::CodeGen::Generator::addToken(const std::shared_ptr<Lang::ASTToken>& toToken,
-                                     Tokens tokenType) noexcept
+std::string SGCore::CodeGen::Generator::SourceCodeReader::lnext(int count, std::string excpected)
 {
-    auto newToken = std::make_shared<Lang::ASTToken>(tokenType);
-    newToken->m_parent = toToken;
-    // copying scope
-    newToken->m_scope.insert(toToken->m_scope.begin(), toToken->m_scope.end());
-    toToken->m_children.push_back(newToken);
+    if (!hasNext(count))
+        throw ParseException(excpected + " excpected.");
 
-    return newToken;
+    return source.source.substr(cursor, cursor + count);
 }
 
-SGCore::CodeGen::Tokens SGCore::CodeGen::Generator::getTokenTypeByName(const std::string& tokenName) const noexcept
+bool SGCore::CodeGen::Generator::SourceCodeReader::hasNext()
 {
-    const auto foundIt = m_tokensLookup.find(tokenName);
-    if(foundIt == m_tokensLookup.end())
-    {
-        return Tokens::K_UNKNOWN;
-    }
-
-    return foundIt->second;
+    return cursor < source.source.length();
 }
 
-bool SGCore::CodeGen::Generator::isSpace(char c) noexcept
+bool SGCore::CodeGen::Generator::SourceCodeReader::hasNext(int count)
 {
-    return c == ' ' || c == '\n' || c == '\0';
+    return cursor + (count - 1) < source.source.length();
 }
 
-void SGCore::CodeGen::Generator::gotoParent(std::shared_ptr<Lang::ASTToken>& token) const noexcept
-{
-    auto lockedParent = token->m_parent.lock();
-    if(token && lockedParent)
-    {
-        token = lockedParent;
-    }
-}
 
-SGCore::CodeGen::Generator::VariableFindResult
-SGCore::CodeGen::Generator::getLastVariable(const std::shared_ptr<Lang::ASTToken>& from,
-                                            const size_t& begin) noexcept
-{
-    VariableFindResult out;
-    bool isDotWas = false;
-
-    auto& outToken = out.m_token;
-    auto& outVariable = out.m_variable;
-    auto& outFunc = out.m_function;
-
-    for(size_t i = begin; i < from->m_children.size(); ++i)
-    {
-        const auto& child = from->m_children[i];
-        if(child->m_type == Tokens::K_VAR)
-        {
-            auto lastToken = outToken;
-            outToken = child;
-            // getting variable from scope because it is first iteration
-            if(i == begin)
-            {
-                outVariable = from->getScopeVariable(child->m_name);
-            }
-            else // iteration continues (accessing to member variables)
-            {
-                if(outVariable)
-                {
-                    auto foundMember = outVariable->getMember(child->m_name);
-                    auto foundFunction = outVariable->getTypeInfo().tryGetFunction(child->m_name);
-                    if(!foundMember && !foundFunction)
-                    {
-                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: member or function '{}' does not exist in '{}' type (variable: '{}').",
-                              child->m_name,
-                              outVariable->getTypeInfo().m_name,
-                              lastToken->m_name)
-                    }
-                    else
-                    {
-                        if(foundMember)
-                        {
-                            // if member with this name was found then assigning new variable pointer to out.second
-                            outVariable = foundMember;
-                            // function and member with the same names can not exist
-                            outFunc = std::nullopt;
-                        }
-                        else
-                        {
-                            // if member with this name was found then assigning found function to outFunc
-                            outFunc = foundFunction;
-                            outFunc->m_parentVariable = outVariable;
-                            // function and member with the same names can not exist
-                            outVariable = nullptr;
-                        }
-                    }
-                }
-            }
-
-            isDotWas = false;
-        }
-        else if(child->m_type == Tokens::K_DOT)
-        {
-            isDotWas = true;
-        }
-        else
-        {
-            out.m_tokenIndex = i;
-            break;
-        }
+std::pair<std::string, std::function<std::string()>> SGCore::CodeGen::Generator::parseAny() {
+    auto lineGetters = std::vector<std::function<std::string()>>();
+    while (m_reader.hasNext()) {
+        lineGetters.push_back(parseLine());
     }
 
-    if(isDotWas)
-    {
-        LOG_E(SGCORE_TAG, "Error in CodeGenerator: unknown member variable ''. (DOT token found but VAR token was not found after DOT)")
-        outToken = nullptr;
-        outVariable = nullptr;
-    }
-
-    return out;
-}
-
-std::any SGCore::CodeGen::Generator::processFunctionTokensAndCallFunc(const std::shared_ptr<Lang::ASTToken>& inToken,
-                                                                      const size_t& tokenOffset,
-                                                                      SGCore::CodeGen::Lang::Function& callableFunction,
-                                                                      std::string& outputString) const noexcept
-{
-    std::any funcOutput;
-
-    bool lparenFound = false;
-    bool rparenFound = false;
-
-    std::vector<Lang::FunctionArgument> funcArguments;
-    std::shared_ptr<Lang::ASTToken> currentArgToken;
-
-    // analyzing next token
-    for(size_t j = tokenOffset; j < inToken->m_children.size(); ++j)
-    {
-        const auto& curFuncToken = inToken->m_children[j];
-        std::shared_ptr<Lang::ASTToken> nextFuncToken;
-        if(j + 1 < inToken->m_children.size())
-        {
-            nextFuncToken = inToken->m_children[j + 1];
+    // FIXME: add cancel reason
+    return std::pair("", [lineGetters]() {
+        std::string outputString = "";
+        for (auto& getter : lineGetters) {
+            outputString += getter();
         }
-
-        if(curFuncToken->m_type == Tokens::K_LPAREN)
-        {
-            lparenFound = true;
-            continue;
-        }
-        if(curFuncToken->m_type == Tokens::K_RPAREN)
-        {
-            rparenFound = true;
-            break; // arguments acceptance ending
-        }
-
-        if((curFuncToken->m_type == Tokens::K_VAR ||
-            curFuncToken->m_type == Tokens::K_CHAR_SEQ) &&
-           currentArgToken)
-        {
-            Lang::FunctionArgument funcArg;
-            funcArg.m_name = currentArgToken->m_name;
-
-            if(curFuncToken->m_type == Tokens::K_CHAR_SEQ)
-            {
-                funcArg.m_acceptableType = *getTypeByName("string");
-                funcArg.m_data = curFuncToken->m_cppCode;
-            }
-            else
-            {
-                auto scopeVariable = inToken->getScopeVariable(curFuncToken->m_cppCode);
-                if(!scopeVariable)
-                {
-                    LOG_E(SGCORE_TAG,
-                          "Error in CodeGenerator: unknown scope variable '{}' in function argument '{}'.",
-                          curFuncToken->m_name, currentArgToken->m_name);
-                    continue;
-                }
-
-                funcArg.m_acceptableType = scopeVariable->getTypeInfo();
-                funcArg.m_data = scopeVariable->m_value;
-            }
-
-            funcArguments.push_back(funcArg);
-
-            currentArgToken = nullptr;
-        }
-
-        if(curFuncToken->m_type == Tokens::K_VAR)
-        {
-            if(nextFuncToken && nextFuncToken->m_type == Tokens::K_COLON)
-            {
-                currentArgToken = curFuncToken;
-            }
-            else
-            {
-                if(currentArgToken)
-                {
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator (in function call): unknown token with name '{}'.", curFuncToken->m_name);
-                }
-            }
-        }
-    }
-
-    if(!lparenFound || !rparenFound)
-    {
-        LOG_E(SGCORE_TAG, "Error in CodeGenerator: in function '{}': parens mismatch.", callableFunction.m_name);
-    }
-
-    if(auto lockedParentLockedVar = callableFunction.m_parentVariable.lock())
-    {
-        funcOutput = callableFunction.m_functor(lockedParentLockedVar->getTypeInfo(),
-                                                       lockedParentLockedVar.get(), 0, outputString,
-                                                       funcArguments);
-    }
-
-    return funcOutput;
-}
-
-bool SGCore::CodeGen::Lang::Type::instanceof(const SGCore::CodeGen::Lang::Type& other) const noexcept
-{
-    if(m_extends.empty()) return false;
-
-    auto it = std::find_if(m_extends.begin(), m_extends.end(), [&other](const Type& t) {
-        return t.m_name == other.m_name;
+        return outputString;
     });
+}
 
-    if(it == m_extends.end())
-    {
-        for(const auto& t : m_extends)
-        {
-            return t.instanceof(other);
+std::function<std::string()> SGCore::CodeGen::Generator::parseLine() {
+    std::string skippedSpaces = skipSpaces();
+    if (m_reader.hasNext(2) && m_reader.lnext(2) == "##") {
+        m_reader.next(2);
+        return parseCode();
+    }
+
+    auto lineRemains = parseUntil('\n'); // TODO: replace with parseRawCode
+    m_reader.next();
+
+    return [skippedSpaces, lineRemains]() { return skippedSpaces + lineRemains + "\n"; };
+}
+
+std::function<std::string()> SGCore::CodeGen::Generator::parseCode() {
+    skipSpaces();
+    auto forLoop = tryParseForLoop();
+    if (forLoop.has_value())
+        return forLoop.value();
+
+    throw ParseException("Expression required");
+}
+
+std::optional<std::function<SGCore::CodeGen::Lang::Any()>> SGCore::CodeGen::Generator::tryParseVarWithPath() {
+    m_reader.push();
+
+    auto firstExpr = tryParseInlinedExpression();
+    if (firstExpr.has_value()) {
+        auto path = std::vector<std::string>();
+
+        m_reader.apply();
+        skipSpaces();
+        while (parseExcactToken(".")) {
+            skipSpaces();
+            path.push_back(parseVarToken());
+            skipSpaces();
         }
+         
+        return [firstExpr, path]() {
+            auto first = firstExpr.value()();
+            auto current = dynamic_cast<Lang::Table*>(&first);
+            if (current == nullptr)
+                throw new RuntimeException("Table excpected");
+
+            for (auto i = 0; i < path.size(); i++) {
+                auto next = (std::shared_ptr<Lang::Any>)((*current)[path[i]]);
+                current = &*std::dynamic_pointer_cast<Lang::Table>(next);
+            }
+
+            return *current;
+        };
     }
 
-    return true;
+    m_reader.pop();
+    return std::nullopt;
 }
 
-bool SGCore::CodeGen::Lang::Type::instanceof(const std::string& typeName) const noexcept
+std::optional<std::function<SGCore::CodeGen::Lang::Any()>> SGCore::CodeGen::Generator::tryParseInlinedExpression()
 {
-    if(m_extends.empty()) return false;
+    m_reader.push();
 
-    auto it = std::find_if(m_extends.begin(), m_extends.end(), [&typeName](const Type& t) {
-        return t.m_name == typeName;
-    });
+    skipSpaces();
 
-    if(it == m_extends.end())
-    {
-        for(const auto& t : m_extends)
-        {
-            return t.instanceof(typeName);
-        }
-    }
+    // Try parse inlined exprs:
 
-    return true;
-}
+    // Try parse subexpr:
 
-SGCore::CodeGen::Lang::Table::Table(const SGCore::CodeGen::Lang::Type& withType) noexcept
-{
-    m_typeInfo = withType;
+    if (parseExcactToken("(")) {
+        m_reader.apply();
+        skipSpaces();
 
-    for(const auto& member : withType.m_members)
-    {
-        m_members[member.first] = std::make_shared<Table>(member.second);
-    }
-
-    for(const auto& type : withType.m_extends)
-    {
-        m_inheritanceMap[type.m_name] = std::make_shared<Table>(type);
-    }
-}
-
-const SGCore::CodeGen::Lang::Type& SGCore::CodeGen::Lang::Table::getTypeInfo() const noexcept
-{
-    return m_typeInfo;
-}
-
-std::shared_ptr<SGCore::CodeGen::Lang::Table> SGCore::CodeGen::Lang::Table::getMember(const std::string& name) noexcept
-{
-    if(m_members.empty() && m_inheritanceMap.empty()) return nullptr;
-
-    auto it = m_members.find(name);
-
-    if(it == m_members.end())
-    {
-        for(auto& t : m_inheritanceMap)
-        {
-            return t.second->getMember(name);
+        auto parsed = tryParseExpression();
+        if (!parsed.has_value()) {
+            throw ParseException("Expression excpected");
         }
 
-        return nullptr;
+        forceExcactToken(")"); skipSpaces();
+
+        return parsed;
     }
 
-    return it->second;
+    m_reader.pop();
+    return std::nullopt;
 }
 
-std::optional<SGCore::CodeGen::Lang::TypeMemberInfo> SGCore::CodeGen::Lang::Type::tryGetMemberInfo(const std::string& name) const noexcept
+std::optional<std::function<SGCore::CodeGen::Lang::Any()>> SGCore::CodeGen::Generator::tryParseExpression() {
+    m_reader.push();
+
+    // Trying parse as self
+
+    auto asPath = tryParseVarWithPath();
+    if (asPath.has_value()) {
+        m_reader.apply();
+        return asPath.value();
+    }
+
+    // Trying parse as inline expr:
+
+    auto inlined = tryParseInlinedExpression();
+    if (inlined.has_value()) {
+        m_reader.apply();
+        return inlined.value();
+    }
+    m_reader.pop();
+    return std::nullopt;
+}
+
+std::optional<std::function<std::string()>> SGCore::CodeGen::Generator::tryParseIf()
 {
-    if (m_members.empty() && m_extends.empty()) return std::nullopt;
-
-    auto it = m_members.find(name);
-
-    if (it == m_members.end())
-    {
-        for (auto& t : m_extends)
-        {
-            return t->tryGetMemberInfo(name);
-        }
+    m_reader.push();
+    if (!parseExcactToken("if")) {
+        m_reader.pop();
         return std::nullopt;
     }
-    return it->second;
-}
+    m_reader.apply();
 
-SGCore::CodeGen::Lang::Function* SGCore::CodeGen::Lang::Type::tryGetFunction(const std::string& name) const noexcept
-{
-    auto member = tryGetMemberInfo(name);
-    if (!member.has_value()) {
-        return nullptr;
+    skipSpacesRequired();
+
+    auto expr = tryParseExpression(); skipSpaces();
+    if (!expr.has_value())
+        throw ParseException("Expression required");
+
+    forceExcactToken(":"); skipToEOL();
+
+    auto ifContent = parseAny();
+
+    std::function<std::string()> elseContent = []() {return ""; };
+    if (ifContent.first == "else") {
+        elseContent = ifContent.second;
     }
-    return dynamic_cast<Function*>(&member.value().m_memberType);
-}
 
-SGCore::CodeGen::Lang::Table& SGCore::CodeGen::Lang::Table::operator[](const std::string& memberName) noexcept
-{
-    if(hasMember(memberName))
-    {
-        return *m_members[memberName];
-    }
-    else
-    {
-        auto newMember = std::make_shared<Table>();
-        m_members[memberName] = newMember;
-        return *newMember;
-    }
-}
+    return [expr, ifContent, elseContent] {
+        auto exprSolved = expr.value()();
+        // FIXME: add bool type
+        auto exprAsBool = dynamic_cast<Lang::Number*>(&exprSolved);
 
-bool SGCore::CodeGen::Lang::Table::hasMember(const std::string& memberName) const noexcept
-{
-    return m_members.contains(memberName);
-}
-
-void SGCore::CodeGen::Lang::Table::removeMember(const std::string& memberName) noexcept
-{
-    m_members.erase(memberName);
-}
-
-size_t SGCore::CodeGen::Lang::Table::membersCount() const noexcept
-{
-    return m_members.size();
-}
-
-const std::unordered_map<std::string, std::shared_ptr<SGCore::CodeGen::Lang::Table>>&
-SGCore::CodeGen::Lang::Table::getMembers() const noexcept
-{
-    return m_members;
-}
-
-void SGCore::CodeGen::Lang::Table::setMemberPtr(const std::string& memberName, const std::shared_ptr<Table>& value) noexcept
-{
-    m_members[memberName] = value;
-}
-
-std::shared_ptr<SGCore::CodeGen::Lang::Table> SGCore::CodeGen::Lang::ASTToken::getScopeVariable(const std::string& variableName) const noexcept
-{
-    if(m_scope.empty()) return nullptr;
-
-    auto var = m_scope.find(variableName);
-
-    if(var == m_scope.end())
-    {
-        if(auto lockedParent = m_parent.lock())
-        {
-            return lockedParent->getScopeVariable(variableName);
+        if (exprAsBool->m_value != 0) {
+            return ifContent.second();
         }
-        else
-        {
-            return nullptr;
-        }
-    }
+        return elseContent();
+    };
+}
 
-    return var->second;
+std::optional<std::function<std::string()>> SGCore::CodeGen::Generator::tryParseForLoop()
+{
+    m_reader.push();
+    if (!parseExcactToken("for")) {                             // for
+        m_reader.pop();
+        return std::nullopt;
+    }
+    m_reader.apply(); // Now way back! On parse faield - error
+
+    skipSpacesRequired();
+    auto varSetter = parseNewVar(); skipSpacesRequired();       // var
+    forceExcactToken("in"); skipSpacesRequired();               // in
+    auto sourceVarGetter = tryParseExpression(); skipSpaces();
+    forceExcactToken(":"); skipToEOL();   // iterable
+
+    if (!sourceVarGetter.has_value())
+        throw "Expression for iterable excpected";
+
+    auto forContent = parseAny();
+
+    return [varSetter, sourceVarGetter, forContent, this]() {
+        m_currentScope = m_currentScope.createSubScope();
+
+        auto sourceVar = dynamic_cast<Lang::Table*>(&(sourceVarGetter.value()()));
+        if (sourceVar == nullptr)
+            throw RuntimeException("variable is null!");
+
+        std::string outputStr = "";
+
+        auto keyObj = std::make_shared<Lang::String>(Lang::String());
+        for (auto& key : sourceVar->getMembers()) {
+            keyObj->m_value = key.first;
+            varSetter(keyObj);
+            outputStr += forContent.second();
+        }
+
+        m_currentScope = m_currentScope.destroySubScope();
+        return outputStr;
+    };
 }

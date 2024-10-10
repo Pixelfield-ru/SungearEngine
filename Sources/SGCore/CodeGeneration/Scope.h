@@ -30,9 +30,7 @@ namespace SGCore::CodeGen::Lang {
     struct Any {
         virtual std::string getTypeName() const noexcept { return "Any"; }
 
-        bool typeEquals(Any& other) { return getTypeName() == other.getTypeName(); }
-
-
+        bool typeEquals(Any& other) { return getTypeName() == other.getTypeName() };
 
         bool referenceEquals(Any& other) { return &other == this; }
         virtual bool equals(Any& other) { return referenceEquals(other); }
@@ -169,19 +167,7 @@ namespace SGCore::CodeGen::Lang {
         std::unordered_map<std::string, std::shared_ptr<Any>> m_members;
     };
 
-    struct ASTToken
-    {
-        Tokens m_type = Tokens::K_EOF;
-        // optional
-        std::string m_name;
-        // optional
-        std::string m_cppCode;
-        bool m_isExprToken = false;
-        std::weak_ptr<Lang::ASTToken> m_parent;
-        std::vector<std::shared_ptr<Lang::ASTToken>> m_children;
-
-        [[nodiscard]] std::shared_ptr<Table> getScopeVariable(const std::string& variableName) const noexcept;
-    };
+    
 }
 
 #endif // !SCOPE_H
