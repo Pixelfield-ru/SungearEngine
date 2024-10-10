@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __SGCORE_SERDE_GENERATEDSERDESPECS_H__
+#define __SGCORE_SERDE_GENERATEDSERDESPECS_H__
 
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs.h"
@@ -1862,3 +1863,5 @@ void SGCore::Serde::SerdeSpec<SGCore::UICamera, TFormatType>::deserialize(SGCore
 {
 }
 // =================================================================================
+
+#endif
