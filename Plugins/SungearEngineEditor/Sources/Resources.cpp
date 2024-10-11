@@ -16,24 +16,24 @@ void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noex
 
     {
         standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+                SGCore::CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
         ));
         standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-        ));
-
-        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-        ));
-        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+                SGCore::CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
         ));
 
         standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+                SGCore::CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
         ));
         standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
-                "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+                SGCore::CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+        ));
+
+        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
+                SGCore::CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+        ));
+        standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
+                SGCore::CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
         ));
 
         standardCubemap->setRawName("standard_skybox0");
@@ -47,7 +47,7 @@ void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noex
 
     toManager.loadAssetWithAlias<SGCore::ModelAsset>(
             "cube_model",
-            "../SGResources/models/standard/cube.obj"
+            SGCore::CoreMain::getSungearEngineRootPath() / "Resources/models/standard/cube.obj"
     );
 }
 

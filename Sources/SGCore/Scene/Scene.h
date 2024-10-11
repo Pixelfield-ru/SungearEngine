@@ -26,19 +26,26 @@ namespace SGCore
 
     struct SceneEntitySaveInfo
     {
-        Scene* m_savableScene { };
+        const Scene* m_savableScene { };
         entity_t m_savableEntity { };
     };
     
     class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
     {
+    public:
+        using systems_container_t = std::vector<Ref<ISystem>>;
+
     private:
         template<Serde::FormatType TFormatType>
-        struct SGCORE_EXPORT EntitySaveEvent
+        struct SGCORE_EXPORT SceneSaveEvents
         {
-            static inline Event<void(Scene& savableScene,
+            static inline Event<void(const Scene& savableScene,
                                      const entity_t& savableEntity,
                                      Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView)> onEntitySave;
+
+            static inline Event<void(const Scene& savableScene,
+                                     const Ref<ISystem>& savableSystem,
+                                     Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView)> onSystemSave;
         };
 
     public:
@@ -69,13 +76,13 @@ namespace SGCore
 
             return nullptr;
         }
-        
+
         template<typename SystemT>
         // requires(std::is_base_of_v<SystemT, ISystem>)
         std::vector<Ref<SystemT>> getSystems()
         {
             std::vector<Ref<SystemT>> foundSystems;
-            
+
             for(auto& system : m_systems)
             {
                 if(SG_INSTANCEOF(system.get(), SystemT))
@@ -83,7 +90,7 @@ namespace SGCore
                     foundSystems.push_back(std::static_pointer_cast<SystemT>(system));
                 }
             }
-            
+
             return foundSystems;
         }
 
@@ -135,9 +142,15 @@ namespace SGCore
         }
 
         template<Serde::FormatType TFormatType>
-        SG_NOINLINE static auto& getOnEntitySave() noexcept
+        SG_NOINLINE static auto& getOnEntitySaveEvent() noexcept
         {
-            return EntitySaveEvent<TFormatType>::onEntitySave;
+            return SceneSaveEvents<TFormatType>::onEntitySave;
+        }
+
+        template<Serde::FormatType TFormatType>
+        SG_NOINLINE static auto& getOnSystemSaveEvent() noexcept
+        {
+            return SceneSaveEvents<TFormatType>::onSystemSave;
         }
 
     private:
@@ -150,7 +163,7 @@ namespace SGCore
 
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 
-        std::vector<Ref<ISystem>> m_systems;
+        systems_container_t m_systems;
         std::vector<Ref<Layer>> m_layers;
 
         size_t m_maxLayersCount = 0;

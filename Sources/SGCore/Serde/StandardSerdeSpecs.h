@@ -453,7 +453,7 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().setAsArray();
 
-            valueView.m_data->m_savableScene->template getOnEntitySave<TFormatType>()(
+            Scene::getOnEntitySaveEvent<TFormatType>()(
                     *valueView.m_data->m_savableScene,
                     valueView.m_data->m_savableEntity,
                     valueView
@@ -520,6 +520,34 @@ namespace SGCore::Serde
     };
 
     template<FormatType TFormatType>
+    struct SerdeSpec<Scene::systems_container_t, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Scene";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<Scene::systems_container_t, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().setAsArray();
+
+            Ref<Scene> savableScene;
+            if(!valueView.m_data->empty())
+            {
+                savableScene = (*valueView.m_data)[0]->getScene().lock();
+            }
+
+            // serializing systems
+            for(const auto& system : *valueView.m_data)
+            {
+                Scene::getOnSystemSaveEvent<TFormatType>()(*savableScene, system, valueView);
+            }
+        }
+
+        static void deserialize(DeserializableValueView<Scene, TFormatType>& valueView)
+        {
+        }
+    };
+
+    template<FormatType TFormatType>
     struct SerdeSpec<Scene, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::Scene";
@@ -529,6 +557,7 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry);
+            valueView.getValueContainer().addMember("m_systems", valueView.m_data->m_systems);
         }
 
         static void deserialize(DeserializableValueView<Scene, TFormatType>& valueView)

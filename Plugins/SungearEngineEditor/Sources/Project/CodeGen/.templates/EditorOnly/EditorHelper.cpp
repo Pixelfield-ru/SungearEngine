@@ -18,7 +18,9 @@
 
 // including all structs
 ## for struct in structs
+## if struct.hasMember(name: "filePath")
 #include "{{ struct.filePath }}"
+## endif
 ## endfor
 
 // BARRIER FOR STATIC ANALYZER (FOR HIGHLIGHTING)
@@ -28,7 +30,7 @@ void DO_NOT_USE()
 }
 
 template<SGCore::Serde::FormatType TFormatType>
-void onEntitySave(SGCore::Scene& savableScene,
+void onEntitySave(const SGCore::Scene& savableScene,
                   const SGCore::entity_t& savableEntity,
                   SGCore::Serde::SerializableValueView<SGCore::SceneEntitySaveInfo, TFormatType>& entityView) noexcept
 {
@@ -55,10 +57,8 @@ void onEntitySave(SGCore::Scene& savableScene,
     // saving components of savableEntity
 
     ## for struct in structs
-
-    // TODO: FIX
     ## if struct.hasMember(name: "type")
-    if(std::string("{{ struct.type }}") == "component")
+    ## if struct.type.equals(value: "component")
     {
         ## if struct.hasMember(name: "getFromRegistryBy")
         auto* component = savableScene.getECSRegistry()->try_get<{{ struct.getFromRegistryBy }}>(savableEntity);
@@ -72,8 +72,16 @@ void onEntitySave(SGCore::Scene& savableScene,
         }
     }
     ## endif
-
+    ## endif
     ## endfor
+}
+
+template<SGCore::Serde::FormatType TFormatType>
+void onSystemSave(const SGCore::Scene& savableScene,
+                  const SGCore::Ref<SGCore::ISystem>& savableSystem,
+                  SGCore::Serde::SerializableValueView<SGCore::Scene::systems_container_t, TFormatType>& systemsContainerView) noexcept
+{
+    systemsContainerView.getValueContainer().pushBack(savableSystem);
 }
 
 void onInit()
@@ -108,7 +116,8 @@ SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 {
     LOG_I("GENERATED", "Calling editorGeneratedCodeEntry()...");
 
-    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnEntitySaveEvent<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemSaveEvent<SGCore::Serde::FormatType::JSON>() += onSystemSave<SGCore::Serde::FormatType::JSON>;
     // TODO: supporting BSON and YAML
     /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;*/
@@ -122,7 +131,8 @@ SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 
 SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeExit()
 {
-    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() -= onEntitySave<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnEntitySaveEvent<SGCore::Serde::FormatType::JSON>() -= onEntitySave<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemSaveEvent<SGCore::Serde::FormatType::JSON>() -= onSystemSave<SGCore::Serde::FormatType::JSON>;
     // TODO: supporting BSON and YAML
     /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() -= onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() -= onEntitySave<SGCore::Serde::FormatType::YAML>;*/

@@ -107,6 +107,45 @@ SGCore::CodeGen::Generator::Generator()
 
         genericMapType.m_functions["empty"] = isEmptyFunc;
 
+        Lang::Function equalsFunc;
+        equalsFunc.m_name = "equals";
+        equalsFunc.m_arguments.push_back({
+                                                .m_name = "value",
+                                                .m_isNecessary = true,
+                                                .m_acceptableType = stringType
+                                        });
+        equalsFunc.m_functor = [equalsFunc](const Lang::Type& owner, Lang::Variable* operableVariable, const size_t& curLine,
+                                   std::string& outputText, const std::vector<Lang::FunctionArgument>& args) {
+            if(args.size() != 1)
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'equals': bad count of passed arguments (required: {}, provided: {})",
+                      curLine, equalsFunc.m_arguments.size(), args.size());
+                // outputValue = false;
+                return false;
+            }
+
+            if(args[0].m_name != "value")
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'equals': unknown argument '{}'",
+                      curLine, args[0].m_name);
+                return false;
+            }
+
+            if(args[0].m_acceptableType.m_name != "string")
+            {
+                LOG_E(SGCORE_TAG,
+                      "Error in CodeGenerator (line: {}): in function 'equals': type of argument '{}' is not string",
+                      curLine, args[0].m_name);
+                return false;
+            }
+
+            return operableVariable->m_insertedValue == std::any_cast<std::string>(args[0].m_data);
+        };
+
+        genericMapType.m_functions["equals"] = equalsFunc;
+
         Lang::Function hasMemberFunc;
         hasMemberFunc.m_name = "hasMember";
         hasMemberFunc.m_arguments.push_back({
@@ -224,7 +263,10 @@ void SGCore::CodeGen::Generator::addBuiltinVariables() noexcept
             {
                 auto& newBaseStruct = (*m_AST->m_scope["structs"])[baseType->first];
 
-                newBaseStruct["derivedTypes"] = Lang::Variable(*getTypeByName("generic_map"));
+                if(!newBaseStruct.hasMember("derivedTypes"))
+                {
+                    newBaseStruct["derivedTypes"] = Lang::Variable(*getTypeByName("generic_map"));
+                }
                 newBaseStruct["derivedTypes"][metaStruct["fullName"].getValue()].m_insertedValue = metaStruct["fullName"].getValue();
             }
         }

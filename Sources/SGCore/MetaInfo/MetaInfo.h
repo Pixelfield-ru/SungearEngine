@@ -459,6 +459,195 @@ namespace SGCore
 
                 m_meta["structs"].push_back(meta);
             }
+
+            // SGCore::ISystem
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::ISystem";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/ISystem.h";
+                meta["type"] = "system";
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::IParallelSystem
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::IParallelSystem";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/IParallelSystem.h";
+                meta["type"] = "system";
+
+                meta["template_args"]["ParallelSystemT"] = "typename";
+
+                // meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::PhysicsWorld3D
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::PhysicsWorld3D";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Physics/PhysicsWorld3D.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::IParallelSystem<SGCore::PhysicsWorld3D>"];
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::RenderingBasesUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::RenderingBasesUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/RenderingBasesUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::AtmosphereUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::AtmosphereUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Atmosphere/AtmosphereUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::DirectionalLightsUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::DirectionalLightsUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Lighting/DirectionalLightsUpdater.h";
+                meta["type"] = "system";
+
+                meta["members"]["m_maxLightsCount"];
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::TransformationsUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::TransformationsUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/TransformationsUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::IParallelSystem<SGCore::TransformationsUpdater>"];
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::Controllables3DUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::Controllables3DUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/Controllables3DUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::BoxGizmosRenderer
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::BoxGizmosRenderer";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/BoxGizmosRenderer.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::LineGizmosRenderer
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::LineGizmosRenderer";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/LineGizmosRenderer.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::SphereGizmosUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::SphereGizmosUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/SphereGizmosUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::DebugDraw
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::DebugDraw";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/DebugDraw.h";
+                meta["type"] = "system";
+
+                meta["members"]["m_mode"];
+                meta["members"]["m_linesRenderInfo"];
+                // meta["members"]["m_maxLines"];
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::BatchesRenderer
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::BatchesRenderer";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Batching/BatchesRenderer.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::OctreesSolver
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::OctreesSolver";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/SpacePartitioning/OctreesSolver.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::IParallelSystem<SGCore::OctreesSolver>"];
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::AudioProcessor
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::AudioProcessor";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Audio/AudioProcessor.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
         }
 
         static void clearAllMeta() noexcept
