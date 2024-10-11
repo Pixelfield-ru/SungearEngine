@@ -80,7 +80,7 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
 };
 
 template<SGCore::Serde::FormatType TFormatType>
-struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes<Base>, SGCore::Serde::DerivedTypes<Derived0>
+struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes<Base> //, SGCore::Serde::DerivedTypes<Derived0>
 {
     static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Derived";

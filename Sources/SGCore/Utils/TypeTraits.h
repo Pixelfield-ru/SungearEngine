@@ -111,7 +111,7 @@ namespace SGCore
     template<typename... RepeatT>
     using repeated_tuple = decltype(std::tuple_cat((repeated_tuple_single<RepeatT>())...));
     
-    template <std::size_t Idx, class... Types>
+    template <std::size_t Idx, typename... Types>
     class extract
     {
         static_assert(Idx < sizeof...( Types ), "index out of bounds");
@@ -132,6 +132,29 @@ namespace SGCore
         };
     public:
         using type = typename extract_impl<0, Idx, Types...>::type;
+    };
+
+    template <std::size_t Idx, typename OrType, typename... Types>
+    class extract_or : public std::conditional_t<Idx >= sizeof...(Types), extract<0, OrType>, extract<Idx, Types...>>
+    {
+    };
+
+    template<typename... Types>
+    struct types_container
+    {
+        static inline constexpr size_t types_size = (0 + ... + sizeof(Types));
+        static inline constexpr size_t types_count = sizeof...(Types);
+
+        template<size_t Idx>
+        using get_type = extract<Idx, Types...>::type;
+    };
+
+    template<typename T>
+    concept types_container_t = requires {
+        T::types_size;
+        T::types_count;
+
+        requires (T::types_count == 0) || (requires { typename T::template get_type<0>; });
     };
     
     template <typename> struct class_function_traits;

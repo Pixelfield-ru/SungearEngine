@@ -135,15 +135,14 @@ void coreInit()
     /*dynamic_cast<Derived0*>(tst)->b = 20.1f;
     dynamic_cast<Derived0*>(tst)->str1 = u"abra";*/
     //dynamic_cast<Derived*>(tst)->b = 4;
-    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat(tst), false, true);
+    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat<Serde::custom_derived_types<Derived0>>(tst), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
     std::string outputLog;
 
     std::shared_ptr<Base> deser;
-    // Base* deser;
-    // Serde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
+    Serde::Serializer::fromFormat<Serde::custom_derived_types<Derived0>>(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
 
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 
