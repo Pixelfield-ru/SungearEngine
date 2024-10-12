@@ -30,7 +30,7 @@ namespace SGCore
         AABB<> m_aabb;
 
         glm::vec3 m_position { 0.0 };
-        glm::vec3 m_rotation { 0.0 };
+        glm::quat m_rotation;
         glm::vec3 m_scale { 1.0 };
 
         glm::vec3 m_left = MathUtils::left3;
@@ -49,7 +49,7 @@ namespace SGCore
 
     // private:
         glm::vec3 m_lastPosition { 0.0 };
-        glm::vec3 m_lastRotation { 0.0 };
+        glm::quat m_lastRotation;
         glm::vec3 m_lastScale = glm::vec3(0);
     };
 

@@ -21,7 +21,7 @@
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
-    m_thread->setSleepTime(std::chrono::milliseconds(5));
+    m_thread->setSleepTime(std::chrono::milliseconds(0));
     m_thread->start();
 }
 
@@ -96,15 +96,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             // rotation ================================================
             
             if(ownTransform.m_lastRotation != ownTransform.m_rotation)
-            {
-                auto q = glm::identity<glm::quat>();
-                
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.z), { 0, 0, 1 });
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.y), { 0, 1, 0 });
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), { 1, 0, 0 });
-                
-                ownTransform.m_rotationMatrix = glm::toMat4(q);
-                
+            {                
                 // rotating directions vectors
                 ownTransform.m_left = glm::rotate(MathUtils::left3,
                                                   glm::radians(-ownTransform.m_rotation.y), glm::vec3(0, 1, 0));
@@ -113,10 +105,9 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
                 
                 ownTransform.m_left *= -1.0f;
                 
-                ownTransform.m_forward = glm::rotate(MathUtils::forward3,
-                                                     glm::radians(-ownTransform.m_rotation.x), glm::vec3(1, 0, 0));
-                ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
-                                                     glm::radians(-ownTransform.m_rotation.y), glm::vec3(0, 1, 0));
+                ownTransform.m_forward.x = cos(glm::radians(ownTransform.m_rotation.x)) * cos(glm::radians(ownTransform.m_rotation.y));
+                ownTransform.m_forward.y = sin(glm::radians(ownTransform.m_rotation.y));
+                ownTransform.m_forward.z = sin(glm::radians(ownTransform.m_rotation.x)) * cos(glm::radians(ownTransform.m_rotation.y));
                 
                 ownTransform.m_forward *= -1.0f;
                 
@@ -126,9 +117,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
                                                 glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
                 
                 ownTransform.m_up *= -1.0f;
-                
-                //transformComponent->m_rotationMatrix = glm::toMat4(rotQuat);
-                
+
                 ownTransform.m_lastRotation = ownTransform.m_rotation;
                 
                 rotationChanged = true;
@@ -246,13 +235,11 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
                                                            mesh->m_base.getMeshData()->m_aabb);
                 
-                glm::vec3 eulerRotation = glm::eulerAngles(rotation);
-                
                 finalTransform.m_position = translation;
                 finalTransform.m_lastPosition = translation;
                 
-                finalTransform.m_rotation = eulerRotation;
-                finalTransform.m_lastRotation = eulerRotation;
+                finalTransform.m_rotation = rotation;
+                finalTransform.m_lastRotation = rotation;
                 
                 finalTransform.m_scale = scale;
                 finalTransform.m_lastScale = scale;
@@ -296,13 +283,11 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
                                                            mesh->m_base.getMeshData()->m_aabb);
                 
-                glm::vec3 eulerRotation = glm::eulerAngles(rotation);
-                
                 finalTransform.m_position = translation;
                 finalTransform.m_lastPosition = translation;
                 
-                finalTransform.m_rotation = eulerRotation;
-                finalTransform.m_lastRotation = eulerRotation;
+                finalTransform.m_rotation = rotation;
+                finalTransform.m_lastRotation = rotation;
                 
                 finalTransform.m_scale = scale;
                 finalTransform.m_lastScale = scale;

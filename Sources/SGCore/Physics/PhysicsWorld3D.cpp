@@ -15,7 +15,7 @@
 #include "SGCore/Transformations/TransformationsUpdater.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
-#include "SGCore/Utils/GLMExt.h"
+#include "SGCore/Utils/Math/GLMExt.h"
 
 SGCore::PhysicsWorld3D::PhysicsWorld3D()
 {
@@ -36,7 +36,7 @@ SGCore::PhysicsWorld3D::PhysicsWorld3D()
 
     m_dynamicsWorld->setGravity({ 0, -120.0, 0 });
 
-    m_thread->setSleepTime(std::chrono::milliseconds(0));
+    m_thread->setSleepTime(std::chrono::milliseconds(5));
     m_thread->start();
 }
 
@@ -96,7 +96,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
             {
                 auto& entities = transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getWrapped();
                 auto& calculatedEntities = transformationsUpdater->m_calculatedPhysicalEntities.getWrapped();
-                auto start = std::chrono::system_clock::now();
+                // auto start = std::chrono::system_clock::now();
                 /*
                 * Changed MisterElect (MisterChoose)
                 * 04.10.2024
@@ -190,42 +190,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
                     if (ownTransform.m_rotation != ownTransform.m_lastRotation)
                     {
-                        auto q = glm::identity<glm::quat>();
-
-                        q = glm::rotate(q, glm::radians(ownTransform.m_rotation.z), { 0, 0, 1 });
-                        q = glm::rotate(q, glm::radians(ownTransform.m_rotation.y), { 0, 1, 0 });
-                        q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), { 1, 0, 0 });
-
-                        ownTransform.m_rotationMatrix = glm::toMat4(q);
-
-                        // rotating directions vectors
-                        ownTransform.m_left = glm::rotate(MathUtils::left3,
-                            glm::radians(-ownTransform.m_rotation.y),
-                            glm::vec3(0, 1, 0));
-                        ownTransform.m_left = glm::rotate(ownTransform.m_left,
-                            glm::radians(-ownTransform.m_rotation.z),
-                            glm::vec3(0, 0, 1));
-
-                        ownTransform.m_left *= -1.0f;
-
-                        ownTransform.m_forward = glm::rotate(MathUtils::forward3,
-                            glm::radians(-ownTransform.m_rotation.x),
-                            glm::vec3(1, 0, 0));
-                        ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
-                            glm::radians(-ownTransform.m_rotation.y),
-                            glm::vec3(0, 1, 0));
-
-                        ownTransform.m_forward *= -1.0f;
-
-                        ownTransform.m_up = glm::rotate(MathUtils::up3,
-                            glm::radians(-ownTransform.m_rotation.x),
-                            glm::vec3(1, 0, 0));
-                        ownTransform.m_up = glm::rotate(ownTransform.m_up,
-                            glm::radians(-ownTransform.m_rotation.z),
-                            glm::vec3(0, 0, 1));
-
-                        ownTransform.m_up *= -1.0f;
-
+                        ownTransform.m_rotationMatrix = glm::toMat4(rotation); 
                         ownTransform.m_lastRotation = ownTransform.m_rotation;
 
                         rotationChanged = true;
@@ -259,7 +224,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     }
                 }
 
-                std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for " << entities.size() << std::endl;
+                // std::cout << "Elapsed: " << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start) << " for " << entities.size() << std::endl;
 
                 entities.clear();
                 transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.unlock();

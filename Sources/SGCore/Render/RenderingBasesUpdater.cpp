@@ -29,20 +29,21 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
         glm::quat rotationQuat;
         // if(viewMatrixChanged)
         {
+            
             rotationQuat = glm::angleAxis(
-                    glm::radians(ownTransform.m_rotation.x),
+                    glm::radians(ownTransform.m_lastRotation.x),
                     glm::vec3(1, 0, 0)
             );
             rotationQuat *= glm::angleAxis(
-                    glm::radians(ownTransform.m_rotation.y),
+                    glm::radians(ownTransform.m_lastRotation.y),
                     glm::vec3(0, 1, 0)
             );
             rotationQuat *= glm::angleAxis(
-                    glm::radians(ownTransform.m_rotation.z),
+                    glm::radians(ownTransform.m_lastRotation.z),
                     glm::vec3(0, 0, 1)
             );
+            
         }
-
         renderingBase->m_projectionSpaceMatrixChanged = false;
 
         bool projectionMatrixChanged = false;

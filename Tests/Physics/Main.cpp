@@ -203,7 +203,7 @@ void onUpdate(const double& dt, const double& fixedDt)
         Scene::getCurrentScene()->update(dt, fixedDt);
     }
 
-    if (InputManager::getMainInputListener()->keyboardKeyReleased(KeyboardKey::KEY_F12))
+    if (InputManager::getMainInputListener()->keyboardKeyReleased(KeyboardKey::KEY_M))
     {
         auto& physicsWorld3DDebug = testScene->getSystem<PhysicsWorld3D>()->getDebugDraw();
         if (physicsWorld3DDebug->getDebugMode() == btIDebugDraw::DBG_NoDebug)
