@@ -29,17 +29,17 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
 
         if(!ownTransform.m_blockRotation)
         {
-            ownTransform.m_rotation.x +=
+            ownTransform.m_yawPitchRoll.x +=
                     (float) mainListener->getCursorPositionDeltaY() *
                     controllable3D.m_rotationSensitive;
-            ownTransform.m_rotation.y +=
+            ownTransform.m_yawPitchRoll.y +=
                     (float) mainListener->getCursorPositionDeltaX() *
                     controllable3D.m_rotationSensitive;
         }
 
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_R))
         {
-            ownTransform.m_rotation.x = ownTransform.m_rotation.y = ownTransform.m_rotation.z =
+            ownTransform.m_yawPitchRoll.x = ownTransform.m_yawPitchRoll.y = ownTransform.m_yawPitchRoll.z =
             ownTransform.m_position.x = ownTransform.m_position.y = ownTransform.m_position.z = 0.0f;
         }
 

@@ -23,18 +23,18 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
         TransformBase& ownTransform = transform->m_ownTransform;
 
         bool viewMatrixChanged = ownTransform.m_rotationChanged ||
-                                 ownTransform.m_positionChanged ||
-                                 ownTransform.m_scaleChanged;
-        ownTransform.m_quatRot = glm::angleAxis(
-            glm::radians(ownTransform.m_rotation.x),
+            ownTransform.m_positionChanged ||
+            ownTransform.m_scaleChanged;
+        ownTransform.m_rotation = glm::angleAxis(
+            glm::radians(ownTransform.m_yawPitchRoll.x),
             MathUtils::right3
         );
-        ownTransform.m_quatRot *= glm::angleAxis(
-            glm::radians(ownTransform.m_rotation.y),
+        ownTransform.m_rotation *= glm::angleAxis(
+            glm::radians(ownTransform.m_yawPitchRoll.y),
             MathUtils::up3
         );
-        ownTransform.m_quatRot *= glm::angleAxis(
-            glm::radians(ownTransform.m_rotation.z),
+        ownTransform.m_rotation *= glm::angleAxis(
+            glm::radians(ownTransform.m_yawPitchRoll.z),
             MathUtils::forward3
         );
 
@@ -44,7 +44,7 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
         {
             // RTS
             // #TODO: fix incorrect position. This -ownTransform.m_position may cause incorrect behaviour in TU, PW2d and C3DU transforms
-            renderingBase->m_viewMatrix = glm::toMat4(ownTransform.m_quatRot);
+            renderingBase->m_viewMatrix = glm::toMat4(ownTransform.m_rotation);
 
             renderingBase->m_viewMatrix = glm::translate(renderingBase->m_viewMatrix,
                 -ownTransform.m_position

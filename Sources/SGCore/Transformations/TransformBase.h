@@ -46,13 +46,13 @@ namespace SGCore
 
         glm::mat4 m_modelMatrix = glm::mat4(1);
 
-    // private:
         glm::vec3 m_lastPosition { 0.0 };
-        glm::vec3 m_rotation{ 0 };
+        // from Controllables3DUpdater, where x - yaw, y - pitch, z - roll
+        glm::vec3 m_yawPitchRoll { 0 }; 
         glm::vec3 m_lastScale = glm::vec3(0);
 
-        glm::quat m_quatRot;
-        glm::quat m_lastQuatRot;
+        glm::quat m_rotation;
+        glm::quat m_lastRotation;
     };
 
     /*template<>

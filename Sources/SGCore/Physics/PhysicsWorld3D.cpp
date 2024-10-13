@@ -172,7 +172,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                         perspective);
 
                     ownTransform.m_position = translation;
-                    ownTransform.m_quatRot = rotation;
+                    ownTransform.m_rotation = rotation;
 
                     bool translationChanged = false;
                     bool rotationChanged = false;
@@ -187,10 +187,10 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                         translationChanged = true;
                     }
 
-                    if (ownTransform.m_quatRot != ownTransform.m_lastQuatRot)
+                    if (ownTransform.m_rotation != ownTransform.m_lastRotation)
                     {
-                        ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_quatRot);                        
-                        ownTransform.m_lastQuatRot = ownTransform.m_quatRot;
+                        ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_rotation);
+                        ownTransform.m_lastRotation = ownTransform.m_rotation;
 
                         rotationChanged = true;
                     }

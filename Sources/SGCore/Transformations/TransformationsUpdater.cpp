@@ -95,9 +95,9 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             
             // rotation ================================================
             
-            if(ownTransform.m_lastQuatRot != ownTransform.m_quatRot)
+            if(ownTransform.m_lastRotation != ownTransform.m_rotation)
             {   
-                ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_quatRot);
+                ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_rotation);
 
                 const glm::vec3& column1 = ownTransform.m_rotationMatrix[0];
                 const glm::vec3& column2 = ownTransform.m_rotationMatrix[1];
@@ -107,7 +107,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
                 ownTransform.m_forward = -glm::vec3(column1.z, column2.z, column3.z);
                 ownTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);
 
-                ownTransform.m_lastQuatRot = ownTransform.m_quatRot;
+                ownTransform.m_lastRotation = ownTransform.m_rotation;
                 
                 rotationChanged = true;
             }
@@ -227,8 +227,8 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_position = translation;
                 finalTransform.m_lastPosition = translation;
                 
-                finalTransform.m_quatRot = rotation;
-                finalTransform.m_lastQuatRot = rotation;
+                finalTransform.m_rotation = rotation;
+                finalTransform.m_lastRotation = rotation;
                 
                 finalTransform.m_scale = scale;
                 finalTransform.m_lastScale = scale;
@@ -275,8 +275,8 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_position = translation;
                 finalTransform.m_lastPosition = translation;
                 
-                finalTransform.m_quatRot = rotation;
-                finalTransform.m_lastQuatRot = rotation;
+                finalTransform.m_rotation = rotation;
+                finalTransform.m_lastRotation = rotation;
                 
                 finalTransform.m_scale = scale;
                 finalTransform.m_lastScale = scale;
