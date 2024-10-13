@@ -5,7 +5,7 @@
 #include "FileNotFoundException.h"
 
 SGCore::FileNotFoundException::FileNotFoundException(const std::filesystem::path& filePath,
-                                                     const std::string& err) noexcept : std::exception(err.c_str())
+                                                     const std::string& err) noexcept : std::runtime_error(err.c_str())
 {
     m_filePath = filePath;
 }

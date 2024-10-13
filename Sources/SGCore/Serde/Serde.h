@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_SERDE_H
 #define SUNGEARENGINE_SERDE_H
 
+#include <optional>
+
 #include "SGCore/Utils/TypeTraits.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -57,10 +59,712 @@ namespace SGCore::Serde
 
     template<typename T, FormatType TFormatType>
     struct SerdeSpec;
-
+    
+    template<FormatType TFormatType>
+    struct SerializableValueContainer;
+    
+    template<FormatType TFormatType>
+    struct DeserializableValueContainer;
+    
+    template<typename T, FormatType TFormatType>
+    struct DeserializableValueView;
+    
+    template<typename T, FormatType TFormatType>
+    struct SerializableValueView;
+    
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
+    
+    /**
+     * Primary SerdeSpec structure. Use this structure body as example to implement custom SerdeSpec.\n
+     * @tparam T
+     */
+    template<typename T, FormatType TFormatType>
+    struct SerdeSpec : BaseTypes<>, DerivedTypes<>
+    {
+        static_assert(always_false<T>::value,
+                      "This type is not serializable. Please, implement specialization of SerdeSpec for this type.");
+        
+        /**
+         * The type name of T
+         */
+        static inline const std::string type_name = "unknown";
+        /**
+         * Is T is pointer type
+         */
+        static inline constexpr bool is_pointer_type = false;
+        /**
+         * OPTIONAL (IF TYPE IS POINTER): type that pointer points to
+         */
+        using element_type = void;
+        
+        /**
+         * Serializes only T type members.
+         * @param valueView
+         */
+        static void serialize(SerializableValueView<T, TFormatType>& valueView)
+        {
+        
+        }
+        
+        /**
+         * Deserializes only T type members.
+         * @param valueView
+         */
+        static void deserialize(DeserializableValueView<T, TFormatType>& valueView)
+        {
+        
+        }
+        
+        /**
+         * OPTIONAL (IF TYPE IS POINTER): getting raw pointer to object
+         * @param valueView
+         */
+        template<typename ValueViewT>
+        static T* getObjectRawPointer(ValueViewT& valueView) noexcept
+        {
+        
+        }
+        
+        /**
+         * OPTIONAL (IF TYPE IS POINTER): setting raw pointer to object
+         * @param valueView
+         */
+        template<typename ValueViewT, typename T0>
+        static void setObjectRawPointer(ValueViewT& valueView, T0* pointer) noexcept
+        {
+        
+        }
+    };
+    
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
+    
+    struct Utils
+    {
+        /**
+         * Is SerdeSpec of T provides base types.
+         * @tparam T
+         * @return
+         */
+        template<typename T, FormatType TFormatType>
+        static consteval bool isBaseTypesProvided()
+        {
+            if constexpr(requires { SerdeSpec<T, TFormatType>::base_classes_count; })
+            {
+                if constexpr(SerdeSpec<T, TFormatType>::base_classes_count > 0)
+                {
+                    if constexpr(requires { typename SerdeSpec<T, TFormatType>::template get_base_type<0>; })
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+        
+        /**
+        * Is SerdeSpec of T provides derived types.
+        * @tparam T
+        * @return
+        */
+        template<typename T, FormatType TFormatType>
+        static consteval bool isDerivedTypesProvided()
+        {
+            if constexpr(requires { SerdeSpec<T, TFormatType>::derived_classes_count; })
+            {
+                if constexpr(SerdeSpec<T, TFormatType>::derived_classes_count > 0)
+                {
+                    if constexpr(requires { typename SerdeSpec<T, TFormatType>::template get_derived_type<0>; })
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+    };
+    
+    // ================================================================
+    // ================================================================
+    // ================================================================
+    
+    struct Serializer
+    {
+        template<typename T, FormatType TFormatType>
+        friend struct SerializableValueView;
+        
+        template<FormatType TFormatType>
+        friend struct SerializableValueContainer;
+        
+        template<FormatType TFormatType>
+        friend struct DeserializableValueContainer;
+        
+        /**
+         * Converts object to some format (JSON, BSON, YAML, etc)
+         * @tparam T - Serializable type.
+         * @param value
+         * @param formatType
+         * @return
+         */
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
+        static std::string toFormat(T& value, FormatType formatType = m_defaultFormatType) noexcept
+        {
+            switch (formatType)
+            {
+                case FormatType::JSON:
+                {
+                    rapidjson::Document document;
+                    document.SetObject();
+                    
+                    return toJSON<CustomDerivedTypes>(document, value);
+                }
+                case FormatType::BSON:
+                    break;
+                case FormatType::YAML:
+                    break;
+            }
+            
+            return "";
+        }
+        
+        /**
+         * Deserializes object from some format (JSON, BSON, YAML, etc)
+         * @tparam T
+         * @param value
+         * @param formatType
+         * @return
+         */
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
+        static void fromFormat(const std::string& formattedText,
+                               T& outValue,
+                               std::string& outputLog,
+                               FormatType formatType = m_defaultFormatType) noexcept
+        {
+            switch (formatType)
+            {
+                case FormatType::JSON:
+                {
+                    rapidjson::Document document;
+                    document.Parse(formattedText.c_str());
+                    
+                    fromJSON<CustomDerivedTypes>(document, outputLog, outValue);
+                    
+                    break;
+                }
+                case FormatType::BSON:
+                    break;
+                case FormatType::YAML:
+                    break;
+            }
+        }
+    
+    private:
+        static inline FormatType m_defaultFormatType = SGCore::Serde::FormatType::JSON;
+        
+        /**
+         * Converts object to JSON format
+         * @tparam T - Serializable type.
+         * @param toDocument
+         * @param value
+         * @return
+         */
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
+        static std::string toJSON(rapidjson::Document& toDocument,
+                                  const T& value) noexcept
+        {
+            // adding version of document
+            toDocument.AddMember("version", "1", toDocument.GetAllocator());
+            
+            // adding type name of T
+            rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
+            typeNameSectionValue.SetString(SerdeSpec<T, FormatType::JSON>::type_name.c_str(),
+                                           SerdeSpec<T, FormatType::JSON>::type_name.length());
+            
+            // creating section that will contain all members of T
+            rapidjson::Value valueSectionValue(rapidjson::kObjectType);
+            
+            // ==== serialization code
+            
+            // creating view of value with format pointers
+            SerializableValueView<T, FormatType::JSON> valueView  { };
+            valueView.m_data = &value;
+            valueView.m_version = "1";
+            valueView.getValueContainer().m_document = &toDocument;
+            valueView.getValueContainer().m_thisValue = &valueSectionValue;
+            valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
+            
+            // serializing value with attempt at dynamic casts to derived types
+            serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView);
+            
+            // =======================
+            
+            // adding type name of T after serializing (because type name can be changed)
+            toDocument.AddMember("typeName", typeNameSectionValue, toDocument.GetAllocator());
+            
+            // adding value section to document
+            toDocument.AddMember("value", valueSectionValue, toDocument.GetAllocator());
+            
+            // converting to string
+            rapidjson::StringBuffer stringBuffer;
+            stringBuffer.Clear();
+            rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+            toDocument.Accept(writer);
+            
+            return stringBuffer.GetString();
+        }
+        
+        /**
+         * Converts JSON document to object.
+         * @tparam T
+         * @param toDocument
+         * @param value
+         * @return
+         */
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
+        static void fromJSON(rapidjson::Document& document,
+                             std::string& outputLog,
+                             T& outValue) noexcept
+        {
+            // trying to get 'version' member from document
+            if(!document.HasMember("version"))
+            {
+                outputLog = "Error: Broken JSON document: root member 'version' does not exist.\n";
+                return;
+            }
+            
+            // getting 'version' member from document
+            const std::string version = document["version"].GetString();
+            
+            // trying to get 'typeName' member from document
+            if(!document.HasMember("typeName"))
+            {
+                outputLog = "Error: Broken JSON document: root member 'typeName' does not exist.\n";
+                return;
+            }
+            
+            // getting 'typeName' member from document
+            const std::string typeName = document["typeName"].GetString();
+            
+            // trying to get 'value' member from document
+            if(!document.HasMember("value"))
+            {
+                outputLog = "Error: Broken JSON document: root member 'value' does not exist.\n";
+                return;
+            }
+            
+            // getting 'value' member from document
+            auto& jsonValue = document["value"];
+            
+            DeserializableValueView<T, FormatType::JSON> valueView;
+            valueView.m_data = &outValue;
+            valueView.m_version = version;
+            valueView.getValueContainer().m_document = &document;
+            valueView.getValueContainer().m_thisValue = &jsonValue;
+            valueView.getValueContainer().m_typeName = typeName;
+            valueView.getValueContainer().m_outputLog = &outputLog;
+            
+            deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView);
+        }
+        
+        /**
+         * Serializes value with attempt at dynamic casts to derived types.\n
+         * If all attempts of casting value to derived types are failed than serializing only T type members and members of all base types.
+         * @tparam T - Serializable type.
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes, size_t... CustomDerivedTypesIndices>
+        static void serializeWithDynamicChecksImpl(SerializableValueView<T, TFormatType>& valueView, std::index_sequence<CustomDerivedTypesIndices...>)
+        {
+            if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks
+            {
+                // getting element_type that pointer contains
+                using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
+                
+                // creating view that contains element_type object
+                SerializableValueView<ptr_element_type, TFormatType> tmpView { };
+                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.m_version = valueView.m_version;
+                tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
+                
+                // serializing base types
+                serializeBaseTypes(tmpView);
+                
+                if constexpr(sizeof...(CustomDerivedTypesIndices) > 0)
+                {
+                    // serializing derived types
+                    serializeDerivedTypes<ptr_element_type, TFormatType,
+                            typename CustomDerivedTypes::template get_type<CustomDerivedTypesIndices...>>(tmpView);
+                }
+                else
+                {
+                    // serializing derived types
+                    serializeDerivedTypes<ptr_element_type, TFormatType>(tmpView);
+                }
+                
+                // serializing element_type type members
+                SerdeSpec<T, TFormatType>::serialize(valueView);
+                
+                return;
+            }
+            
+            // serialize without dynamic checks (static serialization)
+            
+            // serializing base types
+            serializeBaseTypes(valueView);
+            
+            // serializing only T type members
+            SerdeSpec<T, TFormatType>::serialize(valueView);
+        }
+        
+        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes>
+        static void serializeWithDynamicChecks(SerializableValueView<T, TFormatType>& valueView)
+        {
+            serializeWithDynamicChecksImpl<T, TFormatType, CustomDerivedTypes>(valueView, std::make_index_sequence<CustomDerivedTypes::types_count> { });
+        }
+        
+        /**
+         * Deserializes value with attempt at dynamic casts to derived types.\n
+         * If all attempts of casting value to derived types are failed than serializing only T type members and members of all base types.\n
+         * If one of derived types is matches to typeName than it will be deserialized.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes, size_t... CustomDerivedTypesIndices>
+        static void deserializeWithDynamicChecksImpl(DeserializableValueView<T, TFormatType>& valueView, std::index_sequence<CustomDerivedTypesIndices...>)
+        {
+            if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // deserializing value using dynamic checks
+            {
+                // getting element_type that pointer contains
+                using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
+                
+                // creating view that contains element_type object
+                DeserializableValueView<ptr_element_type, TFormatType> tmpView { };
+                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.m_version = valueView.m_version;
+                
+                if constexpr(sizeof...(CustomDerivedTypesIndices) > 0)
+                {
+                    // trying to deserialize T as one of its derived types (including custom derived types)
+                    deserializeAsOneOfDerivedTypes<ptr_element_type, TFormatType,
+                            typename CustomDerivedTypes::template get_type<CustomDerivedTypesIndices...>>(tmpView);
+                }
+                else
+                {
+                    // trying to deserialize T as one of its derived types (excluding custom derived types)
+                    deserializeAsOneOfDerivedTypes<ptr_element_type, TFormatType>(tmpView);
+                }
+                
+                // if one of derived types T was deserialized
+                if(tmpView.m_data)
+                {
+                    // setting new raw pointer to value view
+                    SerdeSpec<T, TFormatType>::setObjectRawPointer(valueView, tmpView.m_data);
+                }
+                else
+                {
+                    // deserializing element_type type members. SerdeSpec deserialize of pointer must allocate pointer
+                    SerdeSpec<T, TFormatType>::deserialize(valueView);
+                    
+                    // assigning allocated pointer
+                    tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
+                    
+                    // deserializing base types of T
+                    deserializeBaseTypes(tmpView);
+                }
+                
+                return;
+            }
+            
+            // deserialize without dynamic checks (static deserialization)
+            
+            // deserializing base types
+            deserializeBaseTypes(valueView);
+            
+            // deserializing only T type members
+            SerdeSpec<T, TFormatType>::deserialize(valueView);
+        }
+        
+        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes>
+        static void deserializeWithDynamicChecks(DeserializableValueView<T, TFormatType>& valueView)
+        {
+            deserializeWithDynamicChecksImpl<T, TFormatType, CustomDerivedTypes>(valueView, std::make_index_sequence<CustomDerivedTypes::types_count> { });
+        }
+        
+        // =====================================================================================
+        // =====================================================================================
+        // =====================================================================================
+        
+        /**
+         * Serializes base type (BaseT) of parent type (OriginalT)
+         * @tparam OriginalT
+         * @tparam BaseT
+         * @param valueView
+         */
+        template<typename OriginalT, typename BaseT, FormatType TFormatType>
+        static void serializeBaseType(SerializableValueView<OriginalT, TFormatType>& valueView) noexcept
+        {
+            // converting OriginalT value view to BaseT value view to pass into SerdeSpec
+            SerializableValueView<BaseT, TFormatType> tmpView { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_version = valueView.m_version;
+            tmpView.m_data = &(static_cast<const BaseT&>(*valueView.m_data));
+            
+            // serialize BaseT`s base types
+            serializeBaseTypes(tmpView);
+            
+            // passing tmpView with BaseT to SerdeSpec
+            SerdeSpec<BaseT, TFormatType>::serialize(tmpView);
+        }
+        
+        /**
+         * Implementation of serializing base types of T. Uses unpacking.
+         * @tparam T - Serializable type.
+         * @tparam Indices
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, std::size_t... Indices>
+        static void serializeBaseTypesImpl(SerializableValueView<T, TFormatType>& valueView,
+                                           std::index_sequence<Indices...>) noexcept
+        {
+            // unpacking variadic template
+            (serializeBaseType<T,
+                    typename SerdeSpec<T, TFormatType>::template get_base_type<Indices>,
+                    TFormatType>(valueView), ...);
+        }
+        
+        /**
+         * Serializes all base types of T.
+         * @tparam T - Serializable type.
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType>
+        static void serializeBaseTypes(SerializableValueView<T, TFormatType>& valueView) noexcept
+        {
+            // serializing base types only if information of them was provided
+            if constexpr(Utils::isBaseTypesProvided<T, TFormatType>())
+            {
+                serializeBaseTypesImpl<T, TFormatType>
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::base_classes_count> {});
+            }
+        }
+        
+        // =====================================================================================
+        // =====================================================================================
+        // =====================================================================================
+        
+        /**
+         * Serializes derived type (BaseT) of parent type (OriginalT)
+         * @tparam OriginalT
+         * @tparam BaseT
+         * @param valueView
+         */
+        template<typename OriginalT, typename DerivedT, FormatType TFormatType>
+        static void serializeDerivedType(SerializableValueView<OriginalT, TFormatType>& valueView) noexcept
+        {
+            const DerivedT* derivedTypeObj = nullptr;
+            if constexpr(std::is_polymorphic_v<OriginalT>)
+            {
+                derivedTypeObj = dynamic_cast<const DerivedT*>(valueView.m_data);
+            }
+            
+            if(derivedTypeObj)
+            {
+                // converting OriginalT value view to DerivedT value view to pass into SerdeSpec
+                SerializableValueView<DerivedT, TFormatType> tmpView { };
+                tmpView.getValueContainer() = valueView.getValueContainer();
+                tmpView.m_version = valueView.m_version;
+                tmpView.m_data = derivedTypeObj;
+                
+                // setting new type name
+                tmpView.getValueContainer().setTypeName(SerdeSpec<DerivedT, TFormatType>::type_name);
+                
+                // trying to serialize as one of DerivedT`s derived types
+                serializeDerivedTypes<DerivedT, TFormatType>(tmpView);
+                
+                // passing tmpView with DerivedT to SerdeSpec
+                SerdeSpec<DerivedT, TFormatType>::serialize(tmpView);
+            }
+        }
+        
+        /**
+         * Implementation of serializing derived types of T. Uses unpacking.
+         * @tparam T - Serializable type.
+         * @tparam Indices
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes, std::size_t... BuiltinDerivedTypesIndices>
+        static void serializeDerivedTypesImpl(SerializableValueView<T, TFormatType>& valueView,
+                                              std::index_sequence<BuiltinDerivedTypesIndices...>) noexcept
+        {
+            // unpacking variadic template
+            (serializeDerivedType<T,
+                    typename SerdeSpec<T, TFormatType>::template get_derived_type<BuiltinDerivedTypesIndices>,
+                    TFormatType>(valueView), ...);
+            
+            // unpacking variadic template for custom derived types
+            (serializeDerivedType<T, CustomDerivedTypes, TFormatType>(valueView), ...);
+        }
+        
+        /**
+         * Serializes all derived types of T.
+         * @tparam T - Serializable type.
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes>
+        static void serializeDerivedTypes(SerializableValueView<T, TFormatType>& valueView) noexcept
+        {
+            // serializing derived types only if information of them was provided
+            if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
+            {
+                std::printf("as derived\n");
+                serializeDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> { });
+                return;
+            }
+            
+            serializeDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>(valueView, std::make_index_sequence<0> { });
+        }
+        
+        // =====================================================================================
+        // =====================================================================================
+        // =====================================================================================
+        
+        /**
+         * Serializes base type (BaseT) of parent type (OriginalT)
+         * @tparam OriginalT
+         * @tparam BaseT
+         * @param valueView
+         */
+        template<typename OriginalT, typename BaseT, FormatType TFormatType>
+        static void deserializeBaseType(DeserializableValueView<OriginalT, TFormatType>& valueView) noexcept
+        {
+            // converting OriginalT value view to BaseT value view to pass into SerdeSpec
+            DeserializableValueView<BaseT, TFormatType> tmpView { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_version = valueView.m_version;
+            tmpView.m_data = &(static_cast<BaseT&>(*valueView.m_data));
+            
+            // serialize BaseT`s base types
+            deserializeBaseTypes(tmpView);
+            
+            // passing tmpView with BaseT to SerdeSpec
+            SerdeSpec<BaseT, TFormatType>::deserialize(tmpView);
+        }
+        
+        /**
+         * Implementation of serializing base types of T. Uses unpacking.
+         * @tparam T
+         * @tparam Indices
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, std::size_t... Indices>
+        static void deserializeBaseTypesImpl(DeserializableValueView<T, TFormatType>& valueView,
+                                             std::index_sequence<Indices...>) noexcept
+        {
+            // unpacking variadic template
+            (deserializeBaseType<T,
+                    typename SerdeSpec<T, TFormatType>::template get_base_type<Indices>,
+                    TFormatType>(valueView), ...);
+        }
+        
+        /**
+         * Deserializes all base types of T.
+         * @tparam T
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType>
+        static void deserializeBaseTypes(DeserializableValueView<T, TFormatType>& valueView) noexcept
+        {
+            // deserializing base types only if information of them was provided
+            if constexpr(Utils::isBaseTypesProvided<T, TFormatType>())
+            {
+                deserializeBaseTypesImpl<T, TFormatType>
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::base_classes_count> {});
+            }
+        }
+        
+        // =========================================================================
+        
+        /**
+         * Tries to deserialize value in OriginalT value view as DerivedT.
+         * @tparam OriginalT
+         * @tparam DerivedT
+         * @tparam TFormatType
+         * @param valueView
+         */
+        template<typename OriginalT, typename DerivedT, FormatType TFormatType>
+        static void deserializeAsDerivedType(DeserializableValueView<OriginalT, TFormatType>& valueView) noexcept
+        {
+            // creating temporary view that contains pointer to DerivedT
+            DeserializableValueView<DerivedT, TFormatType> tmpView { };
+            tmpView.getValueContainer() = valueView.getValueContainer();
+            tmpView.m_version = valueView.m_version;
+            
+            // typeNames are equal. DerivedT is suitable
+            if(valueView.getValueContainer().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
+            {
+                // allocating object of DerivedT
+                auto* derivedObject = new DerivedT();
+                tmpView.m_data = derivedObject;
+                
+                // deserializing base types of DerivedT
+                deserializeBaseTypes(tmpView);
+                
+                // deserializing members of DerivedT
+                SerdeSpec<DerivedT, TFormatType>::deserialize(tmpView);
+                
+                // assigning allocated pointer to original valueView
+                valueView.m_data = derivedObject;
+                
+                return;
+            }
+            
+            // if DerivedT is not suitable than continue to search
+            deserializeAsOneOfDerivedTypes(tmpView);
+            
+            // assigning allocated pointer to original valueView
+            valueView.m_data = tmpView.m_data;
+        }
+        
+        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes, std::size_t... BuiltinDerivedTypesIndices>
+        static void deserializeAsOneOfDerivedTypesImpl(DeserializableValueView<T, TFormatType>& valueView,
+                                                       std::index_sequence<BuiltinDerivedTypesIndices...>) noexcept
+        {
+            // unpacking variadic template
+            (deserializeAsDerivedType<T,
+                    typename SerdeSpec<T, TFormatType>::template get_derived_type<BuiltinDerivedTypesIndices>,
+                    TFormatType>(valueView), ...);
+            
+            // unpacking variadic template for custom derived types
+            (deserializeAsDerivedType<T, CustomDerivedTypes, TFormatType>(valueView), ...);
+        }
+        
+        /**
+         * Tries to deserialize document value in valueView as one of derived types of T.
+         * @tparam T
+         * @tparam TFormatType
+         * @param valueView
+         */
+        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes>
+        static void deserializeAsOneOfDerivedTypes(DeserializableValueView<T, TFormatType>& valueView) noexcept
+        {
+            // deserializing base types only if information of them was provided
+            if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
+            {
+                deserializeAsOneOfDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> { });
+                
+                return;
+            }
+            
+            deserializeAsOneOfDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>(valueView, std::make_index_sequence<0> { });
+        }
+    };
 
     /**
      * Container that contains pointers to object format specific types.\n
@@ -821,700 +1525,9 @@ namespace SGCore::Serde
         DeserializableValueContainer<TFormatType> m_valueContainer { };
     };
 
-    // ==============================================================================
-    // ==============================================================================
-    // ==============================================================================
-
-    /**
-     * Primary SerdeSpec structure. Use this structure body as example to implement custom SerdeSpec.\n
-     * @tparam T
-     */
-    template<typename T, FormatType TFormatType>
-    struct SerdeSpec : BaseTypes<>, DerivedTypes<>
-    {
-        static_assert(always_false<T>::value,
-                      "This type is not serializable. Please, implement specialization of SerdeSpec for this type.");
-
-        /**
-         * The type name of T
-         */
-        static inline const std::string type_name = "unknown";
-        /**
-         * Is T is pointer type
-         */
-        static inline constexpr bool is_pointer_type = false;
-        /**
-         * OPTIONAL (IF TYPE IS POINTER): type that pointer points to
-         */
-        using element_type = void;
-
-        /**
-         * Serializes only T type members.
-         * @param valueView
-         */
-        static void serialize(SerializableValueView<T, TFormatType>& valueView)
-        {
-
-        }
-
-        /**
-         * Deserializes only T type members.
-         * @param valueView
-         */
-        static void deserialize(DeserializableValueView<T, TFormatType>& valueView)
-        {
-
-        }
-
-        /**
-         * OPTIONAL (IF TYPE IS POINTER): getting raw pointer to object
-         * @param valueView
-         */
-        template<typename ValueViewT>
-        static T* getObjectRawPointer(ValueViewT& valueView) noexcept
-        {
-
-        }
-
-        /**
-         * OPTIONAL (IF TYPE IS POINTER): setting raw pointer to object
-         * @param valueView
-         */
-        template<typename ValueViewT, typename T0>
-        static void setObjectRawPointer(ValueViewT& valueView, T0* pointer) noexcept
-        {
-
-        }
-    };
-
-
     // ================================================================
     // ================================================================
     // ================================================================
-
-    struct Utils
-    {
-        /**
-         * Is SerdeSpec of T provides base types.
-         * @tparam T
-         * @return
-         */
-        template<typename T, FormatType TFormatType>
-        static consteval bool isBaseTypesProvided()
-        {
-            if constexpr(requires { SerdeSpec<T, TFormatType>::base_classes_count; })
-            {
-                if constexpr(SerdeSpec<T, TFormatType>::base_classes_count > 0)
-                {
-                    if constexpr(requires { typename SerdeSpec<T, TFormatType>::template get_base_type<0>; })
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /**
-        * Is SerdeSpec of T provides derived types.
-        * @tparam T
-        * @return
-        */
-        template<typename T, FormatType TFormatType>
-        static consteval bool isDerivedTypesProvided()
-        {
-            if constexpr(requires { SerdeSpec<T, TFormatType>::derived_classes_count; })
-            {
-                if constexpr(SerdeSpec<T, TFormatType>::derived_classes_count > 0)
-                {
-                    if constexpr(requires { typename SerdeSpec<T, TFormatType>::template get_derived_type<0>; })
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-    };
-
-    // ================================================================
-    // ================================================================
-    // ================================================================
-
-    struct Serializer
-    {
-        template<typename T, FormatType TFormatType>
-        friend struct SerializableValueView;
-
-        template<FormatType TFormatType>
-        friend struct SerializableValueContainer;
-
-        template<FormatType TFormatType>
-        friend struct DeserializableValueContainer;
-
-        /**
-         * Converts object to some format (JSON, BSON, YAML, etc)
-         * @tparam T - Serializable type.
-         * @param value
-         * @param formatType
-         * @return
-         */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        static std::string toFormat(T& value, FormatType formatType = m_defaultFormatType) noexcept
-        {
-            switch (formatType)
-            {
-                case FormatType::JSON:
-                {
-                    rapidjson::Document document;
-                    document.SetObject();
-
-                    return toJSON<CustomDerivedTypes>(document, value);
-                }
-                case FormatType::BSON:
-                    break;
-                case FormatType::YAML:
-                    break;
-            }
-
-            return "";
-        }
-
-        /**
-         * Deserializes object from some format (JSON, BSON, YAML, etc)
-         * @tparam T
-         * @param value
-         * @param formatType
-         * @return
-         */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        static void fromFormat(const std::string& formattedText,
-                               T& outValue,
-                               std::string& outputLog,
-                               FormatType formatType = m_defaultFormatType) noexcept
-        {
-            switch (formatType)
-            {
-                case FormatType::JSON:
-                {
-                    rapidjson::Document document;
-                    document.Parse(formattedText.c_str());
-
-                    fromJSON<CustomDerivedTypes>(document, outputLog, outValue);
-
-                    break;
-                }
-                case FormatType::BSON:
-                    break;
-                case FormatType::YAML:
-                    break;
-            }
-        }
-
-    private:
-        static inline FormatType m_defaultFormatType = SGCore::Serde::FormatType::JSON;
-
-        /**
-         * Converts object to JSON format
-         * @tparam T - Serializable type.
-         * @param toDocument
-         * @param value
-         * @return
-         */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        static std::string toJSON(rapidjson::Document& toDocument,
-                                  const T& value) noexcept
-        {
-            // adding version of document
-            toDocument.AddMember("version", "1", toDocument.GetAllocator());
-
-            // adding type name of T
-            rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
-            typeNameSectionValue.SetString(SerdeSpec<T, FormatType::JSON>::type_name.c_str(),
-                                           SerdeSpec<T, FormatType::JSON>::type_name.length());
-
-            // creating section that will contain all members of T
-            rapidjson::Value valueSectionValue(rapidjson::kObjectType);
-
-            // ==== serialization code
-
-            // creating view of value with format pointers
-            SerializableValueView<T, FormatType::JSON> valueView  { };
-            valueView.m_data = &value;
-            valueView.m_version = "1";
-            valueView.getValueContainer().m_document = &toDocument;
-            valueView.getValueContainer().m_thisValue = &valueSectionValue;
-            valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
-
-            // serializing value with attempt at dynamic casts to derived types
-            serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView);
-
-            // =======================
-
-            // adding type name of T after serializing (because type name can be changed)
-            toDocument.AddMember("typeName", typeNameSectionValue, toDocument.GetAllocator());
-
-            // adding value section to document
-            toDocument.AddMember("value", valueSectionValue, toDocument.GetAllocator());
-
-            // converting to string
-            rapidjson::StringBuffer stringBuffer;
-            stringBuffer.Clear();
-            rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
-            toDocument.Accept(writer);
-
-            return stringBuffer.GetString();
-        }
-
-        /**
-         * Converts JSON document to object.
-         * @tparam T
-         * @param toDocument
-         * @param value
-         * @return
-         */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        static void fromJSON(rapidjson::Document& document,
-                             std::string& outputLog,
-                             T& outValue) noexcept
-        {
-            // trying to get 'version' member from document
-            if(!document.HasMember("version"))
-            {
-                outputLog = "Error: Broken JSON document: root member 'version' does not exist.\n";
-                return;
-            }
-
-            // getting 'version' member from document
-            const std::string version = document["version"].GetString();
-
-            // trying to get 'typeName' member from document
-            if(!document.HasMember("typeName"))
-            {
-                outputLog = "Error: Broken JSON document: root member 'typeName' does not exist.\n";
-                return;
-            }
-
-            // getting 'typeName' member from document
-            const std::string typeName = document["typeName"].GetString();
-
-            // trying to get 'value' member from document
-            if(!document.HasMember("value"))
-            {
-                outputLog = "Error: Broken JSON document: root member 'value' does not exist.\n";
-                return;
-            }
-
-            // getting 'value' member from document
-            auto& jsonValue = document["value"];
-
-            DeserializableValueView<T, FormatType::JSON> valueView;
-            valueView.m_data = &outValue;
-            valueView.m_version = version;
-            valueView.getValueContainer().m_document = &document;
-            valueView.getValueContainer().m_thisValue = &jsonValue;
-            valueView.getValueContainer().m_typeName = typeName;
-            valueView.getValueContainer().m_outputLog = &outputLog;
-
-            deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView);
-        }
-
-        /**
-         * Serializes value with attempt at dynamic casts to derived types.\n
-         * If all attempts of casting value to derived types are failed than serializing only T type members and members of all base types.
-         * @tparam T - Serializable type.
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes, size_t... CustomDerivedTypesIndices>
-        static void serializeWithDynamicChecksImpl(SerializableValueView<T, TFormatType>& valueView, std::index_sequence<CustomDerivedTypesIndices...>)
-        {
-            if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks
-            {
-                // getting element_type that pointer contains
-                using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
-
-                // creating view that contains element_type object
-                SerializableValueView<ptr_element_type, TFormatType> tmpView { };
-                tmpView.getValueContainer() = valueView.getValueContainer();
-                tmpView.m_version = valueView.m_version;
-                tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
-
-                // serializing base types
-                serializeBaseTypes(tmpView);
-
-                if constexpr(sizeof...(CustomDerivedTypesIndices) > 0)
-                {
-                    // serializing derived types
-                    serializeDerivedTypes<ptr_element_type, TFormatType,
-                            typename CustomDerivedTypes::template get_type<CustomDerivedTypesIndices...>>(tmpView);
-                }
-                else
-                {
-                    // serializing derived types
-                    serializeDerivedTypes<ptr_element_type, TFormatType>(tmpView);
-                }
-
-                // serializing element_type type members
-                SerdeSpec<T, TFormatType>::serialize(valueView);
-
-                return;
-            }
-
-            // serialize without dynamic checks (static serialization)
-
-            // serializing base types
-            serializeBaseTypes(valueView);
-
-            // serializing only T type members
-            SerdeSpec<T, TFormatType>::serialize(valueView);
-        }
-
-        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes>
-        static void serializeWithDynamicChecks(SerializableValueView<T, TFormatType>& valueView)
-        {
-            serializeWithDynamicChecksImpl<T, TFormatType, CustomDerivedTypes>(valueView, std::make_index_sequence<CustomDerivedTypes::types_count> { });
-        }
-
-        /**
-         * Deserializes value with attempt at dynamic casts to derived types.\n
-         * If all attempts of casting value to derived types are failed than serializing only T type members and members of all base types.\n
-         * If one of derived types is matches to typeName than it will be deserialized.
-         * @tparam T
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes, size_t... CustomDerivedTypesIndices>
-        static void deserializeWithDynamicChecksImpl(DeserializableValueView<T, TFormatType>& valueView, std::index_sequence<CustomDerivedTypesIndices...>)
-        {
-            if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // deserializing value using dynamic checks
-            {
-                // getting element_type that pointer contains
-                using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
-
-                // creating view that contains element_type object
-                DeserializableValueView<ptr_element_type, TFormatType> tmpView { };
-                tmpView.getValueContainer() = valueView.getValueContainer();
-                tmpView.m_version = valueView.m_version;
-
-                if constexpr(sizeof...(CustomDerivedTypesIndices) > 0)
-                {
-                    // trying to deserialize T as one of its derived types (including custom derived types)
-                    deserializeAsOneOfDerivedTypes<ptr_element_type, TFormatType,
-                            typename CustomDerivedTypes::template get_type<CustomDerivedTypesIndices...>>(tmpView);
-                }
-                else
-                {
-                    // trying to deserialize T as one of its derived types (excluding custom derived types)
-                    deserializeAsOneOfDerivedTypes<ptr_element_type, TFormatType>(tmpView);
-                }
-
-                // if one of derived types T was deserialized
-                if(tmpView.m_data)
-                {
-                    // setting new raw pointer to value view
-                    SerdeSpec<T, TFormatType>::setObjectRawPointer(valueView, tmpView.m_data);
-                }
-                else
-                {
-                    // deserializing element_type type members. SerdeSpec deserialize of pointer must allocate pointer
-                    SerdeSpec<T, TFormatType>::deserialize(valueView);
-
-                    // assigning allocated pointer
-                    tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
-
-                    // deserializing base types of T
-                    deserializeBaseTypes(tmpView);
-                }
-
-                return;
-            }
-
-            // deserialize without dynamic checks (static deserialization)
-
-            // deserializing base types
-            deserializeBaseTypes(valueView);
-
-            // deserializing only T type members
-            SerdeSpec<T, TFormatType>::deserialize(valueView);
-        }
-
-        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes>
-        static void deserializeWithDynamicChecks(DeserializableValueView<T, TFormatType>& valueView)
-        {
-            deserializeWithDynamicChecksImpl<T, TFormatType, CustomDerivedTypes>(valueView, std::make_index_sequence<CustomDerivedTypes::types_count> { });
-        }
-
-        // =====================================================================================
-        // =====================================================================================
-        // =====================================================================================
-
-        /**
-         * Serializes base type (BaseT) of parent type (OriginalT)
-         * @tparam OriginalT
-         * @tparam BaseT
-         * @param valueView
-         */
-        template<typename OriginalT, typename BaseT, FormatType TFormatType>
-        static void serializeBaseType(SerializableValueView<OriginalT, TFormatType>& valueView) noexcept
-        {
-            // converting OriginalT value view to BaseT value view to pass into SerdeSpec
-            SerializableValueView<BaseT, TFormatType> tmpView { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_version = valueView.m_version;
-            tmpView.m_data = &(static_cast<const BaseT&>(*valueView.m_data));
-
-            // serialize BaseT`s base types
-            serializeBaseTypes(tmpView);
-
-            // passing tmpView with BaseT to SerdeSpec
-            SerdeSpec<BaseT, TFormatType>::serialize(tmpView);
-        }
-
-        /**
-         * Implementation of serializing base types of T. Uses unpacking.
-         * @tparam T - Serializable type.
-         * @tparam Indices
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType, std::size_t... Indices>
-        static void serializeBaseTypesImpl(SerializableValueView<T, TFormatType>& valueView,
-                                           std::index_sequence<Indices...>) noexcept
-        {
-            // unpacking variadic template
-            (serializeBaseType<T,
-                    typename SerdeSpec<T, TFormatType>::template get_base_type<Indices>,
-                    TFormatType>(valueView), ...);
-        }
-
-        /**
-         * Serializes all base types of T.
-         * @tparam T - Serializable type.
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType>
-        static void serializeBaseTypes(SerializableValueView<T, TFormatType>& valueView) noexcept
-        {
-            // serializing base types only if information of them was provided
-            if constexpr(Utils::isBaseTypesProvided<T, TFormatType>())
-            {
-                serializeBaseTypesImpl<T, TFormatType>
-                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::base_classes_count> {});
-            }
-        }
-
-        // =====================================================================================
-        // =====================================================================================
-        // =====================================================================================
-
-        /**
-         * Serializes derived type (BaseT) of parent type (OriginalT)
-         * @tparam OriginalT
-         * @tparam BaseT
-         * @param valueView
-         */
-        template<typename OriginalT, typename DerivedT, FormatType TFormatType>
-        static void serializeDerivedType(SerializableValueView<OriginalT, TFormatType>& valueView) noexcept
-        {
-            const DerivedT* derivedTypeObj = nullptr;
-            if constexpr(std::is_polymorphic_v<OriginalT>)
-            {
-                derivedTypeObj = dynamic_cast<const DerivedT*>(valueView.m_data);
-            }
-
-            if(derivedTypeObj)
-            {
-                // converting OriginalT value view to DerivedT value view to pass into SerdeSpec
-                SerializableValueView<DerivedT, TFormatType> tmpView { };
-                tmpView.getValueContainer() = valueView.getValueContainer();
-                tmpView.m_version = valueView.m_version;
-                tmpView.m_data = derivedTypeObj;
-
-                // setting new type name
-                tmpView.getValueContainer().setTypeName(SerdeSpec<DerivedT, TFormatType>::type_name);
-
-                // trying to serialize as one of DerivedT`s derived types
-                serializeDerivedTypes<DerivedT, TFormatType>(tmpView);
-
-                // passing tmpView with DerivedT to SerdeSpec
-                SerdeSpec<DerivedT, TFormatType>::serialize(tmpView);
-            }
-        }
-
-        /**
-         * Implementation of serializing derived types of T. Uses unpacking.
-         * @tparam T - Serializable type.
-         * @tparam Indices
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes, std::size_t... BuiltinDerivedTypesIndices>
-        static void serializeDerivedTypesImpl(SerializableValueView<T, TFormatType>& valueView,
-                                              std::index_sequence<BuiltinDerivedTypesIndices...>) noexcept
-        {
-            // unpacking variadic template
-            (serializeDerivedType<T,
-                    typename SerdeSpec<T, TFormatType>::template get_derived_type<BuiltinDerivedTypesIndices>,
-                    TFormatType>(valueView), ...);
-
-            // unpacking variadic template for custom derived types
-            (serializeDerivedType<T, CustomDerivedTypes, TFormatType>(valueView), ...);
-        }
-
-        /**
-         * Serializes all derived types of T.
-         * @tparam T - Serializable type.
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes>
-        static void serializeDerivedTypes(SerializableValueView<T, TFormatType>& valueView) noexcept
-        {
-            // serializing derived types only if information of them was provided
-            if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
-            {
-                std::printf("as derived\n");
-                serializeDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>
-                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> { });
-                return;
-            }
-
-            serializeDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>(valueView, std::make_index_sequence<0> { });
-        }
-
-        // =====================================================================================
-        // =====================================================================================
-        // =====================================================================================
-
-        /**
-         * Serializes base type (BaseT) of parent type (OriginalT)
-         * @tparam OriginalT
-         * @tparam BaseT
-         * @param valueView
-         */
-        template<typename OriginalT, typename BaseT, FormatType TFormatType>
-        static void deserializeBaseType(DeserializableValueView<OriginalT, TFormatType>& valueView) noexcept
-        {
-            // converting OriginalT value view to BaseT value view to pass into SerdeSpec
-            DeserializableValueView<BaseT, TFormatType> tmpView { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_version = valueView.m_version;
-            tmpView.m_data = &(static_cast<BaseT&>(*valueView.m_data));
-
-            // serialize BaseT`s base types
-            deserializeBaseTypes(tmpView);
-
-            // passing tmpView with BaseT to SerdeSpec
-            SerdeSpec<BaseT, TFormatType>::deserialize(tmpView);
-        }
-
-        /**
-         * Implementation of serializing base types of T. Uses unpacking.
-         * @tparam T
-         * @tparam Indices
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType, std::size_t... Indices>
-        static void deserializeBaseTypesImpl(DeserializableValueView<T, TFormatType>& valueView,
-                                             std::index_sequence<Indices...>) noexcept
-        {
-            // unpacking variadic template
-            (deserializeBaseType<T,
-                    typename SerdeSpec<T, TFormatType>::template get_base_type<Indices>,
-                    TFormatType>(valueView), ...);
-        }
-
-        /**
-         * Deserializes all base types of T.
-         * @tparam T
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType>
-        static void deserializeBaseTypes(DeserializableValueView<T, TFormatType>& valueView) noexcept
-        {
-            // deserializing base types only if information of them was provided
-            if constexpr(Utils::isBaseTypesProvided<T, TFormatType>())
-            {
-                deserializeBaseTypesImpl<T, TFormatType>
-                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::base_classes_count> {});
-            }
-        }
-
-        // =========================================================================
-
-        /**
-         * Tries to deserialize value in OriginalT value view as DerivedT.
-         * @tparam OriginalT
-         * @tparam DerivedT
-         * @tparam TFormatType
-         * @param valueView
-         */
-        template<typename OriginalT, typename DerivedT, FormatType TFormatType>
-        static void deserializeAsDerivedType(DeserializableValueView<OriginalT, TFormatType>& valueView) noexcept
-        {
-            // creating temporary view that contains pointer to DerivedT
-            DeserializableValueView<DerivedT, TFormatType> tmpView { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_version = valueView.m_version;
-
-            // typeNames are equal. DerivedT is suitable
-            if(valueView.getValueContainer().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
-            {
-                // allocating object of DerivedT
-                auto* derivedObject = new DerivedT();
-                tmpView.m_data = derivedObject;
-
-                // deserializing base types of DerivedT
-                deserializeBaseTypes(tmpView);
-
-                // deserializing members of DerivedT
-                SerdeSpec<DerivedT, TFormatType>::deserialize(tmpView);
-
-                // assigning allocated pointer to original valueView
-                valueView.m_data = derivedObject;
-
-                return;
-            }
-
-            // if DerivedT is not suitable than continue to search
-            deserializeAsOneOfDerivedTypes(tmpView);
-
-            // assigning allocated pointer to original valueView
-            valueView.m_data = tmpView.m_data;
-        }
-
-        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes, std::size_t... BuiltinDerivedTypesIndices>
-        static void deserializeAsOneOfDerivedTypesImpl(DeserializableValueView<T, TFormatType>& valueView,
-                                                       std::index_sequence<BuiltinDerivedTypesIndices...>) noexcept
-        {
-            // unpacking variadic template
-            (deserializeAsDerivedType<T,
-                    typename SerdeSpec<T, TFormatType>::template get_derived_type<BuiltinDerivedTypesIndices>,
-                    TFormatType>(valueView), ...);
-
-            // unpacking variadic template for custom derived types
-            (deserializeAsDerivedType<T, CustomDerivedTypes, TFormatType>(valueView), ...);
-        }
-
-        /**
-         * Tries to deserialize document value in valueView as one of derived types of T.
-         * @tparam T
-         * @tparam TFormatType
-         * @param valueView
-         */
-        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes>
-        static void deserializeAsOneOfDerivedTypes(DeserializableValueView<T, TFormatType>& valueView) noexcept
-        {
-            // deserializing base types only if information of them was provided
-            if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
-            {
-                deserializeAsOneOfDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>
-                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> { });
-
-                return;
-            }
-
-            deserializeAsOneOfDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>(valueView, std::make_index_sequence<0> { });
-        }
-    };
 }
 
 #endif //SUNGEARENGINE_SERDE_H

@@ -96,7 +96,7 @@ SGCore::CodeGen::Generator::Generator()
             return outputString;
         };
 
-        genericMapType.m_functions["place"] = placeFunc;
+        genericMapType.m_functions["place"] = std::make_shared<Lang::Function>(placeFunc);
 
         Lang::Function isEmptyFunc;
         isEmptyFunc.m_name = "empty";
@@ -105,7 +105,7 @@ SGCore::CodeGen::Generator::Generator()
             return operableVariable->getMembers().empty();
         };
 
-        genericMapType.m_functions["empty"] = isEmptyFunc;
+        genericMapType.m_functions["empty"] = std::make_shared<Lang::Function>(isEmptyFunc);
 
         Lang::Function equalsFunc;
         equalsFunc.m_name = "equals";
@@ -144,7 +144,7 @@ SGCore::CodeGen::Generator::Generator()
             return operableVariable->m_insertedValue == std::any_cast<std::string>(args[0].m_data);
         };
 
-        genericMapType.m_functions["equals"] = equalsFunc;
+        genericMapType.m_functions["equals"] = std::make_shared<Lang::Function>(equalsFunc);
 
         Lang::Function hasMemberFunc;
         hasMemberFunc.m_name = "hasMember";
@@ -185,7 +185,7 @@ SGCore::CodeGen::Generator::Generator()
             return operableVariable->getMembers().contains(memberNameArg);
         };
 
-        genericMapType.m_functions["hasMember"] = hasMemberFunc;
+        genericMapType.m_functions["hasMember"] = std::make_shared<Lang::Function>(hasMemberFunc);
 
         m_currentTypes.push_back(genericMapType);
 
@@ -201,7 +201,7 @@ SGCore::CodeGen::Generator::Generator()
         cppStructType.m_members["baseTypes"] = genericMapType;
         cppStructType.m_members["derivedTypes"] = genericMapType;
         cppStructType.m_members["members"] = genericMapType;*/
-        cppStructType.m_functions["hasMember"] = hasMemberFunc;
+        cppStructType.m_functions["hasMember"] = std::make_shared<Lang::Function>(hasMemberFunc);
         m_currentTypes.push_back(cppStructType);
 
         Lang::Type cppMemberType;
@@ -212,7 +212,7 @@ SGCore::CodeGen::Generator::Generator()
         cppMemberType.m_members["hasSetter"] = boolType;
         cppMemberType.m_members["hasGetter"] = boolType;
         cppMemberType.m_members["struct"] = cppStructType;*/
-        cppMemberType.m_functions["hasMember"] = hasMemberFunc;
+        cppMemberType.m_functions["hasMember"] = std::make_shared<Lang::Function>(hasMemberFunc);
         m_currentTypes.push_back(cppMemberType);
     }
 
@@ -1210,7 +1210,7 @@ SGCore::CodeGen::Lang::Variable::Variable(const SGCore::CodeGen::Lang::Type& wit
 
     for(const auto& member : withType.m_members)
     {
-        m_members[member.first] = std::make_shared<Variable>(member.second);
+        m_members[member.first] = std::make_shared<Variable>(*member.second);
     }
 
     for(const auto& type : withType.m_extends)
@@ -1259,7 +1259,7 @@ std::optional<SGCore::CodeGen::Lang::Function> SGCore::CodeGen::Lang::Type::tryG
         return std::nullopt;
     }
 
-    return it->second;
+    return *it->second;
 }
 
 SGCore::CodeGen::Lang::Variable& SGCore::CodeGen::Lang::Variable::operator[](const std::string& memberName) noexcept

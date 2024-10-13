@@ -6,6 +6,8 @@
 #define SUNGEARENGINE_CODEGENERATOR_H
 
 #include <any>
+#include <optional>
+
 #include "SGCore/MetaInfo/MetaInfo.h"
 
 namespace SGCore::CodeGen
@@ -47,15 +49,15 @@ namespace SGCore::CodeGen
 
         struct Variable;
         struct Function;
-
+        
         struct Type
         {
             std::string m_name;
             std::vector<Type> m_extends;
             // first - name, second - type
-            std::unordered_map<std::string, Type> m_members;
+            std::unordered_map<std::string, std::shared_ptr<Type>> m_members;
             // first - name, second - function
-            std::unordered_map<std::string, Function> m_functions;
+            std::unordered_map<std::string, std::shared_ptr<Function>> m_functions;
 
             [[nodiscard]] std::optional<Function> tryGetFunction(const std::string& name) const noexcept;
 

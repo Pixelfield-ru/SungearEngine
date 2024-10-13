@@ -10,7 +10,7 @@
 
 namespace SGCore
 {
-    struct FileNotFoundException : std::exception
+    struct FileNotFoundException : std::runtime_error
     {
         FileNotFoundException(const std::filesystem::path& filePath, const std::string& err) noexcept;
 

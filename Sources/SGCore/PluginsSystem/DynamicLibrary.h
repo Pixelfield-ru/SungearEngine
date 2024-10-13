@@ -124,7 +124,7 @@ namespace SGCore
             else
             {
                 #ifdef PLATFORM_OS_LINUX
-                T* field  = (T*) dlsym(nativeHandler, funcName);
+                T* field  = (T*) dlsym(m_nativeHandler, symbolName);
                 if(!field)
                 {
                     err += dlerror();
