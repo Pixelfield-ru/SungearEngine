@@ -185,6 +185,7 @@ void coreInit()
     auto transform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
 
     transform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
+    transform->m_ownTransform.m_position = { 0, -50, 0 };
 
     // creating rigidbody and box shape for floor
     auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(floorEntities[0],

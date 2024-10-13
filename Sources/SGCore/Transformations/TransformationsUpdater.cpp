@@ -95,30 +95,19 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             
             // rotation ================================================
             
-            if(ownTransform.m_lastRotation != ownTransform.m_rotation)
-            {                
-                // rotating directions vectors
-                ownTransform.m_left = glm::rotate(MathUtils::left3,
-                                                  glm::radians(-ownTransform.m_rotation.y), glm::vec3(0, 1, 0));
-                ownTransform.m_left = glm::rotate(ownTransform.m_left,
-                                                  glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
-                
-                ownTransform.m_left *= -1.0f;
-                
-                ownTransform.m_forward.x = cos(glm::radians(ownTransform.m_rotation.x)) * cos(glm::radians(ownTransform.m_rotation.y));
-                ownTransform.m_forward.y = sin(glm::radians(ownTransform.m_rotation.y));
-                ownTransform.m_forward.z = sin(glm::radians(ownTransform.m_rotation.x)) * cos(glm::radians(ownTransform.m_rotation.y));
-                
-                ownTransform.m_forward *= -1.0f;
-                
-                ownTransform.m_up = glm::rotate(MathUtils::up3,
-                                                glm::radians(-ownTransform.m_rotation.x), glm::vec3(1, 0, 0));
-                ownTransform.m_up = glm::rotate(ownTransform.m_up,
-                                                glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
-                
-                ownTransform.m_up *= -1.0f;
+            if(ownTransform.m_lastQuatRot != ownTransform.m_quatRot)
+            {   
+                ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_quatRot);
 
-                ownTransform.m_lastRotation = ownTransform.m_rotation;
+                const glm::vec3& column1 = ownTransform.m_rotationMatrix[0];
+                const glm::vec3& column2 = ownTransform.m_rotationMatrix[1];
+                const glm::vec3& column3 = ownTransform.m_rotationMatrix[2];
+
+                ownTransform.m_up = glm::vec3(column1.y, column2.y, column3.y);
+                ownTransform.m_forward = -glm::vec3(column1.z, column2.z, column3.z);
+                ownTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);
+
+                ownTransform.m_lastQuatRot = ownTransform.m_quatRot;
                 
                 rotationChanged = true;
             }
@@ -238,8 +227,8 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_position = translation;
                 finalTransform.m_lastPosition = translation;
                 
-                finalTransform.m_rotation = rotation;
-                finalTransform.m_lastRotation = rotation;
+                finalTransform.m_quatRot = rotation;
+                finalTransform.m_lastQuatRot = rotation;
                 
                 finalTransform.m_scale = scale;
                 finalTransform.m_lastScale = scale;
@@ -286,8 +275,8 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_position = translation;
                 finalTransform.m_lastPosition = translation;
                 
-                finalTransform.m_rotation = rotation;
-                finalTransform.m_lastRotation = rotation;
+                finalTransform.m_quatRot = rotation;
+                finalTransform.m_lastQuatRot = rotation;
                 
                 finalTransform.m_scale = scale;
                 finalTransform.m_lastScale = scale;

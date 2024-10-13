@@ -29,45 +29,18 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
 
         if(!ownTransform.m_blockRotation)
         {
-            ownTransform.m_rotation.y +=
+            ownTransform.m_rotation.x +=
                     (float) mainListener->getCursorPositionDeltaY() *
                     controllable3D.m_rotationSensitive;
-            ownTransform.m_rotation.x +=
+            ownTransform.m_rotation.y +=
                     (float) mainListener->getCursorPositionDeltaX() *
                     controllable3D.m_rotationSensitive;
         }
-        // restore camera`s transformation
+
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_R))
         {
             ownTransform.m_rotation.x = ownTransform.m_rotation.y = ownTransform.m_rotation.z =
             ownTransform.m_position.x = ownTransform.m_position.y = ownTransform.m_position.z = 0.0f;
-
-            // ownTransform.m_translationMatrix = ownTransform.m_rotationMatrix = ownTransform.m_scaleMatrix = ownTransform.m_modelMatrix = glm::identity<glm::mat4>();
-        }
-
-        glm::vec3 rotatedForward = MathUtils::forward3;
-        glm::vec3 rotatedLeft = MathUtils::left3;
-
-        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_W) ||
-            mainListener->keyboardKeyDown(KeyboardKey::KEY_S))
-        {
-            rotatedForward = glm::rotate(rotatedForward,
-                                         glm::radians(-ownTransform.m_rotation.x),
-                                         glm::vec3(1, 0, 0));
-            rotatedForward = glm::rotate(rotatedForward,
-                                         glm::radians(-ownTransform.m_rotation.y),
-                                         glm::vec3(0, 1, 0));
-        }
-
-        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_A) ||
-            mainListener->keyboardKeyDown(KeyboardKey::KEY_D))
-        {
-            rotatedLeft = glm::rotate(rotatedLeft,
-                                      glm::radians(-ownTransform.m_rotation.x),
-                                      glm::vec3(1, 0, 0));
-            rotatedLeft = glm::rotate(rotatedLeft,
-                                      glm::radians(-ownTransform.m_rotation.y),
-                                      glm::vec3(0, 1, 0));
         }
 
         float finalCameraSpeed = controllable3D.m_movementSpeed;
@@ -84,19 +57,19 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
 
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_W))
         {
-            ownTransform.m_position -= rotatedForward * finalCameraSpeed * finalDt;
+            ownTransform.m_position += ownTransform.m_forward * finalCameraSpeed * finalDt;
         }
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_S))
         {
-            ownTransform.m_position += rotatedForward * finalCameraSpeed * finalDt;
+            ownTransform.m_position -= ownTransform.m_forward * finalCameraSpeed * finalDt;
         }
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_A))
         {
-            ownTransform.m_position += rotatedLeft * finalCameraSpeed * finalDt;
+            ownTransform.m_position -= ownTransform.m_right * finalCameraSpeed * finalDt;
         }
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_D))
         {
-            ownTransform.m_position -= rotatedLeft * finalCameraSpeed * finalDt;
+            ownTransform.m_position += ownTransform.m_right * finalCameraSpeed * finalDt;
         }
 
         if(mainListener->keyboardKeyReleased(KeyboardKey::KEY_ESCAPE))

@@ -168,12 +168,11 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     glm::vec3 skew;
                     glm::vec4 perspective;
 
-                    glm::extension::decompose(glmRigidbody3DOwnModelMatrix, scale, rotation, translation, skew,
+                    glm::decompose(glmRigidbody3DOwnModelMatrix, scale, rotation, translation, skew,
                         perspective);
 
                     ownTransform.m_position = translation;
-                    ownTransform.m_rotation = glm::degrees(glm::eulerAngles(rotation));
-                    // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
+                    ownTransform.m_quatRot = rotation;
 
                     bool translationChanged = false;
                     bool rotationChanged = false;
@@ -188,10 +187,10 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                         translationChanged = true;
                     }
 
-                    if (ownTransform.m_rotation != ownTransform.m_lastRotation)
+                    if (ownTransform.m_quatRot != ownTransform.m_lastQuatRot)
                     {
-                        ownTransform.m_rotationMatrix = glm::toMat4(rotation); 
-                        ownTransform.m_lastRotation = ownTransform.m_rotation;
+                        ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_quatRot);                        
+                        ownTransform.m_lastQuatRot = ownTransform.m_quatRot;
 
                         rotationChanged = true;
                     }

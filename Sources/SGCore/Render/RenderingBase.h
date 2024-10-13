@@ -44,6 +44,7 @@ namespace SGCore
         float m_lastTop = m_top;
         
         bool m_projectionSpaceMatrixChanged = false;
+        // bool m_orthographicSpaceMatrixChanged = false;
     };
 }
 
