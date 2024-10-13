@@ -59,7 +59,7 @@ void SGE::Toolchain::setCMakePath(const std::filesystem::path& cmakePath)
         SGCore::Utils::splitString(cmakeTestResult, '\n', lines);
         if(lines.size() < 3)
         {
-            throw std::exception("Invalid CMake");
+            throw std::runtime_error("Invalid CMake");
         }
         std::vector<std::string> thirdLineWords;
         SGCore::Utils::splitString(lines[2], ' ', thirdLineWords);
@@ -70,7 +70,7 @@ void SGE::Toolchain::setCMakePath(const std::filesystem::path& cmakePath)
         }
         else
         {
-            throw std::exception("Invalid CMake");
+            throw std::runtime_error("Invalid CMake");
         }
     }
     else
@@ -110,7 +110,7 @@ void SGE::Toolchain::setBuildToolPath(const std::filesystem::path& buildToolPath
             SGCore::Utils::splitString(versionCommandResult, '\n', lines);
             if(lines.size() < 3)
             {
-                throw std::exception("Invalid CMake");
+                throw std::runtime_error("Invalid CMake");
             }
             std::vector<std::string> thirdLineWords;
             SGCore::Utils::splitString(lines[2], ' ', thirdLineWords);
@@ -122,7 +122,7 @@ void SGE::Toolchain::setBuildToolPath(const std::filesystem::path& buildToolPath
         }
         else
         {
-            throw std::exception("Invalid build tool");
+            throw std::runtime_error("Invalid build tool");
         }
     }
     else

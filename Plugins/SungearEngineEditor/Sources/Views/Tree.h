@@ -12,6 +12,8 @@
 
 namespace SGE
 {
+    struct Tree;
+    
     struct TreeNode
     {
         friend struct Tree;
