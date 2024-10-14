@@ -19,6 +19,19 @@
 
 void SGCore::CoreMain::start()
 {
+    const std::string finalLogFileName = "logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
+    
+    HwExceptionHandler::setApplicationName("Sungear Engine");
+    HwExceptionHandler::setOutputLogFilePath(finalLogFileName);
+    HwExceptionHandler::setupHandler();
+    
+    auto defaultLogger = Logger::createLogger("current_session", finalLogFileName);
+    Logger::setDefaultLogger(defaultLogger);
+    
+    // ================================================================================
+    // ================================================================================
+    // ================================================================================
+    
     const char* sungearEngineRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
     if(!sungearEngineRoot)
     {
@@ -52,8 +65,6 @@ void SGCore::CoreMain::start()
 
     std::cout << "core init" << std::endl;
 
-    const std::string finalLogFileName = "logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
-
     try
     {
         std::filesystem::remove_all("ConsoleTmp");
@@ -70,13 +81,6 @@ void SGCore::CoreMain::start()
     /*CrashHandler::hc_application_name = "Sungear Engine";
     CrashHandler::hc_log_file_output = finalLogName;
     CrashHandler::hc_install();*/
-
-    HwExceptionHandler::setApplicationName("Sungear Engine");
-    HwExceptionHandler::setOutputLogFilePath(finalLogFileName);
-    HwExceptionHandler::setupHandler();
-
-    auto defaultLogger = Logger::createLogger("current_session", finalLogFileName);
-    Logger::setDefaultLogger(defaultLogger);
 
     // todo: move
     /*system("chcp 65001");
