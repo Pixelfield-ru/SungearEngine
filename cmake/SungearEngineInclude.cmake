@@ -118,4 +118,10 @@ endif()
     list(APPEND SungearEngine_LIBS "rapidjson")
 #endif()
 
+if(${CMAKE_COMPILER_IS_GNUCXX})
+    find_library(Backtrace_LIBRARY backtrace)
+
+    list(APPEND SungearEngine_LIBS "${Backtrace_LIBRARY}")
+endif()
+
 list(APPEND SungearEngine_INCLUDE_DIRS "$ENV{SUNGEAR_SOURCES_ROOT}")

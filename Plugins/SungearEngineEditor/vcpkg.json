@@ -231,5 +231,8 @@
   }, {
     "name" : "freetype",
     "version>=" : "2.13.2"
+  }, {
+    "name" : "libbacktrace",
+    "version>=" : "2023-11-30"
   } ]
 }

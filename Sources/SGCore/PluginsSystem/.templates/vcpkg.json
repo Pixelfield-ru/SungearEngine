@@ -55,5 +55,8 @@
   }, {
     "name" : "rapidjson",
     "version>=" : "2023-07-17#1"
+  }, {
+    "name" : "libbacktrace",
+    "version>=" : "2023-11-30"
   } ]
 }
