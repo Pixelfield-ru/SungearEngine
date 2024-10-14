@@ -306,10 +306,18 @@ namespace SGCore
         template<typename T>
         static std::string toUTF8(const std::basic_string<T, std::char_traits<T>, std::allocator<T>>& source)
         {
-            std::string result;
-            std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
-            result = convertor.to_bytes(source);
-            return result;
+            if constexpr(std::is_same_v<T, char>)
+            {
+                return source;
+            }
+            else
+            {
+                std::string result;
+                std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
+                result = convertor.to_bytes(source);
+                
+                return result;
+            }
         }
 
         template<typename T>
