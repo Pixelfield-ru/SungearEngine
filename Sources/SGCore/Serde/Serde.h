@@ -211,8 +211,8 @@ namespace SGCore::Serde
          * @param formatType
          * @return
          */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        static std::string toFormat(T& value, FormatType formatType = m_defaultFormatType) noexcept
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+        static std::string toFormat(FormatType formatType, T& value, SharedDataT&&... sharedData) noexcept
         {
             switch (formatType)
             {
@@ -221,7 +221,7 @@ namespace SGCore::Serde
                     rapidjson::Document document;
                     document.SetObject();
                     
-                    return toJSON<CustomDerivedTypes>(document, value);
+                    return toJSON<CustomDerivedTypes>(document, value, std::forward<SharedDataT>(sharedData)...);
                 }
                 case FormatType::BSON:
                     break;
@@ -230,6 +230,19 @@ namespace SGCore::Serde
             }
             
             return "";
+        }
+
+        /**
+         * Converts object to some format (JSON, BSON, YAML, etc)
+         * @tparam T - Serializable type.
+         * @param value
+         * @param formatType
+         * @return
+         */
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
+        static std::string toFormat(T& value, FormatType formatType = m_defaultFormatType) noexcept
+        {
+            return toFormat<CustomDerivedTypes>(formatType, value);
         }
         
         /**
@@ -262,6 +275,42 @@ namespace SGCore::Serde
                     break;
             }
         }
+
+        template<typename T, FormatType TFormatType, typename... SharedDataT>
+        static void invokeSerdeSpecSerialize(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
+        {
+            // if serialize function of SerdeSpec is template
+            if constexpr(requires { SerdeSpec<T, TFormatType>::template serialize<SharedDataT...>; })
+            {
+                // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
+                if constexpr(std::is_invocable_v<decltype(SerdeSpec<T, TFormatType>::template serialize<SharedDataT...>),
+                        decltype(valueView),
+                        SharedDataT...>)
+                {
+                    SerdeSpec<T, TFormatType>::serialize(valueView, std::forward<SharedDataT>(sharedData)...);
+                }
+                else
+                {
+                    // else if we can not call SerdeSpec<T, TFormatType>::serialize than passing only valueView without sharedData
+                    SerdeSpec<T, TFormatType>::serialize(valueView);
+                }
+            }
+            else
+            {
+                // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
+                if constexpr(std::is_invocable_v<decltype(SerdeSpec<T, TFormatType>::serialize),
+                        decltype(valueView),
+                        SharedDataT...>)
+                {
+                    SerdeSpec<T, TFormatType>::serialize(valueView, std::forward<SharedDataT>(sharedData)...);
+                }
+                else
+                {
+                    // else if we can not call SerdeSpec<T, TFormatType>::serialize than passing only valueView without sharedData
+                    SerdeSpec<T, TFormatType>::serialize(valueView);
+                }
+            }
+        }
     
     private:
         static inline FormatType m_defaultFormatType = SGCore::Serde::FormatType::JSON;
@@ -273,9 +322,10 @@ namespace SGCore::Serde
          * @param value
          * @return
          */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
         static std::string toJSON(rapidjson::Document& toDocument,
-                                  const T& value) noexcept
+                                  const T& value,
+                                  SharedDataT&&... sharedData) noexcept
         {
             // adding version of document
             toDocument.AddMember("version", "1", toDocument.GetAllocator());
@@ -299,7 +349,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
             
             // serializing value with attempt at dynamic casts to derived types
-            serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView);
+            serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes, SharedDataT...>(valueView, std::forward<SharedDataT>(sharedData)...);
             
             // =======================
             
@@ -377,8 +427,12 @@ namespace SGCore::Serde
          * @tparam T - Serializable type.
          * @param valueView
          */
-        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes, size_t... CustomDerivedTypesIndices>
-        static void serializeWithDynamicChecksImpl(SerializableValueView<T, TFormatType>& valueView, std::index_sequence<CustomDerivedTypesIndices...>)
+        template<typename T,
+                 FormatType TFormatType,
+                 custom_derived_types_t CustomDerivedTypes,
+                 typename... SharedDataT,
+                 size_t... CustomDerivedTypesIndices>
+        static void serializeWithDynamicChecksImpl(SerializableValueView<T, TFormatType>& valueView, std::index_sequence<CustomDerivedTypesIndices...>, SharedDataT&&... sharedData)
         {
             if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks
             {
@@ -392,22 +446,22 @@ namespace SGCore::Serde
                 tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
                 
                 // serializing base types
-                serializeBaseTypes(tmpView);
+                serializeBaseTypes(tmpView, std::forward<SharedDataT>(sharedData)...);
                 
                 if constexpr(sizeof...(CustomDerivedTypesIndices) > 0)
                 {
                     // serializing derived types
                     serializeDerivedTypes<ptr_element_type, TFormatType,
-                            typename CustomDerivedTypes::template get_type<CustomDerivedTypesIndices...>>(tmpView);
+                            typename CustomDerivedTypes::template get_type<CustomDerivedTypesIndices...>>(tmpView, std::forward<SharedDataT>(sharedData)...);
                 }
                 else
                 {
                     // serializing derived types
-                    serializeDerivedTypes<ptr_element_type, TFormatType>(tmpView);
+                    serializeDerivedTypes<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
                 }
-                
+
                 // serializing element_type type members
-                SerdeSpec<T, TFormatType>::serialize(valueView);
+                invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
                 
                 return;
             }
@@ -415,16 +469,19 @@ namespace SGCore::Serde
             // serialize without dynamic checks (static serialization)
             
             // serializing base types
-            serializeBaseTypes(valueView);
+            serializeBaseTypes(valueView, std::forward<SharedDataT>(sharedData)...);
             
             // serializing only T type members
-            SerdeSpec<T, TFormatType>::serialize(valueView);
+            invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
         }
-        
-        template<typename T, FormatType TFormatType, custom_derived_types_t CustomDerivedTypes>
-        static void serializeWithDynamicChecks(SerializableValueView<T, TFormatType>& valueView)
+
+        template<typename T,
+                 FormatType TFormatType,
+                 custom_derived_types_t CustomDerivedTypes,
+                 typename... SharedDataT>
+        static void serializeWithDynamicChecks(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
-            serializeWithDynamicChecksImpl<T, TFormatType, CustomDerivedTypes>(valueView, std::make_index_sequence<CustomDerivedTypes::types_count> { });
+            serializeWithDynamicChecksImpl<T, TFormatType, CustomDerivedTypes, SharedDataT...>(valueView, std::make_index_sequence<CustomDerivedTypes::types_count> { }, std::forward<SharedDataT>(sharedData)...);
         }
         
         /**
@@ -505,8 +562,8 @@ namespace SGCore::Serde
          * @tparam BaseT
          * @param valueView
          */
-        template<typename OriginalT, typename BaseT, FormatType TFormatType>
-        static void serializeBaseType(SerializableValueView<OriginalT, TFormatType>& valueView) noexcept
+        template<typename OriginalT, typename BaseT, FormatType TFormatType, typename... SharedDataT>
+        static void serializeBaseType(SerializableValueView<OriginalT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             // converting OriginalT value view to BaseT value view to pass into SerdeSpec
             SerializableValueView<BaseT, TFormatType> tmpView { };
@@ -515,10 +572,10 @@ namespace SGCore::Serde
             tmpView.m_data = &(static_cast<const BaseT&>(*valueView.m_data));
             
             // serialize BaseT`s base types
-            serializeBaseTypes(tmpView);
+            serializeBaseTypes(tmpView, std::forward<SharedDataT>(sharedData)...);
             
             // passing tmpView with BaseT to SerdeSpec
-            SerdeSpec<BaseT, TFormatType>::serialize(tmpView);
+            invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
         
         /**
@@ -527,14 +584,15 @@ namespace SGCore::Serde
          * @tparam Indices
          * @param valueView
          */
-        template<typename T, FormatType TFormatType, std::size_t... Indices>
+        template<typename T, FormatType TFormatType, typename...SharedDataT, std::size_t... Indices>
         static void serializeBaseTypesImpl(SerializableValueView<T, TFormatType>& valueView,
-                                           std::index_sequence<Indices...>) noexcept
+                                           std::index_sequence<Indices...>,
+                                           SharedDataT&& ... sharedData) noexcept
         {
             // unpacking variadic template
             (serializeBaseType<T,
                     typename SerdeSpec<T, TFormatType>::template get_base_type<Indices>,
-                    TFormatType>(valueView), ...);
+                    TFormatType>(valueView, std::forward<SharedDataT>(sharedData)...), ...);
         }
         
         /**
@@ -542,14 +600,14 @@ namespace SGCore::Serde
          * @tparam T - Serializable type.
          * @param valueView
          */
-        template<typename T, FormatType TFormatType>
-        static void serializeBaseTypes(SerializableValueView<T, TFormatType>& valueView) noexcept
+        template<typename T, FormatType TFormatType, typename... SharedDataT>
+        static void serializeBaseTypes(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             // serializing base types only if information of them was provided
             if constexpr(Utils::isBaseTypesProvided<T, TFormatType>())
             {
                 serializeBaseTypesImpl<T, TFormatType>
-                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::base_classes_count> {});
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::base_classes_count> {}, std::forward<SharedDataT>(sharedData)...);
             }
         }
         
@@ -563,8 +621,8 @@ namespace SGCore::Serde
          * @tparam BaseT
          * @param valueView
          */
-        template<typename OriginalT, typename DerivedT, FormatType TFormatType>
-        static void serializeDerivedType(SerializableValueView<OriginalT, TFormatType>& valueView) noexcept
+        template<typename OriginalT, typename DerivedT, FormatType TFormatType, typename... SharedDataT>
+        static void serializeDerivedType(SerializableValueView<OriginalT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             const DerivedT* derivedTypeObj = nullptr;
             if constexpr(std::is_polymorphic_v<OriginalT>)
@@ -584,10 +642,10 @@ namespace SGCore::Serde
                 tmpView.getValueContainer().setTypeName(SerdeSpec<DerivedT, TFormatType>::type_name);
                 
                 // trying to serialize as one of DerivedT`s derived types
-                serializeDerivedTypes<DerivedT, TFormatType>(tmpView);
+                serializeDerivedTypes<DerivedT, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
                 
                 // passing tmpView with DerivedT to SerdeSpec
-                SerdeSpec<DerivedT, TFormatType>::serialize(tmpView);
+                invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
             }
         }
         
@@ -597,17 +655,22 @@ namespace SGCore::Serde
          * @tparam Indices
          * @param valueView
          */
-        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes, std::size_t... BuiltinDerivedTypesIndices>
+        template<typename T,
+                FormatType TFormatType,
+                typename... CustomDerivedTypes,
+                typename... SharedDataT,
+                std::size_t... BuiltinDerivedTypesIndices>
         static void serializeDerivedTypesImpl(SerializableValueView<T, TFormatType>& valueView,
-                                              std::index_sequence<BuiltinDerivedTypesIndices...>) noexcept
+                                              std::index_sequence<BuiltinDerivedTypesIndices...>,
+                                              SharedDataT&&... sharedData) noexcept
         {
             // unpacking variadic template
             (serializeDerivedType<T,
                     typename SerdeSpec<T, TFormatType>::template get_derived_type<BuiltinDerivedTypesIndices>,
-                    TFormatType>(valueView), ...);
+                    TFormatType>(valueView, std::forward<SharedDataT>(sharedData)...), ...);
             
             // unpacking variadic template for custom derived types
-            (serializeDerivedType<T, CustomDerivedTypes, TFormatType>(valueView), ...);
+            (serializeDerivedType<T, CustomDerivedTypes, TFormatType>(valueView, std::forward<SharedDataT>(sharedData)...), ...);
         }
         
         /**
@@ -615,19 +678,19 @@ namespace SGCore::Serde
          * @tparam T - Serializable type.
          * @param valueView
          */
-        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes>
-        static void serializeDerivedTypes(SerializableValueView<T, TFormatType>& valueView) noexcept
+        template<typename T, FormatType TFormatType, typename... CustomDerivedTypes, typename... SharedDataT>
+        static void serializeDerivedTypes(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             // serializing derived types only if information of them was provided
             if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
             {
                 std::printf("as derived\n");
                 serializeDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>
-                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> { });
+                        (valueView, std::make_index_sequence<SerdeSpec<T, TFormatType>::derived_classes_count> { }, std::forward<SharedDataT>(sharedData)...);
                 return;
             }
             
-            serializeDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>(valueView, std::make_index_sequence<0> { });
+            serializeDerivedTypesImpl<T, TFormatType, CustomDerivedTypes...>(valueView, std::make_index_sequence<0> { }, std::forward<SharedDataT>(sharedData)...);
         }
         
         // =====================================================================================
@@ -1205,8 +1268,8 @@ namespace SGCore::Serde
          * @param name
          * @param value
          */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        void addMember(const std::string& name, const T& value) noexcept
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+        void addMember(const std::string& name, const T& value, SharedDataT&&... sharedData) noexcept
         {
 
         }
@@ -1217,8 +1280,8 @@ namespace SGCore::Serde
          * @param name
          * @param value
          */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        void pushBack(const T& value) noexcept
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+        void pushBack(const T& value, SharedDataT&&... sharedData) noexcept
         {
 
         }
@@ -1323,8 +1386,8 @@ namespace SGCore::Serde
 
         // todo: ADD createMember FUNCTION
 
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        void addMember(const std::string& name, const T& value) noexcept
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+        void addMember(const std::string& name, const T& value, SharedDataT&&... sharedData) noexcept
         {
             if (!(m_thisValue || m_document)) return;
 
@@ -1361,7 +1424,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().m_parent = this;
 
             // serializing value with attempt at dynamic casts to derived types
-            Serializer::serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView);
+            Serializer::serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
 
             // =======================
 
@@ -1382,10 +1445,10 @@ namespace SGCore::Serde
             m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
         }
 
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T>
-        void pushBack(const T& value) noexcept
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+        void pushBack(const T& value, SharedDataT&&... sharedData) noexcept
         {
-            addMember<CustomDerivedTypes>("", value);
+            addMember<CustomDerivedTypes>("", value, std::forward<SharedDataT>(sharedData)...);
         }
 
         void setAsNull() noexcept

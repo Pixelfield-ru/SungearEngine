@@ -135,7 +135,7 @@ void coreInit()
     /*dynamic_cast<Derived0*>(tst)->b = 20.1f;
     dynamic_cast<Derived0*>(tst)->str1 = u"abra";*/
     //dynamic_cast<Derived*>(tst)->b = 4;
-    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat<Serde::custom_derived_types<Derived0>>(tst), false, true);
+    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat<Serde::custom_derived_types<Derived0>>(Serde::FormatType::JSON, tst, 1), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 

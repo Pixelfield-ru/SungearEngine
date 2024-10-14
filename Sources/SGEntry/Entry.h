@@ -39,14 +39,14 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
     static inline const std::string type_name = "Derived0";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<Derived0, TFormatType>& valueView) noexcept
+    static void serialize(SGCore::Serde::SerializableValueView<Derived0, TFormatType>& valueView, int i) noexcept
     {
         valueView.getValueContainer().addMember("c", valueView.m_data->c);
         valueView.getValueContainer().addMember("floats", valueView.m_data->floats);
         valueView.getValueContainer().addMember("myVec3", valueView.m_data->myVec3);
         valueView.getValueContainer().addMember("unMap", valueView.m_data->unMap);
 
-        std::printf("derived0 serializing\n");
+        std::printf("derived0 serializing %i\n", i);
     }
 
     static void deserialize(SGCore::Serde::DeserializableValueView<Derived0, TFormatType>& valueView) noexcept

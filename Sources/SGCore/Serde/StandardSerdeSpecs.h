@@ -24,7 +24,8 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
-        static void serialize(SerializableValueView<std::unique_ptr<T>, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<std::unique_ptr<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             if(!*valueView.m_data)
             {
@@ -36,8 +37,8 @@ namespace SGCore::Serde
             tmpView.getValueContainer() = valueView.getValueContainer();
             tmpView.m_data = valueView.m_data->get();
 
-            // serializing values of T
-            SerdeSpec<T, TFormatType>::serialize(tmpView);
+            // serializing values of T with passing shared data
+            Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         static void deserialize(DeserializableValueView<std::unique_ptr<T>, TFormatType>& valueView)
@@ -85,7 +86,8 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
-        static void serialize(SerializableValueView<std::shared_ptr<T>, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<std::shared_ptr<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             if(!*valueView.m_data)
             {
@@ -97,8 +99,8 @@ namespace SGCore::Serde
             tmpView.getValueContainer() = valueView.getValueContainer();
             tmpView.m_data = valueView.m_data->get();
 
-            // serializing values of T
-            SerdeSpec<T, TFormatType>::serialize(tmpView);
+            // serializing values of T with passing shared data
+            Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         static void deserialize(DeserializableValueView<std::shared_ptr<T>, TFormatType>& valueView)
@@ -146,7 +148,8 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
-        static void serialize(SerializableValueView<T*, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<T*, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             // if value is null then doing nothing
             if(!*valueView.m_data)
@@ -159,8 +162,8 @@ namespace SGCore::Serde
             tmpView.getValueContainer() = valueView.getValueContainer();
             tmpView.m_data = *valueView.m_data;
 
-            // serializing values of T
-            SerdeSpec<T, TFormatType>::serialize(tmpView);
+            // serializing values of T with passing shared data
+            Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         static void deserialize(DeserializableValueView<T*, TFormatType>& valueView)
