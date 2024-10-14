@@ -111,12 +111,12 @@ void coreInit()
 
     cubeModel = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
         "cube_model",
-        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/cube.obj"
+        CoreMain::getSungearEngineRootPath() / "Resources/models/standard/cube.obj"
     );
 
     sphereModel = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
         "sphere_model",
-        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/sphere.obj"
+        CoreMain::getSungearEngineRootPath() / "Resources/models/standard/sphere.obj"
     );
 
     // =====
@@ -124,24 +124,24 @@ void coreInit()
     cubemapTexture = Ref<ICubemapTexture>(CoreMain::getRenderer()->createCubemapTexture());
 
     cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
     ));
     cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-    ));
-
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-    ));
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
     ));
 
     cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
     ));
     cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+    ));
+
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+    ));
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+        CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
     ));
 
     cubemapTexture->setRawName("standard_skybox0");
@@ -225,8 +225,8 @@ void coreInit()
 
     auto floorTransform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
 
-    transform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
-    transform->m_ownTransform.m_position = { 0, -50, 0 };
+    floorTransform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
+    floorTransform->m_ownTransform.m_position = { 0, -50, 0 };
 
     // creating rigidbody and box shape for floor
     auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(floorEntities[0],

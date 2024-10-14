@@ -21,6 +21,7 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
 
     renderingBasesView.each([](Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
         TransformBase& finalTransform = transform->m_finalTransform;
+        TransformBase& ownTransform = transform->m_ownTransform;
 
         bool viewMatrixChanged = ownTransform.m_rotationChanged ||
             ownTransform.m_positionChanged ||

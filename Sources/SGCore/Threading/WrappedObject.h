@@ -58,7 +58,7 @@ namespace SGCore::Threading {
 
 		void unlock() noexcept
 		{
-			m_mutex.unlock();
+            m_mutex.unlock();
 			m_locked = false;
 		}
 
@@ -77,7 +77,7 @@ namespace SGCore::Threading {
 		}
 
 	private:
-		bool m_locked;
+		bool m_locked = false;
 		deallocator* m_deallocImpl;
 
 		ObjT m_wrappedObject;
