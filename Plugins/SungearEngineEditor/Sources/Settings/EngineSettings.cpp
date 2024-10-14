@@ -75,7 +75,7 @@ void SGE::EngineSettings::load(const std::filesystem::path& fromPath) noexcept
     const std::string settingsContent = SGCore::FileUtils::readFile(fromPath);
 
     std::string outputLog;
-    SGCore::Serde::Serializer::fromFormat<EngineSettings>(settingsContent, *this, outputLog);
+    SGCore::Serde::Serializer::fromFormat(settingsContent, *this, outputLog);
 
     if(!outputLog.empty())
     {

@@ -20,7 +20,7 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
     auto renderingBasesView = lockedScene->getECSRegistry()->view<Ref<RenderingBase>, Ref<Transform>>();
 
     renderingBasesView.each([](Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
-        TransformBase& ownTransform = transform->m_ownTransform;
+        TransformBase& finalTransform = transform->m_finalTransform;
 
         bool viewMatrixChanged = ownTransform.m_rotationChanged ||
             ownTransform.m_positionChanged ||

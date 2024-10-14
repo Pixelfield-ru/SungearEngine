@@ -36,6 +36,7 @@ Ref<ICubemapTexture> cubemapTexture;
 Ref<Scene> testScene;
 
 entity_t testCameraEntity;
+entity_t testPlayerEntity;
 
 entity_t planeEntity;
 
@@ -57,6 +58,7 @@ void createBallAndApplyImpulse(const glm::vec3& spherePos,
     auto sphereRigidbody3D = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Rigidbody3D>>(sphereEntities[2],
         SGCore::MakeRef<SGCore::Rigidbody3D>(
             testScene->getSystem<SGCore::PhysicsWorld3D>()));
+
     SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
     sphereRigidbody3D->setShape(sphereRigidbody3DShape);
     sphereRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
@@ -93,10 +95,13 @@ void coreInit()
     // creating camera entity
     testCameraEntity = testScene->getECSRegistry()->create();
     // adding base info to entity
-    EntityBaseInfo& cameraBaseInfo = testScene->getECSRegistry()->emplace<EntityBaseInfo>(testCameraEntity);
+    EntityBaseInfo& cameraBaseInfo = testScene->getECSRegistry()->emplace<EntityBaseInfo>(testCameraEntity, testCameraEntity);
     cameraBaseInfo.setRawName("SGMainCamera");
 
     auto& cameraTransform = testScene->getECSRegistry()->emplace<Ref<Transform>>(testCameraEntity, MakeRef<Transform>());
+    cameraTransform->m_ownTransform.m_position.y = 10.0f;
+    cameraTransform->m_ownTransform.m_position.z = -10.0f;
+    //cameraTransform->m_ownTransform.m_rotation.y = 180.0f;
 
     auto& cameraEntityCamera3D = testScene->getECSRegistry()->emplace<Ref<Camera3D>>(testCameraEntity, MakeRef<Camera3D>());
     auto& cameraEntityControllable = testScene->getECSRegistry()->emplace<Controllable3D>(testCameraEntity);
@@ -161,7 +166,7 @@ void coreInit()
         Atmosphere& atmosphereScattering = testScene->getECSRegistry()->emplace<Atmosphere>(skyboxMeshEntity);
 
         // setting material
-        skyboxMesh.m_base.setMaterial(AssetManager::getInstance()->loadAsset<IMaterial>("standard_skybox_material0"));
+        // skyboxMesh.m_base.setMaterial(AssetManager::getInstance()->loadAsset<IMaterial>("standard_skybox_material0"));
 
         ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
         skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
@@ -170,6 +175,42 @@ void coreInit()
 
         skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
     }
+
+    // creating player ===================
+    std::vector<entity_t> playerEntities;
+    cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
+                                      [&playerEntities](const entity_t& entity)
+                                      {
+                                          playerEntities.push_back(entity);
+                                          //testScene->getECSRegistry()->emplace<EntityBaseInfo>(meshEntity);
+                                      }
+    );
+
+    testPlayerEntity = playerEntities[2];
+
+    // cameraBaseInfo.m_parent = testPlayerEntity;
+
+    auto playerTransform = testScene->getECSRegistry()->get<Ref<Transform>>(playerEntities[0]);
+
+    playerTransform->m_ownTransform.m_position = { 0.8f, 10.0f, 0.0f };
+    playerTransform->m_ownTransform.m_scale = { 1.0f, 1.8f, 1.0f };
+
+    // creating rigidbody and box shape for player
+    auto playerRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(playerEntities[0],
+                                                                                    MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
+    SGCore::Ref<btBoxShape> playerRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(1.0, 1.8, 1.0));
+    playerRigidbody3D->setShape(playerRigidbody3DShape);
+    playerRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
+    playerRigidbody3D->m_bodyFlags.addFlag(btCollisionObject::CF_DYNAMIC_OBJECT);
+    playerRigidbody3D->m_body->setRestitution(0.1);
+    btScalar mass = 70.0f;
+    btVector3 inertia(0, 0, 0);
+    playerRigidbody3D->m_body->getCollisionShape()->calculateLocalInertia(mass, inertia);
+    playerRigidbody3D->m_body->setMassProps(mass, inertia);
+    playerRigidbody3D->updateFlags();
+    playerRigidbody3D->reAddToWorld();
+
+    // ===================================
 
     // adding entities on scene ===================================
 
@@ -182,7 +223,7 @@ void coreInit()
         }
     );
 
-    auto transform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
+    auto floorTransform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
 
     transform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
     transform->m_ownTransform.m_position = { 0, -50, 0 };
@@ -190,6 +231,7 @@ void coreInit()
     // creating rigidbody and box shape for floor
     auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(floorEntities[0],
         MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
+
     SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(250, 1, 250.0));
     floorRigidbody3D->setShape(floorRigidbody3DShape);
     floorRigidbody3D->m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
@@ -230,6 +272,21 @@ void onFixedUpdate(const double& dt, const double& fixedDt)
     {
         Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
     }
+
+    /*if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_S))
+    {
+        playerTransform->m_ownTransform.m_position.z += -playerSpeed * dt;
+    }
+
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_D))
+    {
+        playerTransform->m_ownTransform.m_position.x += -playerSpeed * dt;
+    }
+
+    if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_A))
+    {
+        playerTransform->m_ownTransform.m_position.x += playerSpeed * dt;
+    }*/
 }
 
 int main()

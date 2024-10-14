@@ -2,10 +2,13 @@
 // Created by stuka on 10.09.2024.
 //
 
-#ifndef SUNGEARENGINE_CODEGENERATION_H
-#define SUNGEARENGINE_CODEGENERATION_H
+#ifndef SUNGEARENGINE_CODEGENERATOR_H
+#define SUNGEARENGINE_CODEGENERATOR_H
 
 #include <any>
+#include <optional>
+
+#include "SGCore/MetaInfo/MetaInfo.h"
 
 namespace SGCore::CodeGen
 {
@@ -46,15 +49,15 @@ namespace SGCore::CodeGen
 
         struct Variable;
         struct Function;
-
+        
         struct Type
         {
             std::string m_name;
             std::vector<Type> m_extends;
             // first - name, second - type
-            std::unordered_map<std::string, Type> m_members;
+            std::unordered_map<std::string, std::shared_ptr<Type>> m_members;
             // first - name, second - function
-            std::unordered_map<std::string, Function> m_functions;
+            std::unordered_map<std::string, std::shared_ptr<Function>> m_functions;
 
             [[nodiscard]] std::optional<Function> tryGetFunction(const std::string& name) const noexcept;
 
@@ -75,6 +78,7 @@ namespace SGCore::CodeGen
             std::string m_name;
             // value that will be inserted in result document
             std::string m_insertedValue;
+            bool m_isBuiltin = false;
 
             [[nodiscard]] std::shared_ptr<Variable> getMember(const std::string& name) noexcept;
 
@@ -220,6 +224,9 @@ namespace SGCore::CodeGen
                                                                 Lang::Function& callableFunction,
                                                                 std::string& outputString) const noexcept;
 
+        void addBuiltinVariables() noexcept;
+        void addVariableFields(Lang::Variable& var, MetaInfo::Meta& meta);
+
         // tmp variables ===================
         bool m_isExprStarted = false;
         bool m_isPlacementStarted = false;
@@ -237,4 +244,4 @@ namespace SGCore::CodeGen
     };
 }
 
-#endif //SUNGEARENGINE_CODEGENERATION_H
+#endif //SUNGEARENGINE_CODEGENERATOR_H

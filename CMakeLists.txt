@@ -21,7 +21,7 @@ add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DUSE_LIBPNG)
 add_definitions(-DHC_NO_COMPRESSION)
 add_definitions(-DNOMINMAX)
-add_definitions(-DSPDLOG_WCHAR_TO_UTF8_SUPPORT)
+#add_definitions(-DSPDLOG_WCHAR_TO_UTF8_SUPPORT)
 
 set(CMAKE_CXX_STANDARD 23)
 
@@ -74,7 +74,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -Wno-return-type")
 
 # TODO: make SG_BUILD_EDITOR
 set(SG_BUILD_TESTS ON)
-set(SG_BUILD_ENTRY OFF)
+set(SG_BUILD_ENTRY ON)
 
 set(SG_RESOURCES_COPY_MODELS ON)
 set(SG_RESOURCES_COPY_SHADERS ON)

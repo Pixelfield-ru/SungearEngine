@@ -33,13 +33,14 @@ namespace SGCore
 
             Meta& operator[](const std::string& childName) noexcept
             {
-                auto it = std::find_if(m_children.begin(), m_children.end(), [&childName](const auto& child) {
+                auto it = std::find_if(m_children.begin(), m_children.end(), [&childName](auto child) {
                     return childName == child->first;
                 });
 
                 if(it == m_children.end())
                 {
                     m_children.emplace_back(std::make_shared<std::pair<std::string, Meta>>(childName, Meta()));
+                    (*m_children.rbegin())->second.m_name = childName;
                     return (*m_children.rbegin())->second;
                 }
                 else
@@ -76,7 +77,13 @@ namespace SGCore
                 return m_children;
             }
 
+            [[nodiscard]] std::string getName() const noexcept
+            {
+                return m_name;
+            }
+
         private:
+            std::string m_name;
             std::string m_value;
             std::vector<std::shared_ptr<std::pair<std::string, Meta>>> m_children;
         };
@@ -124,7 +131,8 @@ namespace SGCore
                 meta["members"]["m_isLooping"]["setter"] = "setIsLooping";
                 meta["members"]["m_isLooping"]["getter"] = "isLooping";
 
-                meta["members"]["m_attachedAudioTrack"];
+                // TODO: add
+                // meta["members"]["m_attachedAudioTrack"];
 
                 meta["members"]["m_lastState"]["setter"] = "setState";
                 meta["members"]["m_lastState"]["getter"] = "getState";
@@ -165,6 +173,7 @@ namespace SGCore
                 meta["fullName"] = "SGCore::AABB";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Math/AABB.h";
                 meta["type"] = "component";
+                meta["getFromRegistryBy"] = "SGCore::AABB<float>";
                 meta["template_args"]["ScalarT"] = "typename";
 
                 meta["members"]["m_min"];
@@ -228,7 +237,7 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/EntityBaseInfo.h";
                 meta["type"] = "component";
 
-                meta["extends"]["SGCore::UniqueNameWrapper"];
+                meta["baseTypes"]["SGCore::UniqueNameWrapper"];
 
                 meta["members"]["m_parent"];
 
@@ -348,11 +357,12 @@ namespace SGCore
 
                 meta["members"]["m_meshDataRenderInfo"];
 
-                meta["members"]["m_meshData"]["setter"] = "setMeshData";
-                meta["members"]["m_meshData"]["getter"] = "getMeshData";
+                /*meta["members"]["m_meshData"]["setter"] = "setMeshData";
+                meta["members"]["m_meshData"]["getter"] = "getMeshData";*/
 
-                meta["members"]["m_material"]["setter"] = "setMaterial";
-                meta["members"]["m_material"]["getter"] = "getMaterial";
+                // TODO: add
+                /*meta["members"]["m_material"]["setter"] = "setMaterial";
+                meta["members"]["m_material"]["getter"] = "getMaterial";*/
 
                 m_meta["structs"].push_back(meta);
             }
@@ -446,6 +456,195 @@ namespace SGCore
                 meta["fullName"] = "SGCore::UICamera";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/UICamera.h";
                 meta["type"] = "component";
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::ISystem
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::ISystem";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/ISystem.h";
+                meta["type"] = "system";
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::IParallelSystem
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::IParallelSystem";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/IParallelSystem.h";
+                meta["type"] = "system";
+
+                meta["template_args"]["ParallelSystemT"] = "typename";
+
+                // meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::PhysicsWorld3D
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::PhysicsWorld3D";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Physics/PhysicsWorld3D.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::IParallelSystem<SGCore::PhysicsWorld3D>"];
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::RenderingBasesUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::RenderingBasesUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/RenderingBasesUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::AtmosphereUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::AtmosphereUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Atmosphere/AtmosphereUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::DirectionalLightsUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::DirectionalLightsUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Lighting/DirectionalLightsUpdater.h";
+                meta["type"] = "system";
+
+                meta["members"]["m_maxLightsCount"];
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::TransformationsUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::TransformationsUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/TransformationsUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::IParallelSystem<SGCore::TransformationsUpdater>"];
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::Controllables3DUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::Controllables3DUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/Controllables3DUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::BoxGizmosRenderer
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::BoxGizmosRenderer";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/BoxGizmosRenderer.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::LineGizmosRenderer
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::LineGizmosRenderer";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/LineGizmosRenderer.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::SphereGizmosUpdater
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::SphereGizmosUpdater";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/SphereGizmosUpdater.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::DebugDraw
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::DebugDraw";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/DebugDraw.h";
+                meta["type"] = "system";
+
+                meta["members"]["m_mode"];
+                meta["members"]["m_linesRenderInfo"];
+                // meta["members"]["m_maxLines"];
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::BatchesRenderer
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::BatchesRenderer";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Batching/BatchesRenderer.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::OctreesSolver
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::OctreesSolver";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/SpacePartitioning/OctreesSolver.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::IParallelSystem<SGCore::OctreesSolver>"];
+                meta["baseTypes"]["SGCore::ISystem"];
+
+                m_meta["structs"].push_back(meta);
+            }
+
+            // SGCore::AudioProcessor
+            {
+                Meta meta;
+                meta["fullName"] = "SGCore::AudioProcessor";
+                meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Audio/AudioProcessor.h";
+                meta["type"] = "system";
+
+                meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
             }

@@ -10,6 +10,8 @@
 #include <SGCore/PluginsSystem/PluginsManager.h>
 #include <SGCore/Memory/Assets/SVGImage.h>
 #include <SGCore/Utils/Formatter.h>
+#include <SGCore/CodeGeneration/CodeGenerator.h>
+#include <SGCore/Utils/CMakeUtils.h>
 
 #include "ProjectCreateDialog.h"
 #include "SungearEngineEditor.h"
@@ -31,7 +33,7 @@ SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
                       .m_text = "OK",
                       .m_name = "OKButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ENTER);
+                          return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ENTER);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           submit();
@@ -47,7 +49,7 @@ SGE::ProjectCreateDialog::ProjectCreateDialog() noexcept
                       .m_text = "Cancel",
                       .m_name = "CancelButton",
                       .isFastClicked = [](auto& self) -> bool {
-                          return SGCore::InputManager::getMainInputListener()->keyboardKeySkipFrameIfPressed(SGCore::KeyboardKey::KEY_ESCAPE);
+                          return SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_ESCAPE);
                       },
                       .onClicked = [this](auto& self, SGCore::ImGuiWrap::IView* parentView) {
                           cancel();
@@ -148,7 +150,7 @@ void SGE::ProjectCreateDialog::renderBody()
                 ImGui::TableNextColumn();
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-                ImGui::Combo("##CreateProject_CPPStandard", &m_currentSelectedCPPStandard, m_cppStandards, 7);
+                ImGui::Combo("##CreateProject_CPPStandard", &m_currentSelectedCPPStandard, m_cppStandards, m_cppStandardsCount);
 
                 ImGui::TableNextColumn();
             }
@@ -200,6 +202,29 @@ void SGE::ProjectCreateDialog::submit()
         const std::filesystem::path projectPath = m_dirPath + "/" + m_projectName;
         SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = projectPath;
         currentEditorProject->m_pluginProject = pluginProject;
+
+        const std::filesystem::path generatedFilesPath = projectPath / ".SG_GENERATED";
+
+        // creating editor helper code
+        {
+            SGCore::CodeGen::Generator codeGenerator;
+
+            const std::string editorHelperCPPGeneratedCode = codeGenerator.generate(
+                    SungearEngineEditor::getInstance()->getLocalPath() /
+                    "Sources/Project/CodeGen/.templates/EditorOnly/EditorHelper.cpp"
+            );
+
+            const std::string editorHelperHGeneratedCode = SGCore::FileUtils::readFile(
+                    SungearEngineEditor::getInstance()->getLocalPath() /
+                    "Sources/Project/CodeGen/.templates/EditorOnly/EditorHelper.h"
+            );
+
+            const std::string serdeH = codeGenerator.generate(SGCore::CoreMain::getSungearEngineRootPath() / "Sources/SGCore/CodeGeneration/SerdeGeneration/.templates/SerdeSpec.h");
+
+            SGCore::FileUtils::writeToFile(generatedFilesPath / "Editor" / "EditorHelper.h", editorHelperHGeneratedCode, false, true);
+            SGCore::FileUtils::writeToFile(generatedFilesPath / "Editor" / "EditorHelper.cpp", editorHelperCPPGeneratedCode, false, true);
+            SGCore::FileUtils::writeToFile(generatedFilesPath / "Serde.h", serdeH, false, true);
+        }
 
         const std::filesystem::path metaInfoProjectPath = projectPath / "MetaInfo";
 
@@ -284,39 +309,7 @@ void SGE::ProjectCreateDialog::submit()
 */
         // =====================================================================================
         // BUILDING CREATED PROJECT
-
-        if(!EngineSettings::getInstance()->getToolchains().empty())
-        {
-            Toolchain::ProjectSpecific::buildProject(EngineSettings::getInstance()->getToolchains()[0]);
-        }
-        else
-        {
-            // showing warning dialog that no toolchains were added
-            auto projectBuiltDialogWindow = DialogWindowsManager::createTwoButtonsWindow("Project Build", "Create Toolchain", "OK");
-            // getting "Create Toolchain" button
-            Button* createToolchainButton = projectBuiltDialogWindow.tryGetButton(0);
-            createToolchainButton->onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parent) {
-                // opening the engine settings window in toolchains tab
-                auto engineSettingsView = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_engineSettingsView;
-                engineSettingsView->setActive(true);
-                TreeNode engineSettingsToolchainsNode;
-                if(engineSettingsView->m_settingsTree.tryCopyGetTreeNodeRecursively("Toolchains", &engineSettingsToolchainsNode))
-                {
-                    engineSettingsToolchainsNode.openBranchAndSelectThis();
-                }
-
-                // closing the dialog window
-                parent->setActive(false);
-            };
-            projectBuiltDialogWindow.m_level = SGCore::Logger::Level::LVL_WARN;
-            projectBuiltDialogWindow.onCustomBodyRenderListener = [currentEditorProject]() {
-                ImGui::SameLine();
-                ImGui::TextWrapped(fmt::format("The project '{}' cannot be built: no toolchain has been added. "
-                                               "Go to the <Engine Settings - Development and Support - Toolchains> and add your first toolchain.",
-                                               currentEditorProject->m_pluginProject.m_name).c_str());
-            };
-            DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
-        }
+        Toolchain::ProjectSpecific::buildProject();
 
         // TEST!!!!!
 
@@ -339,7 +332,126 @@ void SGE::ProjectCreateDialog::submit()
     }
     else if(std::filesystem::exists(m_dirPath) && m_mode == FileOpenMode::OPEN)
     {
+        const std::filesystem::path dirPath = std::filesystem::path(m_dirPath);
+
+        const std::string projectName = SGCore::Utils::toUTF8(dirPath.stem().u16string());
+        const std::filesystem::path cmakePresetsPath = dirPath / "CMakePresets.json";
+
+        if(!std::filesystem::exists(cmakePresetsPath))
+        {
+            m_error = "CMakePresets.json file was not found in this directory.";
+
+            return;
+        }
+
+        SGCore::CMakePresetsFileInfo projectCMakePresetsFileInfo(cmakePresetsPath);
+        // loading preset using current engine preset
+        const SGCore::CMakePresetsFileInfo::Preset* projectPreset = projectCMakePresetsFileInfo.getPreset(SG_BUILD_PRESET);
+        if(!projectPreset)
+        {
+            m_error = fmt::format("CMakePresets.json of this project does not contain preset '{}' that is needed to build this project.", SG_BUILD_PRESET);
+
+            return;
+        }
+
+        const std::filesystem::path presetPath = dirPath / projectPreset->m_binaryDir;
+
         SungearEngineEditor::getInstance()->getMainView()->getDirectoriesTreeExplorer()->m_rootPath = m_dirPath;
+
+        SungearEngineEditor::getInstance()->m_currentProject = SGCore::MakeRef<Project>();
+        auto currentEditorProject = SungearEngineEditor::getInstance()->m_currentProject;
+
+        currentEditorProject->m_pluginProject.m_name = projectName;
+        currentEditorProject->m_pluginProject.m_pluginPath = m_dirPath;
+        // TODO: ??? WHERE TO GET IT
+        // currentEditorProject->m_pluginProject.m_cxxStandard = "???";
+        currentEditorProject->m_pluginProject.m_parentPath = dirPath.parent_path();
+
+        const std::filesystem::path metaInfoDLPath = dirPath / "MetaInfo" / projectPreset->m_binaryDir / (std::string("MetaInfo") + DL_POSTFIX);
+
+        // if dynamic library (or meta info dynamic library) of current preset was not found or built library of loaded project was not found
+        if(!std::filesystem::exists(presetPath / (projectName + DL_POSTFIX)) ||
+           !std::filesystem::exists(metaInfoDLPath))
+        {
+            setActive(false);
+
+            // showing warning dialog that binary dir of preset was not found
+            auto projectBuiltDialogWindow = DialogWindowsManager::createTwoButtonsWindow("Project Load", "Build", "Cancel");
+            // getting "Build" button
+            Button* createToolchainButton = projectBuiltDialogWindow->tryGetButton(0);
+            createToolchainButton->onClicked = [](Button& self, SGCore::ImGuiWrap::IView* parent) {
+                Toolchain::ProjectSpecific::buildProject();
+
+                // closing the dialog window
+                parent->setActive(false);
+            };
+            projectBuiltDialogWindow->m_level = SGCore::Logger::Level::LVL_WARN;
+            projectBuiltDialogWindow->onCustomBodyRenderListener = [projectName]() {
+                ImGui::SameLine();
+                ImGui::TextWrapped(fmt::format("Project '{}' was not built earlier with preset '{}'.\nDo you want to build project using '{}' preset?",
+                                               projectName, SG_BUILD_PRESET, SG_BUILD_PRESET).c_str());
+            };
+            // showing dialog window
+            DialogWindowsManager::addDialogWindow(projectBuiltDialogWindow);
+
+            return;
+        }
+
+        // else if project was built earlier
+        // trying to load project as plugin (if was built)
+        currentEditorProject->m_loadedPlugin = SGCore::PluginsManager::loadPlugin(projectName, dirPath, { }, projectPreset->m_binaryDir);
+
+        // if project was successfully loaded
+        if(currentEditorProject->m_loadedPlugin)
+        {
+            // loading symbols of project and meta info
+
+            currentEditorProject->m_metaInfoProjectDL = SGCore::MakeRef<SGCore::DynamicLibrary>();
+            std::string metaInfoDLErr;
+            currentEditorProject->m_metaInfoProjectDL->load(metaInfoDLPath, metaInfoDLErr);
+            if(!metaInfoDLErr.empty())
+            {
+                LOG_E(SGEDITOR_TAG, "Can not load meta info project of project '{}': {}.", projectName, metaInfoDLErr);
+            }
+            else
+            {
+                // loading symbols of meta info
+                currentEditorProject->m_metaInfoProjectEntryPoint = currentEditorProject->m_metaInfoProjectDL->loadSymbol<void()>("addMetaInfo", metaInfoDLErr);
+                auto** currentProjectPath = currentEditorProject->m_metaInfoProjectDL->loadSymbol<std::filesystem::path*>("myProjectPath", metaInfoDLErr);
+
+                if(!metaInfoDLErr.empty())
+                {
+                    LOG_E(SGEDITOR_TAG, "Can not load meta info project symbols (project: '{}'): {}.", projectName, metaInfoDLErr);
+                }
+
+                // calling entry point of meta info generated code
+                if(currentEditorProject->m_metaInfoProjectEntryPoint)
+                {
+                    currentEditorProject->m_metaInfoProjectEntryPoint();
+                }
+
+                if(currentProjectPath)
+                {
+                    *currentProjectPath = &currentEditorProject->m_pluginProject.m_pluginPath;
+                }
+            }
+
+            // loading symbols of project
+            std::string projectSymbolsLoadErr;
+            currentEditorProject->m_editorHelperEntryPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>("editorGeneratedCodeEntry", projectSymbolsLoadErr);
+            currentEditorProject->m_editorHelperExitPoint = currentEditorProject->m_loadedPlugin->getPluginLib()->loadSymbol<void()>("editorGeneratedCodeExit", projectSymbolsLoadErr);
+
+            if(!projectSymbolsLoadErr.empty())
+            {
+                LOG_E(SGEDITOR_TAG, "Can not load project '{}' symbols: {}.", projectName, projectSymbolsLoadErr);
+            }
+
+            // calling entry point of project generated code
+            if(currentEditorProject->m_editorHelperEntryPoint)
+            {
+                currentEditorProject->m_editorHelperEntryPoint();
+            }
+        }
 
         m_projectName.clear();
         m_dirPath.clear();

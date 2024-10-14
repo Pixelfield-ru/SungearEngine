@@ -27,7 +27,8 @@ namespace SGE
         void submit();
         void cancel();
 
-        static inline const char* m_cppStandards[] = {"C++98", "C++03", "C++11", "C++14", "C++17", "C++20", "C++23"};
+        static inline const char* m_cppStandards[] = { /*"C++98", "C++03", "C++11", "C++14", "C++17",*/ "C++20", "C++23" };
+        static inline size_t m_cppStandardsCount = 2;
 
         int m_currentSelectedCPPStandard = 0;
         

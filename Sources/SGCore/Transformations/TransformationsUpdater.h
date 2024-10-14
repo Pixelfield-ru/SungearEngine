@@ -37,6 +37,7 @@ namespace SGCore
         Event<void(const Ref<registry_t>& registry, const entity_t&, Ref<const Transform>)> onTransformChanged;
         
     private:
+        // TODO: ??? FIX. I THINK IT MAY CAUSE MEMORY LEAKS
         Ref<Scene> m_sharedScene;
 
         Threading::WrappedObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;

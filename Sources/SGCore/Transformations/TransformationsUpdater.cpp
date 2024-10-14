@@ -56,7 +56,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             
             if(entityBaseInfo)
             {
-                auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo->m_parent);
+                auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo->getParent());
                 parentTransform = (tmp ? *tmp : nullptr);
             }
             
@@ -166,6 +166,19 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
                 {
                     finalTransform.m_modelMatrix = ownTransform.m_modelMatrix;
                 }
+
+                glm::vec3 finalScale;
+                glm::quat finalRotation;
+                glm::vec3 finalTranslation;
+                glm::vec3 finalSkew;
+                glm::vec4 finalPerspective;
+
+                glm::decompose(finalTransform.m_modelMatrix, finalScale, finalRotation, finalTranslation, finalSkew,
+                               finalPerspective);
+
+                finalTransform.m_position = finalTranslation;
+                finalTransform.m_rotation = glm::degrees(glm::eulerAngles(finalRotation));
+                finalTransform.m_scale = finalScale;
                 
                 matrices.push_back({ entity, finalTransform.m_modelMatrix });
                 notPhysicalEntities.push_back({ entity, transform });

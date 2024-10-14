@@ -3,6 +3,7 @@
 //
 
 #include "EditorScene.h"
+#include "SungearEngineEditor.h"
 
 #include <SGCore/Serde/Serde.h>
 #include <SGCore/Serde/StandardSerdeSpecs.h>
@@ -20,6 +21,7 @@
 #include <SGCore/Render/ShaderComponent.h>
 #include <SGCore/Memory/Assets/Materials/IMaterial.h>
 #include <SGCore/Graphics/API/ICubemapTexture.h>
+#include <SGCore/Serde/Components/NonSavable.h>
 
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : BaseTypes<>, DerivedTypes<>
@@ -93,10 +95,11 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
     {
         const auto& camera = editorScene->m_data.m_editorCamera;
 
-        SGCore::EntityBaseInfo& cameraBaseInfo = newScene->getECSRegistry()->emplace<SGCore::EntityBaseInfo>(camera);
+        SGCore::EntityBaseInfo& cameraBaseInfo = newScene->getECSRegistry()->emplace<SGCore::EntityBaseInfo>(camera, camera);
         cameraBaseInfo.setRawName("SGMainCamera");
 
         newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(camera, SGCore::MakeRef<SGCore::Transform>());
+        newScene->getECSRegistry()->emplace<SGCore::NonSavable>(camera);
         newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Camera3D>>(camera, SGCore::MakeRef<SGCore::Camera3D>());
         newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::RenderingBase>>(camera, SGCore::MakeRef<SGCore::RenderingBase>());
         newScene->getECSRegistry()->emplace<SGCore::Controllable3D>(camera);
@@ -111,7 +114,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
     }
 
     // adding scene atmosphere
-    auto atmosphereEntity = newScene->getECSRegistry()->create();
+    SGCore::entity_t atmosphereEntity = entt::null;
     {
         std::vector<SGCore::entity_t> skyboxEntities;
         auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("cube_model");

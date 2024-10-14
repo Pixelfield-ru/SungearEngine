@@ -163,7 +163,7 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
 
     // todo: make to final transform
     m_viewMatricesBuffer->subData("camera.position",
-                                         glm::value_ptr(transform->m_ownTransform.m_position), 3
+                                         glm::value_ptr(transform->m_finalTransform.m_position), 3
     );
 
     int windowWidth;

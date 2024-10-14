@@ -63,19 +63,19 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
     auto lockedScene = m_scene.lock();
 
-    if (lockedScene)
+    if(lockedScene)
     {
         auto registry = lockedScene->getECSRegistry();
 
         Ref<TransformationsUpdater> transformationsUpdater = lockedScene->getSystem<TransformationsUpdater>();
 
-        if (transformationsUpdater)
+        if(transformationsUpdater)
         {
-            if (transformationsUpdater->m_changedModelMatrices.isLocked())
+            if(transformationsUpdater->m_changedModelMatrices.isLocked())
             {
                 auto& transformations = transformationsUpdater->m_changedModelMatrices.getWrapped();
 
-                for (size_t i = 0, n = transformations.size(); i < n; ++i)
+                for(size_t i = 0, n = transformations.size(); i < n; ++i)
                 {
                     const auto& val = transformations[i];
                     Ref<Rigidbody3D>* tmpRigidbody3D = lockedScene->getECSRegistry()->try_get<Ref<Rigidbody3D>>(val.m_owner);
@@ -92,7 +92,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                 transformationsUpdater->m_changedModelMatrices.unlock();
             }
 
-            if (transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.isLocked())
+            if(transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.isLocked())
             {
                 auto& entities = transformationsUpdater->m_entitiesForPhysicsUpdateToCheck.getWrapped();
                 auto& calculatedEntities = transformationsUpdater->m_calculatedPhysicalEntities.getWrapped();
@@ -108,7 +108,8 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
                 // A lot of time is consumed by reallocating vector in cycle, just... allocate it in one pass
                 calculatedEntities.reserve(n);
-                for (i, n; i < n; ++i) {
+                for (i, n; i < n; ++i) 
+                {
                     const auto& entity = entities[i];
 
                     Ref<Rigidbody3D> rigidbody3D;
@@ -122,7 +123,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     Ref<Transform> transform;
                     {
                         Ref<Transform>* tmpTransform = registry->try_get<Ref<Transform>>(entity);
-                        if (!tmpTransform) continue;
+                        if(!tmpTransform) continue;
 
                         transform = *tmpTransform;
                     }
@@ -147,7 +148,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     auto inversedParentRotationMatrix = glm::mat4(1.0);
                     auto inversedParentScaleMatrix = glm::mat4(1.0);
 
-                    if (parentTransform)
+                    if(parentTransform)
                     {
                         inversedParentTranslationMatrix = glm::inverse(
                             parentTransform->m_finalTransform.m_translationMatrix);
@@ -177,7 +178,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     bool translationChanged = false;
                     bool rotationChanged = false;
 
-                    if (ownTransform.m_position != ownTransform.m_lastPosition)
+                    if(ownTransform.m_position != ownTransform.m_lastPosition)
                     {
                         ownTransform.m_translationMatrix = glm::translate(glm::mat4(1.0),
                             ownTransform.m_position);
@@ -187,7 +188,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                         translationChanged = true;
                     }
 
-                    if (ownTransform.m_rotation != ownTransform.m_lastRotation)
+                    if(ownTransform.m_rotation != ownTransform.m_lastRotation)
                     {
                         ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_rotation);
                         ownTransform.m_lastRotation = ownTransform.m_rotation;
@@ -198,7 +199,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     transform->m_transformChanged =
                         transform->m_transformChanged || translationChanged || rotationChanged;
 
-                    if (transform->m_transformChanged)
+                    if(transform->m_transformChanged)
                     {
                         ownTransform.m_modelMatrix =
                             ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix *
@@ -211,12 +212,12 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     }
                 }
 
-                if (!transformationsUpdater->m_calculatedPhysicalEntitiesCopy.isLocked())
+                if(!transformationsUpdater->m_calculatedPhysicalEntitiesCopy.isLocked())
                 {
                     std::lock_guard guard(transformationsUpdater->m_calculatedPhysicalEntitiesCopy);
                     auto& vec = transformationsUpdater->m_calculatedPhysicalEntitiesCopy.getWrapped();
                    
-                    if (vec.empty())
+                    if(vec.empty())
                     {
                         // #TODO some tests on optimization
                         vec = std::move(calculatedEntities);
@@ -237,7 +238,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
 {
     auto lockedScene = m_scene.lock();
-    if (lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
+    if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
     {
         // if(m_bodiesToAdd.getObject().empty() && m_bodiesToRemove.getObject().empty())
         {
@@ -255,7 +256,7 @@ void SGCore::PhysicsWorld3D::onAddToScene(const Ref<Scene>& scene)
 
     rigidbodies3DView.each([this](Ref<Rigidbody3D> rigidbody3D) {
         this->addBody(rigidbody3D->m_body);
-        });
+    });
 }
 
 void SGCore::PhysicsWorld3D::onRemoveFromScene(const Ref<Scene>& scene)

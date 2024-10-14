@@ -50,6 +50,8 @@ void SGCore::CoreMain::start()
         s_sungearEngineRootPath = sungearEngineRootPath;
     }
 
+    std::cout << "core init" << std::endl;
+
     const std::string finalLogFileName = "logs/sg_log_" + Utils::getTimeAsString("%Y_%m_%d_%H_%M_%S") + ".log";
 
     try

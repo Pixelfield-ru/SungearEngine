@@ -107,7 +107,7 @@ bool SGE::SungearEngineEditor::checkSungearEngineEnvironmentRootPathValidity(con
                                      additionalWarningMessage;
 
         auto sungearEngineRootErrorDialog = DialogWindowsManager::createOneButtonWindow("Incorrect environment variable", "OK");
-        sungearEngineRootErrorDialog.onCustomBodyRenderListener = [errorMsg]() {
+        sungearEngineRootErrorDialog->onCustomBodyRenderListener = [errorMsg]() {
             ImGui::SameLine();
             ImGui::TextWrapped(errorMsg.c_str());
         };
@@ -129,7 +129,7 @@ bool SGE::SungearEngineEditor::checkSungearEngineEnvironmentRootPathValidity(con
                                          additionalWarningMessage;
 
             auto sungearEngineRootErrorDialog = DialogWindowsManager::createOneButtonWindow("Incorrect environment variable", "OK");
-            sungearEngineRootErrorDialog.onCustomBodyRenderListener = [errorMsg]() {
+            sungearEngineRootErrorDialog->onCustomBodyRenderListener = [errorMsg]() {
                 ImGui::SameLine();
                 ImGui::TextWrapped(errorMsg.c_str());
             };

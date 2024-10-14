@@ -33,7 +33,7 @@ extern "C" {
 #include "SGCore/ImGuiWrap/Views/IView.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Utils/Formatter.h"
-#include "SGCore/CodeGeneration/CodeGeneration.h"
+#include "SGCore/CodeGeneration/CodeGenerator.h"
 
 #include "SGCore/Serde/GeneratedSerdeSpecs.h"
 
@@ -43,23 +43,23 @@ extern "C" {
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 
-/*template<SGCore::Serde::FormatType TFormatType>
+template<SGCore::Serde::FormatType TFormatType>
 void onEntitySave(const SGCore::Scene& savableScene,
-                  const SGCore::entity_t& savableEntity,
-                  SGCore::Serde::SerializableValueView<SGCore::registry_t, TFormatType>& valueView) noexcept
+                  const SGCore::Ref<SGCore::ISystem>& savableSystem,
+                  SGCore::Serde::SerializableValueView<SGCore::Scene::systems_container_t, TFormatType>& systemsContainerView) noexcept
 {
-
-}*/
+    LOG_W("SGENTRY", "Saving entity");
+}
 
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
-    /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
+    SGCore::Scene::getOnSystemSaveEvent<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
+    /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;*/
 
-    std::printf("init...\n");
+    // std::printf("init...\n");
 
     // fixme: FOR TEST
     auto pbrrpPipeline = SGCore::RenderPipelinesManager::createRenderPipeline<SGCore::PBRRenderPipeline>();
@@ -135,18 +135,14 @@ void coreInit()
     /*dynamic_cast<Derived0*>(tst)->b = 20.1f;
     dynamic_cast<Derived0*>(tst)->str1 = u"abra";*/
     //dynamic_cast<Derived*>(tst)->b = 4;
-    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat(tst), false, true);
-
-    Ref<UniqueNameWrapper> entityBaseInfo = MakeRef<EntityBaseInfo>();
-    FileUtils::writeToFile("serializer_test_1.txt", Serde::Serializer::toFormat(entityBaseInfo), false, true);
+    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat<Serde::custom_derived_types<Derived0>>(tst), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 
     std::string outputLog;
 
     std::shared_ptr<Base> deser;
-    // Base* deser;
-    // Serde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
+    Serde::Serializer::fromFormat<Serde::custom_derived_types<Derived0>>(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
 
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 

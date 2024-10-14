@@ -51,6 +51,9 @@
 
 #include <SGCore/pch.h>
 
+#include <codecvt>
+#include <locale>
+
 #include "TypeTraits.h"
 #include "SGCore/CrashHandler/Platform.h"
 
@@ -310,8 +313,7 @@ namespace SGCore
         }
 
         template<typename T>
-        static void
-        fromUTF8(const std::string& source, std::basic_string<T, std::char_traits<T>, std::allocator<T>>& result)
+        static void fromUTF8(const std::string& source, std::basic_string<T, std::char_traits<T>, std::allocator<T>>& result)
         {
             std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
             result = convertor.from_bytes(source);
