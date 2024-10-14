@@ -310,19 +310,23 @@ namespace SGCore
             {
                 return source;
             }
-            else
-            {
-                std::string result;
-                std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
-                result = convertor.to_bytes(source);
-                
-                return result;
-            }
+            
+            std::string result;
+            std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
+            result = convertor.to_bytes(source);
+            
+            return result;
         }
 
         template<typename T>
         static void fromUTF8(const std::string& source, std::basic_string<T, std::char_traits<T>, std::allocator<T>>& result)
         {
+            if constexpr(std::is_same_v<T, char>)
+            {
+                result = source;
+                return;
+            }
+            
             std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
             result = convertor.from_bytes(source);
         }
@@ -330,6 +334,11 @@ namespace SGCore
         template<typename T>
         static std::basic_string<T, std::char_traits<T>, std::allocator<T>> fromUTF8(const std::string& source)
         {
+            if constexpr(std::is_same_v<T, char>)
+            {
+                return source;
+            }
+            
             std::wstring_convert<std::codecvt_utf8_utf16<T>, T> convertor;
             return convertor.from_bytes(source);
         }
