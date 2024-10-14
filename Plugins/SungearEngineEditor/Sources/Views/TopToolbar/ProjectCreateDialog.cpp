@@ -280,8 +280,8 @@ void SGE::ProjectCreateDialog::submit()
             return;
         }
 
-        const auto& sungearRootStr = SungearEngineEditor::getSungearEngineRootPath();
-        const std::filesystem::path sungearPluginsPathStr = SungearEngineEditor::getSungearEngineRootPath() / "Plugins";
+        const auto& sungearRootStr = SGCore::CoreMain::getSungearEngineRootPath();
+        const std::filesystem::path sungearPluginsPathStr = sungearRootStr / "Plugins";
 
         /*annotationsProcessor.processAnnotations(sungearRootStr / "Sources",
                                                 {sungearRootStr / "Sources/SGCore/Annotations/Annotations.h",

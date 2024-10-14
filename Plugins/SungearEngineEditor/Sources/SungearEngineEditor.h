@@ -33,7 +33,6 @@ namespace SGE
         [[nodiscard]] SGCore::Ref<MainView> getMainView() const noexcept;
         
         SG_NOINLINE static SGCore::Ref<SungearEngineEditor> getInstance() noexcept;
-        SG_NOINLINE static const std::filesystem::path& getSungearEngineRootPath() noexcept;
 
         /**
          * Checks Sungear Engine environment root path validity and logs warning if path is not correct\n
@@ -42,10 +41,10 @@ namespace SGE
          */
         static bool checkSungearEngineEnvironmentRootPathValidity(const std::string& additionalWarningMessage = "") noexcept;
 
+        static void loadDefaultUIConfig() noexcept;
+
     private:
         static inline SGCore::Ref<SungearEngineEditor> s_SungearEngineEditorInstance = SGCore::MakeRef<SungearEngineEditor>();
-
-        static inline std::filesystem::path s_sungearEngineRootPath;
         
         SGCore::Ref<MainView> m_mainView;
     };

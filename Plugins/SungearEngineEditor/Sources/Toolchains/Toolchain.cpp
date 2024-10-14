@@ -298,7 +298,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
         return;
     }
 
-    const std::filesystem::path sungearPluginsPathStr = SungearEngineEditor::getSungearEngineRootPath() / "Plugins";
+    const std::filesystem::path sungearPluginsPathStr = SGCore::CoreMain::getSungearEngineRootPath() / "Plugins";
 
     const bool isPresetsEquals = m_currentCMakePreset == SG_BUILD_PRESET;
 
@@ -446,7 +446,7 @@ void SGE::Toolchain::ProjectSpecific::buildProject(const SGCore::Ref<SGE::Toolch
         toolchainPtr->m_doInBackground = true;
     };
     // building the Sungear Engine
-    toolchain->buildProject(SungearEngineEditor::getSungearEngineRootPath(), m_currentCMakePreset);
+    toolchain->buildProject(SGCore::CoreMain::getSungearEngineRootPath(), m_currentCMakePreset);
 }
 
 void SGE::Toolchain::ProjectSpecific::buildProject() noexcept

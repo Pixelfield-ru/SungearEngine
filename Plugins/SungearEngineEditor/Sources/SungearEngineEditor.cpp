@@ -37,15 +37,11 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
     LOG_E(SGEDITOR_TAG, "Error msg")
     LOG_C(SGEDITOR_TAG, "Critical msg")
 
-    const char* sungearEngineRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
-    if(sungearEngineRoot)
-    {
-        s_sungearEngineRootPath = sungearEngineRoot;
-    }
-
     checkSungearEngineEnvironmentRootPathValidity();
 
     Resources::loadStandardResources();
+
+    loadDefaultUIConfig();
 
 	// No error.
 	return "";
@@ -90,11 +86,6 @@ SGCore::Ref<SGE::SungearEngineEditor> SGE::SungearEngineEditor::getInstance() no
     return s_SungearEngineEditorInstance;
 }
 
-const std::filesystem::path& SGE::SungearEngineEditor::getSungearEngineRootPath() noexcept
-{
-    return s_sungearEngineRootPath;
-}
-
 bool SGE::SungearEngineEditor::checkSungearEngineEnvironmentRootPathValidity(const std::string& additionalWarningMessage) noexcept
 {
     const char* sungearEngineRoot = std::getenv("SUNGEAR_SOURCES_ROOT");
@@ -119,8 +110,8 @@ bool SGE::SungearEngineEditor::checkSungearEngineEnvironmentRootPathValidity(con
     }
     else
     {
-        const std::filesystem::path sungearEngineIncludeCMakeFile = s_sungearEngineRootPath / "cmake/SungearEngineInclude.cmake";
-        if (!std::filesystem::exists(s_sungearEngineRootPath) ||
+        const std::filesystem::path sungearEngineIncludeCMakeFile = SGCore::CoreMain::getSungearEngineRootPath() / "cmake/SungearEngineInclude.cmake";
+        if (!std::filesystem::exists(SGCore::CoreMain::getSungearEngineRootPath()) ||
             !std::filesystem::exists(sungearEngineIncludeCMakeFile))
         {
             const std::string errorMsg = "The 'SUNGEAR_SOURCES_ROOT' environment variable contains an invalid value. "
@@ -142,6 +133,11 @@ bool SGE::SungearEngineEditor::checkSungearEngineEnvironmentRootPathValidity(con
     }
 
     return true;
+}
+
+void SGE::SungearEngineEditor::loadDefaultUIConfig() noexcept
+{
+    ImGui::LoadIniSettingsFromDisk(SGCore::Utils::toUTF8((getInstance()->getLocalPath() / "Resources/editor_ui_config.ini").u16string()).c_str());
 }
 
 
