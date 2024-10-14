@@ -23,7 +23,7 @@ namespace SGCore::Threading
          * Creates absolute new thread. It is recommended to use ThreadsPool to reuse threads and set a policy for creating new threads.
          * @return Absolute new thread.
          */
-        static std::shared_ptr<Thread> create() noexcept;
+        static std::shared_ptr<Thread> create(const std::chrono::milliseconds& sleepTime = std::chrono::milliseconds(100)) noexcept;
         
         std::atomic<bool> m_autoJoinIfNotBusy = false;
         std::atomic<bool> m_sleepIfNotBusy = true;
@@ -54,12 +54,22 @@ namespace SGCore::Threading
             
             func(onUpdate);
         }
+
+        void setSleepTime(const std::chrono::milliseconds& sleepTime) noexcept 
+        {
+            m_sleepTime = sleepTime;
+        }
         
-        double getExecutionTime() const noexcept;
+        const double& getExecutionTime() const noexcept;
         
-        std::thread::id getNativeID() const noexcept;
+        const std::thread::id& getNativeID() const noexcept;
         
-        bool isRunning() const noexcept;
+        const bool& isRunning() const noexcept;
+
+        const std::chrono::milliseconds& getSleepTime() const noexcept 
+        { 
+            return m_sleepTime; 
+        }
     
     protected:
         Thread() = default;
@@ -87,6 +97,8 @@ namespace SGCore::Threading
         std::atomic<bool> m_hasJoinRequest = false;
         
         std::thread m_thread;
+
+        std::chrono::milliseconds m_sleepTime;
     };
     
     struct MainThread : public Thread

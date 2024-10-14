@@ -22,42 +22,37 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
     renderingBasesView.each([](Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
         TransformBase& finalTransform = transform->m_finalTransform;
 
-        bool viewMatrixChanged = finalTransform.m_rotationChanged ||
-                                 finalTransform.m_positionChanged ||
-                                 finalTransform.m_scaleChanged;
-
-        glm::quat rotationQuat;
-        // if(viewMatrixChanged)
-        {
-            rotationQuat = glm::angleAxis(
-                    glm::radians(finalTransform.m_rotation.x),
-                    glm::vec3(1, 0, 0)
-            );
-            rotationQuat *= glm::angleAxis(
-                    glm::radians(finalTransform.m_rotation.y),
-                    glm::vec3(0, 1, 0)
-            );
-            rotationQuat *= glm::angleAxis(
-                    glm::radians(finalTransform.m_rotation.z),
-                    glm::vec3(0, 0, 1)
-            );
-        }
+        bool viewMatrixChanged = ownTransform.m_rotationChanged ||
+            ownTransform.m_positionChanged ||
+            ownTransform.m_scaleChanged;
+        ownTransform.m_rotation = glm::angleAxis(
+            glm::radians(ownTransform.m_yawPitchRoll.x),
+            MathUtils::right3
+        );
+        ownTransform.m_rotation *= glm::angleAxis(
+            glm::radians(ownTransform.m_yawPitchRoll.y),
+            MathUtils::up3
+        );
+        ownTransform.m_rotation *= glm::angleAxis(
+            glm::radians(ownTransform.m_yawPitchRoll.z),
+            MathUtils::forward3
+        );
 
         renderingBase->m_projectionSpaceMatrixChanged = false;
 
         bool projectionMatrixChanged = false;
-
-        // TODO: make checking for lastTransformation != current transformation
-        // if(viewMatrixChanged)
         {
-            renderingBase->m_viewMatrix = glm::toMat4(rotationQuat);
-            renderingBase->m_viewMatrix = glm::translate(renderingBase->m_viewMatrix,
-                                                         -finalTransform.m_position
-            );
-            renderingBase->m_viewMatrix =
-                    glm::scale(renderingBase->m_viewMatrix, transform->m_ownTransform.m_scale);
-        }
+            // RTS
+            // #TODO: fix incorrect position. This -ownTransform.m_position may cause incorrect behaviour in TU, PW2d and C3DU transforms
+            renderingBase->m_viewMatrix = glm::toMat4(ownTransform.m_rotation);
 
+            renderingBase->m_viewMatrix = glm::translate(renderingBase->m_viewMatrix,
+                -ownTransform.m_position
+            );
+
+            renderingBase->m_viewMatrix =
+                glm::scale(renderingBase->m_viewMatrix, transform->m_ownTransform.m_scale);
+        }
         // if some part of projection matrix of camera is changed
         if(renderingBase->m_lastFov != renderingBase->m_fov ||
            renderingBase->m_lastAspect != renderingBase->m_aspect ||

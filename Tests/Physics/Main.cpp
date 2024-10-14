@@ -43,19 +43,22 @@ entity_t planeEntity;
 // ===========================================================
 
 void createBallAndApplyImpulse(const glm::vec3& spherePos,
-                               const glm::vec3& impulse) noexcept
+    const glm::vec3& impulse) noexcept
 {
+    auto sphereModel = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("sphere_model");
+
     std::vector<SGCore::entity_t> sphereEntities;
     sphereModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                        [&sphereEntities](const SGCore::entity_t& entity)
-                                        {
-                                            sphereEntities.push_back(entity);
-                                        }
+        [&sphereEntities](const SGCore::entity_t& entity)
+        {
+            sphereEntities.push_back(entity);
+        }
     );
 
     auto sphereRigidbody3D = testScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Rigidbody3D>>(sphereEntities[2],
-                                                                                                    SGCore::MakeRef<SGCore::Rigidbody3D>(
-                                                                                                            testScene->getSystem<SGCore::PhysicsWorld3D>()));
+        SGCore::MakeRef<SGCore::Rigidbody3D>(
+            testScene->getSystem<SGCore::PhysicsWorld3D>()));
+
     SGCore::Ref<btSphereShape> sphereRigidbody3DShape = SGCore::MakeRef<btSphereShape>(1.0);
     sphereRigidbody3D->setShape(sphereRigidbody3DShape);
     sphereRigidbody3D->m_bodyFlags.removeFlag(btCollisionObject::CF_STATIC_OBJECT);
@@ -107,13 +110,13 @@ void coreInit()
     // loading assets =============================================
 
     cubeModel = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
-            "cube_model",
-            CoreMain::getSungearEngineRootPath() / "Resources/models/standard/cube.obj"
+        "cube_model",
+        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/cube.obj"
     );
 
     sphereModel = AssetManager::getInstance()->loadAssetWithAlias<ModelAsset>(
-            "sphere_model",
-            CoreMain::getSungearEngineRootPath() / "Resources/models/standard/sphere.obj"
+        "sphere_model",
+        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/models/standard/sphere.obj"
     );
 
     // =====
@@ -121,24 +124,24 @@ void coreInit()
     cubemapTexture = Ref<ICubemapTexture>(CoreMain::getRenderer()->createCubemapTexture());
 
     cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-            CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
+        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_xleft.png"
     ));
     cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-            CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
-    ));
-
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-            CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
-    ));
-    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-            CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_xright.png"
     ));
 
     cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-            CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_ytop.png"
     ));
     cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
-            CoreMain::getSungearEngineRootPath() / "Resources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
+        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_ybottom.png"
+    ));
+
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
+    ));
+    cubemapTexture->m_parts.push_back(AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
+        CoreMain::getSungearEngineRootPath() / "Resources/SGResources/textures/skyboxes/skybox0/standard_skybox0_zback.png"
     ));
 
     cubemapTexture->setRawName("standard_skybox0");
@@ -154,7 +157,7 @@ void coreInit()
         std::vector<entity_t> skyboxEntities;
         cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities](const auto& entity) {
             skyboxEntities.push_back(entity);
-        });
+            });
 
         const entity_t& skyboxMeshEntity = skyboxEntities[2];
 
@@ -213,20 +216,22 @@ void coreInit()
 
     std::vector<entity_t> floorEntities;
     cubeModel->m_nodes[0]->addOnScene(testScene, SG_LAYER_OPAQUE_NAME,
-                                      [&floorEntities](const entity_t& entity)
-                                      {
-                                          floorEntities.push_back(entity);
-                                          //testScene->getECSRegistry()->emplace<EntityBaseInfo>(meshEntity);
-                                      }
+        [&floorEntities](const entity_t& entity)
+        {
+            floorEntities.push_back(entity);
+            //testScene->getECSRegistry()->emplace<EntityBaseInfo>(meshEntity);
+        }
     );
 
     auto floorTransform = testScene->getECSRegistry()->get<Ref<Transform>>(floorEntities[0]);
 
-    floorTransform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
+    transform->m_ownTransform.m_scale = { 1000.0f, 1.0f, 1000.0f };
+    transform->m_ownTransform.m_position = { 0, -50, 0 };
 
     // creating rigidbody and box shape for floor
     auto floorRigidbody3D = testScene->getECSRegistry()->emplace<Ref<Rigidbody3D>>(floorEntities[0],
-            MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
+        MakeRef<Rigidbody3D>(testScene->getSystem<PhysicsWorld3D>()));
+
     SGCore::Ref<btBoxShape> floorRigidbody3DShape = SGCore::MakeRef<btBoxShape>(btVector3(250, 1, 250.0));
     floorRigidbody3D->setShape(floorRigidbody3DShape);
     floorRigidbody3D->m_body->setMassProps(100000000.0, btVector3(0, 0, 0));
@@ -236,15 +241,15 @@ void coreInit()
 
 void onUpdate(const double& dt, const double& fixedDt)
 {
-    if(Scene::getCurrentScene())
+    if (Scene::getCurrentScene())
     {
         Scene::getCurrentScene()->update(dt, fixedDt);
     }
 
-    if(InputManager::getMainInputListener()->keyboardKeyReleased(KeyboardKey::KEY_F12))
+    if (InputManager::getMainInputListener()->keyboardKeyReleased(KeyboardKey::KEY_M))
     {
         auto& physicsWorld3DDebug = testScene->getSystem<PhysicsWorld3D>()->getDebugDraw();
-        if(physicsWorld3DDebug->getDebugMode() == btIDebugDraw::DBG_NoDebug)
+        if (physicsWorld3DDebug->getDebugMode() == btIDebugDraw::DBG_NoDebug)
         {
             physicsWorld3DDebug->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
         }
@@ -254,30 +259,21 @@ void onUpdate(const double& dt, const double& fixedDt)
         }
     }
 
-    if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_4))
+    if (SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_4))
     {
-        auto& cameraTransform = testScene->getECSRegistry()->get<Ref<Transform>>(testCameraEntity);
+        auto& cameraTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(testCameraEntity);
         createBallAndApplyImpulse(cameraTransform->m_ownTransform.m_position, cameraTransform->m_ownTransform.m_forward * 200000.0f / 10.0f);
     }
 }
 
 void onFixedUpdate(const double& dt, const double& fixedDt)
 {
-    if(Scene::getCurrentScene())
+    if (Scene::getCurrentScene())
     {
         Scene::getCurrentScene()->fixedUpdate(dt, fixedDt);
     }
 
-    const float playerSpeed = 10.0f;
-
-    auto playerTransform = testScene->getECSRegistry()->get<Ref<SGCore::Transform>>(testCameraEntity);
-
-    /*if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_W))
-    {
-        playerTransform->m_ownTransform.m_position.z += playerSpeed * dt;
-    }
-
-    if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_S))
+    /*if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_S))
     {
         playerTransform->m_ownTransform.m_position.z += -playerSpeed * dt;
     }

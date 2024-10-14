@@ -25,81 +25,54 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
 
     controllablesView.each([&finalDt](Ref<Transform>& transform, Controllable3D& controllable3D) {
         TransformBase& ownTransform = transform->m_ownTransform;
+        const auto& mainListener = InputManager::getMainInputListener();
 
         if(!ownTransform.m_blockRotation)
         {
-            ownTransform.m_rotation.x +=
-                    (float) InputManager::getMainInputListener()->getCursorPositionDeltaY() *
+            ownTransform.m_yawPitchRoll.x +=
+                    (float) mainListener->getCursorPositionDeltaY() *
                     controllable3D.m_rotationSensitive;
-            ownTransform.m_rotation.y +=
-                    (float) InputManager::getMainInputListener()->getCursorPositionDeltaX() *
+            ownTransform.m_yawPitchRoll.y +=
+                    (float) mainListener->getCursorPositionDeltaX() *
                     controllable3D.m_rotationSensitive;
         }
 
-        // restore camera`s transformation
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_R))
+        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_R))
         {
-            ownTransform.m_rotation.x = ownTransform.m_rotation.y = ownTransform.m_rotation.z =
+            ownTransform.m_yawPitchRoll.x = ownTransform.m_yawPitchRoll.y = ownTransform.m_yawPitchRoll.z =
             ownTransform.m_position.x = ownTransform.m_position.y = ownTransform.m_position.z = 0.0f;
-
-            // ownTransform.m_translationMatrix = ownTransform.m_rotationMatrix = ownTransform.m_scaleMatrix = ownTransform.m_modelMatrix = glm::identity<glm::mat4>();
-        }
-
-        glm::vec3 rotatedForward = MathUtils::forward3;
-        glm::vec3 rotatedLeft = MathUtils::left3;
-
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_W) ||
-           InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_S))
-        {
-            rotatedForward = glm::rotate(rotatedForward,
-                                         glm::radians(-ownTransform.m_rotation.x),
-                                         glm::vec3(1, 0, 0));
-            rotatedForward = glm::rotate(rotatedForward,
-                                         glm::radians(-ownTransform.m_rotation.y),
-                                         glm::vec3(0, 1, 0));
-        }
-
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_A) ||
-           InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_D))
-        {
-            rotatedLeft = glm::rotate(rotatedLeft,
-                                      glm::radians(-ownTransform.m_rotation.x),
-                                      glm::vec3(1, 0, 0));
-            rotatedLeft = glm::rotate(rotatedLeft,
-                                      glm::radians(-ownTransform.m_rotation.y),
-                                      glm::vec3(0, 1, 0));
         }
 
         float finalCameraSpeed = controllable3D.m_movementSpeed;
 
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_LEFT_SHIFT))
+        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_LEFT_SHIFT))
         {
             finalCameraSpeed *= 6.0;
         }
 
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_LEFT_CONTROL))
+        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_LEFT_CONTROL))
         {
             finalCameraSpeed /= 6.0;
         }
 
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_W))
+        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_W))
         {
-            ownTransform.m_position -= rotatedForward * finalCameraSpeed * finalDt;
+            ownTransform.m_position += ownTransform.m_forward * finalCameraSpeed * finalDt;
         }
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_S))
+        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_S))
         {
-            ownTransform.m_position += rotatedForward * finalCameraSpeed * finalDt;
+            ownTransform.m_position -= ownTransform.m_forward * finalCameraSpeed * finalDt;
         }
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_A))
+        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_A))
         {
-            ownTransform.m_position += rotatedLeft * finalCameraSpeed * finalDt;
+            ownTransform.m_position -= ownTransform.m_right * finalCameraSpeed * finalDt;
         }
-        if(InputManager::getMainInputListener()->keyboardKeyDown(KeyboardKey::KEY_D))
+        if(mainListener->keyboardKeyDown(KeyboardKey::KEY_D))
         {
-            ownTransform.m_position -= rotatedLeft * finalCameraSpeed * finalDt;
+            ownTransform.m_position += ownTransform.m_right * finalCameraSpeed * finalDt;
         }
 
-        if(InputManager::getMainInputListener()->keyboardKeyReleased(KeyboardKey::KEY_ESCAPE))
+        if(mainListener->keyboardKeyReleased(KeyboardKey::KEY_ESCAPE))
         {
             CoreMain::getWindow().setHideAndCentralizeCursor(
                     !CoreMain::getWindow().isHideAndCentralizeCursor());

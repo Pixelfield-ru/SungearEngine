@@ -21,10 +21,8 @@
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
+    m_thread->setSleepTime(std::chrono::milliseconds(0));
     m_thread->start();
-    // startThread();
-    
-    // m_updaterThread.detach();
 }
 
 void SGCore::TransformationsUpdater::onAddToScene(const Ref<Scene>& scene)
@@ -42,7 +40,15 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
     
     auto transformsView = registry->view<Ref<Transform>>();
     
-    transformsView.each([&registry, this](const entity_t& entity, Ref<Transform> transform) {
+    auto& matrices = m_changedModelMatrices.getWrapped();
+    auto& notPhysicalEntities = m_calculatedNotPhysicalEntities.getWrapped();
+    auto& physicEntitiesToCheck = m_entitiesForPhysicsUpdateToCheck.getWrapped();
+
+    matrices.reserve(transformsView.size());
+    notPhysicalEntities.reserve(transformsView.size());
+    physicEntitiesToCheck.reserve(transformsView.size());
+
+    transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck, this](const entity_t& entity, Ref<Transform> transform) {
         if(transform)
         {
             EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(entity);
@@ -90,39 +96,17 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             // rotation ================================================
             
             if(ownTransform.m_lastRotation != ownTransform.m_rotation)
-            {
-                auto q = glm::identity<glm::quat>();
-                
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.z), { 0, 0, 1 });
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.y), { 0, 1, 0 });
-                q = glm::rotate(q, glm::radians(ownTransform.m_rotation.x), { 1, 0, 0 });
-                
-                ownTransform.m_rotationMatrix = glm::toMat4(q);
-                
-                // rotating directions vectors
-                ownTransform.m_left = glm::rotate(MathUtils::left3,
-                                                  glm::radians(-ownTransform.m_rotation.y), glm::vec3(0, 1, 0));
-                ownTransform.m_left = glm::rotate(ownTransform.m_left,
-                                                  glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
-                
-                ownTransform.m_left *= -1.0f;
-                
-                ownTransform.m_forward = glm::rotate(MathUtils::forward3,
-                                                     glm::radians(-ownTransform.m_rotation.x), glm::vec3(1, 0, 0));
-                ownTransform.m_forward = glm::rotate(ownTransform.m_forward,
-                                                     glm::radians(-ownTransform.m_rotation.y), glm::vec3(0, 1, 0));
-                
-                ownTransform.m_forward *= -1.0f;
-                
-                ownTransform.m_up = glm::rotate(MathUtils::up3,
-                                                glm::radians(-ownTransform.m_rotation.x), glm::vec3(1, 0, 0));
-                ownTransform.m_up = glm::rotate(ownTransform.m_up,
-                                                glm::radians(-ownTransform.m_rotation.z), glm::vec3(0, 0, 1));
-                
-                ownTransform.m_up *= -1.0f;
-                
-                //transformComponent->m_rotationMatrix = glm::toMat4(rotQuat);
-                
+            {   
+                ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_rotation);
+
+                const glm::vec3& column1 = ownTransform.m_rotationMatrix[0];
+                const glm::vec3& column2 = ownTransform.m_rotationMatrix[1];
+                const glm::vec3& column3 = ownTransform.m_rotationMatrix[2];
+
+                ownTransform.m_up = glm::vec3(column1.y, column2.y, column3.y);
+                ownTransform.m_forward = -glm::vec3(column1.z, column2.z, column3.z);
+                ownTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);
+
                 ownTransform.m_lastRotation = ownTransform.m_rotation;
                 
                 rotationChanged = true;
@@ -196,28 +180,24 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
                 finalTransform.m_rotation = glm::degrees(glm::eulerAngles(finalRotation));
                 finalTransform.m_scale = finalScale;
                 
-                m_changedModelMatrices.getObject().push_back({ entity, finalTransform.m_modelMatrix });
-                
-                // std::cout << "dkkdd" << std::endl;
-                
-                m_calculatedNotPhysicalEntities.getObject().push_back({ entity, transform });
+                matrices.push_back({ entity, finalTransform.m_modelMatrix });
+                notPhysicalEntities.push_back({ entity, transform });
             }
             else
             {
-                m_entitiesForPhysicsUpdateToCheck.getObject().push_back(entity);
+                physicEntitiesToCheck.push_back(entity);
             }
         }
     });
     
-    if(m_canCopyEntities)
+    if(!m_calculatedNotPhysicalEntitiesCopy.isLocked())
     {
-        m_canCopyEntities = false;
-        if(m_calculatedNotPhysicalEntitiesCopy.empty())
+        std::lock_guard guard(m_calculatedNotPhysicalEntitiesCopy);
+        auto& vec = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
+        if(vec.empty())
         {
-            m_calculatedNotPhysicalEntitiesCopy = m_calculatedNotPhysicalEntities.getObject();
-            m_calculatedNotPhysicalEntities.getObject().clear();
+            vec = std::move(notPhysicalEntities);
         }
-        m_canCopyEntities = true;
     }
     
     m_changedModelMatrices.lock();
@@ -226,18 +206,16 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    // updateTransformations(dt, fixedDt);
-    // dispatch transformations
-    
     if(!m_sharedScene) return;
     
-    if(m_canCopyEntities)
+    if(!m_calculatedNotPhysicalEntitiesCopy.isLocked())
     {
-        m_canCopyEntities = false;
+        std::lock_guard guard(m_calculatedNotPhysicalEntitiesCopy);
         
         size_t i = 0;
         
-        for(const auto& t : m_calculatedNotPhysicalEntitiesCopy)
+        auto& entitiesCopy = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
+        for(const auto& t : entitiesCopy)
         {
             auto* tmpNonConstTransform = m_sharedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
@@ -259,13 +237,11 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
                                                            mesh->m_base.getMeshData()->m_aabb);
                 
-                glm::vec3 eulerRotation = glm::eulerAngles(rotation);
-                
                 finalTransform.m_position = translation;
                 finalTransform.m_lastPosition = translation;
                 
-                finalTransform.m_rotation = eulerRotation;
-                finalTransform.m_lastRotation = eulerRotation;
+                finalTransform.m_rotation = rotation;
+                finalTransform.m_lastRotation = rotation;
                 
                 finalTransform.m_scale = scale;
                 finalTransform.m_lastScale = scale;
@@ -278,18 +254,16 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             ++i;
         }
         
-        m_calculatedNotPhysicalEntitiesCopy.clear();
-        
-        m_canCopyEntities = true;
+        entitiesCopy.clear();
     }
     
     // std::cout << "calculatedNotPhysEntitiesLastSize - 1: " << (calculatedNotPhysEntitiesLastSize - 1) << std::endl;
     
-    if(m_canCopyEntities)
+    if(!m_calculatedPhysicalEntitiesCopy.isLocked())
     {
-        m_canCopyEntities = false;
-        
-        for(const auto& t : m_calculatedPhysicalEntitiesCopy)
+        std::lock_guard guard(m_calculatedPhysicalEntitiesCopy);
+        auto& entitiesCopy = m_calculatedPhysicalEntitiesCopy.getWrapped();
+        for(const auto& t : entitiesCopy)
         {
             auto* tmpNonConstTransform = m_sharedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
@@ -311,13 +285,11 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 finalTransform.m_aabb.calculateAABBFromTRS(translation, rotation, scale,
                                                            mesh->m_base.getMeshData()->m_aabb);
                 
-                glm::vec3 eulerRotation = glm::eulerAngles(rotation);
-                
                 finalTransform.m_position = translation;
                 finalTransform.m_lastPosition = translation;
                 
-                finalTransform.m_rotation = eulerRotation;
-                finalTransform.m_lastRotation = eulerRotation;
+                finalTransform.m_rotation = rotation;
+                finalTransform.m_lastRotation = rotation;
                 
                 finalTransform.m_scale = scale;
                 finalTransform.m_lastScale = scale;
@@ -328,8 +300,6 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
             onTransformChanged(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
         }
         
-        m_calculatedPhysicalEntitiesCopy.clear();
-        
-        m_canCopyEntities = true;
+        entitiesCopy.clear();
     }
 }

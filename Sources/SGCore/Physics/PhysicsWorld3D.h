@@ -12,8 +12,7 @@
 #include "PhysicsDebugDraw.h"
 #include "SGCore/Utils/Timer.h"
 #include "SGCore/Scene/EntityComponentMember.h"
-#include "SGCore/Threading/SafeObject.h"
-#include "SGCore/Threading/FixedVector.h"
+#include "SGCore/Threading/WrappedObject.h"
 #include "SGCore/Scene/IParallelSystem.h"
 
 namespace SGCore
@@ -74,8 +73,6 @@ namespace SGCore
         Scope<PhysicsDebugDraw> m_debugDraw;
         
         std::mutex m_bodiesCountChangeMutex;
-        
-        SafeObject<std::vector<EntityComponentMember<glm::mat4>>> m_physicalMatricesVector;
     };
 }
 

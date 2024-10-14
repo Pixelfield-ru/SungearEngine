@@ -37,7 +37,7 @@ extern "C" {
 
 #include "SGCore/Serde/GeneratedSerdeSpecs.h"
 
-// #include "D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\cmake-build-debug\Sources\SGEntry\generated.h"
+// #include "D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\cmake-build-release\Sources\SGEntry\generated.h"
 /*#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
 #include "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.templates/TestStruct.h"*/
 #include "SGCore/Render/Mesh.h"
@@ -75,7 +75,7 @@ void coreInit()
             SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                sgEditorPath,
                                                {},
-                                               "cmake-build-debug");
+                                               "cmake-build-release");
 
     // std::cout << "plugin: " << sgEditorPlugin << ", sgeditor path: " << sgEditorPath << std::endl;
 
@@ -177,7 +177,7 @@ void onUpdate(const double& dt, const double& fixedDt)
     {
         if(SGCore::PluginsManager::isPluginExists("SungearEngineEditor"))
         {
-            SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", {}, "cmake-build-debug");
+            SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", {}, "cmake-build-release");
         }
         else
         {
@@ -189,7 +189,7 @@ void onUpdate(const double& dt, const double& fixedDt)
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   "cmake-build-debug");
+                                                   "cmake-build-release");
             }
         }
     }
