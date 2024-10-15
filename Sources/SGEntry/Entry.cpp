@@ -142,7 +142,7 @@ void coreInit()
     std::string outputLog;
 
     std::shared_ptr<Base> deser;
-    Serde::Serializer::fromFormat<Serde::custom_derived_types<Derived0>>(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
+    Serde::Serializer::fromFormat<Serde::custom_derived_types<Derived0>>(FileUtils::readFile("serializer_test.txt"), deser, Serde::FormatType::JSON, outputLog, 1);
 
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 

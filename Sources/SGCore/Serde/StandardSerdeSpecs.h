@@ -41,7 +41,8 @@ namespace SGCore::Serde
             Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
-        static void deserialize(DeserializableValueView<std::unique_ptr<T>, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<std::unique_ptr<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             // if value is null then doing nothing
             if(valueView.getValueContainer().isNull())
@@ -61,7 +62,7 @@ namespace SGCore::Serde
             tmpView.m_data = valueView.m_data->get();
 
             // deserializing values of T
-            SerdeSpec<T, TFormatType>::deserialize(tmpView);
+            Serde::Serializer::invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         template<typename ValueViewT>
@@ -103,7 +104,8 @@ namespace SGCore::Serde
             Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
-        static void deserialize(DeserializableValueView<std::shared_ptr<T>, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<std::shared_ptr<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             // if value is null then doing nothing
             if(valueView.getValueContainer().isNull())
@@ -123,7 +125,7 @@ namespace SGCore::Serde
             tmpView.m_data = valueView.m_data->get();
 
             // deserializing values of T
-            SerdeSpec<T, TFormatType>::deserialize(tmpView);
+            Serde::Serializer::invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         template<typename ValueViewT>
@@ -166,7 +168,8 @@ namespace SGCore::Serde
             Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
-        static void deserialize(DeserializableValueView<T*, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<T*, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             // if value is null then doing nothing
             if(valueView.getValueContainer().isNull())
@@ -186,7 +189,7 @@ namespace SGCore::Serde
             tmpView.m_data = *valueView.m_data;
 
             // deserializing values of T
-            SerdeSpec<T, TFormatType>::deserialize(tmpView);
+            Serde::Serializer::invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         template<typename ValueViewT>

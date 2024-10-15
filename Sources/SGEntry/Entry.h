@@ -49,7 +49,7 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
         std::printf("derived0 serializing %i\n", i);
     }
 
-    static void deserialize(SGCore::Serde::DeserializableValueView<Derived0, TFormatType>& valueView) noexcept
+    static void deserialize(SGCore::Serde::DeserializableValueView<Derived0, TFormatType>& valueView, int i) noexcept
     {
         const auto c = valueView.getValueContainer().template getMember<float>("c");
         if(c)
@@ -75,7 +75,7 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
             valueView.m_data->unMap = *unMap;
         }
 
-        std::printf("derived0 deserializing\n");
+        std::printf("derived0 deserializing %i\n", i);
     }
 };
 
