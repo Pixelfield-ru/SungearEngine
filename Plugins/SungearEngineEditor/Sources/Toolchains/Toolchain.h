@@ -12,7 +12,7 @@
 #include <SGCore/Utils/Utils.h>
 #include <SGCore/Main/CoreGlobals.h>
 
-sg_predeclare_serdespec()
+sg_predeclare_serde()
 
 namespace SGE
 {
@@ -38,7 +38,7 @@ namespace SGE
             std::string m_binaryDir;
         };
 
-        sg_serdespec_as_friend()
+        sg_serde_as_friend()
 
         bool m_doInBackground = true;
         std::function<void(const ProjectBuildOutput& buildOutput)> onProjectBuilt;

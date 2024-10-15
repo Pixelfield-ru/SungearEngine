@@ -8,7 +8,7 @@
 #include <SGCore/pch.h>
 #include "SGCore/Serde/Defines.h"
 
-sg_predeclare_serdespec()
+sg_predeclare_serde()
 
 namespace SGCore
 {
@@ -16,7 +16,7 @@ namespace SGCore
 
     struct UniqueName
     {
-        sg_serdespec_as_friend()
+        sg_serde_as_friend()
 
         friend class UniqueNamesManager;
 
@@ -68,7 +68,7 @@ namespace SGCore
     // wrapper class for unique name for inheritance
     class UniqueNameWrapper
     {
-        sg_serdespec_as_friend()
+        sg_serde_as_friend()
     public:
 
         [[nodiscard]] auto getRawName() const noexcept

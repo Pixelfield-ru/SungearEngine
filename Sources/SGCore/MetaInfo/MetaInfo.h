@@ -207,8 +207,9 @@ namespace SGCore
                 meta["members"]["m_aabb"];
                 meta["members"]["m_position"];
                 meta["members"]["m_rotation"];
+                meta["members"]["m_yawPitchRoll"];
                 meta["members"]["m_scale"];
-                meta["members"]["m_left"];
+                meta["members"]["m_right"];
                 meta["members"]["m_forward"];
                 meta["members"]["m_up"];
 
@@ -239,7 +240,7 @@ namespace SGCore
 
                 meta["baseTypes"]["SGCore::UniqueNameWrapper"];
 
-                meta["members"]["m_parent"];
+                meta["members"]["m_parent"]["annotations"]["doNotSerialize"];
 
                 m_meta["structs"].push_back(meta);
             }

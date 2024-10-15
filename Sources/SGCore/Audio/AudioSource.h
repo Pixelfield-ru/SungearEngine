@@ -15,7 +15,7 @@
 #include "SGCore/Memory/Assets/AudioTrackAsset.h"
 #include "SGCore/Serde/Defines.h"
 
-sg_predeclare_serdespec()
+sg_predeclare_serde()
 
 namespace SGCore
 {
@@ -36,10 +36,14 @@ namespace SGCore
 
     struct AudioSource
     {
-        sg_serdespec_as_friend()
+        sg_serde_as_friend()
 
         friend struct AudioProcessor;
-        
+
+        AudioSource() = default;
+        AudioSource(const AudioSource&) = default;
+        AudioSource(AudioSource&&) noexcept = default;
+
         ~AudioSource();
         
         void create() noexcept;

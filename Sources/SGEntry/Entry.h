@@ -35,7 +35,6 @@ struct Derived0 : Derived
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseTypes<Derived>
 {
-    static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Derived0";
     static inline constexpr bool is_pointer_type = false;
 
@@ -82,7 +81,6 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes<Base> //, SGCore::Serde::DerivedTypes<Derived0>
 {
-    static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Derived";
     static inline constexpr bool is_pointer_type = false;
 
@@ -121,7 +119,6 @@ struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Base, TFormatType> : SGCore::Serde::DerivedTypes<Derived>
 {
-    static inline const rapidjson::Type rapidjson_type = rapidjson::kObjectType;
     static inline const std::string type_name = "Base";
     static inline constexpr bool is_pointer_type = false;
 

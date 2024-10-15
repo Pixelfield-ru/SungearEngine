@@ -13,13 +13,13 @@
 #define SG_LAYER_OPAQUE_NAME        "Opaque"
 #define SG_LAYER_TRANSPARENT_NAME   "Transparent"
 
-sg_predeclare_serdespec()
+sg_predeclare_serde()
 
 namespace SGCore
 {
     struct Layer
     {
-        sg_serdespec_as_friend()
+        sg_serde_as_friend()
 
         friend class Scene;
         friend class ISystem;

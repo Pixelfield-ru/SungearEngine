@@ -11,13 +11,13 @@
 #include <SGCore/Main/CoreGlobals.h>
 #include "Toolchains/Toolchain.h"
 
-sg_predeclare_serdespec()
+sg_predeclare_serde()
 
 namespace SGE
 {
     struct EngineSettings
     {
-        sg_serdespec_as_friend()
+        sg_serde_as_friend()
 
         static SG_NOINLINE SGCore::Ref<EngineSettings> getInstance() noexcept;
 

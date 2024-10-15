@@ -17,7 +17,7 @@ namespace SGCore
     struct MeshBase
     {
         MeshBase();
-        // MeshBase(const MeshBase&) = default;
+        MeshBase(const MeshBase&) = default;
         MeshBase(MeshBase&&) noexcept = default;
 
         MeshDataRenderInfo m_meshDataRenderInfo;
@@ -30,6 +30,9 @@ namespace SGCore
 
         void setMaterial(const Ref<IMaterial>& material) noexcept;
         Ref<IMaterial> getMaterial() const noexcept;
+
+        MeshBase& operator=(const MeshBase&) = default;
+        MeshBase& operator=(MeshBase&&) noexcept = default;
 
     private:
         Ref<IMeshData> m_meshData;

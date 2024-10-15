@@ -37,25 +37,13 @@ extern "C" {
 
 #include "SGCore/Serde/GeneratedSerdeSpecs.h"
 
-// #include "D:\Pixelfield\NativeSungearEngine\NativeSungearEngine\cmake-build-release\Sources\SGEntry\generated.h"
-/*#include "/home/ilya/pixelfield/SungearEngine/cmake-build-release/Sources/SGEntry/.generated/Serializers.h"
-#include "/home/ilya/pixelfield/SungearEngine/Sources/SGCore/Annotations/.templates/TestStruct.h"*/
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
-
-template<SGCore::Serde::FormatType TFormatType>
-void onEntitySave(const SGCore::Scene& savableScene,
-                  const SGCore::Ref<SGCore::ISystem>& savableSystem,
-                  SGCore::Serde::SerializableValueView<SGCore::Scene::systems_container_t, TFormatType>& systemsContainerView) noexcept
-{
-    LOG_W("SGENTRY", "Saving entity");
-}
 
 void coreInit()
 {
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
-    SGCore::Scene::getOnSystemSaveEvent<SGCore::Serde::FormatType::JSON>() += onEntitySave<SGCore::Serde::FormatType::JSON>;
     /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;*/
 
@@ -142,7 +130,8 @@ void coreInit()
     std::string outputLog;
 
     std::shared_ptr<Base> deser;
-    Serde::Serializer::fromFormat<Serde::custom_derived_types<Derived0>>(FileUtils::readFile("serializer_test.txt"), deser, Serde::FormatType::JSON, outputLog, 1);
+    // Serde::Serializer::fromFormat<Serde::custom_derived_types<Derived0>>(FileUtils::readFile("serializer_test.txt"), deser, Serde::FormatType::JSON, outputLog, 1);
+    Serde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
 
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 

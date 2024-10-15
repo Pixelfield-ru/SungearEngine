@@ -14,6 +14,8 @@ namespace SGCore
     struct GizmoBase
     {
         GizmoBase() noexcept;
+        GizmoBase(const GizmoBase&) = default;
+        GizmoBase(GizmoBase&&) noexcept = default;
 
         glm::vec4 m_color { 1.0, 0.0, 0.0, 1.0 };
     // private:
@@ -22,6 +24,9 @@ namespace SGCore
         glm::vec4 m_lastColor = glm::vec4 { 1.0, 1.0, 1.0, 1.0 };
 
         MeshBase m_meshBase;
+
+        GizmoBase& operator=(const GizmoBase&) = default;
+        GizmoBase& operator=(GizmoBase&&) noexcept = default;
     };
 }
 

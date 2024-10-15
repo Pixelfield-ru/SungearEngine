@@ -69,10 +69,26 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType>::s
     ## if struct.hasMember(name: "members")
     ## for member in struct.members
 
+    ## if member.hasMember(name: "annotations")
+
+    ## if !member.annotations.hasMember(name: "doNotSerialize")
+
     ## if member.hasMember(name: "getter")
     valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.getter }}());
     ## else
     valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.name }});
+    ## endif
+
+    ## endif
+
+    ## else
+
+    ## if member.hasMember(name: "getter")
+    valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.getter }}());
+    ## else
+    valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.name }});
+    ## endif
+
     ## endif
 
     ## endfor

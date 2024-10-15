@@ -62,7 +62,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
         // meshEntityBaseInfo.m_layer = layer;
 
-        meshEntityBaseInfo.setParent(parentEntity, registry);
+        meshEntityBaseInfo.setParent(parentEntity, *registry);
 
         meshFunc(parentEntity, meshEntity);
         eachEntityFunc(meshEntity);
@@ -72,7 +72,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     {
         auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
         EntityBaseInfo& childEntityBaseInfo = registry->get<EntityBaseInfo>(childNodeEntity);
-        childEntityBaseInfo.setParent(parentEntity, registry);
+        childEntityBaseInfo.setParent(parentEntity, *registry);
         // parentEntity->addChild(childNodeEntity);
     }
 

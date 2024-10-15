@@ -592,6 +592,13 @@ namespace SGCore::Serde
                 
                 return;
             }
+
+            if(valueView.getValueContainer().m_typeName != SerdeSpec<T, TFormatType>::type_name)
+            {
+                *valueView.getValueContainer().m_outputLog += "Can not deserialize value with type '" + valueView.getValueContainer().m_typeName + "' using T as '" + SerdeSpec<T, TFormatType>::type_name + "'.";
+
+                return;
+            }
             
             // deserialize without dynamic checks (static deserialization)
             
@@ -978,6 +985,24 @@ namespace SGCore::Serde
         }
 
         /**
+        * Getting first iterator of array container.
+        * @return First iterator of array container (begin).
+        */
+        [[nodiscard]] int begin() const noexcept
+        {
+
+        }
+
+        /**
+         * Getting last iterator of array container.
+         * @return Last iterator of array container (end).
+         */
+        [[nodiscard]] int end() const noexcept
+        {
+
+        }
+
+        /**
          * Getting member by iterator.
          * @tparam T - Type of member.
          * @param iterator - Member iterator.
@@ -985,6 +1010,18 @@ namespace SGCore::Serde
          */
         template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
         T getMember(const int& iterator, SharedDataT&&... sharedData) noexcept
+        {
+
+        }
+
+        /**
+         * Getting element in array by iterator.
+         * @tparam T - Type of member.
+         * @param iterator - Array iterator.
+         * @return Value of element.
+         */
+        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
+        T getMember(const float& iterator, SharedDataT&&... sharedData) noexcept
         {
 
         }
@@ -1228,6 +1265,20 @@ namespace SGCore::Serde
             return m_thisValue->MemberEnd();
         }
 
+        [[nodiscard]] rapidjson::Value::ValueIterator begin() const noexcept
+        {
+            if(!m_thisValue) return { };
+
+            return m_thisValue->Begin();
+        }
+
+        [[nodiscard]] rapidjson::Value::ValueIterator end() const noexcept
+        {
+            if(!m_thisValue) return { };
+
+            return m_thisValue->End();
+        }
+
         template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
         std::optional<T> getMember(const rapidjson::Value::MemberIterator& memberIterator, SharedDataT&&... sharedData) noexcept
         {
@@ -1265,6 +1316,65 @@ namespace SGCore::Serde
                 {
                     *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
                             "': this member does not have 'value' section.\n";
+                }
+
+                return std::nullopt;
+            }
+
+            // getting value section of member
+            auto& memberValue = member["value"];
+
+            T outputValue { };
+
+            // creating value view of member
+            DeserializableValueView<T, FormatType::JSON> valueView { };
+            valueView.getValueContainer().m_document = m_document;
+            valueView.getValueContainer().m_thisValue = &memberValue;
+            valueView.getValueContainer().m_parent = this;
+            valueView.getValueContainer().m_outputLog = m_outputLog;
+            valueView.getValueContainer().m_typeName = typeName;
+            valueView.m_data = &outputValue;
+
+            // deserializing member with dynamic checks
+            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
+
+            return outputValue;
+        }
+
+        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
+        std::optional<T> getMember(const rapidjson::Value::ValueIterator& memberIterator, SharedDataT&&... sharedData) noexcept
+        {
+            if(!(m_thisValue || m_document))
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get value from array: m_thisValue or m_document is null.\n";
+                }
+
+                return std::nullopt;
+            }
+
+            // getting member
+            auto& member = *memberIterator;
+
+            if(!member.HasMember("typeName"))
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get value from array: this member does not have 'typeName' section.\n";
+                }
+
+                return std::nullopt;
+            }
+
+            // getting typeName section of member
+            const std::string& typeName = member["typeName"].GetString();
+
+            if(!member.HasMember("value"))
+            {
+                if(m_outputLog)
+                {
+                    *m_outputLog = "Error: Can not get value from array: this member does not have 'value' section.\n";
                 }
 
                 return std::nullopt;

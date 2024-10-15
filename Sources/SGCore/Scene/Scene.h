@@ -18,16 +18,20 @@ namespace SGCore
     namespace Serde
     {
         enum class FormatType;
+
         template<typename T, FormatType TFormatType>
         struct SerializableValueView;
+
+        template<typename T, FormatType TFormatType>
+        struct DeserializableValueView;
     }
 
     struct XMLDocument;
 
     struct SceneEntitySaveInfo
     {
-        const Scene* m_savableScene { };
-        entity_t m_savableEntity { };
+        const Scene* m_serializableScene { };
+        entity_t m_serializableEntity { };
     };
     
     class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
@@ -37,19 +41,22 @@ namespace SGCore
 
     private:
         template<Serde::FormatType TFormatType>
-        struct SGCORE_EXPORT SceneSaveEvents
+        struct SGCORE_EXPORT SceneSerdeEvents
         {
-            static inline Event<void(const Scene& savableScene,
-                                     const entity_t& savableEntity,
-                                     Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView)> onEntitySave;
+            static inline Event<void(Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
+                                     const Scene& serializableScene,
+                                     const entity_t& serializableEntity)> onEntitySerialize;
 
-            static inline Event<void(const Scene& savableScene,
-                                     const Ref<ISystem>& savableSystem,
-                                     Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView)> onSystemSave;
+            static inline Event<void(Serde::DeserializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
+                                     registry_t& toRegistry)> onEntityDeserialize;
+
+            static inline Event<void(Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
+                                     const Scene& serializableScene,
+                                     const Ref<ISystem>& serializableSystem)> onSystemSerialize;
         };
 
     public:
-        sg_serdespec_as_friend()
+        sg_serde_as_friend()
 
         Scene();
         
@@ -142,19 +149,25 @@ namespace SGCore
         }
 
         template<Serde::FormatType TFormatType>
-        SG_NOINLINE static auto& getOnEntitySaveEvent() noexcept
+        SG_NOINLINE static auto& getOnEntitySerializeEvent() noexcept
         {
-            return SceneSaveEvents<TFormatType>::onEntitySave;
+            return SceneSerdeEvents<TFormatType>::onEntitySerialize;
         }
 
         template<Serde::FormatType TFormatType>
-        SG_NOINLINE static auto& getOnSystemSaveEvent() noexcept
+        SG_NOINLINE static auto& getOnEntityDeserializeEvent() noexcept
         {
-            return SceneSaveEvents<TFormatType>::onSystemSave;
+            return SceneSerdeEvents<TFormatType>::onEntityDeserialize;
+        }
+
+        template<Serde::FormatType TFormatType>
+        SG_NOINLINE static auto& getOnSystemSerializeEvent() noexcept
+        {
+            return SceneSerdeEvents<TFormatType>::onSystemSerialize;
         }
 
     private:
-        static inline Event<void(Scene& savedScene)> onSceneSaved;
+        static inline Event<void(const Scene& savedScene)> onSceneSaved;
 
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;

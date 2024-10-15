@@ -16,6 +16,8 @@
 #include "Styles/StylesManager.h"
 #include "EditorScene.h"
 
+#include <SGCore/Serde/StandardSerdeSpecs.h>
+
 SGE::DirectoryExplorer::DirectoryExplorer()
 {
     // TODO: MAKE ON RIGHT CLICK SETTINGS FOR AUTO CONFIGURE POPUP
@@ -1094,6 +1096,20 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                 m_popup.setOpened(false);
                 setCurrentPath(curPath);
                 break;
+            }
+        }
+        else
+        {
+            if(clickInfo.m_isLMBDoubleClicked)
+            {
+                if(curPath.extension() == ".sgscene")
+                {
+                    std::string sceneLoadLog;
+
+                    SGCore::Ref<SGCore::Scene> loadedScene = SGCore::MakeRef<SGCore::Scene>();
+
+                    SGCore::Serde::Serializer::fromFormat(SGCore::FileUtils::readFile(curPath), *loadedScene, sceneLoadLog);
+                }
             }
         }
         

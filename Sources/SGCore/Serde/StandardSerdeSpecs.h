@@ -318,6 +318,36 @@ namespace SGCore::Serde
 
     // ====================================================================================
 
+    template<typename T, glm::qualifier Qualifier, FormatType TFormatType>
+    struct SerdeSpec<glm::qua<T, Qualifier>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "glm::qua";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<glm::qua<T, Qualifier>, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().setAsArray();
+
+            valueView.getValueContainer().pushBack(valueView.m_data->x);
+            valueView.getValueContainer().pushBack(valueView.m_data->y);
+            valueView.getValueContainer().pushBack(valueView.m_data->z);
+            valueView.getValueContainer().pushBack(valueView.m_data->w);
+        }
+
+        static void deserialize(DeserializableValueView<glm::qua<T, Qualifier>, TFormatType>& valueView)
+        {
+            const std::vector<T> vec =
+                    valueView.getValueContainer().template getAsArray<T>();
+
+            valueView.m_data->x = vec[0];
+            valueView.m_data->y = vec[1];
+            valueView.m_data->z = vec[2];
+            valueView.m_data->w = vec[3];
+        }
+    };
+
+    // ====================================================================================
+
     template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Qualifier, FormatType TFormatType>
     struct SerdeSpec<glm::mat<C, R, T, Qualifier>, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
@@ -459,15 +489,19 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().setAsArray();
 
-            Scene::getOnEntitySaveEvent<TFormatType>()(
-                    *valueView.m_data->m_savableScene,
-                    valueView.m_data->m_savableEntity,
-                    valueView
+            Scene::getOnEntitySerializeEvent<TFormatType>()(
+                    valueView,
+                    *valueView.m_data->m_serializableScene,
+                    valueView.m_data->m_serializableEntity
             );
         }
 
-        static void deserialize(DeserializableValueView<registry_t, TFormatType>& valueView)
+        static void deserialize(DeserializableValueView<SceneEntitySaveInfo, TFormatType>& valueView, registry_t& toRegistry)
         {
+            Scene::getOnEntityDeserializeEvent<TFormatType>()(
+                    valueView,
+                    toRegistry
+            );
         }
     };
 
@@ -477,74 +511,65 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::registry_t";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<registry_t, TFormatType>& valueView)
+        static void serialize(SerializableValueView<registry_t, TFormatType>& valueView, const Scene& serializableScene)
         {
             valueView.getValueContainer().setAsArray();
 
-            Scene* savableScene { };
-
-            // getting scene
-            auto sceneEntitiesView = valueView.m_data->template view<Scene*>();
-            sceneEntitiesView.each([&savableScene](Scene* scene) {
-                savableScene = scene;
-            });
-
-            if(!savableScene)
-            {
-                LOG_E(SGCORE_TAG, "Can not save null scene!");
-                return;
-            }
-
             SceneEntitySaveInfo sceneEntitySaveInfo;
-            sceneEntitySaveInfo.m_savableScene = savableScene;
+            sceneEntitySaveInfo.m_serializableScene = &serializableScene;
 
             auto entitiesView = valueView.m_data->template view<EntityBaseInfo>();
             for(const auto& entity : entitiesView)
             {
                 // if current savable entity has parent the skip saving this entity because parent saves children entities himself
-                EntityBaseInfo* entityBaseInfo = savableScene->getECSRegistry()->try_get<EntityBaseInfo>(entity);
+                EntityBaseInfo* entityBaseInfo = serializableScene.getECSRegistry()->try_get<EntityBaseInfo>(entity);
                 if(entityBaseInfo &&
                    entityBaseInfo->getParent() != entt::null &&
-                   savableScene->getECSRegistry()->valid(entityBaseInfo->getParent()))
+                   serializableScene.getECSRegistry()->valid(entityBaseInfo->getParent()))
                 {
                     continue;
                 }
 
                 LOG_I(SGCORE_TAG, "Saving entity '{}'...", std::to_underlying(entity));
 
-                sceneEntitySaveInfo.m_savableEntity = entity;
+                sceneEntitySaveInfo.m_serializableEntity = entity;
 
                 valueView.getValueContainer().pushBack(sceneEntitySaveInfo);
             }
 
-            Scene::getOnSceneSavedEvent()(*savableScene);
+            Scene::getOnSceneSavedEvent()(serializableScene);
         }
 
         static void deserialize(DeserializableValueView<registry_t, TFormatType>& valueView)
         {
+            for(auto entityIt = valueView.getValueContainer().begin(); entityIt != valueView.getValueContainer().end(); ++entityIt)
+            {
+                // deserializing entity and passing registry to getMember to put entity in scene
+                valueView.getValueContainer().template getMember<SceneEntitySaveInfo, custom_derived_types<>>(entityIt, *valueView.m_data);
+            }
         }
     };
 
     template<FormatType TFormatType>
     struct SerdeSpec<Scene::systems_container_t, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
-        static inline const std::string type_name = "SGCore::Scene";
+        static inline const std::string type_name = "SGCore::Scene::systems_container_t";
         static inline constexpr bool is_pointer_type = false;
 
         static void serialize(SerializableValueView<Scene::systems_container_t, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsArray();
 
-            Ref<Scene> savableScene;
+            Ref<Scene> serializableScene;
             if(!valueView.m_data->empty())
             {
-                savableScene = (*valueView.m_data)[0]->getScene().lock();
+                serializableScene = (*valueView.m_data)[0]->getScene().lock();
             }
 
             // serializing systems
             for(const auto& system : *valueView.m_data)
             {
-                Scene::getOnSystemSaveEvent<TFormatType>()(*savableScene, system, valueView);
+                Scene::getOnSystemSerializeEvent<TFormatType>()(valueView, *serializableScene, system);
             }
         }
 
@@ -562,12 +587,23 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<Scene, TFormatType>& valueView)
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
-            valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry);
+            valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry, *valueView.m_data);
             valueView.getValueContainer().addMember("m_systems", valueView.m_data->m_systems);
         }
 
         static void deserialize(DeserializableValueView<Scene, TFormatType>& valueView)
         {
+            auto sceneName = valueView.getValueContainer().template getMember<std::string>("m_name");
+            if(sceneName)
+            {
+                valueView.m_data->m_name = std::move(*sceneName);
+            }
+
+            auto ecsRegistry = valueView.getValueContainer().template getMember<registry_t>("m_ecsRegistry");
+            if(ecsRegistry)
+            {
+                (*valueView.m_data->getECSRegistry()) = std::move(*ecsRegistry);
+            }
         }
     };
 }

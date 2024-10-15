@@ -17,7 +17,7 @@ namespace SGCore
     // sizeof
     struct EntityBaseInfo : public UniqueNameWrapper
     {
-        sg_serdespec_as_friend()
+        sg_serde_as_friend()
 
         explicit EntityBaseInfo(const entity_t& thisEntity) noexcept : m_thisEntity(thisEntity) { }
         EntityBaseInfo(const EntityBaseInfo&) = default;
@@ -26,11 +26,11 @@ namespace SGCore
         // sg_member()
         Weak<Layer> m_layer;
 
-        void setParent(const entity_t& parent, const Ref<registry_t>& inRegistry) noexcept;
-        void detachFromParent(const Ref<registry_t>& inRegistry) noexcept;
+        void setParent(const entity_t& parent, registry_t& inRegistry) noexcept;
+        void detachFromParent(registry_t& inRegistry) noexcept;
 
-        void addChild(const entity_t& child, const Ref<registry_t>& inRegistry) noexcept;
-        void removeChild(const entity_t& child, const Ref<registry_t>& inRegistry) noexcept;
+        void addChild(const entity_t& child, registry_t& inRegistry) noexcept;
+        void removeChild(const entity_t& child, registry_t& inRegistry) noexcept;
         [[nodiscard]] bool hasChild(const entity_t& child) const noexcept;
 
         [[nodiscard]] const std::vector<entity_t>& getChildren() const noexcept;
@@ -41,6 +41,8 @@ namespace SGCore
         EntityBaseInfo& operator=(EntityBaseInfo&&) = default;
 
     private:
+        EntityBaseInfo() = default;
+
         entity_t m_parent = entt::null;
         entity_t m_thisEntity = entt::null;
 
