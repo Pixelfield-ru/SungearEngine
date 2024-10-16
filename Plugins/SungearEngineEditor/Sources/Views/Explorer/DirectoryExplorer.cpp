@@ -73,7 +73,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         if(SungearEngineEditor::getInstance()->getMainView()
                    ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgscene" && !canceled)
         {
-            auto editorScene = EditorScene::createSceneForEditor(SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string()));
+            auto editorScene = EditorScene::createBasicScene(SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string()));
             editorScene->saveByPath(byPath.parent_path(), byPath.stem());
             if(!EditorScene::getCurrentScene())
             {
@@ -1107,8 +1107,18 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                     std::string sceneLoadLog;
 
                     SGCore::Ref<SGCore::Scene> loadedScene = SGCore::MakeRef<SGCore::Scene>();
-
                     SGCore::Serde::Serializer::fromFormat(SGCore::FileUtils::readFile(curPath), *loadedScene, sceneLoadLog);
+
+                    loadedScene->createDefaultSystems();
+                    loadedScene->m_name = SGCore::Utils::toUTF8(curPath.stem().u16string());
+
+                    SGCore::Scene::addScene(loadedScene);
+
+                    auto editorScene = SGCore::MakeRef<EditorScene>();
+                    editorScene->m_scene = loadedScene;
+                    editorScene->addEditorEntities();
+
+                    EditorScene::setCurrentScene(editorScene);
                 }
             }
         }

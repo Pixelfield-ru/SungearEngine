@@ -79,7 +79,7 @@ void SGE::EditorScene::saveByPath(const std::filesystem::path& toPath, const std
     SGCore::FileUtils::writeToFile(editorScenePath, SGCore::Serde::Serializer::toFormat(m_data), false, true);
 }
 
-SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::string& name) noexcept
+SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::string& name) noexcept
 {
     auto newScene = SGCore::MakeRef<SGCore::Scene>();
     newScene->m_name = name;
@@ -89,29 +89,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
     auto editorScene = SGCore::MakeRef<EditorScene>();
     editorScene->m_scene = newScene;
 
-    // adding standard entities with components
-    // adding editor-only camera
-    editorScene->m_data.m_editorCamera = newScene->getECSRegistry()->create();
-    {
-        const auto& camera = editorScene->m_data.m_editorCamera;
-
-        SGCore::EntityBaseInfo& cameraBaseInfo = newScene->getECSRegistry()->emplace<SGCore::EntityBaseInfo>(camera, camera);
-        cameraBaseInfo.setRawName("SGMainCamera");
-
-        newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Transform>>(camera, SGCore::MakeRef<SGCore::Transform>());
-        newScene->getECSRegistry()->emplace<SGCore::NonSavable>(camera);
-        newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::Camera3D>>(camera, SGCore::MakeRef<SGCore::Camera3D>());
-        newScene->getECSRegistry()->emplace<SGCore::Ref<SGCore::RenderingBase>>(camera, SGCore::MakeRef<SGCore::RenderingBase>());
-        newScene->getECSRegistry()->emplace<SGCore::Controllable3D>(camera);
-        auto& layeredFrameReceiver = newScene->getECSRegistry()->emplace<SGCore::LayeredFrameReceiver>(camera);
-        layeredFrameReceiver.setRenderOverlayInSeparateFrameBuffer(true);
-    }
-
-    // adding editor-only grid
-    editorScene->m_data.m_editorGrid = newScene->getECSRegistry()->create();
-    {
-
-    }
+    editorScene->addEditorEntities();
 
     // adding scene atmosphere
     SGCore::entity_t atmosphereEntity = entt::null;
@@ -142,4 +120,33 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createSceneForEditor(const std::
     }
 
     return editorScene;
+}
+
+void SGE::EditorScene::addEditorEntities() noexcept
+{
+    auto registry = m_scene->getECSRegistry();
+
+    // adding standard entities with components
+    // adding editor-only camera
+    m_data.m_editorCamera = registry->create();
+    {
+        const auto& camera = m_data.m_editorCamera;
+
+        SGCore::EntityBaseInfo& cameraBaseInfo = registry->emplace<SGCore::EntityBaseInfo>(camera, camera);
+        cameraBaseInfo.setRawName("SGMainCamera");
+
+        registry->emplace<SGCore::Ref<SGCore::Transform>>(camera, SGCore::MakeRef<SGCore::Transform>());
+        registry->emplace<SGCore::NonSavable>(camera);
+        registry->emplace<SGCore::Ref<SGCore::Camera3D>>(camera, SGCore::MakeRef<SGCore::Camera3D>());
+        registry->emplace<SGCore::Ref<SGCore::RenderingBase>>(camera, SGCore::MakeRef<SGCore::RenderingBase>());
+        registry->emplace<SGCore::Controllable3D>(camera);
+        auto& layeredFrameReceiver = registry->emplace<SGCore::LayeredFrameReceiver>(camera);
+        layeredFrameReceiver.setRenderOverlayInSeparateFrameBuffer(true);
+    }
+
+    // adding editor-only grid
+    m_data.m_editorGrid = registry->create();
+    {
+
+    }
 }
