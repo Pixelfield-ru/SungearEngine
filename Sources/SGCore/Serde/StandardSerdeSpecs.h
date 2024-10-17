@@ -556,31 +556,32 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::Scene::systems_container_t";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<Scene::systems_container_t, TFormatType>& valueView)
+        static void serialize(SerializableValueView<Scene::systems_container_t, TFormatType>& valueView, const Scene& serializableScene)
         {
             valueView.getValueContainer().setAsArray();
-
-            Ref<Scene> serializableScene;
-            if(!valueView.m_data->empty())
-            {
-                serializableScene = (*valueView.m_data)[0]->getScene().lock();
-            }
 
             // serializing systems
             for(const auto& system : *valueView.m_data)
             {
-                Scene::getOnSystemSerializeEvent<TFormatType>()(valueView, *serializableScene, system);
+                Scene::getOnSystemSerializeEvent<TFormatType>()(valueView, serializableScene, system);
             }
         }
 
-        static void deserialize(DeserializableValueView<Scene, TFormatType>& valueView)
+        static void deserialize(DeserializableValueView<Scene::systems_container_t, TFormatType>& valueView)
         {
+            // type of auto is equals to Serde::FormatInfo<TFormatType>::array_iterator_t
+            for(auto systemIt = valueView.getValueContainer().begin(); systemIt != valueView.getValueContainer().end(); ++systemIt)
+            {
+                Scene::getOnSystemDeserializeEvent<TFormatType>()(valueView, systemIt);
+            }
         }
     };
 
     template<FormatType TFormatType>
     struct SerdeSpec<Scene, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
+        // sg_validate_serdespec_supported_formats(TFormatType, FormatType::JSON, FormatType::BSON)
+
         static inline const std::string type_name = "SGCore::Scene";
         static inline constexpr bool is_pointer_type = false;
 
@@ -588,7 +589,7 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry, *valueView.m_data);
-            valueView.getValueContainer().addMember("m_systems", valueView.m_data->m_systems);
+            valueView.getValueContainer().addMember("m_systems", valueView.m_data->m_systems, *valueView.m_data);
         }
 
         static void deserialize(DeserializableValueView<Scene, TFormatType>& valueView)
@@ -603,6 +604,15 @@ namespace SGCore::Serde
             if(ecsRegistry)
             {
                 (*valueView.m_data->getECSRegistry()) = std::move(*ecsRegistry);
+            }
+
+            auto systems = valueView.getValueContainer().template getMember<Scene::systems_container_t>("m_systems");
+            if(systems)
+            {
+                for(const auto& system : *systems)
+                {
+                    valueView.m_data->addSystem(system);
+                }
             }
         }
     };

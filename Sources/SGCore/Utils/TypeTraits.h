@@ -91,6 +91,9 @@ namespace SGCore
         }
 #endif
     };
+
+    // ======================================================================================================================
+    // ======================================================================================================================
     
     template<typename T, size_t RepeatsCnt>
     struct repeated_type
@@ -110,22 +113,46 @@ namespace SGCore
     
     template<typename... RepeatT>
     using repeated_tuple = decltype(std::tuple_cat((repeated_tuple_single<RepeatT>())...));
+
+    // ======================================================================================================================
+    // ======================================================================================================================
+
+    template<bool Test, auto TVal, auto FVal>
+    struct conditional_variable;
+
+    template<auto TVal, auto FVal>
+    struct conditional_variable<true, TVal, FVal>
+    {
+        static constexpr inline auto value = TVal;
+    };
+
+    template<auto TVal, auto FVal>
+    struct conditional_variable<false, TVal, FVal>
+    {
+        static constexpr inline auto value = FVal;
+    };
+
+    template<bool Test, auto TVal, auto FVal>
+    static constexpr inline auto conditional_variable_v = conditional_variable<Test, TVal, FVal>::value;
+
+    // ======================================================================================================================
+    // ======================================================================================================================
     
     template <std::size_t Idx, typename... Types>
     class extract
     {
-        static_assert(Idx < sizeof...( Types ), "index out of bounds");
+        static_assert(Idx < sizeof...( Types ), "Index out of bounds.");
         
-        template <std::size_t I, std::size_t N, class... Rest>
+        template <size_t I, size_t N, typename... Rest>
         struct extract_impl;
         
-        template <std::size_t I, std::size_t N, class T, class... Rest>
+        template <size_t I, size_t N, typename T, typename... Rest>
         struct extract_impl<I, N, T, Rest...>
         {
             using type = typename extract_impl<I + 1, N, Rest...>::type;
         };
         
-        template <std::size_t N, class T, class... Rest>
+        template <size_t N, typename T, typename... Rest>
         struct extract_impl<N, N, T, Rest...>
         {
             using type = T;
@@ -139,6 +166,78 @@ namespace SGCore
     {
     };
 
+    template <std::size_t Idx, auto... Values>
+    class extract_obj
+    {
+        static_assert(Idx < sizeof...(Values), "Index out of bounds.");
+
+        template <size_t I, size_t N, auto... Rest>
+        struct extract_impl;
+
+        template <size_t I, size_t N, auto V, auto... Rest>
+        struct extract_impl<I, N, V, Rest...>
+        {
+            static constexpr inline auto value = extract_impl<I + 1, N, Rest...>::value;
+        };
+
+        template <size_t N, auto V, auto... Rest>
+        struct extract_impl<N, N, V, Rest...>
+        {
+            static constexpr inline auto value = V;
+        };
+    public:
+        static constexpr inline auto value = extract_impl<0, Idx, Values...>::value;
+    };
+
+    template <std::size_t Idx, auto OrValue, auto... Values>
+    class extract_obj_or : public std::conditional_t<Idx >= sizeof...(Values), extract_obj<0, OrValue>, extract_obj<Idx, Values...>>
+    {
+    };
+
+    // ======================================================================================================================
+    // ======================================================================================================================
+
+    template<typename T, typename... InTypes>
+    class contains
+    {
+        template<size_t CurIdx, size_t MaxIdx>
+        struct contains_impl
+        {
+            static constexpr inline bool value = conditional_variable_v<std::is_same_v<typename extract<CurIdx, InTypes...>::type, T>, true, contains_impl<CurIdx + 1, MaxIdx>::value>;
+        };
+
+        template<size_t MaxIdx>
+        struct contains_impl<MaxIdx, MaxIdx>
+        {
+            static constexpr inline bool value = false;
+        };
+
+    public:
+        static constexpr inline bool value = contains_impl<0, sizeof...(InTypes)>::value;
+    };
+
+    template<auto T, auto... InValues>
+    class contains_obj
+    {
+        template<size_t CurIdx, size_t MaxIdx>
+        struct contains_impl
+        {
+            static constexpr inline bool value = conditional_variable_v<extract_obj<CurIdx, InValues...>::value == T, true, contains_impl<CurIdx + 1, MaxIdx>::value>;
+        };
+
+        template<size_t MaxIdx>
+        struct contains_impl<MaxIdx, MaxIdx>
+        {
+            static constexpr inline bool value = false;
+        };
+
+    public:
+        static constexpr inline bool value = contains_impl<0, sizeof...(InValues)>::value;
+    };
+
+    // ======================================================================================================================
+    // ======================================================================================================================
+
     template<typename... Types>
     struct types_container
     {
@@ -147,6 +246,9 @@ namespace SGCore
 
         template<size_t Idx>
         using get_type = extract<Idx, Types...>::type;
+
+        template<typename T>
+        static constexpr inline bool contains = SGCore::contains<T, Types...>::value;
     };
 
     template<typename T>
@@ -156,7 +258,10 @@ namespace SGCore
 
         requires (T::types_count == 0) || (requires { typename T::template get_type<0>; });
     };
-    
+
+    // ======================================================================================================================
+    // ======================================================================================================================
+
     template <typename> struct class_function_traits;
     
     template <typename Object, typename Return, typename... Args>
@@ -208,16 +313,21 @@ namespace SGCore
         template<size_t Idx>
         using get_type = extract<Idx, Args...>;
     };
-    
-    template <typename T>
-    struct always_false : std::false_type
-    {
-    };
-    
-    template <typename T>
-    struct always_true : std::false_type
-    {
-    };
+
+    // ======================================================================================================================
+    // ======================================================================================================================
+
+    template <typename>
+    struct always_false : std::false_type {};
+
+    template <auto>
+    struct always_false_obj : std::false_type {};
+
+    template <typename>
+    struct always_true : std::false_type { };
+
+    template <auto>
+    struct always_true_obj : std::false_type { };
     
     template <typename T, std::size_t = sizeof(T)>
     std::true_type is_complete_impl(T*);

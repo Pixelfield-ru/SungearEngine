@@ -13,19 +13,10 @@
 #include "SGCore/Utils/EventListener.h"
 #include "SGCore/Utils/TypeTraits.h"
 
+sg_predeclare_serde()
+
 namespace SGCore
 {
-    namespace Serde
-    {
-        enum class FormatType;
-
-        template<typename T, FormatType TFormatType>
-        struct SerializableValueView;
-
-        template<typename T, FormatType TFormatType>
-        struct DeserializableValueView;
-    }
-
     struct XMLDocument;
 
     struct SceneEntitySaveInfo
@@ -53,6 +44,9 @@ namespace SGCore
             static inline Event<void(Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
                                      const Scene& serializableScene,
                                      const Ref<ISystem>& serializableSystem)> onSystemSerialize;
+
+            static inline Event<void(Serde::DeserializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
+                                     const typename Serde::FormatInfo<TFormatType>::array_iterator_t& curIterator)> onSystemDeserialize;
         };
 
     public:
@@ -164,6 +158,12 @@ namespace SGCore
         SG_NOINLINE static auto& getOnSystemSerializeEvent() noexcept
         {
             return SceneSerdeEvents<TFormatType>::onSystemSerialize;
+        }
+
+        template<Serde::FormatType TFormatType>
+        SG_NOINLINE static auto& getOnSystemDeserializeEvent() noexcept
+        {
+            return SceneSerdeEvents<TFormatType>::onSystemDeserialize;
         }
 
     private:

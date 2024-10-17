@@ -137,7 +137,31 @@ namespace SGCore::Serde
         
         }
     };
-    
+
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
+
+    /**
+     * Information about format type.
+     * @tparam TFormatType - Format Type.
+     */
+    template<FormatType TFormatType>
+    struct FormatInfo
+    {
+        static_assert(always_false_obj<TFormatType>::value, "Can not get information about this format type. FormatInfo specialization for this format type was not defined.");
+
+        using member_iterator_t = void;
+        using array_iterator_t = void;
+    };
+
+    template<>
+    struct FormatInfo<FormatType::JSON>
+    {
+        using member_iterator_t = rapidjson::Value::MemberIterator;
+        using array_iterator_t = rapidjson::Value::ValueIterator;
+    };
+
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
@@ -588,6 +612,8 @@ namespace SGCore::Serde
                     
                     // deserializing base types of T
                     deserializeBaseTypes(tmpView, std::forward<SharedDataT>(sharedData)...);
+
+                    std::cout << "deser only base " << std::string(GENERATOR_PRETTY_FUNCTION) << std::endl;
                 }
                 
                 return;
@@ -595,7 +621,7 @@ namespace SGCore::Serde
 
             if(valueView.getValueContainer().m_typeName != SerdeSpec<T, TFormatType>::type_name)
             {
-                *valueView.getValueContainer().m_outputLog += "Can not deserialize value with type '" + valueView.getValueContainer().m_typeName + "' using T as '" + SerdeSpec<T, TFormatType>::type_name + "'.";
+                *valueView.getValueContainer().m_outputLog += "Can not deserialize value with type '" + valueView.getValueContainer().m_typeName + "' using T as '" + SerdeSpec<T, TFormatType>::type_name + "'.\n";
 
                 return;
             }
@@ -827,6 +853,12 @@ namespace SGCore::Serde
         template<typename OriginalT, typename DerivedT, FormatType TFormatType, typename... SharedDataT>
         static void deserializeAsDerivedType(DeserializableValueView<OriginalT, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
+            // if pointer was already allocated then we are thinking that correct derived object was already allocated
+            if(valueView.m_data)
+            {
+                return;
+            }
+
             // creating temporary view that contains pointer to DerivedT
             DeserializableValueView<DerivedT, TFormatType> tmpView { };
             tmpView.getValueContainer() = valueView.getValueContainer();
@@ -847,6 +879,8 @@ namespace SGCore::Serde
                 
                 // assigning allocated pointer to original valueView
                 valueView.m_data = derivedObject;
+
+                std::cout << "deserializing as derived " << std::string(GENERATOR_PRETTY_FUNCTION) << std::endl;
                 
                 return;
             }
@@ -1342,7 +1376,7 @@ namespace SGCore::Serde
         }
 
         template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
-        std::optional<T> getMember(const rapidjson::Value::ValueIterator& memberIterator, SharedDataT&&... sharedData) noexcept
+        std::optional<T> getMember(const rapidjson::Value::ValueIterator& arrayIterator, SharedDataT&&... sharedData) noexcept
         {
             if(!(m_thisValue || m_document))
             {
@@ -1355,7 +1389,7 @@ namespace SGCore::Serde
             }
 
             // getting member
-            auto& member = *memberIterator;
+            auto& member = *arrayIterator;
 
             if(!member.HasMember("typeName"))
             {
@@ -1718,7 +1752,7 @@ namespace SGCore::Serde
 
         const T* m_data { };
 
-        auto& getValueContainer() noexcept
+        SerializableValueContainer<TFormatType>& getValueContainer() noexcept
         {
             return m_valueContainer;
         }
@@ -1749,7 +1783,7 @@ namespace SGCore::Serde
 
         T* m_data { };
 
-        auto& getValueContainer() noexcept
+        DeserializableValueContainer<TFormatType>& getValueContainer() noexcept
         {
             return m_valueContainer;
         }

@@ -136,11 +136,26 @@ void onEntityDeserialize(SGCore::Serde::DeserializableValueView<SGCore::SceneEnt
 }
 
 template<SGCore::Serde::FormatType TFormatType>
-void onSystemSave(SGCore::Serde::SerializableValueView<SGCore::Scene::systems_container_t, TFormatType>& systemsContainerView,
-                  const SGCore::Scene& savableScene,
-                  const SGCore::Ref<SGCore::ISystem>& savableSystem) noexcept
+void onSystemSerialize(
+        SGCore::Serde::SerializableValueView<SGCore::Scene::systems_container_t, TFormatType>& systemsContainerView,
+        const SGCore::Scene& savableScene,
+        const SGCore::Ref<SGCore::ISystem>& savableSystem) noexcept
 {
     systemsContainerView.getValueContainer().pushBack(savableSystem);
+}
+
+template<SGCore::Serde::FormatType TFormatType>
+void onSystemDeserialize(
+        SGCore::Serde::DeserializableValueView<SGCore::Scene::systems_container_t, TFormatType>& systemsContainerView,
+        const typename SGCore::Serde::FormatInfo<TFormatType>::array_iterator_t& curIterator) noexcept
+{
+    const auto system = systemsContainerView.getValueContainer().template getMember<SGCore::Ref<SGCore::ISystem>>(curIterator);
+    if(system)
+    {
+        LOG_D(SGCORE_TAG, "LOADING SYSTEM {}", std::string(typeid(**system).name()));
+
+        systemsContainerView.m_data->emplace_back(std::move(*system));
+    }
 }
 
 void onInit()
@@ -177,7 +192,8 @@ SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 
     SGCore::Scene::getOnEntitySerializeEvent<SGCore::Serde::FormatType::JSON>() += onEntitySerialize<SGCore::Serde::FormatType::JSON>;
     SGCore::Scene::getOnEntityDeserializeEvent<SGCore::Serde::FormatType::JSON>() += onEntityDeserialize<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnSystemSerializeEvent<SGCore::Serde::FormatType::JSON>() += onSystemSave<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemSerializeEvent<SGCore::Serde::FormatType::JSON>() += onSystemSerialize<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemDeserializeEvent<SGCore::Serde::FormatType::JSON>() += onSystemDeserialize<SGCore::Serde::FormatType::JSON>;
     // TODO: supporting BSON and YAML
     /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() += onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() += onEntitySave<SGCore::Serde::FormatType::YAML>;*/
@@ -192,7 +208,9 @@ SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeEntry()
 SG_NOMANGLING SG_DLEXPORT void editorGeneratedCodeExit()
 {
     SGCore::Scene::getOnEntitySerializeEvent<SGCore::Serde::FormatType::JSON>() -= onEntitySerialize<SGCore::Serde::FormatType::JSON>;
-    SGCore::Scene::getOnSystemSerializeEvent<SGCore::Serde::FormatType::JSON>() -= onSystemSave<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnEntityDeserializeEvent<SGCore::Serde::FormatType::JSON>() -= onEntityDeserialize<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemSerializeEvent<SGCore::Serde::FormatType::JSON>() -= onSystemSerialize<SGCore::Serde::FormatType::JSON>;
+    SGCore::Scene::getOnSystemDeserializeEvent<SGCore::Serde::FormatType::JSON>() -= onSystemDeserialize<SGCore::Serde::FormatType::JSON>;
     // TODO: supporting BSON and YAML
     /*SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::BSON>() -= onEntitySave<SGCore::Serde::FormatType::BSON>;
     SGCore::Scene::getOnEntitySave<SGCore::Serde::FormatType::YAML>() -= onEntitySave<SGCore::Serde::FormatType::YAML>;*/

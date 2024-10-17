@@ -116,14 +116,14 @@ void coreInit()
     std::shared_ptr<Base> tst = std::make_shared<Derived0>();
     // Base* tst = new Derived0();
     tst->a = -1;
-    dynamic_cast<Derived0*>(tst.get())->b = 20.1f;
+    /*dynamic_cast<Derived0*>(tst.get())->b = 20.1f;
     dynamic_cast<Derived0*>(tst.get())->str1 = u"abra";
     dynamic_cast<Derived0*>(tst.get())->myVec3 = { -3, 5, 1 };
-    dynamic_cast<Derived0*>(tst.get())->unMap["v0"] = 20.0f;
+    dynamic_cast<Derived0*>(tst.get())->unMap["v0"] = 20.0f;*/
     /*dynamic_cast<Derived0*>(tst)->b = 20.1f;
     dynamic_cast<Derived0*>(tst)->str1 = u"abra";*/
     //dynamic_cast<Derived*>(tst)->b = 4;
-    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat<Serde::custom_derived_types<Derived0>>(Serde::FormatType::JSON, tst, 1), false, true);
+    FileUtils::writeToFile("serializer_test.txt", Serde::Serializer::toFormat(tst), false, true);
 
     // Serializer::serialize(document, document, "testSerde", annotationsProcessor);
 

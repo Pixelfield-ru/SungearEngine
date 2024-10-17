@@ -1109,7 +1109,6 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                     SGCore::Ref<SGCore::Scene> loadedScene = SGCore::MakeRef<SGCore::Scene>();
                     SGCore::Serde::Serializer::fromFormat(SGCore::FileUtils::readFile(curPath), *loadedScene, sceneLoadLog);
 
-                    loadedScene->createDefaultSystems();
                     loadedScene->m_name = SGCore::Utils::toUTF8(curPath.stem().u16string());
 
                     SGCore::Scene::addScene(loadedScene);
@@ -1119,6 +1118,11 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                     editorScene->addEditorEntities();
 
                     EditorScene::setCurrentScene(editorScene);
+
+                    if(!sceneLoadLog.empty())
+                    {
+                        LOG_E(SGEDITOR_TAG, "Error while loading scene '{}': {}", SGCore::Utils::toUTF8(curPath.stem().u16string()), sceneLoadLog);
+                    }
                 }
             }
         }

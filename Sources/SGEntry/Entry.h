@@ -32,23 +32,47 @@ struct Derived0 : Derived
     std::unordered_map<std::string, float> unMap { { "v0", 1.0f }, { "v1", -5.0f } };
 };
 
+struct Derived1 : Derived
+{
+    float e = 3.0f;
+    float f = 3.0f;
+    float g = 3.0f;
+};
+
+template<SGCore::Serde::FormatType TFormatType>
+struct SGCore::Serde::SerdeSpec<Derived1, TFormatType> : SGCore::Serde::BaseTypes<Derived>
+{
+    static inline const std::string type_name = "Derived1";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<Derived1, TFormatType>& valueView) noexcept
+    {
+        std::printf("derived1 serializing\n");
+    }
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<Derived1, TFormatType>& valueView) noexcept
+    {
+        std::printf("derived1 deserializing\n");
+    }
+};
+
 template<SGCore::Serde::FormatType TFormatType>
 struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseTypes<Derived>
 {
     static inline const std::string type_name = "Derived0";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<Derived0, TFormatType>& valueView, int i) noexcept
+    static void serialize(SGCore::Serde::SerializableValueView<Derived0, TFormatType>& valueView) noexcept
     {
         valueView.getValueContainer().addMember("c", valueView.m_data->c);
         valueView.getValueContainer().addMember("floats", valueView.m_data->floats);
         valueView.getValueContainer().addMember("myVec3", valueView.m_data->myVec3);
         valueView.getValueContainer().addMember("unMap", valueView.m_data->unMap);
 
-        std::printf("derived0 serializing %i\n", i);
+        std::printf("derived0 serializing\n");
     }
 
-    static void deserialize(SGCore::Serde::DeserializableValueView<Derived0, TFormatType>& valueView, int i) noexcept
+    static void deserialize(SGCore::Serde::DeserializableValueView<Derived0, TFormatType>& valueView) noexcept
     {
         const auto c = valueView.getValueContainer().template getMember<float>("c");
         if(c)
@@ -74,12 +98,12 @@ struct SGCore::Serde::SerdeSpec<Derived0, TFormatType> : SGCore::Serde::BaseType
             valueView.m_data->unMap = *unMap;
         }
 
-        std::printf("derived0 deserializing %i\n", i);
+        std::printf("derived0 deserializing\n");
     }
 };
 
 template<SGCore::Serde::FormatType TFormatType>
-struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes<Base> //, SGCore::Serde::DerivedTypes<Derived0>
+struct SGCore::Serde::SerdeSpec<Derived, TFormatType> : SGCore::Serde::BaseTypes<Base>, SGCore::Serde::DerivedTypes<Derived0, Derived1>
 {
     static inline const std::string type_name = "Derived";
     static inline constexpr bool is_pointer_type = false;

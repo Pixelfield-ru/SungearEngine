@@ -15,12 +15,14 @@
 
 void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
+    std::cout << "controlling" << std::endl;
+
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
     float finalDt = dt * 300.0f;
     // finalDt = 1.0f;
-    
+
     auto controllablesView = lockedScene->getECSRegistry()->view<Ref<Transform>, Controllable3D>();
 
     controllablesView.each([&finalDt](Ref<Transform>& transform, Controllable3D& controllable3D) {
@@ -36,6 +38,8 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
                     (float) mainListener->getCursorPositionDeltaX() *
                     controllable3D.m_rotationSensitive;
         }
+
+        std::cout << "controlling entity" << std::endl;
 
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_R))
         {
