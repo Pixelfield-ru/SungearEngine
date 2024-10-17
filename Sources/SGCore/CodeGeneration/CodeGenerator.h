@@ -33,6 +33,8 @@ namespace SGCore::CodeGen
             K_VAR,
             K_CPP_CODE_LINE,
             K_CHAR_SEQ,
+            K_AND,
+            K_OR,
 
             // char-tokens
             K_LPAREN,
@@ -189,6 +191,7 @@ namespace SGCore::CodeGen
                 { "}", Lang::Tokens::K_RBLOCK },
                 { ".", Lang::Tokens::K_DOT },
                 { ":", Lang::Tokens::K_COLON },
+                { "!", Lang::Tokens::K_NOT },
                 { "\"", Lang::Tokens::K_QUOTE }
         };
 
@@ -226,6 +229,13 @@ namespace SGCore::CodeGen
 
         void addBuiltinVariables() noexcept;
         void addVariableFields(Lang::Variable& var, MetaInfo::Meta& meta);
+
+        bool analyzeIf(const std::shared_ptr<Lang::ASTToken>& ifToken,
+                       size_t& childTokenOffset,
+                       std::string& outputString) noexcept;
+
+        void skipFirstLParenAndRParen(const std::shared_ptr<Lang::ASTToken>& parentToken,
+                                      size_t& currentOffset) const noexcept;
 
         // tmp variables ===================
         bool m_isExprStarted = false;

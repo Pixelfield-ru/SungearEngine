@@ -4,8 +4,10 @@
 #include <SGCore/Serde/StandardSerdeSpecs.h>
 
 ## for struct in structs
+## if !struct.hasMember(name: "annotations") || !struct.annotations.hasMember(name: "doNotGenerateSerdeSpec")
 ## if struct.hasMember(name: "filePath")
 #include "{{ struct.filePath }}"
+## endif
 ## endif
 ## endfor
 
