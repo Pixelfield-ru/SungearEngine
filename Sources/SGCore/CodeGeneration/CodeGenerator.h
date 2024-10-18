@@ -192,6 +192,8 @@ namespace SGCore::CodeGen
                 { ".", Lang::Tokens::K_DOT },
                 { ":", Lang::Tokens::K_COLON },
                 { "!", Lang::Tokens::K_NOT },
+                { "||", Lang::Tokens::K_OR },
+                { "&&", Lang::Tokens::K_AND },
                 { "\"", Lang::Tokens::K_QUOTE }
         };
 

@@ -103,7 +103,7 @@ namespace SGCore
 
             const std::string sgSourcesPathStr = sgSourcesPath;
 
-            // SGCore::AudioSource
+            /*// SGCore::AudioSource
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::AudioSource";
@@ -358,12 +358,12 @@ namespace SGCore
 
                 meta["members"]["m_meshDataRenderInfo"];
 
-                /*meta["members"]["m_meshData"]["setter"] = "setMeshData";
-                meta["members"]["m_meshData"]["getter"] = "getMeshData";*/
+                *//*meta["members"]["m_meshData"]["setter"] = "setMeshData";
+                meta["members"]["m_meshData"]["getter"] = "getMeshData";*//*
 
                 // TODO: add
-                /*meta["members"]["m_material"]["setter"] = "setMaterial";
-                meta["members"]["m_material"]["getter"] = "getMaterial";*/
+                *//*meta["members"]["m_material"]["setter"] = "setMaterial";
+                meta["members"]["m_material"]["getter"] = "getMaterial";*//*
 
                 m_meta["structs"].push_back(meta);
             }
@@ -379,7 +379,7 @@ namespace SGCore
                 meta["members"]["m_samplesCount"];
 
                 m_meta["structs"].push_back(meta);
-            }
+            }*/
 
             // SGCore::DirectionalLight
             {
@@ -388,12 +388,14 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Lighting/DirectionalLight.h";
                 meta["type"] = "component";
 
+                // meta["annotations"]["doNotGenerateSerdeSpec"];
+
                 meta["members"]["m_base"];
 
                 m_meta["structs"].push_back(meta);
             }
 
-            // SGCore::Atmosphere
+            /*// SGCore::Atmosphere
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::Atmosphere";
@@ -648,7 +650,7 @@ namespace SGCore
                 meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
-            }
+            }*/
         }
 
         static void clearAllMeta() noexcept

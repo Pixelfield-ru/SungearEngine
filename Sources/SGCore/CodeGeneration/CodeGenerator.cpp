@@ -569,43 +569,9 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
             case Lang::Tokens::K_IN: break;
             case Lang::Tokens::K_IF:
             {
-                // getting last variable in sequence of variables
-                VariableFindResult tokenAndVar = getLastVariable(child, 0);
-
-                if(tokenAndVar.m_token->m_type != Lang::Tokens::K_VAR)
-                {
-                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: (if branch) trying to test variable that is not variable type (maybe keyword).")
-                    continue;
-                }
-
-                std::any funcOutput;
-
-                if(tokenAndVar.m_variable)
-                {
-                    if(tokenAndVar.m_variable->getTypeInfo().m_name != "bool")
-                    {
-                        LOG_E(SGCORE_TAG,
-                              "Error in CodeGenerator: (if branch) trying to test variable that is not boolean type.")
-                        continue;
-                    }
-                }
-                else if(tokenAndVar.m_function)
-                {
-                    funcOutput = processFunctionTokensAndCallFunc(child, tokenAndVar.m_tokenIndex,
-                                                                  *tokenAndVar.m_function, outputString);
-
-                    if(!std::any_cast<bool>(&funcOutput))
-                    {
-                        LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'bool' type.",
-                              tokenAndVar.m_function->m_name);
-
-                        continue;
-                    }
-                }
-                else
-                {
-                    continue;
-                }
+                size_t ifOffset = 0;
+                // getting result of expression in 'IF'
+                const bool ifResult = analyzeIf(child, ifOffset, outputString);
 
                 std::shared_ptr<Lang::ASTToken> elseToken;
 
@@ -628,22 +594,7 @@ void SGCore::CodeGen::Generator::generateCodeUsingAST(const std::shared_ptr<Lang
                     }
                 }
 
-                bool isNotSignFound = false;
-                // if 'not' sign found. reversing values
-                if(token->m_children[childIdx - 1]->m_type == Lang::Tokens::K_NOT)
-                {
-                    isNotSignFound = true;
-                }
-
-                const bool& funcOutputVal = funcOutput.has_value() && std::any_cast<bool>(funcOutput);
-
-                if((tokenAndVar.m_variable &&
-                    (tokenAndVar.m_variable->m_insertedValue == "true" ||
-                     (isNotSignFound && tokenAndVar.m_variable->m_insertedValue == "false"))) ||
-
-                   (funcOutput.has_value() &&
-                    (funcOutputVal ||
-                    (isNotSignFound && !funcOutputVal))))
+                if(ifResult)
                 {
                     generateCodeUsingAST(child, outputString);
                 }
@@ -1150,16 +1101,11 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
     bool currentScopeResult = false;
     Lang::Tokens currentLogicalOperator = Lang::Tokens::K_UNKNOWN;
 
+    bool isNotTokenWasFound = false;
+
     for(; childTokenOffset < ifToken->m_children.size(); ++childTokenOffset)
     {
         const auto& ifTokenChild = ifToken->m_children[childTokenOffset];
-
-        bool isNotTokenWasFound = ifTokenChild->m_type == Lang::Tokens::K_NOT;
-        // if it was not token then we are skipping this token
-        if(isNotTokenWasFound)
-        {
-            ++childTokenOffset;
-        }
 
         // firstly trying to find variable or function (example expr: 'struct.members.something' or 'struct.members.hasMember(name: "something")'
         VariableFindResult variableFindResult = getLastVariable(ifToken, childTokenOffset);
@@ -1177,7 +1123,7 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
             }
 
             // inserted value of found function or variable
-            std::string valueOfVar;
+            bool valueOfVar = false;
 
             // if variable find result is 'variable' type
             if(variableFindResult.m_variable)
@@ -1195,57 +1141,69 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
                 childTokenOffset = variableFindResult.m_tokenIndex;
 
                 // value of found variable
-                valueOfVar = variableFindResult.m_variable->m_insertedValue;
+                valueOfVar = variableFindResult.m_variable->m_insertedValue == "true";
             }
-
-            // TODO: finding result of function (if function provided)
-
-            // =====================================================
-            // =====================================================
-            // =====================================================
-
-            if(valueOfVar == "true")
+            else if(variableFindResult.m_function) // else if found variable is 'function' type then parsing arguments of function and calling it
             {
-                // switching by type of current logical operator
-                switch(currentLogicalOperator)
+                // parsing arguments of function and calling it
+                std::any funcOutput = processFunctionTokensAndCallFunc(ifToken, variableFindResult.m_tokenIndex,
+                                                                       *variableFindResult.m_function, outputString
+                );
+
+                const bool* funcOutputBool = std::any_cast<bool>(&funcOutput);
+
+                if(!funcOutputBool)
                 {
-                    case Lang::Tokens::K_OR:
-                    {
-                        currentScopeResult = currentScopeResult || (true && !isNotTokenWasFound);
-                        break;
-                    }
-                    case Lang::Tokens::K_AND:
-                    {
-                        currentScopeResult = currentScopeResult && (true && !isNotTokenWasFound);
-                        break;
-                    }
-                    case Lang::Tokens::K_UNKNOWN: // logical operators was not found already.
-                    {                             // that means that it is first variable or function return type to check
-                        currentScopeResult = (true && !isNotTokenWasFound);
-                        break;
-                    }
+                    LOG_E(SGCORE_TAG, "Error in CodeGenerator: return type of function '{}' is not 'bool' type.",
+                          variableFindResult.m_function->m_name);
+
+                    // dot not parse further expression
+                    return false;
                 }
+
+                valueOfVar = *funcOutputBool;
+
+                // moving offset to variable token index
+                childTokenOffset = variableFindResult.m_tokenIndex;
+
+                // skipping parens
+                skipFirstLParenAndRParen(ifToken, childTokenOffset);
             }
-            else if(valueOfVar == "false")
+            else
             {
-                // switching by type of current logical operator
-                switch(currentLogicalOperator)
+                LOG_E(SGCORE_TAG, "Error in CodeGenerator: unknown variable.");
+
+                // dot not parse further expression
+                return false;
+            }
+
+            // =====================================================
+            // =====================================================
+            // =====================================================
+
+            // if 'NOT' was found then inverting
+            if(isNotTokenWasFound)
+            {
+                valueOfVar = !valueOfVar;
+            }
+
+            // switching by current found logical operator
+            switch(currentLogicalOperator)
+            {
+                case Lang::Tokens::K_OR:
                 {
-                    case Lang::Tokens::K_OR:
-                    {
-                        currentScopeResult = currentScopeResult || (false || isNotTokenWasFound);
-                        break;
-                    }
-                    case Lang::Tokens::K_AND:
-                    {
-                        currentScopeResult = currentScopeResult && (false || isNotTokenWasFound);
-                        break;
-                    }
-                    case Lang::Tokens::K_UNKNOWN: // logical operators was not found already.
-                    {                             // that means that it is first variable or function return type to check
-                        currentScopeResult = (false || isNotTokenWasFound);
-                        break;
-                    }
+                    currentScopeResult = currentScopeResult || valueOfVar;
+                    break;
+                }
+                case Lang::Tokens::K_AND:
+                {
+                    currentScopeResult = currentScopeResult && valueOfVar;
+                    break;
+                }
+                case Lang::Tokens::K_UNKNOWN: // logical operators was not found already.
+                {                             // that means that it is first variable or function return type to check
+                    currentScopeResult = valueOfVar;
+                    break;
                 }
             }
         }
@@ -1266,7 +1224,6 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
             }
 
             currentLogicalOperator = ifTokenChild->m_type;
-            ++childTokenOffset;
         }
 
         // if we found an entrance in sub-scope (LPAREN) then we are skipping this token (LPAREN) and going in this scope
@@ -1307,6 +1264,9 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
             ++childTokenOffset;
             return currentScopeResult;
         }
+
+        // in the in end we are checking if current token is 'NOT' token
+        isNotTokenWasFound = ifTokenChild->m_type == Lang::Tokens::K_NOT;
     }
 
     return currentScopeResult;
@@ -1322,7 +1282,6 @@ void SGCore::CodeGen::Generator::skipFirstLParenAndRParen(const std::shared_ptr<
     {
         const auto& child = parentToken->m_children[currentOffset];
 
-        ++currentOffset;
         if(child->m_type == Lang::Tokens::K_LPAREN)
         {
             isLParenWasFound = true;
@@ -1332,6 +1291,8 @@ void SGCore::CodeGen::Generator::skipFirstLParenAndRParen(const std::shared_ptr<
         {
             return;
         }
+
+        ++currentOffset;
     }
 
     if(!isLParenWasFound)

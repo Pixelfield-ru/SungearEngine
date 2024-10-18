@@ -28,9 +28,7 @@ endif()
     find_package(Bullet REQUIRED)
 
     list(APPEND SungearEngine_INCLUDE_DIRS "${BULLET_INCLUDE_DIR}")
-    list(APPEND SungearEngine_LIBS "${BULLET_COLLISION_LIBRARY}")
-    list(APPEND SungearEngine_LIBS "${BULLET_DYNAMICS_LIBRARY}")
-    list(APPEND SungearEngine_LIBS "${BULLET_MATH_LIBRARY}")
+    list(APPEND SungearEngine_LIBS "${SG_BULLET_LIBS}")
 #endif()
 
 #if(${SG_INCLUDE_PUGIXML})
