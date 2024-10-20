@@ -39,6 +39,7 @@ namespace SGCore
                                      const entity_t& serializableEntity)> onEntitySerialize;
 
             static inline Event<void(Serde::DeserializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
+                                     const typename Serde::FormatInfo<TFormatType>::array_iterator_t& componentsIterator,
                                      registry_t& toRegistry)> onEntityDeserialize;
 
             static inline Event<void(Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
@@ -46,7 +47,7 @@ namespace SGCore
                                      const Ref<ISystem>& serializableSystem)> onSystemSerialize;
 
             static inline Event<void(Serde::DeserializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
-                                     const typename Serde::FormatInfo<TFormatType>::array_iterator_t& curIterator)> onSystemDeserialize;
+                                     const typename Serde::FormatInfo<TFormatType>::array_iterator_t& systemsIterator)> onSystemDeserialize;
         };
 
     public:

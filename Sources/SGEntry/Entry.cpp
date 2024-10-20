@@ -35,8 +35,6 @@ extern "C" {
 #include "SGCore/Utils/Formatter.h"
 #include "SGCore/CodeGeneration/CodeGenerator.h"
 
-#include "SGCore/Serde/GeneratedSerdeSpecs.h"
-
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 

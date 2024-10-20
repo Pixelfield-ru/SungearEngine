@@ -11,21 +11,10 @@
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Main/CoreGlobals.h"
 
+#include "Common.h"
+
 namespace SGCore::Serde
 {
-    template<typename... Types>
-    using custom_derived_types = types_container<Types...>;
-
-    template<typename T>
-    concept custom_derived_types_t = types_container_t<T>;
-
-    enum class FormatType
-    {
-        JSON,
-        BSON,
-        YAML
-    };
-
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
@@ -57,21 +46,25 @@ namespace SGCore::Serde
         using get_derived_type = extract<Idx, Cls...>::type;
     };
 
+    // FORWARD DECLARATIONS =======================================================
+
     template<typename T, FormatType TFormatType>
     struct SerdeSpec;
-    
+
     template<FormatType TFormatType>
     struct SerializableValueContainer;
-    
+
     template<FormatType TFormatType>
     struct DeserializableValueContainer;
-    
+
     template<typename T, FormatType TFormatType>
     struct DeserializableValueView;
-    
+
     template<typename T, FormatType TFormatType>
     struct SerializableValueView;
-    
+
+    struct Serializer;
+
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
@@ -155,13 +148,6 @@ namespace SGCore::Serde
         using array_iterator_t = void;
     };
 
-    template<>
-    struct FormatInfo<FormatType::JSON>
-    {
-        using member_iterator_t = rapidjson::Value::MemberIterator;
-        using array_iterator_t = rapidjson::Value::ValueIterator;
-    };
-
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
@@ -216,7 +202,56 @@ namespace SGCore::Serde
     // ================================================================
     // ================================================================
     // ================================================================
-    
+
+    /**
+     * EXAMPLE STRUCT.
+     * @tparam TFormatType
+     */
+    template<FormatType TFormatType>
+    class SerializerImpl
+    {
+        friend struct Serializer;
+
+        static_assert(always_false_obj<TFormatType>::value, "Serde for this type was not implemented.");
+
+        /**
+         * Converts object to SOME format
+         * @tparam T - Serializable type.
+         * @param toDocument
+         * @param value
+         * @return
+         */
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+        static std::string to(const T& value,
+                              SharedDataT&&... sharedData) noexcept
+        {
+            return "";
+        }
+
+        /**
+         * Converts SOME FORMAT document to object.
+         * @tparam T
+         * @param toDocument
+         * @param value
+         * @return
+         */
+        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T, typename... SharedDataT>
+        static void from(const std::string& formattedText,
+                         std::string& outputLog,
+                         T& outValue,
+                         SharedDataT&&... sharedData) noexcept
+        {
+
+        }
+    };
+
+    // including forward decl of serializers
+    #include "Implementations/JSON/SerializerForward.h"
+
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
+
     struct Serializer
     {
         template<typename T, FormatType TFormatType>
@@ -227,6 +262,9 @@ namespace SGCore::Serde
         
         template<FormatType TFormatType>
         friend struct DeserializableValueContainer;
+
+        template<FormatType TFormatType>
+        friend class SerializerImpl;
         
         /**
          * Converts object to some format (JSON, BSON, YAML, etc)
@@ -242,10 +280,7 @@ namespace SGCore::Serde
             {
                 case FormatType::JSON:
                 {
-                    rapidjson::Document document;
-                    document.SetObject();
-                    
-                    return toJSON<CustomDerivedTypes>(document, value, std::forward<SharedDataT>(sharedData)...);
+                    return SerializerImpl<FormatType::JSON>::to<CustomDerivedTypes>(value, std::forward<SharedDataT>(sharedData)...);
                 }
                 case FormatType::BSON:
                     break;
@@ -287,11 +322,8 @@ namespace SGCore::Serde
             {
                 case FormatType::JSON:
                 {
-                    rapidjson::Document document;
-                    document.Parse(formattedText.c_str());
-                    
-                    fromJSON<CustomDerivedTypes>(document, outputLog, outValue, std::forward<SharedDataT>(sharedData)...);
-                    
+                    SerializerImpl<FormatType::JSON>::from<CustomDerivedTypes>(formattedText, outputLog, outValue, std::forward<SharedDataT>(sharedData)...);
+
                     break;
                 }
                 case FormatType::BSON:
@@ -391,113 +423,6 @@ namespace SGCore::Serde
     
     private:
         static inline FormatType m_defaultFormatType = SGCore::Serde::FormatType::JSON;
-        
-        /**
-         * Converts object to JSON format
-         * @tparam T - Serializable type.
-         * @param toDocument
-         * @param value
-         * @return
-         */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
-        static std::string toJSON(rapidjson::Document& toDocument,
-                                  const T& value,
-                                  SharedDataT&&... sharedData) noexcept
-        {
-            // adding version of document
-            toDocument.AddMember("version", "1", toDocument.GetAllocator());
-            
-            // adding type name of T
-            rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
-            typeNameSectionValue.SetString(SerdeSpec<T, FormatType::JSON>::type_name.c_str(),
-                                           SerdeSpec<T, FormatType::JSON>::type_name.length());
-            
-            // creating section that will contain all members of T
-            rapidjson::Value valueSectionValue(rapidjson::kObjectType);
-            
-            // ==== serialization code
-            
-            // creating view of value with format pointers
-            SerializableValueView<T, FormatType::JSON> valueView  { };
-            valueView.m_data = &value;
-            valueView.m_version = "1";
-            valueView.getValueContainer().m_document = &toDocument;
-            valueView.getValueContainer().m_thisValue = &valueSectionValue;
-            valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
-            
-            // serializing value with attempt at dynamic casts to derived types
-            serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes, SharedDataT...>(valueView, std::forward<SharedDataT>(sharedData)...);
-            
-            // =======================
-            
-            // adding type name of T after serializing (because type name can be changed)
-            toDocument.AddMember("typeName", typeNameSectionValue, toDocument.GetAllocator());
-            
-            // adding value section to document
-            toDocument.AddMember("value", valueSectionValue, toDocument.GetAllocator());
-            
-            // converting to string
-            rapidjson::StringBuffer stringBuffer;
-            stringBuffer.Clear();
-            rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
-            toDocument.Accept(writer);
-            
-            return stringBuffer.GetString();
-        }
-        
-        /**
-         * Converts JSON document to object.
-         * @tparam T
-         * @param toDocument
-         * @param value
-         * @return
-         */
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T, typename... SharedDataT>
-        static void fromJSON(rapidjson::Document& document,
-                             std::string& outputLog,
-                             T& outValue,
-                             SharedDataT&&... sharedData) noexcept
-        {
-            // trying to get 'version' member from document
-            if(!document.HasMember("version"))
-            {
-                outputLog = "Error: Broken JSON document: root member 'version' does not exist.\n";
-                return;
-            }
-            
-            // getting 'version' member from document
-            const std::string version = document["version"].GetString();
-            
-            // trying to get 'typeName' member from document
-            if(!document.HasMember("typeName"))
-            {
-                outputLog = "Error: Broken JSON document: root member 'typeName' does not exist.\n";
-                return;
-            }
-            
-            // getting 'typeName' member from document
-            const std::string typeName = document["typeName"].GetString();
-            
-            // trying to get 'value' member from document
-            if(!document.HasMember("value"))
-            {
-                outputLog = "Error: Broken JSON document: root member 'value' does not exist.\n";
-                return;
-            }
-            
-            // getting 'value' member from document
-            auto& jsonValue = document["value"];
-            
-            DeserializableValueView<T, FormatType::JSON> valueView;
-            valueView.m_data = &outValue;
-            valueView.m_version = version;
-            valueView.getValueContainer().m_document = &document;
-            valueView.getValueContainer().m_thisValue = &jsonValue;
-            valueView.getValueContainer().m_typeName = typeName;
-            valueView.getValueContainer().m_outputLog = &outputLog;
-            
-            deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
-        }
         
         /**
          * Serializes value with attempt at dynamic casts to derived types.\n
@@ -932,16 +857,23 @@ namespace SGCore::Serde
         }
     };
 
+    // including implementation of serializers
+    #include "Implementations/JSON/SerializerImpl.h"
+
     /**
      * Container that contains pointers to object format specific types.\n
      * You must implement all next functions and members in your specialization of this struct.\n
      * DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING.
+     * EXAMPLE STRUCT.
      * @tparam T
      * @tparam TFormatType
      */
     template<FormatType TFormatType>
     struct DeserializableValueContainer
     {
+        template<FormatType>
+        friend struct SerializerImpl;
+
         friend struct Serializer;
 
         template<typename T0, FormatType TFormatType0>
@@ -1080,388 +1012,20 @@ namespace SGCore::Serde
         std::string* m_outputLog { };
     };
 
-    template<>
-    struct DeserializableValueContainer<FormatType::JSON>
-    {
-        friend struct Serializer;
-
-        template<typename T0, FormatType TFormatType0>
-        friend struct DeserializableValueView;
-
-        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
-        std::optional<T> getMember(const std::string& memberName, SharedDataT&&... sharedData) noexcept
-        {
-            if(!(m_thisValue || m_document))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': m_thisValue or m_document is null.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            if(!m_thisValue->HasMember(memberName.c_str()))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not exist.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting member
-            auto& member = (*m_thisValue)[memberName.c_str()];
-
-            if(!member.HasMember("typeName"))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not have 'typeName' section.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting typeName section of member
-            const std::string& typeName = member["typeName"].GetString();
-
-            if(!member.HasMember("value"))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not have 'value' section.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting value section of member
-            auto& memberValue = member["value"];
-
-            T outputValue { };
-
-            // creating value view of member
-            DeserializableValueView<T, FormatType::JSON> valueView { };
-            valueView.getValueContainer().m_document = m_document;
-            valueView.getValueContainer().m_thisValue = &memberValue;
-            valueView.getValueContainer().m_parent = this;
-            valueView.getValueContainer().m_outputLog = m_outputLog;
-            valueView.getValueContainer().m_typeName = typeName;
-            valueView.m_data = &outputValue;
-
-            // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
-
-            return outputValue;
-        }
-
-        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
-        [[nodiscard]] std::vector<T> getAsArray(SharedDataT&&... sharedData) noexcept
-        {
-            if(!(m_thisValue || m_document))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get value as array: m_thisValue or m_document is null.\n";
-                }
-
-                return { };
-            }
-
-            if(!m_thisValue->IsArray())
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get value as array: value is not an array.\n";
-                }
-
-                return { };
-            }
-
-            std::vector<T> outputValue;
-
-            for(std::size_t i = 0; i < m_thisValue->Size(); ++i)
-            {
-                T tmpVal { };
-
-                auto& rootValue = (*m_thisValue)[i];
-
-                if(!rootValue.HasMember("typeName"))
-                {
-                    if(m_outputLog)
-                    {
-                        *m_outputLog = "Error: Can not get member with index '" + std::to_string(i) +
-                                       "' from array: this member does not have 'typeName' section.\n";
-                    }
-
-                    continue;
-                }
-
-                // getting 'typeName' section
-                const std::string typeNameSection = rootValue["typeName"].GetString();
-
-                if(!rootValue.HasMember("value"))
-                {
-                    if(m_outputLog)
-                    {
-                        *m_outputLog = "Error: Can not get member with index '" + std::to_string(i) +
-                                       "' from array: this member does not have 'value' section.\n";
-                    }
-
-                    continue;
-                }
-
-                auto& valueSection = rootValue["value"];
-
-                // creating value view of member
-                DeserializableValueView<T, FormatType::JSON> valueView { };
-                valueView.getValueContainer().m_document = m_document;
-                valueView.getValueContainer().m_thisValue = &valueSection;
-                valueView.getValueContainer().m_parent = this;
-                valueView.getValueContainer().m_outputLog = m_outputLog;
-                valueView.getValueContainer().m_typeName = typeNameSection;
-                valueView.m_data = &tmpVal;
-
-                Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
-
-                outputValue.push_back(tmpVal);
-            }
-
-            return outputValue;
-        }
-
-        [[nodiscard]] std::int64_t getAsInt64() const noexcept
-        {
-            if(!m_thisValue)
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get value as int64: m_thisValue is null.\n";
-                }
-
-                return { };
-            }
-
-            return m_thisValue->GetInt64();
-        }
-
-        [[nodiscard]] float getAsFloat() const noexcept
-        {
-            if(!m_thisValue)
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get value as float: m_thisValue is null.\n";
-                }
-
-                return { };
-            }
-
-            return m_thisValue->GetFloat();
-        }
-
-        template<typename CharT>
-        [[nodiscard]] std::basic_string<CharT> getAsString() const noexcept
-        {
-            if(!m_thisValue)
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get value as float: m_thisValue is null.\n";
-                }
-
-                return { };
-            }
-
-            return SGCore::Utils::template fromUTF8<CharT>(m_thisValue->GetString());
-        }
-
-        [[nodiscard]] bool getAsBool() const noexcept
-        {
-            if(!m_thisValue) return false;
-
-            return m_thisValue->GetBool();
-        }
-
-        [[nodiscard]] rapidjson::Value::MemberIterator memberBegin() const noexcept
-        {
-            if(!m_thisValue) return { };
-
-            return m_thisValue->MemberBegin();
-        }
-
-        [[nodiscard]] rapidjson::Value::MemberIterator memberEnd() const noexcept
-        {
-            if(!m_thisValue) return { };
-
-            return m_thisValue->MemberEnd();
-        }
-
-        [[nodiscard]] rapidjson::Value::ValueIterator begin() const noexcept
-        {
-            if(!m_thisValue) return { };
-
-            return m_thisValue->Begin();
-        }
-
-        [[nodiscard]] rapidjson::Value::ValueIterator end() const noexcept
-        {
-            if(!m_thisValue) return { };
-
-            return m_thisValue->End();
-        }
-
-        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
-        std::optional<T> getMember(const rapidjson::Value::MemberIterator& memberIterator, SharedDataT&&... sharedData) noexcept
-        {
-            if(!(m_thisValue || m_document))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
-                            "': m_thisValue or m_document is null.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting member
-            auto& member = memberIterator->value;
-
-            if(!member.HasMember("typeName"))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
-                            "': this member does not have 'typeName' section.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting typeName section of member
-            const std::string& typeName = member["typeName"].GetString();
-
-            if(!member.HasMember("value"))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
-                            "': this member does not have 'value' section.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting value section of member
-            auto& memberValue = member["value"];
-
-            T outputValue { };
-
-            // creating value view of member
-            DeserializableValueView<T, FormatType::JSON> valueView { };
-            valueView.getValueContainer().m_document = m_document;
-            valueView.getValueContainer().m_thisValue = &memberValue;
-            valueView.getValueContainer().m_parent = this;
-            valueView.getValueContainer().m_outputLog = m_outputLog;
-            valueView.getValueContainer().m_typeName = typeName;
-            valueView.m_data = &outputValue;
-
-            // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
-
-            return outputValue;
-        }
-
-        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
-        std::optional<T> getMember(const rapidjson::Value::ValueIterator& arrayIterator, SharedDataT&&... sharedData) noexcept
-        {
-            if(!(m_thisValue || m_document))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get value from array: m_thisValue or m_document is null.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting member
-            auto& member = *arrayIterator;
-
-            if(!member.HasMember("typeName"))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get value from array: this member does not have 'typeName' section.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting typeName section of member
-            const std::string& typeName = member["typeName"].GetString();
-
-            if(!member.HasMember("value"))
-            {
-                if(m_outputLog)
-                {
-                    *m_outputLog = "Error: Can not get value from array: this member does not have 'value' section.\n";
-                }
-
-                return std::nullopt;
-            }
-
-            // getting value section of member
-            auto& memberValue = member["value"];
-
-            T outputValue { };
-
-            // creating value view of member
-            DeserializableValueView<T, FormatType::JSON> valueView { };
-            valueView.getValueContainer().m_document = m_document;
-            valueView.getValueContainer().m_thisValue = &memberValue;
-            valueView.getValueContainer().m_parent = this;
-            valueView.getValueContainer().m_outputLog = m_outputLog;
-            valueView.getValueContainer().m_typeName = typeName;
-            valueView.m_data = &outputValue;
-
-            // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
-
-            return outputValue;
-        }
-
-        [[nodiscard]] std::string getMemberName(const rapidjson::Value::MemberIterator& memberIterator) const noexcept
-        {
-            return memberIterator->name.GetString();
-        }
-
-        [[nodiscard]] bool isNull() const noexcept
-        {
-            return m_thisValue && m_thisValue->IsNull();
-        }
-
-    private:
-        DeserializableValueContainer<FormatType::JSON>* m_parent { };
-        rapidjson::Document* m_document { };
-        rapidjson::Value* m_thisValue { };
-        std::string* m_outputLog { };
-        std::string m_typeName;
-    };
-
     /**
      * Container that contains pointers to object format specific types.\n
      * You must implement all next functions and members in your specialization of this struct.\n
      * DO NOT STORE ANYWHERE. DOES NOT OWN ANYTHING.
+     * EXAMPLE STRUCT.
      * @tparam T
      * @tparam TFormatType
      */
     template<FormatType TFormatType>
     struct SerializableValueContainer
     {
+        template<FormatType>
+        friend struct SerializerImpl;
+
         friend struct Serializer;
 
         template<typename T0, FormatType TFormatType0>
@@ -1579,155 +1143,6 @@ namespace SGCore::Serde
         SerializableValueContainer<TFormatType>* m_parent { };
     };
 
-    /**
-     * Value container for JSON format.
-     */
-    template<>
-    struct SerializableValueContainer<FormatType::JSON>
-    {
-        friend struct Serializer;
-
-        template<typename T0, FormatType TFormatType0>
-        friend struct SerializableValueView;
-
-        // todo: ADD createMember FUNCTION
-
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
-        void addMember(const std::string& name, const T& value, SharedDataT&&... sharedData) noexcept
-        {
-            if (!(m_thisValue || m_document)) return;
-
-            // removing member with this name if it is already exists
-            if (m_thisValue->IsObject() && m_thisValue->HasMember(name.c_str()))
-            {
-                m_thisValue->RemoveMember(name.c_str());
-            }
-
-            // creating key that contains passed name
-            rapidjson::Value valueNameKey(rapidjson::kStringType);
-            // creating value root section
-            rapidjson::Value valueRootSection(rapidjson::kObjectType);
-
-            // setting name
-            valueNameKey.SetString(name.c_str(), name.length(), m_document->GetAllocator());
-
-            // creating type name of T value
-            rapidjson::Value typeNameSectionValue(rapidjson::kStringType);
-            typeNameSectionValue.SetString(SerdeSpec<T, FormatType::JSON>::type_name.c_str(),
-                                           SerdeSpec<T, FormatType::JSON>::type_name.length());
-
-            // creating section that will contain all members of T0
-            rapidjson::Value valueSectionValue(rapidjson::kObjectType);
-
-            // ==== value serialization code
-
-            // creating view of value with format pointers
-            SerializableValueView<T, FormatType::JSON> valueView {};
-            valueView.m_data = &value;
-            valueView.getValueContainer().m_document = m_document;
-            valueView.getValueContainer().m_thisValue = &valueSectionValue;
-            valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
-            valueView.getValueContainer().m_parent = this;
-
-            // serializing value with attempt at dynamic casts to derived types
-            Serializer::serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
-
-            // =======================
-
-            // adding typeName section
-            valueRootSection.AddMember("typeName", typeNameSectionValue, m_document->GetAllocator());
-
-            // adding value section
-            valueRootSection.AddMember("value", valueSectionValue, m_document->GetAllocator());
-
-            if(m_thisValue->IsArray())
-            {
-                m_thisValue->PushBack(valueRootSection, m_document->GetAllocator());
-
-                return;
-            }
-
-            // adding value section to document
-            m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
-        }
-
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
-        void pushBack(const T& value, SharedDataT&&... sharedData) noexcept
-        {
-            addMember<CustomDerivedTypes>("", value, std::forward<SharedDataT>(sharedData)...);
-        }
-
-        void setAsNull() noexcept
-        {
-            if(!m_thisValue) return;
-
-            m_thisValue->SetNull();
-        }
-
-        void setAsFloat(const float& f) noexcept
-        {
-            if(!m_thisValue) return;
-
-            m_thisValue->SetFloat(f);
-        }
-
-        void setAsInt64(const std::int64_t& i) noexcept
-        {
-            if(!m_thisValue) return;
-
-            m_thisValue->SetInt64(i);
-        }
-
-        template<typename CharT>
-        void setAsString(const std::basic_string<CharT>& str) noexcept
-        {
-            if(!(m_thisValue || m_document)) return;
-
-            const std::string utf8String = SGCore::Utils::toUTF8(str);
-
-            m_thisValue->SetString(utf8String.c_str(), utf8String.length(), m_document->GetAllocator());
-        }
-
-        void setAsArray() noexcept
-        {
-            if(!m_thisValue) return;
-
-            m_thisValue->SetArray();
-        }
-
-        void setAsBool(bool b) noexcept
-        {
-            if(!m_thisValue) return;
-
-            m_thisValue->SetBool(b);
-        }
-
-        void setTypeName(const std::string& typeName) noexcept
-        {
-            if(!(m_typeNameValue || m_document)) return;
-
-            m_typeNameValue->SetString(typeName.c_str(), typeName.length(), m_document->GetAllocator());
-        }
-
-        [[nodiscard]] std::string getTypeName(const std::string& typeName) const noexcept
-        {
-            if(!m_typeNameValue) return "";
-
-            return m_typeNameValue->GetString();
-        }
-
-        auto& getParent() noexcept
-        {
-            return *m_parent;
-        }
-
-    private:
-        SerializableValueContainer<FormatType::JSON>* m_parent { };
-        rapidjson::Document* m_document { };
-        rapidjson::Value* m_thisValue { };
-        rapidjson::Value* m_typeNameValue { };
-    };
-
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
@@ -1742,6 +1157,9 @@ namespace SGCore::Serde
     template<typename T, FormatType TFormatType>
     struct SerializableValueView
     {
+        template<FormatType>
+        friend struct SerializerImpl;
+
         friend struct Serializer;
 
         // making all SerializableValueView as friends
@@ -1773,6 +1191,9 @@ namespace SGCore::Serde
     template<typename T, FormatType TFormatType>
     struct DeserializableValueView
     {
+        template<FormatType>
+        friend struct SerializerImpl;
+
         friend struct Serializer;
 
         // making all SerializableValueView as friends
@@ -1798,5 +1219,8 @@ namespace SGCore::Serde
     // ================================================================
     // ================================================================
 }
+
+// including implementations
+#include "Implementations/JSON/CommonImpl.h"
 
 #endif //SUNGEARENGINE_SERDE_H

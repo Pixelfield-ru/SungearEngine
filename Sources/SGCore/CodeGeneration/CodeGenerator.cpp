@@ -1223,6 +1223,15 @@ bool SGCore::CodeGen::Generator::analyzeIf(const std::shared_ptr<Lang::ASTToken>
                 return true;
             }
 
+            // special rule for 'and' token: if current token is 'AND' and value of 'currentScopeResult' is equals to 'false' then returning false
+            // because further analyze is pointless
+            if(ifTokenChild->m_type == Lang::Tokens::K_AND && !currentScopeResult)
+            {
+                // skipping offset directly to token after RPAREN
+                skipFirstLParenAndRParen(ifToken, childTokenOffset);
+                return false;
+            }
+
             currentLogicalOperator = ifTokenChild->m_type;
         }
 

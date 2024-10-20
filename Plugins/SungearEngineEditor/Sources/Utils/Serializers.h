@@ -7,7 +7,6 @@
 
 #include <SGCore/Serde/Serde.h>
 #include <SGCore/Serde/StandardSerdeSpecs.h>
-#include <SGCore/Serde/GeneratedSerdeSpecs.h>
 #include "Toolchains/Toolchain.h"
 #include "Toolchains/VisualStudioToolchain.h"
 #include "Settings/EngineSettings.h"

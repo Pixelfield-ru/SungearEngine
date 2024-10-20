@@ -103,12 +103,16 @@ namespace SGCore
 
             const std::string sgSourcesPathStr = sgSourcesPath;
 
-            /*// SGCore::AudioSource
+            // SGCore::AudioSource
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::AudioSource";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Audio/AudioSource.h";
                 meta["type"] = "component";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_rolloffFactor"]["setter"] = "setRolloffFactor";
                 meta["members"]["m_rolloffFactor"]["getter"] = "getRolloffFactor";
@@ -149,6 +153,10 @@ namespace SGCore
                 meta["fullName"] = "SGCore::UniqueName";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Utils/UniqueName.h";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["members"]["m_rawName"];
                 meta["members"]["m_uniqueID"];
                 meta["members"]["m_name"];
@@ -161,6 +169,10 @@ namespace SGCore
                 Meta meta;
                 meta["fullName"] = "SGCore::UniqueNameWrapper";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Utils/UniqueName.h";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_uniqueName"];
 
@@ -176,6 +188,10 @@ namespace SGCore
                 meta["getFromRegistryBy"] = "SGCore::AABB<float>";
                 meta["template_args"]["ScalarT"] = "typename";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["members"]["m_min"];
                 meta["members"]["m_max"];
 
@@ -187,6 +203,10 @@ namespace SGCore
                 Meta meta;
                 meta["fullName"] = "SGCore::Layer";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/Layer.h";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_name"];
                 meta["members"]["m_isOpaque"];
@@ -200,6 +220,10 @@ namespace SGCore
                 Meta meta;
                 meta["fullName"] = "SGCore::TransformBase";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/TransformBase.h";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_blockTranslation"];
                 meta["members"]["m_blockRotation"];
@@ -224,6 +248,10 @@ namespace SGCore
                 meta["type"] = "component";
                 meta["getFromRegistryBy"] = "SGCore::Ref<SGCore::Transform>";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["members"]["m_finalTransform"];
                 meta["members"]["m_ownTransform"];
                 meta["members"]["m_followParentTRS"];
@@ -238,6 +266,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/EntityBaseInfo.h";
                 meta["type"] = "component";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::UniqueNameWrapper"];
 
                 meta["members"]["m_parent"]["annotations"]["doNotSerialize"];
@@ -250,6 +282,10 @@ namespace SGCore
                 Meta meta;
                 meta["fullName"] = "SGCore::MeshDataRenderInfo";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/ImportedScenesArch/MeshDataRenderInfo.h";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_useIndices"];
                 meta["members"]["m_enableFacesCulling"];
@@ -268,6 +304,10 @@ namespace SGCore
                 meta["fullName"] = "SGCore::RenderingBase";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/RenderingBase.h";
                 meta["type"] = "component";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_fov"];
                 meta["members"]["m_aspect"];
@@ -293,6 +333,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Camera3D.h";
                 meta["type"] = "component";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 m_meta["structs"].push_back(meta);
             }
 
@@ -301,6 +345,10 @@ namespace SGCore
                 Meta meta;
                 meta["fullName"] = "SGCore::GizmoBase";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/GizmoBase.h";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_color"];
                 meta["members"]["m_meshBase"];
@@ -314,6 +362,10 @@ namespace SGCore
                 meta["fullName"] = "SGCore::SphereGizmo";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/SphereGizmo.h";
                 meta["type"] = "component";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_base"];
                 meta["members"]["m_radius"];
@@ -329,6 +381,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/BoxGizmo.h";
                 meta["type"] = "component";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["members"]["m_base"];
                 meta["members"]["m_size"];
                 meta["members"]["m_lastSize"];
@@ -343,6 +399,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/LineGizmo.h";
                 meta["type"] = "component";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["members"]["m_base"];
                 meta["members"]["m_start"];
                 meta["members"]["m_end"];
@@ -356,14 +416,18 @@ namespace SGCore
                 meta["fullName"] = "SGCore::MeshBase";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/MeshBase.h";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["members"]["m_meshDataRenderInfo"];
 
-                *//*meta["members"]["m_meshData"]["setter"] = "setMeshData";
-                meta["members"]["m_meshData"]["getter"] = "getMeshData";*//*
+                meta["members"]["m_meshData"]["setter"] = "setMeshData";
+                meta["members"]["m_meshData"]["getter"] = "getMeshData";
 
                 // TODO: add
-                *//*meta["members"]["m_material"]["setter"] = "setMaterial";
-                meta["members"]["m_material"]["getter"] = "getMaterial";*//*
+                meta["members"]["m_material"]["setter"] = "setMaterial";
+                meta["members"]["m_material"]["getter"] = "getMaterial";
 
                 m_meta["structs"].push_back(meta);
             }
@@ -374,12 +438,16 @@ namespace SGCore
                 meta["fullName"] = "SGCore::LightBase";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Lighting/LightBase.h";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["members"]["m_color"];
                 meta["members"]["m_intensity"];
                 meta["members"]["m_samplesCount"];
 
                 m_meta["structs"].push_back(meta);
-            }*/
+            }
 
             // SGCore::DirectionalLight
             {
@@ -388,19 +456,25 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Lighting/DirectionalLight.h";
                 meta["type"] = "component";
 
-                // meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_base"];
 
                 m_meta["structs"].push_back(meta);
             }
 
-            /*// SGCore::Atmosphere
+            // SGCore::Atmosphere
             {
                 Meta meta;
                 meta["fullName"] = "SGCore::Atmosphere";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Atmosphere/Atmosphere.h";
                 meta["type"] = "component";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_sunPosition"];
 
@@ -447,6 +521,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/Controllable3D.h";
                 meta["type"] = "component";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["members"]["m_movementSpeed"];
                 meta["members"]["m_rotationSensitive"];
 
@@ -460,6 +538,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/UICamera.h";
                 meta["type"] = "component";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 m_meta["structs"].push_back(meta);
             }
 
@@ -470,6 +552,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/ISystem.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 m_meta["structs"].push_back(meta);
             }
 
@@ -479,6 +565,10 @@ namespace SGCore
                 meta["fullName"] = "SGCore::IParallelSystem";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Scene/IParallelSystem.h";
                 meta["type"] = "system";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["template_args"]["ParallelSystemT"] = "typename";
 
@@ -494,6 +584,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Physics/PhysicsWorld3D.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::IParallelSystem<SGCore::PhysicsWorld3D>"];
                 meta["baseTypes"]["SGCore::ISystem"];
 
@@ -507,6 +601,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/RenderingBasesUpdater.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
@@ -519,6 +617,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Atmosphere/AtmosphereUpdater.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
@@ -530,6 +632,10 @@ namespace SGCore
                 meta["fullName"] = "SGCore::DirectionalLightsUpdater";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Lighting/DirectionalLightsUpdater.h";
                 meta["type"] = "system";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_maxLightsCount"];
 
@@ -545,6 +651,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/TransformationsUpdater.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::IParallelSystem<SGCore::TransformationsUpdater>"];
                 meta["baseTypes"]["SGCore::ISystem"];
 
@@ -558,6 +668,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/Controllables3DUpdater.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
@@ -569,6 +683,10 @@ namespace SGCore
                 meta["fullName"] = "SGCore::BoxGizmosRenderer";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/BoxGizmosRenderer.h";
                 meta["type"] = "system";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["baseTypes"]["SGCore::ISystem"];
 
@@ -582,6 +700,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/LineGizmosRenderer.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
@@ -594,6 +716,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Gizmos/SphereGizmosUpdater.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
@@ -605,6 +731,10 @@ namespace SGCore
                 meta["fullName"] = "SGCore::DebugDraw";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/DebugDraw.h";
                 meta["type"] = "system";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_mode"];
                 meta["members"]["m_linesRenderInfo"];
@@ -622,6 +752,10 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/Batching/BatchesRenderer.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
@@ -633,6 +767,10 @@ namespace SGCore
                 meta["fullName"] = "SGCore::OctreesSolver";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Render/SpacePartitioning/OctreesSolver.h";
                 meta["type"] = "system";
+
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["baseTypes"]["SGCore::IParallelSystem<SGCore::OctreesSolver>"];
                 meta["baseTypes"]["SGCore::ISystem"];
@@ -647,10 +785,14 @@ namespace SGCore
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Audio/AudioProcessor.h";
                 meta["type"] = "system";
 
+                meta["annotations"]["doNotGenerateSerdeSpec"];
+                meta["annotations"]["doNotGenerateSerializationLogic"];
+                meta["annotations"]["doNotGenerateDeserializationLogic"];
+
                 meta["baseTypes"]["SGCore::ISystem"];
 
                 m_meta["structs"].push_back(meta);
-            }*/
+            }
         }
 
         static void clearAllMeta() noexcept
