@@ -57,21 +57,44 @@ char* SGCore::FileUtils::readBytes(const std::filesystem::path& path, size_t& ou
     return buffer;
 }
 
+char* SGCore::FileUtils::readBytesBlock(const std::filesystem::path& path, const std::streamsize& offset, const std::streamsize& size) noexcept
+{
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
+    stream.unsetf(std::ios::skipws);
+    stream.exceptions(std::ios_base::badbit);
+
+    if(!stream)
+    {
+        LOG_E(SGCORE_TAG, "Read file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
+        return nullptr;
+    }
+
+    stream.seekg(offset, std::ios::beg);
+
+    auto* buffer = (char*) malloc(size);
+
+    if (stream.read(buffer, size))
+    {
+
+    }
+
+    return buffer;
+}
+
 void SGCore::FileUtils::writeToFile(const std::filesystem::path& path, const std::string& text, bool append, bool createDirectories)
 {
     if(createDirectories)
     {
-        std::filesystem::path fPath(path);
-        if(!fPath.parent_path().empty())
+        if(!path.parent_path().empty())
         {
-            std::filesystem::create_directories(fPath.parent_path().string());
+            std::filesystem::create_directories(path.parent_path().string());
         }
     }
 
     try
     {
         std::ofstream fileStream;
-        fileStream.open(path,  (append ? std::ios::app : std::ios::trunc) | std::ios::out | std::ios::in | std::ios::binary);
+        fileStream.open(path, (append ? std::ios::app : std::ios::trunc) | std::ios::out | std::ios::in | std::ios::binary);
 
         fileStream << text;
     }

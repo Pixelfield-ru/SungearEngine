@@ -34,11 +34,16 @@ void SGCore::AssetManager::clear() noexcept
 
 void SGCore::AssetManager::fullRemoveAsset(const std::filesystem::path& aliasOrPath) noexcept
 {
-    auto foundIt = m_entities.find(aliasOrPath);
+    auto foundIt = m_entities.find(std::hash<std::filesystem::path>()(aliasOrPath));
     if(foundIt == m_entities.end()) return;
 
     const auto& e = foundIt->second;
     m_registry->destroy(e);
 
     m_entities.erase(foundIt);
+}
+
+void SGCore::AssetManager::createPackage(const std::filesystem::path& toPath, bool saveAssetsData) noexcept
+{
+
 }

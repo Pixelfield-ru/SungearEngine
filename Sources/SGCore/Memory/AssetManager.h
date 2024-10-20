@@ -28,6 +28,11 @@ namespace SGCore
     class SGCORE_EXPORT AssetManager
     {
     public:
+        struct Package
+        {
+            std::filesystem::path m_path;
+        };
+
         AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
         
         static void init() noexcept;
@@ -46,8 +51,10 @@ namespace SGCore
             std::lock_guard guard(m_mutex);
             
             entity_t entity;
+
+            const size_t hashedAssetPath = std::hash<std::filesystem::path>()(path);
             
-            auto foundEntity = m_entities.find(path);
+            auto foundEntity = m_entities.find(hashedAssetPath);
             if(foundEntity != m_entities.end())
             {
                 entity = foundEntity->second;
@@ -55,7 +62,7 @@ namespace SGCore
             else
             {
                 entity = m_registry->create();
-                m_entities[path] = entity;
+                m_entities[hashedAssetPath] = entity;
             }
             
             Ref<AssetT>* asset = m_registry->try_get<Ref<AssetT>>(entity);
@@ -110,8 +117,10 @@ namespace SGCore
             std::lock_guard guard(m_mutex);
             
             entity_t entity;
+
+            const size_t hashedAssetPath = std::hash<std::filesystem::path>()(path);
             
-            auto foundEntity = m_entities.find(path);
+            auto foundEntity = m_entities.find(hashedAssetPath);
             if(foundEntity != m_entities.end())
             {
                 entity = foundEntity->second;
@@ -119,7 +128,7 @@ namespace SGCore
             else
             {
                 entity = m_registry->create();
-                m_entities[path] = entity;
+                m_entities[hashedAssetPath] = entity;
             }
             
             Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
@@ -173,8 +182,10 @@ namespace SGCore
             std::lock_guard guard(m_mutex);
             
             entity_t entity;
+
+            const size_t hashedAssetAlias = std::hash<std::string>()(alias);
             
-            auto foundEntity = m_entities.find(alias);
+            auto foundEntity = m_entities.find(hashedAssetAlias);
             if(foundEntity != m_entities.end())
             {
                 entity = foundEntity->second;
@@ -182,7 +193,7 @@ namespace SGCore
             else
             {
                 entity = m_registry->create();
-                m_entities[alias] = entity;
+                m_entities[hashedAssetAlias] = entity;
             }
             
             Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
@@ -236,8 +247,10 @@ namespace SGCore
             std::lock_guard guard(m_mutex);
             
             entity_t entity;
+
+            const size_t hashedAssetAlias = std::hash<std::string>()(alias);
             
-            auto foundEntity = m_entities.find(alias);
+            auto foundEntity = m_entities.find(hashedAssetAlias);
             if(foundEntity != m_entities.end())
             {
                 entity = foundEntity->second;
@@ -245,7 +258,7 @@ namespace SGCore
             else
             {
                 entity = m_registry->create();
-                m_entities[alias] = entity;
+                m_entities[hashedAssetAlias] = entity;
             }
             
             Ref<AssetT>* asset = m_registry->try_get<Ref<AssetT>>(entity);
@@ -297,8 +310,10 @@ namespace SGCore
             std::lock_guard guard(m_mutex);
             
             entity_t entity;
-            
-            auto foundEntity = m_entities.find(alias);
+
+            const size_t hashedAssetAlias = std::hash<std::string>()(alias);
+
+            auto foundEntity = m_entities.find(hashedAssetAlias);
             if(foundEntity != m_entities.end())
             {
                 entity = foundEntity->second;
@@ -306,7 +321,7 @@ namespace SGCore
             else
             {
                 entity = m_registry->create();
-                m_entities[alias] = entity;
+                m_entities[hashedAssetAlias] = entity;
             }
             
             Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
@@ -334,10 +349,12 @@ namespace SGCore
             std::lock_guard guard(m_mutex);
             
             const std::string& assetPath = asset->getPath().string();
+
+            const size_t hashedAssetPath = std::hash<std::string>()(assetPath);
             
             entity_t entity;
             
-            auto foundEntity = m_entities.find(assetPath);
+            auto foundEntity = m_entities.find(hashedAssetPath);
             if(foundEntity != m_entities.end())
             {
                 entity = foundEntity->second;
@@ -345,7 +362,7 @@ namespace SGCore
             else
             {
                 entity = m_registry->create();
-                m_entities[assetPath] = entity;
+                m_entities[hashedAssetPath] = entity;
             }
             
             Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
@@ -367,7 +384,7 @@ namespace SGCore
         
         bool isAssetsEntityExists(const std::string& pathOrAlias) noexcept
         {
-            auto foundEntity = m_entities.find(pathOrAlias);
+            auto foundEntity = m_entities.find(std::hash<std::string>()(pathOrAlias));
             
             return foundEntity != m_entities.end();
         }
@@ -378,7 +395,7 @@ namespace SGCore
         {
             std::lock_guard guard(m_mutex);
             
-            auto foundEntity = m_entities.find(pathOrAlias);
+            auto foundEntity = m_entities.find(std::hash<std::string>()(pathOrAlias));
             if(foundEntity == m_entities.end())
             {
                 return false;
@@ -403,7 +420,7 @@ namespace SGCore
         template<typename AssetT>
         void removeAssetLoadedByType(const std::filesystem::path& aliasOrPath) noexcept
         {
-            auto foundIt = m_entities.find(aliasOrPath);
+            auto foundIt = m_entities.find(std::hash<std::filesystem::path>()(aliasOrPath));
             if(foundIt == m_entities.end()) return;
 
             const auto& e = foundIt->second;
@@ -417,6 +434,8 @@ namespace SGCore
         Ref<registry_t> getRegistry() noexcept;
         
         SG_NOINLINE static Ref<AssetManager>& getInstance() noexcept;
+
+        void createPackage(const std::filesystem::path& toPath, bool saveAssetsData = true) noexcept;
 
     private:
         void distributeAsset(const Ref<IAsset>& asset,
@@ -480,7 +499,7 @@ namespace SGCore
         std::mutex m_mutex;
         
         Ref<registry_t> m_registry = MakeRef<registry_t>();
-        std::unordered_map<std::filesystem::path, entity_t> m_entities;
+        std::unordered_map<size_t, entity_t> m_entities;
         
         Threading::BaseThreadsPool<Threading::LeastTasksCount> m_threadsPool { 2, false };
         

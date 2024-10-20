@@ -22,7 +22,7 @@ namespace SGCore::Serde
 
         friend struct Serializer;
 
-        template<typename T0, FormatType TFormatType0>
+        template<typename, FormatType>
         friend struct DeserializableValueView;
 
         template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
