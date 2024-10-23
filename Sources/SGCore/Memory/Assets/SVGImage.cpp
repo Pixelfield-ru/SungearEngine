@@ -66,14 +66,3 @@ void SGCore::SVGImage::removeSpecialization(const uint32_t& width, const uint32_
         return width == specialization->getSize().x && height == specialization->getSize().y;
     });
 }
-
-void
-SGCore::SVGImage::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
-{
-    currentAssetSection.addStandardInfo(this);
-
-    if(isDataSerializing)
-    {
-
-    }
-}

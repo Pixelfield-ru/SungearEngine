@@ -11,14 +11,3 @@ std::string SGCore::TextFileAsset::getData() const noexcept
 {
     return m_data;
 }
-
-void SGCore::TextFileAsset::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection,
-                                               bool isDataSerializing)
-{
-    currentAssetSection.addStandardInfo(this);
-
-    if(isDataSerializing)
-    {
-        currentAssetSection.addSection("m_data", m_data);
-    }
-}

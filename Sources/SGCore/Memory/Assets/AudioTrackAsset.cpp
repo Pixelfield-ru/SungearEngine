@@ -340,26 +340,3 @@ std::string SGCore::AudioTrackAsset::getSummary() const noexcept
 
     return sum;
 }
-
-void SGCore::AudioTrackAsset::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection,
-                                                 bool isDataSerializing)
-{
-    currentAssetSection.addStandardInfo(this);
-
-    if(isDataSerializing)
-    {
-        currentAssetSection.addSection("m_audioTrackType", m_audioTrackType);
-        currentAssetSection.addSection("m_audioFormat", m_audioFormat);
-        currentAssetSection.addSection("m_numChannels", m_numChannels);
-        currentAssetSection.addSection("m_sampleRate", m_sampleRate);
-        currentAssetSection.addSection("m_byteRate", m_byteRate);
-        currentAssetSection.addSection("m_blockAlign", m_blockAlign);
-        currentAssetSection.addSection("m_bitsPerSample", m_bitsPerSample);
-        currentAssetSection.addSection("m_frequency", m_frequency);
-        if(m_dataBuffer)
-        {
-            currentAssetSection.addSection("m_dataBufferSize", m_dataBufferSize);
-            currentAssetSection.addSection("m_dataBuffer", m_dataBuffer);
-        }
-    }
-}

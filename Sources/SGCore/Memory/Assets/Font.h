@@ -26,9 +26,6 @@ namespace SGCore
         
     protected:
         void doLoad(const std::filesystem::path& path) override;
-
-        // todo:
-        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
         
     private:
         std::unordered_map<FontSpecializationSettings, Ref<FontSpecialization>> m_specializations;

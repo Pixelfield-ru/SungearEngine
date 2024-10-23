@@ -81,14 +81,3 @@ SGCore::IMaterial& SGCore::IMaterial::operator=
 
     return *this;
 }
-
-void
-SGCore::IMaterial::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
-{
-    currentAssetSection.addStandardInfo(this);
-
-    if(isDataSerializing)
-    {
-
-    }
-}

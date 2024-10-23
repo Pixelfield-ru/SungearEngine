@@ -107,9 +107,6 @@ namespace SGCore
         
         // TODO: impl
         void doLoad(const std::filesystem::path& path) override;
-
-        // todo:
-        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
         
         // first - shader name
         // std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;

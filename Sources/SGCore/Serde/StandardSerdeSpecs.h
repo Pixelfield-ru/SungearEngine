@@ -47,6 +47,7 @@
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
+#include "SGCore/Graphics/API/ITexture2D.h"
 
 #include "SGCore/Serde/Components/NonSavable.h"
 
@@ -3176,19 +3177,21 @@ namespace SGCore::Serde
         static inline const std::string type_name = "std::vector";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<std::vector<T>, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<std::vector<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             valueView.getValueContainer().setAsArray();
 
             for(const auto& v : *valueView.m_data)
             {
-                valueView.getValueContainer().pushBack(v);
+                valueView.getValueContainer().pushBack(v, std::forward<SharedDataT>(sharedData)...);
             }
         }
 
-        static void deserialize(DeserializableValueView<std::vector<T>, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<std::vector<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
-            *valueView.m_data = valueView.getValueContainer().template getAsArray<T>();
+            *valueView.m_data = valueView.getValueContainer().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
         }
     };
 
@@ -3314,6 +3317,7 @@ namespace SGCore::Serde
     /**
      * KeyT REQUIRES AN IMPLICIT CONVERSION OPERATOR TO std::string OR OTHER TYPES FROM
      * WHICH std::string CAN BE CONSTRUCTED OR WHICH CAN BE IMPLICITLY CONVERTED TO std::string
+     * OR CAN BE CONVERTED TO std::string USING std::to_string.
      *
     **/
     template<typename KeyT, typename ValueT, FormatType TFormatType>
@@ -3322,23 +3326,64 @@ namespace SGCore::Serde
         static inline const std::string type_name = "std::unordered_map";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             for(const auto& [key, value] : *valueView.m_data)
             {
-                valueView.getValueContainer().addMember(key, value);
+                std::string resultKey;
+                if constexpr(std::is_convertible_v<KeyT, std::string>)
+                {
+                    resultKey = key;
+                }
+                else if constexpr(requires {
+                    resultKey = std::to_string(key);
+                })
+                {
+                    resultKey = std::to_string(key);
+                }
+                else
+                {
+                    static_assert(always_false<KeyT>::value, "KeyT in std::unordered_map can not be casted to std::string.");
+                }
+
+                valueView.getValueContainer().addMember(resultKey, value, std::forward<SharedDataT>(sharedData)...);
             }
         }
 
-        static void deserialize(DeserializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView)
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             for(auto it = valueView.getValueContainer().memberBegin(); it != valueView.getValueContainer().memberEnd(); ++it)
             {
-                const auto val = valueView.getValueContainer().template getMember<ValueT>(it);
+                const auto val = valueView.getValueContainer().template getMember<ValueT>(it, std::forward<SharedDataT>(sharedData)...);
 
                 if(val)
                 {
-                    (*valueView.m_data)[valueView.getValueContainer().getMemberName(it)] = *val;
+                    const std::string memberName = valueView.getValueContainer().getMemberName(it);
+                    KeyT resultKey;
+                    if constexpr(std::is_convertible_v<std::string, KeyT>)
+                    {
+                        resultKey = memberName;
+                    }
+                    else if constexpr(std::numeric_limits<KeyT>::is_integer && std::numeric_limits<KeyT>::is_signed)
+                    {
+                        resultKey = std::stoll(memberName);
+                    }
+                    else if constexpr(std::numeric_limits<KeyT>::is_integer && !std::numeric_limits<KeyT>::is_signed)
+                    {
+                        resultKey = std::stoull(memberName);
+                    }
+                    else if constexpr(std::is_floating_point_v<KeyT>)
+                    {
+                        resultKey = std::stold(memberName);
+                    }
+                    else
+                    {
+                        static_assert(always_false<KeyT>::value, "std::string can not be casted to KeyT in std::unordered_map.");
+                    }
+
+                    (*valueView.m_data)[resultKey] = *val;
                 }
             }
         }
@@ -3885,6 +3930,117 @@ namespace SGCore::Serde
                 {
                     valueView.m_data->addSystem(system);
                 }
+            }
+        }
+    };
+
+    // ===================================================================================================================
+    // ====================================== Standard assets SerdeSpecs impl ============================================
+    // ===================================================================================================================
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<IAsset, TFormatType> : BaseTypes<>, DerivedTypes<ITexture2D>
+    {
+        static inline const std::string type_name = "SGCore::IAsset";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<IAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
+            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+        }
+
+        static void deserialize(DeserializableValueView<IAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto assetName = valueView.getValueContainer().template getMember<std::string>("m_name");
+            if(assetName)
+            {
+                valueView.m_data->m_name = std::move(*assetName);
+            }
+
+            auto assetPath = valueView.getValueContainer().template getMember<std::string>("m_path");
+            if(assetPath)
+            {
+                valueView.m_data->m_path = std::move(*assetPath);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<ITexture2D, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::ITexture2D";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            // if we are serializing data too
+            if(assetsPackage.isDataSerde())
+            {
+                AssetsPackage::DataMarkup textureDataMarkup =
+                        assetsPackage.addData(valueView.m_data->m_textureData.get(),
+                                              valueView.m_data->m_width * valueView.m_data->m_height *
+                                              valueView.m_data->m_channelsCount
+                        );
+
+                valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
+            }
+
+            valueView.getValueContainer().addMember("m_width", valueView.m_data->m_width);
+            valueView.getValueContainer().addMember("m_height", valueView.m_data->m_height);
+            valueView.getValueContainer().addMember("m_channelsCount", valueView.m_data->m_channelsCount);
+            valueView.getValueContainer().addMember("m_internalFormat", valueView.m_data->m_internalFormat);
+            valueView.getValueContainer().addMember("m_format", valueView.m_data->m_format);
+        }
+
+        static void deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto width = valueView.getValueContainer().template getMember<std::int32_t>("m_width");
+            auto height = valueView.getValueContainer().template getMember<std::int32_t>("m_height");
+            auto channelsCount = valueView.getValueContainer().template getMember<int>("m_channelsCount");
+            auto internalFormat = valueView.getValueContainer().template getMember<SGGColorInternalFormat>("m_internalFormat");
+            auto format = valueView.getValueContainer().template getMember<SGGColorFormat>("m_format");
+
+            // if we are deserializing data too
+            if(assetsPackage.isDataSerde())
+            {
+                auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataOffset");
+                auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataSizeInBytes");
+
+                if(dataOffsetOpt && dataSizeInBytesOpt && width && height && channelsCount && internalFormat && format)
+                {
+                    char* textureData = FileUtils::readBytesBlock(assetsPackage.getPath(), *dataOffsetOpt, *dataSizeInBytesOpt);
+
+                    valueView.m_data->moveAndCreate(textureData, *width, *height, *channelsCount, *internalFormat, *format);
+                }
+            }
+
+            // assigning ==============================================
+
+            if(width)
+            {
+                valueView.m_data->m_width = *width;
+            }
+
+            if(height)
+            {
+                valueView.m_data->m_height = *height;
+            }
+
+            if(channelsCount)
+            {
+                valueView.m_data->m_channelsCount = *channelsCount;
+            }
+
+            if(internalFormat)
+            {
+                valueView.m_data->m_internalFormat = *internalFormat;
+            }
+
+            if(format)
+            {
+                valueView.m_data->m_format = *format;
             }
         }
     };

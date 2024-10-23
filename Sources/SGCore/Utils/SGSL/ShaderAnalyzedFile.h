@@ -107,9 +107,6 @@ namespace SGCore
         
     protected:
         void doLoad(const std::filesystem::path& path) final;
-
-        // todo: impl
-        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
     };
 }
 

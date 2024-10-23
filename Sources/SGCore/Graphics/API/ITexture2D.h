@@ -32,6 +32,8 @@ namespace SGCore
         friend class AssetManager;
 
     public:
+        sg_serde_as_friend()
+
         static inline size_t asset_type_id = StaticTypeID<ITexture2D>::setID(1);
 
         virtual ~ITexture2D() = default;
@@ -84,6 +86,33 @@ namespace SGCore
             addToGlobalStorage();
         }
 
+        /// Moves 'data' to ITexture2D and now ITexture2D owns this data
+        template<typename DataType = std::uint8_t>
+        requires(std::is_scalar_v<DataType>)
+        void moveAndCreate(DataType* data,
+                           const size_t& width,
+                           const size_t& height,
+                           const int& channelsCount,
+                           SGGColorInternalFormat internalFormat,
+                           SGGColorFormat format)
+        {
+            // size_t byteSize = width * height * sizeof(DataType) * channelsCount;
+
+            m_width = width;
+            m_height = height;
+            m_channelsCount = channelsCount;
+            m_internalFormat = internalFormat;
+            m_format = format;
+            m_dataType = getSGDataTypeFromCPPType<DataType>();
+
+            // TODO: IS IT NOT MEMORY LEAK OR UB???
+            m_textureData = Ref<std::uint8_t[]>(data);
+
+            create();
+
+            addToGlobalStorage();
+        }
+
         virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
         
         template<typename DataType = std::uint8_t>
@@ -130,8 +159,6 @@ namespace SGCore
         std::int32_t m_height = 0;
         
         size_t m_pixelSize = 0;
-
-        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
 
         void doLoad(const std::filesystem::path& path) override;
         void doLazyLoad() override;

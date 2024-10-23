@@ -50,7 +50,7 @@ namespace SGCore
     private:
         int m_debugMode = 0;
         
-        std::uint32_t m_maxLines = 1'000'000;
+        std::uint32_t m_maxLines = 100'000;
         std::uint32_t m_currentDrawingLine = 0;
         
         std::vector<float> m_linesPositions;

@@ -21,6 +21,8 @@ namespace SGCore
 
     class IAsset : public UniqueNameWrapper
     {
+        sg_serde_as_friend()
+
         friend class AssetManager;
 
     public:
@@ -68,8 +70,6 @@ namespace SGCore
     protected:
         virtual void doLoad(const std::filesystem::path& path) = 0;
         virtual void doLazyLoad() { };
-
-        virtual void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) = 0;
         
         long m_lastModified = -1;
         std::filesystem::path m_path;

@@ -7,6 +7,8 @@
 #include "AssetManager.h"
 #include "Assets/TextFileAsset.h"
 #include "AssetsPackage.h"
+#include "SGCore/Serde/Serde.h"
+#include "SGCore/Serde/StandardSerdeSpecs.h"
 
 #include <assimp/version.h>
 
@@ -32,29 +34,19 @@ void SGCore::AssetManager::fullRemoveAsset(const std::filesystem::path& aliasOrP
     m_assets.erase(std::hash<std::filesystem::path>()(aliasOrPath));
 }
 
-void SGCore::AssetManager::createPackage(const std::filesystem::path& toPath, bool saveAssetsData) noexcept
+void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirectory, const std::string& packageName, bool saveAssetsData) noexcept
 {
-    // structure of package:
-    // sections for all assets:
-    //
-    // size:<size of full asset section>
-    // path:<path to asset>
-    // alias:<alias of asset>
-    // typeID:<ID of type that must be provided in every derived type of IAsset (see IAsset struct)>
-    //
-    // next you can put custom data
+    const std::filesystem::path binaryFilePath = toDirectory / (packageName + ".bin");
+    const std::filesystem::path markupFilePath = toDirectory / (packageName + ".json");
 
     AssetsPackage outPackage;
-    outPackage.m_path = toPath;
+    outPackage.m_path = binaryFilePath;
+    outPackage.m_useSerdeData = saveAssetsData;
 
-    for(auto& p0 : m_assets)
-    {
-        for(auto& p1 : p0.second)
-        {
-            AssetsPackage::AssetSection assetSection(&outPackage);
-            p1.second->serializeToPackage(assetSection, saveAssetsData);
-        }
-    }
+    const std::string writtenJSON = Serde::Serializer::toFormat(Serde::FormatType::JSON, m_assets, outPackage);
 
-    FileUtils::writeBytes(toPath, 0, outPackage.m_buffer, false);
+    // writing markup (json) file
+    FileUtils::writeToFile(markupFilePath, writtenJSON, false, true);
+    // writing binary file
+    FileUtils::writeBytes(binaryFilePath, 0, outPackage.m_buffer, false);
 }

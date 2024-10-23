@@ -55,8 +55,6 @@ namespace SGCore
     
     protected:
         void doLoad(const std::filesystem::path& path) override;
-
-        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
         
     private:
         AudioTrackType m_audioTrackType = AudioTrackType::UNKNOWN;

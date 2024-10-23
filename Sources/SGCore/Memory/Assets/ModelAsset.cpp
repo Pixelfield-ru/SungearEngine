@@ -325,15 +325,3 @@ void SGCore::ModelAsset::prepareNodeMeshes(const SGCore::Ref<SGCore::Node>& node
         prepareNodeMeshes(child);
     }
 }
-
-void
-SGCore::ModelAsset::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
-{
-    currentAssetSection.addStandardInfo(this);
-
-    if(isDataSerializing)
-    {
-
-    }
-}
-

@@ -48,13 +48,3 @@ SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
         return foundSpecIter->second;
     }
 }
-
-void SGCore::Font::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
-{
-    currentAssetSection.addStandardInfo(this);
-
-    if(isDataSerializing)
-    {
-
-    }
-}

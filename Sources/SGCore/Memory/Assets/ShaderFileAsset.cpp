@@ -8,14 +8,3 @@
 void SGCore::ShaderFileAsset::doLoad(const std::filesystem::path& path)
 {
 }
-
-void SGCore::ShaderFileAsset::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection,
-                                                 bool isDataSerializing)
-{
-    currentAssetSection.addStandardInfo(this);
-
-    if(isDataSerializing)
-    {
-
-    }
-}

@@ -400,7 +400,7 @@ namespace SGCore
         
         SG_NOINLINE static Ref<AssetManager>& getInstance() noexcept;
 
-        void createPackage(const std::filesystem::path& toPath, bool saveAssetsData = true) noexcept;
+        void createPackage(const std::filesystem::path& toDirectory, const std::string& packageName, bool saveAssetsData = true) noexcept;
 
     private:
         void distributeAsset(const Ref<IAsset>& asset,

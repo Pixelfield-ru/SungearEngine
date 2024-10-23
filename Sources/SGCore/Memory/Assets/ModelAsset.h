@@ -24,9 +24,6 @@ namespace SGCore
     protected:
         void doLoad(const std::filesystem::path& path) override;
         void doLazyLoad() override;
-
-        // todo:
-        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
         
     private:
         // local import flags
