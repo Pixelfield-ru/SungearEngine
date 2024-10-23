@@ -49,12 +49,12 @@ SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
     }
 }
 
-void SGCore::Font::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+void SGCore::Font::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
 {
+    currentAssetSection.addStandardInfo(this);
 
-}
+    if(isDataSerializing)
+    {
 
-void SGCore::Font::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
-{
-
+    }
 }

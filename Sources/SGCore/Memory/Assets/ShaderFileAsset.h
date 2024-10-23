@@ -13,8 +13,13 @@ namespace SGCore
 {
     struct ShaderFileAsset : public IAsset
     {
+        static inline size_t asset_type_id = StaticTypeID<ShaderFileAsset>::setID(9);
+
     protected:
         void doLoad(const std::filesystem::path& path) override;
+
+        // todo:
+        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
     };
 }
 

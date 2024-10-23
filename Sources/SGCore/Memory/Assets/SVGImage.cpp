@@ -68,13 +68,12 @@ void SGCore::SVGImage::removeSpecialization(const uint32_t& width, const uint32_
 }
 
 void
-SGCore::SVGImage::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+SGCore::SVGImage::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
 {
+    currentAssetSection.addStandardInfo(this);
 
-}
+    if(isDataSerializing)
+    {
 
-void
-SGCore::SVGImage::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
-{
-
+    }
 }

@@ -6,12 +6,14 @@
 #define NATIVECORE_IASSET_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Utils/StaticTypeID.h"
 
 #include "IAssetObserver.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Serde/SerializationType.h"
+#include "SGCore/Memory/AssetsPackage.h"
 
 namespace SGCore
 {
@@ -22,6 +24,9 @@ namespace SGCore
         friend class AssetManager;
 
     public:
+        /// You must implement this field in your type of asset. This field must have explicit value and be the same on different platforms.
+        static inline size_t asset_type_id = StaticTypeID<IAsset>::setID(0);
+
         std::string m_name;
         
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
@@ -45,12 +50,6 @@ namespace SGCore
             onLazyLoadDone(this);
         }
 
-        SerializationType m_serializationType = SerializationType::SERIALIZE_META;
-
-        virtual void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) = 0;
-        virtual void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) = 0;
-
-
         // LEGACY CODE ================================
         
         void addObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
@@ -69,14 +68,14 @@ namespace SGCore
     protected:
         virtual void doLoad(const std::filesystem::path& path) = 0;
         virtual void doLazyLoad() { };
+
+        virtual void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) = 0;
         
         long m_lastModified = -1;
         std::filesystem::path m_path;
         std::list<Weak<IAssetObserver>> m_observers;
 
     private:
-        size_t m_assetTypeID = 0;
-        
         template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, InstanceT>)
         static Ref<InstanceT> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept

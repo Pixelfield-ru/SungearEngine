@@ -83,13 +83,12 @@ SGCore::IMaterial& SGCore::IMaterial::operator=
 }
 
 void
-SGCore::IMaterial::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+SGCore::IMaterial::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
 {
+    currentAssetSection.addStandardInfo(this);
 
-}
+    if(isDataSerializing)
+    {
 
-void
-SGCore::IMaterial::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
-{
-
+    }
 }

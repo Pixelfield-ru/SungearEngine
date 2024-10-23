@@ -14,6 +14,8 @@ namespace SGCore
 {
     struct ShaderAnalyzedFile : public IAsset, public std::enable_shared_from_this<ShaderAnalyzedFile>
     {
+        static inline size_t asset_type_id = StaticTypeID<ShaderAnalyzedFile>::setID(4);
+
         friend class SGSLETranslator;
         friend class AssetManager;
 
@@ -21,11 +23,6 @@ namespace SGCore
         
         std::unordered_map<std::string, SGSLESubPass> m_subPasses;
         std::vector<std::shared_ptr<ShaderAnalyzedFile>> m_includedFiles;
-
-        // TODO:
-        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
-        // TODO:
-        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
         
         void includeFile(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
         {
@@ -110,6 +107,9 @@ namespace SGCore
         
     protected:
         void doLoad(const std::filesystem::path& path) final;
+
+        // todo: impl
+        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
     };
 }
 

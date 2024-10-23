@@ -32,6 +32,8 @@ namespace SGCore
         friend class AssetManager;
 
     public:
+        static inline size_t asset_type_id = StaticTypeID<ITexture2D>::setID(1);
+
         virtual ~ITexture2D() = default;
         
         ITexture2D() = default;
@@ -107,11 +109,6 @@ namespace SGCore
 
         virtual void bind(const std::uint8_t& textureUnit) = 0;
 
-        // TODO:
-        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
-        // TODO:
-        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
-
         void addToGlobalStorage() noexcept final;
 
         virtual ITexture2D& operator=(const Ref<ITexture2D>& other) = 0;
@@ -133,14 +130,16 @@ namespace SGCore
         std::int32_t m_height = 0;
         
         size_t m_pixelSize = 0;
-        
+
+        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
+
         void doLoad(const std::filesystem::path& path) override;
         void doLazyLoad() override;
         
         virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
         virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;
         
-        Ref<std::uint8_t[]> m_textureData;
+        Ref<std::uint8_t[]> m_textureData = nullptr;
 
     private:
         template<typename InstanceT, typename... AssetCtorArgs>

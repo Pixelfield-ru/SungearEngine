@@ -11,6 +11,8 @@ namespace SGCore
 {
     struct XMLDocument : public IAsset
     {
+        static inline size_t asset_type_id = StaticTypeID<XMLDocument>::setID(10);
+
         pugi::xml_document m_document;
         
     protected:

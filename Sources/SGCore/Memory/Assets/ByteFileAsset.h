@@ -11,6 +11,8 @@ namespace SGCore
 {
     struct ByteFileAsset : public IAsset
     {
+        static inline size_t asset_type_id = StaticTypeID<ByteFileAsset>::setID(7);
+
         ~ByteFileAsset();
         
         [[nodiscard]] char* getDataBuffer() const noexcept;

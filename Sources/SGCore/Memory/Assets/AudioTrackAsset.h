@@ -20,10 +20,9 @@ namespace SGCore
 
     struct AudioTrackAsset : public ByteFileAsset
     {
-        ~AudioTrackAsset();
+        static constexpr inline size_t asset_type_id = 2;
 
-        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
-        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        ~AudioTrackAsset();
 
         void createALBuffer() noexcept;
         void destroyALBuffer() noexcept;
@@ -56,6 +55,8 @@ namespace SGCore
     
     protected:
         void doLoad(const std::filesystem::path& path) override;
+
+        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
         
     private:
         AudioTrackType m_audioTrackType = AudioTrackType::UNKNOWN;

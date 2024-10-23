@@ -327,13 +327,13 @@ void SGCore::ModelAsset::prepareNodeMeshes(const SGCore::Ref<SGCore::Node>& node
 }
 
 void
-SGCore::ModelAsset::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+SGCore::ModelAsset::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
 {
+    currentAssetSection.addStandardInfo(this);
 
+    if(isDataSerializing)
+    {
+
+    }
 }
 
-void
-SGCore::ModelAsset::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
-{
-
-}

@@ -14,10 +14,7 @@ namespace SGCore
 {
     struct Font : public IAsset
     {
-        // TODO:
-        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
-        // TODO:
-        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        static inline size_t asset_type_id = StaticTypeID<Font>::setID(5);
 
         Ref<FontSpecialization> addOrGetSpecialization(const SGCore::FontSpecializationSettings& fontSpecializationSettings);
         Ref<FontSpecialization> getSpecialization(const FontSpecializationSettings& fontSpecializationSettings);
@@ -29,6 +26,9 @@ namespace SGCore
         
     protected:
         void doLoad(const std::filesystem::path& path) override;
+
+        // todo:
+        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
         
     private:
         std::unordered_map<FontSpecializationSettings, Ref<FontSpecialization>> m_specializations;

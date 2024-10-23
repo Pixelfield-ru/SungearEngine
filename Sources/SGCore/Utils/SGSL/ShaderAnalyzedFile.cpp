@@ -13,15 +13,13 @@ void SGCore::ShaderAnalyzedFile::doLoad(const std::filesystem::path& path)
     translator.processCode(path, SGCore::FileUtils::readFile(path), shared_from_this());
 }
 
-void SGCore::ShaderAnalyzedFile::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                               const std::string& varName)
+void SGCore::ShaderAnalyzedFile::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection,
+                                                    bool isDataSerializing)
 {
+    currentAssetSection.addStandardInfo(this);
 
+    if(isDataSerializing)
+    {
+        // currentAssetSection.addSection("m_allCode", getAllCode());
+    }
 }
-
-void SGCore::ShaderAnalyzedFile::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                               const std::string& varName)
-{
-
-}
-

@@ -7,11 +7,46 @@
 
 #include <SGCore/pch.h>
 
+#include <SGCore/Logger/Logger.h>
+
 namespace SGCore::FileUtils
 {
     std::string readFile(const std::filesystem::path& path);
     [[nodiscard]] char* readBytes(const std::filesystem::path& path, size_t& outSize) noexcept;
     [[nodiscard]] char* readBytesBlock(const std::filesystem::path& path, const std::streamsize& offset, const std::streamsize& size) noexcept;
+    void writeBytes(const std::filesystem::path& path, const std::streamsize& offset, char* buffer, const std::streamsize& bufferSize, bool append);
+
+    template<typename T>
+    void writeBytes(const std::filesystem::path& path, const std::streamsize& offset, const std::vector<T>& buffer, bool append)
+    {
+        std::ofstream stream(path, (append ? std::ios::app : std::ios::trunc) | std::ios::binary);
+
+        if(!stream)
+        {
+            LOG_E(SGCORE_TAG, "Write bytes to file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
+            return;
+        }
+
+        stream.seekp(offset);
+
+        stream.write(reinterpret_cast<const char*>(buffer.data()), std::ssize(buffer) * sizeof(T));
+    }
+
+    template<typename T>
+    void writeBytes(const std::filesystem::path& path, const std::streamsize& offset, const T& object, bool append)
+    {
+        std::ofstream stream(path, (append ? std::ios::app : std::ios::trunc) | std::ios::binary);
+
+        if(!stream)
+        {
+            LOG_E(SGCORE_TAG, "Write bytes to file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
+            return;
+        }
+
+        stream.seekp(offset);
+
+        stream.write(reinterpret_cast<const char*>(&object), sizeof(T));
+    }
 
     void writeToFile(const std::filesystem::path& path, const std::string& text, bool append, bool createDirectories);
 

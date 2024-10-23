@@ -17,16 +17,16 @@ namespace SGCore
     class ModelAsset : public IAsset
     {
     public:
-        // TODO:
-        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
-        // TODO:
-        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        static inline size_t asset_type_id = StaticTypeID<ModelAsset>::setID(8);
 
         std::vector<std::shared_ptr<Node>> m_nodes;
 
     protected:
         void doLoad(const std::filesystem::path& path) override;
         void doLazyLoad() override;
+
+        // todo:
+        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
         
     private:
         // local import flags

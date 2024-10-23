@@ -17,12 +17,9 @@ namespace SGCore
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
     public:
-        std::string m_name;
+        static inline size_t asset_type_id = StaticTypeID<IMaterial>::setID(11);
 
-        // TODO:
-        void serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
-        // TODO:
-        void serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName) override;
+        std::string m_name;
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.
@@ -110,6 +107,9 @@ namespace SGCore
         
         // TODO: impl
         void doLoad(const std::filesystem::path& path) override;
+
+        // todo:
+        void serializeToPackage(AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing) override;
         
         // first - shader name
         // std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;

@@ -7,15 +7,6 @@
 
 #include <SGCore/pch.h>
 
-#define SGECS_DECLARE_BASE(DerivedType, BaseType) \
-private: \
-    static inline const bool sgTypeInfoInit_base_##BaseType = []() { \
-                const auto& baseTypeInfo = SGUtils::TypeInfoUtils::getTypeInfo<BaseType>(); \
-                const auto& derivedTypeInfo = SGUtils::TypeInfoUtils::getTypeInfo<DerivedType>(); \
-                SGUtils::TypeInfoUtils::inheritAllBases(baseTypeInfo.getID(), derivedTypeInfo.getID()); \
-                return true; \
-            }(); \
-
 #if defined _MSC_VER
 #   define GENERATOR_PRETTY_FUNCTION __FUNCSIG__
 #elif defined __clang__ || (defined __GNUC__)

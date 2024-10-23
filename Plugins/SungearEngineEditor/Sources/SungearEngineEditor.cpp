@@ -49,8 +49,10 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 
 void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 {
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_R))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_Y))
     {
+        SGCore::AssetManager::getInstance()->createPackage("assets.bin");
+
         /*try
         {
             // CRASH HERE ======================

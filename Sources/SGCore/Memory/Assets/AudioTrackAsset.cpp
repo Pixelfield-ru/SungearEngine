@@ -35,8 +35,6 @@ void SGCore::AudioTrackAsset::createALBuffer() noexcept
 void SGCore::AudioTrackAsset::putData(const uint16_t& numChannels, const uint16_t& bitsPerSample, const void* data,
                                       const size_t& dataSize, const uint16_t& sampleRate) noexcept
 {
-    m_serializationType = SerializationType::SERIALIZE_DATA;
-
     deleteData();
     m_dataBuffer = static_cast<char*>(std::malloc(dataSize));
     std::memcpy(m_dataBuffer, data, dataSize);
@@ -72,8 +70,6 @@ void SGCore::AudioTrackAsset::putData(const uint16_t& numChannels, const uint16_
 
 void SGCore::AudioTrackAsset::doLoad(const std::filesystem::path& path)
 {
-    m_serializationType = SerializationType::SERIALIZE_META;
-
     AudioTrackType trackType;
     std::string extension = m_path.extension().string();
     if(extension == ".wav")
@@ -345,43 +341,25 @@ std::string SGCore::AudioTrackAsset::getSummary() const noexcept
     return sum;
 }
 
-void SGCore::AudioTrackAsset::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                            const std::string& varName)
+void SGCore::AudioTrackAsset::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection,
+                                                 bool isDataSerializing)
 {
-    /*rapidjson::Value k(rapidjson::kStringType);
-    rapidjson::Value v(rapidjson::kObjectType);
+    currentAssetSection.addStandardInfo(this);
 
-    k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-    Serializer::serialize(toDocument, v, "m_audioTrackType", m_audioTrackType);
-    Serializer::serialize(toDocument, v, "m_audioFormat", m_audioFormat);
-    Serializer::serialize(toDocument, v, "m_numChannels", m_numChannels);
-    Serializer::serialize(toDocument, v, "m_sampleRate", m_sampleRate);
-    Serializer::serialize(toDocument, v, "m_byteRate", m_byteRate);
-    Serializer::serialize(toDocument, v, "m_blockAlign", m_blockAlign);
-    Serializer::serialize(toDocument, v, "m_bitsPerSample", m_bitsPerSample);
-    Serializer::serialize(toDocument, v, "m_frequency", m_frequency);
-
-    std::vector<char> buf;
-    for(std::uint64_t i = 0; i < m_dataBufferSize; ++i)
+    if(isDataSerializing)
     {
-        buf.push_back(m_dataBuffer[i]);
+        currentAssetSection.addSection("m_audioTrackType", m_audioTrackType);
+        currentAssetSection.addSection("m_audioFormat", m_audioFormat);
+        currentAssetSection.addSection("m_numChannels", m_numChannels);
+        currentAssetSection.addSection("m_sampleRate", m_sampleRate);
+        currentAssetSection.addSection("m_byteRate", m_byteRate);
+        currentAssetSection.addSection("m_blockAlign", m_blockAlign);
+        currentAssetSection.addSection("m_bitsPerSample", m_bitsPerSample);
+        currentAssetSection.addSection("m_frequency", m_frequency);
+        if(m_dataBuffer)
+        {
+            currentAssetSection.addSection("m_dataBufferSize", m_dataBufferSize);
+            currentAssetSection.addSection("m_dataBuffer", m_dataBuffer);
+        }
     }
-
-    Serializer::serialize(toDocument, v, "m_dataBuffer", buf);
-
-    parent.AddMember(k, v, toDocument.GetAllocator());*/
-}
-
-void SGCore::AudioTrackAsset::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent,
-                                            const std::string& varName)
-{
-    /*rapidjson::Value k(rapidjson::kStringType);
-    rapidjson::Value v(rapidjson::kObjectType);
-
-    k.SetString(varName.c_str(), varName.length(), toDocument.GetAllocator());
-
-    Serializer::serialize(toDocument, v, "m_path", Utils::toUTF8<char16_t>(m_path.u16string()));
-
-    parent.AddMember(k, v, toDocument.GetAllocator());*/
 }

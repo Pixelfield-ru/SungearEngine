@@ -2,7 +2,6 @@
 // Created by stuka on 11.05.2023.
 //
 
-#include <SGCore/Logger/Logger.h>
 #include "FileUtils.h"
 #include "Utils.h"
 
@@ -79,6 +78,25 @@ char* SGCore::FileUtils::readBytesBlock(const std::filesystem::path& path, const
     }
 
     return buffer;
+}
+
+void SGCore::FileUtils::writeBytes(const std::filesystem::path& path,
+                                   const std::streamsize& offset,
+                                   char* buffer,
+                                   const std::streamsize& bufferSize,
+                                   bool append)
+{
+    std::ofstream stream(path, (append ? std::ios::app : std::ios::trunc) | std::ios::binary);
+
+    if(!stream)
+    {
+        LOG_E(SGCORE_TAG, "Write bytes to file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
+        return;
+    }
+
+    stream.seekp(offset);
+
+    stream.write(buffer, bufferSize);
 }
 
 void SGCore::FileUtils::writeToFile(const std::filesystem::path& path, const std::string& text, bool append, bool createDirectories)

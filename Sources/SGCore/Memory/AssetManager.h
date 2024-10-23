@@ -24,15 +24,10 @@ namespace SGCore
         PARALLEL_THEN_LAZYLOAD,
         PARALLEL_NO_LAZYLOAD
     };
-    
+
     class SGCORE_EXPORT AssetManager
     {
     public:
-        struct Package
-        {
-            std::filesystem::path m_path;
-        };
-
         AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
         
         static void init() noexcept;
@@ -48,32 +43,26 @@ namespace SGCore
                                           const std::filesystem::path& path,
                                           AssetCtorArgs&&... assetCtorArgs)
         {
-            std::lock_guard guard(m_mutex);
-            
-            entity_t entity;
+            std::lock_guard guard(m_mutex);;
 
-            const size_t hashedAssetPath = std::hash<std::filesystem::path>()(path);
-            
-            auto foundEntity = m_entities.find(hashedAssetPath);
-            if(foundEntity != m_entities.end())
+            const size_t hashedAssetPath = std::hash<std::string>()(Utils::toUTF8(path.u16string()));
+
+            // getting variants of assets that were loaded by path 'path'
+            auto& foundVariants = m_assets[hashedAssetPath];
+
+            // trying to find existing asset of type 'AssetT' loaded bt path 'path'
+            auto foundAssetOfTIt = foundVariants.find(AssetT::asset_type_id);
+            // if asset already exists then we are just leaving
+            if(foundAssetOfTIt != foundVariants.end())
             {
-                entity = foundEntity->second;
+                // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
+                // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
+                return std::static_pointer_cast<AssetT>(foundAssetOfTIt->second);
             }
-            else
-            {
-                entity = m_registry->create();
-                m_entities[hashedAssetPath] = entity;
-            }
-            
-            Ref<AssetT>* asset = m_registry->try_get<Ref<AssetT>>(entity);
-            // asset found
-            if(asset)
-            {
-                return *asset;
-            }
-            
-            Ref<AssetT> newAsset = m_registry->emplace<Ref<AssetT>>(entity,
-                                                                    AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...));
+
+            Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
+            foundVariants[AssetT::asset_type_id] = newAsset;
+
             
             std::filesystem::path p(path);
             
@@ -81,7 +70,7 @@ namespace SGCore
             
             newAsset->setRawName(p.stem().string());
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}. Asset type ID: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name(), AssetT::asset_type_id);
             
             return newAsset;
         }
@@ -115,31 +104,21 @@ namespace SGCore
                        const std::filesystem::path& path)
         {
             std::lock_guard guard(m_mutex);
-            
-            entity_t entity;
 
-            const size_t hashedAssetPath = std::hash<std::filesystem::path>()(path);
-            
-            auto foundEntity = m_entities.find(hashedAssetPath);
-            if(foundEntity != m_entities.end())
+            const size_t hashedAssetPath = std::hash<std::string>()(Utils::toUTF8(path.u16string()));
+
+            // getting variants of assets that were loaded by path 'path'
+            auto& foundVariants = m_assets[hashedAssetPath];
+
+            // trying to find existing asset of type 'AssetT' loaded bt path 'path'
+            auto foundAssetOfTIt = foundVariants.find(AssetT::asset_type_id);
+            // if asset already exists then we are just leaving
+            if(foundAssetOfTIt != foundVariants.end())
             {
-                entity = foundEntity->second;
-            }
-            else
-            {
-                entity = m_registry->create();
-                m_entities[hashedAssetPath] = entity;
-            }
-            
-            Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
-            // asset found
-            if(foundAsset)
-            {
-                assetToLoad = *foundAsset;
                 return;
             }
-            
-            m_registry->emplace<Ref<AssetT>>(entity, assetToLoad);
+
+            foundVariants[AssetT::asset_type_id] = assetToLoad;
             
             std::filesystem::path p(path);
             
@@ -180,31 +159,22 @@ namespace SGCore
                                 const std::filesystem::path& path)
         {
             std::lock_guard guard(m_mutex);
-            
-            entity_t entity;
 
             const size_t hashedAssetAlias = std::hash<std::string>()(alias);
-            
-            auto foundEntity = m_entities.find(hashedAssetAlias);
-            if(foundEntity != m_entities.end())
+
+            // getting variants of assets that were loaded with alias 'alias'
+            auto& foundVariants = m_assets[hashedAssetAlias];
+
+            // trying to find existing asset of type 'AssetT' loaded with alias 'alias'
+            auto foundAssetOfTIt = foundVariants.find(AssetT::asset_type_id);
+            // if asset already exists then we are just leaving
+            if(foundAssetOfTIt != foundVariants.end())
             {
-                entity = foundEntity->second;
-            }
-            else
-            {
-                entity = m_registry->create();
-                m_entities[hashedAssetAlias] = entity;
-            }
-            
-            Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
-            // asset found
-            if(foundAsset)
-            {
-                assetToLoad = *foundAsset;
                 return;
             }
-            
-            m_registry->emplace<Ref<AssetT>>(entity, assetToLoad);
+
+            // else we are assigning asset of type 'AssetT'
+            foundVariants[AssetT::asset_type_id] = assetToLoad;
             
             distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -245,37 +215,31 @@ namespace SGCore
                                                    AssetCtorArgs&&... assetCtorArgs)
         {
             std::lock_guard guard(m_mutex);
-            
-            entity_t entity;
 
             const size_t hashedAssetAlias = std::hash<std::string>()(alias);
-            
-            auto foundEntity = m_entities.find(hashedAssetAlias);
-            if(foundEntity != m_entities.end())
+
+            // getting variants of assets that were loaded with alias 'alias'
+            auto& foundVariants = m_assets[hashedAssetAlias];
+
+            // trying to find existing asset of type 'AssetT' loaded with alias 'alias'
+            auto foundAssetOfTIt = foundVariants.find(AssetT::asset_type_id);
+            // if asset already exists then we are just leaving
+            if(foundAssetOfTIt != foundVariants.end())
             {
-                entity = foundEntity->second;
+                // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
+                // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
+                return std::static_pointer_cast<AssetT>(foundAssetOfTIt->second);
             }
-            else
-            {
-                entity = m_registry->create();
-                m_entities[hashedAssetAlias] = entity;
-            }
-            
-            Ref<AssetT>* asset = m_registry->try_get<Ref<AssetT>>(entity);
-            // asset found
-            if(asset)
-            {
-                return *asset;
-            }
-            
-            Ref<AssetT> newAsset = m_registry->emplace<Ref<AssetT>>(entity,
-                                                                    AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...));
+
+            // else we are creating new asset with type 'AssetT'
+            Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
+            foundVariants[AssetT::asset_type_id] = newAsset;
             
             distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
             
             newAsset->setRawName(alias);
 
-            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name());
+            LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}", Utils::toUTF8(path.u16string()), alias, typeid(AssetT).name(), AssetT::asset_type_id);
             
             return newAsset;
         }
@@ -308,30 +272,22 @@ namespace SGCore
         void addAsset(const std::string& alias, const Ref<AssetT>& asset)
         {
             std::lock_guard guard(m_mutex);
-            
-            entity_t entity;
 
             const size_t hashedAssetAlias = std::hash<std::string>()(alias);
 
-            auto foundEntity = m_entities.find(hashedAssetAlias);
-            if(foundEntity != m_entities.end())
-            {
-                entity = foundEntity->second;
-            }
-            else
-            {
-                entity = m_registry->create();
-                m_entities[hashedAssetAlias] = entity;
-            }
-            
-            Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
-            // asset already exists
-            if(foundAsset)
+            // getting variants of assets that were loaded with alias 'alias'
+            auto& foundVariants = m_assets[hashedAssetAlias];
+
+            // trying to find existing asset of type 'AssetT' loaded with alias 'alias'
+            auto foundAssetOfTIt = foundVariants.find(AssetT::asset_type_id);
+            // if asset already exists then we are just leaving
+            if(foundAssetOfTIt != foundVariants.end())
             {
                 return;
             }
-            
-            m_registry->emplace<Ref<AssetT>>(entity, asset);
+
+            // assigning new asset by type 'AssetT'
+            foundVariants[AssetT::asset_type_id] = asset;
             asset->setRawName(alias);
             
             if(SG_INSTANCEOF(asset.get(), GPUObject))
@@ -349,30 +305,21 @@ namespace SGCore
             std::lock_guard guard(m_mutex);
             
             const std::string& assetPath = asset->getPath().string();
-
             const size_t hashedAssetPath = std::hash<std::string>()(assetPath);
-            
-            entity_t entity;
-            
-            auto foundEntity = m_entities.find(hashedAssetPath);
-            if(foundEntity != m_entities.end())
-            {
-                entity = foundEntity->second;
-            }
-            else
-            {
-                entity = m_registry->create();
-                m_entities[hashedAssetPath] = entity;
-            }
-            
-            Ref<AssetT>* foundAsset = m_registry->try_get<Ref<AssetT>>(entity);
-            // asset already exists
-            if(foundAsset)
+
+            // getting variants of assets that were loaded by path 'assetPath'
+            auto& foundVariants = m_assets[hashedAssetPath];
+
+            // trying to find existing asset of type 'AssetT' loaded by path 'assetPath'
+            auto foundAssetOfTIt = foundVariants.find(AssetT::asset_type_id);
+            // if asset already exists then we are just leaving
+            if(foundAssetOfTIt != foundVariants.end())
             {
                 return;
             }
-            
-            m_registry->emplace<Ref<AssetT>>(entity, asset);
+
+            // assigning new asset by type 'AssetT'
+            foundVariants[AssetT::asset_type_id] = asset;
             
             if(SG_INSTANCEOF(asset.get(), GPUObject))
             {
@@ -382,11 +329,11 @@ namespace SGCore
             LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'", asset->m_name, Utils::toUTF8(asset->getPath().u16string()), typeid(AssetT).name())
         }
         
-        bool isAssetsEntityExists(const std::string& pathOrAlias) noexcept
+        bool areAssetsVariantsExist(const std::string& pathOrAlias) noexcept
         {
-            auto foundEntity = m_entities.find(std::hash<std::string>()(pathOrAlias));
+            auto foundVariantsIt = m_assets.find(std::hash<std::string>()(pathOrAlias));
             
-            return foundEntity != m_entities.end();
+            return foundVariantsIt != m_assets.end();
         }
         
         template<typename AssetT>
@@ -395,14 +342,15 @@ namespace SGCore
         {
             std::lock_guard guard(m_mutex);
             
-            auto foundEntity = m_entities.find(std::hash<std::string>()(pathOrAlias));
-            if(foundEntity == m_entities.end())
+            auto foundVariantsIt = m_assets.find(std::hash<std::string>()(pathOrAlias));
+            if(foundVariantsIt == m_assets.end())
             {
                 return false;
             }
             else
             {
-                return m_registry->try_get<Ref<AssetT>>(foundEntity->second) != nullptr;
+                auto foundAssetIt = foundVariantsIt->second.find(AssetT::asset_type_id);
+                return foundAssetIt != foundVariantsIt->second.end();
             }
         }
 
@@ -418,20 +366,37 @@ namespace SGCore
          * @param aliasOrPath
          */
         template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
         void removeAssetLoadedByType(const std::filesystem::path& aliasOrPath) noexcept
         {
-            auto foundIt = m_entities.find(std::hash<std::filesystem::path>()(aliasOrPath));
-            if(foundIt == m_entities.end()) return;
+            auto foundIt = m_assets.find(std::hash<std::string>()(Utils::toUTF8(aliasOrPath.u16string())));
+            if(foundIt == m_assets.end()) return;
 
-            const auto& e = foundIt->second;
-            m_registry->remove<SGCore::Ref<AssetT>>(e);
+            auto& variants = foundIt->second;
+            variants.erase(AssetT::asset_type_id);
+        }
 
-            m_entities.erase(foundIt);
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        [[nodiscard]] std::vector<Ref<AssetT>> getAssetsWithType() const noexcept
+        {
+            std::vector<Ref<AssetT>> assets;
+            for(const auto& p0 : m_assets)
+            {
+                auto foundAssetWithTIt = p0.second.find(AssetT::asset_type_id);
+                if(foundAssetWithTIt == p0.second.end())
+                {
+                    continue;
+                }
+
+                // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
+                // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
+                assets.push_back(std::static_pointer_cast<AssetT>(foundAssetWithTIt->second));
+            }
+            return assets;
         }
 
         void clear() noexcept;
-        
-        Ref<registry_t> getRegistry() noexcept;
         
         SG_NOINLINE static Ref<AssetManager>& getInstance() noexcept;
 
@@ -497,9 +462,12 @@ namespace SGCore
         }
         
         std::mutex m_mutex;
-        
-        Ref<registry_t> m_registry = MakeRef<registry_t>();
-        std::unordered_map<size_t, entity_t> m_entities;
+
+        // first - hash of path or alias
+        // second - asset by path but loaded in different formats
+        //      first - type name id
+        //      second - asset
+        std::unordered_map<size_t, std::unordered_map<size_t, Ref<IAsset>>> m_assets;
         
         Threading::BaseThreadsPool<Threading::LeastTasksCount> m_threadsPool { 2, false };
         

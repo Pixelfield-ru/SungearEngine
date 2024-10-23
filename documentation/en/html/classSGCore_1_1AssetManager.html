@@ -110,7 +110,7 @@ template&lt;typename AssetT &gt; </td></tr>
 <tr class="memitem:ab7819d2a2a4c61172e746a90a58fecfc"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>requires</b> (std::is_base_of_v&lt; <a class="el" href="classSGCore_1_1IAsset.html">IAsset</a>, AssetT &gt;) void loadAsset(Ref&lt; AssetT &gt; &amp;assetToLoad</td></tr>
 <tr class="separator:ab7819d2a2a4c61172e746a90a58fecfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdedc83b4eb3ae861d7c947648517cdf"><td class="memItemLeft" align="right" valign="top"><a id="abdedc83b4eb3ae861d7c947648517cdf"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (foundEntity !=m_entities.end())</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (foundEntity !=m_assets.end())</td></tr>
 <tr class="separator:abdedc83b4eb3ae861d7c947648517cdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7b858e40f11b859ea62fa29438d11a7"><td class="memItemLeft" align="right" valign="top"><a id="aa7b858e40f11b859ea62fa29438d11a7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (foundAsset)</td></tr>
@@ -143,7 +143,7 @@ template&lt;typename AssetT &gt; </td></tr>
 <tr class="memitem:a6414f2efbc3bce550f365fa5e9628044"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>requires</b> (std::is_base_of_v&lt; <a class="el" href="classSGCore_1_1IAsset.html">IAsset</a>, AssetT &gt;) void loadAssetWithAlias(Ref&lt; AssetT &gt; &amp;assetToLoad</td></tr>
 <tr class="separator:a6414f2efbc3bce550f365fa5e9628044"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdedc83b4eb3ae861d7c947648517cdf"><td class="memItemLeft" align="right" valign="top"><a id="abdedc83b4eb3ae861d7c947648517cdf"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (foundEntity !=m_entities.end())</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (foundEntity !=m_assets.end())</td></tr>
 <tr class="separator:abdedc83b4eb3ae861d7c947648517cdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7b858e40f11b859ea62fa29438d11a7"><td class="memItemLeft" align="right" valign="top"><a id="aa7b858e40f11b859ea62fa29438d11a7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (foundAsset)</td></tr>
@@ -219,12 +219,12 @@ AssetsLoadPolicy const Ref&lt; <a class="el" href="structSGCore_1_1Threading_1_1
 entity_t&#160;</td><td class="memItemRight" valign="bottom"><b>entity</b></td></tr>
 <tr class="separator:a28b2b026d02fe299e2738ad4a1038cd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32dad0bc3fb16d92e1d9eaa2d00c7bb1"><td class="memItemLeft" align="right" valign="top"><a id="a32dad0bc3fb16d92e1d9eaa2d00c7bb1"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>foundEntity</b> = m_entities.find(path)</td></tr>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>foundEntity</b> = m_assets.find(path)</td></tr>
 <tr class="separator:a32dad0bc3fb16d92e1d9eaa2d00c7bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa33858b70c7383146621a400395daa71"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><b>else</b></td></tr>
 <tr class="separator:aa33858b70c7383146621a400395daa71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71bca5294d0738b90d02810bdb160611"><td class="memItemLeft" align="right" valign="top"><a id="a71bca5294d0738b90d02810bdb160611"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>m_entities</b> [path] = entity</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>m_assets</b> [path] = entity</td></tr>
 <tr class="separator:a71bca5294d0738b90d02810bdb160611"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb45d6b45f18a2f68bf10f4486660746"><td class="memItemLeft" align="right" valign="top"><a id="aeb45d6b45f18a2f68bf10f4486660746"></a>
 Ref&lt; AssetT &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>foundAsset</b> = m_registry-&gt;try_get&lt;Ref&lt;AssetT&gt;&gt;(entity)</td></tr>

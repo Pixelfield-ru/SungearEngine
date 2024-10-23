@@ -120,13 +120,31 @@ std::int32_t SGCore::ITexture2D::getHeight() const noexcept
     return m_height;
 }
 
-void SGCore::ITexture2D::serializeData(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
-{
-
-}
-
 void
-SGCore::ITexture2D::serializeMeta(rapidjson::Document& toDocument, rapidjson::Value& parent, const std::string& varName)
+SGCore::ITexture2D::serializeToPackage(SGCore::AssetsPackage::AssetSection& currentAssetSection, bool isDataSerializing)
 {
+    currentAssetSection.addStandardInfo(this);
 
+    if(isDataSerializing)
+    {
+        currentAssetSection.addSection("m_internalFormat", m_internalFormat);
+        currentAssetSection.addSection("m_format", m_format);
+        currentAssetSection.addSection("m_channelsCount", m_channelsCount);
+        currentAssetSection.addSection("m_mipLevel", m_mipLevel);
+        currentAssetSection.addSection("m_layer", m_layer);
+        currentAssetSection.addSection("m_isCompressedFormat", m_isCompressedFormat);
+        currentAssetSection.addSection("m_dataType", m_dataType);
+        currentAssetSection.addSection("m_isTextureBuffer", m_isTextureBuffer);
+        currentAssetSection.addSection("m_textureBufferUsage", m_textureBufferUsage);
+        currentAssetSection.addSection("m_useMultisampling", m_useMultisampling);
+        currentAssetSection.addSection("m_multisamplingSamplesCount", m_multisamplingSamplesCount);
+        currentAssetSection.addSection("m_width", m_width);
+        currentAssetSection.addSection("m_height", m_height);
+        currentAssetSection.addSection("m_pixelSize", m_pixelSize);
+        if(m_textureData)
+        {
+            currentAssetSection.addSection("m_textureDataSize", m_width * m_height * m_channelsCount);
+            currentAssetSection.addSection("m_textureData", m_textureData.get(), m_width * m_height * m_channelsCount);
+        }
+    }
 }
