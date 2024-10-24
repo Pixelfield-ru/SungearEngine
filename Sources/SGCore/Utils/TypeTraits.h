@@ -352,6 +352,13 @@ namespace SGCore
 
     template<typename T>
     constexpr bool is_weak_ptr_v = is_weak_ptr<T>::value;
+
+    template<typename CollectionT>
+    concept collection = requires(const CollectionT& col) {
+        { col.size() } -> std::same_as<std::size_t>;
+        { col.data() } -> std::same_as<const typename CollectionT::value_type*>;
+        typename CollectionT::value_type;
+    };
     
     template <typename T>
     struct func_return_type;

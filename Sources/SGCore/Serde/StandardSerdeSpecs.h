@@ -48,6 +48,8 @@
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Memory/Assets/TextFileAsset.h"
+#include "SGCore/Memory/Assets/ModelAsset.h"
 
 #include "SGCore/Serde/Components/NonSavable.h"
 
@@ -3152,18 +3154,19 @@ namespace SGCore::Serde
 
     // ====================================================================================
 
-    template<std::integral IntegralT, FormatType TFormatType>
-    struct SerdeSpec<IntegralT, TFormatType> : BaseTypes<>, DerivedTypes<>
+    template<typename IntegerT, FormatType TFormatType>
+    requires(std::numeric_limits<IntegerT>::is_integer)
+    struct SerdeSpec<IntegerT, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
         static inline const std::string type_name = "int";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<IntegralT, TFormatType>& valueView)
+        static void serialize(SerializableValueView<IntegerT, TFormatType>& valueView)
         {
             valueView.getValueContainer().setAsInt64(*valueView.m_data);
         }
 
-        static void deserialize(DeserializableValueView<IntegralT, TFormatType>& valueView)
+        static void deserialize(DeserializableValueView<IntegerT, TFormatType>& valueView)
         {
             *valueView.m_data = valueView.getValueContainer().getAsInt64();
         }
@@ -3939,7 +3942,7 @@ namespace SGCore::Serde
     // ===================================================================================================================
 
     template<FormatType TFormatType>
-    struct SerdeSpec<IAsset, TFormatType> : BaseTypes<>, DerivedTypes<ITexture2D>
+    struct SerdeSpec<IAsset, TFormatType> : BaseTypes<>, DerivedTypes<ITexture2D, TextFileAsset, ShaderAnalyzedFile, ModelAsset>
     {
         static inline const std::string type_name = "SGCore::IAsset";
         static inline constexpr bool is_pointer_type = false;
@@ -4010,9 +4013,9 @@ namespace SGCore::Serde
 
                 if(dataOffsetOpt && dataSizeInBytesOpt && width && height && channelsCount && internalFormat && format)
                 {
-                    char* textureData = FileUtils::readBytesBlock(assetsPackage.getPath(), *dataOffsetOpt, *dataSizeInBytesOpt);
+                    auto textureData = assetsPackage.readData<std::vector<uint8_t>>(*dataOffsetOpt, *dataSizeInBytesOpt);
 
-                    valueView.m_data->moveAndCreate(textureData, *width, *height, *channelsCount, *internalFormat, *format);
+                    valueView.m_data->moveAndCreate(textureData.data(), *width, *height, *channelsCount, *internalFormat, *format);
                 }
             }
 
@@ -4041,6 +4044,383 @@ namespace SGCore::Serde
             if(format)
             {
                 valueView.m_data->m_format = *format;
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<TextFileAsset, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::TextFileAsset";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            // if we are serializing data too
+            if(assetsPackage.isDataSerde())
+            {
+                AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_data);
+
+                valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
+            }
+        }
+
+        static void deserialize(DeserializableValueView<TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            // if we are deserializing data too
+            if(assetsPackage.isDataSerde())
+            {
+                auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataOffset");
+                auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>(
+                        "m_dataSizeInBytes"
+                );
+
+                if(dataOffsetOpt && dataSizeInBytesOpt)
+                {
+                    valueView.m_data->m_data = assetsPackage.readData<std::string>(*dataOffsetOpt, *dataSizeInBytesOpt);
+                }
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<SGSLESubPass, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::SGSLESubPass";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<SGSLESubPass, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+            valueView.getValueContainer().addMember("m_subShaders", valueView.m_data->m_subShaders, assetsPackage);
+        }
+
+        static void deserialize(DeserializableValueView<SGSLESubPass, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto nameOpt = valueView.getValueContainer().template getMember<std::string>("m_name");
+            if(nameOpt)
+            {
+                valueView.m_data->m_name = std::move(*nameOpt);
+            }
+
+            auto subShadersOpt = valueView.getValueContainer().template getMember<std::unordered_map<SGSLESubShaderType, Ref<SGSLESubShader>>>("m_subShaders", assetsPackage);
+            if(subShadersOpt)
+            {
+                valueView.m_data->m_subShaders = std::move(*subShadersOpt);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<SGSLESubShader, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::SGSLESubShader";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<SGSLESubShader, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+            valueView.getValueContainer().addMember("m_type", valueView.m_data->m_type);
+
+            if(assetsPackage.isDataSerde())
+            {
+                AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_code);
+
+                valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
+            }
+        }
+
+        static void deserialize(DeserializableValueView<SGSLESubShader, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto nameOpt = valueView.getValueContainer().template getMember<std::string>("m_name");
+            if(nameOpt)
+            {
+                valueView.m_data->m_name = std::move(*nameOpt);
+            }
+
+            const auto typeOpt = valueView.getValueContainer().template getMember<SGSLESubShaderType>("m_type");
+            if(typeOpt)
+            {
+                valueView.m_data->m_type = *typeOpt;
+            }
+
+            // if we are deserializing data too
+            if(assetsPackage.isDataSerde())
+            {
+                auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataOffset");
+                auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataSizeInBytes");
+
+                if(dataOffsetOpt && dataSizeInBytesOpt)
+                {
+                    valueView.m_data->m_code = assetsPackage.readData<std::string>(*dataOffsetOpt, *dataSizeInBytesOpt);
+                }
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<ShaderAnalyzedFile, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::ShaderAnalyzedFile";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_subPasses", valueView.m_data->m_subPasses, assetsPackage);
+        }
+
+        static void deserialize(DeserializableValueView<ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto subPasses = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_subPasses)>("m_subPasses", assetsPackage);
+
+            if(subPasses)
+            {
+                valueView.m_data->m_subPasses = subPasses;
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<IMeshData, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::IMeshData";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<IMeshData, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_aabb", valueView.m_data->m_aabb);
+            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+
+            if(assetsPackage.isDataSerde())
+            {
+                {
+                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_indices);
+
+                    valueView.getValueContainer().addMember("m_indicesOffset", dataMarkup.m_offset);
+                    valueView.getValueContainer().addMember("m_indicesSizeInBytes", dataMarkup.m_sizeInBytes);
+                }
+
+                {
+                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_positions);
+
+                    valueView.getValueContainer().addMember("m_positionsOffset", dataMarkup.m_offset);
+                    valueView.getValueContainer().addMember("m_positionsSizeInBytes", dataMarkup.m_sizeInBytes);
+                }
+
+                {
+                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_uv);
+
+                    valueView.getValueContainer().addMember("m_uvOffset", dataMarkup.m_offset);
+                    valueView.getValueContainer().addMember("m_uvSizeInBytes", dataMarkup.m_sizeInBytes);
+                }
+
+                {
+                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_normals);
+
+                    valueView.getValueContainer().addMember("m_normalsOffset", dataMarkup.m_offset);
+                    valueView.getValueContainer().addMember("m_normalsSizeInBytes", dataMarkup.m_sizeInBytes);
+                }
+
+                {
+                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_tangents);
+
+                    valueView.getValueContainer().addMember("m_tangentsOffset", dataMarkup.m_offset);
+                    valueView.getValueContainer().addMember("m_tangentsSizeInBytes", dataMarkup.m_sizeInBytes);
+                }
+
+                {
+                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_bitangents);
+
+                    valueView.getValueContainer().addMember("m_bitangentsOffset", dataMarkup.m_offset);
+                    valueView.getValueContainer().addMember("m_bitangentsSizeInBytes", dataMarkup.m_sizeInBytes);
+                }
+
+                {
+                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_bitangents);
+
+                    valueView.getValueContainer().addMember("m_bitangentsOffset", dataMarkup.m_offset);
+                    valueView.getValueContainer().addMember("m_bitangentsSizeInBytes", dataMarkup.m_sizeInBytes);
+                }
+            }
+
+            // TODO: MAYBE SERIALIZING DATA OF PHYSICAL MESH (I DONT FUCKING KNOW HOW TO GET DATA FROM btTriangleMesh)
+            valueView.getValueContainer().addMember("m_generatePhysicalMesh", valueView.m_data->m_physicalMesh != nullptr);
+        }
+
+        static void deserialize(DeserializableValueView<IMeshData, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto aabb = valueView.getValueContainer().template getMember<AABB<>>("m_aabb");
+            if(aabb)
+            {
+                valueView.m_data->m_aabb = aabb;
+            }
+
+            auto name = valueView.getValueContainer().template getMember<std::string>("m_name");
+            if(name)
+            {
+                valueView.m_data->m_name = name;
+            }
+
+            if(assetsPackage.isDataSerde())
+            {
+                {
+                    auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_indicesOffset");
+                    auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_indicesSizeInBytes");
+
+                    if(dataOffsetOpt && dataSizeInBytesOpt)
+                    {
+                        valueView.m_data->m_indices = assetsPackage.readData<std::vector<std::uint32_t>>(*dataOffsetOpt, *dataSizeInBytesOpt);
+                    }
+                }
+
+                {
+                    auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_positionsOffset");
+                    auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_positionsSizeInBytes");
+
+                    if(dataOffsetOpt && dataSizeInBytesOpt)
+                    {
+                        valueView.m_data->m_positions = assetsPackage.readData<std::vector<float>>(*dataOffsetOpt, *dataSizeInBytesOpt);
+                    }
+                }
+
+                {
+                    auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_uvOffset");
+                    auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_uvSizeInBytes");
+
+                    if(dataOffsetOpt && dataSizeInBytesOpt)
+                    {
+                        valueView.m_data->m_uv = assetsPackage.readData<std::vector<float>>(*dataOffsetOpt, *dataSizeInBytesOpt);
+                    }
+                }
+
+                {
+                    auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_normalsOffset");
+                    auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_normalsSizeInBytes");
+
+                    if(dataOffsetOpt && dataSizeInBytesOpt)
+                    {
+                        valueView.m_data->m_normals = assetsPackage.readData<std::vector<float>>(*dataOffsetOpt, *dataSizeInBytesOpt);
+                    }
+                }
+
+                {
+                    auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_tangentsOffset");
+                    auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_tangentsSizeInBytes");
+
+                    if(dataOffsetOpt && dataSizeInBytesOpt)
+                    {
+                        valueView.m_data->m_tangents = assetsPackage.readData<std::vector<float>>(*dataOffsetOpt, *dataSizeInBytesOpt);
+                    }
+                }
+
+                {
+                    auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_bitangentsOffset");
+                    auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_bitangentsSizeInBytes");
+
+                    if(dataOffsetOpt && dataSizeInBytesOpt)
+                    {
+                        valueView.m_data->m_bitangents = assetsPackage.readData<std::vector<float>>(*dataOffsetOpt, *dataSizeInBytesOpt);
+                    }
+                }
+            }
+
+            auto generatePhysicalMesh = valueView.getValueContainer().template getMember<bool>("m_generatePhysicalMesh");
+            if(generatePhysicalMesh)
+            {
+                valueView.m_data->generatePhysicalMesh();
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Node, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Node";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<Node, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+            valueView.getValueContainer().addMember("m_children", valueView.m_data->m_children, assetsPackage);
+            valueView.getValueContainer().addMember("m_meshesData", valueView.m_data->m_meshesData, assetsPackage);
+            valueView.getValueContainer().addMember("m_position", valueView.m_data->m_position);
+            valueView.getValueContainer().addMember("m_rotationQuaternion", valueView.m_data->m_rotationQuaternion);
+            valueView.getValueContainer().addMember("m_scale", valueView.m_data->m_scale);
+        }
+
+        static void deserialize(DeserializableValueView<Node, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto name = valueView.getValueContainer().template getMember<std::string>("m_name");
+            if(name)
+            {
+                valueView.m_data->m_name = name;
+            }
+
+            auto children = valueView.getValueContainer().template getMember<std::vector<Ref<Node>>>("m_children");
+            if(children)
+            {
+                valueView.m_data->m_children = children;
+            }
+
+            auto meshesData = valueView.getValueContainer().template getMember<std::vector<Ref<IMeshData>>>("m_meshesData", assetsPackage);
+            if(meshesData)
+            {
+                valueView.m_data->m_meshesData = meshesData;
+            }
+
+            auto position = valueView.getValueContainer().template getMember<glm::vec3>("m_position");
+            if(position)
+            {
+                valueView.m_data->m_position = position;
+            }
+
+            auto rotationQuaternion = valueView.getValueContainer().template getMember<glm::quat>("m_rotationQuaternion");
+            if(rotationQuaternion)
+            {
+                valueView.m_data->m_rotationQuaternion = rotationQuaternion;
+            }
+
+            auto scale = valueView.getValueContainer().template getMember<glm::vec3>("m_scale");
+            if(scale)
+            {
+                valueView.m_data->m_scale = scale;
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<ModelAsset, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::ModelAsset";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_importerFlags", valueView.m_data->m_importerFlags);
+            valueView.getValueContainer().addMember("m_modelName", valueView.m_data->m_modelName);
+            valueView.getValueContainer().addMember("m_nodes", valueView.m_data->m_nodes, assetsPackage);
+        }
+
+        static void deserialize(DeserializableValueView<ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto importerFlags = valueView.getValueContainer().template getMember<int>("m_importerFlags");
+            if(importerFlags)
+            {
+                valueView.m_data->m_importerFlags = importerFlags;
+            }
+
+            auto modelName = valueView.getValueContainer().template getMember<std::string>("m_modelName");
+            if(modelName)
+            {
+                valueView.m_data->m_modelName = modelName;
+            }
+
+            auto nodes = valueView.getValueContainer().template getMember<std::vector<Ref<Node>>>("m_nodes", assetsPackage);
+            if(nodes)
+            {
+                valueView.m_data->m_nodes = nodes;
             }
         }
     };

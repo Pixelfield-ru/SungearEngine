@@ -12,8 +12,14 @@
 namespace SGCore::FileUtils
 {
     std::string readFile(const std::filesystem::path& path);
+    /**
+     * ALLOCATES BUFFER. YOU MUST DEALLOCATE IT.
+     * @param path
+     * @param outSize
+     * @return
+     */
     [[nodiscard]] char* readBytes(const std::filesystem::path& path, size_t& outSize) noexcept;
-    [[nodiscard]] char* readBytesBlock(const std::filesystem::path& path, const std::streamsize& offset, const std::streamsize& size) noexcept;
+    [[nodiscard]] std::vector<char> readBytesBlock(const std::filesystem::path& path, const std::streamsize& offset, const std::streamsize& size) noexcept;
     void writeBytes(const std::filesystem::path& path, const std::streamsize& offset, char* buffer, const std::streamsize& bufferSize, bool append);
 
     template<typename T>

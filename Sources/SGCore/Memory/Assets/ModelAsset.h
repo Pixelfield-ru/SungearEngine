@@ -17,9 +17,11 @@ namespace SGCore
     class ModelAsset : public IAsset
     {
     public:
+        sg_serde_as_friend()
+
         static inline size_t asset_type_id = StaticTypeID<ModelAsset>::setID(8);
 
-        std::vector<std::shared_ptr<Node>> m_nodes;
+        std::vector<Ref<Node>> m_nodes;
 
     protected:
         void doLoad(const std::filesystem::path& path) override;
@@ -31,7 +33,7 @@ namespace SGCore
         int m_importerFlags = 0;
 
         // model name
-        std::string m_name;
+        std::string m_modelName;
 
         std::shared_ptr<Node> processNode(const aiNode*, const aiScene*);
         std::shared_ptr<IMeshData> processMesh(const aiMesh*, const aiScene*);

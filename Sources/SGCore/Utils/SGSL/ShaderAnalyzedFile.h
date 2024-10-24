@@ -18,11 +18,8 @@ namespace SGCore
 
         friend class SGSLETranslator;
         friend class AssetManager;
-
-        std::string m_globalCode;
         
         std::unordered_map<std::string, SGSLESubPass> m_subPasses;
-        std::vector<std::shared_ptr<ShaderAnalyzedFile>> m_includedFiles;
         
         void includeFile(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
         {
@@ -107,6 +104,10 @@ namespace SGCore
         
     protected:
         void doLoad(const std::filesystem::path& path) final;
+
+    private:
+        std::string m_globalCode;
+        std::vector<std::shared_ptr<ShaderAnalyzedFile>> m_includedFiles;
     };
 }
 

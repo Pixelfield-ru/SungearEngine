@@ -17,7 +17,6 @@
 
 namespace SGCore
 {
-    class TextureAsset;
     class IFrameBuffer;
 
     struct STBITextureDataDeleter
@@ -28,7 +27,6 @@ namespace SGCore
     class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>, public GPUObject
     {
         friend class IFrameBuffer;
-        friend class TextureAsset;
         friend class AssetManager;
 
     public:

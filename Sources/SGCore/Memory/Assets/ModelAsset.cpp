@@ -35,12 +35,12 @@ void SGCore::ModelAsset::doLoad(const std::filesystem::path& path)
         return;
     }
 
-    m_name = aiImportedScene->mName.data;
+    m_modelName = aiImportedScene->mName.data;
 
     m_nodes.push_back(processNode(aiImportedScene->mRootNode, aiImportedScene));
 
     LOG_I(SGCORE_TAG,
-          "Loaded model '{}'. Nodes count: {}", m_name, m_nodes.size());
+          "Loaded model '{}'. Nodes count: {}", m_modelName, m_nodes.size());
 }
 
 SGCore::Ref<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, const aiScene* aiScene)
