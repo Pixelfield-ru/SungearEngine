@@ -17,7 +17,9 @@ namespace SGCore
     class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
     {
     public:
-        static inline size_t asset_type_id = StaticTypeID<IMaterial>::setID(11);
+        sg_serde_as_friend()
+
+        sg_implement_asset_type_id(IMaterial, 11)
 
         std::string m_name;
 

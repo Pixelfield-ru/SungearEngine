@@ -94,6 +94,31 @@ namespace SGCore
         return hashConstexprObject<FuncPtr>() ^ hashObject(&obj);
     }
 
+    /**
+     * Output of this hash will be always identical on all platforms and compilers if you are using the same string and salt.
+     * @param s
+     * @param salt
+     * @return
+     */
+    static size_t hashString(const char* str, unsigned salt = 0)
+    {
+        unsigned h = salt;
+        while (*str)
+            h = h * 101 + (unsigned) *str++;
+        return h;
+    }
+
+    /**
+     * Output of this hash will be always identical on all platforms and compilers if you are using the same string.
+     * @param s
+     * @param salt
+     * @return
+     */
+    static size_t hashString(const std::string& str, unsigned salt = 0)
+    {
+        return hashString(str.data());
+    }
+
     template<typename T>
     void exclude(std::vector<T>& vec, std::vector<T>& from)
     {

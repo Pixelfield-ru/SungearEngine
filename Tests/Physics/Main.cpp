@@ -146,11 +146,11 @@ void coreInit()
 
     cubemapTexture->setRawName("standard_skybox0");
     cubemapTexture->create();
-    AssetManager::getInstance()->addAsset("standard_skybox0", cubemapTexture);
+    AssetManager::getInstance()->addAssetByAlias("standard_skybox0", cubemapTexture);
 
     auto standardCubemapMaterial = SGCore::MakeRef<SGCore::IMaterial>();
     standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, cubemapTexture);
-    AssetManager::getInstance()->addAsset("standard_skybox_material0", standardCubemapMaterial);
+    AssetManager::getInstance()->addAssetByAlias("standard_skybox_material0", standardCubemapMaterial);
 
     // adding skybox with atmosphere
     {

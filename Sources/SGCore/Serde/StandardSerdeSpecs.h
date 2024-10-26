@@ -50,6 +50,7 @@
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 #include "SGCore/Serde/Components/NonSavable.h"
 
@@ -3129,6 +3130,11 @@ namespace SGCore::Serde
         template<typename ValueViewT, typename T0>
         static void setObjectRawPointer(ValueViewT& valueView, T0* pointer) noexcept
         {
+            if(*valueView.m_data)
+            {
+                delete *valueView.m_data;
+                *valueView.m_data = nullptr;
+            }
             *valueView.m_data = pointer;
         }
     };
@@ -3950,15 +3956,19 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<IAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
-            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+            valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
+            valueView.getValueContainer().addMember("m_storageType", valueView.m_data->getStorageType());
+            valueView.getValueContainer().addMember("m_usePathToDeserialize",
+                                                    !(assetsPackage.isDataSerde() ||
+                                                      valueView.m_data->m_forceDataSerialization));
         }
 
         static void deserialize(DeserializableValueView<IAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            auto assetName = valueView.getValueContainer().template getMember<std::string>("m_name");
-            if(assetName)
+            auto assetAlias = valueView.getValueContainer().template getMember<std::string>("m_alias");
+            if(assetAlias)
             {
-                valueView.m_data->m_name = std::move(*assetName);
+                valueView.m_data->m_alias = std::move(*assetAlias);
             }
 
             auto assetPath = valueView.getValueContainer().template getMember<std::string>("m_path");
@@ -3966,30 +3976,53 @@ namespace SGCore::Serde
             {
                 valueView.m_data->m_path = std::move(*assetPath);
             }
+
+            const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storageType");
+            if(assetPath)
+            {
+                valueView.m_data->m_storageType = *assetStorageType;
+            }
         }
     };
 
     template<FormatType TFormatType>
     struct SerdeSpec<ITexture2D, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
     {
+        /// We indicate the type we are working with.
         static inline const std::string type_name = "SGCore::ITexture2D";
+        /// ITexture2D is not pointer type. That is, ITexture2D is not a type that uses RAII to store the pointer and to wrap it.
         static inline constexpr bool is_pointer_type = false;
 
+        /// Required function: This function is ONLY used when serializing assets into a package.
+        /// The second argument is the current package being serialized.
         static void serialize(SerializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            // if we are serializing data too
-            if(assetsPackage.isDataSerde())
+            /// The m_textureDate field is very large, so we save it to a binary file instead of a JSON file.\n\n
+            /// But we only save this field when we have assets serialized along with data, or if the current serialized asset REQUIRES that we MUST serialize the asset along with data.\n\n
+            /// This requirement is expressed using the 'm_forceDataSerializing' variable in the 'IAsset' class.\n\n
+            /// This requirement can be useful when the current serializable asset was not loaded from any file (e.g. .gltf or .obj files), but was generated via code.
+            /// Thus, to save the data of such an asset, we must specify that serialization of the data of this asset is MANDATORY.\n\n
+            /// We also do not save heavy data of the current asset if this asset already exists in the parent asset manager,
+            /// i. e. is essentially a duplicate of an existing asset or a reference to an existing asset.
+            if((assetsPackage.isDataSerde() || valueView.m_data->m_forceDataSerialization) &&
+               !assetsPackage.getParentAssetManager()->isAssetExists(valueView.m_data))
             {
+                /// Next, we serialize the heavy data (in this case, 'm_data')
+                /// into a binary package file and get the output markup,
+                /// which indicates the position of the 'm_data' data in the binary file,
+                /// as well as the size of 'm_data' in bytes in the binary file.
                 AssetsPackage::DataMarkup textureDataMarkup =
                         assetsPackage.addData(valueView.m_data->m_textureData.get(),
                                               valueView.m_data->m_width * valueView.m_data->m_height *
                                               valueView.m_data->m_channelsCount
                         );
 
+                /// Next, we write the markup of heavy data into a JSON file for further deserialization of heavy data from a binary file.
                 valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
                 valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
             }
 
+            /// We simply add lightweight data directly to the JSON file.
             valueView.getValueContainer().addMember("m_width", valueView.m_data->m_width);
             valueView.getValueContainer().addMember("m_height", valueView.m_data->m_height);
             valueView.getValueContainer().addMember("m_channelsCount", valueView.m_data->m_channelsCount);
@@ -4005,7 +4038,6 @@ namespace SGCore::Serde
             auto internalFormat = valueView.getValueContainer().template getMember<SGGColorInternalFormat>("m_internalFormat");
             auto format = valueView.getValueContainer().template getMember<SGGColorFormat>("m_format");
 
-            // if we are deserializing data too
             if(assetsPackage.isDataSerde())
             {
                 auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataOffset");
@@ -4247,6 +4279,8 @@ namespace SGCore::Serde
 
             // TODO: MAYBE SERIALIZING DATA OF PHYSICAL MESH (I DONT FUCKING KNOW HOW TO GET DATA FROM btTriangleMesh)
             valueView.getValueContainer().addMember("m_generatePhysicalMesh", valueView.m_data->m_physicalMesh != nullptr);
+
+            valueView.getValueContainer().addMember("m_material", valueView.m_data->m_material);
         }
 
         static void deserialize(DeserializableValueView<IMeshData, TFormatType>& valueView, AssetsPackage& assetsPackage)

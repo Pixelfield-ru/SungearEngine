@@ -23,7 +23,7 @@ SGCore::Font::addOrGetSpecialization(const SGCore::FontSpecializationSettings& f
         specialization = MakeRef<FontSpecialization>();
         specialization->m_settings = fontSpecializationSettings;
         
-        specialization->prepareToBuild(m_path.string());
+        specialization->prepareToBuild(getPath().string());
         
         m_specializations[fontSpecializationSettings] = specialization;
     }

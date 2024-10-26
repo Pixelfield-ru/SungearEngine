@@ -45,7 +45,7 @@ namespace SGCore
         {
             std::lock_guard guard(m_mutex);;
 
-            const size_t hashedAssetPath = std::hash<std::string>()(Utils::toUTF8(path.u16string()));
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(path.u16string()));
 
             // getting variants of assets that were loaded by path 'path'
             auto& foundVariants = m_assets[hashedAssetPath];
@@ -62,9 +62,11 @@ namespace SGCore
 
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
             foundVariants[AssetT::asset_type_id] = newAsset;
-
             
             std::filesystem::path p(path);
+
+            newAsset->m_path = path;
+            newAsset->m_storageType = AssetStorageType::BY_PATH;
             
             distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -105,7 +107,7 @@ namespace SGCore
         {
             std::lock_guard guard(m_mutex);
 
-            const size_t hashedAssetPath = std::hash<std::string>()(Utils::toUTF8(path.u16string()));
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(path.u16string()));
 
             // getting variants of assets that were loaded by path 'path'
             auto& foundVariants = m_assets[hashedAssetPath];
@@ -121,6 +123,9 @@ namespace SGCore
             foundVariants[AssetT::asset_type_id] = assetToLoad;
             
             std::filesystem::path p(path);
+
+            assetToLoad->m_path = path;
+            assetToLoad->m_storageType = AssetStorageType::BY_PATH;
             
             distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -160,7 +165,7 @@ namespace SGCore
         {
             std::lock_guard guard(m_mutex);
 
-            const size_t hashedAssetAlias = std::hash<std::string>()(alias);
+            const size_t hashedAssetAlias = hashString(alias);
 
             // getting variants of assets that were loaded with alias 'alias'
             auto& foundVariants = m_assets[hashedAssetAlias];
@@ -175,6 +180,9 @@ namespace SGCore
 
             // else we are assigning asset of type 'AssetT'
             foundVariants[AssetT::asset_type_id] = assetToLoad;
+
+            assetToLoad->m_alias = alias;
+            assetToLoad->m_storageType = AssetStorageType::BY_ALIAS;
             
             distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -216,7 +224,7 @@ namespace SGCore
         {
             std::lock_guard guard(m_mutex);
 
-            const size_t hashedAssetAlias = std::hash<std::string>()(alias);
+            const size_t hashedAssetAlias = hashString(alias);
 
             // getting variants of assets that were loaded with alias 'alias'
             auto& foundVariants = m_assets[hashedAssetAlias];
@@ -234,7 +242,10 @@ namespace SGCore
             // else we are creating new asset with type 'AssetT'
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
             foundVariants[AssetT::asset_type_id] = newAsset;
-            
+
+            newAsset->m_alias = alias;
+            newAsset->m_storageType = AssetStorageType::BY_ALIAS;
+
             distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
             
             newAsset->setRawName(alias);
@@ -269,11 +280,14 @@ namespace SGCore
         
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        void addAsset(const std::string& alias, const Ref<AssetT>& asset)
+        void addAssetByAlias(const std::string& alias, const Ref<AssetT>& asset)
         {
             std::lock_guard guard(m_mutex);
 
-            const size_t hashedAssetAlias = std::hash<std::string>()(alias);
+            const size_t hashedAssetAlias = hashString(alias);
+
+            asset->m_alias = alias;
+            asset->m_storageType = AssetStorageType::BY_ALIAS;
 
             // getting variants of assets that were loaded with alias 'alias'
             auto& foundVariants = m_assets[hashedAssetAlias];
@@ -300,12 +314,14 @@ namespace SGCore
         
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        void addAsset(const Ref<AssetT>& asset)
+        void addAssetByPath(const std::filesystem::path& assetPath, const Ref<AssetT>& asset)
         {
             std::lock_guard guard(m_mutex);
-            
-            const std::string& assetPath = asset->getPath().string();
-            const size_t hashedAssetPath = std::hash<std::string>()(assetPath);
+
+            const size_t hashedAssetPath = hashString(Utils::toUTF8(assetPath.u16string()));
+
+            asset->m_path = assetPath;
+            asset->m_storageType = AssetStorageType::BY_PATH;
 
             // getting variants of assets that were loaded by path 'assetPath'
             auto& foundVariants = m_assets[hashedAssetPath];
@@ -326,12 +342,12 @@ namespace SGCore
                 std::dynamic_pointer_cast<GPUObject>(asset)->addToGlobalStorage();
             }
 
-            LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'", asset->m_name, Utils::toUTF8(asset->getPath().u16string()), typeid(AssetT).name())
+            LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'", asset->m_alias, Utils::toUTF8(asset->getPath().u16string()), typeid(AssetT).name())
         }
         
         bool areAssetsVariantsExist(const std::string& pathOrAlias) noexcept
         {
-            auto foundVariantsIt = m_assets.find(std::hash<std::string>()(pathOrAlias));
+            auto foundVariantsIt = m_assets.find(hashString(pathOrAlias));
             
             return foundVariantsIt != m_assets.end();
         }
@@ -342,7 +358,7 @@ namespace SGCore
         {
             std::lock_guard guard(m_mutex);
             
-            auto foundVariantsIt = m_assets.find(std::hash<std::string>()(pathOrAlias));
+            auto foundVariantsIt = m_assets.find(hashString(pathOrAlias));
             if(foundVariantsIt == m_assets.end())
             {
                 return false;
@@ -350,6 +366,55 @@ namespace SGCore
             else
             {
                 auto foundAssetIt = foundVariantsIt->second.find(AssetT::asset_type_id);
+                return foundAssetIt != foundVariantsIt->second.end();
+            }
+        }
+
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        bool isAssetExists(const AssetT* asset) noexcept
+        {
+            std::lock_guard guard(m_mutex);
+
+            std::string pathOrAlias;
+            switch(asset->m_storageType)
+            {
+                case AssetStorageType::BY_PATH:
+                {
+                    pathOrAlias = asset->m_path.u16string();
+                    break;
+                }
+                case AssetStorageType::BY_ALIAS:
+                {
+                    pathOrAlias = asset->m_alias;
+                    break;
+                }
+            }
+
+            auto foundVariantsIt = m_assets.find(hashString(pathOrAlias));
+            if(foundVariantsIt == m_assets.end())
+            {
+                return false;
+            }
+            else
+            {
+                auto foundAssetIt = foundVariantsIt->second.find(asset->getTypeID());
+                return foundAssetIt != foundVariantsIt->second.end();
+            }
+        }
+
+        bool isAssetExists(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept
+        {
+            std::lock_guard guard(m_mutex);
+
+            auto foundVariantsIt = m_assets.find(hashString(pathOrAlias));
+            if(foundVariantsIt == m_assets.end())
+            {
+                return false;
+            }
+            else
+            {
+                auto foundAssetIt = foundVariantsIt->second.find(assetTypeID);
                 return foundAssetIt != foundVariantsIt->second.end();
             }
         }
@@ -369,7 +434,7 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         void removeAssetLoadedByType(const std::filesystem::path& aliasOrPath) noexcept
         {
-            auto foundIt = m_assets.find(std::hash<std::string>()(Utils::toUTF8(aliasOrPath.u16string())));
+            auto foundIt = m_assets.find(hashString(Utils::toUTF8(aliasOrPath.u16string())));
             if(foundIt == m_assets.end()) return;
 
             auto& variants = foundIt->second;

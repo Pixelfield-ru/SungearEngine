@@ -380,7 +380,7 @@ $(document).ready(function(){initNavTree('AssetManager_8h_source.html',''); init
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;        </div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> AssetT&gt;</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;        requires(std::is_base_of_v&lt;IAsset, AssetT&gt;)</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        <span class="keywordtype">void</span> addAsset(<span class="keyword">const</span> std::string&amp; alias, <span class="keyword">const</span> Ref&lt;AssetT&gt;&amp; asset)</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        <span class="keywordtype">void</span> addAssetByAlias(<span class="keyword">const</span> std::string&amp; alias, <span class="keyword">const</span> Ref&lt;AssetT&gt;&amp; asset)</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        {</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            std::lock_guard guard(m_mutex);</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;            </div>
@@ -415,7 +415,7 @@ $(document).ready(function(){initNavTree('AssetManager_8h_source.html',''); init
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        </div>
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> AssetT&gt;</div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        requires(std::is_base_of_v&lt;IAsset, AssetT&gt;)</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="keywordtype">void</span> addAsset(<span class="keyword">const</span> Ref&lt;AssetT&gt;&amp; asset)</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="keywordtype">void</span> addAssetByAlias(<span class="keyword">const</span> Ref&lt;AssetT&gt;&amp; asset)</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        {</div>
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;            std::lock_guard guard(m_mutex);</div>
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;            </div>

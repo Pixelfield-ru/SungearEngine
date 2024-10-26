@@ -19,7 +19,7 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        static inline size_t asset_type_id = StaticTypeID<ModelAsset>::setID(8);
+        sg_implement_asset_type_id(ModelAsset, 8)
 
         std::vector<Ref<Node>> m_nodes;
 

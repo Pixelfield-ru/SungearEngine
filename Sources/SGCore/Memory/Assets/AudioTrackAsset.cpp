@@ -71,7 +71,7 @@ void SGCore::AudioTrackAsset::putData(const uint16_t& numChannels, const uint16_
 void SGCore::AudioTrackAsset::doLoad(const std::filesystem::path& path)
 {
     AudioTrackType trackType;
-    std::string extension = m_path.extension().string();
+    std::string extension = getPath().extension().string();
     if(extension == ".wav")
     {
         trackType = AudioTrackType::WAV;

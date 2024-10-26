@@ -89,7 +89,17 @@ void SGCore::IAsset::removeObserver(const Ref<IAssetObserver>& observer) noexcep
     });
 }
 
-std::filesystem::path SGCore::IAsset::getPath() const noexcept
+const std::filesystem::path& SGCore::IAsset::getPath() const noexcept
 {
     return m_path;
+}
+
+const std::string& SGCore::IAsset::getAlias() const noexcept
+{
+    return m_alias;
+}
+
+SGCore::AssetStorageType SGCore::IAsset::getStorageType() const noexcept
+{
+    return m_storageType;
 }

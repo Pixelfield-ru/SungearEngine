@@ -18,6 +18,8 @@ namespace SGCore
         GLuint m_textureBufferHandler = 0;
 
     public:
+        friend class AssetManager;
+
         ~GL4Texture2D() noexcept;
 
         void create() noexcept override;

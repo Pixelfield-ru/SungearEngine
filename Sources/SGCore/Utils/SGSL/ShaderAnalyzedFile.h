@@ -14,7 +14,7 @@ namespace SGCore
 {
     struct ShaderAnalyzedFile : public IAsset, public std::enable_shared_from_this<ShaderAnalyzedFile>
     {
-        static inline size_t asset_type_id = StaticTypeID<ShaderAnalyzedFile>::setID(4);
+        sg_implement_asset_type_id(ShaderAnalyzedFile, 4)
 
         friend class SGSLETranslator;
         friend class AssetManager;
@@ -68,7 +68,7 @@ namespace SGCore
         
         bool operator==(const ShaderAnalyzedFile& other) const noexcept
         {
-            return m_path == other.m_path;
+            return getPath() == other.getPath();
         }
         
         bool operator!=(const ShaderAnalyzedFile& other) const noexcept

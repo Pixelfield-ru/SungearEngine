@@ -21,7 +21,7 @@ void SGCore::ModelAsset::doLoad(const std::filesystem::path& path)
 
     Assimp::Importer importer;
 
-    const std::string u8Path = Utils::toUTF8(m_path.u16string());
+    const std::string u8Path = Utils::toUTF8(getPath().u16string());
 
     // TODO: maybe shared_ptr
     const aiScene* aiImportedScene(importer.ReadFile(u8Path, m_importerFlags));
@@ -290,7 +290,7 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
         aiMat->GetTexture(aiTexType, i, &texturePath);
 
         // final path is model directory file + separator + relative texture path
-        std::string finalPath = m_path.parent_path().string();
+        std::string finalPath = getPath().parent_path().string();
         finalPath += "/";
         finalPath += texturePath.data;
 

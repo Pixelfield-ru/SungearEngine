@@ -42,6 +42,7 @@ void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirector
     AssetsPackage outPackage;
     outPackage.m_path = binaryFilePath;
     outPackage.m_useSerdeData = saveAssetsData;
+    outPackage.m_parentAssetManager = this;
 
     const std::string writtenJSON = Serde::Serializer::toFormat(Serde::FormatType::JSON, m_assets, outPackage);
 

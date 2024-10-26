@@ -11,7 +11,7 @@ namespace SGCore
 {
     struct ByteFileAsset : public IAsset
     {
-        static inline size_t asset_type_id = StaticTypeID<ByteFileAsset>::setID(7);
+        sg_implement_asset_type_id(ByteFileAsset, 7)
 
         ~ByteFileAsset();
         

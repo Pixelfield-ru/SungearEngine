@@ -32,12 +32,12 @@ void SGCore::ITexture2D::doLoad(const std::filesystem::path& path)
     
     // m_texture2D = Ref<ITexture2D>(CoreMain::getRenderer().createTexture2D())->addToGlobalStorage();
 
-    const auto& ext = m_path.extension();
+    const auto& ext = getPath().extension();
     
     if(ext == ".png" || ext == ".jpg" || ext == ".jpeg")
     {
         m_textureData = Ref<std::uint8_t[]>(
-                stbi_load(m_path.string().data(),
+                stbi_load(getPath().string().data(),
                           &m_width, &m_height,
                           &m_channelsCount, channelsDesired),
                 STBITextureDataDeleter {});
@@ -67,7 +67,7 @@ void SGCore::ITexture2D::doLazyLoad()
           m_height,
           m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
           m_channelsCount,
-          m_path.string());
+          getPath().string());
 }
 
 void SGCore::ITexture2D::addToGlobalStorage() noexcept

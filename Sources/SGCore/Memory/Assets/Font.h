@@ -14,7 +14,7 @@ namespace SGCore
 {
     struct Font : public IAsset
     {
-        static inline size_t asset_type_id = StaticTypeID<Font>::setID(5);
+        sg_implement_asset_type_id(Font, 5)
 
         Ref<FontSpecialization> addOrGetSpecialization(const SGCore::FontSpecializationSettings& fontSpecializationSettings);
         Ref<FontSpecialization> getSpecialization(const FontSpecializationSettings& fontSpecializationSettings);

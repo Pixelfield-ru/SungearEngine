@@ -32,11 +32,9 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        static inline size_t asset_type_id = StaticTypeID<ITexture2D>::setID(1);
+        sg_implement_asset_type_id(ITexture2D, 1)
 
         virtual ~ITexture2D() = default;
-        
-        ITexture2D() = default;
         
         SGGColorInternalFormat m_internalFormat = SGGColorInternalFormat::SGG_RGBA8;
         SGGColorFormat m_format = SGGColorFormat::SGG_RGBA;

@@ -11,6 +11,7 @@
 namespace SGCore
 {
     struct IAsset;
+    struct AssetManager;
 
     /**
      * DO NOT STORE ANYWHERE.
@@ -103,7 +104,13 @@ namespace SGCore
             return m_path;
         }
 
+        [[nodiscard]] auto getParentAssetManager() const noexcept
+        {
+            return m_parentAssetManager;
+        }
+
     private:
+        AssetManager* m_parentAssetManager { };
         std::filesystem::path m_path;
         bool m_useSerdeData = false;
         std::vector<char> m_buffer;

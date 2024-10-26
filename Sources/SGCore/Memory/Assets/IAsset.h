@@ -6,6 +6,7 @@
 #define NATIVECORE_IASSET_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Utils/UUID.h"
 #include "SGCore/Utils/StaticTypeID.h"
 
 #include "IAssetObserver.h"
@@ -15,21 +16,44 @@
 #include "SGCore/Serde/SerializationType.h"
 #include "SGCore/Memory/AssetsPackage.h"
 
+/// Pass current class type as first argument and its type ID as second argument.
+#define sg_implement_asset_type_id(current_class, type_id)                          \
+static inline size_t asset_type_id = StaticTypeID<current_class>::setID(type_id);   \
+const size_t& getTypeID() const noexcept override { return asset_type_id; }
+
+// =======================================================================================================
+/**
+ * @brief Implementation of SerdeSpec for your custom asset type.
+ *
+ * See the implementation of SerdeSpec for ITexture2D as an example.
+ *
+ */
+// =======================================================================================================
+
 namespace SGCore
 {
     class IAssetObserver;
 
+    /// How asset was stored in asset manager.
+    enum class AssetStorageType : std::uint8_t
+    {
+        BY_PATH,
+        BY_ALIAS
+    };
+
     class IAsset : public UniqueNameWrapper
     {
+    public:
         sg_serde_as_friend()
 
         friend class AssetManager;
 
-    public:
         /// You must implement this field in your type of asset. This field must have explicit value and be the same on different platforms.
+        /// You can use 'sg_implement_asset_type_id' macro.
         static inline size_t asset_type_id = StaticTypeID<IAsset>::setID(0);
 
-        std::string m_name;
+        /// Indicates whether IT is NECESSARY TO SAVE THE DATA TO A BINARY FILE.
+        bool m_forceDataSerialization = false;
         
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
         Event<void(IAsset* asset)> onLoadDone;
@@ -38,6 +62,7 @@ namespace SGCore
 
         void load(const std::filesystem::path& path)
         {
+            m_isLoaded = true;
             m_path = path;
             
             doLoad(path);
@@ -47,6 +72,8 @@ namespace SGCore
         
         void lazyLoad()
         {
+            m_isLoaded = true;
+
             doLazyLoad();
             
             onLazyLoadDone(this);
@@ -65,17 +92,51 @@ namespace SGCore
         // =============================================
 
         long getLastModified() noexcept;
-        [[nodiscard]] std::filesystem::path getPath() const noexcept;
+        [[nodiscard]] const std::filesystem::path& getPath() const noexcept;
+        [[nodiscard]] const std::string& getAlias() const noexcept;
+        [[nodiscard]] AssetStorageType getStorageType() const noexcept;
+        [[nodiscard]] const size_t& getCurrentAssetTypeID() const noexcept;
 
     protected:
         virtual void doLoad(const std::filesystem::path& path) = 0;
         virtual void doLazyLoad() { };
-        
+
+        /**
+         * In the implementation of this function, you must read data from the binary file of the asset manager
+         * and save it to heavy data-variables that you serialized in the SerdeSpec implementation for the asset of the current type.\n
+         * For example: your asset class contains a heavy variable 'm_data'. Along with it, you must store fields such as:
+         * 'm_dataOffset' to indicate the position of 'm_data' in the 'parentAssetManager' binary file and 'm_dataSizeInBytes' to indicate the size of the serialized 'm_data' in bytes.\n
+         * To understand how to implement SerdeSpec for your custom asset type see the text 'Implementation of SerdeSpec for your custom asset type'.
+         *
+         * @param parentAssetManager Parent AssetManager, that contains current used AssetsPackage.\n
+         * Use that AssetPackage from 'parentAssetManager' to read data from binary file.
+         */
+        virtual void loadFromBinaryFile(AssetManager* parentAssetManager) = 0;
+
+        /// Indicates whether this asset was loaded along the path to any file (for example: .wav, .gltf) or loaded from the binary file of the some AssetManager.\n
+        /// You can change value of this variable in your implementations of 'doLoad' or 'doLazyLoad' functions to indicate whether this asset was successfully loaded or it is need to be reloaded.
+        bool m_isLoaded = false;
+
+        /**
+         * Use this function to get actual instance real type ID.
+         * Just return 'asset_type_id' in your implementations of this function.
+         */
+        virtual const size_t& getTypeID() const noexcept = 0;
+
         long m_lastModified = -1;
-        std::filesystem::path m_path;
+
         std::list<Weak<IAssetObserver>> m_observers;
 
     private:
+        // we are generating UUID for these fields to guarantee uniqueness for every asset even the one that wasn`t added to AssetManager
+        std::filesystem::path m_path = UUID::generateNew();
+        std::string m_alias = UUID::generateNew();
+
+        AssetStorageType m_storageType = AssetStorageType::BY_PATH;
+
+        /// Specifies whether to load this asset from a binary file. If true, the loadFromBinaryFile function is called.
+        bool m_useBinaryFileToDeserialize = false;
+
         template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, InstanceT>)
         static Ref<InstanceT> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept

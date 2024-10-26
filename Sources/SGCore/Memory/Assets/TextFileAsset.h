@@ -16,7 +16,7 @@ namespace SGCore
     {
         sg_serde_as_friend()
 
-        static inline size_t asset_type_id = StaticTypeID<TextFileAsset>::setID(3);
+        sg_implement_asset_type_id(TextFileAsset, 3)
 
         [[nodiscard]] std::string getData() const noexcept;
     

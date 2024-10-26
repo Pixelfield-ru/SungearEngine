@@ -12,6 +12,8 @@ namespace SGCore
     class GL46Texture2D : public GL4Texture2D
     {
     public:
+        friend class AssetManager;
+
         ~GL46Texture2D() noexcept;
 
         void create() noexcept final;
