@@ -15,6 +15,7 @@
 #include "SGCore/Threading/ThreadsPool.h"
 #include "SGCore/Threading/ThreadsManager.h"
 #include "SGCore/Logger/Logger.h"
+#include "AssetsPackage.h"
 
 namespace SGCore
 {
@@ -381,7 +382,7 @@ namespace SGCore
             {
                 case AssetStorageType::BY_PATH:
                 {
-                    pathOrAlias = asset->m_path.u16string();
+                    pathOrAlias = Utils::toUTF8(asset->m_path.u16string());
                     break;
                 }
                 case AssetStorageType::BY_ALIAS:
@@ -466,6 +467,9 @@ namespace SGCore
         SG_NOINLINE static Ref<AssetManager>& getInstance() noexcept;
 
         void createPackage(const std::filesystem::path& toDirectory, const std::string& packageName, bool saveAssetsData = true) noexcept;
+        void loadPackage(const std::filesystem::path& fromDirectory, const std::string& packageName) noexcept;
+
+        [[nodiscard]] const AssetsPackage& getPackage() const noexcept;
 
     private:
         void distributeAsset(const Ref<IAsset>& asset,
@@ -477,7 +481,15 @@ namespace SGCore
             {
                 case SINGLE_THREADED:
                 {
-                    asset->load(path);
+                    if(!asset->m_useBinaryFileToSerde)
+                    {
+                        asset->load(path);
+                    }
+                    else
+                    {
+                        asset->loadFromBinaryFile(this);
+                    }
+
                     asset->lazyLoad();
                     break;
                 }
@@ -487,8 +499,15 @@ namespace SGCore
                     // loadInThread->m_autoJoinIfNotBusy = true;
                     auto loadAssetTask = loadInThread->createTask();
         
-                    loadAssetTask->setOnExecuteCallback([asset, path]() {
-                        asset->load(path);
+                    loadAssetTask->setOnExecuteCallback([this, asset, path]() {
+                        if(!asset->m_useBinaryFileToSerde)
+                        {
+                            asset->load(path);
+                        }
+                        else
+                        {
+                            asset->loadFromBinaryFile(this);
+                        }
                     });
                     
                     if(lazyLoadInThread)
@@ -508,9 +527,16 @@ namespace SGCore
                     auto loadInThread = m_threadsPool.getThread();
                     // loadInThread->m_autoJoinIfNotBusy = true;
                     auto loadAssetTask = loadInThread->createTask();
-                    
-                    loadAssetTask->setOnExecuteCallback([asset, path]() {
-                        asset->load(path);
+
+                    loadAssetTask->setOnExecuteCallback([this, asset, path]() {
+                        if(!asset->m_useBinaryFileToSerde)
+                        {
+                            asset->load(path);
+                        }
+                        else
+                        {
+                            asset->loadFromBinaryFile(this);
+                        }
                     });
                     
                     loadInThread->addTask(loadAssetTask);
@@ -527,6 +553,8 @@ namespace SGCore
         }
         
         std::mutex m_mutex;
+
+        AssetsPackage m_package;
 
         // first - hash of path or alias
         // second - asset by path but loaded in different formats

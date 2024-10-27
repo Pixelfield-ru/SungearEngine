@@ -81,6 +81,30 @@ std::vector<char> SGCore::FileUtils::readBytesBlock(const std::filesystem::path&
     return output;
 }
 
+char* SGCore::FileUtils::readBytesBlockUnmanaged(const std::filesystem::path& path, const std::streamsize& offset, const std::streamsize& size) noexcept
+{
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
+    stream.unsetf(std::ios::skipws);
+    stream.exceptions(std::ios_base::badbit);
+
+    if(!stream)
+    {
+        LOG_E(SGCORE_TAG, "Read file error: File does not exist. Path: {}", Utils::toUTF8(path.u16string()));
+        return { };
+    }
+
+    stream.seekg(offset, std::ios::beg);
+
+    auto* buffer = (char*) malloc(size);
+
+    if (stream.read(buffer, size))
+    {
+
+    }
+
+    return buffer;
+}
+
 void SGCore::FileUtils::writeBytes(const std::filesystem::path& path,
                                    const std::streamsize& offset,
                                    char* buffer,

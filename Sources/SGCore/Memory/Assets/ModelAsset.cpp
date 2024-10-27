@@ -325,3 +325,11 @@ void SGCore::ModelAsset::prepareNodeMeshes(const SGCore::Ref<SGCore::Node>& node
         prepareNodeMeshes(child);
     }
 }
+
+void SGCore::ModelAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    for(auto& node : m_nodes)
+    {
+        node->doLoadFromBinaryFile(parentAssetManager);
+    }
+}

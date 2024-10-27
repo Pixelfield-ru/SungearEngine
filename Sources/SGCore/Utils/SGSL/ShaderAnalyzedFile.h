@@ -105,6 +105,8 @@ namespace SGCore
     protected:
         void doLoad(const std::filesystem::path& path) final;
 
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
+
     private:
         std::string m_globalCode;
         std::vector<std::shared_ptr<ShaderAnalyzedFile>> m_includedFiles;

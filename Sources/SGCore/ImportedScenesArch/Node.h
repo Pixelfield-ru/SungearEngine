@@ -2,6 +2,7 @@
 #define SUNGEARENGINE_NODE_H
 
 #include <SGCore/pch.h>
+#include <SGCore/Memory/AssetManager.h>
 
 #include "IMeshData.h"
 #include "SGCore/Scene/Scene.h"
@@ -10,6 +11,8 @@ namespace SGCore
 {
     class Node
     {
+        friend struct ModelAsset;
+
     private:
         using MeshFunc = std::function<void(const entity_t& parentEntity, const entity_t& meshEntity)>;
         using EachEntityFunc = std::function<void(const entity_t& parentEntity)>;
@@ -19,6 +22,8 @@ namespace SGCore
                                 const EachEntityFunc& eachEntityFunc,
                                 const MeshFunc& meshFunc,
                                 const bool& rootAdd) noexcept;
+
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
 
     public:
         std::string m_name;

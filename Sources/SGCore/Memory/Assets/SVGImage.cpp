@@ -66,3 +66,8 @@ void SGCore::SVGImage::removeSpecialization(const uint32_t& width, const uint32_
         return width == specialization->getSize().x && height == specialization->getSize().y;
     });
 }
+
+void SGCore::SVGImage::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+
+}

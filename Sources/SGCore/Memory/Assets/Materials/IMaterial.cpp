@@ -81,3 +81,8 @@ SGCore::IMaterial& SGCore::IMaterial::operator=
 
     return *this;
 }
+
+void SGCore::IMaterial::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+
+}

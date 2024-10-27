@@ -9,6 +9,7 @@
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
+#include "SGCore/Memory/AssetManager.h"
 
 SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
                                       const std::string& layerName,
@@ -111,4 +112,17 @@ void SGCore::Node::addOnScene(const Ref<Scene>& scene, const std::string& layerN
                [](const entity_t&, const entity_t&)
                {}
     );
+}
+
+void SGCore::Node::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    for(auto& meshData : m_meshesData)
+    {
+        meshData->doLoadFromBinaryFile(parentAssetManager);
+    }
+
+    for(auto& node : m_children)
+    {
+        node->doLoadFromBinaryFile(parentAssetManager);
+    }
 }

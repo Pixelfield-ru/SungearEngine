@@ -48,3 +48,8 @@ SGCore::Ref<SGCore::FontSpecialization> SGCore::Font::getSpecialization
         return foundSpecIter->second;
     }
 }
+
+void SGCore::Font::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+
+}

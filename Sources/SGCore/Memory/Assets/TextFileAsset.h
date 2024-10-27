@@ -22,8 +22,13 @@ namespace SGCore
     
     protected:
         void doLoad(const std::filesystem::path& path) override;
+
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         
     private:
+        std::streamsize m_dataOffsetInPackage = 0;
+        std::streamsize m_dataSizeInPackage = 0;
+
         std::string m_data;
     };
 }

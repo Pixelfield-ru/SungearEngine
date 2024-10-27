@@ -26,6 +26,8 @@ namespace SGCore
     protected:
         void doLoad(const std::filesystem::path& path) override;
         void doLazyLoad() override;
+
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         
     private:
         // local import flags

@@ -24,3 +24,8 @@ size_t SGCore::ByteFileAsset::getDataBufferSize() const noexcept
 {
     return m_dataBufferSize;
 }
+
+void SGCore::ByteFileAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+
+}

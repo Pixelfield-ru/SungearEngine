@@ -19,3 +19,8 @@ void SGCore::XMLDocument::doLoad(const std::filesystem::path& path)
     }
 }
 
+void SGCore::XMLDocument::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+
+}
+

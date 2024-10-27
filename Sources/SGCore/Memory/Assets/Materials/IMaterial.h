@@ -107,6 +107,7 @@ namespace SGCore
         
         // TODO: impl
         void doLoad(const std::filesystem::path& path) override;
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         
         // first - shader name
         // std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;

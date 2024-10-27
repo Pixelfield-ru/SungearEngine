@@ -8,3 +8,8 @@
 void SGCore::ShaderFileAsset::doLoad(const std::filesystem::path& path)
 {
 }
+
+void SGCore::ShaderFileAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+
+}

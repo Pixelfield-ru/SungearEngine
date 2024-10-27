@@ -5,6 +5,7 @@
 
 #include "SGCore/Utils/DDSLoader/dds-ktx.h"
 #include "SGCore/Utils/FileUtils.h"
+#include "SGCore/Memory/AssetManager.h"
 
 #include <stb_image.h>
 #include <stb_image_resize2.h>
@@ -118,4 +119,11 @@ std::int32_t SGCore::ITexture2D::getWidth() const noexcept
 std::int32_t SGCore::ITexture2D::getHeight() const noexcept
 {
     return m_height;
+}
+
+void SGCore::ITexture2D::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    auto textureData = parentAssetManager->getPackage().readBytes(m_textureDataOffsetInPackage, m_textureDataSizeInPackage);
+
+    m_textureData = Ref<std::uint8_t[]>(reinterpret_cast<std::uint8_t*>(textureData));
 }

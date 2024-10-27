@@ -12,3 +12,14 @@ void SGCore::ShaderAnalyzedFile::doLoad(const std::filesystem::path& path)
     
     translator.processCode(path, SGCore::FileUtils::readFile(path), shared_from_this());
 }
+
+void SGCore::ShaderAnalyzedFile::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    for(const auto& subPassPair : m_subPasses)
+    {
+        for(const auto& subShaderPair : subPassPair.second.m_subShaders)
+        {
+            subShaderPair.second->doLoadFromBinaryFile(parentAssetManager);
+        }
+    }
+}

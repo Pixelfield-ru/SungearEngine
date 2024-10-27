@@ -22,6 +22,9 @@ namespace SGCore
     
     protected:
         void doLoad(const std::filesystem::path& path) override;
+
+        // TODO: impl
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         
         std::vector<Ref<SVGImageSpecialization>> m_specializations;
         

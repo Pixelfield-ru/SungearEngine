@@ -17,6 +17,8 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 
+#include "SGCore/Memory/AssetManager.h"
+
 /*SGCore::Mesh::Mesh() noexcept
 {
     m_material = Ref<Memory::Assets::IMaterial>(Main::CoreMain::getRenderer().createPBRMaterial());
@@ -147,4 +149,16 @@ void SGCore::IMeshData::migrateAndSetNewMaterial
 void SGCore::IMeshData::generatePhysicalMesh() noexcept
 {
     m_physicalMesh = generatePhysicalMesh(m_positions, m_indices);
+}
+
+void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    auto& package = parentAssetManager->getPackage();
+
+    m_indices = package.readData<std::vector<std::uint32_t>>(m_indicesOffsetInPackage, m_indicesSizeInPackage);
+    m_positions = package.readData<std::vector<float>>(m_positionsOffsetInPackage, m_positionsSizeInPackage);
+    m_uv = package.readData<std::vector<float>>(m_uvOffsetInPackage, m_uvSizeInPackage);
+    m_normals = package.readData<std::vector<float>>(m_normalsOffsetInPackage, m_normalsSizeInPackage);
+    m_tangents = package.readData<std::vector<float>>(m_tangentsOffsetInPackage, m_tangentsSizeInPackage);
+    m_bitangents = package.readData<std::vector<float>>(m_bitangentsOffsetInPackage, m_bitangentsSizeInPackage);
 }

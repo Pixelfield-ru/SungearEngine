@@ -20,7 +20,7 @@ namespace SGCore
     public:
         friend class AssetManager;
 
-        ~GL4Texture2D() noexcept;
+        ~GL4Texture2D() noexcept override;
 
         void create() noexcept override;
         void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) override;

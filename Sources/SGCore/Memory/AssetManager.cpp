@@ -34,20 +34,47 @@ void SGCore::AssetManager::fullRemoveAsset(const std::filesystem::path& aliasOrP
     m_assets.erase(std::hash<std::filesystem::path>()(aliasOrPath));
 }
 
-void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirectory, const std::string& packageName, bool saveAssetsData) noexcept
+void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirectory,
+                                         const std::string& packageName,
+                                         bool saveAssetsData) noexcept
 {
     const std::filesystem::path binaryFilePath = toDirectory / (packageName + ".bin");
     const std::filesystem::path markupFilePath = toDirectory / (packageName + ".json");
 
-    AssetsPackage outPackage;
-    outPackage.m_path = binaryFilePath;
-    outPackage.m_useSerdeData = saveAssetsData;
-    outPackage.m_parentAssetManager = this;
+    m_package.m_buffer.clear();
 
-    const std::string writtenJSON = Serde::Serializer::toFormat(Serde::FormatType::JSON, m_assets, outPackage);
+    m_package.m_path = binaryFilePath;
+    m_package.m_useSerdeData = saveAssetsData;
+    m_package.m_parentAssetManager = this;
+
+    const std::string writtenJSON = Serde::Serializer::toFormat(Serde::FormatType::JSON, m_assets, m_package);
 
     // writing markup (json) file
     FileUtils::writeToFile(markupFilePath, writtenJSON, false, true);
     // writing binary file
-    FileUtils::writeBytes(binaryFilePath, 0, outPackage.m_buffer, false);
+    FileUtils::writeBytes(binaryFilePath, 0, m_package.m_buffer, false);
+}
+
+void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirectory,
+                                       const std::string& packageName) noexcept
+{
+    const std::filesystem::path binaryFilePath = fromDirectory / (packageName + ".bin");
+    const std::filesystem::path markupFilePath = fromDirectory / (packageName + ".json");
+
+    m_package.m_path = binaryFilePath;
+    m_package.m_parentAssetManager = this;
+
+    std::string outputLog;
+    // Serde::Serializer::fromFormat(FileUtils::readFile(markupFilePath), m_assets, Serde::FormatType::JSON, outputLog, m_package);
+
+    if(!outputLog.empty())
+    {
+        LOG_E(SGCORE_TAG, "Error while loading package with assets (directory of package: '{}', name of package '{}'): {}",
+              Utils::toUTF8(fromDirectory.u16string()), packageName, outputLog);
+    }
+}
+
+const SGCore::AssetsPackage& SGCore::AssetManager::getPackage() const noexcept
+{
+    return m_package;
 }

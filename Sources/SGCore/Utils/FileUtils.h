@@ -20,6 +20,10 @@ namespace SGCore::FileUtils
      */
     [[nodiscard]] char* readBytes(const std::filesystem::path& path, size_t& outSize) noexcept;
     [[nodiscard]] std::vector<char> readBytesBlock(const std::filesystem::path& path, const std::streamsize& offset, const std::streamsize& size) noexcept;
+    /**
+    * ALLOCATES BUFFER. YOU MUST DEALLOCATE IT.
+    */
+    [[nodiscard]] char* readBytesBlockUnmanaged(const std::filesystem::path& path, const std::streamsize& offset, const std::streamsize& size) noexcept;
     void writeBytes(const std::filesystem::path& path, const std::streamsize& offset, char* buffer, const std::streamsize& bufferSize, bool append);
 
     template<typename T>

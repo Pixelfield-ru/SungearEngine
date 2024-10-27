@@ -9,12 +9,10 @@
 #include "SGCore/Utils/UUID.h"
 #include "SGCore/Utils/StaticTypeID.h"
 
-#include "IAssetObserver.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Serde/SerializationType.h"
-#include "SGCore/Memory/AssetsPackage.h"
 
 /// Pass current class type as first argument and its type ID as second argument.
 #define sg_implement_asset_type_id(current_class, type_id)                          \
@@ -29,6 +27,8 @@ const size_t& getTypeID() const noexcept override { return asset_type_id; }
  *
  */
 // =======================================================================================================
+
+sg_predeclare_serde()
 
 namespace SGCore
 {
@@ -79,53 +79,51 @@ namespace SGCore
             onLazyLoadDone(this);
         }
 
-        // LEGACY CODE ================================
-        
-        void addObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
-        void removeObserver(const std::shared_ptr<IAssetObserver>&) noexcept;
+        void loadFromBinaryFile(AssetManager* parentAssetManager) noexcept
+        {
+            m_isLoaded = true;
 
-        void onModified();
-        void onPathChanged();
-        void onDeleted();
-        void onRestored();
-        
-        // =============================================
+            doLoadFromBinaryFile(parentAssetManager);
+        }
 
         long getLastModified() noexcept;
         [[nodiscard]] const std::filesystem::path& getPath() const noexcept;
         [[nodiscard]] const std::string& getAlias() const noexcept;
         [[nodiscard]] AssetStorageType getStorageType() const noexcept;
-        [[nodiscard]] const size_t& getCurrentAssetTypeID() const noexcept;
 
     protected:
+        /// In the implementation of the \p doLoad function, you must implement all the logic of downloading an asset, which can be executed in parallel (for example: downloading an asset from disk).
+        /// The \p doLoad function can be called in parallel.
         virtual void doLoad(const std::filesystem::path& path) = 0;
+        /// In the implementation of the \p doLazyLoad function, you must implement all the logic of asset loading, which cannot be executed in a separate thread.
+        /// For example: creating a GPU object.
         virtual void doLazyLoad() { };
 
         /**
          * In the implementation of this function, you must read data from the binary file of the asset manager
          * and save it to heavy data-variables that you serialized in the SerdeSpec implementation for the asset of the current type.\n
-         * For example: your asset class contains a heavy variable 'm_data'. Along with it, you must store fields such as:
-         * 'm_dataOffset' to indicate the position of 'm_data' in the 'parentAssetManager' binary file and 'm_dataSizeInBytes' to indicate the size of the serialized 'm_data' in bytes.\n
+         * For example: your asset class contains a heavy variable \p m_data. Along with it, you must store fields such as:
+         * \p m_dataOffset to indicate the position of \p m_data in the \p parentAssetManager binary file and \p m_dataSizeInBytes to indicate the size of the serialized \p m_data in bytes.\n
          * To understand how to implement SerdeSpec for your custom asset type see the text 'Implementation of SerdeSpec for your custom asset type'.
+         *
+         * @see Implementation of SerdeSpec for your custom asset type.
          *
          * @param parentAssetManager Parent AssetManager, that contains current used AssetsPackage.\n
          * Use that AssetPackage from 'parentAssetManager' to read data from binary file.
          */
-        virtual void loadFromBinaryFile(AssetManager* parentAssetManager) = 0;
+        virtual void doLoadFromBinaryFile(AssetManager* parentAssetManager) = 0;
 
         /// Indicates whether this asset was loaded along the path to any file (for example: .wav, .gltf) or loaded from the binary file of the some AssetManager.\n
-        /// You can change value of this variable in your implementations of 'doLoad' or 'doLazyLoad' functions to indicate whether this asset was successfully loaded or it is need to be reloaded.
+        /// You can change value of this variable in your implementations of \p doLoad , \p doLazyLoad or \p doLoadFromBinaryFile functions to indicate whether this asset was successfully loaded or it is need to be reloaded.
         bool m_isLoaded = false;
 
         /**
          * Use this function to get actual instance real type ID.
-         * Just return 'asset_type_id' in your implementations of this function.
+         * Just return \p asset_type_id in your implementations of this function.
          */
-        virtual const size_t& getTypeID() const noexcept = 0;
+        [[nodiscard]] virtual const size_t& getTypeID() const noexcept = 0;
 
         long m_lastModified = -1;
-
-        std::list<Weak<IAssetObserver>> m_observers;
 
     private:
         // we are generating UUID for these fields to guarantee uniqueness for every asset even the one that wasn`t added to AssetManager
@@ -134,8 +132,9 @@ namespace SGCore
 
         AssetStorageType m_storageType = AssetStorageType::BY_PATH;
 
-        /// Specifies whether to load this asset from a binary file. If true, the loadFromBinaryFile function is called.
-        bool m_useBinaryFileToDeserialize = false;
+        /// Specifies whether to load this asset from a binary file. If true, the \p loadFromBinaryFile function is called.
+        /// READ ONLY.
+        bool m_useBinaryFileToSerde = false;
 
         template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, InstanceT>)

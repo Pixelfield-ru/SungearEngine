@@ -5,6 +5,9 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Math/AABB.h"
+#include "SGCore/Serde/Defines.h"
+
+sg_predeclare_serde()
 
 namespace SGCore
 {
@@ -16,9 +19,15 @@ namespace SGCore
 
     class Scene;
 
+    class AssetManager;
+
     class IMeshData : public std::enable_shared_from_this<IMeshData>
     {
     public:
+        sg_serde_as_friend()
+
+        friend struct Node;
+
         AABB<> m_aabb;
         
         // Mesh() noexcept;
@@ -103,6 +112,29 @@ namespace SGCore
         Ref<IVertexArray> getVertexArray() noexcept;
 
     protected:
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
+
+        std::streamsize m_indicesOffsetInPackage = 0;
+        std::streamsize m_indicesSizeInPackage = 0;
+
+        std::streamsize m_positionsOffsetInPackage = 0;
+        std::streamsize m_positionsSizeInPackage = 0;
+
+        std::streamsize m_uvOffsetInPackage = 0;
+        std::streamsize m_uvSizeInPackage = 0;
+
+        std::streamsize m_normalsOffsetInPackage = 0;
+        std::streamsize m_normalsSizeInPackage = 0;
+
+        std::streamsize m_tangentsOffsetInPackage = 0;
+        std::streamsize m_tangentsSizeInPackage = 0;
+
+        std::streamsize m_bitangentsOffsetInPackage = 0;
+        std::streamsize m_bitangentsSizeInPackage = 0;
+
+        // ========================================================================================
+        // ========================================================================================
+
         Ref<IVertexArray> m_vertexArray;
 
         Ref<IVertexBuffer> m_positionsBuffer;

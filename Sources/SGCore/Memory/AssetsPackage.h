@@ -5,8 +5,9 @@
 #ifndef SUNGEARENGINE_ASSETSPACKAGE_H
 #define SUNGEARENGINE_ASSETSPACKAGE_H
 
-#include <SGCore/Utils/Utils.h>
-#include <SGCore/Utils/FileUtils.h>
+#include "SGCore/Utils/Utils.h"
+#include "SGCore/Utils/FileUtils.h"
+#include "SGCore/Serde/Defines.h"
 
 namespace SGCore
 {
@@ -27,16 +28,17 @@ namespace SGCore
             std::streamsize m_sizeInBytes = 0;
         };
 
-        friend struct AssetManager;
-        friend struct AssetSection;
+        friend class AssetManager;
 
         template<collection CollectionT>
         [[nodiscard]] DataMarkup addData(const CollectionT& data) noexcept
         {
-            DataMarkup writtenDataMarkup { std::ssize(m_buffer), std::ssize(data) * sizeof(CollectionT::value_type) };
+            using value_t = typename CollectionT::value_type;
+
+            DataMarkup writtenDataMarkup { std::ssize(m_buffer), std::ssize(data) * (std::streamsize) sizeof(value_t) };
 
             auto* bytes = reinterpret_cast<const char*>(data.data());
-            m_buffer.insert(m_buffer.end(), bytes, (bytes + data.size() * sizeof(CollectionT::value_type)));
+            m_buffer.insert(m_buffer.end(), bytes, (bytes + data.size() * sizeof(value_t)));
 
             return writtenDataMarkup;
         }
@@ -55,7 +57,7 @@ namespace SGCore
         template<typename T>
         [[nodiscard]] DataMarkup addData(const T* buffer, const std::streamsize& bufferSize) noexcept
         {
-            DataMarkup writtenDataMarkup { std::ssize(m_buffer), bufferSize * sizeof(T) };
+            DataMarkup writtenDataMarkup { std::ssize(m_buffer), bufferSize * (std::streamsize) sizeof(T) };
 
             auto* bytes = reinterpret_cast<const char*>(buffer);
             m_buffer.insert(m_buffer.end(), bytes, (bytes + bufferSize * sizeof(T)));
@@ -71,7 +73,7 @@ namespace SGCore
          * @return
          */
         template<collection CollectionT>
-        [[nodiscard]] CollectionT readData(const std::streamsize& offset, const std::streamsize& size) noexcept
+        [[nodiscard]] CollectionT readData(const std::streamsize& offset, const std::streamsize& size) const noexcept
         {
             using value_t = typename CollectionT::value_type;
 
@@ -89,9 +91,24 @@ namespace SGCore
          * @return
          */
         template<typename T>
-        [[nodiscard]] T readData(const std::streamsize& offset, const std::streamsize& size) noexcept
+        [[nodiscard]] T readData(const std::streamsize& offset, const std::streamsize& size) const noexcept
         {
-            return *reinterpret_cast<T*>(FileUtils::readBytesBlock(m_path, offset, size).data());
+            // DO NOT INLINE THIS LINES
+            auto data = FileUtils::readBytesBlock(m_path, offset, size);
+            T outVal = *reinterpret_cast<T*>(data.data());
+            return outVal;
+        }
+
+        /**
+         * READS OBJECT FROM BINARY FILE. ALLOCATES BUFFER. YOU MUST DEALLOCATE IT.
+         * @tparam T
+         * @param offset
+         * @param size
+         * @return
+         */
+        [[nodiscard]] char* readBytes(const std::streamsize& offset, const std::streamsize& size) const noexcept
+        {
+            return FileUtils::readBytesBlockUnmanaged(m_path, offset, size);
         }
 
         [[nodiscard]] bool isDataSerde() const noexcept
@@ -108,6 +125,9 @@ namespace SGCore
         {
             return m_parentAssetManager;
         }
+
+        /// READ ONLY MEMBER.
+        bool m_useBinarySerdeForCurrentAsset = false;
 
     private:
         AssetManager* m_parentAssetManager { };

@@ -12,10 +12,20 @@
 #include "SGSLEBracketsListener.h"
 #include "SGSLEStruct.h"
 
+#include "SGCore/Serde/Defines.h"
+
+sg_predeclare_serde()
+
 namespace SGCore
 {
+    struct AssetManager;
+
     struct SGSLESubShader : SGSLEBracketsListener
     {
+        sg_serde_as_friend()
+
+        friend struct ShaderAnalyzedFile;
+
         std::string m_name;
         std::string m_code;
         SGSLESubShaderType m_type = SGSLESubShaderType::SST_NONE;
@@ -34,6 +44,12 @@ namespace SGCore
             auto it = std::find(m_variables.begin(), m_variables.end(), SGSLEVariable { varName });
             return it == m_variables.end() ? nullptr : &*it;
         }
+
+    private:
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
+
+        std::streamsize m_codeOffsetInPackage = 0;
+        std::streamsize m_codeSizeInPackage = 0;
     };
 }
 

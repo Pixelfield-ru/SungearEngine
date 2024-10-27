@@ -27,9 +27,10 @@ namespace SGCore
     class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>, public GPUObject
     {
         friend class IFrameBuffer;
-        friend class AssetManager;
 
     public:
+        friend class AssetManager;
+
         sg_serde_as_friend()
 
         sg_implement_asset_type_id(ITexture2D, 1)
@@ -158,6 +159,8 @@ namespace SGCore
 
         void doLoad(const std::filesystem::path& path) override;
         void doLazyLoad() override;
+
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         
         virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
         virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;
@@ -165,6 +168,9 @@ namespace SGCore
         Ref<std::uint8_t[]> m_textureData = nullptr;
 
     private:
+        std::streamsize m_textureDataOffsetInPackage = 0;
+        std::streamsize m_textureDataSizeInPackage = 0;
+
         template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_same_v<ITexture2D, InstanceT>)
         static Ref<InstanceT> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
