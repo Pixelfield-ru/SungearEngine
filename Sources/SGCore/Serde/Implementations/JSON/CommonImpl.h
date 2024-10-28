@@ -25,7 +25,7 @@ namespace SGCore::Serde
         template<typename, FormatType>
         friend struct DeserializableValueView;
 
-        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
+        template<typename T, typename... SharedDataT>
         std::optional<T> getMember(const std::string& memberName, SharedDataT&&... sharedData) noexcept
         {
             if(!(m_thisValue || m_document))
@@ -89,12 +89,12 @@ namespace SGCore::Serde
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
 
             return outputValue;
         }
 
-        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
+        template<typename T, typename... SharedDataT>
         [[nodiscard]] std::vector<T> getAsArray(SharedDataT&&... sharedData) noexcept
         {
             if(!(m_thisValue || m_document))
@@ -161,7 +161,7 @@ namespace SGCore::Serde
                 valueView.getValueContainer().m_typeName = typeNameSection;
                 valueView.m_data = &tmpVal;
 
-                Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
+                Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
 
                 outputValue.push_back(tmpVal);
             }
@@ -250,7 +250,7 @@ namespace SGCore::Serde
             return m_thisValue->End();
         }
 
-        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
+        template<typename T, typename... SharedDataT>
         std::optional<T> getMember(const rapidjson::Value::MemberIterator& memberIterator, SharedDataT&&... sharedData) noexcept
         {
             if(!(m_thisValue || m_document))
@@ -307,12 +307,12 @@ namespace SGCore::Serde
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
 
             return outputValue;
         }
 
-        template<typename T, custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT>
+        template<typename T, typename... SharedDataT>
         std::optional<T> getMember(const rapidjson::Value::ValueIterator& arrayIterator, SharedDataT&&... sharedData) noexcept
         {
             if(!(m_thisValue || m_document))
@@ -366,7 +366,7 @@ namespace SGCore::Serde
             valueView.m_data = &outputValue;
 
             // deserializing member with dynamic checks
-            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
 
             return outputValue;
         }
@@ -403,7 +403,7 @@ namespace SGCore::Serde
         template<typename T0, FormatType TFormatType0>
         friend struct SerializableValueView;
 
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+        template<typename... SharedDataT, typename T>
         void addMember(const std::string& name, const T& value, SharedDataT&&... sharedData) noexcept
         {
             if (!(m_thisValue || m_document)) return;
@@ -441,7 +441,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().m_parent = this;
 
             // serializing value with attempt at dynamic casts to derived types
-            Serializer::serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView, std::forward<SharedDataT>(sharedData)...);
+            Serializer::serializeWithDynamicChecks<T, FormatType::JSON>(valueView, std::forward<SharedDataT>(sharedData)...);
 
             // =======================
 
@@ -462,10 +462,10 @@ namespace SGCore::Serde
             m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
         }
 
-        template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+        template<typename... SharedDataT, typename T>
         void pushBack(const T& value, SharedDataT&&... sharedData) noexcept
         {
-            addMember<CustomDerivedTypes>("", value, std::forward<SharedDataT>(sharedData)...);
+            addMember("", value, std::forward<SharedDataT>(sharedData)...);
         }
 
         void setAsNull() noexcept

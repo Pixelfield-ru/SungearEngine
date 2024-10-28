@@ -8,7 +8,7 @@
 #include "SGCore/Serde/Common.h"
 
 
-template<custom_derived_types_t CustomDerivedTypes, typename... SharedDataT, typename T>
+template<typename... SharedDataT, typename T>
 std::string SerializerImpl<FormatType::JSON>::to(const T& value,
                                                  SharedDataT&& ... sharedData) noexcept
 {
@@ -37,10 +37,10 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
     valueView.getValueContainer().m_typeNameValue = &typeNameSectionValue;
 
     // serializing value with attempt at dynamic casts to derived types
-    Serializer::serializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes, SharedDataT...>(valueView,
-                                                                                                    std::forward<SharedDataT>(
-                                                                                                            sharedData
-                                                                                                    )...
+    Serializer::serializeWithDynamicChecks<T, FormatType::JSON, SharedDataT...>(valueView,
+                                                                                std::forward<SharedDataT>(
+                                                                                        sharedData
+                                                                                )...
     );
 
     // =======================
@@ -67,7 +67,7 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
  * @param value
  * @return
  */
-template<custom_derived_types_t CustomDerivedTypes, typename T, typename... SharedDataT>
+template<typename T, typename... SharedDataT>
 void SerializerImpl<FormatType::JSON>::from(const std::string& formattedText,
                                             std::string& outputLog,
                                             T& outValue,
@@ -114,10 +114,10 @@ void SerializerImpl<FormatType::JSON>::from(const std::string& formattedText,
     valueView.getValueContainer().m_typeName = typeName;
     valueView.getValueContainer().m_outputLog = &outputLog;
 
-    Serializer::deserializeWithDynamicChecks<T, FormatType::JSON, CustomDerivedTypes>(valueView,
-                                                                                      std::forward<SharedDataT>(
-                                                                                              sharedData
-                                                                                      )...
+    Serializer::deserializeWithDynamicChecks<T, FormatType::JSON>(valueView,
+                                                                  std::forward<SharedDataT>(
+                                                                          sharedData
+                                                                  )...
     );
 }
 

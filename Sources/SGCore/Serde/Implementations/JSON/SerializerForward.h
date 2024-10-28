@@ -19,7 +19,7 @@ class SerializerImpl<FormatType::JSON>
      * @param value
      * @return
      */
-    template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename... SharedDataT, typename T>
+    template<typename... SharedDataT, typename T>
     static std::string to(const T& value,
                           SharedDataT&& ... sharedData) noexcept;
 
@@ -30,7 +30,7 @@ class SerializerImpl<FormatType::JSON>
      * @param value
      * @return
      */
-    template<custom_derived_types_t CustomDerivedTypes = custom_derived_types<>, typename T, typename... SharedDataT>
+    template<typename T, typename... SharedDataT>
     static void from(const std::string& formattedText,
                      std::string& outputLog,
                      T& outValue,

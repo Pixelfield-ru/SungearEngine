@@ -131,6 +131,13 @@ void coreInit()
     // Serde::Serializer::fromFormat<Serde::custom_derived_types<Derived0>>(FileUtils::readFile("serializer_test.txt"), deser, Serde::FormatType::JSON, outputLog, 1);
     Serde::Serializer::fromFormat(FileUtils::readFile("serializer_test.txt"), deser, outputLog);
 
+    using t0 = types_container<int, float>;
+    using t1 = types_container<float, double>;
+
+    using cat = reverse_types_container_t<types_container_cat_t<t0, t1>>;
+
+    std::cout << "cat: " << typeid(cat).name() << std::endl;
+
     // auto deser = Serde::Serializer::deserialize<std::unique_ptr<Base>>(document, "testSerde", outputLog);
 
     // std::printf("deser: %i, %f\n", deser->a, 0.0f);

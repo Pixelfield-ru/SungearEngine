@@ -168,16 +168,16 @@ namespace SGCore
         template <size_t I, size_t N, auto V, auto... Rest>
         struct extract_impl<I, N, V, Rest...>
         {
-            static constexpr inline auto value = extract_impl<I + 1, N, Rest...>::value;
+            static constexpr inline auto& value = extract_impl<I + 1, N, Rest...>::value;
         };
 
         template <size_t N, auto V, auto... Rest>
         struct extract_impl<N, N, V, Rest...>
         {
-            static constexpr inline auto value = V;
+            static constexpr inline auto& value = V;
         };
     public:
-        static constexpr inline auto value = extract_impl<0, Idx, Values...>::value;
+        static constexpr inline auto& value = extract_impl<0, Idx, Values...>::value;
     };
 
     template <std::size_t Idx, auto OrValue, auto... Values>
@@ -250,6 +250,89 @@ namespace SGCore
         requires (T::types_count == 0) || (requires { typename T::template get_type<0>; });
     };
 
+    template<types_container_t TypesContainer, typename T>
+    struct add_type_to_container
+    {
+    private:
+        template<size_t... Indices>
+        static consteval auto impl(std::index_sequence<Indices...>)
+        {
+            return types_container<typename TypesContainer::template get_type<Indices>..., T>();
+        }
+
+    public:
+        using type = decltype(impl(std::make_index_sequence<TypesContainer::types_size>()));
+    };
+
+    template<types_container_t TypesContainer, typename T>
+    using add_type_to_container_t = typename add_type_to_container<TypesContainer, T>::type;
+
+    template<types_container_t... TypesContainers>
+    struct types_container_cat
+    {
+    private:
+        template<size_t CurrentContIdx>
+        consteval static auto impl() noexcept
+        {
+            using current_cont = typename extract<CurrentContIdx, TypesContainers...>::type;
+
+            if constexpr(CurrentContIdx + 1 < sizeof...(TypesContainers))
+            {
+                return concat_two<
+                        current_cont,
+                        decltype(impl<CurrentContIdx + 1>())
+                        >();
+            }
+            else
+            {
+                return current_cont();
+            }
+        }
+
+        template<types_container_t Cont0, types_container_t Cont1>
+        consteval static auto concat_two() noexcept
+        {
+            return concat_two_impl<Cont0, Cont1>(std::make_index_sequence<Cont0::types_count>(), std::make_index_sequence<Cont1::types_count>());
+        }
+
+        template<types_container_t Cont0, types_container_t Cont1, size_t... Indices0, size_t... Indices1>
+        consteval static auto concat_two_impl(std::index_sequence<Indices0...>, std::index_sequence<Indices1...>) noexcept
+        {
+            return types_container<typename Cont0::template get_type<Indices0>..., typename Cont1::template get_type<Indices1>...>();
+        }
+
+    public:
+        using type = std::remove_cvref_t<decltype(impl<0>())>;
+    };
+
+    template<types_container_t... TypesContainers>
+    using types_container_cat_t = typename types_container_cat<TypesContainers...>::type;
+
+
+
+    template<typename... Ts>
+    struct reverse_types_container;
+
+    template<>
+    struct reverse_types_container<types_container<>>
+    {
+        using type = types_container<>;
+    };
+
+    template<typename T, typename... Ts>
+    struct reverse_types_container<types_container<T, Ts...>>
+    {
+    private:
+        using head = types_container<T>;
+        using tail = typename reverse_types_container<types_container<Ts...>>::type;
+
+    public:
+        using type = types_container_cat_t<tail, head>;
+    };
+
+    template<types_container_t Container>
+    using reverse_types_container_t = typename reverse_types_container<Container>::type;
+
     // ======================================================================================================================
     // ======================================================================================================================
 
@@ -304,6 +387,30 @@ namespace SGCore
         template<size_t Idx>
         using get_type = extract<Idx, Args...>;
     };
+
+    // ======================================================================================================================
+    // ======================================================================================================================
+
+    template <typename... Ts>
+    struct tuple_reverse;
+
+    template <>
+    struct tuple_reverse<std::tuple<>>
+    {
+        using type = std::tuple<>;
+    };
+
+    template <typename T, typename... Ts>
+    struct tuple_reverse<std::tuple<T, Ts...>>
+    {
+        using head = std::tuple<T>;
+        using tail = typename tuple_reverse<std::tuple<Ts...>>::type;
+
+        using type = decltype(std::tuple_cat(std::declval<tail>(), std::declval<head>()));
+    };
+
+    template <typename T, typename... Ts>
+    using tuple_reverse_t = tuple_reverse<T, Ts...>::type;
 
     // ======================================================================================================================
     // ======================================================================================================================

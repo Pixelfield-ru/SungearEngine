@@ -127,7 +127,7 @@ namespace SGCore
         }
 
         /// READ ONLY MEMBER.
-        bool m_useBinarySerdeForCurrentAsset = false;
+        bool m_useSerdeForCurrentAsset = false;
 
     private:
         AssetManager* m_parentAssetManager { };

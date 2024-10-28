@@ -2984,14 +2984,6 @@ namespace SGCore::Serde
                 // allocating object
                 *valueView.m_data = std::make_unique<T>();
             }
-
-            // creating temporary value view that contains object with type T
-            DeserializableValueView<T, TFormatType> tmpView = { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_data = valueView.m_data->get();
-
-            // deserializing values of T
-            Serde::Serializer::invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         template<typename ValueViewT>
@@ -3047,14 +3039,6 @@ namespace SGCore::Serde
                 // allocating object
                 *valueView.m_data = std::make_shared<T>();
             }
-
-            // creating temporary value view that contains object with type T
-            DeserializableValueView<T, TFormatType> tmpView = { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_data = valueView.m_data->get();
-
-            // deserializing values of T
-            Serde::Serializer::invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         template<typename ValueViewT>
@@ -3111,14 +3095,6 @@ namespace SGCore::Serde
                 // allocating object
                 *valueView.m_data = new T();
             }
-
-            // creating temporary value view that contains object with type T
-            DeserializableValueView<T, TFormatType> tmpView = { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_data = *valueView.m_data;
-
-            // deserializing values of T
-            Serde::Serializer::invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
         }
 
         template<typename ValueViewT>
@@ -3622,7 +3598,7 @@ namespace SGCore::Serde
             {
                 // trying to deserialize current element of array (valueView is array) as child SceneEntitySaveInfo
                 const std::optional<SceneEntitySaveInfo> asChild =
-                        valueView.getValueContainer().template getMember<SceneEntitySaveInfo, custom_derived_types<>>(componentsIt, toRegistry);
+                        valueView.getValueContainer().template getMember<SceneEntitySaveInfo>(componentsIt, toRegistry);
                 if(asChild)
                 {
                     childrenEntities.push_back(asChild->m_serializableEntity);
@@ -3838,7 +3814,7 @@ namespace SGCore::Serde
             for(auto entityIt = valueView.getValueContainer().begin(); entityIt != valueView.getValueContainer().end(); ++entityIt)
             {
                 // deserializing entity and passing registry to getMember to put entity in scene
-                valueView.getValueContainer().template getMember<SceneEntitySaveInfo, custom_derived_types<>>(entityIt, *valueView.m_data);
+                valueView.getValueContainer().template getMember<SceneEntitySaveInfo>(entityIt, *valueView.m_data);
             }
         }
     };
@@ -3956,16 +3932,18 @@ namespace SGCore::Serde
         /// This function is used only when serializing an asset manager package.
         static void serialize(SerializableValueView<IAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            assetsPackage.m_useBinarySerdeForCurrentAsset = assetsPackage.isDataSerde() ||
-                                                            valueView.m_data->m_forceDataSerialization ||
-                                                            !assetsPackage.getParentAssetManager()->isAssetExists(
+            std::cout << "iasset: " << typeid(*valueView.m_data).name() << std::endl;
+
+            assetsPackage.m_useSerdeForCurrentAsset = assetsPackage.isDataSerde() ||
+                                                      valueView.m_data->m_forceDataSerialization ||
+                                                      !assetsPackage.getParentAssetManager()->isAssetExists(
                                                                     valueView.m_data
                                                             );
 
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
             valueView.getValueContainer().addMember("m_storageType", valueView.m_data->getStorageType());
-            valueView.getValueContainer().addMember("m_useBinaryFileToSerde", assetsPackage.m_useBinarySerdeForCurrentAsset);
+            valueView.getValueContainer().addMember("m_useBinaryFileToSerde", assetsPackage.m_useSerdeForCurrentAsset);
         }
 
         /// This function is used in any other cases.
@@ -4054,8 +4032,10 @@ namespace SGCore::Serde
         /// The second argument is the current package being serialized.
         static void serialize(SerializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            std::cout << "texture2d" << std::endl;
+
             /// The \p m_textureDate field is very large, so we save it to a binary file instead of a JSON file.\n\n
-            /// But we only save this field when we have \p assetsPackage.m_useBinarySerdeForCurrentAsset equals to \p true .
+            /// But we only save this field when we have \p assetsPackage.m_useSerdeForCurrentAsset equals to \p true .
             /// \p assetsPackage.m_useBinarySerdeForCurrentAsset equals to \p true when assets must be serialized along with data (\p assetsPackage.isDataSerde() equals to \p true ),
             /// or if the current serialized asset REQUIRES that we MUST serialize the asset along with data,
             /// or current serialized asset DOES NOT exist in parent asset manager (expression \p assetsPackage.getParentAssetManager()->isAssetExists(valueView.m_data) equals to \p false ).\n\n
@@ -4064,7 +4044,7 @@ namespace SGCore::Serde
             /// Thus, to save the data of such an asset, we must specify that serialization of the data of this asset is MANDATORY.\n\n
             /// We also do not save heavy data of the current asset if this asset already exists in the parent asset manager,
             /// i. e. is essentially a duplicate of an existing asset or a reference to an existing asset.
-            if(assetsPackage.m_useBinarySerdeForCurrentAsset)
+            if(assetsPackage.m_useSerdeForCurrentAsset)
             {
                 /// Next, we serialize the heavy data (in this case, \p m_data )
                 /// into a binary package file and get the output markup,
@@ -4106,6 +4086,9 @@ namespace SGCore::Serde
         /// So for each member with heavy data in your class inheriting IAsset you must store the offset in the binary file (in bytes) and the size of the data in bytes.
         static void deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            //
+            // if(!assetsPackage.m_useSerdeForCurrentAsset) return;
+
             /// We just deserialize lightweight data because it is always in the JSON file (we always serialize lightweight data).
             auto width = valueView.getValueContainer().template getMember<std::int32_t>("m_width");
             auto height = valueView.getValueContainer().template getMember<std::int32_t>("m_height");
@@ -4168,7 +4151,7 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             // if we are serializing data too
-            if(assetsPackage.m_useBinarySerdeForCurrentAsset)
+            if(assetsPackage.m_useSerdeForCurrentAsset)
             {
                 AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_data);
 
@@ -4233,7 +4216,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_type", valueView.m_data->m_type);
 
-            if(assetsPackage.m_useBinarySerdeForCurrentAsset)
+            if(assetsPackage.m_useSerdeForCurrentAsset)
             {
                 AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_code);
 
@@ -4304,7 +4287,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_aabb", valueView.m_data->m_aabb);
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
 
-            if(assetsPackage.m_useBinarySerdeForCurrentAsset)
+            if(assetsPackage.m_useSerdeForCurrentAsset)
             {
                 {
                     AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_indices);

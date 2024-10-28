@@ -30,6 +30,8 @@ struct SGCore::Serde::SerdeSpec<SGE::Toolchain, TFormatType> : BaseTypes<>, Deri
 
     static void deserialize(DeserializableValueView<SGE::Toolchain, TFormatType>& valueView)
     {
+        std::cout << "deser toolchain" << std::endl;
+
         const auto name = valueView.getValueContainer().template getMember<SGCore::UniqueName>("m_name");
         if(name)
         {
@@ -90,6 +92,8 @@ struct SGCore::Serde::SerdeSpec<SGE::VisualStudioToolchain, TFormatType> : BaseT
 
     static void deserialize(DeserializableValueView<SGE::VisualStudioToolchain, TFormatType>& valueView)
     {
+        std::cout << "deser VisualStudioToolchain" << std::endl;
+
         const auto archType = valueView.getValueContainer().template getMember<SGE::VCArchType>("m_archType");
         if(archType)
         {
