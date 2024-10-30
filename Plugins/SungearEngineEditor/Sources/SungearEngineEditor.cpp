@@ -71,6 +71,11 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
         ImGui::LoadIniSettingsFromDisk((std::filesystem::current_path().string() + "/imgui.ini").c_str());
         StylesManager::init();*/
     }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_L))
+    {
+        SGCore::AssetManager::getInstance()->loadPackage("./", "assets");
+    }
 }
 
 void SGE::SungearEngineEditor::fixedUpdate(const double& dt, const double& fixedDt)

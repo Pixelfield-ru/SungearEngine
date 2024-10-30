@@ -16,8 +16,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noex
 
     m_fileAsset = asset;
 
-    std::string assetPath = asset->getPath().string();
-    m_shaderAnalyzedFile = AssetManager::getInstance()->loadAsset<ShaderAnalyzedFile>(assetPath);
+    m_shaderAnalyzedFile = AssetManager::getInstance()->loadAsset<ShaderAnalyzedFile>(asset->getPath());
 
     for(const auto& subPassIter : m_shaderAnalyzedFile->m_subPasses)
     {

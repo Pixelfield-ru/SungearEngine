@@ -60,6 +60,8 @@ namespace SGCore
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
         Event<void(IAsset* asset)> onLazyLoadDone;
 
+        virtual ~IAsset() = default;
+
         void load(const std::filesystem::path& path)
         {
             m_isLoaded = true;
@@ -134,7 +136,7 @@ namespace SGCore
 
         /// Specifies whether to load this asset from a binary file. If true, the \p loadFromBinaryFile function is called.
         /// READ ONLY.
-        bool m_useBinaryFileToSerde = false;
+        bool m_useDataSerde = false;
 
         template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, InstanceT>)

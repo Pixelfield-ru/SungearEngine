@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_SERDE_H
 
 #include <optional>
+#include "SGCore/Utils/Assert.h"
 
 #include "SGCore/Utils/TypeTraits.h"
 #include "SGCore/Utils/Utils.h"
@@ -97,7 +98,7 @@ namespace SGCore::Serde
         using element_type = void;
         
         /**
-         * Serializes only T type members.
+         * Serializes only T type members. DO NOT IMPLEMENT IN SerdeSpec OF POINTER TYPES.
          * @param valueView
          */
         static void serialize(SerializableValueView<T, TFormatType>& valueView)
@@ -106,12 +107,23 @@ namespace SGCore::Serde
         }
         
         /**
-         * Deserializes only T type members.
+         * Deserializes only T type members. DO NOT IMPLEMENT IN SerdeSpec OF POINTER TYPES.
          * @param valueView
          */
         static void deserialize(DeserializableValueView<T, TFormatType>& valueView)
         {
         
+        }
+
+        /**
+         * OPTIONAL (BUT NECESSARY IN IMPLEMENTATIONS OF SerdeSpec OF POINTER TYPES).
+         * Allocates object with type that is derived type of T or allocates T object.
+         * Possible uses: allocation of the ITexture2D object depending on the currently used graphics API.
+         * @return
+         */
+        static int allocateObject()
+        {
+
         }
         
         /**
@@ -499,6 +511,14 @@ namespace SGCore::Serde
         {
             if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // serializing value using dynamic checks
             {
+                // if value of passed pointer equals to nullptr
+                if(!SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView))
+                {
+                    // setting value as null in output container
+                    valueView.getValueContainer().setAsNull();
+                    return;
+                }
+
                 // getting element_type that pointer contains
                 using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
                 
@@ -510,23 +530,24 @@ namespace SGCore::Serde
 
                 // trying to serialize as one of derived types o ptr_element_type
                 tryToSerializeAsDerivedType<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
-                
-                return;
             }
+            else
+            {
+                // getting all base types from very base type in inheritance tree to very derived type
+                using base_types = typename collect_all_base_types<T, TFormatType>::type;
 
-            // getting all base types from very base type in inheritance tree to very derived type
-            using base_types = typename collect_all_base_types<T, TFormatType>::type;
+                // serialize without dynamic checks (static serialization)
 
-            // serialize without dynamic checks (static serialization)
-            
-            // serializing all base types from very base type in inheritance tree to very derived type
-            serializeBaseTypes<base_types>(valueView, std::make_index_sequence<base_types::types_count>(), std::forward<SharedDataT>(sharedData)...);
-            
-            // serializing only T type members
-            invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
+                // serializing all base types from very base type in inheritance tree to very derived type
+                serializeBaseTypes<base_types>(valueView, std::make_index_sequence<base_types::types_count>(),
+                                               std::forward<SharedDataT>(sharedData)...);
 
-            // setting new type name
-            valueView.getValueContainer().setTypeName(SerdeSpec<T, TFormatType>::type_name);
+                // serializing only T type members
+                invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
+
+                // setting new type name
+                valueView.getValueContainer().setTypeName(SerdeSpec<T, TFormatType>::type_name);
+            }
         }
 
         template<typename T,
@@ -550,6 +571,12 @@ namespace SGCore::Serde
         {
             if constexpr(SerdeSpec<T, TFormatType>::is_pointer_type) // deserializing value using dynamic checks
             {
+                // if value of deserializable type equals to null then just returning
+                if(valueView.getValueContainer().isNull())
+                {
+                    return;
+                }
+
                 // getting element_type that pointer contains
                 using ptr_element_type = SerdeSpec<T, TFormatType>::element_type;
                 
@@ -558,7 +585,7 @@ namespace SGCore::Serde
                 tmpView.getValueContainer() = valueView.getValueContainer();
                 tmpView.m_version = valueView.m_version;
 
-                // trying to deserialize T as one of its derived types
+                // trying to deserialize T as one of its derived types (this function will allocate object)
                 deserializeAsOneOfDerivedTypes<ptr_element_type, TFormatType>(tmpView, std::forward<SharedDataT>(sharedData)...);
                 
                 // if one of derived types T was deserialized
@@ -572,40 +599,80 @@ namespace SGCore::Serde
                     // collecting all base types of ptr_element_type in very base type to DerivedT order
                     using base_types = typename collect_all_base_types<ptr_element_type, TFormatType>::type;
 
-                    // calling pointer`s SerdeSpec deserialize. It must allocate the object
-                    invokeSerdeSpecDeserialize(valueView, std::forward<SharedDataT>(sharedData)...);
-                    
+                    if constexpr(!std::is_abstract_v<ptr_element_type>)
+                    {
+                        // allocating object. all SerdeSpec for pointer types must provide this function
+                        *valueView.m_data = SerdeSpec<T, TFormatType>::allocateObject();
+                    }
+                    else
+                    {
+                        if constexpr(requires { SerdeSpec<ptr_element_type, TFormatType>::allocateObject; })
+                        {
+                            auto* object = SerdeSpec<ptr_element_type, TFormatType>::allocateObject();
+                            // setting raw pointer ('object') to 'valueView'
+                            SerdeSpec<T, TFormatType>::setObjectRawPointer(valueView, object);
+                        }
+                        else
+                        {
+                            // we have no derived types of 'ptr_element_type' but 'ptr_element_type' is abstract type
+                            if constexpr(!Utils::isDerivedTypesProvided<ptr_element_type, TFormatType>())
+                            {
+                                static_assert(always_false<ptr_element_type>::value,
+                                        "Can not allocate object of abstract type (using new expression or SerdeSpec<AbstractType, TFormatType>::allocateObject().");
+                            }
+
+                            // NOT static_assert BECAUSE WE CAN NOT DETERMINE IF OBJECT WAS DESERIALIZED AS DERIVED TYPE IN COMPILE-TIME
+                            //
+                            // Theoretically, this case is possible only with initially incorrectly serialized data, which is now being deserialized.
+                            // An abstract type cannot be allocated in a program, therefore, only a non-abstract type
+                            // inheriting the current abstract type can be allocated, and therefore,
+                            // this non-abstract type must always be serialized and deserialized.
+                            //
+                            // Also, such behavior is possible when forgetting to specify a non-abstract type as a type inheriting
+                            // the current abstract type in the SerdeSpec implementation of the current abstract type.
+                            // Please, make sure that you specify all derived types in BaseTypes of SerdeSpec<ptr_element_type (abstract type), TFormatType>
+                            const std::string assertMsg = fmt::format("Can not allocate object of abstract type (using new expression or SerdeSpec<{}, TFormatType>::allocateObject(). Abstract type is: {}",
+                                                                      typeid(ptr_element_type).name(),
+                                                                      typeid(ptr_element_type).name());
+
+                            SG_ASSERT(false, assertMsg.data());
+                        }
+                    }
+
                     // assigning allocated pointer
                     tmpView.m_data = SerdeSpec<T, TFormatType>::getObjectRawPointer(valueView);
 
                     // then we are deserializing all base types
                     // deserializing base types of ptr_element_type
-                    deserializeBaseTypes<ptr_element_type, TFormatType, base_types>(tmpView, std::forward<SharedDataT>(sharedData)...);
+                    deserializeBaseTypes<base_types>(tmpView, std::forward<SharedDataT>(sharedData)...);
 
                     // finally we are calling deserialization of ptr_element_type type members
                     invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
                 }
-                
-                return;
             }
-
-            if(valueView.getValueContainer().m_typeName != SerdeSpec<T, TFormatType>::type_name)
+            else
             {
-                *valueView.getValueContainer().m_outputLog += "Can not deserialize value with type '" + valueView.getValueContainer().m_typeName + "' using T as '" + SerdeSpec<T, TFormatType>::type_name + "'.\n";
 
-                return;
+                if(valueView.getValueContainer().m_typeName != SerdeSpec<T, TFormatType>::type_name)
+                {
+                    *valueView.getValueContainer().m_outputLog +=
+                            "Can not deserialize value with type '" + valueView.getValueContainer().m_typeName +
+                            "' using T as '" + SerdeSpec<T, TFormatType>::type_name + "'.\n";
+
+                    return;
+                }
+
+                // deserialize without dynamic checks (static deserialization)
+
+                // collecting all base types of T in very base type to DerivedT order
+                using base_types = typename collect_all_base_types<T, TFormatType>::type;
+
+                // deserializing base types
+                deserializeBaseTypes<base_types>(valueView, std::forward<SharedDataT>(sharedData)...);
+
+                // deserializing only T type members
+                invokeSerdeSpecDeserialize(valueView, std::forward<SharedDataT>(sharedData)...);
             }
-
-            // deserialize without dynamic checks (static deserialization)
-
-            // collecting all base types of T in very base type to DerivedT order
-            using base_types = typename collect_all_base_types<T, TFormatType>::type;
-            
-            // deserializing base types
-            deserializeBaseTypes<T, TFormatType, base_types>(valueView, std::forward<SharedDataT>(sharedData)...);
-
-            // deserializing only T type members
-            invokeSerdeSpecDeserialize(valueView, std::forward<SharedDataT>(sharedData)...);
         }
         
         template<typename T, FormatType TFormatType, typename... SharedDataT>
@@ -749,11 +816,24 @@ namespace SGCore::Serde
         template<typename T, FormatType TFormatType, typename... SharedDataT>
         static void tryToSerializeAsDerivedType(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
-            // serializing derived types only if information of them was provided
+            // serializing derived types only if information of them was provided and count of derived types > 0
             if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
             {
                 trySerializeAsDerivedType<T, TFormatType, 0>(valueView, std::forward<SharedDataT>(sharedData)...);
-                return;
+            }
+            else
+            {
+                // collecting all base types of T
+                using base_types = typename collect_all_base_types<T, TFormatType>::type;
+
+                std::cout << "serializing type...:: " << typeid(T).name() << std::endl;
+
+                // calling serialize all base types using 'base_types'
+                serializeBaseTypes<base_types>(valueView, std::make_index_sequence<base_types::types_count>(),
+                                               std::forward<SharedDataT>(sharedData)...);
+
+                // calling serialization of T
+                invokeSerdeSpecSerialize(valueView, std::forward<SharedDataT>(sharedData)...);
             }
         }
         
@@ -806,7 +886,7 @@ namespace SGCore::Serde
          * @tparam T
          * @param valueView
          */
-        template<typename T, FormatType TFormatType, types_container_t CollectedBaseTypes, typename... SharedDataT>
+        template<types_container_t CollectedBaseTypes, typename T, FormatType TFormatType, typename... SharedDataT>
         static void deserializeBaseTypes(DeserializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
             std::cout << "deserializeBaseTypes " << std::string(GENERATOR_PRETTY_FUNCTION) << std::endl;
@@ -842,14 +922,30 @@ namespace SGCore::Serde
             if(valueView.getValueContainer().m_typeName == SerdeSpec<DerivedT, TFormatType>::type_name)
             {
                 // allocating object of DerivedT
-                auto* derivedObject = new DerivedT();
+                DerivedT* derivedObject { };
+                if constexpr(!std::is_abstract_v<DerivedT>)
+                {
+                    derivedObject = new DerivedT();
+                }
+                else
+                {
+                    if constexpr(requires { SerdeSpec<DerivedT, TFormatType>::allocateObject; })
+                    {
+                        derivedObject = SerdeSpec<DerivedT, TFormatType>::allocateObject();
+                    }
+                    else
+                    {
+                        static_assert(always_false<DerivedT>::value, "Can not allocate object of abstract type (using new expression or SerdeSpec<AbstractType, TFormatType>::allocateObject().");
+                    }
+                }
+
                 tmpView.m_data = derivedObject;
 
                 // collecting all base types of DerivedT in very base type to DerivedT order
                 using base_types = typename collect_all_base_types<DerivedT, TFormatType>::type;
                 
                 // deserializing base types of DerivedT
-                deserializeBaseTypes<DerivedT, TFormatType, base_types>(tmpView, std::forward<SharedDataT>(sharedData)...);
+                deserializeBaseTypes<base_types>(tmpView, std::forward<SharedDataT>(sharedData)...);
                 
                 // deserializing members of DerivedT
                 invokeSerdeSpecDeserialize(tmpView, std::forward<SharedDataT>(sharedData)...);
@@ -892,7 +988,7 @@ namespace SGCore::Serde
         template<typename T, FormatType TFormatType, typename... SharedDataT>
         static void deserializeAsOneOfDerivedTypes(DeserializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
-            // deserializing base types only if information of them was provided
+            // deserializing derived types only if information of them was provided and count of derived types > 0
             if constexpr(Utils::isDerivedTypesProvided<T, TFormatType>())
             {
                 deserializeAsOneOfDerivedTypesImpl<T, TFormatType>

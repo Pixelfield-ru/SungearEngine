@@ -2953,39 +2953,6 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
-        template<typename... SharedDataT>
-        static void serialize(SerializableValueView<std::unique_ptr<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
-        {
-            if(!*valueView.m_data)
-            {
-                valueView.getValueContainer().setAsNull();
-                return;
-            }
-
-            SerializableValueView<T, TFormatType> tmpView = { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_data = valueView.m_data->get();
-
-            // serializing values of T with passing shared data
-            Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
-        }
-
-        template<typename... SharedDataT>
-        static void deserialize(DeserializableValueView<std::unique_ptr<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
-        {
-            // if value is null then doing nothing
-            if(valueView.getValueContainer().isNull())
-            {
-                return;
-            }
-
-            if constexpr(!std::is_abstract_v<T>)
-            {
-                // allocating object
-                *valueView.m_data = std::make_unique<T>();
-            }
-        }
-
         template<typename ValueViewT>
         static T* getObjectRawPointer(ValueViewT& valueView)
         {
@@ -2996,6 +2963,11 @@ namespace SGCore::Serde
         static void setObjectRawPointer(ValueViewT& valueView, T0* pointer) noexcept
         {
             *valueView.m_data = std::move(std::unique_ptr<T0>(pointer));
+        }
+
+        static std::unique_ptr<T> allocateObject()
+        {
+            return std::make_unique<T>();
         }
     };
 
@@ -3008,39 +2980,6 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
 
-        template<typename... SharedDataT>
-        static void serialize(SerializableValueView<std::shared_ptr<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
-        {
-            if(!*valueView.m_data)
-            {
-                valueView.getValueContainer().setAsNull();
-                return;
-            }
-
-            SerializableValueView<T, TFormatType> tmpView = { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_data = valueView.m_data->get();
-
-            // serializing values of T with passing shared data
-            Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
-        }
-
-        template<typename... SharedDataT>
-        static void deserialize(DeserializableValueView<std::shared_ptr<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
-        {
-            // if value is null then doing nothing
-            if(valueView.getValueContainer().isNull())
-            {
-                return;
-            }
-
-            if constexpr(!std::is_abstract_v<T>)
-            {
-                // allocating object
-                *valueView.m_data = std::make_shared<T>();
-            }
-        }
-
         template<typename ValueViewT>
         static T* getObjectRawPointer(ValueViewT& valueView)
         {
@@ -3052,6 +2991,11 @@ namespace SGCore::Serde
         {
             *valueView.m_data = std::move(std::shared_ptr<T0>(pointer));
         }
+
+        static std::shared_ptr<T> allocateObject()
+        {
+            return std::make_shared<T>();
+        }
     };
 
     // ====================================================================================
@@ -3062,40 +3006,6 @@ namespace SGCore::Serde
         static inline const std::string type_name = SerdeSpec<T, TFormatType>::type_name;
         static inline constexpr bool is_pointer_type = true;
         using element_type = T;
-
-        template<typename... SharedDataT>
-        static void serialize(SerializableValueView<T*, TFormatType>& valueView, SharedDataT&&... sharedData)
-        {
-            // if value is null then doing nothing
-            if(!*valueView.m_data)
-            {
-                valueView.getValueContainer().setAsNull();
-                return;
-            }
-
-            SerializableValueView<T, TFormatType> tmpView = { };
-            tmpView.getValueContainer() = valueView.getValueContainer();
-            tmpView.m_data = *valueView.m_data;
-
-            // serializing values of T with passing shared data
-            Serde::Serializer::invokeSerdeSpecSerialize(tmpView, std::forward<SharedDataT>(sharedData)...);
-        }
-
-        template<typename... SharedDataT>
-        static void deserialize(DeserializableValueView<T*, TFormatType>& valueView, SharedDataT&&... sharedData)
-        {
-            // if value is null then doing nothing
-            if(valueView.getValueContainer().isNull())
-            {
-                return;
-            }
-
-            if constexpr(!std::is_abstract_v<T>)
-            {
-                // allocating object
-                *valueView.m_data = new T();
-            }
-        }
 
         template<typename ValueViewT>
         static T* getObjectRawPointer(ValueViewT& valueView)
@@ -3112,6 +3022,11 @@ namespace SGCore::Serde
                 *valueView.m_data = nullptr;
             }
             *valueView.m_data = pointer;
+        }
+
+        static T* allocateObject()
+        {
+            return new T();
         }
     };
 
@@ -3346,27 +3261,7 @@ namespace SGCore::Serde
                 if(val)
                 {
                     const std::string memberName = valueView.getValueContainer().getMemberName(it);
-                    KeyT resultKey;
-                    if constexpr(std::is_convertible_v<std::string, KeyT>)
-                    {
-                        resultKey = memberName;
-                    }
-                    else if constexpr(std::numeric_limits<KeyT>::is_integer && std::numeric_limits<KeyT>::is_signed)
-                    {
-                        resultKey = std::stoll(memberName);
-                    }
-                    else if constexpr(std::numeric_limits<KeyT>::is_integer && !std::numeric_limits<KeyT>::is_signed)
-                    {
-                        resultKey = std::stoull(memberName);
-                    }
-                    else if constexpr(std::is_floating_point_v<KeyT>)
-                    {
-                        resultKey = std::stold(memberName);
-                    }
-                    else
-                    {
-                        static_assert(always_false<KeyT>::value, "std::string can not be casted to KeyT in std::unordered_map.");
-                    }
+                    KeyT resultKey = fromString<KeyT>(memberName);
 
                     (*valueView.m_data)[resultKey] = *val;
                 }
@@ -3934,16 +3829,16 @@ namespace SGCore::Serde
         {
             std::cout << "iasset: " << typeid(*valueView.m_data).name() << std::endl;
 
-            assetsPackage.m_useSerdeForCurrentAsset = assetsPackage.isDataSerde() ||
-                                                      valueView.m_data->m_forceDataSerialization ||
-                                                      !assetsPackage.getParentAssetManager()->isAssetExists(
+            assetsPackage.m_useDataSerdeForCurrentAsset = assetsPackage.isDataSerde() ||
+                                                          valueView.m_data->m_forceDataSerialization ||
+                                                          !assetsPackage.getParentAssetManager()->isAssetExists(
                                                                     valueView.m_data
                                                             );
 
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
             valueView.getValueContainer().addMember("m_storageType", valueView.m_data->getStorageType());
-            valueView.getValueContainer().addMember("m_useBinaryFileToSerde", assetsPackage.m_useSerdeForCurrentAsset);
+            valueView.getValueContainer().addMember("m_useDataSerde", assetsPackage.m_useDataSerdeForCurrentAsset);
         }
 
         /// This function is used in any other cases.
@@ -3976,15 +3871,17 @@ namespace SGCore::Serde
                 valueView.m_data->m_storageType = *assetStorageType;
             }
 
-            const auto useBinaryFileToDeserialize = valueView.getValueContainer().template getMember<bool>("m_useBinaryFileToSerde");
-            if(useBinaryFileToDeserialize)
+            const auto useDataSerde = valueView.getValueContainer().template getMember<bool>("m_useDataSerde");
+            if(useDataSerde)
             {
-                valueView.m_data->m_useBinaryFileToSerde = *useBinaryFileToDeserialize;
+                valueView.m_data->m_useDataSerde = *useDataSerde;
             }
             else
             {
-                valueView.m_data->m_useBinaryFileToSerde = false;
+                valueView.m_data->m_useDataSerde = false;
             }
+            
+            assetsPackage.m_useDataSerdeForCurrentAsset = valueView.m_data->m_useDataSerde;
         }
 
         /// This function is used in any other cases.
@@ -4035,31 +3932,30 @@ namespace SGCore::Serde
             std::cout << "texture2d" << std::endl;
 
             /// The \p m_textureDate field is very large, so we save it to a binary file instead of a JSON file.\n\n
-            /// But we only save this field when we have \p assetsPackage.m_useSerdeForCurrentAsset equals to \p true .
+            /// But we only save fields of current asset when we have \p assetsPackage.m_useSerdeForCurrentAsset equals to \p true .
             /// \p assetsPackage.m_useBinarySerdeForCurrentAsset equals to \p true when assets must be serialized along with data (\p assetsPackage.isDataSerde() equals to \p true ),
             /// or if the current serialized asset REQUIRES that we MUST serialize the asset along with data,
             /// or current serialized asset DOES NOT exist in parent asset manager (expression \p assetsPackage.getParentAssetManager()->isAssetExists(valueView.m_data) equals to \p false ).\n\n
-            /// This requirement is expressed using the \p m_forceDataSerializing variable in the \p IAsset class.\n\n
+            /// Requirement of necessity of serialization is expressed using the \p m_forceDataSerializing variable in the \p IAsset class.\n\n
             /// This requirement can be useful when the current serializable asset was not loaded from any file (e.g. .gltf or .obj files), but was generated via code.
             /// Thus, to save the data of such an asset, we must specify that serialization of the data of this asset is MANDATORY.\n\n
             /// We also do not save heavy data of the current asset if this asset already exists in the parent asset manager,
             /// i. e. is essentially a duplicate of an existing asset or a reference to an existing asset.
-            if(assetsPackage.m_useSerdeForCurrentAsset)
-            {
-                /// Next, we serialize the heavy data (in this case, \p m_data )
-                /// into a binary package file and get the output markup,
-                /// which indicates the position of the \p m_data data in the binary file,
-                /// as well as the size of \p m_data in bytes in the binary file.
-                AssetsPackage::DataMarkup textureDataMarkup =
-                        assetsPackage.addData(valueView.m_data->m_textureData.get(),
-                                              valueView.m_data->m_width * valueView.m_data->m_height *
-                                              valueView.m_data->m_channelsCount
-                        );
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
 
-                /// Next, we write the markup of heavy data into a JSON file for further deserialization of heavy data from a binary file.
-                valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
-            }
+            /// Next, we serialize the heavy data (in this case, \p m_data )
+            /// into a binary package file and get the output markup,
+            /// which indicates the position of the \p m_data data in the binary file,
+            /// as well as the size of \p m_data in bytes in the binary file.
+            AssetsPackage::DataMarkup textureDataMarkup =
+                    assetsPackage.addData(valueView.m_data->m_textureData.get(),
+                                          valueView.m_data->m_width * valueView.m_data->m_height *
+                                          valueView.m_data->m_channelsCount
+                    );
+
+            /// Next, we write the markup of heavy data into a JSON file for further deserialization of heavy data from a binary file.
+            valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
+            valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
 
             /// We simply add lightweight data directly to the JSON file.
             valueView.getValueContainer().addMember("m_width", valueView.m_data->m_width);
@@ -4086,8 +3982,8 @@ namespace SGCore::Serde
         /// So for each member with heavy data in your class inheriting IAsset you must store the offset in the binary file (in bytes) and the size of the data in bytes.
         static void deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            //
-            // if(!assetsPackage.m_useSerdeForCurrentAsset) return;
+            /// If the current asset has not been serialized, then we will not deserialize all the data of this asset.
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
 
             /// We just deserialize lightweight data because it is always in the JSON file (we always serialize lightweight data).
             auto width = valueView.getValueContainer().template getMember<std::int32_t>("m_width");
@@ -4140,6 +4036,11 @@ namespace SGCore::Serde
 
         /// You should never implement this function.
         // static void deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView);
+
+        static ITexture2D* allocateObject() noexcept
+        {
+            return CoreMain::getRenderer()->createTexture2D();
+        }
     };
 
     template<FormatType TFormatType>
@@ -4150,18 +4051,18 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            // if we are serializing data too
-            if(assetsPackage.m_useSerdeForCurrentAsset)
-            {
-                AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_data);
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
 
-                valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
-            }
+            AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_data);
+
+            valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
+            valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
         }
 
         static void deserialize(DeserializableValueView<TextFileAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
             auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataOffset");
             auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataSizeInBytes");
 
@@ -4216,13 +4117,10 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_type", valueView.m_data->m_type);
 
-            if(assetsPackage.m_useSerdeForCurrentAsset)
-            {
-                AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_code);
+            AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_code);
 
-                valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
-            }
+            valueView.getValueContainer().addMember("m_dataOffset", textureDataMarkup.m_offset);
+            valueView.getValueContainer().addMember("m_dataSizeInBytes", textureDataMarkup.m_sizeInBytes);
         }
 
         static void deserialize(DeserializableValueView<SGSLESubShader, TFormatType>& valueView, AssetsPackage& assetsPackage)
@@ -4262,16 +4160,20 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
             valueView.getValueContainer().addMember("m_subPasses", valueView.m_data->m_subPasses, assetsPackage);
         }
 
         static void deserialize(DeserializableValueView<ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
             auto subPasses = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_subPasses)>("m_subPasses", assetsPackage);
 
             if(subPasses)
             {
-                valueView.m_data->m_subPasses = subPasses;
+                valueView.m_data->m_subPasses = std::move(*subPasses);
             }
         }
     };
@@ -4287,56 +4189,53 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_aabb", valueView.m_data->m_aabb);
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
 
-            if(assetsPackage.m_useSerdeForCurrentAsset)
             {
-                {
-                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_indices);
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_indices);
 
-                    valueView.getValueContainer().addMember("m_indicesOffset", dataMarkup.m_offset);
-                    valueView.getValueContainer().addMember("m_indicesSizeInBytes", dataMarkup.m_sizeInBytes);
-                }
+                valueView.getValueContainer().addMember("m_indicesOffset", dataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_indicesSizeInBytes", dataMarkup.m_sizeInBytes);
+            }
 
-                {
-                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_positions);
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_positions);
 
-                    valueView.getValueContainer().addMember("m_positionsOffset", dataMarkup.m_offset);
-                    valueView.getValueContainer().addMember("m_positionsSizeInBytes", dataMarkup.m_sizeInBytes);
-                }
+                valueView.getValueContainer().addMember("m_positionsOffset", dataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_positionsSizeInBytes", dataMarkup.m_sizeInBytes);
+            }
 
-                {
-                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_uv);
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_uv);
 
-                    valueView.getValueContainer().addMember("m_uvOffset", dataMarkup.m_offset);
-                    valueView.getValueContainer().addMember("m_uvSizeInBytes", dataMarkup.m_sizeInBytes);
-                }
+                valueView.getValueContainer().addMember("m_uvOffset", dataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_uvSizeInBytes", dataMarkup.m_sizeInBytes);
+            }
 
-                {
-                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_normals);
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_normals);
 
-                    valueView.getValueContainer().addMember("m_normalsOffset", dataMarkup.m_offset);
-                    valueView.getValueContainer().addMember("m_normalsSizeInBytes", dataMarkup.m_sizeInBytes);
-                }
+                valueView.getValueContainer().addMember("m_normalsOffset", dataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_normalsSizeInBytes", dataMarkup.m_sizeInBytes);
+            }
 
-                {
-                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_tangents);
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_tangents);
 
-                    valueView.getValueContainer().addMember("m_tangentsOffset", dataMarkup.m_offset);
-                    valueView.getValueContainer().addMember("m_tangentsSizeInBytes", dataMarkup.m_sizeInBytes);
-                }
+                valueView.getValueContainer().addMember("m_tangentsOffset", dataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_tangentsSizeInBytes", dataMarkup.m_sizeInBytes);
+            }
 
-                {
-                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_bitangents);
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_bitangents);
 
-                    valueView.getValueContainer().addMember("m_bitangentsOffset", dataMarkup.m_offset);
-                    valueView.getValueContainer().addMember("m_bitangentsSizeInBytes", dataMarkup.m_sizeInBytes);
-                }
+                valueView.getValueContainer().addMember("m_bitangentsOffset", dataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_bitangentsSizeInBytes", dataMarkup.m_sizeInBytes);
+            }
 
-                {
-                    AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_bitangents);
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_bitangents);
 
-                    valueView.getValueContainer().addMember("m_bitangentsOffset", dataMarkup.m_offset);
-                    valueView.getValueContainer().addMember("m_bitangentsSizeInBytes", dataMarkup.m_sizeInBytes);
-                }
+                valueView.getValueContainer().addMember("m_bitangentsOffset", dataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_bitangentsSizeInBytes", dataMarkup.m_sizeInBytes);
             }
 
             // TODO: MAYBE SERIALIZING DATA OF PHYSICAL MESH (I DONT FUCKING KNOW HOW TO GET DATA FROM btTriangleMesh)
@@ -4351,13 +4250,13 @@ namespace SGCore::Serde
             auto aabb = valueView.getValueContainer().template getMember<AABB<>>("m_aabb");
             if(aabb)
             {
-                valueView.m_data->m_aabb = aabb;
+                valueView.m_data->m_aabb = *aabb;
             }
 
             auto name = valueView.getValueContainer().template getMember<std::string>("m_name");
             if(name)
             {
-                valueView.m_data->m_name = name;
+                valueView.m_data->m_name = std::move(*name);
             }
 
             {
@@ -4478,6 +4377,11 @@ namespace SGCore::Serde
                 valueView.m_data->generatePhysicalMesh();
             }
         }
+
+        static IMeshData* allocateObject() noexcept
+        {
+            return CoreMain::getRenderer()->createMeshData();
+        }
     };
 
     template<FormatType TFormatType>
@@ -4501,37 +4405,37 @@ namespace SGCore::Serde
             auto name = valueView.getValueContainer().template getMember<std::string>("m_name");
             if(name)
             {
-                valueView.m_data->m_name = name;
+                valueView.m_data->m_name = std::move(*name);
             }
 
-            auto children = valueView.getValueContainer().template getMember<std::vector<Ref<Node>>>("m_children");
+            auto children = valueView.getValueContainer().template getMember<std::vector<Ref<Node>>>("m_children", assetsPackage);
             if(children)
             {
-                valueView.m_data->m_children = children;
+                valueView.m_data->m_children = std::move(*children);
             }
 
             auto meshesData = valueView.getValueContainer().template getMember<std::vector<Ref<IMeshData>>>("m_meshesData", assetsPackage);
             if(meshesData)
             {
-                valueView.m_data->m_meshesData = meshesData;
+                valueView.m_data->m_meshesData = std::move(*meshesData);
             }
 
             auto position = valueView.getValueContainer().template getMember<glm::vec3>("m_position");
             if(position)
             {
-                valueView.m_data->m_position = position;
+                valueView.m_data->m_position = *position;
             }
 
             auto rotationQuaternion = valueView.getValueContainer().template getMember<glm::quat>("m_rotationQuaternion");
             if(rotationQuaternion)
             {
-                valueView.m_data->m_rotationQuaternion = rotationQuaternion;
+                valueView.m_data->m_rotationQuaternion = *rotationQuaternion;
             }
 
             auto scale = valueView.getValueContainer().template getMember<glm::vec3>("m_scale");
             if(scale)
             {
-                valueView.m_data->m_scale = scale;
+                valueView.m_data->m_scale = *scale;
             }
         }
     };
@@ -4544,6 +4448,8 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
             valueView.getValueContainer().addMember("m_importerFlags", valueView.m_data->m_importerFlags);
             valueView.getValueContainer().addMember("m_modelName", valueView.m_data->m_modelName);
             valueView.getValueContainer().addMember("m_nodes", valueView.m_data->m_nodes, assetsPackage);
@@ -4551,22 +4457,24 @@ namespace SGCore::Serde
 
         static void deserialize(DeserializableValueView<ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
             auto importerFlags = valueView.getValueContainer().template getMember<int>("m_importerFlags");
             if(importerFlags)
             {
-                valueView.m_data->m_importerFlags = importerFlags;
+                valueView.m_data->m_importerFlags = *importerFlags;
             }
 
             auto modelName = valueView.getValueContainer().template getMember<std::string>("m_modelName");
             if(modelName)
             {
-                valueView.m_data->m_modelName = modelName;
+                valueView.m_data->m_modelName = std::move(*modelName);
             }
 
             auto nodes = valueView.getValueContainer().template getMember<std::vector<Ref<Node>>>("m_nodes", assetsPackage);
             if(nodes)
             {
-                valueView.m_data->m_nodes = nodes;
+                valueView.m_data->m_nodes = std::move(*nodes);
             }
         }
     };

@@ -108,6 +108,35 @@ namespace SGCore
         return h;
     }
 
+    template<typename T>
+    static T fromString(const std::string& str) noexcept
+    {
+        if constexpr(std::is_convertible_v<std::string, T>)
+        {
+            return str;
+        }
+        else if constexpr(std::numeric_limits<T>::is_integer && std::numeric_limits<T>::is_signed)
+        {
+            return std::stoll(str);
+        }
+        else if constexpr(std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed)
+        {
+            return std::stoull(str);
+        }
+        else if constexpr(std::is_floating_point_v<T>)
+        {
+            return std::stold(str);
+        }
+        else if constexpr(std::is_enum_v<T>)
+        {
+            return (T) fromString<std::underlying_type_t<T>>(str);
+        }
+        else
+        {
+            static_assert(always_false<T>::value, "std::string can not be casted to KeyT in std::unordered_map.");
+        }
+    }
+
     /**
      * Output of this hash will be always identical on all platforms and compilers if you are using the same string.
      * @param s

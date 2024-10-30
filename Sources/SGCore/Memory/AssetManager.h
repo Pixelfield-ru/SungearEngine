@@ -346,7 +346,7 @@ namespace SGCore
             LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'", asset->m_alias, Utils::toUTF8(asset->getPath().u16string()), typeid(AssetT).name())
         }
         
-        bool areAssetsVariantsExist(const std::string& pathOrAlias) noexcept
+        bool isAnyAssetLoadedByPathOrAlias(const std::string& pathOrAlias) noexcept
         {
             auto foundVariantsIt = m_assets.find(hashString(pathOrAlias));
             
@@ -404,21 +404,7 @@ namespace SGCore
             }
         }
 
-        bool isAssetExists(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept
-        {
-            std::lock_guard guard(m_mutex);
-
-            auto foundVariantsIt = m_assets.find(hashString(pathOrAlias));
-            if(foundVariantsIt == m_assets.end())
-            {
-                return false;
-            }
-            else
-            {
-                auto foundAssetIt = foundVariantsIt->second.find(assetTypeID);
-                return foundAssetIt != foundVariantsIt->second.end();
-            }
-        }
+        bool isAssetExists(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept;
 
         /**
          * Completely deletes the asset (deletes all copies of the asset that were loaded as different types).
@@ -481,7 +467,7 @@ namespace SGCore
             {
                 case SINGLE_THREADED:
                 {
-                    if(!asset->m_useBinaryFileToSerde)
+                    if(!asset->m_useDataSerde)
                     {
                         asset->load(path);
                     }
@@ -500,7 +486,7 @@ namespace SGCore
                     auto loadAssetTask = loadInThread->createTask();
         
                     loadAssetTask->setOnExecuteCallback([this, asset, path]() {
-                        if(!asset->m_useBinaryFileToSerde)
+                        if(!asset->m_useDataSerde)
                         {
                             asset->load(path);
                         }
@@ -529,7 +515,7 @@ namespace SGCore
                     auto loadAssetTask = loadInThread->createTask();
 
                     loadAssetTask->setOnExecuteCallback([this, asset, path]() {
-                        if(!asset->m_useBinaryFileToSerde)
+                        if(!asset->m_useDataSerde)
                         {
                             asset->load(path);
                         }

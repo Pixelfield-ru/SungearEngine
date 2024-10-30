@@ -29,6 +29,22 @@ void SGCore::AssetManager::clear() noexcept
     m_assets.clear();
 }
 
+bool SGCore::AssetManager::isAssetExists(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept
+{
+    std::lock_guard guard(m_mutex);
+
+    auto foundVariantsIt = m_assets.find(hashString(pathOrAlias));
+    if(foundVariantsIt == m_assets.end())
+    {
+        return false;
+    }
+    else
+    {
+        auto foundAssetIt = foundVariantsIt->second.find(assetTypeID);
+        return foundAssetIt != foundVariantsIt->second.end();
+    }
+}
+
 void SGCore::AssetManager::fullRemoveAsset(const std::filesystem::path& aliasOrPath) noexcept
 {
     m_assets.erase(std::hash<std::filesystem::path>()(aliasOrPath));
@@ -65,7 +81,39 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
     m_package.m_parentAssetManager = this;
 
     std::string outputLog;
-    // Serde::Serializer::fromFormat(FileUtils::readFile(markupFilePath), m_assets, Serde::FormatType::JSON, outputLog, m_package);
+    decltype(m_assets) loadedAssets;
+    Serde::Serializer::fromFormat(FileUtils::readFile(markupFilePath), m_assets, Serde::FormatType::JSON, outputLog, m_package);
+
+    // adding only assets that were not loaded in current asset manager
+    for(auto& variantsIt : loadedAssets)
+    {
+        const auto& pathOrAliasHash = variantsIt.first;
+        auto& assetsByPathOrAlias = variantsIt.second;
+
+        // if no asset was loaded by path or alias with hash equals to 'variantsIt.first'
+        // then we are adding all assets from 'variantsIt.second' m_assets
+        if(!m_assets.contains(pathOrAliasHash))
+        {
+            LOG_D(SGCORE_TAG, "Loaded bunch of assets from .json and .bin files. Assets path or alias hash: {}", pathOrAliasHash);
+            m_assets[pathOrAliasHash] = std::move(assetsByPathOrAlias);
+            continue;
+        }
+
+        auto& alreadyLoadedAssetsByPathOrAlias = m_assets[pathOrAliasHash];
+
+        for(auto& assetIt : assetsByPathOrAlias)
+        {
+            const auto& assetTypeID = assetIt.first;
+            auto& asset = assetIt.second;
+
+            // if asset 'asset' does not exist in current asset manager
+            if(!alreadyLoadedAssetsByPathOrAlias.contains(assetTypeID))
+            {
+                LOG_D(SGCORE_TAG, "Loaded new asset from .json and .bin files. Asset path or alias hash: {}, asset type ID: {}", pathOrAliasHash, assetTypeID);
+                alreadyLoadedAssetsByPathOrAlias[assetTypeID] = std::move(asset);
+            }
+        }
+    }
 
     if(!outputLog.empty())
     {
