@@ -52,9 +52,6 @@ namespace SGCore
         /// You can use 'sg_implement_asset_type_id' macro.
         static inline size_t asset_type_id = StaticTypeID<IAsset>::setID(0);
 
-        /// Indicates whether IT is NECESSARY TO SAVE THE DATA TO A BINARY FILE.
-        bool m_forceDataSerialization = false;
-        
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
         Event<void(IAsset* asset)> onLoadDone;
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
@@ -137,6 +134,10 @@ namespace SGCore
         /// Specifies whether to load this asset from a binary file. If true, the \p loadFromBinaryFile function is called.
         /// READ ONLY.
         bool m_useDataSerde = false;
+
+        /// ALWAYS ASSIGNING TO FALSE WHEN CALLING AssetManager::createPackage()
+        /// DOT NOT EDIT IN OTHER PLACES!
+        bool m_hasBeenSerialized = false;
 
         template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, InstanceT>)

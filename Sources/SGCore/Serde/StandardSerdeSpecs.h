@@ -48,6 +48,7 @@
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Graphics/API/ICubemapTexture.h"
 #include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
@@ -3229,7 +3230,7 @@ namespace SGCore::Serde
         template<typename... SharedDataT>
         static void serialize(SerializableValueView<std::unordered_map<KeyT, ValueT>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
-            for(const auto& [key, value] : *valueView.m_data)
+            for(auto& [key, value] : *valueView.m_data)
             {
                 std::string resultKey;
                 if constexpr(std::is_convertible_v<KeyT, std::string>)
@@ -3819,7 +3820,13 @@ namespace SGCore::Serde
     // ===================================================================================================================
 
     template<FormatType TFormatType>
-    struct SerdeSpec<IAsset, TFormatType> : BaseTypes<>, DerivedTypes<ITexture2D, TextFileAsset, ShaderAnalyzedFile, ModelAsset>
+    struct SerdeSpec<IAsset, TFormatType> : BaseTypes<>, DerivedTypes<
+            ITexture2D,
+            TextFileAsset,
+            ShaderAnalyzedFile,
+            ModelAsset,
+            IMaterial
+            >
     {
         static inline const std::string type_name = "SGCore::IAsset";
         static inline constexpr bool is_pointer_type = false;
@@ -3829,11 +3836,10 @@ namespace SGCore::Serde
         {
             std::cout << "iasset: " << typeid(*valueView.m_data).name() << std::endl;
 
-            assetsPackage.m_useDataSerdeForCurrentAsset = assetsPackage.isDataSerde() ||
-                                                          valueView.m_data->m_forceDataSerialization ||
-                                                          !assetsPackage.getParentAssetManager()->isAssetExists(
-                                                                    valueView.m_data
-                                                            );
+            // if we are saving data of assets and current serializable asset was not serialized earlier
+            assetsPackage.m_useDataSerdeForCurrentAsset = assetsPackage.isDataSerde() && !valueView.m_data->m_hasBeenSerialized;
+            // this asset is serialized
+            valueView.setDataMemberValue(&IAsset::m_hasBeenSerialized, true);
 
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
@@ -3918,7 +3924,7 @@ namespace SGCore::Serde
     };
 
     template<FormatType TFormatType>
-    struct SerdeSpec<ITexture2D, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    struct SerdeSpec<ITexture2D, TFormatType> : BaseTypes<IAsset>, DerivedTypes<ICubemapTexture>
     {
         /// We indicate the type we are working with.
         static inline const std::string type_name = "SGCore::ITexture2D";
@@ -3934,8 +3940,7 @@ namespace SGCore::Serde
             /// The \p m_textureDate field is very large, so we save it to a binary file instead of a JSON file.\n\n
             /// But we only save fields of current asset when we have \p assetsPackage.m_useSerdeForCurrentAsset equals to \p true .
             /// \p assetsPackage.m_useBinarySerdeForCurrentAsset equals to \p true when assets must be serialized along with data (\p assetsPackage.isDataSerde() equals to \p true ),
-            /// or if the current serialized asset REQUIRES that we MUST serialize the asset along with data,
-            /// or current serialized asset DOES NOT exist in parent asset manager (expression \p assetsPackage.getParentAssetManager()->isAssetExists(valueView.m_data) equals to \p false ).\n\n
+            /// and current serialized asset DOES NOT SERIALIZED EARLIER (\p valueView.m_data->m_hasBeenSerialized equals to \p false )\n\n
             /// Requirement of necessity of serialization is expressed using the \p m_forceDataSerializing variable in the \p IAsset class.\n\n
             /// This requirement can be useful when the current serializable asset was not loaded from any file (e.g. .gltf or .obj files), but was generated via code.
             /// Thus, to save the data of such an asset, we must specify that serialization of the data of this asset is MANDATORY.\n\n
@@ -4040,6 +4045,36 @@ namespace SGCore::Serde
         static ITexture2D* allocateObject() noexcept
         {
             return CoreMain::getRenderer()->createTexture2D();
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<ICubemapTexture, TFormatType> : BaseTypes<ITexture2D>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::ICubemapTexture";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<ICubemapTexture, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
+            valueView.getValueContainer().addMember("m_parts", valueView.m_data->m_parts, assetsPackage);
+        }
+
+        static void deserialize(DeserializableValueView<ICubemapTexture, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
+            auto parts = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_parts)>("m_parts", assetsPackage);
+            if(parts)
+            {
+                valueView.m_data->m_parts = std::move(*parts);
+            }
+        }
+
+        static ICubemapTexture* allocateObject() noexcept
+        {
+            return CoreMain::getRenderer()->createCubemapTexture();
         }
     };
 
@@ -4179,6 +4214,96 @@ namespace SGCore::Serde
     };
 
     template<FormatType TFormatType>
+    struct SerdeSpec<IMaterial, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::IMaterial";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<IMaterial, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
+            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+
+            valueView.getValueContainer().addMember("m_textures", valueView.m_data->m_textures, assetsPackage);
+
+            valueView.getValueContainer().addMember("m_diffuseColor", valueView.m_data->m_diffuseColor);
+            valueView.getValueContainer().addMember("m_specularColor", valueView.m_data->m_specularColor);
+            valueView.getValueContainer().addMember("m_ambientColor", valueView.m_data->m_ambientColor);
+            valueView.getValueContainer().addMember("m_emissionColor", valueView.m_data->m_emissionColor);
+            valueView.getValueContainer().addMember("m_transparentColor", valueView.m_data->m_transparentColor);
+            valueView.getValueContainer().addMember("m_shininess", valueView.m_data->m_shininess);
+            valueView.getValueContainer().addMember("m_metallicFactor", valueView.m_data->m_metallicFactor);
+            valueView.getValueContainer().addMember("m_roughnessFactor", valueView.m_data->m_roughnessFactor);
+        }
+
+        static void deserialize(DeserializableValueView<IMaterial, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
+
+            auto name = valueView.getValueContainer().template getMember<std::string>("m_name");
+            if(name)
+            {
+                valueView.m_data->m_name = std::move(*name);
+            }
+
+            auto textures = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_textures)>("m_textures", assetsPackage);
+            if(textures)
+            {
+                valueView.m_data->m_textures = std::move(*textures);
+            }
+
+            const auto diffuseColor = valueView.getValueContainer().template getMember<glm::vec4>("m_diffuseColor");
+            if(diffuseColor)
+            {
+                valueView.m_data->m_diffuseColor = *diffuseColor;
+            }
+
+            const auto specularColor = valueView.getValueContainer().template getMember<glm::vec4>("m_specularColor");
+            if(specularColor)
+            {
+                valueView.m_data->m_specularColor = *specularColor;
+            }
+
+            const auto ambientColor = valueView.getValueContainer().template getMember<glm::vec4>("m_ambientColor");
+            if(ambientColor)
+            {
+                valueView.m_data->m_ambientColor = *ambientColor;
+            }
+
+            const auto emissionColor = valueView.getValueContainer().template getMember<glm::vec4>("m_emissionColor");
+            if(emissionColor)
+            {
+                valueView.m_data->m_emissionColor = *emissionColor;
+            }
+
+            const auto transparentColor = valueView.getValueContainer().template getMember<glm::vec4>("m_transparentColor");
+            if(transparentColor)
+            {
+                valueView.m_data->m_transparentColor = *transparentColor;
+            }
+
+            const auto shininess = valueView.getValueContainer().template getMember<float>("m_shininess");
+            if(shininess)
+            {
+                valueView.m_data->m_shininess = *shininess;
+            }
+
+            const auto metallicFactor = valueView.getValueContainer().template getMember<float>("m_metallicFactor");
+            if(metallicFactor)
+            {
+                valueView.m_data->m_metallicFactor = *metallicFactor;
+            }
+
+            const auto roughnessFactor = valueView.getValueContainer().template getMember<float>("m_roughnessFactor");
+            if(roughnessFactor)
+            {
+                valueView.m_data->m_roughnessFactor = *roughnessFactor;
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
     struct SerdeSpec<IMeshData, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::IMeshData";
@@ -4241,8 +4366,7 @@ namespace SGCore::Serde
             // TODO: MAYBE SERIALIZING DATA OF PHYSICAL MESH (I DONT FUCKING KNOW HOW TO GET DATA FROM btTriangleMesh)
             valueView.getValueContainer().addMember("m_generatePhysicalMesh", valueView.m_data->m_physicalMesh != nullptr);
 
-            // TODO: ща лень
-            // valueView.getValueContainer().addMember("m_material", valueView.m_data->m_material);
+            valueView.getValueContainer().addMember("m_material", valueView.m_data->m_material, assetsPackage);
         }
 
         static void deserialize(DeserializableValueView<IMeshData, TFormatType>& valueView, AssetsPackage& assetsPackage)

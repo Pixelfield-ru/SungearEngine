@@ -28,7 +28,7 @@ namespace SGCore::Serde
         template<typename T, typename... SharedDataT>
         std::optional<T> getMember(const std::string& memberName, SharedDataT&&... sharedData) noexcept
         {
-            if(!(m_thisValue || m_document))
+            if(!(m_thisValue && m_document))
             {
                 if(m_outputLog)
                 {
@@ -97,7 +97,7 @@ namespace SGCore::Serde
         template<typename T, typename... SharedDataT>
         [[nodiscard]] std::vector<T> getAsArray(SharedDataT&&... sharedData) noexcept
         {
-            if(!(m_thisValue || m_document))
+            if(!(m_thisValue && m_document))
             {
                 if(m_outputLog)
                 {
@@ -253,7 +253,7 @@ namespace SGCore::Serde
         template<typename T, typename... SharedDataT>
         std::optional<T> getMember(const rapidjson::Value::MemberIterator& memberIterator, SharedDataT&&... sharedData) noexcept
         {
-            if(!(m_thisValue || m_document))
+            if(!(m_thisValue && m_document))
             {
                 if(m_outputLog)
                 {
@@ -315,7 +315,7 @@ namespace SGCore::Serde
         template<typename T, typename... SharedDataT>
         std::optional<T> getMember(const rapidjson::Value::ValueIterator& arrayIterator, SharedDataT&&... sharedData) noexcept
         {
-            if(!(m_thisValue || m_document))
+            if(!(m_thisValue && m_document))
             {
                 if(m_outputLog)
                 {
@@ -403,7 +403,7 @@ namespace SGCore::Serde
         template<typename T0, FormatType TFormatType0>
         friend struct SerializableValueView;
 
-        template<typename... SharedDataT, typename T>
+        template<typename T, typename... SharedDataT>
         void addMember(const std::string& name, const T& value, SharedDataT&&... sharedData) noexcept
         {
             if (!(m_thisValue || m_document)) return;
@@ -462,7 +462,7 @@ namespace SGCore::Serde
             m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
         }
 
-        template<typename... SharedDataT, typename T>
+        template<typename T, typename... SharedDataT>
         void pushBack(const T& value, SharedDataT&&... sharedData) noexcept
         {
             addMember("", value, std::forward<SharedDataT>(sharedData)...);

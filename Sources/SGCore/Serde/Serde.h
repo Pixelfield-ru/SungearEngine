@@ -14,6 +14,11 @@
 
 #include "Common.h"
 
+/**
+ *  Sungear Engine Core Serde.\n\n
+ *  Please note that all serialization functions accept a const reference to an object,
+ *  but the authors of Serde do not guarantee the unchanged state of the object after serialization of the object.
+ */
 namespace SGCore::Serde
 {
     // ==============================================================================
@@ -316,7 +321,7 @@ namespace SGCore::Serde
          * @return
          */
         template<typename... SharedDataT, typename T>
-        static std::string toFormat(FormatType formatType, T& value, SharedDataT&&... sharedData) noexcept
+        static std::string toFormat(FormatType formatType, const T& value, SharedDataT&&... sharedData) noexcept
         {
             switch (formatType)
             {
@@ -466,6 +471,29 @@ namespace SGCore::Serde
     private:
         static inline FormatType m_defaultFormatType = SGCore::Serde::FormatType::JSON;
 
+        /**
+         * It is intended only for polymorphic serialization.
+         * @tparam T
+         */
+        template<typename T, FormatType TFormatType>
+        static void checkSerializationOfAbstractType()
+        {
+            // we are calling assert only if type T is abstract type and implementation of SerdeSpec for this type does not have function allocateObject
+            if constexpr(std::is_abstract_v<T> && !requires { SerdeSpec<T, TFormatType>::allocateObject; })
+            {
+                // This case is possible only if the user forgot to specify all derived types in the SerdeSpec implementation of the current abstract type.
+                const std::string assertMsg = fmt::format(
+                        "Can not serialize object of abstract type. Current serialization type: {}. Abstract type is: {}. "
+                        "You may not have specified all derived types for the SerdeSpec implementation of the current abstract type.",
+                        typeid(T).name(),
+                        std::to_underlying(TFormatType),
+                        typeid(T).name());
+
+                // We call assert, not static_assert, because we cannot determine the final derived type in compile-time during polymorphic serialization.
+                SG_ASSERT(false, assertMsg.data());
+            }
+        }
+
         /// Collects all base types of \p FromT type and returns \p std::tuple with all base types from very base type to \p FromT type
         template<typename FromT, FormatType TFormatType>
         struct collect_all_base_types
@@ -533,6 +561,8 @@ namespace SGCore::Serde
             }
             else
             {
+                checkSerializationOfAbstractType<T, TFormatType>();
+
                 // getting all base types from very base type in inheritance tree to very derived type
                 using base_types = typename collect_all_base_types<T, TFormatType>::type;
 
@@ -631,8 +661,10 @@ namespace SGCore::Serde
                             // Also, such behavior is possible when forgetting to specify a non-abstract type as a type inheriting
                             // the current abstract type in the SerdeSpec implementation of the current abstract type.
                             // Please, make sure that you specify all derived types in BaseTypes of SerdeSpec<ptr_element_type (abstract type), TFormatType>
-                            const std::string assertMsg = fmt::format("Can not allocate object of abstract type (using new expression or SerdeSpec<{}, TFormatType>::allocateObject(). Abstract type is: {}",
+                            const std::string assertMsg = fmt::format("Can not allocate object of abstract type (using new expression or SerdeSpec<{}, TFormatType>::allocateObject(). "
+                                                                      "Current serialization type: {}. Abstract type is: {}",
                                                                       typeid(ptr_element_type).name(),
+                                                                      std::to_underlying(TFormatType),
                                                                       typeid(ptr_element_type).name());
 
                             SG_ASSERT(false, assertMsg.data());
@@ -738,6 +770,8 @@ namespace SGCore::Serde
                 // collecting all base types of OriginalT in very base type to DerivedT order
                 if(CurrentDerivedIdx == SerdeSpec<OriginalT, TFormatType>::derived_classes_count)
                 {
+                    checkSerializationOfAbstractType<OriginalT, TFormatType>();
+
                     serializeObjectStraitDownByTree(valueView, std::forward<SharedDataT>(sharedData)...);
                 }
             }
@@ -746,6 +780,8 @@ namespace SGCore::Serde
                 // WE ARE IN THE END OF INHERITANCE TREE FOR CURRENT OBJECT. DESERIALIZING ALL BASE TYPES OF OriginalT FROM VERY BASE TYPE TO OriginalT type
                 // if we did not find correct derived type on current level then trying to serialize last correct derived type (last is: 'OriginalT')
                 // collecting all base types of OriginalT in very base type to DerivedT order
+
+                checkSerializationOfAbstractType<OriginalT, TFormatType>();
 
                 serializeObjectStraitDownByTree(valueView, std::forward<SharedDataT>(sharedData)...);
             }
@@ -823,6 +859,8 @@ namespace SGCore::Serde
             }
             else
             {
+                checkSerializationOfAbstractType<T, TFormatType>();
+
                 // collecting all base types of T
                 using base_types = typename collect_all_base_types<T, TFormatType>::type;
 
@@ -1180,7 +1218,7 @@ namespace SGCore::Serde
          * @param name
          * @param value
          */
-        template<typename... SharedDataT, typename T>
+        template<typename T, typename... SharedDataT>
         void addMember(const std::string& name, const T& value, SharedDataT&&... sharedData) noexcept
         {
 
@@ -1299,6 +1337,24 @@ namespace SGCore::Serde
     template<typename T, FormatType TFormatType>
     struct SerializableValueView
     {
+    private:
+        template<typename FieldT, bool IsClass = false>
+        struct t_field_ptr
+        {
+            using type = int;
+        };
+
+        template<typename FieldT>
+        struct t_field_ptr<FieldT, true>
+        {
+            using type = FieldT T::*;
+        };
+
+        template<typename FieldT>
+        using t_field_ptr_t = typename t_field_ptr<FieldT, std::is_class_v<T>>::type;
+
+    public:
+
         template<FormatType>
         friend struct SerializerImpl;
 
@@ -1315,6 +1371,21 @@ namespace SGCore::Serde
         SerializableValueContainer<TFormatType>& getValueContainer() noexcept
         {
             return m_valueContainer;
+        }
+
+        /**
+         * THIS FUNCTION IS USING const_cast! BE CAREFUL!
+         * @tparam FieldT
+         * @param fieldPtr
+         * @param value
+         */
+        template<typename FieldT>
+        void setDataMemberValue(t_field_ptr_t<FieldT> fieldPtr, const FieldT& value) const noexcept
+        {
+            if constexpr(std::is_class_v<T>)
+            {
+                const_cast<T*>(m_data)->*fieldPtr = value;
+            }
         }
 
     private:
