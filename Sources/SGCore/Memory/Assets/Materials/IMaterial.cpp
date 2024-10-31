@@ -86,3 +86,17 @@ void SGCore::IMaterial::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
 {
 
 }
+
+void SGCore::IMaterial::resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept
+{
+    for(auto& texturesIt : m_textures)
+    {
+        for(auto& texture : texturesIt.second)
+        {
+            if(texture)
+            {
+                texture = parentAssetManager->getAsset(texture);
+            }
+        }
+    }
+}

@@ -162,3 +162,11 @@ void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
     m_tangents = package.readData<std::vector<float>>(m_tangentsOffsetInPackage, m_tangentsSizeInPackage);
     m_bitangents = package.readData<std::vector<float>>(m_bitangentsOffsetInPackage, m_bitangentsSizeInPackage);
 }
+
+void SGCore::IMeshData::resolveMemberAssetsReferences(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    if(m_material)
+    {
+        m_material = parentAssetManager->getAsset(m_material);
+    }
+}

@@ -113,6 +113,7 @@ namespace SGCore
 
     protected:
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept;
 
         std::streamsize m_indicesOffsetInPackage = 0;
         std::streamsize m_indicesSizeInPackage = 0;

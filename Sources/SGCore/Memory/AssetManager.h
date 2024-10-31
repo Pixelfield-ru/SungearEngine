@@ -26,13 +26,25 @@ namespace SGCore
         PARALLEL_NO_LAZYLOAD
     };
 
-    class SGCORE_EXPORT AssetManager
+    class SGCORE_EXPORT AssetManager : public std::enable_shared_from_this<AssetManager>
     {
     public:
-        AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
-        
+        using assets_container_t = std::unordered_map<size_t, std::unordered_map<size_t, Ref<IAsset>>>;
+
         static void init() noexcept;
-        
+
+        AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
+
+        /// CALL ONLY AFTER RESOLVING CONFLICTS OF ASSETS.\n
+        /// CALL THIS FUNCTION IMMEDIATELY AFTER DESERIALIZATION OF ASSETS IF NO CONFLICTS WERE FOUND.\n
+        void resolveMemberAssetsReferences() noexcept;
+
+        /**
+         * Subscriber of this event MUST call resolveMemberAssetsReferences.
+         * First argument - deserialized assets from package that are conflicting with assets of current asset manager.
+         */
+        std::function<void(const assets_container_t& deserializedConflictingAssets, AssetManager* assetManager)> deserializedAssetsConflictsResolver;
+
         // =================================================================================================
         // =================================================================================================
         // =================================================================================================
@@ -62,12 +74,13 @@ namespace SGCore
             }
 
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
+            newAsset->m_parentAssetManager = shared_from_this();
             foundVariants[AssetT::asset_type_id] = newAsset;
             
             std::filesystem::path p(path);
 
             newAsset->m_path = path;
-            newAsset->m_storageType = AssetStorageType::BY_PATH;
+            newAsset->m_storedBy = AssetStorageType::BY_PATH;
             
             distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -122,11 +135,16 @@ namespace SGCore
             }
 
             foundVariants[AssetT::asset_type_id] = assetToLoad;
+            if(assetToLoad->getParentAssetManager())
+            {
+                assetToLoad->getParentAssetManager()->removeAsset(assetToLoad);
+            }
+            assetToLoad->m_parentAssetManager = shared_from_this();
             
             std::filesystem::path p(path);
 
             assetToLoad->m_path = path;
-            assetToLoad->m_storageType = AssetStorageType::BY_PATH;
+            assetToLoad->m_storedBy = AssetStorageType::BY_PATH;
             
             distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -181,9 +199,14 @@ namespace SGCore
 
             // else we are assigning asset of type 'AssetT'
             foundVariants[AssetT::asset_type_id] = assetToLoad;
+            if(assetToLoad->getParentAssetManager())
+            {
+                assetToLoad->getParentAssetManager()->removeAsset(assetToLoad);
+            }
+            assetToLoad->m_parentAssetManager = shared_from_this();
 
             assetToLoad->m_alias = alias;
-            assetToLoad->m_storageType = AssetStorageType::BY_ALIAS;
+            assetToLoad->m_storedBy = AssetStorageType::BY_ALIAS;
             
             distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -242,10 +265,11 @@ namespace SGCore
 
             // else we are creating new asset with type 'AssetT'
             Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
+            newAsset->m_parentAssetManager = shared_from_this();
             foundVariants[AssetT::asset_type_id] = newAsset;
 
             newAsset->m_alias = alias;
-            newAsset->m_storageType = AssetStorageType::BY_ALIAS;
+            newAsset->m_storedBy = AssetStorageType::BY_ALIAS;
 
             distributeAsset(newAsset, path, assetsLoadPolicy, lazyLoadInThread);
             
@@ -288,7 +312,7 @@ namespace SGCore
             const size_t hashedAssetAlias = hashString(alias);
 
             asset->m_alias = alias;
-            asset->m_storageType = AssetStorageType::BY_ALIAS;
+            asset->m_storedBy = AssetStorageType::BY_ALIAS;
 
             // getting variants of assets that were loaded with alias 'alias'
             auto& foundVariants = m_assets[hashedAssetAlias];
@@ -303,6 +327,11 @@ namespace SGCore
 
             // assigning new asset by type 'AssetT'
             foundVariants[AssetT::asset_type_id] = asset;
+            if(asset->getParentAssetManager())
+            {
+                asset->getParentAssetManager()->removeAsset(asset);
+            }
+            asset->m_parentAssetManager = shared_from_this();
             asset->setRawName(alias);
             
             if(SG_INSTANCEOF(asset.get(), GPUObject))
@@ -322,7 +351,7 @@ namespace SGCore
             const size_t hashedAssetPath = hashString(Utils::toUTF8(assetPath.u16string()));
 
             asset->m_path = assetPath;
-            asset->m_storageType = AssetStorageType::BY_PATH;
+            asset->m_storedBy = AssetStorageType::BY_PATH;
 
             // getting variants of assets that were loaded by path 'assetPath'
             auto& foundVariants = m_assets[hashedAssetPath];
@@ -337,6 +366,11 @@ namespace SGCore
 
             // assigning new asset by type 'AssetT'
             foundVariants[AssetT::asset_type_id] = asset;
+            if(asset->getParentAssetManager())
+            {
+                asset->getParentAssetManager()->removeAsset(asset);
+            }
+            asset->m_parentAssetManager = shared_from_this();
             
             if(SG_INSTANCEOF(asset.get(), GPUObject))
             {
@@ -378,7 +412,7 @@ namespace SGCore
             std::lock_guard guard(m_mutex);
 
             std::string pathOrAlias;
-            switch(asset->m_storageType)
+            switch(asset->m_storedBy)
             {
                 case AssetStorageType::BY_PATH:
                 {
@@ -428,6 +462,34 @@ namespace SGCore
             variants.erase(AssetT::asset_type_id);
         }
 
+        /**
+         * Deletes only one copy of an asset that was loaded as type AssetT.
+         * @tparam AssetT
+         * @param aliasOrPath
+         */
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        void removeAsset(const Ref<AssetT>& asset) noexcept
+        {
+            size_t pathOrAliasHash;
+            switch(asset->m_storedBy)
+            {
+                case AssetStorageType::BY_PATH:
+                    pathOrAliasHash = hashString(Utils::toUTF8(asset->getPath().u16string()));
+                    break;
+
+                case AssetStorageType::BY_ALIAS:
+                    pathOrAliasHash = hashString(asset->getAlias());
+                    break;
+            }
+
+            auto foundIt = m_assets.find(pathOrAliasHash);
+            if(foundIt == m_assets.end()) return;
+
+            auto& variants = foundIt->second;
+            variants.erase(AssetT::asset_type_id);
+        }
+
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
         [[nodiscard]] std::vector<Ref<AssetT>> getAssetsWithType() const noexcept
@@ -446,6 +508,32 @@ namespace SGCore
                 assets.push_back(std::static_pointer_cast<AssetT>(foundAssetWithTIt->second));
             }
             return assets;
+        }
+
+        /**
+         * Gets asset in this asset manager using data from \p byAsset .
+         * @param byAsset
+         * @return
+         */
+        template<typename AssetT>
+        [[nodiscard]] Ref<AssetT> getAsset(const Ref<AssetT>& byAsset) noexcept
+        {
+            size_t pathOrAliasHash { };
+            switch(byAsset->m_storedBy)
+            {
+                case AssetStorageType::BY_PATH:
+                    pathOrAliasHash = hashString(Utils::toUTF8(byAsset->getPath().u16string()));
+                    break;
+                case AssetStorageType::BY_ALIAS:
+                    pathOrAliasHash = hashString(byAsset->getAlias());
+                    break;
+            }
+
+            if(!m_assets.contains(pathOrAliasHash)) return nullptr;
+
+            if(!m_assets[pathOrAliasHash][byAsset->getTypeID()]) return nullptr;
+
+            return std::static_pointer_cast<AssetT>(m_assets[pathOrAliasHash][byAsset->getTypeID()]);
         }
 
         void clear() noexcept;

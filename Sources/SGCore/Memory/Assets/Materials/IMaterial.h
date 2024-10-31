@@ -96,6 +96,8 @@ namespace SGCore
     protected:
         std::unordered_map<SGTextureType, std::vector<Ref<ITexture2D>>> m_textures;
 
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
         glm::vec4 m_specularColor       = glm::vec4(1.0f);
         glm::vec4 m_ambientColor        = glm::vec4(0.0f);

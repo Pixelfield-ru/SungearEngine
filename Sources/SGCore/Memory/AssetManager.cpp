@@ -14,7 +14,7 @@
 
 void SGCore::AssetManager::init() noexcept
 {
-    m_instance = MakeScope<AssetManager>();
+    m_instance = MakeRef<AssetManager>();
 }
 
 SGCore::Ref<SGCore::AssetManager>& SGCore::AssetManager::getInstance() noexcept
@@ -93,18 +93,17 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
     decltype(m_assets) loadedAssets;
     Serde::Serializer::fromFormat(FileUtils::readFile(markupFilePath), loadedAssets, Serde::FormatType::JSON, outputLog, m_package);
 
-    // adding only assets that were not loaded in current asset manager
+    assets_container_t deserializedConflictingAssets;
+
+    // finding conflicting assets and adding assets that are not exist in current asset manager;
     for(auto& variantsIt : loadedAssets)
     {
         const auto& pathOrAliasHash = variantsIt.first;
         auto& assetsByPathOrAlias = variantsIt.second;
 
-        // if no asset was loaded by path or alias with hash equals to 'variantsIt.first'
-        // then we are adding all assets from 'variantsIt.second' m_assets
         if(!m_assets.contains(pathOrAliasHash))
         {
-            LOG_D(SGCORE_TAG, "Loaded bunch of assets from .json and .bin files. Assets path or alias hash: {}", pathOrAliasHash);
-            m_assets[pathOrAliasHash] = std::move(assetsByPathOrAlias);
+            m_assets[pathOrAliasHash] = variantsIt.second;
             continue;
         }
 
@@ -113,15 +112,30 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
         for(auto& assetIt : assetsByPathOrAlias)
         {
             const auto& assetTypeID = assetIt.first;
+
             auto& asset = assetIt.second;
 
-            // if asset 'asset' does not exist in current asset manager
-            if(!alreadyLoadedAssetsByPathOrAlias.contains(assetTypeID))
+            // if asset 'asset' is already exists in current asset manager
+            if(alreadyLoadedAssetsByPathOrAlias.contains(assetTypeID))
             {
-                LOG_D(SGCORE_TAG, "Loaded new asset from .json and .bin files. Asset path or alias hash: {}, asset type ID: {}", pathOrAliasHash, assetTypeID);
-                alreadyLoadedAssetsByPathOrAlias[assetTypeID] = std::move(asset);
+                // add conflicting asset
+                deserializedConflictingAssets[pathOrAliasHash][assetTypeID] = asset;
+            }
+            else
+            {
+                m_assets[pathOrAliasHash][assetTypeID] = asset;
             }
         }
+    }
+
+    if(!deserializedConflictingAssets.empty())
+    {
+        // calling resolver of conflicts
+        deserializedAssetsConflictsResolver(deserializedConflictingAssets, this);
+    }
+    else
+    {
+        resolveMemberAssetsReferences();
     }
 
     if(!outputLog.empty())
@@ -134,4 +148,15 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
 const SGCore::AssetsPackage& SGCore::AssetManager::getPackage() const noexcept
 {
     return m_package;
+}
+
+void SGCore::AssetManager::resolveMemberAssetsReferences() noexcept
+{
+    for(auto& variantsIt : m_assets)
+    {
+        for(auto& assetIt : variantsIt.second)
+        {
+            assetIt.second->resolveMemberAssetsReferences(this);
+        }
+    }
 }

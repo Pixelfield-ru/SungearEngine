@@ -333,3 +333,11 @@ void SGCore::ModelAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetM
         node->doLoadFromBinaryFile(parentAssetManager);
     }
 }
+
+void SGCore::ModelAsset::resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept
+{
+    for(auto& node : m_nodes)
+    {
+        node->resolveMemberAssetsReferences(parentAssetManager);
+    }
+}

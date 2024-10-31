@@ -3843,7 +3843,7 @@ namespace SGCore::Serde
 
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
-            valueView.getValueContainer().addMember("m_storageType", valueView.m_data->getStorageType());
+            valueView.getValueContainer().addMember("m_storedBy", valueView.m_data->storedByWhat());
             valueView.getValueContainer().addMember("m_useDataSerde", assetsPackage.m_useDataSerdeForCurrentAsset);
         }
 
@@ -3871,10 +3871,10 @@ namespace SGCore::Serde
                 valueView.m_data->m_path = std::move(*assetPath);
             }
 
-            const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storageType");
+            const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storedBy");
             if(assetPath)
             {
-                valueView.m_data->m_storageType = *assetStorageType;
+                valueView.m_data->m_storedBy = *assetStorageType;
             }
 
             const auto useDataSerde = valueView.getValueContainer().template getMember<bool>("m_useDataSerde");
@@ -3886,6 +3886,8 @@ namespace SGCore::Serde
             {
                 valueView.m_data->m_useDataSerde = false;
             }
+
+            valueView.m_data->m_parentAssetManager = assetsPackage.getParentAssetManager()->shared_from_this();
             
             assetsPackage.m_useDataSerdeForCurrentAsset = valueView.m_data->m_useDataSerde;
         }
@@ -3941,10 +3943,7 @@ namespace SGCore::Serde
             /// But we only save fields of current asset when we have \p assetsPackage.m_useSerdeForCurrentAsset equals to \p true .
             /// \p assetsPackage.m_useBinarySerdeForCurrentAsset equals to \p true when assets must be serialized along with data (\p assetsPackage.isDataSerde() equals to \p true ),
             /// and current serialized asset DOES NOT SERIALIZED EARLIER (\p valueView.m_data->m_hasBeenSerialized equals to \p false )\n\n
-            /// Requirement of necessity of serialization is expressed using the \p m_forceDataSerializing variable in the \p IAsset class.\n\n
-            /// This requirement can be useful when the current serializable asset was not loaded from any file (e.g. .gltf or .obj files), but was generated via code.
-            /// Thus, to save the data of such an asset, we must specify that serialization of the data of this asset is MANDATORY.\n\n
-            /// We also do not save heavy data of the current asset if this asset already exists in the parent asset manager,
+            /// We also do not save data of the current asset if this asset already exists in the parent asset manager,
             /// i. e. is essentially a duplicate of an existing asset or a reference to an existing asset.
             if(!assetsPackage.m_useDataSerdeForCurrentAsset) return;
 
@@ -3985,6 +3984,8 @@ namespace SGCore::Serde
         /// which means loading by the path to the asset (.gltf, .obj).\n\n
         /// Each implementation of the \p loadFromBinaryFile(...) function must load heavy data by offsets and sizes from a binary file.
         /// So for each member with heavy data in your class inheriting IAsset you must store the offset in the binary file (in bytes) and the size of the data in bytes.
+        /// \param valueView
+        /// \param assetsPackage
         static void deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             /// If the current asset has not been serialized, then we will not deserialize all the data of this asset.

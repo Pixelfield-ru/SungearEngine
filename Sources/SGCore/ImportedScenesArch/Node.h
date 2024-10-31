@@ -24,6 +24,7 @@ namespace SGCore
                                 const bool& rootAdd) noexcept;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept;
 
     public:
         std::string m_name;

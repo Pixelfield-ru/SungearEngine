@@ -19,7 +19,12 @@ const std::string& SGCore::IAsset::getAlias() const noexcept
     return m_alias;
 }
 
-SGCore::AssetStorageType SGCore::IAsset::getStorageType() const noexcept
+SGCore::AssetStorageType SGCore::IAsset::storedByWhat() const noexcept
 {
-    return m_storageType;
+    return m_storedBy;
+}
+
+SGCore::Ref<SGCore::AssetManager> SGCore::IAsset::getParentAssetManager() const noexcept
+{
+    return m_parentAssetManager.lock();
 }

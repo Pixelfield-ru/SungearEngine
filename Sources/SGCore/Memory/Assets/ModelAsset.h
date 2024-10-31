@@ -28,7 +28,8 @@ namespace SGCore
         void doLazyLoad() override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-        
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+
     private:
         // local import flags
         // TODO: maybe reimport after change flags

@@ -88,7 +88,9 @@ namespace SGCore
         long getLastModified() noexcept;
         [[nodiscard]] const std::filesystem::path& getPath() const noexcept;
         [[nodiscard]] const std::string& getAlias() const noexcept;
-        [[nodiscard]] AssetStorageType getStorageType() const noexcept;
+        [[nodiscard]] AssetStorageType storedByWhat() const noexcept;
+
+        [[nodiscard]] Ref<AssetManager> getParentAssetManager() const noexcept;
 
     protected:
         /// In the implementation of the \p doLoad function, you must implement all the logic of downloading an asset, which can be executed in parallel (for example: downloading an asset from disk).
@@ -122,14 +124,21 @@ namespace SGCore
          */
         [[nodiscard]] virtual const size_t& getTypeID() const noexcept = 0;
 
+        /**
+         * Implement this function to resolve reference of member asset that contains in current asset.
+         */
+        virtual void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept { };
+
         long m_lastModified = -1;
 
     private:
+        Weak<AssetManager> m_parentAssetManager;
+
         // we are generating UUID for these fields to guarantee uniqueness for every asset even the one that wasn`t added to AssetManager
         std::filesystem::path m_path = UUID::generateNew();
         std::string m_alias = UUID::generateNew();
 
-        AssetStorageType m_storageType = AssetStorageType::BY_PATH;
+        AssetStorageType m_storedBy = AssetStorageType::BY_PATH;
 
         /// Specifies whether to load this asset from a binary file. If true, the \p loadFromBinaryFile function is called.
         /// READ ONLY.

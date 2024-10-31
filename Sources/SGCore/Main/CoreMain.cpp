@@ -115,16 +115,16 @@ void SGCore::CoreMain::start()
 
     //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
 
-    try
-    {
+    /*try
+    {*/
         onInit();
-    }
+    /*}
     catch(const std::exception& e)
     {
         std::string what = e.what();
         LOG_E(SGCORE_TAG,
               "Error while onInit. Error is: {}", what);
-    }
+    }*/
 
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();

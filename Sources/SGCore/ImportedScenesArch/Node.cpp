@@ -126,3 +126,16 @@ void SGCore::Node::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager
         node->doLoadFromBinaryFile(parentAssetManager);
     }
 }
+
+void SGCore::Node::resolveMemberAssetsReferences(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    for(auto& meshData : m_meshesData)
+    {
+        meshData->resolveMemberAssetsReferences(parentAssetManager);
+    }
+
+    for(auto& node : m_children)
+    {
+        node->resolveMemberAssetsReferences(parentAssetManager);
+    }
+}
