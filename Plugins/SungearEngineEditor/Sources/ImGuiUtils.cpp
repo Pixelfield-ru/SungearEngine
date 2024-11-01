@@ -381,13 +381,13 @@ void SGE::ImGuiUtils::TextWithColors(const char* fmt, ...) noexcept
     }
 }
 
-SGCore::Ref<SGCore::ITexture2D> SGE::ImGuiUtils::getFileIcon(const std::filesystem::path& filePath,
-                                                             const SGCore::ivec2_32& iconSize,
-                                                             SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>&,
-                                                                                const std::string&,
-                                                                                const std::string&)>* onIconSet) noexcept
+SGCore::AssetRef<SGCore::ITexture2D> SGE::ImGuiUtils::getFileIcon(const std::filesystem::path& filePath,
+                                                                  const SGCore::ivec2_32& iconSize,
+                                                                  SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>&,
+                                                                                     const std::string&,
+                                                                                     const std::string&)>* onIconSet) noexcept
 {
-    SGCore::Ref<SGCore::ITexture2D> fileIcon;
+    SGCore::AssetRef<SGCore::ITexture2D> fileIcon;
     
     std::string fileExtension = filePath.extension().string();
     std::string fileName = filePath.stem().string();

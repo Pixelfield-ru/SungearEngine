@@ -63,15 +63,6 @@ void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirector
     m_package.m_useSerdeData = saveAssetsData;
     m_package.m_parentAssetManager = this;
 
-    // setting m_hasBeenSerialized to false. that means that no one asset was serialized
-    for(auto& variantsIt : m_assets)
-    {
-        for(auto& asset : variantsIt.second)
-        {
-            asset.second->m_hasBeenSerialized = false;
-        }
-    }
-
     const std::string writtenJSON = Serde::Serializer::toFormat(Serde::FormatType::JSON, m_assets, m_package);
 
     // writing markup (json) file
@@ -93,7 +84,7 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
     decltype(m_assets) loadedAssets;
     Serde::Serializer::fromFormat(FileUtils::readFile(markupFilePath), loadedAssets, Serde::FormatType::JSON, outputLog, m_package);
 
-    assets_container_t deserializedConflictingAssets;
+    assets_refs_container_t deserializedConflictingAssets;
 
     // finding conflicting assets and adding assets that are not exist in current asset manager;
     for(auto& variantsIt : loadedAssets)

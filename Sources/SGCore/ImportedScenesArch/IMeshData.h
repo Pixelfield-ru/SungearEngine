@@ -6,6 +6,7 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Serde/Defines.h"
+#include "SGCore/Memory/AssetRef.h"
 
 sg_predeclare_serde()
 
@@ -57,7 +58,7 @@ namespace SGCore
         // bitangents array
         std::vector<float> m_bitangents;
 
-        Ref<IMaterial> m_material;
+        AssetRef<IMaterial> m_material;
         
         Ref<btTriangleMesh> m_physicalMesh;
 
@@ -83,10 +84,10 @@ namespace SGCore
 
         /**
          * Moves all textures of the current material to the new material and sets the new material as the current one.
-         * @see Core::Memory::Assets::IMaterial::copyTextures
+         * @see Core::Memory::Assets::IMaterial::copyTexturesRefs
          * @param[in] newMaterial The material to which the textures will be moved and which will be set as the current one.
          */
-        void migrateAndSetNewMaterial(const Ref<IMaterial>& newMaterial) noexcept;
+        void migrateAndSetNewMaterial(const AssetRef<IMaterial>& newMaterial) noexcept;
         
         template<typename VScalarT, typename IScalarT>
         static Ref<btTriangleMesh> generatePhysicalMesh(const std::vector<VScalarT>& vertices, const std::vector<IScalarT>& indices) noexcept

@@ -280,9 +280,9 @@ SGCore::Ref<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiM
 }
 
 void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
-                                                    Ref<IMaterial>& sgMaterial,
-                                                    const aiTextureType& aiTexType,
-                                                    const SGTextureType& sgMaterialTextureType)
+                                      AssetRef<IMaterial>& sgMaterial,
+                                      const aiTextureType& aiTexType,
+                                      const SGTextureType& sgMaterialTextureType)
 {
     for(unsigned i = 0; i < aiMat->GetTextureCount(aiTexType); i++)
     {

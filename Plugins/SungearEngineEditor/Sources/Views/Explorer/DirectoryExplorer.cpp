@@ -944,7 +944,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         ImVec2 requiredIconSize { (m_iconsSize.x * m_UIScale.x),
                                   (m_iconsSize.y * m_UIScale.y) };
         
-        SGCore::Ref<SGCore::ITexture2D> fileIcon = ImGuiUtils::getFileIcon(curPath,
+        SGCore::AssetRef<SGCore::ITexture2D> fileIcon = ImGuiUtils::getFileIcon(curPath,
                                                                            { (std::uint32_t) requiredIconSize.x,
                                                                              (std::uint32_t) requiredIconSize.y },
                                                                            &onIconRender);

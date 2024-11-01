@@ -8,7 +8,7 @@ void SGCore::IMaterial::doLoad(const std::filesystem::path& path)
 
 }
 
-std::shared_ptr<SGCore::ITexture2D>
+SGCore::AssetRef<SGCore::ITexture2D>
 SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
                                        const std::string& path,
                                        AssetManager& toAssetManager)
@@ -22,12 +22,12 @@ SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
 }
 
 void
-SGCore::IMaterial::addTexture2D(const SGTextureType& textureType, const SGCore::Ref<SGCore::ITexture2D>& tex)
+SGCore::IMaterial::addTexture2D(const SGTextureType& textureType, const SGCore::AssetRef<SGCore::ITexture2D>& tex)
 {
     m_textures[textureType].push_back(tex);
 }
 
-void SGCore::IMaterial::copyTextures(const std::shared_ptr<IMaterial>& to) const noexcept
+void SGCore::IMaterial::copyTexturesRefs(IMaterial* to) const noexcept
 {
     to->m_textures = m_textures;
 }
@@ -77,7 +77,7 @@ SGCore::IMaterial& SGCore::IMaterial::operator=
 {
     if(this == std::addressof(other)) return *this;
 
-    other.copyTextures(shared_from_this());
+    other.copyTexturesRefs(this);
 
     return *this;
 }

@@ -138,15 +138,11 @@ namespace SGCore
         std::filesystem::path m_path = UUID::generateNew();
         std::string m_alias = UUID::generateNew();
 
-        AssetStorageType m_storedBy = AssetStorageType::BY_PATH;
+        AssetStorageType m_storedBy = AssetStorageType::BY_ALIAS;
 
         /// Specifies whether to load this asset from a binary file. If true, the \p loadFromBinaryFile function is called.
         /// READ ONLY.
         bool m_useDataSerde = false;
-
-        /// ALWAYS ASSIGNING TO FALSE WHEN CALLING AssetManager::createPackage()
-        /// DOT NOT EDIT IN OTHER PLACES!
-        bool m_hasBeenSerialized = false;
 
         template<typename InstanceT, typename... AssetCtorArgs>
         requires(std::is_base_of_v<IAsset, InstanceT>)

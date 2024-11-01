@@ -3819,6 +3819,43 @@ namespace SGCore::Serde
     // ====================================== Standard assets SerdeSpecs impl ============================================
     // ===================================================================================================================
 
+    template<typename AssetT, FormatType TFormatType>
+    struct SerdeSpec<AssetRef<AssetT>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::AssetRef";
+        static inline constexpr bool is_pointer_type = false;
+
+        // WE ARE SERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO SERIALIZATION OF DATA
+        static void serialize(SerializableValueView<AssetRef<AssetT>, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_path", (*valueView.m_data)->getPath());
+            valueView.getValueContainer().addMember("m_alias", (*valueView.m_data)->getAlias());
+            valueView.getValueContainer().addMember("m_storedBy", (*valueView.m_data)->storedByWhat());
+        }
+
+        // WE ARE DESERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO DESERIALIZATION OF DATA
+        static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto assetAlias = valueView.getValueContainer().template getMember<std::string>("m_alias");
+            if(assetAlias)
+            {
+                (*valueView.m_data)->m_alias = std::move(*assetAlias);
+            }
+
+            auto assetPath = valueView.getValueContainer().template getMember<std::string>("m_path");
+            if(assetPath)
+            {
+                (*valueView.m_data)->m_path = std::move(*assetPath);
+            }
+
+            const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storedBy");
+            if(assetPath)
+            {
+                (*valueView.m_data)->m_storedBy = *assetStorageType;
+            }
+        }
+    };
+
     template<FormatType TFormatType>
     struct SerdeSpec<IAsset, TFormatType> : BaseTypes<>, DerivedTypes<
             ITexture2D,
@@ -3837,14 +3874,11 @@ namespace SGCore::Serde
             std::cout << "iasset: " << typeid(*valueView.m_data).name() << std::endl;
 
             // if we are saving data of assets and current serializable asset was not serialized earlier
-            assetsPackage.m_useDataSerdeForCurrentAsset = assetsPackage.isDataSerde() && !valueView.m_data->m_hasBeenSerialized;
-            // this asset is serialized
-            valueView.setDataMemberValue(&IAsset::m_hasBeenSerialized, true);
+            assetsPackage.m_useDataSerdeForCurrentAsset = assetsPackage.isDataSerde();
 
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
             valueView.getValueContainer().addMember("m_storedBy", valueView.m_data->storedByWhat());
-            valueView.getValueContainer().addMember("m_useDataSerde", assetsPackage.m_useDataSerdeForCurrentAsset);
         }
 
         /// This function is used in any other cases.

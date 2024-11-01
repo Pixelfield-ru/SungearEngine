@@ -26,12 +26,12 @@ SGCore::Ref<SGCore::IMeshData> SGCore::MeshBase::getMeshData() const noexcept
     return m_meshData;
 }
 
-void SGCore::MeshBase::setMaterial(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
+void SGCore::MeshBase::setMaterial(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept
 {
     m_material = material;
 }
 
-SGCore::Ref<SGCore::IMaterial> SGCore::MeshBase::getMaterial() const noexcept
+SGCore::AssetRef<SGCore::IMaterial> SGCore::MeshBase::getMaterial() const noexcept
 {
     return m_material;
 }

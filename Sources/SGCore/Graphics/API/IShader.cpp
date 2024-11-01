@@ -10,7 +10,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 
-void SGCore::IShader::addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noexcept
+void SGCore::IShader::addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset) noexcept
 {
     if(!asset) return;
 
@@ -51,7 +51,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noex
 }
 
 void SGCore::IShader::setSubPassShader
-(const std::string& subPassName, const SGCore::Ref<SGCore::IShader>& from) noexcept
+(const std::string& subPassName, const IShader* from) noexcept
 {
     auto foundFrom = from->getSubPassShader(subPassName);
     if(foundFrom)
@@ -73,7 +73,7 @@ void SGCore::IShader::setSubPassShader
     }
 }
 
-SGCore::Ref<SGCore::ISubPassShader> SGCore::IShader::getSubPassShader(const std::string& subPassName) noexcept
+SGCore::Ref<SGCore::ISubPassShader> SGCore::IShader::getSubPassShader(const std::string& subPassName) const noexcept
 {
     auto it = std::find_if(m_subPassesShaders.begin(), m_subPassesShaders.end(), [&subPassName](const Ref<ISubPassShader>& subPassShader) {
         return subPassShader->m_subPassName == subPassName;

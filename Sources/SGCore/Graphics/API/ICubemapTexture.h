@@ -15,7 +15,7 @@ namespace SGCore
     {
         friend class AssetManager;
 
-        std::vector<Ref<ITexture2D>> m_parts;
+        std::vector<AssetRef<ITexture2D>> m_parts;
 
     private:
         template<typename InstanceT, typename... AssetCtorArgs>

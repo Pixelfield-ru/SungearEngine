@@ -28,15 +28,16 @@ namespace SGCore
         void setMeshData(const Ref<IMeshData>& meshData) noexcept;
         Ref<IMeshData> getMeshData() const noexcept;
 
-        void setMaterial(const Ref<IMaterial>& material) noexcept;
-        Ref<IMaterial> getMaterial() const noexcept;
+        void setMaterial(const AssetRef<IMaterial>& material) noexcept;
+        AssetRef<IMaterial> getMaterial() const noexcept;
 
         MeshBase& operator=(const MeshBase&) = default;
         MeshBase& operator=(MeshBase&&) noexcept = default;
 
     private:
         Ref<IMeshData> m_meshData;
-        Ref<IMaterial> m_material;
+        // this is final material. this material can be used from m_meshData as default material, or you can set custom material
+        AssetRef<IMaterial> m_material;
     };
 }
 

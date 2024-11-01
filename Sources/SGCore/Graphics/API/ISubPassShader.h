@@ -6,7 +6,8 @@
 
 #include <SGCore/pch.h>
 
-#include <SGCore/Graphics/ShaderTextureBinding.h>
+#include "SGCore/Graphics/ShaderTextureBinding.h"
+#include "SGCore/Memory/AssetWeakRef.h"
 
 #include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGCore/Memory/Assets/IAssetObserver.h"
@@ -43,7 +44,7 @@ namespace SGCore
 
         std::unordered_map<SGSLESubShaderType, Ref<SGSLESubShader>> m_subShaders;
 
-        Weak<TextFileAsset> m_fileAsset;
+        AssetWeakRef<TextFileAsset> m_fileAsset;
 
         virtual ~ISubPassShader() = default;
 
@@ -106,9 +107,9 @@ namespace SGCore
          * @param material - Material to bind textures.
          * @return Offset of samplers.
          */
-        size_t bindMaterialTextures(const Ref<IMaterial>& material) noexcept;
+        size_t bindMaterialTextures(const AssetRef<IMaterial>& material) noexcept;
         
-        void unbindMaterialTextures(const Ref<IMaterial>& material) noexcept;
+        void unbindMaterialTextures(const AssetRef<IMaterial>& material) noexcept;
         
         /**
          * Bind all vector of m_textureBindings.

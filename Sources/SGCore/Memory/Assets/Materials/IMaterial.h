@@ -4,7 +4,7 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Memory/AssetManager.h"
-#include "SGCore/Memory/Assets/IAsset.h"
+#include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 
 namespace SGCore
@@ -14,7 +14,7 @@ namespace SGCore
 
     // TODO: make remove texture
     // TODO: make function addBlockDeclaration
-    class IMaterial : public std::enable_shared_from_this<IMaterial>, public IAsset
+    class IMaterial : public IAsset
     {
     public:
         sg_serde_as_friend()
@@ -29,9 +29,9 @@ namespace SGCore
         * @param path - Path to texture.
         * @return this
         */
-        Ref<ITexture2D> findAndAddTexture2D(const SGTextureType& textureType,
-                                            const std::string& path,
-                                            AssetManager& toAssetManager = *AssetManager::getInstance());
+        AssetRef<ITexture2D> findAndAddTexture2D(const SGTextureType& textureType,
+                                                 const std::string& path,
+                                                 AssetManager& toAssetManager = *AssetManager::getInstance());
 
         /**
          * Adds texture2D.
@@ -39,9 +39,9 @@ namespace SGCore
          * @param tex - Texture to add.
          */
         void addTexture2D(const SGTextureType& textureType,
-                          const Ref<ITexture2D>& tex);
+                          const AssetRef<ITexture2D>& tex);
 
-        void copyTextures(const Ref<IMaterial>& to) const noexcept;
+        void copyTexturesRefs(IMaterial* to) const noexcept;
 
         void setDiffuseColor(const glm::vec4& col) noexcept;
 
@@ -94,7 +94,7 @@ namespace SGCore
         }
 
     protected:
-        std::unordered_map<SGTextureType, std::vector<Ref<ITexture2D>>> m_textures;
+        std::unordered_map<SGTextureType, std::vector<AssetRef<ITexture2D>>> m_textures;
 
         void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
 

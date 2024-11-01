@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_ISHADER_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Memory/AssetWeakRef.h"
 
 #include "SGCore/Memory/Assets/IAssetObserver.h"
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
@@ -21,16 +22,16 @@ namespace SGCore
     class IShader : public IAssetObserver
     {
     public:
-        Ref<ShaderAnalyzedFile> m_shaderAnalyzedFile;
+        AssetRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;
 
-        Weak<TextFileAsset> m_fileAsset;
+        AssetWeakRef<TextFileAsset> m_fileAsset;
 
-        void addSubPassShadersAndCompile(Ref<TextFileAsset> asset) noexcept;
+        void addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset) noexcept;
 
-        void setSubPassShader(const std::string& subPassName, const Ref<IShader>& from) noexcept;
+        void setSubPassShader(const std::string& subPassName, const IShader* from) noexcept;
         void setSubPassShader(const std::string& subPassName, const Ref<ISubPassShader>& subPassShader) noexcept;
 
-        Ref<ISubPassShader> getSubPassShader(const std::string& subPassName) noexcept;
+        Ref<ISubPassShader> getSubPassShader(const std::string& subPassName) const noexcept;
 
         /**
          * Calls recompile of shader program.

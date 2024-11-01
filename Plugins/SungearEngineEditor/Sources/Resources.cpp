@@ -12,7 +12,8 @@
 
 void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noexcept
 {
-    auto standardCubemap = SGCore::Ref<SGCore::ICubemapTexture>(SGCore::CoreMain::getRenderer()->createCubemapTexture());
+    // auto standardCubemap = SGCore::Ref<SGCore::ICubemapTexture>(SGCore::CoreMain::getRenderer()->createCubemapTexture());
+    auto standardCubemap = toManager.createAssetWithAlias<SGCore::ICubemapTexture>("standard_skybox0");
 
     {
         standardCubemap->m_parts.push_back(toManager.loadAsset<SGCore::ITexture2D>(
@@ -38,11 +39,9 @@ void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noex
 
         standardCubemap->setRawName("standard_skybox0");
         standardCubemap->create();
-        toManager.addAssetByAlias("standard_skybox0", standardCubemap);
 
-        auto standardCubemapMaterial = SGCore::MakeRef<SGCore::IMaterial>();
+        auto standardCubemapMaterial = toManager.createAssetWithAlias<SGCore::IMaterial>("standard_skybox_material0");
         standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, standardCubemap);
-        toManager.addAssetByAlias("standard_skybox_material0", standardCubemapMaterial);
     }
 
     toManager.loadAssetWithAlias<SGCore::ModelAsset>(

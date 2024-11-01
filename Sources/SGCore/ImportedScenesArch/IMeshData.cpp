@@ -26,7 +26,7 @@
 
 SGCore::IMeshData::IMeshData()
 {
-    m_material = MakeRef<IMaterial>();
+    m_material = AssetManager::getInstance()->createAsset<IMaterial>();
 }
 
 void SGCore::IMeshData::setVertexPosition
@@ -117,7 +117,7 @@ void SGCore::IMeshData::setData(const Ref<IMeshData>& other) noexcept
 
     prepare();
 
-    other->m_material->copyTextures(m_material);
+    other->m_material->copyTexturesRefs(m_material.get());
 }
 
 SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
@@ -140,9 +140,9 @@ SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const st
 }
 
 void SGCore::IMeshData::migrateAndSetNewMaterial
-        (const Ref<IMaterial>& newMaterial) noexcept
+        (const AssetRef<IMaterial>& newMaterial) noexcept
 {
-    m_material->copyTextures(newMaterial);
+    m_material->copyTexturesRefs(newMaterial.get());
     m_material = newMaterial;
 }
 

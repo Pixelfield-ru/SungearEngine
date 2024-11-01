@@ -198,7 +198,7 @@ void SGCore::ISubPassShader::addToGlobalStorage() noexcept
     GPUObjectsStorage::addShader(shared_from_this());
 }
 
-size_t SGCore::ISubPassShader::bindMaterialTextures(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
+size_t SGCore::ISubPassShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept
 {
     size_t offset = 0;
     
@@ -246,7 +246,7 @@ size_t SGCore::ISubPassShader::bindMaterialTextures(const SGCore::Ref<SGCore::IM
     return offset;
 }
 
-void SGCore::ISubPassShader::unbindMaterialTextures(const SGCore::Ref<SGCore::IMaterial>& material) noexcept
+void SGCore::ISubPassShader::unbindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept
 {
     std::string preallocUniformName;
     preallocUniformName.resize(48);
