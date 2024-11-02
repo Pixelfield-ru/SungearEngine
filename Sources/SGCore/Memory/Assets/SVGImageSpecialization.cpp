@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 #include <SGCore/Logger/Logger.h>
 #include "SVGImageSpecialization.h"
+#include "SGCore/Memory/AssetManager.h"
 
 void SGCore::SVGImageSpecialization::regenerate(std::uint8_t channelsCount,
                                                 SGGColorInternalFormat internalColorFormat,
@@ -20,8 +21,9 @@ void SGCore::SVGImageSpecialization::regenerate(std::uint8_t channelsCount,
     }
     
     m_size = { m_bitmap.width(), m_bitmap.height() };
-    
-    m_texture = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
+
+    // TODO: MAYBE MAKE ALIAS
+    m_texture = AssetManager::getInstance()->createAsset<ITexture2D>();
     m_texture->create(m_bitmap.data(), m_size.x, m_size.y, channelsCount, internalColorFormat, colorFormat);
 }
 
@@ -30,7 +32,7 @@ lunasvg::Bitmap& SGCore::SVGImageSpecialization::getBitmap() noexcept
     return m_bitmap;
 }
 
-SGCore::Ref<SGCore::ITexture2D> SGCore::SVGImageSpecialization::getTexture() noexcept
+SGCore::AssetRef<SGCore::ITexture2D> SGCore::SVGImageSpecialization::getTexture() noexcept
 {
     return m_texture;
 }
@@ -38,4 +40,9 @@ SGCore::Ref<SGCore::ITexture2D> SGCore::SVGImageSpecialization::getTexture() noe
 SGCore::uivec2_32 SGCore::SVGImageSpecialization::getSize() const noexcept
 {
     return m_size;
+}
+
+void SGCore::SVGImageSpecialization::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager)
+{
+
 }

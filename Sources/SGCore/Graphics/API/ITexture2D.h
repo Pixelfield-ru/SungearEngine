@@ -171,13 +171,12 @@ namespace SGCore
         std::streamsize m_textureDataOffsetInPackage = 0;
         std::streamsize m_textureDataSizeInPackage = 0;
 
-        template<typename InstanceT, typename... AssetCtorArgs>
-        requires(std::is_same_v<ITexture2D, InstanceT>)
-        static Ref<InstanceT> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
+        template<typename... AssetCtorArgs>
+        static Ref<ITexture2D> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
         {
-            auto tex = Ref<InstanceT>(CoreMain::getRenderer()->createTexture2D());
+            auto tex = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D(std::forward<AssetCtorArgs>(assetCtorArgs)...));
 
-            tex->addToGlobalStorage(std::forward<AssetCtorArgs>(assetCtorArgs)...);
+            tex->addToGlobalStorage();
 
             return tex;
         }

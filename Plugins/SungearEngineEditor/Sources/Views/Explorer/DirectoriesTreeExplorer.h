@@ -17,7 +17,7 @@ namespace SGE
 {
     struct DirectoriesTreeExplorer : SGCore::ImGuiWrap::IView
     {
-        SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>& iconTexture,
+        SGCore::Event<void(SGCore::AssetRef<SGCore::ITexture2D>& iconTexture,
                            const std::string& fileExtension,
                            const std::string& fileName)> onIconRender;
         

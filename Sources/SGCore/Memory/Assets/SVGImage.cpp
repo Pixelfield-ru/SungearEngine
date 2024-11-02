@@ -5,13 +5,14 @@
 #include <spdlog/spdlog.h>
 #include <SGCore/Logger/Logger.h>
 #include "SVGImage.h"
+#include "SGCore/Memory/AssetManager.h"
 
 void SGCore::SVGImage::doLoad(const std::filesystem::path& path)
 {
     m_document = lunasvg::Document::loadFromFile(Utils::toUTF8(path.u16string()));
 }
 
-SGCore::Ref<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept
+SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept
 {
     if(!m_document)
     {
@@ -23,8 +24,8 @@ SGCore::Ref<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(
         
         return nullptr;
     }
-    
-    Ref<SVGImageSpecialization> specialization;
+
+    AssetRef<SVGImageSpecialization> specialization;
     
     auto foundIt = std::find_if(m_specializations.begin(), m_specializations.end(), [&width, &height](const auto& spec) {
         return width == spec->getSize().x && height == spec->getSize().y;
@@ -46,7 +47,8 @@ SGCore::Ref<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(
             return nullptr;
         }
         
-        specialization = MakeRef<SVGImageSpecialization>();
+        specialization = getParentAssetManager()->createAsset<SVGImageSpecialization>();
+
         specialization->m_bitmap = std::move(bitmap);
         specialization->regenerate();
         

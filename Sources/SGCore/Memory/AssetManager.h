@@ -37,45 +37,59 @@ namespace SGCore
 
         AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
 
-        template<typename AssetT>
-        requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAsset() noexcept
+        static Ref<AssetManager> getAssetManager(const std::string& name) noexcept
         {
-            Ref<AssetT> asset = createAssetInstance<AssetT>();
-            m_assets[hashString(asset->getAlias())][AssetT::asset_type_id] = asset;
+            auto foundIt = s_allAssetsManagers.find(name);
+            if(foundIt != s_allAssetsManagers.end())
+            {
+                return foundIt->second;
+            }
 
-            return asset;
+            Ref<AssetManager> assetManager = Ref<AssetManager>(new AssetManager(name));
+            s_allAssetsManagers[name] = assetManager;
+
+            return assetManager;
         }
 
-        template<typename AssetT>
+        template<typename AssetT, typename... AssetCtorArgsT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAssetWithPath(const std::filesystem::path& withPath) noexcept
+        AssetRef<AssetT> createAsset(AssetCtorArgsT&&... assetCtorArgs) noexcept
         {
-            Ref<AssetT> asset = createAssetInstance<AssetT>();
+            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
+            m_assets[hashString(asset->getAlias())][AssetT::asset_type_id] = asset;
+
+            return AssetRef<AssetT>(asset);
+        }
+
+        template<typename AssetT, typename... AssetCtorArgsT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        AssetRef<AssetT> createAssetWithPath(const std::filesystem::path& withPath, AssetCtorArgsT&&... assetCtorArgs) noexcept
+        {
+            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             asset->m_path = withPath;
             asset->m_storedBy = AssetStorageType::BY_PATH;
             m_assets[hashString(Utils::toUTF8(asset->getPath().u16string()))][AssetT::asset_type_id] = asset;
 
-            return asset;
+            return AssetRef<AssetT>(asset);
         }
 
-        template<typename AssetT>
+        template<typename AssetT, typename... AssetCtorArgsT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAssetWithAlias(const std::string& withAlias) noexcept
+        AssetRef<AssetT> createAssetWithAlias(const std::string& withAlias, AssetCtorArgsT&&... assetCtorArgs) noexcept
         {
-            Ref<AssetT> asset = createAssetInstance<AssetT>();
+            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             asset->m_alias = withAlias;
             asset->m_storedBy = AssetStorageType::BY_ALIAS;
             m_assets[hashString(asset->getAlias())][AssetT::asset_type_id] = asset;
 
-            return asset;
+            return AssetRef<AssetT>(asset);
         }
 
-        template<typename AssetT>
+        template<typename AssetT, typename... AssetCtorArgsT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAsset(const std::filesystem::path& withPath, const std::string& withAlias, AssetStorageType storedBy) noexcept
+        AssetRef<AssetT> createAsset(const std::filesystem::path& withPath, const std::string& withAlias, AssetStorageType storedBy, AssetCtorArgsT&&... assetCtorArgs) noexcept
         {
-            Ref<AssetT> asset = createAssetInstance<AssetT>();
+            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             asset->m_path = withPath;
             asset->m_alias = withAlias;
             asset->m_storedBy = storedBy;
@@ -90,7 +104,7 @@ namespace SGCore
                     break;
             }
 
-            return asset;
+            return AssetRef<AssetT>(asset);
         }
 
         /// CALL ONLY AFTER RESOLVING CONFLICTS OF ASSETS.\n
@@ -107,12 +121,12 @@ namespace SGCore
         // =================================================================================================
         // =================================================================================================
         
-        template<typename AssetT, typename... AssetCtorArgs>
+        template<typename AssetT, typename... AssetCtorArgsT>
         requires(std::is_base_of_v<IAsset, AssetT>)
         AssetRef<AssetT> loadAsset(AssetsLoadPolicy assetsLoadPolicy,
                                    const Ref<Threading::Thread>& lazyLoadInThread,
                                    const std::filesystem::path& path,
-                                   AssetCtorArgs&& ... assetCtorArgs)
+                                   AssetCtorArgsT&& ... assetCtorArgs)
         {
             std::lock_guard guard(m_mutex);
 
@@ -128,10 +142,10 @@ namespace SGCore
             {
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
                 // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
-                return std::static_pointer_cast<AssetT>(foundAssetOfTIt->second);
+                return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetOfTIt->second));
             }
 
-            Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
+            Ref<AssetT> newAsset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             newAsset->m_parentAssetManager = shared_from_this();
             foundVariants[AssetT::asset_type_id] = newAsset;
             
@@ -146,7 +160,7 @@ namespace SGCore
 
             LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}. Asset type ID: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name(), AssetT::asset_type_id);
             
-            return newAsset;
+            return AssetRef<AssetT>(newAsset);
         }
         
         template<typename AssetT, typename... AssetCtorArgs>
@@ -204,7 +218,7 @@ namespace SGCore
             assetToLoad->m_path = path;
             assetToLoad->m_storedBy = AssetStorageType::BY_PATH;
             
-            distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
+            distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
             
             assetToLoad->setRawName(p.stem().string());
 
@@ -266,7 +280,7 @@ namespace SGCore
             assetToLoad->m_alias = alias;
             assetToLoad->m_storedBy = AssetStorageType::BY_ALIAS;
             
-            distributeAsset(assetToLoad, path, assetsLoadPolicy, lazyLoadInThread);
+            distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
             
             assetToLoad->setRawName(alias);
 
@@ -296,13 +310,13 @@ namespace SGCore
         // =================================================================================================
         // =================================================================================================
         
-        template<typename AssetT, typename... AssetCtorArgs>
+        template<typename AssetT, typename... AssetCtorArgsT>
         requires(std::is_base_of_v<IAsset, AssetT>)
         AssetRef<AssetT> loadAssetWithAlias(AssetsLoadPolicy assetsLoadPolicy,
                                             const Ref<Threading::Thread>& lazyLoadInThread,
                                             const std::string& alias,
                                             const std::filesystem::path& path,
-                                            AssetCtorArgs&& ... assetCtorArgs)
+                                            AssetCtorArgsT&& ... assetCtorArgs)
         {
             std::lock_guard guard(m_mutex);
 
@@ -318,11 +332,11 @@ namespace SGCore
             {
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
                 // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
-                return std::static_pointer_cast<AssetT>(foundAssetOfTIt->second);
+                return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetOfTIt->second));
             }
 
             // else we are creating new asset with type 'AssetT'
-            Ref<AssetT> newAsset = AssetT::template createRefInstance<AssetT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
+            Ref<AssetT> newAsset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             newAsset->m_parentAssetManager = shared_from_this();
             foundVariants[AssetT::asset_type_id] = newAsset;
 
@@ -335,7 +349,7 @@ namespace SGCore
 
             LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}", Utils::toUTF8(path.u16string()), alias, typeid(AssetT).name(), AssetT::asset_type_id);
             
-            return newAsset;
+            return AssetRef<AssetT>(newAsset);
         }
         
         template<typename AssetT, typename... AssetCtorArgs>
@@ -563,7 +577,7 @@ namespace SGCore
 
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
                 // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
-                assets.push_back(std::static_pointer_cast<AssetT>(foundAssetWithTIt->second));
+                assets.push_back(AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetWithTIt->second)));
             }
 
             return assets;
@@ -592,7 +606,7 @@ namespace SGCore
 
             if(!m_assets[pathOrAliasHash][byAsset->getTypeID()]) return nullptr;
 
-            return std::static_pointer_cast<AssetT>(m_assets[pathOrAliasHash][byAsset->getTypeID()]);
+            return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(m_assets[pathOrAliasHash][byAsset->getTypeID()]));
         }
 
         template<typename AssetT>
@@ -637,17 +651,21 @@ namespace SGCore
 
         [[nodiscard]] const AssetsPackage& getPackage() const noexcept;
 
+        const std::string& getName() const noexcept;
+
     private:
-        template<typename AssetT>
-        static Ref<AssetT> createAssetInstance() noexcept
+        explicit AssetManager(const std::string& name) noexcept : m_name(name) { }
+
+        template<typename AssetT, typename... AssetCtorArgsT>
+        static Ref<AssetT> createAssetInstance(AssetCtorArgsT&&... assetCtorArgs) noexcept
         {
-            if constexpr(!std::is_abstract_v<AssetT>)
+            if constexpr(requires { AssetT::template createRefInstance<AssetCtorArgsT...>; })
+            {
+                return AssetT::template createRefInstance(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
+            }
+            else if constexpr(!std::is_abstract_v<AssetT>)
             {
                 return MakeRef<AssetT>();
-            }
-            else if constexpr(requires { AssetT::template createRefInstance<AssetT>; })
-            {
-                return AssetT::template createRefInstance<AssetT>();
             }
             else
             {
@@ -737,6 +755,8 @@ namespace SGCore
         
         std::mutex m_mutex;
 
+        std::string m_name;
+
         AssetsPackage m_package;
 
         // first - hash of path or alias
@@ -748,6 +768,8 @@ namespace SGCore
         Threading::BaseThreadsPool<Threading::LeastTasksCount> m_threadsPool { 2, false };
         
         static inline Ref<AssetManager> m_instance;
+
+        static inline std::unordered_map<std::string, Ref<AssetManager>> s_allAssetsManagers;
     };
 }
 

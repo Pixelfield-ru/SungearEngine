@@ -17,7 +17,7 @@ namespace SGCore
     {
         sg_implement_asset_type_id(SVGImage, 6)
 
-        [[nodiscard]] Ref<SVGImageSpecialization> getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
+        [[nodiscard]] AssetRef<SVGImageSpecialization> getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
         void removeSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
     
     protected:
@@ -26,7 +26,7 @@ namespace SGCore
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         
-        std::vector<Ref<SVGImageSpecialization>> m_specializations;
+        std::vector<AssetRef<SVGImageSpecialization>> m_specializations;
         
     private:
         std::unique_ptr<lunasvg::Document> m_document;

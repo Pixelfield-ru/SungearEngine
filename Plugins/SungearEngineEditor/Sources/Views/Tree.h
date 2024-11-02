@@ -20,7 +20,7 @@ namespace SGE
 
         SGCore::UniqueName m_name;
 
-        SGCore::Ref<SGCore::ITexture2D> m_icon;
+        SGCore::AssetRef<SGCore::ITexture2D> m_icon;
         std::any m_userData;
 
         std::function<void(TreeNode& self)> onClicked;

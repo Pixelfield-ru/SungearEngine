@@ -74,9 +74,10 @@ namespace SGCore
             return m_asset != nullptr;
         }
 
-    private:
-        AssetRef(const Ref<AssetT>& asset) : m_asset(asset) { }
         AssetRef(std::nullptr_t) : m_asset(nullptr) { }
+
+    private:
+        explicit AssetRef(const Ref<AssetT>& asset) : m_asset(asset) { }
 
         Ref<AssetT> m_asset;
     };

@@ -3879,6 +3879,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
             valueView.getValueContainer().addMember("m_storedBy", valueView.m_data->storedByWhat());
+            valueView.getValueContainer().addMember("m_useDataSerde", assetsPackage.m_useDataSerdeForCurrentAsset);
         }
 
         /// This function is used in any other cases.

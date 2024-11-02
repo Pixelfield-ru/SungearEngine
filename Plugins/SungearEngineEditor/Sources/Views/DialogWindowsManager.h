@@ -48,11 +48,11 @@ namespace SGE
         SG_NOINLINE static const std::deque<SGCore::Ref<DialogWindow>>& getDialogWindows() noexcept;
 
     private:
-        static inline SGCore::Ref<SGCore::ITexture2D> m_infoIcon;
-        static inline SGCore::Ref<SGCore::ITexture2D> m_debugIcon;
-        static inline SGCore::Ref<SGCore::ITexture2D> m_warnIcon;
-        static inline SGCore::Ref<SGCore::ITexture2D> m_errorIcon;
-        static inline SGCore::Ref<SGCore::ITexture2D> m_criticalIcon;
+        static inline SGCore::AssetRef<SGCore::ITexture2D> m_infoIcon;
+        static inline SGCore::AssetRef<SGCore::ITexture2D> m_debugIcon;
+        static inline SGCore::AssetRef<SGCore::ITexture2D> m_warnIcon;
+        static inline SGCore::AssetRef<SGCore::ITexture2D> m_errorIcon;
+        static inline SGCore::AssetRef<SGCore::ITexture2D> m_criticalIcon;
 
         static inline std::deque<SGCore::Ref<DialogWindow>> m_dialogWindows;
 

@@ -11,9 +11,11 @@
 
 namespace SGCore
 {
-    struct SVGImageSpecialization
+    struct SVGImageSpecialization : public IAsset
     {
         friend struct SVGImage;
+
+        sg_implement_asset_type_id(SVGImageSpecialization, 12)
         
         void regenerate(std::uint8_t channelsCount = 4,
                         SGGColorInternalFormat internalColorFormat = SGGColorInternalFormat::SGG_RGBA8,
@@ -21,14 +23,19 @@ namespace SGCore
         
         [[nodiscard]] lunasvg::Bitmap& getBitmap() noexcept;
         
-        [[nodiscard]] Ref<ITexture2D> getTexture() noexcept;
+        [[nodiscard]] AssetRef<ITexture2D> getTexture() noexcept;
         
         [[nodiscard]] uivec2_32 getSize() const noexcept;
-        
+
+    protected:
+        void doLoad(const std::filesystem::path& path) noexcept final { }
+        // todo: implement
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) final;
+
     private:
         lunasvg::Bitmap m_bitmap;
         
-        Ref<ITexture2D> m_texture;
+        AssetRef<ITexture2D> m_texture;
         
         uivec2_32 m_size { 0, 0 };
     };

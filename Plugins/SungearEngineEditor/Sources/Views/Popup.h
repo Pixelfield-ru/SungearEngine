@@ -23,7 +23,7 @@ namespace SGE
         SGCore::UniqueName m_name;
         std::string m_hint;
         
-        SGCore::Ref<SGCore::ITexture2D> m_icon;
+        SGCore::AssetRef<SGCore::ITexture2D> m_icon;
         bool m_drawSeparatorAfter = false;
         bool m_closePopupWhenClicked = true;
         bool m_isActive = true;

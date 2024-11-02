@@ -144,12 +144,12 @@ namespace SGCore
         /// READ ONLY.
         bool m_useDataSerde = false;
 
-        template<typename InstanceT, typename... AssetCtorArgs>
-        requires(std::is_base_of_v<IAsset, InstanceT>)
-        static Ref<InstanceT> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
+        /// You must implement this function if your asset type is abstract and can be created only using factory (for example).
+        /*template<typename... AssetCtorArgs>
+        static Ref<IAsset> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
         {
-            return MakeRef<InstanceT>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
-        }
+            return MakeRef<IAsset>(std::forward<AssetCtorArgs>(assetCtorArgs)...);
+        }*/
     };
 
     template <class T>

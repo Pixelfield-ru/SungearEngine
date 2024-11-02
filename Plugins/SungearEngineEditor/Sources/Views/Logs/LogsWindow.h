@@ -24,13 +24,13 @@ namespace SGE
         void setCurrentLevel(SGCore::Logger::Level level) noexcept;
 
     private:
-        SGCore::Ref<SGCore::ITexture2D> m_infoIcon;
-        SGCore::Ref<SGCore::ITexture2D> m_debugIcon;
-        SGCore::Ref<SGCore::ITexture2D> m_warnIcon;
-        SGCore::Ref<SGCore::ITexture2D> m_errorIcon;
-        SGCore::Ref<SGCore::ITexture2D> m_criticalIcon;
+        SGCore::AssetRef<SGCore::ITexture2D> m_infoIcon;
+        SGCore::AssetRef<SGCore::ITexture2D> m_debugIcon;
+        SGCore::AssetRef<SGCore::ITexture2D> m_warnIcon;
+        SGCore::AssetRef<SGCore::ITexture2D> m_errorIcon;
+        SGCore::AssetRef<SGCore::ITexture2D> m_criticalIcon;
 
-        SGCore::Ref<SGCore::ITexture2D> m_clearLogsIcon;
+        SGCore::AssetRef<SGCore::ITexture2D> m_clearLogsIcon;
 
         std::string m_currentChosenLevel;
 

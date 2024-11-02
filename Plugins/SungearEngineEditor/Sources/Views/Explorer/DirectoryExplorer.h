@@ -80,7 +80,7 @@ namespace SGE
     {
         DirectoryExplorer();
         
-        SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>& iconTexture,
+        SGCore::Event<void(SGCore::AssetRef<SGCore::ITexture2D>& iconTexture,
                            const std::string& fileExtension,
                            const std::string& fileName)> onIconRender;
         
@@ -232,8 +232,8 @@ namespace SGE
         std::filesystem::path m_currentFileOpsTargetDir;
         
         std::string m_currentEditingFileName;
-        
-        SGCore::AssetManager m_previewAssetManager;
+
+        SGCore::Ref<SGCore::AssetManager> m_previewAssetManager = SGCore::AssetManager::getAssetManager("SGEDITOR_ASSETS_PREVIEW");
         
         FileInfo* m_currentEditingFile = nullptr;
         

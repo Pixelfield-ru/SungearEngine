@@ -14,7 +14,7 @@
 
 void SGCore::AssetManager::init() noexcept
 {
-    m_instance = MakeRef<AssetManager>();
+    m_instance = Ref<AssetManager>(new AssetManager("MainAssetManager"));
 }
 
 SGCore::Ref<SGCore::AssetManager>& SGCore::AssetManager::getInstance() noexcept
@@ -110,7 +110,7 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
             if(alreadyLoadedAssetsByPathOrAlias.contains(assetTypeID))
             {
                 // add conflicting asset
-                deserializedConflictingAssets[pathOrAliasHash][assetTypeID] = asset;
+                deserializedConflictingAssets[pathOrAliasHash][assetTypeID] = AssetRef<IAsset>(asset);
             }
             else
             {
@@ -121,8 +121,16 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
 
     if(!deserializedConflictingAssets.empty())
     {
-        // calling resolver of conflicts
-        deserializedAssetsConflictsResolver(deserializedConflictingAssets, this);
+        if(deserializedAssetsConflictsResolver)
+        {
+            // calling resolver of conflicts
+            deserializedAssetsConflictsResolver(deserializedConflictingAssets, this);
+        }
+        else
+        {
+            LOG_W(SGCORE_TAG, "Resolver of conflicts for asset manager with name '{}' was not set! Conflicts were not resolved, new assets were not added.", m_name);
+            resolveMemberAssetsReferences();
+        }
     }
     else
     {
@@ -150,4 +158,9 @@ void SGCore::AssetManager::resolveMemberAssetsReferences() noexcept
             assetIt.second->resolveMemberAssetsReferences(this);
         }
     }
+}
+
+const std::string& SGCore::AssetManager::getName() const noexcept
+{
+    return m_name;
 }

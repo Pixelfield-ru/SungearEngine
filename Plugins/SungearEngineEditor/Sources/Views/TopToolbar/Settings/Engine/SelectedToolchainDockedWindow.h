@@ -62,10 +62,10 @@ namespace SGE
         SGCore::Weak<Toolchain> m_selectedToolchain;
 
         // USED ICONS =======================================
-        SGCore::Ref<SGCore::ITexture2D> m_folderTexture;
-        SGCore::Ref<SGCore::ITexture2D> m_greenCheckMarkTexture;
-        SGCore::Ref<SGCore::ITexture2D> m_redCrossTexture;
-        SGCore::Ref<SGCore::ITexture2D> m_questionCircledTexture;
+        SGCore::AssetRef<SGCore::ITexture2D> m_folderTexture;
+        SGCore::AssetRef<SGCore::ITexture2D> m_greenCheckMarkTexture;
+        SGCore::AssetRef<SGCore::ITexture2D> m_redCrossTexture;
+        SGCore::AssetRef<SGCore::ITexture2D> m_questionCircledTexture;
     };
 }
 

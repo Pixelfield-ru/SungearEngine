@@ -141,7 +141,7 @@ void SGE::DirectoriesTreeExplorer::renderTreeNode(const std::filesystem::path& p
         
         auto fileExt = parent.extension();
         
-        SGCore::Ref<SGCore::ITexture2D> iconTexture = ImGuiUtils::getFileIcon(parent, { 16, 16 }, &onIconRender);
+        SGCore::AssetRef<SGCore::ITexture2D> iconTexture = ImGuiUtils::getFileIcon(parent, { 16, 16 }, &onIconRender);
         
         ImGui::Image(iconTexture->getTextureNativeHandler(), ImVec2(16, 16));
         

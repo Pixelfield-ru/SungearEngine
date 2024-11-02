@@ -465,7 +465,7 @@ void SGE::DirectoryExplorer::setCurrentPath(const std::filesystem::path& path) n
     m_currentPath = path;
     
     m_drawableFilesNames.clear();
-    m_previewAssetManager.clear();
+    m_previewAssetManager->clear();
     m_currentEditingFile = nullptr;
     
     m_selectedFiles.clear();
@@ -959,8 +959,9 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         
         if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
         {
-            bool previewExists = m_previewAssetManager.isAssetExists<SGCore::ITexture2D>(u8curPath);
-            fileIcon = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
+            bool previewExists = m_previewAssetManager->isAssetExists<SGCore::ITexture2D>(u8curPath);
+            fileIcon = m_previewAssetManager->createAsset<SGCore::ITexture2D>();
+            // fileIcon = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
             fileIcon->onLazyLoadDone += [previewExists, iconSize, iconPadding](SGCore::IAsset* self) {
                 if(!previewExists)
                 {
@@ -988,7 +989,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
                 }
             };
             
-            m_previewAssetManager.loadAsset<SGCore::ITexture2D>(fileIcon,
+            m_previewAssetManager->loadAsset<SGCore::ITexture2D>(fileIcon,
                                                                 SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD,
                                                                 u8curPath);
         }

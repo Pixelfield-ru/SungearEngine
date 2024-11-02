@@ -383,7 +383,7 @@ void SGE::ImGuiUtils::TextWithColors(const char* fmt, ...) noexcept
 
 SGCore::AssetRef<SGCore::ITexture2D> SGE::ImGuiUtils::getFileIcon(const std::filesystem::path& filePath,
                                                                   const SGCore::ivec2_32& iconSize,
-                                                                  SGCore::Event<void(SGCore::Ref<SGCore::ITexture2D>&,
+                                                                  SGCore::Event<void(SGCore::AssetRef<SGCore::ITexture2D>&,
                                                                                      const std::string&,
                                                                                      const std::string&)>* onIconSet) noexcept
 {

@@ -17,10 +17,10 @@ namespace SGE
         static void loadStandardResources(SGCore::AssetManager& toManager = *SGCore::AssetManager::getInstance()) noexcept;
         static void unloadStandardResources(SGCore::AssetManager& fromManager = *SGCore::AssetManager::getInstance()) noexcept;
 
-        SG_NOINLINE static SGCore::AssetManager& getEditorOnlyAssetManager() noexcept;
+        SG_NOINLINE static SGCore::Ref<SGCore::AssetManager> getEditorOnlyAssetManager() noexcept;
         
     private:
-        static inline SGCore::AssetManager m_editorOnlyAssetManager;
+        static inline SGCore::Ref<SGCore::AssetManager> m_editorOnlyAssetManager = SGCore::AssetManager::getAssetManager("SGEDITOR_INSTANCE");
     };
 }
 

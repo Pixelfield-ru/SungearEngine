@@ -22,7 +22,7 @@ namespace SGCore
 
         AssetRef<AssetT> lock() const noexcept
         {
-            return m_asset.lock();
+            return AssetRef<AssetT>(m_asset.lock());
         }
 
         template<typename OtherAssetT>
