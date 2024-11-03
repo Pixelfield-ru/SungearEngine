@@ -3831,6 +3831,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_path", (*valueView.m_data)->getPath());
             valueView.getValueContainer().addMember("m_alias", (*valueView.m_data)->getAlias());
             valueView.getValueContainer().addMember("m_storedBy", (*valueView.m_data)->storedByWhat());
+            valueView.getValueContainer().addMember("m_parentAssetManagerName", (*valueView.m_data)->getParentAssetManager()->getName());
         }
 
         // WE ARE DESERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO DESERIALIZATION OF DATA
@@ -3852,6 +3853,31 @@ namespace SGCore::Serde
             if(assetPath)
             {
                 (*valueView.m_data)->m_storedBy = *assetStorageType;
+            }
+
+            const auto parentAssetManagerName = valueView.getValueContainer().template getMember<std::string>("m_parentAssetManagerName");
+
+            if(parentAssetManagerName)
+            {
+                auto parentAssetManager = AssetManager::getAssetManager(*parentAssetManagerName);
+
+                // setting parent asset manager
+                (*valueView.m_data)->m_parentAssetManager = parentAssetManager;
+
+                // checking if asset is already exists
+                if(parentAssetManager->isAssetExists((*valueView.m_data).get()))
+                {
+                    // setting m_asset to asset from parent asset manager
+                    valueView.m_data->m_asset = parentAssetManager->getAsset(*valueView.m_data).m_asset;
+                }
+                else
+                {
+                    auto& currentAssetRef = (*valueView.m_data);
+                    // subscribing to event onAssetsReferencesResolve of parent asset manager to resolve current AssetRef deferred
+                    parentAssetManager->onAssetsReferencesResolve += [&currentAssetRef, parentAssetManager]() {
+                        currentAssetRef.m_asset = parentAssetManager->getAsset(currentAssetRef).m_asset;
+                    };
+                }
             }
         }
     };

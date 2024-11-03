@@ -12,6 +12,8 @@ namespace SGCore
     template<typename AssetT>
     struct AssetRef
     {
+        sg_serde_as_friend()
+
         friend struct AssetManager;
 
         template<typename>

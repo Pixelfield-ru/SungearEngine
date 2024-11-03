@@ -128,13 +128,16 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
         }
         else
         {
-            LOG_W(SGCORE_TAG, "Resolver of conflicts for asset manager with name '{}' was not set! Conflicts were not resolved, new assets were not added.", m_name);
-            resolveMemberAssetsReferences();
+            LOG_W(SGCORE_TAG, "Resolver of conflicts for asset manager with name '{}' was not set! Conflicts were not resolved.", m_name);
+
+            onAssetsReferencesResolve();
+            onAssetsReferencesResolve.clear();
         }
     }
     else
     {
-        resolveMemberAssetsReferences();
+        onAssetsReferencesResolve();
+        onAssetsReferencesResolve.clear();
     }
 
     if(!outputLog.empty())

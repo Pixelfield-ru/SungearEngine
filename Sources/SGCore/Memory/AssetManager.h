@@ -30,12 +30,18 @@ namespace SGCore
     class SGCORE_EXPORT AssetManager : public std::enable_shared_from_this<AssetManager>
     {
     public:
+        sg_serde_as_friend()
+
         using assets_container_t = std::unordered_map<size_t, std::unordered_map<size_t, Ref<IAsset>>>;
         using assets_refs_container_t = std::unordered_map<size_t, std::unordered_map<size_t, AssetRef<IAsset>>>;
 
         static void init() noexcept;
 
         AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
+
+        /// This event is using for resolve references of member assets after package deserialization.
+        /// This event is called after package deserialization.
+        Event<void()> onAssetsReferencesResolve;
 
         static Ref<AssetManager> getAssetManager(const std::string& name) noexcept
         {
@@ -112,7 +118,7 @@ namespace SGCore
         void resolveMemberAssetsReferences() noexcept;
 
         /**
-         * Subscriber of this event MUST call resolveMemberAssetsReferences.
+         * Subscriber of this event MUST call onAssetsReferencesResolve event after resolving conflicts.
          * First argument - deserialized assets from package that are conflicting with assets of current asset manager.
          */
         std::function<void(const assets_refs_container_t& deserializedConflictingAssets, AssetManager* assetManager)> deserializedAssetsConflictsResolver;
@@ -657,15 +663,22 @@ namespace SGCore
         explicit AssetManager(const std::string& name) noexcept : m_name(name) { }
 
         template<typename AssetT, typename... AssetCtorArgsT>
-        static Ref<AssetT> createAssetInstance(AssetCtorArgsT&&... assetCtorArgs) noexcept
+        Ref<AssetT> createAssetInstance(AssetCtorArgsT&&... assetCtorArgs) noexcept
         {
+            Ref<AssetT> asset;
             if constexpr(requires { AssetT::template createRefInstance<AssetCtorArgsT...>; })
             {
-                return AssetT::template createRefInstance(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
+                asset = AssetT::template createRefInstance(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
+                asset->m_parentAssetManager = shared_from_this();
+
+                return asset;
             }
             else if constexpr(!std::is_abstract_v<AssetT>)
             {
-                return MakeRef<AssetT>();
+                asset = MakeRef<AssetT>();
+                asset->m_parentAssetManager = shared_from_this();
+
+                return asset;
             }
             else
             {
