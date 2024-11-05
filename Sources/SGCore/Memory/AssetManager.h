@@ -627,7 +627,7 @@ namespace SGCore
             {
                 if(createNewIfNotFound)
                 {
-                    return createAsset<AssetT>(alias);
+                    return createAssetWithAlias<AssetT>(alias);
                 }
 
                 return nullptr;
@@ -639,7 +639,40 @@ namespace SGCore
             {
                 if(createNewIfNotFound)
                 {
-                    return createAsset<AssetT>(alias);
+                    return createAssetWithAlias<AssetT>(alias);
+                }
+
+                return nullptr;
+            }
+
+            return foundAssetIt->second;
+        }
+
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        [[nodiscard]] AssetRef<AssetT> getAssetByPath(const std::filesystem::path& path, bool createNewIfNotFound = false) noexcept
+        {
+            const size_t aliasHash = hashString(Utils::toUTF8(path.u16string()));
+
+            auto foundVariantsIt = m_assets.find(aliasHash);
+
+            if(foundVariantsIt == m_assets.end())
+            {
+                if(createNewIfNotFound)
+                {
+                    return createAssetWithPath<AssetT>(path);
+                }
+
+                return nullptr;
+            }
+
+            auto foundAssetIt = foundVariantsIt->second.find(AssetT::asset_type_id);
+
+            if(foundAssetIt == foundVariantsIt->second.end())
+            {
+                if(createNewIfNotFound)
+                {
+                    return createAssetWithPath<AssetT>(path);
                 }
 
                 return nullptr;

@@ -3838,23 +3838,8 @@ namespace SGCore::Serde
         static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             auto assetAlias = valueView.getValueContainer().template getMember<std::string>("m_alias");
-            if(assetAlias)
-            {
-                (*valueView.m_data)->m_alias = std::move(*assetAlias);
-            }
-
             auto assetPath = valueView.getValueContainer().template getMember<std::string>("m_path");
-            if(assetPath)
-            {
-                (*valueView.m_data)->m_path = std::move(*assetPath);
-            }
-
             const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storedBy");
-            if(assetPath)
-            {
-                (*valueView.m_data)->m_storedBy = *assetStorageType;
-            }
-
             const auto parentAssetManagerName = valueView.getValueContainer().template getMember<std::string>("m_parentAssetManagerName");
 
             if(parentAssetManagerName)
@@ -3864,18 +3849,48 @@ namespace SGCore::Serde
                 // setting parent asset manager
                 (*valueView.m_data)->m_parentAssetManager = parentAssetManager;
 
+                std::string assetPathOrAlias;
+                switch(*assetStorageType)
+                {
+                    case AssetStorageType::BY_PATH:
+                        assetPathOrAlias = Utils::toUTF8((*assetPath).u16string());
+                        break;
+                    case AssetStorageType::BY_PATH:
+                        assetPathOrAlias = *assetAlias;
+                        break;
+                }
+
                 // checking if asset is already exists
-                if(parentAssetManager->isAssetExists((*valueView.m_data).get()))
+                if(parentAssetManager->isAssetExists(assetPathOrAlias))
                 {
                     // setting m_asset to asset from parent asset manager
-                    valueView.m_data->m_asset = parentAssetManager->getAsset(*valueView.m_data).m_asset;
+                    std::cout << "asset is already exist\n";
+                    valueView.m_data->m_asset = parentAssetManager->getAsset(assetPathOrAlias).m_asset;
+
+                    // assigning values only after getting asset from asset manager
+                    valueView.m_data->m_asset->m_alias = std::move(*assetAlias);
+                    valueView.m_data->m_asset->m_path = std::move(*assetPath);
+                    valueView.m_data->m_asset->m_storedBy = *assetStorageType;
                 }
                 else
                 {
+                    std::cout << "asset does not exist. subscribing to event...\n";
                     auto& currentAssetRef = (*valueView.m_data);
                     // subscribing to event onAssetsReferencesResolve of parent asset manager to resolve current AssetRef deferred
-                    parentAssetManager->onAssetsReferencesResolve += [&currentAssetRef, parentAssetManager]() {
-                        currentAssetRef.m_asset = parentAssetManager->getAsset(currentAssetRef).m_asset;
+                    parentAssetManager->onAssetsReferencesResolve += [&currentAssetRef,
+                            assetPathOrAlias
+                            parentAssetManager,
+                            assetAlias,
+                            assetPath,
+                            assetStorageType,
+                            parentAssetManagerName]() {
+                        // getting asset from asset manager
+                        currentAssetRef.m_asset = parentAssetManager->getAsset(assetPathOrAlias).m_asset;
+
+                        // assigning values only after getting asset from asset manager
+                        currentAssetRef.m_asset->m_alias = std::move(*assetAlias);
+                        currentAssetRef.m_asset->m_path = std::move(*assetPath);
+                        currentAssetRef.m_asset->m_storedBy = *assetStorageType;
                     };
                 }
             }
