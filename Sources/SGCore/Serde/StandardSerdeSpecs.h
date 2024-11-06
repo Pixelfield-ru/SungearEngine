@@ -3829,6 +3829,7 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<AssetRef<AssetT>, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_path", (*valueView.m_data)->getPath());
+            valueView.getValueContainer().addMember("m_assetTypeID", (*valueView.m_data)->getTypeID());
             valueView.getValueContainer().addMember("m_alias", (*valueView.m_data)->getAlias());
             valueView.getValueContainer().addMember("m_storedBy", (*valueView.m_data)->storedByWhat());
             valueView.getValueContainer().addMember("m_parentAssetManagerName", (*valueView.m_data)->getParentAssetManager()->getName());
@@ -3837,62 +3838,68 @@ namespace SGCore::Serde
         // WE ARE DESERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO DESERIALIZATION OF DATA
         static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
+            auto assetPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_path");
+            const auto assetTypeID = valueView.getValueContainer().template getMember<size_t>("m_assetTypeID");
             auto assetAlias = valueView.getValueContainer().template getMember<std::string>("m_alias");
-            auto assetPath = valueView.getValueContainer().template getMember<std::string>("m_path");
             const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storedBy");
             const auto parentAssetManagerName = valueView.getValueContainer().template getMember<std::string>("m_parentAssetManagerName");
 
-            if(parentAssetManagerName)
+            if(!parentAssetManagerName) return;
+
+            auto parentAssetManager = AssetManager::getAssetManager(*parentAssetManagerName);
+
+            // WE DO NOT set parent asset manager because we are getting already existing asset from asset manager
+            // and this asset is already has parent asset manager
+
+            std::string assetPathOrAlias;
+            switch (*assetStorageType)
             {
-                auto parentAssetManager = AssetManager::getAssetManager(*parentAssetManagerName);
+                case AssetStorageType::BY_PATH:
+                    assetPathOrAlias = SGCore::Utils::toUTF8(assetPath->u16string());
+                    break;
+                case AssetStorageType::BY_ALIAS:
+                    assetPathOrAlias = *assetAlias;
+                    break;
+            }
 
-                // setting parent asset manager
-                (*valueView.m_data)->m_parentAssetManager = parentAssetManager;
+            // checking if asset is already exists
+            if (parentAssetManager->isAssetExists(assetPathOrAlias, *assetTypeID))
+            {
+                // setting m_asset to asset from parent asset manager
+                std::cout << "asset is already exist\n";
+                valueView.m_data->m_asset =
+                        std::static_pointer_cast<AssetT>(
+                                parentAssetManager->getAsset(assetPathOrAlias, *assetTypeID).m_asset);
 
-                std::string assetPathOrAlias;
-                switch(*assetStorageType)
-                {
-                    case AssetStorageType::BY_PATH:
-                        assetPathOrAlias = Utils::toUTF8((*assetPath).u16string());
-                        break;
-                    case AssetStorageType::BY_PATH:
-                        assetPathOrAlias = *assetAlias;
-                        break;
-                }
-
-                // checking if asset is already exists
-                if(parentAssetManager->isAssetExists(assetPathOrAlias))
-                {
-                    // setting m_asset to asset from parent asset manager
-                    std::cout << "asset is already exist\n";
-                    valueView.m_data->m_asset = parentAssetManager->getAsset(assetPathOrAlias).m_asset;
+                // assigning values only after getting asset from asset manager
+                valueView.m_data->m_asset->m_alias = std::move(*assetAlias);
+                valueView.m_data->m_asset->m_path = std::move(*assetPath);
+                valueView.m_data->m_asset->m_storedBy = *assetStorageType;
+            }
+            else
+            {
+                std::cout << "asset does not exist. subscribing to event...\n";
+                auto& currentAssetRef = (*valueView.m_data);
+                // subscribing to event onAssetsReferencesResolve of parent asset manager to resolve current AssetRef deferred
+                // currentAssetRef is still alive when this event called
+                parentAssetManager->onAssetsReferencesResolve += [&currentAssetRef,
+                        assetPathOrAlias,
+                        parentAssetManager,
+                        assetAlias,
+                        assetTypeID,
+                        assetPath,
+                        assetStorageType,
+                        parentAssetManagerName]() {
+                    // getting asset from asset manager
+                    currentAssetRef.m_asset =
+                            std::static_pointer_cast<AssetT>(
+                                    parentAssetManager->getAsset(assetPathOrAlias, *assetTypeID).m_asset);
 
                     // assigning values only after getting asset from asset manager
-                    valueView.m_data->m_asset->m_alias = std::move(*assetAlias);
-                    valueView.m_data->m_asset->m_path = std::move(*assetPath);
-                    valueView.m_data->m_asset->m_storedBy = *assetStorageType;
-                }
-                else
-                {
-                    std::cout << "asset does not exist. subscribing to event...\n";
-                    auto& currentAssetRef = (*valueView.m_data);
-                    // subscribing to event onAssetsReferencesResolve of parent asset manager to resolve current AssetRef deferred
-                    parentAssetManager->onAssetsReferencesResolve += [&currentAssetRef,
-                            assetPathOrAlias
-                            parentAssetManager,
-                            assetAlias,
-                            assetPath,
-                            assetStorageType,
-                            parentAssetManagerName]() {
-                        // getting asset from asset manager
-                        currentAssetRef.m_asset = parentAssetManager->getAsset(assetPathOrAlias).m_asset;
-
-                        // assigning values only after getting asset from asset manager
-                        currentAssetRef.m_asset->m_alias = std::move(*assetAlias);
-                        currentAssetRef.m_asset->m_path = std::move(*assetPath);
-                        currentAssetRef.m_asset->m_storedBy = *assetStorageType;
-                    };
-                }
+                    currentAssetRef.m_asset->m_alias = std::move(*assetAlias);
+                    currentAssetRef.m_asset->m_path = std::move(*assetPath);
+                    currentAssetRef.m_asset->m_storedBy = *assetStorageType;
+                };
             }
         }
     };

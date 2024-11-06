@@ -167,3 +167,25 @@ const std::string& SGCore::AssetManager::getName() const noexcept
 {
     return m_name;
 }
+
+SGCore::AssetRef<SGCore::IAsset>
+SGCore::AssetManager::getAsset(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept
+{
+    const size_t pathOrAliasHash = hashString(pathOrAlias);
+
+    auto foundVariantsIt = m_assets.find(pathOrAliasHash);
+
+    if(foundVariantsIt == m_assets.end())
+    {
+        return nullptr;
+    }
+
+    auto foundAssetIt = foundVariantsIt->second.find(assetTypeID);
+
+    if(foundAssetIt == foundVariantsIt->second.end())
+    {
+        return nullptr;
+    }
+
+    return AssetRef<IAsset>(foundAssetIt->second);
+}

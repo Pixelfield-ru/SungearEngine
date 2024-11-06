@@ -617,7 +617,7 @@ namespace SGCore
 
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        [[nodiscard]] AssetRef<AssetT> getAssetByAlias(const std::string& alias, bool createNewIfNotFound = false) noexcept
+        [[nodiscard]] AssetRef<AssetT> getOrAddAssetByAlias(const std::string& alias) noexcept
         {
             const size_t aliasHash = hashString(alias);
 
@@ -625,24 +625,14 @@ namespace SGCore
 
             if(foundVariantsIt == m_assets.end())
             {
-                if(createNewIfNotFound)
-                {
-                    return createAssetWithAlias<AssetT>(alias);
-                }
-
-                return nullptr;
+                return createAssetWithAlias<AssetT>(alias);
             }
 
             auto foundAssetIt = foundVariantsIt->second.find(AssetT::asset_type_id);
 
             if(foundAssetIt == foundVariantsIt->second.end())
             {
-                if(createNewIfNotFound)
-                {
-                    return createAssetWithAlias<AssetT>(alias);
-                }
-
-                return nullptr;
+                return createAssetWithAlias<AssetT>(alias);
             }
 
             return foundAssetIt->second;
@@ -650,19 +640,37 @@ namespace SGCore
 
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
-        [[nodiscard]] AssetRef<AssetT> getAssetByPath(const std::filesystem::path& path, bool createNewIfNotFound = false) noexcept
+        [[nodiscard]] AssetRef<AssetT> getOrAddAssetByPath(const std::filesystem::path& path) noexcept
         {
-            const size_t aliasHash = hashString(Utils::toUTF8(path.u16string()));
+            const size_t pathHash = hashString(Utils::toUTF8(path.u16string()));
 
-            auto foundVariantsIt = m_assets.find(aliasHash);
+            auto foundVariantsIt = m_assets.find(pathHash);
 
             if(foundVariantsIt == m_assets.end())
             {
-                if(createNewIfNotFound)
-                {
-                    return createAssetWithPath<AssetT>(path);
-                }
+                return createAssetWithPath<AssetT>(path);
+            }
 
+            auto foundAssetIt = foundVariantsIt->second.find(AssetT::asset_type_id);
+
+            if(foundAssetIt == foundVariantsIt->second.end())
+            {
+                return createAssetWithPath<AssetT>(path);
+            }
+
+            return foundAssetIt->second;
+        }
+
+        template<typename AssetT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        [[nodiscard]] AssetRef<AssetT> getAsset(const std::string& pathOrAlias) noexcept
+        {
+            const size_t pathOrAliasHash = hashString(pathOrAlias);
+
+            auto foundVariantsIt = m_assets.find(pathOrAliasHash);
+
+            if(foundVariantsIt == m_assets.end())
+            {
                 return nullptr;
             }
 
@@ -670,16 +678,13 @@ namespace SGCore
 
             if(foundAssetIt == foundVariantsIt->second.end())
             {
-                if(createNewIfNotFound)
-                {
-                    return createAssetWithPath<AssetT>(path);
-                }
-
                 return nullptr;
             }
 
             return foundAssetIt->second;
         }
+
+        [[nodiscard]] AssetRef<IAsset> getAsset(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept;
 
         void clear() noexcept;
         
