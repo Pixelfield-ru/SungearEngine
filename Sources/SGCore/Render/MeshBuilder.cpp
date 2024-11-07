@@ -3,7 +3,8 @@
 //
 
 #include "MeshBuilder.h"
-#include "glm/gtx/rotate_vector.hpp"
+#include "SGCore/Memory/AssetManager.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 void SGCore::MeshBuilder::buildLine(SGCore::MeshBase& meshBase, const glm::vec3& start, const glm::vec3& end) noexcept
 {
@@ -14,9 +15,10 @@ void SGCore::MeshBuilder::buildBox3D(SGCore::MeshBase& meshBase, const glm::vec3
 {
     // building a cube ------------------------------
 
-    auto meshData = meshBase.getMeshData();
+    // auto meshData = meshBase.getMeshData();
 
-    if(!meshData) return;
+    auto meshData = AssetManager::getInstance()->createAsset<IMeshData>();
+    meshBase.setMeshData(meshData);
 
     meshData->m_positions.clear();
 
@@ -104,9 +106,8 @@ void SGCore::MeshBuilder::buildBox3D(SGCore::MeshBase& meshBase, const glm::vec3
 void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const float& radius,
                                               const float& angleIncrement) noexcept
 {
-    auto meshData = meshBase.getMeshData();
-
-    if(!meshData) return;
+    auto meshData = AssetManager::getInstance()->createAsset<IMeshData>();
+    meshBase.setMeshData(meshData);
 
     // clear
     meshData->m_positions.clear();

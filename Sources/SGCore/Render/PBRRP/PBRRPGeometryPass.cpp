@@ -137,6 +137,8 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                            Mesh& mesh,
                                            const Ref<ISubPassShader>& standardGeometryShader) noexcept
 {
+    if(!mesh.m_base.getMeshData()) return;
+
     ShaderComponent* entityShader = registry->try_get<ShaderComponent>(meshEntity);
     
     auto meshGeomShader = (entityShader && entityShader->m_shader)
@@ -176,7 +178,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
         }
         
         CoreMain::getRenderer()->renderMeshData(
-                mesh.m_base.getMeshData(),
+                mesh.m_base.getMeshData().get(),
                 mesh.m_base.m_meshDataRenderInfo
         );
         

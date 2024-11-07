@@ -44,8 +44,8 @@ namespace SGCore
         void prepareUniformBuffers(const Ref<RenderingBase>& renderingComponent,
                                    const Ref<Transform>& transformComponent) override;
 
-        void renderMeshData(const Ref<IMeshData>& meshData,
-                                    const MeshDataRenderInfo& meshDataRenderInfo) override;
+        void renderMeshData(const IMeshData* meshData,
+                            const MeshDataRenderInfo& meshDataRenderInfo) override;
         
         void renderArray(const Ref<IVertexArray>& vertexArray,
                          const MeshDataRenderInfo& meshDataRenderInfo,

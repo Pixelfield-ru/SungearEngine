@@ -4,12 +4,9 @@
 #include <SGCore/pch.h>
 
 #include "IShaderUniform.h"
-#include "ISubPassShader.h"
 
 namespace SGCore
 {
-    class ISubPassShader;
-
     class IUniformBuffer : public std::enable_shared_from_this<IUniformBuffer>
     {
     protected:

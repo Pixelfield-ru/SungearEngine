@@ -41,6 +41,9 @@ namespace SGCore
         BY_ALIAS
     };
 
+    template<typename>
+    struct AssetRef;
+
     class IAsset : public UniqueNameWrapper
     {
     public:
@@ -93,6 +96,7 @@ namespace SGCore
         [[nodiscard]] Ref<AssetManager> getParentAssetManager() const noexcept;
 
     protected:
+
         /// In the implementation of the \p doLoad function, you must implement all the logic of downloading an asset, which can be executed in parallel (for example: downloading an asset from disk).
         /// The \p doLoad function can be called in parallel.
         virtual void doLoad(const std::filesystem::path& path) = 0;

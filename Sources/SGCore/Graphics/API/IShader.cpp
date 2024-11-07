@@ -9,6 +9,7 @@
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Graphics/GPUObjectsStorage.h"
+#include "ISubPassShader.h"
 
 void SGCore::IShader::addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset) noexcept
 {

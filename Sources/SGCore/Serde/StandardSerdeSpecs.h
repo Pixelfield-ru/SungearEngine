@@ -28,6 +28,7 @@
 #include "SGCore/Render/Gizmos/LineGizmo.h"
 #include "SGCore/Render/Atmosphere/Atmosphere.h"
 #include "SGCore/Render/MeshBase.h"
+#include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Atmosphere/AtmosphereUpdater.h"
 #include "SGCore/Render/Lighting/LightBase.h"
 #include "SGCore/Transformations/Controllables3DUpdater.h"
@@ -466,6 +467,27 @@ struct SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType> :
     static void serialize(SGCore::Serde::SerializableValueView<SGCore::MeshBase, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshBase, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
+
+// SERDE FORWARD DECL FOR struct 'SGCore::Mesh'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::Mesh, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+                                   >
+{
+    static inline const std::string type_name = "SGCore::Mesh";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Mesh, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Mesh, TFormatType>& valueView) noexcept;
 };
 // =================================================================================
 
@@ -2379,6 +2401,30 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::deserialize(SGCo
 // =================================================================================
 
 
+// SERDE IMPL FOR struct 'SGCore::GizmoBase'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::Mesh, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Mesh, TFormatType>& valueView) noexcept
+{
+    valueView.getValueContainer().addMember("m_base", valueView.m_data->m_base);
+}
+
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::Mesh, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::Mesh, TFormatType>& valueView) noexcept
+{
+    const auto m_base = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_base)>("m_base");
+
+    if(m_base)
+    {
+        valueView.m_data->m_base = *m_base;
+    }
+
+}
+// =================================================================================
 
 
 // SERDE IMPL FOR struct 'SGCore::MeshBase'
@@ -2388,9 +2434,7 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::MeshBase, TFormatType>& valueView) noexcept
 {
-
-    // TODO:
-    // valueView.getValueContainer().addMember("m_material", valueView.m_data->getMaterial());
+    valueView.getValueContainer().addMember("m_material", valueView.m_data->getMaterial());
 
 
 
@@ -2400,10 +2444,7 @@ void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::serialize(SGCore::
 
 
 
-    // TODO:
-    // valueView.getValueContainer().addMember("m_meshData", valueView.m_data->getMeshData());
-
-
+    valueView.getValueContainer().addMember("m_meshData", valueView.m_data->getMeshData());
 }
 
 template<
@@ -2413,12 +2454,12 @@ void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::deserialize(SGCore
 {
 
     // TODO:
-    /*const auto m_material = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->getMaterial())>>>("m_material");
+    const auto m_material = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->getMaterial())>>>("m_material");
 
     if(m_material)
     {
         valueView.m_data->setMaterial(*m_material);
-    }*/
+    }
 
 
     const auto m_meshDataRenderInfo = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_meshDataRenderInfo)>("m_meshDataRenderInfo");
@@ -2430,12 +2471,13 @@ void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::deserialize(SGCore
 
 
     // TODO:
-    /*const auto m_meshData = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->getMeshData())>>>("m_meshData");
+    const auto m_meshData = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->getMeshData())>>>("m_meshData");
 
     if(m_meshData)
     {
+        LOG_D(SGCORE_TAG, "Deserializing meshdata from mesh base...");
         valueView.m_data->setMeshData(*m_meshData);
-    }*/
+    }
 
 }
 // =================================================================================
@@ -3444,6 +3486,14 @@ namespace SGCore::Serde
                 }
             }
             {
+                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::Mesh>(serializableEntity);
+
+                if(component)
+                {
+                    valueView.getValueContainer().pushBack(*component);
+                }
+            }
+            {
                 auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::DirectionalLight>(serializableEntity);
 
                 if(component)
@@ -3602,7 +3652,19 @@ namespace SGCore::Serde
 
                     if(component)
                     {
+                        LOG_D(SGCORE_TAG, "Atmosphere component deserializing");
                         toRegistry.emplace<SGCore::Atmosphere>(entity, *component);
+
+                        continue;
+                    }
+                }
+                {
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::Mesh>(componentsIt);
+
+                    if(component)
+                    {
+                        LOG_D(SGCORE_TAG, "Mesh component deserializing");
+                        toRegistry.emplace<SGCore::Mesh>(entity, *component);
 
                         continue;
                     }
@@ -3826,7 +3888,8 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         // WE ARE SERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO SERIALIZATION OF DATA
-        static void serialize(SerializableValueView<AssetRef<AssetT>, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        template<typename... SharedDataT> // making this function to accept any types and count of arguments
+        static void serialize(SerializableValueView<AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...)
         {
             valueView.getValueContainer().addMember("m_path", (*valueView.m_data)->getPath());
             valueView.getValueContainer().addMember("m_assetTypeID", (*valueView.m_data)->getTypeID());
@@ -3836,7 +3899,8 @@ namespace SGCore::Serde
         }
 
         // WE ARE DESERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO DESERIALIZATION OF DATA
-        static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        template<typename... SharedDataT> // making this function to accept any types and count of arguments
+        static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...)
         {
             auto assetPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_path");
             const auto assetTypeID = valueView.getValueContainer().template getMember<size_t>("m_assetTypeID");
@@ -3851,25 +3915,14 @@ namespace SGCore::Serde
             // WE DO NOT set parent asset manager because we are getting already existing asset from asset manager
             // and this asset is already has parent asset manager
 
-            std::string assetPathOrAlias;
-            switch (*assetStorageType)
-            {
-                case AssetStorageType::BY_PATH:
-                    assetPathOrAlias = SGCore::Utils::toUTF8(assetPath->u16string());
-                    break;
-                case AssetStorageType::BY_ALIAS:
-                    assetPathOrAlias = *assetAlias;
-                    break;
-            }
-
             // checking if asset is already exists
-            if (parentAssetManager->isAssetExists(assetPathOrAlias, *assetTypeID))
+            if (parentAssetManager->isAssetExists(*assetAlias, *assetPath, *assetStorageType, *assetTypeID))
             {
                 // setting m_asset to asset from parent asset manager
-                std::cout << "asset is already exist\n";
+                LOG_D(SGCORE_TAG, "Asset is already exist.");
                 valueView.m_data->m_asset =
                         std::static_pointer_cast<AssetT>(
-                                parentAssetManager->getAsset(assetPathOrAlias, *assetTypeID).m_asset);
+                                parentAssetManager->loadExistingAsset(*assetAlias, *assetPath, *assetStorageType, *assetTypeID).m_asset);
 
                 // assigning values only after getting asset from asset manager
                 valueView.m_data->m_asset->m_alias = std::move(*assetAlias);
@@ -3878,22 +3931,21 @@ namespace SGCore::Serde
             }
             else
             {
-                std::cout << "asset does not exist. subscribing to event...\n";
                 auto& currentAssetRef = (*valueView.m_data);
                 // subscribing to event onAssetsReferencesResolve of parent asset manager to resolve current AssetRef deferred
                 // currentAssetRef is still alive when this event called
                 parentAssetManager->onAssetsReferencesResolve += [&currentAssetRef,
-                        assetPathOrAlias,
                         parentAssetManager,
                         assetAlias,
                         assetTypeID,
                         assetPath,
                         assetStorageType,
                         parentAssetManagerName]() {
+                    LOG_D(SGCORE_TAG, "Subscribing...");
                     // getting asset from asset manager
                     currentAssetRef.m_asset =
                             std::static_pointer_cast<AssetT>(
-                                    parentAssetManager->getAsset(assetPathOrAlias, *assetTypeID).m_asset);
+                                    parentAssetManager->loadExistingAsset(*assetAlias, *assetPath, *assetStorageType, *assetTypeID).m_asset);
 
                     // assigning values only after getting asset from asset manager
                     currentAssetRef.m_asset->m_alias = std::move(*assetAlias);
@@ -3910,7 +3962,8 @@ namespace SGCore::Serde
             TextFileAsset,
             ShaderAnalyzedFile,
             ModelAsset,
-            IMaterial
+            IMaterial,
+            IMeshData
             >
     {
         static inline const std::string type_name = "SGCore::IAsset";
@@ -4388,7 +4441,7 @@ namespace SGCore::Serde
     };
 
     template<FormatType TFormatType>
-    struct SerdeSpec<IMeshData, TFormatType> : BaseTypes<>, DerivedTypes<>
+    struct SerdeSpec<IMeshData, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::IMeshData";
         static inline constexpr bool is_pointer_type = false;
@@ -4622,7 +4675,7 @@ namespace SGCore::Serde
                 valueView.m_data->m_children = std::move(*children);
             }
 
-            auto meshesData = valueView.getValueContainer().template getMember<std::vector<Ref<IMeshData>>>("m_meshesData", assetsPackage);
+            auto meshesData = valueView.getValueContainer().template getMember<std::vector<AssetRef<IMeshData>>>("m_meshesData", assetsPackage);
             if(meshesData)
             {
                 valueView.m_data->m_meshesData = std::move(*meshesData);

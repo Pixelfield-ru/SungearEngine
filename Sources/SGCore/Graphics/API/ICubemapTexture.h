@@ -9,6 +9,9 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 
+#include "SGCore/Memory/AssetRef.h"
+#include "ITexture2D.h"
+
 namespace SGCore
 {
     struct ICubemapTexture : public ITexture2D

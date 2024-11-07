@@ -14,7 +14,27 @@
 
 void SGCore::AssetManager::init() noexcept
 {
-    m_instance = Ref<AssetManager>(new AssetManager("MainAssetManager"));
+    m_instance = getAssetManager("MainAssetManager");
+}
+
+void SGCore::AssetManager::addStandardAssets() noexcept
+{
+    if(!isAssetExists<IMeshData>("quad_mesh"))
+    {
+        auto quad = createAssetWithAlias<IMeshData>("quad_mesh");
+
+        quad->m_indices.push_back(0);
+        quad->m_indices.push_back(2);
+        quad->m_indices.push_back(1);
+
+        quad->m_indices.push_back(0);
+        quad->m_indices.push_back(3);
+        quad->m_indices.push_back(2);
+
+        quad->prepare();
+    }
+
+    getOrAddAssetByAlias<IMaterial>("default_material");
 }
 
 SGCore::Ref<SGCore::AssetManager>& SGCore::AssetManager::getInstance() noexcept
@@ -43,6 +63,26 @@ bool SGCore::AssetManager::isAssetExists(const std::string& pathOrAlias, const s
         auto foundAssetIt = foundVariantsIt->second.find(assetTypeID);
         return foundAssetIt != foundVariantsIt->second.end();
     }
+}
+
+bool SGCore::AssetManager::isAssetExists(const std::string& alias, const std::filesystem::path& path,
+                                         SGCore::AssetStorageType loadedBy, const size_t& assetTypeID) noexcept
+{
+    switch(loadedBy)
+    {
+        case AssetStorageType::BY_PATH:
+        {
+            return isAssetExists(Utils::toUTF8(path.u16string()), assetTypeID);
+            break;
+        }
+        case AssetStorageType::BY_ALIAS:
+        {
+            return isAssetExists(alias, assetTypeID);
+            break;
+        }
+    }
+
+    return false;
 }
 
 void SGCore::AssetManager::fullRemoveAsset(const std::filesystem::path& aliasOrPath) noexcept

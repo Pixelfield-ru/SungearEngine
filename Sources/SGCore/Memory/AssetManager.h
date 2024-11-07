@@ -37,6 +37,8 @@ namespace SGCore
 
         static void init() noexcept;
 
+        void addStandardAssets() noexcept;
+
         AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
 
         /// This event is using for resolve references of member assets after package deserialization.
@@ -146,6 +148,15 @@ namespace SGCore
             // if asset already exists then we are just leaving
             if(foundAssetOfTIt != foundVariants.end())
             {
+                auto asset = foundAssetOfTIt->second;
+
+                // if asset was not loaded earlier
+                // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
+                if(!asset->m_isLoaded)
+                {
+                    distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
+                }
+
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
                 // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
                 return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetOfTIt->second));
@@ -209,6 +220,13 @@ namespace SGCore
             // if asset already exists then we are just leaving
             if(foundAssetOfTIt != foundVariants.end())
             {
+                // if asset was not loaded earlier
+                // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
+                if(!assetToLoad->m_isLoaded)
+                {
+                    distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
+                }
+
                 return;
             }
 
@@ -251,6 +269,85 @@ namespace SGCore
         // =================================================================================================
         // =================================================================================================
         // =================================================================================================
+
+        /**
+         * Use for asset deferred loading. Returns nullptr if asset with this alias or path does not exist.\n
+         * Loads asset if \p m_isLoaded variable of asset equals to false.
+         * @tparam AssetCtorArgsT
+         * @param alias
+         * @param path
+         * @param loadedBy
+         * @param assetTypeID
+         * @param assetsLoadPolicy
+         * @param lazyLoadInThread
+         * @param assetCtorArgs
+         * @return
+         */
+        AssetRef<IAsset> loadExistingAsset(const std::string& alias,
+                                           const std::filesystem::path& path,
+                                           AssetStorageType loadedBy,
+                                           const size_t& assetTypeID,
+                                           AssetsLoadPolicy assetsLoadPolicy,
+                                           const Ref<Threading::Thread>& lazyLoadInThread) noexcept
+        {
+            std::lock_guard guard(m_mutex);
+
+            size_t hashedAssetPath { };
+            switch(loadedBy)
+            {
+                case AssetStorageType::BY_PATH:
+                    hashedAssetPath = hashString(Utils::toUTF8(path.u16string()));
+                    break;
+                case AssetStorageType::BY_ALIAS:
+                    hashedAssetPath = hashString(alias);
+                    break;
+            }
+
+            // getting variants of assets that were loaded by path 'path'
+            auto& foundVariants = m_assets[hashedAssetPath];
+
+            // trying to find existing asset of type 'AssetT' loaded bt path 'path'
+            auto foundAssetOfTIt = foundVariants.find(assetTypeID);
+            // if asset already exists then we are just leaving
+            if(foundAssetOfTIt != foundVariants.end())
+            {
+                auto asset = foundAssetOfTIt->second;
+
+                // if asset was not loaded earlier
+                // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
+                if(!asset->m_isLoaded)
+                {
+                    distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
+                }
+
+                return AssetRef<IAsset>(foundAssetOfTIt->second);
+            }
+
+            return nullptr;
+        }
+
+        AssetRef<IAsset> loadExistingAsset(const std::string& alias,
+                                           const std::filesystem::path& path,
+                                           AssetStorageType loadedBy,
+                                           const size_t& assetTypeID,
+                                           AssetsLoadPolicy assetsLoadPolicy) noexcept
+        {
+            return loadExistingAsset(alias, path, loadedBy, assetTypeID, assetsLoadPolicy,
+                                     Threading::ThreadsManager::getMainThread());
+        }
+
+        AssetRef<IAsset> loadExistingAsset(const std::string& alias,
+                                           const std::filesystem::path& path,
+                                           AssetStorageType loadedBy,
+                                           const size_t& assetTypeID) noexcept
+        {
+            return loadExistingAsset(alias, path, loadedBy, assetTypeID, m_defaultAssetsLoadPolicy,
+                                     Threading::ThreadsManager::getMainThread());
+        }
+
+        // =================================================================================================
+        // =================================================================================================
+        // =================================================================================================
         
         template<typename AssetT>
         requires(std::is_base_of_v<IAsset, AssetT>)
@@ -272,6 +369,13 @@ namespace SGCore
             // if asset already exists then we are just leaving
             if(foundAssetOfTIt != foundVariants.end())
             {
+                // if asset was not loaded earlier
+                // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
+                if(!assetToLoad->m_isLoaded)
+                {
+                    distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
+                }
+
                 return;
             }
 
@@ -336,9 +440,18 @@ namespace SGCore
             // if asset already exists then we are just leaving
             if(foundAssetOfTIt != foundVariants.end())
             {
+                auto asset = foundAssetOfTIt->second;
+
+                // if asset was not loaded earlier
+                // THIS IS DEFERRED LOAD OF ASSET (LOAD AS NEEDED)
+                if(!asset->m_isLoaded)
+                {
+                    distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
+                }
+
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
                 // IF THIS IS NOT THE CASE, AND SUDDENLY IT TURNS OUT THAT THERE ARE TWO OR MORE ASSET CLASSES WITH THE SAME asset_type_id, THEN ALAS (i hope engine will crash).
-                return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetOfTIt->second));
+                return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(asset));
             }
 
             // else we are creating new asset with type 'AssetT'
@@ -517,6 +630,8 @@ namespace SGCore
         }
 
         bool isAssetExists(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept;
+        bool isAssetExists(const std::string& alias, const std::filesystem::path& path, AssetStorageType loadedBy,
+                           const size_t& assetTypeID) noexcept;
 
         /**
          * Completely deletes the asset (deletes all copies of the asset that were loaded as different types).
@@ -635,7 +750,7 @@ namespace SGCore
                 return createAssetWithAlias<AssetT>(alias);
             }
 
-            return foundAssetIt->second;
+            return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetIt->second));
         }
 
         template<typename AssetT>
@@ -658,7 +773,7 @@ namespace SGCore
                 return createAssetWithPath<AssetT>(path);
             }
 
-            return foundAssetIt->second;
+            return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetIt->second));
         }
 
         template<typename AssetT>
@@ -681,7 +796,7 @@ namespace SGCore
                 return nullptr;
             }
 
-            return foundAssetIt->second;
+            return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetIt->second));
         }
 
         [[nodiscard]] AssetRef<IAsset> getAsset(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept;

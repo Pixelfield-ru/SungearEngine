@@ -30,7 +30,7 @@ namespace SGCore
         std::string m_name;
 
         std::vector<Ref<Node>> m_children;
-        std::vector<Ref<IMeshData>> m_meshesData;
+        std::vector<AssetRef<IMeshData>> m_meshesData;
 
         glm::vec3 m_position { 1.0 };
         glm::quat m_rotationQuaternion = glm::identity<glm::quat>();

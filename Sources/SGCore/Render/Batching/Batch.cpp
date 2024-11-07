@@ -209,6 +209,12 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
     }
     
     Mesh& entityMesh = lockedScene->getECSRegistry()->get<Mesh>(entity);
+
+    if(!entityMesh.m_base.getMeshData())
+    {
+        LOG_E(SGCORE_TAG, "Batching error: can not add entity. Entity does not have mesh.");
+        return;
+    }
     
     if(entityMesh.m_base.getMeshData()->m_positions.empty())
     {

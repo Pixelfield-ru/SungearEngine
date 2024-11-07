@@ -63,7 +63,7 @@ namespace SGCore
         virtual void prepareUniformBuffers(const Ref<RenderingBase>& renderingBase,
                                            const Ref<Transform>& transform) { }
 
-        virtual void renderMeshData(const Ref<IMeshData>& meshData,
+        virtual void renderMeshData(const IMeshData* meshData,
                                     const MeshDataRenderInfo& meshDataRenderInfo) { }
                                     
         virtual void renderArray(const Ref<IVertexArray>& vertexArray,

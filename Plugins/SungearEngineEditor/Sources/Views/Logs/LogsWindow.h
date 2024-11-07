@@ -7,6 +7,7 @@
 
 #include <SGCore/ImGuiWrap/Views/IView.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
+#include <SGCore/Memory/AssetRef.h>
 #include <SGCore/Logger/Logger.h>
 
 namespace SGE

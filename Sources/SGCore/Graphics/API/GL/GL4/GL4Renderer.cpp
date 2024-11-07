@@ -187,9 +187,11 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
     // std::cout << "time for subdata: " << std::to_string((t1 - t0) * 1000.0) << std::endl;
 }
 
-void SGCore::GL4Renderer::renderMeshData(const Ref<IMeshData>& meshData,
+void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
                                          const MeshDataRenderInfo& meshDataRenderInfo)
 {
+    if(!meshData) return;
+
     if(meshDataRenderInfo.m_enableFacesCulling)
     {
         glEnable(GL_CULL_FACE);

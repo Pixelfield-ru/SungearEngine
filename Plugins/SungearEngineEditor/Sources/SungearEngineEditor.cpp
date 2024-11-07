@@ -51,7 +51,7 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
 {
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_Y))
     {
-        SGCore::AssetManager::getInstance()->createPackage("./", "assets");
+        SGCore::AssetManager::getInstance()->createPackage("./", "assets", true);
 
         /*try
         {

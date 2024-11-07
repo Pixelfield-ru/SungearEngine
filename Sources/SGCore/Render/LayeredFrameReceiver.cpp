@@ -256,7 +256,7 @@ void SGCore::LayeredFrameReceiver::attachmentDepthPass
     layer->m_frameBuffer->bindAttachmentToDrawIn(attachmentType);
     
     CoreMain::getRenderer()->renderMeshData(
-            m_postProcessQuad,
+            m_postProcessQuad.get(),
             m_postProcessQuadRenderInfo
     );
     

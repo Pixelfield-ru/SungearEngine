@@ -6,7 +6,9 @@
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Serde/Defines.h"
-#include "SGCore/Memory/AssetRef.h"
+#include "SGCore/Memory/AssetRefFromThis.h"
+#include "SGCore/Graphics/API/IRenderer.h"
+#include "SGCore/Main/CoreMain.h"
 
 sg_predeclare_serde()
 
@@ -22,17 +24,20 @@ namespace SGCore
 
     class AssetManager;
 
-    class IMeshData : public std::enable_shared_from_this<IMeshData>
+    class IMeshData : public IAsset, public AssetRefFromThis<IMeshData>
     {
     public:
         sg_serde_as_friend()
 
+        sg_implement_asset_type_id(IMeshData, 13)
+
+        friend class AssetManager;
         friend struct Node;
 
         AABB<> m_aabb;
         
         // Mesh() noexcept;
-        virtual ~IMeshData() = default;
+        virtual ~IMeshData() override = default;
 
         IMeshData();
         IMeshData(const IMeshData&) = default;
@@ -77,7 +82,7 @@ namespace SGCore
         void setIndex(const std::uint64_t& faceIdx, const std::uint64_t& indexIdx, const std::uint64_t& value) noexcept;
         void getFaceIndices(const std::uint64_t& faceIdx, std::uint64_t& outIdx0, std::uint64_t& outIdx1, std::uint64_t& outIdx2) noexcept;
 
-        void setData(const Ref<IMeshData>& other) noexcept;
+        void setData(const AssetRef<IMeshData>& other) noexcept;
         
         entity_t addOnScene(const Ref<Scene>& scene,
                             const std::string& layerName) noexcept;
@@ -110,11 +115,14 @@ namespace SGCore
         
         void generatePhysicalMesh() noexcept;
 
-        Ref<IVertexArray> getVertexArray() noexcept;
+        Ref<IVertexArray> getVertexArray() const noexcept;
 
     protected:
-        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
-        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept;
+        void doLoad(const std::filesystem::path& path) override;
+        void doLazyLoad() override;
+
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
 
         std::streamsize m_indicesOffsetInPackage = 0;
         std::streamsize m_indicesSizeInPackage = 0;
@@ -146,6 +154,14 @@ namespace SGCore
         Ref<IVertexBuffer> m_bitangentsBuffer;
 
         Ref<IIndexBuffer> m_indicesBuffer;
+
+        template<typename... AssetCtorArgs>
+        static Ref<IMeshData> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
+        {
+            auto meshData = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData(std::forward<AssetCtorArgs>(assetCtorArgs)...));
+
+            return meshData;
+        }
     };
 }
 

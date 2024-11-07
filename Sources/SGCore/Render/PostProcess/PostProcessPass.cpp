@@ -88,7 +88,7 @@ void SGCore::PostProcessPass::depthPass
             ppLayer->m_frameBuffer->bindAttachmentToDrawIn(attachmentType);
 
             CoreMain::getRenderer()->renderMeshData(
-                    m_postProcessQuad,
+                    m_postProcessQuad.get(),
                     m_postProcessQuadRenderInfo
             );
         }
@@ -163,7 +163,7 @@ void SGCore::PostProcessPass::FXPass
             ppLayer->m_frameBuffer->clearAttachment(ppFXSubPass.m_attachmentRenderTo);
             
             CoreMain::getRenderer()->renderMeshData(
-                    m_postProcessQuad,
+                    m_postProcessQuad.get(),
                     m_postProcessQuadRenderInfo
             );
             
@@ -191,7 +191,7 @@ void SGCore::PostProcessPass::FXPass
                 depthPassShader->useInteger("SGLPP_LayersDepthAttachmentsCount", depthPassLayerIdx);
                 
                 CoreMain::getRenderer()->renderMeshData(
-                        m_postProcessQuad,
+                        m_postProcessQuad.get(),
                         m_postProcessQuadRenderInfo
                 );
                 
@@ -265,7 +265,7 @@ void SGCore::PostProcessPass::layersCombiningPass
         ppLayerCombiningShader->useInteger("SGLPP_AttachmentsToCopyInCurrentTargetAttachmentCount", attachmentIdx);
 
         CoreMain::getRenderer()->renderMeshData(
-                m_postProcessQuad,
+                m_postProcessQuad.get(),
                 m_postProcessQuadRenderInfo
         );
     }
@@ -296,7 +296,7 @@ void SGCore::PostProcessPass::finalFrameFXPass
     ppFinalFXShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
     CoreMain::getRenderer()->renderMeshData(
-            m_postProcessQuad,
+            m_postProcessQuad.get(),
             m_postProcessQuadRenderInfo
     );
 

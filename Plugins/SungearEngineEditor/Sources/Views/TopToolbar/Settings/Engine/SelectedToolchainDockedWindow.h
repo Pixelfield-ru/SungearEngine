@@ -6,6 +6,7 @@
 #define SUNGEARENGINEEDITOR_SELECTEDTOOLCHAINDOCKEDWINDOW_H
 
 #include <SGCore/Graphics/API/ITexture2D.h>
+#include <SGCore/Memory/AssetRef.h>
 #include "Views/DockedWindow.h"
 #include "Toolchains/Toolchain.h"
 

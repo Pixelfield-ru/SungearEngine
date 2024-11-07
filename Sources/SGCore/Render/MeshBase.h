@@ -16,7 +16,7 @@ namespace SGCore
 {
     struct MeshBase
     {
-        MeshBase();
+        MeshBase() = default;
         MeshBase(const MeshBase&) = default;
         MeshBase(MeshBase&&) noexcept = default;
 
@@ -25,8 +25,8 @@ namespace SGCore
         // определяем для каждого ресивера какой слой будет использоваться для данной сущности
         std::unordered_map<LayeredFrameReceiver*, Weak<PostProcessLayer>> m_layeredFrameReceiversMarkup;
 
-        void setMeshData(const Ref<IMeshData>& meshData) noexcept;
-        Ref<IMeshData> getMeshData() const noexcept;
+        void setMeshData(const AssetRef<IMeshData>& meshData) noexcept;
+        AssetRef<IMeshData> getMeshData() const noexcept;
 
         void setMaterial(const AssetRef<IMaterial>& material) noexcept;
         AssetRef<IMaterial> getMaterial() const noexcept;
@@ -35,7 +35,7 @@ namespace SGCore
         MeshBase& operator=(MeshBase&&) noexcept = default;
 
     private:
-        Ref<IMeshData> m_meshData;
+        AssetRef<IMeshData> m_meshData;
         // this is final material. this material can be used from m_meshData as default material, or you can set custom material
         AssetRef<IMaterial> m_material;
     };

@@ -39,7 +39,7 @@ namespace SGCore
         std::string m_modelName;
 
         std::shared_ptr<Node> processNode(const aiNode*, const aiScene*);
-        std::shared_ptr<IMeshData> processMesh(const aiMesh*, const aiScene*);
+        AssetRef<IMeshData> processMesh(const aiMesh*, const aiScene*);
         void loadTextures(aiMaterial* aiMat, AssetRef<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureType& sgMaterialTextureType);
         
         void prepareNodeMeshes(const Ref<Node>& node) noexcept;

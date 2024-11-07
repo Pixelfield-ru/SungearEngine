@@ -107,9 +107,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
         SGCore::ShaderComponent& skyboxShaderComponent = newScene->getECSRegistry()->emplace<SGCore::ShaderComponent>(atmosphereEntity);
         SGCore::Atmosphere& atmosphereScattering = newScene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
         // atmosphereScattering.m_sunRotation.z = 90.0;
-        skyboxMesh.m_base.getMaterial()->addTexture2D(SGTextureType::SGTT_SKYBOX,
-                                                      SGCore::AssetManager::getInstance()->loadAsset<SGCore::ICubemapTexture>("standard_skybox0")
-        );
+        skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_skybox_material0"));
         // это топ пж
         SGCore::ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
         skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;

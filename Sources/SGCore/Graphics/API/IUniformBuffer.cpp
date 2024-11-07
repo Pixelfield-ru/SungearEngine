@@ -1,3 +1,4 @@
+
 #include "IUniformBuffer.h"
 
 SGCore::IUniformBuffer::~IUniformBuffer()

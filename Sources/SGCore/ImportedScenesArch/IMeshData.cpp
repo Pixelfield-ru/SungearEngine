@@ -26,7 +26,8 @@
 
 SGCore::IMeshData::IMeshData()
 {
-    m_material = AssetManager::getInstance()->createAsset<IMaterial>();
+    // m_material = AssetManager::getInstance()->createAsset<IMaterial>();
+    m_material = AssetManager::getInstance()->getOrAddAssetByAlias<IMaterial>("default_material");
 }
 
 void SGCore::IMeshData::setVertexPosition
@@ -91,12 +92,12 @@ void SGCore::IMeshData::getFaceIndices(const std::uint64_t& faceIdx, std::uint64
     outIdx2 = m_indices[faceIdx * 3 + 2];
 }
 
-SGCore::Ref<SGCore::IVertexArray> SGCore::IMeshData::getVertexArray() noexcept
+SGCore::Ref<SGCore::IVertexArray> SGCore::IMeshData::getVertexArray() const noexcept
 {
     return m_vertexArray;
 }
 
-void SGCore::IMeshData::setData(const Ref<IMeshData>& other) noexcept
+void SGCore::IMeshData::setData(const AssetRef<IMeshData>& other) noexcept
 {
     if(m_vertexArray) m_vertexArray->destroy();
 
@@ -132,7 +133,7 @@ SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const st
     // NOT STANDARD
     // auto cullableMesh = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
     // maybe can load the ram
-    meshEntityMesh.m_base.setMeshData(shared_from_this());
+    meshEntityMesh.m_base.setMeshData(assetRef());
     
     // meshEntityMesh.m_base.m_meshData = shared_from_this();
     
@@ -169,4 +170,14 @@ void SGCore::IMeshData::resolveMemberAssetsReferences(SGCore::AssetManager* pare
     {
         m_material = parentAssetManager->getAsset(m_material);
     }
+}
+
+void SGCore::IMeshData::doLoad(const std::filesystem::path& path)
+{
+
+}
+
+void SGCore::IMeshData::doLazyLoad()
+{
+
 }

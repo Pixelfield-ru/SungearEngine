@@ -13,7 +13,6 @@
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Math/AABB.h"
-#include "SGCore/Serde/Serde.h"
 
 namespace SGCore
 {

@@ -10,8 +10,6 @@
 #include "TransformBase.h"
 #include "SGCore/Main/CoreGlobals.h"
 
-#include "SGCore/Serde/Serde.h"
-
 namespace SGCore
 {
     // sizeof(Transform) = 767

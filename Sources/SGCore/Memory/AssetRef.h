@@ -17,6 +17,9 @@ namespace SGCore
         friend struct AssetManager;
 
         template<typename>
+        friend struct AssetRefFromThis;
+
+        template<typename>
         friend struct AssetWeakRef;
 
         template<typename>

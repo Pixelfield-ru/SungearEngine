@@ -8,6 +8,8 @@
 // todo: impl 
 void SGCore::GL4CubemapTexture::create()
 {
+    m_isLoaded = true;
+
     glGenTextures(1, &m_cubemapHandler);
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapHandler);

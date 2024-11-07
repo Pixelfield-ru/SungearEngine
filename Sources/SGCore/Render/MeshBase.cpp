@@ -7,12 +7,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "RenderPipelinesManager.h"
 
-SGCore::MeshBase::MeshBase()
-{
-    m_meshData = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
-}
-
-void SGCore::MeshBase::setMeshData(const SGCore::Ref<SGCore::IMeshData>& meshData) noexcept
+void SGCore::MeshBase::setMeshData(const SGCore::AssetRef<SGCore::IMeshData>& meshData) noexcept
 {
     m_meshData = meshData;
     if(!m_material)
@@ -21,7 +16,7 @@ void SGCore::MeshBase::setMeshData(const SGCore::Ref<SGCore::IMeshData>& meshDat
     }
 }
 
-SGCore::Ref<SGCore::IMeshData> SGCore::MeshBase::getMeshData() const noexcept
+SGCore::AssetRef<SGCore::IMeshData> SGCore::MeshBase::getMeshData() const noexcept
 {
     return m_meshData;
 }
