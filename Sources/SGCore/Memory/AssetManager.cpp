@@ -21,7 +21,7 @@ void SGCore::AssetManager::addStandardAssets() noexcept
 {
     if(!isAssetExists<IMeshData>("quad_mesh"))
     {
-        auto quad = createAssetWithAlias<IMeshData>("quad_mesh");
+        auto quad = getOrAddAssetByAlias<IMeshData>("quad_mesh");
 
         quad->m_indices.push_back(0);
         quad->m_indices.push_back(2);

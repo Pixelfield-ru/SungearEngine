@@ -68,10 +68,13 @@ void onEntityDeserialize(SGCore::Serde::DeserializableValueView<SGCore::SceneEnt
 {
     const auto& entity = entityView.m_data->m_serializableEntity;
 
+    const auto& currentElementTypeName = entityView.getValueContainer().getMemberTypeName(componentsIterator);
+
     // iterating through all elements of entityView
     ## for struct in structs
     ## if struct.hasMember(name: "type") && struct.type.equals(value: "component")
     ## if !struct.hasMember(name: "annotations") || !struct.annotations.hasMember(name: "doNotGenerateDeserializationLogic")
+    if(currentElementTypeName == SGCore::Serde::SerdeSpec<{{ struct.fullName }}, TFormatType>::type_name)
     {
         ## if struct.hasMember(name: "getFromRegistryBy")
         const auto component = entityView.getValueContainer().template getMember<{{ struct.getFromRegistryBy }}>(componentsIterator);

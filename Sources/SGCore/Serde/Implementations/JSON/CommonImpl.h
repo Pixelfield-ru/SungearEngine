@@ -32,7 +32,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': m_thisValue or m_document is null.\n";
+                    *m_outputLog += "Error: Can not get member with name '" + memberName + "': m_thisValue or m_document is null.\n";
                 }
 
                 return std::nullopt;
@@ -42,7 +42,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not exist.\n";
+                    *m_outputLog += "Error: Can not get member with name '" + memberName + "': this member does not exist.\n";
                 }
 
                 return std::nullopt;
@@ -55,7 +55,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not have 'typeName' section.\n";
+                    *m_outputLog += "Error: Can not get member with name '" + memberName + "': this member does not have 'typeName' section.\n";
                 }
 
                 return std::nullopt;
@@ -68,7 +68,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get member with name '" + memberName + "': this member does not have 'value' section.\n";
+                    *m_outputLog += "Error: Can not get member with name '" + memberName + "': this member does not have 'value' section.\n";
                 }
 
                 return std::nullopt;
@@ -101,7 +101,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get value as array: m_thisValue or m_document is null.\n";
+                    *m_outputLog += "Error: Can not get value as array: m_thisValue or m_document is null.\n";
                 }
 
                 return { };
@@ -111,7 +111,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get value as array: value is not an array.\n";
+                    *m_outputLog += "Error: Can not get value as array: value is not an array.\n";
                 }
 
                 return { };
@@ -129,7 +129,7 @@ namespace SGCore::Serde
                 {
                     if(m_outputLog)
                     {
-                        *m_outputLog = "Error: Can not get member with index '" + std::to_string(i) +
+                        *m_outputLog += "Error: Can not get member with index '" + std::to_string(i) +
                                        "' from array: this member does not have 'typeName' section.\n";
                     }
 
@@ -143,7 +143,7 @@ namespace SGCore::Serde
                 {
                     if(m_outputLog)
                     {
-                        *m_outputLog = "Error: Can not get member with index '" + std::to_string(i) +
+                        *m_outputLog += "Error: Can not get member with index '" + std::to_string(i) +
                                        "' from array: this member does not have 'value' section.\n";
                     }
 
@@ -175,7 +175,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get value as int64: m_thisValue is null.\n";
+                    *m_outputLog += "Error: Can not get value as int64: m_thisValue is null.\n";
                 }
 
                 return { };
@@ -190,7 +190,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get value as float: m_thisValue is null.\n";
+                    *m_outputLog += "Error: Can not get value as float: m_thisValue is null.\n";
                 }
 
                 return { };
@@ -206,7 +206,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get value as float: m_thisValue is null.\n";
+                    *m_outputLog += "Error: Can not get value as float: m_thisValue is null.\n";
                 }
 
                 return { };
@@ -257,7 +257,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
+                    *m_outputLog += "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
                                    "': m_thisValue or m_document is null.\n";
                 }
 
@@ -271,7 +271,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
+                    *m_outputLog += "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
                                    "': this member does not have 'typeName' section.\n";
                 }
 
@@ -285,7 +285,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
+                    *m_outputLog += "Error: Can not get member with name '" + std::string(memberIterator->name.GetString()) +
                                    "': this member does not have 'value' section.\n";
                 }
 
@@ -319,7 +319,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get value from array: m_thisValue or m_document is null.\n";
+                    *m_outputLog += "Error: Can not get value from array: m_thisValue or m_document is null.\n";
                 }
 
                 return std::nullopt;
@@ -332,7 +332,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get value from array: this member does not have 'typeName' section.\n";
+                    *m_outputLog += "Error: Can not get value from array: this member does not have 'typeName' section.\n";
                 }
 
                 return std::nullopt;
@@ -345,7 +345,7 @@ namespace SGCore::Serde
             {
                 if(m_outputLog)
                 {
-                    *m_outputLog = "Error: Can not get value from array: this member does not have 'value' section.\n";
+                    *m_outputLog += "Error: Can not get value from array: this member does not have 'value' section.\n";
                 }
 
                 return std::nullopt;
@@ -374,6 +374,28 @@ namespace SGCore::Serde
         [[nodiscard]] std::string getMemberName(const rapidjson::Value::MemberIterator& memberIterator) const noexcept
         {
             return memberIterator->name.GetString();
+        }
+
+        [[nodiscard]] std::string getMemberTypeName(const rapidjson::Value::MemberIterator& memberIterator) const noexcept
+        {
+            if(!memberIterator->value.HasMember("typeName"))
+            {
+                *m_outputLog += fmt::format("Can not get type name of member '{}'. Section 'typeName' in member iterator does not exist.", memberIterator->name.GetString());
+                return "";
+            }
+
+            return memberIterator->value["typeName"].GetString();
+        }
+
+        [[nodiscard]] std::string getMemberTypeName(const rapidjson::Value::ValueIterator& memberIterator) const noexcept
+        {
+            if(!memberIterator->HasMember("typeName"))
+            {
+                *m_outputLog += fmt::format("Can not get type name of array element. Section 'typeName' in value iterator does not exist.");
+                return "";
+            }
+
+            return (*memberIterator)["typeName"].GetString();
         }
 
         [[nodiscard]] bool isNull() const noexcept

@@ -18,11 +18,13 @@ void SGCore::ShadersUtils::loadShader(ShaderComponent& shaderComponent, const st
 
     if(renderPipeline)
     {
+        auto shaderFile =
+                AssetManager::getInstance()->loadAsset<TextFileAsset>(renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization());
+
         // std::cout << "loaded shader: " << renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization() << std::endl;
         shaderComponent.m_shaderPath = shaderPath;
-        shaderComponent.m_shader->addSubPassShadersAndCompile(
-                AssetManager::getInstance()->loadAsset<TextFileAsset>(
-                        renderPipeline->m_shadersPaths.getByVirtualPath(shaderPath).getCurrentRealization()));
+        shaderComponent.m_shader = AssetManager::getInstance()->getOrAddAssetByAlias<IShader>(shaderFile->getAlias());
+        shaderComponent.m_shader->addSubPassShadersAndCompile(shaderFile);
     }
 }
 
@@ -33,15 +35,16 @@ void SGCore::ShadersUtils::onRenderPipelineSet(ShaderComponent& shaderComponent)
     if(shaderComponent.m_shader)
     {
         shaderComponent.m_shader->removeAllSubPassShadersByDiskPath(shaderComponent.m_shaderPath);
-        
-        auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
-        
-        if(renderPipeline)
-        {
-            shaderComponent.m_shader->addSubPassShadersAndCompile(
-                    AssetManager::getInstance()->loadAsset<TextFileAsset>(
-                            renderPipeline->m_shadersPaths.getByVirtualPath(shaderComponent.m_shaderPath
-                            ).getCurrentRealization()));
-        }
+    }
+
+    auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
+
+    if(renderPipeline)
+    {
+        auto shaderFile =
+                AssetManager::getInstance()->loadAsset<TextFileAsset>(renderPipeline->m_shadersPaths.getByVirtualPath(shaderComponent.m_shaderPath).getCurrentRealization());
+
+        shaderComponent.m_shader = AssetManager::getInstance()->getOrAddAssetByAlias<IShader>(shaderFile->getAlias());
+        shaderComponent.m_shader->addSubPassShadersAndCompile(shaderFile);
     }
 }

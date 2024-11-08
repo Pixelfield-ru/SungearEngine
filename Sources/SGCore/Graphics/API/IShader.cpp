@@ -15,6 +15,8 @@ void SGCore::IShader::addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset)
 {
     if(!asset) return;
 
+    m_subPassesShaders.clear();
+
     m_fileAsset = asset;
 
     m_shaderAnalyzedFile = AssetManager::getInstance()->loadAsset<ShaderAnalyzedFile>(asset->getPath());
@@ -40,14 +42,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset)
         subPassShader->compile(subPassName);
         subPassShader->addToGlobalStorage();
 
-        if(!getSubPassShader(subPassName))
-        {
-            m_subPassesShaders.push_back(subPassShader);
-        }
-        else
-        {
-            setSubPassShader(subPassName, subPassShader);
-        }
+        m_subPassesShaders.push_back(subPassShader);
     }
 }
 
@@ -83,7 +78,7 @@ SGCore::Ref<SGCore::ISubPassShader> SGCore::IShader::getSubPassShader(const std:
     return it != m_subPassesShaders.end() ? *it : nullptr;
 }
 
-void SGCore::IShader::onAssetModified()
+/*void SGCore::IShader::onAssetModified()
 {
     m_subPassesShaders.clear();
     addSubPassShadersAndCompile(m_fileAsset.lock());
@@ -93,7 +88,7 @@ void SGCore::IShader::onAssetPathChanged()
 {
     m_subPassesShaders.clear();
     addSubPassShadersAndCompile(m_fileAsset.lock());
-}
+}*/
 
 void SGCore::IShader::removeAllSubPassShadersByDiskPath(const std::string& path) noexcept
 {
@@ -110,4 +105,24 @@ void SGCore::IShader::removeSubPass(const std::string& subPassName) noexcept
     std::erase_if(m_subPassesShaders, [&subPassName](const Ref<ISubPassShader>& subPassShader) {
         return subPassName == subPassShader->m_subPassName;
     });
+}
+
+void SGCore::IShader::doLoad(const std::filesystem::path& path)
+{
+    m_fileAsset = getParentAssetManager()->loadAsset<TextFileAsset>(path);
+}
+
+void SGCore::IShader::doLazyLoad()
+{
+    addSubPassShadersAndCompile(m_fileAsset.lock());
+}
+
+void SGCore::IShader::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    // nothing to do...
+}
+
+SGCore::AssetRef<SGCore::TextFileAsset> SGCore::IShader::getFile() const noexcept
+{
+    return m_fileAsset.lock();
 }

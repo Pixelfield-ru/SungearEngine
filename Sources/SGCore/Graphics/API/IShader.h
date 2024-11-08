@@ -19,13 +19,17 @@ namespace SGCore
     class IMaterial;
     class ITexture2D;
 
-    class IShader : public IAssetObserver
+    class IShader : public IAsset
     {
     public:
-        AssetRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;
+        sg_serde_as_friend()
 
-        AssetWeakRef<TextFileAsset> m_fileAsset;
+        sg_implement_asset_type_id(IShader, 14)
 
+        /**
+         * Removes all sub pass shaders in this IShader and adds new sub pass shaders.
+         * @param asset
+         */
         void addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset) noexcept;
 
         void setSubPassShader(const std::string& subPassName, const IShader* from) noexcept;
@@ -35,13 +39,13 @@ namespace SGCore
 
         /**
          * Calls recompile of shader program.
-         */
+         *//*
         void onAssetModified() override;
 
-        /**
+        *//**
          * Calls recompile of shader program.
-         */
-        void onAssetPathChanged() override;
+         *//*
+        void onAssetPathChanged() override;*/
 
         const auto& getSubPassesShaders() const noexcept
         {
@@ -75,7 +79,18 @@ namespace SGCore
 
         static void useTextureBlockGlobal(const std::string& uniformName, const size_t& textureBlock) noexcept;*/
 
+        [[nodiscard]] AssetRef<TextFileAsset> getFile() const noexcept;
+
+    protected:
+        void doLoad(const std::filesystem::path& path) override;
+        void doLazyLoad() override;
+
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
+
     private:
+        AssetRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;
+        AssetWeakRef<TextFileAsset> m_fileAsset;
+
         std::vector<Ref<ISubPassShader>> m_subPassesShaders;
     };
 }

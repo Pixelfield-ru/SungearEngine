@@ -1116,7 +1116,7 @@ namespace SGCore::Serde
          * Getting first iterator of members container.
          * @return First iterator of members container (begin).
          */
-        [[nodiscard]] int memberBegin() const noexcept
+        [[nodiscard]] FormatInfo<TFormatType>::member_iterator_t memberBegin() const noexcept
         {
 
         }
@@ -1125,7 +1125,7 @@ namespace SGCore::Serde
          * Getting last iterator of members container.
          * @return Last iterator of members container (end).
          */
-        [[nodiscard]] int memberEnd() const noexcept
+        [[nodiscard]] FormatInfo<TFormatType>::member_iterator_t memberEnd() const noexcept
         {
 
         }
@@ -1134,7 +1134,7 @@ namespace SGCore::Serde
         * Getting first iterator of array container.
         * @return First iterator of array container (begin).
         */
-        [[nodiscard]] int begin() const noexcept
+        [[nodiscard]] FormatInfo<TFormatType>::array_iterator_t begin() const noexcept
         {
 
         }
@@ -1143,7 +1143,7 @@ namespace SGCore::Serde
          * Getting last iterator of array container.
          * @return Last iterator of array container (end).
          */
-        [[nodiscard]] int end() const noexcept
+        [[nodiscard]] FormatInfo<TFormatType>::array_iterator_t end() const noexcept
         {
 
         }
@@ -1155,7 +1155,7 @@ namespace SGCore::Serde
          * @return Value of member.
          */
         template<typename T, typename... SharedDataT>
-        T getMember(const int& iterator, SharedDataT&&... sharedData) noexcept
+        T getMember(const FormatInfo<TFormatType>::member_iterator_t& iterator, SharedDataT&&... sharedData) noexcept
         {
 
         }
@@ -1167,7 +1167,7 @@ namespace SGCore::Serde
          * @return Value of element.
          */
         template<typename T, typename... SharedDataT>
-        T getMember(const float& iterator, SharedDataT&&... sharedData) noexcept
+        T getMember(const FormatInfo<TFormatType>::array_iterator_t& iterator, SharedDataT&&... sharedData) noexcept
         {
 
         }
@@ -1177,7 +1177,27 @@ namespace SGCore::Serde
          * @param memberIterator
          * @return
          */
-        [[nodiscard]] std::string getMemberName(const int& memberIterator) const noexcept
+        [[nodiscard]] std::string getMemberName(const FormatInfo<TFormatType>::member_iterator_t& memberIterator) const noexcept
+        {
+
+        }
+
+        /**
+         * Getting type name of member by iterator.
+         * @param memberIterator
+         * @return
+         */
+        [[nodiscard]] std::string getMemberTypeName(const FormatInfo<TFormatType>::member_iterator_t& memberIterator) const noexcept
+        {
+
+        }
+
+        /**
+         * Getting type name of member by iterator.
+         * @param memberIterator
+         * @return
+         */
+        [[nodiscard]] std::string getMemberTypeName(const FormatInfo<TFormatType>::array_iterator_t& valueIterator) const noexcept
         {
 
         }

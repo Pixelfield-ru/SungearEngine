@@ -147,6 +147,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
     
     if(shaderToUse)
     {
+        // binding shaderToUse only if it is custom shader
         if(shaderToUse == meshGeomShader)
         {
             shaderToUse->bind();
@@ -176,14 +177,18 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                 uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
             }
         }
-        
+
+        LOG_D(SGCORE_TAG, "Rendered entity mesh data: alias: '{}', path: '{}'", mesh.m_base.getMeshData()->getAlias(), Utils::toUTF8(mesh.m_base.getMeshData()->getPath().u16string()));
+        LOG_D(SGCORE_TAG, "Rendered entity material: alias: '{}', path: '{}'", mesh.m_base.getMaterial()->getAlias(), Utils::toUTF8(mesh.m_base.getMaterial()->getPath().u16string()));
+
         CoreMain::getRenderer()->renderMeshData(
                 mesh.m_base.getMeshData().get(),
                 mesh.m_base.m_meshDataRenderInfo
         );
         
         shaderToUse->unbindMaterialTextures(mesh.m_base.getMaterial());
-        
+
+        // if we used custom shader then we must bind standard pipeline shader
         if(shaderToUse == meshGeomShader)
         {
             if(standardGeometryShader)

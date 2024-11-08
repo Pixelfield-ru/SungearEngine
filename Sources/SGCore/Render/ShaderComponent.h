@@ -5,6 +5,7 @@
 #ifndef SUNGEARENGINE_SHADERCOMPONENT_H
 #define SUNGEARENGINE_SHADERCOMPONENT_H
 
+#include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/EventListener.h"
 #include "ShadersUtils.h"
@@ -15,18 +16,23 @@ namespace SGCore
     
     struct ShaderComponent
     {
+        sg_serde_as_friend()
+
+        friend struct ShadersUtils;
+
         ShaderComponent();
         // ShaderComponent(const ShaderComponent&) = default;
 
         bool m_isCustomShader = false;
         
-        Ref<IShader> m_shader = SGCore::MakeRef<IShader>();
-        
-        std::string m_shaderPath;
+        AssetRef<IShader> m_shader;
         
         EventListener<void()> m_onRenderPipelineSet = [this]() {
             ShadersUtils::onRenderPipelineSet(*this);
         };
+
+    private:
+        std::string m_shaderPath;
     };
 }
 

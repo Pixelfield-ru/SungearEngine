@@ -69,52 +69,6 @@ namespace SGCore
             return AssetRef<AssetT>(asset);
         }
 
-        template<typename AssetT, typename... AssetCtorArgsT>
-        requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAssetWithPath(const std::filesystem::path& withPath, AssetCtorArgsT&&... assetCtorArgs) noexcept
-        {
-            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
-            asset->m_path = withPath;
-            asset->m_storedBy = AssetStorageType::BY_PATH;
-            m_assets[hashString(Utils::toUTF8(asset->getPath().u16string()))][AssetT::asset_type_id] = asset;
-
-            return AssetRef<AssetT>(asset);
-        }
-
-        template<typename AssetT, typename... AssetCtorArgsT>
-        requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAssetWithAlias(const std::string& withAlias, AssetCtorArgsT&&... assetCtorArgs) noexcept
-        {
-            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
-            asset->m_alias = withAlias;
-            asset->m_storedBy = AssetStorageType::BY_ALIAS;
-            m_assets[hashString(asset->getAlias())][AssetT::asset_type_id] = asset;
-
-            return AssetRef<AssetT>(asset);
-        }
-
-        template<typename AssetT, typename... AssetCtorArgsT>
-        requires(std::is_base_of_v<IAsset, AssetT>)
-        AssetRef<AssetT> createAsset(const std::filesystem::path& withPath, const std::string& withAlias, AssetStorageType storedBy, AssetCtorArgsT&&... assetCtorArgs) noexcept
-        {
-            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
-            asset->m_path = withPath;
-            asset->m_alias = withAlias;
-            asset->m_storedBy = storedBy;
-
-            switch(storedBy)
-            {
-                case AssetStorageType::BY_PATH:
-                    m_assets[hashString(Utils::toUTF8(asset->getPath().u16string()))][AssetT::asset_type_id] = asset;
-                    break;
-                case AssetStorageType::BY_ALIAS:
-                    m_assets[hashString(asset->getAlias())][AssetT::asset_type_id] = asset;
-                    break;
-            }
-
-            return AssetRef<AssetT>(asset);
-        }
-
         /// CALL ONLY AFTER RESOLVING CONFLICTS OF ASSETS.\n
         /// CALL THIS FUNCTION IMMEDIATELY AFTER DESERIALIZATION OF ASSETS IF NO CONFLICTS WERE FOUND.\n
         void resolveMemberAssetsReferences() noexcept;
@@ -136,17 +90,20 @@ namespace SGCore
                                    const std::filesystem::path& path,
                                    AssetCtorArgsT&& ... assetCtorArgs)
         {
-            std::lock_guard guard(m_mutex);
-
             const size_t hashedAssetPath = hashString(Utils::toUTF8(path.u16string()));
 
-            // getting variants of assets that were loaded by path 'path'
-            auto& foundVariants = m_assets[hashedAssetPath];
+            std::unordered_map<size_t, Ref<IAsset>>* foundVariants { };
+
+            {
+                std::lock_guard guard(m_mutex);
+                // getting variants of assets that were loaded by path 'path'
+                foundVariants = &m_assets[hashedAssetPath];
+            }
 
             // trying to find existing asset of type 'AssetT' loaded bt path 'path'
-            auto foundAssetOfTIt = foundVariants.find(AssetT::asset_type_id);
+            auto foundAssetOfTIt = foundVariants->find(AssetT::asset_type_id);
             // if asset already exists then we are just leaving
-            if(foundAssetOfTIt != foundVariants.end())
+            if(foundAssetOfTIt != foundVariants->end())
             {
                 auto asset = foundAssetOfTIt->second;
 
@@ -164,7 +121,11 @@ namespace SGCore
 
             Ref<AssetT> newAsset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             newAsset->m_parentAssetManager = shared_from_this();
-            foundVariants[AssetT::asset_type_id] = newAsset;
+
+            {
+                std::lock_guard guard(m_mutex);
+                (*foundVariants)[AssetT::asset_type_id] = newAsset;
+            }
             
             std::filesystem::path p(path);
 
@@ -290,8 +251,6 @@ namespace SGCore
                                            AssetsLoadPolicy assetsLoadPolicy,
                                            const Ref<Threading::Thread>& lazyLoadInThread) noexcept
         {
-            std::lock_guard guard(m_mutex);
-
             size_t hashedAssetPath { };
             switch(loadedBy)
             {
@@ -304,12 +263,16 @@ namespace SGCore
             }
 
             // getting variants of assets that were loaded by path 'path'
-            auto& foundVariants = m_assets[hashedAssetPath];
+            std::unordered_map<size_t, Ref<IAsset>>* foundVariants { };
+            {
+                std::lock_guard guard(m_mutex);
+                foundVariants = &m_assets[hashedAssetPath];
+            }
 
             // trying to find existing asset of type 'AssetT' loaded bt path 'path'
-            auto foundAssetOfTIt = foundVariants.find(assetTypeID);
+            auto foundAssetOfTIt = foundVariants->find(assetTypeID);
             // if asset already exists then we are just leaving
-            if(foundAssetOfTIt != foundVariants.end())
+            if(foundAssetOfTIt != foundVariants->end())
             {
                 auto asset = foundAssetOfTIt->second;
 
@@ -814,6 +777,52 @@ namespace SGCore
 
     private:
         explicit AssetManager(const std::string& name) noexcept : m_name(name) { }
+
+        template<typename AssetT, typename... AssetCtorArgsT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        AssetRef<AssetT> createAssetWithPath(const std::filesystem::path& withPath, AssetCtorArgsT&&... assetCtorArgs) noexcept
+        {
+            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
+            asset->m_path = withPath;
+            asset->m_storedBy = AssetStorageType::BY_PATH;
+            m_assets[hashString(Utils::toUTF8(asset->getPath().u16string()))][AssetT::asset_type_id] = asset;
+
+            return AssetRef<AssetT>(asset);
+        }
+
+        template<typename AssetT, typename... AssetCtorArgsT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        AssetRef<AssetT> createAssetWithAlias(const std::string& withAlias, AssetCtorArgsT&&... assetCtorArgs) noexcept
+        {
+            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
+            asset->m_alias = withAlias;
+            asset->m_storedBy = AssetStorageType::BY_ALIAS;
+            m_assets[hashString(asset->getAlias())][AssetT::asset_type_id] = asset;
+
+            return AssetRef<AssetT>(asset);
+        }
+
+        template<typename AssetT, typename... AssetCtorArgsT>
+        requires(std::is_base_of_v<IAsset, AssetT>)
+        AssetRef<AssetT> createAsset(const std::filesystem::path& withPath, const std::string& withAlias, AssetStorageType storedBy, AssetCtorArgsT&&... assetCtorArgs) noexcept
+        {
+            Ref<AssetT> asset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
+            asset->m_path = withPath;
+            asset->m_alias = withAlias;
+            asset->m_storedBy = storedBy;
+
+            switch(storedBy)
+            {
+                case AssetStorageType::BY_PATH:
+                    m_assets[hashString(Utils::toUTF8(asset->getPath().u16string()))][AssetT::asset_type_id] = asset;
+                    break;
+                case AssetStorageType::BY_ALIAS:
+                    m_assets[hashString(asset->getAlias())][AssetT::asset_type_id] = asset;
+                    break;
+            }
+
+            return AssetRef<AssetT>(asset);
+        }
 
         template<typename AssetT, typename... AssetCtorArgsT>
         Ref<AssetT> createAssetInstance(AssetCtorArgsT&&... assetCtorArgs) noexcept

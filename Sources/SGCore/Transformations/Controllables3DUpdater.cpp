@@ -15,8 +15,6 @@
 
 void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
-    std::cout << "controlling" << std::endl;
-
     auto lockedScene = m_scene.lock();
     if(!lockedScene) return;
     
@@ -38,8 +36,6 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
                     (float) mainListener->getCursorPositionDeltaX() *
                     controllable3D.m_rotationSensitive;
         }
-
-        std::cout << "controlling entity" << std::endl;
 
         if(mainListener->keyboardKeyDown(KeyboardKey::KEY_R))
         {

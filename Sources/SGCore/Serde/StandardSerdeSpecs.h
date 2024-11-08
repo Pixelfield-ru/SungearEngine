@@ -53,6 +53,7 @@
 #include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Render/ShaderComponent.h"
 
 #include "SGCore/Serde/Components/NonSavable.h"
 
@@ -563,7 +564,48 @@ struct SGCore::Serde::SerdeSpec<SGCore::Controllables3DUpdater, TFormatType> :
 };
 // =================================================================================
 
+// SERDE FORWARD DECL FOR struct 'SGCore::IShader'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType> :
+        SGCore::Serde::BaseTypes<
+                        IAsset
+                                >,
+        SGCore::Serde::DerivedTypes<
+                                   >
+{
+    static inline const std::string type_name = "SGCore::IShader";
+    static inline constexpr bool is_pointer_type = false;
 
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
+
+
+// SERDE FORWARD DECL FOR struct 'SGCore::ShaderComponent'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::ShaderComponent, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+                                   >
+{
+    static inline const std::string type_name = "SGCore::ShaderComponent";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderComponent, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderComponent, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
 
 
 // SERDE FORWARD DECL FOR struct 'SGCore::DirectionalLight'
@@ -2452,16 +2494,6 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshBase, TFormatType>& valueView) noexcept
 {
-
-    // TODO:
-    const auto m_material = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->getMaterial())>>>("m_material");
-
-    if(m_material)
-    {
-        valueView.m_data->setMaterial(*m_material);
-    }
-
-
     const auto m_meshDataRenderInfo = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_meshDataRenderInfo)>("m_meshDataRenderInfo");
 
     if(m_meshDataRenderInfo)
@@ -2479,10 +2511,85 @@ void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::deserialize(SGCore
         valueView.m_data->setMeshData(*m_meshData);
     }
 
+    // WE DESERIALIZING MATERIAL STRICTLY AFTER m_meshData BECAUSE MATERIAL CAN BE CUSTOM
+    // TODO:
+    const auto m_material = valueView.getValueContainer().template getMember<std::remove_reference_t<std::remove_const_t<decltype(valueView.m_data->getMaterial())>>>("m_material");
+
+    if(m_material)
+    {
+        valueView.m_data->setMaterial(*m_material);
+    }
+
 }
 // =================================================================================
 
 
+// SERDE IMPL FOR struct 'SGCore::IShader'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept
+{
+    valueView.getValueContainer().addMember("m_fileAssetPath", valueView.m_data->getFile()->getPath());
+}
+
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept
+{
+    const auto m_fileAssetPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_fileAssetPath");
+
+    if(m_fileAssetPath)
+    {
+        auto shaderFile = valueView.m_data->getParentAssetManager()->template loadAsset<TextFileAsset>(*m_fileAssetPath);
+        valueView.m_data->m_fileAsset = shaderFile;
+        // valueView.m_data->addSubPassShadersAndCompile(shaderFile);
+    }
+}
+// =================================================================================
+
+
+// SERDE IMPL FOR struct 'SGCore::ShaderComponent'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::ShaderComponent, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderComponent, TFormatType>& valueView) noexcept
+{
+    valueView.getValueContainer().addMember("m_isCustomShader", valueView.m_data->m_isCustomShader);
+    valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader);
+    valueView.getValueContainer().addMember("m_shaderPath", valueView.m_data->m_shaderPath);
+}
+
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::ShaderComponent, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderComponent, TFormatType>& valueView) noexcept
+{
+    const auto m_isCustomShader = valueView.getValueContainer().template getMember<bool>("m_isCustomShader");
+
+    if(m_isCustomShader)
+    {
+        valueView.m_data->m_isCustomShader = *m_isCustomShader;
+    }
+
+    const auto m_shader = valueView.getValueContainer().template getMember<AssetRef<IShader>>("m_shader");
+
+    if(m_shader)
+    {
+        valueView.m_data->m_shader = *m_shader;
+    }
+
+    const auto m_shaderPath = valueView.getValueContainer().template getMember<std::string>("m_shaderPath");
+
+    if(m_shaderPath)
+    {
+        valueView.m_data->m_shaderPath = *m_shaderPath;
+    }
+}
+// =================================================================================
 
 
 // SERDE IMPL FOR struct 'SGCore::AtmosphereUpdater'
@@ -3494,6 +3601,14 @@ namespace SGCore::Serde
                 }
             }
             {
+                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::ShaderComponent>(serializableEntity);
+
+                if(component)
+                {
+                    valueView.getValueContainer().pushBack(*component);
+                }
+            }
+            {
                 auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::DirectionalLight>(serializableEntity);
 
                 if(component)
@@ -3539,16 +3654,27 @@ namespace SGCore::Serde
             // storing created entity in value view to allow adding components to this entity in event subscriber`s functions
             valueView.m_data->m_serializableEntity = entity;
 
+            LOG_D(SGCORE_TAG, "Loading entity: {}", std::to_underlying(valueView.m_data->m_serializableEntity));
+
             // iterating through all elements of entityView
             for(auto componentsIt = valueView.getValueContainer().begin(); componentsIt != valueView.getValueContainer().end(); ++componentsIt)
             {
-                // trying to deserialize current element of array (valueView is array) as child SceneEntitySaveInfo
-                const std::optional<SceneEntitySaveInfo> asChild =
-                        valueView.getValueContainer().template getMember<SceneEntitySaveInfo>(componentsIt, toRegistry);
-                if(asChild)
-                {
-                    childrenEntities.push_back(asChild->m_serializableEntity);
+                const auto& currentElementTypeName = valueView.getValueContainer().getMemberTypeName(componentsIt);
 
+                // deserializing iterator as child entity only if current iterator is SceneEntitySaveInfo
+                if(currentElementTypeName == type_name)
+                {
+                    // trying to deserialize current element of array (valueView is array) as child SceneEntitySaveInfo
+                    const std::optional<SceneEntitySaveInfo> asChild =
+                            valueView.getValueContainer().template getMember<SceneEntitySaveInfo>(componentsIt,
+                                                                                                  toRegistry);
+                    if(asChild)
+                    {
+                        childrenEntities.push_back(asChild->m_serializableEntity);
+                        LOG_D(SGCORE_TAG, "Loaded entity: {}",
+                              std::to_underlying(valueView.m_data->m_serializableEntity));
+
+                    }
                     continue;
                 }
 
@@ -3557,6 +3683,7 @@ namespace SGCore::Serde
 
                 #pragma region Generated
 
+                if(currentElementTypeName == SerdeSpec<SGCore::AudioSource, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::AudioSource>(componentsIt);
 
@@ -3567,6 +3694,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::Transform, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::Ref<SGCore::Transform>>(componentsIt);
 
@@ -3577,6 +3706,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::AABB<float>, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::AABB<float>>(componentsIt);
 
@@ -3587,6 +3718,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::EntityBaseInfo>(componentsIt);
 
@@ -3597,6 +3730,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::RenderingBase, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::RenderingBase>(componentsIt);
 
@@ -3607,6 +3742,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::Camera3D, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::Camera3D>(componentsIt);
 
@@ -3617,6 +3754,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::SphereGizmo, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::SphereGizmo>(componentsIt);
 
@@ -3627,6 +3766,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::BoxGizmo, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::BoxGizmo>(componentsIt);
 
@@ -3637,6 +3778,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::LineGizmo, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::LineGizmo>(componentsIt);
 
@@ -3647,6 +3790,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::Atmosphere, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::Atmosphere>(componentsIt);
 
@@ -3658,6 +3803,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::Mesh, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::Mesh>(componentsIt);
 
@@ -3669,6 +3816,21 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::ShaderComponent, TFormatType>::type_name)
+                {
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::ShaderComponent>(componentsIt);
+
+                    if(component)
+                    {
+                        LOG_D(SGCORE_TAG, "ShaderComponent deserializing");
+                        toRegistry.emplace<SGCore::ShaderComponent>(entity, *component);
+
+                        continue;
+                    }
+                }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::DirectionalLight, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::DirectionalLight>(componentsIt);
 
@@ -3679,6 +3841,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::Controllable3D, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::Controllable3D>(componentsIt);
 
@@ -3689,6 +3853,8 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::UICamera, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::UICamera>(componentsIt);
 
@@ -3963,7 +4129,8 @@ namespace SGCore::Serde
             ShaderAnalyzedFile,
             ModelAsset,
             IMaterial,
-            IMeshData
+            IMeshData,
+            IShader
             >
     {
         static inline const std::string type_name = "SGCore::IAsset";

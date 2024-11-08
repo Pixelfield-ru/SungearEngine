@@ -75,7 +75,7 @@ SGCore::Ref<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, 
 
 SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
-    auto sgMeshData = AssetManager::getInstance()->createAssetWithPath<IMeshData>(getPath() / aiMesh->mName.data);
+    auto sgMeshData = AssetManager::getInstance()->getOrAddAssetByPath<IMeshData>(getPath() / aiMesh->mName.data);
 
     sgMeshData->m_positions.reserve(aiMesh->mNumVertices * 3);
     sgMeshData->m_normals.reserve(aiMesh->mNumVertices * 3);
