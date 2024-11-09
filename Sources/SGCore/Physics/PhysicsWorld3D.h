@@ -21,6 +21,8 @@ namespace SGCore
     
     struct PhysicsWorld3D : public IParallelSystem<PhysicsWorld3D>
     {
+        sg_implement_type_id(PhysicsWorld3D, 17)
+
         friend struct TransformationsUpdater;
         
         PhysicsWorld3D();

@@ -14,11 +14,6 @@
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Serde/SerializationType.h"
 
-/// Pass current class type as first argument and its type ID as second argument.
-#define sg_implement_asset_type_id(current_class, type_id)                          \
-static inline size_t asset_type_id = StaticTypeID<current_class>::setID(type_id);   \
-const size_t& getTypeID() const noexcept override { return asset_type_id; }
-
 // =======================================================================================================
 /**
  * @brief Implementation of SerdeSpec for your custom asset type.
@@ -44,16 +39,14 @@ namespace SGCore
     template<typename>
     struct AssetRef;
 
+    /// You must use \p sg_implement_type_id macro in your assets types to implement static type ID.
     class IAsset : public UniqueNameWrapper
     {
     public:
         sg_serde_as_friend()
+        sg_implement_type_id_base(IAsset, 0)
 
         friend class AssetManager;
-
-        /// You must implement this field in your type of asset. This field must have explicit value and be the same on different platforms.
-        /// You can use 'sg_implement_asset_type_id' macro.
-        static inline size_t asset_type_id = StaticTypeID<IAsset>::setID(0);
 
         /// You can make a downcast to the type of asset you subscribe to using static_cast<your_type>(asset).
         Event<void(IAsset* asset)> onLoadDone;
@@ -121,12 +114,6 @@ namespace SGCore
         /// Indicates whether this asset was loaded along the path to any file (for example: .wav, .gltf) or loaded from the binary file of the some AssetManager.\n
         /// You can change value of this variable in your implementations of \p doLoad , \p doLazyLoad or \p doLoadFromBinaryFile functions to indicate whether this asset was successfully loaded or it is need to be reloaded.
         bool m_isLoaded = false;
-
-        /**
-         * Use this function to get actual instance real type ID.
-         * Just return \p asset_type_id in your implementations of this function.
-         */
-        [[nodiscard]] virtual const size_t& getTypeID() const noexcept = 0;
 
         /**
          * Implement this function to resolve reference of member asset that contains in current asset.

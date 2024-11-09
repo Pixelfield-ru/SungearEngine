@@ -13,15 +13,21 @@
 #include "SGCore/Utils/Singleton.h"
 
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Utils/StaticTypeID.h"
 
 namespace SGCore
 {
     class Scene;
 
+    /**
+     * You must implement \p sg_implement_type_id macro in your custom system type.
+     */
     class ISystem
     {
         friend class Scene;
     public:
+        sg_implement_type_id_base(ISystem, 15)
+
         virtual ~ISystem() = default;
 
         bool m_active = true;

@@ -19,7 +19,7 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        sg_implement_asset_type_id(ModelAsset, 8)
+        sg_implement_type_id(ModelAsset, 8)
 
         std::vector<Ref<Node>> m_nodes;
 

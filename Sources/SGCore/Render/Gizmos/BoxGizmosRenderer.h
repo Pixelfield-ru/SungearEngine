@@ -11,6 +11,8 @@ namespace SGCore
 {
     class BoxGizmosRenderer : public ISystem
     {
+        sg_implement_type_id(BoxGizmosRenderer, 21)
+
         void fixedUpdate(const double& dt, const double& fixedDt) final;
     };
 }

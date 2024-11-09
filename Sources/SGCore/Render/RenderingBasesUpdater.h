@@ -11,6 +11,8 @@ namespace SGCore
 {
     struct RenderingBasesUpdater : public ISystem
     {
+        sg_implement_type_id(RenderingBasesUpdater, 17)
+
         void fixedUpdate(const double& dt, const double& fixedDt) final;
     };
 }

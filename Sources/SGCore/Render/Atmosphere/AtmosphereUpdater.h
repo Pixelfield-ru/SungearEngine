@@ -14,6 +14,8 @@ namespace SGCore
     
     struct AtmosphereUpdater : public ISystem
     {
+        sg_implement_type_id(AtmosphereUpdater, 18)
+
         AtmosphereUpdater() noexcept;
         
         void update(const double& dt, const double& fixedDt) final;

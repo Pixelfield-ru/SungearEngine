@@ -11,6 +11,8 @@ namespace SGCore
 {
     struct BatchesRenderer : public ISystem
     {
+        sg_implement_type_id(BatchesRenderer, 23)
+
         void update(const double& dt, const double& fixedDt) noexcept;
     };
 }

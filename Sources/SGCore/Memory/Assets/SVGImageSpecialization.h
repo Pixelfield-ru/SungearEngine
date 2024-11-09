@@ -16,7 +16,7 @@ namespace SGCore
     {
         friend struct SVGImage;
 
-        sg_implement_asset_type_id(SVGImageSpecialization, 12)
+        sg_implement_type_id(SVGImageSpecialization, 12)
         
         void regenerate(std::uint8_t channelsCount = 4,
                         SGGColorInternalFormat internalColorFormat = SGGColorInternalFormat::SGG_RGBA8,

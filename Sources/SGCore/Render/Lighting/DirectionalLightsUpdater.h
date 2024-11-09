@@ -14,6 +14,8 @@ namespace SGCore
     
     struct DirectionalLightsUpdater : public ISystem
     {
+        sg_implement_type_id(DirectionalLightsUpdater, 19)
+
         DirectionalLightsUpdater() noexcept;
         
         void update(const double& dt, const double& fixedDt) final;

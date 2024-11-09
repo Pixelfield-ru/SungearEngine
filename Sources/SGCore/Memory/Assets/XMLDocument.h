@@ -11,7 +11,7 @@ namespace SGCore
 {
     struct XMLDocument : public IAsset
     {
-        sg_implement_asset_type_id(XMLDocument, 10)
+        sg_implement_type_id(XMLDocument, 10)
 
         pugi::xml_document m_document;
         

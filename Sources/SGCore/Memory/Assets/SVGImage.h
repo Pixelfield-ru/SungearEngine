@@ -15,7 +15,7 @@ namespace SGCore
 {
     struct SVGImage : public IAsset
     {
-        sg_implement_asset_type_id(SVGImage, 6)
+        sg_implement_type_id(SVGImage, 6)
 
         [[nodiscard]] AssetRef<SVGImageSpecialization> getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
         void removeSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;

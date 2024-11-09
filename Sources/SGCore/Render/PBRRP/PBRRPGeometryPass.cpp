@@ -178,9 +178,6 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
             }
         }
 
-        LOG_D(SGCORE_TAG, "Rendered entity mesh data: alias: '{}', path: '{}'", mesh.m_base.getMeshData()->getAlias(), Utils::toUTF8(mesh.m_base.getMeshData()->getPath().u16string()));
-        LOG_D(SGCORE_TAG, "Rendered entity material: alias: '{}', path: '{}'", mesh.m_base.getMaterial()->getAlias(), Utils::toUTF8(mesh.m_base.getMaterial()->getPath().u16string()));
-
         CoreMain::getRenderer()->renderMeshData(
                 mesh.m_base.getMeshData().get(),
                 mesh.m_base.m_meshDataRenderInfo

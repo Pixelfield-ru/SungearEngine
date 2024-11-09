@@ -91,8 +91,7 @@ void SGCore::AssetManager::fullRemoveAsset(const std::filesystem::path& aliasOrP
 }
 
 void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirectory,
-                                         const std::string& packageName,
-                                         bool saveAssetsData) noexcept
+                                         const std::string& packageName) noexcept
 {
     const std::filesystem::path binaryFilePath = toDirectory / (packageName + ".bin");
     const std::filesystem::path markupFilePath = toDirectory / (packageName + ".json");
@@ -100,7 +99,6 @@ void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirector
     m_package.m_buffer.clear();
 
     m_package.m_path = binaryFilePath;
-    m_package.m_useSerdeData = saveAssetsData;
     m_package.m_parentAssetManager = this;
 
     const std::string writtenJSON = Serde::Serializer::toFormat(Serde::FormatType::JSON, m_assets, m_package);

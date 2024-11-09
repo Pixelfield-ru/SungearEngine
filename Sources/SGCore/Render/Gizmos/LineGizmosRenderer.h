@@ -11,6 +11,8 @@ namespace SGCore
 {
     struct LineGizmosRenderer : public ISystem
     {
+        sg_implement_type_id(LineGizmosRenderer, 22)
+
         void fixedUpdate(const double& dt, const double& fixedDt) final;
     };
 }

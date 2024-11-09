@@ -33,7 +33,7 @@ namespace SGCore
 
         sg_serde_as_friend()
 
-        sg_implement_asset_type_id(ITexture2D, 1)
+        sg_implement_type_id(ITexture2D, 1)
 
         virtual ~ITexture2D() = default;
         

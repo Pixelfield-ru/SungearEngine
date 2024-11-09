@@ -19,6 +19,8 @@ void SGCore::ShaderAnalyzedFile::doLoadFromBinaryFile(SGCore::AssetManager* pare
     {
         for(const auto& subShaderPair : subPassPair.second.m_subShaders)
         {
+            if(!subShaderPair.second) continue;
+
             subShaderPair.second->doLoadFromBinaryFile(parentAssetManager);
         }
     }

@@ -111,11 +111,6 @@ namespace SGCore
             return FileUtils::readBytesBlockUnmanaged(m_path, offset, size);
         }
 
-        [[nodiscard]] bool isDataSerde() const noexcept
-        {
-            return m_useSerdeData;
-        }
-
         [[nodiscard]] const std::filesystem::path& getPath() const noexcept
         {
             return m_path;
@@ -126,13 +121,9 @@ namespace SGCore
             return m_parentAssetManager;
         }
 
-        /// READ ONLY MEMBER.
-        bool m_useDataSerdeForCurrentAsset = false;
-
     private:
         AssetManager* m_parentAssetManager { };
         std::filesystem::path m_path;
-        bool m_useSerdeData = false;
         std::vector<char> m_buffer;
     };
 }

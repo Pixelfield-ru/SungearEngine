@@ -11,7 +11,7 @@ namespace SGCore
 {
     struct ByteFileAsset : public IAsset
     {
-        sg_implement_asset_type_id(ByteFileAsset, 7)
+        sg_implement_type_id(ByteFileAsset, 7)
 
         ~ByteFileAsset();
         

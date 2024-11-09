@@ -24,7 +24,7 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        sg_implement_asset_type_id(IShader, 14)
+        sg_implement_type_id(IShader, 14)
 
         /**
          * Removes all sub pass shaders in this IShader and adds new sub pass shaders.

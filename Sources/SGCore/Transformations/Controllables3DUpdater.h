@@ -11,6 +11,8 @@ namespace SGCore
 {
     struct Controllables3DUpdater : public ISystem
     {
+        sg_implement_type_id(Controllables3DUpdater, 16)
+
         void fixedUpdate(const double& dt, const double& fixedDt) final;
     };
 }

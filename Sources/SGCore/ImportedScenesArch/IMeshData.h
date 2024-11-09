@@ -29,7 +29,7 @@ namespace SGCore
     public:
         sg_serde_as_friend()
 
-        sg_implement_asset_type_id(IMeshData, 13)
+        sg_implement_type_id(IMeshData, 13)
 
         friend class AssetManager;
         friend struct Node;

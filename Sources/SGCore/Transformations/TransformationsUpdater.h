@@ -23,6 +23,8 @@ namespace SGCore
     
     struct TransformationsUpdater : public IParallelSystem<TransformationsUpdater>
     {
+        sg_implement_type_id(TransformationsUpdater, 20)
+
         friend class PhysicsWorld3D;
 
         TransformationsUpdater();

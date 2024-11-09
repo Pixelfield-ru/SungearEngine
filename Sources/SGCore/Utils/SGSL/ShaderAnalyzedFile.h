@@ -14,7 +14,7 @@ namespace SGCore
 {
     struct ShaderAnalyzedFile : public IAsset, public std::enable_shared_from_this<ShaderAnalyzedFile>
     {
-        sg_implement_asset_type_id(ShaderAnalyzedFile, 4)
+        sg_implement_type_id(ShaderAnalyzedFile, 4)
 
         friend class SGSLETranslator;
         friend class AssetManager;
