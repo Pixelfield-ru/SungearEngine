@@ -21,8 +21,6 @@ SGCore::OctreesSolver::OctreesSolver()
 
 void SGCore::OctreesSolver::onAddToScene(const Ref<Scene>& scene)
 {
-    m_scene = scene;
-    
     if(!scene) return;
     
     auto transformationsUpdater = scene->getSystem<TransformationsUpdater>();
@@ -34,7 +32,7 @@ void SGCore::OctreesSolver::onAddToScene(const Ref<Scene>& scene)
 
 void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
     
     if(!lockedScene) return;
     

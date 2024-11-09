@@ -71,7 +71,8 @@ void SGCore::DirectionalLightsUpdater::update(const double& dt, const double& fi
 
 void SGCore::DirectionalLightsUpdater::updateLights() noexcept
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
+
     if(!lockedScene) return;
     
     auto directionalLightsView = lockedScene->getECSRegistry()->view<DirectionalLight, Ref<RenderingBase>, Ref<Transform>>();

@@ -1112,7 +1112,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
 
                     loadedScene->m_name = SGCore::Utils::toUTF8(curPath.stem().u16string());
 
-                    SGCore::Scene::addScene(loadedScene);
+                    SGCore::Scene::swapOrAddScene(loadedScene);
 
                     auto editorScene = SGCore::MakeRef<EditorScene>();
                     editorScene->m_scene = loadedScene;

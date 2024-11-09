@@ -9,7 +9,8 @@
 
 void SGCore::SphereGizmosUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
+
     if(!lockedScene) return;
     
     auto sphereGizmosView = lockedScene->getECSRegistry()->view<SphereGizmo>();

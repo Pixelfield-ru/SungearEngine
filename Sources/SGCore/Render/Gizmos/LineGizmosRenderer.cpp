@@ -11,7 +11,8 @@
 
 void SGCore::LineGizmosRenderer::fixedUpdate(const double& dt, const double& fixedDt)
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
+
     if(!lockedScene) return;
     
     auto lineGizmosView = lockedScene->getECSRegistry()->view<LineGizmo>();

@@ -14,7 +14,7 @@
 
 void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
     if(!lockedScene) return;
     
     auto renderingBasesView = lockedScene->getECSRegistry()->view<Ref<RenderingBase>, Ref<Transform>>();

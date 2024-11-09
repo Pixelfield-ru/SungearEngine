@@ -12,6 +12,7 @@
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Utils/EventListener.h"
 #include "SGCore/Utils/TypeTraits.h"
+#include "SGCore/Memory/Assets/IAsset.h"
 
 sg_predeclare_serde()
 
@@ -130,15 +131,15 @@ namespace SGCore
         double getFixedUpdateFunctionExecutionTime() const noexcept;
         
         void saveToFile(const std::filesystem::path& path) noexcept;
-        
+
+        /**
+         * Sets new pointer \p newScene to scene with the same name as in \p newScene or adds new scene \p newScene .
+         * @param newScene
+         */
+        static void swapOrAddScene(const Ref<Scene>& newScene) noexcept;
         static void addScene(const Ref<Scene>& scene) noexcept;
         static Ref<Scene> getScene(const std::string& sceneName) noexcept;
         static void setCurrentScene(const std::string& sceneName) noexcept;
-        
-        static const auto& getScenes() noexcept
-        {
-            return m_scenes;
-        }
         
         SG_NOINLINE static auto& getOnSceneSavedEvent() noexcept
         {

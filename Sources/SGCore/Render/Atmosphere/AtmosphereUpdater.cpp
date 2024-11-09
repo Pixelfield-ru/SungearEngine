@@ -73,7 +73,8 @@ void SGCore::AtmosphereUpdater::update(const double& dt, const double& fixedDt)
 
 void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
+
     if(!lockedScene) return;
     
     auto atmosphereScatteringsView = lockedScene->getECSRegistry()->view<Atmosphere>();

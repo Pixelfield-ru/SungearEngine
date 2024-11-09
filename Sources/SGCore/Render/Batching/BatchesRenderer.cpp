@@ -16,7 +16,7 @@
 
 void SGCore::BatchesRenderer::update(const double& dt, const double& fixedDt) noexcept
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
     if(!lockedScene) return;
     
     auto batchesView = lockedScene->getECSRegistry()->view<Batch>();

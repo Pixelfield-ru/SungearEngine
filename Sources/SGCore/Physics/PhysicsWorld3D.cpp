@@ -61,7 +61,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 {
     std::lock_guard guard(m_bodiesCountChangeMutex);
 
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
 
     if(lockedScene)
     {
@@ -237,7 +237,8 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
 void SGCore::PhysicsWorld3D::update(const double& dt, const double& fixedDt) noexcept
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
+
     if(lockedScene && m_debugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug)
     {
         // if(m_bodiesToAdd.getObject().empty() && m_bodiesToRemove.getObject().empty())

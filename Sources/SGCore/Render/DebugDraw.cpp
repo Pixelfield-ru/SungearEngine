@@ -160,7 +160,7 @@ void SGCore::DebugDraw::drawAABB(const glm::vec3& min, const glm::vec3& max, con
 
 void SGCore::DebugDraw::update(const double& dt, const double& fixedDt)
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
     
     if(!m_linesShader || !lockedScene || m_mode == DebugDrawMode::NO_DEBUG) return;
     

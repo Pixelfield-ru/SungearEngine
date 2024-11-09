@@ -15,7 +15,8 @@
 
 void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double& fixedDt)
 {
-    auto lockedScene = m_scene.lock();
+    auto lockedScene = getScene();
+
     if(!lockedScene) return;
     
     float finalDt = dt * 300.0f;

@@ -12,7 +12,7 @@
 
 void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const double& fixedDt, Ref<OctreesSolver> parent) noexcept
 {
-    auto lockedScene = parent->getScene().lock();
+    auto lockedScene = parent->getScene();
     
     if(!lockedScene) return;
     

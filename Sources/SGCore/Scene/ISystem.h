@@ -41,13 +41,18 @@ namespace SGCore
         virtual void onRemoveFromScene(const Ref<Scene>& scene) { }
         
         void setScene(const Ref<Scene>& scene) noexcept;
-        Weak<Scene> getScene() const noexcept;
-        
-        Ref<Threading::Thread> getThread() const noexcept;
+        /**
+         * Can be nullptr. You must ALWAYS check for nullptr.
+         * @return Scene that is parent of current system.
+         */
+        [[nodiscard]] Ref<Scene> getScene() const noexcept;
+
+        [[nodiscard]] Ref<Threading::Thread> getThread() const noexcept;
 
     protected:
         Ref<Threading::Thread> m_thread = Threading::ThreadsManager::getMainThread();
-        
+
+    private:
         Weak<Scene> m_scene;
     };
 }

@@ -25,18 +25,15 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
     m_thread->start();
 }
 
-void SGCore::TransformationsUpdater::onAddToScene(const Ref<Scene>& scene)
-{
-    m_sharedScene = scene;
-}
-
 void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    if(!m_sharedScene) return;
+    auto lockedScene = getScene();
+
+    if(!lockedScene) return;
 
     if(m_changedModelMatrices.isLocked() || m_entitiesForPhysicsUpdateToCheck.isLocked()) return;
 
-    auto registry = m_sharedScene->getECSRegistry();
+    auto registry = lockedScene->getECSRegistry();
     
     auto transformsView = registry->view<Ref<Transform>>();
     
@@ -48,7 +45,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
     notPhysicalEntities.reserve(transformsView.size());
     physicEntitiesToCheck.reserve(transformsView.size());
 
-    transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck, this](const entity_t& entity, Ref<Transform> transform) {
+    transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck](const entity_t& entity, Ref<Transform> transform) {
         if(transform)
         {
             EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(entity);
@@ -206,7 +203,9 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept
 {
-    if(!m_sharedScene) return;
+    auto lockedScene = getScene();
+
+    if(!lockedScene) return;
     
     if(!m_calculatedNotPhysicalEntitiesCopy.isLocked())
     {
@@ -217,9 +216,9 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         auto& entitiesCopy = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
         for(const auto& t : entitiesCopy)
         {
-            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
+            auto* tmpNonConstTransform = lockedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = m_sharedScene->getECSRegistry()->try_get<Mesh>(t.m_owner);
+            Mesh* mesh = lockedScene->getECSRegistry()->try_get<Mesh>(t.m_owner);
             if(nonConstTransform && mesh)
             {
                 auto& finalTransform = nonConstTransform->m_finalTransform;
@@ -252,7 +251,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 ownTransform.m_aabb = finalTransform.m_aabb;
             }
             
-            onTransformChanged(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
+            onTransformChanged(lockedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
             
             ++i;
         }
@@ -268,9 +267,9 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         auto& entitiesCopy = m_calculatedPhysicalEntitiesCopy.getWrapped();
         for(const auto& t : entitiesCopy)
         {
-            auto* tmpNonConstTransform = m_sharedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
+            auto* tmpNonConstTransform = lockedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = m_sharedScene->getECSRegistry()->try_get<Mesh>(t.m_owner);
+            Mesh* mesh = lockedScene->getECSRegistry()->try_get<Mesh>(t.m_owner);
             if(nonConstTransform && mesh)
             {
                 auto& finalTransform = nonConstTransform->m_finalTransform;
@@ -300,7 +299,7 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
                 ownTransform.m_aabb = finalTransform.m_aabb;
             }
             
-            onTransformChanged(m_sharedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
+            onTransformChanged(lockedScene->getECSRegistry(), t.m_owner, t.m_memberValue);
         }
         
         entitiesCopy.clear();

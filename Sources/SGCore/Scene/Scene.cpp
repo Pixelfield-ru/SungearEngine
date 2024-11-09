@@ -213,6 +213,20 @@ double SGCore::Scene::getFixedUpdateFunctionExecutionTime() const noexcept
     return m_fixedUpdate_executionTime;
 }
 
+void SGCore::Scene::swapOrAddScene(const SGCore::Ref<SGCore::Scene>& newScene) noexcept
+{
+    for(auto& scene : m_scenes)
+    {
+        if(scene->m_name == newScene->m_name)
+        {
+            scene = newScene;
+            return;
+        }
+    }
+
+    m_scenes.push_back(newScene);
+}
+
 void SGCore::Scene::addScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
 {
     auto foundIt = std::find_if(m_scenes.begin(), m_scenes.end(), [&scene](const Ref<Scene>& s) {
@@ -284,6 +298,8 @@ bool SGCore::Scene::isSystemExists(const SGCore::Ref<SGCore::ISystem>& system) c
 {
     for(const auto& sys : m_systems)
     {
+        LOG_W(SGCORE_TAG, "Current system '{}' (type id: '{}'), finding system '{}' (type id: '{}').", typeid(*sys).name(), sys->getTypeID(), typeid(*system).name(), system->getTypeID());
+
         if(sys->getTypeID() == system->getTypeID()) return true;
     }
 

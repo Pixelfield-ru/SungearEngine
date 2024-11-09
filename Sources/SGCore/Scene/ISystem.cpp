@@ -11,9 +11,9 @@ void SGCore::ISystem::setScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
     onAddToScene(scene);
 }
 
-SGCore::Weak<SGCore::Scene> SGCore::ISystem::getScene() const noexcept
+SGCore::Ref<SGCore::Scene> SGCore::ISystem::getScene() const noexcept
 {
-    return m_scene;
+    return m_scene.lock();
 }
 
 std::shared_ptr<SGCore::Threading::Thread> SGCore::ISystem::getThread() const noexcept
