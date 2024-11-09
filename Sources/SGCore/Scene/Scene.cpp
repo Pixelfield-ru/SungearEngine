@@ -154,6 +154,8 @@ void SGCore::Scene::fixedUpdate(const double& dt, const double& fixedDt)
 
 void SGCore::Scene::addSystem(const Ref<ISystem>& system) noexcept
 {
+    if(isSystemExists(system)) return;
+
     system->setScene(shared_from_this());
     m_systems.push_back(system);
 }
@@ -276,4 +278,14 @@ void SGCore::Scene::saveToFile(const std::filesystem::path& path) noexcept
     FileUtils::writeToFile(path, Serde::Serializer::toFormat(*this), false, true);
 
     LOG_I(SGCORE_TAG, "Scene '{}' has been saved!", m_name)
+}
+
+bool SGCore::Scene::isSystemExists(const SGCore::Ref<SGCore::ISystem>& system) const noexcept
+{
+    for(const auto& sys : m_systems)
+    {
+        if(sys->getTypeID() == system->getTypeID()) return true;
+    }
+
+    return false;
 }

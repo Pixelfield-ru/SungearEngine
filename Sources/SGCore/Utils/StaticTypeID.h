@@ -10,14 +10,16 @@
 
 /// Pass current class type as first argument and its type ID as second argument.\n
 /// Use this macro in derived types to implement function \p getTypeID() that overrides virtual function in base type\n
-/// \p getTypeID() is needed to get real static type ID of object.
+/// \p getTypeID() is needed to get real static type ID of object.\n
+/// Implementation of this macro must has public access.
 #define sg_implement_type_id(current_class, class_type_id)                          \
 static inline size_t type_id = StaticTypeID<current_class>::setID(class_type_id);   \
-const size_t& getTypeID() const noexcept override { return class_type_id; }
+const size_t& getTypeID() const noexcept final { return class_type_id; }
 
 /// Pass current class type as first argument and its type ID as second argument.\n
 /// Use this macro in base types to implement virtual function \p getTypeID() .\n
-/// \p getTypeID() is needed to get real static type ID of object.
+/// \p getTypeID() is needed to get real static type ID of object.\n
+/// Implementation of this macro must has public access.
 #define sg_implement_type_id_base(current_class, class_type_id)                          \
 static inline size_t type_id = StaticTypeID<current_class>::setID(class_type_id);        \
 virtual const size_t& getTypeID() const noexcept { return class_type_id; }

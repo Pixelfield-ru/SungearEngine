@@ -96,6 +96,8 @@ namespace SGCore
             return foundSystems;
         }
 
+        [[nodiscard]] bool isSystemExists(const Ref<ISystem>& system) const noexcept;
+
         void addSystem(const Ref<ISystem>& system) noexcept;
         const std::vector<Ref<ISystem>>& getAllSystems() noexcept;
 

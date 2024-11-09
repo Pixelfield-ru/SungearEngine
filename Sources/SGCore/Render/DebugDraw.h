@@ -31,6 +31,8 @@ namespace SGCore
     class DebugDraw : public ISystem
     {
     public:
+        sg_implement_type_id(DebugDraw, 25)
+
         DebugDraw();
         
         DebugDrawMode m_mode = DebugDrawMode::WIREFRAME;

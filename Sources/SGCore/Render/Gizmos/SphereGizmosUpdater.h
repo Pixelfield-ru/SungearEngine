@@ -11,6 +11,8 @@ namespace SGCore
 {
     struct SphereGizmosUpdater : public ISystem
     {
+        sg_implement_type_id(SphereGizmosUpdater, 24)
+
         void fixedUpdate(const double& dt, const double& fixedDt) final;
     };
 }

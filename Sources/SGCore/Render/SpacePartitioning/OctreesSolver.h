@@ -21,6 +21,8 @@ namespace SGCore
     class OctreesSolver : public IParallelSystem<OctreesSolver>
     {
     public:
+        sg_implement_type_id(OctreesSolver, 26)
+
         OctreesSolver();
 
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
