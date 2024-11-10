@@ -1105,14 +1105,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             {
                 if(curPath.extension() == ".sgscene")
                 {
-                    std::string sceneLoadLog;
-
-                    SGCore::Ref<SGCore::Scene> loadedScene = SGCore::MakeRef<SGCore::Scene>();
-                    SGCore::Serde::Serializer::fromFormat(SGCore::FileUtils::readFile(curPath), *loadedScene, sceneLoadLog);
-
-                    loadedScene->m_name = SGCore::Utils::toUTF8(curPath.stem().u16string());
-
-                    SGCore::Scene::swapOrAddScene(loadedScene);
+                    auto loadedScene = SGCore::Scene::loadSceneAndSetAsCurrent(curPath);
 
                     auto editorScene = SGCore::MakeRef<EditorScene>();
                     editorScene->m_scene = loadedScene;
@@ -1120,10 +1113,10 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
 
                     EditorScene::setCurrentScene(editorScene);
 
-                    if(!sceneLoadLog.empty())
+                    /*if(!sceneLoadLog.empty())
                     {
                         LOG_E(SGEDITOR_TAG, "Error while loading scene '{}': {}", SGCore::Utils::toUTF8(curPath.stem().u16string()), sceneLoadLog);
-                    }
+                    }*/
                 }
             }
         }
@@ -1138,7 +1131,7 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             isAnyFileRightClicked = true;
             
             m_rightClickedFile = curPath;
-            
+
             if(m_selectedFiles.size() == 1)
             {
                 m_selectedFiles.clear();

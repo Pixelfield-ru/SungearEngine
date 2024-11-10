@@ -56,7 +56,7 @@ struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : BaseTypes<>
 void SGE::EditorScene::setCurrentScene(const SGCore::Ref<SGE::EditorScene>& scene) noexcept
 {
     s_currentScene = scene;
-    SGCore::Scene::setCurrentScene(scene->m_scene->m_name);
+    SGCore::Scene::setCurrentScene(scene->m_scene);
 }
 
 SGCore::Ref<SGE::EditorScene> SGE::EditorScene::getCurrentScene() noexcept
@@ -74,6 +74,7 @@ void SGE::EditorScene::saveByPath(const std::filesystem::path& toPath, const std
     std::filesystem::path editorScenePath = toPath / fileName;
     editorScenePath += ".es";
 
+    m_scene->m_metaInfo.m_sceneLocalPath = scenePath;
     m_scene->saveToFile(scenePath);
 
     SGCore::FileUtils::writeToFile(editorScenePath, SGCore::Serde::Serializer::toFormat(m_data), false, true);
@@ -82,9 +83,8 @@ void SGE::EditorScene::saveByPath(const std::filesystem::path& toPath, const std
 SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::string& name) noexcept
 {
     auto newScene = SGCore::MakeRef<SGCore::Scene>();
-    newScene->m_name = name;
+    newScene->m_metaInfo.m_sceneName = name;
     newScene->createDefaultSystems();
-    SGCore::Scene::addScene(newScene);
 
     auto editorScene = SGCore::MakeRef<EditorScene>();
     editorScene->m_scene = newScene;

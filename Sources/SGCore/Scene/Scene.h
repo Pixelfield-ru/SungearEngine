@@ -25,6 +25,13 @@ namespace SGCore
         const Scene* m_serializableScene { };
         entity_t m_serializableEntity { };
     };
+
+    // todo: make on path changed event
+    struct SceneMetaInfo
+    {
+        std::string m_sceneName;
+        std::filesystem::path m_sceneLocalPath;
+    };
     
     class SGCORE_EXPORT Scene : public std::enable_shared_from_this<Scene>
     {
@@ -55,8 +62,8 @@ namespace SGCore
         sg_serde_as_friend()
 
         Scene();
-        
-        std::string m_name;
+
+        SceneMetaInfo m_metaInfo;
 
         void createDefaultSystems();
 
@@ -136,11 +143,13 @@ namespace SGCore
          * Sets new pointer \p newScene to scene with the same name as in \p newScene or adds new scene \p newScene .
          * @param newScene
          */
-        static void swapOrAddScene(const Ref<Scene>& newScene) noexcept;
-        static void addScene(const Ref<Scene>& scene) noexcept;
-        static Ref<Scene> getScene(const std::string& sceneName) noexcept;
-        static void setCurrentScene(const std::string& sceneName) noexcept;
-        
+        static void swapOrAddScene(const SceneMetaInfo& newScene) noexcept;
+        static void addScene(const SceneMetaInfo& scene) noexcept;
+        static std::optional<SceneMetaInfo> getSceneMeta(const std::string& sceneName) noexcept;
+        static Ref<Scene> setCurrentScene(const std::string& sceneName) noexcept;
+        static void setCurrentScene(const Ref<Scene>& scene) noexcept;
+        static Ref<Scene> loadSceneAndSetAsCurrent(const std::filesystem::path& scenePath) noexcept;
+
         SG_NOINLINE static auto& getOnSceneSavedEvent() noexcept
         {
             return onSceneSaved;
@@ -188,7 +197,7 @@ namespace SGCore
         Weak<XMLDocument> m_UIXMLDocument;
         
         static inline Ref<Scene> m_currentScene;
-        static inline std::vector<Ref<Scene>> m_scenes;
+        static inline std::vector<SceneMetaInfo> m_scenesMeta;
     };
 }
 

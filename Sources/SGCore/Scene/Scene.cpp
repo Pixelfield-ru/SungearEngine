@@ -213,58 +213,95 @@ double SGCore::Scene::getFixedUpdateFunctionExecutionTime() const noexcept
     return m_fixedUpdate_executionTime;
 }
 
-void SGCore::Scene::swapOrAddScene(const SGCore::Ref<SGCore::Scene>& newScene) noexcept
+void SGCore::Scene::swapOrAddScene(const SceneMetaInfo& newScene) noexcept
 {
-    for(auto& scene : m_scenes)
+    for(auto& scene : m_scenesMeta)
     {
-        if(scene->m_name == newScene->m_name)
+        if(scene.m_sceneName == newScene.m_sceneName)
         {
             scene = newScene;
             return;
         }
     }
 
-    m_scenes.push_back(newScene);
+    m_scenesMeta.push_back(newScene);
 }
 
-void SGCore::Scene::addScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+void SGCore::Scene::addScene(const SceneMetaInfo& scene) noexcept
 {
-    auto foundIt = std::find_if(m_scenes.begin(), m_scenes.end(), [&scene](const Ref<Scene>& s) {
-        return s->m_name == scene->m_name;
+    auto foundIt = std::find_if(m_scenesMeta.begin(), m_scenesMeta.end(), [&scene](const SceneMetaInfo& s) {
+        return s.m_sceneName == scene.m_sceneName;
     });
     
-    if(foundIt != m_scenes.end())
+    if(foundIt != m_scenesMeta.end())
     {
         return;
     }
-    
-    m_scenes.push_back(scene);
+
+    m_scenesMeta.push_back(scene);
 }
 
-SGCore::Ref<SGCore::Scene> SGCore::Scene::getScene(const std::string& sceneName) noexcept
+std::optional<SGCore::SceneMetaInfo> SGCore::Scene::getSceneMeta(const std::string& sceneName) noexcept
 {
-    auto foundIt = std::find_if(m_scenes.begin(), m_scenes.end(), [&sceneName](const Ref<Scene>& s) {
-        return s->m_name == sceneName;
+    auto foundIt = std::find_if(m_scenesMeta.begin(), m_scenesMeta.end(), [&sceneName](const SceneMetaInfo& s) {
+        return s.m_sceneName == sceneName;
     });
     
-    return foundIt == m_scenes.end() ? nullptr : *foundIt;
+    return foundIt == m_scenesMeta.end() ? std::nullopt : std::optional(*foundIt);
 }
 
-void SGCore::Scene::setCurrentScene(const std::string& sceneName) noexcept
+SGCore::Ref<SGCore::Scene> SGCore::Scene::setCurrentScene(const std::string& sceneName) noexcept
 {
-    auto foundIt = std::find_if(m_scenes.begin(), m_scenes.end(), [&sceneName](const Ref<Scene>& s) {
-        return s->m_name == sceneName;
+    auto foundIt = std::find_if(m_scenesMeta.begin(), m_scenesMeta.end(), [&sceneName](const SceneMetaInfo& s) {
+        return s.m_sceneName == sceneName;
     });
     
-    if(foundIt != m_scenes.end())
+    if(foundIt != m_scenesMeta.end())
     {
-        m_currentScene = *foundIt;
+        if(!std::filesystem::exists(foundIt->m_sceneLocalPath))
+        {
+            LOG_E(SGCORE_TAG,
+                  "Cannot set scene '{}' as current! Local path '{}' of this scene is not valid.", sceneName, Utils::toUTF8(foundIt->m_sceneLocalPath.u16string()));
+            return nullptr;
+        }
+
+        const std::string sceneText = FileUtils::readFile(foundIt->m_sceneLocalPath);
+
+        std::string sceneLoadOutputLog;
+        Ref<Scene> loadedScene;
+        Serde::Serializer::fromFormat(sceneText, loadedScene, sceneLoadOutputLog);
+
+        m_currentScene = loadedScene;
+
+        return loadedScene;
     }
     else
     {
         LOG_E(SGCORE_TAG,
               "Cannot set scene '{}' as current! No such scene (maybe you forgot to add this scene).", sceneName);
     }
+
+    return nullptr;
+}
+
+SGCore::Ref<SGCore::Scene> SGCore::Scene::loadSceneAndSetAsCurrent(const std::filesystem::path& scenePath) noexcept
+{
+    if(!std::filesystem::exists(scenePath))
+    {
+        LOG_E(SGCORE_TAG,
+              "Cannot set scene as current! Local path '{}' of this scene is not valid.", Utils::toUTF8(scenePath.u16string()));
+        return nullptr;
+    }
+
+    const std::string sceneText = FileUtils::readFile(scenePath);
+
+    std::string sceneLoadOutputLog;
+    Ref<Scene> loadedScene;
+    Serde::Serializer::fromFormat(sceneText, loadedScene, sceneLoadOutputLog);
+
+    m_currentScene = loadedScene;
+
+    return loadedScene;
 }
 
 void SGCore::Scene::setUIXMLDocument(const SGCore::Ref<SGCore::XMLDocument>& xmlDocument) noexcept
@@ -291,7 +328,7 @@ void SGCore::Scene::saveToFile(const std::filesystem::path& path) noexcept
 {
     FileUtils::writeToFile(path, Serde::Serializer::toFormat(*this), false, true);
 
-    LOG_I(SGCORE_TAG, "Scene '{}' has been saved!", m_name)
+    LOG_I(SGCORE_TAG, "Scene '{}' has been saved!", m_metaInfo.m_sceneName)
 }
 
 bool SGCore::Scene::isSystemExists(const SGCore::Ref<SGCore::ISystem>& system) const noexcept
@@ -304,4 +341,9 @@ bool SGCore::Scene::isSystemExists(const SGCore::Ref<SGCore::ISystem>& system) c
     }
 
     return false;
+}
+
+void SGCore::Scene::setCurrentScene(const SGCore::Ref<SGCore::Scene>& scene) noexcept
+{
+    m_currentScene = scene;
 }

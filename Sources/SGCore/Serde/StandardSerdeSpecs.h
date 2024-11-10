@@ -4004,6 +4004,34 @@ namespace SGCore::Serde
     };
 
     template<FormatType TFormatType>
+    struct SerdeSpec<SceneMetaInfo, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::SceneMetaInfo";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<SceneMetaInfo, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_sceneName", valueView.m_data->m_sceneName);
+            valueView.getValueContainer().addMember("m_sceneLocalPath", valueView.m_data->m_sceneLocalPath);
+        }
+
+        static void deserialize(DeserializableValueView<SceneMetaInfo, TFormatType>& valueView)
+        {
+            auto sceneName = valueView.getValueContainer().template getMember<std::string>("m_sceneName");
+            if(sceneName)
+            {
+                valueView.m_data->m_sceneName = std::move(*sceneName);
+            }
+
+            auto sceneLocalPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_sceneLocalPath");
+            if(sceneLocalPath)
+            {
+                valueView.m_data->m_sceneLocalPath = std::move(*sceneLocalPath);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
     struct SerdeSpec<Scene, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
         // sg_validate_serdespec_supported_formats(TFormatType, FormatType::JSON, FormatType::BSON)
@@ -4013,17 +4041,17 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<Scene, TFormatType>& valueView)
         {
-            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+            valueView.getValueContainer().addMember("m_metaInfo", valueView.m_data->m_metaInfo);
             valueView.getValueContainer().addMember("m_ecsRegistry", *valueView.m_data->m_ecsRegistry, *valueView.m_data);
             valueView.getValueContainer().addMember("m_systems", valueView.m_data->m_systems, *valueView.m_data);
         }
 
         static void deserialize(DeserializableValueView<Scene, TFormatType>& valueView)
         {
-            auto sceneName = valueView.getValueContainer().template getMember<std::string>("m_name");
-            if(sceneName)
+            auto metaInfo = valueView.getValueContainer().template getMember<SceneMetaInfo>("m_metaInfo");
+            if(metaInfo)
             {
-                valueView.m_data->m_name = std::move(*sceneName);
+                valueView.m_data->m_metaInfo = std::move(*metaInfo);
             }
 
             auto ecsRegistry = valueView.getValueContainer().template getMember<registry_t>("m_ecsRegistry");
