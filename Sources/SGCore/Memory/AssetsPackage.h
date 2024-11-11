@@ -57,6 +57,8 @@ namespace SGCore
         template<typename T>
         [[nodiscard]] DataMarkup addData(const T* buffer, const std::streamsize& bufferSize) noexcept
         {
+            if(!buffer) return { 0, 0 };
+
             DataMarkup writtenDataMarkup { std::ssize(m_buffer), bufferSize * (std::streamsize) sizeof(T) };
 
             auto* bytes = reinterpret_cast<const char*>(buffer);
