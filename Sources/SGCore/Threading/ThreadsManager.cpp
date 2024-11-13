@@ -8,11 +8,11 @@ std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::ThreadsManager::cu
 {
     std::lock_guard guard(m_threadAccessMutex);
     
-    auto it = std::find_if(m_threads.begin(), m_threads.end(), [](const std::shared_ptr<Thread>& thread) {
-        return thread->m_nativeThreadID == std::this_thread::get_id();
+    auto it = std::find_if(m_threads.begin(), m_threads.end(), [](const std::weak_ptr<Thread>& thread) {
+        return thread.lock()->m_nativeThreadID == std::this_thread::get_id();
     });
     
-    return it != m_threads.end() ? *it : nullptr;
+    return it != m_threads.end() ? it->lock() : nullptr;
 }
 
 std::shared_ptr<SGCore::Threading::Thread> SGCore::Threading::ThreadsManager::getMainThread() noexcept

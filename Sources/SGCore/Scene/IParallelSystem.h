@@ -42,6 +42,7 @@ namespace SGCore
         
         ~IParallelSystem() override
         {
+            std::printf("deleting parallel system: %llu\n", std::hash<size_t>()((size_t) this));
             m_timer.onUpdate.disconnect<&IParallelSystem::internalUpdate>(*this);
         }
         

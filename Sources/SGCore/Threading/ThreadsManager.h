@@ -27,7 +27,7 @@ namespace SGCore::Threading
         
         static inline std::mutex m_threadAccessMutex;
         
-        static inline std::vector<std::shared_ptr<Thread>> m_threads;
+        static inline std::vector<std::weak_ptr<Thread>> m_threads;
         
         static inline std::shared_ptr<MainThread> m_mainThread;
 

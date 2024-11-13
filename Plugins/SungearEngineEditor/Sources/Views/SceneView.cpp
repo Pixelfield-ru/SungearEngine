@@ -39,7 +39,7 @@ void SGE::SceneView::renderBody()
         {
             ImGui::Image(layeredFrameReceiver->getOverlayFrameBuffer()->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0
-            )->getTextureNativeHandler(), ImGui::GetContentRegionAvail());
+            )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
         }
     }
 

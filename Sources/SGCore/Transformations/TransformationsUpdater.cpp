@@ -21,6 +21,7 @@
 
 SGCore::TransformationsUpdater::TransformationsUpdater()
 {
+    std::printf("creating TransformationsUpdater %llu\n", std::hash<size_t>()((size_t) (IParallelSystem<TransformationsUpdater>*) this));
     m_thread->setSleepTime(std::chrono::milliseconds(0));
     m_thread->start();
 }
