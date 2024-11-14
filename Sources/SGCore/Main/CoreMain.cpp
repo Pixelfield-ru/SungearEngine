@@ -3,9 +3,9 @@
 #include <locale>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <SGCore/Logger/Logger.h>
+#include "SGCore/Logger/Logger.h"
+#include "SGCore/Utils/ShadersUniversalPaths.h"
 
-#include "SGCore/Utils/DefaultShadersPaths.h"
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Input/InputManager.h"
@@ -99,7 +99,7 @@ void SGCore::CoreMain::start()
 
     m_renderer->init();
 
-    DefaultShadersPaths::init();
+    ShadersUniversalPaths::init();
     InputManager::init();
     FontsManager::init();
 

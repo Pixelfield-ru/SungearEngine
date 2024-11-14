@@ -28,9 +28,9 @@ namespace SGCore
 
         /**
          * Removes all sub pass shaders in this IShader and adds new sub pass shaders.
-         * @param asset
+         * @param fromFile
          */
-        void addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset) noexcept;
+        void compile(AssetRef<TextFileAsset> fromFile) noexcept;
 
         void setSubPassShader(const std::string& subPassName, const IShader* from) noexcept;
         void setSubPassShader(const std::string& subPassName, const Ref<ISubPassShader>& subPassShader) noexcept;

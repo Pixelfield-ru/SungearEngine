@@ -18,7 +18,6 @@
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/DisableMeshGeometryPass.h"
-#include "SGCore/Render/ShaderComponent.h"
 #include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 #include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
 #include "SGCore/Render/SpacePartitioning/Octree.h"
@@ -28,9 +27,10 @@ size_t renderedInOctrees = 0;
 
 void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
-    m_shader = MakeRef<IShader>();
-    m_shader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            parentRenderPipeline->m_shadersPaths.getByVirtualPath("StandardMeshShader").getCurrentRealization()));
+    auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
+            parentRenderPipeline->m_shadersPaths["StandardMeshShader"]->getCurrentRealization());
+
+    m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 }
 
 void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
@@ -137,12 +137,11 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                            Mesh& mesh,
                                            const Ref<ISubPassShader>& standardGeometryShader) noexcept
 {
-    if(!mesh.m_base.getMeshData()) return;
+    if(!mesh.m_base.getMeshData() ||
+       !mesh.m_base.getMaterial() ||
+       !mesh.m_base.getMaterial()->m_shader) return;
 
-    ShaderComponent* entityShader = registry->try_get<ShaderComponent>(meshEntity);
-    
-    auto meshGeomShader = (entityShader && entityShader->m_shader)
-                          ? entityShader->m_shader->getSubPassShader("GeometryPass") : nullptr;
+    auto meshGeomShader = mesh.m_base.getMaterial()->m_shader->getSubPassShader("GeometryPass");
     auto shaderToUse = meshGeomShader ? meshGeomShader : standardGeometryShader;
     
     if(shaderToUse)

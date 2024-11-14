@@ -56,7 +56,7 @@ namespace SGCore
         int m_debugMode = 0;
 
         // TODO: MAKE SAVING. MAKE GETTER AND SETTER FOR THIS MEMBER
-        std::uint32_t m_maxLines = 4'000'000;
+        std::uint32_t m_maxLines = 100'000;
         std::uint32_t m_currentDrawingLine = 0;
         
         std::vector<float> m_linesPositions;

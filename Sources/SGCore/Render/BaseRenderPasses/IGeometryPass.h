@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_IGEOMETRYPASS_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Render/IRenderPass.h"
 
 #include "SGCore/Main/CoreGlobals.h"
 
@@ -13,7 +14,7 @@ namespace SGCore
 {
     class IUniformBuffer;
     
-    struct IGeometryPass
+    struct IGeometryPass : public IRenderPass
     {
         std::vector<Weak<IUniformBuffer>> m_uniformBuffersToUse;
     };

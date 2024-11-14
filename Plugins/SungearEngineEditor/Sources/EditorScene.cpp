@@ -18,7 +18,6 @@
 #include <SGCore/Render/SpacePartitioning/IgnoreOctrees.h>
 #include <SGCore/Render/Mesh.h>
 #include <SGCore/Render/Atmosphere/Atmosphere.h>
-#include <SGCore/Render/ShaderComponent.h>
 #include <SGCore/Memory/Assets/Materials/IMaterial.h>
 #include <SGCore/Graphics/API/ICubemapTexture.h>
 #include <SGCore/Serde/Components/NonSavable.h>
@@ -74,7 +73,6 @@ void SGE::EditorScene::saveByPath(const std::filesystem::path& toPath, const std
     std::filesystem::path editorScenePath = toPath / fileName;
     editorScenePath += ".es";
 
-    m_scene->m_metaInfo.m_sceneLocalPath = scenePath;
     m_scene->saveToFile(scenePath);
 
     SGCore::FileUtils::writeToFile(editorScenePath, SGCore::Serde::Serializer::toFormat(m_data), false, true);
@@ -104,12 +102,9 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
         atmosphereEntity = skyboxEntities[2];
 
         SGCore::Mesh& skyboxMesh = newScene->getECSRegistry()->get<SGCore::Mesh>(atmosphereEntity);
-        SGCore::ShaderComponent& skyboxShaderComponent = newScene->getECSRegistry()->emplace<SGCore::ShaderComponent>(atmosphereEntity);
         SGCore::Atmosphere& atmosphereScattering = newScene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
         // atmosphereScattering.m_sunRotation.z = 90.0;
         skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_skybox_material0"));
-        // это топ пж
-        SGCore::ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
         skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
 
         auto& skyboxTransform = newScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(atmosphereEntity);

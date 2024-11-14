@@ -2,6 +2,20 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Graphics/API/IShader.h"
+#include "SGCore/Render/RenderPipelinesManager.h"
+#include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
+
+SGCore::IMaterial::IMaterial() noexcept
+{
+    if(RenderPipelinesManager::getCurrentRenderPipeline())
+    {
+        auto geomPass = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<IGeometryPass>();
+        if(geomPass)
+        {
+            m_shader = geomPass->m_shader;
+        }
+    }
+}
 
 void SGCore::IMaterial::doLoad(const std::filesystem::path& path)
 {

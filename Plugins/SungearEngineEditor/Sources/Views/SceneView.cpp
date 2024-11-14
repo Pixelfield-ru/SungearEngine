@@ -9,6 +9,8 @@
 #include <SGCore/Memory/AssetManager.h>
 #include <SGCore/Render/LayeredFrameReceiver.h>
 #include <SGCore/Graphics/API/IFrameBuffer.h>
+#include <SGCore/Input/InputManager.h>
+#include <SGCore/Input/InputListener.h>
 
 bool SGE::SceneView::begin()
 {
@@ -40,6 +42,15 @@ void SGE::SceneView::renderBody()
             ImGui::Image(layeredFrameReceiver->getOverlayFrameBuffer()->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0
             )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
+        }
+
+        if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) &&
+           SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_S) &&
+           !ImGui::GetIO().WantTextInput)
+        {
+            const auto& scenePath = currentEditorScene->m_scene->m_metaInfo.m_sceneLocalPath;
+            currentEditorScene->saveByPath(scenePath.parent_path(), scenePath.stem());
+            std::cout << "scene saved" << std::endl;
         }
     }
 

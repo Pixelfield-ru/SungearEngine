@@ -18,7 +18,6 @@
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 #include "AtmosphereUtils.h"
-#include "SGCore/Render/ShaderComponent.h"
 
 SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
 {
@@ -77,21 +76,17 @@ void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
 
     if(!lockedScene) return;
     
-    auto atmosphereScatteringsView = lockedScene->getECSRegistry()->view<Atmosphere>();
+    auto atmosphereScatteringsView = lockedScene->getECSRegistry()->view<Atmosphere, Mesh>();
     
-    atmosphereScatteringsView.each([&lockedScene, this](const entity_t& entity, Atmosphere& atmosphere) {
+    atmosphereScatteringsView.each([&lockedScene, this](const entity_t& entity, Atmosphere& atmosphere, Mesh& mesh) {
         size_t hashedSunPos = MathUtils::hashVector(atmosphere.m_sunPosition);
-        
-        ShaderComponent* atmosphereScatteringShader = lockedScene->getECSRegistry()->try_get<ShaderComponent>(entity);
-        if(atmosphereScatteringShader)
+
+        auto meshShader = mesh.m_base.getMaterial()->m_shader;
+        auto geomPassShader = meshShader ? meshShader->getSubPassShader("GeometryPass") : nullptr;
+        if(geomPassShader)
         {
-            auto meshShader = atmosphereScatteringShader->m_shader;
-            auto geomPassShader = meshShader ? meshShader->getSubPassShader("GeometryPass") : nullptr;
-            if(geomPassShader)
-            {
-                geomPassShader->bind();
-                geomPassShader->useUniformBuffer(m_uniformBuffer);
-            }
+            geomPassShader->bind();
+            geomPassShader->useUniformBuffer(m_uniformBuffer);
         }
         
         if(atmosphere.m_sunRotation != atmosphere.m_lastSunRotation)

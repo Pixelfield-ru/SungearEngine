@@ -831,8 +831,6 @@ namespace SGCore::Serde
         {
             using base_types = typename collect_all_base_types<TypeToSerialize, TFormatType>::type;
 
-            std::cout << "serializing type...:: " << typeid(TypeToSerialize).name() << std::endl;
-
             // calling serialize all base types using 'base_types'
             serializeBaseTypes<base_types>(valueView, std::make_index_sequence<base_types::types_count>(),
                                            std::forward<SharedDataT>(sharedData)...);
@@ -863,8 +861,6 @@ namespace SGCore::Serde
 
                 // collecting all base types of T
                 using base_types = typename collect_all_base_types<T, TFormatType>::type;
-
-                std::cout << "serializing type...:: " << typeid(T).name() << std::endl;
 
                 // calling serialize all base types using 'base_types'
                 serializeBaseTypes<base_types>(valueView, std::make_index_sequence<base_types::types_count>(),
@@ -927,8 +923,6 @@ namespace SGCore::Serde
         template<types_container_t CollectedBaseTypes, typename T, FormatType TFormatType, typename... SharedDataT>
         static void deserializeBaseTypes(DeserializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
-            std::cout << "deserializeBaseTypes " << std::string(GENERATOR_PRETTY_FUNCTION) << std::endl;
-
             deserializeBaseTypesImpl<T, TFormatType, CollectedBaseTypes>
                     (valueView, std::make_index_sequence<CollectedBaseTypes::types_count> {}, std::forward<SharedDataT>(sharedData)...);
         }
@@ -990,8 +984,6 @@ namespace SGCore::Serde
                 
                 // assigning allocated pointer to original valueView
                 valueView.m_data = derivedObject;
-
-                std::cout << "deserializing as derived " << std::string(GENERATOR_PRETTY_FUNCTION) << std::endl;
                 
                 return;
             }

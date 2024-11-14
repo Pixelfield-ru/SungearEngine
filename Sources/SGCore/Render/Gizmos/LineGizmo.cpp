@@ -3,7 +3,6 @@
 //
 
 #include "LineGizmo.h"
-#include "SGCore/Render/ShadersUtils.h"
 
 SGCore::LineGizmo::LineGizmo() noexcept
 {

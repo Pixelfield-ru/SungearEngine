@@ -21,7 +21,13 @@ namespace SGCore
 
         sg_implement_type_id(IMaterial, 11)
 
+        IMaterial() noexcept;
+        IMaterial(const IMaterial&) noexcept = default;
+        IMaterial(IMaterial&&) noexcept = default;
+
         std::string m_name;
+
+        AssetRef<IShader> m_shader;
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.

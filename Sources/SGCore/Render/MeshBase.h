@@ -9,7 +9,6 @@
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/EventListener.h"
-#include "ShadersUtils.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 
 namespace SGCore

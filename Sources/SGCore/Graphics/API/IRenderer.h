@@ -9,7 +9,6 @@
 
 #include "GAPIType.h"
 #include "IUniformBuffer.h"
-#include "SGCore/Utils/ShadersPaths.h"
 #include "SGCore/Transformations/Transform.h"
 
 namespace SGCore

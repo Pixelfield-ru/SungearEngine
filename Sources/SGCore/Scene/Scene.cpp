@@ -326,6 +326,8 @@ void SGCore::Scene::reloadUI() noexcept
 
 void SGCore::Scene::saveToFile(const std::filesystem::path& path) noexcept
 {
+    m_metaInfo.m_sceneLocalPath = path;
+
     FileUtils::writeToFile(path, Serde::Serializer::toFormat(*this), false, true);
 
     LOG_I(SGCORE_TAG, "Scene '{}' has been saved!", m_metaInfo.m_sceneName)

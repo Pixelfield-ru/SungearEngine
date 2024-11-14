@@ -18,7 +18,7 @@ namespace SGCore
     {
         bool m_active = true;
 
-        Ref<IShader> m_shader;
+        AssetRef<IShader> m_shader;
         
         virtual void create(const Ref<IRenderPipeline>& parentRenderPipeline) { };
         

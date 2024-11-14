@@ -11,15 +11,15 @@
 #include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "ISubPassShader.h"
 
-void SGCore::IShader::addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset) noexcept
+void SGCore::IShader::compile(AssetRef<TextFileAsset> fromFile) noexcept
 {
-    if(!asset) return;
+    if(!fromFile) return;
 
     m_subPassesShaders.clear();
 
-    m_fileAsset = asset;
+    m_fileAsset = fromFile;
 
-    m_shaderAnalyzedFile = AssetManager::getInstance()->loadAsset<ShaderAnalyzedFile>(asset->getPath());
+    m_shaderAnalyzedFile = AssetManager::getInstance()->loadAsset<ShaderAnalyzedFile>(fromFile->getPath());
 
     for(const auto& subPassIter : m_shaderAnalyzedFile->m_subPasses)
     {
@@ -38,7 +38,7 @@ void SGCore::IShader::addSubPassShadersAndCompile(AssetRef<TextFileAsset> asset)
             }
         }
         
-        subPassShader->m_fileAsset = asset;
+        subPassShader->m_fileAsset = fromFile;
         subPassShader->compile(subPassName);
         subPassShader->addToGlobalStorage();
 
@@ -114,7 +114,7 @@ void SGCore::IShader::doLoad(const std::filesystem::path& path)
 
 void SGCore::IShader::doLazyLoad()
 {
-    addSubPassShadersAndCompile(m_fileAsset.lock());
+    compile(m_fileAsset.lock());
 }
 
 void SGCore::IShader::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept

@@ -12,16 +12,75 @@
 
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
-    m_shadersPaths["StandardMeshShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/pbr/default_shader.glsl";
-    m_shadersPaths["LayeredPostProcessingShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/postprocessing/default_shader.glsl";
-    m_shadersPaths["ShadowsGenerationShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/shadows_generator/default_shader.glsl";
-    m_shadersPaths["SkyboxShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/skybox/default_shader.glsl";
-    m_shadersPaths["Gizmos"]["ComplexGizmosShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl";
-    m_shadersPaths["Gizmos"]["LinesGizmosShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/gizmos/lines_shader.glsl";
-    m_shadersPaths["LinesDebugDrawShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/debug/lines_debug_shader.glsl";
-    m_shadersPaths["StandardTextShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/ui/text_shader.glsl";
-    m_shadersPaths["InstancingShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/pbr/instancing.glsl";
-    m_shadersPaths["BatchingShader"].m_GLSL4RealizationPath = CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/pbr/batching.glsl";
+    m_shadersPaths.addShader(
+            "StandardMeshShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/pbr/default_shader.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "LayeredPostProcessingShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/postprocessing/default_shader.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "ShadowsGenerationShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/shadows_generator/default_shader.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "SkyboxShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/skybox/default_shader.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "Gizmos/ComplexGizmosShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "Gizmos/LinesGizmosShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/gizmos/lines_shader.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "LinesDebugDrawShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/debug/lines_debug_shader.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "StandardTextShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/ui/text_shader.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "InstancingShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/pbr/instancing.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
+
+    m_shadersPaths.addShader(
+            "BatchingShader",
+            CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/pbr/batching.glsl",
+            ShadersUniversalPaths::undefined_path,
+            ShadersUniversalPaths::undefined_path
+    );
     
     // configure render passes --------
 

@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_IPIPELINESYSTEM_H
 
 #include "IRenderPass.h"
-#include "SGCore/Utils/ShadersPaths.h"
+#include "SGCore/Utils/ShadersUniversalPaths.h"
 
 namespace SGCore
 {
@@ -16,7 +16,7 @@ namespace SGCore
 
     struct IRenderPipeline : public std::enable_shared_from_this<IRenderPipeline>
     {
-        ShadersPaths m_shadersPaths;
+        ShadersUniversalPaths m_shadersPaths;
 
         virtual void render(Ref<Scene> scene) noexcept;
 

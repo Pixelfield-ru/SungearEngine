@@ -53,7 +53,6 @@
 #include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/Render/ShaderComponent.h"
 
 #include "SGCore/Serde/Components/NonSavable.h"
 
@@ -582,28 +581,6 @@ struct SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType> :
     static void serialize(SGCore::Serde::SerializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
-};
-// =================================================================================
-
-
-// SERDE FORWARD DECL FOR struct 'SGCore::ShaderComponent'
-// =================================================================================
-template<
-        SGCore::Serde::FormatType TFormatType
->
-struct SGCore::Serde::SerdeSpec<SGCore::ShaderComponent, TFormatType> :
-        SGCore::Serde::BaseTypes<
-
-                                >,
-        SGCore::Serde::DerivedTypes<
-                                   >
-{
-    static inline const std::string type_name = "SGCore::ShaderComponent";
-    static inline constexpr bool is_pointer_type = false;
-
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderComponent, TFormatType>& valueView) noexcept;
-
-    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderComponent, TFormatType>& valueView) noexcept;
 };
 // =================================================================================
 
@@ -2551,47 +2528,6 @@ void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::deserialize(SGCore:
 // =================================================================================
 
 
-// SERDE IMPL FOR struct 'SGCore::ShaderComponent'
-// =================================================================================
-template<
-        SGCore::Serde::FormatType TFormatType
->
-void SGCore::Serde::SerdeSpec<SGCore::ShaderComponent, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderComponent, TFormatType>& valueView) noexcept
-{
-    valueView.getValueContainer().addMember("m_isCustomShader", valueView.m_data->m_isCustomShader);
-    valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader);
-    valueView.getValueContainer().addMember("m_shaderPath", valueView.m_data->m_shaderPath);
-}
-
-template<
-        SGCore::Serde::FormatType TFormatType
->
-void SGCore::Serde::SerdeSpec<SGCore::ShaderComponent, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderComponent, TFormatType>& valueView) noexcept
-{
-    const auto m_isCustomShader = valueView.getValueContainer().template getMember<bool>("m_isCustomShader");
-
-    if(m_isCustomShader)
-    {
-        valueView.m_data->m_isCustomShader = *m_isCustomShader;
-    }
-
-    const auto m_shader = valueView.getValueContainer().template getMember<AssetRef<IShader>>("m_shader");
-
-    if(m_shader)
-    {
-        valueView.m_data->m_shader = *m_shader;
-    }
-
-    const auto m_shaderPath = valueView.getValueContainer().template getMember<std::string>("m_shaderPath");
-
-    if(m_shaderPath)
-    {
-        valueView.m_data->m_shaderPath = *m_shaderPath;
-    }
-}
-// =================================================================================
-
-
 // SERDE IMPL FOR struct 'SGCore::AtmosphereUpdater'
 // =================================================================================
 template<
@@ -3601,14 +3537,6 @@ namespace SGCore::Serde
                 }
             }
             {
-                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::ShaderComponent>(serializableEntity);
-
-                if(component)
-                {
-                    valueView.getValueContainer().pushBack(*component);
-                }
-            }
-            {
                 auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::DirectionalLight>(serializableEntity);
 
                 if(component)
@@ -3812,19 +3740,6 @@ namespace SGCore::Serde
                     {
                         LOG_D(SGCORE_TAG, "Mesh component deserializing");
                         toRegistry.emplace<SGCore::Mesh>(entity, *component);
-
-                        continue;
-                    }
-                }
-
-                if(currentElementTypeName == SerdeSpec<SGCore::ShaderComponent, TFormatType>::type_name)
-                {
-                    const auto component = valueView.getValueContainer().template getMember<SGCore::ShaderComponent>(componentsIt);
-
-                    if(component)
-                    {
-                        LOG_D(SGCORE_TAG, "ShaderComponent deserializing");
-                        toRegistry.emplace<SGCore::ShaderComponent>(entity, *component);
 
                         continue;
                     }
@@ -4085,6 +4000,12 @@ namespace SGCore::Serde
         template<typename... SharedDataT> // making this function to accept any types and count of arguments
         static void serialize(SerializableValueView<AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...)
         {
+            if(!valueView.m_data->m_asset)
+            {
+                valueView.getValueContainer().setAsNull();
+                return;
+            }
+
             valueView.getValueContainer().addMember("m_path", (*valueView.m_data)->getPath());
             valueView.getValueContainer().addMember("m_assetTypeID", (*valueView.m_data)->getTypeID());
             valueView.getValueContainer().addMember("m_alias", (*valueView.m_data)->getAlias());
@@ -4096,6 +4017,11 @@ namespace SGCore::Serde
         template<typename... SharedDataT> // making this function to accept any types and count of arguments
         static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...)
         {
+            if(valueView.getValueContainer().isNull())
+            {
+                return;
+            }
+
             auto assetPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_path");
             const auto assetTypeID = valueView.getValueContainer().template getMember<size_t>("m_assetTypeID");
             auto assetAlias = valueView.getValueContainer().template getMember<std::string>("m_alias");
@@ -4167,8 +4093,6 @@ namespace SGCore::Serde
         /// This function is used only when serializing an asset manager package.
         static void serialize(SerializableValueView<IAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            std::cout << "iasset: " << typeid(*valueView.m_data).name() << std::endl;
-
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
             valueView.getValueContainer().addMember("m_storedBy", valueView.m_data->storedByWhat());
@@ -4222,8 +4146,6 @@ namespace SGCore::Serde
         /// The second argument is the current package being serialized.
         static void serialize(SerializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            std::cout << "texture2d" << std::endl;
-
             /// Next, we serialize the heavy data (in this case, \p m_data )
             /// into a binary package file and get the output markup,
             /// which indicates the position of the \p m_data data in the binary file,
@@ -4485,6 +4407,7 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<IMaterial, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+            valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader);
 
             valueView.getValueContainer().addMember("m_textures", valueView.m_data->m_textures, assetsPackage);
 
@@ -4504,6 +4427,12 @@ namespace SGCore::Serde
             if(name)
             {
                 valueView.m_data->m_name = std::move(*name);
+            }
+
+            auto shader = valueView.getValueContainer().template getMember<AssetRef<IShader>>("m_shader");
+            if(shader)
+            {
+                valueView.m_data->m_shader = std::move(*shader);
             }
 
             auto textures = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_textures)>("m_textures", assetsPackage);

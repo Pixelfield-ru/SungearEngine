@@ -7,6 +7,7 @@
 #include <SGCore/Graphics/API/ICubemapTexture.h>
 #include <SGCore/Memory/Assets/ModelAsset.h>
 #include <SGCore/Memory/Assets/Materials/IMaterial.h>
+#include <SGCore/Render/RenderPipelinesManager.h>
 
 #include "Resources.h"
 
@@ -41,6 +42,10 @@ void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noex
         standardCubemap->create();
 
         auto standardCubemapMaterial = toManager.getOrAddAssetByAlias<SGCore::IMaterial>("standard_skybox_material0");
+        standardCubemapMaterial->m_shader =
+                toManager.loadAsset<SGCore::IShader>(
+                        SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]->getCurrentRealization());
+
         standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, standardCubemap);
     }
 

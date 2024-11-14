@@ -3,7 +3,6 @@
 //
 #include "Mesh.h"
 #include "SGCore/Graphics/API/IShader.h"
-#include "ShadersUtils.h"
 
 SGCore::Mesh::Mesh() noexcept
 {

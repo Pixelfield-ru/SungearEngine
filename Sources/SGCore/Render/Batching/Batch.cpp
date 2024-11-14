@@ -522,7 +522,7 @@ void SGCore::Batch::onRenderPipelineSet() noexcept
     auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
     
     if(!renderPipeline) return;
-    
-    m_shader->addSubPassShadersAndCompile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            renderPipeline->m_shadersPaths.getByVirtualPath("BatchingShader").getCurrentRealization()));
+
+    m_shader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
+            renderPipeline->m_shadersPaths["BatchingShader"]->getCurrentRealization()));
 }

@@ -539,8 +539,6 @@ namespace SGCore::Serde
         {
             if(!(m_typeNameValue || m_document)) return;
 
-            std::cout << "new type name: " << typeName << std::endl;
-
             m_typeNameValue->SetString(typeName.c_str(), typeName.length(), m_document->GetAllocator());
         }
 

@@ -18,7 +18,7 @@ namespace SGCore
     struct OctreeNode;
     struct Transform;
     
-    struct PBRRPGeometryPass : public IRenderPass, IGeometryPass
+    struct PBRRPGeometryPass : public IGeometryPass
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
         
