@@ -150,7 +150,10 @@ void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)
     {
         try
         {
-            plugin->getPlugin()->fixedUpdate(dt, fixedDt);
+            if(plugin->getPlugin())
+            {
+                plugin->getPlugin()->fixedUpdate(dt, fixedDt);
+            }
         }
         catch(const std::exception& e)
         {
@@ -176,7 +179,10 @@ void SGCore::CoreMain::updateStart(const double& dt, const double& fixedDt)
     {
         try
         {
-            plugin->getPlugin()->update(dt, fixedDt);
+            if(plugin->getPlugin())
+            {
+                plugin->getPlugin()->update(dt, fixedDt);
+            }
         }
         catch(const std::exception& e)
         {

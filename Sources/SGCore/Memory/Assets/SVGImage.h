@@ -25,7 +25,9 @@ namespace SGCore
 
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-        
+
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+
         std::vector<AssetRef<SVGImageSpecialization>> m_specializations;
         
     private:

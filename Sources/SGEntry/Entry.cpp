@@ -172,7 +172,7 @@ void onUpdate(const double& dt, const double& fixedDt)
     {
         if(SGCore::PluginsManager::isPluginExists("SungearEngineEditor"))
         {
-            SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", {}, "cmake-build-release");
+            SGCore::PluginsManager::reloadPlugin("SungearEngineEditor", {}, "cmake-build-debug");
         }
         else
         {
@@ -184,7 +184,7 @@ void onUpdate(const double& dt, const double& fixedDt)
                 SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                    sgEditorPath,
                                                    {},
-                                                   "cmake-build-release");
+                                                   "cmake-build-debug");
             }
         }
     }

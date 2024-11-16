@@ -31,6 +31,8 @@ void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline
             parentRenderPipeline->m_shadersPaths["StandardMeshShader"]->getCurrentRealization());
 
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
+
+    std::cout << "loaded pbr shader: " << m_shader.get() << std::endl;
 }
 
 void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)

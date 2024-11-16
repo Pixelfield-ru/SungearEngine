@@ -15,11 +15,12 @@
 void SGCore::AssetManager::init() noexcept
 {
     m_instance = getAssetManager("MainAssetManager");
+    m_instance->addStandardAssets();
 }
 
 void SGCore::AssetManager::addStandardAssets() noexcept
 {
-    if(!isAssetExists<IMeshData>("quad_mesh"))
+    /*if(!isAssetExists<IMeshData>("quad_mesh"))
     {
         auto quad = getOrAddAssetByAlias<IMeshData>("quad_mesh");
 
@@ -32,9 +33,11 @@ void SGCore::AssetManager::addStandardAssets() noexcept
         quad->m_indices.push_back(2);
 
         quad->prepare();
-    }
+    }*/
 
-    getOrAddAssetByAlias<IMaterial>("default_material");
+    {
+        auto standardMaterial = getOrAddAssetByAlias<IMaterial>("default_material");
+    }
 }
 
 SGCore::Ref<SGCore::AssetManager>& SGCore::AssetManager::getInstance() noexcept
@@ -168,14 +171,12 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
         {
             LOG_W(SGCORE_TAG, "Resolver of conflicts for asset manager with name '{}' was not set! Conflicts were not resolved.", m_name);
 
-            onAssetsReferencesResolve();
-            onAssetsReferencesResolve.clear();
+            resolveMemberAssetsReferences();
         }
     }
     else
     {
-        onAssetsReferencesResolve();
-        onAssetsReferencesResolve.clear();
+        resolveMemberAssetsReferences();
     }
 
     if(!outputLog.empty())
@@ -199,6 +200,8 @@ void SGCore::AssetManager::resolveMemberAssetsReferences() noexcept
             assetIt.second->resolveMemberAssetsReferences(this);
         }
     }
+
+    onMemberAssetsReferencesResolve(this);
 }
 
 const std::string& SGCore::AssetManager::getName() const noexcept

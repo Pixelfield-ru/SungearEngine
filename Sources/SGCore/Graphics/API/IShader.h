@@ -87,6 +87,8 @@ namespace SGCore
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
 
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+
     private:
         AssetRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;
         AssetWeakRef<TextFileAsset> m_fileAsset;

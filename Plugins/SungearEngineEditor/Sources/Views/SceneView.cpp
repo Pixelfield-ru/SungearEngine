@@ -4,6 +4,7 @@
 
 #include "SceneView.h"
 #include "EditorScene.h"
+#include "ImGuiUtils.h"
 #include <imgui_internal.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/AssetManager.h>
@@ -11,6 +12,11 @@
 #include <SGCore/Graphics/API/IFrameBuffer.h>
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/Input/InputListener.h>
+#include <SGCore/Memory/Assets/ModelAsset.h>
+
+#include "SungearEngineEditor.h"
+#include "Views/MainView.h"
+#include "Views/Explorer/DirectoryExplorer.h"
 
 bool SGE::SceneView::begin()
 {
@@ -42,6 +48,8 @@ void SGE::SceneView::renderBody()
             ImGui::Image(layeredFrameReceiver->getOverlayFrameBuffer()->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0
             )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
+
+            acceptFilesFromDirectoryExplorer();
         }
 
         if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) &&
@@ -62,4 +70,50 @@ void SGE::SceneView::renderBody()
 void SGE::SceneView::end()
 {
     IView::end();
+}
+
+void SGE::SceneView::acceptFilesFromDirectoryExplorer() noexcept
+{
+    auto directoryExplorer = SungearEngineEditor::getInstance()->getMainView()->getDirectoryExplorer();
+
+    DragNDropInfo dragNDropInfo;
+    dragNDropInfo.m_type = DragNDropType::TARGET;
+    dragNDropInfo.m_name = directoryExplorer->getDragNDropPayloadName();
+    dragNDropInfo.m_payloadProcessFunction = [directoryExplorer, this](const ImGuiPayload* payload) {
+        for(const auto* file : directoryExplorer->getSelectedFiles())
+        {
+            const auto fileExt = file->getPath().extension();
+
+            if(fileExt == ".obj")
+            {
+                loadModelByPath(file->getPath());
+            }
+        }
+    };
+
+    ImGuiUtils::UseDragNDrop(&dragNDropInfo);
+}
+
+void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) const noexcept
+{
+    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelPath);
+
+    if(!modelAsset)
+    {
+        LOG_E(SGEDITOR_TAG, "Can not drop model asset on scene: can not load model asset by path '{}'",
+              SGCore::Utils::toUTF8(modelPath.u16string()));
+        return;
+    }
+
+    if(modelAsset->m_nodes.empty())
+    {
+        LOG_E(SGEDITOR_TAG, "Can not drop model asset on scene: model by path '{}' does not have nodes.",
+              SGCore::Utils::toUTF8(modelPath.u16string()));
+        return;
+    }
+
+    modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME);
+
+    SG_ASSERT(false, "");
+    std::cout << "" << std::endl;
 }

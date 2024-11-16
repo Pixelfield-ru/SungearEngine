@@ -79,6 +79,18 @@ namespace SGCore
             return m_asset != nullptr;
         }
 
+        template<typename AssetT0>
+        [[nodiscard]] AssetRef<AssetT0> staticCast() const noexcept
+        {
+            return AssetRef<AssetT0>(std::static_pointer_cast<AssetT0>(m_asset));
+        }
+
+        template<typename AssetT0>
+        [[nodiscard]] AssetRef<AssetT0> dynamicCast() const noexcept
+        {
+            return AssetRef<AssetT0>(std::dynamic_pointer_cast<AssetT0>(m_asset));
+        }
+
         AssetRef(std::nullptr_t) : m_asset(nullptr) { }
 
     private:

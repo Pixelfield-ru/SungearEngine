@@ -20,6 +20,9 @@ namespace SGCore
 
         std::vector<AssetRef<ITexture2D>> m_parts;
 
+    protected:
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+
     private:
         template<typename... AssetCtorArgs>
         static Ref<ICubemapTexture> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept

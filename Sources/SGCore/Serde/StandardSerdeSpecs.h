@@ -4044,35 +4044,17 @@ namespace SGCore::Serde
                         std::static_pointer_cast<AssetT>(
                                 parentAssetManager->loadExistingAsset(*assetAlias, *assetPath, *assetStorageType, *assetTypeID).m_asset);
 
-                // assigning values only after getting asset from asset manager
-                valueView.m_data->m_asset->m_alias = std::move(*assetAlias);
-                valueView.m_data->m_asset->m_path = std::move(*assetPath);
-                valueView.m_data->m_asset->m_storedBy = *assetStorageType;
             }
             else
             {
-                auto& currentAssetRef = (*valueView.m_data);
-                // subscribing to event onAssetsReferencesResolve of parent asset manager to resolve current AssetRef deferred
-                // currentAssetRef is still alive when this event called
-                parentAssetManager->onAssetsReferencesResolve += [&currentAssetRef,
-                        parentAssetManager,
-                        assetAlias,
-                        assetTypeID,
-                        assetPath,
-                        assetStorageType,
-                        parentAssetManagerName]() {
-                    LOG_I(SGCORE_TAG, "Subscribing...");
-                    // getting asset from asset manager
-                    currentAssetRef.m_asset =
-                            std::static_pointer_cast<AssetT>(
-                                    parentAssetManager->loadExistingAsset(*assetAlias, *assetPath, *assetStorageType, *assetTypeID).m_asset);
-
-                    // assigning values only after getting asset from asset manager
-                    currentAssetRef.m_asset->m_alias = std::move(*assetAlias);
-                    currentAssetRef.m_asset->m_path = std::move(*assetPath);
-                    currentAssetRef.m_asset->m_storedBy = *assetStorageType;
-                };
+                // just creating asset instance. we will resolve this reference in future
+                valueView.m_data->m_asset = parentAssetManager->template createAssetInstance<AssetT>();
             }
+
+            // assigning values only after getting asset from asset manager
+            valueView.m_data->m_asset->m_alias = std::move(*assetAlias);
+            valueView.m_data->m_asset->m_path = std::move(*assetPath);
+            valueView.m_data->m_asset->m_storedBy = *assetStorageType;
         }
     };
 
@@ -4407,7 +4389,7 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<IMaterial, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
-            valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader);
+            valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader, assetsPackage);
 
             valueView.getValueContainer().addMember("m_textures", valueView.m_data->m_textures, assetsPackage);
 
@@ -4687,6 +4669,12 @@ namespace SGCore::Serde
             if(generatePhysicalMesh)
             {
                 valueView.m_data->generatePhysicalMesh();
+            }
+
+            auto material = valueView.getValueContainer().template getMember<AssetRef<IMaterial>>("m_material");
+            if(material)
+            {
+                valueView.m_data->m_material = std::move(*material);
             }
         }
 

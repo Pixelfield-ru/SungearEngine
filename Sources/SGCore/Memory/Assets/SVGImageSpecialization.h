@@ -33,6 +33,8 @@ namespace SGCore
         // todo: implement
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) final;
 
+        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+
     private:
         lunasvg::Bitmap m_bitmap;
         

@@ -168,7 +168,8 @@ void SGCore::IMeshData::resolveMemberAssetsReferences(SGCore::AssetManager* pare
 {
     if(m_material)
     {
-        m_material = parentAssetManager->getAsset(m_material);
+        // resolving reference
+        parentAssetManager->resolveAssetReference(m_material);
     }
 }
 

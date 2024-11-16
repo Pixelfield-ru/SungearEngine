@@ -73,3 +73,11 @@ void SGCore::SVGImage::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMan
 {
 
 }
+
+void SGCore::SVGImage::resolveMemberAssetsReferences(SGCore::AssetManager* parentAssetManager) noexcept
+{
+    for(auto& spec : m_specializations)
+    {
+        parentAssetManager->resolveAssetReference(spec);
+    }
+}

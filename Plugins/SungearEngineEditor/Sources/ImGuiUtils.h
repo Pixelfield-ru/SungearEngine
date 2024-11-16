@@ -109,6 +109,8 @@ namespace SGE
 
         static void TextWithColors(const char* fmt, ...) noexcept;
 
+        static void UseDragNDrop(DragNDropInfo* dragNDropInfo) noexcept;
+
         static SGCore::AssetRef<SGCore::ITexture2D> getFileIcon(const std::filesystem::path& filePath,
                                                                 const SGCore::ivec2_32& iconSize,
                                                                 SGCore::Event<void(

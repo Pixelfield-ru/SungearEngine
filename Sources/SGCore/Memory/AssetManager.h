@@ -17,6 +17,7 @@
 #include "SGCore/Logger/Logger.h"
 #include "AssetsPackage.h"
 #include "AssetRef.h"
+#include "AssetWeakRef.h"
 
 namespace SGCore
 {
@@ -43,7 +44,68 @@ namespace SGCore
 
         /// This event is using for resolve references of member assets after package deserialization.
         /// This event is called after package deserialization.
-        Event<void()> onAssetsReferencesResolve;
+        /// You can subscribe to this event to resolve member assets references.
+        /// @param assetManager AssetManager for which new assets were deserialized.
+        Event<void(AssetManager* assetManager)> onMemberAssetsReferencesResolve;
+
+        /**
+         * Use this function to resolve member asset reference.\n
+         * if the asset reference resolves, the asset data will be automatically loaded.
+         * @tparam AssetT type of asset reference to resolve.
+         * @param assetRef asset reference that is needs to be resolved.
+         * @param isAssetRefWasResolved is asset reference was resolved.
+         */
+        template<typename AssetT>
+        void resolveAssetReference(AssetRef<AssetT>& assetRef, bool* isAssetRefWasResolved = nullptr) noexcept
+        {
+            if(!assetRef)
+            {
+                if(isAssetRefWasResolved)
+                {
+                    LOG_W(SGCORE_TAG, "Can not resolve asset reference: asset reference that is must be resolved is null!");
+                    *isAssetRefWasResolved = false;
+                }
+                return;
+            }
+
+            auto newAssetRef = loadExistingAsset(assetRef->getAlias(), assetRef->getPath(), assetRef->storedByWhat(), assetRef->getTypeID());
+
+            if(!newAssetRef)
+            {
+                if(isAssetRefWasResolved)
+                {
+                    LOG_W(SGCORE_TAG, "Can not resolve asset reference: can not find asset in manager! Info about asset reference: path - '{}', alias - '{}', stored by - '{}', asset type ID - '{}'",
+                          assetRef->getAlias(),
+                          Utils::toUTF8(assetRef->getPath().u16string()),
+                          std::to_underlying(assetRef->storedByWhat()),
+                          assetRef->getTypeID());
+                    *isAssetRefWasResolved = false;
+                }
+                return;
+            }
+
+            assetRef = newAssetRef.template staticCast<AssetT>();
+
+            LOG_I(SGCORE_TAG, "Asset reference was resolved! Info about asset reference: path - '{}', alias - '{}', stored by - '{}', asset type ID - '{}'",
+                  assetRef->getAlias(),
+                  Utils::toUTF8(assetRef->getPath().u16string()),
+                  std::to_underlying(assetRef->storedByWhat()),
+                  assetRef->getTypeID());
+
+            if(isAssetRefWasResolved)
+            {
+                *isAssetRefWasResolved = true;
+            }
+        }
+
+        template<typename AssetT>
+        void resolveWeakAssetReference(AssetWeakRef<AssetT>& assetRef, bool* isAssetRefWasResolved = nullptr) noexcept
+        {
+            auto strongRef = assetRef.lock();
+            resolveAssetReference(strongRef, isAssetRefWasResolved);
+
+            assetRef = strongRef;
+        }
 
         static Ref<AssetManager> getAssetManager(const std::string& name) noexcept
         {
@@ -830,7 +892,7 @@ namespace SGCore
             Ref<AssetT> asset;
             if constexpr(requires { AssetT::template createRefInstance<AssetCtorArgsT...>; })
             {
-                asset = AssetT::template createRefInstance(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
+                asset = AssetT::createRefInstance(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
                 asset->m_parentAssetManager = shared_from_this();
 
                 return asset;

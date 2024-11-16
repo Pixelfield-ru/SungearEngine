@@ -131,6 +131,9 @@ void SGCore::Node::resolveMemberAssetsReferences(SGCore::AssetManager* parentAss
 {
     for(auto& meshData : m_meshesData)
     {
+        // resolving reference
+        parentAssetManager->resolveAssetReference(meshData);
+
         meshData->resolveMemberAssetsReferences(parentAssetManager);
     }
 

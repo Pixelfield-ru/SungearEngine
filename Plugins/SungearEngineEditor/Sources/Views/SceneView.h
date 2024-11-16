@@ -14,6 +14,12 @@ namespace SGE
         bool begin() final;
         void renderBody() final;
         void end() final;
+
+    private:
+        // accepts files that are drag n dropped from directory explorer
+        void acceptFilesFromDirectoryExplorer() noexcept;
+
+        void loadModelByPath(const std::filesystem::path& modelPath) const noexcept;
     };
 }
 

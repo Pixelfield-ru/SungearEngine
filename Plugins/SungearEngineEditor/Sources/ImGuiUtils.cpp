@@ -100,56 +100,8 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
         ImGui::InvisibleButton(name.c_str(), {buttonSize.x, buttonSize.y - offset.y});
     }
     // ImGui::Dummy({ buttonSize.x, buttonSize.y - offset.y });
-    
-    if(dragNDropInfo)
-    {
-        dragNDropInfo->m_state = DragNDropState::NONE;
-    }
-    
-    if(dragNDropInfo && dragNDropInfo->m_isEnabled && dragNDropInfo->m_type != DragNDropType::UNKNOWN)
-    {
-        if(dragNDropInfo->m_type == DragNDropType::BOTH || dragNDropInfo->m_type == DragNDropType::SOURCE)
-        {
-            if(ImGui::BeginDragDropSource(dragNDropInfo->m_flags))
-            {
-                ImGui::SetDragDropPayload(dragNDropInfo->m_name.c_str(), dragNDropInfo->m_data, dragNDropInfo->m_dataSize);
-                
-                dragNDropInfo->m_state = DragNDropState::DRAGGING;
-                
-                if(dragNDropInfo->m_drawSourceFunction)
-                {
-                    dragNDropInfo->m_drawSourceFunction();
-                }
-                
-                ImGui::EndDragDropSource();
-            }
-        }
-        
-        if(dragNDropInfo->m_type == DragNDropType::BOTH || dragNDropInfo->m_type == DragNDropType::TARGET)
-        {
-            if(ImGui::BeginDragDropTarget())
-            {
-                const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(dragNDropInfo->m_name.c_str());
-                
-                if(payload)
-                {
-                    dragNDropInfo->m_state = DragNDropState::ACCEPTED;
-                    
-                    if(dragNDropInfo->m_payloadProcessFunction)
-                    {
-                        dragNDropInfo->m_payloadProcessFunction(payload);
-                    }
-                }
-                
-                if(dragNDropInfo->m_drawTargetFunction)
-                {
-                    dragNDropInfo->m_drawTargetFunction();
-                }
-                
-                ImGui::EndDragDropTarget();
-            }
-        }
-    }
+
+    UseDragNDrop(dragNDropInfo);
 
     if(m_isCheckBoxesGroupBegan)
     {
@@ -429,4 +381,57 @@ SGCore::AssetRef<SGCore::ITexture2D> SGE::ImGuiUtils::getFileIcon(const std::fil
     }
     
     return fileIcon;
+}
+
+void SGE::ImGuiUtils::UseDragNDrop(SGE::DragNDropInfo* dragNDropInfo) noexcept
+{
+    if(dragNDropInfo)
+    {
+        dragNDropInfo->m_state = DragNDropState::NONE;
+    }
+
+    if(dragNDropInfo && dragNDropInfo->m_isEnabled && dragNDropInfo->m_type != DragNDropType::UNKNOWN)
+    {
+        if(dragNDropInfo->m_type == DragNDropType::BOTH || dragNDropInfo->m_type == DragNDropType::SOURCE)
+        {
+            if(ImGui::BeginDragDropSource(dragNDropInfo->m_flags))
+            {
+                ImGui::SetDragDropPayload(dragNDropInfo->m_name.c_str(), dragNDropInfo->m_data, dragNDropInfo->m_dataSize);
+
+                dragNDropInfo->m_state = DragNDropState::DRAGGING;
+
+                if(dragNDropInfo->m_drawSourceFunction)
+                {
+                    dragNDropInfo->m_drawSourceFunction();
+                }
+
+                ImGui::EndDragDropSource();
+            }
+        }
+
+        if(dragNDropInfo->m_type == DragNDropType::BOTH || dragNDropInfo->m_type == DragNDropType::TARGET)
+        {
+            if(ImGui::BeginDragDropTarget())
+            {
+                const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(dragNDropInfo->m_name.c_str());
+
+                if(payload)
+                {
+                    dragNDropInfo->m_state = DragNDropState::ACCEPTED;
+
+                    if(dragNDropInfo->m_payloadProcessFunction)
+                    {
+                        dragNDropInfo->m_payloadProcessFunction(payload);
+                    }
+                }
+
+                if(dragNDropInfo->m_drawTargetFunction)
+                {
+                    dragNDropInfo->m_drawTargetFunction();
+                }
+
+                ImGui::EndDragDropTarget();
+            }
+        }
+    }
 }

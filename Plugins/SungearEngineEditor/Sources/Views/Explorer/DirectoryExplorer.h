@@ -153,7 +153,17 @@ namespace SGE
                         },
                 }
         };
-        
+
+        [[nodiscard]] const std::string& getDragNDropPayloadName() const noexcept
+        {
+            return m_filesDragAndDropPayloadName;
+        }
+
+        [[nodiscard]] const auto& getSelectedFiles() const noexcept
+        {
+            return m_selectedFiles;
+        }
+
     private:
         static int onFileNameEditCallback(ImGuiInputTextCallbackData* data) noexcept;
         static int onFindFileNameEditCallback(ImGuiInputTextCallbackData* data) noexcept;

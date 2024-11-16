@@ -203,19 +203,23 @@ namespace SGCore
         
         void clear() noexcept
         {
-            for(auto& holder : m_listeners)
+            auto it = m_listeners.begin();
+            while(it != m_listeners.end())
             {
+                auto* holder = *it;
+
+                if(!holder->m_isOwnedByEvent)
+                {
+                    holder->m_listeningEvents.remove(this);
+                }
+
+                it = m_listeners.erase(it);
+
                 if(holder->m_isOwnedByEvent)
                 {
                     delete holder;
                 }
-                else
-                {
-                    holder->m_listeningEvents.remove(this);
-                }
             }
-            
-            m_listeners.clear();
         }
         
         template<auto FuncPtr>

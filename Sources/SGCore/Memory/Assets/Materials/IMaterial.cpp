@@ -7,11 +7,15 @@
 
 SGCore::IMaterial::IMaterial() noexcept
 {
+    std::cout << "material ctor" << std::endl;
+
     if(RenderPipelinesManager::getCurrentRenderPipeline())
     {
+        std::cout << "render pipeline exists" << std::endl;
         auto geomPass = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<IGeometryPass>();
         if(geomPass)
         {
+            std::cout << "setting default shader for material..." << std::endl;
             m_shader = geomPass->m_shader;
         }
     }
@@ -107,10 +111,9 @@ void SGCore::IMaterial::resolveMemberAssetsReferences(AssetManager* parentAssetM
     {
         for(auto& texture : texturesIt.second)
         {
-            if(texture)
-            {
-                texture = parentAssetManager->getAsset(texture);
-            }
+            parentAssetManager->resolveAssetReference(texture);
         }
     }
+
+    parentAssetManager->resolveAssetReference(m_shader);
 }

@@ -10,7 +10,7 @@
 void SGCore::MeshBase::setMeshData(const SGCore::AssetRef<SGCore::IMeshData>& meshData) noexcept
 {
     m_meshData = meshData;
-    if(!m_material)
+    if(!m_material && meshData)
     {
         m_material = meshData->m_material;
     }

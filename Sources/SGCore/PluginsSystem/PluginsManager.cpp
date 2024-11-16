@@ -161,7 +161,7 @@ SGCore::PluginsManager::loadPlugin(const std::string& pluginName,
     Ref<PluginWrap> loadedPlugin;
     
     auto foundIt = std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
-        return pluginWrap->getPlugin()->m_name == pluginName;
+        return pluginWrap->getPlugin() && pluginWrap->getPlugin()->m_name == pluginName;
     });
     
     if(foundIt != m_plugins.end())
@@ -223,7 +223,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
     Ref<PluginWrap> loadedPlugin;
     
     auto foundIt = std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& pluginWrap) {
-        return pluginWrap->getPlugin()->m_name == pluginName;
+        return pluginWrap->getPlugin() && pluginWrap->getPlugin()->m_name == pluginName;
     });
     
     if(foundIt != m_plugins.end())
@@ -234,7 +234,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         std::string dlEntryErr;
         
         const std::filesystem::path pluginSrcPath = loadedPlugin->m_plugin->m_path;
-        const std::filesystem::path pluginDLPath = pluginSrcPath / cmakeBuildDir / pluginName / DL_POSTFIX;
+        const std::filesystem::path pluginDLPath = pluginSrcPath / cmakeBuildDir / (pluginName + DL_POSTFIX);
         
         loadedPlugin->m_plugin = nullptr;
         
@@ -243,7 +243,7 @@ SGCore::PluginsManager::reloadPlugin(const std::string& pluginName,
         
         if(!loadedPlugin->m_pluginLib->getNativeHandler())
         {
-            LOG_E(SGCORE_TAG, "Cannot reload plugin '{}'. Error is: {}", pluginName, dlErr);
+            LOG_E(SGCORE_TAG, "Cannot reload plugin '{}' by path '{}'. Error is: {}", pluginName, Utils::toUTF8(pluginDLPath.u16string()), dlErr);
             return nullptr;
         }
         
@@ -289,7 +289,7 @@ void SGCore::PluginsManager::unloadPlugin(const std::string& pluginName) noexcep
 bool SGCore::PluginsManager::isPluginExists(const std::string& pluginName) noexcept
 {
     return std::find_if(m_plugins.begin(), m_plugins.end(), [&pluginName](const Ref<PluginWrap>& plugin) {
-        return plugin->m_plugin->m_name == pluginName;
+        return plugin->m_plugin && plugin->m_plugin->m_name == pluginName;
     }) != m_plugins.end();
 }
 
