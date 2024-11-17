@@ -7,18 +7,7 @@
 
 SGCore::IMaterial::IMaterial() noexcept
 {
-    std::cout << "material ctor" << std::endl;
 
-    if(RenderPipelinesManager::getCurrentRenderPipeline())
-    {
-        std::cout << "render pipeline exists" << std::endl;
-        auto geomPass = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<IGeometryPass>();
-        if(geomPass)
-        {
-            std::cout << "setting default shader for material..." << std::endl;
-            m_shader = geomPass->m_shader;
-        }
-    }
 }
 
 void SGCore::IMaterial::doLoad(const std::filesystem::path& path)

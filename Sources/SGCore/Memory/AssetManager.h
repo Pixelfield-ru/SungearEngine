@@ -174,6 +174,7 @@ namespace SGCore
                 if(!asset->m_isLoaded)
                 {
                     distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
+                    LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}. Asset type ID: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name(), AssetT::type_id);
                 }
 
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.
@@ -248,6 +249,7 @@ namespace SGCore
                 if(!assetToLoad->m_isLoaded)
                 {
                     distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
+                    LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name());
                 }
 
                 return;
@@ -343,6 +345,7 @@ namespace SGCore
                 if(!asset->m_isLoaded)
                 {
                     distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
+                    LOG_I(SGCORE_TAG, "Loaded existing asset (deferred load) with path: {}; and alias: {}. Asset type ID: {}", Utils::toUTF8(path.u16string()), alias, assetTypeID);
                 }
 
                 return AssetRef<IAsset>(foundAssetOfTIt->second);
@@ -399,6 +402,7 @@ namespace SGCore
                 if(!assetToLoad->m_isLoaded)
                 {
                     distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
+                    LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}", Utils::toUTF8(path.u16string()), typeid(AssetT).name());
                 }
 
                 return;
@@ -472,6 +476,7 @@ namespace SGCore
                 if(!asset->m_isLoaded)
                 {
                     distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
+                    LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}", Utils::toUTF8(path.u16string()), alias, typeid(AssetT).name(), AssetT::type_id);
                 }
 
                 // WE ARE USING STATIC CAST BECAUSE WE KNOW THAT ONLY AN ASSET WITH THE ASSET TYPE HAS SUCH AN asset_type_id.

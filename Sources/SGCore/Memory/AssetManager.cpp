@@ -36,7 +36,7 @@ void SGCore::AssetManager::addStandardAssets() noexcept
     }*/
 
     {
-        auto standardMaterial = getOrAddAssetByAlias<IMaterial>("default_material");
+        // auto standardMaterial = getOrAddAssetByAlias<IMaterial>("default_material");
     }
 }
 

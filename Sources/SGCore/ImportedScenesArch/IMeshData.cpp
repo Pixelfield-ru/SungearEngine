@@ -162,6 +162,8 @@ void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
     m_normals = package.readData<std::vector<float>>(m_normalsOffsetInPackage, m_normalsSizeInPackage);
     m_tangents = package.readData<std::vector<float>>(m_tangentsOffsetInPackage, m_tangentsSizeInPackage);
     m_bitangents = package.readData<std::vector<float>>(m_bitangentsOffsetInPackage, m_bitangentsSizeInPackage);
+
+    prepare();
 }
 
 void SGCore::IMeshData::resolveMemberAssetsReferences(SGCore::AssetManager* parentAssetManager) noexcept

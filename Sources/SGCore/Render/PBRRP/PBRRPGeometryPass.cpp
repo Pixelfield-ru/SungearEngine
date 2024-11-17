@@ -32,7 +32,9 @@ void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline
 
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 
-    std::cout << "loaded pbr shader: " << m_shader.get() << std::endl;
+    // configuring default material to use standard pbr shader
+    auto defaultMaterial = AssetManager::getInstance()->getOrAddAssetByAlias<IMaterial>("default_material");
+    defaultMaterial->m_shader = m_shader;
 }
 
 void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)

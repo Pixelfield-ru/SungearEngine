@@ -32,6 +32,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
 
     if(!lockedScene) return;
 
+    // todo: fix!!!
     if(m_changedModelMatrices.isLocked() || m_entitiesForPhysicsUpdateToCheck.isLocked()) return;
 
     auto registry = lockedScene->getECSRegistry();
@@ -197,9 +198,10 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             vec = std::move(notPhysicalEntities);
         }
     }
-    
-    m_changedModelMatrices.lock();
-    m_entitiesForPhysicsUpdateToCheck.lock();
+
+    // todo: fix!!!!
+    /*m_changedModelMatrices.lock();
+    m_entitiesForPhysicsUpdateToCheck.lock();*/
 }
 
 void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double& fixedDt) noexcept

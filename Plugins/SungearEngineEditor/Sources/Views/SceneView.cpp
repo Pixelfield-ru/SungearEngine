@@ -114,6 +114,6 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
 
     modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME);
 
-    SG_ASSERT(false, "");
+    // SG_ASSERT(false, "");
     std::cout << "" << std::endl;
 }

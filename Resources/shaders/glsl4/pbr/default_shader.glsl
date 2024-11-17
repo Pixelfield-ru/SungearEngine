@@ -393,9 +393,13 @@ SGSubPass(GeometryPass)
             fragColor0.rgb = finalCol;
 
             // fragColor0 = vec4(1.0);
+            // fragColor0.rgb = vec3(finalUV.x, finalUV.y, finalUV.x);
+            fragColor0.rgb = vec3(1.0);
+            fragColor0.a = 1.0;
             // fragColor0.rgba = vec4(1.0);
 
-            fragColor1 = vec4(finalCol, diffuseColor.a);
+            // fragColor1 = vec4(finalCol, diffuseColor.a);
+            fragColor1.rgba = vec4(1.0);
             // fragColor0 = vec4(1.0);
             // fragColor = vec4(1.0);
 
