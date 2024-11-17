@@ -4036,25 +4036,22 @@ namespace SGCore::Serde
             // and this asset is already has parent asset manager
 
             // checking if asset is already exists
+            // TRYING TO RESOLVE REFERENCE AUTOMATICALLY
             if (parentAssetManager->isAssetExists(*assetAlias, *assetPath, *assetStorageType, *assetTypeID))
             {
                 // setting m_asset to asset from parent asset manager
-                LOG_I(SGCORE_TAG, "Asset is already exist.");
+                LOG_I(SGCORE_TAG, "Asset is already exist. Reference was resolved automatically.");
                 valueView.m_data->m_asset =
                         std::static_pointer_cast<AssetT>(
                                 parentAssetManager->loadExistingAsset(*assetAlias, *assetPath, *assetStorageType, *assetTypeID).m_asset);
-
-            }
-            else
-            {
-                // just creating asset instance. we will resolve this reference in future
-                valueView.m_data->m_asset = parentAssetManager->template createAssetInstance<AssetT>();
             }
 
             // assigning values only after getting asset from asset manager
-            valueView.m_data->m_asset->m_alias = std::move(*assetAlias);
-            valueView.m_data->m_asset->m_path = std::move(*assetPath);
-            valueView.m_data->m_asset->m_storedBy = *assetStorageType;
+            valueView.m_data->m_deserializedAssetAlias = std::move(*assetAlias);
+            valueView.m_data->m_deserializedAssetPath = std::move(*assetPath);
+            valueView.m_data->m_deserializedAssetStoredBy = *assetStorageType;
+            valueView.m_data->m_deserializedAssetTypeID = *assetTypeID;
+            valueView.m_data->m_deserializedParentAssetManager = parentAssetManager;
         }
     };
 

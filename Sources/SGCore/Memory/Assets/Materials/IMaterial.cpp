@@ -94,15 +94,15 @@ void SGCore::IMaterial::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
 
 }
 
-void SGCore::IMaterial::resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept
+void SGCore::IMaterial::onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept
 {
     for(auto& texturesIt : m_textures)
     {
         for(auto& texture : texturesIt.second)
         {
-            parentAssetManager->resolveAssetReference(texture);
+            AssetManager::resolveAssetReference(updatedAssetManager, texture);
         }
     }
 
-    parentAssetManager->resolveAssetReference(m_shader);
+    AssetManager::resolveAssetReference(updatedAssetManager, m_shader);
 }

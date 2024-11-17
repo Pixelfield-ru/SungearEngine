@@ -9,7 +9,7 @@
 
 namespace SGCore
 {
-    class Node
+    class Node : public IAssetsRefsResolver
     {
         friend struct ModelAsset;
 
@@ -24,7 +24,7 @@ namespace SGCore
                                 const bool& rootAdd) noexcept;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
-        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept;
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
 
     public:
         std::string m_name;

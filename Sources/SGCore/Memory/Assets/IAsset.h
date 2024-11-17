@@ -115,11 +115,6 @@ namespace SGCore
         /// You can change value of this variable in your implementations of \p doLoad , \p doLazyLoad or \p doLoadFromBinaryFile functions to indicate whether this asset was successfully loaded or it is need to be reloaded.
         bool m_isLoaded = false;
 
-        /**
-         * Implement this function to resolve reference of member asset that contains in current asset.
-         */
-        virtual void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept { };
-
         long m_lastModified = -1;
 
     private:

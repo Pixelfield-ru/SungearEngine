@@ -166,13 +166,10 @@ void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
     prepare();
 }
 
-void SGCore::IMeshData::resolveMemberAssetsReferences(SGCore::AssetManager* parentAssetManager) noexcept
+void SGCore::IMeshData::onMemberAssetsReferencesResolve(SGCore::AssetManager* updatedAssetManager) noexcept
 {
-    if(m_material)
-    {
-        // resolving reference
-        parentAssetManager->resolveAssetReference(m_material);
-    }
+    // resolving reference
+    AssetManager::resolveAssetReference(updatedAssetManager, m_material);
 }
 
 void SGCore::IMeshData::doLoad(const std::filesystem::path& path)

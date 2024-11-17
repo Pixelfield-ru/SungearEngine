@@ -18,6 +18,7 @@
 #include "AssetsPackage.h"
 #include "AssetRef.h"
 #include "AssetWeakRef.h"
+#include "SGCore/Utils/Event.h"
 
 namespace SGCore
 {
@@ -42,67 +43,62 @@ namespace SGCore
 
         AssetsLoadPolicy m_defaultAssetsLoadPolicy = AssetsLoadPolicy::SINGLE_THREADED;
 
-        /// This event is using for resolve references of member assets after package deserialization.
-        /// This event is called after package deserialization.
-        /// You can subscribe to this event to resolve member assets references.
-        /// @param assetManager AssetManager for which new assets were deserialized.
-        Event<void(AssetManager* assetManager)> onMemberAssetsReferencesResolve;
-
         /**
          * Use this function to resolve member asset reference.\n
-         * if the asset reference resolves, the asset data will be automatically loaded.
+         * If the asset reference resolves, the asset data will be automatically loaded.
          * @tparam AssetT type of asset reference to resolve.
          * @param assetRef asset reference that is needs to be resolved.
          * @param isAssetRefWasResolved is asset reference was resolved.
          */
         template<typename AssetT>
-        void resolveAssetReference(AssetRef<AssetT>& assetRef, bool* isAssetRefWasResolved = nullptr) noexcept
+        static void resolveAssetReference(AssetManager* updatedAssetManager, AssetRef<AssetT>& assetRef) noexcept
         {
-            if(!assetRef)
+            const auto lockedDeserializedAssetManager = assetRef.m_deserializedParentAssetManager.lock();
+
+            // assetRef.m_asset can be nullptr only when assetRef was deserialized earlier but was not resolved earlier
+            AssetManager* usedAssetManager = lockedDeserializedAssetManager.get();
+            if(assetRef)
             {
-                if(isAssetRefWasResolved)
-                {
-                    LOG_W(SGCORE_TAG, "Can not resolve asset reference: asset reference that is must be resolved is null!");
-                    *isAssetRefWasResolved = false;
-                }
-                return;
+                usedAssetManager = assetRef->getParentAssetManager().get();
             }
 
-            auto newAssetRef = loadExistingAsset(assetRef->getAlias(), assetRef->getPath(), assetRef->storedByWhat(), assetRef->getTypeID());
+            // if names of updated asset manager and asset manager that is used for current asset are not equals
+            // and assetRef contains valid asset then we do not resolving reference
+            // because assetRef was resolved earlier and its parent asset manager was not updated
+            if(usedAssetManager->getName() != updatedAssetManager->getName() && assetRef) return;
+
+            const std::string assetAlias = assetRef.m_asset ? assetRef->getAlias() : assetRef.m_deserializedAssetAlias;
+            const std::filesystem::path assetPath = assetRef.m_asset ? assetRef->getPath() : assetRef.m_deserializedAssetPath;
+            const AssetStorageType assetStoredBy = assetRef.m_asset ? assetRef->storedByWhat() : assetRef.m_deserializedAssetStoredBy;
+            const size_t assetTypeID = assetRef.m_asset ? assetRef->getTypeID() : assetRef.m_deserializedAssetTypeID;
+
+            auto newAssetRef = usedAssetManager->loadExistingAsset(assetAlias, assetPath, assetStoredBy, assetTypeID);
 
             if(!newAssetRef)
             {
-                if(isAssetRefWasResolved)
-                {
-                    LOG_W(SGCORE_TAG, "Can not resolve asset reference: can not find asset in manager! Info about asset reference: path - '{}', alias - '{}', stored by - '{}', asset type ID - '{}'",
-                          assetRef->getAlias(),
-                          Utils::toUTF8(assetRef->getPath().u16string()),
-                          std::to_underlying(assetRef->storedByWhat()),
-                          assetRef->getTypeID());
-                    *isAssetRefWasResolved = false;
-                }
+                LOG_W(SGCORE_TAG, "Can not resolve asset reference: can not find asset in manager! Info about asset reference: alias - '{}', path - '{}', stored by - '{}', asset type ID - '{}'",
+                      assetAlias,
+                      Utils::toUTF8(assetPath.u16string()),
+                      std::to_underlying(assetStoredBy),
+                      assetTypeID);
+
                 return;
             }
 
             assetRef = newAssetRef.template staticCast<AssetT>();
 
-            LOG_I(SGCORE_TAG, "Asset reference was resolved! Info about asset reference: path - '{}', alias - '{}', stored by - '{}', asset type ID - '{}'",
-                  assetRef->getAlias(),
-                  Utils::toUTF8(assetRef->getPath().u16string()),
-                  std::to_underlying(assetRef->storedByWhat()),
-                  assetRef->getTypeID());
-
-            if(isAssetRefWasResolved)
-            {
-                *isAssetRefWasResolved = true;
-            }
+            LOG_I(SGCORE_TAG, "Asset reference was resolved! Info about asset reference: alias - '{}', path - '{}', stored by - '{}', asset type ID - '{}'",
+                  assetAlias,
+                  Utils::toUTF8(assetPath.u16string()),
+                  std::to_underlying(assetStoredBy),
+                  assetTypeID);
         }
 
         template<typename AssetT>
-        void resolveWeakAssetReference(AssetWeakRef<AssetT>& assetRef, bool* isAssetRefWasResolved = nullptr) noexcept
+        static void resolveWeakAssetReference(AssetManager* updatedAssetManager, AssetWeakRef<AssetT>& assetRef) noexcept
         {
             auto strongRef = assetRef.lock();
-            resolveAssetReference(strongRef, isAssetRefWasResolved);
+            resolveAssetReference(updatedAssetManager, strongRef);
 
             assetRef = strongRef;
         }
@@ -832,8 +828,8 @@ namespace SGCore
         [[nodiscard]] AssetRef<IAsset> getAsset(const std::string& pathOrAlias, const size_t& assetTypeID) noexcept;
 
         void clear() noexcept;
-        
-        SG_NOINLINE static Ref<AssetManager>& getInstance() noexcept;
+
+        [[nodiscard]] SG_NOINLINE static Ref<AssetManager> getInstance() noexcept;
 
         void createPackage(const std::filesystem::path& toDirectory, const std::string& packageName) noexcept;
         void loadPackage(const std::filesystem::path& fromDirectory, const std::string& packageName) noexcept;
@@ -841,6 +837,14 @@ namespace SGCore
         [[nodiscard]] const AssetsPackage& getPackage() const noexcept;
 
         const std::string& getName() const noexcept;
+
+        /// This event is using for resolve references of member assets after package deserialization.
+        /// This event is called after package deserialization.
+        /// You can subscribe to this event to resolve member assets references.
+        [[nodiscard]] SG_NOINLINE static auto& getOnMemberAssetsReferencesResolveEvent() noexcept
+        {
+            return onMemberAssetsReferencesResolve;
+        }
 
     private:
         explicit AssetManager(const std::string& name) noexcept : m_name(name) { }
@@ -1008,7 +1012,13 @@ namespace SGCore
         std::unordered_map<size_t, std::unordered_map<size_t, Ref<IAsset>>> m_assets;
         
         Threading::BaseThreadsPool<Threading::LeastTasksCount> m_threadsPool { 2, false };
-        
+
+        /// This event is using for resolve references of member assets after package deserialization.
+        /// This event is called after package deserialization.
+        /// You can subscribe to this event to resolve member assets references.
+        /// @param assetManager AssetManager for which new assets were deserialized.
+        static inline Event<void(AssetManager* assetManager)> onMemberAssetsReferencesResolve;
+
         static inline Ref<AssetManager> m_instance;
 
         static inline std::unordered_map<std::string, Ref<AssetManager>> s_allAssetsManagers;

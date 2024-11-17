@@ -38,7 +38,11 @@ namespace SGCore
             m_func = func;
         }
         
-        EventListener(const EventListener& e) = default;
+        EventListener(const EventListener& e) noexcept
+        {
+            *this = e;
+        }
+
         EventListener(EventListener&&) noexcept = default;
         
         ~EventListener()
@@ -51,12 +55,16 @@ namespace SGCore
 
         EventListener& operator=(const EventListener& other) noexcept
         {
+            if(this == std::addressof(other)) return *this;
+
             if(m_copyToEventsFunc)
             {
                 m_copyToEventsFunc(&other, this);
             }
 
             m_func = other.m_func;
+
+            return *this;
         }
 
         EventListener& operator=(EventListener&&) noexcept = default;

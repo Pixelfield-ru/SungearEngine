@@ -2,6 +2,7 @@
 #define SUNGEARENGINE_IMESH_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Memory/IAssetsRefsResolver.h"
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Math/AABB.h"
@@ -24,7 +25,7 @@ namespace SGCore
 
     class AssetManager;
 
-    class IMeshData : public IAsset, public AssetRefFromThis<IMeshData>
+    class IMeshData : public IAsset, public AssetRefFromThis<IMeshData>, public IAssetsRefsResolver
     {
     public:
         sg_serde_as_friend()
@@ -122,7 +123,7 @@ namespace SGCore
         void doLazyLoad() override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
 
         std::streamsize m_indicesOffsetInPackage = 0;
         std::streamsize m_indicesSizeInPackage = 0;

@@ -12,7 +12,7 @@
 namespace SGCore
 {
     struct IAsset;
-    struct AssetManager;
+    class AssetManager;
 
     /**
      * DO NOT STORE ANYWHERE.

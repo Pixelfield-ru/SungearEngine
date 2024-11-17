@@ -47,7 +47,7 @@ void SGCore::SVGImageSpecialization::doLoadFromBinaryFile(SGCore::AssetManager* 
 
 }
 
-void SGCore::SVGImageSpecialization::resolveMemberAssetsReferences(SGCore::AssetManager* parentAssetManager) noexcept
+void SGCore::SVGImageSpecialization::onMemberAssetsReferencesResolve(SGCore::AssetManager* updatedAssetManager) noexcept
 {
-    parentAssetManager->resolveAssetReference(m_texture);
+    AssetManager::resolveAssetReference(updatedAssetManager, m_texture);
 }

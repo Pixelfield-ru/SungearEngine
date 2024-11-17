@@ -13,7 +13,7 @@
 
 namespace SGCore
 {
-    struct SVGImage : public IAsset
+    struct SVGImage : public IAsset, public IAssetsRefsResolver
     {
         sg_implement_type_id(SVGImage, 6)
 
@@ -26,7 +26,7 @@ namespace SGCore
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
 
-        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
 
         std::vector<AssetRef<SVGImageSpecialization>> m_specializations;
         

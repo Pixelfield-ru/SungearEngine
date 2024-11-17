@@ -40,11 +40,6 @@ void SGCore::AssetManager::addStandardAssets() noexcept
     }
 }
 
-SGCore::Ref<SGCore::AssetManager>& SGCore::AssetManager::getInstance() noexcept
-{
-    return m_instance;
-}
-
 void SGCore::AssetManager::clear() noexcept
 {
     std::lock_guard guard(m_mutex);
@@ -193,15 +188,7 @@ const SGCore::AssetsPackage& SGCore::AssetManager::getPackage() const noexcept
 
 void SGCore::AssetManager::resolveMemberAssetsReferences() noexcept
 {
-    for(auto& variantsIt : m_assets)
-    {
-        for(auto& assetIt : variantsIt.second)
-        {
-            assetIt.second->resolveMemberAssetsReferences(this);
-        }
-    }
-
-    onMemberAssetsReferencesResolve(this);
+    getOnMemberAssetsReferencesResolveEvent()(this);
 }
 
 const std::string& SGCore::AssetManager::getName() const noexcept
@@ -229,4 +216,9 @@ SGCore::AssetManager::getAsset(const std::string& pathOrAlias, const size_t& ass
     }
 
     return AssetRef<IAsset>(foundAssetIt->second);
+}
+
+SGCore::Ref<SGCore::AssetManager> SGCore::AssetManager::getInstance() noexcept
+{
+    return m_instance;
 }

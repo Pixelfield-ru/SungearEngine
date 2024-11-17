@@ -18,7 +18,7 @@ sg_predeclare_serde()
 
 namespace SGCore
 {
-    struct AssetManager;
+    class AssetManager;
 
     struct SGSLESubShader : SGSLEBracketsListener
     {

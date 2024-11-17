@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_ISHADER_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Memory/IAssetsRefsResolver.h"
 #include "SGCore/Memory/AssetWeakRef.h"
 
 #include "SGCore/Memory/Assets/IAssetObserver.h"
@@ -19,7 +20,7 @@ namespace SGCore
     class IMaterial;
     class ITexture2D;
 
-    class IShader : public IAsset
+    class IShader : public IAsset, public IAssetsRefsResolver
     {
     public:
         sg_serde_as_friend()
@@ -87,7 +88,7 @@ namespace SGCore
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
 
-        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
 
     private:
         AssetRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;

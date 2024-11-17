@@ -2,6 +2,7 @@
 #define SUNGEARENGINE_IMATERIAL_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Memory/IAssetsRefsResolver.h"
 
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/AssetRef.h"
@@ -14,7 +15,7 @@ namespace SGCore
 
     // TODO: make remove texture
     // TODO: make function addBlockDeclaration
-    class IMaterial : public IAsset
+    class IMaterial : public IAsset, public IAssetsRefsResolver
     {
     public:
         sg_serde_as_friend()
@@ -102,7 +103,7 @@ namespace SGCore
     protected:
         std::unordered_map<SGTextureType, std::vector<AssetRef<ITexture2D>>> m_textures;
 
-        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
 
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
         glm::vec4 m_specularColor       = glm::vec4(1.0f);

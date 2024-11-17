@@ -14,7 +14,7 @@
 
 namespace SGCore
 {
-    class ModelAsset : public IAsset
+    class ModelAsset : public IAsset, public IAssetsRefsResolver
     {
     public:
         sg_serde_as_friend()
@@ -28,7 +28,7 @@ namespace SGCore
         void doLazyLoad() override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
 
     private:
         // local import flags

@@ -127,18 +127,11 @@ void SGCore::Node::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager
     }
 }
 
-void SGCore::Node::resolveMemberAssetsReferences(SGCore::AssetManager* parentAssetManager) noexcept
+void SGCore::Node::onMemberAssetsReferencesResolve(SGCore::AssetManager* updatedAssetManager) noexcept
 {
     for(auto& meshData : m_meshesData)
     {
         // resolving reference
-        parentAssetManager->resolveAssetReference(meshData);
-
-        meshData->resolveMemberAssetsReferences(parentAssetManager);
-    }
-
-    for(auto& node : m_children)
-    {
-        node->resolveMemberAssetsReferences(parentAssetManager);
+        AssetManager::resolveAssetReference(updatedAssetManager, meshData);
     }
 }

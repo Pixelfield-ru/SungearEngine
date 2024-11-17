@@ -9,10 +9,11 @@
 
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Memory/AssetRef.h"
+#include "SGCore/Memory/IAssetsRefsResolver.h"
 
 namespace SGCore
 {
-    struct SVGImageSpecialization : public IAsset
+    struct SVGImageSpecialization : public IAsset, public IAssetsRefsResolver
     {
         friend struct SVGImage;
 
@@ -33,7 +34,7 @@ namespace SGCore
         // todo: implement
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) final;
 
-        void resolveMemberAssetsReferences(AssetManager* parentAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
 
     private:
         lunasvg::Bitmap m_bitmap;
