@@ -353,22 +353,28 @@ namespace SGCore
         {
             holder->m_unsubscribeFunc = [](holder_t* thisHolder)
             {
-                for(auto& listeningEvent : thisHolder->m_listeningEvents)
+                for(auto listeningEvent : thisHolder->m_listeningEvents)
                 {
                     listeningEvent->m_listeners.remove(thisHolder);
                     
                     listeningEvent->sortByPriorities();
                 }
+
+                thisHolder->m_listeningEvents.clear();
             };
 
             holder->m_copyToEventsFunc = [](const holder_t* from, holder_t* thisHolder)
             {
-                for(auto& listeningEvent : thisHolder->m_listeningEvents)
+                for(auto listeningEvent : thisHolder->m_listeningEvents)
                 {
-                    *listeningEvent -= *thisHolder;
+                    listeningEvent->m_listeners.remove(thisHolder);
+
+                    listeningEvent->sortByPriorities();
                 }
 
-                for(auto& listeningEvent : from->m_listeningEvents)
+                thisHolder->m_listeningEvents.clear();
+
+                for(auto listeningEvent : from->m_listeningEvents)
                 {
                     *listeningEvent += *thisHolder;
                 }

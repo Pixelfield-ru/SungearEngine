@@ -10,10 +10,11 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/EventListener.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/Memory/IAssetsRefsResolver.h"
 
 namespace SGCore
 {
-    struct MeshBase
+    struct MeshBase : public IAssetsRefsResolver
     {
         MeshBase() = default;
         MeshBase(const MeshBase&) = default;
@@ -32,6 +33,9 @@ namespace SGCore
 
         MeshBase& operator=(const MeshBase&) = default;
         MeshBase& operator=(MeshBase&&) noexcept = default;
+
+    protected:
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
 
     private:
         AssetRef<IMeshData> m_meshData;

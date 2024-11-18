@@ -31,4 +31,10 @@ SGCore::AssetRef<SGCore::IMaterial> SGCore::MeshBase::getMaterial() const noexce
     return m_material;
 }
 
+void SGCore::MeshBase::onMemberAssetsReferencesResolve(SGCore::AssetManager* updatedAssetManager) noexcept
+{
+    AssetManager::resolveAssetReference(updatedAssetManager, m_meshData);
+    AssetManager::resolveAssetReference(updatedAssetManager, m_material);
+}
+
 

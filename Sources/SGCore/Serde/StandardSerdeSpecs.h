@@ -1992,13 +1992,6 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::BoxGizmo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::BoxGizmo, TFormatType>& valueView) noexcept
 {
-
-
-    valueView.getValueContainer().addMember("m_lastSize", valueView.m_data->m_lastSize);
-
-
-
-
     valueView.getValueContainer().addMember("m_base", valueView.m_data->m_base);
 
 
@@ -2014,15 +2007,6 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::BoxGizmo, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::BoxGizmo, TFormatType>& valueView) noexcept
 {
-
-    const auto m_lastSize = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastSize)>("m_lastSize");
-
-    if(m_lastSize)
-    {
-        valueView.m_data->m_lastSize = *m_lastSize;
-    }
-
-
     const auto m_base = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_base)>("m_base");
 
     if(m_base)
@@ -2117,21 +2101,6 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::serialize(SGCore
 
 
 
-    valueView.getValueContainer().addMember("m_lastMieScaleHeight", valueView.m_data->m_lastMieScaleHeight);
-
-
-
-
-    valueView.getValueContainer().addMember("m_lastRayleighScatteringCoeff", valueView.m_data->m_lastRayleighScatteringCoeff);
-
-
-
-
-    valueView.getValueContainer().addMember("m_lastSunRotation", valueView.m_data->m_lastSunRotation);
-
-
-
-
     valueView.getValueContainer().addMember("m_sunAmbient", valueView.m_data->m_sunAmbient);
 
 
@@ -2152,32 +2121,12 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::serialize(SGCore
 
 
 
-    valueView.getValueContainer().addMember("m_lastSunAmbient", valueView.m_data->m_lastSunAmbient);
-
-
-
-
     valueView.getValueContainer().addMember("m_mieScatteringCoeff", valueView.m_data->m_mieScatteringCoeff);
 
 
 
 
-    valueView.getValueContainer().addMember("m_lastMieScatteringCoeff", valueView.m_data->m_lastMieScatteringCoeff);
-
-
-
-
     valueView.getValueContainer().addMember("m_rayleighScaleHeight", valueView.m_data->m_rayleighScaleHeight);
-
-
-
-
-    valueView.getValueContainer().addMember("m_lastRayOrigin", valueView.m_data->m_lastRayOrigin);
-
-
-
-
-    valueView.getValueContainer().addMember("m_lastRayleighScaleHeight", valueView.m_data->m_lastRayleighScaleHeight);
 
 
 
@@ -2192,32 +2141,12 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::serialize(SGCore
 
 
 
-    valueView.getValueContainer().addMember("m_lastSunIntensity", valueView.m_data->m_lastSunIntensity);
-
-
-
-
     valueView.getValueContainer().addMember("m_planetRadius", valueView.m_data->m_planetRadius);
 
 
 
 
-    valueView.getValueContainer().addMember("m_lastPlanetRadius", valueView.m_data->m_lastPlanetRadius);
-
-
-
-
-    valueView.getValueContainer().addMember("m_lastAtmosphereRadius", valueView.m_data->m_lastAtmosphereRadius);
-
-
-
-
     valueView.getValueContainer().addMember("m_miePreferredScatteringDirection", valueView.m_data->m_miePreferredScatteringDirection);
-
-
-
-
-    valueView.getValueContainer().addMember("m_lastMiePreferredScatteringDirection", valueView.m_data->m_lastMiePreferredScatteringDirection);
 
 
 
@@ -2238,30 +2167,6 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::deserialize(SGCo
     if(m_sunPosition)
     {
         valueView.m_data->m_sunPosition = *m_sunPosition;
-    }
-
-
-    const auto m_lastMieScaleHeight = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastMieScaleHeight)>("m_lastMieScaleHeight");
-
-    if(m_lastMieScaleHeight)
-    {
-        valueView.m_data->m_lastMieScaleHeight = *m_lastMieScaleHeight;
-    }
-
-
-    const auto m_lastRayleighScatteringCoeff = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastRayleighScatteringCoeff)>("m_lastRayleighScatteringCoeff");
-
-    if(m_lastRayleighScatteringCoeff)
-    {
-        valueView.m_data->m_lastRayleighScatteringCoeff = *m_lastRayleighScatteringCoeff;
-    }
-
-
-    const auto m_lastSunRotation = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastSunRotation)>("m_lastSunRotation");
-
-    if(m_lastSunRotation)
-    {
-        valueView.m_data->m_lastSunRotation = *m_lastSunRotation;
     }
 
 
@@ -2297,14 +2202,6 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::deserialize(SGCo
     }
 
 
-    const auto m_lastSunAmbient = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastSunAmbient)>("m_lastSunAmbient");
-
-    if(m_lastSunAmbient)
-    {
-        valueView.m_data->m_lastSunAmbient = *m_lastSunAmbient;
-    }
-
-
     const auto m_mieScatteringCoeff = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_mieScatteringCoeff)>("m_mieScatteringCoeff");
 
     if(m_mieScatteringCoeff)
@@ -2313,35 +2210,11 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::deserialize(SGCo
     }
 
 
-    const auto m_lastMieScatteringCoeff = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastMieScatteringCoeff)>("m_lastMieScatteringCoeff");
-
-    if(m_lastMieScatteringCoeff)
-    {
-        valueView.m_data->m_lastMieScatteringCoeff = *m_lastMieScatteringCoeff;
-    }
-
-
     const auto m_rayleighScaleHeight = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_rayleighScaleHeight)>("m_rayleighScaleHeight");
 
     if(m_rayleighScaleHeight)
     {
         valueView.m_data->m_rayleighScaleHeight = *m_rayleighScaleHeight;
-    }
-
-
-    const auto m_lastRayOrigin = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastRayOrigin)>("m_lastRayOrigin");
-
-    if(m_lastRayOrigin)
-    {
-        valueView.m_data->m_lastRayOrigin = *m_lastRayOrigin;
-    }
-
-
-    const auto m_lastRayleighScaleHeight = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastRayleighScaleHeight)>("m_lastRayleighScaleHeight");
-
-    if(m_lastRayleighScaleHeight)
-    {
-        valueView.m_data->m_lastRayleighScaleHeight = *m_lastRayleighScaleHeight;
     }
 
 
@@ -2361,14 +2234,6 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::deserialize(SGCo
     }
 
 
-    const auto m_lastSunIntensity = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastSunIntensity)>("m_lastSunIntensity");
-
-    if(m_lastSunIntensity)
-    {
-        valueView.m_data->m_lastSunIntensity = *m_lastSunIntensity;
-    }
-
-
     const auto m_planetRadius = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_planetRadius)>("m_planetRadius");
 
     if(m_planetRadius)
@@ -2377,35 +2242,11 @@ void SGCore::Serde::SerdeSpec<SGCore::Atmosphere, TFormatType>::deserialize(SGCo
     }
 
 
-    const auto m_lastPlanetRadius = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastPlanetRadius)>("m_lastPlanetRadius");
-
-    if(m_lastPlanetRadius)
-    {
-        valueView.m_data->m_lastPlanetRadius = *m_lastPlanetRadius;
-    }
-
-
-    const auto m_lastAtmosphereRadius = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastAtmosphereRadius)>("m_lastAtmosphereRadius");
-
-    if(m_lastAtmosphereRadius)
-    {
-        valueView.m_data->m_lastAtmosphereRadius = *m_lastAtmosphereRadius;
-    }
-
-
     const auto m_miePreferredScatteringDirection = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_miePreferredScatteringDirection)>("m_miePreferredScatteringDirection");
 
     if(m_miePreferredScatteringDirection)
     {
         valueView.m_data->m_miePreferredScatteringDirection = *m_miePreferredScatteringDirection;
-    }
-
-
-    const auto m_lastMiePreferredScatteringDirection = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_lastMiePreferredScatteringDirection)>("m_lastMiePreferredScatteringDirection");
-
-    if(m_lastMiePreferredScatteringDirection)
-    {
-        valueView.m_data->m_lastMiePreferredScatteringDirection = *m_lastMiePreferredScatteringDirection;
     }
 
 
@@ -3434,6 +3275,9 @@ namespace SGCore::Serde
                 // saving all children entities
                 for(const auto& childEntity : entityBaseInfo->getChildren())
                 {
+                    // if entity has component 'NonSavable' then skipping this entity
+                    if(serializableScene.getECSRegistry()->template all_of<NonSavable>(childEntity)) continue;
+
                     LOG_I("GENERATED", "Saving CHILD entity '{}'...", std::to_underlying(childEntity));
 
                     SGCore::SceneEntitySaveInfo childSaveInfo;
@@ -3599,8 +3443,8 @@ namespace SGCore::Serde
                     if(asChild)
                     {
                         childrenEntities.push_back(asChild->m_serializableEntity);
-                        LOG_D(SGCORE_TAG, "Loaded entity: {}",
-                              std::to_underlying(valueView.m_data->m_serializableEntity));
+                        LOG_D(SGCORE_TAG, "Loaded child entity: {}",
+                              std::to_underlying(asChild->m_serializableEntity));
 
                     }
                     continue;
@@ -3801,12 +3645,14 @@ namespace SGCore::Serde
                 return;
             }
 
+            LOG_I(SGCORE_TAG, "Creating EntityBaseInfo component for entity '{}'....", std::to_underlying(entity));
             // creating EntityBaseInfo component with 'entity' as identifier in arguments
             *entityBaseInfo = EntityBaseInfo(entity);
 
             // adding all children
             for(const auto& childEntity : childrenEntities)
             {
+                LOG_I(SGCORE_TAG, "Adding child entity '{}' to parent entity '{}'...", std::to_underlying(childEntity), std::to_underlying(entity));
                 entityBaseInfo->addChild(childEntity, toRegistry);
             }
         }
@@ -3828,10 +3674,13 @@ namespace SGCore::Serde
             auto entitiesView = valueView.m_data->template view<EntityBaseInfo>();
             for(const auto& entity : entitiesView)
             {
-                // if entity has component 'NonSavable' then skipping this entity
-                if(serializableScene.getECSRegistry()->all_of<NonSavable>(entity)) return;
+                LOG_I(SGCORE_TAG, "Trying to save entity '{}'", std::to_underlying(entity))
 
-                // if current savable entity has parent the skip saving this entity because parent saves children entities himself
+                // if entity has component 'NonSavable' then skipping this entity
+                if(serializableScene.getECSRegistry()->any_of<NonSavable>(entity)) continue;
+
+                // if current savable entity has parent then
+                // skip saving this entity because parent saves children entities himself
                 EntityBaseInfo* entityBaseInfo = serializableScene.getECSRegistry()->try_get<EntityBaseInfo>(entity);
                 if(entityBaseInfo &&
                    entityBaseInfo->getParent() != entt::null &&
@@ -3842,6 +3691,7 @@ namespace SGCore::Serde
 
                 sceneEntitySaveInfo.m_serializableEntity = entity;
 
+                LOG_I(SGCORE_TAG, "Saving ROOT entity '{}'", std::to_underlying(entity))
                 valueView.getValueContainer().pushBack(sceneEntitySaveInfo);
             }
 
