@@ -14,11 +14,11 @@ namespace SGCore
     struct IAssetsRefsResolver
     {
         IAssetsRefsResolver() noexcept;
-        IAssetsRefsResolver(const IAssetsRefsResolver&) noexcept = default;
-        IAssetsRefsResolver(IAssetsRefsResolver&$) noexcept = default;
+        IAssetsRefsResolver(const IAssetsRefsResolver&) noexcept;
+        IAssetsRefsResolver(IAssetsRefsResolver&&) noexcept;
 
-        IAssetsRefsResolver& operator=(const IAssetsRefsResolver& other) noexcept = default;
-        IAssetsRefsResolver& operator=(IAssetsRefsResolver&& other) noexcept = default;
+        IAssetsRefsResolver& operator=(const IAssetsRefsResolver& other) noexcept;
+        IAssetsRefsResolver& operator=(IAssetsRefsResolver&& other) noexcept;
 
     protected:
         /**

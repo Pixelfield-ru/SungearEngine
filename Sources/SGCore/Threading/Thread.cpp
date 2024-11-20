@@ -95,7 +95,9 @@ void SGCore::Threading::Thread::start() noexcept
     auto internalFunc = [this]() {
         while(m_isAlive && m_isRunning)
         {
+            m_isTasksProcessing = true;
             processTasks();
+            m_isTasksProcessing = false;
         }
     };
     
@@ -109,12 +111,17 @@ void SGCore::Threading::Thread::join() noexcept
 {
     if(!m_isRunning) return;
 
+    // marking that thread must stop from task processing
     m_isRunning = false;
-
-    std::cout << "joining thread..." << std::endl;
 
     // PREVENT FROM CALLING start() WHEN THREAD IS NOT JOINED YET BUT NOT RUNNING
     m_hasJoinRequest = true;
+
+    // waiting for tasks process ending...
+    while(m_isTasksProcessing) { }
+
+    std::cout << "joining thread..." << std::endl;
+
     m_thread.join();
     m_hasJoinRequest = false;
 }

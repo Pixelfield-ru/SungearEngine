@@ -293,7 +293,9 @@ namespace SGCore
             clear();
             
             m_currentMaxPriority = other.m_currentMaxPriority;
-            
+
+            if(other.m_listeners.empty()) return *this;
+
             for(holder_t* listener : other.m_listeners)
             {
                 holder_t* holder = listener;
@@ -322,6 +324,8 @@ namespace SGCore
             clear();
             
             m_currentMaxPriority = other.m_currentMaxPriority;
+
+            if(other.m_listeners.empty()) return *this;
             
             for(holder_t* listener : other.m_listeners)
             {
@@ -353,10 +357,11 @@ namespace SGCore
         {
             holder->m_unsubscribeFunc = [](holder_t* thisHolder)
             {
-                for(auto listeningEvent : thisHolder->m_listeningEvents)
+                // removing thisHolder from its old events
+                for(auto* listeningEvent : thisHolder->m_listeningEvents)
                 {
                     listeningEvent->m_listeners.remove(thisHolder);
-                    
+
                     listeningEvent->sortByPriorities();
                 }
 
@@ -365,7 +370,8 @@ namespace SGCore
 
             holder->m_copyToEventsFunc = [](const holder_t* from, holder_t* thisHolder)
             {
-                for(auto listeningEvent : thisHolder->m_listeningEvents)
+                // removing thisHolder from its old events
+                for(auto* listeningEvent : thisHolder->m_listeningEvents)
                 {
                     listeningEvent->m_listeners.remove(thisHolder);
 
@@ -374,7 +380,8 @@ namespace SGCore
 
                 thisHolder->m_listeningEvents.clear();
 
-                for(auto listeningEvent : from->m_listeningEvents)
+                // adding thisHolder to new events
+                for(auto* listeningEvent : from->m_listeningEvents)
                 {
                     *listeningEvent += *thisHolder;
                 }

@@ -95,7 +95,8 @@ namespace SGCore::Threading
         std::atomic<bool> m_isRunning = false;
         std::atomic<bool> m_isAlive = true;
         std::atomic<bool> m_hasJoinRequest = false;
-        
+        std::atomic<bool> m_isTasksProcessing = false;
+
         std::thread m_thread;
 
         std::chrono::milliseconds m_sleepTime;

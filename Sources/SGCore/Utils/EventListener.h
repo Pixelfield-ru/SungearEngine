@@ -15,7 +15,13 @@ namespace SGCore
     
     template<typename Return>
     struct EventListener;
-    
+
+    /**
+     * BE CAREFUL WITH CAPTURING this TO LAMBDA OF EventListener. THIS WILL CAUSE UB AFTER COPYING OTHER EventListener1 TO EventListener2, DELETING EventListener1 AND CALLING EventListener2.
+     * CODE IN EventListener2 WILL USE PREVIOUS this THAT WAS CAPTURED!!
+     * @tparam Return
+     * @tparam Args
+     */
     template<typename Return, typename... Args>
     struct EventListener<Return(Args...)>
     {
@@ -40,10 +46,23 @@ namespace SGCore
         
         EventListener(const EventListener& e) noexcept
         {
-            *this = e;
+            if(this == std::addressof(e)) return;
+
+            m_copyToEventsFunc = e.m_copyToEventsFunc;
+
+            if(m_copyToEventsFunc)
+            {
+                m_copyToEventsFunc(&e, this);
+            }
+
+            m_func = e.m_func;
+            // *this = e;
         }
 
-        EventListener(EventListener&&) noexcept = default;
+        EventListener(EventListener&& other) noexcept
+        {
+            *this = std::move(other);
+        }
         
         ~EventListener()
         {
@@ -57,6 +76,8 @@ namespace SGCore
         {
             if(this == std::addressof(other)) return *this;
 
+            m_copyToEventsFunc = other.m_copyToEventsFunc;
+
             if(m_copyToEventsFunc)
             {
                 m_copyToEventsFunc(&other, this);
@@ -67,7 +88,23 @@ namespace SGCore
             return *this;
         }
 
-        EventListener& operator=(EventListener&&) noexcept = default;
+        EventListener& operator=(EventListener&& other) noexcept
+        {
+            if(this == std::addressof(other)) return *this;
+
+            m_priority = other.m_priority;
+
+            m_copyToEventsFunc = std::move(other.m_copyToEventsFunc);
+
+            if(m_copyToEventsFunc)
+            {
+                m_copyToEventsFunc(&other, this);
+            }
+
+            m_func = std::move(other.m_func);
+
+            return *this;
+        }
 
         EventListener& operator=(const std::function<Return(Args&&...)>& func) noexcept
         {
