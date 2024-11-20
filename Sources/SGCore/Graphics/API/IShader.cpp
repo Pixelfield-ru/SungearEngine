@@ -127,7 +127,7 @@ SGCore::AssetRef<SGCore::TextFileAsset> SGCore::IShader::getFile() const noexcep
     return m_fileAsset.lock();
 }
 
-void SGCore::IShader::onMemberAssetsReferencesResolve(SGCore::AssetManager* updatedAssetManager) noexcept
+void SGCore::IShader::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
 {
     // todo: ????
     /*AssetManager::resolveAssetReference(updatedAssetManager, m_shaderAnalyzedFile);

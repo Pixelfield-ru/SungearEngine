@@ -13,11 +13,13 @@
 
 namespace SGCore
 {
-    struct SVGImageSpecialization : public IAsset, public IAssetsRefsResolver
+    struct SVGImageSpecialization : public IAsset, public IAssetsRefsResolver<SVGImageSpecialization>
     {
         friend struct SVGImage;
 
         sg_implement_type_id(SVGImageSpecialization, 12)
+
+        sg_assets_refs_resolver_as_friend
         
         void regenerate(std::uint8_t channelsCount = 4,
                         SGGColorInternalFormat internalColorFormat = SGGColorInternalFormat::SGG_RGBA8,
@@ -34,7 +36,7 @@ namespace SGCore
         // todo: implement
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) final;
 
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
         lunasvg::Bitmap m_bitmap;

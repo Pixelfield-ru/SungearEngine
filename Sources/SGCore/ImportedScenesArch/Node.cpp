@@ -127,7 +127,7 @@ void SGCore::Node::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager
     }
 }
 
-void SGCore::Node::onMemberAssetsReferencesResolve(SGCore::AssetManager* updatedAssetManager) noexcept
+void SGCore::Node::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
 {
     for(auto& meshData : m_meshesData)
     {

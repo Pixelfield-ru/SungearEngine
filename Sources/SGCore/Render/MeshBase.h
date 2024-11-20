@@ -14,8 +14,10 @@
 
 namespace SGCore
 {
-    struct MeshBase : public IAssetsRefsResolver
+    struct MeshBase : public IAssetsRefsResolver<MeshBase>
     {
+        sg_assets_refs_resolver_as_friend
+
         MeshBase() = default;
         MeshBase(const MeshBase&) = default;
         MeshBase(MeshBase&&) noexcept = default;
@@ -35,7 +37,7 @@ namespace SGCore
         MeshBase& operator=(MeshBase&&) noexcept = default;
 
     protected:
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
         AssetRef<IMeshData> m_meshData;

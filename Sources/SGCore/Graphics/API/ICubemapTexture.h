@@ -14,14 +14,15 @@
 
 namespace SGCore
 {
-    struct ICubemapTexture : public ITexture2D, public IAssetsRefsResolver
+    struct ICubemapTexture : public ITexture2D, public IAssetsRefsResolver<ICubemapTexture>
     {
         friend class AssetManager;
+        sg_assets_refs_resolver_as_friend
 
         std::vector<AssetRef<ITexture2D>> m_parts;
 
     protected:
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
         template<typename... AssetCtorArgs>

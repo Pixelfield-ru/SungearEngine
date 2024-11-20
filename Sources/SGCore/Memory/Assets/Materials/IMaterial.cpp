@@ -94,7 +94,7 @@ void SGCore::IMaterial::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
 
 }
 
-void SGCore::IMaterial::onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept
+void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept
 {
     for(auto& texturesIt : m_textures)
     {

@@ -13,9 +13,11 @@
 
 namespace SGCore
 {
-    struct SVGImage : public IAsset, public IAssetsRefsResolver
+    struct SVGImage : public IAsset, public IAssetsRefsResolver<SVGImage>
     {
         sg_implement_type_id(SVGImage, 6)
+
+        sg_assets_refs_resolver_as_friend
 
         [[nodiscard]] AssetRef<SVGImageSpecialization> getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
         void removeSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
@@ -26,7 +28,7 @@ namespace SGCore
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
 
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
         std::vector<AssetRef<SVGImageSpecialization>> m_specializations;
         

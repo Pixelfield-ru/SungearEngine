@@ -14,12 +14,14 @@
 
 namespace SGCore
 {
-    class ModelAsset : public IAsset, public IAssetsRefsResolver
+    class ModelAsset : public IAsset, public IAssetsRefsResolver<ModelAsset>
     {
     public:
         sg_serde_as_friend()
 
         sg_implement_type_id(ModelAsset, 8)
+
+        sg_assets_refs_resolver_as_friend
 
         std::vector<Ref<Node>> m_nodes;
 
@@ -28,7 +30,7 @@ namespace SGCore
         void doLazyLoad() override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
         // local import flags

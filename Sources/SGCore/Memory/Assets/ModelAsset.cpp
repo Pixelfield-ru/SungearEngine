@@ -335,7 +335,7 @@ void SGCore::ModelAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetM
     }
 }
 
-void SGCore::ModelAsset::onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept
+void SGCore::ModelAsset::onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept
 {
     // DOING NOTHING!
     // NODES WILL RESOLVE REFERENCES BY THEMSELF!

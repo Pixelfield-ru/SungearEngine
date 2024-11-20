@@ -166,7 +166,7 @@ void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
     prepare();
 }
 
-void SGCore::IMeshData::onMemberAssetsReferencesResolve(SGCore::AssetManager* updatedAssetManager) noexcept
+void SGCore::IMeshData::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
 {
     // resolving reference
     AssetManager::resolveAssetReference(updatedAssetManager, m_material);

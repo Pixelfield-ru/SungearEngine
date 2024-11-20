@@ -25,12 +25,14 @@ namespace SGCore
 
     class AssetManager;
 
-    class IMeshData : public IAsset, public AssetRefFromThis<IMeshData>, public IAssetsRefsResolver
+    class IMeshData : public IAsset, public AssetRefFromThis<IMeshData>, public IAssetsRefsResolver<IMeshData>
     {
     public:
         sg_serde_as_friend()
 
         sg_implement_type_id(IMeshData, 13)
+
+        sg_assets_refs_resolver_as_friend
 
         friend class AssetManager;
         friend struct Node;
@@ -123,7 +125,7 @@ namespace SGCore
         void doLazyLoad() override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
         std::streamsize m_indicesOffsetInPackage = 0;
         std::streamsize m_indicesSizeInPackage = 0;

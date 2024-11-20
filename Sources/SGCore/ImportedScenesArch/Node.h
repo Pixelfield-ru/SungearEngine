@@ -9,9 +9,10 @@
 
 namespace SGCore
 {
-    class Node : public IAssetsRefsResolver
+    class Node : public IAssetsRefsResolver<Node>
     {
         friend struct ModelAsset;
+        sg_assets_refs_resolver_as_friend
 
     private:
         using MeshFunc = std::function<void(const entity_t& parentEntity, const entity_t& meshEntity)>;
@@ -24,7 +25,7 @@ namespace SGCore
                                 const bool& rootAdd) noexcept;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     public:
         std::string m_name;

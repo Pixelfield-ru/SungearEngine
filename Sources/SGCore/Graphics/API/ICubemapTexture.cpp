@@ -5,7 +5,7 @@
 #include "ICubemapTexture.h"
 #include "SGCore/Memory/AssetManager.h"
 
-void SGCore::ICubemapTexture::onMemberAssetsReferencesResolve(SGCore::AssetManager* updatedAssetManager) noexcept
+void SGCore::ICubemapTexture::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
 {
     for(auto& part : m_parts)
     {

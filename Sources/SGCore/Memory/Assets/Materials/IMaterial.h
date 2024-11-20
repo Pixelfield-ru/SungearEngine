@@ -15,12 +15,14 @@ namespace SGCore
 
     // TODO: make remove texture
     // TODO: make function addBlockDeclaration
-    class IMaterial : public IAsset, public IAssetsRefsResolver
+    class IMaterial : public IAsset, public IAssetsRefsResolver<IMaterial>
     {
     public:
         sg_serde_as_friend()
 
         sg_implement_type_id(IMaterial, 11)
+
+        sg_assets_refs_resolver_as_friend
 
         IMaterial() noexcept;
         IMaterial(const IMaterial&) noexcept = default;
@@ -103,7 +105,7 @@ namespace SGCore
     protected:
         std::unordered_map<SGTextureType, std::vector<AssetRef<ITexture2D>>> m_textures;
 
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
         glm::vec4 m_diffuseColor        = glm::vec4(1.0f);
         glm::vec4 m_specularColor       = glm::vec4(1.0f);

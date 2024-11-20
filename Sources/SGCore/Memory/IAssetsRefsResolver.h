@@ -6,19 +6,61 @@
 #define SUNGEARENGINE_IASSETSREFSRESOLVER_H
 
 #include "SGCore/Utils/EventListener.h"
+#include "SGCore/Memory/AssetManager.h"
+#include "SGCore/Utils/Defines.h"
+
+#define sg_assets_refs_resolver_as_friend template<typename> friend struct IAssetsRefsResolver;
 
 namespace SGCore
 {
     class AssetManager;
 
+    // CRTP STRUCT
+    /**
+     * DECLARE THIS STRUCT AS FRIEND IF YOU INHERITED THIS STRUCT.
+     * @tparam DerivedT
+     */
+    template<typename DerivedT>
     struct IAssetsRefsResolver
     {
-        IAssetsRefsResolver() noexcept;
-        IAssetsRefsResolver(const IAssetsRefsResolver&) noexcept;
-        IAssetsRefsResolver(IAssetsRefsResolver&&) noexcept;
+        IAssetsRefsResolver() noexcept
+        {
+            AssetManager::getOnMemberAssetsReferencesResolveEvent() += onMemberAssetsReferencesResolveListener;
+        }
 
-        IAssetsRefsResolver& operator=(const IAssetsRefsResolver& other) noexcept;
-        IAssetsRefsResolver& operator=(IAssetsRefsResolver&& other) noexcept;
+        IAssetsRefsResolver(const IAssetsRefsResolver& other) noexcept
+        {
+            *this = other;
+        }
+
+        IAssetsRefsResolver(IAssetsRefsResolver&& other) noexcept
+        {
+            *this = std::move(other);
+        }
+
+        IAssetsRefsResolver& operator=(const IAssetsRefsResolver& other) noexcept
+        {
+            if(this == std::addressof(other)) return *this;
+
+            onMemberAssetsReferencesResolveListener = other.onMemberAssetsReferencesResolveListener;
+            onMemberAssetsReferencesResolveListener = [this](AssetManager* updatedAssetManager) {
+                onMemberAssetsReferencesResolve(updatedAssetManager);
+            };
+
+            return *this;
+        }
+
+        IAssetsRefsResolver& operator=(IAssetsRefsResolver&& other) noexcept
+        {
+            if(this == std::addressof(other)) return *this;
+
+            onMemberAssetsReferencesResolveListener = std::move(other.onMemberAssetsReferencesResolveListener);
+            onMemberAssetsReferencesResolveListener = [this](AssetManager* updatedAssetManager) {
+                onMemberAssetsReferencesResolve(updatedAssetManager);
+            };
+
+            return *this;
+        }
 
     protected:
         /**
@@ -26,9 +68,18 @@ namespace SGCore
          * Then you can use \p updatedAssetManager->resolveAssetReference(myAssetReferences) or \p updatedAssetManager->resolveWeakAssetReference(myWeakAssetReferences) .
          * @param updatedAssetManager AssetManager for which new assets were deserialized (AssetManager was updated).
          */
-        virtual void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept = 0;
+        /*SG_CRTP_VIRTUAL void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept
+        {
+
+        }*/
 
     private:
+        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept
+        {
+            SG_CRTP_CHECK_VIRTUAL_FUNCTION_IMPL(onMemberAssetsReferencesResolveImpl)
+            static_cast<DerivedT*>(this)->onMemberAssetsReferencesResolveImpl(updatedAssetManager);
+        }
+
         EventListener<void(AssetManager* updatedAssetManager)> onMemberAssetsReferencesResolveListener = [this](AssetManager* updatedAssetManager) {
             onMemberAssetsReferencesResolve(updatedAssetManager);
         };

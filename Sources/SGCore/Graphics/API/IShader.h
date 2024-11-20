@@ -20,12 +20,14 @@ namespace SGCore
     class IMaterial;
     class ITexture2D;
 
-    class IShader : public IAsset, public IAssetsRefsResolver
+    class IShader : public IAsset, public IAssetsRefsResolver<IShader>
     {
     public:
         sg_serde_as_friend()
 
         sg_implement_type_id(IShader, 14)
+
+        sg_assets_refs_resolver_as_friend
 
         /**
          * Removes all sub pass shaders in this IShader and adds new sub pass shaders.
@@ -88,7 +90,7 @@ namespace SGCore
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
 
-        void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept override;
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
         AssetRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;
