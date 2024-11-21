@@ -46,12 +46,21 @@ void SGE::Resources::loadStandardResources(SGCore::AssetManager& toManager) noex
                 toManager.loadAsset<SGCore::IShader>(
                         SGCore::RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["SkyboxShader"]->getCurrentRealization());
 
+        auto standardGridMaterial = toManager.getOrAddAssetByAlias<SGCore::IMaterial>("standard_grid_material");
+        standardGridMaterial->m_shader =
+                toManager.loadAsset<SGCore::IShader>(SGCore::ShadersUniversalPaths::getDefaultPaths()["InfiniteGrid"]->getCurrentRealization());
+
         standardCubemapMaterial->addTexture2D(SGTextureType::SGTT_SKYBOX, standardCubemap);
     }
 
     toManager.loadAssetWithAlias<SGCore::ModelAsset>(
             "cube_model",
             SGCore::CoreMain::getSungearEngineRootPath() / "Resources/models/standard/cube.obj"
+    );
+
+    toManager.loadAssetWithAlias<SGCore::ModelAsset>(
+            "plane_model",
+            SGCore::CoreMain::getSungearEngineRootPath() / "Resources/models/standard/plane.fbx"
     );
 }
 

@@ -138,8 +138,19 @@ void SGE::EditorScene::addEditorEntities() noexcept
     }
 
     // adding editor-only grid
-    m_data.m_editorGrid = registry->create();
     {
+        auto scene = m_scene;
 
+        std::vector<SGCore::entity_t> skyboxEntities;
+        auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("plane_model");
+        cubeModel->m_nodes[0]->addOnScene(m_scene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities, scene](const auto& entity) {
+            skyboxEntities.push_back(entity);
+            scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
+        });
+
+        m_data.m_editorGrid = skyboxEntities[2];
+        auto& gridMesh = scene->getECSRegistry()->get<SGCore::Mesh>(m_data.m_editorGrid);
+        gridMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_grid_material"));
+        gridMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
     }
 }

@@ -84,7 +84,7 @@ void SGE::SceneView::acceptFilesFromDirectoryExplorer() noexcept
         {
             const auto fileExt = file->getPath().extension();
 
-            if(fileExt == ".obj")
+            if(fileExt == ".obj" || fileExt == ".gltf")
             {
                 loadModelByPath(file->getPath());
             }

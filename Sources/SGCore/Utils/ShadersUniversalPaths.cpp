@@ -59,6 +59,12 @@ void SGCore::ShadersUniversalPaths::init() noexcept
                               ShadersUniversalPaths::undefined_path,
                               ShadersUniversalPaths::undefined_path
     );
+
+    m_defaultPaths->addShader("InfiniteGrid",
+                              CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/gizmos/infinite_grid.glsl",
+                              ShadersUniversalPaths::undefined_path,
+                              ShadersUniversalPaths::undefined_path
+    );
 }
 
 SGCore::ShaderUniversalPath SGCore::ShadersUniversalPaths::addShader(const std::string& virtualPath,
