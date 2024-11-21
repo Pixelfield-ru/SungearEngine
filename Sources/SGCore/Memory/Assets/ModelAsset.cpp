@@ -75,7 +75,7 @@ SGCore::Ref<SGCore::Node> SGCore::ModelAsset::processNode(const aiNode* aiNode, 
 
 SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh* aiMesh, const aiScene* aiScene)
 {
-    auto sgMeshData = AssetManager::getInstance()->getOrAddAssetByPath<IMeshData>(getPath() / aiMesh->mName.data);
+    auto sgMeshData = AssetManager::getInstance()->getOrAddAssetByPath<IMeshData>(getPath() / "meshes" / aiMesh->mName.data);
 
     sgMeshData->m_positions.reserve(aiMesh->mNumVertices * 3);
     sgMeshData->m_normals.reserve(aiMesh->mNumVertices * 3);
@@ -206,6 +206,11 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
         // get current mesh material
         auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
 
+        const std::string materialName = aiMat->GetName().data;
+        sgMeshData->m_material = sgMeshData->getParentAssetManager()->getOrAddAssetByPath<IMaterial>(getPath() / "materials" / materialName);
+        // TODO: maybe bad variant?
+        sgMeshData->m_material->m_shader = sgMeshData->getParentAssetManager()->getAsset<IMaterial>("default_material")->m_shader;
+
         aiColor4D diffuseColor;
         aiColor4D specularColor;
         aiColor4D ambientColor;
@@ -249,11 +254,9 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
             sgMeshData->m_material->setRoughnessFactor(roughness);
         }
 
-        sgMeshData->m_material->m_name = aiMat->GetName().data;
-
         LOG_I(SGCORE_TAG,
-              "Current object: {}",
-              sgMeshData->m_material->m_name);
+              "Current material: {}",
+              Utils::toUTF8(sgMeshData->m_material->getPath().u16string()));
 
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureType::SGTT_EMISSIVE);
         loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureType::SGTT_AMBIENT_OCCLUSION);
