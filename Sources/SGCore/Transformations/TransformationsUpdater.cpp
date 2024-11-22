@@ -36,9 +36,9 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
     if(m_changedModelMatrices.isLocked() || m_entitiesForPhysicsUpdateToCheck.isLocked()) return;
 
     auto registry = lockedScene->getECSRegistry();
-    
+
     auto transformsView = registry->view<Ref<Transform>>();
-    
+
     auto& matrices = m_changedModelMatrices.getWrapped();
     auto& notPhysicalEntities = m_calculatedNotPhysicalEntities.getWrapped();
     auto& physicEntitiesToCheck = m_entitiesForPhysicsUpdateToCheck.getWrapped();
@@ -52,35 +52,35 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
         {
             EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(entity);
             Ref<Transform> parentTransform;
-            
+
             if(entityBaseInfo)
             {
                 auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo->getParent());
                 parentTransform = (tmp ? *tmp : nullptr);
             }
-            
+
             bool translationChanged = false;
             bool rotationChanged = false;
             bool scaleChanged = false;
-            
+
             TransformBase& ownTransform = transform->m_ownTransform;
             TransformBase& finalTransform = transform->m_finalTransform;
-            
+
             // translation ==============================================
-            
+
             if(ownTransform.m_lastPosition != ownTransform.m_position)
             {
                 ownTransform.m_translationMatrix = glm::translate(glm::mat4(1.0),
                                                                   ownTransform.m_position
                 );
-                
+
                 // std::cout << "pos : " << ownTransform.m_position.x << ", " << ownTransform.m_position.y << ", " << ownTransform.m_position.z << std::endl;
-                
+
                 ownTransform.m_lastPosition = ownTransform.m_position;
-                
+
                 translationChanged = true;
             }
-            
+
             if(parentTransform && transform->m_followParentTRS.x)
             {
                 // std::cout << "dfdff" << std::endl;
@@ -91,11 +91,11 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             {
                 finalTransform.m_translationMatrix = ownTransform.m_translationMatrix;
             }
-            
+
             // rotation ================================================
-            
+
             if(ownTransform.m_lastRotation != ownTransform.m_rotation)
-            {   
+            {
                 ownTransform.m_rotationMatrix = glm::toMat4(ownTransform.m_rotation);
 
                 const glm::vec3& column1 = ownTransform.m_rotationMatrix[0];
@@ -107,10 +107,10 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
                 ownTransform.m_right = glm::vec3(column1.x, column2.x, column3.x);
 
                 ownTransform.m_lastRotation = ownTransform.m_rotation;
-                
+
                 rotationChanged = true;
             }
-            
+
             if(parentTransform && transform->m_followParentTRS.y)
             {
                 finalTransform.m_rotationMatrix =
@@ -120,19 +120,19 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             {
                 finalTransform.m_rotationMatrix = ownTransform.m_rotationMatrix;
             }
-            
+
             // scale ========================================================
-            
+
             if(ownTransform.m_lastScale != ownTransform.m_scale)
             {
                 ownTransform.m_scaleMatrix = glm::scale(glm::mat4(1.0),
                                                         ownTransform.m_scale
                 );
                 ownTransform.m_lastScale = ownTransform.m_scale;
-                
+
                 scaleChanged = true;
             }
-            
+
             if(parentTransform && transform->m_followParentTRS.z)
             {
                 finalTransform.m_scaleMatrix =
@@ -142,20 +142,20 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             {
                 finalTransform.m_scaleMatrix = ownTransform.m_scaleMatrix;
             }
-            
+
             // model matrix =================================================
-            
+
             bool modelMatrixChanged = translationChanged || rotationChanged || scaleChanged;
-            
+
             // О ТАК ВЕРНО
             transform->m_transformChanged =
                     modelMatrixChanged || (parentTransform && parentTransform->m_transformChanged);
-            
+
             if(transform->m_transformChanged)
             {
                 ownTransform.m_modelMatrix =
                         ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
-                
+
                 if(parentTransform)
                 {
                     finalTransform.m_modelMatrix =
@@ -178,7 +178,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
                 finalTransform.m_position = finalTranslation;
                 finalTransform.m_rotation = glm::degrees(glm::eulerAngles(finalRotation));
                 finalTransform.m_scale = finalScale;
-                
+
                 matrices.push_back({ entity, finalTransform.m_modelMatrix });
                 notPhysicalEntities.push_back({ entity, transform });
             }
@@ -188,7 +188,7 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             }
         }
     });
-    
+
     if(!m_calculatedNotPhysicalEntitiesCopy.isLocked())
     {
         std::lock_guard guard(m_calculatedNotPhysicalEntitiesCopy);

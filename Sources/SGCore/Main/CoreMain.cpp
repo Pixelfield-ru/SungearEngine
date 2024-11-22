@@ -148,19 +148,19 @@ void SGCore::CoreMain::fixedUpdateStart(const double& dt, const double& fixedDt)
 
     for(const auto& plugin : PluginsManager::getPlugins())
     {
-        try
-        {
+        /*try
+        {*/
             if(plugin->getPlugin())
             {
                 plugin->getPlugin()->fixedUpdate(dt, fixedDt);
             }
-        }
+        /*}
         catch(const std::exception& e)
         {
             std::string what = e.what();
             LOG_E(SGCORE_TAG,
                   "Error while fixedUpdate plugin. Error is: {}", what);
-        }
+        }*/
     }
 }
 
@@ -177,18 +177,18 @@ void SGCore::CoreMain::updateStart(const double& dt, const double& fixedDt)
 
     for(const auto& plugin : PluginsManager::getPlugins())
     {
-        try
-        {
+        /*try
+        {*/
             if(plugin->getPlugin())
             {
                 plugin->getPlugin()->update(dt, fixedDt);
             }
-        }
+        /*}
         catch(const std::exception& e)
         {
             std::string what = e.what();
             LOG_E(SGCORE_TAG, "Error while update plugin. Error is: {}", what);
-        }
+        }*/
     }
 }
 

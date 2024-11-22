@@ -10,9 +10,12 @@ SGSubPass(GeometryPass)
         #extension GL_KHR_vulkan_glsl : enable
 
         layout (location = 0) in vec3 positionsAttribute;
+        layout (location = 1) in vec3 UVAttribute;
 
         out vec3 nearPoint;
         out vec3 farPoint;
+
+        out vec3 vs_UVAttribute;
 
         // Grid position are in clipped space
         vec3 gridPlane[6] = vec3[] (
@@ -30,13 +33,15 @@ SGSubPass(GeometryPass)
 
         void main()
         {
+            vs_UVAttribute = UVAttribute;
+
             vec3 p = gridPlane[gl_VertexIndex].xyz;
             // vec3 p = positionsAttribute;
             nearPoint = UnprojectPoint(p.x, p.y, 0.0, camera.viewMatrix, camera.projectionMatrix).xyz;
             farPoint = UnprojectPoint(p.x, p.y, 1.0, camera.viewMatrix, camera.projectionMatrix).xyz;
-            gl_Position = vec4(p, 1.0);
+            // gl_Position = vec4(p, 1.0);
 
-            // gl_Position = camera.projectionMatrix * camera.viewMatrix * objectTransform.modelMatrix * vec4(positionsAttribute, 1.0);
+            gl_Position = camera.projectionMatrix * camera.viewMatrix * objectTransform.modelMatrix * vec4(positionsAttribute, 1.0);
         }
     }
 
@@ -47,10 +52,30 @@ SGSubPass(GeometryPass)
         in vec3 nearPoint;
         in vec3 farPoint;
 
+        in vec3 vs_UVAttribute;
+
+        const float linesStep = 0.1;
+        const float linesWidth = 0.05;
+
         void main()
         {
             float t = -nearPoint.y / (farPoint.y - nearPoint.y);
-            fragColor = vec4(1.0, 0.0, 0.0, 1.0 * float(t > 0));
+            // fragColor = vec4(1.0, 0.0, 0.0, 1.0 * float(t > 0));
+
+            // fragColor = vec4(1.0);
+            // discard;
+
+            float xFract = fract(vs_UVAttribute.x * 100.0 / linesStep);
+            float yFract = fract(vs_UVAttribute.y * 100.0 / linesStep);
+
+            if(xFract < linesWidth || yFract < linesWidth)
+            {
+                fragColor = vec4(1.0);
+            }
+            else
+            {
+                discard;
+            }
         }
     }
 }

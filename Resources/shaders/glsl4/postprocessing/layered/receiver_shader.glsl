@@ -39,7 +39,7 @@ SGSubPass(SGLPPLayerDepthPass)
 
             float currentFBDepth = texture(SGLPP_LayersDepthAttachments[SGLPP_CurrentLayerSeqIndex], finalUV).r;
 
-            // then sampling depth from other frame buffers and if we have closer depth then discard fragment
+                // then sampling depth from other frame buffers and if we have closer depth then discard fragment
             for (int i = 0; i < SGLPP_LayersCount; i++)
             {
                 if (SGLPP_CurrentLayerIndex == SGLPP_LayersIndices[i]) continue;
@@ -56,6 +56,8 @@ SGSubPass(SGLPPLayerDepthPass)
 
                 // else do nothing and save the pixel color
             }
+
+            // gl_FragColor = vec4(currentFBDepth, currentFBDepth, currentFBDepth, 1.0);
         }
     }
 }

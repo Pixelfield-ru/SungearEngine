@@ -139,18 +139,55 @@ void SGE::EditorScene::addEditorEntities() noexcept
 
     // adding editor-only grid
     {
-        /*auto scene = m_scene;
+        auto scene = m_scene;
 
-        std::vector<SGCore::entity_t> skyboxEntities;
+        std::vector<SGCore::entity_t> gridEntities;
         auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("plane_model");
-        cubeModel->m_nodes[0]->addOnScene(m_scene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities, scene](const auto& entity) {
-            skyboxEntities.push_back(entity);
+        cubeModel->m_nodes[0]->addOnScene(m_scene, SG_LAYER_TRANSPARENT_NAME, [&gridEntities, scene](const auto& entity) {
+            gridEntities.push_back(entity);
             scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
         });
 
-        m_data.m_editorGrid = skyboxEntities[2];
+        m_data.m_editorGrid = gridEntities[2];
+        registry->emplace<SGCore::NonSavable>(gridEntities[0]);
         auto& gridMesh = scene->getECSRegistry()->get<SGCore::Mesh>(m_data.m_editorGrid);
         gridMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_grid_material"));
-        gridMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;*/
+        gridMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
+
+        auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
+        gridTransform.m_ownTransform.m_scale = { 100.0f, 100.0f, 1.0f, };
+
+        /*auto& editorTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
+        editorTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));;*/
+
+        auto& cameraLayeredFrameReceiver = scene->getECSRegistry()->get<SGCore::LayeredFrameReceiver>(m_data.m_editorCamera);
+        auto chunksPPLayer = cameraLayeredFrameReceiver.addLayer("chunks_layer");
+        auto testLayerShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>(
+                SGCore::CoreMain::getSungearEngineRootPath() / "Plugins/SungearEngineEditor/Resources/shaders/glsl4/test_layer.glsl");
+        chunksPPLayer->setFXSubPassShader(testLayerShader->getSubPassShader("SGLPPLayerFXPass"));
+
+        /*chunksPPLayer->m_frameBuffer->bind();
+        chunksPPLayer->m_frameBuffer->addAttachment(
+                SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
+                SGGColorFormat::SGG_RGB,
+                SGGColorInternalFormat::SGG_RGB32_FLOAT,
+                0,
+                0
+        );
+        chunksPPLayer->m_frameBuffer->unbind();*/
+
+        /*chunksPPLayer->m_attachmentsToRenderIn.push_back(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
+        chunksPPLayer->m_attachmentsToDepthTest.push_back(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);*/
+
+        chunksPPLayer->m_attachmentsForCombining[SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0] = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
+
+        SGCore::PostProcessFXSubPass subPass;
+        subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
+        subPass.m_enablePostFXDepthPass = true;
+        chunksPPLayer->m_subPasses.push_back(subPass);
+
+        chunksPPLayer->getFXSubPassShader()->addTextureBinding("currentLayer", chunksPPLayer->m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+
+        gridMesh.m_base.m_layeredFrameReceiversMarkup[&cameraLayeredFrameReceiver] = chunksPPLayer;
     }
 }

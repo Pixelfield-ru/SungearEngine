@@ -68,6 +68,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         }
         
         LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->try_get<LayeredFrameReceiver>(cameraEntity);
+        if(cameraLayeredFrameReceiver) cameraLayeredFrameReceiver->clearPostProcessFrameBuffers();
         
         // todo: make get receiver (postprocess or default) and render in them
 

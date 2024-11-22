@@ -100,6 +100,7 @@ void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* update
     {
         for(auto& texture : texturesIt.second)
         {
+            LOG_W(SGCORE_TAG, "Resolving texture for IMaterial");
             AssetManager::resolveAssetReference(updatedAssetManager, texture);
         }
     }

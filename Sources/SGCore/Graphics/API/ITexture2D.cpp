@@ -73,7 +73,7 @@ void SGCore::ITexture2D::doLazyLoad()
 
 void SGCore::ITexture2D::addToGlobalStorage() noexcept
 {
-    GPUObjectsStorage::addTexture(shared_from_this());
+    // GPUObjectsStorage::addTexture(shared_from_this());
 }
 
 SGCore::Ref<std::uint8_t[]> SGCore::ITexture2D::getData() noexcept

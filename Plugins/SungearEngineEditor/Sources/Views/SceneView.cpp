@@ -112,7 +112,12 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         return;
     }
 
-    modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME);
+    std::vector<SGCore::entity_t> entities;
+    modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
+        entities.push_back(entity);
+    });
+    /*auto& rotation = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(entities[0])->m_ownTransform.m_rotation;
+    rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));*/
 
     // SG_ASSERT(false, "");
     std::cout << "" << std::endl;

@@ -6,6 +6,10 @@
 #sg_include "../math.glsl"
 #sg_include "../defines.glsl"
 #sg_include "../color_correction/aces.glsl"
+#sg_include "../color_correction/lottes.glsl"
+#sg_include "../color_correction/reinhard.glsl"
+#sg_include "../color_correction/filmic.glsl"
+#sg_include "../color_correction/neutral.glsl"
 #sg_include "dir_lights_shadows_calc.glsl"
 
 float ambient = 0.1;
@@ -386,22 +390,20 @@ SGSubPass(GeometryPass)
             // finalCol *= dirLightsShadowCoeff;
 
             // HDR standard tonemapper
-            finalCol = finalCol / (finalCol + vec3(1.0));
-            finalCol = pow(finalCol, vec3(1.0 / exposure));
+            // ВЫГЛЯДИТ ПЛОХО
+            /*finalCol = finalCol / (finalCol + vec3(1.0));
+            finalCol = pow(finalCol, vec3(1.0 / exposure));*/
+            // finalCol = ACESFilm(finalCol);
+            // finalCol = lottes(finalCol);
+            finalCol = reinhard2(finalCol);
 
             fragColor0.a = diffuseColor.a;
             fragColor0.rgb = finalCol;
 
-            // fragColor0 = vec4(1.0);
-            // fragColor0.rgb = vec3(finalUV.x, finalUV.y, finalUV.x);
-            // fragColor0.rgb = vec3(1.0);
-            // fragColor0.a = 1.0;
-            // fragColor0.rgba = vec4(1.0);
-
             fragColor1 = vec4(finalCol, diffuseColor.a);
-            // fragColor1.rgba = vec4(1.0);
-            // fragColor0 = vec4(1.0);
-            // fragColor = vec4(1.0);
+
+            /*fragColor0 = vec4(normalMapColor, 1.0);
+            fragColor1 = vec4(normalMapColor, 1.0);*/
 
             // DEBUG ==================================
             // base color
