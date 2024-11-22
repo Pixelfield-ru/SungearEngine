@@ -1,6 +1,6 @@
 #sg_pragma once
 
-#sg_include "../ray_intersections.glsl"
+#sg_include "sg_shaders/glsl4/ray_intersections.glsl"
 
 #define PI 3.141592
 #define iSteps 16

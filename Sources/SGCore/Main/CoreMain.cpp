@@ -3,6 +3,7 @@
 #include <locale>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <SGCore/Utils/SGSL/SGSLETranslator.h>
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Utils/ShadersUniversalPaths.h"
 
@@ -77,6 +78,8 @@ void SGCore::CoreMain::start()
     MetaInfo::addStandardMetaInfo();
 
     AssetManager::init();
+
+    SGSLETranslator::includeDirectory(s_sungearEngineRootPath / "Resources");
 
     /*CrashHandler::hc_application_name = "Sungear Engine";
     CrashHandler::hc_log_file_output = finalLogName;

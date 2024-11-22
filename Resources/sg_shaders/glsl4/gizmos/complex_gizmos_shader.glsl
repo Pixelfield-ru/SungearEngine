@@ -1,19 +1,20 @@
 #sg_pragma once
 
-#sg_include "../uniform_bufs_decl.glsl"
+#sg_include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
 
 SGSubPass(GeometryPass)
 {
     SGSubShader(Vertex)
     {
+        layout (location = 0) in vec3 positionsAttribute;
+
         uniform vec3 u_offset;
-        uniform vec3 u_verticesPositions[2];
 
         uniform mat4 u_primitiveModelMatrix;
 
         void main()
         {
-            gl_Position = camera.projectionSpaceMatrix * u_primitiveModelMatrix * vec4(u_offset + u_verticesPositions[gl_VertexID], 1.0);
+            gl_Position = camera.projectionSpaceMatrix * u_primitiveModelMatrix * vec4(u_offset + positionsAttribute, 1.0);
         }
     }
 
@@ -36,7 +37,7 @@ SGSubPass(GeometryPass)
             unknownAttachment0 = vec3(1.0);
             unknownAttachment1 = vec3(1.0);
 
-            fragColor = u_color;
+            fragColor = vec4(u_color.rgb, u_color.a);
         }
     }
 }

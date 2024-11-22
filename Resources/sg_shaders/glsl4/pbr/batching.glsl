@@ -4,7 +4,7 @@ SGSubPass(BatchingPass)
 {
     SGSubShader(Vertex)
     {
-        #sg_include "../uniform_bufs_decl.glsl"
+        #sg_include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
 
         layout (location = 0) in int instanceID;
         layout (location = 1) in vec3 vertexUV;

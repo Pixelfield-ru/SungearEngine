@@ -31,37 +31,37 @@ void SGCore::ShadersUniversalPaths::init() noexcept
     m_defaultPaths = MakeRef<ShadersUniversalPaths>();
 
     m_defaultPaths->addShader("Gizmos/ComplexGizmosShader",
-                              CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/gizmos/complex_gizmos_shader.glsl",
+                              CoreMain::getSungearEngineRootPath() / "Resources/sg_shaders/glsl4/gizmos/complex_gizmos_shader.glsl",
                               ShadersUniversalPaths::undefined_path,
                               ShadersUniversalPaths::undefined_path
     );
 
     m_defaultPaths->addShader("Gizmos/LinesGizmosShader",
-                              CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/gizmos/lines_shader.glsl",
+                              CoreMain::getSungearEngineRootPath() / "Resources/sg_shaders/glsl4/gizmos/lines_shader.glsl",
                               ShadersUniversalPaths::undefined_path,
                               ShadersUniversalPaths::undefined_path
     );
 
     m_defaultPaths->addShader("LayeredPP/ReceiverShader",
-                              CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/postprocessing/layered/receiver_shader.glsl",
+                              CoreMain::getSungearEngineRootPath() / "Resources/sg_shaders/glsl4/postprocessing/layered/receiver_shader.glsl",
                               ShadersUniversalPaths::undefined_path,
                               ShadersUniversalPaths::undefined_path
     );
 
     m_defaultPaths->addShader("LayeredPP/LayerFXShader",
-                              CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/postprocessing/layered/layer_default_fx.glsl",
+                              CoreMain::getSungearEngineRootPath() / "Resources/sg_shaders/glsl4/postprocessing/layered/layer_default_fx.glsl",
                               ShadersUniversalPaths::undefined_path,
                               ShadersUniversalPaths::undefined_path
     );
 
     m_defaultPaths->addShader("LayeredPP/FinalFrameFXShader",
-                              CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/postprocessing/layered/final_frame_fx.glsl",
+                              CoreMain::getSungearEngineRootPath() / "Resources/sg_shaders/glsl4/postprocessing/layered/final_frame_fx.glsl",
                               ShadersUniversalPaths::undefined_path,
                               ShadersUniversalPaths::undefined_path
     );
 
     m_defaultPaths->addShader("InfiniteGrid",
-                              CoreMain::getSungearEngineRootPath() / "Resources/shaders/glsl4/gizmos/infinite_grid.glsl",
+                              CoreMain::getSungearEngineRootPath() / "Resources/sg_shaders/glsl4/gizmos/infinite_grid.glsl",
                               ShadersUniversalPaths::undefined_path,
                               ShadersUniversalPaths::undefined_path
     );

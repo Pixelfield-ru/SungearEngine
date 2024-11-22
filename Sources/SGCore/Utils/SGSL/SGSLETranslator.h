@@ -20,6 +20,8 @@ namespace SGCore
 
         SGSLETranslatorConfiguration m_config;
 
+        static void includeDirectory(const std::filesystem::path& dirPath) noexcept;
+
     private:
         void processCode(const std::filesystem::path& path,
                          const std::string& code,
@@ -33,7 +35,11 @@ namespace SGCore
         void sgsleMainProcessor(const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile, SGSLETranslator& translator) noexcept;
         
         void sgsleMakeSubShaderCodePretty(const Ref<SGCore::SGSLESubShader>& subShader) const noexcept;
-        
+
+        [[nodiscard]] static std::filesystem::path findRealIncludePath(const std::filesystem::path& originalIncludePath) noexcept;
+
+        static inline std::vector<std::filesystem::path> s_includedDirectories;
+
         static inline const std::regex s_rSideOfAssignExprRegex = std::regex(R"(\s*(\w+)\s*\(([^)]*)\);)");
         static inline const std::regex m_sgslFuncWithArgsCallRegex = std::regex(R"(\s*(\w+)\s*\(([^)]*)\))");
         static inline const std::regex m_funcArgsDividerRegex = std::regex(R"([a-zA-Z0-9_.-]+)");

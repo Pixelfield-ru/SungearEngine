@@ -166,7 +166,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
                 SGCore::CoreMain::getSungearEngineRootPath() / "Plugins/SungearEngineEditor/Resources/shaders/glsl4/test_layer.glsl");
         chunksPPLayer->setFXSubPassShader(testLayerShader->getSubPassShader("SGLPPLayerFXPass"));
 
-        /*chunksPPLayer->m_frameBuffer->bind();
+        chunksPPLayer->m_frameBuffer->bind();
         chunksPPLayer->m_frameBuffer->addAttachment(
                 SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
                 SGGColorFormat::SGG_RGB,
@@ -174,19 +174,19 @@ void SGE::EditorScene::addEditorEntities() noexcept
                 0,
                 0
         );
-        chunksPPLayer->m_frameBuffer->unbind();*/
+        chunksPPLayer->m_frameBuffer->unbind();
 
-        /*chunksPPLayer->m_attachmentsToRenderIn.push_back(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
-        chunksPPLayer->m_attachmentsToDepthTest.push_back(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);*/
+        chunksPPLayer->m_attachmentsToRenderIn.push_back(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
+        chunksPPLayer->m_attachmentsToDepthTest.push_back(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
 
-        chunksPPLayer->m_attachmentsForCombining[SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0] = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
+        chunksPPLayer->m_attachmentsForCombining[SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0] = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
 
         SGCore::PostProcessFXSubPass subPass;
-        subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
-        subPass.m_enablePostFXDepthPass = true;
+        subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
+        // subPass.m_enablePostFXDepthPass = true;
         chunksPPLayer->m_subPasses.push_back(subPass);
 
-        chunksPPLayer->getFXSubPassShader()->addTextureBinding("currentLayer", chunksPPLayer->m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+        chunksPPLayer->getFXSubPassShader()->addTextureBinding("currentLayer", chunksPPLayer->m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1));
 
         gridMesh.m_base.m_layeredFrameReceiversMarkup[&cameraLayeredFrameReceiver] = chunksPPLayer;
     }

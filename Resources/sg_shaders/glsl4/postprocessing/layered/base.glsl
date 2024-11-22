@@ -4,7 +4,8 @@ SGSubPass(SGLPPLayerDepthPass, SGLPPLayerFXPass, SGLPPAttachmentsCombiningPass, 
 {
     SGSubShader(Vertex)
     {
-        #sg_include "../../primitives.glsl"
+        // #sg_include "../../primitives.glsl"
+        #sg_include "sg_shaders/glsl4/primitives.glsl"
 
         out vec2 vs_UVAttribute;
 

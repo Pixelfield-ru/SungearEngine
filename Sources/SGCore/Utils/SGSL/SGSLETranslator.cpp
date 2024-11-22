@@ -209,11 +209,13 @@ SGCore::SGSLETranslator::sgslePreProcessor(const std::string& path, const std::s
             finalIncludedFilePath = SGCore::Utils::getRealPath(finalIncludedFilePath);
             if(!std::filesystem::exists(finalIncludedFilePath))
             {
+                finalIncludedFilePath = SGCore::Utils::toUTF8(findRealIncludePath(std::string(includedFilePath.begin() + 1, includedFilePath.end() - 1)).u16string());
+
                 // trying to include file using relative to executable file path
-                finalIncludedFilePath = std::filesystem::current_path().string() + "/" +
+                /*finalIncludedFilePath = std::filesystem::current_path().string() + "/" +
                                         std::string(includedFilePath.begin() + 1, includedFilePath.end() - 1);
                 // f = finalIncludedFilePath;
-                finalIncludedFilePath = SGCore::Utils::getRealPath(finalIncludedFilePath);
+                finalIncludedFilePath = SGCore::Utils::getRealPath(finalIncludedFilePath);*/
                 
                 //std::cout << "exec path: " << std::filesystem::current_path().string() << ", f: " << f << ", realpath: " << finalIncludedFilePath << std::endl;
             }
@@ -645,4 +647,31 @@ void SGCore::SGSLETranslator::sgsleMakeSubShaderCodePretty(const Ref<SGCore::SGS
         
         subShader->m_code += line + '\n';
     }
+}
+
+void SGCore::SGSLETranslator::includeDirectory(const std::filesystem::path& dirPath) noexcept
+{
+    s_includedDirectories.push_back(dirPath);
+}
+
+std::filesystem::path
+SGCore::SGSLETranslator::findRealIncludePath(const std::filesystem::path& originalIncludePath) noexcept
+{
+    std::filesystem::path finalIncludedFilePath = "unknown";
+
+    for(const auto& includedDir : s_includedDirectories)
+    {
+        finalIncludedFilePath = includedDir / originalIncludePath;
+        finalIncludedFilePath = SGCore::Utils::getRealPath(SGCore::Utils::toUTF8(finalIncludedFilePath.u16string()));
+        if(std::filesystem::exists(finalIncludedFilePath)) break;
+    }
+
+    if(finalIncludedFilePath == "unknown")
+    {
+        LOG_E(SGCORE_TAG, "SGSLE PROCESSOR: can not find real include path for path '{}'. Check that you include all needed directories using function 'includeDirectory'.",
+              SGCore::Utils::toUTF8(originalIncludePath.u16string()));
+        return originalIncludePath;
+    }
+
+    return finalIncludedFilePath;
 }

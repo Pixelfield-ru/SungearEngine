@@ -1,7 +1,7 @@
 #sg_pragma once
 
-#sg_include "../structs_decl.glsl"
-#sg_include "../math.glsl"
+#sg_include "sg_shaders/glsl4/structs_decl.glsl"
+#sg_include "sg_shaders/glsl4/math.glsl"
 
 // todo: make PCSS, PCF
 

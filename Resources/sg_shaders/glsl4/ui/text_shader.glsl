@@ -4,7 +4,7 @@ SGSubPass(TextRenderPass)
 {
     SGSubShader(Vertex)
     {
-        #sg_include "../uniform_bufs_decl.glsl"
+        #sg_include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
 
         layout (location = 0) in mat4 characterModelMatrix;
         layout (location = 4) in vec4 characterColor;

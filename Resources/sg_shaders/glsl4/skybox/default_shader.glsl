@@ -1,7 +1,7 @@
 #sg_pragma once
 
-#sg_include "../defines.glsl"
-#sg_include "../uniform_bufs_decl.glsl"
+#sg_include "sg_shaders/glsl4/defines.glsl"
+#sg_include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
 
 SGSubPass(GeometryPass)
 {
