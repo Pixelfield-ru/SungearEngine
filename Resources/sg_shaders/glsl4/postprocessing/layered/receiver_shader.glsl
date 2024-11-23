@@ -39,7 +39,7 @@ SGSubPass(SGLPPLayerDepthPass)
 
             float currentFBDepth = texture(SGLPP_LayersDepthAttachments[SGLPP_CurrentLayerSeqIndex], finalUV).r;
 
-                // then sampling depth from other frame buffers and if we have closer depth then discard fragment
+            // then sampling depth from other frame buffers and if we have closer depth then discard fragment
             for (int i = 0; i < SGLPP_LayersCount; i++)
             {
                 if (SGLPP_CurrentLayerIndex == SGLPP_LayersIndices[i]) continue;
@@ -47,17 +47,18 @@ SGSubPass(SGLPPLayerDepthPass)
                 float otherDepth = texture(SGLPP_LayersDepthAttachments[i], finalUV).r;
 
                 // discard fragment
-                if (otherDepth < currentFBDepth)
+                if(otherDepth < currentFBDepth)
                 {
-                    gl_FragColor = vec4(0, 0, 0, 1);
-
-                    return;
+                    gl_FragColor = vec4(0, 0, 0, 0.0);
+                    break;
                 }
+
 
                 // else do nothing and save the pixel color
             }
 
-            // gl_FragColor = vec4(currentFBDepth, currentFBDepth, currentFBDepth, 1.0);
+            // gl_FragColor = vec4(currentFBDepth, currentFBDepth, currentFBDepth, gl_FragColor.a);
+            // gl_FragColor.a = 1.0;
         }
     }
 }
@@ -88,7 +89,9 @@ SGSubPass(SGLPPAttachmentsCombiningPass)
 
             for(int i = 0; i < SGLPP_AttachmentsToCopyInCurrentTargetAttachmentCount; ++i)
             {
-                combinedColor.rgb += texture(SGLPP_AttachmentsToCopyInCurrentTargetAttachment[i], finalUV).rgb;
+                vec4 layerCol = texture(SGLPP_AttachmentsToCopyInCurrentTargetAttachment[i], finalUV);
+                // layerCol.a = 1.0 - layerCol.a;
+                combinedColor.rgb += layerCol.rgb;
             }
 
             gl_FragColor = combinedColor;

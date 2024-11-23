@@ -105,6 +105,7 @@ void SGCore::GL4FrameBuffer::bind()
 {
     glViewport(0, 0, m_width, m_height);
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void SGCore::GL4FrameBuffer::unbind()

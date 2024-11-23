@@ -157,8 +157,8 @@ void SGE::EditorScene::addEditorEntities() noexcept
         auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
         gridTransform.m_ownTransform.m_scale = { 100.0f, 100.0f, 1.0f, };
 
-        /*auto& editorTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
-        editorTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));;*/
+        auto& editorTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
+        editorTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));;
 
         auto& cameraLayeredFrameReceiver = scene->getECSRegistry()->get<SGCore::LayeredFrameReceiver>(m_data.m_editorCamera);
         auto chunksPPLayer = cameraLayeredFrameReceiver.addLayer("chunks_layer");
@@ -169,8 +169,8 @@ void SGE::EditorScene::addEditorEntities() noexcept
         chunksPPLayer->m_frameBuffer->bind();
         chunksPPLayer->m_frameBuffer->addAttachment(
                 SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
-                SGGColorFormat::SGG_RGB,
-                SGGColorInternalFormat::SGG_RGB32_FLOAT,
+                SGGColorFormat::SGG_RGBA,
+                SGGColorInternalFormat::SGG_RGBA32_FLOAT,
                 0,
                 0
         );
@@ -183,7 +183,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
 
         SGCore::PostProcessFXSubPass subPass;
         subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
-        // subPass.m_enablePostFXDepthPass = true;
+        //subPass.m_enablePostFXDepthPass = true;
         chunksPPLayer->m_subPasses.push_back(subPass);
 
         chunksPPLayer->getFXSubPassShader()->addTextureBinding("currentLayer", chunksPPLayer->m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1));

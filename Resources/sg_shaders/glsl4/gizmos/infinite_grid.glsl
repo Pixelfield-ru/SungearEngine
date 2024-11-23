@@ -14,34 +14,36 @@ SGSubPass(GeometryPass)
 
         out vec3 nearPoint;
         out vec3 farPoint;
+        /*out vec3 fragView;
+        out vec3 fragProjection;*/
 
         out vec3 vs_UVAttribute;
 
-        // Grid position are in clipped space
-        vec3 gridPlane[6] = vec3[] (
-            vec3(1, 1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
-            vec3(-1, -1, 0), vec3(1, 1, 0), vec3(1, -1, 0)
-        );
-
-        vec3 UnprojectPoint(float x, float y, float z, mat4 view, mat4 projection)
+        vec3 unprojectPoint(float x, float y, float z, mat4 view, mat4 projection)
         {
-            mat4 viewInv = inverse(view);
-            mat4 projInv = inverse(projection);
-            vec4 unprojectedPoint =  viewInv * projInv * vec4(x, y, z, 1.0);
-            return unprojectedPoint.xyz / unprojectedPoint.w;
+            mat4 view_inverse = inverse (view);
+            mat4 projection_inverse = inverse (projection);
+            vec4 unprojected_point = view_inverse * projection_inverse * vec4 (x, y, z, 1.0);
+
+            return unprojected_point.xyz / unprojected_point.w;
         }
 
         void main()
         {
             vs_UVAttribute = UVAttribute;
 
-            vec3 p = gridPlane[gl_VertexIndex].xyz;
+            // vec3 p = gridPlane[gl_VertexIndex].xyz;
             // vec3 p = positionsAttribute;
-            nearPoint = UnprojectPoint(p.x, p.y, 0.0, camera.viewMatrix, camera.projectionMatrix).xyz;
-            farPoint = UnprojectPoint(p.x, p.y, 1.0, camera.viewMatrix, camera.projectionMatrix).xyz;
+            /*nearPoint = UnprojectPoint(p.x, p.y, 0.0, camera.viewMatrix, camera.projectionMatrix).xyz;
+            farPoint = UnprojectPoint(p.x, p.y, 1.0, camera.viewMatrix, camera.projectionMatrix).xyz;*/
             // gl_Position = vec4(p, 1.0);
 
-            gl_Position = camera.projectionMatrix * camera.viewMatrix * objectTransform.modelMatrix * vec4(positionsAttribute, 1.0);
+            nearPoint = unprojectPoint(positionsAttribute.x, positionsAttribute.y, 0.0, camera.viewMatrix, camera.projectionMatrix).xyz;
+            farPoint = unprojectPoint(positionsAttribute.x, positionsAttribute.y, 1.0, camera.viewMatrix, camera.projectionMatrix).xyz;
+            /*frag_view = view;
+            frag_projection = projection;*/
+
+            gl_Position = vec4(positionsAttribute, 1.0);
         }
     }
 
@@ -54,28 +56,84 @@ SGSubPass(GeometryPass)
 
         in vec3 vs_UVAttribute;
 
-        const float linesStep = 0.1;
-        const float linesWidth = 0.05;
+        const float gridHeight = 1.0;
+
+        vec4 grid(vec3 fragPosition3D, float scale)
+        {
+            // dont want the grid to be infinite?
+            // 	uncomment this bit, set your boundaries to whatever you want
+            //if (frag_position_3d.x > 10
+            //	|| frag_position_3d.x < -10
+            //	|| frag_position_3d.z > 10
+            //	|| frag_position_3d.z < -10)
+            //{
+            //	return vec4 (0, 0, 0, 0);
+            //}
+
+            vec2 coord = fragPosition3D.xz * scale;
+            vec2 derivative = fwidth (coord);
+            vec2 grid = abs (fract (coord - 0.5) - 0.5) / derivative;
+            float line = min (grid.x, grid.y);
+            float minimum_z = min (derivative.y, 1);
+            float minimum_x = min (derivative.x, 1);
+            vec4 color = vec4 (0.2, 0.2, 0.2, 1.0 - min (line, 1.0));
+
+            // z axis color
+            //if (fragPosition3D.x > -0.1 * minimum_x
+            //	&& fragPosition3D.x < 0.1 * minimum_x)
+            //{
+            //	color.z = 1.0;
+            //}
+
+            //// x axis color
+            //if (fragPosition3D.z > -0.1 * minimum_z
+            //	&& fragPosition3D.z < 0.1 * minimum_z)
+            //{
+            //	color.x = 1.0;
+            //}
+
+            return color;
+        }
+
+        float computeDepth(vec3 position)
+        {
+            vec4 clipSpacePosition = camera.projectionMatrix * camera.viewMatrix * vec4(position.xyz, 1.0);
+
+            // the depth calculation in the original article is for vulkan
+            // the depth calculation for opengl is:
+            // 	(far - near) * 0.5 * ndc_depth + (far + near) * 0.5
+            // 	far = 1.0  (opengl max depth)
+            // 	near = 0.0  (opengl min depth)
+            //		ndc_depth = clip_space_position.z / clip_space_position.w
+            //	since our near and far are fixed, we can reduce the above formula to the following
+            return 0.5 + 0.5 * (clipSpacePosition.z / clipSpacePosition.w);
+            // this could also be (ndc_depth + 1.0) * 0.5
+        }
+
+        float computeLinearDepth(vec3 position)
+        {
+            float near = 0.5;
+            float far = 250;
+            vec4 clipSpacePosition = camera.projectionMatrix * camera.viewMatrix * vec4(position.xyz, 1.0);
+            float clipSpaceDepth = (clipSpacePosition.z / clipSpacePosition.w) * 2.0 - 1.0;
+            float linearDepth = (2.0 * near * far) / (far + near - clipSpaceDepth * (far - near));
+
+            return linearDepth / far;
+        }
 
         void main()
         {
-            float t = -nearPoint.y / (farPoint.y - nearPoint.y);
-            // fragColor = vec4(1.0, 0.0, 0.0, 1.0 * float(t > 0));
+            float t = (gridHeight - nearPoint.y) / (farPoint.y - nearPoint.y);
+            vec3 fragPosition3D= nearPoint + t * (farPoint - nearPoint);
 
-            // fragColor = vec4(1.0);
-            // discard;
+            gl_FragDepth = computeDepth(fragPosition3D);
 
-            float xFract = fract(vs_UVAttribute.x * 100.0 / linesStep);
-            float yFract = fract(vs_UVAttribute.y * 100.0 / linesStep);
+            float linearDepth = computeLinearDepth(fragPosition3D);
+            float fading = max(0, (0.5 - linearDepth));
 
-            if(xFract < linesWidth || yFract < linesWidth)
-            {
-                fragColor = vec4(1.0);
-            }
-            else
-            {
-                discard;
-            }
+            fragColor = (grid(fragPosition3D, 2) + grid(fragPosition3D, 2)) * float(t > 0);
+            fragColor.a *= fading;
+            // if(fading < 0.2) discard;
         }
     }
 }
