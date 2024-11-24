@@ -108,24 +108,46 @@ enum SGFrameBufferAttachmentType
     SGG_RENDER_ATTACHMENT9
 };
 
-static bool isDepthAttachment(const SGFrameBufferAttachmentType& attachmentType)
+static bool isDepthAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
     return attachmentType >= SGG_DEPTH_ATTACHMENT0 && attachmentType <= SGG_DEPTH_ATTACHMENT9;
 }
 
-static bool isDepthStencilAttachment(const SGFrameBufferAttachmentType& attachmentType)
+static bool isDepthStencilAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
     return attachmentType >= SGG_DEPTH_STENCIL_ATTACHMENT0 && attachmentType <= SGG_DEPTH_STENCIL_ATTACHMENT9;
 }
 
-static bool isColorAttachment(const SGFrameBufferAttachmentType& attachmentType)
+static bool isColorAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
     return attachmentType >= SGG_COLOR_ATTACHMENT0 && attachmentType <= SGG_COLOR_ATTACHMENT31;
 }
 
-static bool isRenderAttachment(const SGFrameBufferAttachmentType& attachmentType)
+static bool isRenderAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
     return attachmentType >= SGG_RENDER_ATTACHMENT0 && attachmentType <= SGG_RENDER_ATTACHMENT9;
+}
+
+static std::string sgFrameBufferAttachmentTypeToString(const SGFrameBufferAttachmentType& attachmentType) noexcept
+{
+    if(isDepthAttachment(attachmentType))
+    {
+        return "SGG_DEPTH_ATTACHMENT" + std::to_string(attachmentType - SGG_DEPTH_ATTACHMENT0);
+    }
+    else if(isDepthStencilAttachment(attachmentType))
+    {
+        return "SGG_DEPTH_STENCIL_ATTACHMENT" + std::to_string(attachmentType - SGG_DEPTH_STENCIL_ATTACHMENT0);
+    }
+    else if(isColorAttachment(attachmentType))
+    {
+        return "SGG_COLOR_ATTACHMENT" + std::to_string(attachmentType - SGG_COLOR_ATTACHMENT0);
+    }
+    else if(isRenderAttachment(attachmentType))
+    {
+        return "SGG_RENDER_ATTACHMENT" + std::to_string(attachmentType - SGG_RENDER_ATTACHMENT0);
+    }
+
+    return "UNKNOWN";
 }
 
 enum SGGDataType
@@ -210,7 +232,7 @@ static constexpr SGGDataType getSGDataTypeFromCPPType() noexcept
     return SGGDataType::SGG_NONE;
 }
 
-static SGTextureType sgStandardTextureFromString(const std::string& textureType)
+static SGTextureType sgStandardTextureFromString(const std::string& textureType) noexcept
 {
     if(textureType == "SGTT_EMISSIVE")
     {
@@ -308,7 +330,7 @@ static SGTextureType sgStandardTextureFromString(const std::string& textureType)
     return SGTT_NONE;
 }
 
-static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterialTextureType)
+static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterialTextureType) noexcept
 {
     switch(sgMaterialTextureType)
     {

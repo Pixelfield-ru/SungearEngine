@@ -133,6 +133,8 @@ SGSubPass(GeometryPass)
 
             fragColor = (grid(fragPosition3D, 2) + grid(fragPosition3D, 2)) * float(t > 0);
             fragColor.a *= fading;
+
+            // fragColor.a = 0.0;
             // if(fading < 0.2) discard;
         }
     }

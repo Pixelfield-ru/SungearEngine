@@ -20,10 +20,10 @@ SGSubPass(SGLPPLayerDepthPass)
         uniform int SGLPP_LayersIndices[32];
         uniform int SGLPP_LayersCount;
 
-        // as layers count
-        uniform int SGLPP_LayersDepthAttachmentsCount;
         // as all layers depths
-        uniform sampler2D SGLPP_LayersDepthAttachments[32];
+        uniform sampler2D SGLPP_LayersDepthAttachments[16];
+        // as layers color attachments that are needed to be depth tested
+        uniform sampler2D SGLPP_LayersColorAttachments0[16];
 
         in vec2 vs_UVAttribute;
 
@@ -38,6 +38,9 @@ SGSubPass(SGLPPLayerDepthPass)
             // depth test pass -------------------------------------------
 
             float currentFBDepth = texture(SGLPP_LayersDepthAttachments[SGLPP_CurrentLayerSeqIndex], finalUV).r;
+            vec4 currentColor0 = texture(SGLPP_LayersColorAttachments0[SGLPP_CurrentLayerSeqIndex], finalUV);
+
+            vec3 finalCol = currentColor0.rgb;
 
             // then sampling depth from other frame buffers and if we have closer depth then discard fragment
             for (int i = 0; i < SGLPP_LayersCount; i++)
@@ -45,19 +48,18 @@ SGSubPass(SGLPPLayerDepthPass)
                 if (SGLPP_CurrentLayerIndex == SGLPP_LayersIndices[i]) continue;
 
                 float otherDepth = texture(SGLPP_LayersDepthAttachments[i], finalUV).r;
+                vec4 otherColor0 = texture(SGLPP_LayersColorAttachments0[i], finalUV);
 
-                // discard fragment
                 if(otherDepth < currentFBDepth)
                 {
-                    gl_FragColor = vec4(0, 0, 0, 0.0);
-                    break;
+                    gl_FragColor = vec4(0, 0, 0, 1);
+                    return;
                 }
-
-
-                // else do nothing and save the pixel color
             }
 
-            // gl_FragColor = vec4(currentFBDepth, currentFBDepth, currentFBDepth, gl_FragColor.a);
+            // gl_FragColor = vec4(finalCol, 1.0);
+
+            // gl_FragColor = vec4(currentFBDepth, currentFBDepth, currentFBDepth, 1.0);
             // gl_FragColor.a = 1.0;
         }
     }
@@ -87,12 +89,16 @@ SGSubPass(SGLPPAttachmentsCombiningPass)
 
             vec4 combinedColor = vec4(0.0, 0.0, 0.0, 1.0);
 
+            // TODO: MAKE ALPHA-TEST
+
             for(int i = 0; i < SGLPP_AttachmentsToCopyInCurrentTargetAttachmentCount; ++i)
             {
                 vec4 layerCol = texture(SGLPP_AttachmentsToCopyInCurrentTargetAttachment[i], finalUV);
                 // layerCol.a = 1.0 - layerCol.a;
-                combinedColor.rgb += layerCol.rgb;
+                combinedColor.rgb += layerCol.rgb * layerCol.a;
             }
+
+            // combinedColor.rgb /= float(SGLPP_AttachmentsToCopyInCurrentTargetAttachmentCount);
 
             gl_FragColor = combinedColor;
             // fragColor = combinedColor;

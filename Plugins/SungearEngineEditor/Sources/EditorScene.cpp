@@ -143,7 +143,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
 
         std::vector<SGCore::entity_t> gridEntities;
         auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("plane_model");
-        cubeModel->m_nodes[0]->addOnScene(m_scene, SG_LAYER_TRANSPARENT_NAME, [&gridEntities, scene](const auto& entity) {
+        cubeModel->m_nodes[0]->addOnScene(m_scene, SG_LAYER_OPAQUE_NAME, [&gridEntities, scene](const auto& entity) {
             gridEntities.push_back(entity);
             scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
         });
@@ -170,7 +170,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
         chunksPPLayer->m_frameBuffer->addAttachment(
                 SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
                 SGGColorFormat::SGG_RGBA,
-                SGGColorInternalFormat::SGG_RGBA32_FLOAT,
+                SGGColorInternalFormat::SGG_RGBA8,
                 0,
                 0
         );
@@ -183,7 +183,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
 
         SGCore::PostProcessFXSubPass subPass;
         subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2;
-        //subPass.m_enablePostFXDepthPass = true;
+        subPass.m_enablePostFXDepthPass = true;
         chunksPPLayer->m_subPasses.push_back(subPass);
 
         chunksPPLayer->getFXSubPassShader()->addTextureBinding("currentLayer", chunksPPLayer->m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1));

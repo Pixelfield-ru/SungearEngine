@@ -49,8 +49,8 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersCombinedBuffer->bind();
     m_layersCombinedBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
-            SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA8,
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
             0,
             0
     );
@@ -111,7 +111,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
             0,
             0);
     newPPLayer->m_frameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // NOT DEPT-TESTED ATTACHMENT
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // NOT DEPTH-TESTED ATTACHMENT
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA8,
             0,

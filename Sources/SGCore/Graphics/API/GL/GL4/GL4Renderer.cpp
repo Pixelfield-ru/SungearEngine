@@ -41,6 +41,7 @@ void SGCore::GL4Renderer::init() noexcept
 
     setDepthTestingEnabled(true);
     glEnable(GL_BLEND);
+    // glBlendFunc(GL_ONE, GL_ZERO);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_STENCIL_TEST);
 

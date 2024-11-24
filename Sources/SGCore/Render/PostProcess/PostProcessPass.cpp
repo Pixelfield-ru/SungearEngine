@@ -56,12 +56,15 @@ void SGCore::PostProcessPass::depthPass
     
     bindLayersIndices(camera, depthPassShader);
 
+    // layerIdx also used as current texture block for binding depth and color attachments
     std::uint8_t layerIdx = 0;
     
     // binding depth uniforms =================
-    for(const auto& ppLayer : camera.getLayers())
+    for(size_t i = 0; i < camera.getLayers().size(); ++i)
     {
-        depthPassShader->useTextureBlock("SGLPP_LayersDepthAttachments[" + std::to_string(layerIdx) + "]", layerIdx);
+        const auto& ppLayer = camera.getLayers()[i];
+
+        depthPassShader->useTextureBlock("SGLPP_LayersDepthAttachments[" + std::to_string(i) + "]", layerIdx);
         if(ppLayer->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0))
         {
             ppLayer->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0, layerIdx);
@@ -69,10 +72,23 @@ void SGCore::PostProcessPass::depthPass
         }
     }
     
-    depthPassShader->useInteger("SGLPP_LayersDepthAttachmentsCount", layerIdx);
-    
     // =========================================
-    
+
+    // binding color0 uniforms =================
+    for(size_t i = 0; i < camera.getLayers().size(); ++i)
+    {
+        const auto& ppLayer = camera.getLayers()[i];
+
+        depthPassShader->useTextureBlock("SGLPP_LayersColorAttachments0[" + std::to_string(i) + "]", layerIdx);
+        if(ppLayer->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0))
+        {
+            ppLayer->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, layerIdx);
+            ++layerIdx;
+        }
+    }
+
+    // =========================================
+
     layerIdx = 0;
     
     for(const auto& ppLayer : camera.getLayers())
@@ -173,23 +189,38 @@ void SGCore::PostProcessPass::FXPass
                 
                 depthPassShader->useInteger("SGLPP_CurrentLayerIndex", ppLayer->m_index);
                 depthPassShader->useInteger("SGLPP_CurrentLayerSeqIndex", layerIdx);
-                
-                std::uint8_t depthPassLayerIdx = 0;
-                
+
+                std::uint8_t depthPassTexBlockIdx = 0;
+
                 // binding depth uniforms =================
-                for(const auto& depthPassLayer : camera.getLayers())
+                for(size_t i = 0; i < camera.getLayers().size(); ++i)
                 {
-                    if(depthPassLayer->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0))
+                    const auto& ppLayer0 = camera.getLayers()[i];
+
+                    depthPassShader->useTextureBlock("SGLPP_LayersDepthAttachments[" + std::to_string(i) + "]", depthPassTexBlockIdx);
+                    if(ppLayer0->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0))
                     {
-                        depthPassShader->useTextureBlock("SGLPP_LayersDepthAttachments[" + std::to_string(depthPassLayerIdx) + "]", depthPassLayerIdx);
-                        depthPassLayer->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0, depthPassLayerIdx);
-                        ++depthPassLayerIdx;
+                        ppLayer0->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0, depthPassTexBlockIdx);
+                        ++depthPassTexBlockIdx;
                     }
                 }
+
                 // =========================================
-                
-                depthPassShader->useInteger("SGLPP_LayersDepthAttachmentsCount", depthPassLayerIdx);
-                
+
+                // binding color0 uniforms =================
+                for(size_t i = 0; i < camera.getLayers().size(); ++i)
+                {
+                    const auto& ppLayer0 = camera.getLayers()[i];
+                    depthPassShader->useTextureBlock("SGLPP_LayersColorAttachments0[" + std::to_string(i) + "]", depthPassTexBlockIdx);
+                    if(ppLayer0->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0))
+                    {
+                        ppLayer0->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, depthPassTexBlockIdx);
+                        ++depthPassTexBlockIdx;
+                    }
+                }
+
+                // =========================================
+
                 CoreMain::getRenderer()->renderMeshData(
                         m_postProcessQuad.get(),
                         m_postProcessQuadRenderInfo
@@ -307,10 +338,10 @@ void SGCore::PostProcessPass::finalFrameFXPass
     
     for(const auto& ppLayer : receiver.getLayers())
     {
-        ppLayer->m_frameBuffer->bind();
-        ppLayer->m_frameBuffer->clearAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
+        // ppLayer->m_frameBuffer->bind();
+        // ppLayer->m_frameBuffer->clearAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0);
         // TODO: MAY CAUSE ARTIFACTS ??? OR NOT??? CHECK IN FUTURE
-        ppLayer->m_frameBuffer->unbind();
+        // ppLayer->m_frameBuffer->unbind();
     }
 }
 
