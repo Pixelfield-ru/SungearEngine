@@ -27,18 +27,18 @@ SGSubPass(SGLPPLayerFXPass)
             float rotAngle = rand * PI;
             vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
 
-            vec3 finalCol = vec3(0.0);
+            vec4 finalCol = vec4(0.0);
 
             for(int i = 0; i < samplesCount; i++)
             {
-                finalCol += texture(currentLayer, finalUV + rotate(poissonDisk[i], rotTrig) / 150.0).rgb;
+                finalCol += texture(currentLayer, finalUV + rotate(poissonDisk[i], rotTrig) / 70.0).rgba;
             }
 
-            finalCol /= float(samplesCount);
+            finalCol.rgb /= float(samplesCount);
 
-            // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-            gl_FragColor = vec4(texture(currentLayer, finalUV).rgba);
-            // gl_FragColor = vec4(finalCol, 1.0);
+            // gl_FragColor = vec4(1.0, 0.0, 0.0, texture(currentLayer, finalUV).a);
+            // gl_FragColor = vec4(texture(currentLayer, finalUV).rgba);
+            gl_FragColor = finalCol;
         }
     }
 }

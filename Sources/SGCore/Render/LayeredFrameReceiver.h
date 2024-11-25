@@ -36,27 +36,12 @@ namespace SGCore
         std::uint16_t m_index = 0;
         
         // attachments that the scene will be rendered into
-        std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0,    // BY DEFAULT DEPTH NON-TESTED ATTACHMENT
-                                                                           SGG_COLOR_ATTACHMENT1/*,  // BY DEFAULT DEPTH-TESTED ATTACHMENT
-                                                                           SGG_COLOR_ATTACHMENT2,
-                                                                           SGG_COLOR_ATTACHMENT3,
-                                                                           SGG_COLOR_ATTACHMENT4,
-                                                                           SGG_COLOR_ATTACHMENT5,
-                                                                           SGG_COLOR_ATTACHMENT6*/};
-        
-        // attachments that will pass the depth test
-        // SGG_COLOR_ATTACHMENT0 IS NOT DEPTH-TESTED ATTACHMENT
-        std::vector<SGFrameBufferAttachmentType> m_attachmentsToDepthTest { SGG_COLOR_ATTACHMENT1/*,
-                                                                            SGG_COLOR_ATTACHMENT2,
-                                                                            SGG_COLOR_ATTACHMENT3,
-                                                                            SGG_COLOR_ATTACHMENT4,
-                                                                            SGG_COLOR_ATTACHMENT5,
-                                                                            SGG_COLOR_ATTACHMENT6*/};
+        std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0 };
 
         // first - to which attachment of the output buffer will the data from the attachment "second" be copied
         // second - the attachment to be copied
         std::unordered_map<SGFrameBufferAttachmentType, SGFrameBufferAttachmentType> m_attachmentsForCombining {
-                { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1 }/*,
+                { SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT0 }/*,
                 { SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT2 },
                 { SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT3 },
                 { SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT4 },
@@ -160,8 +145,6 @@ namespace SGCore
 
         // final frame buffer with all post-processing
         Ref<IFrameBuffer> m_finalFrameFXFrameBuffer;
-
-        std::set<SGFrameBufferAttachmentType> m_attachmentsForCombining;
         
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
                                             const std::uint16_t& fbWidth,

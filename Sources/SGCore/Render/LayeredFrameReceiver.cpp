@@ -48,7 +48,14 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersCombinedBuffer->create();
     m_layersCombinedBuffer->bind();
     m_layersCombinedBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // CONTAINS LAYERS VOLUMES
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
+            0,
+            0
+    );
+    m_layersCombinedBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // CONTAINS COLORS FROM LAYERS
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB8,
             0,
@@ -76,7 +83,7 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     
     m_finalFrameFXShader = finalFrameFXShader->getSubPassShader("SGLPPFinalFXPass");
     
-    m_finalFrameFXShader->addTextureBinding("SGLPP_CombinedAttachments[0]", m_layersCombinedBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+    m_finalFrameFXShader->addTextureBinding("SGLPP_CombinedAttachments[0]", m_layersCombinedBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1));
 }
 
 SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLayer(const std::string& name,
@@ -111,14 +118,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
             0,
             0);
     newPPLayer->m_frameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // NOT DEPTH-TESTED ATTACHMENT
-            SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA8,
-            0,
-            0
-    );
-    newPPLayer->m_frameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // DEPTH-TESTED ATTACHMENT
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // DEFAULT ATTACHMENT
             SGGColorFormat::SGG_RGBA,
             SGGColorInternalFormat::SGG_RGBA8,
             0,
@@ -213,7 +213,7 @@ void SGCore::LayeredFrameReceiver::clearPostProcessFrameBuffers() const noexcept
     }
     
     m_layersCombinedBuffer->bind();
-    m_layersCombinedBuffer->bindAttachmentsToDrawIn(m_attachmentsForCombining);
+    // m_layersCombinedBuffer->bindAttachmentsToDrawIn({ });
     m_layersCombinedBuffer->clear();
     
     m_finalFrameFXFrameBuffer->bind();

@@ -26,6 +26,8 @@ void SGE::SceneTreeView::renderBody()
     
     ImGui::Begin("SceneTreeView");
 
+    const float compressionCoeff = 4.0f;
+
     auto currentEditorScene = EditorScene::getCurrentScene();
     if(currentEditorScene && currentEditorScene->m_scene)
     {
@@ -40,11 +42,31 @@ void SGE::SceneTreeView::renderBody()
             {
                 ImGui::Text(("Attachment '" + sgFrameBufferAttachmentTypeToString(attachment.first) + "'").c_str());
 
-                const float compressionCoeff = 4.0f;
-
                 ImGui::Image(attachment.second->getTextureNativeHandler(),
                              { attachment.second->getWidth() / compressionCoeff, attachment.second->getHeight() / compressionCoeff }, { 0, 1 }, { 1, 0 });
             }
+        }
+
+        ImGui::Text("Attachments of combined frame buffer");
+
+        {
+            const auto& attachment0 = layeredFrameReceiver->m_layersCombinedBuffer->getAttachment(
+                    SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0
+            );
+
+            ImGui::Image(attachment0->getTextureNativeHandler(),
+                         {attachment0->getWidth() / compressionCoeff, attachment0->getHeight() / compressionCoeff},
+                         {0, 1}, {1, 0}
+            );
+
+            const auto& attachment1 = layeredFrameReceiver->m_layersCombinedBuffer->getAttachment(
+                    SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1
+            );
+
+            ImGui::Image(attachment1->getTextureNativeHandler(),
+                         {attachment1->getWidth() / compressionCoeff, attachment1->getHeight() / compressionCoeff},
+                         {0, 1}, {1, 0}
+            );
         }
     }
     

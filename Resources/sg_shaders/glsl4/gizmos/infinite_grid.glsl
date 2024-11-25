@@ -72,7 +72,7 @@ SGSubPass(GeometryPass)
 
             vec2 coord = fragPosition3D.xz * scale;
             vec2 derivative = fwidth (coord);
-            vec2 grid = abs (fract (coord - 0.5) - 0.5) / derivative;
+            vec2 grid = abs (fract (coord - 0.5) - 0.5) / derivative / 15.0;
             float line = min (grid.x, grid.y);
             float minimum_z = min (derivative.y, 1);
             float minimum_x = min (derivative.x, 1);
@@ -131,7 +131,7 @@ SGSubPass(GeometryPass)
             float linearDepth = computeLinearDepth(fragPosition3D);
             float fading = max(0, (0.5 - linearDepth));
 
-            fragColor = (grid(fragPosition3D, 2) + grid(fragPosition3D, 2)) * float(t > 0);
+            fragColor = (grid(fragPosition3D, 1) + grid(fragPosition3D, 1)) * float(t > 0);
             fragColor.a *= fading;
 
             // fragColor.a = 0.0;

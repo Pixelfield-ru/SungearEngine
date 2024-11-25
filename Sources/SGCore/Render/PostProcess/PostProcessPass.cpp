@@ -35,7 +35,7 @@ void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderP
     auto receiversView = scene->getECSRegistry()->view<LayeredFrameReceiver, Ref<RenderingBase>, Ref<Transform>>();
 
     receiversView.each([this](LayeredFrameReceiver& receiver, Ref<RenderingBase> renderingBase, Ref<Transform> transform) {
-        depthPass(receiver, renderingBase, transform);
+        volumesDepthPass(receiver, renderingBase, transform);
         FXPass(receiver, renderingBase, transform);
         layersCombiningPass(receiver, renderingBase, transform);
         finalFrameFXPass(receiver, renderingBase, transform);
@@ -44,21 +44,20 @@ void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderP
     CoreMain::getRenderer()->setDepthTestingEnabled(true);
 }
 
-// DONE
-void SGCore::PostProcessPass::depthPass
-(LayeredFrameReceiver& camera, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const noexcept
+void SGCore::PostProcessPass::volumesDepthPass
+        (LayeredFrameReceiver& camera, const Ref<RenderingBase>& renderingBase, const Ref<Transform>& transform) const noexcept
 {
     auto depthPassShader = camera.m_shader->getSubPassShader("SGLPPLayerDepthPass");
 
     if(!depthPassShader) return;
-    
+
     depthPassShader->bind();
-    
+
     bindLayersIndices(camera, depthPassShader);
 
     // layerIdx also used as current texture block for binding depth and color attachments
     std::uint8_t layerIdx = 0;
-    
+
     // binding depth uniforms =================
     for(size_t i = 0; i < camera.getLayers().size(); ++i)
     {
@@ -71,48 +70,18 @@ void SGCore::PostProcessPass::depthPass
             ++layerIdx;
         }
     }
-    
-    // =========================================
-
-    // binding color0 uniforms =================
-    for(size_t i = 0; i < camera.getLayers().size(); ++i)
-    {
-        const auto& ppLayer = camera.getLayers()[i];
-
-        depthPassShader->useTextureBlock("SGLPP_LayersColorAttachments0[" + std::to_string(i) + "]", layerIdx);
-        if(ppLayer->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0))
-        {
-            ppLayer->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, layerIdx);
-            ++layerIdx;
-        }
-    }
 
     // =========================================
 
-    layerIdx = 0;
-    
-    for(const auto& ppLayer : camera.getLayers())
-    {
-        depthPassShader->useInteger("SGLPP_CurrentLayerSeqIndex", layerIdx);
-        depthPassShader->useInteger("SGLPP_CurrentLayerIndex", ppLayer->m_index);
+    camera.m_layersCombinedBuffer->bind();
+    camera.m_layersCombinedBuffer->bindAttachmentToDrawIn(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
 
-        ppLayer->m_frameBuffer->bind();
+    CoreMain::getRenderer()->renderMeshData(
+            m_postProcessQuad.get(),
+            m_postProcessQuadRenderInfo
+    );
 
-        for(const auto& attachmentType : ppLayer->m_attachmentsToDepthTest)
-        {
-            // bind the attachment to which the fragment will be received and into which this fragment will be overwritten
-            ppLayer->m_frameBuffer->bindAttachmentToDrawIn(attachmentType);
-
-            CoreMain::getRenderer()->renderMeshData(
-                    m_postProcessQuad.get(),
-                    m_postProcessQuadRenderInfo
-            );
-        }
-        
-        ppLayer->m_frameBuffer->unbind();
-        
-        ++layerIdx;
-    }
+    camera.m_layersCombinedBuffer->unbind();
 }
 
 // DONE
@@ -183,53 +152,6 @@ void SGCore::PostProcessPass::FXPass
                     m_postProcessQuadRenderInfo
             );
             
-            if(ppFXSubPass.m_enablePostFXDepthPass && depthPassShader)
-            {
-                depthPassShader->bind();
-                
-                depthPassShader->useInteger("SGLPP_CurrentLayerIndex", ppLayer->m_index);
-                depthPassShader->useInteger("SGLPP_CurrentLayerSeqIndex", layerIdx);
-
-                std::uint8_t depthPassTexBlockIdx = 0;
-
-                // binding depth uniforms =================
-                for(size_t i = 0; i < camera.getLayers().size(); ++i)
-                {
-                    const auto& ppLayer0 = camera.getLayers()[i];
-
-                    depthPassShader->useTextureBlock("SGLPP_LayersDepthAttachments[" + std::to_string(i) + "]", depthPassTexBlockIdx);
-                    if(ppLayer0->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0))
-                    {
-                        ppLayer0->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0, depthPassTexBlockIdx);
-                        ++depthPassTexBlockIdx;
-                    }
-                }
-
-                // =========================================
-
-                // binding color0 uniforms =================
-                for(size_t i = 0; i < camera.getLayers().size(); ++i)
-                {
-                    const auto& ppLayer0 = camera.getLayers()[i];
-                    depthPassShader->useTextureBlock("SGLPP_LayersColorAttachments0[" + std::to_string(i) + "]", depthPassTexBlockIdx);
-                    if(ppLayer0->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0))
-                    {
-                        ppLayer0->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, depthPassTexBlockIdx);
-                        ++depthPassTexBlockIdx;
-                    }
-                }
-
-                // =========================================
-
-                CoreMain::getRenderer()->renderMeshData(
-                        m_postProcessQuad.get(),
-                        m_postProcessQuadRenderInfo
-                );
-                
-                layerShader->bind();
-                layerShader->bindTextureBindings(0);
-            }
-            
             if (ppFXSubPass.m_postpassFunction)
             {
                 ppFXSubPass.m_postpassFunction(layerShader);
@@ -251,24 +173,63 @@ void SGCore::PostProcessPass::layersCombiningPass
     auto ppLayerCombiningShader = camera.m_shader->getSubPassShader("SGLPPAttachmentsCombiningPass");
 
     if(!ppLayerCombiningShader) return;
-    
-    camera.m_attachmentsForCombining.clear();
 
     ppLayerCombiningShader->bind();
+
+    std::uint8_t maxTexBlock = 0;
+
+    {
+
+        // binding color0 uniforms =================
+        for(size_t i = 0; i < camera.getLayers().size(); ++i)
+        {
+            const auto& ppLayer0 = camera.getLayers()[i];
+            ppLayerCombiningShader->useTextureBlock("SGLPP_LayersColorAttachments0[" + std::to_string(i) + "]",
+                                                    maxTexBlock
+            );
+            if(ppLayer0->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0))
+            {
+                ppLayer0->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
+                                                        maxTexBlock
+                );
+                ++maxTexBlock;
+            }
+        }
+    }
+
+    {
+        // binding depth uniforms =================
+        for(size_t i = 0; i < camera.getLayers().size(); ++i)
+        {
+            const auto& ppLayer = camera.getLayers()[i];
+
+            ppLayerCombiningShader->useTextureBlock("SGLPP_LayersDepthAttachments[" + std::to_string(i) + "]", maxTexBlock);
+            if(ppLayer->m_frameBuffer->getAttachments().contains(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0))
+            {
+                ppLayer->m_frameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0, maxTexBlock);
+                ++maxTexBlock;
+            }
+        }
+    }
+
+    // =========================================
+
     camera.m_layersCombinedBuffer->bind();
+
+    std::set<SGFrameBufferAttachmentType> attachmentsForCombining;
 
     // collecting all attachments (from pp layers) to render in
     for(const auto& ppLayer : camera.getLayers())
     {
         for(const auto& attachmentsPair : ppLayer->m_attachmentsForCombining)
         {
-            camera.m_attachmentsForCombining.insert(attachmentsPair.first);
+            attachmentsForCombining.insert(attachmentsPair.first);
         }
     }
 
     // combining all attachments
     // sequentially render each color attachment of the pp layer (if it is specified for the attachmentToRenderIn) to the target layer
-    for(const auto& attachmentToRenderIn : camera.m_attachmentsForCombining)
+    for(const auto& attachmentToRenderIn : attachmentsForCombining)
     {
         camera.m_layersCombinedBuffer->bindAttachmentToDrawIn(attachmentToRenderIn);
 
@@ -284,12 +245,13 @@ void SGCore::PostProcessPass::layersCombiningPass
                 auto foundAttachment = foundAttachmentIter->second;
 
                 ppLayerCombiningShader->useInteger("SGLPP_AttachmentsToCopyInCurrentTargetAttachment[" + std::to_string(attachmentIdx) + "]",
-                                                              attachmentIdx
+                                                   maxTexBlock
                 );
                 // binding source attachment to texture block
-                ppLayer->m_frameBuffer->bindAttachment(foundAttachment, attachmentIdx);
+                ppLayer->m_frameBuffer->bindAttachment(foundAttachment, maxTexBlock);
 
                 ++attachmentIdx;
+                ++maxTexBlock;
             }
         }
 
