@@ -49,7 +49,10 @@ SGSubPass(GeometryPass)
 
     SGSubShader(Fragment)
     {
-        layout(location = 0) out vec4 fragColor;
+        #sg_include "sg_shaders/glsl4/postprocessing/layered/utils.glsl"
+
+        layout(location = 0) out vec4 layerVolume;
+        layout(location = 1) out vec4 layerColor;
 
         in vec3 nearPoint;
         in vec3 farPoint;
@@ -57,6 +60,8 @@ SGSubPass(GeometryPass)
         in vec3 vs_UVAttribute;
 
         const float gridHeight = 1.0;
+
+        uniform int SGPP_CurrentLayerIndex;
 
         vec4 grid(vec3 fragPosition3D, float scale)
         {
@@ -131,8 +136,10 @@ SGSubPass(GeometryPass)
             float linearDepth = computeLinearDepth(fragPosition3D);
             float fading = max(0, (0.5 - linearDepth));
 
-            fragColor = (grid(fragPosition3D, 1) + grid(fragPosition3D, 1)) * float(t > 0);
-            fragColor.a *= fading;
+            layerColor = (grid(fragPosition3D, 1) + grid(fragPosition3D, 1)) * float(t > 0);
+            layerColor.a *= fading;
+
+            layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 
             // fragColor.a = 0.0;
             // if(fading < 0.2) discard;

@@ -134,7 +134,6 @@ void SGE::EditorScene::addEditorEntities() noexcept
         registry->emplace<SGCore::Ref<SGCore::RenderingBase>>(camera, SGCore::MakeRef<SGCore::RenderingBase>());
         registry->emplace<SGCore::Controllable3D>(camera);
         auto& layeredFrameReceiver = registry->emplace<SGCore::LayeredFrameReceiver>(camera);
-        layeredFrameReceiver.setRenderOverlayInSeparateFrameBuffer(true);
     }
 
     // adding editor-only grid
@@ -156,35 +155,19 @@ void SGE::EditorScene::addEditorEntities() noexcept
 
         auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
         gridTransform.m_ownTransform.m_scale = { 100.0f, 100.0f, 1.0f, };
-
-        auto& editorTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
-        editorTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));;
+        gridTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));;
 
         auto& cameraLayeredFrameReceiver = scene->getECSRegistry()->get<SGCore::LayeredFrameReceiver>(m_data.m_editorCamera);
         auto chunksPPLayer = cameraLayeredFrameReceiver.addLayer("chunks_layer");
         auto testLayerShader = SGCore::AssetManager::getInstance()->loadAsset<SGCore::IShader>(
                 SGCore::CoreMain::getSungearEngineRootPath() / "Plugins/SungearEngineEditor/Resources/shaders/glsl4/test_layer.glsl");
-        chunksPPLayer->setFXSubPassShader(testLayerShader->getSubPassShader("SGLPPLayerFXPass"));
-
-        chunksPPLayer->m_frameBuffer->bind();
-        chunksPPLayer->m_frameBuffer->addAttachment(
-                SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
-                SGGColorFormat::SGG_RGBA,
-                SGGColorInternalFormat::SGG_RGBA8,
-                0,
-                0
-        );
-        chunksPPLayer->m_frameBuffer->unbind();
-
-        chunksPPLayer->m_attachmentsToRenderIn.push_back(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1);
-
-        chunksPPLayer->m_attachmentsForCombining[SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1] = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
+        chunksPPLayer->setFXSubPassShader(testLayerShader->getSubPassShader("SGPPLayerFXPass"));
 
         SGCore::PostProcessFXSubPass subPass;
-        subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
+        // subPass.m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1;
         chunksPPLayer->m_subPasses.push_back(subPass);
 
-        chunksPPLayer->getFXSubPassShader()->addTextureBinding("currentLayer", chunksPPLayer->m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+        // chunksPPLayer->getFXSubPassShader()->addTextureBinding("currentLayer", chunksPPLayer->m_frameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
 
         gridMesh.m_base.m_layeredFrameReceiversMarkup[&cameraLayeredFrameReceiver] = chunksPPLayer;
     }

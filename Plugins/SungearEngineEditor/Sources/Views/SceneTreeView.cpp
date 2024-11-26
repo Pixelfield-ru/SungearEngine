@@ -34,23 +34,10 @@ void SGE::SceneTreeView::renderBody()
         auto* layeredFrameReceiver = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::LayeredFrameReceiver>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
-        for(const auto& layer : layeredFrameReceiver->getLayers())
-        {
-            ImGui::Text(("Attachments of layer '" + layer->m_name + "'").c_str());
-
-            for(const auto& attachment : layer->m_frameBuffer->getAttachments())
-            {
-                ImGui::Text(("Attachment '" + sgFrameBufferAttachmentTypeToString(attachment.first) + "'").c_str());
-
-                ImGui::Image(attachment.second->getTextureNativeHandler(),
-                             { attachment.second->getWidth() / compressionCoeff, attachment.second->getHeight() / compressionCoeff }, { 0, 1 }, { 1, 0 });
-            }
-        }
-
-        ImGui::Text("Attachments of combined frame buffer");
+        ImGui::Text("Attachments of layered frame receiver.");
 
         {
-            const auto& attachment0 = layeredFrameReceiver->m_layersCombinedBuffer->getAttachment(
+            const auto& attachment0 = layeredFrameReceiver->m_layersFrameBuffer->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0
             );
 
@@ -59,12 +46,21 @@ void SGE::SceneTreeView::renderBody()
                          {0, 1}, {1, 0}
             );
 
-            const auto& attachment1 = layeredFrameReceiver->m_layersCombinedBuffer->getAttachment(
+            const auto& attachment1 = layeredFrameReceiver->m_layersFrameBuffer->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1
             );
 
             ImGui::Image(attachment1->getTextureNativeHandler(),
                          {attachment1->getWidth() / compressionCoeff, attachment1->getHeight() / compressionCoeff},
+                         {0, 1}, {1, 0}
+            );
+
+            const auto& attachment31 = layeredFrameReceiver->m_layersFrameBuffer->getAttachment(
+                    SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT10
+            );
+
+            ImGui::Image(attachment31->getTextureNativeHandler(),
+                         {attachment31->getWidth() / compressionCoeff, attachment31->getHeight() / compressionCoeff},
                          {0, 1}, {1, 0}
             );
         }

@@ -10,6 +10,7 @@
 #sg_include "sg_shaders/glsl4/color_correction/reinhard.glsl"
 #sg_include "sg_shaders/glsl4/color_correction/filmic.glsl"
 #sg_include "sg_shaders/glsl4/color_correction/neutral.glsl"
+#sg_include "sg_shaders/glsl4/postprocessing/layered/utils.glsl"
 #sg_include "dir_lights_shadows_calc.glsl"
 
 float ambient = 0.1;
@@ -53,11 +54,8 @@ SGSubPass(GeometryPass)
     
     SGSubShader(Fragment)
     {
-        layout(location = 0) out vec4 fragColor0;
-        layout(location = 1) out vec4 fragColor1;
-        layout(location = 2) out vec4 gFragPos;
-        layout(location = 3) out vec4 gNormal;
-        layout(location = 4) out vec4 gAlbedoSpec;
+        layout(location = 0) out vec4 layerVolume;
+        layout(location = 1) out vec4 layerColor;
 
         // thats fucking works!!!!!!
         // SGUSampler2D diffuseSamplers[1] = SGGetTextures("GeniusTexture");
@@ -74,6 +72,8 @@ SGSubPass(GeometryPass)
         // lightmapSamplers[0] = SGGetTexturesFromMaterial("SGTT_LIGHTMAP");
         SGSampler2D mat_diffuseRoughnessSamplers[1];
         // diffuseRoughnessSamplers[0] = SGGetTexturesFromMaterial("SGTT_DIFFUSE_ROUGHNESS");
+
+        uniform int SGPP_CurrentLayerIndex;
 
         in VSOut
         {
@@ -237,10 +237,9 @@ SGSubPass(GeometryPass)
                 finalNormal = normalizedNormal;
             }
 
-            gFragPos = vec4(vsIn.fragPos, 1.0);
-            // gNormal = vec4(finalNormal, 1.0);
+            /*gFragPos = vec4(vsIn.fragPos, 1.0);
             gNormal = vec4(normalMapColor.rg, 0.0, 1.0);
-            gAlbedoSpec = vec4(diffuseColor.rgb, 1.0);
+            gAlbedoSpec = vec4(diffuseColor.rgb, 1.0);*/
 
             //unknownAttachment0 = vec3(1.0);
             //unknownAttachment1 = vec3(1.0);
@@ -397,12 +396,11 @@ SGSubPass(GeometryPass)
             // finalCol = lottes(finalCol);
             finalCol = reinhard2(finalCol);
 
-            fragColor0.a = diffuseColor.a;
-            fragColor0.rgb = finalCol;
-            fragColor0.a = 1.0;
+            layerColor.a = diffuseColor.a;
+            layerColor.rgb = finalCol;
+            layerColor.a = 1.0;
 
-            fragColor1 = vec4(finalCol, diffuseColor.a);
-            fragColor1.a = 1.0;
+            layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 
             /*fragColor0 = vec4(normalMapColor, 1.0);
             fragColor1 = vec4(normalMapColor, 1.0);*/

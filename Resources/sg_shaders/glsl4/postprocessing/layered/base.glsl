@@ -1,10 +1,9 @@
 #sg_pragma once
 
-SGSubPass(SGLPPLayerDepthPass, SGLPPLayerFXPass, SGLPPAttachmentsCombiningPass, SGLPPFinalFXPass)
+SGSubPass(SGPPLayerFXPass)
 {
     SGSubShader(Vertex)
     {
-        // #sg_include "../../primitives.glsl"
         #sg_include "sg_shaders/glsl4/primitives.glsl"
 
         out vec2 vs_UVAttribute;

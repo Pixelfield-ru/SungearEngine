@@ -29,25 +29,7 @@ namespace SGCore
 
         std::vector<PostProcessFXSubPass> m_subPasses;
 
-        Ref<IFrameBuffer> m_frameBuffer;
-
         std::string m_name;
-
-        std::uint16_t m_index = 0;
-        
-        // attachments that the scene will be rendered into
-        std::vector<SGFrameBufferAttachmentType> m_attachmentsToRenderIn { SGG_COLOR_ATTACHMENT0 };
-
-        // first - to which attachment of the output buffer will the data from the attachment "second" be copied
-        // second - the attachment to be copied
-        std::unordered_map<SGFrameBufferAttachmentType, SGFrameBufferAttachmentType> m_attachmentsForCombining {
-                { SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT0 }/*,
-                { SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT2 },
-                { SGG_COLOR_ATTACHMENT2, SGG_COLOR_ATTACHMENT3 },
-                { SGG_COLOR_ATTACHMENT3, SGG_COLOR_ATTACHMENT4 },
-                { SGG_COLOR_ATTACHMENT4, SGG_COLOR_ATTACHMENT5 },
-                { SGG_COLOR_ATTACHMENT5, SGG_COLOR_ATTACHMENT6 }*/
-        };
         
         template<typename EffectT>
         requires(std::is_base_of_v<PostProcessEffect, EffectT>)
@@ -120,8 +102,15 @@ namespace SGCore
                 effect->onLayerShaderChanged(shared_from_this());
             }
         }
+
+        const size_t& getIndex() const noexcept
+        {
+            return m_index;
+        }
         
     private:
+        std::uint16_t m_index = 0;
+
         Ref<ISubPassShader> m_FXSubPassShader;
         
         std::vector<Ref<PostProcessEffect>> m_effects;
@@ -135,16 +124,11 @@ namespace SGCore
     public:
         LayeredFrameReceiver();
 
-        // contains only PostProcessFinalFXPass
-        Ref<ISubPassShader> m_finalFrameFXShader;
-        
-        // contains depth pass and combination pass
         Ref<IShader> m_shader;
 
-        Ref<IFrameBuffer> m_layersCombinedBuffer;
-
-        // final frame buffer with all post-processing
-        Ref<IFrameBuffer> m_finalFrameFXFrameBuffer;
+        Ref<IFrameBuffer> m_layersFrameBuffer;
+        // ATTACHMENT THAT ARE USED TO RENDER IN THEM.
+        std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1 };
         
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
                                             const std::uint16_t& fbWidth,
@@ -153,9 +137,6 @@ namespace SGCore
         Ref<PostProcessLayer> addLayer(const std::string& name);
 
         void removeLayer(const std::string& name) noexcept;
-        
-        void setLayerShader(const std::string& name,
-                            const Ref<ISubPassShader>& shader) noexcept;
 
         [[nodiscard]] const auto& getLayers() const noexcept
         {
@@ -169,20 +150,9 @@ namespace SGCore
         
         void clearPostProcessFrameBuffers() const noexcept;
         
-        void attachmentDepthPass(const SGCore::Ref<SGCore::PostProcessLayer>& layer, SGFrameBufferAttachmentType attachmentType) noexcept;
-
-        void setRenderOverlayInSeparateFrameBuffer(bool renderOverlayInSeparateFrameBuffer) noexcept;
-        [[nodiscard]] bool isRenderOverlayInSeparateFrameBuffer() const noexcept;
-
-        [[nodiscard]] Ref<IFrameBuffer> getOverlayFrameBuffer() const noexcept;
-        
     private:
         MeshDataRenderInfo m_postProcessQuadRenderInfo;
         Ref<IMeshData> m_postProcessQuad;
-
-        bool m_renderOverlayInSeparateFrameBuffer = false;
-        // may be nullptr. this frame buffer has only one attachment (COLOR). not nullptr if m_renderOverlayInSeparateFrameBuffer == true
-        Ref<IFrameBuffer> m_overlayFrameBuffer;
 
         Ref<PostProcessLayer> m_defaultLayer;
         

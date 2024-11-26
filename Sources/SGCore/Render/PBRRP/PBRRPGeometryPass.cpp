@@ -81,26 +81,24 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             
             if(willRender)
             {
-                EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(meshEntity);
-                Ref<PostProcessLayer> meshPPLayer = entityBaseInfo ? mesh.m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock() : nullptr;
-                
+                Ref<PostProcessLayer> meshPPLayer = mesh.m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock();
+
                 if(cameraLayeredFrameReceiver)
                 {
                     if(!meshPPLayer)
                     {
                         meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
                     }
-                    
-                    meshPPLayer->m_frameBuffer->bind();
-                    meshPPLayer->m_frameBuffer->bindAttachmentsToDrawIn(meshPPLayer->m_attachmentsToRenderIn);
                 }
-                
-                renderMesh(registry, meshEntity, meshTransform, mesh, standardGeometryShader);
-                
-                if(meshPPLayer)
-                {
-                    meshPPLayer->m_frameBuffer->unbind();
-                }
+
+                SG_ASSERT(meshPPLayer != nullptr, "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
+
+                cameraLayeredFrameReceiver->m_layersFrameBuffer->bind();
+                cameraLayeredFrameReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraLayeredFrameReceiver->m_attachmentToRenderIn);
+
+                renderMesh(registry, meshEntity, meshTransform, mesh, meshPPLayer, standardGeometryShader);
+
+                cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
             }
         });
     });
@@ -140,6 +138,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                            const entity_t& meshEntity,
                                            const Ref<Transform>& meshTransform,
                                            Mesh& mesh,
+                                           const Ref<PostProcessLayer>& meshPPLayer,
                                            const Ref<ISubPassShader>& standardGeometryShader) noexcept
 {
     if(!mesh.m_base.getMeshData() ||
@@ -166,6 +165,9 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
         
         size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.getMaterial());
         shaderToUse->bindTextureBindings(offset0);
+        shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
+
+        std::cout << meshPPLayer->getIndex() << std::endl;
         
         auto uniformBuffsIt = m_uniformBuffersToUse.begin();
         while(uniformBuffsIt != m_uniformBuffersToUse.end())
@@ -227,7 +229,8 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry
                 ++renderedInOctrees;
                 
                 EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(e);
-                Ref<PostProcessLayer> meshPPLayer = entityBaseInfo ? mesh->m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock() : nullptr;
+                SG_ASSERT(entityBaseInfo != nullptr, "In octree culling: can not render entity that contains mesh does not contain EntityBaseInfo.");
+                Ref<PostProcessLayer> meshPPLayer = mesh->m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock();
                 
                 if(cameraLayeredFrameReceiver)
                 {
@@ -235,17 +238,14 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry
                     {
                         meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
                     }
-                    
-                    meshPPLayer->m_frameBuffer->bind();
-                    meshPPLayer->m_frameBuffer->bindAttachmentsToDrawIn(meshPPLayer->m_attachmentsToRenderIn);
                 }
+
+                cameraLayeredFrameReceiver->m_layersFrameBuffer->bind();
+                cameraLayeredFrameReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(cameraLayeredFrameReceiver->m_attachmentToRenderIn);
                 
-                renderMesh(registry, e, meshTransform, *mesh, standardGeometryShader);
-                
-                if(meshPPLayer)
-                {
-                    meshPPLayer->m_frameBuffer->unbind();
-                }
+                renderMesh(registry, e, meshTransform, *mesh, meshPPLayer, standardGeometryShader);
+
+                cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
             }
         }
     }

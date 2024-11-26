@@ -1,6 +1,6 @@
 #sg_pragma once
 
-vec3 calculatePPLayerVolume(int layerIndex)
+vec4 calculatePPLayerVolume(int layerIndex)
 {
-    return vec3(float(layerIndex) * 10.0 / 255.0, 0.0, 0.0);
+    return vec4(float(layerIndex) * 10.0 / 255.0, 0.0, 0.0, 1.0);
 }

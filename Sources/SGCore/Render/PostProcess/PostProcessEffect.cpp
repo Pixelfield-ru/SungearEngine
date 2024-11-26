@@ -1,5 +1,5 @@
 //
-// Created by ilya on 19.04.24.
+// Created by stuka on 26.11.2024.
 //
 
 #include "PostProcessEffect.h"
@@ -24,13 +24,13 @@ bool SGCore::PostProcessEffect::isEnabled() const noexcept
 void SGCore::PostProcessEffect::setEnabled(bool isEnabled) noexcept
 {
     m_isEnabled = isEnabled;
-    
+
     for(const auto& layer : m_parentPostProcessLayers)
     {
         if(auto lockedLayer = layer.lock())
         {
             lockedLayer->getFXSubPassShader()->bind();
-            
+
             lockedLayer->getFXSubPassShader()->useInteger(m_name + "_ENABLED", m_isEnabled);
         }
     }

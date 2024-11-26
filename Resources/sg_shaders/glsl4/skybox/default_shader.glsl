@@ -27,8 +27,10 @@ SGSubPass(GeometryPass)
     SGSubShader(Fragment)
     {
         #sg_include "atmosphere_scattering.glsl"
+        #sg_include "sg_shaders/glsl4/postprocessing/layered/utils.glsl"
 
-        layout(location = 0) out vec4 fragColor;
+        layout(location = 0) out vec4 layerVolume;
+        layout(location = 1) out vec4 layerColor;
 
         /*SGSamplerCube skyboxSamplers[1];
         skyboxSamplers[0] = SGGetTextures("GeniusTexture");*/
@@ -36,6 +38,8 @@ SGSubPass(GeometryPass)
         skyboxSamplers[0] = SGGetTextures("standard_skybox0");*/
         SGSamplerCube mat_skyboxSamplers[1];
         // skyboxSamplers[0] = SGGetTexturesFromMaterial("SGTT_SKYBOX");
+
+        uniform int SGPP_CurrentLayerIndex;
 
         in vec3 vs_UVAttribute;
 
@@ -64,12 +68,14 @@ SGSubPass(GeometryPass)
                     skyboxCol += texture(mat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
                 }
 
-                fragColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);
+                layerColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);
             }
             else
             {
-                fragColor = vec4(atmosphereCol, 1.0);
+                layerColor = vec4(atmosphereCol, 1.0);
             }
+
+            layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
         }
     }
 }

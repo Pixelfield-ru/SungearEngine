@@ -1,11 +1,9 @@
 //
-// Created by Ilya on 05.12.2023.
+// Created by stuka on 26.11.2024.
 //
 
 #ifndef SUNGEARENGINE_POSTPROCESSFXSUBPASS_H
 #define SUNGEARENGINE_POSTPROCESSFXSUBPASS_H
-
-#include <SGCore/pch.h>
 
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
 #include "SGCore/Main/CoreGlobals.h"
@@ -16,14 +14,10 @@ namespace SGCore
 
     struct PostProcessFXSubPass
     {
+        SGFrameBufferAttachmentType m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT10;
+
         std::function<void(const Ref<ISubPassShader>& ppLayerShader)> m_prepassFunction;
         std::function<void(const Ref<ISubPassShader>& ppLayerShader)> m_postpassFunction;
-        
-        bool m_enablePostFXDepthPass = false;
-        /**
-         * YOU MUST SPECIFY RENDER TARGET.
-         */
-        SGFrameBufferAttachmentType m_attachmentRenderTo = SGG_COLOR_ATTACHMENT1;
     };
 }
 
