@@ -259,13 +259,13 @@ void SGCore::GL46SubPassShader::useFloat(const std::string& uniformName, const f
     glUniform1f(fLoc, f);
 }
 
-void SGCore::GL46SubPassShader::useInteger(const std::string& uniformName, const size_t& i)
+void SGCore::GL46SubPassShader::useInteger(const std::string& uniformName, const int& i)
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, i);
 }
 
-void SGCore::GL46SubPassShader::useTextureBlock(const std::string& uniformName, const size_t& textureBlock)
+void SGCore::GL46SubPassShader::useTextureBlock(const std::string& uniformName, const int& textureBlock)
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, textureBlock);

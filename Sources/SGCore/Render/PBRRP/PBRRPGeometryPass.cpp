@@ -162,12 +162,11 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                    meshTransform->m_finalTransform.m_modelMatrix);
             shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
         }
+
+        shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
         
         size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.getMaterial());
         shaderToUse->bindTextureBindings(offset0);
-        shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
-
-        std::cout << meshPPLayer->getIndex() << std::endl;
         
         auto uniformBuffsIt = m_uniformBuffersToUse.begin();
         while(uniformBuffsIt != m_uniformBuffersToUse.end())

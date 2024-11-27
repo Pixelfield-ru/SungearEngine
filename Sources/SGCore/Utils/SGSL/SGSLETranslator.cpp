@@ -16,14 +16,10 @@ SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const st
                                      const std::shared_ptr<ShaderAnalyzedFile>& analyzedFile) noexcept
 {
     // std::cout << "loading shader: " << path << std::endl;
-    
-    std::string replacedPath = Utils::toUTF8(SGCore::Utils::replaceAll<char16_t>(path.u16string(), u"/", u"_"));
-    replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, "\\", "_");
-    replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, ":", "_");
 
     if(isRootShader)
     {
-        translator.m_config.m_outputDebugDirectoryPath += "/" + replacedPath;
+        // translator.m_config.m_outputDebugDirectoryPath += "/" + replacedPath;
     }
     
     std::string correctedCode = sgsleCodeCorrector(code);
@@ -32,7 +28,13 @@ SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const st
     
     if(translator.m_config.m_useOutputDebug && isRootShader)
     {
-        SGCore::FileUtils::writeToFile(translator.m_config.m_outputDebugDirectoryPath + "/" + replacedPath + ".txt",
+        std::string replacedPath = Utils::toUTF8(SGCore::Utils::replaceAll<char16_t>(path.u16string(), u"/", u"_"));
+        replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, "\\", "_");
+        replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, ":", "_");
+        replacedPath = SGCore::Utils::replaceAll<char>(replacedPath, ".", "_");
+
+        // todo: make for hlsl and other
+        SGCore::FileUtils::writeToFile(translator.m_config.m_outputDebugDirectoryPath + "/" + replacedPath + ".glsl",
                                         analyzedFile->getAllCode(), false, true);
     }
 }

@@ -8,7 +8,7 @@ SGSubPass(SGPPLayerFXPass)
     SGSubShader(Fragment)
     {
         // ===================================================
-        // !! - TO GET INDICES OF ALL LAYERS USE UNIFORM ARRAY 'SGPP_LayersIndices'
+        // !! - TO GET INDICES OF ALL LAYERS USE UNIFORM ARRAY 'SGPP_LayersIndices' (UNIFORM INT)
         // !! - TO GET LAYERS COUNT USE UNIFORM INT 'SGPP_LayersCount'
         // !! - TO GET CURRENT LAYER INDEX USE UNIFORM INT 'SGPP_CurrentLayerIndex'. !! WARNING - THE INDEXES OF THE LAYERS ARE NOT NECESSARILY SEQUENTIAL
         // !! - TO GET CURRENT LAYER SEQUENTIAL INDEX USE UNIFORM INT 'SGPP_CurrentLayerSeqIndex'
@@ -17,13 +17,11 @@ SGSubPass(SGPPLayerFXPass)
         // ===================================================
 
         // =========== HOW TO WRITE/READ COLORS ==============
-        // !! USE LOCATION 31 TO WRITE IN DEFAULT ATTACHMENT THAT CONTAINS EFFECTS
+        // !! USE LOCATION 7 TO WRITE IN DEFAULT ATTACHMENT THAT CONTAINS EFFECTS
         // !! USE UNIFORM SAMPLER2D 'SGPP_LayersVolumes' TO GET LAYERS VOLUMES
         // !! USE UNIFORM SAMPLER2D 'SGPP_LayersColors' TO GET LAYERS COLORS WITHOUT POSTPROCESS EFFECTS
         // !! YOU CAN ADD YOUR CUSTOM INTERMEDIATE ATTACHMENTS TO STORE EFFECTS
         // ===================================================
-
-        out vec4 fragColor;
 
         in vec2 vs_UVAttribute;
 
@@ -40,12 +38,12 @@ SGSubPass(SGPPLayerFXPass)
             #endif
 
             // just do nothing
-            // if(texture(SGPP_LayersVolumes, finalUV).rgb == calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb)
+            if(texture(SGPP_LayersVolumes, finalUV).rgb == calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb)
             {
-                // fragColor = vec4(1.0, 0.0, 0.0, 1.0);
-                // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-                // gl_FragColor = texture(SGPP_LayersColors, finalUV);
+                // gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+                gl_FragColor = texture(SGPP_LayersColors, finalUV);
             }
+            // fragColor = vec4(1.0, 1.0, 0.0, 1.0);
         }
     }
 }

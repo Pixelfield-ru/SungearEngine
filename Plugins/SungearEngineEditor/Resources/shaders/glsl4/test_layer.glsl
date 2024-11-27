@@ -10,8 +10,6 @@ SGSubPass(SGPPLayerFXPass)
 {
     SGSubShader(Fragment)
     {
-        uniform sampler2D currentLayer;
-
         in vec2 vs_UVAttribute;
 
         const int samplesCount = 6;
@@ -32,21 +30,37 @@ SGSubPass(SGPPLayerFXPass)
             float rotAngle = rand * PI;
             vec2 rotTrig = vec2(cos(rotAngle), sin(rotAngle));
 
-            vec4 finalCol = vec4(0.0);
+            vec3 layerCol = texture(SGPP_LayersColors, finalUV).rgb;
+            vec3 bloomCol = vec3(0.0);
 
+            int successfulSamplesCount = 1;
             for(int i = 0; i < samplesCount; i++)
             {
-                finalCol += texture(currentLayer, finalUV + rotate(poissonDisk[i], rotTrig) / 70.0).rgba;
+                vec2 uvOffset = finalUV + rotate(poissonDisk[i], rotTrig) / 50.0;
+                vec4 layerVolume = texture(SGPP_LayersVolumes, uvOffset);
+                if(layerVolume == calculatePPLayerVolume(SGPP_CurrentLayerIndex))
+                {
+                    bloomCol += texture(SGPP_LayersColors, uvOffset).rgb * 5.0;
+                    ++successfulSamplesCount;
+                }
             }
 
-            finalCol.rgb /= float(samplesCount);
+            if(successfulSamplesCount > 2)
+            {
+                --successfulSamplesCount;
+            }
+
+            bloomCol.rgb /= float(successfulSamplesCount);
+
+            layerCol += bloomCol;
 
             // just do nothing
             // if(texture(SGPP_LayersVolumes, finalUV).rgb == calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb)
+            // if()
             {
-                gl_FragColor = texture(SGPP_LayersColors, finalUV);
+                // gl_FragColor = texture(SGPP_LayersColors, finalUV);
             }
-            // gl_FragColor = finalCol;
+            gl_FragColor = vec4(layerCol, 1.0);
         }
     }
 }

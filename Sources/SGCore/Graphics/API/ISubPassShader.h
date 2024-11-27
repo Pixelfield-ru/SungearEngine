@@ -94,8 +94,8 @@ namespace SGCore
         virtual void useVectorf(const std::string& uniformName, const glm::vec4& vec) { };
 
         virtual void useFloat(const std::string& uniformName, const float& f) { };
-        virtual void useInteger(const std::string& uniformName, const size_t& i) { };
-        virtual void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) { };
+        virtual void useInteger(const std::string& uniformName, const int& i) { };
+        virtual void useTextureBlock(const std::string& uniformName, const int& textureBlock) { };
         
         virtual bool isUniformExists(const std::string& uniformName) const noexcept { return false; };
 

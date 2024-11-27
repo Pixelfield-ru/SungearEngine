@@ -45,7 +45,7 @@ void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderP
 
 void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
 {
-    /*receiver.m_layersFrameBuffer->bind();
+    receiver.m_layersFXFrameBuffer->bind();
 
     for(const auto& layer : receiver.getLayers())
     {
@@ -56,23 +56,27 @@ void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
 
         bindCommonUniforms(receiver, layerShader);
 
+        layerShader->useInteger("SGPP_CurrentLayerIndex", layer->getIndex());
+
         for(size_t i = 0; i < layer->m_subPasses.size(); ++i)
         {
             const auto& fxSubPass = layer->m_subPasses[i];
 
             layerShader->useInteger("SGPP_CurrentFXSubPassSeqIndex", i);
 
-            receiver.m_layersFrameBuffer->bindAttachmentToDrawIn(fxSubPass.m_attachmentRenderTo);
+            receiver.m_layersFXFrameBuffer->bindAttachmentToDrawIn(fxSubPass.m_attachmentRenderTo);
             // receiver.m_layersFrameBuffer->clearAttachment(fxSubPass.m_attachmentRenderTo);
 
             CoreMain::getRenderer()->renderMeshData(
                     m_postProcessQuad.get(),
                     m_postProcessQuadRenderInfo
             );
+
+            // receiver.m_layersFXFrameBuffer->unbindAttachmentToDrawIn();
         }
     }
 
-    receiver.m_layersFrameBuffer->unbind();*/
+    receiver.m_layersFXFrameBuffer->unbind();
 }
 
 void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,

@@ -40,8 +40,8 @@ namespace SGCore
         void useVectorf(const std::string& uniformName, const glm::vec4& vec) override;
 
         void useFloat(const std::string& uniformName, const float& f) override;
-        void useInteger(const std::string& uniformName, const size_t& i) override;
-        void useTextureBlock(const std::string& uniformName, const size_t& textureBlock) override;
+        void useInteger(const std::string& uniformName, const int& i) override;
+        void useTextureBlock(const std::string& uniformName, const int& textureBlock) override;
         
         bool isUniformExists(const std::string& uniformName) const noexcept;
 

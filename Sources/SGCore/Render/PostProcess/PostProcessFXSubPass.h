@@ -14,7 +14,7 @@ namespace SGCore
 
     struct PostProcessFXSubPass
     {
-        SGFrameBufferAttachmentType m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT10;
+        SGFrameBufferAttachmentType m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7;
 
         std::function<void(const Ref<ISubPassShader>& ppLayerShader)> m_prepassFunction;
         std::function<void(const Ref<ISubPassShader>& ppLayerShader)> m_postpassFunction;

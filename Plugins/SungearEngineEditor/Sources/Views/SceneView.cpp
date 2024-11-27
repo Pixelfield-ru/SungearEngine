@@ -45,8 +45,8 @@ void SGE::SceneView::renderBody()
 
         if(layeredFrameReceiver)
         {
-            ImGui::Image(layeredFrameReceiver->m_layersFrameBuffer->getAttachment(
-                    SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT10
+            ImGui::Image(layeredFrameReceiver->m_layersFXFrameBuffer->getAttachment(
+                    SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7
             )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 
             acceptFilesFromDirectoryExplorer();

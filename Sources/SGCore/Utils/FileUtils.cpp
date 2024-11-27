@@ -137,7 +137,7 @@ void SGCore::FileUtils::writeToFile(const std::filesystem::path& path, const std
     try
     {
         std::ofstream fileStream;
-        fileStream.open(path, (append ? std::ios::app : std::ios::trunc) | std::ios::out | std::ios::in | std::ios::binary);
+        fileStream.open(path, (append ? std::ios::app : std::ios::trunc) | std::ios::out | std::ios::in);
 
         fileStream << text;
     }

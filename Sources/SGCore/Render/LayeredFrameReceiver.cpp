@@ -31,10 +31,6 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_postProcessQuad->prepare();
     
     m_defaultLayer = addLayer("___DEFAULT_LAYER___");
-    
-    m_shader = MakeRef<IShader>();
-    m_shader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            ShadersUniversalPaths::getDefaultPaths()["LayeredPP/ReceiverShader"]->getCurrentRealization()));
 
     // ==================================================================
 
@@ -68,15 +64,22 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0,
             0
     );
-    m_layersFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT10, // CONTAINS COLOR1 BUT WITH EFFECTS
-            SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA8,
+
+    m_layersFrameBuffer->unbind();
+
+    m_layersFXFrameBuffer = Ref<IFrameBuffer>(CoreMain::getRenderer()->createFrameBuffer());
+    m_layersFXFrameBuffer->setSize(primaryMonitorWidth, primaryMonitorHeight);
+    m_layersFXFrameBuffer->create();
+    m_layersFXFrameBuffer->bind();
+    m_layersFXFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // CONTAINS COLOR1 BUT WITH EFFECTS
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
             0,
             0
     );
 
-    m_layersFrameBuffer->unbind();
+    m_layersFXFrameBuffer->unbind();
 }
 
 SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLayer(const std::string& name,
@@ -162,7 +165,10 @@ void SGCore::LayeredFrameReceiver::clearPostProcessFrameBuffers() const noexcept
 {
     // clearing all attachments
     m_layersFrameBuffer->bind();
-    m_layersFrameBuffer->bindAttachmentsToDrawIn(std::vector { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1, SGG_COLOR_ATTACHMENT10 });
     m_layersFrameBuffer->clear();
     m_layersFrameBuffer->unbind();
+
+    m_layersFXFrameBuffer->bind();
+    m_layersFXFrameBuffer->clear();
+    m_layersFXFrameBuffer->unbind();
 }

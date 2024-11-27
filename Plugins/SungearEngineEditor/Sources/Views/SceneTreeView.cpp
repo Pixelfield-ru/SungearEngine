@@ -55,8 +55,8 @@ void SGE::SceneTreeView::renderBody()
                          {0, 1}, {1, 0}
             );
 
-            const auto& attachment31 = layeredFrameReceiver->m_layersFrameBuffer->getAttachment(
-                    SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT10
+            const auto& attachment31 = layeredFrameReceiver->m_layersFXFrameBuffer->getAttachment(
+                    SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7
             );
 
             ImGui::Image(attachment31->getTextureNativeHandler(),
