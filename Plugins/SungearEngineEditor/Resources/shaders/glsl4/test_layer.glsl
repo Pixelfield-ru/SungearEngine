@@ -55,12 +55,12 @@ SGSubPass(SGPPLayerFXPass)
             layerCol += bloomCol;
 
             // just do nothing
-            // if(texture(SGPP_LayersVolumes, finalUV).rgb == calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb)
+            if(texture(SGPP_LayersVolumes, finalUV).rgb == calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb)
             // if()
             {
-                // gl_FragColor = texture(SGPP_LayersColors, finalUV);
+                gl_FragColor = texture(SGPP_LayersColors, finalUV);
             }
-            gl_FragColor = vec4(layerCol, 1.0);
+            // gl_FragColor = vec4(layerCol, 1.0);
         }
     }
 }

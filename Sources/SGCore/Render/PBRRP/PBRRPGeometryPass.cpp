@@ -72,7 +72,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         
         // todo: make get receiver (postprocess or default) and render in them
 
-        meshesView.each([&cameraLayeredFrameReceiver, &renderPipeline, &standardGeometryShader, &scene, &cameraEntity, &registry, this]
+        meshesView.each([&cameraLayeredFrameReceiver, &standardGeometryShader, &registry, this]
         (const entity_t& meshEntity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
             auto* tmpCullableMesh = registry->try_get<Ref<OctreeCullable>>(meshEntity);
             Ref<OctreeCullable> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);

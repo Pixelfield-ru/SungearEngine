@@ -6,6 +6,7 @@
 #define NATIVECORE_IASSET_H
 
 #include <SGCore/pch.h>
+#include <SGCore/Utils/StringInterpolation/InterpolatedPath.h>
 #include "SGCore/Utils/UUID.h"
 #include "SGCore/Utils/StaticTypeID.h"
 
@@ -82,7 +83,7 @@ namespace SGCore
         }
 
         long getLastModified() noexcept;
-        [[nodiscard]] const std::filesystem::path& getPath() const noexcept;
+        [[nodiscard]] const InterpolatedPath& getPath() const noexcept;
         [[nodiscard]] const std::string& getAlias() const noexcept;
         [[nodiscard]] AssetStorageType storedByWhat() const noexcept;
 
@@ -121,7 +122,7 @@ namespace SGCore
         Weak<AssetManager> m_parentAssetManager;
 
         // we are generating UUID for these fields to guarantee uniqueness for every asset even the one that wasn`t added to AssetManager
-        std::filesystem::path m_path = UUID::generateNew();
+        InterpolatedPath m_path = UUID::generateNew();
         std::string m_alias = UUID::generateNew();
 
         AssetStorageType m_storedBy = AssetStorageType::BY_ALIAS;

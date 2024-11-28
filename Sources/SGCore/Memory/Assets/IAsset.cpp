@@ -9,7 +9,7 @@ long SGCore::IAsset::getLastModified() noexcept
     return m_lastModified;
 }
 
-const std::filesystem::path& SGCore::IAsset::getPath() const noexcept
+const SGCore::InterpolatedPath& SGCore::IAsset::getPath() const noexcept
 {
     return m_path;
 }

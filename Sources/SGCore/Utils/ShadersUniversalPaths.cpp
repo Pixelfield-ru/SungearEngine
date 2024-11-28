@@ -65,6 +65,12 @@ void SGCore::ShadersUniversalPaths::init() noexcept
                               ShadersUniversalPaths::undefined_path,
                               ShadersUniversalPaths::undefined_path
     );
+
+    m_defaultPaths->addShader("StandardOutline",
+                              CoreMain::getSungearEngineRootPath() / "Resources/sg_shaders/glsl4/outline.glsl",
+                              ShadersUniversalPaths::undefined_path,
+                              ShadersUniversalPaths::undefined_path
+    );
 }
 
 SGCore::ShaderUniversalPath SGCore::ShadersUniversalPaths::addShader(const std::string& virtualPath,

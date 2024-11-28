@@ -17,6 +17,7 @@
 #include "SGCore/ImGuiWrap/ImGuiLayer.h"
 #include "SGCore/PluginsSystem/PluginsManager.h"
 #include "SGCore/MetaInfo/MetaInfo.h"
+#include "SGCore/Utils/StringInterpolation/InterpolationResolver.h"
 
 void SGCore::CoreMain::start()
 {
@@ -105,6 +106,8 @@ void SGCore::CoreMain::start()
     ShadersUniversalPaths::init();
     InputManager::init();
     FontsManager::init();
+
+    InterpolationMarkup<std::filesystem::path>::getGlobalSubstitutedValues()["enginePath"] = s_sungearEngineRootPath;
 
     m_renderTimer.onUpdate.connect<&updateStart>(0);
     m_renderTimer.onUpdate.connect<&updateEnd>(std::numeric_limits<size_t>::max());

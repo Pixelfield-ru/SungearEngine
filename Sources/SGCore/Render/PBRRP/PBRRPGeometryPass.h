@@ -22,7 +22,7 @@ namespace SGCore
     {
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
         
-        void render(const Ref<Scene>& meshEntity, const Ref<IRenderPipeline>& renderPipeline) final;
+        void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
         
     private:
         void renderMesh(const Ref<registry_t>& registry,
