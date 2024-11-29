@@ -407,13 +407,13 @@ SGSubPass(GeometryPass)
 
             // DEBUG ==================================
             // base color
-            // fragColor0.rgb = albedo.rgb; // PASSED
-            // fragColor0.rgb = vec3(metalness); // PASSED
-            // fragColor0.rgb = vec3(roughness); // PASSED
-            // fragColor0.rgb = finalNormal;
-            // fragColor0.rgb = normalizedNormal;
-            // fragColor0.rgb = normalMapColor; // PASSED
-            // fragColor0.rgb = vec3(ao); // PASSED
+            // layerColor.rgb = albedo.rgb; // PASSED
+            // layerColor.rgb = vec3(metalness); // PASSED
+            // layerColor.rgb = vec3(roughness); // PASSED
+            // layerColor.rgb = finalNormal;
+            // layerColor.rgb = normalizedNormal;
+            // layerColor.rgb = normalMapColor; // PASSED
+            // layerColor.rgb = vec3(ao); // PASSED
         }
     }
 }

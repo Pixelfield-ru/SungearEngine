@@ -8,7 +8,7 @@
 #include "SGCore/UI/FontsManager.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 
-void SGCore::Font::doLoad(const std::filesystem::path& path)
+void SGCore::Font::doLoad(const InterpolatedPath& path)
 {
 
 }
@@ -23,7 +23,7 @@ SGCore::Font::addOrGetSpecialization(const SGCore::FontSpecializationSettings& f
         specialization = MakeRef<FontSpecialization>();
         specialization->m_settings = fontSpecializationSettings;
         
-        specialization->prepareToBuild(getPath().string());
+        specialization->prepareToBuild(getPath().resolved().string());
         
         m_specializations[fontSpecializationSettings] = specialization;
     }

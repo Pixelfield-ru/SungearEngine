@@ -5,6 +5,8 @@
 #ifndef SUNGEARENGINE_INTERPOLATEDPATH_H
 #define SUNGEARENGINE_INTERPOLATEDPATH_H
 
+#include "SGCore/Utils/Utils.h"
+
 namespace SGCore
 {
     struct InterpolatedPath final
@@ -25,6 +27,13 @@ namespace SGCore
         InterpolatedPath(std::basic_string<CharT>&& other) noexcept
         {
             m_rawPath = std::move(other);
+            resolve();
+        }
+
+        template<typename CharT, size_t Count>
+        InterpolatedPath(const CharT (&other)[Count]) noexcept
+        {
+            m_rawPath = std::basic_string<CharT>(other);
             resolve();
         }
 
@@ -49,14 +58,6 @@ namespace SGCore
             return *this;
         }
 
-        [[nodiscard]] InterpolatedPath operator/(const std::filesystem::path& path) noexcept;
-        [[nodiscard]] InterpolatedPath operator/(const InterpolatedPath& path) noexcept;
-        template<typename CharT>
-        [[nodiscard]] InterpolatedPath operator/(const std::basic_string<CharT>& other) noexcept
-        {
-            return m_rawPath / other;
-        }
-
         InterpolatedPath& operator=(const InterpolatedPath& other) = default;
         InterpolatedPath& operator=(InterpolatedPath&& other) = default;
         InterpolatedPath& operator=(const std::filesystem::path& other) noexcept;
@@ -77,17 +78,16 @@ namespace SGCore
 
             return *this;
         }
-
-        InterpolatedPath& operator+=(const std::filesystem::path& other) noexcept;
-        InterpolatedPath& operator+=(const InterpolatedPath& other) noexcept;
-        template<typename CharT>
-        InterpolatedPath& operator+=(const std::basic_string<CharT>& other) noexcept
+        template<typename CharT, size_t Count>
+        InterpolatedPath& operator=(const CharT (&other)[Count]) noexcept
         {
-            m_rawPath += other;
+            m_rawPath = std::basic_string<CharT>(other);
             resolve();
 
             return *this;
         }
+
+        InterpolatedPath& operator+=(const InterpolatedPath& other) noexcept;
 
     private:
         void resolve() noexcept;
@@ -96,5 +96,9 @@ namespace SGCore
         std::filesystem::path m_resolvedPath;
     };
 }
+
+[[nodiscard]] SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const std::filesystem::path& p1) noexcept;
+
+[[nodiscard]] bool operator==(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept;
 
 #endif //SUNGEARENGINE_INTERPOLATEDPATH_H

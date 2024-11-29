@@ -103,7 +103,7 @@ namespace SGCore
         }
         
     protected:
-        void doLoad(const std::filesystem::path& path) final;
+        void doLoad(const InterpolatedPath& path) final;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
 

@@ -172,7 +172,7 @@ void SGCore::IMeshData::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager
     AssetManager::resolveAssetReference(updatedAssetManager, m_material);
 }
 
-void SGCore::IMeshData::doLoad(const std::filesystem::path& path)
+void SGCore::IMeshData::doLoad(const InterpolatedPath& path)
 {
 
 }

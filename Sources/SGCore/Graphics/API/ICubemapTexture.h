@@ -30,8 +30,6 @@ namespace SGCore
         {
             auto tex = Ref<ICubemapTexture>(CoreMain::getRenderer()->createCubemapTexture(std::forward<AssetCtorArgs>(assetCtorArgs)...));
 
-            tex->addToGlobalStorage();
-
             return tex;
         }
     };

@@ -151,7 +151,7 @@ namespace SGCore
 
         // these fields are used for unresolved m_asset to avoid allocation instance of Asset with AssetT type.
         // these fields can be edited only in SerdeSpec for AssetRef.
-        std::filesystem::path m_deserializedAssetPath;
+        InterpolatedPath m_deserializedAssetPath;
         std::string m_deserializedAssetAlias;
         AssetStorageType m_deserializedAssetStoredBy = AssetStorageType::BY_ALIAS;
         size_t m_deserializedAssetTypeID = 0;

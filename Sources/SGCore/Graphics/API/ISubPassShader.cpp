@@ -3,7 +3,6 @@
 //
 
 #include "ISubPassShader.h"
-#include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "IFrameBuffer.h"
 #include "ITexture2D.h"
 #include "SGCore/Utils/SGSL/SGSLESubShader.h"
@@ -191,11 +190,6 @@ SGCore::ISubPassShader& SGCore::ISubPassShader::operator=(const SGCore::ISubPass
     }
 
     return *this;
-}
-
-void SGCore::ISubPassShader::addToGlobalStorage() noexcept
-{
-    GPUObjectsStorage::addShader(shared_from_this());
 }
 
 size_t SGCore::ISubPassShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept

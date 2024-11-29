@@ -6,11 +6,11 @@
 #include "SGSLETranslator.h"
 #include "SGCore/Utils/FileUtils.h"
 
-void SGCore::ShaderAnalyzedFile::doLoad(const std::filesystem::path& path)
+void SGCore::ShaderAnalyzedFile::doLoad(const InterpolatedPath& path)
 {
     SGSLETranslator translator;
     
-    translator.processCode(path, SGCore::FileUtils::readFile(path), shared_from_this());
+    translator.processCode(path.resolved(), SGCore::FileUtils::readFile(path.resolved()), shared_from_this());
 }
 
 void SGCore::ShaderAnalyzedFile::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept

@@ -16,7 +16,7 @@ namespace SGCore
         sg_implement_type_id(ShaderFileAsset, 9)
 
     protected:
-        void doLoad(const std::filesystem::path& path) override;
+        void doLoad(const InterpolatedPath& path) override;
 
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;

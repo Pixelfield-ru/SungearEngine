@@ -23,7 +23,7 @@ namespace SGCore
         void removeSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept;
     
     protected:
-        void doLoad(const std::filesystem::path& path) override;
+        void doLoad(const InterpolatedPath& path) override;
 
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;

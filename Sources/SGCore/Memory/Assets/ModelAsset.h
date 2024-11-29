@@ -26,7 +26,7 @@ namespace SGCore
         std::vector<Ref<Node>> m_nodes;
 
     protected:
-        void doLoad(const std::filesystem::path& path) override;
+        void doLoad(const InterpolatedPath& path) override;
         void doLazyLoad() override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;

@@ -10,9 +10,9 @@ SGCore::ByteFileAsset::~ByteFileAsset()
     delete m_dataBuffer;
 }
 
-void SGCore::ByteFileAsset::doLoad(const std::filesystem::path& path)
+void SGCore::ByteFileAsset::doLoad(const InterpolatedPath& path)
 {
-    m_dataBuffer = SGCore::FileUtils::readBytes(path, m_dataBufferSize);
+    m_dataBuffer = SGCore::FileUtils::readBytes(path.resolved(), m_dataBufferSize);
 }
 
 char* SGCore::ByteFileAsset::getDataBuffer() const noexcept

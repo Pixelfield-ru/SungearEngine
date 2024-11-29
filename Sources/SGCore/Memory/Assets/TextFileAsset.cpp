@@ -3,9 +3,9 @@
 #include "TextFileAsset.h"
 #include "SGCore/Memory/AssetManager.h"
 
-void SGCore::TextFileAsset::doLoad(const std::filesystem::path& path)
+void SGCore::TextFileAsset::doLoad(const InterpolatedPath& path)
 {
-    m_data = SGCore::FileUtils::readFile(path);
+    m_data = SGCore::FileUtils::readFile(path.resolved());
 }
 
 std::string SGCore::TextFileAsset::getData() const noexcept

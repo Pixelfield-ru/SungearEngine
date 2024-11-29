@@ -3257,6 +3257,25 @@ namespace SGCore::Serde
     };
 
     template<FormatType TFormatType>
+    struct SerdeSpec<InterpolatedPath, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "InterpolatedPath";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<InterpolatedPath, TFormatType>& valueView)
+        {
+            const std::string u8Path = SGCore::Utils::toUTF8(valueView.m_data->raw().u16string());
+            valueView.getValueContainer().setAsString(u8Path);
+        }
+
+        static void deserialize(DeserializableValueView<InterpolatedPath, TFormatType>& valueView)
+        {
+            const std::u16string tmpPath = valueView.getValueContainer().template getAsString<char16_t>();
+            *valueView.m_data = tmpPath;
+        }
+    };
+
+    template<FormatType TFormatType>
     struct SerdeSpec<SceneEntitySaveInfo, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::SceneEntitySaveInfo";

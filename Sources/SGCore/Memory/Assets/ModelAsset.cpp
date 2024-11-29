@@ -15,13 +15,13 @@
 
 size_t polygonsNumber = 0;
 
-void SGCore::ModelAsset::doLoad(const std::filesystem::path& path)
+void SGCore::ModelAsset::doLoad(const InterpolatedPath& path)
 {
     m_importerFlags = ModelsImportSettings::IMPORTER_FLAGS;
 
     Assimp::Importer importer;
 
-    const std::string u8Path = Utils::toUTF8(getPath().u16string());
+    const std::string u8Path = Utils::toUTF8(getPath().resolved().u16string());
 
     // TODO: maybe shared_ptr
     const aiScene* aiImportedScene(importer.ReadFile(u8Path, m_importerFlags));
@@ -200,85 +200,91 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
         }
     }
 
-    // if has material
-    if(aiMesh->mMaterialIndex >= 0)
+    // if does not have material
+    if(aiMesh->mMaterialIndex < 0)
     {
-        // get current mesh material
-        auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
-
-        const std::string materialName = aiMat->GetName().data;
-        sgMeshData->m_material = sgMeshData->getParentAssetManager()->getOrAddAssetByPath<IMaterial>(getPath() / "materials" / materialName);
-        // TODO: maybe bad variant?
-        sgMeshData->m_material->m_shader = sgMeshData->getParentAssetManager()->getAsset<IMaterial>("default_material")->m_shader;
-
-        aiColor4D diffuseColor;
-        aiColor4D specularColor;
-        aiColor4D ambientColor;
-        aiColor4D emissionColor;
-        float shininess;
-        float metallic;
-        float roughness;
-
-        if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) == AI_SUCCESS)
-        {
-            sgMeshData->m_material->setDiffuseColor(AssimpUtils::aiVectorToGLM(diffuseColor));
-        }
-
-        if(aiGetMaterialColor(aiMat, AI_MATKEY_SPECULAR_FACTOR, &specularColor) == AI_SUCCESS)
-        {
-            sgMeshData->m_material->setSpecularColor(AssimpUtils::aiVectorToGLM(specularColor));
-        }
-
-        if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_AMBIENT, &ambientColor) == AI_SUCCESS)
-        {
-            sgMeshData->m_material->setAmbientColor(AssimpUtils::aiVectorToGLM(ambientColor));
-        }
-
-        if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissionColor) == AI_SUCCESS)
-        {
-            sgMeshData->m_material->setEmissionColor(AssimpUtils::aiVectorToGLM(emissionColor));
-        }
-
-        if(aiGetMaterialFloat(aiMat, AI_MATKEY_SHININESS, &shininess) == AI_SUCCESS)
-        {
-            sgMeshData->m_material->setShininess(shininess);
-        }
-
-        if(aiGetMaterialFloat(aiMat, AI_MATKEY_METALLIC_FACTOR, &metallic) == AI_SUCCESS)
-        {
-            sgMeshData->m_material->setMetallicFactor(metallic);
-        }
-
-        if(aiGetMaterialFloat(aiMat, AI_MATKEY_ROUGHNESS_FACTOR, &roughness) == AI_SUCCESS)
-        {
-            sgMeshData->m_material->setRoughnessFactor(roughness);
-        }
-
-        LOG_I(SGCORE_TAG,
-              "Current material: {}",
-              Utils::toUTF8(sgMeshData->m_material->getPath().u16string()));
-
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureType::SGTT_EMISSIVE);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureType::SGTT_AMBIENT_OCCLUSION);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT, SGTextureType::SGTT_AMBIENT);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DIFFUSE_ROUGHNESS, SGTextureType::SGTT_DIFFUSE_ROUGHNESS);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DIFFUSE, SGTextureType::SGTT_DIFFUSE);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DISPLACEMENT, SGTextureType::SGTT_DISPLACEMENT);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_HEIGHT, SGTextureType::SGTT_HEIGHT);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_NORMALS, SGTextureType::SGTT_NORMALS);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_BASE_COLOR, SGTextureType::SGTT_BASE_COLOR);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_CLEARCOAT, SGTextureType::SGTT_CLEARCOAT);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSION_COLOR, SGTextureType::SGTT_EMISSION_COLOR);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_LIGHTMAP, SGTextureType::SGTT_LIGHTMAP);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_METALNESS, SGTextureType::SGTT_METALNESS);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_NORMAL_CAMERA, SGTextureType::SGTT_NORMAL_CAMERA);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_OPACITY, SGTextureType::SGTT_OPACITY);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_REFLECTION, SGTextureType::SGTT_REFLECTION);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHEEN, SGTextureType::SGTT_SHEEN);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHININESS, SGTextureType::SGTT_SHININESS);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SPECULAR, SGTextureType::SGTT_SPECULAR);
-        loadTextures(aiMat, sgMeshData->m_material, aiTextureType_TRANSMISSION, SGTextureType::SGTT_TRANSMISSION);
+        sgMeshData->m_material = sgMeshData->getParentAssetManager()->getAsset<IMaterial>("default_material");
+        LOG_W(SGCORE_TAG, "Mesh '{}' does not have materials! Default material was applied to this mesh.", Utils::toUTF8(sgMeshData->getPath().resolved().u16string()));
+        return sgMeshData;
     }
+
+    // get current mesh material
+    auto* aiMat = aiScene->mMaterials[aiMesh->mMaterialIndex];
+
+    const std::string materialName = aiMat->GetName().data;
+    sgMeshData->m_material = sgMeshData->getParentAssetManager()->getOrAddAssetByPath<IMaterial>(
+            getPath() / "materials" / materialName
+    );
+    // TODO: maybe bad variant?
+    sgMeshData->m_material->m_shader = sgMeshData->getParentAssetManager()->getAsset<IMaterial>("default_material")->m_shader;
+
+    aiColor4D diffuseColor;
+    aiColor4D specularColor;
+    aiColor4D ambientColor;
+    aiColor4D emissionColor;
+    float shininess;
+    float metallic;
+    float roughness;
+
+    if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) == AI_SUCCESS)
+    {
+        sgMeshData->m_material->setDiffuseColor(AssimpUtils::aiVectorToGLM(diffuseColor));
+    }
+
+    if(aiGetMaterialColor(aiMat, AI_MATKEY_SPECULAR_FACTOR, &specularColor) == AI_SUCCESS)
+    {
+        sgMeshData->m_material->setSpecularColor(AssimpUtils::aiVectorToGLM(specularColor));
+    }
+
+    if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_AMBIENT, &ambientColor) == AI_SUCCESS)
+    {
+        sgMeshData->m_material->setAmbientColor(AssimpUtils::aiVectorToGLM(ambientColor));
+    }
+
+    if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissionColor) == AI_SUCCESS)
+    {
+        sgMeshData->m_material->setEmissionColor(AssimpUtils::aiVectorToGLM(emissionColor));
+    }
+
+    if(aiGetMaterialFloat(aiMat, AI_MATKEY_SHININESS, &shininess) == AI_SUCCESS)
+    {
+        sgMeshData->m_material->setShininess(shininess);
+    }
+
+    if(aiGetMaterialFloat(aiMat, AI_MATKEY_METALLIC_FACTOR, &metallic) == AI_SUCCESS)
+    {
+        sgMeshData->m_material->setMetallicFactor(metallic);
+    }
+
+    if(aiGetMaterialFloat(aiMat, AI_MATKEY_ROUGHNESS_FACTOR, &roughness) == AI_SUCCESS)
+    {
+        sgMeshData->m_material->setRoughnessFactor(roughness);
+    }
+
+    LOG_I(SGCORE_TAG,
+          "Current material: {}",
+          Utils::toUTF8(sgMeshData->m_material->getPath().resolved().u16string()));
+
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSIVE, SGTextureType::SGTT_EMISSIVE);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT_OCCLUSION, SGTextureType::SGTT_AMBIENT_OCCLUSION);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_AMBIENT, SGTextureType::SGTT_AMBIENT);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DIFFUSE_ROUGHNESS, SGTextureType::SGTT_DIFFUSE_ROUGHNESS);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DIFFUSE, SGTextureType::SGTT_DIFFUSE);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_DISPLACEMENT, SGTextureType::SGTT_DISPLACEMENT);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_HEIGHT, SGTextureType::SGTT_HEIGHT);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_NORMALS, SGTextureType::SGTT_NORMALS);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_BASE_COLOR, SGTextureType::SGTT_BASE_COLOR);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_CLEARCOAT, SGTextureType::SGTT_CLEARCOAT);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_EMISSION_COLOR, SGTextureType::SGTT_EMISSION_COLOR);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_LIGHTMAP, SGTextureType::SGTT_LIGHTMAP);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_METALNESS, SGTextureType::SGTT_METALNESS);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_NORMAL_CAMERA, SGTextureType::SGTT_NORMAL_CAMERA);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_OPACITY, SGTextureType::SGTT_OPACITY);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_REFLECTION, SGTextureType::SGTT_REFLECTION);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHEEN, SGTextureType::SGTT_SHEEN);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SHININESS, SGTextureType::SGTT_SHININESS);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_SPECULAR, SGTextureType::SGTT_SPECULAR);
+    loadTextures(aiMat, sgMeshData->m_material, aiTextureType_TRANSMISSION, SGTextureType::SGTT_TRANSMISSION);
 
     return sgMeshData;
 }
@@ -294,7 +300,7 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
         aiMat->GetTexture(aiTexType, i, &texturePath);
 
         // final path is model directory file + separator + relative texture path
-        std::string finalPath = getPath().parent_path().string();
+        InterpolatedPath finalPath = getPath().raw().parent_path().string();
         finalPath += "/";
         finalPath += texturePath.data;
 
@@ -303,7 +309,7 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
         LOG_I(SGCORE_TAG,
               "Loaded material`s '{}' texture. Raw type name: '{}', path: {}",
               aiMat->GetName().data,
-              sgStandardTextureTypeToString(sgMaterialTextureType), finalPath
+              sgStandardTextureTypeToString(sgMaterialTextureType), Utils::toUTF8(finalPath.resolved().u16string())
         );
     }
 }

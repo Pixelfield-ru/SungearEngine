@@ -8,7 +8,6 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "ISubPassShader.h"
 
 void SGCore::IShader::compile(AssetRef<TextFileAsset> fromFile) noexcept
@@ -40,7 +39,6 @@ void SGCore::IShader::compile(AssetRef<TextFileAsset> fromFile) noexcept
         
         subPassShader->m_fileAsset = fromFile;
         subPassShader->compile(subPassName);
-        subPassShader->addToGlobalStorage();
 
         m_subPassesShaders.push_back(subPassShader);
     }
@@ -96,7 +94,7 @@ void SGCore::IShader::removeAllSubPassShadersByDiskPath(const std::string& path)
         auto lockedFileAsset = subPassShader->m_fileAsset.lock();
         if(!lockedFileAsset) return false;
         
-        return path == lockedFileAsset->getPath();
+        return lockedFileAsset->getPath() == path;
     });
 }
 
@@ -107,7 +105,7 @@ void SGCore::IShader::removeSubPass(const std::string& subPassName) noexcept
     });
 }
 
-void SGCore::IShader::doLoad(const std::filesystem::path& path)
+void SGCore::IShader::doLoad(const InterpolatedPath& path)
 {
     m_fileAsset = getParentAssetManager()->loadAsset<TextFileAsset>(path);
 }

@@ -39,7 +39,7 @@ namespace SGCore
         * @return this
         */
         AssetRef<ITexture2D> findAndAddTexture2D(const SGTextureType& textureType,
-                                                 const std::string& path,
+                                                 const InterpolatedPath& path,
                                                  AssetManager& toAssetManager = *AssetManager::getInstance());
 
         /**
@@ -117,7 +117,7 @@ namespace SGCore
         float m_roughnessFactor         = 1.0f;
         
         // TODO: impl
-        void doLoad(const std::filesystem::path& path) override;
+        void doLoad(const InterpolatedPath& path) override;
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         
         // first - shader name

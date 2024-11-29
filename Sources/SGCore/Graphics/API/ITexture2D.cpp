@@ -1,5 +1,4 @@
 #include "ITexture2D.h"
-#include "SGCore/Graphics/GPUObjectsStorage.h"
 
 #define DDSKTX_IMPLEMENT
 
@@ -20,25 +19,25 @@ void SGCore::STBITextureDataDeleter::operator()(const std::uint8_t* data)
 
 // ----------------------------------
 
-void SGCore::ITexture2D::doLoad(const std::filesystem::path& path)
+void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
 {
     int channelsDesired = 0;
     
-    if(!std::filesystem::exists(path))
+    if(!std::filesystem::exists(path.resolved()))
     {
         LOG_E(SGCORE_TAG,
-              "Error while loading texture: texture by path {} does not exist.", Utils::toUTF8(path.u16string()));
+              "Error while loading texture: texture by path {} does not exist.", Utils::toUTF8(path.resolved().u16string()));
         return;
     }
     
     // m_texture2D = Ref<ITexture2D>(CoreMain::getRenderer().createTexture2D())->addToGlobalStorage();
 
-    const auto& ext = getPath().extension();
+    const auto& ext = getPath().resolved().extension();
     
     if(ext == ".png" || ext == ".jpg" || ext == ".jpeg")
     {
         m_textureData = Ref<std::uint8_t[]>(
-                stbi_load(getPath().string().data(),
+                stbi_load(getPath().resolved().string().data(),
                           &m_width, &m_height,
                           &m_channelsCount, channelsDesired),
                 STBITextureDataDeleter {});
@@ -59,8 +58,6 @@ void SGCore::ITexture2D::doLoad(const std::filesystem::path& path)
 void SGCore::ITexture2D::doLazyLoad()
 {
     create();
-    
-    addToGlobalStorage();
 
     LOG_I(SGCORE_TAG,
           "Loaded texture (in lazy load). Width: {}, height: {}, MB size: {}, channels: {}, path: {}",
@@ -68,12 +65,7 @@ void SGCore::ITexture2D::doLazyLoad()
           m_height,
           m_width * m_height * m_channelsCount / 1024.0 / 1024.0,
           m_channelsCount,
-          getPath().string());
-}
-
-void SGCore::ITexture2D::addToGlobalStorage() noexcept
-{
-    // GPUObjectsStorage::addTexture(shared_from_this());
+          getPath().resolved().string());
 }
 
 SGCore::Ref<std::uint8_t[]> SGCore::ITexture2D::getData() noexcept

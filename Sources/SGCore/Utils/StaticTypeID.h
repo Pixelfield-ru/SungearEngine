@@ -13,7 +13,7 @@
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
 #define sg_implement_type_id(current_class, class_type_id)                          \
-static inline size_t type_id = StaticTypeID<current_class>::setID(class_type_id);   \
+static inline size_t type_id = SGCore::StaticTypeID<current_class>::setID(class_type_id);   \
 const size_t& getTypeID() const noexcept final { return type_id; }
 
 /// Pass current class type as first argument and its type ID as second argument.\n
@@ -21,14 +21,14 @@ const size_t& getTypeID() const noexcept final { return type_id; }
 /// \p getTypeID() is needed to get real static type ID of object.\n
 /// Implementation of this macro must has public access.
 #define sg_implement_type_id_base(current_class, class_type_id)                          \
-static inline size_t type_id = StaticTypeID<current_class>::setID(class_type_id);        \
+static inline size_t type_id = SGCore::StaticTypeID<current_class>::setID(class_type_id);        \
 virtual const size_t& getTypeID() const noexcept { return type_id; }
 
 /// Pass current class type as first argument and its type ID as second argument.\n
 /// Creates only static inline \p typeID without virtual function to get type ID of object
 /// Implementation of this macro must has public access.
 #define sg_implement_nonvirtual_type_id(current_class, class_type_id)                    \
-static inline size_t type_id = StaticTypeID<current_class>::setID(class_type_id);
+static inline size_t type_id = SGCore::StaticTypeID<current_class>::setID(class_type_id);
 
 namespace SGCore
 {

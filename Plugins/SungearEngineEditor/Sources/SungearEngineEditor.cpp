@@ -8,6 +8,7 @@
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/ImGuiWrap/ImGuiLayer.h>
 #include <SGCore/Logger/Logger.h>
+#include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 
 #include "Resources.h"
 
@@ -18,6 +19,8 @@ SGE::SungearEngineEditor::~SungearEngineEditor()
 
 std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>& args)
 {
+    SGCore::InterpolationMarkup<std::filesystem::path>::getGlobalSubstitutedValues()["sgEditorPath"] = getLocalPath();
+
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
 	m_name = "SungearEngineEditor";

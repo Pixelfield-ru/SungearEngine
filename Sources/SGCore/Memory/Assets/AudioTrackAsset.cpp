@@ -68,10 +68,10 @@ void SGCore::AudioTrackAsset::putData(const uint16_t& numChannels, const uint16_
     setNumChannels(numChannels);
 }
 
-void SGCore::AudioTrackAsset::doLoad(const std::filesystem::path& path)
+void SGCore::AudioTrackAsset::doLoad(const InterpolatedPath& path)
 {
     AudioTrackType trackType;
-    std::string extension = getPath().extension().string();
+    std::string extension = getPath().resolved().extension().string();
     if(extension == ".wav")
     {
         trackType = AudioTrackType::WAV;
@@ -86,7 +86,7 @@ void SGCore::AudioTrackAsset::doLoad(const std::filesystem::path& path)
     }
     else
     {
-        LOG_E(SGCORE_TAG, "Audio file with extension '{}' is not supported. Path to audio file: '{}'", extension, Utils::toUTF8(path.u16string()));
+        LOG_E(SGCORE_TAG, "Audio file with extension '{}' is not supported. Path to audio file: '{}'", extension, Utils::toUTF8(path.resolved().u16string()));
         return;
     }
     

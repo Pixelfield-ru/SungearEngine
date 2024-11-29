@@ -5,7 +5,7 @@
 #include "ShaderFileAsset.h"
 #include "SGCore/Main/CoreMain.h"
 
-void SGCore::ShaderFileAsset::doLoad(const std::filesystem::path& path)
+void SGCore::ShaderFileAsset::doLoad(const InterpolatedPath& path)
 {
 }
 

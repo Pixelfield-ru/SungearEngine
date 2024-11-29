@@ -54,12 +54,12 @@ void coreInit()
 
     LOG_E(SGCORE_TAG, "Русский язык");
 
-    const std::filesystem::path sgEditorPath = SGCore::CoreMain::getSungearEngineRootPath() / "Plugins/SungearEngineEditor";
+    const SGCore::InterpolatedPath sgEditorPath = "${enginePath}/Plugins/SungearEngineEditor";
 
     // hardcoded sgeditor load
     auto sgEditorPlugin =
             SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
-                                               sgEditorPath,
+                                               sgEditorPath.resolved(),
                                                {},
                                                "cmake-build-debug");
 

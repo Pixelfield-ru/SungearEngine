@@ -41,7 +41,7 @@ namespace SGCore
     struct AssetRef;
 
     /// You must use \p sg_implement_type_id macro in your assets types to implement static type ID.
-    class IAsset : public UniqueNameWrapper
+    class IAsset
     {
     public:
         sg_serde_as_friend()
@@ -56,12 +56,12 @@ namespace SGCore
 
         virtual ~IAsset() = default;
 
-        void load(const std::filesystem::path& path)
+        void load(const InterpolatedPath& path)
         {
             m_isLoaded = true;
             m_path = path;
             
-            doLoad(path);
+            doLoad(m_path);
             
             onLoadDone(this);
         }
@@ -93,7 +93,7 @@ namespace SGCore
 
         /// In the implementation of the \p doLoad function, you must implement all the logic of downloading an asset, which can be executed in parallel (for example: downloading an asset from disk).
         /// The \p doLoad function can be called in parallel.
-        virtual void doLoad(const std::filesystem::path& path) = 0;
+        virtual void doLoad(const InterpolatedPath& path) = 0;
         /// In the implementation of the \p doLazyLoad function, you must implement all the logic of asset loading, which cannot be executed in a separate thread.
         /// For example: creating a GPU object.
         virtual void doLazyLoad() { };

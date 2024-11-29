@@ -18,6 +18,7 @@ void SGCore::ImGuiWrap::ImGuiLayer::init() noexcept
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     auto gapiType = CoreMain::getRenderer()->getGAPIType();
 
@@ -77,7 +78,13 @@ void SGCore::ImGuiWrap::ImGuiLayer::endFrame() noexcept
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
     
-    ImGui::EndFrame();
+    // ImGui::EndFrame();
+
+    /*if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+    }*/
 }
 
 ImGuiContext* SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext() noexcept

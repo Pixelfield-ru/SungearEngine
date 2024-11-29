@@ -32,7 +32,7 @@ namespace SGCore
         [[nodiscard]] uivec2_32 getSize() const noexcept;
 
     protected:
-        void doLoad(const std::filesystem::path& path) noexcept final { }
+        void doLoad(const InterpolatedPath& path) noexcept final { }
         // todo: implement
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) final;
 

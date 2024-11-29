@@ -13,7 +13,6 @@
 #include "SGCore/Memory/Assets/IAsset.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "SGCore/Graphics/GPUObject.h"
 
 namespace SGCore
 {
@@ -24,7 +23,7 @@ namespace SGCore
         void operator()(const std::uint8_t* data);
     };
     
-    class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>, public GPUObject
+    class ITexture2D : public IAsset, public std::enable_shared_from_this<ITexture2D>
     {
         friend class IFrameBuffer;
 
@@ -79,8 +78,6 @@ namespace SGCore
             std::memcpy(m_textureData.get(), data, byteSize);
 
             create();
-
-            addToGlobalStorage();
         }
 
         /// Moves 'data' to ITexture2D and now ITexture2D owns this data
@@ -106,8 +103,6 @@ namespace SGCore
             m_textureData = Ref<std::uint8_t[]>(data);
 
             create();
-
-            addToGlobalStorage();
         }
 
         virtual void createAsFrameBufferAttachment(const Ref<IFrameBuffer>& parentFrameBuffer, SGFrameBufferAttachmentType attachmentType) = 0;
@@ -135,8 +130,6 @@ namespace SGCore
 
         virtual void bind(const std::uint8_t& textureUnit) = 0;
 
-        void addToGlobalStorage() noexcept final;
-
         virtual ITexture2D& operator=(const Ref<ITexture2D>& other) = 0;
         //virtual operator=(std::shared_ptr<ITexture2D> other);
         
@@ -157,7 +150,7 @@ namespace SGCore
         
         size_t m_pixelSize = 0;
 
-        void doLoad(const std::filesystem::path& path) override;
+        void doLoad(const InterpolatedPath& path) override;
         void doLazyLoad() override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
@@ -175,8 +168,6 @@ namespace SGCore
         static Ref<ITexture2D> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
         {
             auto tex = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D(std::forward<AssetCtorArgs>(assetCtorArgs)...));
-
-            tex->addToGlobalStorage();
 
             return tex;
         }

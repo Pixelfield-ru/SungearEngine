@@ -19,7 +19,6 @@
 
 #include "SGCore/Utils/SGSL/SGSLESubShaderType.h"
 #include "SGCore/Utils/Utils.h"
-#include "SGCore/Graphics/GPUObject.h"
 
 namespace SGCore
 {
@@ -31,7 +30,7 @@ namespace SGCore
 
     // todo: add subshaders and add preprocess for it
     // todo: add various types of defines like material textures block define e.t.c.
-    class ISubPassShader : public UniqueNameWrapper, public std::enable_shared_from_this<ISubPassShader>, public GPUObject
+    class ISubPassShader : public UniqueNameWrapper, public std::enable_shared_from_this<ISubPassShader>
     {
     public:
         std::string m_subPassName;
@@ -98,8 +97,6 @@ namespace SGCore
         virtual void useTextureBlock(const std::string& uniformName, const int& textureBlock) { };
         
         virtual bool isUniformExists(const std::string& uniformName) const noexcept { return false; };
-
-        void addToGlobalStorage() noexcept final;
 
         // ==========================================
         

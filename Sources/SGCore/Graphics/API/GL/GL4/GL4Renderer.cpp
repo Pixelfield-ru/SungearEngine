@@ -10,7 +10,6 @@
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 
 #include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
-#include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "SGCore/Memory/AssetManager.h"
 
 void SGCore::GL4Renderer::init() noexcept
@@ -331,7 +330,7 @@ SGCore::GL46SubPassShader* SGCore::GL4Renderer::createSubPassShader() const
     auto* shader = new GL46SubPassShader;
     shader->m_version = "400 core";
 
-    shader->setRawName("SGUnknownShader");
+    // shader->setRawName("SGUnknownShader");
 
     return shader;
 }
@@ -359,7 +358,7 @@ SGCore::GLIndexBuffer* SGCore::GL4Renderer::createIndexBuffer() const
 SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D() const
 {
     auto* tex = new GL4Texture2D;
-    tex->setRawName("SGUnknownTexture2D");
+    // tex->setRawName("SGUnknownTexture2D");
 
     return tex;
 }
@@ -367,7 +366,7 @@ SGCore::GL4Texture2D* SGCore::GL4Renderer::createTexture2D() const
 SGCore::GL4CubemapTexture* SGCore::GL4Renderer::createCubemapTexture() const
 {
     auto* tex = new GL4CubemapTexture;
-    tex->setRawName("SGUnknownCubemapTexture");
+    // tex->setRawName("SGUnknownCubemapTexture");
 
     return new GL4CubemapTexture;
 }
@@ -380,7 +379,7 @@ SGCore::GL4UniformBuffer* SGCore::GL4Renderer::createUniformBuffer() const
 SGCore::GL4FrameBuffer* SGCore::GL4Renderer::createFrameBuffer() const
 {
     auto* fb = new GL4FrameBuffer;
-    fb->setRawName("SGUnknownFrameBuffer");
+    // fb->setRawName("SGUnknownFrameBuffer");
 
     return fb;
 }

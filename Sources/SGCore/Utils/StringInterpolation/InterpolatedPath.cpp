@@ -85,16 +85,6 @@ SGCore::InterpolatedPath& SGCore::InterpolatedPath::operator/=(const SGCore::Int
     return *this;
 }
 
-SGCore::InterpolatedPath SGCore::InterpolatedPath::operator/(const std::filesystem::path& path) noexcept
-{
-    return m_rawPath / path;
-}
-
-SGCore::InterpolatedPath SGCore::InterpolatedPath::operator/(const SGCore::InterpolatedPath& path) noexcept
-{
-    return m_rawPath / path.m_rawPath;
-}
-
 SGCore::InterpolatedPath& SGCore::InterpolatedPath::operator=(const std::filesystem::path& other) noexcept
 {
     m_rawPath = other;
@@ -111,14 +101,6 @@ SGCore::InterpolatedPath& SGCore::InterpolatedPath::operator=(std::filesystem::p
     return *this;
 }
 
-SGCore::InterpolatedPath& SGCore::InterpolatedPath::operator+=(const std::filesystem::path& other) noexcept
-{
-    m_rawPath += other;
-    resolve();
-
-    return *this;
-}
-
 SGCore::InterpolatedPath& SGCore::InterpolatedPath::operator+=(const SGCore::InterpolatedPath& other) noexcept
 {
     m_rawPath += other.m_rawPath;
@@ -130,4 +112,14 @@ SGCore::InterpolatedPath& SGCore::InterpolatedPath::operator+=(const SGCore::Int
 void SGCore::InterpolatedPath::resolve() noexcept
 {
     m_resolvedPath = InterpolationResolver<std::filesystem::path>::resolve(m_rawPath);
+}
+
+SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const std::filesystem::path& p1) noexcept
+{
+    return p0.raw() / p1;
+}
+
+bool operator==(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept
+{
+    return p0.raw() == p1.raw();
 }

@@ -10,14 +10,14 @@ SGCore::IMaterial::IMaterial() noexcept
 
 }
 
-void SGCore::IMaterial::doLoad(const std::filesystem::path& path)
+void SGCore::IMaterial::doLoad(const InterpolatedPath& path)
 {
 
 }
 
 SGCore::AssetRef<SGCore::ITexture2D>
 SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
-                                       const std::string& path,
+                                       const InterpolatedPath& path,
                                        AssetManager& toAssetManager)
 {
     auto foundTex =

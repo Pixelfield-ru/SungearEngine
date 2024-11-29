@@ -1,7 +1,6 @@
 #include <SGCore/Logger/Logger.h>
 #include "GL46Renderer.h"
 
-#include "SGCore/Graphics/GPUObjectsStorage.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/Assets/TextFileAsset.h"
 

@@ -6,9 +6,9 @@
 #include <spdlog/spdlog.h>
 #include <SGCore/Logger/Logger.h>
 
-void SGCore::XMLDocument::doLoad(const std::filesystem::path& path)
+void SGCore::XMLDocument::doLoad(const InterpolatedPath& path)
 {
-    const std::string u8Path = Utils::toUTF8(path.u16string());
+    const std::string u8Path = Utils::toUTF8(path.resolved().u16string());
 
     pugi::xml_parse_result parseResult = m_document.load_file(u8Path.c_str());
     

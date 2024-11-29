@@ -8,11 +8,12 @@
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/Utils/TypeTraits.h"
+#include "sgcore_export.h"
 
 namespace SGCore
 {
     template<typename T>
-    struct InterpolationMarkup
+    struct SGCORE_EXPORT InterpolationMarkup
     {
         static SG_NOINLINE auto& getGlobalSubstitutedValues() noexcept
         {

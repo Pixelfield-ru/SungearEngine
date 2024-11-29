@@ -7,9 +7,16 @@
 #include "SVGImage.h"
 #include "SGCore/Memory/AssetManager.h"
 
-void SGCore::SVGImage::doLoad(const std::filesystem::path& path)
+void SGCore::SVGImage::doLoad(const InterpolatedPath& path)
 {
-    m_document = lunasvg::Document::loadFromFile(Utils::toUTF8(path.u16string()));
+    if(!std::filesystem::exists(path.resolved()))
+    {
+        LOG_E(SGCORE_TAG, "Cannot load SVG image: path '{}' does not exist.", Utils::toUTF8(path.resolved().u16string()));
+
+        return;
+    }
+
+    m_document = lunasvg::Document::loadFromFile(Utils::toUTF8(path.resolved().u16string()));
 }
 
 SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecialization(const std::uint32_t& width, const std::uint32_t& height) noexcept
@@ -18,9 +25,9 @@ SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecializa
     {
         LOG_E(SGCORE_TAG,
               "Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': document equals to nullptr (SVGImage was not successfully loaded previously).",
-              getPath().string(),
               width,
-              height);
+              height,
+              getPath().resolved().string());
         
         return nullptr;
     }
@@ -40,9 +47,9 @@ SGCore::AssetRef<SGCore::SVGImageSpecialization> SGCore::SVGImage::getSpecializa
         {
             LOG_E(SGCORE_TAG,
                   "Cannot create specialization (with width: '{}', height: '{}') of SVGImage loaded at path '{}': bitmap was not loaded successfully (not valid).",
-                  getPath().string(),
                   width,
-                  height);
+                  height,
+                  getPath().resolved().string());
             
             return nullptr;
         }

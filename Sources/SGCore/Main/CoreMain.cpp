@@ -42,7 +42,7 @@ void SGCore::CoreMain::start()
                                      "In the variable value, specify the path to the Sungear Engine. "
                                      "Until then, you will not be able to build the project, as well as some other features of the engine.";
 
-        LOG_C_UNFORMATTED("SGEditor", errorMsg)
+        LOG_C_UNFORMATTED(SGCORE_TAG, errorMsg)
         assert(errorMsg.c_str());
         std::exit(0);
     }
@@ -57,13 +57,15 @@ void SGCore::CoreMain::start()
                                          "Make sure that the 'SUNGEAR_SOURCES_ROOT' environment variable contains the correct value and indeed points to the Sungear Engine root folder. "
                                          "Until then, you will not be able to build the project, as well as some other features of the engine.";
 
-            LOG_C_UNFORMATTED("SGEditor", errorMsg)
+            LOG_C_UNFORMATTED(SGCORE_TAG, errorMsg)
             assert(errorMsg.c_str());
             std::exit(0);
         }
 
         s_sungearEngineRootPath = sungearEngineRootPath;
     }
+
+    InterpolationMarkup<std::filesystem::path>::getGlobalSubstitutedValues()["enginePath"] = s_sungearEngineRootPath;
 
     std::cout << "core init" << std::endl;
 
@@ -77,8 +79,6 @@ void SGCore::CoreMain::start()
     }
 
     MetaInfo::addStandardMetaInfo();
-
-    AssetManager::init();
 
     SGSLETranslator::includeDirectory(s_sungearEngineRootPath / "Resources");
 
@@ -103,11 +103,11 @@ void SGCore::CoreMain::start()
 
     m_renderer->init();
 
+    AssetManager::init();
+
     ShadersUniversalPaths::init();
     InputManager::init();
     FontsManager::init();
-
-    InterpolationMarkup<std::filesystem::path>::getGlobalSubstitutedValues()["enginePath"] = s_sungearEngineRootPath;
 
     m_renderTimer.onUpdate.connect<&updateStart>(0);
     m_renderTimer.onUpdate.connect<&updateEnd>(std::numeric_limits<size_t>::max());

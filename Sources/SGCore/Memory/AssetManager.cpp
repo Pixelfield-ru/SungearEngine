@@ -36,7 +36,8 @@ void SGCore::AssetManager::addStandardAssets() noexcept
     }*/
 
     {
-        // auto standardMaterial = getOrAddAssetByAlias<IMaterial>("default_material");
+        auto standardMaterial = getOrAddAssetByAlias<IMaterial>("default_material");
+        standardMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, loadAsset<ITexture2D>("${enginePath}/Resources/textures/no_material.png"));
     }
 }
 
@@ -63,14 +64,14 @@ bool SGCore::AssetManager::isAssetExists(const std::string& pathOrAlias, const s
     }
 }
 
-bool SGCore::AssetManager::isAssetExists(const std::string& alias, const std::filesystem::path& path,
+bool SGCore::AssetManager::isAssetExists(const std::string& alias, const InterpolatedPath& path,
                                          SGCore::AssetStorageType loadedBy, const size_t& assetTypeID) noexcept
 {
     switch(loadedBy)
     {
         case AssetStorageType::BY_PATH:
         {
-            return isAssetExists(Utils::toUTF8(path.u16string()), assetTypeID);
+            return isAssetExists(Utils::toUTF8(path.resolved().u16string()), assetTypeID);
             break;
         }
         case AssetStorageType::BY_ALIAS:
@@ -83,16 +84,16 @@ bool SGCore::AssetManager::isAssetExists(const std::string& alias, const std::fi
     return false;
 }
 
-void SGCore::AssetManager::fullRemoveAsset(const std::filesystem::path& aliasOrPath) noexcept
+void SGCore::AssetManager::fullRemoveAsset(const InterpolatedPath& aliasOrPath) noexcept
 {
-    m_assets.erase(std::hash<std::filesystem::path>()(aliasOrPath));
+    m_assets.erase(std::hash<std::filesystem::path>()(aliasOrPath.raw()));
 }
 
-void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirectory,
+void SGCore::AssetManager::createPackage(const InterpolatedPath& toDirectory,
                                          const std::string& packageName) noexcept
 {
-    const std::filesystem::path binaryFilePath = toDirectory / (packageName + ".bin");
-    const std::filesystem::path markupFilePath = toDirectory / (packageName + ".json");
+    const std::filesystem::path binaryFilePath = (toDirectory / (packageName + ".bin")).resolved();
+    const std::filesystem::path markupFilePath = (toDirectory / (packageName + ".json")).resolved();
 
     m_package.m_buffer.clear();
 
@@ -107,11 +108,11 @@ void SGCore::AssetManager::createPackage(const std::filesystem::path& toDirector
     FileUtils::writeBytes(binaryFilePath, 0, m_package.m_buffer, false);
 }
 
-void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirectory,
+void SGCore::AssetManager::loadPackage(const InterpolatedPath& fromDirectory,
                                        const std::string& packageName) noexcept
 {
-    const std::filesystem::path binaryFilePath = fromDirectory / (packageName + ".bin");
-    const std::filesystem::path markupFilePath = fromDirectory / (packageName + ".json");
+    const std::filesystem::path binaryFilePath = (fromDirectory / (packageName + ".bin")).resolved();
+    const std::filesystem::path markupFilePath = (fromDirectory / (packageName + ".json")).resolved();
 
     m_package.m_path = binaryFilePath;
     m_package.m_parentAssetManager = this;
@@ -177,7 +178,7 @@ void SGCore::AssetManager::loadPackage(const std::filesystem::path& fromDirector
     if(!outputLog.empty())
     {
         LOG_E(SGCORE_TAG, "Error while loading package with assets (directory of package: '{}', name of package '{}'): {}",
-              Utils::toUTF8(fromDirectory.u16string()), packageName, outputLog);
+              Utils::toUTF8(fromDirectory.resolved().u16string()), packageName, outputLog);
     }
 }
 

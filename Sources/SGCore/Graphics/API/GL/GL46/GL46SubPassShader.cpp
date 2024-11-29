@@ -26,7 +26,7 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
     if(m_subShaders.empty())
     {
         LOG_E(SGCORE_TAG,
-              "No sub shaders to compile! Shader path: {}\n{}", lockedFileAsset->getPath().string(), SG_CURRENT_LOCATION_STR);
+              "No sub shaders to compile! Shader path: {}\n{}", lockedFileAsset->getPath().resolved().string(), SG_CURRENT_LOCATION_STR);
         return;
     }
     
@@ -50,7 +50,7 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
                   "Can not compile sub shader with type '{}' for sub pass '{}' shader by path '{}'. Sub shader with this type does not exist.",
                   sgsleSubShaderTypeToString(subShadersIter.first),
                   m_subPassName,
-                  lockedFileAsset->getPath().string());
+                  lockedFileAsset->getPath().resolved().string());
             continue;
         }
         m_subShadersHandlers.push_back(compileSubShader(subShadersIter.first, definesCode + "\n" + subShadersIter.second->m_code));
@@ -82,7 +82,7 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
 
             LOG_E(SGCORE_TAG,
                   "Error in shader by path: {}\n{}",
-                  m_fileAsset.lock()->getPath().string(),
+                  m_fileAsset.lock()->getPath().resolved().string(),
                   infoLog.data());
         }
 
@@ -171,7 +171,7 @@ GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLESubShaderType sh
 
         LOG_E(SGCORE_TAG,
               "Error in shader by path: {}\n{}",
-             m_fileAsset.lock()->getPath().string(),
+             m_fileAsset.lock()->getPath().resolved().string(),
              infoLog.data());
 
         return -1;

@@ -21,7 +21,7 @@ namespace SGCore
         [[nodiscard]] std::string getData() const noexcept;
     
     protected:
-        void doLoad(const std::filesystem::path& path) override;
+        void doLoad(const InterpolatedPath& path) override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         

@@ -16,7 +16,7 @@ namespace SGCore
         pugi::xml_document m_document;
         
     protected:
-        void doLoad(const std::filesystem::path& path) override;
+        void doLoad(const InterpolatedPath& path) override;
 
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
