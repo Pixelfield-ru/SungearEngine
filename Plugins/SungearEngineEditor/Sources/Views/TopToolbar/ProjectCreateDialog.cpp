@@ -12,6 +12,7 @@
 #include <SGCore/Utils/Formatter.h>
 #include <SGCore/CodeGeneration/CodeGenerator.h>
 #include <SGCore/Utils/CMakeUtils.h>
+#include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 
 #include "ProjectCreateDialog.h"
 #include "SungearEngineEditor.h"
@@ -333,6 +334,8 @@ void SGE::ProjectCreateDialog::submit()
     else if(std::filesystem::exists(m_dirPath) && m_mode == FileOpenMode::OPEN)
     {
         const std::filesystem::path dirPath = std::filesystem::path(m_dirPath);
+        // setting variable 'projectPath' to interpolating
+        SGCore::PathInterpolationMarkup::getGlobalMarkup()["projectPath"] = dirPath;
 
         const std::string projectName = SGCore::Utils::toUTF8(dirPath.stem().u16string());
         const std::filesystem::path cmakePresetsPath = dirPath / "CMakePresets.json";

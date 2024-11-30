@@ -38,6 +38,8 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     ++parentPopup->m_drawingElementsCount;
                     
                     ImGui::TableNextRow();
+
+                    float rowHeight = ImGui::GetFrameHeight();
                     
                     // FIRST COLUMN FOR ICON
                     ImGui::TableNextColumn();
@@ -45,17 +47,32 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     {
                         ImGui::Image(elem->m_icon->getTextureNativeHandler(), ImVec2(elem->m_icon->getWidth(), 
                                                                                      elem->m_icon->getHeight()));
+
+                        rowHeight = elem->m_icon->getHeight() > rowHeight ? elem->m_icon->getHeight() : rowHeight;
                     }
                     
                     // SECOND COLUMN FOR NAME
                     ImGui::TableNextColumn();
-                    ImGui::Text(elem->m_name.getName().c_str());
+                    {
+                        ImVec2 textSize = ImGui::CalcTextSize(elem->m_name.getName().c_str());
+                        if(textSize.y > rowHeight)
+                        {
+                            rowHeight = textSize.y;
+                        }
+                        else
+                        {
+                            float offsetY = (rowHeight - textSize.y) / 2.0f;
+                            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+                        }
+                        ImGui::Text(elem->m_name.getName().c_str());
+                    }
                     
                     // THIRD COLUMN FOR HOT KEYS OR CHEVRON ICON
                     ImGui::TableNextColumn();
                     float thirdColumnRightAlign = 0.0f;
                     if(elem->m_elements.empty())
                     {
+                        ImVec2 textSize = ImGui::CalcTextSize(elem->m_hint.c_str());
                         auto textRightAlign = (ImGui::GetCursorPosX() + ImGui::GetColumnWidth() -
                                                ImGui::CalcTextSize(elem->m_hint.c_str()).x);
                         if(textRightAlign > ImGui::GetCursorPosX())
@@ -63,22 +80,33 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                             thirdColumnRightAlign = textRightAlign;
                             ImGui::SetCursorPosX(textRightAlign);
                         }
+
+                        if(textSize.y > rowHeight)
+                        {
+                            rowHeight = textSize.y;
+                        }
+                        else
+                        {
+                            float offsetY = (rowHeight - textSize.y) / 2.0f;
+                            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+                        }
+
                         ImGui::TextDisabled(elem->m_hint.c_str());
                     }
                     else
                     {
-                        auto iconRightAlign = ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - 16;
+                        auto iconRightAlign = ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - rowHeight;
                         if(iconRightAlign > ImGui::GetCursorPosX())
                         {
                             thirdColumnRightAlign = iconRightAlign;
                             ImGui::SetCursorPosX(iconRightAlign);
                         }
-                        
+
                         ImGui::Image(StylesManager::getCurrentStyle()
                                              ->m_chevronRightIcon
-                                             ->getSpecialization(16, 16)
+                                             ->getSpecialization((std::int32_t) rowHeight, (std::int32_t) rowHeight)
                                              ->getTexture()->getTextureNativeHandler(),
-                                     { 16, 16 });
+                                     { rowHeight, rowHeight });
                     }
                     
                     ImRect rowStart = ImGui::TableGetCellBgRect(ImGui::GetCurrentContext()->CurrentTable, 0);

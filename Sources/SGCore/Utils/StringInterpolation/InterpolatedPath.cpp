@@ -114,9 +114,9 @@ void SGCore::InterpolatedPath::resolve() noexcept
     m_resolvedPath = InterpolationResolver<std::filesystem::path>::resolve(m_rawPath);
 }
 
-SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const std::filesystem::path& p1) noexcept
+SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept
 {
-    return p0.raw() / p1;
+    return p0.raw() / p1.raw();
 }
 
 bool operator==(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept

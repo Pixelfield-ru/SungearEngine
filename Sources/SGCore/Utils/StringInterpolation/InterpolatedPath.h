@@ -97,7 +97,13 @@ namespace SGCore
     };
 }
 
-[[nodiscard]] SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const std::filesystem::path& p1) noexcept;
+[[nodiscard]] SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept;
+template<typename CharT, size_t Count>
+[[nodiscard]] SGCore::InterpolatedPath operator/(const CharT (&p0)[Count], const SGCore::InterpolatedPath& p1) noexcept
+{
+    const std::filesystem::path tmpPath = p0;
+    return tmpPath / p1.raw();
+}
 
 [[nodiscard]] bool operator==(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept;
 

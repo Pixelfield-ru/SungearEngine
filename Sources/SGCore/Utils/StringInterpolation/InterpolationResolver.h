@@ -15,7 +15,7 @@ namespace SGCore
     template<typename T>
     struct SGCORE_EXPORT InterpolationMarkup
     {
-        static SG_NOINLINE auto& getGlobalSubstitutedValues() noexcept
+        static SG_NOINLINE auto& getGlobalMarkup() noexcept
         {
             return s_globalMarkup;
         }
@@ -37,7 +37,7 @@ namespace SGCore
     {
         [[nodiscard]] static std::filesystem::path resolve(const std::filesystem::path& raw) noexcept
         {
-            const auto& globalMarkup = InterpolationMarkup<std::filesystem::path>::getGlobalSubstitutedValues();
+            const auto& globalMarkup = InterpolationMarkup<std::filesystem::path>::getGlobalMarkup();
 
             std::filesystem::path output;
             const std::string rawAsString = Utils::toUTF8(raw.u16string());
@@ -98,7 +98,7 @@ namespace SGCore
     {
         [[nodiscard]] static std::string resolve(const std::string& raw) noexcept
         {
-            const auto& globalMarkup = InterpolationMarkup<std::string>::getGlobalSubstitutedValues();
+            const auto& globalMarkup = InterpolationMarkup<std::string>::getGlobalMarkup();
 
             std::string output;
 
@@ -152,6 +152,10 @@ namespace SGCore
             return output;
         }
     };
+
+    using PathInterpolationMarkup = InterpolationMarkup<std::filesystem::path>;
+    using PathInterpolationResolver = InterpolationResolver<std::filesystem::path>;
+    using StringInterpolationResolver = InterpolationResolver<std::string>;
 }
 
 #endif //SUNGEARENGINE_INTERPOLATIONRESOLVER_H

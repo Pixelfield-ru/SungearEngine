@@ -47,7 +47,7 @@ SGE::ImGuiUtils::ImageButton(void* imageNativeHandler,
                              DragNDropInfo* dragNDropInfo,
                              const std::string& name) noexcept
 {
-    assert(buttonSize.x >= imageSize.x && buttonSize.y >= imageSize.y && "Button size must be greater then image size!");
+    //assert(buttonSize.x >= imageSize.x && buttonSize.y >= imageSize.y && "Button size must be greater then image size!");
     
     ImVec2 offset = imageOffset;
     if(imageOffset.x == -1)

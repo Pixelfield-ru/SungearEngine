@@ -13,6 +13,7 @@
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/Input/InputListener.h>
 #include <SGCore/Memory/Assets/ModelAsset.h>
+#include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 
 #include "SungearEngineEditor.h"
 #include "Views/MainView.h"
@@ -96,7 +97,8 @@ void SGE::SceneView::acceptFilesFromDirectoryExplorer() noexcept
 
 void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) const noexcept
 {
-    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>(modelPath);
+    const SGCore::InterpolatedPath relativeModelPath = std::filesystem::relative(modelPath, SGCore::PathInterpolationMarkup::getGlobalMarkup()["projectPath"]);
+    auto modelAsset = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("${projectPath}" / relativeModelPath);
 
     if(!modelAsset)
     {

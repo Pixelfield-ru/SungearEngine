@@ -119,8 +119,20 @@ namespace SGE
                                         SGCore::MakeRef<PopupElement>(PopupElement {
                                                 .m_name = "Scene",
                                                 .m_icon = StylesManager::getCurrentStyle()->m_cubesIcon->getSpecialization(
-                                                        18, 18)->getTexture(),
-                                                .m_drawSeparatorAfter = true
+                                                        18, 18)->getTexture()
+                                        }),
+                                        SGCore::MakeRef<PopupElement>(PopupElement {
+                                                .m_name = "Asset...",
+                                                .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18,
+                                                                                                                           18)->getTexture(),
+                                                .m_drawSeparatorAfter = true,
+                                                .m_elements = {
+                                                        SGCore::MakeRef<PopupElement>(PopupElement {
+                                                                .m_name = "Material",
+                                                                .m_icon = StylesManager::getCurrentStyle()->m_cubesIcon->getSpecialization(
+                                                                        18, 18)->getTexture()
+                                                        })
+                                                }
                                         }),
                                         SGCore::MakeRef<PopupElement>(PopupElement {
                                                 .m_name = "Directory",
