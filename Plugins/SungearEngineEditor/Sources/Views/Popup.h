@@ -21,7 +21,8 @@ namespace SGE
     struct PopupElement
     {
         // INITIALIZE NEXT VARIABLES IN LIST INITIALIZER!
-        SGCore::UniqueName m_name;
+        std::string m_text;
+        std::string m_ID = m_text;
         std::string m_hint;
         
         SGCore::AssetRef<SGCore::ITexture2D> m_icon;
@@ -44,7 +45,7 @@ namespace SGE
 
         void recursiveClose() noexcept;
         void setAllElementsActive(bool isActive) noexcept;
-        [[nodiscard]] SGCore::Ref<PopupElement> tryGetElementRecursively(std::string_view name) noexcept;
+        [[nodiscard]] SGCore::Ref<PopupElement> tryGetElementRecursively(std::string_view id) noexcept;
     };
     
     struct Popup
@@ -59,13 +60,18 @@ namespace SGE
         
         std::string m_name;
         std::vector<SGCore::Ref<PopupElement>> m_elements;
+
+        ImGuiWindowFlags m_flags = ImGuiWindowFlags_NoMove;
         
         void draw() noexcept;
+
+        bool m_isCustomPosition = false;
+        ImVec2 m_customPosition { 0, 0 };
         
         SGCore::Event<void(const SGCore::Ref<PopupElement>&)> onElementClicked;
         SGCore::Event<void(bool last, bool current)> onOpenedChanged;
 
-        SGCore::Ref<PopupElement> tryGetElement(std::string_view name) noexcept;
+        SGCore::Ref<PopupElement> tryGetElement(std::string_view id) noexcept;
         
         void recursiveClose() noexcept;
         void setAllElementsActive(bool isActive) noexcept;

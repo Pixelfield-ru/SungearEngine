@@ -9,10 +9,10 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
 {
     if(m_isOpened)
     {
-        ImGui::OpenPopup(m_name.getName().c_str());
+        ImGui::OpenPopup(m_text.c_str());
         
         ImGui::SetNextWindowPos(m_popupPos);
-        if(ImGui::BeginPopup(m_name.getName().c_str(), ImGuiWindowFlags_NoMove))
+        if(ImGui::BeginPopup(m_text.c_str(), parentPopup->m_flags))
         {
             ImGui::GetWindowDrawList()->AddRectFilled(m_rectToDraw.Min,
                                                       m_rectToDraw.Max,
@@ -22,7 +22,7 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
             
             m_rectToDraw = { };
             
-            if(ImGui::BeginTable(m_name.getName().c_str(), 3))
+            if(ImGui::BeginTable(m_text.c_str(), 3))
             {
                 for(auto& elem : m_elements)
                 {
@@ -30,13 +30,14 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     
                     if(!elem->m_isActive) continue;
 
-                    if(elem->m_name.getNamesManager() != m_namesManager)
+                    /*if(elem->m_text.getNamesManager() != m_namesManager)
                     {
-                        elem->m_name.attachToManager(m_namesManager);
-                    }
+                        elem->m_text.attachToManager(m_namesManager);
+                    }*/
                     
                     ++parentPopup->m_drawingElementsCount;
-                    
+
+                    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 5));
                     ImGui::TableNextRow();
 
                     float rowHeight = ImGui::GetFrameHeight();
@@ -54,7 +55,7 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     // SECOND COLUMN FOR NAME
                     ImGui::TableNextColumn();
                     {
-                        ImVec2 textSize = ImGui::CalcTextSize(elem->m_name.getName().c_str());
+                        ImVec2 textSize = ImGui::CalcTextSize(elem->m_text.c_str());
                         if(textSize.y > rowHeight)
                         {
                             rowHeight = textSize.y;
@@ -64,7 +65,7 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                             float offsetY = (rowHeight - textSize.y) / 2.0f;
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
                         }
-                        ImGui::Text(elem->m_name.getName().c_str());
+                        ImGui::Text(elem->m_text.c_str());
                     }
                     
                     // THIRD COLUMN FOR HOT KEYS OR CHEVRON ICON
@@ -145,8 +146,11 @@ void SGE::PopupElement::draw(Popup* parentPopup, PopupElement* parentElement) no
                     
                     if(elem->m_isOpened || elem->m_isHovered)
                     {
-                        m_rectToDraw = ImRect({ rowStart.Min.x - 4, rowStart.Min.y + 3 }, { rowEnd.Max.x + 4, rowEnd.Max.y - 3 });
+                        m_rectToDraw = ImRect({ rowStart.Min.x - 4, rowStart.Min.y + 2 }, { rowEnd.Max.x + 4, rowEnd.Max.y - 2 });
                     }
+
+                    // pop ImGuiStyleVar_CellPadding
+                    ImGui::PopStyleVar();
                     
                     elem->draw(parentPopup, this);
                     
@@ -186,24 +190,24 @@ void SGE::PopupElement::setAllElementsActive(bool isActive) noexcept
     }
 }
 
-SGCore::Ref<SGE::PopupElement> SGE::PopupElement::tryGetElementRecursively(std::string_view name) noexcept
+SGCore::Ref<SGE::PopupElement> SGE::PopupElement::tryGetElementRecursively(std::string_view id) noexcept
 {
     SGCore::Ref<PopupElement> elem;
 
     for(auto& e : m_elements)
     {
-        if(e->m_name.getNamesManager() != m_namesManager)
+        /*if(e->m_ID.getNamesManager() != m_namesManager)
         {
-            e->m_name.attachToManager(m_namesManager);
-        }
+            e->m_ID.attachToManager(m_namesManager);
+        }*/
 
-        if(e->m_name == name)
+        if(e->m_ID == id)
         {
             elem = e;
             break;
         }
 
-        elem = e->tryGetElementRecursively(name);
+        elem = e->tryGetElementRecursively(id);
     }
     
     return elem;
@@ -228,8 +232,13 @@ void SGE::Popup::draw() noexcept
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 4));
     ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 0);
     
-    if(m_isOpened && ImGui::BeginPopup(m_name.c_str(), ImGuiWindowFlags_NoMove))
+    if(m_isOpened && ImGui::BeginPopup(m_name.c_str(), m_flags))
     {
+        if(m_isCustomPosition)
+        {
+            ImGui::SetWindowPos(m_customPosition);
+        }
+
         // setOpened(ImGui::BeginPopup(m_name.c_str(), ImGuiWindowFlags_NoMove));
         
         ImGui::GetWindowDrawList()->AddRectFilled(m_rectToDraw.Min,
@@ -246,13 +255,14 @@ void SGE::Popup::draw() noexcept
             {
                 if(!elem->m_isActive) continue;
 
-                if(elem->m_name.getNamesManager() != m_namesManager)
+                /*if(elem->m_ID.getNamesManager() != m_namesManager)
                 {
-                    elem->m_name.attachToManager(m_namesManager);
-                }
+                    elem->m_ID.attachToManager(m_namesManager);
+                }*/
                 
                 ++m_drawingElementsCount;
-                
+
+                ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 5));
                 ImGui::TableNextRow();
                 
                 float rowHeight = ImGui::GetFrameHeight();
@@ -269,7 +279,7 @@ void SGE::Popup::draw() noexcept
                 // SECOND COLUMN FOR NAME
                 ImGui::TableNextColumn();
                 {
-                    ImVec2 textSize = ImGui::CalcTextSize(elem->m_name.getName().c_str());
+                    ImVec2 textSize = ImGui::CalcTextSize(elem->m_text.c_str());
                     if(textSize.y > rowHeight)
                     {
                         rowHeight = textSize.y;
@@ -279,7 +289,7 @@ void SGE::Popup::draw() noexcept
                         float offsetY = (rowHeight - textSize.y) / 2.0f;
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
                     }
-                    ImGui::Text(elem->m_name.getName().c_str());
+                    ImGui::Text(elem->m_text.c_str());
                 }
                 
                 // THIRD COLUMN FOR HOT KEYS OR CHEVRON ICON
@@ -356,8 +366,11 @@ void SGE::Popup::draw() noexcept
                 
                 if(elem->m_isOpened || elem->m_isHovered)
                 {
-                    m_rectToDraw = ImRect({ rowStart.Min.x - 4, rowStart.Min.y + 3 }, { rowEnd.Max.x + 4, rowEnd.Max.y - 3 });
+                    m_rectToDraw = ImRect({ rowStart.Min.x - 4, rowStart.Min.y + 2 }, { rowEnd.Max.x + 4, rowEnd.Max.y - 2 });
                 }
+
+                // pop ImGuiStyleVar_CellPadding
+                ImGui::PopStyleVar();
                 
                 elem->draw(this, elem.get());
                 
@@ -420,24 +433,24 @@ void SGE::Popup::setOpened(bool isOpened) noexcept
     }
 }
 
-SGCore::Ref<SGE::PopupElement> SGE::Popup::tryGetElement(std::string_view name) noexcept
+SGCore::Ref<SGE::PopupElement> SGE::Popup::tryGetElement(std::string_view id) noexcept
 {
     SGCore::Ref<PopupElement> elem;
 
     for(auto& e : m_elements)
     {
-        if(e->m_name.getNamesManager() != m_namesManager)
+       /* if(e->m_ID.getNamesManager() != m_namesManager)
         {
-            e->m_name.attachToManager(m_namesManager);
-        }
+            e->m_ID.attachToManager(m_namesManager);
+        }*/
 
-        if(e->m_name == name)
+        if(e->m_ID == id)
         {
             elem = e;
             break;
         }
 
-        elem = e->tryGetElementRecursively(name);
+        elem = e->tryGetElementRecursively(id);
     }
     
     return elem;

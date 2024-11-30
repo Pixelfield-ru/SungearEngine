@@ -100,66 +100,71 @@ namespace SGE
                 "FilesActions",
                 {
                         {
-                                .m_name = "New...",
+                                .m_text = "New...",
                                 .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18,
                                                                                                            18)->getTexture(),
                                 .m_drawSeparatorAfter = true,
                                 .m_elements = {
                                         SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "C++ Source File",
+                                                .m_text = "C++ Source File",
+                                                .m_ID = "New/C++ Source File",
                                                 .m_icon = StylesManager::getCurrentStyle()->m_cppIcon->getSpecialization(
                                                         18, 18)->getTexture()
                                         }),
                                         SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "C++ Header File",
+                                                .m_text = "C++ Header File",
+                                                .m_ID = "New/C++ Header File",
                                                 .m_icon = StylesManager::getCurrentStyle()->m_headerIcon->getSpecialization(
                                                         18, 18)->getTexture(),
                                                 .m_drawSeparatorAfter = true
                                         }),
                                         SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "Scene",
+                                                .m_text = "Scene",
+                                                .m_ID = "New/Scene",
                                                 .m_icon = StylesManager::getCurrentStyle()->m_cubesIcon->getSpecialization(
                                                         18, 18)->getTexture()
                                         }),
                                         SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "Asset...",
+                                                .m_text = "Asset...",
                                                 .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18,
                                                                                                                            18)->getTexture(),
                                                 .m_drawSeparatorAfter = true,
                                                 .m_elements = {
                                                         SGCore::MakeRef<PopupElement>(PopupElement {
-                                                                .m_name = "Material",
+                                                                .m_text = "Material",
+                                                                .m_ID = "New/Material",
                                                                 .m_icon = StylesManager::getCurrentStyle()->m_cubesIcon->getSpecialization(
                                                                         18, 18)->getTexture()
                                                         })
                                                 }
                                         }),
                                         SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "Directory",
+                                                .m_text = "Directory",
+                                                .m_ID = "New/Directory",
                                                 .m_icon = StylesManager::getCurrentStyle()->m_folderIcon->getSpecialization(
                                                         18, 18)->getTexture()
                                         }),
                                 }
                         },
                         {
-                                .m_name = "Rename",
+                                .m_text = "Rename",
                                 .m_hint = "Ctrl + R",
                                 .m_icon = StylesManager::getCurrentStyle()->m_pencilIcon->getSpecialization(18, 18)->getTexture(),
                                 .m_drawSeparatorAfter = true
                         },
                         {
-                                .m_name = "Copy",
+                                .m_text = "Copy",
                                 .m_hint = "Ctrl + C",
                                 .m_icon = StylesManager::getCurrentStyle()->m_copyIcon->getSpecialization(18, 18)->getTexture(),
                         },
                         {
-                                .m_name = "Paste",
+                                .m_text = "Paste",
                                 .m_hint = "Ctrl + V",
                                 .m_icon = StylesManager::getCurrentStyle()->m_pasteIcon->getSpecialization(18, 18)->getTexture(),
                                 .m_drawSeparatorAfter = true
                         },
                         {
-                                .m_name = "Delete",
+                                .m_text = "Delete",
                                 .m_hint = "Delete",
                                 .m_icon = StylesManager::getCurrentStyle()->m_trashBinIcon->getSpecialization(18, 18)->getTexture()
                         },

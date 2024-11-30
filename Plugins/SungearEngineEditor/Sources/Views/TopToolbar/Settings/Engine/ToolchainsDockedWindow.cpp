@@ -22,13 +22,13 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
             "ToolchainsVariantsPopup",
             {
                     {
-                            .m_name = "Visual Studio",
+                            .m_text = "Visual Studio",
                             .m_icon = StylesManager::getCurrentStyle()
                                     ->m_visualStudioIcon->getSpecialization(16, 16)->getTexture(),
                             .m_drawSeparatorAfter = false
                     },
                     {
-                            .m_name = "MinGW",
+                            .m_text = "MinGW",
                             .m_icon = StylesManager::getCurrentStyle()
                                     ->m_mingwIcon->getSpecialization(16, 16)->getTexture(),
                             .m_drawSeparatorAfter = false
@@ -37,7 +37,7 @@ SGE::ToolchainsDockedWindow::ToolchainsDockedWindow()
     };
 
     m_toolchainsVariantsPopup.onElementClicked += [this](const SGCore::Ref<PopupElement>& element) {
-        if(element->m_name == "Visual Studio")
+        if(element->m_ID == "Visual Studio")
         {
             auto vsToolchain = SGCore::MakeRef<VisualStudioToolchain>();
             vsToolchain->m_name = "Visual Studio";

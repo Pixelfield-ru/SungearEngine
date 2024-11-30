@@ -25,50 +25,22 @@ namespace SGE
         SGCore::Ref<EngineSettingsView> m_engineSettingsView = SGCore::MakeRef<EngineSettingsView>();
 
     private:
+        void drawButtonWithPopup(const std::string& name, Popup& buttonPopup) noexcept;
+
         ImGuiID m_dockID = 0;
 
         SGCore::AssetRef<SGCore::ITexture2D> m_engineIcon;
         SGCore::AssetRef<SGCore::ITexture2D> m_moreIcon;
 
-        Popup m_popup {
-                "ToolbarFileActions",
-                {
-                        {
-                                .m_name = "New...",
-                                .m_elements = {
-                                        SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "Project",
-                                                .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18,
-                                                                                                                           18)->getTexture()
-                                        }),
-                                        SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "File",
-                                                .m_icon = StylesManager::getCurrentStyle()->m_linesIcon->getSpecialization(18,
-                                                                                                                           18)->getTexture()
-                                        }),
-                                }
-                        },
-                        {
-                                .m_name = "Open...",
-                                .m_drawSeparatorAfter = true,
-                                .m_elements = {
-                                        SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "Project",
-                                                .m_icon = StylesManager::getCurrentStyle()->m_dummyIcon->getSpecialization(18,
-                                                                                                                           18)->getTexture()
-                                        }),
-                                        SGCore::MakeRef<PopupElement>(PopupElement {
-                                                .m_name = "File",
-                                                .m_icon = StylesManager::getCurrentStyle()->m_linesIcon->getSpecialization(18,
-                                                                                                                           18)->getTexture()
-                                        }),
-                                }
-                        },
-                        {
-                                .m_name = "Engine Settings",
-                        }
-                }
-        };
+        Popup m_fileButtonPopup;
+        Popup m_helpButtonPopup;
+
+        ImVec2 m_areaToHighlightPos { 0, 0 };
+        ImVec2 m_areaToHighlightSize { 0, 0 };
+
+        bool m_isAnyButtonHovered = false;
+
+        bool m_showToolsButtons = false;
     };
 }
 

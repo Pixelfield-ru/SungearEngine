@@ -88,11 +88,11 @@ SGE::DirectoryExplorer::DirectoryExplorer()
         if(rightClickedFileExists)
         {
             auto& fileInfo = m_drawableFilesNames[m_rightClickedFile];
-            if(element->m_name == "Rename")
+            if(element->m_ID == "Rename")
             {
                 renameFile(fileInfo);
             }
-            else if(element->m_name == "Delete")
+            else if(element->m_ID == "Delete")
             {
                 if(&fileInfo == m_currentEditingFile)
                 {
@@ -127,7 +127,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             }
         }
         
-        if(element->m_name == "C++ Source File")
+        if(element->m_ID == "New/C++ Source File")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
@@ -139,7 +139,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_isCreatingDirectory = false;
             fileCreateDialog->setActive(true);
         }
-        else if(element->m_name == "C++ Header File")
+        else if(element->m_ID == "New/C++ Header File")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
@@ -151,7 +151,7 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_isCreatingDirectory = false;
             fileCreateDialog->setActive(true);
         }
-        else if(element->m_name == "Directory")
+        else if(element->m_ID == "New/Directory")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
@@ -163,15 +163,15 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             fileCreateDialog->m_isCreatingDirectory = true;
             fileCreateDialog->setActive(true);
         }
-        else if(element->m_name == "Copy")
+        else if(element->m_ID == "Copy")
         {
             copySelectedFiles();
         }
-        else if(element->m_name == "Paste")
+        else if(element->m_ID == "Paste")
         {
             pasteFiles(m_currentFileOpsTargetDir);
         }
-        else if(element->m_name == "Scene")
+        else if(element->m_ID == "New/Scene")
         {
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
