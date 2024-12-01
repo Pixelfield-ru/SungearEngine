@@ -62,6 +62,7 @@ namespace SGE
         SGCore::AssetRef<SGCore::SVGImage> m_criticalIcon;
         SGCore::AssetRef<SGCore::SVGImage> m_greenBugIcon;
         SGCore::AssetRef<SGCore::SVGImage> m_greenDebugRun;
+        SGCore::AssetRef<SGCore::SVGImage> m_reloadIcon;
 
         std::unordered_map<std::string, ImFont*> m_fonts;
 

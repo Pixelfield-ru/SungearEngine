@@ -110,7 +110,7 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
         std::filesystem::path buildOutputLogFile;
 
         auto thread = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
-        auto task = thread->createTask();
+        auto task = SGCore::MakeRef<SGCore::Threading::Task>();
         task->setOnExecuteCallback([&buildFinished, &buildOutputLogFile, pathToProjectRoot, finalCommand]() {
             LOG_I(PROJECT_BUILD_TAG, "================================== BUILD START ================================");
 
@@ -172,7 +172,7 @@ void SGE::VisualStudioToolchain::buildProject(const std::filesystem::path& pathT
     if(m_doInBackground)
     {
         auto thread = SungearEngineEditor::getInstance()->m_threadsPool.getThread();
-        auto task = thread->createTask();
+        auto task = SGCore::MakeRef<SGCore::Threading::Task>();
         task->setOnExecuteCallback(buildLambda);
         task->setOnExecutedCallback([this]() {
             if(onProjectBuiltSynchronized)

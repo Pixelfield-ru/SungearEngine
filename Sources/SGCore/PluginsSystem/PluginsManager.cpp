@@ -303,3 +303,8 @@ void SGCore::PluginsManager::unloadAllPlugins() noexcept
 
     m_plugins.clear();
 }
+
+void SGCore::PluginsManager::loadPluginsFromFile(const std::filesystem::path& pluginsPath) noexcept
+{
+
+}

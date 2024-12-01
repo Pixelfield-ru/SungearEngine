@@ -97,7 +97,7 @@
  #target_link_libraries(${PROJECT_NAME} PUBLIC -static-libgcc -static-libstdc++)
 
  IF(WIN32)
-     target_link_libraries(${PROJECT_NAME} PUBLIC
+     target_link_libraries(${PROJECT_NAME} PRIVATE
              wsock32
              ws2_32)
  ENDIF()

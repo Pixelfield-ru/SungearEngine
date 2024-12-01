@@ -12,6 +12,8 @@
 #include "SGCore/Utils/Utils.h"
 
 #ifdef PLATFORM_OS_WINDOWS
+// preventing including win sockets in next time
+#define _WINSOCKAPI_
 #include <Windows.h>
 #include <winnt.h>
 #endif

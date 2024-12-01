@@ -931,7 +931,7 @@ namespace SGCore
                 {
                     auto loadInThread = m_threadsPool.getThread();
                     // loadInThread->m_autoJoinIfNotBusy = true;
-                    auto loadAssetTask = loadInThread->createTask();
+                    auto loadAssetTask = MakeRef<Threading::Task>();
         
                     loadAssetTask->setOnExecuteCallback([this, asset, path]() {
                         if(!asset->m_useDataSerde)
@@ -960,7 +960,7 @@ namespace SGCore
                 {
                     auto loadInThread = m_threadsPool.getThread();
                     // loadInThread->m_autoJoinIfNotBusy = true;
-                    auto loadAssetTask = loadInThread->createTask();
+                    auto loadAssetTask = MakeRef<Threading::Task>();
 
                     loadAssetTask->setOnExecuteCallback([this, asset, path]() {
                         if(!asset->m_useDataSerde)
@@ -982,7 +982,7 @@ namespace SGCore
             
             if(lazyLoadInThread)
             {
-                lazyLoadInThread->processFinishedTasks();
+                // lazyLoadInThread->processFinishedTasks();
             }
         }
         

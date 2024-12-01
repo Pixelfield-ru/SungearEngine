@@ -2,6 +2,7 @@
 // Created by ilya on 03.04.24.
 //
 
+#include "SGCore/Main/CoreGlobals.h"
 #include "Thread.h"
 
 #include "ThreadsManager.h"
@@ -73,10 +74,10 @@ void SGCore::Threading::Thread::processTasks() noexcept
     // THREAD IS FULL FREE
     if(tasksCount == 0 && onUpdateEventListenersCount == 0 && m_autoJoinIfNotBusy)
     {
-        auto joinThisThreadTask = ThreadsManager::getMainThread()->createTask();
+        auto joinThisThreadTask = MakeRef<Threading::Task>();
         joinThisThreadTask->setOnExecuteCallback([threadToJoin = shared_from_this()]() {
              threadToJoin->join();
-            });
+        });
         ThreadsManager::getMainThread()->addTask(joinThisThreadTask);
     }
 
@@ -142,11 +143,6 @@ std::shared_ptr<SGCore::Threading::Task> SGCore::Threading::Thread::createTask
     }
     
     return nullptr;
-}
-
-std::shared_ptr<SGCore::Threading::Task> SGCore::Threading::Thread::createTask() const noexcept
-{
-    return std::make_shared<Task>();
 }
 
 void SGCore::Threading::Thread::addTask(std::shared_ptr<Task> task)

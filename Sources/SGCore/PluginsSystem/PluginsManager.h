@@ -81,6 +81,8 @@ namespace SGCore
 
         static void unloadPlugin(const std::string& pluginName) noexcept;
 
+        static void loadPluginsFromFile(const std::filesystem::path& pluginsPath) noexcept;
+
         static bool isPluginExists(const std::string& pluginName) noexcept;
         
     private:

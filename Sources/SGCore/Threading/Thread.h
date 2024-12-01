@@ -37,14 +37,11 @@ namespace SGCore::Threading
         void processTasks() noexcept;
         
         std::shared_ptr<Task> createTask(const TaskSingletonGuard taskSingletonGuard);
-        std::shared_ptr<Task> createTask() const noexcept;
         
         void addTask(std::shared_ptr<Task> task);
         void removeTask(std::shared_ptr<Task> task);
         
         [[nodiscard]] size_t tasksCount() noexcept;
-        
-        void processFinishedTasks() noexcept;
         
         template<typename Func>
         requires(std::is_invocable_v<Func, Event<void()>&>)
@@ -73,6 +70,8 @@ namespace SGCore::Threading
     
     protected:
         Thread() = default;
+
+        void processFinishedTasks() noexcept;
         
         std::atomic<std::thread::id> m_nativeThreadID;
         
