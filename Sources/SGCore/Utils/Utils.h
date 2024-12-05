@@ -218,6 +218,20 @@ namespace SGCore
             return timeStringStream.str();
         }
 
+        [[nodiscard]] static std::chrono::sys_time<std::chrono::seconds> getStringAsTime(const std::string& dateTime, const std::string& format = "%Y-%m-%d") noexcept
+        {
+            std::istringstream in { dateTime };
+            std::chrono::sys_time<std::chrono::seconds> dt;
+
+            in >> std::chrono::parse(format, dt);
+
+            return dt;
+            /*std::istringstream ss{ dateTime };
+            std::tm dt;
+            ss >> std::get_time(&dt, format.c_str());
+            return std::mktime(&dt);*/
+        }
+
         /**
          * Example
          * forTypes<InTypes...>([](auto t) { using type = typename decltype(t)::type; });
