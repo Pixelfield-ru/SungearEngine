@@ -346,7 +346,7 @@ namespace SGCore::Serde
          * @return
          */
         template<typename T>
-        static std::string toFormat(T& value, FormatType formatType = m_defaultFormatType) noexcept
+        static std::string toFormat(const T& value, FormatType formatType = m_defaultFormatType) noexcept
         {
             return toFormat(formatType, value);
         }
@@ -1147,7 +1147,7 @@ namespace SGCore::Serde
          * @return Value of member.
          */
         template<typename T, typename... SharedDataT>
-        T getMember(const FormatInfo<TFormatType>::member_iterator_t& iterator, SharedDataT&&... sharedData) noexcept
+        T getMember(const typename FormatInfo<TFormatType>::member_iterator_t& iterator, SharedDataT&&... sharedData) noexcept
         {
 
         }
@@ -1159,7 +1159,7 @@ namespace SGCore::Serde
          * @return Value of element.
          */
         template<typename T, typename... SharedDataT>
-        T getMember(const FormatInfo<TFormatType>::array_iterator_t& iterator, SharedDataT&&... sharedData) noexcept
+        T getMember(const typename FormatInfo<TFormatType>::array_iterator_t& iterator, SharedDataT&&... sharedData) noexcept
         {
 
         }
@@ -1169,7 +1169,7 @@ namespace SGCore::Serde
          * @param memberIterator
          * @return
          */
-        [[nodiscard]] std::string getMemberName(const FormatInfo<TFormatType>::member_iterator_t& memberIterator) const noexcept
+        [[nodiscard]] std::string getMemberName(const typename FormatInfo<TFormatType>::member_iterator_t& memberIterator) const noexcept
         {
 
         }
@@ -1179,7 +1179,7 @@ namespace SGCore::Serde
          * @param memberIterator
          * @return
          */
-        [[nodiscard]] std::string getMemberTypeName(const FormatInfo<TFormatType>::member_iterator_t& memberIterator) const noexcept
+        [[nodiscard]] std::string getMemberTypeName(const typename FormatInfo<TFormatType>::member_iterator_t& memberIterator) const noexcept
         {
 
         }
@@ -1189,7 +1189,7 @@ namespace SGCore::Serde
          * @param memberIterator
          * @return
          */
-        [[nodiscard]] std::string getMemberTypeName(const FormatInfo<TFormatType>::array_iterator_t& valueIterator) const noexcept
+        [[nodiscard]] std::string getMemberTypeName(const typename FormatInfo<TFormatType>::array_iterator_t& valueIterator) const noexcept
         {
 
         }
