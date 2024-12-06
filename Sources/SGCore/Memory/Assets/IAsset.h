@@ -89,6 +89,8 @@ namespace SGCore
 
         [[nodiscard]] Ref<AssetManager> getParentAssetManager() const noexcept;
 
+        [[nodiscard]] bool isLoaded() const noexcept;
+
     protected:
 
         /// In the implementation of the \p doLoad function, you must implement all the logic of downloading an asset, which can be executed in parallel (for example: downloading an asset from disk).

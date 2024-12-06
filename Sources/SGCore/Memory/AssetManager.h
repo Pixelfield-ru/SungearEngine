@@ -169,7 +169,7 @@ namespace SGCore
                 if(!asset->m_isLoaded)
                 {
                     distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}. Asset type ID: {}",
+                    LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}. Asset type ID: {}",
                           Utils::toUTF8(path.resolved().u16string()), typeid(AssetT).name(), AssetT::type_id);
                 }
 
@@ -242,7 +242,7 @@ namespace SGCore
                 if(!assetToLoad->m_isLoaded)
                 {
                     distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}",
+                    LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}",
                           Utils::toUTF8(path.resolved().u16string()), typeid(AssetT).name());
                 }
 
@@ -394,7 +394,7 @@ namespace SGCore
                 if(!assetToLoad->m_isLoaded)
                 {
                     distributeAsset(assetToLoad.m_asset, path, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}. Asset type: {}",
+                    LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}. Asset type: {}",
                           Utils::toUTF8(path.resolved().u16string()), typeid(AssetT).name());
                 }
 
@@ -468,7 +468,7 @@ namespace SGCore
                 if(!asset->m_isLoaded)
                 {
                     distributeAsset(asset, path, assetsLoadPolicy, lazyLoadInThread);
-                    LOG_I(SGCORE_TAG, "Loaded new asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}",
+                    LOG_I(SGCORE_TAG, "Loaded existing asset associated by path: {}; and alias: {}. Asset type: {}. Asset type ID: {}",
                           Utils::toUTF8(path.resolved().u16string()), alias, typeid(AssetT).name(), AssetT::type_id);
                 }
 
@@ -911,6 +911,8 @@ namespace SGCore
                              AssetsLoadPolicy loadPolicy,
                              const Ref<Threading::Thread>& lazyLoadInThread) noexcept
         {
+            if(asset->m_isLoaded) return;
+
             switch(loadPolicy)
             {
                 case SINGLE_THREADED:

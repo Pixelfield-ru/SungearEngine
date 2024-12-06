@@ -146,11 +146,12 @@ namespace SGCore::Threading
             auto threadsIt = m_threads.begin();
             while(threadsIt != m_threads.end())
             {
-                if(auto lockedThread = threadsIt->lock())
+                auto thread = *threadsIt;
+                if(thread)
                 {
-                    if(m_threadsSelector(lockedThread, currentPreferableThread))
+                    if(m_threadsSelector(thread, currentPreferableThread))
                     {
-                        currentPreferableThread = lockedThread;
+                        currentPreferableThread = thread;
                     }
 
                     ++threadsIt;
@@ -253,7 +254,7 @@ namespace SGCore::Threading
 
         SelectionPolicyT m_threadsSelector { };
         
-        std::vector<std::weak_ptr<Thread>> m_threads;
+        std::vector<std::shared_ptr<Thread>> m_threads;
     };
 
     using ThreadsPool = BaseThreadsPool<TasksCountLessThan>;

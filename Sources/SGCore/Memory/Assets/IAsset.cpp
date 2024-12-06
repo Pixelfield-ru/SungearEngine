@@ -28,3 +28,8 @@ SGCore::Ref<SGCore::AssetManager> SGCore::IAsset::getParentAssetManager() const 
 {
     return m_parentAssetManager.lock();
 }
+
+bool SGCore::IAsset::isLoaded() const noexcept
+{
+    return m_isLoaded;
+}

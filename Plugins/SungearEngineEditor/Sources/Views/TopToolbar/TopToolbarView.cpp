@@ -95,6 +95,7 @@ SGE::TopToolbarView::TopToolbarView()
             m_fileCreateDialog->m_mode = FileOpenMode::CREATE;
             m_fileCreateDialog->m_name = "New File";
             m_fileCreateDialog->m_disallowPathSpecifying = false;
+            m_fileCreateDialog->m_ext = "";
             m_fileCreateDialog->setActive(true);
         }
         else if(element->m_ID == "Engine Settings")

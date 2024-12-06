@@ -1002,38 +1002,61 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
         if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
         {
             bool previewExists = m_previewAssetManager->isAssetExists<SGCore::ITexture2D>(u8curPath);
-            fileIcon = m_previewAssetManager->createAsset<SGCore::ITexture2D>();
-            // fileIcon = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
-            fileIcon->onLazyLoadDone += [previewExists, iconSize, iconPadding](SGCore::IAsset* self) {
-                if(!previewExists)
+            // if preview does not exist in asset manager then we are loading this preview using PARALLEL_THEN_LAZYLOAD
+            if(!previewExists)
+            {
+                fileIcon = m_previewAssetManager->createAsset<SGCore::ITexture2D>();
+                // fileIcon = SGCore::Ref<SGCore::ITexture2D>(SGCore::CoreMain::getRenderer()->createTexture2D());
+                fileIcon->onLazyLoadDone += [previewExists, iconSize, iconPadding](SGCore::IAsset* self)
                 {
-                    // NEXT WE ARE COMPRESSING TEXTURE SAVING ITS ASPECT RATIO
-                    auto* tex = (SGCore::ITexture2D*) self;
-                    
-                    if(tex->getWidth() > tex->getHeight())
+                    if(!previewExists && self)
                     {
-                        float ratio = (float) tex->getWidth() / (float) tex->getHeight();
-                        
-                        tex->resize(iconSize.x - iconPadding.x * 2,
-                                    std::max<std::int32_t>((std::int32_t) ((float) iconSize.y / ratio) - iconPadding.y * 2, 1));
+                        std::cout << "resizing image" << std::endl;
+
+                        // NEXT WE ARE COMPRESSING TEXTURE SAVING ITS ASPECT RATIO
+                        auto* tex = (SGCore::ITexture2D*) self;
+
+                        if(tex->getWidth() > tex->getHeight())
+                        {
+                            float ratio = (float) tex->getWidth() / (float) tex->getHeight();
+
+                            tex->resize(iconSize.x - iconPadding.x * 2,
+                                        std::max<std::int32_t>(
+                                                (std::int32_t) ((float) iconSize.y / ratio) - iconPadding.y * 2, 1
+                                        ));
+                        }
+                        else if(tex->getHeight() > tex->getWidth())
+                        {
+                            float ratio = (float) tex->getHeight() / (float) tex->getWidth();
+
+                            tex->resize(std::max<std::int32_t>(
+                                                (std::int32_t) ((float) iconSize.x / ratio) - iconPadding.x * 2, 1
+                                        ),
+                                        iconSize.y - iconPadding.y * 2
+                            );
+                        }
+                        else
+                        {
+                            tex->resize(iconSize.x - iconPadding.x * 2, iconSize.y - iconPadding.y * 2);
+                        }
                     }
-                    else if(tex->getHeight() > tex->getWidth())
-                    {
-                        float ratio = (float) tex->getHeight() / (float) tex->getWidth();
-                        
-                        tex->resize(std::max<std::int32_t>((std::int32_t) ((float) iconSize.x / ratio) - iconPadding.x * 2, 1),
-                                    iconSize.y - iconPadding.y * 2);
-                    }
-                    else
-                    {
-                        tex->resize(iconSize.x - iconPadding.x * 2, iconSize.y - iconPadding.y * 2);
-                    }
+                };
+
+                m_previewAssetManager->loadAsset<SGCore::ITexture2D>(fileIcon,
+                                                                     SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD,
+                                                                     u8curPath
+                );
+            }
+            else
+            {
+                // if preview is already exist then we are getting this
+                // preview from asset manager only if data of this asset was loaded (isLoaded())
+                auto tmpPreview = m_previewAssetManager->getAsset<SGCore::ITexture2D>(u8curPath);
+                if(tmpPreview->isLoaded())
+                {
+                    fileIcon = tmpPreview;
                 }
-            };
-            
-            m_previewAssetManager->loadAsset<SGCore::ITexture2D>(fileIcon,
-                                                                SGCore::AssetsLoadPolicy::PARALLEL_THEN_LAZYLOAD,
-                                                                u8curPath);
+            }
         }
         
         /*bool isCurrentFileSelected = std::find_if(m_selectedFiles.begin(), m_selectedFiles.end(), [&curPath](const FileInfo* fileInfo) -> bool {
