@@ -132,7 +132,7 @@ namespace SGE
                                                 .m_elements = {
                                                         SGCore::MakeRef<PopupElement>(PopupElement {
                                                                 .m_text = "Material",
-                                                                .m_ID = "New/Material",
+                                                                .m_ID = "New/Asset/Material",
                                                                 .m_icon = StylesManager::getCurrentStyle()->m_cubesIcon->getSpecialization(
                                                                         18, 18)->getTexture()
                                                         })
@@ -301,6 +301,7 @@ namespace SGE
         
         // =======================================================================
         SGCore::EventListener<void(const std::filesystem::path& byPath, bool canceled)> onSceneFileCreatedListener;
+        SGCore::EventListener<void(const std::filesystem::path& byPath, bool canceled)> onMaterialFileCreatedListener;
     };
 }
 

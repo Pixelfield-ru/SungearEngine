@@ -17,16 +17,51 @@
 #include "EditorScene.h"
 
 #include <SGCore/Serde/StandardSerdeSpecs.h>
+#include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 
 SGE::DirectoryExplorer::DirectoryExplorer()
 {
+    onSceneFileCreatedListener = [](const std::filesystem::path& byPath, bool canceled) {
+        if(SungearEngineEditor::getInstance()->getMainView()
+                   ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgscene" && !canceled)
+        {
+            auto editorScene = EditorScene::createBasicScene(SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string()));
+            editorScene->saveByPath(byPath.parent_path(), byPath.stem());
+            if(!EditorScene::getCurrentScene())
+            {
+                EditorScene::setCurrentScene(editorScene);
+            }
+        }
+    };
+
+    onMaterialFileCreatedListener = [](const std::filesystem::path& byPath, bool canceled) {
+        if(SungearEngineEditor::getInstance()->getMainView()
+                   ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgmat" && !canceled)
+        {
+            const SGCore::InterpolatedPath interpolatedPath = std::filesystem::relative(byPath, SGCore::PathInterpolationMarkup::getGlobalMarkup()["projectPath"]);
+            auto createdMaterial = SGCore::AssetManager::getInstance()->getOrAddAssetByPath<SGCore::IMaterial>("${projectPath}" / interpolatedPath);
+
+            const std::string serializedMaterialRef = SGCore::Serde::Serializer::toFormat(createdMaterial);
+
+            SGCore::FileUtils::writeToFile(byPath, serializedMaterialRef, false, false);
+
+            LOG_I(SGEDITOR_TAG, "Material by path '{}' created!", SGCore::Utils::toUTF8(byPath.u16string()));
+        }
+    };
+
+    SungearEngineEditor::getInstance()->onConstructed += [this]() {
+        auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
+        fileCreateDialog->onOperationEnd += onSceneFileCreatedListener;
+        fileCreateDialog->onOperationEnd += onMaterialFileCreatedListener;
+    };
+
     // TODO: MAKE ON RIGHT CLICK SETTINGS FOR AUTO CONFIGURE POPUP
     onRightClick += [this](const std::filesystem::path& filePath) {
         bool isOneFileSelected = m_selectedFiles.size() <= 1;
         auto newFilesElem = m_popup.tryGetElement("New...");
         auto copyFilesElem = m_popup.tryGetElement("Copy");
         auto pasteFilesElem = m_popup.tryGetElement("Paste");
-        
+
         if(std::filesystem::is_directory(filePath) && isOneFileSelected)
         {
             newFilesElem->setAllElementsActive(true);
@@ -66,19 +101,6 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             pasteFilesElem->m_isActive = true;
             pasteFilesElem->m_drawSeparatorAfter = false;
             newFilesElem->m_drawSeparatorAfter = true;
-        }
-    };
-
-    onSceneFileCreatedListener = [](const std::filesystem::path& byPath, bool canceled) {
-        if(SungearEngineEditor::getInstance()->getMainView()
-                   ->getTopToolbarView()->m_fileCreateDialog->m_ext == ".sgscene" && !canceled)
-        {
-            auto editorScene = EditorScene::createBasicScene(SGCore::Utils::toUTF8<char16_t>(byPath.stem().u16string()));
-            editorScene->saveByPath(byPath.parent_path(), byPath.stem());
-            if(!EditorScene::getCurrentScene())
-            {
-                EditorScene::setCurrentScene(editorScene);
-            }
         }
     };
     
@@ -132,11 +154,13 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
             auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
-            fileCreateDialog->m_dialogTitle = "New C++ Source File";
+            fileCreateDialog->m_mode = FileOpenMode::CREATE;
+            fileCreateDialog->m_name = "New C++ Source File";
             fileCreateDialog->m_defaultPath = utf8Path;
             fileCreateDialog->m_currentChosenDirPath = utf8Path;
             fileCreateDialog->m_ext = ".cpp";
             fileCreateDialog->m_isCreatingDirectory = false;
+            fileCreateDialog->m_disallowPathSpecifying = true;
             fileCreateDialog->setActive(true);
         }
         else if(element->m_ID == "New/C++ Header File")
@@ -144,11 +168,13 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
             auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
-            fileCreateDialog->m_dialogTitle = "New C++ Header File";
+            fileCreateDialog->m_mode = FileOpenMode::CREATE;
+            fileCreateDialog->m_name = "New C++ Header File";
             fileCreateDialog->m_defaultPath = utf8Path;
             fileCreateDialog->m_currentChosenDirPath = utf8Path;
             fileCreateDialog->m_ext = ".h";
             fileCreateDialog->m_isCreatingDirectory = false;
+            fileCreateDialog->m_disallowPathSpecifying = true;
             fileCreateDialog->setActive(true);
         }
         else if(element->m_ID == "New/Directory")
@@ -156,11 +182,27 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
             auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
-            fileCreateDialog->m_dialogTitle = "New Directory";
+            fileCreateDialog->m_mode = FileOpenMode::CREATE;
+            fileCreateDialog->m_name = "New Directory";
             fileCreateDialog->m_defaultPath = utf8Path;
             fileCreateDialog->m_currentChosenDirPath = utf8Path;
             fileCreateDialog->m_ext = "";
             fileCreateDialog->m_isCreatingDirectory = true;
+            fileCreateDialog->m_disallowPathSpecifying = true;
+            fileCreateDialog->setActive(true);
+        }
+        else if(element->m_ID == "New/Asset/Material")
+        {
+            std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
+
+            auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
+            fileCreateDialog->m_mode = FileOpenMode::CREATE;
+            fileCreateDialog->m_name = "New Material";
+            fileCreateDialog->m_defaultPath = utf8Path;
+            fileCreateDialog->m_currentChosenDirPath = utf8Path;
+            fileCreateDialog->m_ext = ".sgmat";
+            fileCreateDialog->m_isCreatingDirectory = false;
+            fileCreateDialog->m_disallowPathSpecifying = true;
             fileCreateDialog->setActive(true);
         }
         else if(element->m_ID == "Copy")
@@ -176,14 +218,14 @@ SGE::DirectoryExplorer::DirectoryExplorer()
             std::string utf8Path = SGCore::Utils::toUTF8<char16_t>(m_currentFileOpsTargetDir.u16string());
             
             auto fileCreateDialog = SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog;
-            fileCreateDialog->m_dialogTitle = "New Scene";
+            fileCreateDialog->m_mode = FileOpenMode::CREATE;
+            fileCreateDialog->m_name = "New Scene";
             fileCreateDialog->m_defaultPath = utf8Path;
             fileCreateDialog->m_currentChosenDirPath = utf8Path;
             fileCreateDialog->m_ext = ".sgscene";
             fileCreateDialog->m_isCreatingDirectory = false;
+            fileCreateDialog->m_disallowPathSpecifying = true;
             fileCreateDialog->setActive(true);
-
-            SungearEngineEditor::getInstance()->getMainView()->getTopToolbarView()->m_fileCreateDialog->onOperationEnd += onSceneFileCreatedListener;
         }
     };
 }

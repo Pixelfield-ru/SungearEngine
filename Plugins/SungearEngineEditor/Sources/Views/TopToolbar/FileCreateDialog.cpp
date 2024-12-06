@@ -54,11 +54,11 @@ void SGE::FileCreateDialog::renderBody()
     {
         case OPEN:
             m_bodyMinSize = { 450, 40 };
-            m_name = "Open File";
+            // m_name = "Open File";
             break;
         case CREATE:
             m_bodyMinSize = { 450, 65 };
-            m_name = "Create File";
+            // m_name = "Create File";
             break;
     }
 
@@ -67,38 +67,42 @@ void SGE::FileCreateDialog::renderBody()
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     if(ImGui::BeginTable((m_name.getName() + "_Table").c_str(), 3, ImGuiTableFlags_SizingStretchProp))
     {
-        ImGui::TableNextRow();
+        if(!m_disallowPathSpecifying)
         {
-            ImGui::TableNextColumn();
-            ImGui::Text("Location");
-
-            ImGui::TableNextColumn();
-            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-            ImGui::InputText("##DirectoryPath", &m_currentChosenDirPath);
-
-            if (ImGui::IsItemEdited())
+            ImGui::TableNextRow();
             {
-                m_error = "";
-            }
+                ImGui::TableNextColumn();
+                ImGui::Text("Location");
 
-            ImGui::TableNextColumn();
+                ImGui::TableNextColumn();
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+                ImGui::InputText("##DirectoryPath", &m_currentChosenDirPath);
 
-            auto folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
-                    ->getSpecialization(20, 20)
-                    ->getTexture();
-
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
-            if (ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
-                                        ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
-                                        ImVec2(folderTexture->getWidth(), folderTexture->getHeight())).m_isLMBClicked)
-            {
-                char* dat = m_currentChosenDirPath.data();
-                nfdresult_t result = NFD_PickFolder("", &dat);
-                if (result == NFD_OKAY)
+                if(ImGui::IsItemEdited())
                 {
-                    m_currentChosenDirPath = dat;
+                    m_error = "";
+                }
+
+                ImGui::TableNextColumn();
+
+                auto folderTexture = StylesManager::getCurrentStyle()->m_folderIcon
+                        ->getSpecialization(20, 20)
+                        ->getTexture();
+
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7);
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
+                if(ImGuiUtils::ImageButton(folderTexture->getTextureNativeHandler(),
+                                           ImVec2(folderTexture->getWidth() + 6, folderTexture->getHeight() + 6),
+                                           ImVec2(folderTexture->getWidth(),
+                                                  folderTexture->getHeight())).m_isLMBClicked)
+                {
+                    char* dat = m_currentChosenDirPath.data();
+                    nfdresult_t result = NFD_PickFolder("", &dat);
+                    if(result == NFD_OKAY)
+                    {
+                        m_currentChosenDirPath = dat;
+                    }
                 }
             }
         }

@@ -2357,7 +2357,7 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept
 {
-    const auto m_fileAssetPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_fileAssetPath");
+    const auto m_fileAssetPath = valueView.getValueContainer().template getMember<InterpolatedPath>("m_fileAssetPath");
 
     if(m_fileAssetPath)
     {
@@ -3891,7 +3891,7 @@ namespace SGCore::Serde
                 return;
             }
 
-            auto assetPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_path");
+            auto assetPath = valueView.getValueContainer().template getMember<InterpolatedPath>("m_path");
             const auto assetTypeID = valueView.getValueContainer().template getMember<size_t>("m_assetTypeID");
             auto assetAlias = valueView.getValueContainer().template getMember<std::string>("m_alias");
             const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storedBy");
@@ -3956,7 +3956,7 @@ namespace SGCore::Serde
                 valueView.m_data->m_alias = std::move(*assetAlias);
             }
 
-            auto assetPath = valueView.getValueContainer().template getMember<std::filesystem::path>("m_path");
+            auto assetPath = valueView.getValueContainer().template getMember<InterpolatedPath>("m_path");
             if(assetPath)
             {
                 valueView.m_data->m_path = std::move(*assetPath);

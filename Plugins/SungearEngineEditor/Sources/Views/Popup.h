@@ -46,6 +46,8 @@ namespace SGE
         void recursiveClose() noexcept;
         void setAllElementsActive(bool isActive) noexcept;
         [[nodiscard]] SGCore::Ref<PopupElement> tryGetElementRecursively(std::string_view id) noexcept;
+        void tryGetElementsContainRecursively(std::string_view id,
+                                              std::vector<SGCore::Ref<PopupElement>>& outputElems) noexcept;
     };
     
     struct Popup
@@ -72,7 +74,8 @@ namespace SGE
         SGCore::Event<void(bool last, bool current)> onOpenedChanged;
 
         SGCore::Ref<PopupElement> tryGetElement(std::string_view id) noexcept;
-        
+        std::vector<SGCore::Ref<PopupElement>> tryGetElementsContain(std::string_view id) noexcept;
+
         void recursiveClose() noexcept;
         void setAllElementsActive(bool isActive) noexcept;
         

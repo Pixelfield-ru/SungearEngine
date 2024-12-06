@@ -81,6 +81,8 @@ SGE::TopToolbarView::TopToolbarView()
         else if(element->m_ID == "Open/File")
         {
             m_fileCreateDialog->m_mode = FileOpenMode::OPEN;
+            m_fileCreateDialog->m_name = "Open File";
+            m_fileCreateDialog->m_disallowPathSpecifying = false;
             m_fileCreateDialog->setActive(true);
         }
         else if(element->m_ID == "New/Project")
@@ -91,6 +93,8 @@ SGE::TopToolbarView::TopToolbarView()
         else if(element->m_ID == "New/File")
         {
             m_fileCreateDialog->m_mode = FileOpenMode::CREATE;
+            m_fileCreateDialog->m_name = "New File";
+            m_fileCreateDialog->m_disallowPathSpecifying = false;
             m_fileCreateDialog->setActive(true);
         }
         else if(element->m_ID == "Engine Settings")

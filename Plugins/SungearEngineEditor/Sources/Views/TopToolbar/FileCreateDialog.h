@@ -29,10 +29,9 @@ namespace SGE
         std::string m_ext;
         
         bool m_isCreatingDirectory = false;
+        bool m_disallowPathSpecifying = false;
         
         std::string m_currentChosenDirPath;
-        
-        std::string m_dialogTitle = "Create File";
 
         void renderBody() final;
         void footerRender() override;

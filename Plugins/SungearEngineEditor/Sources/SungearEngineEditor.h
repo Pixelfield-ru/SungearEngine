@@ -23,6 +23,8 @@ namespace SGE
 
         SGCore::Ref<Project> m_currentProject;
 
+        SGCore::Event<void()> onConstructed;
+
         ~SungearEngineEditor() override;
 
         void update(const double& dt, const double& fixedDt) final;

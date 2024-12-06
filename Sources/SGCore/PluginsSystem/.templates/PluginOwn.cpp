@@ -21,6 +21,8 @@ std::string ${pluginName}$::onConstruct(const std::vector<std::string>& args)
     
     m_name = "${pluginName}$";
     m_version = "1.0.0";
+
+    onConstructed();
     
     return "";
 }

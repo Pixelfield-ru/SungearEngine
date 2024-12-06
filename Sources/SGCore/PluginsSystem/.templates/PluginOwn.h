@@ -8,6 +8,8 @@
 
 struct ${pluginName}$ : public SGCore::IPlugin
 {
+    SGCore::Event<void()> onConstructed;
+
     ~${pluginName}$() override;
 
     void update(const double& dt, const double& fixedDt) final;

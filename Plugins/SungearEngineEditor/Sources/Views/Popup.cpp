@@ -213,6 +213,25 @@ SGCore::Ref<SGE::PopupElement> SGE::PopupElement::tryGetElementRecursively(std::
     return elem;
 }
 
+void SGE::PopupElement::tryGetElementsContainRecursively(std::string_view id,
+                                                         std::vector<SGCore::Ref<SGE::PopupElement>>& outputElems) noexcept
+{
+    for(auto& e : m_elements)
+    {
+        /*if(e->m_ID.getNamesManager() != m_namesManager)
+        {
+            e->m_ID.attachToManager(m_namesManager);
+        }*/
+
+        if(e->m_ID.contains(id))
+        {
+            outputElems.push_back(e);
+        }
+
+        e->tryGetElementsContainRecursively(id, outputElems);
+    }
+}
+
 SGE::Popup::Popup(const std::string& name, const std::initializer_list<PopupElement>& items) noexcept
 {
     m_name = name;
@@ -454,4 +473,26 @@ SGCore::Ref<SGE::PopupElement> SGE::Popup::tryGetElement(std::string_view id) no
     }
     
     return elem;
+}
+
+std::vector<SGCore::Ref<SGE::PopupElement>> SGE::Popup::tryGetElementsContain(std::string_view id) noexcept
+{
+    std::vector<SGCore::Ref<PopupElement>> elems;
+
+    for(auto& e : m_elements)
+    {
+        /* if(e->m_ID.getNamesManager() != m_namesManager)
+         {
+             e->m_ID.attachToManager(m_namesManager);
+         }*/
+
+        if(e->m_ID.contains(id))
+        {
+            elems.push_back(e);
+        }
+
+        e->tryGetElementsContainRecursively(id, elems);
+    }
+
+    return elems;
 }
