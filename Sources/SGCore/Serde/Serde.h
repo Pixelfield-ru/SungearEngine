@@ -399,72 +399,34 @@ namespace SGCore::Serde
         template<typename T, FormatType TFormatType, typename... SharedDataT>
         static void invokeSerdeSpecSerialize(SerializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
-            // if serialize function of SerdeSpec is template
-            if constexpr(requires { SerdeSpec<T, TFormatType>::template serialize<SharedDataT...>; })
+            // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
+            if constexpr(requires {
+                SerdeSpec<T, TFormatType>::serialize(valueView, std::forward<SharedDataT>(sharedData)...);
+            })
             {
-                // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
-                if constexpr(std::is_invocable_v<decltype(SerdeSpec<T, TFormatType>::template serialize<SharedDataT...>),
-                        decltype(valueView),
-                        SharedDataT...>)
-                {
-                    SerdeSpec<T, TFormatType>::serialize(valueView, std::forward<SharedDataT>(sharedData)...);
-                }
-                else
-                {
-                    // else if we can not call SerdeSpec<T, TFormatType>::serialize than passing only valueView without sharedData
-                    SerdeSpec<T, TFormatType>::serialize(valueView);
-                }
+                SerdeSpec<T, TFormatType>::serialize(valueView, std::forward<SharedDataT>(sharedData)...);
             }
             else
             {
-                // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
-                if constexpr(std::is_invocable_v<decltype(SerdeSpec<T, TFormatType>::serialize),
-                        decltype(valueView),
-                        SharedDataT...>)
-                {
-                    SerdeSpec<T, TFormatType>::serialize(valueView, std::forward<SharedDataT>(sharedData)...);
-                }
-                else
-                {
-                    // else if we can not call SerdeSpec<T, TFormatType>::serialize than passing only valueView without sharedData
-                    SerdeSpec<T, TFormatType>::serialize(valueView);
-                }
+                // else if we can not call SerdeSpec<T, TFormatType>::serialize than passing only valueView without sharedData
+                SerdeSpec<T, TFormatType>::serialize(valueView);
             }
         }
 
         template<typename T, FormatType TFormatType, typename... SharedDataT>
         static void invokeSerdeSpecDeserialize(DeserializableValueView<T, TFormatType>& valueView, SharedDataT&&... sharedData) noexcept
         {
-            // if serialize function of SerdeSpec is template
-            if constexpr(requires { SerdeSpec<T, TFormatType>::template deserialize<SharedDataT...>; })
+            // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
+            if constexpr(requires {
+                SerdeSpec<T, TFormatType>::deserialize(valueView, std::forward<SharedDataT>(sharedData)...);
+            })
             {
-                // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
-                if constexpr(std::is_invocable_v<decltype(SerdeSpec<T, TFormatType>::template deserialize<SharedDataT...>),
-                        decltype(valueView),
-                        SharedDataT...>)
-                {
-                    SerdeSpec<T, TFormatType>::deserialize(valueView, std::forward<SharedDataT>(sharedData)...);
-                }
-                else
-                {
-                    // else if we can not call SerdeSpec<T, TFormatType>::serialize than passing only valueView without sharedData
-                    SerdeSpec<T, TFormatType>::deserialize(valueView);
-                }
+                SerdeSpec<T, TFormatType>::deserialize(valueView, std::forward<SharedDataT>(sharedData)...);
             }
             else
             {
-                // if we can call SerdeSpec<T, TFormatType>::serialize with passing sharedData
-                if constexpr(std::is_invocable_v<decltype(SerdeSpec<T, TFormatType>::deserialize),
-                        decltype(valueView),
-                        SharedDataT...>)
-                {
-                    SerdeSpec<T, TFormatType>::deserialize(valueView, std::forward<SharedDataT>(sharedData)...);
-                }
-                else
-                {
-                    // else if we can not call SerdeSpec<T, TFormatType>::serialize than passing only valueView without sharedData
-                    SerdeSpec<T, TFormatType>::deserialize(valueView);
-                }
+                // else if we can not call SerdeSpec<T, TFormatType>::serialize than passing only valueView without sharedData
+                SerdeSpec<T, TFormatType>::deserialize(valueView);
             }
         }
     

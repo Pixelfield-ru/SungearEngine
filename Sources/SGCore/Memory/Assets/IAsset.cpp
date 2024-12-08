@@ -33,3 +33,8 @@ bool SGCore::IAsset::isLoaded() const noexcept
 {
     return m_isLoaded;
 }
+
+bool SGCore::IAsset::isSavedBinaryFile() const noexcept
+{
+    return m_isSavedInBinaryFile;
+}

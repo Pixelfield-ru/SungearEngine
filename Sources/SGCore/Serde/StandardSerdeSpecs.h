@@ -3866,7 +3866,7 @@ namespace SGCore::Serde
         static inline constexpr bool is_pointer_type = false;
 
         // WE ARE SERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO SERIALIZATION OF DATA
-        template<typename... SharedDataT> // making this function to accept any types and count of arguments
+        template<typename... SharedDataT>
         static void serialize(SerializableValueView<AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...)
         {
             if(!valueView.m_data->m_asset)
@@ -3883,8 +3883,7 @@ namespace SGCore::Serde
         }
 
         // WE ARE DESERIALIZING ONLY META INFO OF ASSET BECAUSE IT IS ASSET REFERENCE. WE DO NOT NEED TO DO DESERIALIZATION OF DATA
-        template<typename... SharedDataT> // making this function to accept any types and count of arguments
-        static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView, SharedDataT&&...)
+        static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView, AssetsPackage&)
         {
             if(valueView.getValueContainer().isNull())
             {
@@ -3922,6 +3921,71 @@ namespace SGCore::Serde
             valueView.m_data->m_deserializedAssetTypeID = *assetTypeID;
             valueView.m_data->m_deserializedParentAssetManager = parentAssetManager;
         }
+
+        static void deserialize(DeserializableValueView<AssetRef<AssetT>, TFormatType>& valueView)
+        {
+            if(valueView.getValueContainer().isNull())
+            {
+                return;
+            }
+
+            auto assetPath = valueView.getValueContainer().template getMember<InterpolatedPath>("m_path");
+            const auto assetTypeID = valueView.getValueContainer().template getMember<size_t>("m_assetTypeID");
+            auto assetAlias = valueView.getValueContainer().template getMember<std::string>("m_alias");
+            const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storedBy");
+            const auto parentAssetManagerName = valueView.getValueContainer().template getMember<std::string>("m_parentAssetManagerName");
+
+            LOG_I(SGCORE_TAG, "Deserializing AssetRef from filesystem... AssetRef data: path: '{}', alias: '{}', asset type ID: '{}', stored by: '{}'",
+                  SGCore::Utils::toUTF8(assetPath->resolved().u16string()),
+                  *assetAlias,
+                  *assetTypeID,
+                  std::to_underlying(*assetStorageType));
+
+            if(!parentAssetManagerName) return;
+
+            auto parentAssetManager = AssetManager::getAssetManager(*parentAssetManagerName);
+
+            // WE DO NOT set parent asset manager because we are getting already existing asset from asset manager
+            // and this asset is already has parent asset manager
+
+            // checking if asset is already exists
+            // TRYING TO RESOLVE REFERENCE AUTOMATICALLY
+            bool assetResolvedAutomatically = false;
+            if (parentAssetManager->isAssetExists(*assetAlias, *assetPath, *assetStorageType, *assetTypeID))
+            {
+                // setting m_asset to asset from parent asset manager
+                LOG_I(SGCORE_TAG, "Asset is already exist. Reference was resolved automatically.");
+                valueView.m_data->m_asset =
+                        std::static_pointer_cast<AssetT>(
+                                parentAssetManager->loadExistingAsset(*assetAlias, *assetPath, *assetStorageType, *assetTypeID).m_asset);
+
+                assetResolvedAutomatically = true;
+            }
+
+            // assigning values only after getting asset from asset manager
+            valueView.m_data->m_deserializedAssetAlias = *assetAlias;
+            valueView.m_data->m_deserializedAssetPath = *assetPath;
+            valueView.m_data->m_deserializedAssetStoredBy = *assetStorageType;
+            valueView.m_data->m_deserializedAssetTypeID = *assetTypeID;
+            valueView.m_data->m_deserializedParentAssetManager = parentAssetManager;
+
+            if(assetResolvedAutomatically)
+            {
+                return;
+            }
+
+            // if asset ref was serialized by path and path is valid and if we are deserializing this ref
+            // not from assets package then we are trying to load asset from filesystem
+            if(*assetStorageType == AssetStorageType::BY_PATH && std::filesystem::exists(assetPath->resolved()))
+            {
+                LOG_I(SGCORE_TAG, "Loading AssetRef by path... AssetRef data: path: '{}', alias: '{}', type ID: '{}'",
+                      SGCore::Utils::toUTF8(assetPath->resolved().u16string()),
+                      *assetAlias,
+                      *assetTypeID);
+
+                valueView.m_data->m_asset = parentAssetManager->template loadAsset<AssetT>(*assetPath).m_asset;
+            }
+        }
     };
 
     template<FormatType TFormatType>
@@ -3938,8 +4002,8 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::IAsset";
         static inline constexpr bool is_pointer_type = false;
 
-        /// This function is used only when serializing an asset manager package.
-        static void serialize(SerializableValueView<IAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<IAsset, TFormatType>& valueView, SharedDataT&&...)
         {
             valueView.getValueContainer().addMember("m_path", valueView.m_data->getPath());
             valueView.getValueContainer().addMember("m_alias", valueView.m_data->getAlias());
@@ -3971,14 +4035,46 @@ namespace SGCore::Serde
             const auto useDataSerde = valueView.getValueContainer().template getMember<bool>("m_useDataSerde");
             if(useDataSerde)
             {
-                valueView.m_data->m_useDataSerde = *useDataSerde;
+                valueView.m_data->m_isSavedInBinaryFile = *useDataSerde;
             }
             else
             {
-                valueView.m_data->m_useDataSerde = false;
+                valueView.m_data->m_isSavedInBinaryFile = false;
             }
 
             valueView.m_data->m_parentAssetManager = assetsPackage.getParentAssetManager()->shared_from_this();
+        }
+
+        /// This function is used when deserializing directly from file that contains only this asset.
+        static void deserialize(DeserializableValueView<IAsset, TFormatType>& valueView)
+        {
+            auto assetAlias = valueView.getValueContainer().template getMember<std::string>("m_alias");
+            if(assetAlias)
+            {
+                valueView.m_data->m_alias = std::move(*assetAlias);
+            }
+
+            auto assetPath = valueView.getValueContainer().template getMember<InterpolatedPath>("m_path");
+            if(assetPath)
+            {
+                valueView.m_data->m_path = std::move(*assetPath);
+            }
+
+            const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storedBy");
+            if(assetPath)
+            {
+                valueView.m_data->m_storedBy = *assetStorageType;
+            }
+
+            const auto useDataSerde = valueView.getValueContainer().template getMember<bool>("m_useDataSerde");
+            if(useDataSerde)
+            {
+                valueView.m_data->m_isSavedInBinaryFile = *useDataSerde;
+            }
+            else
+            {
+                valueView.m_data->m_isSavedInBinaryFile = false;
+            }
         }
     };
 
@@ -3990,7 +4086,8 @@ namespace SGCore::Serde
         /// ITexture2D is not pointer type. That is, ITexture2D is not a type that uses RAII to store the pointer and to wrap it.
         static inline constexpr bool is_pointer_type = false;
 
-        /// Required function: This function is ONLY used when serializing assets into a package.
+        /// Required function: This function is ONLY used when serializing assets into a package.\n
+        /// You can implement serialize function that does not accept AssetsPackage for serializing asset directly to file.\n
         /// The second argument is the current package being serialized.
         static void serialize(SerializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
@@ -4030,7 +4127,8 @@ namespace SGCore::Serde
         /// the asset was previously serialized to a binary file or \p load(...) if it was not previously serialized to a binary file,
         /// which means loading by the path to the asset (.gltf, .obj).\n\n
         /// Each implementation of the \p loadFromBinaryFile(...) function must load heavy data by offsets and sizes from a binary file.
-        /// So for each member with heavy data in your class inheriting IAsset you must store the offset in the binary file (in bytes) and the size of the data in bytes.
+        /// So for each member with heavy data in your class inheriting IAsset you must store the offset in the binary file (in bytes) and the size of the data in bytes.\n\n
+        /// You can implement \p deserialize function that does not accept \p AssetsPackage for serializing asset directly to file.
         /// \param valueView
         /// \param assetsPackage
         static void deserialize(DeserializableValueView<ITexture2D, TFormatType>& valueView, AssetsPackage& assetsPackage)
@@ -4252,12 +4350,13 @@ namespace SGCore::Serde
         static inline const std::string type_name = "SGCore::IMaterial";
         static inline constexpr bool is_pointer_type = false;
 
-        static void serialize(SerializableValueView<IMaterial, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<IMaterial, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
-            valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader, assetsPackage);
+            valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader, std::forward<SharedDataT>(sharedData)...);
 
-            valueView.getValueContainer().addMember("m_textures", valueView.m_data->m_textures, assetsPackage);
+            valueView.getValueContainer().addMember("m_textures", valueView.m_data->m_textures, std::forward<SharedDataT>(sharedData)...);
 
             valueView.getValueContainer().addMember("m_diffuseColor", valueView.m_data->m_diffuseColor);
             valueView.getValueContainer().addMember("m_specularColor", valueView.m_data->m_specularColor);
@@ -4269,7 +4368,8 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_roughnessFactor", valueView.m_data->m_roughnessFactor);
         }
 
-        static void deserialize(DeserializableValueView<IMaterial, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<IMaterial, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             auto name = valueView.getValueContainer().template getMember<std::string>("m_name");
             if(name)
@@ -4277,13 +4377,13 @@ namespace SGCore::Serde
                 valueView.m_data->m_name = std::move(*name);
             }
 
-            auto shader = valueView.getValueContainer().template getMember<AssetRef<IShader>>("m_shader");
+            auto shader = valueView.getValueContainer().template getMember<AssetRef<IShader>>("m_shader", std::forward<SharedDataT>(sharedData)...);
             if(shader)
             {
                 valueView.m_data->m_shader = std::move(*shader);
             }
 
-            auto textures = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_textures)>("m_textures", assetsPackage);
+            auto textures = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_textures)>("m_textures", std::forward<SharedDataT>(sharedData)...);
             if(textures)
             {
                 valueView.m_data->m_textures = std::move(*textures);

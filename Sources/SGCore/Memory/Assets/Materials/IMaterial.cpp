@@ -4,15 +4,28 @@
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
+#include "SGCore/Serde/StandardSerdeSpecs.h"
 
 SGCore::IMaterial::IMaterial() noexcept
 {
-
+    /*if(RenderPipelinesManager::getCurrentRenderPipeline())
+    {
+        auto geometryPass = RenderPipelinesManager::getCurrentRenderPipeline()->getRenderPass<IGeometryPass>();
+        if(geometryPass)
+        {
+            m_shader = geometryPass->m_shader;
+        }
+    }*/
 }
 
 void SGCore::IMaterial::doLoad(const InterpolatedPath& path)
 {
-
+    std::string deserLog;
+    Serde::Serializer::fromFormat(FileUtils::readFile(path.resolved()), *this, deserLog);
+    if(!deserLog.empty())
+    {
+        LOG_E(SGCORE_TAG, "Material loading (path: '{}') error: {}", Utils::toUTF8(path.resolved().u16string()), deserLog);
+    }
 }
 
 SGCore::AssetRef<SGCore::ITexture2D>

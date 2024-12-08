@@ -1,0 +1,186 @@
+{
+  "version": "1",
+  "typeName": "SGCore::IMaterial",
+  "value": {
+    "m_path": {
+      "typeName": "InterpolatedPath",
+      "value": "${enginePath}/Resources/materials/no_material.sgmat"
+    },
+    "m_alias": {
+      "typeName": "std::basic_string",
+      "value": "no_material"
+    },
+    "m_storedBy": {
+      "typeName": "enum",
+      "value": 0
+    },
+    "m_useDataSerde": {
+      "typeName": "bool",
+      "value": false
+    },
+    "m_name": {
+      "typeName": "std::basic_string",
+      "value": ""
+    },
+    "m_shader": {
+      "typeName": "SGCore::AssetRef",
+      "value": null
+    },
+    "m_textures": {
+      "typeName": "std::unordered_map",
+      "value": {
+        "4": {
+          "typeName": "std::vector",
+          "value": [
+            {
+              "typeName": "SGCore::AssetRef",
+              "value": {
+                "m_path": {
+                  "typeName": "InterpolatedPath",
+                  "value": "${enginePath}/Resources/textures/no_material.png"
+                },
+                "m_assetTypeID": {
+                  "typeName": "int",
+                  "value": 1
+                },
+                "m_alias": {
+                  "typeName": "std::basic_string",
+                  "value": "63e327b9-8dbd-4356-bb25-6ce517c0dc89"
+                },
+                "m_storedBy": {
+                  "typeName": "enum",
+                  "value": 0
+                },
+                "m_useDataSerde" : {
+                  "typeName": "bool",
+                  "value": false
+                },
+                "m_parentAssetManagerName": {
+                  "typeName": "std::basic_string",
+                  "value": "MainAssetManager"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "m_diffuseColor": {
+      "typeName": "glm::vec",
+      "value": [
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        }
+      ]
+    },
+    "m_specularColor": {
+      "typeName": "glm::vec",
+      "value": [
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        }
+      ]
+    },
+    "m_ambientColor": {
+      "typeName": "glm::vec",
+      "value": [
+        {
+          "typeName": "float",
+          "value": 0.0
+        },
+        {
+          "typeName": "float",
+          "value": 0.0
+        },
+        {
+          "typeName": "float",
+          "value": 0.0
+        },
+        {
+          "typeName": "float",
+          "value": 0.0
+        }
+      ]
+    },
+    "m_emissionColor": {
+      "typeName": "glm::vec",
+      "value": [
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        }
+      ]
+    },
+    "m_transparentColor": {
+      "typeName": "glm::vec",
+      "value": [
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        },
+        {
+          "typeName": "float",
+          "value": 1.0
+        }
+      ]
+    },
+    "m_shininess": {
+      "typeName": "float",
+      "value": 32.0
+    },
+    "m_metallicFactor": {
+      "typeName": "float",
+      "value": 1.0
+    },
+    "m_roughnessFactor": {
+      "typeName": "float",
+      "value": 1.0
+    }
+  }
+}

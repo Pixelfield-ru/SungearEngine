@@ -33,7 +33,7 @@ void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 
     // configuring default material to use standard pbr shader
-    auto defaultMaterial = AssetManager::getInstance()->getOrAddAssetByAlias<IMaterial>("default_material");
+    auto defaultMaterial = AssetManager::getInstance()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
     defaultMaterial->m_shader = m_shader;
 }
 
@@ -150,11 +150,15 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                            const Ref<PostProcessLayer>& meshPPLayer,
                                            const Ref<ISubPassShader>& standardGeometryShader) noexcept
 {
-    if(!mesh.m_base.getMeshData() ||
+    /*if(!mesh.m_base.getMeshData() ||
        !mesh.m_base.getMaterial() ||
-       !mesh.m_base.getMaterial()->m_shader) return;
+       !mesh.m_base.getMaterial()->m_shader) return;*/
 
-    auto meshGeomShader = mesh.m_base.getMaterial()->m_shader->getSubPassShader("GeometryPass");
+    if(!mesh.m_base.getMeshData() ||
+       !mesh.m_base.getMaterial()) return;
+
+    auto meshGeomShader = mesh.m_base.getMaterial()->m_shader ?
+                          mesh.m_base.getMaterial()->m_shader->getSubPassShader("GeometryPass") : nullptr;
     auto shaderToUse = meshGeomShader ? meshGeomShader : standardGeometryShader;
     
     if(shaderToUse)

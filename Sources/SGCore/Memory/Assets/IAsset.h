@@ -91,6 +91,8 @@ namespace SGCore
 
         [[nodiscard]] bool isLoaded() const noexcept;
 
+        [[nodiscard]] bool isSavedBinaryFile() const noexcept;
+
     protected:
 
         /// In the implementation of the \p doLoad function, you must implement all the logic of downloading an asset, which can be executed in parallel (for example: downloading an asset from disk).
@@ -131,7 +133,7 @@ namespace SGCore
 
         /// Specifies whether to load this asset from a binary file. If true, the \p loadFromBinaryFile function is called.
         /// READ ONLY.
-        bool m_useDataSerde = false;
+        bool m_isSavedInBinaryFile = false;
 
         /// You must implement this function if your asset type is abstract and can be created only using factory (for example).
         /*template<typename... AssetCtorArgs>

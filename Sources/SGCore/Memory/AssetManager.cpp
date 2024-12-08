@@ -36,8 +36,11 @@ void SGCore::AssetManager::addStandardAssets() noexcept
     }*/
 
     {
-        auto standardMaterial = getOrAddAssetByAlias<IMaterial>("default_material");
-        standardMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, loadAsset<ITexture2D>("${enginePath}/Resources/textures/no_material.png"));
+
+        // Serde::Serializer::fromFormat(FileUtils::readFile(InterpolatedPath("${enginePath}/Resources/materials/no_material.sgmat").resolved()), );
+        auto standardMaterial = loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
+        std::cout << "standard material: " << standardMaterial.get() << std::endl;
+        // standardMaterial->addTexture2D(SGTextureType::SGTT_DIFFUSE, loadAsset<ITexture2D>("${enginePath}/Resources/textures/no_material.png"));
     }
 }
 

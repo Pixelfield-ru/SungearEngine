@@ -115,8 +115,7 @@ namespace SGCore
         float m_shininess               = 32.0f;
         float m_metallicFactor          = 1.0f;
         float m_roughnessFactor         = 1.0f;
-        
-        // TODO: impl
+
         void doLoad(const InterpolatedPath& path) override;
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         

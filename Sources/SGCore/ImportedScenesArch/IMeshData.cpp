@@ -27,7 +27,7 @@
 SGCore::IMeshData::IMeshData()
 {
     // m_material = AssetManager::getInstance()->createAsset<IMaterial>();
-    m_material = AssetManager::getInstance()->getOrAddAssetByAlias<IMaterial>("default_material");
+    m_material = AssetManager::getInstance()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
 }
 
 void SGCore::IMeshData::setVertexPosition

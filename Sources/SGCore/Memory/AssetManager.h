@@ -52,6 +52,17 @@ namespace SGCore
         template<typename AssetT>
         static void resolveAssetReference(AssetManager* updatedAssetManager, AssetRef<AssetT>& assetRef) noexcept
         {
+            /*if(!assetRef.m_asset)
+            {
+                LOG_W(SGCORE_TAG, "Can not resolve asset reference: AssetRef points to null asset! AssetRef deserialized data: type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
+                      assetRef.m_deserializedAssetTypeID,
+                      assetRef.m_deserializedAssetAlias,
+                      Utils::toUTF8(assetRef.m_deserializedAssetPath.resolved().u16string()),
+                      std::to_underlying(assetRef.m_deserializedAssetStoredBy));
+
+                return;
+            }*/
+
             const auto lockedDeserializedAssetManager = assetRef.m_deserializedParentAssetManager.lock();
 
             // assetRef.m_asset can be nullptr only when assetRef was deserialized earlier but was not resolved earlier
@@ -59,6 +70,17 @@ namespace SGCore
             if(assetRef)
             {
                 usedAssetManager = assetRef->getParentAssetManager().get();
+            }
+
+            if(!usedAssetManager)
+            {
+                LOG_W(SGCORE_TAG, "Can not resolve asset reference: parent asset manager of asset equals to nullptr! AssetRef deserialized data: type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
+                      assetRef.m_deserializedAssetTypeID,
+                      assetRef.m_deserializedAssetAlias,
+                      Utils::toUTF8(assetRef.m_deserializedAssetPath.resolved().u16string()),
+                      std::to_underlying(assetRef.m_deserializedAssetStoredBy));
+
+                return;
             }
 
             // if names of updated asset manager and asset manager that is used for current asset are not equals
@@ -149,18 +171,18 @@ namespace SGCore
         {
             const size_t hashedAssetPath = hashString(Utils::toUTF8(path.resolved().u16string()));
 
-            std::unordered_map<size_t, Ref<IAsset>>* foundVariants { };
+            std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
 
             {
                 std::lock_guard guard(m_mutex);
                 // getting variants of assets that were loaded by path 'path'
-                foundVariants = &m_assets[hashedAssetPath];
+                foundVariants = m_assets[hashedAssetPath];
             }
 
             // trying to find existing asset of type 'AssetT' loaded bt path 'path'
-            auto foundAssetOfTIt = foundVariants->find(AssetT::type_id);
+            auto foundAssetOfTIt = foundVariants.find(AssetT::type_id);
             // if asset already exists then we are just leaving
-            if(foundAssetOfTIt != foundVariants->end())
+            if(foundAssetOfTIt != foundVariants.end())
             {
                 auto asset = foundAssetOfTIt->second;
 
@@ -181,9 +203,12 @@ namespace SGCore
             Ref<AssetT> newAsset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             newAsset->m_parentAssetManager = shared_from_this();
 
+            foundVariants[AssetT::type_id] = newAsset;
+
             {
                 std::lock_guard guard(m_mutex);
-                (*foundVariants)[AssetT::type_id] = newAsset;
+
+                m_assets[hashedAssetPath] = foundVariants;
             }
 
             newAsset->m_path = path;
@@ -225,12 +250,16 @@ namespace SGCore
                        const Ref<Threading::Thread>& lazyLoadInThread,
                        const InterpolatedPath& path)
         {
-            std::lock_guard guard(m_mutex);
-
             const size_t hashedAssetPath = hashString(Utils::toUTF8(path.resolved().u16string()));
 
-            // getting variants of assets that were loaded by path 'path'
-            auto& foundVariants = m_assets[hashedAssetPath];
+            std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                // getting variants of assets that were loaded by path 'path'
+                foundVariants = m_assets[hashedAssetPath];
+            }
 
             // trying to find existing asset of type 'AssetT' loaded bt path 'path'
             auto foundAssetOfTIt = foundVariants.find(AssetT::type_id);
@@ -250,6 +279,14 @@ namespace SGCore
             }
 
             foundVariants[AssetT::type_id] = assetToLoad.m_asset;
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                // setting new map
+                m_assets[hashedAssetPath] = foundVariants;
+            }
+
             if(assetToLoad->getParentAssetManager())
             {
                 assetToLoad->getParentAssetManager()->removeAsset(assetToLoad);
@@ -318,16 +355,18 @@ namespace SGCore
             }
 
             // getting variants of assets that were loaded by path 'path'
-            std::unordered_map<size_t, Ref<IAsset>>* foundVariants { };
+            std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
+
             {
                 std::lock_guard guard(m_mutex);
-                foundVariants = &m_assets[hashedAssetPath];
+
+                foundVariants = m_assets[hashedAssetPath];
             }
 
             // trying to find existing asset of type 'AssetT' loaded bt path 'path'
-            auto foundAssetOfTIt = foundVariants->find(assetTypeID);
+            auto foundAssetOfTIt = foundVariants.find(assetTypeID);
             // if asset already exists then we are just leaving
-            if(foundAssetOfTIt != foundVariants->end())
+            if(foundAssetOfTIt != foundVariants.end())
             {
                 auto asset = foundAssetOfTIt->second;
 
@@ -377,12 +416,16 @@ namespace SGCore
                                 const std::string& alias,
                                 const InterpolatedPath& path)
         {
-            std::lock_guard guard(m_mutex);
-
             const size_t hashedAssetAlias = hashString(alias);
 
             // getting variants of assets that were loaded with alias 'alias'
-            auto& foundVariants = m_assets[hashedAssetAlias];
+            std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                foundVariants = m_assets[hashedAssetAlias];
+            }
 
             // trying to find existing asset of type 'AssetT' loaded with alias 'alias'
             auto foundAssetOfTIt = foundVariants.find(AssetT::type_id);
@@ -403,10 +446,18 @@ namespace SGCore
 
             // else we are assigning asset of type 'AssetT'
             foundVariants[AssetT::type_id] = assetToLoad.m_asset;
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                m_assets[hashedAssetAlias] = foundVariants;
+            }
+
             if(assetToLoad->getParentAssetManager())
             {
                 assetToLoad->getParentAssetManager()->removeAsset(assetToLoad);
             }
+
             assetToLoad->m_parentAssetManager = shared_from_this();
 
             assetToLoad->m_alias = alias;
@@ -449,12 +500,16 @@ namespace SGCore
                                             const InterpolatedPath& path,
                                             AssetCtorArgsT&& ... assetCtorArgs)
         {
-            std::lock_guard guard(m_mutex);
-
             const size_t hashedAssetAlias = hashString(alias);
 
             // getting variants of assets that were loaded with alias 'alias'
-            auto& foundVariants = m_assets[hashedAssetAlias];
+            std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                foundVariants = m_assets[hashedAssetAlias];
+            }
 
             // trying to find existing asset of type 'AssetT' loaded with alias 'alias'
             auto foundAssetOfTIt = foundVariants.find(AssetT::type_id);
@@ -480,7 +535,14 @@ namespace SGCore
             // else we are creating new asset with type 'AssetT'
             Ref<AssetT> newAsset = createAssetInstance<AssetT>(std::forward<AssetCtorArgsT>(assetCtorArgs)...);
             newAsset->m_parentAssetManager = shared_from_this();
+
             foundVariants[AssetT::type_id] = newAsset;
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                m_assets[hashedAssetAlias] = foundVariants;
+            }
 
             newAsset->m_alias = alias;
             newAsset->m_storedBy = AssetStorageType::BY_ALIAS;
@@ -520,15 +582,19 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         void addAssetByAlias(const std::string& alias, const AssetRef<AssetT>& asset)
         {
-            std::lock_guard guard(m_mutex);
-
             const size_t hashedAssetAlias = hashString(alias);
 
             asset->m_alias = alias;
             asset->m_storedBy = AssetStorageType::BY_ALIAS;
 
             // getting variants of assets that were loaded with alias 'alias'
-            auto& foundVariants = m_assets[hashedAssetAlias];
+            std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                foundVariants = m_assets[hashedAssetAlias];
+            }
 
             // trying to find existing asset of type 'AssetT' loaded with alias 'alias'
             auto foundAssetOfTIt = foundVariants.find(AssetT::type_id);
@@ -540,10 +606,18 @@ namespace SGCore
 
             // assigning new asset by type 'AssetT'
             foundVariants[AssetT::type_id] = asset.m_asset;
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                m_assets[hashedAssetAlias] = foundVariants;
+            }
+
             if(asset->getParentAssetManager())
             {
                 asset->getParentAssetManager()->removeAsset(asset);
             }
+
             asset->m_parentAssetManager = shared_from_this();
 
             LOG_I(SGCORE_TAG, "Added new asset with alias '{}', path '{}' and type '{}'",
@@ -554,15 +628,19 @@ namespace SGCore
         requires(std::is_base_of_v<IAsset, AssetT>)
         void addAssetByPath(const InterpolatedPath& assetPath, const AssetRef<AssetT>& asset)
         {
-            std::lock_guard guard(m_mutex);
-
             const size_t hashedAssetPath = hashString(Utils::toUTF8(assetPath.resolved().u16string()));
 
             asset->m_path = assetPath;
             asset->m_storedBy = AssetStorageType::BY_PATH;
 
             // getting variants of assets that were loaded by path 'assetPath'
-            auto& foundVariants = m_assets[hashedAssetPath];
+            std::unordered_map<size_t, Ref<IAsset>> foundVariants { };
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                foundVariants = m_assets[hashedAssetPath];
+            }
 
             // trying to find existing asset of type 'AssetT' loaded by path 'assetPath'
             auto foundAssetOfTIt = foundVariants.find(AssetT::type_id);
@@ -574,6 +652,13 @@ namespace SGCore
 
             // assigning new asset by type 'AssetT'
             foundVariants[AssetT::type_id] = asset;
+
+            {
+                std::lock_guard guard(m_mutex);
+
+                m_assets[hashedAssetPath] = foundVariants;
+            }
+
             if(asset->getParentAssetManager())
             {
                 asset->getParentAssetManager()->removeAsset(asset);
@@ -753,14 +838,18 @@ namespace SGCore
 
             if(foundVariantsIt == m_assets.end())
             {
-                return createAssetWithAlias<AssetT>(alias);
+                auto newAsset = createAssetWithAlias<AssetT>(alias);
+                newAsset->m_isLoaded = true;
+                return newAsset;
             }
 
             auto foundAssetIt = foundVariantsIt->second.find(AssetT::type_id);
 
             if(foundAssetIt == foundVariantsIt->second.end())
             {
-                return createAssetWithAlias<AssetT>(alias);
+                auto newAsset = createAssetWithAlias<AssetT>(alias);
+                newAsset->m_isLoaded = true;
+                return newAsset;
             }
 
             return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetIt->second));
@@ -776,14 +865,18 @@ namespace SGCore
 
             if(foundVariantsIt == m_assets.end())
             {
-                return createAssetWithPath<AssetT>(path);
+                auto newAsset = createAssetWithPath<AssetT>(path);
+                newAsset->m_isLoaded = true;
+                return newAsset;
             }
 
             auto foundAssetIt = foundVariantsIt->second.find(AssetT::type_id);
 
             if(foundAssetIt == foundVariantsIt->second.end())
             {
-                return createAssetWithPath<AssetT>(path);
+                auto newAsset = createAssetWithPath<AssetT>(path);
+                newAsset->m_isLoaded = true;
+                return newAsset;
             }
 
             return AssetRef<AssetT>(std::static_pointer_cast<AssetT>(foundAssetIt->second));
@@ -917,7 +1010,7 @@ namespace SGCore
             {
                 case SINGLE_THREADED:
                 {
-                    if(!asset->m_useDataSerde)
+                    if(!asset->m_isSavedInBinaryFile)
                     {
                         asset->load(path.raw());
                     }
@@ -936,7 +1029,7 @@ namespace SGCore
                     auto loadAssetTask = MakeRef<Threading::Task>();
         
                     loadAssetTask->setOnExecuteCallback([this, asset, path]() {
-                        if(!asset->m_useDataSerde)
+                        if(!asset->m_isSavedInBinaryFile)
                         {
                             asset->load(path.raw());
                         }
@@ -965,7 +1058,7 @@ namespace SGCore
                     auto loadAssetTask = MakeRef<Threading::Task>();
 
                     loadAssetTask->setOnExecuteCallback([this, asset, path]() {
-                        if(!asset->m_useDataSerde)
+                        if(!asset->m_isSavedInBinaryFile)
                         {
                             asset->load(path.raw());
                         }

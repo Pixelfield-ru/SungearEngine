@@ -14,6 +14,8 @@
 #include <SGCore/Input/InputListener.h>
 #include <SGCore/Memory/Assets/ModelAsset.h>
 #include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
+#include <SGCore/Render/Mesh.h>
+#include <SGCore/Memory/Assets/Materials/IMaterial.h>
 
 #include "SungearEngineEditor.h"
 #include "Views/MainView.h"
@@ -60,6 +62,13 @@ void SGE::SceneView::renderBody()
             const auto& scenePath = currentEditorScene->m_scene->m_metaInfo.m_sceneLocalPath;
             currentEditorScene->saveByPath(scenePath.parent_path(), scenePath.stem());
             std::cout << "scene saved" << std::endl;
+        }
+
+        if(SGCore::InputManager::getMainInputListener()->keyboardKeyPressed(SGCore::KeyboardKey::KEY_K))
+        {
+            /*auto noMat = SGCore::AssetManager::getInstance()->getOrAddAssetByPath<SGCore::IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
+            auto& mesh = EditorScene::getCurrentScene()->m_scene->getECSRegistry()->get<SGCore::Mesh>(EditorScene::getCurrentScene()->m_data.m_editorGrid);
+            mesh.m_base.setMaterial(noMat);*/
         }
     }
 
@@ -117,6 +126,14 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     std::vector<SGCore::entity_t> entities;
     modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
         entities.push_back(entity);
+
+        /*auto noMat = SGCore::AssetManager::getInstance()->getOrAddAssetByPath<SGCore::IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
+
+        auto* mesh = SGCore::Scene::getCurrentScene()->getECSRegistry()->try_get<SGCore::Mesh>(entity);
+        if(mesh)
+        {
+            mesh->m_base.setMaterial(noMat);
+        }*/
     });
     /*auto& rotation = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(entities[0])->m_ownTransform.m_rotation;
     rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));*/

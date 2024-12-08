@@ -203,7 +203,7 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
     // if does not have material
     if(aiMesh->mMaterialIndex < 0)
     {
-        sgMeshData->m_material = sgMeshData->getParentAssetManager()->getAsset<IMaterial>("default_material");
+        sgMeshData->m_material = sgMeshData->getParentAssetManager()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
         LOG_W(SGCORE_TAG, "Mesh '{}' does not have materials! Default material was applied to this mesh.", Utils::toUTF8(sgMeshData->getPath().resolved().u16string()));
         return sgMeshData;
     }
@@ -216,7 +216,7 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
             getPath() / "materials" / materialName
     );
     // TODO: maybe bad variant?
-    sgMeshData->m_material->m_shader = sgMeshData->getParentAssetManager()->getAsset<IMaterial>("default_material")->m_shader;
+    sgMeshData->m_material->m_shader = sgMeshData->getParentAssetManager()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat")->m_shader;
 
     aiColor4D diffuseColor;
     aiColor4D specularColor;

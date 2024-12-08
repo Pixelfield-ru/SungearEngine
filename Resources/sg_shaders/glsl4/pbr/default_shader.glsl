@@ -405,6 +405,8 @@ SGSubPass(GeometryPass)
             /*fragColor0 = vec4(normalMapColor, 1.0);
             fragColor1 = vec4(normalMapColor, 1.0);*/
 
+            // layerColor.rgb = vec3(1.0);
+
             // DEBUG ==================================
             // base color
             // layerColor.rgb = albedo.rgb; // PASSED
