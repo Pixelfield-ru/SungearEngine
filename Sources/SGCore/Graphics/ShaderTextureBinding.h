@@ -9,17 +9,19 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
+// #include "SGCore/Memory/AssetRef.h"
+#include "SGCore/Memory/AssetWeakRef.h"
 
 namespace SGCore
 {
     class ITexture2D;
-    class ISubPassShader;
+    class IShader;
     class IMaterial;
 
     struct ShaderTextureBinding
     {
         std::string m_bindingName;
-        Weak<ITexture2D> m_texture;
+        AssetWeakRef<ITexture2D> m_texture;
     };
 }
 

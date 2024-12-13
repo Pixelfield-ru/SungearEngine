@@ -1023,8 +1023,9 @@ namespace SGCore::Serde
          * Getting this container value as array.
          * @param f
          */
-        template<typename T, typename... SharedDataT>
-        [[nodiscard]] std::vector<T> getAsArray(SharedDataT&&... sharedData) noexcept
+        template<typename T, template<typename> typename ContainerT = std::vector, typename... SharedDataT>
+        requires(requires { ContainerT<T>::push_back; })
+        [[nodiscard]] ContainerT<T> getAsArray(SharedDataT&&... sharedData) noexcept
         {
 
         }

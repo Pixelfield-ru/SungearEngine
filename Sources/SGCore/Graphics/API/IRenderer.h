@@ -30,7 +30,7 @@ namespace SGCore
     class IVertexBuffer;
     class IFrameBuffer;
     class ITexture2D;
-    class ISubPassShader;
+    class IShader;
 
     // todo: make description of funcs
     class IRenderer
@@ -84,7 +84,7 @@ namespace SGCore
 
         virtual void checkForErrors(const std::source_location& = std::source_location::current()) noexcept { }
 
-        [[nodiscard]] virtual ISubPassShader* createSubPassShader() const = 0;
+        [[nodiscard]] virtual IShader* createShader() const = 0;
 
         [[nodiscard]] virtual IVertexBuffer* createVertexBuffer() const = 0;
         [[nodiscard]] virtual IVertexArray* createVertexArray() const = 0;

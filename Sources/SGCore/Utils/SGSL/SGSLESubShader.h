@@ -1,56 +1,40 @@
 //
-// Created by ilya on 10.02.24.
+// Created by stuka on 13.12.2024.
 //
 
-#ifndef SGSLETRANSLATOR_SGSLESUBSHADER_H
-#define SGSLETRANSLATOR_SGSLESUBSHADER_H
+#ifndef SUNGEARENGINE_SGSLESUBSHADER_H
+#define SUNGEARENGINE_SGSLESUBSHADER_H
 
-#include <SGCore/pch.h>
-
-#include "SGSLESubShaderType.h"
-#include "SGSLEVariable.h"
-#include "SGSLEBracketsListener.h"
-#include "SGSLEStruct.h"
-
+#include "SGCore/Utils/SGSL/SGSLESubShaderType.h"
 #include "SGCore/Serde/Defines.h"
-
-sg_predeclare_serde()
+#include "SGCore/Serde/Serde.h"
 
 namespace SGCore
 {
-    class AssetManager;
-
-    struct SGSLESubShader : SGSLEBracketsListener
+    struct SGSLESubShader
     {
-        sg_serde_as_friend()
+        sg_serde_as_friend();
 
+        friend struct SGSLETranslator;
         friend struct ShaderAnalyzedFile;
 
-        std::string m_name;
-        std::string m_code;
-        SGSLESubShaderType m_type = SGSLESubShaderType::SST_NONE;
-        std::vector<SGSLEVariable> m_variables;
-        
-        std::vector<SGSLEStruct> m_structs;
-        
-        SGSLEStruct* tryGetStruct(const std::string& structName) noexcept
+        [[nodiscard]] auto getType() const noexcept
         {
-            auto it = std::find(m_structs.begin(), m_structs.end(), SGSLEStruct { structName });
-            return it == m_structs.end() ? nullptr : &*it;
+            return m_type;
         }
-        
-        SGSLEVariable* tryGetVariable(const std::string& varName) noexcept
+
+        [[nodiscard]] const auto& getCode() const noexcept
         {
-            auto it = std::find(m_variables.begin(), m_variables.end(), SGSLEVariable { varName });
-            return it == m_variables.end() ? nullptr : &*it;
+            return m_code;
         }
 
     private:
-        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
+        SGSLESubShaderType m_type = SGSLESubShaderType::SST_NONE;
+        std::string m_code;
 
-        std::streamsize m_codeOffsetInPackage = 0;
-        std::streamsize m_codeSizeInPackage = 0;
+        size_t m_codeOffsetInPackage = 0;
+        size_t m_codeSizeInPackage = 0;
     };
 }
 
-#endif //SGSLETRANSLATOR_SGSLESUBSHADER_H
+#endif //SUNGEARENGINE_SGSLESUBSHADER_H

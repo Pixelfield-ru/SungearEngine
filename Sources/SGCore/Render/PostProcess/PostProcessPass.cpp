@@ -80,7 +80,7 @@ void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
 }
 
 void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
-                                                 const SGCore::Ref<SGCore::ISubPassShader>& subPassShader) const noexcept
+                                                 const SGCore::Ref<SGCore::IShader>& subPassShader) const noexcept
 {
     for(std::uint8_t i = 0; i < receiver.getLayers().size(); ++i)
     {

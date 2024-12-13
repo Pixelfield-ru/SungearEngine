@@ -93,7 +93,7 @@ namespace SGCore
             return m_FXSubPassShader;
         }
         
-        void setFXSubPassShader(const Ref<ISubPassShader>& FXSubPassShader) noexcept
+        void setFXSubPassShader(const Ref<IShader>& FXSubPassShader) noexcept
         {
             m_FXSubPassShader = FXSubPassShader;
             
@@ -111,7 +111,7 @@ namespace SGCore
     private:
         std::uint16_t m_index = 0;
 
-        Ref<ISubPassShader> m_FXSubPassShader;
+        Ref<IShader> m_FXSubPassShader;
         
         std::vector<Ref<PostProcessEffect>> m_effects;
     };

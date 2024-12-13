@@ -325,9 +325,9 @@ void SGCore::GL4Renderer::renderArrayInstanced(const SGCore::Ref<SGCore::IVertex
     }
 }
 
-SGCore::GL46SubPassShader* SGCore::GL4Renderer::createSubPassShader() const
+SGCore::GL46Shader* SGCore::GL4Renderer::createShader() const
 {
-    auto* shader = new GL46SubPassShader;
+    auto* shader = new GL46Shader;
     shader->m_version = "400 core";
 
     // shader->setRawName("SGUnknownShader");

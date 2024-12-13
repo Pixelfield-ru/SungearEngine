@@ -144,7 +144,7 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
 
     if(renderPipeline)
     {
-        m_textShader = MakeRef<IShader>();
+        m_textShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
         m_textShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
                 renderPipeline->m_shadersPaths["StandardTextShader"]->getCurrentRealization()));
         
@@ -292,9 +292,9 @@ void SGCore::FontSpecializationRenderer::drawAll() noexcept
     
     if(!m_textShader || !lockedParentSpec) return;
     
-    auto subPassShader = m_textShader->getSubPassShader("TextRenderPass");
+    auto subPassShader = m_textShader;
     
-    if(!subPassShader) return;
+    if(!subPassShader || subPassShader->getAnalyzedFile()->getSubPassName() != "TextRenderPass") return;
     
     size_t charsCount = std::min(m_currentDrawingCharacter, m_maxCharactersCount);
     
@@ -326,7 +326,7 @@ void SGCore::FontSpecializationRenderer::resetRenderer() noexcept
 
 void SGCore::FontSpecializationRenderer::onRenderPipelineSet() noexcept
 {
-    m_textShader = MakeRef<IShader>();
+    m_textShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     m_textShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
             RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTextShader"]->getCurrentRealization()));
     
@@ -335,11 +335,11 @@ void SGCore::FontSpecializationRenderer::onRenderPipelineSet() noexcept
 
 void SGCore::FontSpecializationRenderer::updateUniforms() noexcept
 {
-    auto subPass = m_textShader->getSubPassShader("TextRenderPass");
-    if(subPass)
+    auto subPassShader = m_textShader;
+    if(subPassShader && subPassShader->getAnalyzedFile()->getSubPassName() == "TextRenderPass")
     {
-        subPass->bind();
-        
-        subPass->useTextureBlock("u_fontSpecializationAtlas", 0);
+        subPassShader->bind();
+
+        subPassShader->useTextureBlock("u_fontSpecializationAtlas", 0);
     }
 }

@@ -10,14 +10,14 @@
 
 namespace SGCore
 {
-    class ISubPassShader;
+    class IShader;
 
     struct PostProcessFXSubPass
     {
         SGFrameBufferAttachmentType m_attachmentRenderTo = SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7;
 
-        std::function<void(const Ref<ISubPassShader>& ppLayerShader)> m_prepassFunction;
-        std::function<void(const Ref<ISubPassShader>& ppLayerShader)> m_postpassFunction;
+        std::function<void(const Ref<IShader>& ppLayerShader)> m_prepassFunction;
+        std::function<void(const Ref<IShader>& ppLayerShader)> m_postpassFunction;
     };
 }
 

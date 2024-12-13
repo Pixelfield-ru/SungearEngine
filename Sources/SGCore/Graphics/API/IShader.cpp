@@ -1,113 +1,328 @@
 //
-// Created by stuka on 29.12.2023.
+// Created by stuka on 13.05.2023.
 //
 
 #include "IShader.h"
-
-#include "SGCore/Utils/SGSL/SGSLETranslator.h"
-#include "SGCore/Main/CoreMain.h"
+#include "IFrameBuffer.h"
+#include "ITexture2D.h"
+#include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
-#include "SGCore/Graphics/API/IRenderer.h"
-#include "ISubPassShader.h"
 
-void SGCore::IShader::compile(AssetRef<TextFileAsset> fromFile) noexcept
+void SGCore::IShader::compile(const SGCore::AssetRef<SGCore::TextFileAsset>& textFileAsset) noexcept
 {
-    if(!fromFile) return;
+    m_fileAsset = textFileAsset;
+    auto shaderAnalyzedFile =
+            textFileAsset->getParentAssetManager()->loadAsset<ShaderAnalyzedFile>(textFileAsset->getPath());
+    m_shaderAnalyzedFile = shaderAnalyzedFile;
 
-    m_subPassesShaders.clear();
-
-    m_fileAsset = fromFile;
-
-    m_shaderAnalyzedFile = AssetManager::getInstance()->loadAsset<ShaderAnalyzedFile>(fromFile->getPath());
-
-    for(const auto& subPassIter : m_shaderAnalyzedFile->m_subPasses)
+    if(!textFileAsset)
     {
-        const auto subPassName = subPassIter.first;
-        const auto& subPass = subPassIter.second;
+        LOG_E(SGCORE_TAG,
+              "Can not compile subpass shader! File asset is nullptr. Please set m_fileAsset before compiling.\n{}", SG_CURRENT_LOCATION_STR);
+        return;
+    }
 
-        auto subPassShader = Ref<ISubPassShader>(CoreMain::getRenderer()->createSubPassShader());
+    if(shaderAnalyzedFile->getSubShaders().empty())
+    {
+        LOG_E(SGCORE_TAG,
+              "No sub shaders to compile! Shader path: {}\n{}", textFileAsset->getPath().resolved().string(), SG_CURRENT_LOCATION_STR);
+        return;
+    }
 
-        for(const auto& subShaderIter : subPass.m_subShaders)
+    doCompile();
+}
+
+void SGCore::IShader::recompile() noexcept
+{
+    destroy();
+    compile(m_fileAsset.lock());
+}
+
+void SGCore::IShader::addDefines(const SGShaderDefineType& shaderDefineType,
+                                 const std::vector<ShaderDefine>& shaderDefines)
+{
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
+
+    for(auto& shaderDefine : shaderDefines)
+    {
+        // if define with name shaderDefine already exists then wont add new shader define
+        if(std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
+            != shaderTypedDefines.end())
         {
-            auto subShaderType = subShaderIter.first;
-
-            if(subPass.isSubShaderExists(subShaderType))
-            {
-                subPassShader->m_subShaders[subShaderType] = m_shaderAnalyzedFile->m_subPasses[subPass.m_name].m_subShaders[subShaderType];
-            }
+            return;
         }
-        
-        subPassShader->m_fileAsset = fromFile;
-        subPassShader->compile(subPassName);
 
-        m_subPassesShaders.push_back(subPassShader);
+        shaderTypedDefines.push_back(shaderDefine);
     }
+
+    if(m_autoRecompile) recompile();
 }
 
-void SGCore::IShader::setSubPassShader
-(const std::string& subPassName, const IShader* from) noexcept
+void SGCore::IShader::emplaceDefines(const SGShaderDefineType& shaderDefineType,
+                                     std::vector<ShaderDefine>& shaderDefines)
 {
-    auto foundFrom = from->getSubPassShader(subPassName);
-    if(foundFrom)
-    {
-        setSubPassShader(subPassName, foundFrom);
-    }
-}
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
 
-void SGCore::IShader::setSubPassShader
-(const std::string& subPassName, const SGCore::Ref<SGCore::ISubPassShader>& subPassShader) noexcept
-{
-    for(auto& s : m_subPassesShaders)
+    for(auto& shaderDefine : shaderDefines)
     {
-        if(s->m_subPassName == subPassName)
+        // if define with name shaderDefine already exists then wont add new shader define
+        if(std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
+           != shaderTypedDefines.end())
         {
-            s = subPassShader;
-            break;
+            return;
         }
+
+        shaderTypedDefines.emplace_back(std::move(shaderDefine));
     }
+
+    if(m_autoRecompile) recompile();
 }
 
-SGCore::Ref<SGCore::ISubPassShader> SGCore::IShader::getSubPassShader(const std::string& subPassName) const noexcept
+void SGCore::IShader::addDefine(const SGShaderDefineType& shaderDefineType,
+                                const ShaderDefine& shaderDefine)
 {
-    auto it = std::find_if(m_subPassesShaders.begin(), m_subPassesShaders.end(), [&subPassName](const Ref<ISubPassShader>& subPassShader) {
-        return subPassShader->m_subPassName == subPassName;
-    });
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
+    // if define with name shaderDefine already exists then wont add new shader define
+    if (std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
+        != shaderTypedDefines.end())
+    {
+        return;
+    }
+
+    shaderTypedDefines.push_back(shaderDefine);
+}
+
+void SGCore::IShader::emplaceDefine(const SGShaderDefineType& shaderDefineType,
+                                    ShaderDefine&& shaderDefine)
+{
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
+    // if define with name shaderDefine already exists then wont add new shader define
+    if (std::find(shaderTypedDefines.begin(), shaderTypedDefines.end(), shaderDefine)
+        != shaderTypedDefines.end())
+    {
+        return;
+    }
+
+    shaderTypedDefines.emplace_back(std::move(shaderDefine));
+}
+
+void SGCore::IShader::removeDefine(const SGShaderDefineType& shaderDefineType,
+                                   const ShaderDefine& shaderDefine)
+{
+    m_defines[shaderDefineType].remove(shaderDefine);
+
+    if(m_autoRecompile) recompile();
+}
+
+void SGCore::IShader::removeDefine(const SGShaderDefineType& shaderDefineType,
+                                   const std::string& shaderDefineName)
+{
+    m_defines[shaderDefineType].remove(ShaderDefine(shaderDefineName, ""));
+
+    if(m_autoRecompile) recompile();
+}
+
+void SGCore::IShader::updateDefine(const SGShaderDefineType& shaderDefineType,
+                                   const SGCore::ShaderDefine& shaderDefine)
+{
+    m_autoRecompile = false;
+
+    removeDefine(shaderDefineType, shaderDefine.m_name);
+    addDefine(shaderDefineType, shaderDefine);
+
+    recompile();
+
+    m_autoRecompile = true;
+}
+
+void SGCore::IShader::emplaceUpdateDefine(const SGShaderDefineType& shaderDefineType,
+                                          SGCore::ShaderDefine&& shaderDefine)
+{
+    m_autoRecompile = false;
+
+    removeDefine(shaderDefineType, shaderDefine.m_name);
+    emplaceDefine(shaderDefineType, std::move(shaderDefine));
+
+    recompile();
+
+    m_autoRecompile = true;
+}
+
+void SGCore::IShader::updateDefines(const SGShaderDefineType& shaderDefineType,
+                                    const std::vector<ShaderDefine>& shaderDefines)
+{
+    m_autoRecompile = false;
+    for(auto& shaderDefine : shaderDefines)
+    {
+        removeDefine(shaderDefineType, shaderDefine.m_name);
+        addDefine(shaderDefineType, shaderDefine);
+    }
+    recompile();
+    m_autoRecompile = true;
+}
+
+void SGCore::IShader::emplaceUpdateDefines(const SGShaderDefineType& shaderDefineType,
+                                           std::vector<ShaderDefine>& shaderDefines)
+{
+    m_autoRecompile = false;
+    for(auto& shaderDefine : shaderDefines)
+    {
+        removeDefine(shaderDefineType, shaderDefine.m_name);
+        emplaceDefine(shaderDefineType, std::move(shaderDefine));
+    }
+    recompile();
+    m_autoRecompile = true;
+}
+
+void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
+                                     const std::list<ShaderDefine>& otherDefines) noexcept
+{
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
+
+    shaderTypedDefines.clear();
+    shaderTypedDefines.insert(shaderTypedDefines.end(), otherDefines.begin(), otherDefines.end());
+
+    if(m_autoRecompile) recompile();
+}
+
+void SGCore::IShader::replaceDefines(const SGShaderDefineType& shaderDefineType,
+                                     Ref<IShader> otherShader) noexcept
+{
+    auto& shaderTypedDefines = m_defines[shaderDefineType];
+    auto& otherShaderTypedDefines = otherShader->m_defines[shaderDefineType];
+
+    shaderTypedDefines.clear();
+    shaderTypedDefines.insert(shaderTypedDefines.end(), otherShaderTypedDefines.begin(), otherShaderTypedDefines.end());
+
+    if(m_autoRecompile) recompile();
+}
+
+void SGCore::IShader::clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept
+{
+    m_defines[shaderDefineType].clear();
+
+    if(m_autoRecompile) recompile();
+}
+
+SGCore::IShader& SGCore::IShader::operator=(const SGCore::IShader& other) noexcept
+{
+    assert(this != std::addressof(other));
+
+    for(const auto& shaderDefinesPair : m_defines)
+    {
+        replaceDefines(shaderDefinesPair.first, shaderDefinesPair.second);
+    }
+
+    return *this;
+}
+
+size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept
+{
+    size_t offset = 0;
     
-    return it != m_subPassesShaders.end() ? *it : nullptr;
-}
-
-/*void SGCore::IShader::onAssetModified()
-{
-    m_subPassesShaders.clear();
-    addSubPassShadersAndCompile(m_fileAsset.lock());
-}
-
-void SGCore::IShader::onAssetPathChanged()
-{
-    m_subPassesShaders.clear();
-    addSubPassShadersAndCompile(m_fileAsset.lock());
-}*/
-
-void SGCore::IShader::removeAllSubPassShadersByDiskPath(const std::string& path) noexcept
-{
-    std::erase_if(m_subPassesShaders, [&path](const Ref<ISubPassShader>& subPassShader) {
-        auto lockedFileAsset = subPassShader->m_fileAsset.lock();
-        if(!lockedFileAsset) return false;
+    std::string preallocUniformName;
+    preallocUniformName.resize(48);
+    
+    for(const auto& texPair : material->getTextures())
+    {
+        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName(texPair.first);
+        size_t firstSize = preallocUniformName.size();
+        preallocUniformName += "[0]";
         
-        return lockedFileAsset->getPath() == path;
-    });
+        if(!isUniformExists(preallocUniformName)) continue;
+        
+        preallocUniformName.erase(preallocUniformName.size() - 3, 3);
+        
+        size_t arrayIdx = 0;
+        
+        for(const auto& tex : texPair.second)
+        {
+            preallocUniformName += '[';
+            preallocUniformName += std::to_string(arrayIdx);
+            preallocUniformName += ']';
+            
+            // out of uniform samplers array bounds
+            if(!isUniformExists(preallocUniformName)) break;
+            
+            useTextureBlock(preallocUniformName, offset);
+            tex->bind(offset);
+            
+            ++arrayIdx;
+            ++offset;
+        }
+        
+        size_t secondSize = preallocUniformName.size();
+        
+        size_t difference = secondSize - firstSize;
+        
+        preallocUniformName.erase(preallocUniformName.size() - difference, difference);
+        preallocUniformName += "_CURRENT_COUNT";
+        
+        useInteger(preallocUniformName, arrayIdx);
+    }
+    
+    return offset;
 }
 
-void SGCore::IShader::removeSubPass(const std::string& subPassName) noexcept
+void SGCore::IShader::unbindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept
 {
-    std::erase_if(m_subPassesShaders, [&subPassName](const Ref<ISubPassShader>& subPassShader) {
-        return subPassName == subPassShader->m_subPassName;
+    std::string preallocUniformName;
+    preallocUniformName.resize(48);
+    
+    for(const auto& texPair : material->getTextures())
+    {
+        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName(texPair.first);
+        preallocUniformName += "_CURRENT_COUNT";
+        
+        useInteger(preallocUniformName, 0);
+    }
+}
+
+size_t SGCore::IShader::bindTextureBindings(const size_t& samplersOffset) noexcept
+{
+    size_t offset = samplersOffset;
+    
+    auto it = m_textureBindings.begin();
+    while(it != m_textureBindings.end())
+    {
+        if(auto lockedTexture = it->m_texture.lock())
+        {
+            lockedTexture->bind(offset);
+            useTextureBlock(it->m_bindingName, offset);
+            
+            ++it;
+            ++offset;
+        }
+        else
+        {
+            it = m_textureBindings.erase(it);
+        }
+    }
+    
+    return offset;
+}
+
+void SGCore::IShader::addTextureBinding
+(const std::string& bindingName, const SGCore::AssetRef<SGCore::ITexture2D>& texture) noexcept
+{
+    ShaderTextureBinding shaderTextureBinding;
+    shaderTextureBinding.m_bindingName = bindingName;
+    shaderTextureBinding.m_texture = texture;
+    m_textureBindings.push_back(shaderTextureBinding);
+    // m_textureBindings.emplace_back(std::move(shaderTextureBinding));
+}
+
+void SGCore::IShader::removeTextureBinding(const std::string& bindingName) noexcept
+{
+    std::erase_if(m_textureBindings, [&bindingName](const ShaderTextureBinding& shaderTextureBinding) {
+        return shaderTextureBinding.m_bindingName == bindingName;
     });
 }
 
-void SGCore::IShader::doLoad(const InterpolatedPath& path)
+void SGCore::IShader::doLoad(const SGCore::InterpolatedPath& path)
 {
     m_fileAsset = getParentAssetManager()->loadAsset<TextFileAsset>(path);
+    m_shaderAnalyzedFile = getParentAssetManager()->loadAsset<ShaderAnalyzedFile>(path);
 }
 
 void SGCore::IShader::doLazyLoad()
@@ -120,14 +335,29 @@ void SGCore::IShader::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMana
     // nothing to do...
 }
 
+void SGCore::IShader::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
+{
+    for(auto& binding : m_textureBindings)
+    {
+        AssetManager::resolveWeakAssetReference(updatedAssetManager, binding.m_texture);
+    }
+
+    // todo: ????
+    /*AssetManager::resolveAssetReference(updatedAssetManager, m_shaderAnalyzedFile);
+    AssetManager::resolveWeakAssetReference(updatedAssetManager, m_fileAsset);*/
+}
+
+SGCore::AssetRef<SGCore::ShaderAnalyzedFile> SGCore::IShader::getAnalyzedFile() const noexcept
+{
+    return m_shaderAnalyzedFile.lock();
+}
+
 SGCore::AssetRef<SGCore::TextFileAsset> SGCore::IShader::getFile() const noexcept
 {
     return m_fileAsset.lock();
 }
 
-void SGCore::IShader::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
+const std::vector<SGCore::ShaderTextureBinding>& SGCore::IShader::getTextureBindings() const noexcept
 {
-    // todo: ????
-    /*AssetManager::resolveAssetReference(updatedAssetManager, m_shaderAnalyzedFile);
-    AssetManager::resolveWeakAssetReference(updatedAssetManager, m_fileAsset);*/
+    return m_textureBindings;
 }

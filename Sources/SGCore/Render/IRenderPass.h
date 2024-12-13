@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_IRENDERPASS_H
 #define SUNGEARENGINE_IRENDERPASS_H
 
-#include "SGCore/Graphics/API/ISubPassShader.h"
+#include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Utils/Timer.h"
 #include "LayeredFrameReceiver.h"
 

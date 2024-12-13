@@ -5,17 +5,14 @@
 #ifndef SUNGEARENGINE_VKSHADER_H
 #define SUNGEARENGINE_VKSHADER_H
 
-#include "SGCore/Graphics/API/ISubPassShader.h"
+#include "SGCore/Graphics/API/IShader.h"
 
 namespace SGCore
 {
     // TODO: impl VkShader
-    class VkSubPassShader : public ISubPassShader
+    struct VkShader : public IShader
     {
-    public:
-        ~VkSubPassShader() noexcept override;
-
-        void compile(const std::string& subPassName) noexcept final;
+        ~VkShader() noexcept override;
 
         void bind() noexcept final;
 
@@ -24,6 +21,9 @@ namespace SGCore
         void destroy() noexcept final;
 
         std::int32_t getShaderUniformLocation(const std::string& uniformName) noexcept final;
+
+    private:
+        void doCompile() noexcept final;
     };
 }
 

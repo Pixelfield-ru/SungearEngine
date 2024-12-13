@@ -84,6 +84,49 @@ struct SGCore::Serde::SerdeSpec<SGCore::UniqueNameWrapper, TFormatType> :
 // =================================================================================
 
 
+// SERDE FORWARD DECL FOR struct 'SGCore::ShaderTextureBinding'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::ShaderTextureBinding, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+                SGCore::EntityBaseInfo
+                                   >
+{
+    static inline const std::string type_name = "SGCore::ShaderTextureBinding";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderTextureBinding, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderTextureBinding, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
+
+// SERDE FORWARD DECL FOR struct 'SGCore::ShaderDefine'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+                SGCore::EntityBaseInfo
+                                   >
+{
+    static inline const std::string type_name = "SGCore::ShaderDefine";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
 
 
 // SERDE FORWARD DECL FOR struct 'SGCore::AudioSource'
@@ -581,6 +624,11 @@ struct SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType> :
     static void serialize(SGCore::Serde::SerializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept;
+
+    static IShader* allocateObject() noexcept
+    {
+        return CoreMain::getRenderer()->createShader();
+    }
 };
 // =================================================================================
 
@@ -2350,6 +2398,9 @@ template<
 void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::IShader, TFormatType>& valueView) noexcept
 {
     valueView.getValueContainer().addMember("m_fileAssetPath", valueView.m_data->getFile()->getPath());
+    valueView.getValueContainer().addMember("m_autoRecompile", valueView.m_data->m_autoRecompile);
+    valueView.getValueContainer().addMember("m_textureBindings", valueView.m_data->m_textureBindings);
+    valueView.getValueContainer().addMember("m_defines", valueView.m_data->m_defines);
 }
 
 template<
@@ -2362,8 +2413,27 @@ void SGCore::Serde::SerdeSpec<SGCore::IShader, TFormatType>::deserialize(SGCore:
     if(m_fileAssetPath)
     {
         auto shaderFile = valueView.m_data->getParentAssetManager()->template loadAsset<TextFileAsset>(*m_fileAssetPath);
+        auto shaderAnalyzedFile = valueView.m_data->getParentAssetManager()->template loadAsset<ShaderAnalyzedFile>(*m_fileAssetPath);
         valueView.m_data->m_fileAsset = shaderFile;
-        // valueView.m_data->addSubPassShadersAndCompile(shaderFile);
+        valueView.m_data->m_shaderAnalyzedFile = shaderAnalyzedFile;
+    }
+
+    const auto m_autoRecompile = valueView.getValueContainer().template getMember<bool>("m_autoRecompile");
+    if(m_autoRecompile)
+    {
+        valueView.m_data->m_autoRecompile = *m_autoRecompile;
+    }
+
+    auto m_textureBindings = valueView.getValueContainer().template getMember<std::vector<ShaderTextureBinding>>("m_textureBindings");
+    if(m_textureBindings)
+    {
+        valueView.m_data->m_textureBindings = std::move(*m_textureBindings);
+    }
+
+    auto m_defines = valueView.getValueContainer().template getMember<decltype(IShader::m_defines)>("m_defines");
+    if(m_defines)
+    {
+        valueView.m_data->m_defines = std::move(*m_defines);
     }
 }
 // =================================================================================
@@ -3019,6 +3089,32 @@ namespace SGCore::Serde
         static void deserialize(DeserializableValueView<std::vector<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             *valueView.m_data = valueView.getValueContainer().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
+        }
+    };
+
+    // ====================================================================================
+
+    template<typename T, FormatType TFormatType>
+    struct SerdeSpec<std::list<T>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "std::list";
+        static inline constexpr bool is_pointer_type = false;
+
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<std::list<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
+        {
+            valueView.getValueContainer().setAsArray();
+
+            for(const auto& v : *valueView.m_data)
+            {
+                valueView.getValueContainer().pushBack(v, std::forward<SharedDataT>(sharedData)...);
+            }
+        }
+
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<std::list<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
+        {
+            *valueView.m_data = valueView.getValueContainer().template getAsArray<T, std::list>(std::forward<SharedDataT>(sharedData)...);
         }
     };
 
@@ -4249,34 +4345,6 @@ namespace SGCore::Serde
     };
 
     template<FormatType TFormatType>
-    struct SerdeSpec<SGSLESubPass, TFormatType> : BaseTypes<>, DerivedTypes<>
-    {
-        static inline const std::string type_name = "SGCore::SGSLESubPass";
-        static inline constexpr bool is_pointer_type = false;
-
-        static void serialize(SerializableValueView<SGSLESubPass, TFormatType>& valueView, AssetsPackage& assetsPackage)
-        {
-            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
-            valueView.getValueContainer().addMember("m_subShaders", valueView.m_data->m_subShaders, assetsPackage);
-        }
-
-        static void deserialize(DeserializableValueView<SGSLESubPass, TFormatType>& valueView, AssetsPackage& assetsPackage)
-        {
-            auto nameOpt = valueView.getValueContainer().template getMember<std::string>("m_name");
-            if(nameOpt)
-            {
-                valueView.m_data->m_name = std::move(*nameOpt);
-            }
-
-            auto subShadersOpt = valueView.getValueContainer().template getMember<std::unordered_map<SGSLESubShaderType, Ref<SGSLESubShader>>>("m_subShaders", assetsPackage);
-            if(subShadersOpt)
-            {
-                valueView.m_data->m_subShaders = std::move(*subShadersOpt);
-            }
-        }
-    };
-
-    template<FormatType TFormatType>
     struct SerdeSpec<SGSLESubShader, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
         static inline const std::string type_name = "SGCore::SGSLESubShader";
@@ -4284,7 +4352,6 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<SGSLESubShader, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_type", valueView.m_data->m_type);
 
             AssetsPackage::DataMarkup textureDataMarkup = assetsPackage.addData(valueView.m_data->m_code);
@@ -4295,15 +4362,9 @@ namespace SGCore::Serde
 
         static void deserialize(DeserializableValueView<SGSLESubShader, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            auto nameOpt = valueView.getValueContainer().template getMember<std::string>("m_name");
             const auto typeOpt = valueView.getValueContainer().template getMember<SGSLESubShaderType>("m_type");
             auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataOffset");
             auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_dataSizeInBytes");
-
-            if(nameOpt)
-            {
-                valueView.m_data->m_name = std::move(*nameOpt);
-            }
 
             if(typeOpt)
             {
@@ -4330,16 +4391,29 @@ namespace SGCore::Serde
 
         static void serialize(SerializableValueView<ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            valueView.getValueContainer().addMember("m_subPasses", valueView.m_data->m_subPasses, assetsPackage);
+            valueView.getValueContainer().addMember("m_subPassName", valueView.m_data->m_subPassName);
+            valueView.getValueContainer().addMember("m_attributes", valueView.m_data->m_attributes);
+            valueView.getValueContainer().addMember("m_subShadersCode", valueView.m_data->m_subShaders, assetsPackage);
         }
 
         static void deserialize(DeserializableValueView<ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
         {
-            auto subPasses = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_subPasses)>("m_subPasses", assetsPackage);
-
-            if(subPasses)
+            auto m_subPassName = valueView.getValueContainer().template getMember<std::string>("m_subPassName");
+            if(m_subPassName)
             {
-                valueView.m_data->m_subPasses = std::move(*subPasses);
+                valueView.m_data->m_subPassName = std::move(*m_subPassName);
+            }
+
+            auto m_attributes = valueView.getValueContainer().template getMember<decltype(ShaderAnalyzedFile::m_attributes)>("m_attributes");
+            if(m_attributes)
+            {
+                valueView.m_data->m_attributes = std::move(*m_attributes);
+            }
+
+            auto m_subShaders = valueView.getValueContainer().template getMember<decltype(ShaderAnalyzedFile::m_subShaders)>("m_subShaders", assetsPackage);
+            if(m_subShaders)
+            {
+                valueView.m_data->m_subShaders = std::move(*m_subShaders);
             }
         }
     };
@@ -4740,6 +4814,56 @@ namespace SGCore::Serde
             }
         }
     };
+
+    // SERDE IMPL FOR struct 'SGCore::ShaderTextureBinding'
+    // =================================================================================
+    template<SGCore::Serde::FormatType TFormatType>
+    void SGCore::Serde::SerdeSpec<SGCore::ShaderTextureBinding, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderTextureBinding, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_bindingName", valueView.m_data->m_bindingName);
+        // todo:
+        // valueView.getValueContainer().addMember("m_texture", valueView.m_data->m_texture);
+    }
+
+    template<SGCore::Serde::FormatType TFormatType>
+    void SGCore::Serde::SerdeSpec<SGCore::ShaderTextureBinding, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<ShaderTextureBinding, TFormatType>& valueView) noexcept
+    {
+        auto m_bindingName = valueView.getValueContainer().template getMember<std::string>("m_bindingName");
+
+        if(m_bindingName)
+        {
+            valueView.m_data->m_bindingName = std::move(*m_bindingName);
+        }
+    }
+    // =================================================================================
+
+    // SERDE IMPL FOR struct 'SGCore::ShaderDefine'
+    // =================================================================================
+    template<SGCore::Serde::FormatType TFormatType>
+    void SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept
+    {
+        valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+        valueView.getValueContainer().addMember("m_expression", valueView.m_data->m_expression);
+    }
+
+    template<SGCore::Serde::FormatType TFormatType>
+    void SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<ShaderDefine, TFormatType>& valueView) noexcept
+    {
+        auto m_name = valueView.getValueContainer().template getMember<std::string>("m_name");
+
+        if(m_name)
+        {
+            valueView.m_data->m_name = std::move(*m_name);
+        }
+
+        auto m_expression = valueView.getValueContainer().template getMember<std::string>("m_expression");
+
+        if(m_expression)
+        {
+            valueView.m_data->m_expression = std::move(*m_expression);
+        }
+    }
+    // =================================================================================
 }
 
 #endif //SUNGEARENGINE_STANDARDSERDESPECS_H

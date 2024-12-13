@@ -29,13 +29,12 @@ namespace SGCore
                         const entity_t& meshEntity,
                         const Ref<Transform>& meshTransform,
                         Mesh& mesh,
-                        const Ref<PostProcessLayer>& meshPPLayer,
-                        const Ref<ISubPassShader>& standardGeometryShader) noexcept;
+                        const Ref<PostProcessLayer>& meshPPLayer) noexcept;
+
         void renderOctreeNode(const Ref<registry_t>& registry,
                               const entity_t& forCamera,
                               LayeredFrameReceiver* cameraLayeredFrameReceiver,
-                              const Ref<OctreeNode>& node,
-                              const Ref<ISubPassShader>& standardGeometryShader) noexcept;
+                              const Ref<OctreeNode>& node) noexcept;
     };
 }
 

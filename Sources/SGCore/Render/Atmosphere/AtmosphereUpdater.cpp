@@ -11,12 +11,13 @@
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IShader.h"
-#include "SGCore/Graphics/API/ISubPassShader.h"
+#include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Graphics/API/IUniformBuffer.h"
 #include "SGCore/Graphics/API/IRenderer.h"
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
+#include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 #include "AtmosphereUtils.h"
 
 SGCore::AtmosphereUpdater::AtmosphereUpdater() noexcept
@@ -82,11 +83,10 @@ void SGCore::AtmosphereUpdater::updateAtmosphere() noexcept
         size_t hashedSunPos = MathUtils::hashVector(atmosphere.m_sunPosition);
 
         auto meshShader = mesh.m_base.getMaterial()->m_shader;
-        auto geomPassShader = meshShader ? meshShader->getSubPassShader("GeometryPass") : nullptr;
-        if(geomPassShader)
+        if(meshShader && meshShader->getAnalyzedFile()->getSubPassName() == "GeometryPass")
         {
-            geomPassShader->bind();
-            geomPassShader->useUniformBuffer(m_uniformBuffer);
+            meshShader->bind();
+            meshShader->useUniformBuffer(m_uniformBuffer);
         }
         
         if(atmosphere.m_sunRotation != atmosphere.m_lastSunRotation)

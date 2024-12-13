@@ -2,21 +2,19 @@
 // Created by stuka on 13.05.2023.
 //
 
-#ifndef SUNGEARENGINE_GL46SUBPASSSHADER_H
-#define SUNGEARENGINE_GL46SUBPASSSHADER_H
+#ifndef SUNGEARENGINE_GL46SHADER_H
+#define SUNGEARENGINE_GL46SHADER_H
 
 #include <SGCore/pch.h>
 
-#include "SGCore/Graphics/API/ISubPassShader.h"
+#include "SGCore/Graphics/API/IShader.h"
 
 namespace SGCore
 {
-    class GL46SubPassShader : public ISubPassShader
+    class GL46Shader : public IShader
     {
     public:
-        ~GL46SubPassShader() noexcept override;
-
-        void compile(const std::string& subPassName) override;
+        ~GL46Shader() noexcept override;
 
         void bind() noexcept override;
 
@@ -46,6 +44,8 @@ namespace SGCore
         bool isUniformExists(const std::string& uniformName) const noexcept;
 
     private:
+        void doCompile() override;
+
         GLuint compileSubShader(SGSLESubShaderType shaderType, const std::string& code);
 
         GLuint m_programHandler = 0;
@@ -57,4 +57,4 @@ namespace SGCore
     };
 }
 
-#endif //SUNGEARENGINE_GL46SUBPASSSHADER_H
+#endif //SUNGEARENGINE_GL46SHADER_H

@@ -11,7 +11,7 @@
 namespace SGCore
 {
     class Scene;
-    class ISubPassShader;
+    class IShader;
     struct IRenderPass;
 
     struct IRenderPipeline : public std::enable_shared_from_this<IRenderPipeline>

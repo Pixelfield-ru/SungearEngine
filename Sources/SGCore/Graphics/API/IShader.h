@@ -1,90 +1,147 @@
 //
-// Created by stuka on 29.12.2023.
+// Created by stuka on 13.05.2023.
 //
-
-#ifndef SUNGEARENGINE_ISHADER_H
-#define SUNGEARENGINE_ISHADER_H
+#ifndef NATIVECORE_ISHADER_H
+#define NATIVECORE_ISHADER_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Main/CoreMain.h"
+#include "IRenderer.h"
+// #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
+#include "SGCore/Memory/AssetRefFromThis.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
+
+#include "SGCore/Graphics/ShaderTextureBinding.h"
 #include "SGCore/Memory/AssetWeakRef.h"
 
-#include "SGCore/Memory/Assets/IAssetObserver.h"
-#include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 #include "SGCore/Memory/Assets/TextFileAsset.h"
-#include "GraphicsDataTypes.h"
+#include "SGCore/Memory/Assets/IAssetObserver.h"
+
+#include "IUniformBuffer.h"
+#include "ShaderDefine.h"
+
+#include "SGCore/Utils/UniqueName.h"
+
+#include "SGCore/Utils/Utils.h"
+
+#include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 
 namespace SGCore
 {
-    class ISubPassShader;
+    class IUniformBuffer;
+    class IFrameBuffer;
     class IMaterial;
     class ITexture2D;
+    struct SGSLESubShader;
 
-    class IShader : public IAsset, public IAssetsRefsResolver<IShader>
+    // todo: add various types of defines like material textures block define e.t.c.
+    class IShader : public AssetRefFromThis<IShader>, public IAsset, public IAssetsRefsResolver<IShader>
     {
     public:
+        friend class AssetManager;
+
         sg_serde_as_friend()
 
         sg_implement_type_id(IShader, 14)
 
         sg_assets_refs_resolver_as_friend
 
-        /**
-         * Removes all sub pass shaders in this IShader and adds new sub pass shaders.
-         * @param fromFile
-         */
-        void compile(AssetRef<TextFileAsset> fromFile) noexcept;
+        std::string m_version;
 
-        void setSubPassShader(const std::string& subPassName, const IShader* from) noexcept;
-        void setSubPassShader(const std::string& subPassName, const Ref<ISubPassShader>& subPassShader) noexcept;
+        bool m_autoRecompile = false;
 
-        Ref<ISubPassShader> getSubPassShader(const std::string& subPassName) const noexcept;
+        Scope<IUniformBuffer> m_uniformBuffer;
 
-        /**
-         * Calls recompile of shader program.
-         *//*
-        void onAssetModified() override;
+        ~IShader() override = default;
 
-        *//**
-         * Calls recompile of shader program.
-         *//*
-        void onAssetPathChanged() override;*/
+        void compile(const AssetRef<TextFileAsset>& textFileAsset) noexcept;
+        virtual void recompile() noexcept;
 
-        const auto& getSubPassesShaders() const noexcept
+        virtual void destroy() = 0;
+
+        virtual void bind() = 0;
+
+        [[nodiscard]] virtual std::int32_t getShaderUniformLocation(const std::string& uniformName) = 0;
+
+        // TODO: wtf is this. clean code
+        void addDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
+        void emplaceDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
+
+        void addDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
+        void emplaceDefine(const SGShaderDefineType& shaderDefineType, ShaderDefine&& shaderDefine);
+
+        void removeDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
+        void removeDefine(const SGShaderDefineType& shaderDefineType, const std::string& shaderDefineName);
+
+        void updateDefine(const SGShaderDefineType& shaderDefineType, const ShaderDefine& shaderDefine);
+        void emplaceUpdateDefine(const SGShaderDefineType& shaderDefineType, ShaderDefine&& shaderDefine);
+
+        void updateDefines(const SGShaderDefineType& shaderDefineType, const std::vector<ShaderDefine>& shaderDefines);
+        void emplaceUpdateDefines(const SGShaderDefineType& shaderDefineType, std::vector<ShaderDefine>& shaderDefines);
+
+        void replaceDefines(const SGShaderDefineType& shaderDefineType, const std::list<ShaderDefine>& otherDefines) noexcept;
+        void replaceDefines(const SGShaderDefineType& shaderDefineType, Ref<IShader> otherShader) noexcept;
+
+        void clearDefinesOfType(const SGShaderDefineType& shaderDefineType) noexcept;
+
+        [[nodiscard]] const auto& getDefines() const noexcept
         {
-            return m_subPassesShaders;
+            return m_defines;
         }
 
-        void removeAllSubPassShadersByDiskPath(const std::string& path) noexcept;
-        void removeSubPass(const std::string& subPassName) noexcept;
+        virtual void useUniformBuffer(const Ref<IUniformBuffer>&) { };
+        virtual void useTexture(const std::string& uniformName, const std::uint8_t& texBlock) { };
 
-        /*static void useTextureGlobal(const std::string& uniformName, const std::uint8_t& texBlock) noexcept;
+        virtual void useMatrix(const std::string& uniformName, const glm::mat4& matrix) { };
 
-        static void useMatrixGlobal(const std::string& uniformName, const glm::mat4& matrix) noexcept;
+        virtual void useVectorf(const std::string& uniformName, const float& x, const float& y) { };
+        virtual void useVectorf(const std::string& uniformName,
+                                const float& x, const float& y, const float& z) { };
+        virtual void useVectorf(const std::string& uniformName,
+                                const float& x, const float& y, const float& z, const float& w) { };
 
-        static void useVectorfGlobal(const std::string& uniformName, const float& x, const float& y) noexcept;
+        virtual void useVectorf(const std::string& uniformName, const glm::vec2& vec) { };
+        virtual void useVectorf(const std::string& uniformName, const glm::vec3& vec) { };
+        virtual void useVectorf(const std::string& uniformName, const glm::vec4& vec) { };
 
-        static void useVectorfGlobal(const std::string& uniformName,
-                                     const float& x, const float& y, const float& z) noexcept;
+        virtual void useFloat(const std::string& uniformName, const float& f) { };
+        virtual void useInteger(const std::string& uniformName, const int& i) { };
+        virtual void useTextureBlock(const std::string& uniformName, const int& textureBlock) { };
+        
+        virtual bool isUniformExists(const std::string& uniformName) const noexcept { return false; };
 
-        static void useVectorfGlobal(const std::string& uniformName,
-                                     const float& x, const float& y, const float& z, const float& w) noexcept;
+        // ==========================================
+        
+        /**
+         * @param material - Material to bind textures.
+         * @return Offset of samplers.
+         */
+        size_t bindMaterialTextures(const AssetRef<IMaterial>& material) noexcept;
+        
+        void unbindMaterialTextures(const AssetRef<IMaterial>& material) noexcept;
+        
+        /**
+         * Bind all vector of m_textureBindings.
+         * @param samplersOffset - Offset to start bind texture bindings.
+         * @return Offset after bind.
+         */
+        size_t bindTextureBindings(const size_t& samplersOffset) noexcept;
+        
+        // ==========================================
+        
+        void addTextureBinding(const std::string& bindingName, const AssetRef<ITexture2D>& texture) noexcept;
+        void removeTextureBinding(const std::string& bindingName) noexcept;
 
-        static void useVectorfGlobal(const std::string& uniformName, const glm::vec2& vec) noexcept;
+        [[nodiscard]] const std::vector<ShaderTextureBinding>& getTextureBindings() const noexcept;
 
-        static void useVectorfGlobal(const std::string& uniformName, const glm::vec3& vec) noexcept;
+        IShader& operator=(const IShader&) noexcept;
 
-        static void useVectorfGlobal(const std::string& uniformName, const glm::vec4& vec) noexcept;
-
-        static void useFloatGlobal(const std::string& uniformName, const float& f) noexcept;
-
-        static void useIntegerGlobal(const std::string& uniformName, const size_t& i) noexcept;
-
-        static void useTextureBlockGlobal(const std::string& uniformName, const size_t& textureBlock) noexcept;*/
-
+        [[nodiscard]] AssetRef<ShaderAnalyzedFile> getAnalyzedFile() const noexcept;
         [[nodiscard]] AssetRef<TextFileAsset> getFile() const noexcept;
 
     protected:
+        virtual void doCompile() = 0;
+
         void doLoad(const InterpolatedPath& path) override;
         void doLazyLoad() override;
 
@@ -93,11 +150,21 @@ namespace SGCore
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
-        AssetRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;
+        AssetWeakRef<ShaderAnalyzedFile> m_shaderAnalyzedFile;
         AssetWeakRef<TextFileAsset> m_fileAsset;
 
-        std::vector<Ref<ISubPassShader>> m_subPassesShaders;
+        std::vector<ShaderTextureBinding> m_textureBindings;
+
+        std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
+
+        template<typename... AssetCtorArgs>
+        static Ref<IShader> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept
+        {
+            auto tex = Ref<IShader>(CoreMain::getRenderer()->createShader(std::forward<AssetCtorArgs>(assetCtorArgs)...));
+
+            return tex;
+        }
     };
 }
 
-#endif //SUNGEARENGINE_ISHADER_H
+#endif //NATIVECORE_ISHADER_H

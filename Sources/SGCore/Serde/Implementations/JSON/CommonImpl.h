@@ -94,8 +94,9 @@ namespace SGCore::Serde
             return outputValue;
         }
 
-        template<typename T, typename... SharedDataT>
-        [[nodiscard]] std::vector<T> getAsArray(SharedDataT&&... sharedData) noexcept
+        template<typename T, template<typename> typename ContainerT = std::vector, typename... SharedDataT>
+        requires(requires(ContainerT<T> con) { con.push_back; })
+        [[nodiscard]] ContainerT<T> getAsArray(SharedDataT&&... sharedData) noexcept
         {
             if(!(m_thisValue && m_document))
             {
@@ -117,7 +118,7 @@ namespace SGCore::Serde
                 return { };
             }
 
-            std::vector<T> outputValue;
+            ContainerT<T> outputValue;
 
             for(std::size_t i = 0; i < m_thisValue->Size(); ++i)
             {

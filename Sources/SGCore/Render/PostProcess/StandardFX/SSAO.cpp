@@ -4,7 +4,7 @@
 
 #include "SSAO.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
-#include "SGCore/Graphics/API/ISubPassShader.h"
+#include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
@@ -15,7 +15,8 @@ SGCore::SSAO::SSAO()
 {
     m_name = "SG_SSAO";
 
-    m_noise = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
+    m_noise = AssetManager::getInstance()->createAsset<ITexture2D>();
+    // m_noise = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
     generateKernel();
 }
 
@@ -67,7 +68,7 @@ void SGCore::SSAO::generateKernel() noexcept
     }
 }
 
-void SGCore::SSAO::passValuesToSubPassShader(const Ref<ISubPassShader>& subPassShader) noexcept
+void SGCore::SSAO::passValuesToSubPassShader(const Ref<IShader>& subPassShader) noexcept
 {
     if(subPassShader)
     {

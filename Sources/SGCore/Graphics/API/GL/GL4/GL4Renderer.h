@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_GL4RENDERER_H
 #define SUNGEARENGINE_GL4RENDERER_H
 
-#include "SGCore/Graphics/API/GL/GL46/GL46SubPassShader.h"
+#include "SGCore/Graphics/API/GL/GL46/GL46Shader.h"
 #include "SGCore/Graphics/API/GL/GLVertexArray.h"
 #include "SGCore/Graphics/API/GL/GLVertexBuffer.h"
 #include "SGCore/Graphics/API/GL/GLVertexBufferLayout.h"
@@ -67,7 +67,7 @@ namespace SGCore
         void checkForErrors(const std::source_location& location = std::source_location::current()) noexcept override;
 
         // TODO: create docs
-        [[nodiscard]] GL46SubPassShader* createSubPassShader() const override;
+        [[nodiscard]] GL46Shader* createShader() const override;
 
         [[nodiscard]] GLVertexArray* createVertexArray() const override;
         [[nodiscard]] GLVertexBuffer* createVertexBuffer() const override;

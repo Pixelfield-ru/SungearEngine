@@ -7,7 +7,7 @@
 
 #include "IAsset.h"
 
-#include "SGCore/Graphics/API/ISubPassShader.h"
+#include "SGCore/Graphics/API/IShader.h"
 
 namespace SGCore
 {

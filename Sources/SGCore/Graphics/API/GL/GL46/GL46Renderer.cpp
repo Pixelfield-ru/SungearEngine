@@ -19,12 +19,10 @@ bool SGCore::GL46Renderer::confirmSupport() noexcept
     return true;
 }
 
-SGCore::GL46SubPassShader* SGCore::GL46Renderer::createSubPassShader() const
+SGCore::GL46Shader* SGCore::GL46Renderer::createShader() const
 {
-    auto* shader = new GL46SubPassShader;
+    auto* shader = new GL46Shader;
     shader->m_version = "460";
-
-    shader->setRawName("SGUnknownShader");
 
     //GPUObjectsStorage::addShader(shader->weak_from_this());
 

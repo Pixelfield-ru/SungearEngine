@@ -8,7 +8,7 @@
 #include <SGCore/pch.h>
 
 #include <SGCore/Render/PostProcess/PostProcessEffect.h>
-#include "SGCore/Graphics/API/ISubPassShader.h"
+#include "SGCore/Graphics/API/IShader.h"
 
 namespace SGCore
 {
@@ -20,13 +20,13 @@ namespace SGCore
 
         void generateKernel() noexcept;
 
-        void passValuesToSubPassShader(const Ref<ISubPassShader>& subPassShader) noexcept override;
+        void passValuesToSubPassShader(const Ref<IShader>& subPassShader) noexcept override;
 
         [[nodiscard]] std::uint16_t getSamplesCount() const noexcept;
         void setSamplesCount(std::uint16_t samplesCount) noexcept;
 
     private:
-        Ref<ITexture2D> m_noise;
+        AssetRef<ITexture2D> m_noise;
 
         std::uint16_t m_samplesCount = 18;
         std::vector<glm::vec3> m_kernel { };

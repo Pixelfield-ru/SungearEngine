@@ -1,40 +1,26 @@
 #include <SGCore/Logger/Logger.h>
-#include "GL46SubPassShader.h"
+#include "GL46Shader.h"
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/SGSL/SGSLESubShader.h"
+#include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 
-SGCore::GL46SubPassShader::~GL46SubPassShader() noexcept
+SGCore::GL46Shader::~GL46Shader() noexcept
 {
     destroy();
 }
 
 // TODO: watch SGP1
 // destroys shaders and shader program in gpu side and compiles new shaders and shader program
-void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
+void SGCore::GL46Shader::doCompile()
 {
-    auto lockedFileAsset = m_fileAsset.lock();
-    
-    if(!lockedFileAsset)
-    {
-        LOG_E(SGCORE_TAG,
-              "Can not compile subpass shader! File asset is nullptr. Please set m_fileAsset before compiling.\n{}", SG_CURRENT_LOCATION_STR);
-        return;
-    }
-
-    if(m_subShaders.empty())
-    {
-        LOG_E(SGCORE_TAG,
-              "No sub shaders to compile! Shader path: {}\n{}", lockedFileAsset->getPath().resolved().string(), SG_CURRENT_LOCATION_STR);
-        return;
-    }
-    
-    m_subPassName = subPassName;
+    auto shaderAnalyzedFile = getAnalyzedFile();
+    auto fileAsset = getFile();
 
     std::string definesCode;
 
-    for(auto const& shaderDefinePair : m_defines)
+    for(auto const& shaderDefinePair : getDefines())
     {
         for(const auto& shaderDefine : shaderDefinePair.second)
         {
@@ -42,18 +28,9 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
         }
     }
 
-    for(const auto& subShadersIter : m_subShaders)
+    for(const auto& subShadersIter : shaderAnalyzedFile->getSubShaders())
     {
-        if(!subShadersIter.second)
-        {
-            LOG_E(SGCORE_TAG,
-                  "Can not compile sub shader with type '{}' for sub pass '{}' shader by path '{}'. Sub shader with this type does not exist.",
-                  sgsleSubShaderTypeToString(subShadersIter.first),
-                  m_subPassName,
-                  lockedFileAsset->getPath().resolved().string());
-            continue;
-        }
-        m_subShadersHandlers.push_back(compileSubShader(subShadersIter.first, definesCode + "\n" + subShadersIter.second->m_code));
+        m_subShadersHandlers.push_back(compileSubShader(subShadersIter.second.getType(), definesCode + "\n" + subShadersIter.second.getCode()));
     }
 
     // -----------------------------------------------
@@ -82,7 +59,7 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
 
             LOG_E(SGCORE_TAG,
                   "Error in shader by path: {}\n{}",
-                  m_fileAsset.lock()->getPath().resolved().string(),
+                  fileAsset->getPath().resolved().string(),
                   infoLog.data());
         }
 
@@ -98,13 +75,13 @@ void SGCore::GL46SubPassShader::compile(const std::string& subPassName)
     m_cachedLocations.clear();
 }
 
-void SGCore::GL46SubPassShader::bind() noexcept
+void SGCore::GL46Shader::bind() noexcept
 {
     glUseProgram(m_programHandler);
 }
 
 // TODO: watch SGP1
-void SGCore::GL46SubPassShader::destroy() noexcept
+void SGCore::GL46Shader::destroy() noexcept
 {
     for(const GLuint shaderPartHandler : m_subShadersHandlers)
     {
@@ -121,8 +98,10 @@ void SGCore::GL46SubPassShader::destroy() noexcept
     m_subShadersHandlers.clear();
 }
 
-GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLESubShaderType shaderType, const std::string& code)
+GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderType, const std::string& code)
 {
+    auto fileAsset = getFile();
+
     std::string additionalShaderInfo =
             "#version " + m_version + "\n";
 
@@ -171,7 +150,7 @@ GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLESubShaderType sh
 
         LOG_E(SGCORE_TAG,
               "Error in shader by path: {}\n{}",
-             m_fileAsset.lock()->getPath().resolved().string(),
+              fileAsset->getPath().resolved().string(),
              infoLog.data());
 
         return -1;
@@ -185,7 +164,7 @@ GLuint SGCore::GL46SubPassShader::compileSubShader(SGCore::SGSLESubShaderType sh
 }
 
 
-std::int32_t SGCore::GL46SubPassShader::getShaderUniformLocation(const std::string& uniformName) noexcept
+std::int32_t SGCore::GL46Shader::getShaderUniformLocation(const std::string& uniformName) noexcept
 {
     const auto& foundLocation = m_cachedLocations.find(uniformName);
     if(foundLocation == m_cachedLocations.cend())
@@ -197,81 +176,81 @@ std::int32_t SGCore::GL46SubPassShader::getShaderUniformLocation(const std::stri
     return foundLocation->second;
 }
 
-void SGCore::GL46SubPassShader::useUniformBuffer(const Ref<IUniformBuffer>& uniformBuffer)
+void SGCore::GL46Shader::useUniformBuffer(const Ref<IUniformBuffer>& uniformBuffer)
 {
     auto uniformBufferIdx = glGetUniformBlockIndex(m_programHandler, uniformBuffer->m_blockName.c_str());
     glUniformBlockBinding(m_programHandler, uniformBufferIdx,
                           uniformBuffer->getLayoutLocation());
 }
 
-void SGCore::GL46SubPassShader::useTexture(const std::string& uniformName, const uint8_t& texBlock)
+void SGCore::GL46Shader::useTexture(const std::string& uniformName, const uint8_t& texBlock)
 {
     int texLoc = getShaderUniformLocation(uniformName);
     glUniform1i(texLoc, texBlock);
 }
 
-void SGCore::GL46SubPassShader::useMatrix(const std::string& uniformName, const glm::mat4& matrix)
+void SGCore::GL46Shader::useMatrix(const std::string& uniformName, const glm::mat4& matrix)
 {
     int matLoc = getShaderUniformLocation(uniformName);
     glUniformMatrix4fv(matLoc, 1, false, glm::value_ptr(matrix));
 }
 
-void SGCore::GL46SubPassShader::useVectorf(const std::string& uniformName, const float& x, const float& y)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform2f(vecLoc, x, y);
 }
 
-void SGCore::GL46SubPassShader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform3f(vecLoc, x, y, z);
 }
 
-void SGCore::GL46SubPassShader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z,
-                                           const float& w)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const float& x, const float& y, const float& z,
+                                    const float& w)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform4f(vecLoc, x, y, z, w);
 }
 
-void SGCore::GL46SubPassShader::useVectorf(const std::string& uniformName, const glm::vec2& vec)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec2& vec)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform2f(vecLoc, vec.x, vec.y);
 }
 
-void SGCore::GL46SubPassShader::useVectorf(const std::string& uniformName, const glm::vec3& vec)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec3& vec)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform3f(vecLoc, vec.x, vec.y, vec.z);
 }
 
-void SGCore::GL46SubPassShader::useVectorf(const std::string& uniformName, const glm::vec4& vec)
+void SGCore::GL46Shader::useVectorf(const std::string& uniformName, const glm::vec4& vec)
 {
     int vecLoc = getShaderUniformLocation(uniformName);
     glUniform4f(vecLoc, vec.x, vec.y, vec.z, vec.w);
 }
 
-void SGCore::GL46SubPassShader::useFloat(const std::string& uniformName, const float& f)
+void SGCore::GL46Shader::useFloat(const std::string& uniformName, const float& f)
 {
     int fLoc = getShaderUniformLocation(uniformName);
     glUniform1f(fLoc, f);
 }
 
-void SGCore::GL46SubPassShader::useInteger(const std::string& uniformName, const int& i)
+void SGCore::GL46Shader::useInteger(const std::string& uniformName, const int& i)
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, i);
 }
 
-void SGCore::GL46SubPassShader::useTextureBlock(const std::string& uniformName, const int& textureBlock)
+void SGCore::GL46Shader::useTextureBlock(const std::string& uniformName, const int& textureBlock)
 {
     int iLoc = getShaderUniformLocation(uniformName);
     glUniform1i(iLoc, textureBlock);
 }
 
-bool SGCore::GL46SubPassShader::isUniformExists(const std::string& uniformName) const noexcept
+bool SGCore::GL46Shader::isUniformExists(const std::string& uniformName) const noexcept
 {
     return glGetUniformLocation(m_programHandler, uniformName.c_str()) != -1;
 }

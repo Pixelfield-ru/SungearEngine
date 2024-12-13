@@ -10,7 +10,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Graphics/API/IVertexBufferLayout.h"
 #include "SGCore/Graphics/API/IShader.h"
-#include "SGCore/Graphics/API/ISubPassShader.h"
+#include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Render/RenderingBase.h"
@@ -85,7 +85,7 @@ SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
     auto currentRenderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
     if(currentRenderPipeline)
     {
-        m_linesShader = MakeRef<IShader>();
+        m_linesShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
         m_linesShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
                 currentRenderPipeline->m_shadersPaths["LinesDebugDrawShader"]->getCurrentRealization()));
     }
@@ -160,9 +160,9 @@ void SGCore::PhysicsDebugDraw::drawAll(const Ref<Scene>& scene)
 {
     if(!m_linesShader) return;
 
-    auto subPassShader = m_linesShader->getSubPassShader("BatchedLinesPass");
+    auto subPassShader = m_linesShader;
     
-    if(!subPassShader) return;
+    if(!subPassShader || subPassShader->getAnalyzedFile()->getSubPassName() != "BatchedLinesPass") return;
     
     size_t vCnt = std::min(m_currentDrawingLine * 6, m_maxLines * 6);
     size_t cCnt = std::min(m_currentDrawingLine * 8, m_maxLines * 8);
@@ -197,7 +197,7 @@ void SGCore::PhysicsDebugDraw::resetRenderer() noexcept
 
 void SGCore::PhysicsDebugDraw::onRenderPipelineSet() noexcept
 {
-    m_linesShader = MakeRef<IShader>();
+    m_linesShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     m_linesShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
             RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["LinesDebugDrawShader"]->getCurrentRealization()));
 }

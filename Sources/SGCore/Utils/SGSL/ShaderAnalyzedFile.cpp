@@ -3,25 +3,26 @@
 //
 #include "ShaderAnalyzedFile.h"
 
+#include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGSLETranslator.h"
 #include "SGCore/Utils/FileUtils.h"
+#include "SGCore/Memory/AssetManager.h"
 
 void SGCore::ShaderAnalyzedFile::doLoad(const InterpolatedPath& path)
 {
+    auto fileAsset = getParentAssetManager()->loadAsset<TextFileAsset>(path);
+
     SGSLETranslator translator;
-    
-    translator.processCode(path.resolved(), SGCore::FileUtils::readFile(path.resolved()), shared_from_this());
+
+    translator.processCode(path.resolved(), fileAsset->getData(), shared_from_this());
 }
 
 void SGCore::ShaderAnalyzedFile::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
 {
-    for(const auto& subPassPair : m_subPasses)
+    for(auto& subShaderPair : m_subShaders)
     {
-        for(const auto& subShaderPair : subPassPair.second.m_subShaders)
-        {
-            if(!subShaderPair.second) continue;
-
-            subShaderPair.second->doLoadFromBinaryFile(parentAssetManager);
-        }
+        auto& subShader = subShaderPair.second;
+        subShader.m_code = parentAssetManager->getPackage().readData<std::string>(subShader.m_codeOffsetInPackage,
+                                                                                  subShader.m_codeSizeInPackage);
     }
 }

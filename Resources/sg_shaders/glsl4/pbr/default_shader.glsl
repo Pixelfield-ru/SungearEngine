@@ -1,6 +1,6 @@
 #sg_pragma once
 
-#sg_include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
+#include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
 #sg_include "sg_shaders/glsl4/random.glsl"
 #sg_include "sg_shaders/glsl4/disks.glsl"
 #sg_include "sg_shaders/glsl4/math.glsl"
@@ -11,7 +11,7 @@
 #sg_include "sg_shaders/glsl4/color_correction/filmic.glsl"
 #sg_include "sg_shaders/glsl4/color_correction/neutral.glsl"
 #sg_include "sg_shaders/glsl4/postprocessing/layered/utils.glsl"
-#sg_include "dir_lights_shadows_calc.glsl"
+#include "dir_lights_shadows_calc.glsl"
 
 float ambient = 0.1;
 

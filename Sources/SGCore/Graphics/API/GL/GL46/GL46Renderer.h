@@ -5,7 +5,7 @@
 #ifndef SUNGEARENGINE_GL46RENDERER_H
 #define SUNGEARENGINE_GL46RENDERER_H
 
-#include "SGCore/Graphics/API/GL/GL46/GL46SubPassShader.h"
+#include "SGCore/Graphics/API/GL/GL46/GL46Shader.h"
 #include "SGCore/Graphics/API/GL/GLVertexArray.h"
 #include "SGCore/Graphics/API/GL/GLVertexBuffer.h"
 #include "SGCore/Graphics/API/GL/GLVertexBufferLayout.h"
@@ -31,7 +31,7 @@ namespace SGCore
 
         bool confirmSupport() noexcept override;
 
-        [[nodiscard]] GL46SubPassShader* createSubPassShader() const override;
+        [[nodiscard]] GL46Shader* createShader() const override;
 
         [[nodiscard]] GL46Texture2D* createTexture2D() const final;
 

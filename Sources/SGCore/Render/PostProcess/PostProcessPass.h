@@ -29,7 +29,7 @@ namespace SGCore
 
     private:
         void layersFX(LayeredFrameReceiver& receiver) noexcept;
-        void bindCommonUniforms(LayeredFrameReceiver& receiver, const Ref<ISubPassShader>& subPassShader) const noexcept;
+        void bindCommonUniforms(LayeredFrameReceiver& receiver, const Ref<IShader>& subPassShader) const noexcept;
     };
 }
 

@@ -102,11 +102,12 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
     // without - 1 because 0 is always default FB
     newPPLayer->m_index = m_layers.empty() ? 0 : getLayersMaximumIndex() + 1;
 
-    auto fxShader = MakeRef<IShader>();
+    auto fxShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     fxShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
             ShadersUniversalPaths::getDefaultPaths()["LayeredPP/LayerFXShader"]->getCurrentRealization()));
-    
-    newPPLayer->m_FXSubPassShader = fxShader->getSubPassShader("SGPPLayerFXPass");
+
+    // SGPPLayerFXPass
+    newPPLayer->m_FXSubPassShader = fxShader;
 
     // adding one sub pass
     PostProcessFXSubPass subPass;

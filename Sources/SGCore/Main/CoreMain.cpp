@@ -3,7 +3,6 @@
 #include <locale>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <SGCore/Utils/SGSL/SGSLETranslator.h>
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Utils/ShadersUniversalPaths.h"
 
@@ -18,6 +17,7 @@
 #include "SGCore/PluginsSystem/PluginsManager.h"
 #include "SGCore/MetaInfo/MetaInfo.h"
 #include "SGCore/Utils/StringInterpolation/InterpolationResolver.h"
+#include "SGCore/Utils/SGSL/SGSLETranslator.h"
 
 void SGCore::CoreMain::start()
 {

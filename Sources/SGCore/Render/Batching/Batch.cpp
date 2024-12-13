@@ -128,7 +128,7 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
     m_renderInfo.m_enableFacesCulling = true;
     m_renderInfo.m_drawMode = SGDrawMode::SGG_TRIANGLES;
     
-    m_shader = SGCore::MakeRef<SGCore::IShader>();
+    m_shader = SGCore::Ref<SGCore::IShader>(CoreMain::getRenderer()->createShader());
     
     onRenderPipelineSet();
 }
@@ -137,9 +137,9 @@ void SGCore::Batch::renderAll() noexcept
 {
     if(!m_shader) return;
     
-    auto subPassShader = m_shader->getSubPassShader("BatchingPass");
+    auto subPassShader = m_shader;
     
-    if(!subPassShader) return;
+    if(!subPassShader || subPassShader->getAnalyzedFile()->getSubPassName() != "BatchingPass") return;
     
     size_t indicesCount = std::min<size_t>(m_currentIndicesCountToRender, m_maxIndicesCount);
     size_t verticesCount = std::min<size_t>(m_currentVerticesCountToRender, m_maxVerticesCount);
