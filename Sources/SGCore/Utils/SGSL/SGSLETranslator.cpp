@@ -9,11 +9,11 @@
 void SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const std::string& code,
                                           const Ref <ShaderAnalyzedFile>& toAnalyzedFile) noexcept
 {
-    const std::string preprocessedCode = preprocessorPass(code);
+    const std::string preprocessedCode = preprocessorPass(path, code);
     std::cout << preprocessedCode << std::endl;
 }
 
-std::string SGCore::SGSLETranslator::preprocessorPass(const std::string& code) noexcept
+std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::path& path, const std::string& code) noexcept
 {
     std::string outputCode;
 
@@ -28,30 +28,33 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::string& code) n
     {
         const auto& c = code[i];
 
-        currentWord += c;
-
         // processing comments ====================================
-        if(c == '*')
+        if(c == '/')
         {
-            if(!isValidCommentToken(commentToken))
+            if(i + 1 < code.size())
             {
-                commentToken += c;
-            }
-            else
-            {
-                uncommentToken += c;
+                if(code[i + 1] == '/')
+                {
+                    commentToken = "//";
+                    ++i;
+                }
+                else if(code[i + 1] == '*')
+                {
+                    commentToken = "/*";
+                    ++i;
+                }
             }
         }
 
-        if(c == '/')
+        if(c == '*')
         {
-            if(!isValidCommentToken(commentToken))
+            if(i + 1 < code.size())
             {
-                commentToken += c;
-            }
-            else
-            {
-                uncommentToken += c;
+                if(code[i + 1] == '/')
+                {
+                    uncommentToken = "*/";
+                    ++i;
+                }
             }
         }
 
@@ -65,6 +68,7 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::string& code) n
         if(commentToken == "/*" && uncommentToken == "*/")
         {
             commentToken = "";
+            uncommentToken = "";
             ++lineIdx;
             continue;
         }
@@ -85,22 +89,30 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::string& code) n
                 std::filesystem::path includedFilePath = Utils::getRealPath(includedFilePair.first);
                 if(!std::filesystem::exists(includedFilePath))
                 {
-                    const auto includedFilePathAsString = Utils::toUTF8(includedFilePath.u16string());
-
                     includedFilePath =
                             Utils::toUTF8(findRealIncludePath(std::filesystem::path(
-                                                                      includedFilePathAsString.begin() + 1,
-                                                                      includedFilePathAsString.end() - 1
+                                                                      includedFilePair.first.begin() + 1,
+                                                                      includedFilePair.first.end() - 1
                                                               )
                             ).u16string());
+                }
 
-                    if(!m_includedPaths.contains(includedFilePath))
+                LOG_I(SGCORE_TAG, "Including path: '{}'", Utils::toUTF8(includedFilePath.u16string()));
+
+                if(!m_includedPaths.contains(includedFilePath))
+                {
+                    if(std::filesystem::exists(includedFilePath))
                     {
                         outputCode += FileUtils::readFile(includedFilePath);
 
                         m_includedPaths.insert(includedFilePath);
                     }
-
+                    else
+                    {
+                        LOG_E(SGCORE_TAG, "SGSLE PREPROCESSING: In file '{}': error including file by path '{}': this file does not exist!",
+                              Utils::toUTF8(path.u16string()),
+                              Utils::toUTF8(includedFilePath.u16string()));
+                    }
                 }
 
                 i += includedFilePair.second;
@@ -114,7 +126,12 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::string& code) n
         if(c == '\n')
         {
             ++lineIdx;
-            continue;
+            // continue;
+        }
+
+        if(c != ' ' && c != '\n')
+        {
+            currentWord += c;
         }
     }
 
@@ -155,7 +172,7 @@ std::pair<std::string, size_t> SGCore::SGSLETranslator::readLine(const size_t& s
         outputLine += c;
     }
 
-    return { outputLine, i };
+    return { outputLine, i - startIdx };
 }
 
 std::filesystem::path

@@ -1,16 +1,16 @@
 #sg_pragma once
 
 #include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
-#sg_include "sg_shaders/glsl4/random.glsl"
-#sg_include "sg_shaders/glsl4/disks.glsl"
-#sg_include "sg_shaders/glsl4/math.glsl"
-#sg_include "sg_shaders/glsl4/defines.glsl"
-#sg_include "sg_shaders/glsl4/color_correction/aces.glsl"
-#sg_include "sg_shaders/glsl4/color_correction/lottes.glsl"
-#sg_include "sg_shaders/glsl4/color_correction/reinhard.glsl"
-#sg_include "sg_shaders/glsl4/color_correction/filmic.glsl"
-#sg_include "sg_shaders/glsl4/color_correction/neutral.glsl"
-#sg_include "sg_shaders/glsl4/postprocessing/layered/utils.glsl"
+#include "sg_shaders/glsl4/random.glsl"
+#include "sg_shaders/glsl4/disks.glsl"
+#include "sg_shaders/glsl4/math.glsl"
+#include "sg_shaders/glsl4/defines.glsl"
+#include "sg_shaders/glsl4/color_correction/aces.glsl"
+#include "sg_shaders/glsl4/color_correction/lottes.glsl"
+#include "sg_shaders/glsl4/color_correction/reinhard.glsl"
+#include "sg_shaders/glsl4/color_correction/filmic.glsl"
+#include "sg_shaders/glsl4/color_correction/neutral.glsl"
+#include "sg_shaders/glsl4/postprocessing/layered/utils.glsl"
 #include "dir_lights_shadows_calc.glsl"
 
 float ambient = 0.1;

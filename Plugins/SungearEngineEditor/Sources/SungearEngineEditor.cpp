@@ -46,6 +46,8 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 
     loadDefaultUIConfig();
 
+    // SGCore::Event<void()> onClicked;
+
     onConstructed();
 
 	// No error.

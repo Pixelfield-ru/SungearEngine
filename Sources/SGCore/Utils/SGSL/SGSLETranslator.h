@@ -32,7 +32,7 @@ namespace SGCore
         static void includeDirectory(const std::filesystem::path& dirPath) noexcept;
 
     private:
-        [[nodiscard]] std::string preprocessorPass(const std::string& code) noexcept;
+        [[nodiscard]] std::string preprocessorPass(const std::filesystem::path& path, const std::string& code) noexcept;
 
         std::unordered_set<std::filesystem::path> m_includedPaths;
 
@@ -42,7 +42,7 @@ namespace SGCore
          * Reads line ignoring comments.
          * @param startIdx
          * @param code
-         * @return
+         * @return First - code, second - count of read characters.
          */
         [[nodiscard]] static std::pair<std::string, size_t> readLine(const size_t& startIdx, const std::string& code) noexcept;
 
