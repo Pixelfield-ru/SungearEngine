@@ -4393,7 +4393,7 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().addMember("m_subPassName", valueView.m_data->m_subPassName);
             valueView.getValueContainer().addMember("m_attributes", valueView.m_data->m_attributes);
-            valueView.getValueContainer().addMember("m_subShadersCode", valueView.m_data->m_subShaders, assetsPackage);
+            valueView.getValueContainer().addMember("m_subShaders", valueView.m_data->m_subShaders, assetsPackage);
         }
 
         static void deserialize(DeserializableValueView<ShaderAnalyzedFile, TFormatType>& valueView, AssetsPackage& assetsPackage)

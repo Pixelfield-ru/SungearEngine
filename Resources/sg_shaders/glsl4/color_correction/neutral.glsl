@@ -1,5 +1,3 @@
-#sg_pragma once
-
 vec3 neutral(vec3 color)
 {
     const float startCompression = 0.8 - 0.04;

@@ -38,6 +38,8 @@ namespace SGCore
             return it != m_attributes.end() ? (std::optional<const std::any*>) &it->second : std::nullopt;
         }*/
 
+        [[nodiscard]] SGSLESubShader* getSubShaderByType(SGSLESubShaderType type) noexcept;
+
         [[nodiscard]] const auto& getSubShaders() const noexcept
         {
             return m_subShaders;
@@ -54,7 +56,7 @@ namespace SGCore
         // attributes of shader
         std::unordered_map<std::string, std::string> m_attributes;
         // code of fragment or vertex or smth else sub shaders
-        std::unordered_map<std::string, SGSLESubShader> m_subShaders;
+        std::vector<SGSLESubShader> m_subShaders;
     };
 }
 

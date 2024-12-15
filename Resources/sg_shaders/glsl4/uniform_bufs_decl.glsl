@@ -1,7 +1,5 @@
-#sg_pragma once
-
-#sg_include "defines.glsl"
-#sg_include "structs_decl.glsl"
+#include "defines.glsl"
+#include "structs_decl.glsl"
 
 // todo: return
 vec4 materialDiffuseCol = vec4(1.0);

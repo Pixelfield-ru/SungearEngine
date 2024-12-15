@@ -28,9 +28,14 @@ void SGCore::GL46Shader::doCompile()
         }
     }
 
-    for(const auto& subShadersIter : shaderAnalyzedFile->getSubShaders())
+    for(const auto& attributePair : shaderAnalyzedFile->getAttributes())
     {
-        m_subShadersHandlers.push_back(compileSubShader(subShadersIter.second.getType(), definesCode + "\n" + subShadersIter.second.getCode()));
+        definesCode += "#define " + attributePair.first + " " + attributePair.second;
+    }
+
+    for(const auto& subShader : shaderAnalyzedFile->getSubShaders())
+    {
+        m_subShadersHandlers.push_back(compileSubShader(subShader.getType(), definesCode + "\n" + subShader.getCode()));
     }
 
     // -----------------------------------------------

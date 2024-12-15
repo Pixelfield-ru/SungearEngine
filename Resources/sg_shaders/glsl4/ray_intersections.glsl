@@ -1,5 +1,3 @@
-#sg_pragma once
-
 vec2 raySphereIntersection(const in vec3 ro, const in vec3 rd, const in float sr)
 {
     float b = dot(ro, rd);

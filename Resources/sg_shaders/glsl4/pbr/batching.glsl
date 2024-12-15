@@ -1,57 +1,56 @@
-#sg_pragma once
+#subpass [BatchingPass]
 
-SGSubPass(BatchingPass)
+#vertex
+
+#include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
+
+layout (location = 0) in int instanceID;
+layout (location = 1) in vec3 vertexUV;
+layout (location = 2) in vec3 vertexPosition;
+
+out vec3 vs_UVAttribute;
+flat out int vs_InstanceID;
+
+uniform samplerBuffer u_matricesTextureBuffer;
+
+void main()
 {
-    SGSubShader(Vertex)
-    {
-        #sg_include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
+    vs_UVAttribute = vertexUV;
+    vs_InstanceID = instanceID;
 
-        layout (location = 0) in int instanceID;
-        layout (location = 1) in vec3 vertexUV;
-        layout (location = 2) in vec3 vertexPosition;
+    mat4 instanceModelMatrix = mat4(1.0);
 
-        out vec3 vs_UVAttribute;
-        flat out int vs_InstanceID;
+    instanceModelMatrix[0] = texelFetch(u_matricesTextureBuffer, instanceID * 4);
+    instanceModelMatrix[1] = texelFetch(u_matricesTextureBuffer, instanceID * 4 + 1);
+    instanceModelMatrix[2] = texelFetch(u_matricesTextureBuffer, instanceID * 4 + 2);
+    instanceModelMatrix[3] = texelFetch(u_matricesTextureBuffer, instanceID * 4 + 3);
 
-        uniform samplerBuffer u_matricesTextureBuffer;
+    gl_Position = camera.projectionSpaceMatrix * instanceModelMatrix * vec4(vertexPosition, 1.0);
+}
 
-        void main()
-        {
-            vs_UVAttribute = vertexUV;
-            vs_InstanceID = instanceID;
+// =========================================================================
+// =========================================================================
+// =========================================================================
 
-            mat4 instanceModelMatrix = mat4(1.0);
+#fragment
 
-            instanceModelMatrix[0] = texelFetch(u_matricesTextureBuffer, instanceID * 4);
-            instanceModelMatrix[1] = texelFetch(u_matricesTextureBuffer, instanceID * 4 + 1);
-            instanceModelMatrix[2] = texelFetch(u_matricesTextureBuffer, instanceID * 4 + 2);
-            instanceModelMatrix[3] = texelFetch(u_matricesTextureBuffer, instanceID * 4 + 3);
+layout(location = 0) out vec4 fragColor;
 
-            gl_Position = camera.projectionSpaceMatrix * instanceModelMatrix * vec4(vertexPosition, 1.0);
-        }
-    }
+in vec3 vs_UVAttribute;
+flat in int vs_InstanceID;
 
-    SGSubShader(Fragment)
-    {
-        layout(location = 0) out vec4 fragColor;
+void main()
+{
+    vec4 charCol = vec4(0, 0, 0, 1);
 
-        in vec3 vs_UVAttribute;
-        flat in int vs_InstanceID;
+    vec2 finalUV = vs_UVAttribute.xy;
+    #ifdef FLIP_TEXTURES_Y
+    finalUV.y = 1.0 - vsIn.UV.y;
+    #endif
 
-        void main()
-        {
-            vec4 charCol = vec4(0, 0, 0, 1);
-
-            vec2 finalUV = vs_UVAttribute.xy;
-            #ifdef FLIP_TEXTURES_Y
-            finalUV.y = 1.0 - vsIn.UV.y;
-            #endif
-
-            // fragColor = charCol;
-            // fragColor = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
-            // fragColor = vec4(vec3(1.0), 1.0);
-            fragColor = vec4(vs_UVAttribute, 1.0);
-            // fragColor = vec4(vec3(1.0) / (1.0 + float(vs_InstanceID)), 1.0);
-        }
-    }
+    // fragColor = charCol;
+    // fragColor = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
+    // fragColor = vec4(vec3(1.0), 1.0);
+    fragColor = vec4(vs_UVAttribute, 1.0);
+    // fragColor = vec4(vec3(1.0) / (1.0 + float(vs_InstanceID)), 1.0);
 }

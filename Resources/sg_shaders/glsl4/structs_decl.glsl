@@ -1,5 +1,3 @@
-#sg_pragma once
-
 #define DIRECTIONAL_LIGHTS_MAX_COUNT    5
 
 struct ProgramData
@@ -36,8 +34,19 @@ struct IRenderingComponent
     float p2;
 };
 
-struct ILight extends IRenderingComponent
+struct ILight
 {
+    mat4 projectionSpaceMatrix;
+    mat4 orthographicSpaceMatrix;
+    mat4 orthographicMatrix;
+    mat4 projectionMatrix;
+    mat4 viewMatrix;
+    vec3 position;
+    float p0;
+    vec3 rotation;
+    float p1;
+    vec3 scale;
+    float p2;
     vec4 color;
     float intensity;
     int shadowSamplesCount;
@@ -45,8 +54,22 @@ struct ILight extends IRenderingComponent
 
 // 264 байта с паддингами p0, p1, p2
 // нужно 272 байта
-struct DirectionalLight extends ILight
+struct DirectionalLight
 {
+    mat4 projectionSpaceMatrix;
+    mat4 orthographicSpaceMatrix;
+    mat4 orthographicMatrix;
+    mat4 projectionMatrix;
+    mat4 viewMatrix;
+    vec3 position;
+    float p0;
+    vec3 rotation;
+    float p1;
+    vec3 scale;
+    float p2;
+    vec4 color;
+    float intensity;
+    int shadowSamplesCount;
     float p3;
     float p4;
     // todo: make for dir light

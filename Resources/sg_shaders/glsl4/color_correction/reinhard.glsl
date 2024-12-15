@@ -1,5 +1,3 @@
-#sg_pragma once
-
 vec3 reinhard2(vec3 x)
 {
     const float L_white = 4.0;

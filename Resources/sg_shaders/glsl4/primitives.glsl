@@ -1,5 +1,3 @@
-#sg_pragma once
-
 const vec2 quad2DVerticesPositions[] = vec2[]
 (
     vec2(-1.0, -1.0),

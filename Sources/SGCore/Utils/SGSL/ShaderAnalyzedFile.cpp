@@ -19,10 +19,22 @@ void SGCore::ShaderAnalyzedFile::doLoad(const InterpolatedPath& path)
 
 void SGCore::ShaderAnalyzedFile::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
 {
-    for(auto& subShaderPair : m_subShaders)
+    for(auto& subShader : m_subShaders)
     {
-        auto& subShader = subShaderPair.second;
         subShader.m_code = parentAssetManager->getPackage().readData<std::string>(subShader.m_codeOffsetInPackage,
                                                                                   subShader.m_codeSizeInPackage);
     }
+}
+
+SGCore::SGSLESubShader* SGCore::ShaderAnalyzedFile::getSubShaderByType(SGCore::SGSLESubShaderType type) noexcept
+{
+    for(auto& shader : m_subShaders)
+    {
+        if(shader.m_type == type)
+        {
+            return &shader;
+        }
+    }
+
+    return nullptr;
 }

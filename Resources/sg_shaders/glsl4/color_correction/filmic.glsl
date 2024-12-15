@@ -1,5 +1,3 @@
-#sg_pragma once
-
 vec3 filmic(vec3 x)
 {
     vec3 X = max(vec3(0.0), x - 0.004);

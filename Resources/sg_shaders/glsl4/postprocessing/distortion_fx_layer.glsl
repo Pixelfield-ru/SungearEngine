@@ -1,14 +1,12 @@
-#sg_pragma once
-
 #define SG_NOT_INCLUDE_LIGHTS
 
-#sg_include "../uniform_bufs_decl.glsl"
-#sg_include "../color_correction/aces.glsl"
-#sg_include "../defines.glsl"
-#sg_include "../random.glsl"
-#sg_include "../disks.glsl"
-#sg_include "../math.glsl"
-#sg_include "../primitives.glsl"
+#include "../uniform_bufs_decl.glsl"
+#include "../color_correction/aces.glsl"
+#include "../defines.glsl"
+#include "../random.glsl"
+#include "../disks.glsl"
+#include "../math.glsl"
+#include "../primitives.glsl"
 
 #ifdef VERTEX_SHADER
     out vec2 vs_UVAttribute;

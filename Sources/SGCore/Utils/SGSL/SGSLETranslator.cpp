@@ -7,10 +7,12 @@
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
 
 void SGCore::SGSLETranslator::processCode(const std::filesystem::path& path, const std::string& code,
-                                          const Ref <ShaderAnalyzedFile>& toAnalyzedFile) noexcept
+                                          const Ref<ShaderAnalyzedFile>& toAnalyzedFile) noexcept
 {
     const std::string preprocessedCode = preprocessorPass(path, code);
-    std::cout << preprocessedCode << std::endl;
+    // std::cout << preprocessedCode << std::endl;
+
+    translateCode(path, preprocessedCode, toAnalyzedFile);
 }
 
 std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::path& path, const std::string& code) noexcept
@@ -19,14 +21,17 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
 
     size_t lineIdx = 0;
 
-    std::string currentWord;
-
     std::string commentToken;
     std::string uncommentToken;
 
     for(size_t i = 0; i < code.size(); ++i)
     {
         const auto& c = code[i];
+        char prevC = ' ';
+        if(((std::int64_t) i) - 1 >= 0)
+        {
+            prevC = code[i - 1];
+        }
 
         // processing comments ====================================
         if(c == '/')
@@ -80,30 +85,37 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
         }
         // ======================================================
 
-
-        if(c == ' ' || c == '\n')
+        // if we have next word
+        if(prevC == ' ' || prevC == '\n')
         {
-            if(currentWord == "#include")
+            auto wordPair = readWord(i, code);
+            if(wordPair.first == "#include")
             {
-                auto includedFilePair = readLine(i + 1, code);
+                auto includedFilePair = readExpr(i + wordPair.second, code, "\"", "\"");
                 std::filesystem::path includedFilePath = Utils::getRealPath(includedFilePair.first);
                 if(!std::filesystem::exists(includedFilePath))
                 {
                     includedFilePath =
                             Utils::toUTF8(findRealIncludePath(std::filesystem::path(
-                                                                      includedFilePair.first.begin() + 1,
-                                                                      includedFilePair.first.end() - 1
+                                                                      includedFilePair.first.begin(),
+                                                                      includedFilePair.first.end()
                                                               )
                             ).u16string());
-                }
 
-                LOG_I(SGCORE_TAG, "Including path: '{}'", Utils::toUTF8(includedFilePath.u16string()));
+                    // finally trying to include file near the current file
+                    if(!std::filesystem::exists(includedFilePath))
+                    {
+                        includedFilePath = SGCore::Utils::getRealPath(Utils::toUTF8((path.parent_path() / includedFilePair.first).u16string()));
+                    }
+                }
 
                 if(!m_includedPaths.contains(includedFilePath))
                 {
                     if(std::filesystem::exists(includedFilePath))
                     {
-                        outputCode += FileUtils::readFile(includedFilePath);
+                        LOG_I(SGCORE_TAG, "Including path: '{}'", Utils::toUTF8(includedFilePath.u16string()));
+
+                        outputCode += preprocessorPass(includedFilePath, FileUtils::readFile(includedFilePath));
 
                         m_includedPaths.insert(includedFilePath);
                     }
@@ -115,10 +127,9 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
                     }
                 }
 
-                i += includedFilePair.second;
+                i += wordPair.second + includedFilePair.second;
+                continue;
             }
-
-            currentWord = "";
         }
 
         outputCode += c;
@@ -128,22 +139,134 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
             ++lineIdx;
             // continue;
         }
+    }
 
-        if(c != ' ' && c != '\n')
+    return outputCode;
+}
+
+void SGCore::SGSLETranslator::translateCode(const std::filesystem::path& path, const std::string& code,
+                                            const SGCore::Ref<SGCore::ShaderAnalyzedFile>& toAnalyzedFile) noexcept
+{
+    std::string globalCode;
+
+    SGSLESubShader* currentSubShader = nullptr;
+
+    std::string outputCode;
+
+    for(size_t i = 0; i < code.size(); ++i)
+    {
+        const auto& c = code[i];
+        char prevC = ' ';
+        if(((std::int64_t) i) - 1 >= 0)
         {
-            currentWord += c;
+            prevC = code[i - 1];
+        }
+
+        // if we have next word
+        if(prevC == ' ' || prevC == '\n')
+        {
+            SGSLESubShaderType curSubShaderType = SGSLESubShaderType::SST_NONE;
+            bool isValidKeyWordFound = false;
+
+            auto wordPair = readWord(i, code);
+            const auto& word = wordPair.first;
+            const auto& wordOffset = wordPair.second;
+            // trying to process shader type directives
+            {
+                if(word == "#vertex")
+                {
+                    curSubShaderType = SGSLESubShaderType::SST_VERTEX;
+                }
+                else if(word == "#fragment")
+                {
+                    curSubShaderType = SGSLESubShaderType::SST_FRAGMENT;
+                }
+                else if(word == "#geometry")
+                {
+                    curSubShaderType = SGSLESubShaderType::SST_GEOMETRY;
+                }
+                else if(word == "#compute")
+                {
+                    curSubShaderType = SGSLESubShaderType::SST_COMPUTE;
+                }
+                else if(word == "#tess_control")
+                {
+                    curSubShaderType = SGSLESubShaderType::SST_TESS_CONTROL;
+                }
+                else if(word == "#tess_eval")
+                {
+                    curSubShaderType = SGSLESubShaderType::SST_TESS_EVALUATION;
+                }
+
+                if(curSubShaderType != SGSLESubShaderType::SST_NONE)
+                {
+                    currentSubShader = toAnalyzedFile->getSubShaderByType(curSubShaderType);
+                    if(!currentSubShader)
+                    {
+                        toAnalyzedFile->m_subShaders.emplace_back();
+                        currentSubShader = &*toAnalyzedFile->m_subShaders.rbegin();
+                        currentSubShader->m_type = curSubShaderType;
+                    }
+
+                    isValidKeyWordFound = true;
+                }
+            }
+
+            if(word == "#subpass")
+            {
+                auto subPassNameFilePair = readExpr(i + wordOffset, code, "[", "]");
+                toAnalyzedFile->m_subPassName = subPassNameFilePair.first;
+
+                i += subPassNameFilePair.second;
+
+                isValidKeyWordFound = true;
+            }
+
+            if(word == "#attribute")
+            {
+                auto attribNamePair = readExpr(i + wordOffset, code, "[", "]");
+                auto attribValuePair = readExpr(i + wordOffset + attribNamePair.second, code, "[", "]");
+
+                toAnalyzedFile->m_attributes[attribNamePair.first] = attribValuePair.first;
+
+                i += attribNamePair.second + attribValuePair.second;
+
+                isValidKeyWordFound = true;
+            }
+
+            if(isValidKeyWordFound)
+            {
+                i += wordOffset;
+                continue;
+            }
+        }
+
+        if(currentSubShader)
+        {
+            currentSubShader->m_code += c;
+        }
+        else
+        {
+            globalCode += c;
         }
     }
 
-    /*while(std::getline(codeStream, line))
+    std::cout << globalCode << std::endl;
+
+    for(auto& subShader : toAnalyzedFile->m_subShaders)
     {
-        std::vector<std::string> words;
-        SGCore::Utils::splitString(line, ' ', words);
+        subShader.m_code = globalCode + subShader.m_code;
+    }
 
-        if()
-    }*/
-
-    return outputCode;
+    if(toAnalyzedFile->m_subPassName.empty())
+    {
+        LOG_E(SGCORE_TAG, "SGSLE ERROR: #subpass is required for shader by path '{}'.", Utils::toUTF8(path.u16string()));
+    }
+    else
+    {
+        LOG_I(SGCORE_TAG, "SGSLE: Translated shader by path '{}'. Shader is using subpass '{}'.",
+              Utils::toUTF8(path.u16string()), toAnalyzedFile->m_subPassName);
+    }
 }
 
 void SGCore::SGSLETranslator::includeDirectory(const std::filesystem::path& dirPath) noexcept
@@ -156,7 +279,61 @@ bool SGCore::SGSLETranslator::isValidCommentToken(const std::string& commentToke
     return commentToken == "//" || commentToken == "/*";
 }
 
-std::pair<std::string, size_t> SGCore::SGSLETranslator::readLine(const size_t& startIdx, const std::string& code) noexcept
+std::pair<std::string, size_t> SGCore::SGSLETranslator::readExpr(const size_t& startIdx, const std::string& code,
+                                                                 const std::string& exprFenceBegin,
+                                                                 const std::string& exprFenceEnd) noexcept
+{
+    std::string outputLine;
+    size_t i = startIdx;
+    bool isExprStarted = false;
+    std::string curWord;
+
+    const size_t maxFenceSize =
+            exprFenceBegin.size() > exprFenceEnd.size() ? exprFenceBegin.size() : exprFenceEnd.size();
+
+    for(; i < code.size(); ++i)
+    {
+        const auto& c = code[i];
+
+        curWord = "";
+
+        bool foundExprStart = false;
+        for(size_t j = i; j < i + maxFenceSize && j < code.size(); ++j)
+        {
+            curWord += code[j];
+            if(curWord == exprFenceBegin && !isExprStarted)
+            {
+                i += curWord.size() - 1;
+
+                curWord = "";
+
+                isExprStarted = true;
+                foundExprStart = true;
+
+                break;
+            }
+            else if(curWord == exprFenceEnd && isExprStarted)
+            {
+                return { outputLine, i - startIdx };
+            }
+        }
+
+        if(foundExprStart)
+        {
+            continue;
+        }
+
+        if(isExprStarted)
+        {
+            outputLine += c;
+        }
+    }
+
+    return { outputLine, i - startIdx };
+}
+
+std::pair<std::string, size_t>
+SGCore::SGSLETranslator::readWord(const size_t& startIdx, const std::string& code) noexcept
 {
     std::string outputLine;
     size_t i = startIdx;
@@ -164,7 +341,7 @@ std::pair<std::string, size_t> SGCore::SGSLETranslator::readLine(const size_t& s
     {
         const auto& c = code[i];
 
-        if(c == '\n' || c == '\0')
+        if(c == '\n' || c == '\0' || c == ' ')
         {
             break;
         }

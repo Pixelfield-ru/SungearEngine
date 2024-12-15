@@ -1,51 +1,50 @@
-#sg_pragma once
+#subpass [TextRenderPass]
 
-SGSubPass(TextRenderPass)
+#vertex
+
+#include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
+
+layout (location = 0) in mat4 characterModelMatrix;
+layout (location = 4) in vec4 characterColor;
+layout (location = 5) in vec2 characterUV;
+layout (location = 6) in vec3 characterVertexPosition;
+
+out vec2 vs_UVAttribute;
+out vec4 vs_characterColor;
+
+void main()
 {
-    SGSubShader(Vertex)
-    {
-        #sg_include "sg_shaders/glsl4/uniform_bufs_decl.glsl"
+    vs_UVAttribute = characterUV;
+    vs_characterColor = characterColor;
 
-        layout (location = 0) in mat4 characterModelMatrix;
-        layout (location = 4) in vec4 characterColor;
-        layout (location = 5) in vec2 characterUV;
-        layout (location = 6) in vec3 characterVertexPosition;
+    gl_Position = camera.orthographicSpaceMatrix * characterModelMatrix * vec4(characterVertexPosition, 1.0);
+}
 
-        out vec2 vs_UVAttribute;
-        out vec4 vs_characterColor;
+// =========================================================================
+// =========================================================================
+// =========================================================================
 
-        void main()
-        {
-            vs_UVAttribute = characterUV;
-            vs_characterColor = characterColor;
+#fragment
 
-            gl_Position = camera.orthographicSpaceMatrix * characterModelMatrix * vec4(characterVertexPosition, 1.0);
-        }
-    }
+layout(location = 0) out vec4 fragColor;
 
-    SGSubShader(Fragment)
-    {
-        layout(location = 0) out vec4 fragColor;
+in vec2 vs_UVAttribute;
+in vec4 vs_characterColor;
 
-        in vec2 vs_UVAttribute;
-        in vec4 vs_characterColor;
+uniform sampler2D u_fontSpecializationAtlas;
 
-        uniform sampler2D u_fontSpecializationAtlas;
+void main()
+{
+    vec4 charCol = vec4(0, 0, 0, 1);
 
-        void main()
-        {
-            vec4 charCol = vec4(0, 0, 0, 1);
+    vec2 finalUV = vs_UVAttribute.xy;
+    #ifdef FLIP_TEXTURES_Y
+        finalUV.y = 1.0 - vsIn.UV.y;
+    #endif
 
-            vec2 finalUV = vs_UVAttribute.xy;
-            #ifdef FLIP_TEXTURES_Y
-                finalUV.y = 1.0 - vsIn.UV.y;
-            #endif
+    charCol = texture(u_fontSpecializationAtlas, finalUV);
 
-            charCol = texture(u_fontSpecializationAtlas, finalUV);
-
-            // fragColor = charCol;
-            fragColor = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
-            // fragColor = vec4(1.0);
-        }
-    }
+    // fragColor = charCol;
+    fragColor = vec4(vec3(charCol.r) * vs_characterColor.rgb, charCol.r * vs_characterColor.a);
+    // fragColor = vec4(1.0);
 }

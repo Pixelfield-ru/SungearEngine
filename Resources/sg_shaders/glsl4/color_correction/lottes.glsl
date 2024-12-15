@@ -1,5 +1,3 @@
-#sg_pragma once
-
 vec3 lottes(vec3 x)
 {
     const vec3 a = vec3(1.6);

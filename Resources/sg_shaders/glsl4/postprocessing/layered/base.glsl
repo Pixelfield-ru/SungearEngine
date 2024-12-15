@@ -1,20 +1,14 @@
-#sg_pragma once
+#include "sg_shaders/glsl4/primitives.glsl"
 
-SGSubPass(SGPPLayerFXPass)
+#vertex
+
+out vec2 vs_UVAttribute;
+
+void main()
 {
-    SGSubShader(Vertex)
-    {
-        #sg_include "sg_shaders/glsl4/primitives.glsl"
+    vec2 pos = quad2DVerticesPositions[gl_VertexID].xy;
 
-        out vec2 vs_UVAttribute;
+    vs_UVAttribute = quad2DUVs[gl_VertexID];
 
-        void main()
-        {
-            vec2 pos = quad2DVerticesPositions[gl_VertexID].xy;
-
-            vs_UVAttribute = quad2DUVs[gl_VertexID];
-
-            gl_Position = vec4(pos, 0.0, 1.0);
-        }
-    }
+    gl_Position = vec4(pos, 0.0, 1.0);
 }

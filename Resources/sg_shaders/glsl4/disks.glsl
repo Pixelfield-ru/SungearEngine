@@ -1,5 +1,3 @@
-#sg_pragma once
-
 /**const vec2 poissonDisk[32] = vec2[] (
     vec2(0.06407013, 0.05409927),
     vec2(0.7366577, 0.5789394),
