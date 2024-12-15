@@ -12,74 +12,44 @@
 
 SGCore::PBRRenderPipeline::PBRRenderPipeline()
 {
-    m_shadersPaths.addShader(
+    m_shadersPaths.addPath(
             "StandardMeshShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/pbr/default_shader.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
+            "${enginePath}/Resources/sg_shaders/features/pbr/pbr.sgshader"
     );
 
-    m_shadersPaths.addShader(
-            "LayeredPostProcessingShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/postprocessing/default_shader.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
-    );
-
-    m_shadersPaths.addShader(
-            "ShadowsGenerationShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/shadows_generator/default_shader.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
-    );
-
-    m_shadersPaths.addShader(
+    m_shadersPaths.addPath(
             "SkyboxShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/skybox/default_shader.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
+            "${enginePath}/Resources/sg_shaders/features/skybox/skybox.sgshader"
     );
 
-    m_shadersPaths.addShader(
+    m_shadersPaths.addPath(
             "Gizmos/ComplexGizmosShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/gizmos/complex_gizmos_shader.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
+            "${enginePath}/Resources/sg_shaders/features/gizmos/complex_gizmos.sgshader"
     );
 
-    m_shadersPaths.addShader(
+    m_shadersPaths.addPath(
             "Gizmos/LinesGizmosShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/gizmos/lines_shader.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
+            "${enginePath}/Resources/sg_shaders/features/gizmos/lines.sgshader"
     );
 
-    m_shadersPaths.addShader(
+    m_shadersPaths.addPath(
             "LinesDebugDrawShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/debug/lines_debug_shader.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
+            "${enginePath}/Resources/sg_shaders/features/debug/debug.sgshader"
     );
 
-    m_shadersPaths.addShader(
+    m_shadersPaths.addPath(
             "StandardTextShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/ui/text_shader.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
+            "${enginePath}/Resources/sg_shaders/features/ui/text_shader.sgshader"
     );
 
-    m_shadersPaths.addShader(
+    m_shadersPaths.addPath(
             "InstancingShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/pbr/instancing.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
+            "${enginePath}/Resources/sg_shaders/features/pbr/instancing.sgshader"
     );
 
-    m_shadersPaths.addShader(
+    m_shadersPaths.addPath(
             "BatchingShader",
-            "${enginePath}/Resources/sg_shaders/glsl4/pbr/batching.glsl",
-            ShadersUniversalPaths::undefined_path,
-            ShadersUniversalPaths::undefined_path
+            "${enginePath}/Resources/sg_shaders/features/pbr/batching.sgshader"
     );
     
     // configure render passes --------

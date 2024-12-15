@@ -4,7 +4,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include "SGCore/Logger/Logger.h"
-#include "SGCore/Utils/ShadersUniversalPaths.h"
+#include "SGCore/Utils/Paths.h"
 
 #include "SGCore/Graphics/API/GL/GL4/GL4Renderer.h"
 #include "SGCore/Memory/AssetManager.h"
@@ -105,7 +105,7 @@ void SGCore::CoreMain::start()
 
     AssetManager::init();
 
-    ShadersUniversalPaths::init();
+    Paths::init();
     InputManager::init();
     FontsManager::init();
 

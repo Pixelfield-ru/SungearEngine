@@ -147,11 +147,23 @@ std::string SGCore::SGSLETranslator::preprocessorPass(const std::filesystem::pat
 void SGCore::SGSLETranslator::translateCode(const std::filesystem::path& path, const std::string& code,
                                             const SGCore::Ref<SGCore::ShaderAnalyzedFile>& toAnalyzedFile) noexcept
 {
-    std::string globalCode;
-
     SGSLESubShader* currentSubShader = nullptr;
 
     std::string outputCode;
+
+    // adding subshaders of all types to analyzed file to add global code in subshaders
+    for(int i = SGSLESubShaderType::SST_VERTEX; i <= SGSLESubShaderType::SST_TESS_EVALUATION; ++i)
+    {
+        if(!toAnalyzedFile->getSubShaderByType((SGSLESubShaderType) i))
+        {
+            SGSLESubShader subShader;
+            subShader.m_type = (SGSLESubShaderType) i;
+            toAnalyzedFile->m_subShaders.push_back(subShader);
+        }
+    }
+
+    // subshaders that were met in file by path
+    std::unordered_set<SGSLESubShaderType> metSubShaders;
 
     for(size_t i = 0; i < code.size(); ++i)
     {
@@ -197,9 +209,25 @@ void SGCore::SGSLETranslator::translateCode(const std::filesystem::path& path, c
                 {
                     curSubShaderType = SGSLESubShaderType::SST_TESS_EVALUATION;
                 }
+                else if(word == "#end")
+                {
+                    currentSubShader = nullptr;
+
+                    isValidKeyWordFound = true;
+                }
 
                 if(curSubShaderType != SGSLESubShaderType::SST_NONE)
                 {
+                    if(currentSubShader)
+                    {
+                        LOG_E(SGCORE_TAG, "The declaration of a new SubShader was met (decl: '{}'),"
+                                          " but the previous SubShader was not completed with the #end directive. Translation aborted.", word);
+
+                        break;
+                    }
+
+                    metSubShaders.insert(curSubShaderType);
+
                     currentSubShader = toAnalyzedFile->getSubShaderByType(curSubShaderType);
                     if(!currentSubShader)
                     {
@@ -241,21 +269,35 @@ void SGCore::SGSLETranslator::translateCode(const std::filesystem::path& path, c
             }
         }
 
+        // if we have current bind subshader then adding code to this subshader
         if(currentSubShader)
         {
             currentSubShader->m_code += c;
         }
         else
         {
-            globalCode += c;
+            // else we are adding code to all subshaders because it is global code
+            for(auto& subShader : toAnalyzedFile->m_subShaders)
+            {
+                subShader.m_code += c;
+            }
         }
     }
 
-    std::cout << globalCode << std::endl;
-
-    for(auto& subShader : toAnalyzedFile->m_subShaders)
+    // finally removing all subshaders from analyzed file that were not met in file by path
     {
-        subShader.m_code = globalCode + subShader.m_code;
+        auto it = toAnalyzedFile->m_subShaders.begin();
+        while(it != toAnalyzedFile->m_subShaders.end())
+        {
+            if(!metSubShaders.contains(it->m_type))
+            {
+                it = toAnalyzedFile->m_subShaders.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
     }
 
     if(toAnalyzedFile->m_subPassName.empty())

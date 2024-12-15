@@ -146,7 +146,7 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
     {
         m_textShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
         m_textShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-                renderPipeline->m_shadersPaths["StandardTextShader"]->getCurrentRealization()));
+                renderPipeline->m_shadersPaths["StandardTextShader"]->resolved()));
         
         // todo: pass uniforms
         updateUniforms();
@@ -328,7 +328,7 @@ void SGCore::FontSpecializationRenderer::onRenderPipelineSet() noexcept
 {
     m_textShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     m_textShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTextShader"]->getCurrentRealization()));
+            RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["StandardTextShader"]->resolved()));
     
     updateUniforms();
 }

@@ -524,5 +524,5 @@ void SGCore::Batch::onRenderPipelineSet() noexcept
     if(!renderPipeline) return;
 
     m_shader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            renderPipeline->m_shadersPaths["BatchingShader"]->getCurrentRealization()));
+            renderPipeline->m_shadersPaths["BatchingShader"]->resolved()));
 }

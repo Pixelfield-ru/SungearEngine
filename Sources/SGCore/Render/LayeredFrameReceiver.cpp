@@ -6,7 +6,7 @@
 
 #include "LayeredFrameReceiver.h"
 
-#include "SGCore/Utils/ShadersUniversalPaths.h"
+#include "SGCore/Utils/Paths.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
 #include "SGCore/Memory/AssetManager.h"
@@ -104,7 +104,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
 
     auto fxShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     fxShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            ShadersUniversalPaths::getDefaultPaths()["LayeredPP/LayerFXShader"]->getCurrentRealization()));
+            Paths::getDefaultPaths()["Shaders/LayeredPP/LayerFXShader"]->resolved()));
 
     // SGPPLayerFXPass
     newPPLayer->m_FXSubPassShader = fxShader;
