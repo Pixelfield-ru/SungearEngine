@@ -48,6 +48,7 @@ void SGCore::Window::create()
     glfwSetKeyCallback(m_handler, nativeKeyboardKeyCallback);
     glfwSetMouseButtonCallback(m_handler, nativeMouseButtonCallback);
     glfwSetCursorPosCallback(m_handler, nativeMousePositionCallback);
+    glfwSetFramebufferSizeCallback(m_handler, nativeFramebufferSizeCallback);
 
     makeCurrent();
 
@@ -249,6 +250,11 @@ void SGCore::Window::nativeMouseButtonCallback(GLFWwindow* window, int button, i
 void SGCore::Window::nativeMousePositionCallback(GLFWwindow* window, double xpos, double ypos) noexcept
 {
     onCursorPositionChanged(*((Window*) glfwGetWindowUserPointer(window)), xpos, ypos);
+}
+
+void SGCore::Window::nativeFramebufferSizeCallback(GLFWwindow* window, int width, int height) noexcept
+{
+    onFrameBufferSizeChanged(*((Window*) glfwGetWindowUserPointer(window)), width, height);
 }
 
 void SGCore::Window::errorCallback(int errCode, const char* err_msg)

@@ -252,7 +252,9 @@ namespace SGCore
         static inline Event<void(Window&, const MouseButton&, const KeyState&, const int&)> onMouseButtonEvent;
         
         static inline Event<void(Window&, const double&, const double&)> onCursorPositionChanged;
-        
+
+        static inline Event<void(Window&, const int&, const int&)> onFrameBufferSizeChanged;
+
         Window() noexcept = default;
 
         Window(const Window&) = delete;
@@ -329,7 +331,8 @@ namespace SGCore
         static void nativeKeyboardKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
         static void nativeMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) noexcept;
         static void nativeMousePositionCallback(GLFWwindow* window, double xpos, double ypos) noexcept;
-        
+        static void nativeFramebufferSizeCallback(GLFWwindow* window, int width, int height) noexcept;
+
         static void errorCallback(int errCode, const char* err_msg);
 
         GLFWwindow* m_handler = nullptr;

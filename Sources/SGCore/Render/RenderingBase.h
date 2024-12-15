@@ -45,6 +45,8 @@ namespace SGCore
         
         bool m_projectionSpaceMatrixChanged = false;
         // bool m_orthographicSpaceMatrixChanged = false;
+
+        // void updateRatio
     };
 }
 

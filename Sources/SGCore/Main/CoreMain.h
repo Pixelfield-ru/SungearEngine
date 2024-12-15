@@ -54,6 +54,8 @@ namespace SGCore
         static void fixedUpdateEnd(const double& dt, const double& fixedDt);
         static void updateStart(const double& dt, const double& fixedDt);
         static void updateEnd(const double& dt, const double& fixedDt);
+
+        static void onFrameBufferResize(Window& window, const int& width, const int& height) noexcept;
     };
 }
 

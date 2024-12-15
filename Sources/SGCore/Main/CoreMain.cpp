@@ -3,6 +3,9 @@
 #include <locale>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
+
+#include "SGCore/Render/Camera3D.h"
+#include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Utils/Paths.h"
 
@@ -119,23 +122,12 @@ void SGCore::CoreMain::start()
     m_fixedTimer.onUpdate.connect<&fixedUpdateEnd>(std::numeric_limits<size_t>::max());
     // m_fixedTimer.m_useFixedUpdateCatchUp = false;
 
-    //Graphics::GL::GL4Renderer::getInstance()->checkForErrors();
+    Window::onFrameBufferSizeChanged += onFrameBufferResize;
 
-    /*try
-    {*/
-        onInit();
-    /*}
-    catch(const std::exception& e)
-    {
-        std::string what = e.what();
-        LOG_E(SGCORE_TAG,
-              "Error while onInit. Error is: {}", what);
-    }*/
+    onInit();
 
     m_fixedTimer.resetTimer();
     m_renderTimer.resetTimer();
-
-    // m_fixedTimerThread.detach();
 
     while (!m_window.shouldClose())
     {
@@ -202,6 +194,18 @@ void SGCore::CoreMain::updateEnd(const double& dt, const double& fixedDt)
 {
     m_window.swapBuffers();
     m_window.pollEvents();
+}
+
+void SGCore::CoreMain::onFrameBufferResize(SGCore::Window& window, const int& width, const int& height) noexcept
+{
+    if(Scene::getCurrentScene())
+    {
+        auto cameras3DView = Scene::getCurrentScene()->getECSRegistry()->view<Ref<Camera3D>, Ref<RenderingBase>>();
+
+        cameras3DView.each([width, height](Ref<Camera3D> camera, Ref<RenderingBase> renderingBase) {
+            renderingBase->m_aspect = (float) width / (float) height;
+        });
+    }
 }
 
 SGCore::Window& SGCore::CoreMain::getWindow() noexcept

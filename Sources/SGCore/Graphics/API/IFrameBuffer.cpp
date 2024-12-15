@@ -14,6 +14,8 @@ void SGCore::IFrameBuffer::setSize(const int& width, const int& height) noexcept
 {
     m_width = width;
     m_height = height;
+    m_viewportWidth = width;
+    m_viewportHeight = height;
 }
 
 int SGCore::IFrameBuffer::getWidth() const noexcept

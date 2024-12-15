@@ -16,6 +16,7 @@
 #include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
 #include <SGCore/Render/Mesh.h>
 #include <SGCore/Memory/Assets/Materials/IMaterial.h>
+#include <SGCore/Render/RenderingBase.h>
 
 #include "SungearEngineEditor.h"
 #include "Views/MainView.h"
@@ -37,6 +38,9 @@ void SGE::SceneView::renderBody()
 
     ImGui::Begin("SceneView");
 
+    const auto windowPos = ImGui::GetCursorScreenPos();
+    const auto windowSize = ImGui::GetWindowSize();
+
     auto currentEditorScene = EditorScene::getCurrentScene();
     if(currentEditorScene && currentEditorScene->m_scene)
     {
@@ -46,6 +50,9 @@ void SGE::SceneView::renderBody()
         auto* layeredFrameReceiver = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::LayeredFrameReceiver>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
+        auto renderingBase = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::Ref<SGCore::RenderingBase>>
+                (EditorScene::getCurrentScene()->m_data.m_editorCamera);
+
         if(layeredFrameReceiver)
         {
             ImGui::Image(layeredFrameReceiver->m_layersFXFrameBuffer->getAttachment(
@@ -53,6 +60,19 @@ void SGE::SceneView::renderBody()
             )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 
             acceptFilesFromDirectoryExplorer();
+        }
+
+        if(renderingBase)
+        {
+            (*renderingBase)->m_aspect = windowSize.x / windowSize.y;
+            if(layeredFrameReceiver)
+            {
+                /*layeredFrameReceiver->m_layersFrameBuffer->m_viewportWidth = windowSize.x;
+                layeredFrameReceiver->m_layersFrameBuffer->m_viewportHeight = windowSize.y;
+                layeredFrameReceiver->m_layersFrameBuffer->m_viewportPosX = windowPos.x;
+                layeredFrameReceiver->m_layersFrameBuffer->m_viewportPosY = windowPos.y;*/
+            }
+            // glViewport(0, 0, windowSize.x, windowSize.y);
         }
 
         if(SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) &&

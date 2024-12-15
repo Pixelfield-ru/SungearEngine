@@ -24,7 +24,12 @@ namespace SGCore
         virtual ~IFrameBuffer() = default;
 
         glm::vec4 m_bgColor { 0.0, 0.0, 0.0, 1.0 };
-        
+
+        int m_viewportWidth = 0;
+        int m_viewportHeight = 0;
+        int m_viewportPosX = 0;
+        int m_viewportPosY = 0;
+
         virtual void bindAttachment(const SGFrameBufferAttachmentType& attachmentType,
                                     const std::uint8_t& textureBlock) { };
 
