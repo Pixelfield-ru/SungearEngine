@@ -17,6 +17,7 @@ namespace SGCore
     struct Mesh;
     struct OctreeNode;
     struct Transform;
+    struct EntityBaseInfo;
     
     struct PBRRPGeometryPass : public IGeometryPass
     {
@@ -29,6 +30,7 @@ namespace SGCore
                         const entity_t& meshEntity,
                         const Ref<Transform>& meshTransform,
                         Mesh& mesh,
+                        EntityBaseInfo& meshedEntityBaseInfo,
                         const Ref<PostProcessLayer>& meshPPLayer) noexcept;
 
         void renderOctreeNode(const Ref<registry_t>& registry,

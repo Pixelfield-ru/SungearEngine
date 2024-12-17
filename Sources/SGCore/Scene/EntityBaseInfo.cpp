@@ -179,3 +179,8 @@ SGCore::entity_t SGCore::EntityBaseInfo::getParent() const noexcept
 {
     return m_parent;
 }
+
+const glm::vec3& SGCore::EntityBaseInfo::getUniqueColor() const noexcept
+{
+    return m_uniqueColor;
+}

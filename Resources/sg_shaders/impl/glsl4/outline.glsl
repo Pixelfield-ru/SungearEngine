@@ -2,7 +2,7 @@
 #include "sg_shaders/impl/glsl4/math.glsl"
 #include "sg_shaders/impl/glsl4/defines.glsl"
 
-#subpass [GeometryPass]
+#subpass [PickingPass]
 
 #vertex
 

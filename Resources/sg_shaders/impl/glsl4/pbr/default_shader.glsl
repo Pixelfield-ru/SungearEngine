@@ -59,8 +59,10 @@ void main()
 
 #fragment
 
+// REQUIRED COLORS!!!
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
+layout(location = 2) out vec4 pickingColor;
 
 
 uniform sampler2D mat_diffuseSamplers[3];
@@ -79,6 +81,9 @@ uniform sampler2D mat_diffuseRoughnessSamplers[1];
 uniform int mat_diffuseRoughnessSamplers_CURRENT_COUNT;
 
 uniform int SGPP_CurrentLayerIndex;
+
+// REQUIRED UNIFORM!!
+uniform vec3 u_pickingColor;
 
 in VSOut
 {
@@ -406,6 +411,8 @@ void main()
     layerColor.a = 1.0;
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
+
+    pickingColor = vec4(u_pickingColor, 1.0);
 
     /*fragColor0 = vec4(normalMapColor, 1.0);
     fragColor1 = vec4(normalMapColor, 1.0);*/

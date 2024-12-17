@@ -53,7 +53,7 @@ void onEntitySerialize(SGCore::Serde::SerializableValueView<SGCore::SceneEntityS
 
         if(component)
         {
-            entityView.getValueContainer().pushBack(*component);
+            entityView.getValueContainer().pushBack(*component, serializableEntity, *(serializableScene.getECSRegistry()));
         }
     }
     ## endif
@@ -77,9 +77,9 @@ void onEntityDeserialize(SGCore::Serde::DeserializableValueView<SGCore::SceneEnt
     if(currentElementTypeName == SGCore::Serde::SerdeSpec<{{ struct.fullName }}, TFormatType>::type_name)
     {
         ## if struct.hasMember(name: "getFromRegistryBy")
-        const auto component = entityView.getValueContainer().template getMember<{{ struct.getFromRegistryBy }}>(componentsIterator);
+        const auto component = entityView.getValueContainer().template getMember<{{ struct.getFromRegistryBy }}>(componentsIterator, entityView.m_data->m_serializableEntity, toRegistry);
         ## else
-        const auto component = entityView.getValueContainer().template getMember<{{ struct.fullName }}>(componentsIterator);
+        const auto component = entityView.getValueContainer().template getMember<{{ struct.fullName }}>(componentsIterator, entityView.m_data->m_serializableEntity, toRegistry);
         ## endif
 
         if(component)

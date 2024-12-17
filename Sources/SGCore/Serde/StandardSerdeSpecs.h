@@ -128,6 +128,28 @@ struct SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType> :
 };
 // =================================================================================
 
+// SERDE FORWARD DECL FOR struct 'SGCore::EntityRef'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+                SGCore::EntityBaseInfo
+                                   >
+{
+    static inline const std::string type_name = "SGCore::EntityRef";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
+
 
 // SERDE FORWARD DECL FOR struct 'SGCore::AudioSource'
 // =================================================================================
@@ -1591,8 +1613,7 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept
 {
-
-
+    valueView.getValueContainer().addMember("m_thisEntity", valueView.m_data->m_thisEntity);
 }
 
 template<
@@ -1600,6 +1621,12 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept
 {
+    const auto m_deserializedThisEntity = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useIndices)>("m_thisEntity");
+
+    if(m_deserializedThisEntity)
+    {
+        valueView.m_data->m_deserializedThisEntity = *m_deserializedThisEntity;
+    }
 }
 // =================================================================================
 
@@ -3408,6 +3435,14 @@ namespace SGCore::Serde
 
             #pragma region Generated
             {
+                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::EntityBaseInfo>(serializableEntity);
+
+                if(component)
+                {
+                    valueView.getValueContainer().pushBack(*component);
+                }
+            }
+            {
                 auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::AudioSource>(serializableEntity);
 
                 if(component)
@@ -3425,14 +3460,6 @@ namespace SGCore::Serde
             }
             {
                 auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::AABB<float>>(serializableEntity);
-
-                if(component)
-                {
-                    valueView.getValueContainer().pushBack(*component);
-                }
-            }
-            {
-                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::EntityBaseInfo>(serializableEntity);
 
                 if(component)
                 {
@@ -3570,6 +3597,18 @@ namespace SGCore::Serde
 
                 #pragma region Generated
 
+                if(currentElementTypeName == SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::type_name)
+                {
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::EntityBaseInfo>(componentsIt, entity, toRegistry);
+
+                    if(component)
+                    {
+                        toRegistry.emplace<SGCore::EntityBaseInfo>(entity, *component);
+
+                        continue;
+                    }
+                }
+
                 if(currentElementTypeName == SerdeSpec<SGCore::AudioSource, TFormatType>::type_name)
                 {
                     const auto component = valueView.getValueContainer().template getMember<SGCore::AudioSource>(componentsIt);
@@ -3601,18 +3640,6 @@ namespace SGCore::Serde
                     if(component)
                     {
                         toRegistry.emplace<SGCore::AABB<float>>(entity, *component);
-
-                        continue;
-                    }
-                }
-
-                if(currentElementTypeName == SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::type_name)
-                {
-                    const auto component = valueView.getValueContainer().template getMember<SGCore::EntityBaseInfo>(componentsIt);
-
-                    if(component)
-                    {
-                        toRegistry.emplace<SGCore::EntityBaseInfo>(entity, *component);
 
                         continue;
                     }

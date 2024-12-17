@@ -5,9 +5,11 @@
 #include <entt/entt.hpp>
 
 #include "PBRRPGeometryPass.h"
+#include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/Mesh.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
 #include "PBRRPDirectionalLightsPass.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
 #include "SGCore/Graphics/API/IRenderer.h"
@@ -96,7 +98,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                     );
                 }
 
-                renderMesh(registry, meshEntity, meshTransform, mesh, meshPPLayer);
+                renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, meshPPLayer);
 
                 if(cameraLayeredFrameReceiver)
                 {
@@ -141,6 +143,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                            const entity_t& meshEntity,
                                            const Ref<Transform>& meshTransform,
                                            Mesh& mesh,
+                                           EntityBaseInfo& meshedEntityBaseInfo,
                                            const Ref<PostProcessLayer>& meshPPLayer) noexcept
 {
     /*if(!mesh.m_base.getMeshData() ||
@@ -166,6 +169,11 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
             shaderToUse->useMatrix("objectTransform.modelMatrix",
                                    meshTransform->m_finalTransform.m_modelMatrix);
             shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
+
+            if(registry->any_of<Pickable>(meshEntity))
+            {
+                shaderToUse->useVectorf("u_pickingColor", meshedEntityBaseInfo.getUniqueColor());
+            }
         }
 
         if(meshPPLayer)
@@ -257,7 +265,7 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry
                     );
                 }
                 
-                renderMesh(registry, e, meshTransform, *mesh, meshPPLayer);
+                renderMesh(registry, e, meshTransform, *mesh, *entityBaseInfo, meshPPLayer);
 
                 if(cameraLayeredFrameReceiver)
                 {

@@ -131,7 +131,9 @@ namespace SGCore
         // CONTAINS OUTPUT FX
         Ref<IFrameBuffer> m_layersFXFrameBuffer;
         // ATTACHMENT THAT ARE USED TO RENDER IN THEM.
-        std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn { SGG_COLOR_ATTACHMENT0, SGG_COLOR_ATTACHMENT1 };
+        std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn { SGG_COLOR_ATTACHMENT0,
+                                                                       SGG_COLOR_ATTACHMENT1,
+                                                                       SGG_COLOR_ATTACHMENT2 };
         
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
                                             const std::uint16_t& fbWidth,
