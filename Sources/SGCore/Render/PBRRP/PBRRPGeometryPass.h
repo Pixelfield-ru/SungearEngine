@@ -18,6 +18,7 @@ namespace SGCore
     struct OctreeNode;
     struct Transform;
     struct EntityBaseInfo;
+    struct Camera3D;
     
     struct PBRRPGeometryPass : public IGeometryPass
     {
@@ -31,9 +32,11 @@ namespace SGCore
                         const Ref<Transform>& meshTransform,
                         Mesh& mesh,
                         EntityBaseInfo& meshedEntityBaseInfo,
+                        const Ref<Camera3D>& forCamera3DComponent,
                         const Ref<PostProcessLayer>& meshPPLayer) noexcept;
 
         void renderOctreeNode(const Ref<registry_t>& registry,
+                              const Ref<Camera3D>& forCamera3DComponent,
                               const entity_t& forCamera,
                               LayeredFrameReceiver* cameraLayeredFrameReceiver,
                               const Ref<OctreeNode>& node) noexcept;

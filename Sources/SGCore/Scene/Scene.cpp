@@ -301,7 +301,22 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::loadSceneAndSetAsCurrent(const std::fi
 
     m_currentScene = loadedScene;
 
+    if(!sceneLoadOutputLog.empty())
+    {
+        LOG_E(SGCORE_TAG, "Error while loading scene by path '{}': {}",
+              Utils::toUTF8(scenePath.u16string()), sceneLoadOutputLog);
+    }
+
     return loadedScene;
+}
+
+void SGCore::Scene::resolveAllEntitiesRefs() const noexcept
+{
+    auto entityBaseInfoView = m_ecsRegistry->template view<EntityBaseInfo>();
+
+    entityBaseInfoView.each([&entityBaseInfoView, this](EntityBaseInfo& entityBaseInfo) {
+        entityBaseInfo.resolveAllEntitiesRefs(m_ecsRegistry);
+    });
 }
 
 void SGCore::Scene::setUIXMLDocument(const SGCore::Ref<SGCore::XMLDocument>& xmlDocument) noexcept

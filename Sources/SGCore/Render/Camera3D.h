@@ -5,11 +5,18 @@
 #ifndef SUNGEARENGINE_CAMERA3D_H
 #define SUNGEARENGINE_CAMERA3D_H
 
+#include <set>
+
+#include "SGCore/Scene/EntityRef.h"
+
 namespace SGCore
 {
-    class Camera3D
+    struct Camera3D
     {
-    public:
+        // contains entities that can be picked for this camera
+        std::unordered_set<EntityRef, EntityRefHash, EntityRefEqual> m_pickableEntities;
+
+    private:
         volatile int m_dummy = 0;
     };
 }

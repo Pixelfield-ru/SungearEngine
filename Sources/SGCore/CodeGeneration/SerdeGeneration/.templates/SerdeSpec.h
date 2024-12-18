@@ -99,15 +99,15 @@ void SGCore::Serde::SerdeSpec<{{ struct.fullNameWithTemplate }}, TFormatType>::s
 
     ## if member.hasMember(name: "getter")
     valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.getter }}()
-## if struct.hasMember(name: "type") && struct.type.equals(value: "component")
-    , serializableEntity, sceneRegistry
-## endif
+    ## if struct.hasMember(name: "type") && struct.type.equals(value: "component")
+        , serializableEntity, sceneRegistry
+    ## endif
     );
     ## else
     valueView.getValueContainer().addMember("{{ member.name }}", valueView.m_data->{{ member.name }}
-## if struct.hasMember(name: "type") && struct.type.equals(value: "component")
-    , serializableEntity, sceneRegistry
-## endif
+    ## if struct.hasMember(name: "type") && struct.type.equals(value: "component")
+        , serializableEntity, sceneRegistry
+    ## endif
     );
     ## endif
 

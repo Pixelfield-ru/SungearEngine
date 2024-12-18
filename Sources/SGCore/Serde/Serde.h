@@ -429,6 +429,11 @@ namespace SGCore::Serde
                 SerdeSpec<T, TFormatType>::deserialize(valueView);
             }
         }
+
+        [[nodiscard]] static const FormatType& getDefaultFormatType() noexcept
+        {
+            return m_defaultFormatType;
+        }
     
     private:
         static inline FormatType m_defaultFormatType = SGCore::Serde::FormatType::JSON;

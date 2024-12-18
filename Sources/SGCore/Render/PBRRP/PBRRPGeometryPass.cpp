@@ -5,7 +5,6 @@
 #include <entt/entt.hpp>
 
 #include "PBRRPGeometryPass.h"
-#include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
 #include "SGCore/Render/Mesh.h"
@@ -68,7 +67,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         
         // todo: make get receiver (postprocess or default) and render in them
 
-        meshesView.each([&cameraLayeredFrameReceiver, &registry, this]
+        meshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3D, this]
         (const entity_t& meshEntity, EntityBaseInfo& meshedEntityBaseInfo, Mesh& mesh, Ref<Transform>& meshTransform) {
             auto* tmpCullableMesh = registry->try_get<Ref<OctreeCullable>>(meshEntity);
             Ref<OctreeCullable> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
@@ -98,7 +97,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                     );
                 }
 
-                renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, meshPPLayer);
+                renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3D, meshPPLayer);
 
                 if(cameraLayeredFrameReceiver)
                 {
@@ -127,11 +126,11 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->try_get<LayeredFrameReceiver>(cameraEntity);
         
         auto objectsCullingOctreesView = registry->view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
-        objectsCullingOctreesView.each([&cameraLayeredFrameReceiver, &scene, &cameraEntity, &registry, &cameraRenderingBase, this]
+        objectsCullingOctreesView.each([&cameraLayeredFrameReceiver, &scene, &cameraEntity, &registry, &camera3D, &cameraRenderingBase, this]
         (Ref<Octree> octree, const Ref<ObjectsCullingOctree>&) {
             for(const auto& n : octree->m_notEmptyNodes)
             {
-                renderOctreeNode(registry, cameraEntity, cameraLayeredFrameReceiver, n);
+                renderOctreeNode(registry, camera3D, cameraEntity, cameraLayeredFrameReceiver, n);
             }
         });
     });
@@ -144,6 +143,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                            const Ref<Transform>& meshTransform,
                                            Mesh& mesh,
                                            EntityBaseInfo& meshedEntityBaseInfo,
+                                           const Ref<Camera3D>& forCamera3DComponent,
                                            const Ref<PostProcessLayer>& meshPPLayer) noexcept
 {
     /*if(!mesh.m_base.getMeshData() ||
@@ -170,7 +170,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
                                    meshTransform->m_finalTransform.m_modelMatrix);
             shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
 
-            if(registry->any_of<Pickable>(meshEntity))
+            if(forCamera3DComponent->m_pickableEntities.contains(meshedEntityBaseInfo.getThisEntity()))
             {
                 shaderToUse->useVectorf("u_pickingColor", meshedEntityBaseInfo.getUniqueColor());
             }
@@ -218,6 +218,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
 }
 
 void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry,
+                                                 const Ref<Camera3D>& forCamera3DComponent,
                                                  const entity_t& forCamera,
                                                  LayeredFrameReceiver* cameraLayeredFrameReceiver,
                                                  const SGCore::Ref<SGCore::OctreeNode>& node) noexcept
@@ -265,7 +266,7 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<registry_t>& registry
                     );
                 }
                 
-                renderMesh(registry, e, meshTransform, *mesh, *entityBaseInfo, meshPPLayer);
+                renderMesh(registry, e, meshTransform, *mesh, *entityBaseInfo, forCamera3DComponent, meshPPLayer);
 
                 if(cameraLayeredFrameReceiver)
                 {

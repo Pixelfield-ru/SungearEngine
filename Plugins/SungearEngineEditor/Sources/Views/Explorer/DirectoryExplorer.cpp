@@ -1170,13 +1170,16 @@ void SGE::DirectoryExplorer::drawIconsAndSetupNames(bool& isAnyFileRightClicked,
             {
                 if(curPath.extension() == ".sgscene")
                 {
-                    auto loadedScene = SGCore::Scene::loadSceneAndSetAsCurrent(curPath);
+                    auto loadedScene = EditorScene::loadByPath(curPath.parent_path(), curPath.stem());
+                    EditorScene::setCurrentScene(loadedScene);
+
+                    /*auto loadedScene = SGCore::Scene::loadSceneAndSetAsCurrent(curPath);
 
                     auto editorScene = SGCore::MakeRef<EditorScene>();
                     editorScene->m_scene = loadedScene;
                     editorScene->addEditorEntities();
 
-                    EditorScene::setCurrentScene(editorScene);
+                    EditorScene::setCurrentScene(editorScene);*/
 
                     /*if(!sceneLoadLog.empty())
                     {

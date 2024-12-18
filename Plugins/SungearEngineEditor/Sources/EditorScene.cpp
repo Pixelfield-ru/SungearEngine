@@ -5,8 +5,6 @@
 #include "EditorScene.h"
 #include "SungearEngineEditor.h"
 
-#include <SGCore/Serde/Serde.h>
-#include <SGCore/Serde/StandardSerdeSpecs.h>
 #include <SGCore/Utils/FileUtils.h>
 #include <SGCore/Transformations/Transform.h>
 #include <SGCore/Render/Camera3D.h>
@@ -21,36 +19,6 @@
 #include <SGCore/Memory/Assets/Materials/IMaterial.h>
 #include <SGCore/Graphics/API/ICubemapTexture.h>
 #include <SGCore/Serde/Components/NonSavable.h>
-
-template<SGCore::Serde::FormatType TFormatType>
-struct SGCore::Serde::SerdeSpec<SGE::EditorSceneData, TFormatType> : BaseTypes<>, DerivedTypes<>
-{
-    static inline const std::string type_name = "SGE::EditorSceneData";
-    static inline constexpr bool is_pointer_type = false;
-
-    static void serialize(SerializableValueView<SGE::EditorSceneData, TFormatType>& valueView)
-    {
-        valueView.getValueContainer().addMember("m_editorCamera", valueView.m_data->m_editorCamera);
-        valueView.getValueContainer().addMember("m_editorGrid", valueView.m_data->m_editorGrid);
-    }
-
-    static void deserialize(DeserializableValueView<SGE::EditorSceneData, TFormatType>& valueView)
-    {
-        const auto editorCamera = valueView.getValueContainer()
-                .template getMember<SGCore::entity_t>("m_editorCamera");
-        if(editorCamera)
-        {
-            valueView.m_data->m_editorCamera = *editorCamera;
-        }
-
-        const auto editorGrid = valueView.getValueContainer()
-                .template getMember<SGCore::entity_t>("m_editorGrid");
-        if(editorGrid)
-        {
-            valueView.m_data->m_editorGrid = *editorGrid;
-        }
-    }
-};
 
 void SGE::EditorScene::setCurrentScene(const SGCore::Ref<SGE::EditorScene>& scene) noexcept
 {
@@ -75,7 +43,62 @@ void SGE::EditorScene::saveByPath(const std::filesystem::path& toPath, const std
 
     m_scene->saveToFile(scenePath);
 
-    SGCore::FileUtils::writeToFile(editorScenePath, SGCore::Serde::Serializer::toFormat(m_data), false, true);
+    SGCore::FileUtils::writeToFile(editorScenePath,
+                                   SGCore::Serde::Serializer::toFormat(SGCore::Serde::Serializer::getDefaultFormatType(),
+                                                                       m_data, *m_scene), false, true);
+
+    // SGCore::FileUtils::writeToFile(editorScenePath, SGCore::Serde::Serializer::toFormat(m_data), false, true);
+}
+
+SGCore::Ref<SGE::EditorScene> SGE::EditorScene::loadByPath(const std::filesystem::path& fromPath,
+                                                           const std::filesystem::path& fileName) noexcept
+{
+    SGCore::Ref<EditorScene> loadedScene = SGCore::MakeRef<EditorScene>();
+
+    std::filesystem::path scenePath = fromPath / fileName;
+    scenePath += ".sgscene";
+
+    std::filesystem::path editorScenePath = fromPath / fileName;
+    editorScenePath += ".es";
+
+    {
+        std::string outputLog;
+        SGCore::Serde::Serializer::fromFormat(SGCore::FileUtils::readFile(scenePath), loadedScene->m_scene, outputLog);
+
+        if(!outputLog.empty())
+        {
+            LOG_E(SGEDITOR_TAG, "Error while deserializing scene: '{}'", outputLog);
+        }
+    }
+
+    {
+        std::string outputLog;
+        SGCore::Serde::Serializer::fromFormat(SGCore::FileUtils::readFile(editorScenePath), loadedScene->m_data,
+                                              SGCore::Serde::Serializer::getDefaultFormatType(), outputLog,
+                                              *loadedScene->m_scene
+        );
+
+        if(!outputLog.empty())
+        {
+            LOG_E(SGEDITOR_TAG, "Error while deserializing editor scene: '{}'", outputLog);
+        }
+    }
+
+    // resolving camera entities refs
+    {
+        auto* cameraBaseInfo = loadedScene->m_scene->getECSRegistry()->try_get<SGCore::EntityBaseInfo>(loadedScene->m_data.m_editorCamera);
+        if(cameraBaseInfo)
+        {
+            cameraBaseInfo->resolveAllEntitiesRefs(loadedScene->m_scene->getECSRegistry());
+        }
+        else
+        {
+            LOG_E(SGEDITOR_TAG, "Can not resolve EntityRef`s for camera '{}': this camera does not have EntityBaseInfo component!",
+                  std::to_underlying(loadedScene->m_data.m_editorCamera));
+        }
+    }
+
+    return loadedScene;
 }
 
 SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::string& name) noexcept

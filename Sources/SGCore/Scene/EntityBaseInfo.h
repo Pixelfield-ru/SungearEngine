@@ -49,6 +49,10 @@ namespace SGCore
 
         [[nodiscard]] const glm::vec3& getUniqueColor() const noexcept;
 
+        [[nodiscard]] const entity_t& getThisEntity() const noexcept;
+
+        [[nodiscard]] const void resolveAllEntitiesRefs(const Ref<registry_t>& registry) noexcept;
+
         EntityBaseInfo& operator=(const EntityBaseInfo&) = default;
         EntityBaseInfo& operator=(EntityBaseInfo&&) = default;
 
@@ -59,6 +63,9 @@ namespace SGCore
         // used to resolve all references to this entity
         entity_t m_deserializedThisEntity = entt::null;
         entity_t m_thisEntity = entt::null;
+
+        // IS EDITING ONLY IN StandardSerdeSpecs.h! CONTAINS ALL EntityRef`s OF THIS ENTITY THAT ARE NEED TO BE RESOLVED AFTER DESERIALIZATION
+        std::vector<Ref<entity_t>> m_entitiesRefsToResolve;
 
         // for picking. not serializable
         glm::vec3 m_uniqueColor { };

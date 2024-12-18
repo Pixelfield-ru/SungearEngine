@@ -184,3 +184,38 @@ const glm::vec3& SGCore::EntityBaseInfo::getUniqueColor() const noexcept
 {
     return m_uniqueColor;
 }
+
+const SGCore::entity_t& SGCore::EntityBaseInfo::getThisEntity() const noexcept
+{
+    return m_thisEntity;
+}
+
+const void
+SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::registry_t>& registry) noexcept
+{
+    auto entityBaseInfoView = registry->template view<EntityBaseInfo>();
+
+    auto it = m_entitiesRefsToResolve.begin();
+    while(it != m_entitiesRefsToResolve.end())
+    {
+        bool isRefResolved = false;
+        entityBaseInfoView.each([&it, &isRefResolved, this](const EntityBaseInfo& otherEntityBaseInfo) {
+            // if deserialized value of EntityRef is equals to deserialized entity of other EntityBaseInfo
+            // then we are resolving current EntityRef to entity of otherEntityBaseInfo
+            if(**it == otherEntityBaseInfo.m_deserializedThisEntity)
+            {
+                **it = otherEntityBaseInfo.m_thisEntity;
+                it = m_entitiesRefsToResolve.erase(it);
+            }
+            else
+            {
+                isRefResolved = true;
+            }
+        });
+
+        if(!isRefResolved)
+        {
+            ++it;
+        }
+    }
+}

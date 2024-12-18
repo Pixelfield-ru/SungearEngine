@@ -17,6 +17,7 @@
 #include <SGCore/Render/Mesh.h>
 #include <SGCore/Memory/Assets/Materials/IMaterial.h>
 #include <SGCore/Render/RenderingBase.h>
+#include <SGCore/Render/Camera3D.h>
 
 #include "SungearEngineEditor.h"
 #include "Views/MainView.h"
@@ -147,6 +148,9 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
         entities.push_back(entity);
 
+        auto curScene = EditorScene::getCurrentScene();
+        auto* editorCamera = curScene->m_scene->getECSRegistry()->try_get<SGCore::Ref<SGCore::Camera3D>>(curScene->m_data.m_editorCamera);
+        (*editorCamera)->m_pickableEntities.emplace(entity);
         /*auto noMat = SGCore::AssetManager::getInstance()->getOrAddAssetByPath<SGCore::IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
 
         auto* mesh = SGCore::Scene::getCurrentScene()->getECSRegistry()->try_get<SGCore::Mesh>(entity);

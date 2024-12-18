@@ -7,6 +7,7 @@
 
 #include "Serde.h"
 #include <glm/glm.hpp>
+#include "SGCore/Scene/EntityRef.h"
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
@@ -133,20 +134,21 @@ struct SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType> :
 template<
         SGCore::Serde::FormatType TFormatType
 >
-struct SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType> :
+struct SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType> :
         SGCore::Serde::BaseTypes<
 
                                 >,
         SGCore::Serde::DerivedTypes<
-                SGCore::EntityBaseInfo
                                    >
 {
     static inline const std::string type_name = "SGCore::EntityRef";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::EntityRef, TFormatType>& valueView) noexcept;
 
-    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::ShaderDefine, TFormatType>& valueView) noexcept;
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::EntityRef, TFormatType>& valueView,
+                            const entity_t& deserializedEntity,
+                            registry_t& toRegistry) noexcept;
 };
 // =================================================================================
 
@@ -387,7 +389,9 @@ struct SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType> :
 
     static void serialize(SGCore::Serde::SerializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept;
 
-    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept;
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView,
+                            const entity_t& deserializableEntity,
+                            registry_t& toRegistry) noexcept;
 };
 // =================================================================================
 
@@ -1621,7 +1625,7 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept
 {
-    const auto m_deserializedThisEntity = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useIndices)>("m_thisEntity");
+    const auto m_deserializedThisEntity = valueView.getValueContainer().template getMember<entity_t>("m_thisEntity");
 
     if(m_deserializedThisEntity)
     {
@@ -1942,13 +1946,23 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept
 {
+    valueView.getValueContainer().addMember("m_pickableEntities", valueView.m_data->m_pickableEntities);
 }
 
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView,
+                                                                          const entity_t& deserializableEntity,
+                                                                          registry_t& toRegistry) noexcept
 {
+    auto m_pickableEntities = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_pickableEntities)>("m_pickableEntities",
+            deserializableEntity, toRegistry);
+
+    if(m_pickableEntities)
+    {
+        valueView.m_data->m_pickableEntities = std::move(*m_pickableEntities);
+    }
 }
 // =================================================================================
 
@@ -2859,8 +2873,6 @@ void SGCore::Serde::SerdeSpec<SGCore::BatchesRenderer, TFormatType>::deserialize
 // =================================================================================
 
 
-
-
 // SERDE IMPL FOR struct 'SGCore::SphereGizmosUpdater'
 // =================================================================================
 template<
@@ -2963,6 +2975,43 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::AudioProcessor, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::AudioProcessor, TFormatType>& valueView) noexcept
 {
+}
+// =================================================================================
+
+
+// SERDE IMPL FOR struct 'SGCore::EntityRef'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::EntityRef, TFormatType>& valueView) noexcept
+{
+    valueView.getValueContainer().addMember("m_referencedEntity", valueView.m_data->m_referencedEntity);
+}
+
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::EntityRef, TFormatType>& valueView,
+                                                                           const entity_t& deserializedEntity,
+                                                                           registry_t& toRegistry) noexcept
+{
+    auto m_referencedEntity = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_referencedEntity)>("m_referencedEntity");
+
+    if(m_referencedEntity)
+    {
+        valueView.m_data->m_referencedEntity = std::move(*m_referencedEntity);
+    }
+
+    // IT IS GUARANTEED THAT ENTITY BASE INFO OF deserializedEntity IS ALREADY EXIST!!!
+    auto* entityBaseInfo = toRegistry.try_get<EntityBaseInfo>(deserializedEntity);
+    SG_ASSERT(entityBaseInfo != nullptr,
+              fmt::format("Can not mark EntityRef (points to entity '{}') as needing to resolve! "
+                          "Entity '{}' that contains component that contains this EntityRef does not have EntityBaseInfo!",
+                          std::to_underlying(*valueView.m_data->m_referencedEntity),
+                          std::to_underlying(deserializedEntity)).c_str());
+
+    entityBaseInfo->m_entitiesRefsToResolve.push_back(valueView.m_data->m_referencedEntity);
 }
 // =================================================================================
 
@@ -3116,6 +3165,38 @@ namespace SGCore::Serde
         static void deserialize(DeserializableValueView<std::vector<T>, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             *valueView.m_data = valueView.getValueContainer().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
+        }
+    };
+
+    // ====================================================================================
+
+    template<typename T, typename HashT, typename EqualT, FormatType TFormatType>
+    struct SerdeSpec<std::unordered_set<T, HashT, EqualT>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        using collection_t = std::unordered_set<T, HashT, EqualT>;
+
+        static inline const std::string type_name = "std::unordered_set";
+        static inline constexpr bool is_pointer_type = false;
+
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<collection_t, TFormatType>& valueView, SharedDataT&&... sharedData)
+        {
+            valueView.getValueContainer().setAsArray();
+
+            for(const auto& v : *valueView.m_data)
+            {
+                valueView.getValueContainer().pushBack(v, std::forward<SharedDataT>(sharedData)...);
+            }
+        }
+
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<collection_t, TFormatType>& valueView, SharedDataT&&... sharedData)
+        {
+            auto valuesVec = valueView.getValueContainer().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
+            for(auto&& v : valuesVec)
+            {
+                valueView.m_data->emplace(std::forward<T>(v));
+            }
         }
     };
 
@@ -3467,7 +3548,7 @@ namespace SGCore::Serde
                 }
             }
             {
-                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::RenderingBase>(serializableEntity);
+                auto* component = serializableScene.getECSRegistry()->template try_get<Ref<SGCore::RenderingBase>>(serializableEntity);
 
                 if(component)
                 {
@@ -3475,7 +3556,7 @@ namespace SGCore::Serde
                 }
             }
             {
-                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::Camera3D>(serializableEntity);
+                auto* component = serializableScene.getECSRegistry()->template try_get<Ref<SGCore::Camera3D>>(serializableEntity);
 
                 if(component)
                 {
@@ -3647,11 +3728,11 @@ namespace SGCore::Serde
 
                 if(currentElementTypeName == SerdeSpec<SGCore::RenderingBase, TFormatType>::type_name)
                 {
-                    const auto component = valueView.getValueContainer().template getMember<SGCore::RenderingBase>(componentsIt);
+                    const auto component = valueView.getValueContainer().template getMember<Ref<SGCore::RenderingBase>>(componentsIt);
 
                     if(component)
                     {
-                        toRegistry.emplace<SGCore::RenderingBase>(entity, *component);
+                        toRegistry.emplace<Ref<SGCore::RenderingBase>>(entity, *component);
 
                         continue;
                     }
@@ -3659,11 +3740,11 @@ namespace SGCore::Serde
 
                 if(currentElementTypeName == SerdeSpec<SGCore::Camera3D, TFormatType>::type_name)
                 {
-                    const auto component = valueView.getValueContainer().template getMember<SGCore::Camera3D>(componentsIt);
+                    const auto component = valueView.getValueContainer().template getMember<Ref<SGCore::Camera3D>>(componentsIt, entity, toRegistry);
 
                     if(component)
                     {
-                        toRegistry.emplace<SGCore::Camera3D>(entity, *component);
+                        toRegistry.emplace<Ref<SGCore::Camera3D>>(entity, *component);
 
                         continue;
                     }
@@ -3840,13 +3921,35 @@ namespace SGCore::Serde
             Scene::getOnSceneSavedEvent()(serializableScene);
         }
 
-        static void deserialize(DeserializableValueView<registry_t, TFormatType>& valueView)
+        static void deserialize(DeserializableValueView<registry_t, TFormatType>& valueView, Scene& serializableScene)
         {
             for(auto entityIt = valueView.getValueContainer().begin(); entityIt != valueView.getValueContainer().end(); ++entityIt)
             {
                 // deserializing entity and passing registry to getMember to put entity in scene
                 valueView.getValueContainer().template getMember<SceneEntitySaveInfo>(entityIt, *valueView.m_data);
             }
+
+            // resolving all EntityRef`s after deserialization ================
+
+            serializableScene.resolveAllEntitiesRefs();
+
+           /* auto entityBaseInfoView = valueView.m_data->template view<EntityBaseInfo>();
+
+            entityBaseInfoView.each([&entityBaseInfoView](const EntityBaseInfo& entityBaseInfo) {
+                for(const auto& refToResolve : entityBaseInfo.m_entitiesRefsToResolve)
+                {
+                    entityBaseInfoView.each([&refToResolve](const EntityBaseInfo& otherEntityBaseInfo) {
+                        // if deserialized value of EntityRef is equals to deserialized entity of other EntityBaseInfo
+                        // then we are resolving current EntityRef to entity of otherEntityBaseInfo
+                        if(*refToResolve == otherEntityBaseInfo.m_deserializedThisEntity)
+                        {
+                            *refToResolve = otherEntityBaseInfo.m_thisEntity;
+                        }
+                    });
+                }
+            });*/
+
+            // =================================================================
         }
     };
 
@@ -3961,7 +4064,7 @@ namespace SGCore::Serde
                 valueView.m_data->m_metaInfo = std::move(*metaInfo);
             }
 
-            auto ecsRegistry = valueView.getValueContainer().template getMember<registry_t>("m_ecsRegistry");
+            auto ecsRegistry = valueView.getValueContainer().template getMember<registry_t>("m_ecsRegistry", *valueView.m_data);
             if(ecsRegistry)
             {
                 (*valueView.m_data->getECSRegistry()) = std::move(*ecsRegistry);
@@ -4058,7 +4161,7 @@ namespace SGCore::Serde
             const auto assetStorageType = valueView.getValueContainer().template getMember<AssetStorageType>("m_storedBy");
             const auto parentAssetManagerName = valueView.getValueContainer().template getMember<std::string>("m_parentAssetManagerName");
 
-            LOG_I(SGCORE_TAG, "Deserializing AssetRef from filesystem... AssetRef data: path: '{}', alias: '{}', asset type ID: '{}', stored by: '{}'",
+            LOG_I(SGCORE_TAG, "Deserializing AssetRef... AssetRef data: path: '{}', alias: '{}', asset type ID: '{}', stored by: '{}'",
                   SGCore::Utils::toUTF8(assetPath->resolved().u16string()),
                   *assetAlias,
                   *assetTypeID,
