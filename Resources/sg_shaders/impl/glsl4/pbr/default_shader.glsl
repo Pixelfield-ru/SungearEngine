@@ -407,6 +407,7 @@ void main()
     finalCol = reinhard2(finalCol);
 
     layerColor.a = diffuseColor.a;
+    // layerColor.rgb = vec3(0, 0, 0.03137255);
     layerColor.rgb = finalCol;
     layerColor.a = 1.0;
 

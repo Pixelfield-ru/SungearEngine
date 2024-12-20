@@ -190,8 +190,7 @@ const SGCore::entity_t& SGCore::EntityBaseInfo::getThisEntity() const noexcept
     return m_thisEntity;
 }
 
-const void
-SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::registry_t>& registry) noexcept
+void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::registry_t>& registry) noexcept
 {
     auto entityBaseInfoView = registry->template view<EntityBaseInfo>();
 
@@ -202,13 +201,13 @@ SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::registr
         entityBaseInfoView.each([&it, &isRefResolved, this](const EntityBaseInfo& otherEntityBaseInfo) {
             // if deserialized value of EntityRef is equals to deserialized entity of other EntityBaseInfo
             // then we are resolving current EntityRef to entity of otherEntityBaseInfo
-            if(**it == otherEntityBaseInfo.m_deserializedThisEntity)
+            if(!isRefResolved && **it == otherEntityBaseInfo.m_deserializedThisEntity)
             {
-                **it = otherEntityBaseInfo.m_thisEntity;
+                std::cout << "resolved entity ref. deserialized: " << std::to_underlying(otherEntityBaseInfo.m_deserializedThisEntity) <<
+                ", new: " << std::to_underlying(otherEntityBaseInfo.getThisEntity()) << std::endl;
+
+                **it = otherEntityBaseInfo.getThisEntity();
                 it = m_entitiesRefsToResolve.erase(it);
-            }
-            else
-            {
                 isRefResolved = true;
             }
         });
@@ -218,4 +217,22 @@ SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::registr
             ++it;
         }
     }
+}
+
+void SGCore::EntityBaseInfo::generateUniqueColor() noexcept
+{
+    const auto underlyingVal = std::to_underlying(m_thisEntity);
+
+    m_uniqueColor.x = (float) (((underlyingVal + 1) & 0xFF0000) >> 16) / 255.0f;
+    m_uniqueColor.y = (float) (((underlyingVal + 1) & 0x00FF00) >> 8) / 255.0f;
+    m_uniqueColor.z = (float) ((underlyingVal + 1) & 0x0000FF) / 255.0f;
+
+    std::cout << std::format("UNIQUE COLOR x = {}, y = {}, z = {}",
+                             m_uniqueColor.x, m_uniqueColor.y, m_uniqueColor.z) << std::endl;
+}
+
+void SGCore::EntityBaseInfo::setThisEntity(const SGCore::entity_t& entity) noexcept
+{
+    m_thisEntity = entity;
+    generateUniqueColor();
 }

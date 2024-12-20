@@ -9,6 +9,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
+#include "EntityRef.h"
 
 namespace SGCore
 {
@@ -19,16 +20,9 @@ namespace SGCore
     {
         sg_serde_as_friend()
 
-        explicit EntityBaseInfo(const entity_t& thisEntity) noexcept : m_thisEntity(thisEntity)
+        explicit EntityBaseInfo(const entity_t& thisEntity) noexcept
         {
-            const auto underlyingVal = std::to_underlying(thisEntity);
-
-            m_uniqueColor.x = (float) ((underlyingVal & 0xFF0000) >> 16) / 255.0f;
-            m_uniqueColor.y = (float) ((underlyingVal & 0x00FF00) >> 8) / 255.0f;
-            m_uniqueColor.z = (float) (underlyingVal & 0x0000FF) / 255.0f;
-
-            std::cout << std::format("UNIQUE COLOR x = {}, y = {}, z = {}",
-                                     m_uniqueColor.x, m_uniqueColor.y, m_uniqueColor.z) << std::endl;
+            setThisEntity(thisEntity);
         }
         EntityBaseInfo(const EntityBaseInfo&) = default;
         EntityBaseInfo(EntityBaseInfo&&) = default;
@@ -51,7 +45,9 @@ namespace SGCore
 
         [[nodiscard]] const entity_t& getThisEntity() const noexcept;
 
-        [[nodiscard]] const void resolveAllEntitiesRefs(const Ref<registry_t>& registry) noexcept;
+        void resolveAllEntitiesRefs(const Ref<registry_t>& registry) noexcept;
+
+        void generateUniqueColor() noexcept;
 
         EntityBaseInfo& operator=(const EntityBaseInfo&) = default;
         EntityBaseInfo& operator=(EntityBaseInfo&&) = default;
@@ -59,9 +55,12 @@ namespace SGCore
     private:
         EntityBaseInfo() = default;
 
+        void setThisEntity(const entity_t& entity) noexcept;
+
         entity_t m_parent = entt::null;
         // used to resolve all references to this entity
         entity_t m_deserializedThisEntity = entt::null;
+        // DO NOT WRITE AND READ THIS MEMBER DIRECTLY IF YOU ARE FRIEND OF THIS STRUCT
         entity_t m_thisEntity = entt::null;
 
         // IS EDITING ONLY IN StandardSerdeSpecs.h! CONTAINS ALL EntityRef`s OF THIS ENTITY THAT ARE NEED TO BE RESOLVED AFTER DESERIALIZATION

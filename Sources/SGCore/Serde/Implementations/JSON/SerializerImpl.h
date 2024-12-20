@@ -45,11 +45,14 @@ std::string SerializerImpl<FormatType::JSON>::to(const T& value,
 
     // =======================
 
-    // adding type name of T after serializing (because type name can be changed)
-    toDocument.AddMember("typeName", typeNameSectionValue, toDocument.GetAllocator());
+    if(!valueView.isDiscarded())
+    {
+        // adding type name of T after serializing (because type name can be changed)
+        toDocument.AddMember("typeName", typeNameSectionValue, toDocument.GetAllocator());
 
-    // adding value section to document
-    toDocument.AddMember("value", valueSectionValue, toDocument.GetAllocator());
+        // adding value section to document
+        toDocument.AddMember("value", valueSectionValue, toDocument.GetAllocator());
+    }
 
     // converting to string
     rapidjson::StringBuffer stringBuffer;

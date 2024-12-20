@@ -1348,6 +1348,19 @@ namespace SGCore::Serde
 
         const T* m_data { };
 
+        /**
+         * Discards writing this value section to file.
+         */
+        void discard() noexcept
+        {
+            m_isDiscarded = true;
+        }
+
+        [[nodiscard]] bool isDiscarded() const noexcept
+        {
+            return m_isDiscarded;
+        }
+
         SerializableValueContainer<TFormatType>& getValueContainer() noexcept
         {
             return m_valueContainer;
@@ -1370,6 +1383,8 @@ namespace SGCore::Serde
 
     private:
         std::string m_version;
+
+        bool m_isDiscarded = false;
 
         SerializableValueContainer<TFormatType> m_valueContainer { };
     };

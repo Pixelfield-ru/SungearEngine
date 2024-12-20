@@ -11,6 +11,7 @@
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Render/Picking/Pickable.h"
 
 #include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Audio/AudioSource.h"
@@ -19,7 +20,6 @@
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Scene/Layer.h"
 #include "SGCore/Transformations/TransformBase.h"
-#include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Camera3D.h"
@@ -144,7 +144,9 @@ struct SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType> :
     static inline const std::string type_name = "SGCore::EntityRef";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::EntityRef, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::EntityRef, TFormatType>& valueView,
+                          const entity_t& deserializedEntity,
+                          registry_t& toRegistry) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::EntityRef, TFormatType>& valueView,
                             const entity_t& deserializedEntity,
@@ -321,6 +323,31 @@ struct SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType> :
 
 
 
+// SERDE FORWARD DECL FOR struct 'SGCore::Pickable'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType> :
+        SGCore::Serde::BaseTypes<
+                                >,
+        SGCore::Serde::DerivedTypes<
+                                   >
+{
+    static inline const std::string type_name = "SGCore::Pickable";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::Pickable, TFormatType>& valueView,
+                          const entity_t& deserializableEntity,
+                          registry_t& toRegistry) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Pickable, TFormatType>& valueView,
+                            const entity_t& deserializableEntity,
+                            registry_t& toRegistry) noexcept;
+};
+// =================================================================================
+
+
 
 // SERDE FORWARD DECL FOR struct 'SGCore::MeshDataRenderInfo'
 // =================================================================================
@@ -389,9 +416,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType> :
 
     static void serialize(SGCore::Serde::SerializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept;
 
-    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView,
-                            const entity_t& deserializableEntity,
-                            registry_t& toRegistry) noexcept;
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept;
 };
 // =================================================================================
 
@@ -1617,7 +1642,7 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::EntityBaseInfo, TFormatType>& valueView) noexcept
 {
-    valueView.getValueContainer().addMember("m_thisEntity", valueView.m_data->m_thisEntity);
+    valueView.getValueContainer().addMember("m_thisEntity", valueView.m_data->getThisEntity());
 }
 
 template<
@@ -1635,6 +1660,36 @@ void SGCore::Serde::SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::deserialize(
 // =================================================================================
 
 
+// SERDE IMPL FOR struct 'SGCore::Pickable'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Pickable, TFormatType>& valueView,
+                                                                        const entity_t& deserializableEntity,
+                                                                        registry_t& toRegistry) noexcept
+{
+    valueView.getValueContainer().addMember("m_pickableForCameras", valueView.m_data->m_pickableForCameras,
+                                            deserializableEntity, toRegistry);
+}
+
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::Pickable, TFormatType>& valueView,
+                                                                          const entity_t& deserializableEntity,
+                                                                          registry_t& toRegistry) noexcept
+{
+    auto m_pickableForCameras = valueView.getValueContainer().template getMember<decltype(Pickable::m_pickableForCameras)>(
+            "m_pickableForCameras", deserializableEntity, toRegistry
+    );
+
+    if(m_pickableForCameras)
+    {
+        valueView.m_data->m_pickableForCameras = std::move(*m_pickableForCameras);
+    }
+}
+// =================================================================================
 
 
 // SERDE IMPL FOR struct 'SGCore::MeshDataRenderInfo'
@@ -1946,23 +2001,15 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept
 {
-    valueView.getValueContainer().addMember("m_pickableEntities", valueView.m_data->m_pickableEntities);
+
 }
 
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView,
-                                                                          const entity_t& deserializableEntity,
-                                                                          registry_t& toRegistry) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::Camera3D, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::Camera3D, TFormatType>& valueView) noexcept
 {
-    auto m_pickableEntities = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_pickableEntities)>("m_pickableEntities",
-            deserializableEntity, toRegistry);
 
-    if(m_pickableEntities)
-    {
-        valueView.m_data->m_pickableEntities = std::move(*m_pickableEntities);
-    }
 }
 // =================================================================================
 
@@ -2984,8 +3031,17 @@ void SGCore::Serde::SerdeSpec<SGCore::AudioProcessor, TFormatType>::deserialize(
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::EntityRef, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::EntityRef, TFormatType>& valueView,
+                                                                         const entity_t& deserializedEntity,
+                                                                         registry_t& toRegistry) noexcept
 {
+    // if referenced entity is non savable then we do not serialize reference to referenced entity
+    if(toRegistry.any_of<NonSavable>(*valueView.m_data->m_referencedEntity))
+    {
+        valueView.discard();
+        return;
+    }
+
     valueView.getValueContainer().addMember("m_referencedEntity", valueView.m_data->m_referencedEntity);
 }
 
@@ -3001,17 +3057,17 @@ void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::deserialize(SGCor
     if(m_referencedEntity)
     {
         valueView.m_data->m_referencedEntity = std::move(*m_referencedEntity);
+
+        // IT IS GUARANTEED THAT ENTITY BASE INFO OF deserializedEntity IS ALREADY EXIST!!!
+        auto* entityBaseInfo = toRegistry.try_get<EntityBaseInfo>(deserializedEntity);
+        SG_ASSERT(entityBaseInfo != nullptr,
+                  fmt::format("Can not mark EntityRef (points to entity '{}') as needing to resolve! "
+                              "Entity '{}' that contains component that contains this EntityRef does not have EntityBaseInfo!",
+                              std::to_underlying(*valueView.m_data->m_referencedEntity),
+                              std::to_underlying(deserializedEntity)).c_str());
+
+        entityBaseInfo->m_entitiesRefsToResolve.push_back(valueView.m_data->m_referencedEntity);
     }
-
-    // IT IS GUARANTEED THAT ENTITY BASE INFO OF deserializedEntity IS ALREADY EXIST!!!
-    auto* entityBaseInfo = toRegistry.try_get<EntityBaseInfo>(deserializedEntity);
-    SG_ASSERT(entityBaseInfo != nullptr,
-              fmt::format("Can not mark EntityRef (points to entity '{}') as needing to resolve! "
-                          "Entity '{}' that contains component that contains this EntityRef does not have EntityBaseInfo!",
-                          std::to_underlying(*valueView.m_data->m_referencedEntity),
-                          std::to_underlying(deserializedEntity)).c_str());
-
-    entityBaseInfo->m_entitiesRefsToResolve.push_back(valueView.m_data->m_referencedEntity);
 }
 // =================================================================================
 
@@ -3627,6 +3683,16 @@ namespace SGCore::Serde
                     valueView.getValueContainer().pushBack(*component);
                 }
             }
+
+            {
+                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::Pickable>(serializableEntity);
+
+                if(component)
+                {
+                    valueView.getValueContainer().pushBack(*component,
+                                                           serializableEntity, *serializableScene.getECSRegistry());
+                }
+            }
             #pragma endregion Generated
 
             // ==================================================================================
@@ -3680,7 +3746,7 @@ namespace SGCore::Serde
 
                 if(currentElementTypeName == SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::type_name)
                 {
-                    const auto component = valueView.getValueContainer().template getMember<SGCore::EntityBaseInfo>(componentsIt, entity, toRegistry);
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::EntityBaseInfo>(componentsIt);
 
                     if(component)
                     {
@@ -3740,7 +3806,7 @@ namespace SGCore::Serde
 
                 if(currentElementTypeName == SerdeSpec<SGCore::Camera3D, TFormatType>::type_name)
                 {
-                    const auto component = valueView.getValueContainer().template getMember<Ref<SGCore::Camera3D>>(componentsIt, entity, toRegistry);
+                    const auto component = valueView.getValueContainer().template getMember<Ref<SGCore::Camera3D>>(componentsIt);
 
                     if(component)
                     {
@@ -3848,6 +3914,18 @@ namespace SGCore::Serde
                     }
                 }
 
+                if(currentElementTypeName == SerdeSpec<SGCore::Pickable, TFormatType>::type_name)
+                {
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::Pickable>(componentsIt, entity, toRegistry);
+
+                    if(component)
+                    {
+                        toRegistry.emplace<SGCore::Pickable>(entity, *component);
+
+                        continue;
+                    }
+                }
+
                 #pragma endregion Generated
 
                 // ==================================================================================
@@ -3870,7 +3948,8 @@ namespace SGCore::Serde
 
             LOG_I(SGCORE_TAG, "Creating EntityBaseInfo component for entity '{}'....", std::to_underlying(entity));
             // creating EntityBaseInfo component with 'entity' as identifier in arguments
-            *entityBaseInfo = EntityBaseInfo(entity);
+            // *entityBaseInfo = EntityBaseInfo(entity);
+            entityBaseInfo->setThisEntity(entity);
 
             // adding all children
             for(const auto& childEntity : childrenEntities)
@@ -3932,22 +4011,6 @@ namespace SGCore::Serde
             // resolving all EntityRef`s after deserialization ================
 
             serializableScene.resolveAllEntitiesRefs();
-
-           /* auto entityBaseInfoView = valueView.m_data->template view<EntityBaseInfo>();
-
-            entityBaseInfoView.each([&entityBaseInfoView](const EntityBaseInfo& entityBaseInfo) {
-                for(const auto& refToResolve : entityBaseInfo.m_entitiesRefsToResolve)
-                {
-                    entityBaseInfoView.each([&refToResolve](const EntityBaseInfo& otherEntityBaseInfo) {
-                        // if deserialized value of EntityRef is equals to deserialized entity of other EntityBaseInfo
-                        // then we are resolving current EntityRef to entity of otherEntityBaseInfo
-                        if(*refToResolve == otherEntityBaseInfo.m_deserializedThisEntity)
-                        {
-                            *refToResolve = otherEntityBaseInfo.m_thisEntity;
-                        }
-                    });
-                }
-            });*/
 
             // =================================================================
         }

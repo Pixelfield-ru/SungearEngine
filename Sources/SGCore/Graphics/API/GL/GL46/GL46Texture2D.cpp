@@ -49,7 +49,7 @@ void SGCore::GL46Texture2D::destroy() noexcept
     glDeleteTextures(1, &m_textureHandler);
 }
 
-void SGCore::GL46Texture2D::bind(const std::uint8_t& textureUnit) noexcept
+void SGCore::GL46Texture2D::bind(const std::uint8_t& textureUnit) const noexcept
 {
     glBindTextureUnit(textureUnit, m_textureHandler);
     //glActiveTexture(GL_TEXTURE0);

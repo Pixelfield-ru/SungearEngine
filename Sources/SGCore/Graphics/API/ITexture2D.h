@@ -128,7 +128,7 @@ namespace SGCore
         
         virtual void destroy() = 0;
 
-        virtual void bind(const std::uint8_t& textureUnit) = 0;
+        virtual void bind(const std::uint8_t& textureUnit) const = 0;
 
         virtual ITexture2D& operator=(const Ref<ITexture2D>& other) = 0;
         //virtual operator=(std::shared_ptr<ITexture2D> other);
@@ -140,6 +140,8 @@ namespace SGCore
         
         // TODO: do documentation
         void resize(std::int32_t newWidth, std::int32_t newHeight, bool noDataResize = false) noexcept;
+
+        [[nodiscard]] virtual glm::vec3 pickColor(const glm::vec2& inPosition) const noexcept = 0;
 
         [[nodiscard]] std::int32_t getWidth() const noexcept;
         [[nodiscard]] std::int32_t getHeight() const noexcept;

@@ -468,21 +468,24 @@ namespace SGCore::Serde
 
             // =======================
 
-            // adding typeName section
-            valueRootSection.AddMember("typeName", typeNameSectionValue, m_document->GetAllocator());
-
-            // adding value section
-            valueRootSection.AddMember("value", valueSectionValue, m_document->GetAllocator());
-
-            if(m_thisValue->IsArray())
+            if(!valueView.isDiscarded())
             {
-                m_thisValue->PushBack(valueRootSection, m_document->GetAllocator());
+                // adding typeName section
+                valueRootSection.AddMember("typeName", typeNameSectionValue, m_document->GetAllocator());
 
-                return;
+                // adding value section
+                valueRootSection.AddMember("value", valueSectionValue, m_document->GetAllocator());
+
+                if(m_thisValue->IsArray())
+                {
+                    m_thisValue->PushBack(valueRootSection, m_document->GetAllocator());
+
+                    return;
+                }
+
+                // adding value section to document
+                m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
             }
-
-            // adding value section to document
-            m_thisValue->AddMember(valueNameKey, valueRootSection, m_document->GetAllocator());
         }
 
         template<typename T, typename... SharedDataT>

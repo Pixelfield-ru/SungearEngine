@@ -43,8 +43,8 @@ namespace SGCore
         virtual void unbindAttachmentToReadFrom() { }
         virtual void unbindAttachmentToDrawIn() { }
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
+        virtual void bind() const = 0;
+        virtual void unbind() const = 0;
 
         virtual void create() = 0;
         virtual void destroy() = 0;
@@ -75,6 +75,8 @@ namespace SGCore
 
         int getWidth() const noexcept;
         int getHeight() const noexcept;
+
+        [[nodiscard]] virtual glm::vec3 readPixelsFromAttachment(const glm::vec2& mousePos, SGFrameBufferAttachmentType attachmentType) const noexcept = 0;
         
         const auto& getAttachments() const noexcept
         {

@@ -19,7 +19,7 @@ namespace SGCore
         void create() noexcept final;
         void destroy() noexcept final;
 
-        void bind(const std::uint8_t& textureUnit) noexcept final;
+        void bind(const std::uint8_t& textureUnit) const noexcept final;
 
         GL46Texture2D& operator=(const Ref<ITexture2D>& other) final;
     };

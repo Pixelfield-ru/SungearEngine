@@ -59,7 +59,7 @@ void SGCore::GL4CubemapTexture::destroy()
     glDeleteTextures(1, &m_cubemapHandler);
 }
 
-void SGCore::GL4CubemapTexture::bind(const uint8_t& textureUnit)
+void SGCore::GL4CubemapTexture::bind(const uint8_t& textureUnit) const
 {
     glActiveTexture(GL_TEXTURE0 + textureUnit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapHandler);
@@ -73,6 +73,11 @@ void* SGCore::GL4CubemapTexture::getTextureNativeHandler() const noexcept
 void* SGCore::GL4CubemapTexture::getTextureBufferNativeHandler() const noexcept
 {
     return nullptr;
+}
+
+glm::vec3 SGCore::GL4CubemapTexture::pickColor(const glm::vec2& inPosition) const noexcept
+{
+    return glm::vec3();
 }
 
 SGCore::GL4CubemapTexture&

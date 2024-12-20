@@ -101,14 +101,14 @@ void SGCore::GL4FrameBuffer::unbindAttachmentToDrawIn()
     glDrawBuffer(GL_NONE);
 }
 
-void SGCore::GL4FrameBuffer::bind()
+void SGCore::GL4FrameBuffer::bind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(m_viewportPosX, m_viewportPosY, m_viewportWidth, m_viewportHeight);
 }
 
-void SGCore::GL4FrameBuffer::unbind()
+void SGCore::GL4FrameBuffer::unbind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -284,5 +284,30 @@ SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType
                                       const int& layer)
 {
     addAttachment(attachmentType, format, internalFormat, mipLevel, layer, false, 8);
+}
+
+glm::vec3 SGCore::GL4FrameBuffer::readPixelsFromAttachment(const glm::vec2& mousePos,
+                                                           SGFrameBufferAttachmentType attachmentType) const noexcept
+{
+    GLubyte pixel[3];
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
+
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+
+    auto attachment = getAttachment(attachmentType);
+
+    glReadPixels(mousePos.x, mousePos.y, 1, 1,
+                 // GLGraphicsTypesCaster::sggFormatToGL(attachment->m_format),
+                 GL_RGB,
+                 GL_UNSIGNED_BYTE, pixel);
+
+    glReadBuffer(GL_NONE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return { pixel[0] / 255.0f, pixel[1] / 255.0f, pixel[2] / 255.0f };
+
+    return { };
 }
 

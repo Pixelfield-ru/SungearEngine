@@ -12,8 +12,8 @@ namespace SGCore
     class VkFrameBuffer : public IFrameBuffer
     {
     public:
-        void bind() override;
-        void unbind() override;
+        void bind() const override;
+        void unbind() const override;
 
         void create() override;
         void destroy() override;
@@ -22,6 +22,8 @@ namespace SGCore
                            SGGColorFormat format, SGGColorInternalFormat internalFormat,
                            const int& mipLevel,
                            const int& layer) override;
+
+        [[nodiscard]] glm::vec3 readPixelsFromAttachment(const glm::vec2& mousePos, SGFrameBufferAttachmentType attachmentType) const noexcept final;
     };
 }
 

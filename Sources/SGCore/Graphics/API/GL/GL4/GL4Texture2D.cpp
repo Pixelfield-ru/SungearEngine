@@ -226,7 +226,7 @@ void SGCore::GL4Texture2D::destroy() noexcept
     glDeleteBuffers(1, &m_textureBufferHandler);
 }
 
-void SGCore::GL4Texture2D::bind(const std::uint8_t& textureUnit) noexcept
+void SGCore::GL4Texture2D::bind(const std::uint8_t& textureUnit) const noexcept
 {
     if(!m_isTextureBuffer)
     {
@@ -255,4 +255,15 @@ void* SGCore::GL4Texture2D::getTextureNativeHandler() const noexcept
 void* SGCore::GL4Texture2D::getTextureBufferNativeHandler() const noexcept
 {
     return (void*) (intptr_t) m_textureBufferHandler;
+}
+
+glm::vec3 SGCore::GL4Texture2D::pickColor(const glm::vec2& inPosition) const noexcept
+{
+    /*GLubyte pixel[3];
+
+    glReadPixels(inPosition.x, inPosition.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+
+    return { pixel[0] / 255.0f, pixel[1] / 255.0f, pixel[2] / 255.0f };*/
+
+    return {};
 }

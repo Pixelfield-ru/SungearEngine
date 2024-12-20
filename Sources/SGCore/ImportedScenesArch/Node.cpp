@@ -4,7 +4,9 @@
 
 #include "Node.h"
 
-#include "glm/gtc/quaternion.hpp"
+#include <glm/gtc/quaternion.hpp>
+
+#include "SGCore/Render/Picking/Pickable.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/Mesh.h"
@@ -26,6 +28,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
     entity_t parentEntity = registry->create();
 
+    registry->emplace<Pickable>(parentEntity);
     EntityBaseInfo& nodeBaseInfo = registry->emplace<EntityBaseInfo>(parentEntity, parentEntity);
     Ref<Transform> nodeTransform = registry->emplace<Ref<Transform>>(parentEntity, MakeRef<Transform>());
     nodeTransform->m_ownTransform.m_position = m_position;
@@ -51,6 +54,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     {
         entity_t meshEntity = registry->create();
 
+        registry->emplace<Pickable>(meshEntity);
         EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity, meshEntity);
         Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
         Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);

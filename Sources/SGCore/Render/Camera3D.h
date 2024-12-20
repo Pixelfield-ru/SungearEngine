@@ -13,9 +13,6 @@ namespace SGCore
 {
     struct Camera3D
     {
-        // contains entities that can be picked for this camera
-        std::unordered_set<EntityRef, EntityRefHash, EntityRefEqual> m_pickableEntities;
-
     private:
         volatile int m_dummy = 0;
     };

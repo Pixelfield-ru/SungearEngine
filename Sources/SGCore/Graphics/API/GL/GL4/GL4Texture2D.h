@@ -30,10 +30,12 @@ namespace SGCore
         
         void destroy() noexcept override;
 
-        void bind(const std::uint8_t& textureUnit) noexcept override;
+        void bind(const std::uint8_t& textureUnit) const noexcept override;
         
         void* getTextureNativeHandler() const noexcept override;
         void* getTextureBufferNativeHandler() const noexcept override;
+
+        [[nodiscard]] glm::vec3 pickColor(const glm::vec2& inPosition) const noexcept final;
         
         GL4Texture2D& operator=(const Ref<ITexture2D>& other) override;
     };

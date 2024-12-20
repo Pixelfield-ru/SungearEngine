@@ -84,8 +84,16 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::loadByPath(const std::filesystem
         }
     }
 
+    // adding editor camera to Pickable component of all entities
+    auto pickableEntitiesView = loadedScene->m_scene->getECSRegistry()->view<SGCore::Pickable>();
+    pickableEntitiesView.each([&loadedScene](SGCore::Pickable& pickable){
+        pickable.m_pickableForCameras.push_back(loadedScene->m_data.m_editorCamera);
+    });
+
+    loadedScene->m_scene->resolveAllEntitiesRefs();
+
     // resolving camera entities refs
-    {
+    /*{
         auto* cameraBaseInfo = loadedScene->m_scene->getECSRegistry()->try_get<SGCore::EntityBaseInfo>(loadedScene->m_data.m_editorCamera);
         if(cameraBaseInfo)
         {
@@ -96,7 +104,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::loadByPath(const std::filesystem
             LOG_E(SGEDITOR_TAG, "Can not resolve EntityRef`s for camera '{}': this camera does not have EntityBaseInfo component!",
                   std::to_underlying(loadedScene->m_data.m_editorCamera));
         }
-    }
+    }*/
 
     return loadedScene;
 }

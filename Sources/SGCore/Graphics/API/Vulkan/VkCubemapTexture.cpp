@@ -25,7 +25,7 @@ void SGCore::VkCubemapTexture::subTextureDataOnGAPISide(const size_t& bytesCount
 
 }
 
-void SGCore::VkCubemapTexture::bind(const uint8_t& textureUnit)
+void SGCore::VkCubemapTexture::bind(const uint8_t& textureUnit) const
 {
 
 }
@@ -43,6 +43,11 @@ void* SGCore::VkCubemapTexture::getTextureNativeHandler() const noexcept
 void* SGCore::VkCubemapTexture::getTextureBufferNativeHandler() const noexcept
 {
     return nullptr;
+}
+
+glm::vec3 SGCore::VkCubemapTexture::pickColor(const glm::vec2& inPosition) const noexcept
+{
+    return glm::vec3();
 }
 
 SGCore::VkCubemapTexture& SGCore::VkCubemapTexture::operator=(const Ref<ITexture2D>& other)

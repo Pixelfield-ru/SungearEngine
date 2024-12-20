@@ -339,6 +339,23 @@ void SGCore::Scene::reloadUI() noexcept
     }
 }
 
+/*
+void pickObject(int x, int y)
+{
+    GLubyte pixel[3];
+
+    glReadPixels(x, windowHeight - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+
+    int id = getObjectIdFromColor(pixel[0], pixel[1], pixel[2]);
+
+    if (id > 0) {
+        выбран объект
+    } else {
+        ничо не выбрал
+    }
+}
+ */
+
 void SGCore::Scene::saveToFile(const std::filesystem::path& path) noexcept
 {
     m_metaInfo.m_sceneLocalPath = path;

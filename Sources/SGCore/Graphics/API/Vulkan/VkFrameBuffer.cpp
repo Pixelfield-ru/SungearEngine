@@ -4,12 +4,12 @@
 
 #include "VkFrameBuffer.h"
 
-void SGCore::VkFrameBuffer::bind()
+void SGCore::VkFrameBuffer::bind() const
 {
 
 }
 
-void SGCore::VkFrameBuffer::unbind()
+void SGCore::VkFrameBuffer::unbind() const
 {
 
 }
@@ -31,4 +31,10 @@ SGCore::VkFrameBuffer::addAttachment(SGFrameBufferAttachmentType,
                                      const int& layer)
 {
 
+}
+
+glm::vec3 SGCore::VkFrameBuffer::readPixelsFromAttachment(const glm::vec2& mousePos,
+                                                          SGFrameBufferAttachmentType attachmentType) const noexcept
+{
+    return glm::vec3();
 }

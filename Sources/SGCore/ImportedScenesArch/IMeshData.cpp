@@ -1,8 +1,10 @@
+#include <LinearMath/btVector3.h>
+
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Render/Mesh.h"
-#include <LinearMath/btVector3.h>
+#include "SGCore/Render/Picking/Pickable.h"
 
 #include "IMeshData.h"
 
@@ -126,7 +128,8 @@ SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const st
     auto registry = scene->getECSRegistry();
     
     auto meshEntity = registry->create();
-    
+
+    registry->emplace<Pickable>(meshEntity);
     EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity, meshEntity);
     Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
     Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
