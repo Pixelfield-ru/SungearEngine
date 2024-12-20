@@ -43,7 +43,7 @@ void SGE::SceneView::renderBody()
 
     ImGui::Begin("SceneView");
 
-    const auto windowPos = ImGui::GetCursorScreenPos();
+    const auto windowPos = ImGui::GetWindowPos();
     const auto windowSize = ImGui::GetWindowSize();
 
     auto currentEditorScene = EditorScene::getCurrentScene();
@@ -64,13 +64,23 @@ void SGE::SceneView::renderBody()
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7
             )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 
-            if(mainInputListener->mouseButtonPressed(SGCore::MouseButton::MOUSE_BUTTON_LEFT))
+            // picking entity
+            if(mainInputListener->mouseButtonPressed(SGCore::MouseButton::MOUSE_BUTTON_LEFT) &&
+               ImGui::IsWindowHovered())
             {
                 const glm::vec2 mousePos = { mainInputListener->getCursorPositionX(),
                                              mainInputListener->getCursorPositionY() };
 
+                auto attachment2 = layeredFrameReceiver->m_layersFrameBuffer
+                        ->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
+
+                const glm::vec2 mouseRelativePos = {
+                        (mousePos.x - windowPos.x) * (attachment2->getWidth() / windowSize.x),
+                        attachment2->getHeight() - (mousePos.y - windowPos.y) * (attachment2->getHeight() / windowSize.y)
+                };
+
                 SGCore::entity_t pickedEntity =
-                        SGCore::SceneUtils::pickEntity(mousePos,
+                        SGCore::SceneUtils::pickEntity(mouseRelativePos,
                                                        *currentEditorScene->m_scene->getECSRegistry(),
                                                        layeredFrameReceiver->m_layersFrameBuffer.get(),
                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2
@@ -80,7 +90,7 @@ void SGE::SceneView::renderBody()
                       mousePos.x,
                       mousePos.y,
                       std::to_underlying(pickedEntity));
-            } // анлак
+            }
 
             acceptFilesFromDirectoryExplorer();
         }
