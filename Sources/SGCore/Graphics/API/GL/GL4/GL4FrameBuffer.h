@@ -58,6 +58,8 @@ namespace SGCore
                            bool useMultisampling,
                            std::uint8_t multisamplingSamplesCount) override;
 
+        void attachAttachment(const Ref<ITexture2D>& otherAttachment) noexcept override;
+
         [[nodiscard]] glm::vec3 readPixelsFromAttachment(const glm::vec2& mousePos, SGFrameBufferAttachmentType attachmentType) const noexcept final;
     };
 }

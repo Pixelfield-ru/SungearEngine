@@ -16,7 +16,7 @@
 
 SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 {
-    m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
+    m_quadRenderState.m_useFacesCulling = false;
     
     m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
     
@@ -44,9 +44,9 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFrameBuffer->create();
     m_layersFrameBuffer->bind();
     m_layersFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
-            SGGColorFormat::SGG_DEPTH_COMPONENT,
-            SGGColorInternalFormat::SGG_DEPTH_COMPONENT32,
+            SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0,
+            SGGColorFormat::SGG_DEPTH_STENCIL,
+            SGGColorInternalFormat::SGG_DEPTH24_STENCIL8,
             0,
             0
     );
@@ -79,12 +79,21 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFXFrameBuffer->create();
     m_layersFXFrameBuffer->bind();
     m_layersFXFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0,
+            SGGColorFormat::SGG_DEPTH_STENCIL,
+            SGGColorInternalFormat::SGG_DEPTH24_STENCIL8,
+            0,
+            0
+    );
+    m_layersFXFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // CONTAINS COLOR1 BUT WITH EFFECTS
             SGGColorFormat::SGG_RGB,
             SGGColorInternalFormat::SGG_RGB8,
             0,
             0
     );
+
+    // m_layersFXFrameBuffer->attachAttachment(m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0));
 
     m_layersFXFrameBuffer->unbind();
 }

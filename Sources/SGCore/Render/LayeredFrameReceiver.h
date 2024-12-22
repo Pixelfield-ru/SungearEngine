@@ -10,7 +10,7 @@
 #include "SGCore/Utils/EventListener.h"
 #include "SGCore/Utils/Utils.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/Graphics/API/RenderState.h"
 
 #define SG_PP_LAYER_FB_NAME(idx)  ("frameBuffer" + std::to_string(idx))
 
@@ -131,9 +131,9 @@ namespace SGCore
         // CONTAINS OUTPUT FX
         Ref<IFrameBuffer> m_layersFXFrameBuffer;
         // ATTACHMENT THAT ARE USED TO RENDER IN THEM.
-        std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn { SGG_COLOR_ATTACHMENT0,
-                                                                       SGG_COLOR_ATTACHMENT1,
-                                                                       SGG_COLOR_ATTACHMENT2 };
+        std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn { SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
+                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
+                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2 };
         
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
                                             const std::uint16_t& fbWidth,
@@ -156,7 +156,7 @@ namespace SGCore
         void clearPostProcessFrameBuffers() const noexcept;
         
     private:
-        MeshDataRenderInfo m_postProcessQuadRenderInfo;
+        RenderState m_quadRenderState;
         Ref<IMeshData> m_postProcessQuad;
 
         Ref<PostProcessLayer> m_defaultLayer;

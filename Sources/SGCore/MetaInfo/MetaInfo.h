@@ -288,7 +288,7 @@ namespace SGCore
                 meta["annotations"]["doNotGenerateDeserializationLogic"];
 
                 meta["members"]["m_useIndices"];
-                meta["members"]["m_enableFacesCulling"];
+                meta["members"]["m_useFacesCulling"];
                 meta["members"]["m_facesCullingFaceType"];
                 meta["members"]["m_facesCullingPolygonsOrder"];
                 meta["members"]["m_drawMode"];

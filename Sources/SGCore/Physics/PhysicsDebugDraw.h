@@ -9,7 +9,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Event.h"
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/Graphics/API/RenderState.h"
 
 namespace SGCore
 {
@@ -29,7 +29,7 @@ namespace SGCore
         Ref<IIndexBuffer> m_linesIndexBuffer;
         Ref<IShader> m_linesShader;
         
-        MeshDataRenderInfo m_linesRenderInfo;
+        RenderState m_renderState;
         
         void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override;
         

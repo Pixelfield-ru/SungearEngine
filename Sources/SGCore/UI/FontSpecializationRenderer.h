@@ -9,7 +9,7 @@
 
 #include "Text.h"
 #include "SGCore/Transformations/Transform.h"
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/Graphics/API/RenderState.h"
 
 namespace SGCore
 {
@@ -33,7 +33,7 @@ namespace SGCore
         
         Ref<IShader> m_textShader;
         
-        MeshDataRenderInfo m_textRenderInfo;
+        RenderState m_renderState;
         
         Weak<FontSpecialization> m_parentSpecialization;
         

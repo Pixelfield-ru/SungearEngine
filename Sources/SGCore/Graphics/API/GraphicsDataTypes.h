@@ -7,13 +7,37 @@
 
 #include <SGCore/pch.h>
 
-enum SGShaderDefineType
+enum class SGStencilOp
+{
+    SGG_KEEP,
+    SGG_REPLACE,
+    SGG_ZERO,
+    SGG_INCR,
+    SGG_INCR_WRAP,
+    SGG_DECR,
+    SGG_DECR_WRAP,
+    SGG_INVERT
+};
+
+enum class SGStencilFunc
+{
+    SGG_NEVER,
+    SGG_LESS,
+    SGG_LEQUAL,
+    SGG_GREATER,
+    SGG_GEQUAL,
+    SGG_EQUAL,
+    SGG_NOTEQUAL,
+    SGG_ALWAYS
+};
+
+enum class SGShaderDefineType
 {
     SGG_MATERIAL_TEXTURES_BLOCK_DEFINE,
     SGG_OTHER_DEFINE
 };
 
-enum SGDrawMode
+enum class SGDrawMode
 {
     SGG_TRIANGLES,
     SGG_TRIANGLE_STRIP,
@@ -23,14 +47,14 @@ enum SGDrawMode
     SGG_POINTS
 };
 
-enum SGFaceType
+enum class SGFaceType
 {
     SGG_FRONT_FACE,
     SGG_BACK_FACE,
     SGG_FRONT_BACK_FACE
 };
 
-enum SGPolygonsOrder
+enum class SGPolygonsOrder
 {
     // clockwise
     SGG_CW,
@@ -38,7 +62,7 @@ enum SGPolygonsOrder
     SGG_CCW
 };
 
-enum SGFrameBufferAttachmentType
+enum class SGFrameBufferAttachmentType
 {
     SGG_DEPTH_ATTACHMENT0,
     SGG_DEPTH_ATTACHMENT1,
@@ -50,7 +74,6 @@ enum SGFrameBufferAttachmentType
     SGG_DEPTH_ATTACHMENT7,
     SGG_DEPTH_ATTACHMENT8,
     SGG_DEPTH_ATTACHMENT9,
-
 
     SGG_DEPTH_STENCIL_ATTACHMENT0,
     SGG_DEPTH_STENCIL_ATTACHMENT1,
@@ -105,52 +128,66 @@ enum SGFrameBufferAttachmentType
     SGG_RENDER_ATTACHMENT6,
     SGG_RENDER_ATTACHMENT7,
     SGG_RENDER_ATTACHMENT8,
-    SGG_RENDER_ATTACHMENT9
+    SGG_RENDER_ATTACHMENT9,
+
+    SGG_NOT_ATTACHMENT
 };
 
 static bool isDepthAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
-    return attachmentType >= SGG_DEPTH_ATTACHMENT0 && attachmentType <= SGG_DEPTH_ATTACHMENT9;
+    return attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
+           attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9;
 }
 
 static bool isDepthStencilAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
-    return attachmentType >= SGG_DEPTH_STENCIL_ATTACHMENT0 && attachmentType <= SGG_DEPTH_STENCIL_ATTACHMENT9;
+    return attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
+           attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9;
 }
 
 static bool isColorAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
-    return attachmentType >= SGG_COLOR_ATTACHMENT0 && attachmentType <= SGG_COLOR_ATTACHMENT31;
+    return attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
+           attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31;
 }
 
 static bool isRenderAttachment(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
-    return attachmentType >= SGG_RENDER_ATTACHMENT0 && attachmentType <= SGG_RENDER_ATTACHMENT9;
+    return attachmentType >= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0 &&
+           attachmentType <= SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT9;
 }
 
 static std::string sgFrameBufferAttachmentTypeToString(const SGFrameBufferAttachmentType& attachmentType) noexcept
 {
     if(isDepthAttachment(attachmentType))
     {
-        return "SGG_DEPTH_ATTACHMENT" + std::to_string(attachmentType - SGG_DEPTH_ATTACHMENT0);
+        return "SGG_DEPTH_ATTACHMENT" +
+               std::to_string(std::to_underlying(attachmentType) -
+                              std::to_underlying(SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0));
     }
     else if(isDepthStencilAttachment(attachmentType))
     {
-        return "SGG_DEPTH_STENCIL_ATTACHMENT" + std::to_string(attachmentType - SGG_DEPTH_STENCIL_ATTACHMENT0);
+        return "SGG_DEPTH_STENCIL_ATTACHMENT" +
+                std::to_string(std::to_underlying(attachmentType) -
+                               std::to_underlying(SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0));
     }
     else if(isColorAttachment(attachmentType))
     {
-        return "SGG_COLOR_ATTACHMENT" + std::to_string(attachmentType - SGG_COLOR_ATTACHMENT0);
+        return "SGG_COLOR_ATTACHMENT" +
+               std::to_string(std::to_underlying(attachmentType) -
+                              std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
     }
     else if(isRenderAttachment(attachmentType))
     {
-        return "SGG_RENDER_ATTACHMENT" + std::to_string(attachmentType - SGG_RENDER_ATTACHMENT0);
+        return "SGG_RENDER_ATTACHMENT" +
+                std::to_string(std::to_underlying(attachmentType) -
+                               std::to_underlying(SGFrameBufferAttachmentType::SGG_RENDER_ATTACHMENT0));
     }
 
     return "UNKNOWN";
 }
 
-enum SGGDataType
+enum class SGGDataType
 {
     SGG_NONE,
 
@@ -175,7 +212,7 @@ enum SGGDataType
     SGG_BYTE
 };
 
-enum SGTextureType
+enum class SGTextureType
 {
     SGTT_EMISSIVE,
     SGTT_AMBIENT_OCCLUSION,
@@ -236,129 +273,129 @@ static SGTextureType sgStandardTextureFromString(const std::string& textureType)
 {
     if(textureType == "SGTT_EMISSIVE")
     {
-        return SGTT_EMISSIVE;
+        return SGTextureType::SGTT_EMISSIVE;
     }
     else if(textureType == "SGTT_AMBIENT_OCCLUSION")
     {
-        return SGTT_AMBIENT_OCCLUSION;
+        return SGTextureType::SGTT_AMBIENT_OCCLUSION;
     }
     else if(textureType == "SGTT_AMBIENT")
     {
-        return SGTT_AMBIENT;
+        return SGTextureType::SGTT_AMBIENT;
     }
     else if(textureType == "SGTT_DIFFUSE_ROUGHNESS")
     {
-        return SGTT_DIFFUSE_ROUGHNESS;
+        return SGTextureType::SGTT_DIFFUSE_ROUGHNESS;
     }
     else if(textureType == "SGTT_DIFFUSE")
     {
-        return SGTT_DIFFUSE;
+        return SGTextureType::SGTT_DIFFUSE;
     }
     else if(textureType == "SGTT_DISPLACEMENT")
     {
-        return SGTT_DISPLACEMENT;
+        return SGTextureType::SGTT_DISPLACEMENT;
     }
     else if(textureType == "SGTT_HEIGHT")
     {
-        return SGTT_HEIGHT;
+        return SGTextureType::SGTT_HEIGHT;
     }
     else if(textureType == "SGTT_NORMALS")
     {
-        return SGTT_NORMALS;
+        return SGTextureType::SGTT_NORMALS;
     }
     else if(textureType == "SGTT_BASE_COLOR")
     {
-        return SGTT_BASE_COLOR;
+        return SGTextureType::SGTT_BASE_COLOR;
     }
     else if(textureType == "SGTT_CLEARCOAT")
     {
-        return SGTT_CLEARCOAT;
+        return SGTextureType::SGTT_CLEARCOAT;
     }
     else if(textureType == "SGTT_EMISSION_COLOR")
     {
-        return SGTT_EMISSION_COLOR;
+        return SGTextureType::SGTT_EMISSION_COLOR;
     }
     else if(textureType == "SGTT_LIGHTMAP")
     {
-        return SGTT_LIGHTMAP;
+        return SGTextureType::SGTT_LIGHTMAP;
     }
     else if(textureType == "SGTT_METALNESS")
     {
-        return SGTT_METALNESS;
+        return SGTextureType::SGTT_METALNESS;
     }
     else if(textureType == "SGTT_NORMAL_CAMERA")
     {
-        return SGTT_NORMAL_CAMERA;
+        return SGTextureType::SGTT_NORMAL_CAMERA;
     }
     else if(textureType == "SGTT_OPACITY")
     {
-        return SGTT_OPACITY;
+        return SGTextureType::SGTT_OPACITY;
     }
     else if(textureType == "SGTT_REFLECTION")
     {
-        return SGTT_REFLECTION;
+        return SGTextureType::SGTT_REFLECTION;
     }
     else if(textureType == "SGTT_SHEEN")
     {
-        return SGTT_SHEEN;
+        return SGTextureType::SGTT_SHEEN;
     }
     else if(textureType == "SGTT_SHININESS")
     {
-        return SGTT_SHININESS;
+        return SGTextureType::SGTT_SHININESS;
     }
     else if(textureType == "SGTT_SPECULAR")
     {
-        return SGTT_SPECULAR;
+        return SGTextureType::SGTT_SPECULAR;
     }
     else if(textureType == "SGTT_TRANSMISSION")
     {
-        return SGTT_TRANSMISSION;
+        return SGTextureType::SGTT_TRANSMISSION;
     }
     else if(textureType == "SGTT_SKYBOX")
     {
-        return SGTT_SKYBOX;
+        return SGTextureType::SGTT_SKYBOX;
     }
     else if(textureType == "SGTT_SHADOW_MAP2D")
     {
-        return SGTT_SHADOW_MAP2D;
+        return SGTextureType::SGTT_SHADOW_MAP2D;
     }
     else if(textureType == "SGTT_NONE")
     {
-        return SGTT_NONE;
+        return SGTextureType::SGTT_NONE;
     }
 
-    return SGTT_NONE;
+    return SGTextureType::SGTT_NONE;
 }
 
 static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterialTextureType) noexcept
 {
     switch(sgMaterialTextureType)
     {
-        case SGTT_EMISSIVE: return "SGTT_EMISSIVE";
-        case SGTT_AMBIENT_OCCLUSION: return "SGTT_AMBIENT_OCCLUSION";
-        case SGTT_AMBIENT: return "SGTT_AMBIENT";
-        case SGTT_DIFFUSE_ROUGHNESS: return "SGTT_DIFFUSE_ROUGHNESS";
-        case SGTT_DIFFUSE: return "SGTT_DIFFUSE";
-        case SGTT_DISPLACEMENT: return "SGTT_DISPLACEMENT";
-        case SGTT_HEIGHT: return "SGTT_HEIGHT";
-        case SGTT_NORMALS: return "SGTT_NORMALS";
-        case SGTT_BASE_COLOR: return "SGTT_BASE_COLOR";
-        case SGTT_CLEARCOAT: return "SGTT_CLEARCOAT";
-        case SGTT_EMISSION_COLOR: return "SGTT_EMISSION_COLOR";
-        case SGTT_LIGHTMAP: return "SGTT_LIGHTMAP";
-        case SGTT_METALNESS: return "SGTT_METALNESS";
-        case SGTT_NORMAL_CAMERA: return "SGTT_NORMAL_CAMERA";
-        case SGTT_OPACITY: return "SGTT_OPACITY";
-        case SGTT_REFLECTION: return "SGTT_REFLECTION";
-        case SGTT_SHEEN: return "SGTT_SHEEN";
-        case SGTT_SHININESS: return "SGTT_SHININESS";
-        case SGTT_SPECULAR: return "SGTT_SPECULAR";
-        case SGTT_TRANSMISSION: return "SGTT_TRANSMISSION";
-        case SGTT_SKYBOX: return "SGTT_SKYBOX";
+        case SGTextureType::SGTT_EMISSIVE: return "SGTT_EMISSIVE";
+        case SGTextureType::SGTT_AMBIENT_OCCLUSION: return "SGTT_AMBIENT_OCCLUSION";
+        case SGTextureType::SGTT_AMBIENT: return "SGTT_AMBIENT";
+        case SGTextureType::SGTT_DIFFUSE_ROUGHNESS: return "SGTT_DIFFUSE_ROUGHNESS";
+        case SGTextureType::SGTT_DIFFUSE: return "SGTT_DIFFUSE";
+        case SGTextureType::SGTT_DISPLACEMENT: return "SGTT_DISPLACEMENT";
+        case SGTextureType::SGTT_HEIGHT: return "SGTT_HEIGHT";
+        case SGTextureType::SGTT_NORMALS: return "SGTT_NORMALS";
+        case SGTextureType::SGTT_BASE_COLOR: return "SGTT_BASE_COLOR";
+        case SGTextureType::SGTT_CLEARCOAT: return "SGTT_CLEARCOAT";
+        case SGTextureType::SGTT_EMISSION_COLOR: return "SGTT_EMISSION_COLOR";
+        case SGTextureType::SGTT_LIGHTMAP: return "SGTT_LIGHTMAP";
+        case SGTextureType::SGTT_METALNESS: return "SGTT_METALNESS";
+        case SGTextureType::SGTT_NORMAL_CAMERA: return "SGTT_NORMAL_CAMERA";
+        case SGTextureType::SGTT_OPACITY: return "SGTT_OPACITY";
+        case SGTextureType::SGTT_REFLECTION: return "SGTT_REFLECTION";
+        case SGTextureType::SGTT_SHEEN: return "SGTT_SHEEN";
+        case SGTextureType::SGTT_SHININESS: return "SGTT_SHININESS";
+        case SGTextureType::SGTT_SPECULAR: return "SGTT_SPECULAR";
+        case SGTextureType::SGTT_TRANSMISSION: return "SGTT_TRANSMISSION";
+        case SGTextureType::SGTT_SKYBOX: return "SGTT_SKYBOX";
 
-        case SGTT_SHADOW_MAP2D: return "SGTT_SHADOW_MAP2D";
+        case SGTextureType::SGTT_SHADOW_MAP2D: return "SGTT_SHADOW_MAP2D";
 
-        case SGTT_NONE: return "SGTT_NONE";
+        case SGTextureType::SGTT_NONE: return "SGTT_NONE";
     }
 
     return "";
@@ -368,31 +405,31 @@ static const char* sgStandardTextureTypeNameToStandardUniformName(const SGTextur
 {
     switch(sgMaterialTextureType)
     {
-        case SGTT_EMISSIVE: return "mat_emissiveSamplers";
-        case SGTT_AMBIENT_OCCLUSION: return "mat_ambientOcclusionSamplers";
-        case SGTT_AMBIENT: return "mat_ambientSamplers";
-        case SGTT_DIFFUSE_ROUGHNESS: return "mat_diffuseRoughnessSamplers";
-        case SGTT_DIFFUSE: return "mat_diffuseSamplers";
-        case SGTT_DISPLACEMENT: return "mat_displacementSamplers";
-        case SGTT_HEIGHT: return "mat_heightSamplers";
-        case SGTT_NORMALS: return "mat_normalsSamplers";
-        case SGTT_BASE_COLOR: return "mat_baseColorSamplers";
-        case SGTT_CLEARCOAT: return "mat_clearCoatSamplers";
-        case SGTT_EMISSION_COLOR: return "mat_emissionColorSamplers";
-        case SGTT_LIGHTMAP: return "mat_lightmapSamplers";
-        case SGTT_METALNESS: return "mat_metalnessSamplers";
-        case SGTT_NORMAL_CAMERA: return "mat_normalCameraSamplers";
-        case SGTT_OPACITY: return "mat_opacitySamplers";
-        case SGTT_REFLECTION: return "mat_reflectionSamplers";
-        case SGTT_SHEEN: return "mat_sheenSamplers";
-        case SGTT_SHININESS: return "mat_shininessSamplers";
-        case SGTT_SPECULAR: return "mat_specularSamplers";
-        case SGTT_TRANSMISSION: return "mat_transmissionSamplers";
-        case SGTT_SKYBOX: return "mat_skyboxSamplers";
+        case SGTextureType::SGTT_EMISSIVE: return "mat_emissiveSamplers";
+        case SGTextureType::SGTT_AMBIENT_OCCLUSION: return "mat_ambientOcclusionSamplers";
+        case SGTextureType::SGTT_AMBIENT: return "mat_ambientSamplers";
+        case SGTextureType::SGTT_DIFFUSE_ROUGHNESS: return "mat_diffuseRoughnessSamplers";
+        case SGTextureType::SGTT_DIFFUSE: return "mat_diffuseSamplers";
+        case SGTextureType::SGTT_DISPLACEMENT: return "mat_displacementSamplers";
+        case SGTextureType::SGTT_HEIGHT: return "mat_heightSamplers";
+        case SGTextureType::SGTT_NORMALS: return "mat_normalsSamplers";
+        case SGTextureType::SGTT_BASE_COLOR: return "mat_baseColorSamplers";
+        case SGTextureType::SGTT_CLEARCOAT: return "mat_clearCoatSamplers";
+        case SGTextureType::SGTT_EMISSION_COLOR: return "mat_emissionColorSamplers";
+        case SGTextureType::SGTT_LIGHTMAP: return "mat_lightmapSamplers";
+        case SGTextureType::SGTT_METALNESS: return "mat_metalnessSamplers";
+        case SGTextureType::SGTT_NORMAL_CAMERA: return "mat_normalCameraSamplers";
+        case SGTextureType::SGTT_OPACITY: return "mat_opacitySamplers";
+        case SGTextureType::SGTT_REFLECTION: return "mat_reflectionSamplers";
+        case SGTextureType::SGTT_SHEEN: return "mat_sheenSamplers";
+        case SGTextureType::SGTT_SHININESS: return "mat_shininessSamplers";
+        case SGTextureType::SGTT_SPECULAR: return "mat_specularSamplers";
+        case SGTextureType::SGTT_TRANSMISSION: return "mat_transmissionSamplers";
+        case SGTextureType::SGTT_SKYBOX: return "mat_skyboxSamplers";
         
-        case SGTT_SHADOW_MAP2D: return "mat_shadowMap2DSamplers";
+        case SGTextureType::SGTT_SHADOW_MAP2D: return "mat_shadowMap2DSamplers";
         
-        case SGTT_NONE: return "noneSamplers";
+        case SGTextureType::SGTT_NONE: return "noneSamplers";
     }
     
     return "noneSamplers";
@@ -404,25 +441,25 @@ static std::uint16_t getSGGDataTypeSizeInBytes(const SGGDataType& dataType) noex
 
     switch(dataType)
     {
-        case SGG_NONE: size = 0; break;
+        case SGGDataType::SGG_NONE: size = 0; break;
         
-        case SGG_UNSIGNED_INT: case SGG_INT: size = 4; break;
-        case SGG_INT2: size = 4 * 2; break;
-        case SGG_INT3: size = 4 * 3; break;
-        case SGG_INT4: size = 4 * 4; break;
+        case SGGDataType::SGG_UNSIGNED_INT: case SGGDataType::SGG_INT: size = 4; break;
+        case SGGDataType::SGG_INT2: size = 4 * 2; break;
+        case SGGDataType::SGG_INT3: size = 4 * 3; break;
+        case SGGDataType::SGG_INT4: size = 4 * 4; break;
 
-        case SGG_FLOAT: size = 4; break;
-        case SGG_FLOAT2: size = 4 * 2; break;
-        case SGG_FLOAT3: size = 4 * 3; break;
-        case SGG_FLOAT4: size = 4 * 4; break;
+        case SGGDataType::SGG_FLOAT: size = 4; break;
+        case SGGDataType::SGG_FLOAT2: size = 4 * 2; break;
+        case SGGDataType::SGG_FLOAT3: size = 4 * 3; break;
+        case SGGDataType::SGG_FLOAT4: size = 4 * 4; break;
 
-        case SGG_MAT2: size = 4 * 2 * 2; break;
-        case SGG_MAT3: size = 4 * 3 * 3; break;
-        case SGG_MAT4: size = 4 * 4 * 4; break;
+        case SGGDataType::SGG_MAT2: size = 4 * 2 * 2; break;
+        case SGGDataType::SGG_MAT3: size = 4 * 3 * 3; break;
+        case SGGDataType::SGG_MAT4: size = 4 * 4 * 4; break;
 
-        case SGG_UNSIGNED_BYTE: case SGG_BYTE: size = 1; break;
+        case SGGDataType::SGG_UNSIGNED_BYTE: case SGGDataType::SGG_BYTE: size = 1; break;
         
-        case SGG_BOOL: size = 1; break;
+        case SGGDataType::SGG_BOOL: size = 1; break;
 
         default: size = 0; break;
     }
@@ -436,27 +473,27 @@ static std::uint16_t getSGGDataTypeAlignedSizeInBytes(const SGGDataType& dataTyp
 
     switch(dataType)
     {
-        case SGG_NONE: size = 0; break;
+        case SGGDataType::SGG_NONE: size = 0; break;
 
-        case SGG_INT: size = 4; break;
-        case SGG_INT2: size = 4 * 2; break;
+        case SGGDataType::SGG_INT: size = 4; break;
+        case SGGDataType::SGG_INT2: size = 4 * 2; break;
         // 16
-        case SGG_INT3: size = 4 * 3; break;
-        case SGG_INT4: size = 4 * 4; break;
+        case SGGDataType::SGG_INT3: size = 4 * 3; break;
+        case SGGDataType::SGG_INT4: size = 4 * 4; break;
 
-        case SGG_FLOAT: size = 4; break;
-        case SGG_FLOAT2: size = 4 * 2; break;
-        case SGG_FLOAT3: size = 4 * 3; break;
-        case SGG_FLOAT4: size = 4 * 4; break;
+        case SGGDataType::SGG_FLOAT: size = 4; break;
+        case SGGDataType::SGG_FLOAT2: size = 4 * 2; break;
+        case SGGDataType::SGG_FLOAT3: size = 4 * 3; break;
+        case SGGDataType::SGG_FLOAT4: size = 4 * 4; break;
 
         // 32
-        case SGG_MAT2: size = 4 * 2 * 2; break;
+        case SGGDataType::SGG_MAT2: size = 4 * 2 * 2; break;
         // 64
-        case SGG_MAT3: size = 4 * 3 * 3; break;
+        case SGGDataType::SGG_MAT3: size = 4 * 3 * 3; break;
         // 64
-        case SGG_MAT4: size = 4 * 4 * 4; break;
+        case SGGDataType::SGG_MAT4: size = 4 * 4 * 4; break;
 
-        case SGG_BOOL: size = 4; break;
+        case SGGDataType::SGG_BOOL: size = 4; break;
 
         default: size = 0; break;
     }
@@ -464,13 +501,13 @@ static std::uint16_t getSGGDataTypeAlignedSizeInBytes(const SGGDataType& dataTyp
     return size;
 }
 
-enum SGGUsage
+enum class SGGUsage
 {
     SGG_DYNAMIC,
     SGG_STATIC
 };
 
-enum SGGColorInternalFormat
+enum class SGGColorInternalFormat
 {
     SGG_RED,
     
@@ -586,7 +623,7 @@ enum SGGColorInternalFormat
     SGG_DEPTH32F_STENCIL8
 };
 
-enum SGGColorFormat
+enum class SGGColorFormat
 {
     SGG_R,
     SGG_RG,

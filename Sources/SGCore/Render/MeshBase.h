@@ -5,7 +5,6 @@
 #ifndef SUNGEARENGINE_MESHBASE_H
 #define SUNGEARENGINE_MESHBASE_H
 
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/EventListener.h"
@@ -21,8 +20,6 @@ namespace SGCore
         MeshBase() = default;
         MeshBase(const MeshBase&) = default;
         MeshBase(MeshBase&&) noexcept = default;
-
-        MeshDataRenderInfo m_meshDataRenderInfo;
 
         // определяем для каждого ресивера какой слой будет использоваться для данной сущности
         std::unordered_map<LayeredFrameReceiver*, Weak<PostProcessLayer>> m_layeredFrameReceiversMarkup;

@@ -12,10 +12,11 @@
 #include "SGCore/Scene/Scene.h"
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 
 SGCore::PostProcessPass::PostProcessPass()
 {
-    m_postProcessQuadRenderInfo.m_enableFacesCulling = false;
+    m_renderState.m_useFacesCulling = false;
 
     m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
 
@@ -32,7 +33,9 @@ SGCore::PostProcessPass::PostProcessPass()
 
 void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline)
 {
-    CoreMain::getRenderer()->setDepthTestingEnabled(false);
+    m_renderState.m_useDepthTest = false;
+    m_renderState.m_useStencilTest = false;
+    m_renderState.use();
 
     auto receiversView = scene->getECSRegistry()->view<LayeredFrameReceiver, Ref<RenderingBase>, Ref<Transform>>();
 
@@ -40,7 +43,9 @@ void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderP
         layersFX(receiver);
     });
 
-    CoreMain::getRenderer()->setDepthTestingEnabled(true);
+    m_renderState.m_useDepthTest = true;
+    m_renderState.m_useStencilTest = true;
+    m_renderState.use();
 }
 
 void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
@@ -69,7 +74,7 @@ void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
 
             CoreMain::getRenderer()->renderMeshData(
                     m_postProcessQuad.get(),
-                    m_postProcessQuadRenderInfo
+                    m_renderState
             );
 
             // receiver.m_layersFXFrameBuffer->unbindAttachmentToDrawIn();

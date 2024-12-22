@@ -45,18 +45,20 @@ namespace SGCore
                                    const Ref<Transform>& transformComponent) override;
 
         void renderMeshData(const IMeshData* meshData,
-                            const MeshDataRenderInfo& meshDataRenderInfo) override;
+                            const RenderState& renderState) override;
         
         void renderArray(const Ref<IVertexArray>& vertexArray,
-                         const MeshDataRenderInfo& meshDataRenderInfo,
+                         const RenderState& renderState,
                          const size_t& verticesCount,
                          const size_t& indicesCount) override;
         
         void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
-                                  const MeshDataRenderInfo& meshDataRenderInfo,
+                                  const RenderState& renderState,
                                   const size_t& verticesCount,
                                   const size_t& indicesCount,
                                   const size_t& instancesCount) override;
+
+        void useState(const RenderState& newRenderState, bool forceState = false) noexcept final;
 
         void printInfo() noexcept override;
 
@@ -79,10 +81,6 @@ namespace SGCore
         [[nodiscard]] GL4FrameBuffer* createFrameBuffer() const override;
 
         [[nodiscard]] GL3MeshData* createMeshData() const override;
-
-        // ------------- some settings for renderer ---------
-        void setDepthTestingEnabled(const bool& enabled) const noexcept override;
-        // --------------------------------------------------
 
         static const Ref<GL4Renderer>& getInstance() noexcept;
     };

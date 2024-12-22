@@ -19,6 +19,7 @@ namespace SGCore
     struct Transform;
     struct EntityBaseInfo;
     struct Camera3D;
+    struct PostProcessLayer;
     
     struct PBRRPGeometryPass : public IGeometryPass
     {

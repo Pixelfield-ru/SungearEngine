@@ -7,7 +7,6 @@
 
 #include "SGCore/Graphics/API/GL/GLGraphicsTypesCaster.h"
 #include "SGCore/ImportedScenesArch/IMeshData.h"
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 
 #include "SGCore/Graphics/API/GL/DeviceGLInfo.h"
 #include "SGCore/Memory/AssetManager.h"
@@ -38,11 +37,11 @@ void SGCore::GL4Renderer::init() noexcept
         CoreMain::getWindow().setShouldClose(true);
     }
 
-    setDepthTestingEnabled(true);
     glEnable(GL_BLEND);
     // glBlendFunc(GL_ONE, GL_ZERO);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_STENCIL_TEST);
+
+    useState(m_cachedRenderState, true);
 
     /*glEnable (GL_ALPHA_TEST);
     glAlphaFunc (GL_GREATER, 0.2);*/
@@ -188,41 +187,20 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
 }
 
 void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
-                                         const MeshDataRenderInfo& meshDataRenderInfo)
+                                         const RenderState& renderState)
 {
     if(!meshData) return;
 
-    if(meshDataRenderInfo.m_enableFacesCulling)
-    {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshDataRenderInfo.m_facesCullingFaceType));
-        glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
-                meshDataRenderInfo.m_facesCullingPolygonsOrder)
-        );
-    }
-    else
-    {
-        glDisable(GL_CULL_FACE);
-    }
+    useState(renderState);
 
     if(meshData->getVertexArray())
     {
         meshData->getVertexArray()->bind();
     }
 
-    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshDataRenderInfo.m_drawMode);
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(renderState.m_drawMode);
 
-    if(drawMode == GL_LINES)
-    {
-        glLineWidth(meshDataRenderInfo.m_linesWidth);
-    }
-
-    if(drawMode == GL_POINTS)
-    {
-        glPointSize(meshDataRenderInfo.m_pointsSize);
-    }
-
-    if(!meshDataRenderInfo.m_useIndices)
+    if(!renderState.m_useIndices)
     {
         glDrawArrays(drawMode, 0, meshData->m_positions.size() / 3);
     }
@@ -234,41 +212,20 @@ void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
 }
 
 void SGCore::GL4Renderer::renderArray(const SGCore::Ref<SGCore::IVertexArray>& vertexArray,
-                                      const SGCore::MeshDataRenderInfo& meshDataRenderInfo,
+                                      const SGCore::RenderState& renderState,
                                       const size_t& verticesCount,
                                       const size_t& indicesCount)
 {
-    if(meshDataRenderInfo.m_enableFacesCulling)
-    {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshDataRenderInfo.m_facesCullingFaceType));
-        glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
-                meshDataRenderInfo.m_facesCullingPolygonsOrder)
-        );
-    }
-    else
-    {
-        glDisable(GL_CULL_FACE);
-    }
+    useState(renderState);
     
     if(vertexArray)
     {
         vertexArray->bind();
     }
     
-    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshDataRenderInfo.m_drawMode);
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(renderState.m_drawMode);
     
-    if(drawMode == GL_LINES)
-    {
-        glLineWidth(meshDataRenderInfo.m_linesWidth);
-    }
-    
-    if(drawMode == GL_POINTS)
-    {
-        glPointSize(meshDataRenderInfo.m_pointsSize);
-    }
-    
-    if(!meshDataRenderInfo.m_useIndices)
+    if(!renderState.m_useIndices)
     {
         glDrawArrays(drawMode, 0, verticesCount);
     }
@@ -280,41 +237,20 @@ void SGCore::GL4Renderer::renderArray(const SGCore::Ref<SGCore::IVertexArray>& v
 }
 
 void SGCore::GL4Renderer::renderArrayInstanced(const SGCore::Ref<SGCore::IVertexArray>& vertexArray,
-                                               const SGCore::MeshDataRenderInfo& meshDataRenderInfo,
+                                               const SGCore::RenderState& renderState,
                                                const size_t& verticesCount, const size_t& indicesCount,
                                                const size_t& instancesCount)
 {
-    if(meshDataRenderInfo.m_enableFacesCulling)
-    {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(meshDataRenderInfo.m_facesCullingFaceType));
-        glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
-                meshDataRenderInfo.m_facesCullingPolygonsOrder)
-        );
-    }
-    else
-    {
-        glDisable(GL_CULL_FACE);
-    }
+    useState(renderState);
     
     if(vertexArray)
     {
         vertexArray->bind();
     }
     
-    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshDataRenderInfo.m_drawMode);
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(renderState.m_drawMode);
     
-    if(drawMode == GL_LINES)
-    {
-        glLineWidth(meshDataRenderInfo.m_linesWidth);
-    }
-    
-    if(drawMode == GL_POINTS)
-    {
-        glPointSize(meshDataRenderInfo.m_pointsSize);
-    }
-    
-    if(!meshDataRenderInfo.m_useIndices)
+    if(!renderState.m_useIndices)
     {
         glDrawArraysInstanced(drawMode, 0, verticesCount, instancesCount);
     }
@@ -390,22 +326,148 @@ SGCore::GL3MeshData* SGCore::GL4Renderer::createMeshData() const
     return new GL3MeshData;
 }
 
-void SGCore::GL4Renderer::setDepthTestingEnabled(const bool& enabled) const noexcept
-{
-    if(enabled)
-    {
-        glEnable(GL_DEPTH_TEST);
-    }
-    else
-    {
-        glDisable(GL_DEPTH_TEST);
-    }
-}
-
 const SGCore::Ref<SGCore::GL4Renderer>& SGCore::GL4Renderer::getInstance() noexcept
 {
     static Ref<GL4Renderer> s_instancePointer(new GL4Renderer);
     s_instancePointer->m_apiType = SG_API_TYPE_GL4;
 
     return s_instancePointer;
+}
+
+void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bool forceState) noexcept
+{
+    if(forceState)
+    {
+        if(newRenderState.m_useDepthTest)
+        {
+            glEnable(GL_DEPTH_TEST);
+        }
+        else
+        {
+            glDisable(GL_DEPTH_TEST);
+        }
+
+        if(newRenderState.m_useFacesCulling)
+        {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(newRenderState.m_facesCullingFaceType));
+            glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
+                    newRenderState.m_facesCullingPolygonsOrder)
+            );
+        }
+        else
+        {
+            glDisable(GL_CULL_FACE);
+        }
+
+        glLineWidth(newRenderState.m_linesWidth);
+        glPointSize(newRenderState.m_pointsSize);
+
+        if(newRenderState.m_useStencilTest)
+        {
+            glEnable(GL_STENCIL_TEST);
+            glStencilOp(GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilFailOp),
+                        GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilZFailOp),
+                        GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilZPassOp));
+            glStencilFunc(GLGraphicsTypesCaster::sgStencilFuncToGL(newRenderState.m_stencilFunc),
+                          newRenderState.m_stencilFuncRef,
+                          newRenderState.m_stencilFuncMask);
+            glStencilMask(newRenderState.m_stencilMask);
+        }
+        else
+        {
+            glDisable(GL_STENCIL_TEST);
+        }
+    }
+    else
+    {
+        if(m_cachedRenderState.m_useDepthTest != newRenderState.m_useDepthTest)
+        {
+            if(newRenderState.m_useDepthTest)
+            {
+                glEnable(GL_DEPTH_TEST);
+            }
+            else
+            {
+                glDisable(GL_DEPTH_TEST);
+            }
+        }
+
+        if(m_cachedRenderState.m_useFacesCulling != newRenderState.m_useFacesCulling)
+        {
+            if(newRenderState.m_useFacesCulling)
+            {
+                glEnable(GL_CULL_FACE);
+            }
+            else
+            {
+                glDisable(GL_CULL_FACE);
+            }
+        }
+
+        if(newRenderState.m_useFacesCulling)
+        {
+            if(m_cachedRenderState.m_facesCullingFaceType != newRenderState.m_facesCullingFaceType)
+            {
+                glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(newRenderState.m_facesCullingFaceType));
+            }
+
+            if(m_cachedRenderState.m_facesCullingPolygonsOrder != newRenderState.m_facesCullingPolygonsOrder)
+            {
+                glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
+                                    newRenderState.m_facesCullingPolygonsOrder
+                            )
+                );
+            }
+        }
+
+        if(m_cachedRenderState.m_linesWidth != newRenderState.m_linesWidth)
+        {
+            glLineWidth(newRenderState.m_linesWidth);
+        }
+        if(m_cachedRenderState.m_pointsSize != newRenderState.m_pointsSize)
+        {
+            glPointSize(newRenderState.m_pointsSize);
+        }
+
+        if(m_cachedRenderState.m_useStencilTest != newRenderState.m_useStencilTest)
+        {
+            if(newRenderState.m_useStencilTest)
+            {
+                glEnable(GL_STENCIL_TEST);
+            }
+            else
+            {
+                glDisable(GL_STENCIL_TEST);
+            }
+        }
+
+        if(newRenderState.m_useStencilTest)
+        {
+            if(m_cachedRenderState.m_stencilFailOp != newRenderState.m_stencilFailOp ||
+               m_cachedRenderState.m_stencilZFailOp != newRenderState.m_stencilZFailOp ||
+               m_cachedRenderState.m_stencilZPassOp != newRenderState.m_stencilZPassOp)
+            {
+                glStencilOp(GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilFailOp),
+                            GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilZFailOp),
+                            GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilZPassOp));
+            }
+
+            if(m_cachedRenderState.m_stencilFunc != newRenderState.m_stencilFunc ||
+               m_cachedRenderState.m_stencilFuncRef != newRenderState.m_stencilFuncRef ||
+               m_cachedRenderState.m_stencilMask != newRenderState.m_stencilMask)
+            {
+                glStencilFunc(GLGraphicsTypesCaster::sgStencilFuncToGL(newRenderState.m_stencilFunc),
+                              newRenderState.m_stencilFuncRef,
+                              newRenderState.m_stencilFuncMask);
+            }
+
+            if(m_cachedRenderState.m_stencilMask != newRenderState.m_stencilMask)
+            {
+                glStencilMask(newRenderState.m_stencilMask);
+            }
+        }
+    }
+
+    m_cachedRenderState = newRenderState;
 }

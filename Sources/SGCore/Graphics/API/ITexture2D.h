@@ -46,7 +46,7 @@ namespace SGCore
         
         bool m_isCompressedFormat = false;
 
-        SGGDataType m_dataType = SGG_UNSIGNED_BYTE;
+        SGGDataType m_dataType = SGGDataType::SGG_UNSIGNED_BYTE;
 
         bool m_isTextureBuffer = false;
         SGGUsage m_textureBufferUsage = SGGUsage::SGG_STATIC;
@@ -145,6 +145,12 @@ namespace SGCore
 
         [[nodiscard]] std::int32_t getWidth() const noexcept;
         [[nodiscard]] std::int32_t getHeight() const noexcept;
+
+        /**
+         * @return What type of framebuffer attachment is this texture.\n
+         * Returns \p SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT if this texture is not framebuffer attachment.
+         */
+        [[nodiscard]] SGFrameBufferAttachmentType getFrameBufferAttachmentType() const noexcept;
         
     protected:
         std::int32_t m_width = 0;
@@ -161,6 +167,9 @@ namespace SGCore
         virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;
         
         Ref<std::uint8_t[]> m_textureData = nullptr;
+
+        // USED ONLY IF THIS TEXTURE IS FRAME BUFFER ATTACHMENT
+        SGFrameBufferAttachmentType m_frameBufferAttachmentType = SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT;
 
     private:
         std::streamsize m_textureDataOffsetInPackage = 0;

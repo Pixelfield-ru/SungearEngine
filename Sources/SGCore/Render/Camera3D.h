@@ -5,14 +5,16 @@
 #ifndef SUNGEARENGINE_CAMERA3D_H
 #define SUNGEARENGINE_CAMERA3D_H
 
-#include <set>
+#include <unordered_set>
 
-#include "SGCore/Scene/EntityRef.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
     struct Camera3D
     {
+        std::unordered_set<entity_t> m_pickedEntities;
+
     private:
         volatile int m_dummy = 0;
     };

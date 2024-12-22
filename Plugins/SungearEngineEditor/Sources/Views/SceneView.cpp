@@ -55,7 +55,10 @@ void SGE::SceneView::renderBody()
         auto* layeredFrameReceiver = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::LayeredFrameReceiver>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
-        auto renderingBase = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::Ref<SGCore::RenderingBase>>
+        auto* renderingBase = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::Ref<SGCore::RenderingBase>>
+                (EditorScene::getCurrentScene()->m_data.m_editorCamera);
+
+        auto* camera3D = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::Ref<SGCore::Camera3D>>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
         if(layeredFrameReceiver)
@@ -86,9 +89,29 @@ void SGE::SceneView::renderBody()
                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2
                                                        );
 
+                if(camera3D)
+                {
+                    if(!mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL))
+                    {
+                        (*camera3D)->m_pickedEntities.clear();
+                        (*camera3D)->m_pickedEntities.insert(pickedEntity);
+                    }
+                    else
+                    {
+                        if((*camera3D)->m_pickedEntities.contains(pickedEntity))
+                        {
+                            (*camera3D)->m_pickedEntities.erase(pickedEntity);
+                        }
+                        else
+                        {
+                            (*camera3D)->m_pickedEntities.insert(pickedEntity);
+                        }
+                    }
+                }
+
                 LOG_I(SGEDITOR_TAG, "ENTITY PICKING: Mouse pos x = '{}', y = '{}'. Picked entity: '{}'",
-                      mousePos.x,
-                      mousePos.y,
+                      mouseRelativePos.x,
+                      mouseRelativePos.y,
                       std::to_underlying(pickedEntity));
             }
 

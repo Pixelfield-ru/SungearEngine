@@ -2,6 +2,7 @@
 #define SUNGEARENGINE_IMATERIAL_H
 
 #include <SGCore/pch.h>
+#include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Memory/IAssetsRefsResolver.h"
 
 #include "SGCore/Memory/AssetManager.h"
@@ -31,6 +32,8 @@ namespace SGCore
         std::string m_name;
 
         AssetRef<IShader> m_shader;
+
+        RenderState m_renderState;
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.

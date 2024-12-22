@@ -17,18 +17,18 @@ namespace GLGraphicsTypesCaster
     {
         switch(sgDrawMode)
         {
-            case SGG_TRIANGLES:
+            case SGDrawMode::SGG_TRIANGLES:
                 return GL_TRIANGLES;
-            case SGG_LINES:
+            case SGDrawMode::SGG_LINES:
                 return GL_LINES;
-            case SGG_QUADS:
+            case SGDrawMode::SGG_QUADS:
                 return GL_QUADS;
-            case SGG_POINTS:
+            case SGDrawMode::SGG_POINTS:
                 return GL_POINTS;
-            case SGG_TRIANGLE_STRIP:
+            case SGDrawMode::SGG_TRIANGLE_STRIP:
                 return GL_TRIANGLE_STRIP;
                 break;
-            case SGG_TRIANGLE_FAN:
+            case SGDrawMode::SGG_TRIANGLE_FAN:
                 return GL_TRIANGLE_FAN;
                 break;
             
@@ -41,9 +41,9 @@ namespace GLGraphicsTypesCaster
     {
         switch(faceType)
         {
-            case SGG_FRONT_FACE: return GL_FRONT;
-            case SGG_BACK_FACE: return GL_BACK;
-            case SGG_FRONT_BACK_FACE: return GL_FRONT_AND_BACK;
+            case SGFaceType::SGG_FRONT_FACE: return GL_FRONT;
+            case SGFaceType::SGG_BACK_FACE: return GL_BACK;
+            case SGFaceType::SGG_FRONT_BACK_FACE: return GL_FRONT_AND_BACK;
 
             default: return GL_BACK;
         }
@@ -53,8 +53,8 @@ namespace GLGraphicsTypesCaster
     {
         switch(polygonsOrder)
         {
-            case SGG_CW: return GL_CW;
-            case SGG_CCW: return GL_CCW;
+            case SGPolygonsOrder::SGG_CW: return GL_CW;
+            case SGPolygonsOrder::SGG_CCW: return GL_CCW;
         }
     }
 
@@ -62,117 +62,117 @@ namespace GLGraphicsTypesCaster
     {
         switch(sggInternalFormat)
         {
-            case SGG_RED: return GL_RED;
+            case SGGColorInternalFormat::SGG_RED: return GL_RED;
             
-            case SGG_R8: return GL_R8;
-            case SGG_R8_SIGNED_NORMALIZED: return GL_R8_SNORM;
+            case SGGColorInternalFormat::SGG_R8: return GL_R8;
+            case SGGColorInternalFormat::SGG_R8_SIGNED_NORMALIZED: return GL_R8_SNORM;
 
-            case SGG_R16: return GL_R16;
-            case SGG_R16_SIGNED_NORMALIZED: return GL_R16_SNORM;
+            case SGGColorInternalFormat::SGG_R16: return GL_R16;
+            case SGGColorInternalFormat::SGG_R16_SIGNED_NORMALIZED: return GL_R16_SNORM;
 
-            case SGG_RG8: return GL_RG8;
-            case SGG_RG8_SIGNED_NORMALIZED: return GL_RG8_SNORM;
+            case SGGColorInternalFormat::SGG_RG8: return GL_RG8;
+            case SGGColorInternalFormat::SGG_RG8_SIGNED_NORMALIZED: return GL_RG8_SNORM;
 
-            case SGG_RG16: return GL_R16;
-            case SGG_RG16_SIGNED_NORMALIZED: return GL_R16_SNORM;
+            case SGGColorInternalFormat::SGG_RG16: return GL_R16;
+            case SGGColorInternalFormat::SGG_RG16_SIGNED_NORMALIZED: return GL_R16_SNORM;
 
-            case SGG_R3_G3_B2: return GL_R3_G3_B2;
+            case SGGColorInternalFormat::SGG_R3_G3_B2: return GL_R3_G3_B2;
 
-            case SGG_RGB4: return GL_RGB4;
-            case SGG_RGB5: return GL_RGB5;
-            case SGG_RGB8: return GL_RGB8;
+            case SGGColorInternalFormat::SGG_RGB4: return GL_RGB4;
+            case SGGColorInternalFormat::SGG_RGB5: return GL_RGB5;
+            case SGGColorInternalFormat::SGG_RGB8: return GL_RGB8;
 
-            case SGG_RGB8_SIGNED_NORMALIZED: return GL_RGB8_SNORM;
+            case SGGColorInternalFormat::SGG_RGB8_SIGNED_NORMALIZED: return GL_RGB8_SNORM;
 
-            case SGG_RGB10: return GL_RGB10;
-            case SGG_RGB12: return GL_RGB12;
+            case SGGColorInternalFormat::SGG_RGB10: return GL_RGB10;
+            case SGGColorInternalFormat::SGG_RGB12: return GL_RGB12;
 
-            case SGG_RGB16_SIGNED_NORMALIZED: return GL_RGB16_SNORM;
+            case SGGColorInternalFormat::SGG_RGB16_SIGNED_NORMALIZED: return GL_RGB16_SNORM;
 
-            case SGG_RGBA2: return GL_RGBA2;
-            case SGG_RGBA4: return GL_RGBA4;
+            case SGGColorInternalFormat::SGG_RGBA2: return GL_RGBA2;
+            case SGGColorInternalFormat::SGG_RGBA4: return GL_RGBA4;
 
-            case SGG_RGB5_A1: return GL_RGB5_A1;
+            case SGGColorInternalFormat::SGG_RGB5_A1: return GL_RGB5_A1;
 
-            case SGG_RGBA8: return GL_RGBA8;
-            case SGG_RGBA8_SIGNED_NORMALIZED: return GL_RGBA8_SNORM;
+            case SGGColorInternalFormat::SGG_RGBA8: return GL_RGBA8;
+            case SGGColorInternalFormat::SGG_RGBA8_SIGNED_NORMALIZED: return GL_RGBA8_SNORM;
 
-            case SGG_RGB10_A2: return GL_RGB10_A2;
-            case SGG_RGB10_A2_UNSIGNED_INT: return GL_RGB10_A2UI;
+            case SGGColorInternalFormat::SGG_RGB10_A2: return GL_RGB10_A2;
+            case SGGColorInternalFormat::SGG_RGB10_A2_UNSIGNED_INT: return GL_RGB10_A2UI;
 
-            case SGG_RGBA12: return GL_RGBA12;
-            case SGG_RGBA16: return GL_RGBA16;
+            case SGGColorInternalFormat::SGG_RGBA12: return GL_RGBA12;
+            case SGGColorInternalFormat::SGG_RGBA16: return GL_RGBA16;
 
-            case SGG_SRGB8: return GL_SRGB8;
-            case SGG_SRGB8_ALPHA8: return GL_SRGB8_ALPHA8;
+            case SGGColorInternalFormat::SGG_SRGB8: return GL_SRGB8;
+            case SGGColorInternalFormat::SGG_SRGB8_ALPHA8: return GL_SRGB8_ALPHA8;
 
-            case SGG_R16_FLOAT: return GL_R16F;
-            case SGG_RG16_FLOAT: return GL_RG16F;
-            case SGG_RGB16_FLOAT: return GL_RGB16F;
-            case SGG_RGBA16_FLOAT: return GL_RGBA16F;
+            case SGGColorInternalFormat::SGG_R16_FLOAT: return GL_R16F;
+            case SGGColorInternalFormat::SGG_RG16_FLOAT: return GL_RG16F;
+            case SGGColorInternalFormat::SGG_RGB16_FLOAT: return GL_RGB16F;
+            case SGGColorInternalFormat::SGG_RGBA16_FLOAT: return GL_RGBA16F;
 
-            case SGG_R32_FLOAT: return GL_R32F;
-            case SGG_RG32_FLOAT: return GL_RG32F;
-            case SGG_RGB32_FLOAT: return GL_RGB32F;
-            case SGG_RGBA32_FLOAT: return GL_RGBA32F;
+            case SGGColorInternalFormat::SGG_R32_FLOAT: return GL_R32F;
+            case SGGColorInternalFormat::SGG_RG32_FLOAT: return GL_RG32F;
+            case SGGColorInternalFormat::SGG_RGB32_FLOAT: return GL_RGB32F;
+            case SGGColorInternalFormat::SGG_RGBA32_FLOAT: return GL_RGBA32F;
 
-            case SGG_R11_G11_B10_FLOAT: return GL_R11F_G11F_B10F;
+            case SGGColorInternalFormat::SGG_R11_G11_B10_FLOAT: return GL_R11F_G11F_B10F;
 
-            case SGG_RGB9_E5: return GL_RGB9_E5;
+            case SGGColorInternalFormat::SGG_RGB9_E5: return GL_RGB9_E5;
 
-            case SGG_R8_INT: return GL_R8I;
-            case SGG_R8_UNSIGNED_INT: return GL_R8UI;
+            case SGGColorInternalFormat::SGG_R8_INT: return GL_R8I;
+            case SGGColorInternalFormat::SGG_R8_UNSIGNED_INT: return GL_R8UI;
 
-            case SGG_R16_INT: return GL_R16I;
-            case SGG_R16_UNSIGNED_INT: return GL_R16UI;
+            case SGGColorInternalFormat::SGG_R16_INT: return GL_R16I;
+            case SGGColorInternalFormat::SGG_R16_UNSIGNED_INT: return GL_R16UI;
 
-            case SGG_R32_INT: return GL_R32I;
-            case SGG_R32_UNSIGNED_INT: return GL_R32UI;
+            case SGGColorInternalFormat::SGG_R32_INT: return GL_R32I;
+            case SGGColorInternalFormat::SGG_R32_UNSIGNED_INT: return GL_R32UI;
 
-            case SGG_RG8_INT: return GL_RG8I;
-            case SGG_RG8_UNSIGNED_INT: return GL_RG8UI;
+            case SGGColorInternalFormat::SGG_RG8_INT: return GL_RG8I;
+            case SGGColorInternalFormat::SGG_RG8_UNSIGNED_INT: return GL_RG8UI;
 
-            case SGG_RG16_INT: return GL_RG16I;
-            case SGG_RG16_UNSIGNED_INT: return GL_RG16UI;
+            case SGGColorInternalFormat::SGG_RG16_INT: return GL_RG16I;
+            case SGGColorInternalFormat::SGG_RG16_UNSIGNED_INT: return GL_RG16UI;
 
-            case SGG_RG32_INT: return GL_RG32I;
-            case SGG_RG32_UNSIGNED_INT: return GL_RG32UI;
+            case SGGColorInternalFormat::SGG_RG32_INT: return GL_RG32I;
+            case SGGColorInternalFormat::SGG_RG32_UNSIGNED_INT: return GL_RG32UI;
 
-            case SGG_RGB8_INT: return GL_RGB8I;
-            case SGG_RGB8_UNSIGNED_INT: return GL_RGB8UI;
+            case SGGColorInternalFormat::SGG_RGB8_INT: return GL_RGB8I;
+            case SGGColorInternalFormat::SGG_RGB8_UNSIGNED_INT: return GL_RGB8UI;
 
-            case SGG_RGB16_INT: return GL_RGB16I;
-            case SGG_RGB16_UNSIGNED_INT: return GL_RGB16UI;
+            case SGGColorInternalFormat::SGG_RGB16_INT: return GL_RGB16I;
+            case SGGColorInternalFormat::SGG_RGB16_UNSIGNED_INT: return GL_RGB16UI;
 
-            case SGG_RGB32_INT: return GL_RGB32I;
-            case SGG_RGB32_UNSIGNED_INT: return GL_RGB32UI;
+            case SGGColorInternalFormat::SGG_RGB32_INT: return GL_RGB32I;
+            case SGGColorInternalFormat::SGG_RGB32_UNSIGNED_INT: return GL_RGB32UI;
 
-            case SGG_RGBA8_INT: return GL_RGBA8I;
-            case SGG_RGBA8_UNSIGNED_INT: return GL_RGBA8UI;
+            case SGGColorInternalFormat::SGG_RGBA8_INT: return GL_RGBA8I;
+            case SGGColorInternalFormat::SGG_RGBA8_UNSIGNED_INT: return GL_RGBA8UI;
 
-            case SGG_RGBA16_INT: return GL_RGBA16I;
-            case SGG_RGBA16_UNSIGNED_INT: return GL_RGBA16UI;
+            case SGGColorInternalFormat::SGG_RGBA16_INT: return GL_RGBA16I;
+            case SGGColorInternalFormat::SGG_RGBA16_UNSIGNED_INT: return GL_RGBA16UI;
 
-            case SGG_RGBA32_INT: return GL_RGBA32I;
-            case SGG_RGBA32_UNSIGNED_INT: return GL_RGBA32UI;
+            case SGGColorInternalFormat::SGG_RGBA32_INT: return GL_RGBA32I;
+            case SGGColorInternalFormat::SGG_RGBA32_UNSIGNED_INT: return GL_RGBA32UI;
 
-            case SGG_COMPRESSED_R: return GL_COMPRESSED_RED;
-            case SGG_COMPRESSED_RG: return GL_COMPRESSED_RG;
-            case SGG_COMPRESSED_RGB: return GL_COMPRESSED_RGB;
-            case SGG_COMPRESSED_RGBA: return GL_COMPRESSED_RGBA;
+            case SGGColorInternalFormat::SGG_COMPRESSED_R: return GL_COMPRESSED_RED;
+            case SGGColorInternalFormat::SGG_COMPRESSED_RG: return GL_COMPRESSED_RG;
+            case SGGColorInternalFormat::SGG_COMPRESSED_RGB: return GL_COMPRESSED_RGB;
+            case SGGColorInternalFormat::SGG_COMPRESSED_RGBA: return GL_COMPRESSED_RGBA;
 
-            case SGG_COMPRESSED_SRGB: return GL_COMPRESSED_SRGB;
-            case SGG_COMPRESSED_SRGBA: return GL_COMPRESSED_SRGB_ALPHA;
+            case SGGColorInternalFormat::SGG_COMPRESSED_SRGB: return GL_COMPRESSED_SRGB;
+            case SGGColorInternalFormat::SGG_COMPRESSED_SRGBA: return GL_COMPRESSED_SRGB_ALPHA;
 
-            case SGG_STENCIL_INDEX8: return GL_STENCIL_INDEX8;
+            case SGGColorInternalFormat::SGG_STENCIL_INDEX8: return GL_STENCIL_INDEX8;
 
-            case SGG_DEPTH_COMPONENT16: return GL_DEPTH_COMPONENT16;
-            case SGG_DEPTH_COMPONENT24: return GL_DEPTH_COMPONENT24;
-            case SGG_DEPTH_COMPONENT32: return GL_DEPTH_COMPONENT32;
-            case SGG_DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT32F;
+            case SGGColorInternalFormat::SGG_DEPTH_COMPONENT16: return GL_DEPTH_COMPONENT16;
+            case SGGColorInternalFormat::SGG_DEPTH_COMPONENT24: return GL_DEPTH_COMPONENT24;
+            case SGGColorInternalFormat::SGG_DEPTH_COMPONENT32: return GL_DEPTH_COMPONENT32;
+            case SGGColorInternalFormat::SGG_DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT32F;
 
-            case SGG_DEPTH24_STENCIL8: return GL_DEPTH24_STENCIL8;
-            case SGG_DEPTH32F_STENCIL8: return GL_DEPTH32F_STENCIL8;
+            case SGGColorInternalFormat::SGG_DEPTH24_STENCIL8: return GL_DEPTH24_STENCIL8;
+            case SGGColorInternalFormat::SGG_DEPTH32F_STENCIL8: return GL_DEPTH32F_STENCIL8;
 
             default: return GL_RGB8;
         }
@@ -182,24 +182,24 @@ namespace GLGraphicsTypesCaster
     {
         switch(sggFormat)
         {
-            case SGG_R: return GL_RED;
-            case SGG_RG: return GL_RG;
-            case SGG_RGB: return GL_RGB;
-            case SGG_BGR: return GL_BGR;
-            case SGG_RGBA: return GL_RGBA;
-            case SGG_BGRA: return GL_BGRA;
+            case SGGColorFormat::SGG_R: return GL_RED;
+            case SGGColorFormat::SGG_RG: return GL_RG;
+            case SGGColorFormat::SGG_RGB: return GL_RGB;
+            case SGGColorFormat::SGG_BGR: return GL_BGR;
+            case SGGColorFormat::SGG_RGBA: return GL_RGBA;
+            case SGGColorFormat::SGG_BGRA: return GL_BGRA;
 
-            case SGG_R_INTEGER: return GL_RED_INTEGER;
-            case SGG_RG_INTEGER: return GL_RG_INTEGER;
-            case SGG_RGB_INTEGER: return GL_RGB_INTEGER;
-            case SGG_BGR_INTEGER: return GL_BGR_INTEGER;
-            case SGG_RGBA_INTEGER: return GL_RGBA_INTEGER;
-            case SGG_BGRA_INTEGER: return GL_BGRA_INTEGER;
+            case SGGColorFormat::SGG_R_INTEGER: return GL_RED_INTEGER;
+            case SGGColorFormat::SGG_RG_INTEGER: return GL_RG_INTEGER;
+            case SGGColorFormat::SGG_RGB_INTEGER: return GL_RGB_INTEGER;
+            case SGGColorFormat::SGG_BGR_INTEGER: return GL_BGR_INTEGER;
+            case SGGColorFormat::SGG_RGBA_INTEGER: return GL_RGBA_INTEGER;
+            case SGGColorFormat::SGG_BGRA_INTEGER: return GL_BGRA_INTEGER;
 
-            case SGG_STENCIL_INDEX: return GL_STENCIL_INDEX;
+            case SGGColorFormat::SGG_STENCIL_INDEX: return GL_STENCIL_INDEX;
 
-            case SGG_DEPTH_COMPONENT: return GL_DEPTH_COMPONENT;
-            case SGG_DEPTH_STENCIL: return GL_DEPTH_STENCIL;
+            case SGGColorFormat::SGG_DEPTH_COMPONENT: return GL_DEPTH_COMPONENT;
+            case SGGColorFormat::SGG_DEPTH_STENCIL: return GL_DEPTH_STENCIL;
 
             default: return GL_RGB;
         }
@@ -209,8 +209,8 @@ namespace GLGraphicsTypesCaster
     {
         switch(sggBufferUsage)
         {
-            case SGG_DYNAMIC: return GL_DYNAMIC_DRAW;
-            case SGG_STATIC: return GL_STATIC_DRAW;
+            case SGGUsage::SGG_DYNAMIC: return GL_DYNAMIC_DRAW;
+            case SGGUsage::SGG_STATIC: return GL_STATIC_DRAW;
         }
     }
 
@@ -218,28 +218,61 @@ namespace GLGraphicsTypesCaster
     {
         switch(sggDataType)
         {
-            case SGG_NONE: return GL_NONE;
+            case SGGDataType::SGG_NONE: return GL_NONE;
 
-            case SGG_UNSIGNED_INT: return GL_UNSIGNED_INT;
-            case SGG_INT: return GL_INT;
-            case SGG_INT2: return GL_INT;
-            case SGG_INT3: return GL_INT;
-            case SGG_INT4: return GL_INT;
+            case SGGDataType::SGG_UNSIGNED_INT: return GL_UNSIGNED_INT;
+            case SGGDataType::SGG_INT: return GL_INT;
+            case SGGDataType::SGG_INT2: return GL_INT;
+            case SGGDataType::SGG_INT3: return GL_INT;
+            case SGGDataType::SGG_INT4: return GL_INT;
 
-            case SGG_FLOAT: return GL_FLOAT;
-            case SGG_FLOAT2: return GL_FLOAT;
-            case SGG_FLOAT3: return GL_FLOAT;
-            case SGG_FLOAT4: return GL_FLOAT;
+            case SGGDataType::SGG_FLOAT: return GL_FLOAT;
+            case SGGDataType::SGG_FLOAT2: return GL_FLOAT;
+            case SGGDataType::SGG_FLOAT3: return GL_FLOAT;
+            case SGGDataType::SGG_FLOAT4: return GL_FLOAT;
 
-            case SGG_MAT2: return GL_FLOAT;
-            case SGG_MAT3: return GL_FLOAT;
-            case SGG_MAT4: return GL_FLOAT;
+            case SGGDataType::SGG_MAT2: return GL_FLOAT;
+            case SGGDataType::SGG_MAT3: return GL_FLOAT;
+            case SGGDataType::SGG_MAT4: return GL_FLOAT;
 
-            case SGG_UNSIGNED_BYTE: return GL_UNSIGNED_BYTE;
-            case SGG_BYTE: return GL_BYTE;
+            case SGGDataType::SGG_UNSIGNED_BYTE: return GL_UNSIGNED_BYTE;
+            case SGGDataType::SGG_BYTE: return GL_BYTE;
 
-            case SGG_BOOL: return GL_BOOL;
+            case SGGDataType::SGG_BOOL: return GL_BOOL;
 
+            default: return GL_NONE;
+        }
+    }
+
+    static std::uint16_t sgStencilOpToGL(const SGStencilOp& sggDataType) noexcept
+    {
+        switch(sggDataType)
+        {
+            case SGStencilOp::SGG_KEEP: return GL_KEEP;
+            case SGStencilOp::SGG_REPLACE: return GL_REPLACE;
+            case SGStencilOp::SGG_ZERO: return GL_ZERO;
+            case SGStencilOp::SGG_INCR: return GL_INCR;
+            case SGStencilOp::SGG_INCR_WRAP: return GL_INCR_WRAP;
+            case SGStencilOp::SGG_DECR: return GL_DECR;
+            case SGStencilOp::SGG_DECR_WRAP: return GL_DECR_WRAP;
+            case SGStencilOp::SGG_INVERT: return GL_INVERT;
+            default: return GL_NONE;
+        }
+    }
+
+    static std::uint16_t sgStencilFuncToGL(const SGStencilFunc& sggDataType) noexcept
+    {
+        switch(sggDataType)
+        {
+
+            case SGStencilFunc::SGG_NEVER: return GL_NEVER;
+            case SGStencilFunc::SGG_LESS: return GL_LESS;
+            case SGStencilFunc::SGG_LEQUAL: return GL_LEQUAL;
+            case SGStencilFunc::SGG_GREATER: return GL_GREATER;
+            case SGStencilFunc::SGG_GEQUAL: return GL_GEQUAL;
+            case SGStencilFunc::SGG_EQUAL: return GL_EQUAL;
+            case SGStencilFunc::SGG_NOTEQUAL: return GL_NOTEQUAL;
+            case SGStencilFunc::SGG_ALWAYS: return GL_ALWAYS;
             default: return GL_NONE;
         }
     }

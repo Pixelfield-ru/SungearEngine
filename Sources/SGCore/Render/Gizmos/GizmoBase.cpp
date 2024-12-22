@@ -7,7 +7,7 @@
 
 SGCore::GizmoBase::GizmoBase() noexcept
 {
-    m_meshBase.m_meshDataRenderInfo.m_enableFacesCulling = false;
-    m_meshBase.m_meshDataRenderInfo.m_drawMode = SGDrawMode::SGG_LINES;
-    m_meshBase.m_meshDataRenderInfo.m_linesWidth = 3.0f;
+    m_renderState.m_useFacesCulling = false;
+    m_renderState.m_drawMode = SGDrawMode::SGG_LINES;
+    m_renderState.m_linesWidth = 3.0f;
 }

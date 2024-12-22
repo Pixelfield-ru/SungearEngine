@@ -10,6 +10,7 @@
 #include "GAPIType.h"
 #include "IUniformBuffer.h"
 #include "SGCore/Transformations/Transform.h"
+#include "RenderState.h"
 
 namespace SGCore
 {
@@ -21,7 +22,6 @@ namespace SGCore
     class IGizmo;
 
     class IMeshData;
-    struct MeshDataRenderInfo;
 
     class IVertexBufferLayout;
     struct ICubemapTexture;
@@ -63,19 +63,21 @@ namespace SGCore
                                            const Ref<Transform>& transform) { }
 
         virtual void renderMeshData(const IMeshData* meshData,
-                                    const MeshDataRenderInfo& meshDataRenderInfo) { }
-                                    
+                                    const RenderState& renderState) { }
+
         virtual void renderArray(const Ref<IVertexArray>& vertexArray,
-                                 const MeshDataRenderInfo& meshDataRenderInfo,
+                                 const RenderState& meshDataRenderInfo,
                                  const size_t& verticesCount,
                                  const size_t& indicesCount) { }
         
         virtual void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
-                                          const MeshDataRenderInfo& meshDataRenderInfo,
+                                          const RenderState& renderState,
                                           const size_t& verticesCount,
                                           const size_t& indicesCount,
                                           const size_t& instancesCount)
         {}
+
+        virtual void useState(const RenderState& newRenderState, bool forceState = false) noexcept = 0;
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
@@ -97,14 +99,14 @@ namespace SGCore
 
         [[nodiscard]] virtual IMeshData* createMeshData() const = 0;
 
-        // ------------- some settings for renderer ---------
-        virtual void setDepthTestingEnabled(const bool& enabled) const noexcept { }
-        // --------------------------------------------------
-
         [[nodiscard]] GAPIType getGAPIType() const noexcept;
+
+        [[nodiscard]] const RenderState& getCachedRenderState() const noexcept;
 
     protected:
         GAPIType m_apiType = SG_API_TYPE_UNKNOWN;
+
+        RenderState m_cachedRenderState;
     };
 }
 

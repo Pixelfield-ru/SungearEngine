@@ -29,7 +29,8 @@ void SGCore::GL4FrameBuffer::bindAttachmentToReadFrom
     if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
        attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        glReadBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
+                std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)));
     }
 }
 
@@ -39,7 +40,8 @@ void SGCore::GL4FrameBuffer::bindAttachmentToDrawIn
     if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
        attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        glDrawBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+        glDrawBuffer(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
+                std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)));
     }
 }
 
@@ -61,7 +63,8 @@ void SGCore::GL4FrameBuffer::bindAttachmentsToDrawIn
         if(type >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
            type <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
         {
-            attachmentsToBind[curAttachment] = GL_COLOR_ATTACHMENT0 + (type - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
+            attachmentsToBind[curAttachment] = GL_COLOR_ATTACHMENT0 + (std::to_underlying(type) -
+                    std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
         }
 
         ++curAttachment;
@@ -82,7 +85,8 @@ void SGCore::GL4FrameBuffer::bindAttachmentsToDrawIn
         if(type >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
            type <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
         {
-            attachmentsToBind[curAttachment] = GL_COLOR_ATTACHMENT0 + (type - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
+            attachmentsToBind[curAttachment] = GL_COLOR_ATTACHMENT0 + (std::to_underlying(type) -
+                    std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
         }
 
         ++curAttachment;
@@ -139,7 +143,8 @@ void SGCore::GL4FrameBuffer::clearAttachment(const SGFrameBufferAttachmentType& 
     if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
        attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        glDrawBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+        glDrawBuffer(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
+                std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)));
         
         glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgColor.a);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -152,7 +157,7 @@ void SGCore::GL4FrameBuffer::clearAttachment(const SGFrameBufferAttachmentType& 
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT9)
     {
-        glClear(GL_STENCIL_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 }
 
@@ -286,6 +291,14 @@ SGCore::GL4FrameBuffer::addAttachment(SGFrameBufferAttachmentType attachmentType
     addAttachment(attachmentType, format, internalFormat, mipLevel, layer, false, 8);
 }
 
+void SGCore::GL4FrameBuffer::attachAttachment(const SGCore::Ref<SGCore::ITexture2D>& otherAttachment) noexcept
+{
+    if(isDepthStencilAttachment(otherAttachment->getFrameBufferAttachmentType()))
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, (intptr_t) otherAttachment->getTextureNativeHandler(), 0);
+    }
+}
+
 glm::vec3 SGCore::GL4FrameBuffer::readPixelsFromAttachment(const glm::vec2& mousePos,
                                                            SGFrameBufferAttachmentType attachmentType) const noexcept
 {
@@ -293,7 +306,8 @@ glm::vec3 SGCore::GL4FrameBuffer::readPixelsFromAttachment(const glm::vec2& mous
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
 
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + (attachmentType - SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
+                                         std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)));
 
     auto attachment = getAttachment(attachmentType);
 

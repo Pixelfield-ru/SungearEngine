@@ -55,14 +55,14 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
                 CoreMain::getRenderer()->createVertexBuffer()
         );
         
-        m_instancesIndicesVertexBuffer->setUsage(SGG_STATIC)->create()->bind()->putData(
+        m_instancesIndicesVertexBuffer->setUsage(SGGUsage::SGG_STATIC)->create()->bind()->putData(
                 m_instancesIndices);
         
         bufferLayout->reset()
                 ->addAttribute(SGCore::Ref<IVertexAttribute>(
                         bufferLayout->createVertexAttribute(0,
                                                             "instanceID",
-                                                            SGG_INT,
+                                                            SGGDataType::SGG_INT,
                                                             (size_t) 0))
                 )
                 ->prepare()->enableAttributes();
@@ -73,14 +73,14 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
                 CoreMain::getRenderer()->createVertexBuffer()
         );
         
-        m_UVsVertexBuffer->setUsage(SGG_DYNAMIC)->create()->bind()->putData(m_UVs);
+        m_UVsVertexBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_UVs);
         
         bufferLayout->reset();
         bufferLayout
                 ->addAttribute(Ref<IVertexAttribute>(
                         bufferLayout->createVertexAttribute(1,
                                                             "vertexUV",
-                                                            SGG_FLOAT3,
+                                                            SGGDataType::SGG_FLOAT3,
                                                             (size_t) 0))
                 )
                 ->prepare()->enableAttributes();
@@ -91,7 +91,7 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
                 CoreMain::getRenderer()->createVertexBuffer()
         );
         
-        m_positionsBuffer->setUsage(SGG_DYNAMIC)->create()->bind()->putData(
+        m_positionsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(
                 m_verticesPositions);
         
         bufferLayout->reset();
@@ -99,7 +99,7 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
                 ->addAttribute(Ref<IVertexAttribute>(
                         bufferLayout->createVertexAttribute(2,
                                                             "vertexPosition",
-                                                            SGG_FLOAT3,
+                                                            SGGDataType::SGG_FLOAT3,
                                                             (size_t) 0))
                 )
                 ->prepare()->enableAttributes();
@@ -107,7 +107,7 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
         // ===============
         
         m_indicesBuffer = Ref<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
-        m_indicesBuffer->setUsage(SGG_DYNAMIC)->create()->bind()->putData(m_indices);
+        m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_indices);
         
         // ===============
         
@@ -124,9 +124,9 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
     
     // ==================================================================
     
-    m_renderInfo.m_useIndices = true;
-    m_renderInfo.m_enableFacesCulling = true;
-    m_renderInfo.m_drawMode = SGDrawMode::SGG_TRIANGLES;
+    m_renderState.m_useIndices = true;
+    m_renderState.m_useFacesCulling = true;
+    m_renderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
     
     m_shader = SGCore::Ref<SGCore::IShader>(CoreMain::getRenderer()->createShader());
     
@@ -181,7 +181,8 @@ void SGCore::Batch::renderAll() noexcept
     }
     subPassShader->useTextureBlock("u_matricesTextureBuffer", 0);
     
-    CoreMain::getRenderer()->renderArray(m_vertexArray, m_renderInfo,
+    CoreMain::getRenderer()->renderArray(m_vertexArray,
+                                         m_renderState,
                                          verticesCount,
                                          indicesCount);
     

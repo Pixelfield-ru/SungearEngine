@@ -68,6 +68,8 @@ namespace SGCore
                                    std::uint8_t multisamplingSamplesCount)
         {};
 
+        virtual void attachAttachment(const Ref<ITexture2D>& otherAttachment) noexcept = 0;
+
         void setWidth(const int& width) noexcept;
         void setHeight(const int& height) noexcept;
 

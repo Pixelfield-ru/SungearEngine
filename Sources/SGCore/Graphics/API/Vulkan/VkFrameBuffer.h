@@ -23,6 +23,8 @@ namespace SGCore
                            const int& mipLevel,
                            const int& layer) override;
 
+        void attachAttachment(const Ref<ITexture2D>& otherAttachment) noexcept final;
+
         [[nodiscard]] glm::vec3 readPixelsFromAttachment(const glm::vec2& mousePos, SGFrameBufferAttachmentType attachmentType) const noexcept final;
     };
 }

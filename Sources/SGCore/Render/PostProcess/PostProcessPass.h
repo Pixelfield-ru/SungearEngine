@@ -6,7 +6,7 @@
 #define SUNGEARENGINE_POSTPROCESSPASS_H
 
 #include "PostProcessFXSubPass.h"
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Render/IRenderPass.h"
 
 class IMeshData;
@@ -20,7 +20,6 @@ namespace SGCore
 {
     struct PostProcessPass : public IRenderPass
     {
-        MeshDataRenderInfo m_postProcessQuadRenderInfo;
         Ref<IMeshData> m_postProcessQuad;
 
         PostProcessPass();

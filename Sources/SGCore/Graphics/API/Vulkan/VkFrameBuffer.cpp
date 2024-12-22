@@ -38,3 +38,8 @@ glm::vec3 SGCore::VkFrameBuffer::readPixelsFromAttachment(const glm::vec2& mouse
 {
     return glm::vec3();
 }
+
+void SGCore::VkFrameBuffer::attachAttachment(const SGCore::Ref<SGCore::ITexture2D>& otherAttachment) noexcept
+{
+
+}

@@ -7,9 +7,9 @@
 
 #include <SGCore/pch.h>
 
+#include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Event.h"
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
 #include "SGCore/Scene/ISystem.h"
 
 namespace SGCore
@@ -43,7 +43,7 @@ namespace SGCore
         Ref<IIndexBuffer> m_linesIndexBuffer;
         Ref<IShader> m_linesShader;
         
-        MeshDataRenderInfo m_linesRenderInfo;
+        RenderState m_renderState;
         
         void drawLine(const glm::vec3& from, const glm::vec3& to, const glm::vec4& color) noexcept;
         void drawAABB(const glm::vec3& min, const glm::vec3& max, const glm::vec4& color) noexcept;

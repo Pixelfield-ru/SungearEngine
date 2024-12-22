@@ -177,16 +177,20 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
             shaderToUse->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
 
             const auto* meshedEntityPickableComponent = registry->try_get<Pickable>(meshEntity);
+            // enable picking
             if(meshedEntityPickableComponent &&
                meshedEntityPickableComponent->isPickableForCamera(forCamera3DBaseInfo.getThisEntity()))
             {
                 shaderToUse->useVectorf("u_pickingColor", meshedEntityBaseInfo.getUniqueColor());
+                // mesh.m_base.getMaterial()->m_renderState.m_stencilMask = 0xFF;
             }
             else
             {
                 shaderToUse->useVectorf("u_pickingColor", { 0, 0, 0 });
             }
         }
+
+        // mesh.m_base.getMaterial()->m_renderState.m_stencilMask = 0x00;
 
         if(meshPPLayer)
         {
@@ -213,7 +217,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<registry_t>& registry,
 
         CoreMain::getRenderer()->renderMeshData(
                 mesh.m_base.getMeshData().get(),
-                mesh.m_base.m_meshDataRenderInfo
+                mesh.m_base.getMaterial()->m_renderState
         );
         
         shaderToUse->unbindMaterialTextures(mesh.m_base.getMaterial());

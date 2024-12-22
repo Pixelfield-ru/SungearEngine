@@ -113,3 +113,8 @@ const std::shared_ptr<SGCore::VkRenderer>& SGCore::VkRenderer::getInstance() noe
 
     return s_instancePointer;
 }
+
+void SGCore::VkRenderer::useState(const SGCore::RenderState& newRenderState, bool forceState) noexcept
+{
+
+}

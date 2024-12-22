@@ -7,7 +7,7 @@
 
 #include "SGCore/Graphics/API/IShader.h"
 #include "SGCore/Utils/Timer.h"
-#include "LayeredFrameReceiver.h"
+#include "SGCore/Graphics/API/RenderState.h"
 
 namespace SGCore
 {
@@ -19,6 +19,8 @@ namespace SGCore
         bool m_active = true;
 
         AssetRef<IShader> m_shader;
+
+        RenderState m_renderState;
         
         virtual void create(const Ref<IRenderPipeline>& parentRenderPipeline) { };
         

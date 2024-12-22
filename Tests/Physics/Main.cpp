@@ -169,7 +169,7 @@ void coreInit()
         // skyboxMesh.m_base.setMaterial(AssetManager::getInstance()->loadAsset<IMaterial>("standard_skybox_material0"));
 
         ShadersUtils::loadShader(skyboxShaderComponent, "SkyboxShader");
-        skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
+        skyboxMesh.m_base.m_meshDataRenderInfo.m_useFacesCulling = false;
 
         auto& skyboxTransform = testScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(skyboxMeshEntity);
 

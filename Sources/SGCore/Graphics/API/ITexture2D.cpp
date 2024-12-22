@@ -119,3 +119,8 @@ void SGCore::ITexture2D::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetM
 
     m_textureData = Ref<std::uint8_t[]>(reinterpret_cast<std::uint8_t*>(textureData));
 }
+
+SGFrameBufferAttachmentType SGCore::ITexture2D::getFrameBufferAttachmentType() const noexcept
+{
+    return m_frameBufferAttachmentType;
+}

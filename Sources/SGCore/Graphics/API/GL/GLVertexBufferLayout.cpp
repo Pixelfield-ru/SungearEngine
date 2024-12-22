@@ -41,23 +41,23 @@ std::uint16_t SGCore::GLVertexBufferLayout::getVertexAttributeScalarsCount
 
     switch(dataType)
     {
-        case SGG_NONE: size = 0; break;
+        case SGGDataType::SGG_NONE: size = 0; break;
 
-        case SGG_INT: size = 1; break;
-        case SGG_INT2: size = 2; break;
-        case SGG_INT3: size = 3; break;
-        case SGG_INT4: size = 4; break;
+        case SGGDataType::SGG_INT: size = 1; break;
+        case SGGDataType::SGG_INT2: size = 2; break;
+        case SGGDataType::SGG_INT3: size = 3; break;
+        case SGGDataType::SGG_INT4: size = 4; break;
 
-        case SGG_FLOAT: size = 1; break;
-        case SGG_FLOAT2: size = 2; break;
-        case SGG_FLOAT3: size = 3; break;
-        case SGG_FLOAT4: size = 4; break;
+        case SGGDataType::SGG_FLOAT: size = 1; break;
+        case SGGDataType::SGG_FLOAT2: size = 2; break;
+        case SGGDataType::SGG_FLOAT3: size = 3; break;
+        case SGGDataType::SGG_FLOAT4: size = 4; break;
 
-        case SGG_MAT2: size = 2 * 2; break;
-        case SGG_MAT3: size = 3 * 3; break;
-        case SGG_MAT4: size = 4 * 4; break;
+        case SGGDataType::SGG_MAT2: size = 2 * 2; break;
+        case SGGDataType::SGG_MAT3: size = 3 * 3; break;
+        case SGGDataType::SGG_MAT4: size = 4 * 4; break;
 
-        case SGG_BOOL: size = 1; break;
+        case SGGDataType::SGG_BOOL: size = 1; break;
 
         default: size = 0; break;
     }

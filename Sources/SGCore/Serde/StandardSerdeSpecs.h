@@ -20,7 +20,7 @@
 #include "SGCore/Math/AABB.h"
 #include "SGCore/Scene/Layer.h"
 #include "SGCore/Transformations/TransformBase.h"
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Render/RenderingBase.h"
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Render/Gizmos/GizmoBase.h"
@@ -349,24 +349,24 @@ struct SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType> :
 
 
 
-// SERDE FORWARD DECL FOR struct 'SGCore::MeshDataRenderInfo'
+// SERDE FORWARD DECL FOR struct 'SGCore::RenderState'
 // =================================================================================
 template<
         SGCore::Serde::FormatType TFormatType
 >
-struct SGCore::Serde::SerdeSpec<SGCore::MeshDataRenderInfo, TFormatType> :
+struct SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType> :
         SGCore::Serde::BaseTypes<
 
                                 >,
         SGCore::Serde::DerivedTypes<
                                    >
 {
-    static inline const std::string type_name = "SGCore::MeshDataRenderInfo";
+    static inline const std::string type_name = "SGCore::RenderState";
     static inline constexpr bool is_pointer_type = false;
 
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::MeshDataRenderInfo, TFormatType>& valueView) noexcept;
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept;
 
-    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshDataRenderInfo, TFormatType>& valueView) noexcept;
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept;
 };
 // =================================================================================
 
@@ -1692,111 +1692,76 @@ void SGCore::Serde::SerdeSpec<SGCore::Pickable, TFormatType>::deserialize(SGCore
 // =================================================================================
 
 
-// SERDE IMPL FOR struct 'SGCore::MeshDataRenderInfo'
+// SERDE IMPL FOR struct 'SGCore::RenderState'
 // =================================================================================
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::MeshDataRenderInfo, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::MeshDataRenderInfo, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept
 {
-
-
     valueView.getValueContainer().addMember("m_useIndices", valueView.m_data->m_useIndices);
-
-
-
-
     valueView.getValueContainer().addMember("m_linesWidth", valueView.m_data->m_linesWidth);
-
-
-
-
     valueView.getValueContainer().addMember("m_facesCullingPolygonsOrder", valueView.m_data->m_facesCullingPolygonsOrder);
-
-
-
-
-    valueView.getValueContainer().addMember("m_enableFacesCulling", valueView.m_data->m_enableFacesCulling);
-
-
-
-
+    valueView.getValueContainer().addMember("m_useFacesCulling", valueView.m_data->m_useFacesCulling);
     valueView.getValueContainer().addMember("m_facesCullingFaceType", valueView.m_data->m_facesCullingFaceType);
-
-
-
-
     valueView.getValueContainer().addMember("m_drawMode", valueView.m_data->m_drawMode);
-
-
-
-
     valueView.getValueContainer().addMember("m_pointsSize", valueView.m_data->m_pointsSize);
-
-
+    valueView.getValueContainer().addMember("m_useDepthTest", valueView.m_data->m_useDepthTest);
 }
 
 template<
         SGCore::Serde::FormatType TFormatType
 >
-void SGCore::Serde::SerdeSpec<SGCore::MeshDataRenderInfo, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshDataRenderInfo, TFormatType>& valueView) noexcept
+void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept
 {
 
     const auto m_useIndices = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useIndices)>("m_useIndices");
-
     if(m_useIndices)
     {
         valueView.m_data->m_useIndices = *m_useIndices;
     }
 
-
     const auto m_linesWidth = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_linesWidth)>("m_linesWidth");
-
     if(m_linesWidth)
     {
         valueView.m_data->m_linesWidth = *m_linesWidth;
     }
 
-
     const auto m_facesCullingPolygonsOrder = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_facesCullingPolygonsOrder)>("m_facesCullingPolygonsOrder");
-
     if(m_facesCullingPolygonsOrder)
     {
         valueView.m_data->m_facesCullingPolygonsOrder = *m_facesCullingPolygonsOrder;
     }
 
-
-    const auto m_enableFacesCulling = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_enableFacesCulling)>("m_enableFacesCulling");
-
+    const auto m_enableFacesCulling = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useFacesCulling)>("m_useFacesCulling");
     if(m_enableFacesCulling)
     {
-        valueView.m_data->m_enableFacesCulling = *m_enableFacesCulling;
+        valueView.m_data->m_useFacesCulling = *m_enableFacesCulling;
     }
 
-
     const auto m_facesCullingFaceType = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_facesCullingFaceType)>("m_facesCullingFaceType");
-
     if(m_facesCullingFaceType)
     {
         valueView.m_data->m_facesCullingFaceType = *m_facesCullingFaceType;
     }
 
-
     const auto m_drawMode = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_drawMode)>("m_drawMode");
-
     if(m_drawMode)
     {
         valueView.m_data->m_drawMode = *m_drawMode;
     }
 
-
     const auto m_pointsSize = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_pointsSize)>("m_pointsSize");
-
     if(m_pointsSize)
     {
         valueView.m_data->m_pointsSize = *m_pointsSize;
     }
 
+    const auto m_useDepthTest = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useDepthTest)>("m_useDepthTest");
+    if(m_useDepthTest)
+    {
+        valueView.m_data->m_useDepthTest = *m_useDepthTest;
+    }
 }
 // =================================================================================
 
@@ -2435,7 +2400,7 @@ void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::serialize(SGCore::
 
 
 
-    valueView.getValueContainer().addMember("m_meshDataRenderInfo", valueView.m_data->m_meshDataRenderInfo);
+    // valueView.getValueContainer().addMember("m_meshDataRenderInfo", valueView.m_data->m_meshDataRenderInfo);
 
 
 
@@ -2448,12 +2413,12 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::MeshBase, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshBase, TFormatType>& valueView) noexcept
 {
-    const auto m_meshDataRenderInfo = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_meshDataRenderInfo)>("m_meshDataRenderInfo");
+    /*const auto m_meshDataRenderInfo = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_meshDataRenderInfo)>("m_meshDataRenderInfo");
 
     if(m_meshDataRenderInfo)
     {
         valueView.m_data->m_meshDataRenderInfo = *m_meshDataRenderInfo;
-    }
+    }*/
 
 
     // TODO:
@@ -2954,7 +2919,7 @@ void SGCore::Serde::SerdeSpec<SGCore::DebugDraw, TFormatType>::serialize(SGCore:
 
 
 
-    valueView.getValueContainer().addMember("m_linesRenderInfo", valueView.m_data->m_linesRenderInfo);
+    valueView.getValueContainer().addMember("m_renderState", valueView.m_data->m_renderState);
 
 
 }
@@ -2973,11 +2938,11 @@ void SGCore::Serde::SerdeSpec<SGCore::DebugDraw, TFormatType>::deserialize(SGCor
     }
 
 
-    const auto m_linesRenderInfo = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_linesRenderInfo)>("m_linesRenderInfo");
+    const auto m_renderState = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_renderState)>("m_renderState");
 
-    if(m_linesRenderInfo)
+    if(m_renderState)
     {
-        valueView.m_data->m_linesRenderInfo = *m_linesRenderInfo;
+        valueView.m_data->m_renderState = *m_renderState;
     }
 
 }
@@ -3428,6 +3393,10 @@ namespace SGCore::Serde
                 })
                 {
                     resultKey = std::to_string(key);
+                }
+                else if constexpr(std::is_enum_v<KeyT>)
+                {
+                    resultKey = std::to_string(std::to_underlying(key));
                 }
                 else
                 {
@@ -4622,6 +4591,7 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader, std::forward<SharedDataT>(sharedData)...);
+            valueView.getValueContainer().addMember("m_renderState", valueView.m_data->m_renderState);
 
             valueView.getValueContainer().addMember("m_textures", valueView.m_data->m_textures, std::forward<SharedDataT>(sharedData)...);
 
@@ -4648,6 +4618,12 @@ namespace SGCore::Serde
             if(shader)
             {
                 valueView.m_data->m_shader = std::move(*shader);
+            }
+
+            const auto renderState = valueView.getValueContainer().template getMember<RenderState>("m_renderState");
+            if(renderState)
+            {
+                valueView.m_data->m_renderState = *renderState;
             }
 
             auto textures = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_textures)>("m_textures", std::forward<SharedDataT>(sharedData)...);

@@ -8,6 +8,7 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Render/MeshBase.h"
+#include "SGCore/Graphics/API/RenderState.h"
 
 namespace SGCore
 {
@@ -24,6 +25,7 @@ namespace SGCore
         glm::vec4 m_lastColor = glm::vec4 { 1.0, 1.0, 1.0, 1.0 };
 
         MeshBase m_meshBase;
+        RenderState m_renderState;
 
         GizmoBase& operator=(const GizmoBase&) = default;
         GizmoBase& operator=(GizmoBase&&) noexcept = default;

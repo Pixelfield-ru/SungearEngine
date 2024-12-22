@@ -128,6 +128,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
         cubeModel->m_nodes[0]->addOnScene(newScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities, newScene](const auto& entity) {
             skyboxEntities.push_back(entity);
             newScene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
+            newScene->getECSRegistry()->remove<SGCore::Pickable>(entity);
         });
 
         atmosphereEntity = skyboxEntities[2];
@@ -136,7 +137,6 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
         auto& atmosphereScattering = newScene->getECSRegistry()->emplace<SGCore::Atmosphere>(atmosphereEntity);
         atmosphereScattering.m_sunRotation.z = 90.0;
         skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_skybox_material0"));
-        skyboxMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
 
         auto& skyboxTransform = newScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(atmosphereEntity);
 
@@ -176,13 +176,13 @@ void SGE::EditorScene::addEditorEntities() noexcept
         cubeModel->m_nodes[0]->addOnScene(m_scene, SG_LAYER_OPAQUE_NAME, [&gridEntities, scene](const auto& entity) {
             gridEntities.push_back(entity);
             scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
+            scene->getECSRegistry()->remove<SGCore::Pickable>(entity);
         });
 
         m_data.m_editorGrid = gridEntities[2];
         registry->emplace<SGCore::NonSavable>(gridEntities[0]);
         auto& gridMesh = scene->getECSRegistry()->get<SGCore::Mesh>(m_data.m_editorGrid);
         gridMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_grid_material"));
-        gridMesh.m_base.m_meshDataRenderInfo.m_enableFacesCulling = false;
 
         auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
         // gridTransform.m_ownTransform.m_scale = { 100.0f, 100.0f, 1.0f, };

@@ -7,7 +7,7 @@
 
 #include <SGCore/pch.h>
 
-#include "SGCore/ImportedScenesArch/MeshDataRenderInfo.h"
+#include "SGCore/Graphics/API/RenderState.h"
 #include "SGCore/Utils/EventListener.h"
 #include "SGCore/Scene/ISystem.h"
 #include "BatchEntityRanges.h"
@@ -66,7 +66,7 @@ namespace SGCore
         Ref<IIndexBuffer> m_indicesBuffer;
         Ref<ITexture2D> m_matricesTextureBuffer;
         
-        MeshDataRenderInfo m_renderInfo;
+        RenderState m_renderState;
         
         Ref<IShader> m_shader;
         
