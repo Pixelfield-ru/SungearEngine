@@ -9,10 +9,14 @@
 
 namespace SGCore
 {
+    struct IMeshData;
+
     struct OutlinePass : public IRenderPass
     {
-        float m_outlineThickness = 1.2;
+        float m_outlineThickness = 3.0;
         glm::vec4 m_outlineColor { 0.5, 0.5, 0.0, 1.0 };
+
+        Ref<IMeshData> m_postProcessQuad;
 
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) noexcept final;
 

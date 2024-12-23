@@ -78,10 +78,24 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFXFrameBuffer->setSize(primaryMonitorWidth, primaryMonitorHeight);
     m_layersFXFrameBuffer->create();
     m_layersFXFrameBuffer->bind();
-    m_layersFXFrameBuffer->addAttachment(
+    /*m_layersFXFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0,
             SGGColorFormat::SGG_DEPTH_STENCIL,
             SGGColorInternalFormat::SGG_DEPTH24_STENCIL8,
+            0,
+            0
+    );*/
+    m_layersFXFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0, // IMPROVISED STENCIL BUFFER
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
+            0,
+            0
+    );
+    m_layersFXFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1, // CONTAINS OBJECTS THAT MUST BE OUTLINED
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB8,
             0,
             0
     );
