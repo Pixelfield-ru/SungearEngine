@@ -6,11 +6,17 @@
 #define SUNGEARENGINEEDITOR_SCENEVIEW_H
 
 #include <SGCore/ImGuiWrap/Views/IView.h>
+#include <SGCore/Render/Camera3D.h>
+#include <ImGuizmo/ImGuizmo.h>
+
+#include "Utils/EntitiesManipulator.h"
 
 namespace SGE
 {
     struct SceneView : public SGCore::ImGuiWrap::IView
     {
+        EntitiesManipulator m_entitiesManipulator;
+
         bool begin() final;
         void renderBody() final;
         void end() final;

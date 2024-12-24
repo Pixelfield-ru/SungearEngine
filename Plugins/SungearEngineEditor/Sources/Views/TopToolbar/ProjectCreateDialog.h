@@ -22,17 +22,17 @@ namespace SGE
         
         void renderBody() override;
         void footerRender() override;
-        
-    private:
+
         void submit();
+        std::string m_dirPath;
+    private:
         void cancel();
 
         static inline const char* m_cppStandards[] = { /*"C++98", "C++03", "C++11", "C++14", "C++17",*/ "C++20", "C++23" };
         static inline size_t m_cppStandardsCount = 2;
 
         int m_currentSelectedCPPStandard = 0;
-        
-        std::string m_dirPath;
+
         std::string m_projectName;
         
         std::string m_error;

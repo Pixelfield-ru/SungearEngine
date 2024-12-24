@@ -64,6 +64,8 @@ SGE::MainView::MainView()
 
 bool SGE::MainView::begin()
 {
+    ImGuizmo::BeginFrame();
+
     return true;
 }
 

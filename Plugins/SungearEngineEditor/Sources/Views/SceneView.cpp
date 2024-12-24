@@ -8,7 +8,6 @@
 #include <imgui_internal.h>
 #include <SGCore/Graphics/API/ITexture2D.h>
 #include <SGCore/Memory/AssetManager.h>
-#include <SGCore/Render/LayeredFrameReceiver.h>
 #include <SGCore/Graphics/API/IFrameBuffer.h>
 #include <SGCore/Input/InputManager.h>
 #include <SGCore/Input/InputListener.h>
@@ -34,21 +33,29 @@ void SGE::SceneView::renderBody()
 {
     auto mainInputListener = SGCore::InputManager::getMainInputListener();
 
+    SGCore::Ref<SGCore::Camera3D> editorCamera3D;
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5, 0.5));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
     ImGuiWindowClass windowClass;
-    windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoDockingOverOther | ImGuiDockNodeFlags_AutoHideTabBar;
+    windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
     ImGui::SetNextWindowClass(&windowClass);
 
     ImGui::Begin("SceneView");
 
+
     const auto windowPos = ImGui::GetWindowPos();
     const auto windowSize = ImGui::GetWindowSize();
+
+    // setting up imguizmo and drawing gizmo to manipulate entities
+    m_entitiesManipulator.m_rectPos = windowPos;
+    m_entitiesManipulator.m_rectSize = windowSize;
 
     auto currentEditorScene = EditorScene::getCurrentScene();
     if(currentEditorScene && currentEditorScene->m_scene)
     {
+
         /*auto tex = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
                 "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
         );*/
@@ -61,15 +68,24 @@ void SGE::SceneView::renderBody()
         auto* camera3D = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::Ref<SGCore::Camera3D>>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
-        if(layeredFrameReceiver)
+        if(layeredFrameReceiver && camera3D)
         {
+            editorCamera3D = *camera3D;
+
             ImGui::Image(layeredFrameReceiver->m_layersFXFrameBuffer->getAttachment(
                     SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7
             )->getTextureNativeHandler(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 
+            if(editorCamera3D)
+            {
+                m_entitiesManipulator.manipulateEntities(*currentEditorScene->m_scene,
+                                                         currentEditorScene->m_data.m_editorCamera, *editorCamera3D
+                );
+            }
+
             // picking entity
             if(mainInputListener->mouseButtonPressed(SGCore::MouseButton::MOUSE_BUTTON_LEFT) &&
-               ImGui::IsWindowHovered())
+               ImGui::IsWindowHovered() && !ImGuizmo::IsOver())
             {
                 const glm::vec2 mousePos = { mainInputListener->getCursorPositionX(),
                                              mainInputListener->getCursorPositionY() };
@@ -139,13 +155,6 @@ void SGE::SceneView::renderBody()
             currentEditorScene->saveByPath(scenePath.parent_path(), scenePath.stem());
             std::cout << "scene saved" << std::endl;
         }
-
-        if(mainInputListener->keyboardKeyPressed(SGCore::KeyboardKey::KEY_K))
-        {
-            /*auto noMat = SGCore::AssetManager::getInstance()->getOrAddAssetByPath<SGCore::IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
-            auto& mesh = EditorScene::getCurrentScene()->m_scene->getECSRegistry()->get<SGCore::Mesh>(EditorScene::getCurrentScene()->m_data.m_editorGrid);
-            mesh.m_base.setMaterial(noMat);*/
-        }
     }
 
     ImGui::End();
@@ -203,9 +212,4 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
         entities.push_back(entity);
     });
-    /*auto& rotation = SGCore::Scene::getCurrentScene()->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(entities[0])->m_ownTransform.m_rotation;
-    rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));*/
-
-    // SG_ASSERT(false, "");
-    std::cout << "" << std::endl;
 }

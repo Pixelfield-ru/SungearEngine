@@ -22,6 +22,7 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
     SGCore::PathInterpolationMarkup::getGlobalMarkup()["sgEditorPath"] = getLocalPath();
 
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
+    ImGuizmo::SetImGuiContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
 	m_name = "SungearEngineEditor";
 	m_version = "1.0.0";
