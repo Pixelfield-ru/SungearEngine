@@ -73,6 +73,16 @@ void SGE::SceneTreeView::renderBody()
                          {0, 1}, {1, 0}
             );
         }
+
+        ImGui::TreePush("Entities");
+
+        auto entitiesView = currentEditorScene->m_scene->getECSRegistry()->view<SGCore::EntityBaseInfo>();
+        for(const auto& e : entitiesView)
+        {
+            drawTreeNode(e, true);
+        }
+
+        ImGui::TreePop();
     }
     
     ImGui::End();
@@ -83,4 +93,56 @@ void SGE::SceneTreeView::renderBody()
 void SGE::SceneTreeView::end()
 {
     IView::end();
+}
+
+void SGE::SceneTreeView::drawTreeNode(const SGCore::entity_t& parentEntity, bool checkForRoot) noexcept
+{
+    static auto formEntityName = [](const SGCore::EntityBaseInfo& entityBaseInfo, const SGCore::entity_t& entity) {
+        return entityBaseInfo.getName() + " (entity: " + std::to_string(std::to_underlying(entity)) + ")";
+    };
+
+    const auto& currentScene = EditorScene::getCurrentScene()->m_scene;
+
+    auto& entityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(parentEntity);
+    auto& entityTransform = currentScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(parentEntity);
+
+    if((entityBaseInfo.getParent() == entt::null || !checkForRoot) &&
+       ImGui::TreeNode(formEntityName(entityBaseInfo, parentEntity).c_str()))
+    {
+        {
+            auto euler = glm::eulerAngles(entityTransform->m_ownTransform.m_rotation);
+            auto scale = entityTransform->m_ownTransform.m_scale;
+            auto position = entityTransform->m_ownTransform.m_position;
+            ImGui::Text(fmt::format("Position: {}, {}, {}", position.x, position.y, position.z).c_str());
+            ImGui::Text(fmt::format("Rotation: {}, {}, {}", glm::degrees(euler.x), glm::degrees(euler.y), glm::degrees(euler.z)).c_str());
+            ImGui::Text(fmt::format("Scale: {}, {}, {}", scale.x, scale.y, scale.z).c_str());
+        }
+
+        for(const auto& childEntity : entityBaseInfo.getChildren())
+        {
+            auto& childEntityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(childEntity);
+            auto& childEntityTransform = currentScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(childEntity);
+
+            if(childEntityBaseInfo.getChildren().empty())
+            {
+                if(ImGui::TreeNodeEx(formEntityName(childEntityBaseInfo, childEntity).c_str(), ImGuiTreeNodeFlags_Bullet))
+                {
+                    auto euler = glm::eulerAngles(childEntityTransform->m_ownTransform.m_rotation);
+                    auto scale = childEntityTransform->m_ownTransform.m_scale;
+                    auto position = childEntityTransform->m_ownTransform.m_position;
+                    ImGui::Text(fmt::format("Position: {}, {}, {}", position.x, position.y, position.z).c_str());
+                    ImGui::Text(fmt::format("Rotation: {}, {}, {}", glm::degrees(euler.x), glm::degrees(euler.y), glm::degrees(euler.z)).c_str());
+                    ImGui::Text(fmt::format("Scale: {}, {}, {}", scale.x, scale.y, scale.z).c_str());
+
+                    ImGui::TreePop();
+                }
+            }
+            else
+            {
+                drawTreeNode(childEntity, false);
+            }
+        }
+
+        ImGui::TreePop();
+    }
 }

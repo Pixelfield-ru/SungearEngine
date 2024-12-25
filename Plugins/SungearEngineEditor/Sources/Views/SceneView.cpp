@@ -79,7 +79,7 @@ void SGE::SceneView::renderBody()
             if(editorCamera3D)
             {
                 m_entitiesManipulator.manipulateEntities(*currentEditorScene->m_scene,
-                                                         currentEditorScene->m_data.m_editorCamera, *editorCamera3D
+                                                         currentEditorScene->m_data.m_editorCamera, editorCamera3D->m_pickedEntities
                 );
             }
 

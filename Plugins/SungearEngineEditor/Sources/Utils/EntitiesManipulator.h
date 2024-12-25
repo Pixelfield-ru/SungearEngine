@@ -8,8 +8,10 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <ImGuizmo/ImGuizmo.h>
-#include <SGCore/Render/Camera3D.h>
 #include <SGCore/Scene/Scene.h>
+#include <SGCore/Render/RenderingBase.h>
+#include <SGCore/Transformations/Transform.h>
+#include <SGCore/Scene/EntityBaseInfo.h>
 
 namespace SGE
 {
@@ -19,17 +21,142 @@ namespace SGE
         ImVec2 m_rectPos { };
         ImVec2 m_rectSize { };
 
-        ImGuizmo::MODE m_mode = ImGuizmo::MODE::WORLD;
+        ImGuizmo::MODE m_mode = ImGuizmo::MODE::LOCAL;
 
         ImGuizmo::OPERATION m_manipulationOperation =
                 ImGuizmo::OPERATION::TRANSLATE |
-                ImGuizmo::OPERATION::ROTATE |
-                ImGuizmo::OPERATION::SCALE;
+                ImGuizmo::OPERATION::ROTATE;
 
 
+        template<typename ContainerT>
         void manipulateEntities(const SGCore::Scene& forScene,
                                 const SGCore::entity_t& camera3DEntity,
-                                const SGCore::Camera3D& forCamera3D) noexcept;
+                                const ContainerT& manipulatingEntities) noexcept
+        {
+            ImGuizmo::SetOrthographic(m_isOrtho);
+            ImGuizmo::SetDrawlist();
+
+            ImGuizmo::SetRect(m_rectPos.x, m_rectPos.y, m_rectSize.x, m_rectSize.y);
+
+            SGCore::Ref<SGCore::RenderingBase> camera3DRenderingBase;
+            {
+                auto* tmp = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::RenderingBase>>(camera3DEntity);
+                if(!tmp) return;
+
+                camera3DRenderingBase = *tmp;
+            }
+
+            std::vector<SGCore::Ref<SGCore::Transform>> entitiesTransforms;
+            std::vector<SGCore::EntityBaseInfo*> entitiesBaseInfo;
+
+            for(const auto& entity : manipulatingEntities)
+            {
+                auto* tmpTransform = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(entity);
+                auto* tmpBaseInfo = forScene.getECSRegistry()->try_get<SGCore::EntityBaseInfo>(entity);
+
+                if(!tmpTransform || !tmpBaseInfo) continue;
+
+                entitiesTransforms.push_back(*tmpTransform);
+
+                entitiesBaseInfo.push_back(tmpBaseInfo);
+            }
+
+            // manipulating each entity base first entity
+            if(!entitiesTransforms.empty() && !entitiesBaseInfo.empty())
+            {
+                SGCore::Ref<SGCore::Transform> parentTransform;
+
+                auto tmpMatrix = entitiesTransforms[0]->m_finalTransform.m_modelMatrix;
+
+                if(entitiesBaseInfo[0]->getParent() != entt::null)
+                {
+                    {
+                        auto* tmp = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(
+                                entitiesBaseInfo[0]->getParent());
+
+                        if(tmp)
+                        {
+                            parentTransform = *tmp;
+                        }
+                    }
+                }
+
+                glm::mat4 deltaM;
+                if(ImGuizmo::Manipulate(
+                        glm::value_ptr(camera3DRenderingBase->m_viewMatrix),
+                        glm::value_ptr(camera3DRenderingBase->m_projectionMatrix),
+                        m_manipulationOperation,                                                // current manipulation operation
+                        m_mode,                                                                 // local or world mode
+                        glm::value_ptr(tmpMatrix),
+                        glm::value_ptr(deltaM)
+                ))
+                {
+                    if(parentTransform)
+                    {
+                        tmpMatrix = glm::inverse(parentTransform->m_finalTransform.m_modelMatrix) * tmpMatrix;
+                    }
+
+
+                    {
+                        glm::mat4 originalMatrix = entitiesTransforms[0]->m_ownTransform.m_modelMatrix;
+
+                        glm::vec3 deltaTranslation;
+                        glm::quat deltaRotation;
+                        glm::vec3 deltaScale;
+                        getDeltaBetweenMatrices(originalMatrix, tmpMatrix, deltaTranslation, deltaRotation, deltaScale);
+
+                        entitiesTransforms[0]->m_ownTransform.m_position += deltaTranslation;
+
+                        entitiesTransforms[0]->m_ownTransform.m_rotation =
+                                deltaRotation * entitiesTransforms[0]->m_ownTransform.m_rotation;
+
+                        entitiesTransforms[0]->m_ownTransform.m_scale += deltaScale;
+                    }
+
+                    if(entitiesTransforms.size() > 1)
+                    {
+                        for(size_t i = 1; i < entitiesTransforms.size(); ++i)
+                        {
+                            auto& transform = entitiesTransforms[i];
+                            auto* baseInfo = entitiesBaseInfo[i];
+
+                            SGCore::Ref<SGCore::Transform> childEntityParent;
+
+                            if(baseInfo->getParent() != entt::null)
+                            {
+                                {
+                                    auto* tmp = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(
+                                            baseInfo->getParent());
+
+                                    if(tmp)
+                                    {
+                                        childEntityParent = *tmp;
+                                    }
+                                }
+                            }
+
+                            auto finalMat = deltaM;
+                            if(childEntityParent)
+                            {
+                                finalMat = glm::inverse(childEntityParent->m_finalTransform.m_rotationMatrix) * finalMat;
+                                finalMat = glm::inverse(childEntityParent->m_finalTransform.m_scaleMatrix) * finalMat;
+                            }
+
+                            glm::vec3 updatedTranslation, updatedScale, skew;
+                            glm::quat updatedRotation;
+                            glm::vec4 perspective;
+                            glm::decompose(finalMat, updatedScale, updatedRotation, updatedTranslation, skew, perspective);
+
+                            transform->m_ownTransform.m_position += updatedTranslation;
+                            // transform->m_ownTransform.m_rotation = updatedRotation * transform->m_ownTransform.m_rotation;
+                            transform->m_ownTransform.m_scale += updatedScale;
+                        }
+                    }
+                }
+            }
+        }
+
+        void rotateAroundWorldQuaternion(glm::quat& localRotation, const glm::quat& worldRotation) noexcept;
 
     private:
         static void getDeltaBetweenMatrices(const glm::mat4& originalMatrix, const glm::mat4& updatedMatrix,

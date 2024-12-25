@@ -14,6 +14,9 @@ namespace SGE
         bool begin() final;
         void renderBody() final;
         void end() final;
+
+    private:
+        void drawTreeNode(const SGCore::entity_t& parentEntity, bool checkForRoot) noexcept;
     };
 }
 

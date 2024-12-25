@@ -51,6 +51,29 @@ std::string SGE::SungearEngineEditor::onConstruct(const std::vector<std::string>
 
     onConstructed();
 
+    // Матрицы родителей и объекта
+    glm::mat4 M_parent2 = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 0.0f)); // Матрица родителя entity2
+    glm::mat4 M_local3 = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 2.0f, 3.0f));  // Локальная матрица entity3 относительно entity2
+    glm::mat4 M_parent0 = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 1.0f, 0.0f)); // Матрица нового родителя entity0
+
+    // 1. Вычисляем мировую матрицу entity3 относительно entity2
+    glm::mat4 M_world3 = M_parent2 * M_local3;
+
+    // 2. Пересчитываем локальную матрицу entity3 относительно нового родителя (entity0)
+    glm::mat4 M_newLocal3 = glm::inverse(M_parent0) * M_world3;
+
+    // Вывод результата
+    std::cout << "Old Local Matrix:\n";
+    for (int i = 0; i < 4; ++i) {
+        std::cout << glm::to_string(M_local3) << "\n";
+    }
+
+    // Вывод результата
+    std::cout << "New Local Matrix:\n";
+    for (int i = 0; i < 4; ++i) {
+        std::cout << glm::to_string(M_newLocal3) << "\n";
+    }
+
 	// No error.
 	return "";
 }
