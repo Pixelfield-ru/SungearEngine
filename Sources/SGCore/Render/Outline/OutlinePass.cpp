@@ -16,7 +16,7 @@
 void SGCore::OutlinePass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline) noexcept
 {
     auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            Paths::getDefaultPaths()["Shaders/StandardOutline"]->resolved());
+            *Paths::getDefaultPaths()["Shaders/StandardOutline"]);
 
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 

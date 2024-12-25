@@ -149,7 +149,7 @@ namespace SGE
 
                             transform->m_ownTransform.m_position += updatedTranslation;
                             // transform->m_ownTransform.m_rotation = updatedRotation * transform->m_ownTransform.m_rotation;
-                            transform->m_ownTransform.m_scale += updatedScale;
+                            // transform->m_ownTransform.m_scale += updatedScale;
                         }
                     }
                 }

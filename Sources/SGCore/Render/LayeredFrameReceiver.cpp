@@ -134,7 +134,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
 
     auto fxShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     fxShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            Paths::getDefaultPaths()["Shaders/LayeredPP/LayerFXShader"]->resolved()));
+            *Paths::getDefaultPaths()["Shaders/LayeredPP/LayerFXShader"]));
 
     // SGPPLayerFXPass
     newPPLayer->m_FXSubPassShader = fxShader;

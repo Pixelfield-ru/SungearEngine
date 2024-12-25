@@ -87,7 +87,7 @@ SGCore::PhysicsDebugDraw::PhysicsDebugDraw()
     {
         m_linesShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
         m_linesShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-                currentRenderPipeline->m_shadersPaths["LinesDebugDrawShader"]->resolved()));
+                *currentRenderPipeline->m_shadersPaths["LinesDebugDrawShader"]));
     }
 }
 
@@ -199,5 +199,5 @@ void SGCore::PhysicsDebugDraw::onRenderPipelineSet() noexcept
 {
     m_linesShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
     m_linesShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["LinesDebugDrawShader"]->resolved()));
+            *RenderPipelinesManager::getCurrentRenderPipeline()->m_shadersPaths["LinesDebugDrawShader"]));
 }

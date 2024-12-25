@@ -30,7 +30,7 @@ size_t renderedInOctrees = 0;
 void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline)
 {
     auto shaderFile = AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            parentRenderPipeline->m_shadersPaths["StandardMeshShader"]->resolved());
+            *parentRenderPipeline->m_shadersPaths["StandardMeshShader"]);
 
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 
