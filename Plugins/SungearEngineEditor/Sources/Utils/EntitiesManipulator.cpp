@@ -17,9 +17,10 @@ void SGE::EntitiesManipulator::getDeltaBetweenMatrices(const glm::mat4& original
     glm::decompose(updatedMatrix, updatedScale, updatedRotation, updatedTranslation, skew, perspective);
 
     deltaTranslation = updatedTranslation - originalTranslation;
-    deltaScale = updatedScale - originalScale;
+    deltaScale = updatedScale / originalScale;
 
     deltaRotation = updatedRotation * glm::inverse(originalRotation);
+    // deltaRotation = glm::inverse(updatedRotation) * originalRotation;
 }
 
 void SGE::EntitiesManipulator::rotateAroundWorldQuaternion(glm::quat& localRotation, const glm::quat& worldRotation) noexcept

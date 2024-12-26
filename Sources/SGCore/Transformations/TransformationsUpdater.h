@@ -29,7 +29,7 @@ namespace SGCore
 
         TransformationsUpdater();
 
-        void parallelUpdate(const double& dt, const double& fixedDt) noexcept final;
+        void update(const double& dt, const double& fixedDt) noexcept final;
 
         // main thread
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;

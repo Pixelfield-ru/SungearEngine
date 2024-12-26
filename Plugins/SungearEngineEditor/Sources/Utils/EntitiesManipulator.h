@@ -21,11 +21,12 @@ namespace SGE
         ImVec2 m_rectPos { };
         ImVec2 m_rectSize { };
 
-        ImGuizmo::MODE m_mode = ImGuizmo::MODE::LOCAL;
+        ImGuizmo::MODE m_mode = ImGuizmo::MODE::WORLD;
 
         ImGuizmo::OPERATION m_manipulationOperation =
                 ImGuizmo::OPERATION::TRANSLATE |
-                ImGuizmo::OPERATION::ROTATE;
+                ImGuizmo::OPERATION::ROTATE |
+                ImGuizmo::OPERATION::SCALE;
 
 
         template<typename ContainerT>
@@ -81,6 +82,57 @@ namespace SGE
                     }
                 }
 
+                /*glm::mat4 deltaM;
+                glm::mat4 tmpMatrix2 = tmpMatrix;
+                if(ImGuizmo::Manipulate(
+                        glm::value_ptr(camera3DRenderingBase->m_viewMatrix),
+                        glm::value_ptr(camera3DRenderingBase->m_projectionMatrix),
+                        m_manipulationOperation,                                                // current manipulation operation
+                        m_mode,                                                                 // local or world mode
+                        glm::value_ptr(tmpMatrix2),
+                        glm::value_ptr(deltaM)
+                ))
+                {
+                    for(size_t i = 0; i < entitiesTransforms.size(); ++i)
+                    {
+                        auto& transform = entitiesTransforms[i];
+                        auto* baseInfo = entitiesBaseInfo[i];
+
+                        SGCore::Ref<SGCore::Transform> childEntityParent;
+
+                        if(baseInfo->getParent() != entt::null)
+                        {
+                            {
+                                auto* tmp = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(
+                                        baseInfo->getParent());
+
+                                if(tmp)
+                                {
+                                    childEntityParent = *tmp;
+                                }
+                            }
+                        }
+
+                        tmpMatrix = deltaM * transform->m_finalTransform.m_modelMatrix;
+                        if(childEntityParent)
+                        {
+                            tmpMatrix = glm::inverse(childEntityParent->m_finalTransform.m_modelMatrix) * tmpMatrix;
+                        }
+
+                        glm::vec3 deltaTranslation;
+                        glm::quat deltaRotation;
+                        glm::vec3 deltaScale;
+                        getDeltaBetweenMatrices(transform->m_ownTransform.m_modelMatrix, tmpMatrix, deltaTranslation, deltaRotation, deltaScale);
+
+                        transform->m_ownTransform.m_position += deltaTranslation;
+
+                        transform->m_ownTransform.m_rotation =
+                                deltaRotation * transform->m_ownTransform.m_rotation;
+
+                        transform->m_ownTransform.m_scale *= deltaScale;
+                    }
+                }*/
+
                 glm::mat4 deltaM;
                 if(ImGuizmo::Manipulate(
                         glm::value_ptr(camera3DRenderingBase->m_viewMatrix),
@@ -96,6 +148,8 @@ namespace SGE
                         tmpMatrix = glm::inverse(parentTransform->m_finalTransform.m_modelMatrix) * tmpMatrix;
                     }
 
+                    // glm::mat4 deltaMatrix = tmpMatrix * glm::inverse(entitiesTransforms[0]->m_ownTransform.m_modelMatrix);
+                    glm::mat4 deltaMatrix;
 
                     {
                         glm::mat4 originalMatrix = entitiesTransforms[0]->m_ownTransform.m_modelMatrix;
@@ -110,7 +164,11 @@ namespace SGE
                         entitiesTransforms[0]->m_ownTransform.m_rotation =
                                 deltaRotation * entitiesTransforms[0]->m_ownTransform.m_rotation;
 
-                        entitiesTransforms[0]->m_ownTransform.m_scale += deltaScale;
+                        entitiesTransforms[0]->m_ownTransform.m_scale *= deltaScale;
+
+                        deltaMatrix = glm::translate(glm::mat4(1.0), deltaTranslation);
+                        deltaMatrix *= glm::toMat4(deltaRotation);
+                        deltaMatrix *= glm::scale(glm::mat4(1.0), deltaScale);
                     }
 
                     if(entitiesTransforms.size() > 1)
@@ -135,11 +193,17 @@ namespace SGE
                                 }
                             }
 
-                            auto finalMat = deltaM;
+                            auto finalMat = deltaMatrix;
+                            if(parentTransform)
+                            {
+                                finalMat = parentTransform->m_finalTransform.m_scaleMatrix * finalMat;
+                                finalMat = parentTransform->m_finalTransform.m_rotationMatrix * finalMat;
+                            }
+
                             if(childEntityParent)
                             {
-                                finalMat = glm::inverse(childEntityParent->m_finalTransform.m_rotationMatrix) * finalMat;
                                 finalMat = glm::inverse(childEntityParent->m_finalTransform.m_scaleMatrix) * finalMat;
+                                finalMat = glm::inverse(childEntityParent->m_finalTransform.m_rotationMatrix) * finalMat;
                             }
 
                             glm::vec3 updatedTranslation, updatedScale, skew;
@@ -147,9 +211,13 @@ namespace SGE
                             glm::vec4 perspective;
                             glm::decompose(finalMat, updatedScale, updatedRotation, updatedTranslation, skew, perspective);
 
+                            std::cout << "translation: " << glm::to_string(updatedTranslation)
+                            << ", rotation: " << glm::to_string(updatedRotation)
+                            << ", scale: " << glm::to_string(updatedScale) << std::endl;
+
                             transform->m_ownTransform.m_position += updatedTranslation;
                             // transform->m_ownTransform.m_rotation = updatedRotation * transform->m_ownTransform.m_rotation;
-                            // transform->m_ownTransform.m_scale += updatedScale;
+                            // transform->m_ownTransform.m_scale *= updatedScale;
                         }
                     }
                 }

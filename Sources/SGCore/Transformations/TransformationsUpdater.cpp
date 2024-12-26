@@ -26,7 +26,7 @@ SGCore::TransformationsUpdater::TransformationsUpdater()
     m_thread->start();
 }
 
-void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const double& fixedDt) noexcept
+void SGCore::TransformationsUpdater::update(const double& dt, const double& fixedDt) noexcept
 {
     auto lockedScene = getScene();
 
@@ -155,6 +155,8 @@ void SGCore::TransformationsUpdater::parallelUpdate(const double& dt, const doub
             {
                 ownTransform.m_modelMatrix =
                         ownTransform.m_translationMatrix * ownTransform.m_rotationMatrix * ownTransform.m_scaleMatrix;
+                /*ownTransform.m_modelMatrix =
+                        ownTransform.m_scaleMatrix * ownTransform.m_rotationMatrix * ownTransform.m_translationMatrix;*/
 
                 if(parentTransform)
                 {
