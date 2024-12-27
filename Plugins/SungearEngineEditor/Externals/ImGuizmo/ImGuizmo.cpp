@@ -2645,7 +2645,8 @@ namespace IMGUIZMO_NAMESPACE
       return radius < pixelRadius;
    }
 
-   bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap)
+   bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, OPERATION* usedOperation,
+                   float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap)
    {
       gContext.mDrawList->PushClipRect (ImVec2 (gContext.mX, gContext.mY), ImVec2 (gContext.mX + gContext.mWidth, gContext.mY + gContext.mHeight), false);
 
@@ -2673,9 +2674,29 @@ namespace IMGUIZMO_NAMESPACE
       {
          if (!gContext.mbUsingBounds)
          {
-            manipulated = HandleTranslation(matrix, deltaMatrix, operation, type, snap) ||
-                          HandleScale(matrix, deltaMatrix, operation, type, snap) ||
-                          HandleRotation(matrix, deltaMatrix, operation, type, snap);
+             bool isTranslationHandled = HandleTranslation(matrix, deltaMatrix, operation, type, snap);
+             bool isScaleHandled = HandleScale(matrix, deltaMatrix, operation, type, snap);
+             bool isRotationHandled = HandleRotation(matrix, deltaMatrix, operation, type, snap);
+
+             manipulated = isTranslationHandled ||
+                           isScaleHandled ||
+                           isRotationHandled;
+
+             if(usedOperation)
+             {
+                 if(isTranslationHandled)
+                 {
+                    *usedOperation = OPERATION::TRANSLATE;
+                 }
+                 if(isScaleHandled)
+                 {
+                     *usedOperation = OPERATION::SCALE;
+                 }
+                 if(isRotationHandled)
+                 {
+                     *usedOperation = OPERATION::ROTATE;
+                 }
+             }
          }
       }
 

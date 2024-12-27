@@ -5,12 +5,13 @@
 #ifndef SUNGEARENGINE_PICKABLE_H
 #define SUNGEARENGINE_PICKABLE_H
 
+#include <sgcore_export.h>
 #include <vector>
 #include "SGCore/Scene/EntityRef.h"
 
 namespace SGCore
 {
-    struct Pickable
+    struct SGCORE_EXPORT Pickable
     {
         // refs to cameras entities
         std::vector<EntityRef> m_pickableForCameras;

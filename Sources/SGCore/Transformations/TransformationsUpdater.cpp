@@ -178,7 +178,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
                                finalPerspective);
 
                 finalTransform.m_position = finalTranslation;
-                finalTransform.m_rotation = glm::degrees(glm::eulerAngles(finalRotation));
+                finalTransform.m_rotation = finalRotation;
                 finalTransform.m_scale = finalScale;
 
                 matrices.push_back({ entity, finalTransform.m_modelMatrix });

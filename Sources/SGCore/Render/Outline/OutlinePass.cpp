@@ -66,7 +66,6 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
     m_renderState.use(true);
 
     m_shader->bind();
-    m_shader->useVectorf("u_outlineColor", m_outlineColor);
     m_shader->useFloat("u_outlineThickness", m_outlineThickness);
 
     camerasView.each([&meshesView,
@@ -96,6 +95,7 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
                                const Ref<Transform>& meshTransform) mutable {
             if(!camera3D->m_pickedEntities.contains(meshEntity)) return;
 
+            m_shader->useVectorf("u_outlineColor", meshBaseInfo.m_outlineColor);
             m_shader->useMatrix("objectTransform.modelMatrix", meshTransform->m_finalTransform.m_modelMatrix);
             m_shader->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
 

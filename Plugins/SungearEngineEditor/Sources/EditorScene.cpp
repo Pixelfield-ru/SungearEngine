@@ -87,8 +87,11 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::loadByPath(const std::filesystem
     // adding editor camera to Pickable component of all entities
     auto pickableEntitiesView = loadedScene->m_scene->getECSRegistry()->view<SGCore::Pickable>();
     pickableEntitiesView.each([&loadedScene](SGCore::Pickable& pickable){
-        pickable.m_pickableForCameras.push_back(loadedScene->m_data.m_editorCamera);
+        pickable.m_pickableForCameras.emplace_back(loadedScene->m_data.m_editorCamera);
     });
+
+    // adding non savable to all editor-only entities
+    loadedScene->m_scene->getECSRegistry()->emplace<SGCore::NonSavable>(loadedScene->m_data.m_editorGrid);
 
     loadedScene->m_scene->resolveAllEntitiesRefs();
 

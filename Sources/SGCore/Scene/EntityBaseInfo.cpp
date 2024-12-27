@@ -236,3 +236,32 @@ void SGCore::EntityBaseInfo::setThisEntity(const SGCore::entity_t& entity) noexc
     m_thisEntity = entity;
     generateUniqueColor();
 }
+
+SGCore::entity_t SGCore::EntityBaseInfo::getRootParent(registry_t& inRegistry) const noexcept
+{
+    auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo>(m_parent);
+
+    if(m_parent == entt::null || !parentBaseInfo)
+    {
+        return m_thisEntity;
+    }
+
+    return parentBaseInfo->getRootParent(inRegistry);
+}
+
+void SGCore::EntityBaseInfo::getAllChildren(SGCore::registry_t& inRegistry,
+                                            std::vector<entity_t>& outputEntities) const noexcept
+{
+    outputEntities.push_back(m_thisEntity);
+
+    for(const auto& e : m_children)
+    {
+        auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo>(e);
+        outputEntities.push_back(e);
+
+        if(childBaseInfo)
+        {
+            childBaseInfo->getAllChildren(inRegistry, outputEntities);
+        }
+    }
+}

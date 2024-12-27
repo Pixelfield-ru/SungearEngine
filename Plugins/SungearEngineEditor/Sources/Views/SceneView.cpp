@@ -79,9 +79,10 @@ void SGE::SceneView::renderBody()
             if(editorCamera3D)
             {
                 m_entitiesManipulator.manipulateEntities(*currentEditorScene->m_scene,
-                                                         currentEditorScene->m_data.m_editorCamera, editorCamera3D->m_pickedEntities
-                );
+                                                         currentEditorScene->m_data.m_editorCamera);
             }
+
+            const bool isMouseDoubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
 
             // picking entity
             if(mainInputListener->mouseButtonPressed(SGCore::MouseButton::MOUSE_BUTTON_LEFT) &&
@@ -105,24 +106,114 @@ void SGE::SceneView::renderBody()
                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2
                                                        );
 
-                if(camera3D)
+                auto& cameraPickedEntities = (*camera3D)->m_pickedEntities;
+
+                auto leftControlDown = mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL);
+
+                // picking
+                if(pickedEntity == entt::null && !leftControlDown)
                 {
-                    if(!mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL))
+                    cameraPickedEntities.clear();
+                    m_entitiesManipulator.m_manipulatingEntities.clear();
+                }
+                else if(camera3D)
+                {
+                    auto& entityBaseInfo =
+                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(pickedEntity);
+
+                    std::vector<SGCore::entity_t> pickedEntities;
+                    const auto rootEntity =
+                            entityBaseInfo.getRootParent(*currentEditorScene->m_scene->getECSRegistry());
+
+                    auto& rootBaseInfo =
+                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(rootEntity);
+
+                    rootBaseInfo.getAllChildren(*currentEditorScene->m_scene->getECSRegistry(),
+                                                 pickedEntities
+                    );
+
+                    const bool containsRootEntity = m_entitiesManipulator.m_manipulatingEntities.contains(rootEntity);
+                    const bool containsPickedEntity = m_entitiesManipulator.m_manipulatingEntities.contains(pickedEntity);
+
+                    if(!leftControlDown)
                     {
-                        (*camera3D)->m_pickedEntities.clear();
-                        (*camera3D)->m_pickedEntities.insert(pickedEntity);
-                    }
-                    else
-                    {
-                        if((*camera3D)->m_pickedEntities.contains(pickedEntity))
+                        cameraPickedEntities.clear();
+                        m_entitiesManipulator.m_manipulatingEntities.clear();
+
+                        if(containsRootEntity)
                         {
-                            (*camera3D)->m_pickedEntities.erase(pickedEntity);
+                            cameraPickedEntities.insert(pickedEntity);
+                            m_entitiesManipulator.m_manipulatingEntities.insert(pickedEntity);
+                            m_entitiesManipulator.m_isWholeModelPicking = false;
+
+                            entityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor0;
                         }
                         else
                         {
-                            (*camera3D)->m_pickedEntities.insert(pickedEntity);
+                            for(const auto& e : pickedEntities)
+                            {
+                                auto& pickedEntityBaseInfo =
+                                        currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(e);
+
+                                cameraPickedEntities.insert(e);
+
+                                pickedEntityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor1;
+                            }
+                            m_entitiesManipulator.m_manipulatingEntities.insert(rootEntity);
+                            m_entitiesManipulator.m_isWholeModelPicking = true;
                         }
                     }
+                    else
+                    {
+                        if(m_entitiesManipulator.m_isWholeModelPicking)
+                        {
+                            if(containsRootEntity)
+                            {
+                                for(const auto& e : pickedEntities)
+                                {
+                                    cameraPickedEntities.erase(e);
+                                }
+
+                                m_entitiesManipulator.m_manipulatingEntities.erase(rootEntity);
+                            }
+                            else
+                            {
+                                for(const auto& e : pickedEntities)
+                                {
+                                    cameraPickedEntities.insert(e);
+
+                                    auto& pickedEntityBaseInfo =
+                                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(e);
+
+                                    pickedEntityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor1;
+                                }
+                                m_entitiesManipulator.m_manipulatingEntities.insert(rootEntity);
+                            }
+                        }
+                        else
+                        {
+                            if(containsPickedEntity)
+                            {
+                                cameraPickedEntities.erase(pickedEntity);
+                                m_entitiesManipulator.m_manipulatingEntities.erase(pickedEntity);
+                            }
+                            else
+                            {
+                                auto& pickedEntityBaseInfo =
+                                        currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(pickedEntity);
+
+                                pickedEntityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor0;
+
+                                cameraPickedEntities.insert(pickedEntity);
+                                m_entitiesManipulator.m_manipulatingEntities.insert(pickedEntity);
+                            }
+                        }
+                    }
+                }
+
+                if(m_entitiesManipulator.m_manipulatingEntities.empty())
+                {
+                    m_entitiesManipulator.m_isWholeModelPicking = true;
                 }
 
                 LOG_I(SGEDITOR_TAG, "ENTITY PICKING: Mouse pos x = '{}', y = '{}'. Picked entity: '{}'",
@@ -136,7 +227,10 @@ void SGE::SceneView::renderBody()
 
         if(renderingBase)
         {
-            (*renderingBase)->m_aspect = windowSize.x / windowSize.y;
+            if(windowSize.x != 0 && windowSize.y != 0)
+            {
+                (*renderingBase)->m_aspect = windowSize.x / windowSize.y;
+            }
             if(layeredFrameReceiver)
             {
                 /*layeredFrameReceiver->m_layersFrameBuffer->m_viewportWidth = windowSize.x;
@@ -211,5 +305,11 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     std::vector<SGCore::entity_t> entities;
     modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
         entities.push_back(entity);
+        auto* pickableComponent =
+                SGCore::Scene::getCurrentScene()->getECSRegistry()->try_get<SGCore::Pickable>(entity);
+        if(pickableComponent)
+        {
+            pickableComponent->m_pickableForCameras.emplace_back(EditorScene::getCurrentScene()->m_data.m_editorCamera);
+        }
     });
 }
