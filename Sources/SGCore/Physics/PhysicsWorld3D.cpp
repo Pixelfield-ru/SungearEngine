@@ -131,12 +131,11 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     TransformBase& ownTransform = transform->m_ownTransform;
                     TransformBase& finalTransform = transform->m_finalTransform;
 
-                    EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(entity);
+                    auto& entityBaseInfo = registry->get<EntityBaseInfo::reg_t>(entity);
                     Ref<Transform> parentTransform;
 
-                    if (entityBaseInfo)
                     {
-                        auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo->getParent());
+                        auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo.getParent());
                         parentTransform = (tmp ? *tmp : nullptr);
                     }
 

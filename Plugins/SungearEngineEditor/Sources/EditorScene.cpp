@@ -159,7 +159,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
     {
         const auto& camera = m_data.m_editorCamera;
 
-        SGCore::EntityBaseInfo& cameraBaseInfo = registry->emplace<SGCore::EntityBaseInfo>(camera, camera);
+        auto& cameraBaseInfo = registry->emplace<SGCore::EntityBaseInfo::reg_t>(camera, camera);
         cameraBaseInfo.setRawName("SGMainCamera");
 
         registry->emplace<SGCore::Ref<SGCore::Transform>>(camera, SGCore::MakeRef<SGCore::Transform>());

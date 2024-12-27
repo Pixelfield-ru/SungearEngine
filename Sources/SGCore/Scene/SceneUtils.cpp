@@ -17,9 +17,9 @@ SGCore::entity_t SGCore::SceneUtils::pickEntity(const glm::vec2& cursorPos,
 
     entity_t pickedEntity = entt::null;
 
-    auto entitiesBaseInfoView = fromRegistry.view<EntityBaseInfo>();
+    auto entitiesBaseInfoView = fromRegistry.view<EntityBaseInfo::reg_t>();
     entitiesBaseInfoView.each([&pickedColor, &pickedEntity](const entity_t& entity,
-                                                            const EntityBaseInfo& entityBaseInfo)  {
+                                                            const EntityBaseInfo::reg_t& entityBaseInfo)  {
         if(pickedEntity == entt::null && entityBaseInfo.getUniqueColor() == pickedColor)
         {
             pickedEntity = entity;

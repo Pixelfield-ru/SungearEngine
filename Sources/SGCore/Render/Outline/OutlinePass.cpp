@@ -59,8 +59,12 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
 {
     auto registry = scene->getECSRegistry();
 
-    auto camerasView = registry->view<Ref<Camera3D>, EntityBaseInfo, Ref<RenderingBase>, Ref<Transform>, LayeredFrameReceiver>();
-    auto meshesView = registry->view<EntityBaseInfo, Mesh, Ref<Transform>>();
+    auto camerasView = registry->view<Ref<Camera3D>,
+            EntityBaseInfo::reg_t,
+            Ref<RenderingBase>,
+            Ref<Transform>,
+            LayeredFrameReceiver>();
+    auto meshesView = registry->view<EntityBaseInfo::reg_t, Mesh, Ref<Transform>>();
 
     // IDK WHY BUT WE MUST FORCE RENDER STATE TO WORK OUTLINE CORRECTLY.
     m_renderState.use(true);
@@ -70,7 +74,7 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
 
     camerasView.each([&meshesView,
                       this](const Ref<Camera3D>& camera3D,
-                            const EntityBaseInfo& cameraBaseInfo,
+                            const EntityBaseInfo::reg_t& cameraBaseInfo,
                             const Ref<RenderingBase>& cameraRenderingBase,
                             const Ref<Transform>& cameraTransform,
                             const LayeredFrameReceiver& layeredFrameReceiver) {
@@ -90,7 +94,7 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
         // color of outlined objects = u_outlineColor
         meshesView.each([&camera3D,
                          this](const entity_t& meshEntity,
-                               const EntityBaseInfo& meshBaseInfo,
+                               const EntityBaseInfo::reg_t& meshBaseInfo,
                                const Mesh& mesh,
                                const Ref<Transform>& meshTransform) mutable {
             if(!camera3D->m_pickedEntities.contains(meshEntity)) return;

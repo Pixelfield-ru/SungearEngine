@@ -9,6 +9,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/UniqueName.h"
+#include "SGCore/Utils/ECS/ComponentTraits.h"
 #include "EntityRef.h"
 
 namespace SGCore
@@ -16,7 +17,7 @@ namespace SGCore
     struct Layer;
 
     // sizeof
-    struct EntityBaseInfo : public UniqueNameWrapper
+    struct EntityBaseInfo : public UniqueNameWrapper, public ComponentTraits<EntityBaseInfo>
     {
         sg_serde_as_friend()
 

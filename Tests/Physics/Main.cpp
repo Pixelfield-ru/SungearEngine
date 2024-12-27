@@ -95,7 +95,7 @@ void coreInit()
     // creating camera entity
     testCameraEntity = testScene->getECSRegistry()->create();
     // adding base info to entity
-    EntityBaseInfo& cameraBaseInfo = testScene->getECSRegistry()->emplace<EntityBaseInfo>(testCameraEntity, testCameraEntity);
+    auto& cameraBaseInfo = testScene->getECSRegistry()->emplace<EntityBaseInfo::reg_t>(testCameraEntity, testCameraEntity);
     cameraBaseInfo.setRawName("SGMainCamera");
 
     auto& cameraTransform = testScene->getECSRegistry()->emplace<Ref<Transform>>(testCameraEntity, MakeRef<Transform>());

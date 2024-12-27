@@ -130,7 +130,7 @@ SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const st
     auto meshEntity = registry->create();
 
     registry->emplace<Pickable>(meshEntity);
-    EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity, meshEntity);
+    auto& meshEntityBaseInfo = registry->emplace<EntityBaseInfo::reg_t>(meshEntity, meshEntity);
     Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
     Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
     // NOT STANDARD

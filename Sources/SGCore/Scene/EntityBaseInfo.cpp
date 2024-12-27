@@ -34,7 +34,7 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
             return;
         }
 
-        auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo>(m_parent);
+        auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(m_parent);
         if(!parentBaseInfo)
         {
             LOG_E(SGCORE_TAG, "Can not detach entity '{}' from entity '{}'. Entity '{}' (parent) does not have EntityBaseInfo component.",
@@ -65,7 +65,7 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
         return;
     }
 
-    auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo>(parent);
+    auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(parent);
     if(!parentBaseInfo)
     {
         LOG_E(SGCORE_TAG, "Can not attach entity '{}' to entity '{}'. Entity '{}' (parent) does not have EntityBaseInfo component.",
@@ -111,7 +111,7 @@ void SGCore::EntityBaseInfo::addChild(const SGCore::entity_t& child,
         return;
     }
 
-    auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo>(child);
+    auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(child);
     if(!childBaseInfo)
     {
         LOG_E(SGCORE_TAG, "Can not add child entity '{}' to entity '{}'. Entity '{}' (child) does not have EntityBaseInfo component.",
@@ -151,7 +151,7 @@ void SGCore::EntityBaseInfo::removeChild(const SGCore::entity_t& child,
         return;
     }
 
-    auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo>(child);
+    auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(child);
     if(!childBaseInfo)
     {
         LOG_E(SGCORE_TAG, "Can not remove child entity '{}' from entity '{}'. Entity '{}' (child) does not have EntityBaseInfo component.",
@@ -192,13 +192,13 @@ const SGCore::entity_t& SGCore::EntityBaseInfo::getThisEntity() const noexcept
 
 void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::registry_t>& registry) noexcept
 {
-    auto entityBaseInfoView = registry->template view<EntityBaseInfo>();
+    auto entityBaseInfoView = registry->template view<EntityBaseInfo::reg_t>();
 
     auto it = m_entitiesRefsToResolve.begin();
     while(it != m_entitiesRefsToResolve.end())
     {
         bool isRefResolved = false;
-        entityBaseInfoView.each([&it, &isRefResolved, this](const EntityBaseInfo& otherEntityBaseInfo) {
+        entityBaseInfoView.each([&it, &isRefResolved, this](const EntityBaseInfo::reg_t& otherEntityBaseInfo) {
             // if deserialized value of EntityRef is equals to deserialized entity of other EntityBaseInfo
             // then we are resolving current EntityRef to entity of otherEntityBaseInfo
             if(!isRefResolved && **it == otherEntityBaseInfo.m_deserializedThisEntity)
@@ -239,7 +239,7 @@ void SGCore::EntityBaseInfo::setThisEntity(const SGCore::entity_t& entity) noexc
 
 SGCore::entity_t SGCore::EntityBaseInfo::getRootParent(registry_t& inRegistry) const noexcept
 {
-    auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo>(m_parent);
+    auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(m_parent);
 
     if(m_parent == entt::null || !parentBaseInfo)
     {
@@ -256,7 +256,7 @@ void SGCore::EntityBaseInfo::getAllChildren(SGCore::registry_t& inRegistry,
 
     for(const auto& e : m_children)
     {
-        auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo>(e);
+        auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(e);
         outputEntities.push_back(e);
 
         if(childBaseInfo)

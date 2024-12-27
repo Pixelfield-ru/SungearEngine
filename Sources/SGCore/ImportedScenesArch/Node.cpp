@@ -29,7 +29,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     entity_t parentEntity = registry->create();
 
     registry->emplace<Pickable>(parentEntity);
-    EntityBaseInfo& nodeBaseInfo = registry->emplace<EntityBaseInfo>(parentEntity, parentEntity);
+    auto& nodeBaseInfo = registry->emplace<EntityBaseInfo::reg_t>(parentEntity, parentEntity);
     Ref<Transform> nodeTransform = registry->emplace<Ref<Transform>>(parentEntity, MakeRef<Transform>());
     nodeTransform->m_ownTransform.m_position = m_position;
     // auto eulerRot = glm::eulerAngles(m_rotationQuaternion);
@@ -55,7 +55,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
         entity_t meshEntity = registry->create();
 
         registry->emplace<Pickable>(meshEntity);
-        EntityBaseInfo& meshEntityBaseInfo = registry->emplace<EntityBaseInfo>(meshEntity, meshEntity);
+        auto& meshEntityBaseInfo = registry->emplace<EntityBaseInfo::reg_t>(meshEntity, meshEntity);
         Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
         Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
         // NOT STANDARD
@@ -76,7 +76,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     for(auto& childNode : m_children)
     {
         auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
-        EntityBaseInfo& childEntityBaseInfo = registry->get<EntityBaseInfo>(childNodeEntity);
+        auto& childEntityBaseInfo = registry->get<EntityBaseInfo::reg_t>(childNodeEntity);
         childEntityBaseInfo.setParent(parentEntity, *registry);
         // parentEntity->addChild(childNodeEntity);
     }

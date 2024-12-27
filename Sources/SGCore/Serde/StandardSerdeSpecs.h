@@ -95,7 +95,6 @@ struct SGCore::Serde::SerdeSpec<SGCore::ShaderTextureBinding, TFormatType> :
 
                                 >,
         SGCore::Serde::DerivedTypes<
-                SGCore::EntityBaseInfo
                                    >
 {
     static inline const std::string type_name = "SGCore::ShaderTextureBinding";
@@ -117,7 +116,6 @@ struct SGCore::Serde::SerdeSpec<SGCore::ShaderDefine, TFormatType> :
 
                                 >,
         SGCore::Serde::DerivedTypes<
-                SGCore::EntityBaseInfo
                                    >
 {
     static inline const std::string type_name = "SGCore::ShaderDefine";
@@ -3024,7 +3022,7 @@ void SGCore::Serde::SerdeSpec<SGCore::EntityRef, TFormatType>::deserialize(SGCor
         valueView.m_data->m_referencedEntity = std::move(*m_referencedEntity);
 
         // IT IS GUARANTEED THAT ENTITY BASE INFO OF deserializedEntity IS ALREADY EXIST!!!
-        auto* entityBaseInfo = toRegistry.try_get<EntityBaseInfo>(deserializedEntity);
+        auto* entityBaseInfo = toRegistry.try_get<EntityBaseInfo::reg_t>(deserializedEntity);
         SG_ASSERT(entityBaseInfo != nullptr,
                   fmt::format("Can not mark EntityRef (points to entity '{}') as needing to resolve! "
                               "Entity '{}' that contains component that contains this EntityRef does not have EntityBaseInfo!",
@@ -3517,7 +3515,7 @@ namespace SGCore::Serde
             auto& serializableScene = *valueView.m_data->m_serializableScene;
             auto& serializableEntity = valueView.m_data->m_serializableEntity;
 
-            auto* entityBaseInfo = serializableScene.getECSRegistry()->template try_get<SGCore::EntityBaseInfo>(serializableEntity);
+            auto* entityBaseInfo = serializableScene.getECSRegistry()->template try_get<SGCore::EntityBaseInfo::reg_t>(serializableEntity);
             if(entityBaseInfo)
             {
                 // saving all children entities
@@ -3541,7 +3539,7 @@ namespace SGCore::Serde
 
             #pragma region Generated
             {
-                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::EntityBaseInfo>(serializableEntity);
+                auto* component = serializableScene.getECSRegistry()->template try_get<SGCore::EntityBaseInfo::reg_t>(serializableEntity);
 
                 if(component)
                 {
@@ -3715,11 +3713,11 @@ namespace SGCore::Serde
 
                 if(currentElementTypeName == SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::type_name)
                 {
-                    const auto component = valueView.getValueContainer().template getMember<SGCore::EntityBaseInfo>(componentsIt);
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::EntityBaseInfo::reg_t>(componentsIt);
 
                     if(component)
                     {
-                        toRegistry.emplace<SGCore::EntityBaseInfo>(entity, *component);
+                        toRegistry.emplace<SGCore::EntityBaseInfo::reg_t>(entity, *component);
 
                         continue;
                     }
@@ -3909,7 +3907,7 @@ namespace SGCore::Serde
             }
 
             // getting EntityBaseInfo of current entity to add all children entities
-            EntityBaseInfo* entityBaseInfo = toRegistry.template try_get<EntityBaseInfo>(entity);
+            auto* entityBaseInfo = toRegistry.template try_get<EntityBaseInfo::reg_t>(entity);
             if(!entityBaseInfo)
             {
                 return;
@@ -3942,7 +3940,7 @@ namespace SGCore::Serde
             SceneEntitySaveInfo sceneEntitySaveInfo;
             sceneEntitySaveInfo.m_serializableScene = &serializableScene;
 
-            auto entitiesView = valueView.m_data->template view<EntityBaseInfo>();
+            auto entitiesView = valueView.m_data->template view<EntityBaseInfo::reg_t>();
             for(const auto& entity : entitiesView)
             {
                 LOG_I(SGCORE_TAG, "Trying to save entity '{}'", std::to_underlying(entity))
@@ -3952,7 +3950,7 @@ namespace SGCore::Serde
 
                 // if current savable entity has parent then
                 // skip saving this entity because parent saves children entities himself
-                EntityBaseInfo* entityBaseInfo = serializableScene.getECSRegistry()->try_get<EntityBaseInfo>(entity);
+                auto* entityBaseInfo = serializableScene.getECSRegistry()->try_get<EntityBaseInfo::reg_t>(entity);
                 if(entityBaseInfo &&
                    entityBaseInfo->getParent() != entt::null &&
                    serializableScene.getECSRegistry()->valid(entityBaseInfo->getParent()))

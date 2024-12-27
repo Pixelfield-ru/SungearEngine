@@ -119,14 +119,14 @@ void SGE::SceneView::renderBody()
                 else if(camera3D)
                 {
                     auto& entityBaseInfo =
-                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(pickedEntity);
+                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo::reg_t>(pickedEntity);
 
                     std::vector<SGCore::entity_t> pickedEntities;
                     const auto rootEntity =
                             entityBaseInfo.getRootParent(*currentEditorScene->m_scene->getECSRegistry());
 
                     auto& rootBaseInfo =
-                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(rootEntity);
+                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo::reg_t>(rootEntity);
 
                     rootBaseInfo.getAllChildren(*currentEditorScene->m_scene->getECSRegistry(),
                                                  pickedEntities
@@ -153,7 +153,7 @@ void SGE::SceneView::renderBody()
                             for(const auto& e : pickedEntities)
                             {
                                 auto& pickedEntityBaseInfo =
-                                        currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(e);
+                                        currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo::reg_t>(e);
 
                                 cameraPickedEntities.insert(e);
 
@@ -183,7 +183,7 @@ void SGE::SceneView::renderBody()
                                     cameraPickedEntities.insert(e);
 
                                     auto& pickedEntityBaseInfo =
-                                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(e);
+                                            currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo::reg_t>(e);
 
                                     pickedEntityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor1;
                                 }
@@ -200,7 +200,7 @@ void SGE::SceneView::renderBody()
                             else
                             {
                                 auto& pickedEntityBaseInfo =
-                                        currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo>(pickedEntity);
+                                        currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo::reg_t>(pickedEntity);
 
                                 pickedEntityBaseInfo.m_outlineColor = SGCore::EntityBaseInfo::s_outlineColor0;
 

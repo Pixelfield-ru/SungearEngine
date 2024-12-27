@@ -312,9 +312,9 @@ SGCore::Ref<SGCore::Scene> SGCore::Scene::loadSceneAndSetAsCurrent(const std::fi
 
 void SGCore::Scene::resolveAllEntitiesRefs() const noexcept
 {
-    auto entityBaseInfoView = m_ecsRegistry->template view<EntityBaseInfo>();
+    auto entityBaseInfoView = m_ecsRegistry->template view<EntityBaseInfo::reg_t>();
 
-    entityBaseInfoView.each([&entityBaseInfoView, this](EntityBaseInfo& entityBaseInfo) {
+    entityBaseInfoView.each([&entityBaseInfoView, this](EntityBaseInfo::reg_t& entityBaseInfo) {
         entityBaseInfo.resolveAllEntitiesRefs(m_ecsRegistry);
     });
 }

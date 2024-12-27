@@ -50,7 +50,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
     transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck](const entity_t& entity, Ref<Transform> transform) {
         if(transform)
         {
-            EntityBaseInfo* entityBaseInfo = registry->try_get<EntityBaseInfo>(entity);
+            auto* entityBaseInfo = registry->try_get<EntityBaseInfo::reg_t>(entity);
             Ref<Transform> parentTransform;
 
             if(entityBaseInfo)

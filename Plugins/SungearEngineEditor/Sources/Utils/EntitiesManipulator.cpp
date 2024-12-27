@@ -40,12 +40,12 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
     }
 
     std::vector<SGCore::Ref<SGCore::Transform>> entitiesTransforms;
-    std::vector<SGCore::EntityBaseInfo*> entitiesBaseInfo;
+    std::vector<SGCore::EntityBaseInfo::reg_t*> entitiesBaseInfo;
 
     for(const auto& entity : m_manipulatingEntities)
     {
         auto* tmpTransform = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(entity);
-        auto* tmpBaseInfo = forScene.getECSRegistry()->try_get<SGCore::EntityBaseInfo>(entity);
+        auto* tmpBaseInfo = forScene.getECSRegistry()->try_get<SGCore::EntityBaseInfo::reg_t>(entity);
 
         if(!tmpTransform || !tmpBaseInfo) continue;
 

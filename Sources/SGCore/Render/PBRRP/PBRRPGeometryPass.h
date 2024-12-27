@@ -11,13 +11,13 @@
 #include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 #include "SGCore/Math/Frustum.h"
+#include "SGCore/Scene/EntityBaseInfo.h"
 
 namespace SGCore
 {
     struct Mesh;
     struct OctreeNode;
     struct Transform;
-    struct EntityBaseInfo;
     struct Camera3D;
     struct PostProcessLayer;
     
@@ -32,12 +32,12 @@ namespace SGCore
                         const entity_t& meshEntity,
                         const Ref<Transform>& meshTransform,
                         Mesh& mesh,
-                        EntityBaseInfo& meshedEntityBaseInfo,
-                        const EntityBaseInfo& forCamera3DBaseInfo,
+                        EntityBaseInfo::reg_t& meshedEntityBaseInfo,
+                        const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
                         const Ref<PostProcessLayer>& meshPPLayer) noexcept;
 
         void renderOctreeNode(const Ref<registry_t>& registry,
-                              const EntityBaseInfo& forCamera3DBaseInfo,
+                              const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
                               const entity_t& forCamera,
                               LayeredFrameReceiver* cameraLayeredFrameReceiver,
                               const Ref<OctreeNode>& node) noexcept;
