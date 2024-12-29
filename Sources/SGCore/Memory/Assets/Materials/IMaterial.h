@@ -116,7 +116,7 @@ namespace SGCore
         glm::vec4 m_emissionColor       = glm::vec4(1.0f);
         glm::vec4 m_transparentColor    = glm::vec4(1.0f);
         float m_shininess               = 32.0f;
-        float m_metallicFactor          = 1.0f;
+        float m_metallicFactor          = 0.0f;
         float m_roughnessFactor         = 1.0f;
 
         void doLoad(const InterpolatedPath& path) override;

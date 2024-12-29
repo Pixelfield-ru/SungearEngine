@@ -29,6 +29,7 @@ out VSOut
 {
     vec2 UV;
     vec3 normal;
+    vec3 worldNormal;
 
     vec3 vertexPos;
     vec3 fragPos;
@@ -39,6 +40,7 @@ void main()
 {
     vsOut.UV = UVAttribute.xy;
     vsOut.normal = normalize(normalsAttribute);
+    vsOut.worldNormal = normalize(mat3(transpose(inverse(objectTransform.modelMatrix))) * normalsAttribute);
 
     vsOut.vertexPos = positionsAttribute;
     vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute, 1.0));
@@ -89,6 +91,7 @@ in VSOut
 {
     vec2 UV;
     vec3 normal;
+    vec3 worldNormal;
 
     vec3 vertexPos;
     vec3 fragPos;
@@ -155,7 +158,7 @@ void main()
     vec3 normalizedNormal = vsIn.normal;
 
     vec4 diffuseColor = vec4(materialDiffuseCol.rgb, 1);
-    vec4 aoRoughnessMetallic = vec4(1, materialRoughnessFactor, materialMetallicFactor, 1);
+    vec4 aoRoughnessMetallic = vec4(materialAmbientFactor, materialRoughnessFactor, materialMetallicFactor, 1);
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
 
@@ -244,7 +247,10 @@ void main()
     else
     {
         // finalNormal = vec3(normalizedNormal.x, normalizedNormal.z, -normalizedNormal.y);
-        finalNormal = normalizedNormal;
+        // finalNormal = normalizedNormal;
+        finalNormal = vsIn.worldNormal;
+        // finalNormal = normalize(vsIn.TBN * normalizedNormal);
+        // finalNormal = normalize(vsIn.TBN * (normalizedNormal * 2.0 - 1.0));
     }
 
     /*gFragPos = vec4(vsIn.fragPos, 1.0);
@@ -385,15 +391,24 @@ void main()
         vec3 diffuse = vec3(1.0) - F;
         diffuse *= (1.0 - metalness);// check diffuse color higher
 
+        // vec3 ctNumerator = vec3(1.0, 1.0, 1.0) * G;
         vec3 ctNumerator = D * F * G;
         float ctDenominator = 4.0 * NdotVD * NdotL;
         vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
+        // vec3 specular = ctNumerator / (ctDenominator + 0.001);
+        //vec3 specular = vec3(0.1);
+
+        /*vec3 reflectDir = reflect(-lightDir, finalNormal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+        vec3 specular = vec3(spec);*/
+        // vec3 specular = vec3(0.0);
 
         lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 3.0;
     }
 
-    ambient = ambient * albedo.rgb * ao;
-    vec3 finalCol = materialAmbientCol.rgb + ambient + lo;
+    // ambient = ambient * albedo.rgb * ao;
+    ambient = albedo.rgb * ao;
+    vec3 finalCol = ambient * materialAmbientCol.rgb * materialAmbientFactor + ambient + lo;
     float exposure = 1.3;
 
     // finalCol *= dirLightsShadowCoeff;
