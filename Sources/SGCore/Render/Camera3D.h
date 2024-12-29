@@ -8,12 +8,13 @@
 #include <unordered_set>
 
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct Camera3D
+    struct Camera3D : ECS::Component<Ref<Camera3D>, Ref<const Camera3D>>
     {
-        std::unordered_set<entity_t> m_pickedEntities;
+        std::unordered_set<ECS::entity_t> m_pickedEntities;
 
     private:
         volatile int m_dummy = 0;

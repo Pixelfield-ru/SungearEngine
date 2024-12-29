@@ -20,7 +20,7 @@ void SGCore::BoxGizmosRenderer::fixedUpdate(const double& dt, const double& fixe
 
     auto debugDraw = lockedScene->getSystem<DebugDraw>();
     
-    boxGizmosView.each([&debugDraw](BoxGizmo& gizmo) {
+    boxGizmosView.each([&debugDraw](BoxGizmo::reg_t& gizmo) {
         if(gizmo.m_size != gizmo.m_lastSize)
         {
             MeshBuilder::buildBox3D(gizmo.m_base.m_meshBase, gizmo.m_size);

@@ -13,6 +13,7 @@
 #include "SGCore/Utils/EventListener.h"
 #include "SGCore/Utils/TypeTraits.h"
 #include "SGCore/Memory/Assets/IAsset.h"
+#include "SGCore/ECS/Registry.h"
 
 sg_predeclare_serde()
 
@@ -23,7 +24,7 @@ namespace SGCore
     struct SceneEntitySaveInfo
     {
         const Scene* m_serializableScene { };
-        entity_t m_serializableEntity { };
+        ECS::entity_t m_serializableEntity { };
     };
 
     // todo: make on path changed event
@@ -44,11 +45,11 @@ namespace SGCore
         {
             static inline Event<void(Serde::SerializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
                                      const Scene& serializableScene,
-                                     const entity_t& serializableEntity)> onEntitySerialize;
+                                     const ECS::entity_t& serializableEntity)> onEntitySerialize;
 
             static inline Event<void(Serde::DeserializableValueView<SceneEntitySaveInfo, TFormatType>& entityView,
                                      const typename Serde::FormatInfo<TFormatType>::array_iterator_t& componentsIterator,
-                                     registry_t& toRegistry)> onEntityDeserialize;
+                                     ECS::registry_t& toRegistry)> onEntityDeserialize;
 
             static inline Event<void(Serde::SerializableValueView<Scene::systems_container_t, TFormatType>& systemsContainerView,
                                      const Scene& serializableScene,
@@ -187,7 +188,7 @@ namespace SGCore
         double m_update_executionTime = 0.0;
         double m_fixedUpdate_executionTime = 0.0;
         
-        Ref<registry_t> m_ecsRegistry = MakeRef<registry_t>();
+        Ref<ECS::registry_t> m_ecsRegistry = MakeRef<ECS::registry_t>();
 
         Ref<UniqueNamesManager> m_uniqueNamesManager = MakeRef<UniqueNamesManager>();
 

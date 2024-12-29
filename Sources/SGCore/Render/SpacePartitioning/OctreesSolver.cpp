@@ -38,19 +38,19 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
     
     auto registry = lockedScene->getECSRegistry();
     
-    auto octreesView = registry->view<Ref<Octree>>();
+    auto octreesView = registry->view<Octree>();
     
-    octreesView.each([this, &registry](const entity_t& entity, Ref<Octree> octree) {
+    octreesView.each([this, &registry](const ECS::entity_t& entity, Octree::reg_t octree) {
         if(octree->m_root->m_isSubdivided)
         {
             for(const auto& p : m_changedTransforms)
             {
-                if(registry->all_of<IgnoreOctrees>(p.first))
+                if(registry->allOf<IgnoreOctrees>(p.first))
                 {
                     continue;
                 }
                 
-                auto* tmpCullable = registry->try_get<Ref<OctreeCullable>>(p.first);
+                auto* tmpCullable = registry->tryGet<OctreeCullable>(p.first);
                 auto cullable = (tmpCullable ? *tmpCullable : nullptr);
                 
                 if(cullable)
@@ -78,11 +78,11 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
         }
         else // check all transformations
         {
-            auto transformationsView = registry->view<Ref<Transform>>();
-            transformationsView.each([&octree, &registry](const entity_t& transformEntity, Ref<Transform> transform) {
-                if(!registry->all_of<IgnoreOctrees>(transformEntity))
+            auto transformationsView = registry->view<Transform>();
+            transformationsView.each([&octree, &registry](const ECS::entity_t& transformEntity, Transform::reg_t transform) {
+                if(!registry->allOf<IgnoreOctrees>(transformEntity))
                 {
-                    auto* tmpCullable = registry->try_get<Ref<OctreeCullable>>(transformEntity);
+                    auto* tmpCullable = registry->tryGet<OctreeCullable>(transformEntity);
                     auto cullable = (tmpCullable ? *tmpCullable : nullptr);
                     
                     if(cullable)
@@ -114,7 +114,7 @@ void SGCore::OctreesSolver::fixedUpdate(const double& dt, const double& fixedDt)
     IParallelSystem::fixedUpdate(dt, fixedDt);
 }
 
-void SGCore::OctreesSolver::onTransformChanged(const entity_t& entity, const SGCore::Ref<const SGCore::Transform>& transform) noexcept
+void SGCore::OctreesSolver::onTransformChanged(const ECS::entity_t& entity, const SGCore::Transform::const_reg_t& transform) noexcept
 {
     m_changedTransforms.emplace_back(entity, transform);
 }

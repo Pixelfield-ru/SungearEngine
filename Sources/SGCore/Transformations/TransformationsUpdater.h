@@ -34,18 +34,18 @@ namespace SGCore
         // main thread
         void fixedUpdate(const double& dt, const double& fixedDt) noexcept final;
         
-        Event<void(const Ref<registry_t>& registry, const entity_t&, Ref<const Transform>)> onTransformChanged;
+        Event<void(const Ref<ECS::registry_t>& registry, const ECS::entity_t&, const Transform::reg_t)> onTransformChanged;
         
     private:
         Threading::WrappedObject<std::vector<EntityComponentMember<glm::mat4>>> m_changedModelMatrices;
-        Threading::WrappedObject<std::vector<entity_t>> m_entitiesForPhysicsUpdateToCheck;
+        Threading::WrappedObject<std::vector<ECS::entity_t>> m_entitiesForPhysicsUpdateToCheck;
         
         // TODO: FIX. MAY PRODUCE SIGSEGV WHEN ITERATING THROUGH IN ONE THREAD AND push_back IN OTHER
         // Reviewed MisterElect 04.10.2024: no sigsegv found
-        Threading::WrappedObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntities;
-        Threading::WrappedObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntities;
+        Threading::WrappedObject<std::vector<EntityComponentMember<const Transform::reg_t>>> m_calculatedNotPhysicalEntities;
+        Threading::WrappedObject<std::vector<EntityComponentMember<const Transform::reg_t>>> m_calculatedPhysicalEntities;
 
-        Threading::WrappedObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedNotPhysicalEntitiesCopy;
-        Threading::WrappedObject<std::vector<EntityComponentMember<Ref<const Transform>>>> m_calculatedPhysicalEntitiesCopy;
+        Threading::WrappedObject<std::vector<EntityComponentMember<const Transform::reg_t>>> m_calculatedNotPhysicalEntitiesCopy;
+        Threading::WrappedObject<std::vector<EntityComponentMember<const Transform::reg_t>>> m_calculatedPhysicalEntitiesCopy;
     };
 }

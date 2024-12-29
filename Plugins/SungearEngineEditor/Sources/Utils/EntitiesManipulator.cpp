@@ -24,7 +24,7 @@ void SGE::EntitiesManipulator::getDeltaBetweenMatrices(const glm::mat4& original
 }
 
 void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
-                                                  const SGCore::entity_t& camera3DEntity) const noexcept
+                                                  const SGCore::ECS::entity_t& camera3DEntity) const noexcept
 {
     ImGuizmo::SetOrthographic(m_isOrtho);
     ImGuizmo::SetDrawlist();
@@ -33,7 +33,7 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
 
     SGCore::Ref<SGCore::RenderingBase> camera3DRenderingBase;
     {
-        auto* tmp = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::RenderingBase>>(camera3DEntity);
+        auto* tmp = forScene.getECSRegistry()->tryGet<SGCore::RenderingBase>(camera3DEntity);
         if(!tmp) return;
 
         camera3DRenderingBase = *tmp;
@@ -44,8 +44,8 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
 
     for(const auto& entity : m_manipulatingEntities)
     {
-        auto* tmpTransform = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(entity);
-        auto* tmpBaseInfo = forScene.getECSRegistry()->try_get<SGCore::EntityBaseInfo::reg_t>(entity);
+        auto* tmpTransform = forScene.getECSRegistry()->tryGet<SGCore::Transform>(entity);
+        auto* tmpBaseInfo = forScene.getECSRegistry()->tryGet<SGCore::EntityBaseInfo::reg_t>(entity);
 
         if(!tmpTransform || !tmpBaseInfo) continue;
 
@@ -64,7 +64,7 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
         if(entitiesBaseInfo[0]->getParent() != entt::null)
         {
             {
-                auto* tmp = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(
+                auto* tmp = forScene.getECSRegistry()->tryGet<SGCore::Transform>(
                         entitiesBaseInfo[0]->getParent());
 
                 if(tmp)
@@ -137,7 +137,7 @@ void SGE::EntitiesManipulator::manipulateEntities(const SGCore::Scene& forScene,
                     if(baseInfo->getParent() != entt::null)
                     {
                         {
-                            auto* tmp = forScene.getECSRegistry()->try_get<SGCore::Ref<SGCore::Transform>>(
+                            auto* tmp = forScene.getECSRegistry()->tryGet<SGCore::Transform>(
                                     baseInfo->getParent());
 
                             if(tmp)

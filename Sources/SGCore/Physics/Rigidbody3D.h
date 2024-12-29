@@ -9,12 +9,13 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Utils/Marker.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
     struct PhysicsWorld3D;
 
-    struct Rigidbody3D
+    struct Rigidbody3D : ECS::Component<Ref<Rigidbody3D>, Ref<const Rigidbody3D>>
     {
     public:
         Ref<btRigidBody> m_body;

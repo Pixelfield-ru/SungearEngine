@@ -117,7 +117,7 @@ namespace SGCore
     };
 
     // todo: make change for default PP shader
-    class LayeredFrameReceiver
+    class LayeredFrameReceiver : public ECS::Component<LayeredFrameReceiver, const LayeredFrameReceiver>
     {
         friend struct Controllables3DUpdater;
 

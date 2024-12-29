@@ -8,10 +8,11 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Render/MeshBase.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct Atmosphere
+    struct Atmosphere : ECS::Component<Atmosphere, const Atmosphere>
     {
         Atmosphere() noexcept;
         Atmosphere(const Atmosphere&) noexcept = default;

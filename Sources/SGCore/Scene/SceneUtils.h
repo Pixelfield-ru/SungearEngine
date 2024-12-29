@@ -17,10 +17,10 @@ namespace SGCore
 
     struct SceneUtils
     {
-        [[nodiscard]] static entity_t pickEntity(const glm::vec2& cursorPos,
-                                                 const registry_t& fromRegistry,
-                                                 const IFrameBuffer* fromFrameBuffer,
-                                                 SGFrameBufferAttachmentType fromAttachment) noexcept;
+        [[nodiscard]] static ECS::entity_t pickEntity(const glm::vec2& cursorPos,
+                                                      const ECS::registry_t& fromRegistry,
+                                                      const IFrameBuffer* fromFrameBuffer,
+                                                      SGFrameBufferAttachmentType fromAttachment) noexcept;
     };
 }
 

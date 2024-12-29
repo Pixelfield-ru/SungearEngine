@@ -9,11 +9,12 @@
 
 #include "MathUtils.h"
 #include "SGCore/Serde/Serde.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
     template<typename ScalarT = float>
-    struct AABB
+    struct AABB : ECS::Component<AABB<ScalarT>, const AABB<ScalarT>>
     {
         static_assert(std::is_scalar_v<ScalarT> && "ScalarT must be scalar.");
         

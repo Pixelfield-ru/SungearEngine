@@ -185,7 +185,7 @@ namespace SGCore
                 meta["fullName"] = "SGCore::AABB";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Math/AABB.h";
                 meta["type"] = "component";
-                meta["getFromRegistryBy"] = "SGCore::AABB<float>";
+                meta["ecsRegistrySpecialization"] = "SGCore::AABB<float>";
                 meta["template_args"]["ScalarT"] = "typename";
 
                 meta["annotations"]["doNotGenerateSerdeSpec"];
@@ -246,7 +246,6 @@ namespace SGCore
                 meta["fullName"] = "SGCore::Transform";
                 meta["filePath"] = sgSourcesPathStr + "/Sources/SGCore/Transformations/Transform.h";
                 meta["type"] = "component";
-                meta["getFromRegistryBy"] = "SGCore::Ref<SGCore::Transform>";
 
                 meta["annotations"]["doNotGenerateSerdeSpec"];
                 meta["annotations"]["doNotGenerateSerializationLogic"];

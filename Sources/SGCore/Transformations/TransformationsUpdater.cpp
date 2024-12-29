@@ -37,7 +37,7 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
 
     auto registry = lockedScene->getECSRegistry();
 
-    auto transformsView = registry->view<Ref<Transform>>();
+    auto transformsView = registry->view<Transform>();
 
     auto& matrices = m_changedModelMatrices.getWrapped();
     auto& notPhysicalEntities = m_calculatedNotPhysicalEntities.getWrapped();
@@ -47,15 +47,15 @@ void SGCore::TransformationsUpdater::update(const double& dt, const double& fixe
     notPhysicalEntities.reserve(transformsView.size());
     physicEntitiesToCheck.reserve(transformsView.size());
 
-    transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck](const entity_t& entity, Ref<Transform> transform) {
+    transformsView.each([&registry, &matrices, &notPhysicalEntities, &physicEntitiesToCheck](const ECS::entity_t& entity, Transform::reg_t transform) {
         if(transform)
         {
-            auto* entityBaseInfo = registry->try_get<EntityBaseInfo::reg_t>(entity);
+            auto* entityBaseInfo = registry->tryGet<EntityBaseInfo>(entity);
             Ref<Transform> parentTransform;
 
             if(entityBaseInfo)
             {
-                auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo->getParent());
+                auto* tmp = registry->tryGet<Transform>(entityBaseInfo->getParent());
                 parentTransform = (tmp ? *tmp : nullptr);
             }
 
@@ -221,9 +221,9 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         auto& entitiesCopy = m_calculatedNotPhysicalEntitiesCopy.getWrapped();
         for(const auto& t : entitiesCopy)
         {
-            auto* tmpNonConstTransform = lockedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
+            auto* tmpNonConstTransform = lockedScene->getECSRegistry()->tryGet<Transform>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = lockedScene->getECSRegistry()->try_get<Mesh>(t.m_owner);
+            Mesh* mesh = lockedScene->getECSRegistry()->tryGet<Mesh>(t.m_owner);
             if(nonConstTransform && mesh)
             {
                 auto& finalTransform = nonConstTransform->m_finalTransform;
@@ -272,9 +272,9 @@ void SGCore::TransformationsUpdater::fixedUpdate(const double& dt, const double&
         auto& entitiesCopy = m_calculatedPhysicalEntitiesCopy.getWrapped();
         for(const auto& t : entitiesCopy)
         {
-            auto* tmpNonConstTransform = lockedScene->getECSRegistry()->try_get<Ref<Transform>>(t.m_owner);
+            auto* tmpNonConstTransform = lockedScene->getECSRegistry()->tryGet<Transform>(t.m_owner);
             Ref<Transform> nonConstTransform = (tmpNonConstTransform ? *tmpNonConstTransform : nullptr);
-            Mesh* mesh = lockedScene->getECSRegistry()->try_get<Mesh>(t.m_owner);
+            Mesh* mesh = lockedScene->getECSRegistry()->tryGet<Mesh>(t.m_owner);
             if(nonConstTransform && mesh)
             {
                 auto& finalTransform = nonConstTransform->m_finalTransform;

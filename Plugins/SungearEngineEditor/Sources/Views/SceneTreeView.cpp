@@ -31,7 +31,7 @@ void SGE::SceneTreeView::renderBody()
     auto currentEditorScene = EditorScene::getCurrentScene();
     if(currentEditorScene && currentEditorScene->m_scene)
     {
-        auto* layeredFrameReceiver = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::LayeredFrameReceiver>
+        auto* layeredFrameReceiver = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::LayeredFrameReceiver>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
         ImGui::Text("Attachments of layered frame receiver.");
@@ -95,16 +95,16 @@ void SGE::SceneTreeView::end()
     IView::end();
 }
 
-void SGE::SceneTreeView::drawTreeNode(const SGCore::entity_t& parentEntity, bool checkForRoot) noexcept
+void SGE::SceneTreeView::drawTreeNode(const SGCore::ECS::entity_t& parentEntity, bool checkForRoot) noexcept
 {
-    static auto formEntityName = [](const SGCore::EntityBaseInfo& entityBaseInfo, const SGCore::entity_t& entity) {
+    static auto formEntityName = [](const SGCore::EntityBaseInfo& entityBaseInfo, const SGCore::ECS::entity_t& entity) {
         return entityBaseInfo.getName() + " (entity: " + std::to_string(std::to_underlying(entity)) + ")";
     };
 
     const auto& currentScene = EditorScene::getCurrentScene()->m_scene;
 
     auto& entityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(parentEntity);
-    auto& entityTransform = currentScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(parentEntity);
+    auto& entityTransform = currentScene->getECSRegistry()->get<SGCore::Transform>(parentEntity);
 
     if((entityBaseInfo.getParent() == entt::null || !checkForRoot) &&
        ImGui::TreeNode(formEntityName(entityBaseInfo, parentEntity).c_str()))
@@ -121,7 +121,7 @@ void SGE::SceneTreeView::drawTreeNode(const SGCore::entity_t& parentEntity, bool
         for(const auto& childEntity : entityBaseInfo.getChildren())
         {
             auto& childEntityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(childEntity);
-            auto& childEntityTransform = currentScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(childEntity);
+            auto& childEntityTransform = currentScene->getECSRegistry()->get<SGCore::Transform>(childEntity);
 
             if(childEntityBaseInfo.getChildren().empty())
             {

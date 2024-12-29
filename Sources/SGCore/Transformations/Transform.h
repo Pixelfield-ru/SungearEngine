@@ -9,11 +9,12 @@
 
 #include "TransformBase.h"
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
     // sizeof(Transform) = 767
-    struct Transform
+    struct Transform : ECS::Component<Ref<Transform>, Ref<const Transform>>
     {
         TransformBase m_finalTransform;
 

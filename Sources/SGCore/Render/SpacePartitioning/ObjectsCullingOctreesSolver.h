@@ -17,7 +17,7 @@ namespace SGCore
         void fixedUpdate(const double& dt, const double& fixedDt, Ref<OctreesSolver> parent) noexcept final;
         
     private:
-        void testNode(const entity_t& cameraEntity, const Frustum& cameraFrustum, const Ref<OctreeNode>& node) noexcept;
+        void testNode(const ECS::entity_t& cameraEntity, const Frustum& cameraFrustum, const Ref<OctreeNode>& node) noexcept;
     };
 }
 

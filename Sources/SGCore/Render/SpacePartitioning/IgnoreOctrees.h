@@ -5,9 +5,11 @@
 #ifndef SUNGEARENGINE_IGNOREOCTREES_H
 #define SUNGEARENGINE_IGNOREOCTREES_H
 
+#include "SGCore/ECS/Component.h"
+
 namespace SGCore
 {
-    struct IgnoreOctrees
+    struct IgnoreOctrees : ECS::Component<IgnoreOctrees, const IgnoreOctrees>
     {
     private:
         bool m_dummy = true;

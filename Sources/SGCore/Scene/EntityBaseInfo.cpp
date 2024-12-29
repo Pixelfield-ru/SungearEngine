@@ -4,9 +4,10 @@
 
 #include "EntityBaseInfo.h"
 #include "SGCore/Logger/Logger.h"
+#include "SGCore/ECS/Registry.h"
 
-void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
-                                       SGCore::registry_t& inRegistry) noexcept
+void SGCore::EntityBaseInfo::setParent(const SGCore::ECS::entity_t& parent,
+                                       SGCore::ECS::registry_t& inRegistry) noexcept
 {
     if(!inRegistry.valid(m_thisEntity))
     {
@@ -34,7 +35,7 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
             return;
         }
 
-        auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(m_parent);
+        auto* parentBaseInfo = inRegistry.tryGet<EntityBaseInfo>(m_parent);
         if(!parentBaseInfo)
         {
             LOG_E(SGCORE_TAG, "Can not detach entity '{}' from entity '{}'. Entity '{}' (parent) does not have EntityBaseInfo component.",
@@ -65,7 +66,7 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
         return;
     }
 
-    auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(parent);
+    auto* parentBaseInfo = inRegistry.tryGet<EntityBaseInfo>(parent);
     if(!parentBaseInfo)
     {
         LOG_E(SGCORE_TAG, "Can not attach entity '{}' to entity '{}'. Entity '{}' (parent) does not have EntityBaseInfo component.",
@@ -80,13 +81,13 @@ void SGCore::EntityBaseInfo::setParent(const SGCore::entity_t& parent,
     parentBaseInfo->m_children.push_back(m_thisEntity);
 }
 
-void SGCore::EntityBaseInfo::detachFromParent(SGCore::registry_t& inRegistry) noexcept
+void SGCore::EntityBaseInfo::detachFromParent(SGCore::ECS::registry_t& inRegistry) noexcept
 {
     setParent(entt::null, inRegistry);
 }
 
-void SGCore::EntityBaseInfo::addChild(const SGCore::entity_t& child,
-                                      SGCore::registry_t& inRegistry) noexcept
+void SGCore::EntityBaseInfo::addChild(const SGCore::ECS::entity_t& child,
+                                      SGCore::ECS::registry_t& inRegistry) noexcept
 {
     if(hasChild(child))
     {
@@ -111,7 +112,7 @@ void SGCore::EntityBaseInfo::addChild(const SGCore::entity_t& child,
         return;
     }
 
-    auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(child);
+    auto* childBaseInfo = inRegistry.tryGet<EntityBaseInfo>(child);
     if(!childBaseInfo)
     {
         LOG_E(SGCORE_TAG, "Can not add child entity '{}' to entity '{}'. Entity '{}' (child) does not have EntityBaseInfo component.",
@@ -125,8 +126,8 @@ void SGCore::EntityBaseInfo::addChild(const SGCore::entity_t& child,
     childBaseInfo->m_parent = m_thisEntity;
 }
 
-void SGCore::EntityBaseInfo::removeChild(const SGCore::entity_t& child,
-                                         SGCore::registry_t& inRegistry) noexcept
+void SGCore::EntityBaseInfo::removeChild(const SGCore::ECS::entity_t& child,
+                                         SGCore::ECS::registry_t& inRegistry) noexcept
 {
     if(!hasChild(child))
     {
@@ -151,7 +152,7 @@ void SGCore::EntityBaseInfo::removeChild(const SGCore::entity_t& child,
         return;
     }
 
-    auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(child);
+    auto* childBaseInfo = inRegistry.tryGet<EntityBaseInfo>(child);
     if(!childBaseInfo)
     {
         LOG_E(SGCORE_TAG, "Can not remove child entity '{}' from entity '{}'. Entity '{}' (child) does not have EntityBaseInfo component.",
@@ -165,17 +166,17 @@ void SGCore::EntityBaseInfo::removeChild(const SGCore::entity_t& child,
     childBaseInfo->m_parent = entt::null;
 }
 
-bool SGCore::EntityBaseInfo::hasChild(const SGCore::entity_t& child) const noexcept
+bool SGCore::EntityBaseInfo::hasChild(const SGCore::ECS::entity_t& child) const noexcept
 {
     return std::find(m_children.begin(), m_children.end(), child) != m_children.end();
 }
 
-const std::vector<SGCore::entity_t>& SGCore::EntityBaseInfo::getChildren() const noexcept
+const std::vector<SGCore::ECS::entity_t>& SGCore::EntityBaseInfo::getChildren() const noexcept
 {
     return m_children;
 }
 
-SGCore::entity_t SGCore::EntityBaseInfo::getParent() const noexcept
+SGCore::ECS::entity_t SGCore::EntityBaseInfo::getParent() const noexcept
 {
     return m_parent;
 }
@@ -185,12 +186,12 @@ const glm::vec3& SGCore::EntityBaseInfo::getUniqueColor() const noexcept
     return m_uniqueColor;
 }
 
-const SGCore::entity_t& SGCore::EntityBaseInfo::getThisEntity() const noexcept
+const SGCore::ECS::entity_t& SGCore::EntityBaseInfo::getThisEntity() const noexcept
 {
     return m_thisEntity;
 }
 
-void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::registry_t>& registry) noexcept
+void SGCore::EntityBaseInfo::resolveAllEntitiesRefs(const SGCore::Ref<SGCore::ECS::registry_t>& registry) noexcept
 {
     auto entityBaseInfoView = registry->template view<EntityBaseInfo::reg_t>();
 
@@ -231,15 +232,15 @@ void SGCore::EntityBaseInfo::generateUniqueColor() noexcept
                              m_uniqueColor.x, m_uniqueColor.y, m_uniqueColor.z) << std::endl;
 }
 
-void SGCore::EntityBaseInfo::setThisEntity(const SGCore::entity_t& entity) noexcept
+void SGCore::EntityBaseInfo::setThisEntity(const SGCore::ECS::entity_t& entity) noexcept
 {
     m_thisEntity = entity;
     generateUniqueColor();
 }
 
-SGCore::entity_t SGCore::EntityBaseInfo::getRootParent(registry_t& inRegistry) const noexcept
+SGCore::ECS::entity_t SGCore::EntityBaseInfo::getRootParent(ECS::registry_t& inRegistry) const noexcept
 {
-    auto* parentBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(m_parent);
+    auto* parentBaseInfo = inRegistry.tryGet<EntityBaseInfo>(m_parent);
 
     if(m_parent == entt::null || !parentBaseInfo)
     {
@@ -249,14 +250,14 @@ SGCore::entity_t SGCore::EntityBaseInfo::getRootParent(registry_t& inRegistry) c
     return parentBaseInfo->getRootParent(inRegistry);
 }
 
-void SGCore::EntityBaseInfo::getAllChildren(SGCore::registry_t& inRegistry,
-                                            std::vector<entity_t>& outputEntities) const noexcept
+void SGCore::EntityBaseInfo::getAllChildren(SGCore::ECS::registry_t& inRegistry,
+                                            std::vector<ECS::entity_t>& outputEntities) const noexcept
 {
     outputEntities.push_back(m_thisEntity);
 
     for(const auto& e : m_children)
     {
-        auto* childBaseInfo = inRegistry.try_get<EntityBaseInfo::reg_t>(e);
+        auto* childBaseInfo = inRegistry.tryGet<EntityBaseInfo>(e);
         outputEntities.push_back(e);
 
         if(childBaseInfo)

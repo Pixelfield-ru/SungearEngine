@@ -78,7 +78,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                 for(size_t i = 0, n = transformations.size(); i < n; ++i)
                 {
                     const auto& val = transformations[i];
-                    Ref<Rigidbody3D>* tmpRigidbody3D = lockedScene->getECSRegistry()->try_get<Ref<Rigidbody3D>>(val.m_owner);
+                    Ref<Rigidbody3D>* tmpRigidbody3D = lockedScene->getECSRegistry()->tryGet<Rigidbody3D>(val.m_owner);
                     if (!tmpRigidbody3D) continue;
                     Ref<Rigidbody3D> rigidbody3D = *tmpRigidbody3D;
 
@@ -114,7 +114,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
                     Ref<Rigidbody3D> rigidbody3D;
                     {
-                        Ref<Rigidbody3D>* rb3d = registry->try_get<Ref<Rigidbody3D>>(entity);
+                        Ref<Rigidbody3D>* rb3d = registry->tryGet<Rigidbody3D>(entity);
                         if (!rb3d) continue;
 
                         rigidbody3D = *rb3d;
@@ -122,7 +122,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
 
                     Ref<Transform> transform;
                     {
-                        Ref<Transform>* tmpTransform = registry->try_get<Ref<Transform>>(entity);
+                        Ref<Transform>* tmpTransform = registry->tryGet<Transform>(entity);
                         if(!tmpTransform) continue;
 
                         transform = *tmpTransform;
@@ -135,7 +135,7 @@ void SGCore::PhysicsWorld3D::parallelUpdate(const double& dt, const double& fixe
                     Ref<Transform> parentTransform;
 
                     {
-                        auto* tmp = registry->try_get<Ref<Transform>>(entityBaseInfo.getParent());
+                        auto* tmp = registry->tryGet<Transform>(entityBaseInfo.getParent());
                         parentTransform = (tmp ? *tmp : nullptr);
                     }
 
@@ -252,7 +252,7 @@ void SGCore::PhysicsWorld3D::onAddToScene(const Ref<Scene>& scene)
 {
     if (!scene) return;
 
-    auto rigidbodies3DView = scene->getECSRegistry()->view<Ref<Rigidbody3D>>();
+    auto rigidbodies3DView = scene->getECSRegistry()->view<Rigidbody3D>();
 
     rigidbodies3DView.each([this](Ref<Rigidbody3D> rigidbody3D) {
         this->addBody(rigidbody3D->m_body);

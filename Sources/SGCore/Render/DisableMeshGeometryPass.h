@@ -5,9 +5,11 @@
 #ifndef SUNGEARENGINE_DISABLEMESHGEOMETRYPASS_H
 #define SUNGEARENGINE_DISABLEMESHGEOMETRYPASS_H
 
+#include "SGCore/ECS/Component.h"
+
 namespace SGCore
 {
-    struct DisableMeshGeometryPass
+    struct DisableMeshGeometryPass : ECS::Component<DisableMeshGeometryPass, const DisableMeshGeometryPass>
     {
     private:
         bool m_dummy = true;

@@ -59,13 +59,13 @@ void SGE::SceneView::renderBody()
         /*auto tex = SGCore::AssetManager::getInstance()->loadAsset<SGCore::ITexture2D>(
                 "../SGResources/textures/skyboxes/skybox0/standard_skybox0_zfront.png"
         );*/
-        auto* layeredFrameReceiver = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::LayeredFrameReceiver>
+        auto* layeredFrameReceiver = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::LayeredFrameReceiver>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
-        auto* renderingBase = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::Ref<SGCore::RenderingBase>>
+        auto* renderingBase = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::RenderingBase>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
-        auto* camera3D = currentEditorScene->m_scene->getECSRegistry()->try_get<SGCore::Ref<SGCore::Camera3D>>
+        auto* camera3D = currentEditorScene->m_scene->getECSRegistry()->tryGet<SGCore::Camera3D>
                 (EditorScene::getCurrentScene()->m_data.m_editorCamera);
 
         if(layeredFrameReceiver && camera3D)
@@ -99,7 +99,7 @@ void SGE::SceneView::renderBody()
                         attachment2->getHeight() - (mousePos.y - windowPos.y) * (attachment2->getHeight() / windowSize.y)
                 };
 
-                SGCore::entity_t pickedEntity =
+                SGCore::ECS::entity_t pickedEntity =
                         SGCore::SceneUtils::pickEntity(mouseRelativePos,
                                                        *currentEditorScene->m_scene->getECSRegistry(),
                                                        layeredFrameReceiver->m_layersFrameBuffer.get(),
@@ -121,7 +121,7 @@ void SGE::SceneView::renderBody()
                     auto& entityBaseInfo =
                             currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo::reg_t>(pickedEntity);
 
-                    std::vector<SGCore::entity_t> pickedEntities;
+                    std::vector<SGCore::ECS::entity_t> pickedEntities;
                     const auto rootEntity =
                             entityBaseInfo.getRootParent(*currentEditorScene->m_scene->getECSRegistry());
 
@@ -302,11 +302,11 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         return;
     }
 
-    std::vector<SGCore::entity_t> entities;
+    std::vector<SGCore::ECS::entity_t> entities;
     modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
         entities.push_back(entity);
         auto* pickableComponent =
-                SGCore::Scene::getCurrentScene()->getECSRegistry()->try_get<SGCore::Pickable>(entity);
+                SGCore::Scene::getCurrentScene()->getECSRegistry()->tryGet<SGCore::Pickable>(entity);
         if(pickableComponent)
         {
             pickableComponent->m_pickableForCameras.emplace_back(EditorScene::getCurrentScene()->m_data.m_editorCamera);

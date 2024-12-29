@@ -8,12 +8,13 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreMain.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct UIElement
+    struct UIElement : ECS::Component<UIElement, const UIElement>
     {
-        std::vector<entt::entity> m_children;
+        std::vector<ECS::entity_t> m_children;
     };
 }
 

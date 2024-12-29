@@ -18,11 +18,11 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
     
     auto registry = lockedScene->getECSRegistry();
 
-    auto objectsCullingOctrees = registry->view<Ref<Octree>, Ref<ObjectsCullingOctree>>();
-    auto camerasView = registry->view<Ref<Camera3D>, Ref<RenderingBase>, Ref<Transform>>();
-    objectsCullingOctrees.each([&camerasView, &registry, this](Ref<Octree> octree, Ref<ObjectsCullingOctree>&) {
+    auto objectsCullingOctrees = registry->view<Octree, ObjectsCullingOctree>();
+    auto camerasView = registry->view<Camera3D, RenderingBase, Transform>();
+    objectsCullingOctrees.each([&camerasView, &registry, this](Octree::reg_t octree, ObjectsCullingOctree::reg_t&) {
         camerasView.each([&octree, &registry, this]
-        (const entity_t& cameraEntity, Ref<Camera3D> camera3D, Ref<RenderingBase> renderingBase, Ref<Transform> cameraTransform) {
+        (const ECS::entity_t& cameraEntity, Camera3D::reg_t camera3D, RenderingBase::reg_t renderingBase, Transform::reg_t cameraTransform) {
             for(const auto& n : octree->m_notEmptyNodes)
             {
                 testNode(cameraEntity, renderingBase->m_frustum, n);
@@ -32,7 +32,7 @@ void SGCore::ObjectsCullingOctreesSolver::fixedUpdate(const double& dt, const do
 }
 
 void SGCore::ObjectsCullingOctreesSolver::testNode
-(const entity_t& cameraEntity, const Frustum& cameraFrustum, const Ref<OctreeNode>& node) noexcept
+(const ECS::entity_t& cameraEntity, const Frustum& cameraFrustum, const Ref<OctreeNode>& node) noexcept
 {
     bool isInFrustum = cameraFrustum.testAABB(node->m_aabb.m_min, node->m_aabb.m_max);
     

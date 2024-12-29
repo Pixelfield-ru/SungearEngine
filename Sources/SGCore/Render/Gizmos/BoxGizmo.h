@@ -6,10 +6,11 @@
 #include "SGCore/Transformations/TransformBase.h"
 #include "SGCore/Render/MeshBase.h"
 #include "GizmoBase.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct BoxGizmo
+    struct BoxGizmo : ECS::Component<BoxGizmo, const BoxGizmo>
     {
         GizmoBase m_base;
 

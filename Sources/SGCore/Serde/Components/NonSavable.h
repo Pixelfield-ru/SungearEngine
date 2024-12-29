@@ -5,9 +5,11 @@
 #ifndef SUNGEARENGINE_NONSAVABLE_H
 #define SUNGEARENGINE_NONSAVABLE_H
 
+#include "SGCore/ECS/Component.h"
+
 namespace SGCore
 {
-    struct NonSavable
+    struct NonSavable : ECS::Component<NonSavable, const NonSavable>
     {
     private:
         bool m_dummy { };

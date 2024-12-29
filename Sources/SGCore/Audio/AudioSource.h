@@ -14,6 +14,7 @@
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Memory/Assets/AudioTrackAsset.h"
 #include "SGCore/Serde/Defines.h"
+#include "SGCore/ECS/Component.h"
 
 sg_predeclare_serde()
 
@@ -34,7 +35,7 @@ namespace SGCore
         AMBIENT
     };
 
-    struct AudioSource
+    struct AudioSource : ECS::Component<AudioSource, const AudioSource>
     {
         sg_serde_as_friend()
 

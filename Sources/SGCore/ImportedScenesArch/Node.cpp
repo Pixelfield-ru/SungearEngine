@@ -13,11 +13,11 @@
 #include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 #include "SGCore/Memory/AssetManager.h"
 
-SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
-                                      const std::string& layerName,
-                                      const SGCore::Node::EachEntityFunc& eachEntityFunc,
-                                      const SGCore::Node::MeshFunc& meshFunc,
-                                      const bool& rootAdd) noexcept
+SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
+                                               const std::string& layerName,
+                                               const SGCore::Node::EachEntityFunc& eachEntityFunc,
+                                               const SGCore::Node::MeshFunc& meshFunc,
+                                               const bool& rootAdd) noexcept
 {
     // todo: make layers
     // auto layer = scene->getLayers().find(layerName)->second;
@@ -26,11 +26,11 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
     auto registry = scene->getECSRegistry();
 
-    entity_t parentEntity = registry->create();
+    ECS::entity_t parentEntity = registry->create();
 
     registry->emplace<Pickable>(parentEntity);
-    auto& nodeBaseInfo = registry->emplace<EntityBaseInfo::reg_t>(parentEntity, parentEntity);
-    Ref<Transform> nodeTransform = registry->emplace<Ref<Transform>>(parentEntity, MakeRef<Transform>());
+    auto& nodeBaseInfo = registry->get<EntityBaseInfo>(parentEntity);
+    auto nodeTransform = registry->emplace<Transform>(parentEntity, MakeRef<Transform>());
     nodeTransform->m_ownTransform.m_position = m_position;
     // auto eulerRot = glm::eulerAngles(m_rotationQuaternion);
     nodeTransform->m_ownTransform.m_rotation = m_rotationQuaternion;
@@ -52,12 +52,12 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
 
     for(auto& mesh : m_meshesData)
     {
-        entity_t meshEntity = registry->create();
+        ECS::entity_t meshEntity = registry->create();
 
         registry->emplace<Pickable>(meshEntity);
-        auto& meshEntityBaseInfo = registry->emplace<EntityBaseInfo::reg_t>(meshEntity, meshEntity);
-        Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
-        Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
+        auto& meshEntityBaseInfo = registry->get<EntityBaseInfo>(meshEntity);
+        auto meshTransform = registry->emplace<Transform>(meshEntity, MakeRef<Transform>());
+        auto& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
         // NOT STANDARD
         // auto cullable = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
         meshEntityMesh.m_base.setMeshData(mesh);
@@ -76,7 +76,7 @@ SGCore::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
     for(auto& childNode : m_children)
     {
         auto childNodeEntity = childNode->addOnScene(scene, layerName, eachEntityFunc, meshFunc, false);
-        auto& childEntityBaseInfo = registry->get<EntityBaseInfo::reg_t>(childNodeEntity);
+        auto& childEntityBaseInfo = registry->get<EntityBaseInfo>(childNodeEntity);
         childEntityBaseInfo.setParent(parentEntity, *registry);
         // parentEntity->addChild(childNodeEntity);
     }
@@ -95,7 +95,7 @@ void SGCore::Node::addOnScene(const Ref<Scene>& scene,
 void SGCore::Node::addOnScene
 (const Ref<Scene>& scene, const std::string& layerName, const Node::EachEntityFunc& eachEntityFunc) noexcept
 {
-    addOnScene(scene, layerName, eachEntityFunc, [](const entity_t&, const entity_t&)
+    addOnScene(scene, layerName, eachEntityFunc, [](const ECS::entity_t&, const ECS::entity_t&)
                {}
     );
 }
@@ -103,7 +103,7 @@ void SGCore::Node::addOnScene
 void SGCore::Node::addOnScene
 (const Ref<Scene>& scene, const std::string& layerName, const Node::MeshFunc& meshFunc) noexcept
 {
-    addOnScene(scene, layerName, [](const entity_t&)
+    addOnScene(scene, layerName, [](const ECS::entity_t&)
                {}, meshFunc
     );
 }
@@ -111,9 +111,9 @@ void SGCore::Node::addOnScene
 void SGCore::Node::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
 {
     addOnScene(scene, layerName,
-               [](const entity_t&)
+               [](const ECS::entity_t&)
                {},
-               [](const entity_t&, const entity_t&)
+               [](const ECS::entity_t&, const ECS::entity_t&)
                {}
     );
 }

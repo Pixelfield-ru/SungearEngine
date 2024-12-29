@@ -17,8 +17,8 @@ namespace SGE
 
     struct EditorSceneData
     {
-        SGCore::entity_t m_editorCamera { };
-        SGCore::entity_t m_editorGrid { };
+        SGCore::ECS::entity_t m_editorCamera { };
+        SGCore::ECS::entity_t m_editorGrid { };
     };
 
     struct EditorScene

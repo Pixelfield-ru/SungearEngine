@@ -59,12 +59,12 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
 {
     auto registry = scene->getECSRegistry();
 
-    auto camerasView = registry->view<Ref<Camera3D>,
-            EntityBaseInfo::reg_t,
-            Ref<RenderingBase>,
-            Ref<Transform>,
+    auto camerasView = registry->view<Camera3D,
+            EntityBaseInfo,
+            RenderingBase,
+            Transform,
             LayeredFrameReceiver>();
-    auto meshesView = registry->view<EntityBaseInfo::reg_t, Mesh, Ref<Transform>>();
+    auto meshesView = registry->view<EntityBaseInfo, Mesh, Transform>();
 
     // IDK WHY BUT WE MUST FORCE RENDER STATE TO WORK OUTLINE CORRECTLY.
     m_renderState.use(true);
@@ -73,11 +73,11 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
     m_shader->useFloat("u_outlineThickness", m_outlineThickness);
 
     camerasView.each([&meshesView,
-                      this](const Ref<Camera3D>& camera3D,
+                      this](const Camera3D::reg_t& camera3D,
                             const EntityBaseInfo::reg_t& cameraBaseInfo,
-                            const Ref<RenderingBase>& cameraRenderingBase,
-                            const Ref<Transform>& cameraTransform,
-                            const LayeredFrameReceiver& layeredFrameReceiver) {
+                            const RenderingBase::reg_t& cameraRenderingBase,
+                            const Transform::reg_t& cameraTransform,
+                            const LayeredFrameReceiver::reg_t& layeredFrameReceiver) {
         CoreMain::getRenderer()->prepareUniformBuffers(cameraRenderingBase, cameraTransform);
         m_shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
@@ -93,10 +93,10 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
         // firstly rendering outlined object to other frame buffer attachment
         // color of outlined objects = u_outlineColor
         meshesView.each([&camera3D,
-                         this](const entity_t& meshEntity,
+                         this](const ECS::entity_t& meshEntity,
                                const EntityBaseInfo::reg_t& meshBaseInfo,
-                               const Mesh& mesh,
-                               const Ref<Transform>& meshTransform) mutable {
+                               const Mesh::reg_t& mesh,
+                               const Transform::reg_t& meshTransform) mutable {
             if(!camera3D->m_pickedEntities.contains(meshEntity)) return;
 
             m_shader->useVectorf("u_outlineColor", meshBaseInfo.m_outlineColor);

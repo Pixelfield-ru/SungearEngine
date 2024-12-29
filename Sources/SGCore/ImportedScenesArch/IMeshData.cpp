@@ -1,7 +1,6 @@
 #include <LinearMath/btVector3.h>
 
 #include "SGCore/Scene/Scene.h"
-#include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Transformations/Transform.h"
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Picking/Pickable.h"
@@ -123,15 +122,14 @@ void SGCore::IMeshData::setData(const AssetRef<IMeshData>& other) noexcept
     other->m_material->copyTexturesRefs(m_material.get());
 }
 
-SGCore::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
+SGCore::ECS::entity_t SGCore::IMeshData::addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept
 {
     auto registry = scene->getECSRegistry();
     
     auto meshEntity = registry->create();
 
     registry->emplace<Pickable>(meshEntity);
-    auto& meshEntityBaseInfo = registry->emplace<EntityBaseInfo::reg_t>(meshEntity, meshEntity);
-    Ref<Transform>& meshTransform = registry->emplace<Ref<Transform>>(meshEntity, MakeRef<Transform>());
+    Ref<Transform>& meshTransform = registry->emplace<Transform>(meshEntity, MakeRef<Transform>());
     Mesh& meshEntityMesh = registry->emplace<Mesh>(meshEntity);
     // NOT STANDARD
     // auto cullableMesh = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());

@@ -13,6 +13,7 @@
 #include "SGCore/Render/IRenderPipeline.h"
 #include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Render/LayeredFrameReceiver.h"
+#include "SGCore/Render/RenderingBase.h"
 
 SGCore::PostProcessPass::PostProcessPass()
 {
@@ -37,9 +38,10 @@ void SGCore::PostProcessPass::render(const Ref<Scene>& scene, const Ref<IRenderP
     m_renderState.m_useStencilTest = false;
     m_renderState.use();
 
-    auto receiversView = scene->getECSRegistry()->view<LayeredFrameReceiver, Ref<RenderingBase>, Ref<Transform>>();
+    auto receiversView = scene->getECSRegistry()->view<LayeredFrameReceiver, RenderingBase, Transform>();
 
-    receiversView.each([this](LayeredFrameReceiver& receiver, Ref<RenderingBase> renderingBase, Ref<Transform> transform) {
+    receiversView.each([this](LayeredFrameReceiver::reg_t& receiver, RenderingBase::reg_t& renderingBase,
+                              Transform::reg_t& transform) {
         layersFX(receiver);
     });
 

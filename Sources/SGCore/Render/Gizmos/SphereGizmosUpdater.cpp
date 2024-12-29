@@ -15,7 +15,7 @@ void SGCore::SphereGizmosUpdater::fixedUpdate(const double& dt, const double& fi
     
     auto sphereGizmosView = lockedScene->getECSRegistry()->view<SphereGizmo>();
 
-    sphereGizmosView.each([](SphereGizmo& gizmo) {
+    sphereGizmosView.each([](SphereGizmo::reg_t& gizmo) {
         if(gizmo.m_radius != gizmo.m_lastRadius || gizmo.m_angleIncrement != gizmo.m_lastAngleIncrement)
         {
             MeshBuilder::buildSphereVariant1(gizmo.m_base.m_meshBase, gizmo.m_radius, gizmo.m_angleIncrement);

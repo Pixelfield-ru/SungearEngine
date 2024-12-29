@@ -15,14 +15,14 @@ namespace SGCore
         sg_assets_refs_resolver_as_friend
 
     private:
-        using MeshFunc = std::function<void(const entity_t& parentEntity, const entity_t& meshEntity)>;
-        using EachEntityFunc = std::function<void(const entity_t& parentEntity)>;
+        using MeshFunc = std::function<void(const ECS::entity_t& parentEntity, const ECS::entity_t& meshEntity)>;
+        using EachEntityFunc = std::function<void(const ECS::entity_t& parentEntity)>;
 
-        entity_t addOnScene(const Ref<Scene>& scene,
-                                const std::string& layerName,
-                                const EachEntityFunc& eachEntityFunc,
-                                const MeshFunc& meshFunc,
-                                const bool& rootAdd) noexcept;
+        ECS::entity_t addOnScene(const Ref<Scene>& scene,
+                                 const std::string& layerName,
+                                 const EachEntityFunc& eachEntityFunc,
+                                 const MeshFunc& meshFunc,
+                                 const bool& rootAdd) noexcept;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept;
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;

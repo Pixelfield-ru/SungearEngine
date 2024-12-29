@@ -6,10 +6,11 @@
 #define SUNGEARENGINE_SPHEREGIZMO_H
 
 #include "GizmoBase.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct SphereGizmo
+    struct SphereGizmo : ECS::Component<SphereGizmo, const SphereGizmo>
     {
         GizmoBase m_base;
 

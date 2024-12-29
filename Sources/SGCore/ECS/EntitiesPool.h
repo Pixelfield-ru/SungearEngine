@@ -12,7 +12,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 
-namespace SGCore
+namespace SGCore::ECS
 {
     struct EntitiesPool
     {

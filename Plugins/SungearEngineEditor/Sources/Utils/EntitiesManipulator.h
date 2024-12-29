@@ -28,7 +28,7 @@ namespace SGE
                 ImGuizmo::OPERATION::ROTATE |
                 ImGuizmo::OPERATION::SCALE;
 
-        std::unordered_set<SGCore::entity_t> m_manipulatingEntities;
+        std::unordered_set<SGCore::ECS::entity_t> m_manipulatingEntities;
 
         bool m_isWholeModelPicking = true;
 
@@ -42,7 +42,7 @@ namespace SGE
         }
 
         void manipulateEntities(const SGCore::Scene& forScene,
-                                const SGCore::entity_t& camera3DEntity) const noexcept;
+                                const SGCore::ECS::entity_t& camera3DEntity) const noexcept;
 
     private:
         static void getDeltaBetweenMatrices(const glm::mat4& originalMatrix, const glm::mat4& updatedMatrix,

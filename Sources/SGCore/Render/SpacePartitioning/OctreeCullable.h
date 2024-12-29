@@ -8,13 +8,14 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/ECS/Component.h"
 #include "SGCore/Utils/EventListener.h"
 
 namespace SGCore
 {
     struct OctreeNode;
     
-    struct OctreeCullable
+    struct OctreeCullable : ECS::Component<Ref<OctreeCullable>, Ref<const OctreeCullable>>
     {
         Weak<OctreeNode> m_parentNode;
         

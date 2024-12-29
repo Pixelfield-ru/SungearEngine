@@ -22,9 +22,9 @@ void SGCore::Controllables3DUpdater::fixedUpdate(const double& dt, const double&
     float finalDt = dt * 300.0f;
     // finalDt = 1.0f;
 
-    auto controllablesView = lockedScene->getECSRegistry()->view<Ref<Transform>, Controllable3D>();
+    auto controllablesView = lockedScene->getECSRegistry()->view<Transform, Controllable3D>();
 
-    controllablesView.each([&finalDt](Ref<Transform>& transform, Controllable3D& controllable3D) {
+    controllablesView.each([&finalDt](Transform::reg_t& transform, Controllable3D::reg_t& controllable3D) {
         TransformBase& ownTransform = transform->m_ownTransform;
         const auto& mainListener = InputManager::getMainInputListener();
 

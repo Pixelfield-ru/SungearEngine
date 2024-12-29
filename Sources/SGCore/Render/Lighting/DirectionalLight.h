@@ -6,10 +6,11 @@
 #define SUNGEARENGINE_DIRECTIONALLIGHT_H
 
 #include "LightBase.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct DirectionalLight
+    struct DirectionalLight : ECS::Component<DirectionalLight, const DirectionalLight>
     {
         DirectionalLight() noexcept;
 

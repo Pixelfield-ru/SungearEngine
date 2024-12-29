@@ -7,7 +7,7 @@
 
 namespace SGCore
 {
-    class UICamera
+    class UICamera : public ECS::Component<UICamera, const UICamera>
     {
     private:
         volatile int m_dummy = 0;

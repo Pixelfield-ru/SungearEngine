@@ -17,7 +17,7 @@ void SGCore::AudioProcessor::update(const double& dt, const double& fixedDt)
     
     auto audioSourcesView = registry->view<AudioSource>();
     
-    audioSourcesView.each([](AudioSource& audioSource) {
+    audioSourcesView.each([](AudioSource::reg_t& audioSource) {
         AudioSourceState currentState = audioSource.getState();
         if(currentState != audioSource.m_lastState)
         {

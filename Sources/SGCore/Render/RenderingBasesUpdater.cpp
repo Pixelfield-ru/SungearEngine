@@ -17,9 +17,9 @@ void SGCore::RenderingBasesUpdater::fixedUpdate(const double& dt, const double& 
     auto lockedScene = getScene();
     if(!lockedScene) return;
     
-    auto renderingBasesView = lockedScene->getECSRegistry()->view<Ref<RenderingBase>, Ref<Transform>>();
+    auto renderingBasesView = lockedScene->getECSRegistry()->view<RenderingBase, Transform>();
 
-    renderingBasesView.each([](Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
+    renderingBasesView.each([](RenderingBase::reg_t& renderingBase, Transform::reg_t& transform) {
         TransformBase& finalTransform = transform->m_finalTransform;
         TransformBase& ownTransform = transform->m_ownTransform;
 

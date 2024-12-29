@@ -4,17 +4,19 @@
 
 #include "EntitiesPool.h"
 
-SGCore::EntitiesPool::EntitiesPool(const SGCore::Ref<SGCore::registry_t>& attachedRegistry)
+#include "SGCore/ECS/Registry.h"
+
+SGCore::ECS::EntitiesPool::EntitiesPool(const SGCore::Ref<SGCore::ECS::registry_t>& attachedRegistry)
 {
     m_attachedRegistry = attachedRegistry;
 }
 
-SGCore::EntitiesPool::~EntitiesPool()
+SGCore::ECS::EntitiesPool::~EntitiesPool()
 {
     clear();
 }
 
-SGCore::entity_t SGCore::EntitiesPool::pop(bool& isCreatedNew) noexcept
+SGCore::ECS::entity_t SGCore::ECS::EntitiesPool::pop(bool& isCreatedNew) noexcept
 {
     std::lock_guard guard(m_mutex);
 
@@ -52,7 +54,7 @@ SGCore::entity_t SGCore::EntitiesPool::pop(bool& isCreatedNew) noexcept
     }
 }
 
-void SGCore::EntitiesPool::push(const entity_t& entity) noexcept
+void SGCore::ECS::EntitiesPool::push(const entity_t& entity) noexcept
 {
     std::lock_guard guard(m_mutex);
 
@@ -64,7 +66,7 @@ void SGCore::EntitiesPool::push(const entity_t& entity) noexcept
     }
 }
 
-void SGCore::EntitiesPool::clear() noexcept
+void SGCore::ECS::EntitiesPool::clear() noexcept
 {
     std::lock_guard guard(m_mutex);
 
@@ -89,12 +91,12 @@ void SGCore::EntitiesPool::clear() noexcept
     }
 }
 
-SGCore::Ref<SGCore::registry_t> SGCore::EntitiesPool::getAttachedRegistry() const noexcept
+SGCore::Ref<SGCore::ECS::registry_t> SGCore::ECS::EntitiesPool::getAttachedRegistry() const noexcept
 {
     return m_attachedRegistry.lock();
 }
 
-SGCore::EntitiesPool& SGCore::EntitiesPool::operator=(const SGCore::EntitiesPool& other) noexcept
+SGCore::ECS::EntitiesPool& SGCore::ECS::EntitiesPool::operator=(const SGCore::ECS::EntitiesPool& other) noexcept
 {
     if(this == std::addressof(other)) return *this;
 

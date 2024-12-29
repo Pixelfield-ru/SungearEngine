@@ -11,7 +11,7 @@ namespace SGE
 {
     struct InspectorView : public SGCore::ImGuiWrap::IView
     {
-        SGCore::entity_t m_currentChosenEntity { };
+        SGCore::ECS::entity_t m_currentChosenEntity { };
 
         bool begin() final;
         void renderBody() final;

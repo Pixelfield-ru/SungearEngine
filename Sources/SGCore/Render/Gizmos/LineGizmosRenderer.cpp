@@ -19,7 +19,7 @@ void SGCore::LineGizmosRenderer::fixedUpdate(const double& dt, const double& fix
     
     auto debugDraw = lockedScene->getSystem<DebugDraw>();
     
-    lineGizmosView.each([&debugDraw](LineGizmo& gizmo) {
+    lineGizmosView.each([&debugDraw](LineGizmo::reg_t& gizmo) {
         if(gizmo.m_start != gizmo.m_lastStart || gizmo.m_end != gizmo.m_lastEnd)
         {
             MeshBuilder::buildLine(gizmo.m_base.m_meshBase, gizmo.m_start, gizmo.m_end);

@@ -124,9 +124,9 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
     editorScene->addEditorEntities();
 
     // adding scene atmosphere
-    SGCore::entity_t atmosphereEntity = entt::null;
+    SGCore::ECS::entity_t atmosphereEntity = entt::null;
     {
-        std::vector<SGCore::entity_t> skyboxEntities;
+        std::vector<SGCore::ECS::entity_t> skyboxEntities;
         auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("cube_model");
         cubeModel->m_nodes[0]->addOnScene(newScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities, newScene](const auto& entity) {
             skyboxEntities.push_back(entity);
@@ -141,7 +141,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
         atmosphereScattering.m_sunRotation.z = 90.0;
         skyboxMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_skybox_material0"));
 
-        auto& skyboxTransform = newScene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(atmosphereEntity);
+        auto& skyboxTransform = newScene->getECSRegistry()->get<SGCore::Transform>(atmosphereEntity);
 
         skyboxTransform->m_ownTransform.m_scale = { 1150, 1150, 1150 };
     }
@@ -159,13 +159,13 @@ void SGE::EditorScene::addEditorEntities() noexcept
     {
         const auto& camera = m_data.m_editorCamera;
 
-        auto& cameraBaseInfo = registry->emplace<SGCore::EntityBaseInfo::reg_t>(camera, camera);
+        auto& cameraBaseInfo = registry->get<SGCore::EntityBaseInfo>(camera);
         cameraBaseInfo.setRawName("SGMainCamera");
 
-        registry->emplace<SGCore::Ref<SGCore::Transform>>(camera, SGCore::MakeRef<SGCore::Transform>());
+        registry->emplace<SGCore::Transform>(camera, SGCore::MakeRef<SGCore::Transform>());
         registry->emplace<SGCore::NonSavable>(camera);
-        registry->emplace<SGCore::Ref<SGCore::Camera3D>>(camera, SGCore::MakeRef<SGCore::Camera3D>());
-        registry->emplace<SGCore::Ref<SGCore::RenderingBase>>(camera, SGCore::MakeRef<SGCore::RenderingBase>());
+        registry->emplace<SGCore::Camera3D>(camera, SGCore::MakeRef<SGCore::Camera3D>());
+        registry->emplace<SGCore::RenderingBase>(camera, SGCore::MakeRef<SGCore::RenderingBase>());
         registry->emplace<SGCore::Controllable3D>(camera);
         auto& layeredFrameReceiver = registry->emplace<SGCore::LayeredFrameReceiver>(camera);
     }
@@ -174,7 +174,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
     {
         auto scene = m_scene;
 
-        std::vector<SGCore::entity_t> gridEntities;
+        std::vector<SGCore::ECS::entity_t> gridEntities;
         auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("plane_model");
         cubeModel->m_nodes[0]->addOnScene(m_scene, SG_LAYER_OPAQUE_NAME, [&gridEntities, scene](const auto& entity) {
             gridEntities.push_back(entity);
@@ -187,7 +187,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
         auto& gridMesh = scene->getECSRegistry()->get<SGCore::Mesh>(m_data.m_editorGrid);
         gridMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_grid_material"));
 
-        auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Ref<SGCore::Transform>>(m_data.m_editorGrid);
+        auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Transform>(m_data.m_editorGrid);
         // gridTransform.m_ownTransform.m_scale = { 100.0f, 100.0f, 1.0f, };
         gridTransform.m_ownTransform.m_scale = { 3.0f, 3.0f, 1.0f, };
         gridTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));;

@@ -35,7 +35,7 @@ void DO_NOT_USE()
 template<SGCore::Serde::FormatType TFormatType>
 void onEntitySerialize(SGCore::Serde::SerializableValueView<SGCore::SceneEntitySaveInfo, TFormatType>& entityView,
                        const SGCore::Scene& serializableScene,
-                       const SGCore::entity_t& serializableEntity) noexcept
+                       const SGCore::ECS::entity_t& serializableEntity) noexcept
 {
     LOG_I("GENERATED", "Saving entity '{}'...", std::to_underlying(serializableEntity));
 
@@ -45,10 +45,10 @@ void onEntitySerialize(SGCore::Serde::SerializableValueView<SGCore::SceneEntityS
     ## if struct.hasMember(name: "type") && struct.type.equals(value: "component")
     ## if !struct.hasMember(name: "annotations") || !struct.annotations.hasMember(name: "doNotGenerateSerializationLogic")
     {
-        ## if struct.hasMember(name: "getFromRegistryBy")
-        auto* component = serializableScene.getECSRegistry()->template try_get<{{ struct.getFromRegistryBy }}>(serializableEntity);
+        ## if struct.hasMember(name: "ecsRegistrySpecialization")
+        auto* component = serializableScene.getECSRegistry()->template tryGet<{{ struct.getFromRegistryBy }}>(serializableEntity);
         ## else
-        auto* component = serializableScene.getECSRegistry()->template try_get<{{ struct.fullName }}>(serializableEntity);
+        auto* component = serializableScene.getECSRegistry()->template tryGet<{{ struct.fullName }}>(serializableEntity);
         ## endif
 
         if(component)
@@ -64,7 +64,7 @@ void onEntitySerialize(SGCore::Serde::SerializableValueView<SGCore::SceneEntityS
 template<SGCore::Serde::FormatType TFormatType>
 void onEntityDeserialize(SGCore::Serde::DeserializableValueView<SGCore::SceneEntitySaveInfo, TFormatType>& entityView,
                          const typename SGCore::Serde::FormatInfo<TFormatType>::array_iterator_t& componentsIterator,
-                         SGCore::registry_t& toRegistry) noexcept
+                         SGCore::ECS::registry_t& toRegistry) noexcept
 {
     const auto& entity = entityView.m_data->m_serializableEntity;
 
@@ -76,18 +76,18 @@ void onEntityDeserialize(SGCore::Serde::DeserializableValueView<SGCore::SceneEnt
     ## if !struct.hasMember(name: "annotations") || !struct.annotations.hasMember(name: "doNotGenerateDeserializationLogic")
     if(currentElementTypeName == SGCore::Serde::SerdeSpec<{{ struct.fullName }}, TFormatType>::type_name)
     {
-        ## if struct.hasMember(name: "getFromRegistryBy")
-        const auto component = entityView.getValueContainer().template getMember<{{ struct.getFromRegistryBy }}>(componentsIterator, entityView.m_data->m_serializableEntity, toRegistry);
+        ## if struct.hasMember(name: "ecsRegistrySpecialization")
+        auto component = entityView.getValueContainer().template getMember<{{ struct.ecsRegistrySpecialization }}>(componentsIterator, entityView.m_data->m_serializableEntity, toRegistry);
         ## else
-        const auto component = entityView.getValueContainer().template getMember<{{ struct.fullName }}>(componentsIterator, entityView.m_data->m_serializableEntity, toRegistry);
+        auto component = entityView.getValueContainer().template getMember<{{ struct.fullName }}>(componentsIterator, entityView.m_data->m_serializableEntity, toRegistry);
         ## endif
 
         if(component)
         {
-            ## if struct.hasMember(name: "getFromRegistryBy")
-            toRegistry.emplace<{{ struct.getFromRegistryBy }}>(entity, *component);
+            ## if struct.hasMember(name: "ecsRegistrySpecialization")
+            toRegistry.emplace<{{ struct.ecsRegistrySpecialization }}>(entity, std::move(*component));
             ## else
-            toRegistry.emplace<{{ struct.fullName }}>(entity, *component);
+            toRegistry.emplace<{{ struct.fullName }}>(entity, std::move(*component));
             ## endif
         }
     }

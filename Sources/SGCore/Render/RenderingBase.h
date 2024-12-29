@@ -8,12 +8,13 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Math/Frustum.h"
+#include "SGCore/ECS/Component.h"
 
 //#include "RenderingComponentsSystem.h"
 
 namespace SGCore
 {
-    struct RenderingBase
+    struct RenderingBase : ECS::Component<Ref<RenderingBase>, Ref<const RenderingBase>>
     {
         float m_fov = 75.0f;
         float m_aspect = 16.0f / 9.0f;

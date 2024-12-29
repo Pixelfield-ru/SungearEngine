@@ -12,13 +12,11 @@
 #include "SGCore/Render/BaseRenderPasses/IGeometryPass.h"
 #include "SGCore/Math/Frustum.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
+#include "SGCore/Render/Mesh.h"
 
 namespace SGCore
 {
-    struct Mesh;
     struct OctreeNode;
-    struct Transform;
-    struct Camera3D;
     struct PostProcessLayer;
     
     struct PBRRPGeometryPass : public IGeometryPass
@@ -28,17 +26,17 @@ namespace SGCore
         void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) final;
         
     private:
-        void renderMesh(const Ref<registry_t>& registry,
-                        const entity_t& meshEntity,
-                        const Ref<Transform>& meshTransform,
-                        Mesh& mesh,
+        void renderMesh(const Ref<ECS::registry_t>& registry,
+                        const ECS::entity_t& meshEntity,
+                        const Transform::reg_t& meshTransform,
+                        Mesh::reg_t& mesh,
                         EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                         const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
                         const Ref<PostProcessLayer>& meshPPLayer) noexcept;
 
-        void renderOctreeNode(const Ref<registry_t>& registry,
+        void renderOctreeNode(const Ref<ECS::registry_t>& registry,
                               const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
-                              const entity_t& forCamera,
+                              const ECS::entity_t& forCamera,
                               LayeredFrameReceiver* cameraLayeredFrameReceiver,
                               const Ref<OctreeNode>& node) noexcept;
     };

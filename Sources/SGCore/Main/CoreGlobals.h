@@ -6,14 +6,21 @@
 #define SUNGEARENGINE_COREGLOBALS_H
 
 #include <SGCore/pch.h>
+// #include "SGCore/ECS/ECSRegistry.h"
 
 namespace SGCore
 {
-    enum class highp_entity : std::uint64_t { };
-    
-    using entity_t = highp_entity;
-    
-    using registry_t = entt::basic_registry<entity_t>;
+    namespace ECS
+    {
+        template<typename>
+        struct Registry;
+
+        enum class highp_entity : std::uint64_t { };
+
+        using entity_t = highp_entity;
+
+        using registry_t = ECS::Registry<entity_t>;
+    }
 
     template<typename T>
     using Ref = std::shared_ptr<T>;

@@ -27,10 +27,10 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
     m_maxIndicesCount = m_maxVerticesCount * 3;
     m_maxInstancesCount = maxInstancesCount;
     
-    parentScene->getECSRegistry()->on_destroy<Mesh>().connect<&Batch::onMeshDestroyed>(*this);
-    parentScene->getECSRegistry()->on_destroy<Ref<Transform>>().connect<&Batch::onTransformDestroyed>(*this);
+    parentScene->getECSRegistry()->onDestroy<Mesh>().connect<&Batch::onMeshDestroyed>(*this);
+    parentScene->getECSRegistry()->onDestroy<Transform>().connect<&Batch::onTransformDestroyed>(*this);
     
-    parentScene->getECSRegistry()->on_update<Mesh>().connect<&Batch::onMeshUpdate>(*this);
+    parentScene->getECSRegistry()->onUpdate<Mesh>().connect<&Batch::onMeshUpdate>(*this);
     // parentScene->getECSRegistry().on_update<Ref<Transform>>().connect<&Batch::onTransformUpdate>(*this);
     
     parentScene->getSystem<TransformationsUpdater>()->onTransformChanged += m_transformChangedListener;
@@ -193,7 +193,7 @@ void SGCore::Batch::renderAll() noexcept
     m_instancesIndicesChanged = false;
 }
 
-void SGCore::Batch::addEntity(const entity_t& entity) noexcept
+void SGCore::Batch::addEntity(const ECS::entity_t& entity) noexcept
 {
     auto lockedScene = m_parentScene.lock();
     
@@ -203,13 +203,13 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
         return;
     }
     
-    if(!lockedScene->getECSRegistry()->all_of<Mesh, Ref<Transform>>(entity))
+    if(!lockedScene->getECSRegistry()->allOf<Mesh, Transform>(entity))
     {
         LOG_E(SGCORE_TAG, "Batching error: can not add entity. One of Mesh or Transform components is not set.");
         return;
     }
     
-    Mesh& entityMesh = lockedScene->getECSRegistry()->get<Mesh>(entity);
+    auto& entityMesh = lockedScene->getECSRegistry()->get<Mesh>(entity);
 
     if(!entityMesh.m_base.getMeshData())
     {
@@ -318,7 +318,7 @@ void SGCore::Batch::addEntity(const entity_t& entity) noexcept
     m_instancesIndicesChanged = true;*/
 }
 
-void SGCore::Batch::removeEntity(const entity_t& entity) noexcept
+void SGCore::Batch::removeEntity(const ECS::entity_t& entity) noexcept
 {
     auto lockedScene = m_parentScene.lock();
     
@@ -371,11 +371,11 @@ void SGCore::Batch::removeEntity(const entity_t& entity) noexcept
     m_instancesIndicesChanged = true;
 }
 
-void SGCore::Batch::updateArraysForEntity(const Ref<Scene>& lockedScene, const entity_t& entity) noexcept
+void SGCore::Batch::updateArraysForEntity(const Ref<Scene>& lockedScene, const ECS::entity_t& entity) noexcept
 {
     const size_t& entityIdx = m_entitiesIndices[entity];
-    Mesh& entityMesh = lockedScene->getECSRegistry()->get<Mesh>(entity);
-    Ref<Transform>& entityTransform = lockedScene->getECSRegistry()->get<Ref<Transform>>(entity);
+    auto& entityMesh = lockedScene->getECSRegistry()->get<Mesh>(entity);
+    auto& entityTransform = lockedScene->getECSRegistry()->get<Transform>(entity);
     BatchEntityRanges& ranges = m_entitiesRanges[entityIdx];
     
     size_t positionsCount = entityMesh.m_base.getMeshData()->m_positions.size();
@@ -467,7 +467,7 @@ void SGCore::Batch::recalculateRanges() noexcept
     }
 }
 
-void SGCore::Batch::onMeshDestroyed(registry_t& registry, entity_t entity) noexcept
+void SGCore::Batch::onMeshDestroyed(ECS::registry_t::entt_reg_t& registry, ECS::entity_t entity) noexcept
 {
     if(m_entitiesIndices.contains(entity))
     {
@@ -475,7 +475,7 @@ void SGCore::Batch::onMeshDestroyed(registry_t& registry, entity_t entity) noexc
     }
 }
 
-void SGCore::Batch::onTransformDestroyed(registry_t& registry, entity_t entity) noexcept
+void SGCore::Batch::onTransformDestroyed(ECS::registry_t::entt_reg_t& registry, ECS::entity_t entity) noexcept
 {
     if(m_entitiesIndices.contains(entity))
     {
@@ -483,7 +483,7 @@ void SGCore::Batch::onTransformDestroyed(registry_t& registry, entity_t entity) 
     }
 }
 
-void SGCore::Batch::onMeshUpdate(registry_t& registry, entity_t entity) noexcept
+void SGCore::Batch::onMeshUpdate(ECS::registry_t::entt_reg_t& registry, ECS::entity_t entity) noexcept
 {
     auto it = m_entitiesIndices.find(entity);
     if(it == m_entitiesIndices.end()) return;
@@ -495,7 +495,9 @@ void SGCore::Batch::onMeshUpdate(registry_t& registry, entity_t entity) noexcept
     // todo:
 }
 
-void SGCore::Batch::onTransformUpdate(const Ref<registry_t>& registry, entity_t entity, Ref<const Transform> transform) noexcept
+void SGCore::Batch::onTransformUpdate(const Ref<ECS::registry_t>& registry,
+                                      ECS::entity_t entity,
+                                      Ref<const Transform> transform) noexcept
 {
     auto it = m_entitiesIndices.find(entity);
     if(it == m_entitiesIndices.end()) return;

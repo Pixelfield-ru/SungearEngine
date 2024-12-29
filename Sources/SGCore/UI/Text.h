@@ -9,12 +9,13 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Memory/Assets/FontSpecialization.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
     struct Font;
     
-    struct Text
+    struct Text : ECS::Component<Text, const Text>
     {
         std::u16string m_text;
         

@@ -18,11 +18,11 @@
 void SGCore::TextRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
                                     const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
 {
-    auto textsView = scene->getECSRegistry()->view<Text, Ref<Transform>>();
-    auto uiCamerasView = scene->getECSRegistry()->view<UICamera, Ref<RenderingBase>, Ref<Transform>>();
+    auto textsView = scene->getECSRegistry()->view<Text, Transform>();
+    auto uiCamerasView = scene->getECSRegistry()->view<UICamera, RenderingBase, Transform>();
     auto fontsView = AssetManager::getInstance()->getAssetsWithType<Font>();
     
-    textsView.each([](Text& text, Ref<Transform>& textTransform) {
+    textsView.each([](Text::reg_t& text, Transform::reg_t& textTransform) {
         Ref<Font> font = text.m_usedFont.lock();
         
         if(font)
@@ -36,7 +36,7 @@ void SGCore::TextRenderPass::render(const SGCore::Ref<SGCore::Scene>& scene,
         }
     });
     
-    uiCamerasView.each([&fontsView](UICamera& uiCamera, Ref<RenderingBase>& renderingBase, Ref<Transform>& transform) {
+    uiCamerasView.each([&fontsView](UICamera::reg_t& uiCamera, RenderingBase::reg_t& renderingBase, Transform::reg_t& transform) {
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
 
         for(const auto& font : fontsView)

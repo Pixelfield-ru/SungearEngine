@@ -12,10 +12,10 @@
 #include "SGCore/Utils/Timer.h"
 #include "SGCore/Scene/IParallelSystem.h"
 #include "SGCore/Scene/EntityComponentMember.h"
+#include "SGCore/Transformations/Transform.h"
 
 namespace SGCore
 {
-    struct Transform;
     struct OctreeNode;
     
     class OctreesSolver : public IParallelSystem<OctreesSolver>
@@ -30,15 +30,15 @@ namespace SGCore
         void onAddToScene(const Ref<Scene>& scene) final;
         
     private:
-        void onTransformChanged(const entity_t& entity, const Ref<const Transform>& transform) noexcept;
+        void onTransformChanged(const ECS::entity_t& entity, const Transform::const_reg_t& transform) noexcept;
 
-        EventListener<void(const Ref<registry_t>& registry, const entity_t&,
+        EventListener<void(const Ref<ECS::registry_t>& registry, const ECS::entity_t&,
                 Ref<const Transform>)> m_transformChangedListener =
-        [this](const Ref<registry_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
+        [this](const Ref<ECS::registry_t>& registry, const ECS::entity_t& entity, Ref<const Transform> transform) {
             onTransformChanged(entity, transform);
         };
         
-        std::vector<std::pair<entity_t, Ref<const Transform>>> m_changedTransforms;
+        std::vector<std::pair<ECS::entity_t, Transform::const_reg_t>> m_changedTransforms;
     };
 }
 

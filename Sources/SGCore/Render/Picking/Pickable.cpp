@@ -3,7 +3,7 @@
 //
 #include "Pickable.h"
 
-bool SGCore::Pickable::isPickableForCamera(const entity_t& cameraEntity) const noexcept
+bool SGCore::Pickable::isPickableForCamera(const ECS::entity_t& cameraEntity) const noexcept
 {
     for(const auto& cameraEntityRef : m_pickableForCameras)
     {

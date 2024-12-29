@@ -11,6 +11,8 @@
 #include "SGCore/Utils/EventListener.h"
 #include "SGCore/Scene/ISystem.h"
 #include "BatchEntityRanges.h"
+#include "SGCore/ECS/Component.h"
+#include "SGCore/ECS/Registry.h"
 
 namespace SGCore
 {
@@ -22,15 +24,15 @@ namespace SGCore
     
     struct Transform;
     
-    struct Batch
+    struct Batch : ECS::Component<Batch, const Batch>
     {
         Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCount, const size_t& maxInstancesCount);
         Batch(const Ref<Scene>& parentScene) : Batch(parentScene, m_maxVerticesCount, m_maxInstancesCount) { }
         
         void renderAll() noexcept;
         
-        void addEntity(const entity_t& entity) noexcept;
-        void removeEntity(const entity_t& entity) noexcept;
+        void addEntity(const ECS::entity_t& entity) noexcept;
+        void removeEntity(const ECS::entity_t& entity) noexcept;
         
     private:
         Weak<Scene> m_parentScene;
@@ -49,7 +51,7 @@ namespace SGCore
         bool m_modelMatricesArrayChanged = false;
         bool m_instancesIndicesChanged = false;
         
-        std::unordered_map<entity_t, size_t> m_entitiesIndices;
+        std::unordered_map<ECS::entity_t, size_t> m_entitiesIndices;
         std::vector<BatchEntityRanges> m_entitiesRanges;
         
         std::vector<float> m_verticesPositions;
@@ -70,20 +72,20 @@ namespace SGCore
         
         Ref<IShader> m_shader;
         
-        EventListener<void(const Ref<registry_t>&, const entity_t&, Ref<const Transform>)> m_transformChangedListener =
-                [this](const Ref<registry_t>& registry, const entity_t& entity, Ref<const Transform> transform) {
+        EventListener<void(const Ref<ECS::registry_t>&, const ECS::entity_t&, const Transform::reg_t)> m_transformChangedListener =
+                [this](const Ref<ECS::registry_t>& registry, const ECS::entity_t& entity, const Transform::reg_t transform) {
             onTransformUpdate(registry, entity, transform);
         };
         
-        void updateArraysForEntity(const Ref<Scene>& lockedScene, const entity_t& entity) noexcept;
+        void updateArraysForEntity(const Ref<Scene>& lockedScene, const ECS::entity_t& entity) noexcept;
         
         void recalculateRanges() noexcept;
 
-        void onMeshDestroyed(registry_t& registry, entity_t entity) noexcept;
-        void onTransformDestroyed(registry_t& registry, entity_t entity) noexcept;
+        void onMeshDestroyed(ECS::registry_t::entt_reg_t& registry, ECS::entity_t entity) noexcept;
+        void onTransformDestroyed(ECS::registry_t::entt_reg_t& registry, ECS::entity_t entity) noexcept;
         
-        void onMeshUpdate(registry_t& registry, entity_t entity) noexcept;
-        void onTransformUpdate(const Ref<registry_t>& registry, entity_t entity, Ref<const Transform> transform) noexcept;
+        void onMeshUpdate(ECS::registry_t::entt_reg_t& registry, ECS::entity_t entity) noexcept;
+        void onTransformUpdate(const Ref<ECS::registry_t>& registry, ECS::entity_t entity, Ref<const Transform> transform) noexcept;
         
         void onRenderPipelineSet() noexcept;
         

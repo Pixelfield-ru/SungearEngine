@@ -6,10 +6,11 @@
 #define SUNGEARENGINE_LINEGIZMO_H
 
 #include "GizmoBase.h"
+#include "SGCore/ECS/Component.h"
 
 namespace SGCore
 {
-    struct LineGizmo
+    struct LineGizmo : ECS::Component<LineGizmo, const LineGizmo>
     {
         LineGizmo() noexcept;
 

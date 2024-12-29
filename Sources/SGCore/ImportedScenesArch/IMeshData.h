@@ -86,9 +86,9 @@ namespace SGCore
         void getFaceIndices(const std::uint64_t& faceIdx, std::uint64_t& outIdx0, std::uint64_t& outIdx1, std::uint64_t& outIdx2) noexcept;
 
         void setData(const AssetRef<IMeshData>& other) noexcept;
-        
-        entity_t addOnScene(const Ref<Scene>& scene,
-                            const std::string& layerName) noexcept;
+
+        ECS::entity_t addOnScene(const Ref<Scene>& scene,
+                                 const std::string& layerName) noexcept;
 
         /**
          * Moves all textures of the current material to the new material and sets the new material as the current one.
