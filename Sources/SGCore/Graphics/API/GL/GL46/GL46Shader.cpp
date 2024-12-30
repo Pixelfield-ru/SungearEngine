@@ -171,14 +171,18 @@ GLuint SGCore::GL46Shader::compileSubShader(SGCore::SGSLESubShaderType shaderTyp
 
 std::int32_t SGCore::GL46Shader::getShaderUniformLocation(const std::string& uniformName) noexcept
 {
-    const auto& foundLocation = m_cachedLocations.find(uniformName);
+    // todo: is that faster than just glGetUniformLocation?
+    // no, it is not faster with std::string. maybe if i do string that hashes its value and compares only hashes when operator== is called than it will be faster. but now it is not
+    /*const auto& foundLocation = m_cachedLocations.find(uniformName);
     if(foundLocation == m_cachedLocations.cend())
     {
         GLint location = glGetUniformLocation(m_programHandler, uniformName.c_str());
         m_cachedLocations[uniformName] = location;
         return location;
     }
-    return foundLocation->second;
+    return foundLocation->second;*/
+
+    return glGetUniformLocation(m_programHandler, uniformName.c_str());
 }
 
 void SGCore::GL46Shader::useUniformBuffer(const Ref<IUniformBuffer>& uniformBuffer)

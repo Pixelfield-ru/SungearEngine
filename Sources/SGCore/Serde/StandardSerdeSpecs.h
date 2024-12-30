@@ -3189,6 +3189,36 @@ namespace SGCore::Serde
 
     // ====================================================================================
 
+    template<typename T, size_t Size, FormatType TFormatType>
+    struct SerdeSpec<std::array<T, Size>, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "std::array";
+        static inline constexpr bool is_pointer_type = false;
+
+        template<typename... SharedDataT>
+        static void serialize(SerializableValueView<std::array<T, Size>, TFormatType>& valueView, SharedDataT&&... sharedData)
+        {
+            valueView.getValueContainer().setAsArray();
+
+            for(const auto& v : *valueView.m_data)
+            {
+                valueView.getValueContainer().pushBack(v, std::forward<SharedDataT>(sharedData)...);
+            }
+        }
+
+        template<typename... SharedDataT>
+        static void deserialize(DeserializableValueView<std::array<T, Size>, TFormatType>& valueView, SharedDataT&&... sharedData)
+        {
+            auto vec = valueView.getValueContainer().template getAsArray<T>(std::forward<SharedDataT>(sharedData)...);
+            for(size_t i = 0; i < Size; ++i)
+            {
+                (*valueView.m_data)[i] = std::move(vec[i]);
+            }
+        }
+    };
+
+    // ====================================================================================
+
     template<typename T, typename HashT, typename EqualT, FormatType TFormatType>
     struct SerdeSpec<std::unordered_set<T, HashT, EqualT>, TFormatType> : BaseTypes<>, DerivedTypes<>
     {

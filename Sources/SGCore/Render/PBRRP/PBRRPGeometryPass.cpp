@@ -70,6 +70,11 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         
         // todo: make get receiver (postprocess or default) and render in them
 
+        if(cameraLayeredFrameReceiver)
+        {
+            cameraLayeredFrameReceiver->m_layersFrameBuffer->bind();
+        }
+
         meshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
                                 (const ECS::entity_t& meshEntity, EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                                  Mesh::reg_t& mesh, Transform::reg_t& meshTransform) {
@@ -95,20 +100,19 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                     SG_ASSERT(meshPPLayer != nullptr,
                               "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
-                    cameraLayeredFrameReceiver->m_layersFrameBuffer->bind();
                     cameraLayeredFrameReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(
                             cameraLayeredFrameReceiver->m_attachmentToRenderIn
                     );
                 }
 
                 renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer);
-
-                if(cameraLayeredFrameReceiver)
-                {
-                    cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
-                }
             }
         });
+
+        if(cameraLayeredFrameReceiver)
+        {
+            cameraLayeredFrameReceiver->m_layersFrameBuffer->unbind();
+        }
     });
     
     // ==========================================
@@ -160,8 +164,8 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
     if(!mesh.m_base.getMeshData() ||
        !mesh.m_base.getMaterial()) return;
 
-    auto meshGeomShader = mesh.m_base.getMaterial()->m_shader;
-    auto shaderToUse = meshGeomShader ? meshGeomShader : m_shader;
+    const auto& meshGeomShader = mesh.m_base.getMaterial()->m_shader;
+    const auto& shaderToUse = meshGeomShader ? meshGeomShader : m_shader;
     
     if(shaderToUse)
     {
@@ -183,7 +187,6 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
                meshedEntityPickableComponent->isPickableForCamera(forCamera3DBaseInfo.getThisEntity()))
             {
                 shaderToUse->useVectorf("u_pickingColor", meshedEntityBaseInfo.getUniqueColor());
-                // mesh.m_base.getMaterial()->m_renderState.m_stencilMask = 0xFF;
             }
             else
             {
@@ -191,13 +194,12 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
             }
         }
 
-        // mesh.m_base.getMaterial()->m_renderState.m_stencilMask = 0x00;
-
         if(meshPPLayer)
         {
             shaderToUse->useInteger("SGPP_CurrentLayerIndex", meshPPLayer->getIndex());
         }
-        
+
+        // 14 MS FOR loc0 IN DEBUG
         size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.getMaterial());
         shaderToUse->bindTextureBindings(offset0);
         
@@ -216,12 +218,14 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
             }
         }
 
+        // 15 ms for map loc0 IN DEBUG
         CoreMain::getRenderer()->renderMeshData(
                 mesh.m_base.getMeshData().get(),
                 mesh.m_base.getMaterial()->m_renderState
         );
-        
-        shaderToUse->unbindMaterialTextures(mesh.m_base.getMaterial());
+
+        // HOLY SHMOLY!! 10 MS FOR MAP loc0 IN DEBUG. DO NOT USE THIS!!!
+        // shaderToUse->unbindMaterialTextures(mesh.m_base.getMaterial());
 
         // if we used custom shader then we must bind standard pipeline shader
         if(shaderToUse == meshGeomShader)

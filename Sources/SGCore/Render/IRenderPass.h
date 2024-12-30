@@ -16,6 +16,8 @@ namespace SGCore
 
     struct IRenderPass
     {
+        friend struct IRenderPipeline;
+
         bool m_active = true;
 
         AssetRef<IShader> m_shader;
@@ -25,6 +27,14 @@ namespace SGCore
         virtual void create(const Ref<IRenderPipeline>& parentRenderPipeline) { };
         
         virtual void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) = 0;
+
+        float getExecutionTime() const noexcept
+        {
+            return m_executionTime;
+        }
+
+    private:
+        float m_executionTime = 0.0f;
     };
 }
 

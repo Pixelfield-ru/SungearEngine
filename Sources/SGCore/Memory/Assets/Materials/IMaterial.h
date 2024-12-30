@@ -106,7 +106,8 @@ namespace SGCore
         }
 
     protected:
-        std::unordered_map<SGTextureType, std::vector<AssetRef<ITexture2D>>> m_textures;
+        std::array<std::vector<AssetRef<ITexture2D>>, std::to_underlying(SGTextureType::SGTT_COUNT)> m_textures;
+        // std::unordered_map<SGTextureType, std::vector<AssetRef<ITexture2D>>> m_textures;
 
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 

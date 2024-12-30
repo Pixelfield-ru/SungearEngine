@@ -48,6 +48,18 @@ namespace SGCore
         template<typename AssetT>
         static void resolveAssetReference(AssetManager* updatedAssetManager, AssetRef<AssetT>& assetRef) noexcept
         {
+            if(assetRef.m_isResolved)
+            {
+                LOG_I(SGCORE_TAG,
+                      "Asset reference is already resolved! "
+                      "Info about asset reference:  type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
+                      assetRef->getTypeID(),
+                      assetRef->getAlias(),
+                      Utils::toUTF8(assetRef->getPath().resolved().u16string()),
+                      std::to_underlying(assetRef->storedByWhat()));
+                return;
+            }
+
             /*if(!assetRef.m_asset)
             {
                 LOG_W(SGCORE_TAG, "Can not resolve asset reference: AssetRef points to null asset! AssetRef deserialized data: type ID: '{}' alias: '{}', path: '{}', stored by: '{}'",
@@ -103,6 +115,7 @@ namespace SGCore
             }
 
             assetRef = newAssetRef.template staticCast<AssetT>();
+            assetRef.m_isResolved = true;
 
             LOG_I(SGCORE_TAG, "Asset reference was resolved! Info about asset reference: alias - '{}', path - '{}', stored by - '{}', asset type ID - '{}'",
                   assetAlias,

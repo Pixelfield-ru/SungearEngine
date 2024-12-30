@@ -5,9 +5,12 @@
 
 bool SGCore::Pickable::isPickableForCamera(const ECS::entity_t& cameraEntity) const noexcept
 {
-    for(const auto& cameraEntityRef : m_pickableForCameras)
+    const size_t camerasSize = m_pickableForCameras.size();
+    for(size_t i = 0; i < camerasSize; ++i)
     {
-        if(*cameraEntityRef.m_referencedEntity == cameraEntity) return true;
+        const auto& camE = m_pickableForCameras[i];
+
+        if(*camE.m_referencedEntity == cameraEntity) return true;
     }
 
     return false;

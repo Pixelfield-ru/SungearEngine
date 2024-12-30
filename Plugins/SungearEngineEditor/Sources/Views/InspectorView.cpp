@@ -5,6 +5,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include "InspectorView.h"
+#include <SGCore/Render/RenderPipelinesManager.h>
 
 bool SGE::InspectorView::begin()
 {
@@ -21,9 +22,18 @@ void SGE::InspectorView::renderBody()
     ImGui::SetNextWindowClass(&windowClass);
     
     ImGui::Begin("InspectorView");
-    
-    
-    
+
+    ImGui::Text("Profiler (TO REMOVE)");
+
+    auto currentRenderPipeline = SGCore::RenderPipelinesManager::getCurrentRenderPipeline();
+
+    ImGui::Text("Render (render pipeline '%s'):", typeid(*currentRenderPipeline).name());
+
+    for(const auto& renderPass : currentRenderPipeline->m_renderPasses)
+    {
+        ImGui::Text("Render pass '%s' execution time: %f", typeid(*renderPass).name(), renderPass->getExecutionTime());
+    }
+
     ImGui::End();
     
     ImGui::PopStyleVar(2);

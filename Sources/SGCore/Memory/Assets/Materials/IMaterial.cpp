@@ -36,7 +36,7 @@ SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
     auto foundTex =
             toAssetManager.loadAsset<ITexture2D>(path);
 
-    m_textures[textureType].push_back(foundTex);
+    m_textures[std::to_underlying(textureType)].push_back(foundTex);
 
     return foundTex;
 }
@@ -44,7 +44,7 @@ SGCore::IMaterial::findAndAddTexture2D(const SGTextureType& textureType,
 void
 SGCore::IMaterial::addTexture2D(const SGTextureType& textureType, const SGCore::AssetRef<SGCore::ITexture2D>& tex)
 {
-    m_textures[textureType].push_back(tex);
+    m_textures[std::to_underlying(textureType)].push_back(tex);
 }
 
 void SGCore::IMaterial::copyTexturesRefs(IMaterial* to) const noexcept
@@ -109,10 +109,16 @@ void SGCore::IMaterial::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
 
 void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept
 {
-    for(auto& texturesIt : m_textures)
+    constexpr auto texturesTypesCount = std::to_underlying(SGTextureType::SGTT_COUNT);
+
+    for(int i = 0; i < texturesTypesCount; ++i)
     {
-        for(auto& texture : texturesIt.second)
+        auto& textures = m_textures[i];
+
+        for(size_t j = 0; j < textures.size(); ++j)
         {
+            auto& texture = textures[j];
+
             LOG_W(SGCORE_TAG, "Resolving texture for IMaterial");
             AssetManager::resolveAssetReference(updatedAssetManager, texture);
         }

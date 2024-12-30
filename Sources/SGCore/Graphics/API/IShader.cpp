@@ -219,13 +219,17 @@ SGCore::IShader& SGCore::IShader::operator=(const SGCore::IShader& other) noexce
 size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMaterial>& material) noexcept
 {
     size_t offset = 0;
-    
+
     std::string preallocUniformName;
-    preallocUniformName.resize(48);
-    
-    for(const auto& texPair : material->getTextures())
+    preallocUniformName.resize(64);
+
+    constexpr auto texturesTypesCount = std::to_underlying(SGTextureType::SGTT_COUNT);
+
+    for(int i = 0; i < texturesTypesCount; ++i)
     {
-        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName(texPair.first);
+        const auto& texturesOfType = material->getTextures()[i];
+
+        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName((SGTextureType) i);
         size_t firstSize = preallocUniformName.size();
         preallocUniformName += "[0]";
         
@@ -235,7 +239,7 @@ size_t SGCore::IShader::bindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
         
         size_t arrayIdx = 0;
         
-        for(const auto& tex : texPair.second)
+        for(const auto& tex : texturesOfType)
         {
             preallocUniformName += '[';
             preallocUniformName += std::to_string(arrayIdx);
@@ -268,10 +272,12 @@ void SGCore::IShader::unbindMaterialTextures(const SGCore::AssetRef<SGCore::IMat
 {
     std::string preallocUniformName;
     preallocUniformName.resize(48);
-    
-    for(const auto& texPair : material->getTextures())
+
+    constexpr auto texturesTypesCount = std::to_underlying(SGTextureType::SGTT_COUNT);
+
+    for(int i = 0; i < texturesTypesCount; ++i)
     {
-        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName(texPair.first);
+        preallocUniformName = sgStandardTextureTypeNameToStandardUniformName((SGTextureType) i);
         preallocUniformName += "_CURRENT_COUNT";
         
         useInteger(preallocUniformName, 0);

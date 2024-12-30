@@ -95,6 +95,11 @@ namespace SGCore
         std::filesystem::path m_rawPath;
         std::filesystem::path m_resolvedPath;
     };
+
+    [[nodiscard]] static bool operator==(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept
+    {
+        return p0.raw() == p1.raw();
+    }
 }
 
 [[nodiscard]] SGCore::InterpolatedPath operator/(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept;
@@ -104,7 +109,5 @@ template<typename CharT, size_t Count>
     const std::filesystem::path tmpPath = p0;
     return tmpPath / p1.raw();
 }
-
-[[nodiscard]] bool operator==(const SGCore::InterpolatedPath& p0, const SGCore::InterpolatedPath& p1) noexcept;
 
 #endif //SUNGEARENGINE_INTERPOLATEDPATH_H

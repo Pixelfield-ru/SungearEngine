@@ -12,7 +12,13 @@ void SGCore::IRenderPipeline::render(SGCore::Ref<SGCore::Scene> scene) noexcept
     {
         if(!renderPass->m_active) continue;
 
+        auto t1 = glfwGetTime();
+
         renderPass->render(scene, shared_from_this());
+
+        auto t2 = glfwGetTime();
+
+        renderPass->m_executionTime = (t2 - t1) * 1000.0;
     }
     
     auto t1 = glfwGetTime();

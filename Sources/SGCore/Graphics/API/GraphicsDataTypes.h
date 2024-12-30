@@ -238,7 +238,9 @@ enum class SGTextureType
 
     SGTT_SHADOW_MAP2D,
 
-    SGTT_NONE
+    SGTT_NONE,
+
+    SGTT_COUNT = SGTT_NONE
 };
 
 template<typename DataType>
@@ -401,38 +403,132 @@ static std::string sgStandardTextureTypeToString(const SGTextureType& sgMaterial
     return "";
 }
 
-static const char* sgStandardTextureTypeNameToStandardUniformName(const SGTextureType& sgMaterialTextureType) noexcept
+static const std::string& sgStandardTextureTypeNameToStandardUniformName(const SGTextureType& sgMaterialTextureType) noexcept
 {
     switch(sgMaterialTextureType)
     {
-        case SGTextureType::SGTT_EMISSIVE: return "mat_emissiveSamplers";
-        case SGTextureType::SGTT_AMBIENT_OCCLUSION: return "mat_ambientOcclusionSamplers";
-        case SGTextureType::SGTT_AMBIENT: return "mat_ambientSamplers";
-        case SGTextureType::SGTT_DIFFUSE_ROUGHNESS: return "mat_diffuseRoughnessSamplers";
-        case SGTextureType::SGTT_DIFFUSE: return "mat_diffuseSamplers";
-        case SGTextureType::SGTT_DISPLACEMENT: return "mat_displacementSamplers";
-        case SGTextureType::SGTT_HEIGHT: return "mat_heightSamplers";
-        case SGTextureType::SGTT_NORMALS: return "mat_normalsSamplers";
-        case SGTextureType::SGTT_BASE_COLOR: return "mat_baseColorSamplers";
-        case SGTextureType::SGTT_CLEARCOAT: return "mat_clearCoatSamplers";
-        case SGTextureType::SGTT_EMISSION_COLOR: return "mat_emissionColorSamplers";
-        case SGTextureType::SGTT_LIGHTMAP: return "mat_lightmapSamplers";
-        case SGTextureType::SGTT_METALNESS: return "mat_metalnessSamplers";
-        case SGTextureType::SGTT_NORMAL_CAMERA: return "mat_normalCameraSamplers";
-        case SGTextureType::SGTT_OPACITY: return "mat_opacitySamplers";
-        case SGTextureType::SGTT_REFLECTION: return "mat_reflectionSamplers";
-        case SGTextureType::SGTT_SHEEN: return "mat_sheenSamplers";
-        case SGTextureType::SGTT_SHININESS: return "mat_shininessSamplers";
-        case SGTextureType::SGTT_SPECULAR: return "mat_specularSamplers";
-        case SGTextureType::SGTT_TRANSMISSION: return "mat_transmissionSamplers";
-        case SGTextureType::SGTT_SKYBOX: return "mat_skyboxSamplers";
+        case SGTextureType::SGTT_EMISSIVE:
+        {
+            static std::string name = "mat_emissiveSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_AMBIENT_OCCLUSION:
+        {
+            static std::string name = "mat_ambientOcclusionSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_AMBIENT:
+        {
+            static std::string name = "mat_ambientSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_DIFFUSE_ROUGHNESS:
+        {
+            static std::string name = "mat_diffuseRoughnessSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_DIFFUSE:
+        {
+            static std::string name = "mat_diffuseSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_DISPLACEMENT:
+        {
+            static std::string name = "mat_displacementSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_HEIGHT:
+        {
+            static std::string name = "mat_heightSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_NORMALS:
+        {
+            static std::string name = "mat_normalsSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_BASE_COLOR:
+        {
+            static std::string name = "mat_baseColorSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_CLEARCOAT:
+        {
+            static std::string name = "mat_clearCoatSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_EMISSION_COLOR:
+        {
+            static std::string name = "mat_emissionColorSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_LIGHTMAP:
+        {
+            static std::string name = "mat_lightmapSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_METALNESS:
+        {
+            static std::string name = "mat_metalnessSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_NORMAL_CAMERA:
+        {
+            static std::string name = "mat_normalCameraSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_OPACITY:
+        {
+            static std::string name = "mat_opacitySamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_REFLECTION:
+        {
+            static std::string name = "mat_reflectionSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_SHEEN:
+        {
+            static std::string name = "mat_sheenSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_SHININESS:
+        {
+            static std::string name = "mat_shininessSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_SPECULAR:
+        {
+            static std::string name = "mat_specularSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_TRANSMISSION:
+        {
+            static std::string name = "mat_transmissionSamplers";
+            return name;
+        }
+        case SGTextureType::SGTT_SKYBOX:
+        {
+            static std::string name = "mat_skyboxSamplers";
+            return name;
+        }
         
-        case SGTextureType::SGTT_SHADOW_MAP2D: return "mat_shadowMap2DSamplers";
+        case SGTextureType::SGTT_SHADOW_MAP2D:
+        {
+            static std::string name = "mat_shadowMap2DSamplers";
+            return name;
+        }
         
-        case SGTextureType::SGTT_NONE: return "noneSamplers";
+        case SGTextureType::SGTT_NONE:
+        {
+            static std::string name = "noneSamplers";
+            return name;
+        }
     }
-    
-    return "noneSamplers";
+
+    static std::string name = "noneSamplers";
+
+    return name;
 }
 
 static std::uint16_t getSGGDataTypeSizeInBytes(const SGGDataType& dataType) noexcept
