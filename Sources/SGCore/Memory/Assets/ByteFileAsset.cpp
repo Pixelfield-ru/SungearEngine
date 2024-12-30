@@ -29,3 +29,8 @@ void SGCore::ByteFileAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAss
 {
 
 }
+
+void SGCore::ByteFileAsset::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
+{
+    doLoad(getPath());
+}

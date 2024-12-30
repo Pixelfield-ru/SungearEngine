@@ -20,6 +20,8 @@ namespace SGCore
 
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
+
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
     };
 }
 

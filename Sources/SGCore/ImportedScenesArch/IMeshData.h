@@ -123,6 +123,7 @@ namespace SGCore
     protected:
         void doLoad(const InterpolatedPath& path) override;
         void doLazyLoad() override;
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;

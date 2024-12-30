@@ -28,6 +28,8 @@ namespace SGCore
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
 
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
+
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
         std::vector<AssetRef<SVGImageSpecialization>> m_specializations;

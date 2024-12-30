@@ -226,3 +226,54 @@ SGCore::Ref<SGCore::AssetManager> SGCore::AssetManager::getInstance() noexcept
 {
     return m_instance;
 }
+
+void SGCore::AssetManager::reloadAssetFromDisk(SGCore::IAsset* asset, SGCore::AssetsLoadPolicy loadPolicy,
+                                               SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+    switch(loadPolicy)
+    {
+        case SINGLE_THREADED:
+        {
+            asset->doReloadFromDisk(loadPolicy, lazyLoadInThread);
+            asset->lazyLoad();
+            break;
+        }
+        case PARALLEL_THEN_LAZYLOAD:
+        {
+            auto loadInThread = m_threadsPool.getThread();
+            // loadInThread->m_autoJoinIfNotBusy = true;
+            auto loadAssetTask = MakeRef<Threading::Task>();
+
+            loadAssetTask->setOnExecuteCallback([this, asset, loadPolicy, lazyLoadInThread]() {
+                asset->doReloadFromDisk(loadPolicy, lazyLoadInThread);
+            });
+
+            if(lazyLoadInThread)
+            {
+                loadAssetTask->setOnExecutedCallback([asset]() {
+                    asset->lazyLoad();
+                }, lazyLoadInThread);
+            }
+
+            loadInThread->addTask(loadAssetTask);
+            loadInThread->start();
+
+            break;
+        }
+        case PARALLEL_NO_LAZYLOAD:
+        {
+            auto loadInThread = m_threadsPool.getThread();
+            // loadInThread->m_autoJoinIfNotBusy = true;
+            auto loadAssetTask = MakeRef<Threading::Task>();
+
+            loadAssetTask->setOnExecuteCallback([this, asset, loadPolicy, lazyLoadInThread]() {
+                asset->doReloadFromDisk(loadPolicy, lazyLoadInThread);
+            });
+
+            loadInThread->addTask(loadAssetTask);
+            loadInThread->start();
+
+            break;
+        }
+    }
+}

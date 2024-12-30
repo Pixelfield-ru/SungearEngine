@@ -51,3 +51,9 @@ void SGCore::SVGImageSpecialization::onMemberAssetsReferencesResolveImpl(SGCore:
 {
     AssetManager::resolveAssetReference(updatedAssetManager, m_texture);
 }
+
+void SGCore::SVGImageSpecialization::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
+                                                      SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+
+}

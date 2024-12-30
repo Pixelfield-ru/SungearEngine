@@ -120,3 +120,8 @@ void SGCore::IMaterial::onMemberAssetsReferencesResolveImpl(AssetManager* update
 
     AssetManager::resolveAssetReference(updatedAssetManager, m_shader);
 }
+
+void SGCore::IMaterial::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
+{
+
+}

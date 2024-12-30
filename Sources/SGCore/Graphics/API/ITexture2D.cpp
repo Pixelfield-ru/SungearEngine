@@ -124,3 +124,9 @@ SGFrameBufferAttachmentType SGCore::ITexture2D::getFrameBufferAttachmentType() c
 {
     return m_frameBufferAttachmentType;
 }
+
+void SGCore::ITexture2D::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
+                                          SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+    doLoad(getPath());
+}

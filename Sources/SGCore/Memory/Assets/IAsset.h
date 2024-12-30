@@ -14,6 +14,9 @@
 #include "SGCore/Utils/UniqueName.h"
 #include "SGCore/Utils/Event.h"
 #include "SGCore/Serde/SerializationType.h"
+#include "SGCore/Memory/AssetsLoadPolicy.h"
+#include "SGCore/Threading/Thread.h"
+#include "SGCore/Threading/ThreadsManager.h"
 
 // =======================================================================================================
 /**
@@ -75,6 +78,22 @@ namespace SGCore
             onLazyLoadDone(this);
         }
 
+        /**
+         * Reloads asset from disk. Calls parent asset manager`s (if parent asset manager is not null) reloadAssetFromDisk function for this function.\n
+         * Parent asset manager calls doReloadFromDisk function for this asset.\n
+         * lazyLoad function is called directly after execution of this function.\n
+         * This function can be executed parallel.
+         */
+        void reloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread = Threading::ThreadsManager::getMainThread()) noexcept;
+
+        /**
+         * Reloads asset from disk. Calls parent asset manager`s (if parent asset manager is not null) reloadAssetFromDisk function for this function.\n
+         * Parent asset manager calls doReloadFromDisk function for this asset.\n
+         * lazyLoad function is called directly after execution of this function.\n
+         * This function can be executed parallel.
+         */
+        void reloadFromDisk() noexcept;
+
         void loadFromBinaryFile(AssetManager* parentAssetManager) noexcept
         {
             m_isLoaded = true;
@@ -95,12 +114,14 @@ namespace SGCore
 
     protected:
 
-        /// In the implementation of the \p doLoad function, you must implement all the logic of downloading an asset, which can be executed in parallel (for example: downloading an asset from disk).
+        /// In the implementation of the \p doLoad function, you must implement all the logic of loading an asset, which can be executed in parallel (for example: loading an asset from disk).
         /// The \p doLoad function can be called in parallel.
         virtual void doLoad(const InterpolatedPath& path) = 0;
         /// In the implementation of the \p doLazyLoad function, you must implement all the logic of asset loading, which cannot be executed in a separate thread.
         /// For example: creating a GPU object.
         virtual void doLazyLoad() { };
+
+        virtual void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) = 0;
 
         /**
          * In the implementation of this function, you must read data from the binary file of the asset manager

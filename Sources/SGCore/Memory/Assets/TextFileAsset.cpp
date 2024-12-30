@@ -17,3 +17,9 @@ void SGCore::TextFileAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAss
 {
     m_data = parentAssetManager->getPackage().readData<std::string>(m_dataOffsetInPackage, m_dataSizeInPackage);
 }
+
+void SGCore::TextFileAsset::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
+                                             SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+    doLoad(getPath());
+}

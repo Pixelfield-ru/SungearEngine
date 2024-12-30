@@ -24,3 +24,9 @@ void SGCore::XMLDocument::doLoadFromBinaryFile(SGCore::AssetManager* parentAsset
 
 }
 
+void SGCore::XMLDocument::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
+                                           SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+    doLoad(getPath());
+}
+

@@ -121,6 +121,8 @@ namespace SGCore
 
         void doLoad(const InterpolatedPath& path) override;
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
+        // todo: impl
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
         
         // first - shader name
         // std::unordered_map<std::string, std::shared_ptr<Graphics::IShader>> m_shaders;

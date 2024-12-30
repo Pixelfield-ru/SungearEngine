@@ -50,6 +50,8 @@ namespace SGCore
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
 
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
+
     private:
         // sub pass of shader
         std::string m_subPassName;

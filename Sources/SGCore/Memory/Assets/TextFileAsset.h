@@ -24,6 +24,8 @@ namespace SGCore
         void doLoad(const InterpolatedPath& path) override;
 
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
+
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
         
     private:
         std::streamsize m_dataOffsetInPackage = 0;

@@ -158,22 +158,24 @@ namespace SGCore
         
         size_t m_pixelSize = 0;
 
-        void doLoad(const InterpolatedPath& path) override;
-        void doLazyLoad() override;
-
-        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-        
-        virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
-        virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;
-        
         Ref<std::uint8_t[]> m_textureData = nullptr;
 
         // USED ONLY IF THIS TEXTURE IS FRAME BUFFER ATTACHMENT
         SGFrameBufferAttachmentType m_frameBufferAttachmentType = SGFrameBufferAttachmentType::SGG_NOT_ATTACHMENT;
 
+        virtual void subTextureBufferDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) { }
+        virtual void subTextureDataOnGAPISide(const size_t& bytesCount, const size_t& bytesOffset) = 0;
+
     private:
         std::streamsize m_textureDataOffsetInPackage = 0;
         std::streamsize m_textureDataSizeInPackage = 0;
+
+        void doLoad(const InterpolatedPath& path) override;
+        void doLazyLoad() override;
+
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
+
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
         template<typename... AssetCtorArgs>
         static Ref<ITexture2D> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept

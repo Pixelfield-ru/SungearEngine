@@ -28,8 +28,11 @@ namespace SGCore
     protected:
         void doLoad(const InterpolatedPath& path) override;
         void doLazyLoad() override;
-
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
+
+        // todo: impl
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
+
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:

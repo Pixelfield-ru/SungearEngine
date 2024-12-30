@@ -182,3 +182,9 @@ void SGCore::IMeshData::doLazyLoad()
 {
 
 }
+
+void SGCore::IMeshData::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
+                                         SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+
+}

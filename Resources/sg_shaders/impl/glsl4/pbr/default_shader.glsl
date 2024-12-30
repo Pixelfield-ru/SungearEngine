@@ -111,13 +111,8 @@ float GeometryShlickGGX(const in float NdotVD, const in float roughness)
 }
 
 // площадь поверхности, где микроскопические неровности перекрывают друг друга
-float GeometrySmith(const in vec3 normal, const in float NdotVD, const in float NdotL, float roughness)
+float GeometrySmith(const in float NdotVD, const in float NdotL, float roughness)
 {
-    // косинус между направлением камеры и нормалью к поверхности
-    // float NdotVD = _NdotVD;
-    // косинус между направлением источника света и нормалью к поверхности
-    // float NdotL = _NdotL;
-
     // ggx from view dir
     // насколько освещён фрагмент при виде от камеры
     float ggx2 = GeometryShlickGGX(NdotVD, roughness);
@@ -129,6 +124,17 @@ float GeometrySmith(const in vec3 normal, const in float NdotVD, const in float 
     // если ggx1 = 0, а ggx2 = 1, то это geometry obstruction
     return ggx1 * ggx2;
 }
+
+/*float GeometrySmith(float NdotVD, float NdotL, float roughness)
+{
+    float m = saturate(roughness * roughness);
+
+    float m2 = m * m;
+    float a = NdotL + clamp(sqrt((NdotL - m2 * NdotL) * NdotL + m2), 0, 1);
+    float b = NdotVD + clamp(sqrt((NdotVD - m2 * NdotVD) * NdotVD + m2), 0, 1);
+
+    return 1.0 / a * b;
+}*/
 
 // Trowbridge-Reitz GGX (Normal Distribution Function)
 float GGXTR(const in vec3 normal, const in vec3 medianVec, const in float roughness)
@@ -328,7 +334,7 @@ void main()
         // это по сути зеркальная часть (kS)
         vec3 F = SchlickFresnel(cosTheta, F0);// kS
         // geometry function
-        float G = GeometrySmith(finalNormal, NdotVD, NdotL, roughness);// TRUE
+        float G = GeometrySmith(NdotVD, NdotL, roughness);// TRUE
 
         vec3 diffuse = vec3(1.0) - F;
         diffuse *= (1.0 - metalness);// check diffuse color higher
@@ -351,8 +357,8 @@ void main()
         vec3 halfWayDir = normalize(lightDir + viewDir);// TRUE
 
         // energy brightness coeff (коэфф. энергетической яркости)
-        float NdotL = max(dot(finalNormal, lightDir), 0.0);
-        float NdotVD = max(dot(finalNormal, viewDir), 0.0);
+        float NdotL = saturate(dot(finalNormal, lightDir));
+        float NdotVD = abs(dot(finalNormal, viewDir)) + 1e-5f;
 
         /*if(NdotL <= 0.0)
         {
@@ -381,19 +387,19 @@ void main()
             roughness
         );// TRUE
 
-        float cosTheta = max(dot(halfWayDir, viewDir), 0.0);
+        float cosTheta = saturate(dot(halfWayDir, viewDir));
 
         // это по сути зеркальная часть (kS)
         vec3 F = SchlickFresnel(cosTheta, F0);// kS
         // geometry function
-        float G = GeometrySmith(finalNormal, NdotVD, NdotL, roughness);// TRUE
+        float G = GeometrySmith(NdotVD, NdotL, roughness);// TRUE
 
         vec3 diffuse = vec3(1.0) - F;
         diffuse *= (1.0 - metalness);// check diffuse color higher
 
         // vec3 ctNumerator = vec3(1.0, 1.0, 1.0) * G;
         vec3 ctNumerator = D * F * G;
-        float ctDenominator = 4.0 * NdotVD * NdotL;
+        float ctDenominator = NdotVD * NdotL;
         vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
         // vec3 specular = ctNumerator / (ctDenominator + 0.001);
         //vec3 specular = vec3(0.1);
@@ -409,7 +415,7 @@ void main()
     // ambient = ambient * albedo.rgb * ao;
     ambient = albedo.rgb * ao;
     vec3 finalCol = ambient * materialAmbientCol.rgb * materialAmbientFactor + ambient + lo;
-    float exposure = 1.3;
+    float exposure = 0.5;
 
     // finalCol *= dirLightsShadowCoeff;
 
@@ -417,9 +423,12 @@ void main()
     // ВЫГЛЯДИТ ПЛОХО
     /*finalCol = finalCol / (finalCol + vec3(1.0));
     finalCol = pow(finalCol, vec3(1.0 / exposure));*/
-    // finalCol = ACESFilm(finalCol);
+    finalCol = ACESTonemap(finalCol, exposure);
     // finalCol = lottes(finalCol);
-    finalCol = reinhard2(finalCol);
+    // finalCol = reinhard2(finalCol);
+    // finalCol = reinhard(finalCol);
+    // finalCol = neutral(finalCol);
+    // finalCol = filmic(finalCol);
 
     layerColor.a = diffuseColor.a;
     // layerColor.rgb = vec3(0, 0, 0.03137255);

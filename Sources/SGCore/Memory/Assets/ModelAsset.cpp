@@ -349,3 +349,9 @@ void SGCore::ModelAsset::onMemberAssetsReferencesResolveImpl(AssetManager* updat
     // DOING NOTHING!
     // NODES WILL RESOLVE REFERENCES BY THEMSELF!
 }
+
+void SGCore::ModelAsset::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
+{
+    // todo: must reload all meshes data
+    // doLoad(getPath());
+}

@@ -3,6 +3,7 @@
 //
 
 #include "IAsset.h"
+#include "SGCore/Memory/AssetManager.h"
 
 long SGCore::IAsset::getLastModified() noexcept
 {
@@ -37,4 +38,17 @@ bool SGCore::IAsset::isLoaded() const noexcept
 bool SGCore::IAsset::isSavedBinaryFile() const noexcept
 {
     return m_isSavedInBinaryFile;
+}
+
+void SGCore::IAsset::reloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
+{
+    auto lockedAssetManager = m_parentAssetManager.lock();
+    if(!lockedAssetManager) return;
+
+    lockedAssetManager->reloadAssetFromDisk(this, loadPolicy, lazyLoadInThread);
+}
+
+void SGCore::IAsset::reloadFromDisk() noexcept
+{
+    reloadFromDisk(AssetsLoadPolicy::SINGLE_THREADED);
 }

@@ -11,6 +11,7 @@
 
 namespace SGCore
 {
+    // todo: del
     struct ShaderFileAsset : public IAsset
     {
         sg_implement_type_id(ShaderFileAsset, 9)

@@ -340,3 +340,8 @@ std::string SGCore::AudioTrackAsset::getSummary() const noexcept
 
     return sum;
 }
+
+void SGCore::AudioTrackAsset::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
+{
+    doLoad(getPath());
+}

@@ -8,9 +8,9 @@ vec4 materialAmbientCol = vec4(1.0);
 vec4 materialEmissionCol = vec4(1.0);
 vec4 materialTransparentCol = vec4(1.0);
 float materialShininess = 32.0;
-float materialMetallicFactor = 0.7;
+float materialMetallicFactor = 0.0;
 float materialRoughnessFactor = 0.5;
-float materialAmbientFactor = 0.1;
+float materialAmbientFactor = 0.25;
 
 /*uniform vec4 materialDiffuseCol;
 uniform vec4 materialSpecularCol;

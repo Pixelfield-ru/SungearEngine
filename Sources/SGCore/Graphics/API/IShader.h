@@ -142,11 +142,6 @@ namespace SGCore
     protected:
         virtual void doCompile() = 0;
 
-        void doLoad(const InterpolatedPath& path) override;
-        void doLazyLoad() override;
-
-        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
-
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
@@ -156,6 +151,12 @@ namespace SGCore
         std::vector<ShaderTextureBinding> m_textureBindings;
 
         std::unordered_map<SGShaderDefineType, std::list<ShaderDefine>> m_defines;
+
+        void doLoad(const InterpolatedPath& path) override;
+        void doLazyLoad() override;
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;
+
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
         template<typename... AssetCtorArgs>
         static Ref<IShader> createRefInstance(AssetCtorArgs&&... assetCtorArgs) noexcept

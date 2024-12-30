@@ -18,20 +18,16 @@
 #include "AssetRef.h"
 #include "AssetWeakRef.h"
 #include "SGCore/Utils/Event.h"
+#include "AssetsLoadPolicy.h"
 
 namespace SGCore
 {
-    enum AssetsLoadPolicy
-    {
-        SINGLE_THREADED,
-        PARALLEL_THEN_LAZYLOAD,
-        PARALLEL_NO_LAZYLOAD
-    };
-
     class SGCORE_EXPORT AssetManager : public std::enable_shared_from_this<AssetManager>
     {
     public:
         sg_serde_as_friend()
+
+        friend struct IAsset;
 
         using assets_container_t = std::unordered_map<size_t, std::unordered_map<size_t, Ref<IAsset>>>;
         using assets_refs_container_t = std::unordered_map<size_t, std::unordered_map<size_t, AssetRef<IAsset>>>;
@@ -928,6 +924,8 @@ namespace SGCore
 
     private:
         explicit AssetManager(const std::string& name) noexcept : m_name(name) { }
+
+        void reloadAssetFromDisk(IAsset* asset, AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept;
 
         template<typename AssetT, typename... AssetCtorArgsT>
         requires(std::is_base_of_v<IAsset, AssetT>)

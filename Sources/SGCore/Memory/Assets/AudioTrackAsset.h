@@ -55,6 +55,7 @@ namespace SGCore
     
     protected:
         void doLoad(const InterpolatedPath& path) override;
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
         
     private:
         AudioTrackType m_audioTrackType = AudioTrackType::UNKNOWN;

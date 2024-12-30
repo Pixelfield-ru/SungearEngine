@@ -12,3 +12,20 @@ vec3 ACESFilm(const in vec3 x)
 
     return saturate((x * (a * x + b)) / (x * (c * x + d) + e));
 }
+
+vec3 ACESTonemap(vec3 color, float exposure)
+{
+    // Применяем экспозицию
+    color *= exposure;
+
+    // Применяем ACES Filmic тонмаппинг
+    color = ACESFilm(color);
+
+    // Слегка увеличиваем насыщенность для сочности
+    float saturationBoost = 1.2; // Множитель насыщенности
+    vec3 luma = vec3(0.2126, 0.7152, 0.0722);
+    float luminance = dot(color, luma);
+    color = mix(vec3(luminance), color, saturationBoost);
+
+    return color;
+}

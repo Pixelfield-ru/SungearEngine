@@ -38,3 +38,15 @@ SGCore::SGSLESubShader* SGCore::ShaderAnalyzedFile::getSubShaderByType(SGCore::S
 
     return nullptr;
 }
+
+void SGCore::ShaderAnalyzedFile::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
+                                                  SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+    m_subPassName = "";
+    m_attributes.clear();
+    m_subShaders.clear();
+
+    getParentAssetManager()->loadAsset<TextFileAsset>(getPath())->reloadFromDisk();
+
+    doLoad(getPath());
+}

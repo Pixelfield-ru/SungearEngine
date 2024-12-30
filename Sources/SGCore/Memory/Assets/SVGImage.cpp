@@ -88,3 +88,9 @@ void SGCore::SVGImage::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager*
         AssetManager::resolveAssetReference(updatedAssetManager, spec);
     }
 }
+
+void SGCore::SVGImage::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
+                                        SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+    doLoad(getPath());
+}

@@ -53,3 +53,8 @@ void SGCore::Font::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager
 {
 
 }
+
+void SGCore::Font::doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept
+{
+
+}

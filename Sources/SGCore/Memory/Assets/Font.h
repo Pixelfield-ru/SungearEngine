@@ -25,7 +25,10 @@ namespace SGCore
         }
         
     protected:
+        // todo: impl
         void doLoad(const InterpolatedPath& path) override;
+        // todo: impl
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
         // TODO: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept override;

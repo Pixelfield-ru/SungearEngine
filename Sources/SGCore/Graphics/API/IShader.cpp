@@ -361,3 +361,19 @@ const std::vector<SGCore::ShaderTextureBinding>& SGCore::IShader::getTextureBind
 {
     return m_textureBindings;
 }
+
+void SGCore::IShader::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
+                                       SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
+{
+    auto lockedFileAsset = m_fileAsset.lock();
+    if(lockedFileAsset)
+    {
+        lockedFileAsset->reloadFromDisk(loadPolicy, lazyLoadInThread);
+    }
+
+    auto lockedAnalyzedFile = m_shaderAnalyzedFile.lock();
+    if(lockedAnalyzedFile)
+    {
+        lockedAnalyzedFile->reloadFromDisk(loadPolicy, lazyLoadInThread);
+    }
+}

@@ -9,6 +9,7 @@
 #include <SGCore/ImGuiWrap/ImGuiLayer.h>
 #include <SGCore/Logger/Logger.h>
 #include <SGCore/Utils/StringInterpolation/InterpolationResolver.h>
+#include <SGCore/Graphics/API/IShader.h>
 
 #include "Resources.h"
 
@@ -88,6 +89,12 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
     if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_F11))
     {
         SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
+    }
+
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_N))
+    {
+        SGCore::AssetManager::getInstance()->getAsset<SGCore::IShader>(SGCore::Utils::toUTF8(SGCore::InterpolatedPath("${enginePath}/Resources/sg_shaders/features/pbr/pbr.sgshader").resolved().u16string()))->reloadFromDisk();
+        // SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
     }
 }
 
