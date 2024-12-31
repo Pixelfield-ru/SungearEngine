@@ -57,7 +57,8 @@ void main()
 
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
-layout(location = 3) out vec4 layerWBOITAccumAlpha;
+layout(location = 3) out vec4 layerWBOITColorAccum;
+layout(location = 4) out float layerWBOITReveal;
 
 in vec3 nearPoint;
 in vec3 farPoint;
@@ -148,8 +149,11 @@ void main()
     layerColor.a *= fading;*/
 
     {
-        calculateWBOITComponents(gridColor.rgb, gridColor.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
-        layerWBOITAccumAlpha.a = 1.0;
+        /*calculateWBOITComponents(gridColor.rgb, gridColor.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
+        layerWBOITAccumAlpha.a = 1.0;*/
+
+        layerColor = gridColor;
+        layerWBOITReveal = 1.0;
     }
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);

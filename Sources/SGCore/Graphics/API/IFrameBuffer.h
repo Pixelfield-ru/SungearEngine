@@ -46,6 +46,8 @@ namespace SGCore
         virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
+        virtual void useStates() const noexcept { };
+
         virtual void create() = 0;
         virtual void destroy() = 0;
 

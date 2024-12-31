@@ -71,7 +71,8 @@ layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
 layout(location = 2) out vec4 pickingColor;
 // accum alpha output for weight blended OIT
-layout(location = 3) out vec4 layerWBOITAccumAlpha;
+layout(location = 3) out vec4 layerWBOITColorAccum;
+layout(location = 4) out float layerWBOITReveal;
 
 
 uniform sampler2D mat_diffuseSamplers[3];
@@ -454,8 +455,10 @@ void main()
     // todo: make
     // if(u_WBOITEnabled == 1)
     {
-        calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
-        layerWBOITAccumAlpha.a = 1.0;
+        layerColor = vec4(finalCol, diffuseColor.a);
+        // calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
+        // layerWBOITAccumAlpha.a = 1.0;
+        layerWBOITReveal = 1.0;
     }
 
     // layerColor.a = diffuseColor.a;

@@ -87,6 +87,7 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
         layeredFrameReceiver.m_layersFXFrameBuffer->bindAttachmentsToDrawIn(
                 std::vector { SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
                               SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1 });
+        // layeredFrameReceiver.m_layersFXFrameBuffer->useStates();
 
         m_shader->useInteger("u_pass", 1);
 

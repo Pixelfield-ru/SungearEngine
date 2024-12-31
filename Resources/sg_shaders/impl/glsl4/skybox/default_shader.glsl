@@ -35,7 +35,8 @@ void main()
 
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
-layout(location = 3) out vec4 layerWBOITAccumAlpha;
+layout(location = 3) out vec4 layerWBOITColorAccum;
+layout(location = 4) out float layerWBOITReveal;
 
 uniform samplerCube mat_skyboxSamplers[1];
 uniform int mat_skyboxSamplers_CURRENT_COUNT;
@@ -70,7 +71,7 @@ void main()
             skyboxCol += texture(mat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
         }
 
-        skyboxCol.rgb * atmosphereCol;
+        skyboxCol.rgb *= atmosphereCol;
     }
     else
     {
@@ -78,8 +79,11 @@ void main()
     }
 
     {
-        calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
-        layerWBOITAccumAlpha.a = 1.0;
+        layerColor = skyboxCol;
+        layerWBOITReveal = 1.0;
+
+        /*calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
+        layerWBOITAccumAlpha.a = 1.0;*/
     }
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);

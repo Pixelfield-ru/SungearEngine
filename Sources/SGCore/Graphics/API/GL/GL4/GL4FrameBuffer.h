@@ -38,6 +38,8 @@ namespace SGCore
         void bind() const override;
         void unbind() const override;
 
+        void useStates() const noexcept final;
+
         void create() override;
         void destroy() override;
         

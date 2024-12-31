@@ -19,7 +19,7 @@ namespace SGCore
         // if < 0 then setting the global state
         int m_forAttachment = -1;
 
-        SGBlendingFactor m_sFactor = SGBlendingFactor::SGG_ONE;
+        SGBlendingFactor m_sFactor = SGBlendingFactor::SGG_SRC_ALPHA;
         SGBlendingFactor m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_ALPHA;
         SGEquation m_blendingEquation = SGEquation::SGG_FUNC_ADD;
 

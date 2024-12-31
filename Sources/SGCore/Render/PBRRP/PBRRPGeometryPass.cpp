@@ -126,6 +126,10 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
 
         // todo: make render for transparent objects
         m_transparentEntitiesRenderState.use();
+        if(cameraLayeredFrameReceiver)
+        {
+            cameraLayeredFrameReceiver->m_layersFrameBuffer->useStates();
+        }
 
         transparentMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
                                       (const ECS::entity_t& meshEntity, EntityBaseInfo::reg_t& meshedEntityBaseInfo,

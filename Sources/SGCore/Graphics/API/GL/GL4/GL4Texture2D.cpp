@@ -202,6 +202,9 @@ void SGCore::GL4Texture2D::createAsFrameBufferAttachment(const SGCore::Ref<SGCor
                                glType,
                                m_textureHandler,
                                m_mipLevel);
+
+        m_blendingState.m_forAttachment = std::to_underlying(attachmentType) -
+                                          std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
     }
     else if(isRenderAttachment(attachmentType))
     {

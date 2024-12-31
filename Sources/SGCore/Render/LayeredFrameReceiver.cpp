@@ -92,12 +92,12 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     colorAttachment3->m_blendingState.m_forAttachment = 3;
     colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
     colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE;
-    colorAttachment3->m_clearColor = { 0, 0, 0, 0 };
+    colorAttachment3->m_clearColor = { 0, 1, 0, 1 };
 
     auto colorAttachment4 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
-    colorAttachment3->m_blendingState.m_forAttachment = 4;
-    colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ZERO;
-    colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_COLOR;
+    colorAttachment4->m_blendingState.m_forAttachment = 4;
+    colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
+    colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_ALPHA;
     colorAttachment4->m_clearColor = { 0, 0, 0, 0 };
 
     m_layersFrameBuffer->unbind();
