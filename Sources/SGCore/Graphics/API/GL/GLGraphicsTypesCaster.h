@@ -13,7 +13,7 @@
 
 namespace GLGraphicsTypesCaster
 {
-    static GLuint sggDrawModeToGL(const SGDrawMode& sgDrawMode)
+    static std::uint32_t sggDrawModeToGL(const SGDrawMode& sgDrawMode)
     {
         switch(sgDrawMode)
         {
@@ -58,7 +58,7 @@ namespace GLGraphicsTypesCaster
         }
     }
 
-    static GLint sggInternalFormatToGL(const SGGColorInternalFormat& sggInternalFormat) noexcept
+    static std::int32_t sggInternalFormatToGL(const SGGColorInternalFormat& sggInternalFormat) noexcept
     {
         switch(sggInternalFormat)
         {
@@ -178,7 +178,7 @@ namespace GLGraphicsTypesCaster
         }
     }
 
-    static GLenum sggFormatToGL(const SGGColorFormat& sggFormat) noexcept
+    static std::uint32_t sggFormatToGL(const SGGColorFormat& sggFormat) noexcept
     {
         switch(sggFormat)
         {
@@ -205,7 +205,7 @@ namespace GLGraphicsTypesCaster
         }
     }
 
-    static GLenum sggBufferUsageToGL(const SGGUsage& sggBufferUsage) noexcept
+    static std::uint32_t sggBufferUsageToGL(const SGGUsage& sggBufferUsage) noexcept
     {
         switch(sggBufferUsage)
         {
@@ -214,7 +214,7 @@ namespace GLGraphicsTypesCaster
         }
     }
 
-    static std::uint16_t sggDataTypeToGL(const SGGDataType& sggDataType) noexcept
+    static std::uint32_t sggDataTypeToGL(const SGGDataType& sggDataType) noexcept
     {
         switch(sggDataType)
         {
@@ -244,7 +244,7 @@ namespace GLGraphicsTypesCaster
         }
     }
 
-    static std::uint16_t sgStencilOpToGL(const SGStencilOp& sggDataType) noexcept
+    static std::uint32_t sgStencilOpToGL(const SGStencilOp& sggDataType) noexcept
     {
         switch(sggDataType)
         {
@@ -260,20 +260,54 @@ namespace GLGraphicsTypesCaster
         }
     }
 
-    static std::uint16_t sgStencilFuncToGL(const SGStencilFunc& sggDataType) noexcept
+    static std::uint32_t sgDepthStencilFuncToGL(const SGDepthStencilFunc& sggDataType) noexcept
     {
         switch(sggDataType)
         {
-
-            case SGStencilFunc::SGG_NEVER: return GL_NEVER;
-            case SGStencilFunc::SGG_LESS: return GL_LESS;
-            case SGStencilFunc::SGG_LEQUAL: return GL_LEQUAL;
-            case SGStencilFunc::SGG_GREATER: return GL_GREATER;
-            case SGStencilFunc::SGG_GEQUAL: return GL_GEQUAL;
-            case SGStencilFunc::SGG_EQUAL: return GL_EQUAL;
-            case SGStencilFunc::SGG_NOTEQUAL: return GL_NOTEQUAL;
-            case SGStencilFunc::SGG_ALWAYS: return GL_ALWAYS;
+            case SGDepthStencilFunc::SGG_NEVER: return GL_NEVER;
+            case SGDepthStencilFunc::SGG_LESS: return GL_LESS;
+            case SGDepthStencilFunc::SGG_LEQUAL: return GL_LEQUAL;
+            case SGDepthStencilFunc::SGG_GREATER: return GL_GREATER;
+            case SGDepthStencilFunc::SGG_GEQUAL: return GL_GEQUAL;
+            case SGDepthStencilFunc::SGG_EQUAL: return GL_EQUAL;
+            case SGDepthStencilFunc::SGG_NOTEQUAL: return GL_NOTEQUAL;
+            case SGDepthStencilFunc::SGG_ALWAYS: return GL_ALWAYS;
             default: return GL_NONE;
+        }
+    }
+
+    static std::uint32_t sgBlendingFactorToGL(const SGBlendingFactor& sggDataType) noexcept
+    {
+        switch(sggDataType)
+        {
+            case SGBlendingFactor::SGG_ZERO: return GL_ZERO;
+            case SGBlendingFactor::SGG_ONE: return GL_ONE;
+            case SGBlendingFactor::SGG_SRC_COLOR: return GL_SRC_COLOR;
+            case SGBlendingFactor::SGG_ONE_MINUS_SRC_COLOR: return GL_ONE_MINUS_SRC_COLOR;
+            case SGBlendingFactor::SGG_DST_COLOR: return GL_DST_COLOR;
+            case SGBlendingFactor::SGG_ONE_MINUS_DST_COLOR: return GL_ONE_MINUS_DST_COLOR;
+            case SGBlendingFactor::SGG_SRC_ALPHA: return GL_SRC_ALPHA;
+            case SGBlendingFactor::SGG_ONE_MINUS_SRC_ALPHA: return GL_ONE_MINUS_SRC_ALPHA;
+            case SGBlendingFactor::SGG_DST_ALPHA: return GL_DST_ALPHA;
+            case SGBlendingFactor::SGG_ONE_MINUS_DST_ALPHA: return GL_ONE_MINUS_DST_ALPHA;
+            case SGBlendingFactor::SGG_CONST_COLOR: return GL_CONSTANT_COLOR;
+            case SGBlendingFactor::SGG_ONE_MINUS_CONST_COLOR: return GL_ONE_MINUS_CONSTANT_COLOR;
+            case SGBlendingFactor::SGG_CONST_ALPHA: return GL_CONSTANT_ALPHA;
+            case SGBlendingFactor::SGG_ONE_MINUS_CONST_ALPHA: return GL_ONE_MINUS_CONSTANT_ALPHA;
+            default: return GL_ZERO;
+        }
+    }
+
+    static std::uint32_t sgEquationToGL(const SGEquation& sggDataType) noexcept
+    {
+        switch(sggDataType)
+        {
+            case SGEquation::SGG_FUNC_ADD: return GL_FUNC_ADD;
+            case SGEquation::SGG_FUNC_SUBTRACT: return GL_FUNC_SUBTRACT;
+            case SGEquation::SGG_FUNC_REVERSE_SUBTRACT: return GL_FUNC_REVERSE_SUBTRACT;
+            case SGEquation::SGG_MIN: return GL_MIN;
+            case SGEquation::SGG_MAX: return GL_MAX;
+            default: return GL_FUNC_ADD;
         }
     }
 };

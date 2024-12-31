@@ -13,6 +13,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Scene/Layer.h"
 #include "RenderPipelinesManager.h"
+#include "SGCore/Graphics/API/ITexture2D.h"
 
 SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 {
@@ -71,6 +72,33 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0,
             0
     );
+    m_layersFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // COLOR ACCUM FOR WBOIT
+            SGGColorFormat::SGG_RGBA,
+            SGGColorInternalFormat::SGG_RGBA32_FLOAT,
+            0,
+            0
+    );
+
+    m_layersFrameBuffer->addAttachment(
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // REVEAL FOR WBOIT
+            SGGColorFormat::SGG_R,
+            SGGColorInternalFormat::SGG_R32_FLOAT,
+            0,
+            0
+    );
+
+    auto colorAttachment3 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3);
+    colorAttachment3->m_blendingState.m_forAttachment = 3;
+    colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
+    colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE;
+    colorAttachment3->m_clearColor = { 0, 0, 0, 0 };
+
+    auto colorAttachment4 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
+    colorAttachment3->m_blendingState.m_forAttachment = 4;
+    colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ZERO;
+    colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_COLOR;
+    colorAttachment4->m_clearColor = { 0, 0, 0, 0 };
 
     m_layersFrameBuffer->unbind();
 
@@ -132,12 +160,7 @@ SGCore::Ref<SGCore::PostProcessLayer> SGCore::LayeredFrameReceiver::addOrGetLaye
     // without - 1 because 0 is always default FB
     newPPLayer->m_index = m_layers.empty() ? 0 : getLayersMaximumIndex() + 1;
 
-    auto fxShader = Ref<IShader>(CoreMain::getRenderer()->createShader());
-    fxShader->compile(AssetManager::getInstance()->loadAsset<TextFileAsset>(
-            *Paths::getDefaultPaths()["Shaders/LayeredPP/LayerFXShader"]));
-
-    // SGPPLayerFXPass
-    newPPLayer->m_FXSubPassShader = fxShader;
+    newPPLayer->m_FXSubPassShader = AssetManager::getInstance()->loadAsset<IShader>(*Paths::getDefaultPaths()["Shaders/LayeredPP/LayerFXShader"]);
 
     // adding one sub pass
     PostProcessFXSubPass subPass;

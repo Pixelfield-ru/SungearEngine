@@ -94,6 +94,31 @@ void SGCore::GL3MeshData::prepare()
             ->prepare()->enableAttributes();
     // --------------------------------------------
 
+    // ---------------- preparing vertices color -------
+
+    m_verticesColorsBuffers.clear();
+
+    for(size_t i = 0; i < m_verticesColors.size(); ++i)
+    {
+        auto verticesColorsBuffer = std::shared_ptr<IVertexBuffer>(
+                CoreMain::getRenderer()->createVertexBuffer()
+        );
+        verticesColorsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_verticesColors[i].m_colors);
+
+        bufferLayout->reset();
+        bufferLayout
+                ->addAttribute(std::shared_ptr<IVertexAttribute>(
+                        bufferLayout->createVertexAttribute(i + 5,
+                                                            "vertexColor" + std::to_string(i) + "Attribute",
+                                                            SGGDataType::SGG_FLOAT4))
+                )
+                ->prepare()->enableAttributes();
+
+        m_verticesColorsBuffers.push_back(verticesColorsBuffer);
+    }
+
+    // -------------------------------------------------
+
     // ------ preparing indices -------------------
     m_indicesBuffer = std::shared_ptr<IIndexBuffer>(CoreMain::getRenderer()->createIndexBuffer());
     m_indicesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_indices);

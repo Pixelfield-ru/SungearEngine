@@ -37,10 +37,6 @@ void SGCore::GL4Renderer::init() noexcept
         CoreMain::getWindow().setShouldClose(true);
     }
 
-    glEnable(GL_BLEND);
-    // glBlendFunc(GL_ONE, GL_ZERO);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     useState(m_cachedRenderState, true);
 
     /*glEnable (GL_ALPHA_TEST);
@@ -341,10 +337,21 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
         if(newRenderState.m_useDepthTest)
         {
             glEnable(GL_DEPTH_TEST);
+            m_cachedRenderState.m_useDepthTest = true;
         }
         else
         {
             glDisable(GL_DEPTH_TEST);
+            m_cachedRenderState.m_useDepthTest = false;
+        }
+
+        if(newRenderState.m_useDepthTest)
+        {
+            glDepthFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_depthFunc));
+            glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
+
+            m_cachedRenderState.m_depthFunc = newRenderState.m_depthFunc;
+            m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
         }
 
         if(newRenderState.m_useFacesCulling)
@@ -354,14 +361,23 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
                     newRenderState.m_facesCullingPolygonsOrder)
             );
+
+            m_cachedRenderState.m_useFacesCulling = true;
+            m_cachedRenderState.m_facesCullingFaceType = newRenderState.m_facesCullingFaceType;
+            m_cachedRenderState.m_facesCullingPolygonsOrder = newRenderState.m_facesCullingPolygonsOrder;
         }
         else
         {
             glDisable(GL_CULL_FACE);
+
+            m_cachedRenderState.m_useFacesCulling = false;
         }
 
         glLineWidth(newRenderState.m_linesWidth);
         glPointSize(newRenderState.m_pointsSize);
+
+        m_cachedRenderState.m_linesWidth = newRenderState.m_linesWidth;
+        m_cachedRenderState.m_pointsSize = newRenderState.m_pointsSize;
 
         if(newRenderState.m_useStencilTest)
         {
@@ -369,27 +385,59 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             glStencilOp(GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilFailOp),
                         GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilZFailOp),
                         GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilZPassOp));
-            glStencilFunc(GLGraphicsTypesCaster::sgStencilFuncToGL(newRenderState.m_stencilFunc),
+            glStencilFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_stencilFunc),
                           newRenderState.m_stencilFuncRef,
                           newRenderState.m_stencilFuncMask);
             glStencilMask(newRenderState.m_stencilMask);
+
+            m_cachedRenderState.m_useStencilTest = true;
+            m_cachedRenderState.m_stencilFailOp = newRenderState.m_stencilFailOp;
+            m_cachedRenderState.m_stencilZFailOp = newRenderState.m_stencilZFailOp;
+            m_cachedRenderState.m_stencilZPassOp = newRenderState.m_stencilZPassOp;
+            m_cachedRenderState.m_stencilFunc = newRenderState.m_stencilFunc;
+            m_cachedRenderState.m_stencilFuncRef = newRenderState.m_stencilFuncRef;
+            m_cachedRenderState.m_stencilFuncMask = newRenderState.m_stencilFuncMask;
+            m_cachedRenderState.m_stencilMask = newRenderState.m_stencilMask;
         }
         else
         {
             glDisable(GL_STENCIL_TEST);
+
+            m_cachedRenderState.m_useStencilTest = false;
         }
+
+        useBlendingState(newRenderState.m_globalBlendingState, true);
     }
     else
     {
+        if(m_cachedRenderState == newRenderState) return;
+
         if(m_cachedRenderState.m_useDepthTest != newRenderState.m_useDepthTest)
         {
             if(newRenderState.m_useDepthTest)
             {
                 glEnable(GL_DEPTH_TEST);
+                m_cachedRenderState.m_useDepthTest = true;
             }
             else
             {
                 glDisable(GL_DEPTH_TEST);
+                m_cachedRenderState.m_useDepthTest = false;
+            }
+        }
+
+        if(newRenderState.m_useDepthTest)
+        {
+            if(m_cachedRenderState.m_depthFunc != newRenderState.m_depthFunc)
+            {
+                glDepthFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_depthFunc));
+                m_cachedRenderState.m_depthFunc = newRenderState.m_depthFunc;
+            }
+
+            if(m_cachedRenderState.m_depthMask != newRenderState.m_depthMask)
+            {
+                glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
+                m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
             }
         }
 
@@ -398,10 +446,12 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             if(newRenderState.m_useFacesCulling)
             {
                 glEnable(GL_CULL_FACE);
+                m_cachedRenderState.m_useFacesCulling = true;
             }
             else
             {
                 glDisable(GL_CULL_FACE);
+                m_cachedRenderState.m_useFacesCulling = false;
             }
         }
 
@@ -410,6 +460,7 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             if(m_cachedRenderState.m_facesCullingFaceType != newRenderState.m_facesCullingFaceType)
             {
                 glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(newRenderState.m_facesCullingFaceType));
+                m_cachedRenderState.m_facesCullingFaceType = newRenderState.m_facesCullingFaceType;
             }
 
             if(m_cachedRenderState.m_facesCullingPolygonsOrder != newRenderState.m_facesCullingPolygonsOrder)
@@ -418,16 +469,19 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
                                     newRenderState.m_facesCullingPolygonsOrder
                             )
                 );
+                m_cachedRenderState.m_facesCullingPolygonsOrder = newRenderState.m_facesCullingPolygonsOrder;
             }
         }
 
         if(m_cachedRenderState.m_linesWidth != newRenderState.m_linesWidth)
         {
             glLineWidth(newRenderState.m_linesWidth);
+            m_cachedRenderState.m_linesWidth = newRenderState.m_linesWidth;
         }
         if(m_cachedRenderState.m_pointsSize != newRenderState.m_pointsSize)
         {
             glPointSize(newRenderState.m_pointsSize);
+            m_cachedRenderState.m_pointsSize = newRenderState.m_pointsSize;
         }
 
         if(m_cachedRenderState.m_useStencilTest != newRenderState.m_useStencilTest)
@@ -435,10 +489,12 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             if(newRenderState.m_useStencilTest)
             {
                 glEnable(GL_STENCIL_TEST);
+                m_cachedRenderState.m_useStencilTest = true;
             }
             else
             {
                 glDisable(GL_STENCIL_TEST);
+                m_cachedRenderState.m_useStencilTest = false;
             }
         }
 
@@ -451,23 +507,103 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
                 glStencilOp(GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilFailOp),
                             GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilZFailOp),
                             GLGraphicsTypesCaster::sgStencilOpToGL(newRenderState.m_stencilZPassOp));
+
+                m_cachedRenderState.m_stencilFailOp = newRenderState.m_stencilFailOp;
+                m_cachedRenderState.m_stencilZFailOp = newRenderState.m_stencilZFailOp;
+                m_cachedRenderState.m_stencilZPassOp = newRenderState.m_stencilZPassOp;
             }
 
             if(m_cachedRenderState.m_stencilFunc != newRenderState.m_stencilFunc ||
                m_cachedRenderState.m_stencilFuncRef != newRenderState.m_stencilFuncRef ||
                m_cachedRenderState.m_stencilMask != newRenderState.m_stencilMask)
             {
-                glStencilFunc(GLGraphicsTypesCaster::sgStencilFuncToGL(newRenderState.m_stencilFunc),
+                glStencilFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_stencilFunc),
                               newRenderState.m_stencilFuncRef,
                               newRenderState.m_stencilFuncMask);
+
+                m_cachedRenderState.m_stencilFunc = newRenderState.m_stencilFunc;
+                m_cachedRenderState.m_stencilFuncRef = newRenderState.m_stencilFuncRef;
+                m_cachedRenderState.m_stencilFuncMask = newRenderState.m_stencilFuncMask;
             }
 
             if(m_cachedRenderState.m_stencilMask != newRenderState.m_stencilMask)
             {
                 glStencilMask(newRenderState.m_stencilMask);
+                m_cachedRenderState.m_stencilMask = newRenderState.m_stencilMask;
+            }
+        }
+
+        if(newRenderState.m_globalBlendingState.m_useBlending)
+        {
+            if(m_cachedRenderState.m_globalBlendingState != newRenderState.m_globalBlendingState)
+            {
+                useBlendingState(newRenderState.m_globalBlendingState);
             }
         }
     }
+}
 
-    m_cachedRenderState = newRenderState;
+void SGCore::GL4Renderer::useBlendingState(const SGCore::BlendingState& newBlendingState,
+                                           bool forceState) noexcept
+{
+    {
+        const std::string assertMsg =
+                fmt::format("Can not apply blending state for attachment '{}'. Attachment index must LESS than 32",
+                            newBlendingState.m_forAttachment);
+        SG_ASSERT(newBlendingState.m_forAttachment < 32, assertMsg.c_str());
+    }
+
+    if(m_cachedRenderState.m_globalBlendingState.m_useBlending != newBlendingState.m_useBlending || forceState)
+    {
+        if(newBlendingState.m_useBlending)
+        {
+            glEnable(GL_BLEND);
+            m_cachedRenderState.m_globalBlendingState.m_useBlending = true;
+        }
+        else
+        {
+            glDisable(GL_BLEND);
+            m_cachedRenderState.m_globalBlendingState.m_useBlending = false;
+        }
+    }
+
+    if(!newBlendingState.m_useBlending) return;
+
+    auto& oldBlendingState = newBlendingState.m_forAttachment >= 0 ?
+                             m_cachedColorAttachmentsBlendingStates[newBlendingState.m_forAttachment] :
+                             m_cachedRenderState.m_globalBlendingState;
+
+    if(oldBlendingState.m_sFactor != newBlendingState.m_sFactor ||
+       oldBlendingState.m_dFactor != newBlendingState.m_dFactor || forceState)
+    {
+        if(newBlendingState.m_forAttachment >= 0)
+        {
+            glBlendFunci(newBlendingState.m_forAttachment,
+                         GLGraphicsTypesCaster::sgBlendingFactorToGL(newBlendingState.m_sFactor),
+                         GLGraphicsTypesCaster::sgBlendingFactorToGL(newBlendingState.m_dFactor));
+        }
+        else
+        {
+            glBlendFunc(GLGraphicsTypesCaster::sgBlendingFactorToGL(newBlendingState.m_sFactor),
+                        GLGraphicsTypesCaster::sgBlendingFactorToGL(newBlendingState.m_dFactor));
+        }
+
+        oldBlendingState.m_sFactor = newBlendingState.m_sFactor;
+        oldBlendingState.m_dFactor = newBlendingState.m_dFactor;
+    }
+
+    if(oldBlendingState.m_blendingEquation != newBlendingState.m_blendingEquation || forceState)
+    {
+        if(newBlendingState.m_forAttachment >= 0)
+        {
+            glBlendEquationi(newBlendingState.m_forAttachment,
+                             GLGraphicsTypesCaster::sgEquationToGL(newBlendingState.m_blendingEquation));
+        }
+        else
+        {
+            glBlendEquation(GLGraphicsTypesCaster::sgEquationToGL(newBlendingState.m_blendingEquation));
+        }
+
+        oldBlendingState.m_blendingEquation = newBlendingState.m_blendingEquation;
+    }
 }

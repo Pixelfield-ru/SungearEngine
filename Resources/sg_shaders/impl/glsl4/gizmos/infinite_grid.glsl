@@ -1,5 +1,6 @@
 #include "sg_shaders/impl/glsl4/defines.glsl"
 #include "sg_shaders/impl/glsl4/uniform_bufs_decl.glsl"
+#include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
 
 #subpass [GeometryPass]
 
@@ -56,6 +57,7 @@ void main()
 
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
+layout(location = 3) out vec4 layerWBOITAccumAlpha;
 
 in vec3 nearPoint;
 in vec3 farPoint;
@@ -139,8 +141,16 @@ void main()
     float linearDepth = computeLinearDepth(fragPosition3D);
     float fading = max(0, (0.5 - linearDepth));
 
-    layerColor = (grid(fragPosition3D, 1) + grid(fragPosition3D, 1)) * float(t > 0);
-    layerColor.a *= fading;
+    vec4 gridColor = (grid(fragPosition3D, 1) + grid(fragPosition3D, 1)) * float(t > 0);
+    gridColor.a *= fading;
+
+    /*layerColor = gridColor;
+    layerColor.a *= fading;*/
+
+    {
+        calculateWBOITComponents(gridColor.rgb, gridColor.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
+        layerWBOITAccumAlpha.a = 1.0;
+    }
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 

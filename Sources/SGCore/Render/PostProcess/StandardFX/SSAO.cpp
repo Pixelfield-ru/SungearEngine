@@ -68,7 +68,7 @@ void SGCore::SSAO::generateKernel() noexcept
     }
 }
 
-void SGCore::SSAO::passValuesToSubPassShader(const Ref<IShader>& subPassShader) noexcept
+void SGCore::SSAO::passValuesToSubPassShader(const AssetRef<IShader>& subPassShader) noexcept
 {
     if(subPassShader)
     {

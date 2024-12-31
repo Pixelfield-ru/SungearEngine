@@ -12,6 +12,9 @@
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/SpacePartitioning/OctreeCullable.h"
 #include "SGCore/Memory/AssetManager.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Render/Alpha/TransparentEntityTag.h"
+#include "SGCore/Render/Alpha/OpaqueEntityTag.h"
 
 SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
                                                const std::string& layerName,
@@ -61,6 +64,16 @@ SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
         // NOT STANDARD
         // auto cullable = registry->emplace<Ref<OctreeCullable>>(meshEntity, MakeRef<OctreeCullable>());
         meshEntityMesh.m_base.setMeshData(mesh);
+
+        if(mesh->m_material->m_transparencyType == MaterialTransparencyType::MAT_BLEND ||
+           mesh->m_material->m_transparencyType == MaterialTransparencyType::MAT_MASK)
+        {
+            registry->emplace<TransparentEntityTag>(meshEntity);
+        }
+        else
+        {
+            registry->emplace<OpaqueEntityTag>(meshEntity);
+        }
         // meshEntityMesh.m_base.m_meshData->setData(mesh);
 
         // meshComponent->addRequiredShaderPath("GeometryShader");

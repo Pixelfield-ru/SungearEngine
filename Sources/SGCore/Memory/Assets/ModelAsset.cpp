@@ -84,6 +84,8 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
     // TODO: make reserve for all texture coordinates
     sgMeshData->m_uv.reserve(aiMesh->mNumVertices * 3);
 
+    sgMeshData->m_verticesColors.clear();
+
     sgMeshData->m_name = aiMesh->mName.data;
     
     /*sgMeshData->m_aabbMin = SGUtils::AssimpUtils::aiVectorToGLM(aiMesh->mAABB.mMin);
@@ -91,7 +93,28 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
 
     polygonsNumber += aiMesh->mNumVertices / 3;
     std::cout << "current polygons num: " << std::to_string(polygonsNumber) << std::endl;
-    
+
+    for(int i = 0; i < 8; ++i)
+    {
+        if(!aiMesh->HasVertexColors(i)) continue;
+
+        sgMeshData->m_verticesColors.emplace_back();
+        auto& verticesSet = sgMeshData->m_verticesColors[i];
+        verticesSet.m_colors.reserve(aiMesh->mNumVertices * 4);
+
+        aiColor4D* colors = aiMesh->mColors[i];
+
+        for(size_t j = 0; j < aiMesh->mNumVertices; ++j)
+        {
+            const aiColor4D& color = colors[j];
+
+            verticesSet.m_colors.push_back(color.r);
+            verticesSet.m_colors.push_back(color.g);
+            verticesSet.m_colors.push_back(color.b);
+            verticesSet.m_colors.push_back(color.a);
+        }
+    }
+
     auto& min = sgMeshData->m_aabb.m_min;
     auto& max = sgMeshData->m_aabb.m_max;
     
@@ -225,6 +248,40 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
     float shininess;
     float metallic;
     float roughness;
+    aiString alphaMode;
+
+    if(aiMat->Get("$mat.gltf.alphaMode", 0, 0, alphaMode) == AI_SUCCESS)
+    {
+        if(alphaMode == aiString("BLEND"))
+        {
+            sgMeshData->m_material->m_transparencyType = MaterialTransparencyType::MAT_OPAQUE;
+        }
+        if(alphaMode == aiString("BLEND"))
+        {
+            sgMeshData->m_material->m_transparencyType = MaterialTransparencyType::MAT_BLEND;
+        }
+        else if(alphaMode == aiString("MASK"))
+        {
+            sgMeshData->m_material->m_transparencyType = MaterialTransparencyType::MAT_MASK;
+        }
+    }
+    else
+    {
+        float opacity = 0.0f;
+
+        if(aiMat->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS)
+        {
+            if(opacity < 1.0f)
+            {
+                sgMeshData->m_material->m_transparencyType = MaterialTransparencyType::MAT_BLEND;
+            }
+        }
+
+        if(aiMat->GetTextureCount(aiTextureType_OPACITY) > 0)
+        {
+            sgMeshData->m_material->m_transparencyType = MaterialTransparencyType::MAT_BLEND;
+        }
+    }
 
     if(aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) == AI_SUCCESS)
     {

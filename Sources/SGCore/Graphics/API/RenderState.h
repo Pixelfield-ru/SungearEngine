@@ -6,9 +6,28 @@
 #define SUNGEARENGINE_RENDERSTATE_H
 
 #include "GraphicsDataTypes.h"
+#include "SGCore/Main/CoreGlobals.h"
 
 namespace SGCore
 {
+    class IFrameBuffer;
+
+    struct BlendingState
+    {
+        bool m_useBlending = true;
+
+        // if < 0 then setting the global state
+        int m_forAttachment = -1;
+
+        SGBlendingFactor m_sFactor = SGBlendingFactor::SGG_ONE;
+        SGBlendingFactor m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_ALPHA;
+        SGEquation m_blendingEquation = SGEquation::SGG_FUNC_ADD;
+
+        void use(bool force = false) const noexcept;
+
+        bool operator==(const BlendingState&) const noexcept = default;
+    };
+
     struct RenderState
     {
         bool m_useIndices = true;
@@ -22,10 +41,14 @@ namespace SGCore
         float m_linesWidth = 3.0f;
         float m_pointsSize = 3.0f;
 
+        BlendingState m_globalBlendingState;
+
         bool m_useDepthTest = true;
+        SGDepthStencilFunc m_depthFunc = SGDepthStencilFunc::SGG_LEQUAL;
+        bool m_depthMask = true;
 
         bool m_useStencilTest = true;
-        SGStencilFunc m_stencilFunc = SGStencilFunc::SGG_ALWAYS;
+        SGDepthStencilFunc m_stencilFunc = SGDepthStencilFunc::SGG_ALWAYS;
         int m_stencilFuncRef = 1;
         std::uint32_t m_stencilFuncMask = 0xFF;
         std::uint32_t m_stencilMask = 0xFF;
@@ -34,6 +57,8 @@ namespace SGCore
         SGStencilOp m_stencilZPassOp = SGStencilOp::SGG_REPLACE;
 
         void use(bool force = false) const noexcept;
+
+        bool operator==(const RenderState&) const noexcept = default;
     };
 }
 

@@ -4,11 +4,8 @@
 #include "sg_shaders/impl/glsl4/math.glsl"
 #include "sg_shaders/impl/glsl4/defines.glsl"
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
-#include "sg_shaders/impl/glsl4/color_correction/lottes.glsl"
-#include "sg_shaders/impl/glsl4/color_correction/reinhard.glsl"
-#include "sg_shaders/impl/glsl4/color_correction/filmic.glsl"
-#include "sg_shaders/impl/glsl4/color_correction/neutral.glsl"
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
+#include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
 #include "dir_lights_shadows_calc.glsl"
 
 #subpass [GeometryPass]
@@ -24,6 +21,8 @@ layout (location = 1) in vec3 UVAttribute;
 layout (location = 2) in vec3 normalsAttribute;
 layout (location = 3) in vec3 tangentsAttribute;
 layout (location = 4) in vec3 bitangentsAttribute;
+layout (location = 5) in vec4 vertexColor0Attribute;
+layout (location = 6) in vec4 vertexColor1Attribute;
 
 out VSOut
 {
@@ -34,6 +33,9 @@ out VSOut
     vec3 vertexPos;
     vec3 fragPos;
     mat3 TBN;
+
+    vec4 vertexColor0;
+    vec4 vertexColor1;
 } vsOut;
 
 void main()
@@ -50,6 +52,9 @@ void main()
     vec3 N = normalize(vec3(objectTransform.modelMatrix * vec4(vsOut.normal, 0.0)));
     vsOut.TBN = mat3(T, B, N);
 
+    vsOut.vertexColor0 = vertexColor0Attribute;
+    vsOut.vertexColor1 = vertexColor1Attribute;
+
     gl_Position = camera.projectionSpaceMatrix * vec4(vsOut.fragPos, 1.0);
 }
 
@@ -65,6 +70,8 @@ void main()
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
 layout(location = 2) out vec4 pickingColor;
+// accum alpha output for weight blended OIT
+layout(location = 3) out vec4 layerWBOITAccumAlpha;
 
 
 uniform sampler2D mat_diffuseSamplers[3];
@@ -87,6 +94,9 @@ uniform int SGPP_CurrentLayerIndex;
 // REQUIRED UNIFORM!!
 uniform vec3 u_pickingColor;
 
+// REQUIRED UNIFORM!!
+uniform int u_verticesColorsAttributesCount;
+
 in VSOut
 {
     vec2 UV;
@@ -96,6 +106,8 @@ in VSOut
     vec3 vertexPos;
     vec3 fragPos;
     mat3 TBN;
+    vec4 vertexColor0;
+    vec4 vertexColor1;
 } vsIn;
 
 // N - normal
@@ -163,7 +175,7 @@ void main()
 {
     vec3 normalizedNormal = vsIn.normal;
 
-    vec4 diffuseColor = vec4(materialDiffuseCol.rgb, 1);
+    vec4 diffuseColor = vec4(materialDiffuseCol.rgb, 1.0);
     vec4 aoRoughnessMetallic = vec4(materialAmbientFactor, materialRoughnessFactor, materialMetallicFactor, 1);
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
@@ -182,7 +194,7 @@ void main()
         {
             float mixCoeff = 1.0 / mat_diffuseSamplers_CURRENT_COUNT;
 
-            diffuseColor.rgb = vec3(0.0, 0.0, 0.0);
+            diffuseColor.rgba = vec4(0.0, 0.0, 0.0, 0.0);
 
             for (int i = 0; i < mat_diffuseSamplers_CURRENT_COUNT; ++i)
             {
@@ -258,6 +270,8 @@ void main()
         // finalNormal = normalize(vsIn.TBN * normalizedNormal);
         // finalNormal = normalize(vsIn.TBN * (normalizedNormal * 2.0 - 1.0));
     }
+
+    // if(diffuseColor.a < 0.1) discard;
 
     /*gFragPos = vec4(vsIn.fragPos, 1.0);
     gNormal = vec4(normalMapColor.rg, 0.0, 1.0);
@@ -399,7 +413,7 @@ void main()
 
         // vec3 ctNumerator = vec3(1.0, 1.0, 1.0) * G;
         vec3 ctNumerator = D * F * G;
-        float ctDenominator = NdotVD * NdotL;
+        float ctDenominator = 1.0 * NdotVD * NdotL;
         vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
         // vec3 specular = ctNumerator / (ctDenominator + 0.001);
         //vec3 specular = vec3(0.1);
@@ -409,7 +423,7 @@ void main()
         vec3 specular = vec3(spec);*/
         // vec3 specular = vec3(0.0);
 
-        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 3.0;
+        lo += (diffuse * albedo.rgb / PI + specular) * max(atmosphere.sunColor.rgb, vec3(0, 0, 0)) * NdotL * 1.0;
     }
 
     // ambient = ambient * albedo.rgb * ao;
@@ -423,17 +437,28 @@ void main()
     // ВЫГЛЯДИТ ПЛОХО
     /*finalCol = finalCol / (finalCol + vec3(1.0));
     finalCol = pow(finalCol, vec3(1.0 / exposure));*/
-    finalCol = ACESTonemap(finalCol, exposure);
+    // finalCol = ACESTonemap(finalCol, exposure);
     // finalCol = lottes(finalCol);
     // finalCol = reinhard2(finalCol);
     // finalCol = reinhard(finalCol);
     // finalCol = neutral(finalCol);
     // finalCol = filmic(finalCol);
 
-    layerColor.a = diffuseColor.a;
-    // layerColor.rgb = vec3(0, 0, 0.03137255);
-    layerColor.rgb = finalCol;
-    layerColor.a = 1.0;
+    finalCol = finalCol;
+
+    if(u_verticesColorsAttributesCount > 0)
+    {
+        finalCol.rgb = finalCol * vsIn.vertexColor0.rgb;
+    }
+
+    // todo: make
+    // if(u_WBOITEnabled == 1)
+    {
+        calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
+        layerWBOITAccumAlpha.a = 1.0;
+    }
+
+    // layerColor.a = diffuseColor.a;
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 
@@ -447,12 +472,14 @@ void main()
     // DEBUG ==================================
     // base color
     // layerColor.rgb = albedo.rgb; // PASSED
+    // layerColor.rgb = vec3(albedo.r, albedo.g, albedo.b); // PASSED
     // layerColor.rgb = vec3(metalness); // PASSED
     // layerColor.rgb = vec3(roughness); // PASSED
     // layerColor.rgb = finalNormal;
     // layerColor.rgb = normalizedNormal;
     // layerColor.rgb = normalMapColor; // PASSED
     // layerColor.rgb = vec3(ao); // PASSED
+    // layerColor.rgb = vec3(vsIn.UV, 1.0);
 }
 
 #end

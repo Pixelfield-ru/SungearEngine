@@ -19,7 +19,7 @@ enum class SGStencilOp
     SGG_INVERT
 };
 
-enum class SGStencilFunc
+enum class SGDepthStencilFunc
 {
     SGG_NEVER,
     SGG_LESS,
@@ -29,6 +29,33 @@ enum class SGStencilFunc
     SGG_EQUAL,
     SGG_NOTEQUAL,
     SGG_ALWAYS
+};
+
+enum class SGBlendingFactor
+{
+    SGG_ZERO,
+    SGG_ONE,
+    SGG_SRC_COLOR,
+    SGG_ONE_MINUS_SRC_COLOR,
+    SGG_DST_COLOR,
+    SGG_ONE_MINUS_DST_COLOR,
+    SGG_SRC_ALPHA,
+    SGG_ONE_MINUS_SRC_ALPHA,
+    SGG_DST_ALPHA,
+    SGG_ONE_MINUS_DST_ALPHA,
+    SGG_CONST_COLOR,
+    SGG_ONE_MINUS_CONST_COLOR,
+    SGG_CONST_ALPHA,
+    SGG_ONE_MINUS_CONST_ALPHA
+};
+
+enum class SGEquation
+{
+    SGG_FUNC_ADD,
+    SGG_FUNC_SUBTRACT,
+    SGG_FUNC_REVERSE_SUBTRACT,
+    SGG_MIN,
+    SGG_MAX
 };
 
 enum class SGShaderDefineType

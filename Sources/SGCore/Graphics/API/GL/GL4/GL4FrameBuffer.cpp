@@ -108,8 +108,16 @@ void SGCore::GL4FrameBuffer::unbindAttachmentToDrawIn()
 void SGCore::GL4FrameBuffer::bind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(m_viewportPosX, m_viewportPosY, m_viewportWidth, m_viewportHeight);
+
+    for(const auto& attachmentIt : m_attachments)
+    {
+        const auto& attachmentType = attachmentIt.first;
+        const auto& attachment = attachmentIt.second;
+
+        attachment->m_blendingState.use();
+    }
 }
 
 void SGCore::GL4FrameBuffer::unbind() const
@@ -134,8 +142,12 @@ void SGCore::GL4FrameBuffer::destroy()
 
 void SGCore::GL4FrameBuffer::clear()
 {
-    glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    // glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgColor.a);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    for(const auto& attachmentIt : m_attachments)
+    {
+        clearAttachment(attachmentIt.first);
+    }
 }
 
 void SGCore::GL4FrameBuffer::clearAttachment(const SGFrameBufferAttachmentType& attachmentType)
@@ -143,11 +155,14 @@ void SGCore::GL4FrameBuffer::clearAttachment(const SGFrameBufferAttachmentType& 
     if(attachmentType >= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0 &&
        attachmentType <= SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT31)
     {
-        glDrawBuffer(GL_COLOR_ATTACHMENT0 + (std::to_underlying(attachmentType) -
-                std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)));
-        
-        glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgColor.a);
+        const auto glAttachmentType = (std::to_underlying(attachmentType) -
+                                     std::to_underlying(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0));
+
+        glDrawBuffer(GL_COLOR_ATTACHMENT0 + glAttachmentType);
+
+        // glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgColor.a);
         glClear(GL_COLOR_BUFFER_BIT);
+        glClearBufferfv(GL_COLOR, glAttachmentType, &getAttachment(attachmentType)->m_clearColor[0]);
     }
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
             attachmentType <= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT9)

@@ -52,6 +52,20 @@ void SGCore::ITexture2D::doLoad(const InterpolatedPath& path)
             m_internalFormat = SGGColorInternalFormat::SGG_RGB8;
             m_format = SGGColorFormat::SGG_RGB;
         }
+        else if(m_channelsCount == 2)
+        {
+            m_internalFormat = SGGColorInternalFormat::SGG_RG8;
+            m_format = SGGColorFormat::SGG_RG;
+
+            std::cout << "two channel tex" << std::endl;
+        }
+        else if(m_channelsCount == 1)
+        {
+            m_internalFormat = SGGColorInternalFormat::SGG_R8;
+            m_format = SGGColorFormat::SGG_R;
+
+            std::cout << "one channel tex" << std::endl;
+        }
     }
 }
 

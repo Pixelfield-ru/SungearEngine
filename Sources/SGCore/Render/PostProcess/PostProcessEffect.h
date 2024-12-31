@@ -24,7 +24,7 @@ namespace SGCore
         virtual void onFXPass(const Ref<PostProcessLayer>& currentLayer) { }
         virtual void onDetachFromLayer(const Ref<PostProcessLayer>& fromLayer) { }
 
-        virtual void passValuesToSubPassShader(const Ref<IShader>& subPassShader) noexcept { }
+        virtual void passValuesToSubPassShader(const AssetRef<IShader>& subPassShader) noexcept { }
 
         [[nodiscard]] bool isEnabled() const noexcept;
         void setEnabled(bool isEnabled) noexcept;

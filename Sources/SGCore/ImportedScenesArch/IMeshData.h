@@ -25,6 +25,19 @@ namespace SGCore
 
     class AssetManager;
 
+    struct VertexColorsSet
+    {
+        sg_serde_as_friend()
+
+        friend class IMeshData;
+
+        std::vector<float> m_colors;
+
+    private:
+        std::streamsize m_offsetInPackage = 0;
+        std::streamsize m_sizeInPackage = 0;
+    };
+
     class IMeshData : public IAsset, public AssetRefFromThis<IMeshData>, public IAssetsRefsResolver<IMeshData>
     {
     public:
@@ -53,6 +66,9 @@ namespace SGCore
 
         // vertices positions array
         std::vector<float> m_positions;
+
+        // sets (usually 8 sets) of colors for every vertex
+        std::vector<VertexColorsSet> m_verticesColors;
 
         // uv array
         std::vector<float> m_uv;
@@ -152,6 +168,7 @@ namespace SGCore
         Ref<IVertexArray> m_vertexArray;
 
         Ref<IVertexBuffer> m_positionsBuffer;
+        std::vector<Ref<IVertexBuffer>> m_verticesColorsBuffers;
         Ref<IVertexBuffer> m_uvBuffer;
         Ref<IVertexBuffer> m_normalsBuffer;
         Ref<IVertexBuffer> m_tangentsBuffer;

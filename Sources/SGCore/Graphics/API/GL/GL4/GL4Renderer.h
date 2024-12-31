@@ -59,6 +59,7 @@ namespace SGCore
                                   const size_t& instancesCount) override;
 
         void useState(const RenderState& newRenderState, bool forceState = false) noexcept final;
+        void useBlendingState(const BlendingState& newBlendingState, bool forceState = false) noexcept final;
 
         void printInfo() noexcept override;
 

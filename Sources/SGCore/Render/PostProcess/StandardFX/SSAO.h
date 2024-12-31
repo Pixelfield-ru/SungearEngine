@@ -20,7 +20,7 @@ namespace SGCore
 
         void generateKernel() noexcept;
 
-        void passValuesToSubPassShader(const Ref<IShader>& subPassShader) noexcept override;
+        void passValuesToSubPassShader(const AssetRef<IShader>& subPassShader) noexcept override;
 
         [[nodiscard]] std::uint16_t getSamplesCount() const noexcept;
         void setSamplesCount(std::uint16_t samplesCount) noexcept;

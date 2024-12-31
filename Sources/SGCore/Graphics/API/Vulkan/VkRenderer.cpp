@@ -118,3 +118,8 @@ void SGCore::VkRenderer::useState(const SGCore::RenderState& newRenderState, boo
 {
 
 }
+
+void SGCore::VkRenderer::useBlendingState(const SGCore::BlendingState& newBlendingState, bool forceState) noexcept
+{
+
+}

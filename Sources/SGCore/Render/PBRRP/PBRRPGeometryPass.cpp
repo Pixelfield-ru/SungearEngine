@@ -24,6 +24,8 @@
 #include "SGCore/Render/SpacePartitioning/IgnoreOctrees.h"
 #include "SGCore/Render/SpacePartitioning/Octree.h"
 #include "SGCore/Render/SpacePartitioning/ObjectsCullingOctree.h"
+#include "SGCore/Render/Alpha/OpaqueEntityTag.h"
+#include "SGCore/Render/Alpha/TransparentEntityTag.h"
 
 size_t renderedInOctrees = 0;
 
@@ -37,6 +39,15 @@ void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline
     // configuring default material to use standard pbr shader
     auto defaultMaterial = AssetManager::getInstance()->loadAsset<IMaterial>("${enginePath}/Resources/materials/no_material.sgmat");
     defaultMaterial->m_shader = m_shader;
+
+    m_opaqueEntitiesRenderState.m_useDepthTest = true;
+    m_opaqueEntitiesRenderState.m_depthFunc = SGDepthStencilFunc::SGG_LESS;
+    m_opaqueEntitiesRenderState.m_depthMask = true;
+    m_opaqueEntitiesRenderState.m_globalBlendingState.m_useBlending = false;
+
+    m_transparentEntitiesRenderState.m_depthMask = false;
+    m_transparentEntitiesRenderState.m_globalBlendingState.m_useBlending = true;
+    m_transparentEntitiesRenderState.m_globalBlendingState.m_blendingEquation = SGEquation::SGG_FUNC_ADD;
 }
 
 void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Ref<SGCore::IRenderPipeline>& renderPipeline)
@@ -47,14 +58,15 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     auto registry = scene->getECSRegistry();
     
     auto camerasView = registry->view<EntityBaseInfo, RenderingBase, Transform>();
-    auto meshesView = registry->view<EntityBaseInfo, Mesh, Transform>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
-    
+    auto opaqueMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, OpaqueEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
+    auto transparentMeshesView = registry->view<EntityBaseInfo, Mesh, Transform, TransparentEntityTag>(ECS::ExcludeTypes<DisableMeshGeometryPass>{});
+
     if(m_shader)
     {
         m_shader->bind();
     }
     
-    camerasView.each([&meshesView, &renderPipeline, &scene, &registry, this]
+    camerasView.each([&opaqueMeshesView, &transparentMeshesView, &renderPipeline, &scene, &registry, this]
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
                               RenderingBase::reg_t& cameraRenderingBase, Transform::reg_t& cameraTransform) {
@@ -75,9 +87,19 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             cameraLayeredFrameReceiver->m_layersFrameBuffer->bind();
         }
 
-        meshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
+        if(cameraLayeredFrameReceiver)
+        {
+            cameraLayeredFrameReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(
+                    cameraLayeredFrameReceiver->m_attachmentToRenderIn
+            );
+        }
+
+        m_opaqueEntitiesRenderState.use();
+
+        opaqueMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
                                 (const ECS::entity_t& meshEntity, EntityBaseInfo::reg_t& meshedEntityBaseInfo,
-                                 Mesh::reg_t& mesh, Transform::reg_t& meshTransform) {
+                                 Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
+                                 const auto&) {
             auto* tmpCullableMesh = registry->tryGet<OctreeCullable>(meshEntity);
             Ref<OctreeCullable> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
             
@@ -95,15 +117,39 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                     }
                 }
 
+                SG_ASSERT(meshPPLayer != nullptr,
+                          "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
+
+                renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer);
+            }
+        });
+
+        // todo: make render for transparent objects
+        m_transparentEntitiesRenderState.use();
+
+        transparentMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
+                                      (const ECS::entity_t& meshEntity, EntityBaseInfo::reg_t& meshedEntityBaseInfo,
+                                       Mesh::reg_t& mesh, Transform::reg_t& meshTransform,
+                                       const auto&) {
+            auto* tmpCullableMesh = registry->tryGet<OctreeCullable>(meshEntity);
+            Ref<OctreeCullable> cullableMesh = (tmpCullableMesh ? *tmpCullableMesh : nullptr);
+
+            bool willRender = registry->tryGet<IgnoreOctrees>(meshEntity) || !cullableMesh;
+
+            if(willRender)
+            {
+                Ref<PostProcessLayer> meshPPLayer = mesh.m_base.m_layeredFrameReceiversMarkup[cameraLayeredFrameReceiver].lock();
+
                 if(cameraLayeredFrameReceiver)
                 {
-                    SG_ASSERT(meshPPLayer != nullptr,
-                              "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
-
-                    cameraLayeredFrameReceiver->m_layersFrameBuffer->bindAttachmentsToDrawIn(
-                            cameraLayeredFrameReceiver->m_attachmentToRenderIn
-                    );
+                    if(!meshPPLayer)
+                    {
+                        meshPPLayer = cameraLayeredFrameReceiver->getDefaultLayer();
+                    }
                 }
+
+                SG_ASSERT(meshPPLayer != nullptr,
+                          "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
                 renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer);
             }
@@ -121,7 +167,8 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
     
     renderedInOctrees = 0;
     
-    camerasView.each([&meshesView, &renderPipeline, &scene, &registry, this]
+    camerasView.each([&opaqueMeshesView, &transparentMeshesView,
+                      &renderPipeline, &scene, &registry, this]
                              (const ECS::entity_t& cameraEntity,
                               const EntityBaseInfo::reg_t& camera3DBaseInfo,
                               RenderingBase::reg_t& cameraRenderingBase,
@@ -193,6 +240,8 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
                 shaderToUse->useVectorf("u_pickingColor", { 0, 0, 0 });
             }
         }
+
+        shaderToUse->useInteger("u_verticesColorsAttributesCount", mesh.m_base.getMeshData()->m_verticesColors.size());
 
         if(meshPPLayer)
         {

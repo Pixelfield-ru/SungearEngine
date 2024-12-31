@@ -8,11 +8,14 @@
 #include "SGCore/Memory/AssetManager.h"
 #include "SGCore/Memory/AssetRef.h"
 #include "SGCore/Graphics/API/IFrameBuffer.h"
+#include "SGCore/Render/Alpha/MaterialTransparencyType.h"
 
 namespace SGCore
 {
     class IShader;
     class ITexture2D;
+
+
 
     // TODO: make remove texture
     // TODO: make function addBlockDeclaration
@@ -34,6 +37,8 @@ namespace SGCore
         AssetRef<IShader> m_shader;
 
         RenderState m_renderState;
+
+        MaterialTransparencyType m_transparencyType = MaterialTransparencyType::MAT_OPAQUE;
 
         /**
         * Adds texture2D. Method is copying texture. This method is looking for texture asset by path.

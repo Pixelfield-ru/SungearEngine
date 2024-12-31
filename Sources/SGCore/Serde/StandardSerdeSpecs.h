@@ -54,6 +54,8 @@
 #include "SGCore/Memory/Assets/TextFileAsset.h"
 #include "SGCore/Memory/Assets/ModelAsset.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Render/Alpha/TransparentEntityTag.h"
+#include "SGCore/Render/Alpha/OpaqueEntityTag.h"
 
 #include "SGCore/Serde/Components/NonSavable.h"
 
@@ -1773,71 +1775,19 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::RenderingBase, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::RenderingBase, TFormatType>& valueView) noexcept
 {
-
-
     valueView.getValueContainer().addMember("m_zFar", valueView.m_data->m_zFar);
-
-
-
-
     valueView.getValueContainer().addMember("m_fov", valueView.m_data->m_fov);
-
-
-
-
     valueView.getValueContainer().addMember("m_aspect", valueView.m_data->m_aspect);
-
-
-
-
     valueView.getValueContainer().addMember("m_zNear", valueView.m_data->m_zNear);
-
-
-
-
     valueView.getValueContainer().addMember("m_left", valueView.m_data->m_left);
-
-
-
-
     valueView.getValueContainer().addMember("m_right", valueView.m_data->m_right);
-
-
-
-
     valueView.getValueContainer().addMember("m_bottom", valueView.m_data->m_bottom);
-
-
-
-
     valueView.getValueContainer().addMember("m_top", valueView.m_data->m_top);
-
-
-
-
     valueView.getValueContainer().addMember("m_projectionMatrix", valueView.m_data->m_projectionMatrix);
-
-
-
-
     valueView.getValueContainer().addMember("m_orthographicMatrix", valueView.m_data->m_orthographicMatrix);
-
-
-
-
     valueView.getValueContainer().addMember("m_viewMatrix", valueView.m_data->m_viewMatrix);
-
-
-
-
     valueView.getValueContainer().addMember("m_projectionSpaceMatrix", valueView.m_data->m_projectionSpaceMatrix);
-
-
-
-
     valueView.getValueContainer().addMember("m_orthographicSpaceMatrix", valueView.m_data->m_orthographicSpaceMatrix);
-
-
 }
 
 template<
@@ -1845,110 +1795,83 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::RenderingBase, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::RenderingBase, TFormatType>& valueView) noexcept
 {
-
     const auto m_zFar = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_zFar)>("m_zFar");
-
     if(m_zFar)
     {
         valueView.m_data->m_zFar = *m_zFar;
     }
 
-
     const auto m_fov = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_fov)>("m_fov");
-
     if(m_fov)
     {
         valueView.m_data->m_fov = *m_fov;
     }
 
-
     const auto m_aspect = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_aspect)>("m_aspect");
-
     if(m_aspect)
     {
         valueView.m_data->m_aspect = *m_aspect;
     }
 
-
     const auto m_zNear = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_zNear)>("m_zNear");
-
     if(m_zNear)
     {
         valueView.m_data->m_zNear = *m_zNear;
     }
 
-
     const auto m_left = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_left)>("m_left");
-
     if(m_left)
     {
         valueView.m_data->m_left = *m_left;
     }
 
-
     const auto m_right = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_right)>("m_right");
-
     if(m_right)
     {
         valueView.m_data->m_right = *m_right;
     }
 
-
     const auto m_bottom = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_bottom)>("m_bottom");
-
     if(m_bottom)
     {
         valueView.m_data->m_bottom = *m_bottom;
     }
 
-
     const auto m_top = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_top)>("m_top");
-
     if(m_top)
     {
         valueView.m_data->m_top = *m_top;
     }
 
-
     const auto m_projectionMatrix = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_projectionMatrix)>("m_projectionMatrix");
-
     if(m_projectionMatrix)
     {
         valueView.m_data->m_projectionMatrix = *m_projectionMatrix;
     }
 
-
     const auto m_orthographicMatrix = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_orthographicMatrix)>("m_orthographicMatrix");
-
     if(m_orthographicMatrix)
     {
         valueView.m_data->m_orthographicMatrix = *m_orthographicMatrix;
     }
 
-
     const auto m_viewMatrix = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_viewMatrix)>("m_viewMatrix");
-
     if(m_viewMatrix)
     {
         valueView.m_data->m_viewMatrix = *m_viewMatrix;
     }
 
-
     const auto m_projectionSpaceMatrix = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_projectionSpaceMatrix)>("m_projectionSpaceMatrix");
-
     if(m_projectionSpaceMatrix)
     {
         valueView.m_data->m_projectionSpaceMatrix = *m_projectionSpaceMatrix;
     }
 
-
     const auto m_orthographicSpaceMatrix = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_orthographicSpaceMatrix)>("m_orthographicSpaceMatrix");
-
     if(m_orthographicSpaceMatrix)
     {
         valueView.m_data->m_orthographicSpaceMatrix = *m_orthographicSpaceMatrix;
     }
-
 }
 // =================================================================================
 
@@ -3189,6 +3112,58 @@ namespace SGCore::Serde
 
     // ====================================================================================
 
+    // SERDE FORWARD DECL FOR struct 'SGCore::TransparentEntityTag'
+    // =================================================================================
+
+    template<
+            SGCore::Serde::FormatType TFormatType
+    >
+    struct SerdeSpec<SGCore::TransparentEntityTag, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::TransparentEntityTag";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SGCore::Serde::SerializableValueView<SGCore::TransparentEntityTag, TFormatType>& valueView) noexcept
+        {
+
+        }
+
+        static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::TransparentEntityTag, TFormatType>& valueView) noexcept
+        {
+
+        }
+    };
+
+    // =================================================================================
+
+    // SERDE FORWARD DECL FOR struct 'SGCore::OpaqueEntityTag'
+    // =================================================================================
+
+    template<
+            SGCore::Serde::FormatType TFormatType
+    >
+    struct SerdeSpec<SGCore::OpaqueEntityTag, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::OpaqueEntityTag";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SGCore::Serde::SerializableValueView<SGCore::OpaqueEntityTag, TFormatType>& valueView) noexcept
+        {
+
+        }
+
+        static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::OpaqueEntityTag, TFormatType>& valueView) noexcept
+        {
+
+        }
+    };
+
+    // =================================================================================
+
     template<typename T, size_t Size, FormatType TFormatType>
     struct SerdeSpec<std::array<T, Size>, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
@@ -3682,6 +3657,24 @@ namespace SGCore::Serde
             }
 
             {
+                auto* component = serializableScene.getECSRegistry()->template tryGet<SGCore::TransparentEntityTag>(serializableEntity);
+
+                if(component)
+                {
+                    valueView.getValueContainer().pushBack(*component);
+                }
+            }
+
+            {
+                auto* component = serializableScene.getECSRegistry()->template tryGet<SGCore::OpaqueEntityTag>(serializableEntity);
+
+                if(component)
+                {
+                    valueView.getValueContainer().pushBack(*component);
+                }
+            }
+
+            {
                 auto* component = serializableScene.getECSRegistry()->template tryGet<SGCore::Pickable>(serializableEntity);
 
                 if(component)
@@ -3921,6 +3914,30 @@ namespace SGCore::Serde
                     if(component)
                     {
                         toRegistry.emplace<SGCore::Pickable>(entity, *component);
+
+                        continue;
+                    }
+                }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::TransparentEntityTag, TFormatType>::type_name)
+                {
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::TransparentEntityTag::reg_t>(componentsIt);
+
+                    if(component)
+                    {
+                        toRegistry.emplace<SGCore::TransparentEntityTag>(entity, *component);
+
+                        continue;
+                    }
+                }
+
+                if(currentElementTypeName == SerdeSpec<SGCore::OpaqueEntityTag, TFormatType>::type_name)
+                {
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::OpaqueEntityTag::reg_t>(componentsIt);
+
+                    if(component)
+                    {
+                        toRegistry.emplace<SGCore::OpaqueEntityTag>(entity, *component);
 
                         continue;
                     }
@@ -4612,6 +4629,7 @@ namespace SGCore::Serde
         static void serialize(SerializableValueView<IMaterial, TFormatType>& valueView, SharedDataT&&... sharedData)
         {
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
+            valueView.getValueContainer().addMember("m_transparencyType", valueView.m_data->m_transparencyType);
             valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader, std::forward<SharedDataT>(sharedData)...);
             valueView.getValueContainer().addMember("m_renderState", valueView.m_data->m_renderState);
 
@@ -4634,6 +4652,12 @@ namespace SGCore::Serde
             if(name)
             {
                 valueView.m_data->m_name = std::move(*name);
+            }
+
+            auto transparencyType = valueView.getValueContainer().template getMember<MaterialTransparencyType>("m_transparencyType");
+            if(transparencyType)
+            {
+                valueView.m_data->m_transparencyType = std::move(*transparencyType);
             }
 
             auto shader = valueView.getValueContainer().template getMember<AssetRef<IShader>>("m_shader", std::forward<SharedDataT>(sharedData)...);

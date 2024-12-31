@@ -31,9 +31,11 @@ void main()
 
 #include "atmosphere_scattering.glsl"
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
+#include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
 
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
+layout(location = 3) out vec4 layerWBOITAccumAlpha;
 
 uniform samplerCube mat_skyboxSamplers[1];
 uniform int mat_skyboxSamplers_CURRENT_COUNT;
@@ -58,20 +60,26 @@ void main()
                 atmosphere.miePreferredScatteringDirection          // Mie preferred scattering direction
     );
 
+    vec4 skyboxCol = vec4(0.0);
+
     if(mat_skyboxSamplers_CURRENT_COUNT > 0)
     {
         float mixCoeff = 1.0 / mat_skyboxSamplers_CURRENT_COUNT;
-        vec4 skyboxCol = vec4(0.0);
         for (int i = 0; i < mat_skyboxSamplers_CURRENT_COUNT; i++)
         {
             skyboxCol += texture(mat_skyboxSamplers[i], vs_UVAttribute.xyz) * mixCoeff;
         }
 
-        layerColor = vec4(atmosphereCol * skyboxCol.rgb, skyboxCol.a);
+        skyboxCol.rgb * atmosphereCol;
     }
     else
     {
-        layerColor = vec4(atmosphereCol, 1.0);
+        skyboxCol = vec4(atmosphereCol, 1.0);
+    }
+
+    {
+        calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
+        layerWBOITAccumAlpha.a = 1.0;
     }
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);

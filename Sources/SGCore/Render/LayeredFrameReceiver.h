@@ -93,7 +93,7 @@ namespace SGCore
             return m_FXSubPassShader;
         }
         
-        void setFXSubPassShader(const Ref<IShader>& FXSubPassShader) noexcept
+        void setFXSubPassShader(const AssetRef<IShader>& FXSubPassShader) noexcept
         {
             m_FXSubPassShader = FXSubPassShader;
             
@@ -111,7 +111,7 @@ namespace SGCore
     private:
         std::uint16_t m_index = 0;
 
-        Ref<IShader> m_FXSubPassShader;
+        AssetRef<IShader> m_FXSubPassShader;
         
         std::vector<Ref<PostProcessEffect>> m_effects;
     };
@@ -133,7 +133,8 @@ namespace SGCore
         // ATTACHMENT THAT ARE USED TO RENDER IN THEM.
         std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn { SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
                                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
-                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2 };
+                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
+                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3 };
         
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
                                             const std::uint16_t& fbWidth,

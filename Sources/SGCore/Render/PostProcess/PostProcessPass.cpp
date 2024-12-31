@@ -87,7 +87,7 @@ void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
 }
 
 void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
-                                                 const SGCore::Ref<SGCore::IShader>& subPassShader) const noexcept
+                                                 const SGCore::AssetRef<SGCore::IShader>& subPassShader) const noexcept
 {
     for(std::uint8_t i = 0; i < receiver.getLayers().size(); ++i)
     {
@@ -99,7 +99,9 @@ void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
 
     subPassShader->useTextureBlock("SGPP_LayersVolumes", 0);
     subPassShader->useTextureBlock("SGPP_LayersColors", 1);
+    subPassShader->useTextureBlock("SGPP_LayersWBOITAlphaAccum", 3);
 
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(0);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1)->bind(1);
+    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3)->bind(3);
 }

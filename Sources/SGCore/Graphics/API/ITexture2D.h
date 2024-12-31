@@ -54,6 +54,11 @@ namespace SGCore
         bool m_useMultisampling = false;
         std::uint8_t m_multisamplingSamplesCount = 8;
 
+        /// CAN BE USED ONLY IF THIS TEXTURE IS FRAMEBUFFER ATTACHMENT
+        BlendingState m_blendingState;
+        /// CAN BE USED ONLY IF THIS TEXTURE IS FRAMEBUFFER ATTACHMENT
+        glm::vec4 m_clearColor = { 0.0, 0.0, 0.0, 1.0 };
+
         virtual void create() = 0;
 
         template<typename DataType = std::uint8_t>

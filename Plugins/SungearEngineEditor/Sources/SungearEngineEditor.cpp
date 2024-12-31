@@ -91,9 +91,10 @@ void SGE::SungearEngineEditor::update(const double& dt, const double& fixedDt)
         SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
     }
 
-    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_N))
+    if(SGCore::InputManager::getMainInputListener()->keyboardKeyReleased(SGCore::KeyboardKey::KEY_N) && !ImGui::GetIO().WantTextInput)
     {
         SGCore::AssetManager::getInstance()->getAsset<SGCore::IShader>(SGCore::Utils::toUTF8(SGCore::InterpolatedPath("${enginePath}/Resources/sg_shaders/features/pbr/pbr.sgshader").resolved().u16string()))->reloadFromDisk();
+        SGCore::AssetManager::getInstance()->getAsset<SGCore::IShader>(SGCore::Utils::toUTF8(SGCore::InterpolatedPath("${enginePath}/Resources/sg_shaders/features/postprocessing/layered/layer_default_fx.sgshader").resolved().u16string()))->reloadFromDisk();
         // SGCore::CoreMain::getWindow().setFullscreen(!SGCore::CoreMain::getWindow().isFullscreen());
     }
 }

@@ -77,7 +77,18 @@ namespace SGCore
                                           const size_t& instancesCount)
         {}
 
+        /**
+         * Applies global render state.
+         * @param newBlendingState
+         * @param forceState
+         */
         virtual void useState(const RenderState& newRenderState, bool forceState = false) noexcept = 0;
+        /**
+         * Applies global blending state.
+         * @param newBlendingState
+         * @param forceState
+         */
+        virtual void useBlendingState(const BlendingState& newBlendingState, bool forceState = false) noexcept = 0;
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
@@ -101,12 +112,13 @@ namespace SGCore
 
         [[nodiscard]] GAPIType getGAPIType() const noexcept;
 
-        [[nodiscard]] const RenderState& getCachedRenderState() const noexcept;
+        [[nodiscard]] RenderState& getCachedRenderState() noexcept;
 
     protected:
         GAPIType m_apiType = SG_API_TYPE_UNKNOWN;
 
         RenderState m_cachedRenderState;
+        std::array<BlendingState, 32> m_cachedColorAttachmentsBlendingStates;
     };
 }
 
