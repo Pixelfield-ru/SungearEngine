@@ -52,7 +52,11 @@ namespace SGCore
         virtual void destroy() = 0;
 
         virtual void clear() { };
-        
+
+        /**
+         * CALL THIS ONLY AFTER BINDING DRAW ATTACHMENT WITH TYPE \p attachmentType !!!
+         * @param attachmentType
+         */
         virtual void clearAttachment(const SGFrameBufferAttachmentType& attachmentType) { };
         
         virtual void addAttachment(SGFrameBufferAttachmentType attachmentType,

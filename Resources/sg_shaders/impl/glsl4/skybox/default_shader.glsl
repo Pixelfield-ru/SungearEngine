@@ -80,7 +80,7 @@ void main()
 
     {
         layerColor = skyboxCol;
-        layerWBOITReveal = 1.0;
+        // layerWBOITReveal = 0.0;
 
         /*calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
         layerWBOITAccumAlpha.a = 1.0;*/

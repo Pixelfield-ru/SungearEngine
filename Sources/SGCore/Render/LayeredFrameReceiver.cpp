@@ -45,9 +45,9 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     m_layersFrameBuffer->create();
     m_layersFrameBuffer->bind();
     m_layersFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_DEPTH_STENCIL_ATTACHMENT0,
-            SGGColorFormat::SGG_DEPTH_STENCIL,
-            SGGColorInternalFormat::SGG_DEPTH24_STENCIL8,
+            SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0,
+            SGGColorFormat::SGG_DEPTH_COMPONENT,
+            SGGColorInternalFormat::SGG_DEPTH_COMPONENT24,
             0,
             0
     );
@@ -89,15 +89,13 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     );
 
     auto colorAttachment3 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3);
-    colorAttachment3->m_blendingState.m_forAttachment = 3;
     colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
     colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE;
-    colorAttachment3->m_clearColor = { 0, 1, 0, 1 };
+    colorAttachment3->m_clearColor = { 0, 0, 0, 0 };
 
     auto colorAttachment4 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
-    colorAttachment4->m_blendingState.m_forAttachment = 4;
-    colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
-    colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_ALPHA;
+    colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ZERO;
+    colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_COLOR;
     colorAttachment4->m_clearColor = { 0, 0, 0, 0 };
 
     m_layersFrameBuffer->unbind();

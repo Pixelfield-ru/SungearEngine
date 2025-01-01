@@ -188,9 +188,8 @@ void SGE::EditorScene::addEditorEntities() noexcept
         gridMesh.m_base.setMaterial(SGCore::AssetManager::getInstance()->getAsset<SGCore::IMaterial>("standard_grid_material"));
 
         auto& gridTransform = *scene->getECSRegistry()->get<SGCore::Transform>(m_data.m_editorGrid);
-        // gridTransform.m_ownTransform.m_scale = { 100.0f, 100.0f, 1.0f, };
         gridTransform.m_ownTransform.m_scale = { 3.0f, 3.0f, 1.0f, };
-        gridTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));;
+        gridTransform.m_ownTransform.m_rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         /*auto& cameraLayeredFrameReceiver = scene->getECSRegistry()->get<SGCore::LayeredFrameReceiver>(m_data.m_editorCamera);
         auto chunksPPLayer = cameraLayeredFrameReceiver.addLayer("chunks_layer");

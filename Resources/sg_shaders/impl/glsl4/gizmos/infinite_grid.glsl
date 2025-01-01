@@ -153,7 +153,7 @@ void main()
         layerWBOITAccumAlpha.a = 1.0;*/
 
         layerColor = gridColor;
-        layerWBOITReveal = 1.0;
+        layerWBOITReveal = 0.0;
     }
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);

@@ -334,6 +334,15 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
 {
     if(forceState)
     {
+        // if(newRenderState.m_useDepthTest)
+        {
+            glDepthFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_depthFunc));
+            glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
+
+            m_cachedRenderState.m_depthFunc = newRenderState.m_depthFunc;
+            m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
+        }
+
         if(newRenderState.m_useDepthTest)
         {
             glEnable(GL_DEPTH_TEST);
@@ -343,15 +352,6 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
         {
             glDisable(GL_DEPTH_TEST);
             m_cachedRenderState.m_useDepthTest = false;
-        }
-
-        if(newRenderState.m_useDepthTest)
-        {
-            glDepthFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_depthFunc));
-            glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
-
-            m_cachedRenderState.m_depthFunc = newRenderState.m_depthFunc;
-            m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
         }
 
         if(newRenderState.m_useFacesCulling)
@@ -412,21 +412,7 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
     {
         if(m_cachedRenderState == newRenderState) return;
 
-        if(m_cachedRenderState.m_useDepthTest != newRenderState.m_useDepthTest)
-        {
-            if(newRenderState.m_useDepthTest)
-            {
-                glEnable(GL_DEPTH_TEST);
-                m_cachedRenderState.m_useDepthTest = true;
-            }
-            else
-            {
-                glDisable(GL_DEPTH_TEST);
-                m_cachedRenderState.m_useDepthTest = false;
-            }
-        }
-
-        if(newRenderState.m_useDepthTest)
+        // if(newRenderState.m_useDepthTest)
         {
             if(m_cachedRenderState.m_depthFunc != newRenderState.m_depthFunc)
             {
@@ -438,6 +424,20 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             {
                 glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
                 m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
+            }
+        }
+
+        if(m_cachedRenderState.m_useDepthTest != newRenderState.m_useDepthTest)
+        {
+            if(newRenderState.m_useDepthTest)
+            {
+                glEnable(GL_DEPTH_TEST);
+                m_cachedRenderState.m_useDepthTest = true;
+            }
+            else
+            {
+                glDisable(GL_DEPTH_TEST);
+                m_cachedRenderState.m_useDepthTest = false;
             }
         }
 

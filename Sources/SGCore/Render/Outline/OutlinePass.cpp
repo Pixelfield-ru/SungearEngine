@@ -82,12 +82,12 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
         m_shader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
 
         layeredFrameReceiver.m_layersFXFrameBuffer->bind();
-        layeredFrameReceiver.m_layersFXFrameBuffer->clearAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
-        layeredFrameReceiver.m_layersFXFrameBuffer->clearAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1);
+        // layeredFrameReceiver.m_layersFXFrameBuffer->useStates();
         layeredFrameReceiver.m_layersFXFrameBuffer->bindAttachmentsToDrawIn(
                 std::vector { SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
                               SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1 });
-        // layeredFrameReceiver.m_layersFXFrameBuffer->useStates();
+        layeredFrameReceiver.m_layersFXFrameBuffer->clearAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0);
+        layeredFrameReceiver.m_layersFXFrameBuffer->clearAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1);
 
         m_shader->useInteger("u_pass", 1);
 

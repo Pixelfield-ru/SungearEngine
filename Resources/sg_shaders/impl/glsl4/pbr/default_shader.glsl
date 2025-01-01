@@ -98,6 +98,9 @@ uniform vec3 u_pickingColor;
 // REQUIRED UNIFORM!!
 uniform int u_verticesColorsAttributesCount;
 
+// REQUIRED UNIFORM!!
+uniform int u_isTransparentPass;
+
 in VSOut
 {
     vec2 UV;
@@ -455,10 +458,12 @@ void main()
     // todo: make
     // if(u_WBOITEnabled == 1)
     {
-        layerColor = vec4(finalCol, diffuseColor.a);
-        // calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
+        // layerColor = vec4(finalCol, diffuseColor.a);
+        calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, u_isTransparentPass);
         // layerWBOITAccumAlpha.a = 1.0;
-        layerWBOITReveal = 1.0;
+        // layerWBOITReveal = 1.0;
+        // layerWBOITReveal = 0.0;
+        // layerWBOITReveal.a = 1.0;
     }
 
     // layerColor.a = diffuseColor.a;

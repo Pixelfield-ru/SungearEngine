@@ -23,6 +23,7 @@ namespace SGCore
     {
         RenderState m_opaqueEntitiesRenderState;
         RenderState m_transparentEntitiesRenderState;
+        RenderState m_afterRenderState;
 
         void create(const Ref<IRenderPipeline>& parentRenderPipeline) final;
         
@@ -35,7 +36,8 @@ namespace SGCore
                         Mesh::reg_t& mesh,
                         EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                         const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
-                        const Ref<PostProcessLayer>& meshPPLayer) noexcept;
+                        const Ref<PostProcessLayer>& meshPPLayer,
+                        bool isTransparentPass) noexcept;
 
         void renderOctreeNode(const Ref<ECS::registry_t>& registry,
                               const EntityBaseInfo::reg_t& forCamera3DBaseInfo,

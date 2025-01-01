@@ -46,6 +46,7 @@ void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline
     m_opaqueEntitiesRenderState.m_globalBlendingState.m_useBlending = false;
 
     m_transparentEntitiesRenderState.m_depthMask = false;
+    m_transparentEntitiesRenderState.m_useDepthTest = false;
     m_transparentEntitiesRenderState.m_globalBlendingState.m_useBlending = true;
     m_transparentEntitiesRenderState.m_globalBlendingState.m_blendingEquation = SGEquation::SGG_FUNC_ADD;
 }
@@ -120,7 +121,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                 SG_ASSERT(meshPPLayer != nullptr,
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
-                renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer);
+                renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer, false);
             }
         });
 
@@ -155,7 +156,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
                 SG_ASSERT(meshPPLayer != nullptr,
                           "No post process layers in frame receiver were found for mesh! Can not render this mesh.");
 
-                renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer);
+                renderMesh(registry, meshEntity, meshTransform, mesh, meshedEntityBaseInfo, camera3DBaseInfo, meshPPLayer, true);
             }
         });
 
@@ -196,7 +197,9 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             }
         });
     });
-    
+
+    m_afterRenderState.use(true);
+
     // std::cout << "renderedInOctrees: " << renderedInOctrees << std::endl;
 }
 
@@ -206,7 +209,8 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
                                            Mesh& mesh,
                                            EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                                            const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
-                                           const Ref<PostProcessLayer>& meshPPLayer) noexcept
+                                           const Ref<PostProcessLayer>& meshPPLayer,
+                                           bool isTransparentPass) noexcept
 {
     /*if(!mesh.m_base.getMeshData() ||
        !mesh.m_base.getMaterial() ||
@@ -225,6 +229,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         {
             shaderToUse->bind();
             shaderToUse->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
+            shaderToUse->useInteger("u_isTransparentPass", isTransparentPass);
         }
         
         {
@@ -274,7 +279,7 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         // 15 ms for map loc0 IN DEBUG
         CoreMain::getRenderer()->renderMeshData(
                 mesh.m_base.getMeshData().get(),
-                mesh.m_base.getMaterial()->m_renderState
+                m_opaqueEntitiesRenderState
         );
 
         // HOLY SHMOLY!! 10 MS FOR MAP loc0 IN DEBUG. DO NOT USE THIS!!!
@@ -340,7 +345,7 @@ void SGCore::PBRRPGeometryPass::renderOctreeNode(const Ref<ECS::registry_t>& reg
                     );
                 }
                 
-                renderMesh(registry, e, meshTransform, *mesh, *entityBaseInfo, forCamera3DBaseInfo, meshPPLayer);
+                renderMesh(registry, e, meshTransform, *mesh, *entityBaseInfo, forCamera3DBaseInfo, meshPPLayer, false);
 
                 if(cameraLayeredFrameReceiver)
                 {
