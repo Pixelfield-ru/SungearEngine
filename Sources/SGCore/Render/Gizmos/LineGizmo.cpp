@@ -6,5 +6,5 @@
 
 SGCore::LineGizmo::LineGizmo() noexcept
 {
-    m_base.m_renderState.m_useIndices = false;
+    m_base.m_meshRenderState.m_useIndices = false;
 }

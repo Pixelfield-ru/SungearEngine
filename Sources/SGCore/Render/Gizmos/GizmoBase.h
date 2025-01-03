@@ -25,7 +25,7 @@ namespace SGCore
         glm::vec4 m_lastColor = glm::vec4 { 1.0, 1.0, 1.0, 1.0 };
 
         MeshBase m_meshBase;
-        RenderState m_renderState;
+        MeshRenderState m_meshRenderState;
 
         GizmoBase& operator=(const GizmoBase&) = default;
         GizmoBase& operator=(GizmoBase&&) noexcept = default;

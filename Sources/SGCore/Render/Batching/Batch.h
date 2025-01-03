@@ -68,7 +68,7 @@ namespace SGCore
         Ref<IIndexBuffer> m_indicesBuffer;
         Ref<ITexture2D> m_matricesTextureBuffer;
         
-        RenderState m_renderState;
+        MeshRenderState m_meshRenderState;
         
         Ref<IShader> m_shader;
         

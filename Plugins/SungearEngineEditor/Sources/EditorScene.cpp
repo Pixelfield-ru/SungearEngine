@@ -132,6 +132,8 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
             skyboxEntities.push_back(entity);
             newScene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
             newScene->getECSRegistry()->remove<SGCore::Pickable>(entity);
+            newScene->getECSRegistry()->remove<SGCore::TransparentEntityTag>(entity);
+            newScene->getECSRegistry()->emplace<SGCore::OpaqueEntityTag>(entity);
         });
 
         atmosphereEntity = skyboxEntities[2];
@@ -180,6 +182,8 @@ void SGE::EditorScene::addEditorEntities() noexcept
             gridEntities.push_back(entity);
             scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
             scene->getECSRegistry()->remove<SGCore::Pickable>(entity);
+            scene->getECSRegistry()->remove<SGCore::TransparentEntityTag>(entity);
+            scene->getECSRegistry()->emplace<SGCore::OpaqueEntityTag>(entity);
         });
 
         m_data.m_editorGrid = gridEntities[2];

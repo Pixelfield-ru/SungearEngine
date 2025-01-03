@@ -63,15 +63,15 @@ namespace SGCore
                                            const Ref<Transform>& transform) { }
 
         virtual void renderMeshData(const IMeshData* meshData,
-                                    const RenderState& renderState) { }
+                                    const MeshRenderState& meshRenderState) { }
 
         virtual void renderArray(const Ref<IVertexArray>& vertexArray,
-                                 const RenderState& meshDataRenderInfo,
+                                 const MeshRenderState& meshRenderState,
                                  const size_t& verticesCount,
                                  const size_t& indicesCount) { }
         
         virtual void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
-                                          const RenderState& renderState,
+                                          const MeshRenderState& meshRenderState,
                                           const size_t& verticesCount,
                                           const size_t& indicesCount,
                                           const size_t& instancesCount)
@@ -83,12 +83,20 @@ namespace SGCore
          * @param forceState
          */
         virtual void useState(const RenderState& newRenderState, bool forceState = false) noexcept = 0;
+
         /**
          * Applies global blending state.
          * @param newBlendingState
          * @param forceState
          */
         virtual void useBlendingState(const BlendingState& newBlendingState, bool forceState = false) noexcept = 0;
+
+        /**
+         * Applies global mesh render state.
+         * @param newMeshRenderState
+         * @param forceState
+         */
+        virtual void useMeshRenderState(const MeshRenderState& newMeshRenderState, bool forceState = false) noexcept = 0;
 
         /**
          * Prints information about the graphics capabilities of the kernel on this GAPI and information about the GAPI itself.
@@ -118,6 +126,7 @@ namespace SGCore
         GAPIType m_apiType = SG_API_TYPE_UNKNOWN;
 
         RenderState m_cachedRenderState;
+        MeshRenderState m_cachedMeshRenderState;
         std::array<BlendingState, 32> m_cachedColorAttachmentsBlendingStates;
     };
 }

@@ -43,7 +43,7 @@ namespace SGCore
         Ref<IIndexBuffer> m_linesIndexBuffer;
         Ref<IShader> m_linesShader;
         
-        RenderState m_renderState;
+        MeshRenderState m_meshRenderState;
         
         void drawLine(const glm::vec3& from, const glm::vec3& to, const glm::vec4& color) noexcept;
         void drawAABB(const glm::vec3& min, const glm::vec3& max, const glm::vec4& color) noexcept;

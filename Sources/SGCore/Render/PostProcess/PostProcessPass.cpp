@@ -17,7 +17,7 @@
 
 SGCore::PostProcessPass::PostProcessPass()
 {
-    m_renderState.m_useFacesCulling = false;
+    m_meshRenderState.m_useFacesCulling = false;
 
     m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
 
@@ -76,7 +76,7 @@ void SGCore::PostProcessPass::layersFX(LayeredFrameReceiver& receiver) noexcept
 
             CoreMain::getRenderer()->renderMeshData(
                     m_postProcessQuad.get(),
-                    m_renderState
+                    m_meshRenderState
             );
 
             // receiver.m_layersFXFrameBuffer->unbindAttachmentToDrawIn();
@@ -99,9 +99,11 @@ void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
 
     subPassShader->useTextureBlock("SGPP_LayersVolumes", 0);
     subPassShader->useTextureBlock("SGPP_LayersColors", 1);
-    subPassShader->useTextureBlock("SGPP_LayersWBOITAlphaAccum", 3);
+    subPassShader->useTextureBlock("SGPP_LayersWBOITColorAccum", 2);
+    subPassShader->useTextureBlock("SGPP_LayersWBOITReveal", 3);
 
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(0);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1)->bind(1);
-    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3)->bind(3);
+    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3)->bind(2);
+    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4)->bind(3);
 }

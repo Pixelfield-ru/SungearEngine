@@ -123,10 +123,10 @@ SGCore::Batch::Batch(const Ref<Scene>& parentScene, const size_t& maxVerticesCou
     SGCore::RenderPipelinesManager::subscribeToRenderPipelineSetEvent(m_onRenderPipelineSetEventListener);
     
     // ==================================================================
-    
-    m_renderState.m_useIndices = true;
-    m_renderState.m_useFacesCulling = true;
-    m_renderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
+
+    m_meshRenderState.m_useIndices = true;
+    m_meshRenderState.m_useFacesCulling = true;
+    m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
     
     m_shader = SGCore::Ref<SGCore::IShader>(CoreMain::getRenderer()->createShader());
     
@@ -182,7 +182,7 @@ void SGCore::Batch::renderAll() noexcept
     subPassShader->useTextureBlock("u_matricesTextureBuffer", 0);
     
     CoreMain::getRenderer()->renderArray(m_vertexArray,
-                                         m_renderState,
+                                         m_meshRenderState,
                                          verticesCount,
                                          indicesCount);
     

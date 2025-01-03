@@ -372,6 +372,51 @@ struct SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType> :
 
 
 
+// SERDE FORWARD DECL FOR struct 'SGCore::MeshRenderState'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::MeshRenderState, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+                                   >
+{
+    static inline const std::string type_name = "SGCore::MeshRenderState";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::MeshRenderState, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshRenderState, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
+
+
+
+// SERDE FORWARD DECL FOR struct 'SGCore::BlendingState'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+struct SGCore::Serde::SerdeSpec<SGCore::BlendingState, TFormatType> :
+        SGCore::Serde::BaseTypes<
+
+                                >,
+        SGCore::Serde::DerivedTypes<
+                                   >
+{
+    static inline const std::string type_name = "SGCore::BlendingState";
+    static inline constexpr bool is_pointer_type = false;
+
+    static void serialize(SGCore::Serde::SerializableValueView<SGCore::BlendingState, TFormatType>& valueView) noexcept;
+
+    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::BlendingState, TFormatType>& valueView) noexcept;
+};
+// =================================================================================
+
+
 
 // SERDE FORWARD DECL FOR struct 'SGCore::RenderingBase'
 // =================================================================================
@@ -1699,14 +1744,20 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept
 {
-    valueView.getValueContainer().addMember("m_useIndices", valueView.m_data->m_useIndices);
-    valueView.getValueContainer().addMember("m_linesWidth", valueView.m_data->m_linesWidth);
-    valueView.getValueContainer().addMember("m_facesCullingPolygonsOrder", valueView.m_data->m_facesCullingPolygonsOrder);
-    valueView.getValueContainer().addMember("m_useFacesCulling", valueView.m_data->m_useFacesCulling);
-    valueView.getValueContainer().addMember("m_facesCullingFaceType", valueView.m_data->m_facesCullingFaceType);
-    valueView.getValueContainer().addMember("m_drawMode", valueView.m_data->m_drawMode);
-    valueView.getValueContainer().addMember("m_pointsSize", valueView.m_data->m_pointsSize);
+    valueView.getValueContainer().addMember("m_globalBlendingState", valueView.m_data->m_globalBlendingState);
+
     valueView.getValueContainer().addMember("m_useDepthTest", valueView.m_data->m_useDepthTest);
+    valueView.getValueContainer().addMember("m_depthFunc", valueView.m_data->m_depthFunc);
+    valueView.getValueContainer().addMember("m_depthMask", valueView.m_data->m_depthMask);
+
+    valueView.getValueContainer().addMember("m_useStencilTest", valueView.m_data->m_useStencilTest);
+    valueView.getValueContainer().addMember("m_stencilFunc", valueView.m_data->m_stencilFunc);
+    valueView.getValueContainer().addMember("m_stencilFuncRef", valueView.m_data->m_stencilFuncRef);
+    valueView.getValueContainer().addMember("m_stencilFuncMask", valueView.m_data->m_stencilFuncMask);
+    valueView.getValueContainer().addMember("m_stencilMask", valueView.m_data->m_stencilMask);
+    valueView.getValueContainer().addMember("m_stencilFailOp", valueView.m_data->m_stencilFailOp);
+    valueView.getValueContainer().addMember("m_stencilZFailOp", valueView.m_data->m_stencilZFailOp);
+    valueView.getValueContainer().addMember("m_stencilZPassOp", valueView.m_data->m_stencilZPassOp);
 }
 
 template<
@@ -1714,23 +1765,114 @@ template<
 >
 void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::RenderState, TFormatType>& valueView) noexcept
 {
+    const auto m_globalBlendingState = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_globalBlendingState)>("m_globalBlendingState");
+    if(m_globalBlendingState)
+    {
+        valueView.m_data->m_globalBlendingState = *m_globalBlendingState;
+    }
+
+    // ===================================
+
+    const auto m_useDepthTest = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useDepthTest)>("m_useDepthTest");
+    if(m_useDepthTest)
+    {
+        valueView.m_data->m_useDepthTest = *m_useDepthTest;
+    }
+
+    const auto m_depthFunc = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_depthFunc)>("m_depthFunc");
+    if(m_depthFunc)
+    {
+        valueView.m_data->m_depthFunc = *m_depthFunc;
+    }
+
+    const auto m_depthMask = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_depthMask)>("m_depthMask");
+    if(m_depthMask)
+    {
+        valueView.m_data->m_depthMask = *m_depthMask;
+    }
+
+    // ===================================
+
+    const auto m_useStencilTest = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useStencilTest)>("m_useStencilTest");
+    if(m_useStencilTest)
+    {
+        valueView.m_data->m_useStencilTest = *m_useStencilTest;
+    }
+
+    const auto m_stencilFunc = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_stencilFunc)>("m_stencilFunc");
+    if(m_stencilFunc)
+    {
+        valueView.m_data->m_stencilFunc = *m_stencilFunc;
+    }
+
+    const auto m_stencilFuncRef = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_stencilFuncRef)>("m_stencilFuncRef");
+    if(m_stencilFuncRef)
+    {
+        valueView.m_data->m_stencilFuncRef = *m_stencilFuncRef;
+    }
+
+    const auto m_stencilFuncMask = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_stencilFuncMask)>("m_stencilFuncMask");
+    if(m_stencilFuncMask)
+    {
+        valueView.m_data->m_stencilFuncMask = *m_stencilFuncMask;
+    }
+
+    const auto m_stencilMask = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_stencilMask)>("m_stencilMask");
+    if(m_stencilMask)
+    {
+        valueView.m_data->m_stencilMask = *m_stencilMask;
+    }
+
+    const auto m_stencilFailOp = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_stencilFailOp)>("m_stencilFailOp");
+    if(m_stencilFailOp)
+    {
+        valueView.m_data->m_stencilFailOp = *m_stencilFailOp;
+    }
+
+    const auto m_stencilZFailOp = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_stencilZFailOp)>("m_stencilZFailOp");
+    if(m_stencilZFailOp)
+    {
+        valueView.m_data->m_stencilZFailOp = *m_stencilZFailOp;
+    }
+
+    const auto m_stencilZPassOp = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_stencilZPassOp)>("m_stencilZPassOp");
+    if(m_stencilZPassOp)
+    {
+        valueView.m_data->m_stencilZPassOp = *m_stencilZPassOp;
+    }
+}
+// =================================================================================
+
+
+// SERDE IMPL FOR struct 'SGCore::MeshRenderState'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::MeshRenderState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::MeshRenderState, TFormatType>& valueView) noexcept
+{
+    valueView.getValueContainer().addMember("m_useIndices", valueView.m_data->m_useIndices);
+
+    valueView.getValueContainer().addMember("m_useFacesCulling", valueView.m_data->m_useFacesCulling);
+    valueView.getValueContainer().addMember("m_facesCullingFaceType", valueView.m_data->m_facesCullingFaceType);
+    valueView.getValueContainer().addMember("m_facesCullingPolygonsOrder", valueView.m_data->m_facesCullingPolygonsOrder);
+
+    valueView.getValueContainer().addMember("m_drawMode", valueView.m_data->m_drawMode);
+
+    valueView.getValueContainer().addMember("m_linesWidth", valueView.m_data->m_linesWidth);
+    valueView.getValueContainer().addMember("m_pointsSize", valueView.m_data->m_pointsSize);
+}
+
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::MeshRenderState, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::MeshRenderState, TFormatType>& valueView) noexcept
+{
 
     const auto m_useIndices = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useIndices)>("m_useIndices");
     if(m_useIndices)
     {
         valueView.m_data->m_useIndices = *m_useIndices;
-    }
-
-    const auto m_linesWidth = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_linesWidth)>("m_linesWidth");
-    if(m_linesWidth)
-    {
-        valueView.m_data->m_linesWidth = *m_linesWidth;
-    }
-
-    const auto m_facesCullingPolygonsOrder = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_facesCullingPolygonsOrder)>("m_facesCullingPolygonsOrder");
-    if(m_facesCullingPolygonsOrder)
-    {
-        valueView.m_data->m_facesCullingPolygonsOrder = *m_facesCullingPolygonsOrder;
     }
 
     const auto m_enableFacesCulling = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useFacesCulling)>("m_useFacesCulling");
@@ -1745,10 +1887,22 @@ void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::deserialize(SGC
         valueView.m_data->m_facesCullingFaceType = *m_facesCullingFaceType;
     }
 
+    const auto m_facesCullingPolygonsOrder = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_facesCullingPolygonsOrder)>("m_facesCullingPolygonsOrder");
+    if(m_facesCullingPolygonsOrder)
+    {
+        valueView.m_data->m_facesCullingPolygonsOrder = *m_facesCullingPolygonsOrder;
+    }
+
     const auto m_drawMode = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_drawMode)>("m_drawMode");
     if(m_drawMode)
     {
         valueView.m_data->m_drawMode = *m_drawMode;
+    }
+
+    const auto m_linesWidth = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_linesWidth)>("m_linesWidth");
+    if(m_linesWidth)
+    {
+        valueView.m_data->m_linesWidth = *m_linesWidth;
     }
 
     const auto m_pointsSize = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_pointsSize)>("m_pointsSize");
@@ -1756,16 +1910,63 @@ void SGCore::Serde::SerdeSpec<SGCore::RenderState, TFormatType>::deserialize(SGC
     {
         valueView.m_data->m_pointsSize = *m_pointsSize;
     }
-
-    const auto m_useDepthTest = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useDepthTest)>("m_useDepthTest");
-    if(m_useDepthTest)
-    {
-        valueView.m_data->m_useDepthTest = *m_useDepthTest;
-    }
 }
 // =================================================================================
 
 
+// SERDE IMPL FOR struct 'SGCore::BlendingState'
+// =================================================================================
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::BlendingState, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::BlendingState, TFormatType>& valueView) noexcept
+{
+    valueView.getValueContainer().addMember("m_useBlending", valueView.m_data->m_useBlending);
+
+    valueView.getValueContainer().addMember("m_forAttachment", valueView.m_data->m_forAttachment);
+
+    valueView.getValueContainer().addMember("m_sFactor", valueView.m_data->m_sFactor);
+    valueView.getValueContainer().addMember("m_dFactor", valueView.m_data->m_dFactor);
+    valueView.getValueContainer().addMember("m_blendingEquation", valueView.m_data->m_blendingEquation);
+}
+
+template<
+        SGCore::Serde::FormatType TFormatType
+>
+void SGCore::Serde::SerdeSpec<SGCore::BlendingState, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::BlendingState, TFormatType>& valueView) noexcept
+{
+
+    const auto m_useBlending = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_useBlending)>("m_useBlending");
+    if(m_useBlending)
+    {
+        valueView.m_data->m_useBlending = *m_useBlending;
+    }
+
+    const auto m_forAttachment = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_forAttachment)>("m_forAttachment");
+    if(m_forAttachment)
+    {
+        valueView.m_data->m_forAttachment = *m_forAttachment;
+    }
+
+    const auto m_sFactor = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_sFactor)>("m_sFactor");
+    if(m_sFactor)
+    {
+        valueView.m_data->m_sFactor = *m_sFactor;
+    }
+
+    const auto m_dFactor = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_dFactor)>("m_dFactor");
+    if(m_dFactor)
+    {
+        valueView.m_data->m_dFactor = *m_dFactor;
+    }
+
+    const auto m_blendingEquation = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_blendingEquation)>("m_blendingEquation");
+    if(m_blendingEquation)
+    {
+        valueView.m_data->m_blendingEquation = *m_blendingEquation;
+    }
+}
+// =================================================================================
 
 
 // SERDE IMPL FOR struct 'SGCore::RenderingBase'
@@ -2840,7 +3041,7 @@ void SGCore::Serde::SerdeSpec<SGCore::DebugDraw, TFormatType>::serialize(SGCore:
 
 
 
-    valueView.getValueContainer().addMember("m_renderState", valueView.m_data->m_renderState);
+    valueView.getValueContainer().addMember("m_meshRenderState", valueView.m_data->m_meshRenderState);
 
 
 }
@@ -2859,11 +3060,11 @@ void SGCore::Serde::SerdeSpec<SGCore::DebugDraw, TFormatType>::deserialize(SGCor
     }
 
 
-    const auto m_renderState = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_renderState)>("m_renderState");
+    const auto m_meshRenderState = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_meshRenderState)>("m_meshRenderState");
 
-    if(m_renderState)
+    if(m_meshRenderState)
     {
-        valueView.m_data->m_renderState = *m_renderState;
+        valueView.m_data->m_meshRenderState = *m_meshRenderState;
     }
 
 }
@@ -4631,7 +4832,7 @@ namespace SGCore::Serde
             valueView.getValueContainer().addMember("m_name", valueView.m_data->m_name);
             valueView.getValueContainer().addMember("m_transparencyType", valueView.m_data->m_transparencyType);
             valueView.getValueContainer().addMember("m_shader", valueView.m_data->m_shader, std::forward<SharedDataT>(sharedData)...);
-            valueView.getValueContainer().addMember("m_renderState", valueView.m_data->m_renderState);
+            valueView.getValueContainer().addMember("m_meshRenderState", valueView.m_data->m_meshRenderState);
 
             valueView.getValueContainer().addMember("m_textures", valueView.m_data->m_textures, std::forward<SharedDataT>(sharedData)...);
 
@@ -4666,10 +4867,10 @@ namespace SGCore::Serde
                 valueView.m_data->m_shader = std::move(*shader);
             }
 
-            const auto renderState = valueView.getValueContainer().template getMember<RenderState>("m_renderState");
-            if(renderState)
+            const auto meshRenderState = valueView.getValueContainer().template getMember<MeshRenderState>("m_meshRenderState");
+            if(meshRenderState)
             {
-                valueView.m_data->m_renderState = *renderState;
+                valueView.m_data->m_meshRenderState = *meshRenderState;
             }
 
             auto textures = valueView.getValueContainer().template getMember<decltype(valueView.m_data->m_textures)>("m_textures", std::forward<SharedDataT>(sharedData)...);

@@ -79,9 +79,9 @@ SGCore::DebugDraw::DebugDraw()
     RenderPipelinesManager::subscribeToRenderPipelineSetEvent(m_onRenderPipelineSetEventListener);
     
     // ==============================================
-    
-    m_renderState.m_useIndices = true;
-    m_renderState.m_drawMode = SGDrawMode::SGG_LINES;
+
+    m_meshRenderState.m_useIndices = true;
+    m_meshRenderState.m_drawMode = SGDrawMode::SGG_LINES;
     
     auto currentRenderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
     if(currentRenderPipeline)
@@ -190,7 +190,7 @@ void SGCore::DebugDraw::update(const double& dt, const double& fixedDt)
         CoreMain::getRenderer()->prepareUniformBuffers(renderingBase, transform);
         subPassShader->useUniformBuffer(CoreMain::getRenderer()->m_viewMatricesBuffer);
         
-        CoreMain::getRenderer()->renderArray(m_linesVertexArray, m_renderState, vCnt, iCnt);
+        CoreMain::getRenderer()->renderArray(m_linesVertexArray, m_meshRenderState, vCnt, iCnt);
     });
     
     m_currentDrawingLine = 0;

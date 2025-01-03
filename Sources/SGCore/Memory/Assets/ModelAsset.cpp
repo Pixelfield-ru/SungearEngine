@@ -213,13 +213,70 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
     
     std::cout << "name: " << sgMeshData->m_name << ", min: " << min.x << ", " << min.y << ", " << min.z <<
               ", max: " << max.x << ", " << max.y << ", " << max.z << std::endl;
-    
+
+    bool isTriangleFan = true;
+    bool isTriangleStrip = true;
+    bool isTriangles = true;
+
     for(unsigned i = 0; i < aiMesh->mNumFaces; i++)
     {
         const auto& face = aiMesh->mFaces[i];
+
+        if(face.mNumIndices != 3)
+        {
+            isTriangles = false;
+        }
+
+        if((aiMesh->mPrimitiveTypes & aiPrimitiveType_TRIANGLE) && isTriangles)
+        {
+            if(i > 0 && i < aiMesh->mNumFaces - 1)
+            {
+                unsigned int prevFaceEnd = aiMesh->mFaces[i - 1].mIndices[2];
+                unsigned int currFaceStart = aiMesh->mFaces[i].mIndices[0];
+                if(prevFaceEnd != currFaceStart)
+                {
+                    isTriangleStrip = false;
+                }
+            }
+
+            if(face.mIndices[0] != aiMesh->mFaces[0].mIndices[0])
+            {
+                isTriangleFan = false;
+            }
+        }
+
         for(unsigned j = 0; j < face.mNumIndices; j++)
         {
             sgMeshData->m_indices.push_back(face.mIndices[j]);
+        }
+    }
+
+    if(aiMesh->mNumFaces <= 0)
+    {
+        sgMeshData->m_material->m_meshRenderState.m_useIndices = false;
+    }
+    else
+    {
+        if(aiMesh->mFaces[0].mNumIndices == 2)
+        {
+            sgMeshData->m_material->m_meshRenderState.m_drawMode = SGDrawMode::SGG_LINES;
+        }
+        else if(isTriangles)
+        {
+            sgMeshData->m_material->m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
+
+            if(isTriangleFan)
+            {
+                sgMeshData->m_material->m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLE_FAN;
+            }
+            else if(isTriangleStrip)
+            {
+                sgMeshData->m_material->m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLE_STRIP;
+            }
+        }
+        if(aiMesh->mFaces[0].mNumIndices == 4)
+        {
+            sgMeshData->m_material->m_meshRenderState.m_drawMode = SGDrawMode::SGG_QUADS;
         }
     }
 

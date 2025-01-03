@@ -135,10 +135,10 @@ SGCore::FontSpecializationRenderer::FontSpecializationRenderer()
     RenderPipelinesManager::subscribeToRenderPipelineSetEvent(m_onRenderPipelineSetEventListener);
     
     // ==================================================================
-    
-    m_renderState.m_useIndices = false;
-    m_renderState.m_useFacesCulling = false;
-    m_renderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
+
+    m_meshRenderState.m_useIndices = false;
+    m_meshRenderState.m_useFacesCulling = false;
+    m_meshRenderState.m_drawMode = SGDrawMode::SGG_TRIANGLES;
 
     auto renderPipeline = RenderPipelinesManager::getCurrentRenderPipeline();
 
@@ -315,7 +315,7 @@ void SGCore::FontSpecializationRenderer::drawAll() noexcept
     
     lockedParentSpec->m_atlas->bind(0);
     
-    CoreMain::getRenderer()->renderArrayInstanced(m_charactersVertexArray, m_renderState, charsCount * 6, 6,
+    CoreMain::getRenderer()->renderArrayInstanced(m_charactersVertexArray, m_meshRenderState, charsCount * 6, 6,
                                                   charsCount);
 }
 

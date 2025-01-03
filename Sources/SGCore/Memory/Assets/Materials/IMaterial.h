@@ -36,7 +36,7 @@ namespace SGCore
 
         AssetRef<IShader> m_shader;
 
-        RenderState m_renderState;
+        MeshRenderState m_meshRenderState;
 
         MaterialTransparencyType m_transparencyType = MaterialTransparencyType::MAT_OPAQUE;
 

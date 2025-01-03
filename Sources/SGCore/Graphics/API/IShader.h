@@ -107,7 +107,8 @@ namespace SGCore
         virtual void useFloat(const std::string& uniformName, const float& f) { };
         virtual void useInteger(const std::string& uniformName, const int& i) { };
         virtual void useTextureBlock(const std::string& uniformName, const int& textureBlock) { };
-        
+        virtual void useMaterialFactors(const IMaterial* material) { };
+
         virtual bool isUniformExists(const std::string& uniformName) const noexcept { return false; };
 
         // ==========================================

@@ -40,6 +40,7 @@ namespace SGCore
         void useFloat(const std::string& uniformName, const float& f) override;
         void useInteger(const std::string& uniformName, const int& i) override;
         void useTextureBlock(const std::string& uniformName, const int& textureBlock) override;
+        void useMaterialFactors(const IMaterial* material) override;
         
         bool isUniformExists(const std::string& uniformName) const noexcept;
 

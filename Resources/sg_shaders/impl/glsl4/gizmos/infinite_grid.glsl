@@ -55,8 +55,11 @@ void main()
 
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
 
+// REQUIRED COLORS!!!
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
+layout(location = 2) out vec3 pickingColor;
+// accum alpha output for weight blended OIT
 layout(location = 3) out vec4 layerWBOITColorAccum;
 layout(location = 4) out float layerWBOITReveal;
 
@@ -68,6 +71,9 @@ in vec3 vs_UVAttribute;
 const float gridHeight = 1.0;
 
 uniform int SGPP_CurrentLayerIndex;
+
+// REQUIRED UNIFORM!!
+uniform int u_isTransparentPass;
 
 vec4 grid(vec3 fragPosition3D, float scale)
 {
@@ -149,11 +155,11 @@ void main()
     layerColor.a *= fading;*/
 
     {
-        /*calculateWBOITComponents(gridColor.rgb, gridColor.a, gl_FragCoord.z, layerColor, layerWBOITAccumAlpha.r);
-        layerWBOITAccumAlpha.a = 1.0;*/
+        layerColor = vec4(gridColor);
+        // calculateWBOITComponents(gridColor.rgb, gridColor.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, 0);
 
-        layerColor = gridColor;
-        layerWBOITReveal = 0.0;
+        /*layerColor = gridColor;
+        layerWBOITReveal = 1.0;*/
     }
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);

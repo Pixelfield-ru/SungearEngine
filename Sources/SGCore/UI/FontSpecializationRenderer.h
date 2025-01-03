@@ -34,7 +34,8 @@ namespace SGCore
         Ref<IShader> m_textShader;
         
         RenderState m_renderState;
-        
+        MeshRenderState m_meshRenderState;
+
         Weak<FontSpecialization> m_parentSpecialization;
         
         void drawText(Text& text, const Ref<Transform>& textTransform) noexcept;

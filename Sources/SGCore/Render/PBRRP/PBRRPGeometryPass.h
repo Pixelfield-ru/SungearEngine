@@ -13,6 +13,7 @@
 #include "SGCore/Math/Frustum.h"
 #include "SGCore/Scene/EntityBaseInfo.h"
 #include "SGCore/Render/Mesh.h"
+#include "SGCore/Render/LayeredFrameReceiver.h"
 
 namespace SGCore
 {
@@ -37,7 +38,8 @@ namespace SGCore
                         EntityBaseInfo::reg_t& meshedEntityBaseInfo,
                         const EntityBaseInfo::reg_t& forCamera3DBaseInfo,
                         const Ref<PostProcessLayer>& meshPPLayer,
-                        bool isTransparentPass) noexcept;
+                        bool isTransparentPass,
+                        LayeredFrameReceiver::reg_t* forLayeredFrameReceiver) noexcept;
 
         void renderOctreeNode(const Ref<ECS::registry_t>& registry,
                               const EntityBaseInfo::reg_t& forCamera3DBaseInfo,

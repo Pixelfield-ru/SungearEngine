@@ -29,7 +29,7 @@ void SGCore::GL4Renderer::init() noexcept
     LOG_I("SGCore", "-----------------------------------");
 
     // -------------------------------------
-    
+
     DeviceGLInfo::init();
 
     if(!confirmSupport())
@@ -48,7 +48,7 @@ void SGCore::GL4Renderer::init() noexcept
     // -------------------------------------
 
     // TODO: make defines for uniforms names
-    
+
     m_viewMatricesBuffer = Ref<GL4UniformBuffer>(createUniformBuffer());
     m_viewMatricesBuffer->m_blockName = "CameraData";
     m_viewMatricesBuffer->putUniforms({
@@ -163,10 +163,10 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
 
     int windowWidth;
     int windowHeight;
-    
+
     int primaryMonitorWidth;
     int primaryMonitorHeight;
-    
+
     m_programDataBuffer->bind();
     CoreMain::getWindow().getSize(windowWidth, windowHeight);
     Window::getPrimaryMonitorSize(primaryMonitorWidth, primaryMonitorHeight);
@@ -183,20 +183,20 @@ void SGCore::GL4Renderer::prepareUniformBuffers(const Ref<RenderingBase>& render
 }
 
 void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
-                                         const RenderState& renderState)
+                                         const MeshRenderState& meshRenderState)
 {
     if(!meshData) return;
 
-    useState(renderState);
+    useMeshRenderState(meshRenderState);
 
     if(meshData->getVertexArray())
     {
         meshData->getVertexArray()->bind();
     }
 
-    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(renderState.m_drawMode);
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshRenderState.m_drawMode);
 
-    if(!renderState.m_useIndices)
+    if(!meshRenderState.m_useIndices)
     {
         glDrawArrays(drawMode, 0, meshData->m_positions.size() / 3);
     }
@@ -208,20 +208,20 @@ void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
 }
 
 void SGCore::GL4Renderer::renderArray(const SGCore::Ref<SGCore::IVertexArray>& vertexArray,
-                                      const SGCore::RenderState& renderState,
+                                      const SGCore::MeshRenderState& meshRenderState,
                                       const size_t& verticesCount,
                                       const size_t& indicesCount)
 {
-    useState(renderState);
-    
+    useMeshRenderState(meshRenderState);
+
     if(vertexArray)
     {
         vertexArray->bind();
     }
-    
-    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(renderState.m_drawMode);
-    
-    if(!renderState.m_useIndices)
+
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshRenderState.m_drawMode);
+
+    if(!meshRenderState.m_useIndices)
     {
         glDrawArrays(drawMode, 0, verticesCount);
     }
@@ -233,20 +233,20 @@ void SGCore::GL4Renderer::renderArray(const SGCore::Ref<SGCore::IVertexArray>& v
 }
 
 void SGCore::GL4Renderer::renderArrayInstanced(const SGCore::Ref<SGCore::IVertexArray>& vertexArray,
-                                               const SGCore::RenderState& renderState,
+                                               const SGCore::MeshRenderState& meshRenderState,
                                                const size_t& verticesCount, const size_t& indicesCount,
                                                const size_t& instancesCount)
 {
-    useState(renderState);
-    
+    useMeshRenderState(meshRenderState);
+
     if(vertexArray)
     {
         vertexArray->bind();
     }
-    
-    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(renderState.m_drawMode);
-    
-    if(!renderState.m_useIndices)
+
+    auto drawMode = GLGraphicsTypesCaster::sggDrawModeToGL(meshRenderState.m_drawMode);
+
+    if(!meshRenderState.m_useIndices)
     {
         glDrawArraysInstanced(drawMode, 0, verticesCount, instancesCount);
     }
@@ -334,15 +334,6 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
 {
     if(forceState)
     {
-        // if(newRenderState.m_useDepthTest)
-        {
-            glDepthFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_depthFunc));
-            glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
-
-            m_cachedRenderState.m_depthFunc = newRenderState.m_depthFunc;
-            m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
-        }
-
         if(newRenderState.m_useDepthTest)
         {
             glEnable(GL_DEPTH_TEST);
@@ -354,30 +345,14 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             m_cachedRenderState.m_useDepthTest = false;
         }
 
-        if(newRenderState.m_useFacesCulling)
+        if(newRenderState.m_useDepthTest)
         {
-            glEnable(GL_CULL_FACE);
-            glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(newRenderState.m_facesCullingFaceType));
-            glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
-                    newRenderState.m_facesCullingPolygonsOrder)
-            );
+            glDepthFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_depthFunc));
+            glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
 
-            m_cachedRenderState.m_useFacesCulling = true;
-            m_cachedRenderState.m_facesCullingFaceType = newRenderState.m_facesCullingFaceType;
-            m_cachedRenderState.m_facesCullingPolygonsOrder = newRenderState.m_facesCullingPolygonsOrder;
+            m_cachedRenderState.m_depthFunc = newRenderState.m_depthFunc;
+            m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
         }
-        else
-        {
-            glDisable(GL_CULL_FACE);
-
-            m_cachedRenderState.m_useFacesCulling = false;
-        }
-
-        glLineWidth(newRenderState.m_linesWidth);
-        glPointSize(newRenderState.m_pointsSize);
-
-        m_cachedRenderState.m_linesWidth = newRenderState.m_linesWidth;
-        m_cachedRenderState.m_pointsSize = newRenderState.m_pointsSize;
 
         if(newRenderState.m_useStencilTest)
         {
@@ -412,21 +387,6 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
     {
         if(m_cachedRenderState == newRenderState) return;
 
-        // if(newRenderState.m_useDepthTest)
-        {
-            if(m_cachedRenderState.m_depthFunc != newRenderState.m_depthFunc)
-            {
-                glDepthFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_depthFunc));
-                m_cachedRenderState.m_depthFunc = newRenderState.m_depthFunc;
-            }
-
-            if(m_cachedRenderState.m_depthMask != newRenderState.m_depthMask)
-            {
-                glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
-                m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
-            }
-        }
-
         if(m_cachedRenderState.m_useDepthTest != newRenderState.m_useDepthTest)
         {
             if(newRenderState.m_useDepthTest)
@@ -441,47 +401,19 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             }
         }
 
-        if(m_cachedRenderState.m_useFacesCulling != newRenderState.m_useFacesCulling)
+        if(newRenderState.m_useDepthTest)
         {
-            if(newRenderState.m_useFacesCulling)
+            if(m_cachedRenderState.m_depthFunc != newRenderState.m_depthFunc)
             {
-                glEnable(GL_CULL_FACE);
-                m_cachedRenderState.m_useFacesCulling = true;
-            }
-            else
-            {
-                glDisable(GL_CULL_FACE);
-                m_cachedRenderState.m_useFacesCulling = false;
-            }
-        }
-
-        if(newRenderState.m_useFacesCulling)
-        {
-            if(m_cachedRenderState.m_facesCullingFaceType != newRenderState.m_facesCullingFaceType)
-            {
-                glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(newRenderState.m_facesCullingFaceType));
-                m_cachedRenderState.m_facesCullingFaceType = newRenderState.m_facesCullingFaceType;
+                glDepthFunc(GLGraphicsTypesCaster::sgDepthStencilFuncToGL(newRenderState.m_depthFunc));
+                m_cachedRenderState.m_depthFunc = newRenderState.m_depthFunc;
             }
 
-            if(m_cachedRenderState.m_facesCullingPolygonsOrder != newRenderState.m_facesCullingPolygonsOrder)
+            if(m_cachedRenderState.m_depthMask != newRenderState.m_depthMask)
             {
-                glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
-                                    newRenderState.m_facesCullingPolygonsOrder
-                            )
-                );
-                m_cachedRenderState.m_facesCullingPolygonsOrder = newRenderState.m_facesCullingPolygonsOrder;
+                glDepthMask(newRenderState.m_depthMask ? GL_TRUE : GL_FALSE);
+                m_cachedRenderState.m_depthMask = newRenderState.m_depthMask;
             }
-        }
-
-        if(m_cachedRenderState.m_linesWidth != newRenderState.m_linesWidth)
-        {
-            glLineWidth(newRenderState.m_linesWidth);
-            m_cachedRenderState.m_linesWidth = newRenderState.m_linesWidth;
-        }
-        if(m_cachedRenderState.m_pointsSize != newRenderState.m_pointsSize)
-        {
-            glPointSize(newRenderState.m_pointsSize);
-            m_cachedRenderState.m_pointsSize = newRenderState.m_pointsSize;
         }
 
         if(m_cachedRenderState.m_useStencilTest != newRenderState.m_useStencilTest)
@@ -533,9 +465,9 @@ void SGCore::GL4Renderer::useState(const SGCore::RenderState& newRenderState, bo
             }
         }
 
-        if(newRenderState.m_globalBlendingState.m_useBlending)
+        // if(newRenderState.m_globalBlendingState.m_useBlending)
         {
-            if(m_cachedRenderState.m_globalBlendingState != newRenderState.m_globalBlendingState)
+            // if(m_cachedRenderState.m_globalBlendingState != newRenderState.m_globalBlendingState)
             {
                 useBlendingState(newRenderState.m_globalBlendingState);
             }
@@ -573,17 +505,22 @@ void SGCore::GL4Renderer::useBlendingState(const SGCore::BlendingState& newBlend
                              m_cachedColorAttachmentsBlendingStates[newBlendingState.m_forAttachment] :
                              m_cachedRenderState.m_globalBlendingState;
 
-    if(oldBlendingState.m_sFactor != newBlendingState.m_sFactor ||
-       oldBlendingState.m_dFactor != newBlendingState.m_dFactor || forceState)
+    /*if(oldBlendingState.m_sFactor != newBlendingState.m_sFactor ||
+       oldBlendingState.m_dFactor != newBlendingState.m_dFactor ||
+       m_cachedRenderState.m_globalBlendingState.m_sFactor != newBlendingState.m_sFactor ||
+       m_cachedRenderState.m_globalBlendingState.m_dFactor != newBlendingState.m_dFactor ||
+       forceState)*/
     {
         if(newBlendingState.m_forAttachment >= 0)
         {
+            // std::cout << std::format("setting m_sFactor and m_dFactor for attachment {}", newBlendingState.m_forAttachment) << std::endl;
             glBlendFunci(newBlendingState.m_forAttachment,
                          GLGraphicsTypesCaster::sgBlendingFactorToGL(newBlendingState.m_sFactor),
                          GLGraphicsTypesCaster::sgBlendingFactorToGL(newBlendingState.m_dFactor));
         }
         else
         {
+            // std::cout << std::format("setting global m_sFactor and m_dFactor") << std::endl;
             glBlendFunc(GLGraphicsTypesCaster::sgBlendingFactorToGL(newBlendingState.m_sFactor),
                         GLGraphicsTypesCaster::sgBlendingFactorToGL(newBlendingState.m_dFactor));
         }
@@ -592,7 +529,9 @@ void SGCore::GL4Renderer::useBlendingState(const SGCore::BlendingState& newBlend
         oldBlendingState.m_dFactor = newBlendingState.m_dFactor;
     }
 
-    if(oldBlendingState.m_blendingEquation != newBlendingState.m_blendingEquation || forceState)
+    /*if(oldBlendingState.m_blendingEquation != newBlendingState.m_blendingEquation ||
+       m_cachedRenderState.m_globalBlendingState.m_blendingEquation != newBlendingState.m_blendingEquation ||
+       forceState)*/
     {
         if(newBlendingState.m_forAttachment >= 0)
         {
@@ -605,5 +544,81 @@ void SGCore::GL4Renderer::useBlendingState(const SGCore::BlendingState& newBlend
         }
 
         oldBlendingState.m_blendingEquation = newBlendingState.m_blendingEquation;
+    }
+}
+
+void
+SGCore::GL4Renderer::useMeshRenderState(const SGCore::MeshRenderState& newMeshRenderState, bool forceState) noexcept
+{
+    if(forceState)
+    {
+        if(newMeshRenderState.m_useFacesCulling)
+        {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(newMeshRenderState.m_facesCullingFaceType));
+            glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(
+                    newMeshRenderState.m_facesCullingPolygonsOrder)
+            );
+
+            m_cachedMeshRenderState.m_useFacesCulling = true;
+            m_cachedMeshRenderState.m_facesCullingFaceType = newMeshRenderState.m_facesCullingFaceType;
+            m_cachedMeshRenderState.m_facesCullingPolygonsOrder = newMeshRenderState.m_facesCullingPolygonsOrder;
+        }
+        else
+        {
+            glDisable(GL_CULL_FACE);
+
+            m_cachedMeshRenderState.m_useFacesCulling = false;
+        }
+
+        glLineWidth(newMeshRenderState.m_linesWidth);
+        glPointSize(newMeshRenderState.m_pointsSize);
+
+        m_cachedMeshRenderState.m_linesWidth = newMeshRenderState.m_linesWidth;
+        m_cachedMeshRenderState.m_pointsSize = newMeshRenderState.m_pointsSize;
+    }
+    else
+    {
+        if(m_cachedMeshRenderState == newMeshRenderState) return;
+
+        if(m_cachedMeshRenderState.m_useFacesCulling != newMeshRenderState.m_useFacesCulling)
+        {
+            if(newMeshRenderState.m_useFacesCulling)
+            {
+                glEnable(GL_CULL_FACE);
+                m_cachedMeshRenderState.m_useFacesCulling = true;
+            }
+            else
+            {
+                glDisable(GL_CULL_FACE);
+                m_cachedMeshRenderState.m_useFacesCulling = false;
+            }
+        }
+
+        if(newMeshRenderState.m_useFacesCulling)
+        {
+            if(m_cachedMeshRenderState.m_facesCullingFaceType != newMeshRenderState.m_facesCullingFaceType)
+            {
+                glCullFace(GLGraphicsTypesCaster::sggFaceTypeToGL(newMeshRenderState.m_facesCullingFaceType));
+                m_cachedMeshRenderState.m_facesCullingFaceType = newMeshRenderState.m_facesCullingFaceType;
+            }
+
+            if(m_cachedMeshRenderState.m_facesCullingPolygonsOrder != newMeshRenderState.m_facesCullingPolygonsOrder)
+            {
+                glFrontFace(GLGraphicsTypesCaster::sggPolygonsOrderToGL(newMeshRenderState.m_facesCullingPolygonsOrder));
+                m_cachedMeshRenderState.m_facesCullingPolygonsOrder = newMeshRenderState.m_facesCullingPolygonsOrder;
+            }
+        }
+
+        if(m_cachedMeshRenderState.m_linesWidth != newMeshRenderState.m_linesWidth)
+        {
+            glLineWidth(newMeshRenderState.m_linesWidth);
+            m_cachedMeshRenderState.m_linesWidth = newMeshRenderState.m_linesWidth;
+        }
+        if(m_cachedMeshRenderState.m_pointsSize != newMeshRenderState.m_pointsSize)
+        {
+            glPointSize(newMeshRenderState.m_pointsSize);
+            m_cachedMeshRenderState.m_pointsSize = newMeshRenderState.m_pointsSize;
+        }
     }
 }

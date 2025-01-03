@@ -8,12 +8,17 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "IFrameBuffer.h"
 
-void SGCore::RenderState::use(bool force) const noexcept
+void SGCore::MeshRenderState::use(bool force) const noexcept
 {
-    CoreMain::getRenderer()->useState(*this, force);
+    CoreMain::getRenderer()->useMeshRenderState(*this, force);
 }
 
 void SGCore::BlendingState::use(bool force) const noexcept
 {
     CoreMain::getRenderer()->useBlendingState(*this, force);
+}
+
+void SGCore::RenderState::use(bool force) const noexcept
+{
+    CoreMain::getRenderer()->useState(*this, force);
 }

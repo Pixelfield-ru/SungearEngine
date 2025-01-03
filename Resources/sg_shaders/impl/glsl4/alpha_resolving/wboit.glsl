@@ -8,14 +8,16 @@ void calculateWBOITComponents(vec3 inputCol,
 {
     if(isTransparentPass == 1)
     {
-        float weight = clamp(pow(min(1.0, inputAlpha * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - fragCoordZ * 0.9, 3.0), 1e-2, 3e3);
+        float weight = pow(inputAlpha, 1.0) * clamp(0.3 / (1e-5 + pow(fragCoordZ / 200, 4.0)), 1e-2, 3e3);
 
-        outputAccumColor = vec4(inputCol.rgb * inputAlpha, inputAlpha) * weight;
+
+        outputAccumColor = vec4(inputCol.rgb * inputAlpha * weight, inputAlpha * weight);
 
         outputReveal = inputAlpha;
     }
     else
     {
         outputLayerColor = vec4(inputCol.rgb, 1.0);
+        outputReveal = 1.0;
     }
 }

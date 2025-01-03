@@ -52,6 +52,7 @@ namespace SGCore
             VERSION = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 
             glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &MAX_FB_COLOR_ATTACHMENTS);
+            glGetIntegerv(GL_MAX_DRAW_BUFFERS, &MAX_DRAW_BUFFERS);
             glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &MAX_UNIFORM_BUFFER_BINDINGS);
             glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MAX_TEXTURE_IMAGE_UNITS);
             glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &MAX_TEXTURE_BUFFER_SIZE);
@@ -71,6 +72,7 @@ namespace SGCore
             LOG_I(SGCORE_TAG, "GL_VERSION: {}\n", VERSION);
 
             LOG_I(SGCORE_TAG, "GL_MAX_COLOR_ATTACHMENTS: {}", MAX_FB_COLOR_ATTACHMENTS);
+            LOG_I(SGCORE_TAG, "GL_MAX_DRAW_BUFFERS: {}", MAX_DRAW_BUFFERS);
             LOG_I(SGCORE_TAG, "GL_MAX_UNIFORM_BUFFER_BINDINGS: {}", MAX_UNIFORM_BUFFER_BINDINGS);
             LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_IMAGE_UNITS: {}", MAX_TEXTURE_IMAGE_UNITS);
             LOG_I(SGCORE_TAG, "GL_MAX_TEXTURE_MAX_ANISOTROPY: {}", MAX_TEXTURE_MAX_ANISOTROPY);
@@ -83,6 +85,11 @@ namespace SGCore
         [[maybe_unused]] [[nodiscard]] static auto getMaxFBColorAttachments() noexcept
         {
             return MAX_FB_COLOR_ATTACHMENTS;
+        }
+
+        [[maybe_unused]] [[nodiscard]] static auto getMaxDrawBuffers() noexcept
+        {
+            return MAX_DRAW_BUFFERS;
         }
 
         [[maybe_unused]] [[nodiscard]] static auto getMaxUniformBufferBindings() noexcept
@@ -124,6 +131,7 @@ namespace SGCore
         static inline std::set<std::string> s_supportingExtensions;
         
         static inline int MAX_FB_COLOR_ATTACHMENTS = 0;
+        static inline int MAX_DRAW_BUFFERS = 0;
         static inline int MAX_UNIFORM_BUFFER_BINDINGS = 0;
         static inline int MAX_TEXTURE_IMAGE_UNITS = 0;
         static inline float MAX_TEXTURE_MAX_ANISOTROPY = 0.0f;

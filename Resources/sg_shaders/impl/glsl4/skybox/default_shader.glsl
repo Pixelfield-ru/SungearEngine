@@ -33,8 +33,11 @@ void main()
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
 #include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
 
+// REQUIRED COLORS!!!
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
+layout(location = 2) out vec3 pickingColor;
+// accum alpha output for weight blended OIT
 layout(location = 3) out vec4 layerWBOITColorAccum;
 layout(location = 4) out float layerWBOITReveal;
 
@@ -79,6 +82,8 @@ void main()
     }
 
     {
+        // calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, 0);
+
         layerColor = skyboxCol;
         // layerWBOITReveal = 0.0;
 

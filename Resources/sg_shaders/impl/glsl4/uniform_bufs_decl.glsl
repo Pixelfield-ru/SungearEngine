@@ -2,7 +2,7 @@
 #include "structs_decl.glsl"
 
 // todo: return
-vec4 materialDiffuseCol = vec4(1.0);
+/*vec4 materialDiffuseCol = vec4(1.0);
 vec4 materialSpecularCol = vec4(1.0);
 vec4 materialAmbientCol = vec4(1.0);
 vec4 materialEmissionCol = vec4(1.0);
@@ -10,16 +10,17 @@ vec4 materialTransparentCol = vec4(1.0);
 float materialShininess = 32.0;
 float materialMetallicFactor = 0.0;
 float materialRoughnessFactor = 0.5;
-float materialAmbientFactor = 0.25;
+float materialAmbientFactor = 0.25;*/
 
-/*uniform vec4 materialDiffuseCol;
-uniform vec4 materialSpecularCol;
-uniform vec4 materialAmbientCol;
-uniform vec4 materialEmissionCol;
-uniform vec4 materialTransparentCol;
-uniform float materialShininess;
-uniform float materialMetallicFactor;
-uniform float materialRoughnessFactor;*/
+uniform vec4 u_materialDiffuseCol;
+uniform vec4 u_materialSpecularCol;
+uniform vec4 u_materialAmbientCol;
+uniform vec4 u_materialEmissionCol;
+uniform vec4 u_materialTransparentCol;
+uniform float u_materialShininess;
+uniform float u_materialMetallicFactor;
+uniform float u_materialRoughnessFactor;
+float materialAmbientFactor = 0.25;
 
 layout(std140) uniform CameraData
 {

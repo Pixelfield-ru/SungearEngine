@@ -23,7 +23,8 @@ namespace SGCore
         AssetRef<IShader> m_shader;
 
         RenderState m_renderState;
-        
+        MeshRenderState m_meshRenderState;
+
         virtual void create(const Ref<IRenderPipeline>& parentRenderPipeline) { };
         
         virtual void render(const Ref<Scene>& scene, const Ref<IRenderPipeline>& renderPipeline) = 0;

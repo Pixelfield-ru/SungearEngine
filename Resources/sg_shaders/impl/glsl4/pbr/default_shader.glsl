@@ -6,6 +6,7 @@
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
 #include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
+#include "sg_shaders/impl/glsl4/random.glsl"
 #include "dir_lights_shadows_calc.glsl"
 
 #subpass [GeometryPass]
@@ -69,7 +70,7 @@ void main()
 // REQUIRED COLORS!!!
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
-layout(location = 2) out vec4 pickingColor;
+layout(location = 2) out vec3 pickingColor;
 // accum alpha output for weight blended OIT
 layout(location = 3) out vec4 layerWBOITColorAccum;
 layout(location = 4) out float layerWBOITReveal;
@@ -100,6 +101,12 @@ uniform int u_verticesColorsAttributesCount;
 
 // REQUIRED UNIFORM!!
 uniform int u_isTransparentPass;
+
+// REQUIRED UNIFORM!!
+uniform sampler2D u_WBOITColorAccum;
+
+// REQUIRED UNIFORM!!
+uniform sampler2D u_WBOITReveal;
 
 in VSOut
 {
@@ -179,8 +186,8 @@ void main()
 {
     vec3 normalizedNormal = vsIn.normal;
 
-    vec4 diffuseColor = vec4(materialDiffuseCol.rgb, 1.0);
-    vec4 aoRoughnessMetallic = vec4(materialAmbientFactor, materialRoughnessFactor, materialMetallicFactor, 1);
+    vec4 diffuseColor = vec4(u_materialDiffuseCol);
+    vec4 aoRoughnessMetallic = vec4(materialAmbientFactor, u_materialRoughnessFactor, u_materialMetallicFactor, 1);
     vec3 normalMapColor = vec3(0);
     vec3 finalNormal = vec3(0);
 
@@ -206,6 +213,11 @@ void main()
             }
         }
     }
+
+    /*if(diffuseColor.a < 0.1)
+    {
+        discard;
+    }*/
 
     {
         {
@@ -359,7 +371,7 @@ void main()
 
         vec3 ctNumerator = D * F * G;
         float ctDenominator = 4.0 * NdotVD * NdotL;
-        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
+        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.rgb;
 
         lo += (diffuse * albedo.rgb / PI + specular) * radiance * NdotL;
 
@@ -418,7 +430,7 @@ void main()
         // vec3 ctNumerator = vec3(1.0, 1.0, 1.0) * G;
         vec3 ctNumerator = D * F * G;
         float ctDenominator = 1.0 * NdotVD * NdotL;
-        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * materialSpecularCol.rgb;
+        vec3 specular = (ctNumerator / max(ctDenominator, 0.001)) * u_materialSpecularCol.rgb;
         // vec3 specular = ctNumerator / (ctDenominator + 0.001);
         //vec3 specular = vec3(0.1);
 
@@ -432,7 +444,7 @@ void main()
 
     // ambient = ambient * albedo.rgb * ao;
     ambient = albedo.rgb * ao;
-    vec3 finalCol = ambient * materialAmbientCol.rgb * materialAmbientFactor + ambient + lo;
+    vec3 finalCol = ambient * u_materialAmbientCol.rgb * materialAmbientFactor + ambient + lo;
     float exposure = 0.5;
 
     // finalCol *= dirLightsShadowCoeff;
@@ -458,19 +470,38 @@ void main()
     // todo: make
     // if(u_WBOITEnabled == 1)
     {
-        // layerColor = vec4(finalCol, diffuseColor.a);
-        calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, u_isTransparentPass);
-        // layerWBOITAccumAlpha.a = 1.0;
-        // layerWBOITReveal = 1.0;
-        // layerWBOITReveal = 0.0;
-        // layerWBOITReveal.a = 1.0;
+        if(u_isTransparentPass == 1)
+        {
+            float a = diffuseColor.a;
+
+            // float weight = pow(a, 1.0) * clamp(0.3 / (1e-5 + pow(gl_FragCoord.z / 200, 4.0)), 1e-2, 3e3);
+            float weight = pow(a + 0.01f, 4.0f) + max(0.01f, min(3000.0f, 0.3f / (0.00001f + pow(abs(gl_FragCoord.z) / 200.0f, 4.0f))));
+            // float weight = 1.0;
+
+            layerWBOITColorAccum = vec4(finalCol.rgb * a, a) * weight;
+
+            // layerWBOITReveal = vsIn.vertexColor0.a;
+            layerWBOITReveal = a;
+        }
+        else
+        {
+            layerColor = vec4(finalCol.rgb, 1.0);
+            layerWBOITReveal = 1.0;
+        }
+
+        // calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, u_isTransparentPass);
     }
 
     // layerColor.a = diffuseColor.a;
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 
-    pickingColor = vec4(u_pickingColor, 1.0);
+    if(u_isTransparentPass == 0)
+    {
+        pickingColor = vec3(u_pickingColor);
+    }
+
+    // pickingColor.r = depthFromTexture;
 
     /*fragColor0 = vec4(normalMapColor, 1.0);
     fragColor1 = vec4(normalMapColor, 1.0);*/

@@ -123,3 +123,8 @@ void SGCore::VkRenderer::useBlendingState(const SGCore::BlendingState& newBlendi
 {
 
 }
+
+void SGCore::VkRenderer::useMeshRenderState(const SGCore::MeshRenderState& newMeshRenderState, bool forceState) noexcept
+{
+
+}

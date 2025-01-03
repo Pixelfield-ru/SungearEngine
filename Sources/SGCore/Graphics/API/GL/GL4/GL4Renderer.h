@@ -45,21 +45,22 @@ namespace SGCore
                                    const Ref<Transform>& transformComponent) override;
 
         void renderMeshData(const IMeshData* meshData,
-                            const RenderState& renderState) override;
+                            const MeshRenderState& meshRenderState) override;
         
         void renderArray(const Ref<IVertexArray>& vertexArray,
-                         const RenderState& renderState,
+                         const MeshRenderState& meshRenderState,
                          const size_t& verticesCount,
                          const size_t& indicesCount) override;
         
         void renderArrayInstanced(const Ref<IVertexArray>& vertexArray,
-                                  const RenderState& renderState,
+                                  const MeshRenderState& meshRenderState,
                                   const size_t& verticesCount,
                                   const size_t& indicesCount,
                                   const size_t& instancesCount) override;
 
         void useState(const RenderState& newRenderState, bool forceState = false) noexcept final;
         void useBlendingState(const BlendingState& newBlendingState, bool forceState = false) noexcept final;
+        void useMeshRenderState(const MeshRenderState& newMeshRenderState, bool forceState = false) noexcept final;
 
         void printInfo() noexcept override;
 

@@ -20,7 +20,7 @@ void SGCore::OutlinePass::create(const SGCore::Ref<SGCore::IRenderPipeline>& par
 
     m_shader = AssetManager::getInstance()->loadAsset<IShader>(shaderFile->getPath());
 
-    m_renderState.m_useFacesCulling = false;
+    m_meshRenderState.m_useFacesCulling = false;
     m_renderState.m_useDepthTest = false;
 
     m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
@@ -67,7 +67,7 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
     auto meshesView = registry->view<EntityBaseInfo, Mesh, Transform>();
 
     // IDK WHY BUT WE MUST FORCE RENDER STATE TO WORK OUTLINE CORRECTLY.
-    m_renderState.use(true);
+    m_renderState.use();
 
     m_shader->bind();
     m_shader->useFloat("u_outlineThickness", m_outlineThickness);
@@ -106,7 +106,7 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
 
             CoreMain::getRenderer()->renderMeshData(
                     mesh.m_base.getMeshData().get(),
-                    m_renderState
+                    m_meshRenderState
             );
         });
 
@@ -125,7 +125,7 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
 
             CoreMain::getRenderer()->renderMeshData(
                     m_postProcessQuad.get(),
-                    m_renderState
+                    m_meshRenderState
             );
         }
 
@@ -148,7 +148,7 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
 
         CoreMain::getRenderer()->renderMeshData(
                 m_postProcessQuad.get(),
-                m_renderState
+                m_meshRenderState
         );
 
         layeredFrameReceiver.m_layersFXFrameBuffer->unbind();

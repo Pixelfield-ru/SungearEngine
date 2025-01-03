@@ -17,7 +17,7 @@
 
 SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
 {
-    m_quadRenderState.m_useFacesCulling = false;
+    m_quadMeshRenderState.m_useFacesCulling = false;
     
     m_postProcessQuad = Ref<IMeshData>(CoreMain::getRenderer()->createMeshData());
     
@@ -67,15 +67,15 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     );
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2, // CONTAINS PICKING COLORS
-            SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA32_FLOAT,
+            SGGColorFormat::SGG_RGB,
+            SGGColorInternalFormat::SGG_RGB32_FLOAT,
             0,
             0
     );
     m_layersFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // COLOR ACCUM FOR WBOIT
             SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA32_FLOAT,
+            SGGColorInternalFormat::SGG_RGBA16_FLOAT,
             0,
             0
     );
@@ -88,6 +88,11 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0
     );
 
+    auto colorAttachment2 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2);
+    colorAttachment2->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
+    colorAttachment2->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ZERO;
+    colorAttachment2->m_clearColor = { 1, 1, 1, 1 };
+
     auto colorAttachment3 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3);
     colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
     colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE;
@@ -96,7 +101,12 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     auto colorAttachment4 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
     colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ZERO;
     colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_COLOR;
-    colorAttachment4->m_clearColor = { 0, 0, 0, 0 };
+
+    /*colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_DST_COLOR;
+    colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ZERO;*/
+    /*colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
+    colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ZERO;*/
+    colorAttachment4->m_clearColor = { 1, 1, 1, 1 };
 
     m_layersFrameBuffer->unbind();
 
@@ -127,8 +137,8 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     );
     m_layersFXFrameBuffer->addAttachment(
             SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT7, // CONTAINS COLOR1 BUT WITH EFFECTS
-            SGGColorFormat::SGG_RGB,
-            SGGColorInternalFormat::SGG_RGB8,
+            SGGColorFormat::SGG_RGBA,
+            SGGColorInternalFormat::SGG_RGBA32_FLOAT,
             0,
             0
     );

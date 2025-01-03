@@ -12,6 +12,24 @@ namespace SGCore
 {
     class IFrameBuffer;
 
+    struct MeshRenderState
+    {
+        bool m_useIndices = true;
+
+        bool m_useFacesCulling = true;
+        SGFaceType m_facesCullingFaceType = SGFaceType::SGG_BACK_FACE;
+        SGPolygonsOrder m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
+
+        SGDrawMode m_drawMode = SGDrawMode::SGG_TRIANGLES;
+
+        float m_linesWidth = 3.0f;
+        float m_pointsSize = 3.0f;
+
+        void use(bool force = false) const noexcept;
+
+        bool operator==(const MeshRenderState&) const noexcept = default;
+    };
+
     struct BlendingState
     {
         bool m_useBlending = true;
@@ -30,17 +48,6 @@ namespace SGCore
 
     struct RenderState
     {
-        bool m_useIndices = true;
-
-        bool m_useFacesCulling = true;
-        SGFaceType m_facesCullingFaceType = SGFaceType::SGG_BACK_FACE;
-        SGPolygonsOrder m_facesCullingPolygonsOrder = SGPolygonsOrder::SGG_CCW;
-
-        SGDrawMode m_drawMode = SGDrawMode::SGG_TRIANGLES;
-
-        float m_linesWidth = 3.0f;
-        float m_pointsSize = 3.0f;
-
         BlendingState m_globalBlendingState;
 
         bool m_useDepthTest = true;

@@ -242,7 +242,7 @@ void SGE::SceneView::renderBody()
         }
 
         if(mainInputListener->keyboardKeyDown(SGCore::KeyboardKey::KEY_LEFT_CONTROL) &&
-           mainInputListener->keyboardKeyPressed(SGCore::KeyboardKey::KEY_S) &&
+           mainInputListener->keyboardKeyPressed(SGCore::KeyboardKey::KEY_B) &&
            !ImGui::GetIO().WantTextInput)
         {
             const auto& scenePath = currentEditorScene->m_scene->m_metaInfo.m_sceneLocalPath;

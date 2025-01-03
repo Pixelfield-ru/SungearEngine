@@ -158,7 +158,7 @@ namespace SGCore
         void clearPostProcessFrameBuffers() const noexcept;
         
     private:
-        RenderState m_quadRenderState;
+        MeshRenderState m_quadMeshRenderState;
         Ref<IMeshData> m_postProcessQuad;
 
         Ref<PostProcessLayer> m_defaultLayer;

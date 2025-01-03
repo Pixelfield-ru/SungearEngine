@@ -33,11 +33,14 @@ in vec2 vs_UVAttribute;
 
 uniform sampler2D SGPP_LayersVolumes;
 uniform sampler2D SGPP_LayersColors;
-uniform sampler2D SGPP_LayersWBOITAlphaAccum;
+uniform sampler2D SGPP_LayersWBOITColorAccum;
+uniform sampler2D SGPP_LayersWBOITReveal;
 uniform int SGPP_CurrentLayerIndex;
 
 // epsilon number
 const float EPSILON = 0.00001f;
+
+out vec4 fragColor;
 
 // calculate floating point numbers equality accurately
 bool isApproximatelyEqual(float a, float b)
@@ -65,7 +68,7 @@ void main()
     // just do nothing
     if(texture(SGPP_LayersVolumes, finalUV).rgb == calculatePPLayerVolume(SGPP_CurrentLayerIndex).rgb)
     {
-        vec4 col = texture(SGPP_LayersColors, finalUV);
+        // vec4 layerColor = texture(SGPP_LayersColors, finalUV);
 
         // col.rgb = lottes(col.rgb);
         // col.rgb = reinhard2(col.rgb);
@@ -76,32 +79,54 @@ void main()
         // todo: make
         // if(u_WBOITEnabled == 1)
         {
-            ivec2 texelCoord = ivec2(finalUV * textureSize(SGPP_LayersWBOITAlphaAccum, 0));
+            ivec2 texelCoord = ivec2(gl_FragCoord.xy);
 
-            // fragment revealage
-            float wboitAccumAlpha = texelFetch(SGPP_LayersWBOITAlphaAccum, texelCoord, 0).r;
+            // vec4 layerColor = texelFetch(SGPP_LayersColors, texelCoord, 0);
+            vec4 layerColor = texture(SGPP_LayersColors, finalUV);
 
-            // save the blending and color texture fetch cost if there is not a transparent fragment
-            if (isApproximatelyEqual(wboitAccumAlpha, 1.0f))
+            float wboitRevealage = texelFetch(SGPP_LayersWBOITReveal, texelCoord, 0).r;
+
+            if (isApproximatelyEqual(wboitRevealage, 1.0f))
             {
                 // discard;
             }
 
-            texelCoord = ivec2(finalUV * textureSize(SGPP_LayersColors, 0));
-            // fragment color
-            vec4 accumulation = texelFetch(SGPP_LayersColors, texelCoord, 0);
+            vec4 wboitAccumulation = texelFetch(SGPP_LayersWBOITColorAccum, texelCoord, 0);
 
-            if (isinf(max3(abs(accumulation.rgb))))
+            if (isinf(max3(abs(wboitAccumulation.rgb))))
             {
-                accumulation.rgb = vec3(accumulation.a);
+                // wboitAccumulation.rgb = vec3(wboitAccumulation.a);
             }
 
-            // col.rgb = accumulation.rgb / max(accumulation.a, EPSILON);
+            wboitAccumulation.rgb = wboitAccumulation.rgb / clamp(wboitRevealage, 1e-4, 5e4);
+            // wboitAccumulation.rgb = wboitAccumulation.rgb / wboitRevealage;
 
-            col.rgb = ACESTonemap(col.rgb, exposure);
+            // wboitAccumulation.rgb = ACESTonemap(wboitAccumulation.rgb, exposure);
 
-            // gl_FragColor = col;
-            gl_FragColor = vec4(col.rgb, 1.0);
+            wboitAccumulation.a = 1.0 - wboitRevealage;
+
+            layerColor.rgb = ACESTonemap(layerColor.rgb, exposure);
+
+            // fragColor = vec4(layerColor.rgb, 1.0);
+            // fragColor = vec4(layerColor.rgb * (1.0 - wboitAccumulation.a) + wboitAccumulation.rgb * (wboitRevealage), wboitRevealage);
+            fragColor = vec4(wboitAccumulation.rgb, wboitAccumulation.a);
+
+            // if(wboitAccumulation.a > 0.8) discard;
+
+            /*ivec2 upos = ivec2(gl_FragCoord.xy);
+            vec4 cc = texelFetch(SGPP_LayersWBOITColorAccum, upos, 0);
+            vec3 sumOfColors = cc.rgb;
+            float sumOfWeights = cc.a;
+
+            vec3 colorNT = texelFetch(SGPP_LayersColors, upos, 0).rgb;
+
+            if (sumOfWeights == 0)
+            { gl_FragColor = vec4(colorNT, 1.0); return; }
+
+            float alpha = 1 - texelFetch(SGPP_LayersWBOITReveal, upos, 0).r;
+            colorNT = sumOfColors / sumOfWeights * alpha +
+            colorNT * (1 - alpha);
+            gl_FragColor = vec4(colorNT, 1.0);*/
         }
     }
 }

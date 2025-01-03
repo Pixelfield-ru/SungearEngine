@@ -5,6 +5,7 @@
 #include "SGCore/Main/CoreMain.h"
 #include "SGCore/Utils/SGSL/SGSLESubShader.h"
 #include "SGCore/Utils/SGSL/ShaderAnalyzedFile.h"
+#include "SGCore/Memory/Assets/Materials/IMaterial.h"
 
 SGCore::GL46Shader::~GL46Shader() noexcept
 {
@@ -262,6 +263,36 @@ void SGCore::GL46Shader::useTextureBlock(const std::string& uniformName, const i
 bool SGCore::GL46Shader::isUniformExists(const std::string& uniformName) const noexcept
 {
     return glGetUniformLocation(m_programHandler, uniformName.c_str()) != -1;
+}
+
+void SGCore::GL46Shader::useMaterialFactors(const SGCore::IMaterial* material)
+{
+    auto materialDiffuseColLoc = getShaderUniformLocation("u_materialDiffuseCol");
+    auto materialSpecularColLoc = getShaderUniformLocation("u_materialSpecularCol");
+    auto materialAmbientColLoc = getShaderUniformLocation("u_materialAmbientCol");
+    auto materialEmissionColLoc = getShaderUniformLocation("u_materialEmissionCol");
+    auto materialTransparentColLoc = getShaderUniformLocation("u_materialTransparentCol");
+    auto materialShininessLoc = getShaderUniformLocation("u_materialShininess");
+    auto materialMetallicFactorLoc = getShaderUniformLocation("u_materialMetallicFactor");
+    auto materialRoughnessFactorLoc = getShaderUniformLocation("u_materialRoughnessFactor");
+
+    auto materialDiffuseCol = material->getDiffuseColor();
+    auto materialSpecularCol = material->getSpecularColor();
+    auto materialAmbientCol = material->getAmbientColor();
+    auto materialEmissionCol = material->getEmissionColor();
+    auto materialTransparentCol = material->getTransparentColor();
+    auto materialShininess = material->getShininess();
+    auto materialMetallicFactor = material->getMetallicFactor();
+    auto materialRoughnessFactor = material->getRoughnessFactor();
+
+    glUniform4f(materialDiffuseColLoc, materialDiffuseCol.r, materialDiffuseCol.g, materialDiffuseCol.b, materialDiffuseCol.a);
+    glUniform4f(materialSpecularColLoc, materialSpecularCol.r, materialSpecularCol.g, materialSpecularCol.b, materialSpecularCol.a);
+    glUniform4f(materialAmbientColLoc, materialAmbientCol.r, materialAmbientCol.g, materialAmbientCol.b, materialAmbientCol.a);
+    glUniform4f(materialEmissionColLoc, materialEmissionCol.r, materialEmissionCol.g, materialEmissionCol.b, materialEmissionCol.a);
+    glUniform4f(materialTransparentColLoc, materialTransparentCol.r, materialTransparentCol.g, materialTransparentCol.b, materialTransparentCol.a);
+    glUniform1f(materialShininessLoc, materialShininess);
+    glUniform1f(materialMetallicFactorLoc, materialMetallicFactor);
+    glUniform1f(materialRoughnessFactorLoc, materialRoughnessFactor);
 }
 
 /*

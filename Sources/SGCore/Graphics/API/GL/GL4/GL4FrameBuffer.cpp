@@ -108,13 +108,7 @@ void SGCore::GL4FrameBuffer::unbindAttachmentToDrawIn()
 void SGCore::GL4FrameBuffer::bind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
-    /*for(const auto& attachmentIt : m_attachments)
-    {
-        const auto& attachmentType = attachmentIt.first;
-        const auto& attachment = attachmentIt.second;
-
-        attachment->m_blendingState.use(true);
-    }*/
+    // useStates();
 
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(m_viewportPosX, m_viewportPosY, m_viewportWidth, m_viewportHeight);
@@ -137,7 +131,10 @@ void SGCore::GL4FrameBuffer::useStates() const noexcept
         const auto& attachmentType = attachmentIt.first;
         const auto& attachment = attachmentIt.second;
 
-        attachment->m_blendingState.use(true);
+        if(isColorAttachment(attachmentType))
+        {
+            attachment->m_blendingState.use(true);
+        }
     }
 }
 
@@ -173,6 +170,7 @@ void SGCore::GL4FrameBuffer::clearAttachment(const SGFrameBufferAttachmentType& 
         // glClear(GL_COLOR_BUFFER_BIT);
         // auto attachment = getAttachment(attachmentType);
         // glClearColor(attachment->m_clearColor[0], attachment->m_clearColor[1], attachment->m_clearColor[2], attachment->m_clearColor[3]);
+        // glClear(GL_COLOR_BUFFER_BIT);
         glClearBufferfv(GL_COLOR, glAttachmentType, &getAttachment(attachmentType)->m_clearColor[0]);
     }
     else if(attachmentType >= SGFrameBufferAttachmentType::SGG_DEPTH_ATTACHMENT0 &&
