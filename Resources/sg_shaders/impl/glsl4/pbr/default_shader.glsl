@@ -6,6 +6,7 @@
 #include "sg_shaders/impl/glsl4/color_correction/aces.glsl"
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
 #include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
+#include "sg_shaders/impl/glsl4/alpha_resolving/stochastic_transparency.glsl"
 #include "sg_shaders/impl/glsl4/random.glsl"
 #include "dir_lights_shadows_calc.glsl"
 
@@ -71,9 +72,8 @@ void main()
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
 layout(location = 2) out vec3 pickingColor;
-// accum alpha output for weight blended OIT
-layout(location = 3) out vec4 layerWBOITColorAccum;
-layout(location = 4) out float layerWBOITReveal;
+// COLOR FOR STOCHASTIC TRANSPARNCY
+layout(location = 3) out vec4 layerSTColor;
 
 
 uniform sampler2D mat_diffuseSamplers[3];
@@ -101,12 +101,6 @@ uniform int u_verticesColorsAttributesCount;
 
 // REQUIRED UNIFORM!!
 uniform int u_isTransparentPass;
-
-// REQUIRED UNIFORM!!
-uniform sampler2D u_WBOITColorAccum;
-
-// REQUIRED UNIFORM!!
-uniform sampler2D u_WBOITReveal;
 
 in VSOut
 {
@@ -468,25 +462,29 @@ void main()
     }
 
     // todo: make
-    // if(u_WBOITEnabled == 1)
+    // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
-        if(u_isTransparentPass == 1)
+        /*if(u_isTransparentPass == 1)
         {
             float a = diffuseColor.a;
 
-            // float weight = pow(a, 1.0) * clamp(0.3 / (1e-5 + pow(gl_FragCoord.z / 200, 4.0)), 1e-2, 3e3);
-            float weight = pow(a + 0.01f, 4.0f) + max(0.01f, min(3000.0f, 0.3f / (0.00001f + pow(abs(gl_FragCoord.z) / 200.0f, 4.0f))));
-            // float weight = 1.0;
+            float weight = fract(sin(dot(vsIn.UV, vec2(127.1, 311.7))) * 43758.5453);
 
-            layerWBOITColorAccum = vec4(finalCol.rgb * a, a) * weight;
+            if(weight > a)
+            {
+                discard;
+            }
 
-            // layerWBOITReveal = vsIn.vertexColor0.a;
-            layerWBOITReveal = a;
+            layerWBOITColorAccum = vec4(finalCol.rgb, 1.0);
         }
         else
         {
             layerColor = vec4(finalCol.rgb, 1.0);
-            layerWBOITReveal = 1.0;
+        }*/
+
+        if(calculateStochasticTransparencyComponents(finalCol.rgb, diffuseColor.a, layerSTColor, layerColor, vsIn.UV, u_isTransparentPass))
+        {
+            discard;
         }
 
         // calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, u_isTransparentPass);
@@ -496,7 +494,7 @@ void main()
 
     layerVolume = calculatePPLayerVolume(SGPP_CurrentLayerIndex);
 
-    if(u_isTransparentPass == 0)
+    // if(u_isTransparentPass == 0)
     {
         pickingColor = vec3(u_pickingColor);
     }

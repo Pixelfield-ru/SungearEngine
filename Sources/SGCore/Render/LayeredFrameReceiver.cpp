@@ -73,17 +73,9 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
             0
     );
     m_layersFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // COLOR ACCUM FOR WBOIT
+            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, // COLOR FOR STOCHASTIC TRANSPARENCY
             SGGColorFormat::SGG_RGBA,
-            SGGColorInternalFormat::SGG_RGBA16_FLOAT,
-            0,
-            0
-    );
-
-    m_layersFrameBuffer->addAttachment(
-            SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, // REVEAL FOR WBOIT
-            SGGColorFormat::SGG_R,
-            SGGColorInternalFormat::SGG_R32_FLOAT,
+            SGGColorInternalFormat::SGG_RGBA32_FLOAT,
             0,
             0
     );
@@ -94,19 +86,15 @@ SGCore::LayeredFrameReceiver::LayeredFrameReceiver()
     colorAttachment2->m_clearColor = { 1, 1, 1, 1 };
 
     auto colorAttachment3 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3);
-    colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
-    colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE;
+    /*colorAttachment3->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
+    colorAttachment3->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE;*/
     colorAttachment3->m_clearColor = { 0, 0, 0, 0 };
 
-    auto colorAttachment4 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
+    // FOR WBOIT
+    /*auto colorAttachment4 = m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4);
     colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ZERO;
     colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ONE_MINUS_SRC_COLOR;
-
-    /*colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_DST_COLOR;
-    colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ZERO;*/
-    /*colorAttachment4->m_blendingState.m_sFactor = SGBlendingFactor::SGG_ONE;
-    colorAttachment4->m_blendingState.m_dFactor = SGBlendingFactor::SGG_ZERO;*/
-    colorAttachment4->m_clearColor = { 1, 1, 1, 1 };
+    colorAttachment4->m_clearColor = { 1, 1, 1, 1 };*/
 
     m_layersFrameBuffer->unbind();
 

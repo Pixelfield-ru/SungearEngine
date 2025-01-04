@@ -99,11 +99,9 @@ void SGCore::PostProcessPass::bindCommonUniforms(LayeredFrameReceiver& receiver,
 
     subPassShader->useTextureBlock("SGPP_LayersVolumes", 0);
     subPassShader->useTextureBlock("SGPP_LayersColors", 1);
-    subPassShader->useTextureBlock("SGPP_LayersWBOITColorAccum", 2);
-    subPassShader->useTextureBlock("SGPP_LayersWBOITReveal", 3);
+    subPassShader->useTextureBlock("SGPP_LayersSTColor", 2);
 
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0)->bind(0);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1)->bind(1);
     receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3)->bind(2);
-    receiver.m_layersFrameBuffer->getAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4)->bind(3);
 }

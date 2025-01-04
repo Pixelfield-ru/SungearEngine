@@ -133,7 +133,7 @@ void SGCore::GL4FrameBuffer::useStates() const noexcept
 
         if(isColorAttachment(attachmentType))
         {
-            attachment->m_blendingState.use(true);
+            attachment->m_blendingState.use();
         }
     }
 }

@@ -18,6 +18,6 @@ void calculateWBOITComponents(vec3 inputCol,
     else
     {
         outputLayerColor = vec4(inputCol.rgb, 1.0);
-        outputReveal = 1.0;
+        // outputReveal = 0.0;
     }
 }

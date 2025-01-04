@@ -134,8 +134,7 @@ namespace SGCore
         std::set<SGFrameBufferAttachmentType> m_attachmentToRenderIn { SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT0,
                                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT1,
                                                                        SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT2,
-                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3,
-                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4 };
+                                                                       SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3 };
         
         Ref<PostProcessLayer> addOrGetLayer(const std::string& name,
                                             const std::uint16_t& fbWidth,

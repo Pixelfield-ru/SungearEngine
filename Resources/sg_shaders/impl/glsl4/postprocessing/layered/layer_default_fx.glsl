@@ -33,8 +33,8 @@ in vec2 vs_UVAttribute;
 
 uniform sampler2D SGPP_LayersVolumes;
 uniform sampler2D SGPP_LayersColors;
-uniform sampler2D SGPP_LayersWBOITColorAccum;
-uniform sampler2D SGPP_LayersWBOITReveal;
+// ST - stochastic transparency
+uniform sampler2D SGPP_LayersSTColor;
 uniform int SGPP_CurrentLayerIndex;
 
 // epsilon number
@@ -54,6 +54,24 @@ float max3(vec3 v)
     return max(max(v.x, v.y), v.z);
 }
 
+vec4 gaussianBlur(in sampler2D inputTexture, vec2 uv) {
+    vec2 offsets[5] = vec2[](
+        vec2(-2.0, 0.0),
+        vec2(-1.0, 0.0),
+        vec2(0.0, 0.0),
+        vec2(1.0, 0.0),
+        vec2(2.0, 0.0)
+    );
+
+    float weights[5] = float[](0.05, 0.2, 0.5, 0.2, 0.05);
+
+    vec4 result = vec4(0.0);
+    for (int i = 0; i < 5; i++)
+    {
+        result += texture(inputTexture, uv + offsets[i] * 0.001) * weights[i];
+    }
+    return result;
+}
 
 void main()
 {
@@ -84,49 +102,43 @@ void main()
             // vec4 layerColor = texelFetch(SGPP_LayersColors, texelCoord, 0);
             vec4 layerColor = texture(SGPP_LayersColors, finalUV);
 
-            float wboitRevealage = texelFetch(SGPP_LayersWBOITReveal, texelCoord, 0).r;
+            vec4 STColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-            if (isApproximatelyEqual(wboitRevealage, 1.0f))
+            const int BOX_SIZE = 1;
+
+            int passesCount = 0;
+
+            vec2 STColorTexSize = vec2(0.0, 0.0);
+
             {
-                // discard;
+                ivec2 tmpSize = textureSize(SGPP_LayersSTColor, 0);
+                STColorTexSize = vec2(float(tmpSize.x), float(tmpSize.y));
             }
 
-            vec4 wboitAccumulation = texelFetch(SGPP_LayersWBOITColorAccum, texelCoord, 0);
-
-            if (isinf(max3(abs(wboitAccumulation.rgb))))
+            /*for(int x = -BOX_SIZE; x <= BOX_SIZE; ++x)
             {
-                // wboitAccumulation.rgb = vec3(wboitAccumulation.a);
-            }
+                for(int y = -BOX_SIZE; y <= BOX_SIZE; ++y)
+                {
+                    float tmpRevealage = texelFetch(SGPP_LayersWBOITReveal, texelCoord + ivec2(x, y), 0).r;
 
-            wboitAccumulation.rgb = wboitAccumulation.rgb / clamp(wboitRevealage, 1e-4, 5e4);
-            // wboitAccumulation.rgb = wboitAccumulation.rgb / wboitRevealage;
+                    if(tmpRevealage != 0.0)
+                    {
+                        wboitAccumulation.rgb += gaussianBlur(SGPP_LayersWBOITColorAccum, (gl_FragCoord.xy + vec2(float(x), float(y)) / 1.0) / wboitAccumulationTexSize).rgb;
+                        ++passesCount;
+                    }
+                }
+            }*/
 
-            // wboitAccumulation.rgb = ACESTonemap(wboitAccumulation.rgb, exposure);
+            STColor.rgba = gaussianBlur(SGPP_LayersSTColor, gl_FragCoord.xy / STColorTexSize).rgba;
 
-            wboitAccumulation.a = 1.0 - wboitRevealage;
+            // STColor.rgba = texture(SGPP_LayersWBOITColorAccum, (gl_FragCoord.xy) / wboitAccumulationTexSize).rgba;
+            // STColor.rgba = texelFetch(SGPP_LayersSTColor, texelCoord, 0).rgba;
+
+            STColor.rgb = ACESTonemap(STColor.rgb, exposure);
 
             layerColor.rgb = ACESTonemap(layerColor.rgb, exposure);
 
-            // fragColor = vec4(layerColor.rgb, 1.0);
-            // fragColor = vec4(layerColor.rgb * (1.0 - wboitAccumulation.a) + wboitAccumulation.rgb * (wboitRevealage), wboitRevealage);
-            fragColor = vec4(wboitAccumulation.rgb, wboitAccumulation.a);
-
-            // if(wboitAccumulation.a > 0.8) discard;
-
-            /*ivec2 upos = ivec2(gl_FragCoord.xy);
-            vec4 cc = texelFetch(SGPP_LayersWBOITColorAccum, upos, 0);
-            vec3 sumOfColors = cc.rgb;
-            float sumOfWeights = cc.a;
-
-            vec3 colorNT = texelFetch(SGPP_LayersColors, upos, 0).rgb;
-
-            if (sumOfWeights == 0)
-            { gl_FragColor = vec4(colorNT, 1.0); return; }
-
-            float alpha = 1 - texelFetch(SGPP_LayersWBOITReveal, upos, 0).r;
-            colorNT = sumOfColors / sumOfWeights * alpha +
-            colorNT * (1 - alpha);
-            gl_FragColor = vec4(colorNT, 1.0);*/
+            fragColor = vec4(layerColor.rgb * (1.0 - STColor.a) + STColor.rgb * (STColor.a), 1.0);
         }
     }
 }

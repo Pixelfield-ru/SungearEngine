@@ -32,14 +32,14 @@ void main()
 #include "atmosphere_scattering.glsl"
 #include "sg_shaders/impl/glsl4/postprocessing/layered/utils.glsl"
 #include "sg_shaders/impl/glsl4/alpha_resolving/wboit.glsl"
+#include "sg_shaders/impl/glsl4/alpha_resolving/stochastic_transparency.glsl"
 
 // REQUIRED COLORS!!!
 layout(location = 0) out vec4 layerVolume;
 layout(location = 1) out vec4 layerColor;
 layout(location = 2) out vec3 pickingColor;
-// accum alpha output for weight blended OIT
-layout(location = 3) out vec4 layerWBOITColorAccum;
-layout(location = 4) out float layerWBOITReveal;
+// COLOR FOR STOCHASTIC TRANSPARNCY
+layout(location = 3) out vec4 layerSTColor;
 
 uniform samplerCube mat_skyboxSamplers[1];
 uniform int mat_skyboxSamplers_CURRENT_COUNT;
@@ -81,7 +81,13 @@ void main()
         skyboxCol = vec4(atmosphereCol, 1.0);
     }
 
+    // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
+        if(calculateStochasticTransparencyComponents(skyboxCol.rgb, skyboxCol.a, layerSTColor, layerColor, vs_UVAttribute.xy, 0))
+        {
+            discard;
+        }
+
         // calculateWBOITComponents(skyboxCol.rgb, skyboxCol.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, 0);
 
         layerColor = skyboxCol;

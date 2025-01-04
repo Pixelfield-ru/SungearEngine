@@ -43,7 +43,7 @@ void SGCore::PBRRPGeometryPass::create(const SGCore::Ref<SGCore::IRenderPipeline
     m_opaqueEntitiesRenderState.m_depthFunc = SGDepthStencilFunc::SGG_LESS;
     m_opaqueEntitiesRenderState.m_globalBlendingState.m_useBlending = false;
 
-    m_transparentEntitiesRenderState.m_depthMask = false;
+    // m_transparentEntitiesRenderState.m_depthMask = false;
     m_transparentEntitiesRenderState.m_globalBlendingState.m_useBlending = true;
     /*m_transparentEntitiesRenderState.m_globalBlendingState.m_useBlending = true;
     m_transparentEntitiesRenderState.m_globalBlendingState.m_blendingEquation = SGEquation::SGG_FUNC_ADD;*/
@@ -78,8 +78,6 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
         
         LayeredFrameReceiver* cameraLayeredFrameReceiver = registry->tryGet<LayeredFrameReceiver>(cameraEntity);
         if(cameraLayeredFrameReceiver) cameraLayeredFrameReceiver->clearPostProcessFrameBuffers();
-        
-        // todo: make get receiver (postprocess or default) and render in them
 
         if(cameraLayeredFrameReceiver)
         {
@@ -89,7 +87,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             );
         }
 
-        m_opaqueEntitiesRenderState.use(true);
+        m_opaqueEntitiesRenderState.use();
 
         opaqueMeshesView.each([&cameraLayeredFrameReceiver, &registry, &camera3DBaseInfo, this]
                                 (const ECS::entity_t& meshEntity, EntityBaseInfo::reg_t& meshedEntityBaseInfo,
@@ -120,8 +118,7 @@ void SGCore::PBRRPGeometryPass::render(const Ref<Scene>& scene, const SGCore::Re
             }
         });
 
-        // IF WBOIT
-        m_transparentEntitiesRenderState.use(true);
+        m_transparentEntitiesRenderState.use();
         if(cameraLayeredFrameReceiver)
         {
             cameraLayeredFrameReceiver->m_layersFrameBuffer->useStates();
@@ -257,17 +254,6 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
         // 14 MS FOR loc0 IN DEBUG
         size_t offset0 = shaderToUse->bindMaterialTextures(mesh.m_base.getMaterial());
         shaderToUse->bindTextureBindings(offset0);
-        if(forLayeredFrameReceiver)
-        {
-            forLayeredFrameReceiver->m_layersFrameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT3, offset0 + 1);
-            forLayeredFrameReceiver->m_layersFrameBuffer->bindAttachment(SGFrameBufferAttachmentType::SGG_COLOR_ATTACHMENT4, offset0 + 2);
-
-            shaderToUse->useTextureBlock("u_WBOITColorAccum", offset0 + 1);
-            shaderToUse->useTextureBlock("u_WBOITReveal", offset0 + 2);
-
-            offset0 += 2;
-        }
-
         shaderToUse->useMaterialFactors(mesh.m_base.getMaterial().get());
         
         auto uniformBuffsIt = m_uniformBuffersToUse.begin();

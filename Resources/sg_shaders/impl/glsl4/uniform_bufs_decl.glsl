@@ -2,15 +2,15 @@
 #include "structs_decl.glsl"
 
 // todo: return
-/*vec4 materialDiffuseCol = vec4(1.0);
-vec4 materialSpecularCol = vec4(1.0);
-vec4 materialAmbientCol = vec4(1.0);
-vec4 materialEmissionCol = vec4(1.0);
-vec4 materialTransparentCol = vec4(1.0);
-float materialShininess = 32.0;
-float materialMetallicFactor = 0.0;
-float materialRoughnessFactor = 0.5;
-float materialAmbientFactor = 0.25;*/
+/*vec4 u_materialDiffuseCol = vec4(1.0);
+vec4 u_materialSpecularCol = vec4(1.0);
+vec4 u_materialAmbientCol = vec4(1.0);
+vec4 u_materialEmissionCol = vec4(1.0);
+vec4 u_materialTransparentCol = vec4(1.0);
+float u_materialShininess = 32.0;
+float u_materialMetallicFactor = 0.0;
+float u_materialRoughnessFactor = 0.5;*/
+// float u_materialAmbientFactor = 0.25;
 
 uniform vec4 u_materialDiffuseCol;
 uniform vec4 u_materialSpecularCol;
