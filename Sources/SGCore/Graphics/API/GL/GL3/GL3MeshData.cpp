@@ -15,84 +15,81 @@ void SGCore::GL3MeshData::prepare()
     m_vertexArray->create()->bind();
 
     // ---------------- preparing positions -------
-    m_positionsBuffer = std::shared_ptr<IVertexBuffer>(
+    m_verticesBuffer = std::shared_ptr<IVertexBuffer>(
             CoreMain::getRenderer()->createVertexBuffer()
             );
-    m_positionsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_positions);
+    m_verticesBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_vertices);
 
     std::shared_ptr<IVertexBufferLayout> bufferLayout = std::shared_ptr<IVertexBufferLayout>(CoreMain::getRenderer()->createVertexBufferLayout());
-    bufferLayout
-            ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                    bufferLayout->createVertexAttribute(0,
-                                                        "positionsAttribute",
-                                                        SGGDataType::SGG_FLOAT3))
-                                                        )
-            ->prepare()->enableAttributes();
+    auto positionsAttrib = bufferLayout->createVertexAttribute(0,
+                                                               "positionsAttribute",
+                                                               SGGDataType::SGG_FLOAT3,
+                                                               3,
+                                                               false,
+                                                               sizeof(Vertex),
+                                                               0,
+                                                               0);
+
+    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(positionsAttrib))->prepare()->enableAttributes();
     // --------------------------------------------
 
     // ----- preparing uv -------------------------
-    m_uvBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer()->createVertexBuffer()
-            );
-    m_uvBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_uv);
+    auto uvAttrib = bufferLayout->createVertexAttribute(1,
+                                                        "UVAttribute",
+                                                        SGGDataType::SGG_FLOAT3,
+                                                        3,
+                                                        false,
+                                                        sizeof(Vertex),
+                                                        offsetof(Vertex, m_uv),
+                                                        0);
 
     bufferLayout->reset();
-    bufferLayout
-            ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                    bufferLayout->createVertexAttribute(1,
-                                                        "UVAttribute",
-                                                        SGGDataType::SGG_FLOAT3))
-                                                        )
-            ->prepare()->enableAttributes();
+    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(uvAttrib))->prepare()->enableAttributes();
     // --------------------------------------------
 
     // ---------- preparing normals ---------------
-    m_normalsBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer()->createVertexBuffer()
-            );
-    m_normalsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_normals);
+    auto normalAttrib = bufferLayout->createVertexAttribute(2,
+                                                            "normalsAttribute",
+                                                            SGGDataType::SGG_FLOAT3,
+                                                            3,
+                                                            false,
+                                                            sizeof(Vertex),
+                                                            offsetof(Vertex, m_normal),
+                                                            0);
 
     bufferLayout->reset();
-    bufferLayout
-            ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                    bufferLayout->createVertexAttribute(2,
-                                                        "normalsAttribute",
-                                                        SGGDataType::SGG_FLOAT3))
-                                                        )
-            ->prepare()->enableAttributes();
+    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(normalAttrib))->prepare()->enableAttributes();
     // --------------------------------------------
 
     // ---------- preparing tangents ---------------
-    m_tangentsBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer()->createVertexBuffer()
-    );
-    m_tangentsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_tangents);
+    auto tangentAttrib = bufferLayout->createVertexAttribute(3,
+                                                             "tangentsAttribute",
+                                                             SGGDataType::SGG_FLOAT3,
+                                                             3,
+                                                             false,
+                                                             sizeof(Vertex),
+                                                             offsetof(Vertex, m_tangent),
+                                                             0);
 
     bufferLayout->reset();
-    bufferLayout
-            ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                    bufferLayout->createVertexAttribute(3,
-                                                        "tangentsAttribute",
-                                                        SGGDataType::SGG_FLOAT3))
-            )
-            ->prepare()->enableAttributes();
+    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(tangentAttrib))->prepare()->enableAttributes();
     // --------------------------------------------
 
     // ---------- preparing bitangents ---------------
-    m_bitangentsBuffer = std::shared_ptr<IVertexBuffer>(
-            CoreMain::getRenderer()->createVertexBuffer()
-    );
-    m_bitangentsBuffer->setUsage(SGGUsage::SGG_DYNAMIC)->create()->bind()->putData(m_bitangents);
+    auto bitangentAttrib = bufferLayout->createVertexAttribute(4,
+                                                               "bitangentsAttribute",
+                                                               SGGDataType::SGG_FLOAT3,
+                                                               3,
+                                                               false,
+                                                               sizeof(Vertex),
+                                                               offsetof(Vertex, m_bitangent),
+                                                               0);
 
     bufferLayout->reset();
-    bufferLayout
-            ->addAttribute(std::shared_ptr<IVertexAttribute>(
-                    bufferLayout->createVertexAttribute(4,
-                                                        "bitangentsAttribute",
-                                                        SGGDataType::SGG_FLOAT3))
-            )
-            ->prepare()->enableAttributes();
+    bufferLayout->addAttribute(std::shared_ptr<IVertexAttribute>(bitangentAttrib))->prepare()->enableAttributes();
     // --------------------------------------------
+
+    std::cout << "created mesh with " << m_vertices.size() << " vertices." << std::endl;
 
     // ---------------- preparing vertices color -------
 

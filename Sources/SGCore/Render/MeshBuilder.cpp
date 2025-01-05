@@ -20,41 +20,25 @@ void SGCore::MeshBuilder::buildBox3D(SGCore::MeshBase& meshBase, const glm::vec3
     auto meshData = AssetManager::getInstance()->createAsset<IMeshData>();
     meshBase.setMeshData(meshData);
 
-    meshData->m_positions.clear();
+    meshData->m_vertices.clear();
 
-    meshData->m_positions.push_back(-size.x / 2.0f);
-    meshData->m_positions.push_back(-size.y / 2.0f);
-    meshData->m_positions.push_back(size.z / 2.0f);
+    meshData->m_vertices.push_back({ .m_position = { -size.x / 2.0f, -size.y / 2.0f, size.z / 2.0f }});
 
-    meshData->m_positions.push_back(-size.x / 2.0f);
-    meshData->m_positions.push_back(-size.y / 2.0f);
-    meshData->m_positions.push_back(-size.z / 2.0f);
+    meshData->m_vertices.push_back({ .m_position = { -size.x / 2.0f, -size.y / 2.0f, -size.z / 2.0f }});
 
-    meshData->m_positions.push_back(-size.x / 2.0f);
-    meshData->m_positions.push_back(size.y / 2.0f);
-    meshData->m_positions.push_back(-size.z / 2.0f);
+    meshData->m_vertices.push_back({ .m_position = { -size.x / 2.0f, size.y / 2.0f, -size.z / 2.0f }});
 
-    meshData->m_positions.push_back(-size.x / 2.0f);
-    meshData->m_positions.push_back(size.y / 2.0f);
-    meshData->m_positions.push_back(size.z / 2.0f);
+    meshData->m_vertices.push_back({ .m_position = { -size.x / 2.0f, size.y / 2.0f, size.z / 2.0f }});
 
 
 
-    meshData->m_positions.push_back(size.x / 2.0f);
-    meshData->m_positions.push_back(-size.y / 2.0f);
-    meshData->m_positions.push_back(size.z / 2.0f);
+    meshData->m_vertices.push_back({ .m_position = { size.x / 2.0f, -size.y / 2.0f, size.z / 2.0f }});
 
-    meshData->m_positions.push_back(size.x / 2.0f);
-    meshData->m_positions.push_back(-size.y / 2.0f);
-    meshData->m_positions.push_back(-size.z / 2.0f);
+    meshData->m_vertices.push_back({ .m_position = { size.x / 2.0f, -size.y / 2.0f, -size.z / 2.0f }});
 
-    meshData->m_positions.push_back(size.x / 2.0f);
-    meshData->m_positions.push_back(size.y / 2.0f);
-    meshData->m_positions.push_back(-size.z / 2.0f);
+    meshData->m_vertices.push_back({ .m_position = { size.x / 2.0f, size.y / 2.0f, -size.z / 2.0f }});
 
-    meshData->m_positions.push_back(size.x / 2.0f);
-    meshData->m_positions.push_back(size.y / 2.0f);
-    meshData->m_positions.push_back(size.z / 2.0f);
+    meshData->m_vertices.push_back({ .m_position = { size.x / 2.0f, size.y / 2.0f, size.z / 2.0f }});
 
     // --------------------------------
 
@@ -110,7 +94,7 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
     meshBase.setMeshData(meshData);
 
     // clear
-    meshData->m_positions.clear();
+    meshData->m_vertices.clear();
     meshData->m_indices.clear();
 
 
@@ -141,9 +125,7 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
 
             degLeft -= angleIncrement;
 
-            meshData->m_positions.push_back(curPos.x + curCircleOffset);
-            meshData->m_positions.push_back(curPos.y);
-            meshData->m_positions.push_back(curPos.z);
+            meshData->m_vertices.push_back({ .m_position = { curPos.x + curCircleOffset, curPos.y, curPos.z }});
         }
         degLeft = 360.0f;
     }
@@ -158,9 +140,7 @@ void SGCore::MeshBuilder::buildSphereVariant1(SGCore::MeshBase& meshBase, const 
     // creating the right end of the sphere
     for(i = 0; i < circleVerticesNum; i++)
     {
-        meshData->m_positions.push_back(radius);
-        meshData->m_positions.push_back(0);
-        meshData->m_positions.push_back(0);
+        meshData->m_vertices.push_back({ .m_position = { radius, 0, 0 }});
     }
 
     size_t resultIndex = 0;

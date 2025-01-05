@@ -10,6 +10,7 @@
 #include "SGCore/Memory/AssetRefFromThis.h"
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Main/CoreMain.h"
+#include "Vertex.h"
 
 sg_predeclare_serde()
 
@@ -50,6 +51,8 @@ namespace SGCore
         friend class AssetManager;
         friend struct Node;
 
+        std::vector<std::string> m_bonesNames;
+
         AABB<> m_aabb;
         
         // Mesh() noexcept;
@@ -64,11 +67,10 @@ namespace SGCore
         // indices array
         std::vector<std::uint32_t> m_indices;
 
-        // vertices positions array
-        std::vector<float> m_positions;
+        std::vector<Vertex> m_vertices;
 
-        // sets (usually 8 sets) of colors for every vertex
-        std::vector<VertexColorsSet> m_verticesColors;
+        // vertices positions array
+        /*std::vector<float> m_positions;
 
         // uv array
         std::vector<float> m_uv;
@@ -80,7 +82,10 @@ namespace SGCore
         std::vector<float> m_tangents;
 
         // bitangents array
-        std::vector<float> m_bitangents;
+        std::vector<float> m_bitangents;*/
+
+        // sets (usually 8 sets) of colors for every vertex
+        std::vector<VertexColorsSet> m_verticesColors;
 
         AssetRef<IMaterial> m_material;
         
@@ -114,7 +119,7 @@ namespace SGCore
         void migrateAndSetNewMaterial(const AssetRef<IMaterial>& newMaterial) noexcept;
         
         template<typename VScalarT, typename IScalarT>
-        static Ref<btTriangleMesh> generatePhysicalMesh(const std::vector<VScalarT>& vertices, const std::vector<IScalarT>& indices) noexcept
+        static Ref<btTriangleMesh> generatePhysicalMesh(const std::vector<glm::vec<3, VScalarT>>& vertices, const std::vector<IScalarT>& indices) noexcept
         {
             auto physicalMesh = MakeRef<btTriangleMesh>();
             
@@ -124,9 +129,9 @@ namespace SGCore
                 size_t ti1 = indices[i + 1] * 3;
                 size_t ti2 = indices[i + 2] * 3;
                 
-                physicalMesh->addTriangle(btVector3(vertices[ti0], vertices[ti0 + 1], vertices[ti0 + 2]),
-                                          btVector3(vertices[ti1], vertices[ti1 + 1], vertices[ti1 + 2]),
-                                          btVector3(vertices[ti2], vertices[ti2 + 1], vertices[ti2 + 2]));
+                physicalMesh->addTriangle(btVector3(vertices[ti0].x, vertices[ti0].y, vertices[ti0].z),
+                                          btVector3(vertices[ti1].x, vertices[ti1].y, vertices[ti1].z),
+                                          btVector3(vertices[ti2].x, vertices[ti2].y, vertices[ti2].z));
             }
             
             return physicalMesh;
@@ -147,32 +152,21 @@ namespace SGCore
         std::streamsize m_indicesOffsetInPackage = 0;
         std::streamsize m_indicesSizeInPackage = 0;
 
-        std::streamsize m_positionsOffsetInPackage = 0;
-        std::streamsize m_positionsSizeInPackage = 0;
-
-        std::streamsize m_uvOffsetInPackage = 0;
-        std::streamsize m_uvSizeInPackage = 0;
-
-        std::streamsize m_normalsOffsetInPackage = 0;
-        std::streamsize m_normalsSizeInPackage = 0;
-
-        std::streamsize m_tangentsOffsetInPackage = 0;
-        std::streamsize m_tangentsSizeInPackage = 0;
-
-        std::streamsize m_bitangentsOffsetInPackage = 0;
-        std::streamsize m_bitangentsSizeInPackage = 0;
+        std::streamsize m_verticesOffsetInPackage = 0;
+        std::streamsize m_verticesSizeInPackage = 0;
 
         // ========================================================================================
         // ========================================================================================
 
         Ref<IVertexArray> m_vertexArray;
 
-        Ref<IVertexBuffer> m_positionsBuffer;
-        std::vector<Ref<IVertexBuffer>> m_verticesColorsBuffers;
+        Ref<IVertexBuffer> m_verticesBuffer;
+        /*Ref<IVertexBuffer> m_positionsBuffer;
         Ref<IVertexBuffer> m_uvBuffer;
         Ref<IVertexBuffer> m_normalsBuffer;
         Ref<IVertexBuffer> m_tangentsBuffer;
-        Ref<IVertexBuffer> m_bitangentsBuffer;
+        Ref<IVertexBuffer> m_bitangentsBuffer;*/
+        std::vector<Ref<IVertexBuffer>> m_verticesColorsBuffers;
 
         Ref<IIndexBuffer> m_indicesBuffer;
 

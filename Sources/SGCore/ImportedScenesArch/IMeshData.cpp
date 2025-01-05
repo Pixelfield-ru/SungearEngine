@@ -34,32 +34,32 @@ SGCore::IMeshData::IMeshData()
 void SGCore::IMeshData::setVertexPosition
 (const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept
 {
-    m_positions[vertexIdx * 3] = x;
-    m_positions[vertexIdx * 3 + 1] = y;
-    m_positions[vertexIdx * 3 + 2] = z;
+    m_vertices[vertexIdx].m_position.x = x;
+    m_vertices[vertexIdx].m_position.y = y;
+    m_vertices[vertexIdx].m_position.z = z;
 }
 
 void SGCore::IMeshData::getVertexPosition(const std::uint64_t& vertexIdx, float& outX, float& outY, float& outZ) noexcept
 {
-    outX = m_positions[vertexIdx * 3];
-    outY = m_positions[vertexIdx * 3 + 1];
-    outZ = m_positions[vertexIdx * 3 + 2];
+    outX = m_vertices[vertexIdx].m_position.x;
+    outY = m_vertices[vertexIdx].m_position.y;
+    outZ = m_vertices[vertexIdx].m_position.z;
 }
 
 // ------------
 
 void SGCore::IMeshData::setVertexUV(const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept
 {
-    m_uv[vertexIdx * 3] = x;
-    m_uv[vertexIdx * 3 + 1] = y;
-    m_uv[vertexIdx * 3 + 2] = z;
+    m_vertices[vertexIdx].m_uv.x = x;
+    m_vertices[vertexIdx].m_uv.y = y;
+    m_vertices[vertexIdx].m_uv.z = z;
 }
 
 void SGCore::IMeshData::getVertexUV(const std::uint64_t& vertexIdx, float& outX, float& outY, float& outZ) noexcept
 {
-    outX = m_uv[vertexIdx * 3];
-    outY = m_uv[vertexIdx * 3 + 1];
-    outZ = m_uv[vertexIdx * 3 + 2];
+    outX = m_vertices[vertexIdx].m_uv.x;
+    outY = m_vertices[vertexIdx].m_uv.y;
+    outZ = m_vertices[vertexIdx].m_uv.z;
 }
 
 // ------------
@@ -67,16 +67,16 @@ void SGCore::IMeshData::getVertexUV(const std::uint64_t& vertexIdx, float& outX,
 void SGCore::IMeshData::setVertexNormal
 (const std::uint64_t& vertexIdx, const float& x, const float& y, const float& z) noexcept
 {
-    m_normals[vertexIdx * 3] = x;
-    m_normals[vertexIdx * 3 + 1] = y;
-    m_normals[vertexIdx * 3 + 2] = z;
+    m_vertices[vertexIdx].m_normal.x = x;
+    m_vertices[vertexIdx].m_normal.y = y;
+    m_vertices[vertexIdx].m_normal.z = z;
 }
 
 void SGCore::IMeshData::getVertexNormal(const std::uint64_t& vertexIdx, float& outX, float& outY, float& outZ) noexcept
 {
-    outX = m_normals[vertexIdx * 3];
-    outY = m_normals[vertexIdx * 3 + 1];
-    outZ = m_normals[vertexIdx * 3 + 2];
+    outX = m_vertices[vertexIdx].m_normal.x;
+    outY = m_vertices[vertexIdx].m_normal.y;
+    outZ = m_vertices[vertexIdx].m_normal.z;
 }
 
 // ------------
@@ -102,20 +102,31 @@ void SGCore::IMeshData::setData(const AssetRef<IMeshData>& other) noexcept
 {
     if(m_vertexArray) m_vertexArray->destroy();
 
-    if(m_positionsBuffer) m_positionsBuffer->destroy();
+    /*if(m_positionsBuffer) m_positionsBuffer->destroy();
     if(m_uvBuffer) m_uvBuffer->destroy();
     if(m_normalsBuffer) m_normalsBuffer->destroy();
     if(m_tangentsBuffer) m_tangentsBuffer->destroy();
-    if(m_bitangentsBuffer) m_bitangentsBuffer->destroy();
+    if(m_bitangentsBuffer) m_bitangentsBuffer->destroy();*/
+    for(const auto& colorsBuf : m_verticesColorsBuffers)
+    {
+        if(colorsBuf)
+        {
+            colorsBuf->destroy();
+        }
+    }
+
+    m_verticesColorsBuffers.clear();
 
     if(m_indicesBuffer) m_indicesBuffer->destroy();
 
     m_indices = other->m_indices;
-    m_positions = other->m_positions;
+    m_vertices = other->m_vertices;
+    m_verticesColors = other->m_verticesColors;
+    /*m_positions = other->m_positions;
     m_uv = other->m_uv;
     m_normals = other->m_normals;
     m_tangents = other->m_tangents;
-    m_bitangents = other->m_tangents;
+    m_bitangents = other->m_tangents;*/
 
     prepare();
 
@@ -150,7 +161,13 @@ void SGCore::IMeshData::migrateAndSetNewMaterial
 
 void SGCore::IMeshData::generatePhysicalMesh() noexcept
 {
-    m_physicalMesh = generatePhysicalMesh(m_positions, m_indices);
+    std::vector<glm::vec3> positions;
+    for(const auto& vertex : m_vertices)
+    {
+        positions.push_back(vertex.m_position);
+    }
+
+    m_physicalMesh = generatePhysicalMesh(positions, m_indices);
 }
 
 void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
@@ -158,11 +175,7 @@ void SGCore::IMeshData::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetMa
     auto& package = parentAssetManager->getPackage();
 
     m_indices = package.readData<std::vector<std::uint32_t>>(m_indicesOffsetInPackage, m_indicesSizeInPackage);
-    m_positions = package.readData<std::vector<float>>(m_positionsOffsetInPackage, m_positionsSizeInPackage);
-    m_uv = package.readData<std::vector<float>>(m_uvOffsetInPackage, m_uvSizeInPackage);
-    m_normals = package.readData<std::vector<float>>(m_normalsOffsetInPackage, m_normalsSizeInPackage);
-    m_tangents = package.readData<std::vector<float>>(m_tangentsOffsetInPackage, m_tangentsSizeInPackage);
-    m_bitangents = package.readData<std::vector<float>>(m_bitangentsOffsetInPackage, m_bitangentsSizeInPackage);
+    m_vertices = package.readData<std::vector<Vertex>>(m_verticesOffsetInPackage, m_verticesSizeInPackage);
 
     prepare();
 }

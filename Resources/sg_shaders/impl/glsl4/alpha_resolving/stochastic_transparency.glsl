@@ -1,3 +1,5 @@
+#include "sg_shaders/impl/glsl4/random.glsl"
+
 // returns is fragment needs to be discarded
 bool calculateStochasticTransparencyComponents(vec3 inputCol,
                                                float inputAlpha,
@@ -10,8 +12,8 @@ bool calculateStochasticTransparencyComponents(vec3 inputCol,
     {
         float a = inputAlpha;
 
-        // float weight = random(vsIn.UV);
-        float weight = fract(sin(dot(UV, vec2(127.1, 311.7))) * 43758.5453);
+        float weight = random(UV);
+        // float weight = fract(sin(dot(UV, vec2(127.1, 311.7))) * 43758.5453);
         // float weight = random(gl_FragCoord.xy) / 2.0;
 
         if(weight > a)

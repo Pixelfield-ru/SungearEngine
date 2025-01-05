@@ -11,6 +11,7 @@
 
 #include "SGCore/ImportedScenesArch/Node.h"
 #include "SGCore/Graphics/API/GraphicsDataTypes.h"
+#include "Skeleton.h"
 
 namespace SGCore
 {
@@ -36,9 +37,15 @@ namespace SGCore
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
+        // std::unordered_map<std::string, BoneInfo> m_bonesInfo;
+
         // local import flags
         // TODO: maybe reimport after change flags
         int m_importerFlags = 0;
+
+        void extractSkeletonForMesh(const AssetRef<IMeshData>& sgMeshData, const aiMesh* fromAiMesh) noexcept;
+
+        void processSkeletons(const aiScene* fromScene, const aiNode* fromNode, const AssetRef<Skeleton>& current) noexcept;
 
         // model name
         std::string m_modelName;

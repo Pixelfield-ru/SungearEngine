@@ -198,7 +198,7 @@ void SGCore::GL4Renderer::renderMeshData(const IMeshData* meshData,
 
     if(!meshRenderState.m_useIndices)
     {
-        glDrawArrays(drawMode, 0, meshData->m_positions.size() / 3);
+        glDrawArrays(drawMode, 0, meshData->m_vertices.size() / 3);
     }
     else
     {

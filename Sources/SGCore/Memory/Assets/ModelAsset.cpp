@@ -39,6 +39,10 @@ void SGCore::ModelAsset::doLoad(const InterpolatedPath& path)
 
     m_nodes.push_back(processNode(aiImportedScene->mRootNode, aiImportedScene));
 
+    processSkeletons(aiImportedScene, aiImportedScene->mRootNode, nullptr);
+
+    importer.FreeScene();
+
     LOG_I(SGCORE_TAG,
           "Loaded model '{}'. Nodes count: {}", m_modelName, m_nodes.size());
 }
@@ -77,12 +81,15 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
 {
     auto sgMeshData = AssetManager::getInstance()->getOrAddAssetByPath<IMeshData>(getPath() / "meshes" / aiMesh->mName.data);
 
-    sgMeshData->m_positions.reserve(aiMesh->mNumVertices * 3);
-    sgMeshData->m_normals.reserve(aiMesh->mNumVertices * 3);
-    sgMeshData->m_tangents.reserve(aiMesh->mNumVertices * 3);
-    sgMeshData->m_bitangents.reserve(aiMesh->mNumVertices * 3);
-    // TODO: make reserve for all texture coordinates
-    sgMeshData->m_uv.reserve(aiMesh->mNumVertices * 3);
+    for(std::uint32_t i = 0; i < aiMesh->mNumBones; ++i)
+    {
+        std::cout << "loaded bone: " << aiMesh->mBones[i]->mName.C_Str() << std::endl;
+        sgMeshData->m_bonesNames.push_back(aiMesh->mBones[i]->mName.C_Str());
+    }
+
+    sgMeshData->m_vertices.clear();
+
+    sgMeshData->m_vertices.reserve(aiMesh->mNumVertices * 3);
 
     sgMeshData->m_verticesColors.clear();
 
@@ -124,13 +131,13 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
         max = SGCore::AssimpUtils::aiVectorToGLM(aiMesh->mVertices[0]);
     }
 
+    Vertex newVertex { };
+
     for(unsigned i = 0; i < aiMesh->mNumVertices; i++)
     {
         const auto& vertex = aiMesh->mVertices[i];
-        
-        sgMeshData->m_positions.push_back(vertex.x);
-        sgMeshData->m_positions.push_back(vertex.y);
-        sgMeshData->m_positions.push_back(vertex.z);
+
+        newVertex.m_position = AssimpUtils::aiVectorToGLM(vertex);
         
         if(min.x > vertex.x)
         {
@@ -158,39 +165,33 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
             max.z = vertex.z;
         }
 
-        sgMeshData->m_normals.push_back(aiMesh->mNormals[i].x);
-        sgMeshData->m_normals.push_back(aiMesh->mNormals[i].y);
-        sgMeshData->m_normals.push_back(aiMesh->mNormals[i].z);
+        newVertex.m_normal = AssimpUtils::aiVectorToGLM(aiMesh->mNormals[i]);
 
         if(aiMesh->mTangents)
         {
-            sgMeshData->m_tangents.push_back(aiMesh->mTangents[i].x);
-            sgMeshData->m_tangents.push_back(aiMesh->mTangents[i].y);
-            sgMeshData->m_tangents.push_back(aiMesh->mTangents[i].z);
+            newVertex.m_tangent = AssimpUtils::aiVectorToGLM(aiMesh->mTangents[i]);
         }
 
         if(aiMesh->mBitangents)
         {
-            sgMeshData->m_bitangents.push_back(aiMesh->mBitangents[i].x);
-            sgMeshData->m_bitangents.push_back(aiMesh->mBitangents[i].y);
-            sgMeshData->m_bitangents.push_back(aiMesh->mBitangents[i].z);
+            newVertex.m_bitangent = AssimpUtils::aiVectorToGLM(aiMesh->mBitangents[i]);
         }
 
         // if mesh has texture coordinates
         // TODO: make process all texture coordinates
         if(aiMesh->mTextureCoords[0])
         {
-            sgMeshData->m_uv.push_back(aiMesh->mTextureCoords[0][i].x);
-            sgMeshData->m_uv.push_back(aiMesh->mTextureCoords[0][i].y);
-            sgMeshData->m_uv.push_back(aiMesh->mTextureCoords[0][i].z);
+            newVertex.m_uv = AssimpUtils::aiVectorToGLM(aiMesh->mTextureCoords[0][i]);
         }
         else
         {
-            sgMeshData->m_uv.push_back(0.0f);
-            sgMeshData->m_uv.push_back(0.0f);
-            sgMeshData->m_uv.push_back(0.0f);
+            newVertex.m_uv = { 0, 0, 0 };
         }
+
+        sgMeshData->m_vertices.push_back(newVertex);
     }
+
+    // extractSkeletonForMesh(sgMeshData, aiMesh);
     
     // todo: make 0.05 as not hardcoded minimal values of aabb
     if(max.x - min.x == 0)
@@ -221,6 +222,20 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
     for(unsigned i = 0; i < aiMesh->mNumFaces; i++)
     {
         const auto& face = aiMesh->mFaces[i];
+
+        /*glm::vec3 v0 = AssimpUtils::aiVectorToGLM(aiMesh->mVertices[face.mIndices[0]]);
+        glm::vec3 v1 = AssimpUtils::aiVectorToGLM(aiMesh->mVertices[face.mIndices[1]]);
+        glm::vec3 v2 = AssimpUtils::aiVectorToGLM(aiMesh->mVertices[face.mIndices[2]]);
+        glm::vec3 normal = glm::normalize(glm::cross(v1 - v0, v2 - v0));
+
+        glm::vec3 importedNormal = AssimpUtils::aiVectorToGLM(aiMesh->mNormals[face.mIndices[0]]);
+        if (glm::dot(normal, importedNormal) < 0.0f)
+        {
+            // applying fixed normal...
+            sgMeshData->m_vertices[face.mIndices[0]].m_normal += normal;
+            sgMeshData->m_vertices[face.mIndices[1]].m_normal += normal;
+            sgMeshData->m_vertices[face.mIndices[2]].m_normal += normal;
+        }*/
 
         if(face.mNumIndices != 3)
         {
@@ -306,6 +321,7 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
     float metallic;
     float roughness;
     aiString alphaMode;
+    int isTwoSided = 0;
 
     if(aiMat->Get("$mat.gltf.alphaMode", 0, 0, alphaMode) == AI_SUCCESS)
     {
@@ -375,6 +391,14 @@ SGCore::AssetRef<SGCore::IMeshData> SGCore::ModelAsset::processMesh(const aiMesh
         sgMeshData->m_material->setRoughnessFactor(roughness);
     }
 
+    if(aiGetMaterialInteger(aiMat, AI_MATKEY_TWOSIDED, &isTwoSided) == AI_SUCCESS)
+    {
+        if(isTwoSided != 0)
+        {
+            sgMeshData->m_material->m_meshRenderState.m_useFacesCulling = false;
+        }
+    }
+
     LOG_I(SGCORE_TAG,
           "Current material: {}",
           Utils::toUTF8(sgMeshData->m_material->getPath().resolved().u16string()));
@@ -425,6 +449,65 @@ void SGCore::ModelAsset::loadTextures(aiMaterial* aiMat,
               aiMat->GetName().data,
               sgStandardTextureTypeToString(sgMaterialTextureType), Utils::toUTF8(finalPath.resolved().u16string())
         );
+    }
+}
+
+void SGCore::ModelAsset::extractSkeletonForMesh(const AssetRef<IMeshData>& sgMeshData,
+                                                const aiMesh* fromAiMesh) noexcept
+{
+    auto meshSkeleton = getParentAssetManager()->getOrAddAssetByPath<Skeleton>(
+            getPath() / "skeletons" / fromAiMesh->mName.data
+    );
+
+    for(std::int32_t boneIdx = 0; boneIdx < fromAiMesh->mNumBones; ++boneIdx)
+    {
+        Bone newBone;
+
+        std::int32_t currentBoneID = -1;
+        auto& bone = *fromAiMesh->mBones[boneIdx];
+
+        const std::string boneName = bone.mName.C_Str();
+
+        {
+            const std::string assertMsg = fmt::format("Can not load bone data for model '{}': bone has ID == -1.",
+                                                      fromAiMesh->mName.C_Str());
+            SG_ASSERT(currentBoneID != -1, assertMsg.c_str());
+        }
+
+        auto* boneWeights = fromAiMesh->mBones[currentBoneID]->mWeights;
+        const std::int32_t boneWeightsCount = fromAiMesh->mBones[currentBoneID]->mNumWeights;
+
+        for(std::int32_t weightIndex = 0; weightIndex < boneWeightsCount; ++weightIndex)
+        {
+            const std::int32_t vertexID = boneWeights[weightIndex].mVertexId;
+            const float weight = boneWeights[weightIndex].mWeight;
+
+            {
+                const std::string assertMsg = fmt::format("Can not load weight with index '{}' for bone with ID '{}' for mesh '{}': invalid vertex ID '{}'",
+                                                          weightIndex,
+                                                          currentBoneID,
+                                                          fromAiMesh->mName.C_Str(),
+                                                          vertexID);
+                SG_ASSERT(vertexId <= sgMeshData->m_vertices.size(), assertMsg.c_str());
+            }
+
+
+             // SetVertexBoneData(vertices[vertexId], boneID, weight);
+        }
+    }
+}
+
+void SGCore::ModelAsset::processSkeletons(const aiScene* fromScene, const aiNode* fromNode, const AssetRef<Skeleton>& current) noexcept
+{
+    for(std::uint32_t i = 0; i < fromNode->mNumMeshes; ++i)
+    {
+        const aiMesh *mesh = fromScene->mMeshes[fromNode->mMeshes[i]];
+        // mesh->mBones[0]->
+    }
+
+    for(std::uint32_t i = 0; i < fromNode->mNumChildren; ++i)
+    {
+        // processNode(fromScene, fromNode, );
     }
 }
 

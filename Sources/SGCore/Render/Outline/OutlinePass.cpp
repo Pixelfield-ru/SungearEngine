@@ -35,21 +35,13 @@ void SGCore::OutlinePass::create(const SGCore::Ref<SGCore::IRenderPipeline>& par
 
     // 4 vertices
 
-    m_postProcessQuad->m_positions.push_back(-1);
-    m_postProcessQuad->m_positions.push_back(-1);
-    m_postProcessQuad->m_positions.push_back(0);
+    m_postProcessQuad->m_vertices.push_back({ .m_position = { -1, -1, 0 }});
 
-    m_postProcessQuad->m_positions.push_back(-1);
-    m_postProcessQuad->m_positions.push_back(1);
-    m_postProcessQuad->m_positions.push_back(0);
+    m_postProcessQuad->m_vertices.push_back({ .m_position = { -1, 1, 0 }});
 
-    m_postProcessQuad->m_positions.push_back(1);
-    m_postProcessQuad->m_positions.push_back(1);
-    m_postProcessQuad->m_positions.push_back(0);
+    m_postProcessQuad->m_vertices.push_back({ .m_position = { 1, 1, 0 }});
 
-    m_postProcessQuad->m_positions.push_back(1);
-    m_postProcessQuad->m_positions.push_back(-1);
-    m_postProcessQuad->m_positions.push_back(0);
+    m_postProcessQuad->m_vertices.push_back({ .m_position = { 1, -1, 0 }});
 
     m_postProcessQuad->prepare();
 }

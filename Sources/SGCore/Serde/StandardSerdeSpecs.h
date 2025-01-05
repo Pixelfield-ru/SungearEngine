@@ -44,7 +44,6 @@
 #include "SGCore/Transformations/TransformationsUpdater.h"
 #include "SGCore/Render/Gizmos/BoxGizmosRenderer.h"
 #include "SGCore/Render/Gizmos/LineGizmosRenderer.h"
-#include "SGCore/Render/Batching/BatchesRenderer.h"
 #include "SGCore/Render/Gizmos/SphereGizmosUpdater.h"
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
@@ -835,7 +834,7 @@ struct SGCore::Serde::SerdeSpec<SGCore::ISystem, TFormatType> :
 
                                 >,
         SGCore::Serde::DerivedTypes<
-                SGCore::Controllables3DUpdater, SGCore::PhysicsWorld3D, SGCore::RenderingBasesUpdater, SGCore::AtmosphereUpdater, SGCore::DirectionalLightsUpdater, SGCore::TransformationsUpdater, SGCore::BoxGizmosRenderer, SGCore::LineGizmosRenderer, SGCore::BatchesRenderer, SGCore::SphereGizmosUpdater, SGCore::DebugDraw, SGCore::OctreesSolver, SGCore::AudioProcessor
+                SGCore::Controllables3DUpdater, SGCore::PhysicsWorld3D, SGCore::RenderingBasesUpdater, SGCore::AtmosphereUpdater, SGCore::DirectionalLightsUpdater, SGCore::TransformationsUpdater, SGCore::BoxGizmosRenderer, SGCore::LineGizmosRenderer, SGCore::SphereGizmosUpdater, SGCore::DebugDraw, SGCore::OctreesSolver, SGCore::AudioProcessor
                                    >
 {
     static inline const std::string type_name = "SGCore::ISystem";
@@ -991,30 +990,6 @@ struct SGCore::Serde::SerdeSpec<SGCore::LineGizmosRenderer, TFormatType> :
     static void serialize(SGCore::Serde::SerializableValueView<SGCore::LineGizmosRenderer, TFormatType>& valueView) noexcept;
 
     static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::LineGizmosRenderer, TFormatType>& valueView) noexcept;
-};
-// =================================================================================
-
-
-
-
-// SERDE FORWARD DECL FOR struct 'SGCore::BatchesRenderer'
-// =================================================================================
-template<
-        SGCore::Serde::FormatType TFormatType
->
-struct SGCore::Serde::SerdeSpec<SGCore::BatchesRenderer, TFormatType> :
-        SGCore::Serde::BaseTypes<
-                SGCore::ISystem
-                                >,
-        SGCore::Serde::DerivedTypes<
-                                   >
-{
-    static inline const std::string type_name = "SGCore::BatchesRenderer";
-    static inline constexpr bool is_pointer_type = false;
-
-    static void serialize(SGCore::Serde::SerializableValueView<SGCore::BatchesRenderer, TFormatType>& valueView) noexcept;
-
-    static void deserialize(SGCore::Serde::DeserializableValueView<SGCore::BatchesRenderer, TFormatType>& valueView) noexcept;
 };
 // =================================================================================
 
@@ -2987,26 +2962,6 @@ void SGCore::Serde::SerdeSpec<SGCore::LineGizmosRenderer, TFormatType>::deserial
 // =================================================================================
 
 
-
-
-// SERDE IMPL FOR struct 'SGCore::BatchesRenderer'
-// =================================================================================
-template<
-        SGCore::Serde::FormatType TFormatType
->
-void SGCore::Serde::SerdeSpec<SGCore::BatchesRenderer, TFormatType>::serialize(SGCore::Serde::SerializableValueView<SGCore::BatchesRenderer, TFormatType>& valueView) noexcept
-{
-}
-
-template<
-        SGCore::Serde::FormatType TFormatType
->
-void SGCore::Serde::SerdeSpec<SGCore::BatchesRenderer, TFormatType>::deserialize(SGCore::Serde::DeserializableValueView<SGCore::BatchesRenderer, TFormatType>& valueView) noexcept
-{
-}
-// =================================================================================
-
-
 // SERDE IMPL FOR struct 'SGCore::SphereGizmosUpdater'
 // =================================================================================
 template<
@@ -4249,7 +4204,6 @@ namespace SGCore::Serde
                    SG_INSTANCEOF(systemPtr, TransformationsUpdater) ||
                    SG_INSTANCEOF(systemPtr, BoxGizmosRenderer) ||
                    SG_INSTANCEOF(systemPtr, LineGizmosRenderer) ||
-                   SG_INSTANCEOF(systemPtr, BatchesRenderer) ||
                    SG_INSTANCEOF(systemPtr, SphereGizmosUpdater) ||
                    SG_INSTANCEOF(systemPtr, DebugDraw) ||
                    SG_INSTANCEOF(systemPtr, OctreesSolver) ||
@@ -4948,46 +4902,13 @@ namespace SGCore::Serde
             }
 
             {
-                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_positions);
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_vertices);
 
-                valueView.getValueContainer().addMember("m_positionsOffset", dataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_positionsSizeInBytes", dataMarkup.m_sizeInBytes);
+                valueView.getValueContainer().addMember("m_verticesOffset", dataMarkup.m_offset);
+                valueView.getValueContainer().addMember("m_verticesSizeInBytes", dataMarkup.m_sizeInBytes);
             }
 
-            {
-                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_uv);
-
-                valueView.getValueContainer().addMember("m_uvOffset", dataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_uvSizeInBytes", dataMarkup.m_sizeInBytes);
-            }
-
-            {
-                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_normals);
-
-                valueView.getValueContainer().addMember("m_normalsOffset", dataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_normalsSizeInBytes", dataMarkup.m_sizeInBytes);
-            }
-
-            {
-                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_tangents);
-
-                valueView.getValueContainer().addMember("m_tangentsOffset", dataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_tangentsSizeInBytes", dataMarkup.m_sizeInBytes);
-            }
-
-            {
-                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_bitangents);
-
-                valueView.getValueContainer().addMember("m_bitangentsOffset", dataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_bitangentsSizeInBytes", dataMarkup.m_sizeInBytes);
-            }
-
-            {
-                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_bitangents);
-
-                valueView.getValueContainer().addMember("m_bitangentsOffset", dataMarkup.m_offset);
-                valueView.getValueContainer().addMember("m_bitangentsSizeInBytes", dataMarkup.m_sizeInBytes);
-            }
+            // TODO: VERTEX COLORS SERIALIZING IN PACKAGE
 
             // TODO: MAYBE SERIALIZING DATA OF PHYSICAL MESH (I DONT FUCKING KNOW HOW TO GET DATA FROM btTriangleMesh)
             valueView.getValueContainer().addMember("m_generatePhysicalMesh", valueView.m_data->m_physicalMesh != nullptr);
@@ -5030,96 +4951,24 @@ namespace SGCore::Serde
 
             {
                 auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_positionsOffset"
+                        "m_verticesOffset"
                 );
                 auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_positionsSizeInBytes"
+                        "m_verticesSizeInBytes"
                 );
 
                 if(dataOffsetOpt)
                 {
-                    valueView.m_data->m_positionsOffsetInPackage = *dataOffsetOpt;
+                    valueView.m_data->m_verticesOffsetInPackage = *dataOffsetOpt;
                 }
 
                 if(dataSizeInBytesOpt)
                 {
-                    valueView.m_data->m_positionsSizeInPackage = *dataSizeInBytesOpt;
+                    valueView.m_data->m_verticesSizeInPackage = *dataSizeInBytesOpt;
                 }
             }
 
-            {
-                auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>("m_uvOffset");
-                auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_uvSizeInBytes"
-                );
-
-                if(dataOffsetOpt)
-                {
-                    valueView.m_data->m_uvOffsetInPackage = *dataOffsetOpt;
-                }
-
-                if(dataSizeInBytesOpt)
-                {
-                    valueView.m_data->m_uvSizeInPackage = *dataSizeInBytesOpt;
-                }
-            }
-
-            {
-                auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_normalsOffset"
-                );
-                auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_normalsSizeInBytes"
-                );
-
-                if(dataOffsetOpt)
-                {
-                    valueView.m_data->m_normalsOffsetInPackage = *dataOffsetOpt;
-                }
-
-                if(dataSizeInBytesOpt)
-                {
-                    valueView.m_data->m_normalsSizeInPackage = *dataSizeInBytesOpt;
-                }
-            }
-
-            {
-                auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_tangentsOffset"
-                );
-                auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_tangentsSizeInBytes"
-                );
-
-                if(dataOffsetOpt)
-                {
-                    valueView.m_data->m_tangentsOffsetInPackage = *dataOffsetOpt;
-                }
-
-                if(dataSizeInBytesOpt)
-                {
-                    valueView.m_data->m_tangentsSizeInPackage = *dataSizeInBytesOpt;
-                }
-            }
-
-            {
-                auto dataOffsetOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_bitangentsOffset"
-                );
-                auto dataSizeInBytesOpt = valueView.getValueContainer().template getMember<std::streamsize>(
-                        "m_bitangentsSizeInBytes"
-                );
-
-                if(dataOffsetOpt)
-                {
-                    valueView.m_data->m_bitangentsOffsetInPackage = *dataOffsetOpt;
-                }
-
-                if(dataSizeInBytesOpt)
-                {
-                    valueView.m_data->m_bitangentsSizeInPackage = *dataSizeInBytesOpt;
-                }
-            }
+            // TODO: VERTEX COLORS DESERIALIZING FROM PACKAGE
 
             auto generatePhysicalMesh = valueView.getValueContainer().template getMember<bool>("m_generatePhysicalMesh");
             if(generatePhysicalMesh)

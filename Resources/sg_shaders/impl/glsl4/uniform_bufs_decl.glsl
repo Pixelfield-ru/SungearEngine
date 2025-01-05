@@ -8,7 +8,7 @@ vec4 u_materialAmbientCol = vec4(1.0);
 vec4 u_materialEmissionCol = vec4(1.0);
 vec4 u_materialTransparentCol = vec4(1.0);
 float u_materialShininess = 32.0;
-float u_materialMetallicFactor = 0.0;
+float u_materialMetallicFactor = 0.2;
 float u_materialRoughnessFactor = 0.5;*/
 // float u_materialAmbientFactor = 0.25;
 

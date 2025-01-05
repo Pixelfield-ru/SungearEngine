@@ -26,7 +26,7 @@ namespace SGCore
         virtual void destroy() = 0;
         
         template<typename DataType>
-        requires(std::is_scalar_v<DataType>)
+        // requires(std::is_scalar_v<DataType>)
         std::shared_ptr<IVertexBuffer> putData(const std::vector<DataType>& data) noexcept
         {
             subDataOnGAPISide(data.data(), data.size() * sizeof(DataType), 0, true);
@@ -35,14 +35,14 @@ namespace SGCore
         }
         
         template<typename DataType>
-        requires(std::is_scalar_v<DataType>)
+        // requires(std::is_scalar_v<DataType>)
         void subData(const std::vector<DataType>& data, const size_t& elementsOffset) noexcept
         {
             subDataOnGAPISide(data.data(), data.size() * sizeof(DataType), elementsOffset * sizeof(DataType), false);
         }
         
         template<typename DataType>
-        requires(std::is_scalar_v<DataType>)
+        // requires(std::is_scalar_v<DataType>)
         void subData(const DataType* data, const size_t& elementsCount, const size_t& elementsOffset) noexcept
         {
             subDataOnGAPISide(data, elementsCount * sizeof(DataType), elementsOffset * sizeof(DataType), false);

@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 #include <SGCore/Logger/Logger.h>
 
-#include "SGCore/Render/Batching/BatchesRenderer.h"
 #include "Scene.h"
 #include "SGCore/Render/RenderPipelinesManager.h"
 #include "SGCore/Transformations/TransformationsUpdater.h"
@@ -81,9 +80,6 @@ void SGCore::Scene::createDefaultSystems()
     addSystem(debugDraw);
 
     // ===================
-    
-    auto batchesRenderer = MakeRef<BatchesRenderer>();
-    addSystem(batchesRenderer);
     
     // space partitions solvers ==============
 

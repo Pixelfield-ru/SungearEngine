@@ -123,6 +123,7 @@ void SGE::SceneTreeView::drawTreeNode(const SGCore::ECS::entity_t& parentEntity,
 
     auto& entityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(parentEntity);
     auto& entityTransform = currentScene->getECSRegistry()->get<SGCore::Transform>(parentEntity);
+    auto* entityMesh = currentScene->getECSRegistry()->tryGet<SGCore::Mesh>(parentEntity);
 
     if((entityBaseInfo.getParent() == entt::null || !checkForRoot) &&
        ImGui::TreeNode(formEntityName(entityBaseInfo, parentEntity).c_str()))
@@ -134,12 +135,24 @@ void SGE::SceneTreeView::drawTreeNode(const SGCore::ECS::entity_t& parentEntity,
             ImGui::Text(fmt::format("Position: {}, {}, {}", position.x, position.y, position.z).c_str());
             ImGui::Text(fmt::format("Rotation: {}, {}, {}", glm::degrees(euler.x), glm::degrees(euler.y), glm::degrees(euler.z)).c_str());
             ImGui::Text(fmt::format("Scale: {}, {}, {}", scale.x, scale.y, scale.z).c_str());
+
+            if(entityMesh)
+            {
+                if(entityMesh->m_base.getMeshData())
+                {
+                    for(const auto& boneName: entityMesh->m_base.getMeshData()->m_bonesNames)
+                    {
+                        ImGui::Text("Bones: %s", boneName.c_str());
+                    }
+                }
+            }
         }
 
         for(const auto& childEntity : entityBaseInfo.getChildren())
         {
             auto& childEntityBaseInfo = currentScene->getECSRegistry()->get<SGCore::EntityBaseInfo>(childEntity);
             auto& childEntityTransform = currentScene->getECSRegistry()->get<SGCore::Transform>(childEntity);
+            auto* childEntityMesh = currentScene->getECSRegistry()->tryGet<SGCore::Mesh>(childEntity);
 
             if(childEntityBaseInfo.getChildren().empty())
             {
@@ -151,6 +164,18 @@ void SGE::SceneTreeView::drawTreeNode(const SGCore::ECS::entity_t& parentEntity,
                     ImGui::Text(fmt::format("Position: {}, {}, {}", position.x, position.y, position.z).c_str());
                     ImGui::Text(fmt::format("Rotation: {}, {}, {}", glm::degrees(euler.x), glm::degrees(euler.y), glm::degrees(euler.z)).c_str());
                     ImGui::Text(fmt::format("Scale: {}, {}, {}", scale.x, scale.y, scale.z).c_str());
+
+                    if(childEntityMesh)
+                    {
+                        if(childEntityMesh->m_base.getMeshData())
+                        {
+                            std::cout << "sfsdfsdfs" << std::endl;
+                            for(const auto& boneName: childEntityMesh->m_base.getMeshData()->m_bonesNames)
+                            {
+                                ImGui::Text("Bones: %s", boneName.c_str());
+                            }
+                        }
+                    }
 
                     ImGui::TreePop();
                 }
