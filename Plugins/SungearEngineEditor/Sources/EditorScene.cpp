@@ -128,7 +128,7 @@ SGCore::Ref<SGE::EditorScene> SGE::EditorScene::createBasicScene(const std::stri
     {
         std::vector<SGCore::ECS::entity_t> skyboxEntities;
         auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("cube_model");
-        cubeModel->m_nodes[0]->addOnScene(newScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities, newScene](const auto& entity) {
+        cubeModel->m_rootNode->addOnScene(newScene, SG_LAYER_OPAQUE_NAME, [&skyboxEntities, newScene](const auto& entity) {
             skyboxEntities.push_back(entity);
             newScene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
             newScene->getECSRegistry()->remove<SGCore::Pickable>(entity);
@@ -178,7 +178,7 @@ void SGE::EditorScene::addEditorEntities() noexcept
 
         std::vector<SGCore::ECS::entity_t> gridEntities;
         auto cubeModel =  SGCore::AssetManager::getInstance()->loadAsset<SGCore::ModelAsset>("plane_model");
-        cubeModel->m_nodes[0]->addOnScene(m_scene, SG_LAYER_OPAQUE_NAME, [&gridEntities, scene](const auto& entity) {
+        cubeModel->m_rootNode->addOnScene(m_scene, SG_LAYER_OPAQUE_NAME, [&gridEntities, scene](const auto& entity) {
             gridEntities.push_back(entity);
             scene->getECSRegistry()->emplace<SGCore::IgnoreOctrees>(entity);
             scene->getECSRegistry()->remove<SGCore::Pickable>(entity);

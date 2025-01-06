@@ -5055,7 +5055,7 @@ namespace SGCore::Serde
         {
             valueView.getValueContainer().addMember("m_importerFlags", valueView.m_data->m_importerFlags);
             valueView.getValueContainer().addMember("m_modelName", valueView.m_data->m_modelName);
-            valueView.getValueContainer().addMember("m_nodes", valueView.m_data->m_nodes, assetsPackage);
+            valueView.getValueContainer().addMember("m_rootNode", valueView.m_data->m_rootNode, assetsPackage);
         }
 
         static void deserialize(DeserializableValueView<ModelAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
@@ -5072,10 +5072,10 @@ namespace SGCore::Serde
                 valueView.m_data->m_modelName = std::move(*modelName);
             }
 
-            auto nodes = valueView.getValueContainer().template getMember<std::vector<Ref<Node>>>("m_nodes", assetsPackage);
-            if(nodes)
+            auto rootNode = valueView.getValueContainer().template getMember<Ref<Node>>("m_rootNode", assetsPackage);
+            if(rootNode)
             {
-                valueView.m_data->m_nodes = std::move(*nodes);
+                valueView.m_data->m_rootNode = std::move(*rootNode);
             }
         }
     };

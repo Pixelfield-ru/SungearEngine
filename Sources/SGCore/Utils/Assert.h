@@ -7,12 +7,16 @@
 
 #include <iostream>
 
-#ifndef NDEBUG
+/*#ifndef NDEBUG
 #   define SG_ASSERT(Expr, Msg) \
     sgAssert(#Expr, Expr, __FILE__, __LINE__, Msg)
 #else
 #   define SG_ASSERT(Expr, Msg)
-#endif
+#endif*/
+
+// i think we must abort in release too
+#define SG_ASSERT(Expr, Msg) \
+    sgAssert(#Expr, Expr, __FILE__, __LINE__, Msg)
 
 #include "SGCore/Logger/Logger.h"
 

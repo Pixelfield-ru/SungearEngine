@@ -38,6 +38,7 @@ void SGCore::GL4Renderer::init() noexcept
     }
 
     useState(m_cachedRenderState, true);
+    useMeshRenderState(m_cachedMeshRenderState, true);
 
     /*glEnable (GL_ALPHA_TEST);
     glAlphaFunc (GL_GREATER, 0.2);*/

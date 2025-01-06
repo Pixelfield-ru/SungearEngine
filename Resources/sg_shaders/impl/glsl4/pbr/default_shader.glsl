@@ -464,30 +464,10 @@ void main()
     // todo: make
     // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
-        /*if(u_isTransparentPass == 1)
-        {
-            float a = diffuseColor.a;
-
-            float weight = fract(sin(dot(vsIn.UV, vec2(127.1, 311.7))) * 43758.5453);
-
-            if(weight > a)
-            {
-                discard;
-            }
-
-            layerWBOITColorAccum = vec4(finalCol.rgb, 1.0);
-        }
-        else
-        {
-            layerColor = vec4(finalCol.rgb, 1.0);
-        }*/
-
         if(calculateStochasticTransparencyComponents(finalCol.rgb, diffuseColor.a, layerSTColor, layerColor, vsIn.UV, u_isTransparentPass))
         {
             discard;
         }
-
-        // calculateWBOITComponents(finalCol.rgb, diffuseColor.a, gl_FragCoord.z, layerWBOITColorAccum, layerColor, layerWBOITReveal, u_isTransparentPass);
     }
 
     // layerColor.a = diffuseColor.a;

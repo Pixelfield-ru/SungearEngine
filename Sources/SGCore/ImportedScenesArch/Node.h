@@ -44,6 +44,13 @@ namespace SGCore
         void addOnScene(const Ref<Scene>& scene, const std::string& layerName, const EachEntityFunc& eachEntityFunc) noexcept;
         void addOnScene(const Ref<Scene>& scene, const std::string& layerName, const MeshFunc& meshFunc) noexcept;
         void addOnScene(const Ref<Scene>& scene, const std::string& layerName) noexcept;
+
+        /**
+         * Trying to find mesh with name \p name , begging at this node.
+         * @param name
+         * @return
+         */
+        [[nodiscard]] AssetRef<IMeshData> findMesh(const std::string& name) const noexcept;
     };
 }
 

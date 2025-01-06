@@ -81,6 +81,7 @@ SGCore::ECS::entity_t SGCore::Node::addOnScene(const SGCore::Ref<Scene>& scene,
         // meshEntityBaseInfo.m_layer = layer;
 
         meshEntityBaseInfo.setParent(parentEntity, *registry);
+        meshEntityBaseInfo.setRawName(mesh->m_name);
 
         meshFunc(parentEntity, meshEntity);
         eachEntityFunc(meshEntity);
@@ -151,4 +152,28 @@ void SGCore::Node::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* upd
         // resolving reference
         AssetManager::resolveAssetReference(updatedAssetManager, meshData);
     }
+}
+
+SGCore::AssetRef<SGCore::IMeshData> SGCore::Node::findMesh(const std::string& name) const noexcept
+{
+    for(size_t i = 0; i < m_meshesData.size(); ++i)
+    {
+        const auto& mesh = m_meshesData[i];
+
+        if(mesh->m_name == name)
+        {
+            return mesh;
+        }
+    }
+
+    for(size_t i = 0; i < m_children.size(); ++i)
+    {
+        auto meshData = m_children[i]->findMesh(name);
+        if(meshData)
+        {
+            return meshData;
+        }
+    }
+
+    return nullptr;
 }

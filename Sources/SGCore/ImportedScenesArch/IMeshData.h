@@ -51,8 +51,6 @@ namespace SGCore
         friend class AssetManager;
         friend struct Node;
 
-        std::vector<std::string> m_bonesNames;
-
         AABB<> m_aabb;
         
         // Mesh() noexcept;

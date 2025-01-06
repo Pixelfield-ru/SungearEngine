@@ -6,6 +6,7 @@
 #define SUNGEARENGINEEDITOR_SCENETREEVIEW_H
 
 #include <SGCore/ImGuiWrap/Views/IView.h>
+#include <SGCore/ImportedScenesArch/Bone.h>
 
 namespace SGE
 {
@@ -17,6 +18,8 @@ namespace SGE
 
     private:
         void drawTreeNode(const SGCore::ECS::entity_t& parentEntity, bool checkForRoot) noexcept;
+
+        void drawSkeletonNode(const SGCore::AssetRef<SGCore::Bone>& parentBone) noexcept;
     };
 }
 

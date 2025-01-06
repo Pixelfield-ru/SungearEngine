@@ -13,6 +13,9 @@
 #define LOG_E(tag, msg, ...) SGCore::Logger::getDefaultLogger()->error<true>(tag, msg, ##__VA_ARGS__);
 #define LOG_C(tag, msg, ...) SGCore::Logger::getDefaultLogger()->critical<true>(tag, msg, ##__VA_ARGS__);
 
+#define LOG_NOT_IMPLEMENTED(tag) LOG_E(tag, "Do not call this function! It is not implemented!\n{}", SG_CURRENT_LOCATION_STR)
+#define LOG_NOT_SUPPORTED_FUNC(tag) LOG_E(tag, "Do not call this function! It is not supported!\n{}", SG_CURRENT_LOCATION_STR)
+
 #define LOG_I_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->info<false>(tag, msg, ##__VA_ARGS__);
 #define LOG_D_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->debug<false>(tag, msg, ##__VA_ARGS__);
 #define LOG_W_UNFORMATTED(tag, msg, ...) SGCore::Logger::getDefaultLogger()->warn<false>(tag, msg, ##__VA_ARGS__);

@@ -295,7 +295,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         return;
     }
 
-    if(modelAsset->m_nodes.empty())
+    if(!modelAsset->m_rootNode)
     {
         LOG_E(SGEDITOR_TAG, "Can not drop model asset on scene: model by path '{}' does not have nodes.",
               SGCore::Utils::toUTF8(modelPath.u16string()));
@@ -303,7 +303,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     }
 
     std::vector<SGCore::ECS::entity_t> entities;
-    modelAsset->m_nodes[0]->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
+    modelAsset->m_rootNode->addOnScene(SGCore::Scene::getCurrentScene(), SG_LAYER_OPAQUE_NAME, [&entities](const auto& entity) {
         entities.push_back(entity);
         auto* pickableComponent =
                 SGCore::Scene::getCurrentScene()->getECSRegistry()->tryGet<SGCore::Pickable>(entity);

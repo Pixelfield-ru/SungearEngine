@@ -6,6 +6,7 @@
 #define SUNGEARENGINE_BONE_H
 
 #include "SGCore/Main/CoreGlobals.h"
+#include "SGCore/Memory/AssetRef.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -15,36 +16,52 @@
 
 namespace SGCore
 {
-    struct KeyPosition
+    struct IMeshData;
+
+    struct BoneVertexWeight
     {
-        glm::vec3 m_position { };
-        float m_timeStamp = 0.0f;
+        std::int64_t m_vertexIdx = -1;
+        float m_weight = 0;
     };
 
-    struct KeyRotation
+    // data of copy of bone for each mesh
+    struct MeshBoneData
     {
-        glm::quat m_rotation = glm::identity<glm::quat>();
-        float m_timeStamp = 0.0f;
+        AssetRef<IMeshData> m_affectedMesh;
+        std::vector<BoneVertexWeight> m_weights;
+        glm::mat4 m_offsetMatrix = glm::identity<glm::mat4>();
     };
 
-    struct KeyScale
+    // i think it must be asset because we can store this bone
+    // in custom user code and this bone must to be resolved automatically. assets can do it!
+    struct Bone : public IAsset
     {
-        glm::vec3 m_scale { };
-        float m_timeStamp = 0.0f;
-    };
+        sg_serde_as_friend()
 
-    struct Bone
-    {
+        sg_implement_type_id(Bone, 32)
+
+        // MEANS IDX IN m_allBones VECTOR IN PARENT SKELETON
         std::int32_t m_id = -1;
-        std::string m_name;
+        std::string m_boneName;
 
-        std::vector<KeyPosition> m_positionKeys;
+        /*std::vector<KeyPosition> m_positionKeys;
         std::vector<KeyRotation> m_rotationKeys;
-        std::vector<KeyScale> m_scaleKeys;
+        std::vector<KeyScale> m_scaleKeys;*/
 
-        glm::mat3 m_localMatrix = glm::identity<glm::mat4>();
+        // the meshes affected by this bone
+        std::vector<MeshBoneData> m_affectedMeshesBoneData;
 
-        std::vector<Ref<Bone>> m_children;
+        std::vector<AssetRef<Bone>> m_children;
+
+    protected:
+        /// does nothing!!
+        void doLoad(const InterpolatedPath& path) override;
+
+        // todo: impl
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
+
+        /// does nothing!!
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
     };
 }
 

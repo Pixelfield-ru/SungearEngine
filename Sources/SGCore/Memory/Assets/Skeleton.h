@@ -16,7 +16,9 @@ namespace SGCore
 
         sg_implement_type_id(Skeleton, 31)
 
-        std::vector<Ref<Bone>> m_bones;
+        AssetRef<Bone> m_rootBone;
+        std::vector<AssetRef<Bone>> m_allBones;
+        // std::vector<Ref<Bone>> m_bones;
 
     protected:
         /// does nothing for now

@@ -24,7 +24,6 @@ namespace SGCore
                 aiProcess_GenUVCoords |
                 aiProcess_FlipUVs |
                 aiProcess_JoinIdenticalVertices |
-                aiProcess_FlipWindingOrder |
                 aiProcess_FixInfacingNormals |
                 aiProcess_CalcTangentSpace |
                 aiProcess_LimitBoneWeights;

@@ -10,10 +10,30 @@
 
 namespace SGCore
 {
-    struct SkeletalAnimationNode
+    struct KeyPosition
     {
-        std::string m_name;
-        std::vector<SkeletalAnimationNode> m_children;
+        glm::vec3 m_position { };
+        float m_timeStamp = 0.0f;
+    };
+
+    struct KeyRotation
+    {
+        glm::quat m_rotation = glm::identity<glm::quat>();
+        float m_timeStamp = 0.0f;
+    };
+
+    struct KeyScale
+    {
+        glm::vec3 m_scale { };
+        float m_timeStamp = 0.0f;
+    };
+
+    struct SkeletalBoneAnimation
+    {
+        std::string m_boneName;
+        std::vector<KeyPosition> m_positionKeys;
+        std::vector<KeyRotation> m_rotationKeys;
+        std::vector<KeyScale> m_scaleKeys;
     };
 
     struct SkeletalAnimationAsset : public IAsset
@@ -22,9 +42,21 @@ namespace SGCore
 
         sg_implement_type_id(SkeletalAnimationAsset, 29)
 
-        sg_assets_refs_resolver_as_friend
+        // sg_assets_refs_resolver_as_friend
 
+        std::string m_animationName;
 
+        std::vector<SkeletalBoneAnimation> m_bonesAnimations;
+
+    private:
+        /// DOES NOTHING!
+        void doLoad(const InterpolatedPath& path) override;
+
+        // todo: impl
+        void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
+
+        /// DOES NOTHING!
+        void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
     };
 }
 

@@ -59,6 +59,14 @@
 
 namespace SGCore
 {
+    template<typename T, std::size_t N>
+    static std::array<T, N> makeFilledArray(const T& value)
+    {
+        std::array<T, N> arr;
+        arr.fill(value); // Используем метод fill()
+        return arr;
+    }
+
     static std::chrono::high_resolution_clock::time_point now() noexcept
     {
         return std::chrono::high_resolution_clock::now();

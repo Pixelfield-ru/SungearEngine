@@ -24,7 +24,7 @@ namespace SGCore
 
         sg_assets_refs_resolver_as_friend
 
-        std::vector<Ref<Node>> m_nodes;
+        Ref<Node> m_rootNode;
 
     protected:
         void doLoad(const InterpolatedPath& path) override;
@@ -37,24 +37,48 @@ namespace SGCore
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
     private:
-        // std::unordered_map<std::string, BoneInfo> m_bonesInfo;
+        // this is so fucking shitty... but assimp forces me to do this
+        struct BoneHierarchyNode
+        {
+            std::string m_name;
+            // bones with that name. IT IS GUARANTEED THAT m_aiBones.size() == m_affectedMeshes.size() AFTER COLLECTING BONES
+            std::vector<const aiBone*> m_aiBones { };
+            // the meshes affected by this bone. IT IS GUARANTEED THAT m_aiBones.size() == m_affectedMeshes.size() AFTER COLLECTING BONES
+            std::vector<const aiMesh*> m_affectedMeshes { };
+            std::vector<std::int32_t> m_children;
+            std::int32_t m_parent = -1;
+        };
 
         // local import flags
         // TODO: maybe reimport after change flags
         int m_importerFlags = 0;
 
-        void extractSkeletonForMesh(const AssetRef<IMeshData>& sgMeshData, const aiMesh* fromAiMesh) noexcept;
-
-        void processSkeletons(const aiScene* fromScene, const aiNode* fromNode, const AssetRef<Skeleton>& current) noexcept;
-
         // model name
         std::string m_modelName;
 
-        std::shared_ptr<Node> processNode(const aiNode*, const aiScene*);
-        AssetRef<IMeshData> processMesh(const aiMesh*, const aiScene*);
+        void processNode(const aiNode*, const aiScene*, std::shared_ptr<Node>& outputNode);
+        AssetRef<IMeshData> processMesh(aiMesh*, const aiScene*);
         void loadTextures(aiMaterial* aiMat, AssetRef<IMaterial>& sgMaterial, const aiTextureType& aiTexType, const SGTextureType& sgMaterialTextureType);
         
         void prepareNodeMeshes(const Ref<Node>& node) noexcept;
+
+        // FOR BUILDING SKELETONS ==================================================
+
+        std::vector<AssetRef<Skeleton>> processSkeletons(const aiScene* fromScene) noexcept;
+        // sub process of processSkeletons function
+        void collectAllBones(std::unordered_map<std::string, BoneHierarchyNode>& bones, const aiScene* scene) noexcept;
+        // sub process of processSkeletons function
+        void buildBonesHierarchy(const aiScene* scene,
+                                        std::vector<BoneHierarchyNode>& bones) noexcept;
+        void initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
+                                      const BoneHierarchyNode& tmpBone,
+                                      std::vector<BoneHierarchyNode>& hierarchyBones,
+                                      const AssetRef<Skeleton>& toSkeleton) noexcept;
+
+        static int32_t findBoneIndex(const std::string& name,
+                                     const std::vector<BoneHierarchyNode>& bones) noexcept;
+
+        static std::int32_t findParentNodeWithBone(const aiNode* currentParentNode, const std::vector<BoneHierarchyNode>& fromBones) noexcept;
     };
 }
 
