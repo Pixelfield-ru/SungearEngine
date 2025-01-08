@@ -20,6 +20,8 @@ namespace SGCore
         std::vector<AssetRef<Bone>> m_allBones;
         // std::vector<Ref<Bone>> m_bones;
 
+        [[nodiscard]] AssetRef<Bone> findBone(const std::string& boneName) const noexcept;
+
     protected:
         /// does nothing for now
         void doLoad(const InterpolatedPath& path) override;

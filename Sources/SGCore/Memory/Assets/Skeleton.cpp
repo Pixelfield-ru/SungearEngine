@@ -19,3 +19,16 @@ void SGCore::Skeleton::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
 {
 
 }
+
+SGCore::AssetRef<SGCore::Bone> SGCore::Skeleton::findBone(const std::string& boneName) const noexcept
+{
+    for(const auto& bone : m_allBones)
+    {
+        if(bone->m_boneName == boneName)
+        {
+            return bone;
+        }
+    }
+
+    return nullptr;
+}

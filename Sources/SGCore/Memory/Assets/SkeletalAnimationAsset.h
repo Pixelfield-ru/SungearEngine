@@ -24,16 +24,32 @@ namespace SGCore
 
     struct KeyScale
     {
-        glm::vec3 m_scale { };
+        glm::vec3 m_scale = { 1.0, 1.0, 1.0 };
         float m_timeStamp = 0.0f;
     };
 
     struct SkeletalBoneAnimation
     {
-        std::string m_boneName;
+        friend struct AnimationsFile;
+        friend struct SkeletalAnimationAsset;
+
         std::vector<KeyPosition> m_positionKeys;
         std::vector<KeyRotation> m_rotationKeys;
         std::vector<KeyScale> m_scaleKeys;
+
+        void sortPositionKeys() noexcept;
+        void sortRotationKeys() noexcept;
+        void sortScaleKeys() noexcept;
+        void sortAllKeys() noexcept;
+
+        [[nodiscard]] std::int64_t findPositionKeyByTime(const float& time) const noexcept;
+        [[nodiscard]] std::int64_t findRotationKeyByTime(const float& time) const noexcept;
+        [[nodiscard]] std::int64_t findScaleKeyByTime(const float& time) const noexcept;
+
+        [[nodiscard]] const std::string& getBoneName() const noexcept;
+
+    private:
+        std::string m_boneName;
     };
 
     struct SkeletalAnimationAsset : public IAsset
@@ -42,16 +58,22 @@ namespace SGCore
 
         sg_implement_type_id(SkeletalAnimationAsset, 29)
 
+        friend struct AnimationsFile;
+
         // sg_assets_refs_resolver_as_friend
 
         std::string m_animationName;
 
-        std::vector<SkeletalBoneAnimation> m_bonesAnimations;
-
         float m_duration = 0.0f;
         float m_ticksPerSecond = 0.0f;
 
+        void changeBoneName(const std::string& lastBoneName, const std::string& newBoneName) noexcept;
+        SkeletalBoneAnimation* getBoneAnimation(const std::string& boneName) noexcept;
+
     private:
+        // first - bone name
+        std::unordered_map<std::string, SkeletalBoneAnimation> m_bonesAnimations;
+
         /// DOES NOTHING!
         void doLoad(const InterpolatedPath& path) override;
 

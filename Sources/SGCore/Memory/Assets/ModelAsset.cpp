@@ -533,6 +533,11 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
     skeletonBone = toSkeleton->getParentAssetManager()->getOrAddAssetByPath<Bone>(toSkeleton->getPath() / "bones" / tmpBone.m_name);
     skeletonBone->m_boneName = tmpBone.m_name;
     skeletonBone->m_id = toSkeleton->m_allBones.size();
+    if(!tmpBone.m_aiBones.empty())
+    {
+        // offset matrix is identical for each mesh that is affected by this bone
+        skeletonBone->m_offsetMatrix = AssimpUtils::aiToGLM(tmpBone.m_aiBones[0]->mOffsetMatrix);
+    }
 
     for(size_t i = 0; i < tmpBone.m_aiBones.size(); ++i)
     {
@@ -541,7 +546,6 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
 
         MeshBoneData meshBoneData { };
         meshBoneData.m_affectedMesh = m_rootNode->findMesh(curAffectedAiMesh->mName.C_Str());
-        meshBoneData.m_offsetMatrix = AssimpUtils::aiToGLM(curAiBone->mOffsetMatrix);
 
         for(size_t j = 0; j < tmpBone.m_aiBones[i]->mNumWeights; ++j)
         {

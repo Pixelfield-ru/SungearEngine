@@ -29,7 +29,6 @@ namespace SGCore
     {
         AssetRef<IMeshData> m_affectedMesh;
         std::vector<BoneVertexWeight> m_weights;
-        glm::mat4 m_offsetMatrix = glm::identity<glm::mat4>();
     };
 
     // i think it must be asset because we can store this bone
@@ -43,6 +42,7 @@ namespace SGCore
         // MEANS IDX IN m_allBones VECTOR IN PARENT SKELETON
         std::int32_t m_id = -1;
         std::string m_boneName;
+        glm::mat4 m_offsetMatrix = glm::identity<glm::mat4>();
 
         /*std::vector<KeyPosition> m_positionKeys;
         std::vector<KeyRotation> m_rotationKeys;

@@ -202,6 +202,9 @@ void SGE::SceneTreeView::drawSkeletonNode(const SGCore::AssetRef<SGCore::Bone>& 
 
     if(ImGui::TreeNode(parentBone->m_boneName.c_str()))
     {
+        const auto& offsetMatrix = parentBone->m_offsetMatrix;
+        ImGui::Text("Offset matrix: %s", glm::to_string(offsetMatrix).c_str());
+
         ImGui::PushID(std::hash<decltype(&parentBone->m_affectedMeshesBoneData)>()(&parentBone->m_affectedMeshesBoneData));
 
         if(!parentBone->m_affectedMeshesBoneData.empty() && ImGui::TreeNode("Data"))
@@ -209,7 +212,6 @@ void SGE::SceneTreeView::drawSkeletonNode(const SGCore::AssetRef<SGCore::Bone>& 
             for(const auto& affectedMeshBoneData: parentBone->m_affectedMeshesBoneData)
             {
                 const auto& affectedMesh = affectedMeshBoneData.m_affectedMesh;
-                const auto& offsetMatrix = affectedMeshBoneData.m_offsetMatrix;
                 const auto& weights = affectedMeshBoneData.m_weights;
 
                 ImGui::PushID(std::hash<decltype(&affectedMesh)>()(&affectedMesh));
@@ -217,7 +219,6 @@ void SGE::SceneTreeView::drawSkeletonNode(const SGCore::AssetRef<SGCore::Bone>& 
                 if(ImGui::TreeNode("For mesh %s", affectedMesh->m_name.c_str()))
                 {
                     ImGui::Text("Affected mesh name: %s", affectedMesh->m_name.c_str());
-                    ImGui::Text("Offset matrix: %s", glm::to_string(offsetMatrix).c_str());
 
                     ImGui::PushID(std::hash<decltype(&weights)>()(&weights));
 

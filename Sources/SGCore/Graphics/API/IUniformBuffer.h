@@ -116,14 +116,14 @@ namespace SGCore
                 
                 // std::cout << "scalar size: " << scalarSize << std::endl;
 
-                // std::memcpy(uniformScalarPtr, scalars, scalarSize * scalarsNum);
-                for(int i = 0; i < scalarsNum; ++i)
+                std::memcpy(uniformScalarPtr, scalars, scalarSize * scalarsNum);
+                /*for(int i = 0; i < scalarsNum; ++i)
                 {
                     // copying scalar to current position (uniformScalarPtr)
                     std::memcpy(uniformScalarPtr, &scalars[i], scalarSize);
                     // offset
                     uniformScalarPtr += scalarSize;
-                }
+                }*/
 
                 // updating data on graphics api side
                 subDataOnGAPISide(uniform.m_offsetInUniformBuffer, uniform.m_dataSizeInUniformBuffer);

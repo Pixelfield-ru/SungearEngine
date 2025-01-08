@@ -12,16 +12,15 @@
 
 namespace SGCore
 {
-
-
-    struct AnimatorsSystem : ISystem
+    struct MotionPlannersResolver : ISystem
     {
         void fixedUpdate(const double& dt, const double& fixedDt) final;
 
     private:
         static void processMotionNode(const double& dt,
+                                      Ref<ECS::registry_t>& inRegistry,
                                       MotionPlanner::reg_t& motionPlanner,
-                                      const Ref<MotionPlannerNode>& node,
+                                      const Ref<MotionPlannerNode>& currentNode,
                                       const AssetRef<Skeleton>& skeleton,
                                       const EntityBaseInfo::reg_t& currentEntity);
     };
