@@ -13,10 +13,10 @@ namespace SGCore
         // buffer of scalar values
         char* m_buffer = nullptr;
 
-        size_t m_bufferSize = 0;
+        std::int64_t m_bufferSize = 0;
 
         // uniforms are just description of data
-        std::vector<IShaderUniform> m_uniforms;
+        std::unordered_map<std::string, IShaderUniform> m_uniforms;
 
         // location in shader
         std::uint16_t m_layoutLocation = 0;
@@ -36,23 +36,30 @@ namespace SGCore
 
         virtual ~IUniformBuffer();
 
+        /**
+         * WHEN PASSING UNIFORMS TO THIS FUNCTION, YOU MUST STRICTLY FOLLOW THE ORDER IN WHICH THEY ARE DECLARED IN THE SHADER.
+         * @tparam ShaderUniform
+         * @param uniforms
+         */
         template<typename ShaderUniform = IShaderUniform>
         void putUniforms(std::vector<ShaderUniform>&& uniforms) noexcept
         {
-            for(auto& uniform : uniforms)
-            {
-                m_uniforms.emplace_back(std::forward<ShaderUniform>(uniform));
-            }
+            // std::vector<ShaderUniform> uniformsCopy = uniforms;
 
             std::uint64_t lastBufferSize = m_bufferSize;
-            m_bufferSize = 0;
+            // m_bufferSize = 0;
             // first iteration - prepare
-            for(auto& uniform : m_uniforms)
+            for(auto& uniform : uniforms)
             {
                 uniform.m_dataSizeInUniformBuffer = getSGGDataTypeAlignedSizeInBytes(uniform.m_dataType);
                 uniform.m_offsetInUniformBuffer = m_bufferSize;
 
                 m_bufferSize += uniform.m_dataSizeInUniformBuffer;
+            }
+
+            for(auto& uniform : uniforms)
+            {
+                m_uniforms[uniform.m_name] = uniform;
             }
 
             //TODO: (possible) to add more memory allocation so as not to allocate frequently. allow only when there is not enough space
@@ -91,14 +98,14 @@ namespace SGCore
         requires(std::is_scalar_v<Scalar> && sizeof(Scalar) == 4)
         std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
         {
-            const auto& foundUniformIter = std::find_if(m_uniforms.begin(), m_uniforms.end(), [&uniformName](const auto& shaderUniform) { return shaderUniform.m_name == uniformName; });
+            const auto& foundUniformIter = m_uniforms.find(uniformName);
             if(foundUniformIter == m_uniforms.end())
             {
                 std::cout << "can not find uniform with name " << uniformName << std::endl;
             }
-            if(foundUniformIter != m_uniforms.end())
+            else
             {
-                const auto& uniform = *foundUniformIter;
+                const auto& uniform = foundUniformIter->second;
 
                 // uniform-local pointer to put scalars
                 char* uniformScalarPtr = m_buffer + uniform.m_offsetInUniformBuffer;
@@ -109,6 +116,7 @@ namespace SGCore
                 
                 // std::cout << "scalar size: " << scalarSize << std::endl;
 
+                // std::memcpy(uniformScalarPtr, scalars, scalarSize * scalarsNum);
                 for(int i = 0; i < scalarsNum; ++i)
                 {
                     // copying scalar to current position (uniformScalarPtr)
@@ -141,18 +149,20 @@ namespace SGCore
         
         char* getUniform(const std::string& uniformName) const noexcept
         {
-            const auto& foundUniformIter = std::find_if(m_uniforms.begin(), m_uniforms.end(), [&uniformName](const auto& shaderUniform) { return shaderUniform.m_name == uniformName; });
+            const auto& foundUniformIter = m_uniforms.find(uniformName);
             if(foundUniformIter == m_uniforms.end())
             {
                 std::cout << "can not find uniform with name " << uniformName << std::endl;
                 return nullptr;
             }
-            if(foundUniformIter != m_uniforms.end())
+            else
             {
-                const auto& uniform = *foundUniformIter;
-                
+                const auto& uniform = foundUniformIter->second;
+
                 return m_buffer + uniform.m_offsetInUniformBuffer;
             }
+
+            return nullptr;
         }
 
         virtual std::shared_ptr<IUniformBuffer> bind() = 0;

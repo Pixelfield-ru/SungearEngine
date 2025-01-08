@@ -61,7 +61,7 @@ void coreInit()
             SGCore::PluginsManager::loadPlugin("SungearEngineEditor",
                                                sgEditorPath.resolved(),
                                                {},
-                                               "cmake-build-release");
+                                               "cmake-build-debug");
 
     // std::cout << "plugin: " << sgEditorPlugin << ", sgeditor path: " << sgEditorPath << std::endl;
 

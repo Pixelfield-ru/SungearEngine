@@ -44,6 +44,12 @@ layout(std140) uniform AtmosphereBlock
 
 uniform ObjectTransform objectTransform;
 
+layout(std140) uniform BonesData
+{
+    mat4 u_bonesTransformations[SG_MAX_BONES_PER_MESH];
+    int u_bonesCount;
+};
+
 #ifndef SG_NOT_INCLUDE_LIGHTS
     layout(std140) uniform DirectionalLightsBlock
     {

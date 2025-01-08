@@ -48,6 +48,9 @@ namespace SGCore
 
         std::vector<SkeletalBoneAnimation> m_bonesAnimations;
 
+        float m_duration = 0.0f;
+        float m_ticksPerSecond = 0.0f;
+
     private:
         /// DOES NOTHING!
         void doLoad(const InterpolatedPath& path) override;

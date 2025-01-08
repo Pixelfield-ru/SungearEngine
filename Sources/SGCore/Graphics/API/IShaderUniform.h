@@ -38,7 +38,7 @@ namespace SGCore
 
         IShaderUniform(const std::string& name, SGGDataType dataType)
         {
-            m_name = std::move(name);
+            m_name = name;
             m_dataType = dataType;
         }
 
@@ -56,12 +56,12 @@ namespace SGCore
         /*
          * In bytes. USE ONLY IN UNIFORM BUFFER.
          */
-        size_t m_offsetInUniformBuffer = 0;
+        std::int64_t m_offsetInUniformBuffer = 0;
 
         /*
          * In bytes. USE ONLY IN UNIFORM BUFFER.
          */
-        size_t m_dataSizeInUniformBuffer = 0;
+        std::int64_t m_dataSizeInUniformBuffer = 0;
     };
 }
 

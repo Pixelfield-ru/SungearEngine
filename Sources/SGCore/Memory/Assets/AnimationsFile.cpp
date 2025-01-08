@@ -60,6 +60,12 @@ void SGCore::AnimationsFile::readFromExistingAssimpScene(const aiScene& scene) n
                     getPath() / "skeletal" / std::string(curAnimation->mName.C_Str()));
 
             skeletalAnimation->m_animationName = curAnimation->mName.C_Str();
+            skeletalAnimation->m_duration = curAnimation->mDuration;
+            skeletalAnimation->m_ticksPerSecond = curAnimation->mTicksPerSecond;
+            if(skeletalAnimation->m_ticksPerSecond == 0.0f)
+            {
+                skeletalAnimation->m_ticksPerSecond = 1.0f;
+            }
 
             for(size_t j = 0; j < curAnimation->mNumChannels; ++j)
             {
