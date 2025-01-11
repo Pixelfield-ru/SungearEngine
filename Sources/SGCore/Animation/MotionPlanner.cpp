@@ -8,22 +8,14 @@
 
 SGCore::MotionPlanner::MotionPlanner() noexcept
 {
-    m_bonesTransformationsUniformBuffer = Ref<IUniformBuffer>(CoreMain::getRenderer()->createUniformBuffer());
-    m_bonesTransformationsUniformBuffer->m_blockName = "BonesData";
+    m_bonesMatricesData.resize(m_maxBonesPerMesh * 16 + 4);
 
-    std::vector<IShaderUniform> uniforms;
-
-    for(std::int32_t i = 0; i < m_maxBonesPerMesh; ++i)
-    {
-        uniforms.push_back(IShaderUniform("u_bonesTransformations[" + std::to_string(i) + "]", SGGDataType::SGG_MAT4));
-    }
-
-    uniforms.push_back(IShaderUniform("u_bonesCount", SGGDataType::SGG_INT));
-
-    m_bonesTransformationsUniformBuffer->putUniforms(std::move(uniforms));
-
-    m_bonesTransformationsUniformBuffer->setLayoutLocation(5);
-    m_bonesTransformationsUniformBuffer->prepare();
+    m_bonesMatricesBuffer = Ref<ITexture2D>(CoreMain::getRenderer()->createTexture2D());
+    m_bonesMatricesBuffer->m_textureBufferUsage = SGGUsage::SGG_DYNAMIC;
+    m_bonesMatricesBuffer->m_isTextureBuffer = true;
+    m_bonesMatricesBuffer->create<float>(m_bonesMatricesData.data(), m_bonesMatricesData.size() + 4 , 1, 1,
+                                         SGGColorInternalFormat::SGG_RGBA32_FLOAT,
+                                         SGGColorFormat::SGG_RGBA);
 }
 
 SGCore::MotionPlanner SGCore::MotionPlanner::copyStructure() const noexcept
@@ -31,9 +23,10 @@ SGCore::MotionPlanner SGCore::MotionPlanner::copyStructure() const noexcept
     MotionPlanner newMotionPlanner;
     newMotionPlanner.m_skeleton = m_skeleton;
     newMotionPlanner.m_maxBonesPerMesh = m_maxBonesPerMesh;
-    if(m_rootNode)
+
+    for(const auto& rootNode : m_rootNodes)
     {
-        newMotionPlanner.m_rootNode = MakeRef<MotionPlannerNode>(m_rootNode->copyStructure());
+        newMotionPlanner.m_rootNodes.push_back(MakeRef<MotionPlannerNode>(rootNode->copyStructure()));
     }
 
     return newMotionPlanner;

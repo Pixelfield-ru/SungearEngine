@@ -17,12 +17,19 @@ namespace SGCore
         void fixedUpdate(const double& dt, const double& fixedDt) final;
 
     private:
-        static void processMotionNode(const double& dt,
-                                      Ref<ECS::registry_t>& inRegistry,
-                                      MotionPlanner::reg_t& motionPlanner,
-                                      const Ref<MotionPlannerNode>& currentNode,
-                                      const AssetRef<Skeleton>& skeleton,
-                                      const EntityBaseInfo::reg_t& currentEntity);
+        static void processMotionNodes(const double& dt,
+                                       SGCore::Ref<SGCore::ECS::registry_t>& inRegistry,
+                                       MotionPlanner& motionPlanner,
+                                       const std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate,
+                                       const AssetRef<Skeleton>& skeleton,
+                                       const ECS::entity_t& currentEntity,
+                                       const EntityBaseInfo::reg_t& currentEntityBaseInfo,
+                                       const Transform::reg_t& currentEntityTransform,
+                                       const Transform::reg_t& parentEntityTransform,
+                                       std::int32_t& bonesCount) noexcept;
+
+        static void collectNodesToInterpolate(const Ref<MotionPlannerNode>& currentNode,
+                                              std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept;
     };
 }
 

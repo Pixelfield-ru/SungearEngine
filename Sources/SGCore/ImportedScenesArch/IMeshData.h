@@ -11,6 +11,7 @@
 #include "SGCore/Graphics/API/IRenderer.h"
 #include "SGCore/Main/CoreMain.h"
 #include "Vertex.h"
+#include "Bone.h"
 
 sg_predeclare_serde()
 
@@ -66,6 +67,7 @@ namespace SGCore
         std::vector<std::uint32_t> m_indices;
 
         std::vector<Vertex> m_vertices;
+        std::vector<BoneVertexWeight> m_tmpVertexWeights;
 
         // vertices positions array
         /*std::vector<float> m_positions;

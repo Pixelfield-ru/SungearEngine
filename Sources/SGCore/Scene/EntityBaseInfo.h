@@ -60,6 +60,14 @@ namespace SGCore
          */
         [[nodiscard]] void getAllChildren(ECS::registry_t& inRegistry, std::vector<ECS::entity_t>& outputEntities) const noexcept;
 
+        /**
+         * Searches for an entity by name starting with this entity.
+         * @param inRegistry
+         * @param name The name of the entity to be found
+         * @return Found entity or \p entt::null .
+         */
+        [[nodiscard]] ECS::entity_t findEntity(ECS::registry_t& inRegistry, const std::string& name) const noexcept;
+
         [[nodiscard]] const glm::vec3& getUniqueColor() const noexcept;
 
         [[nodiscard]] const ECS::entity_t& getThisEntity() const noexcept;

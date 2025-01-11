@@ -77,6 +77,12 @@ void SGCore::SkeletalBoneAnimation::sortAllKeys() noexcept
 std::int64_t SGCore::SkeletalBoneAnimation::findPositionKeyByTime(const float& time) const noexcept
 {
     const std::int64_t keysCount = std::ssize(m_positionKeys);
+
+    if(keysCount == 1)
+    {
+        return 0;
+    }
+
     for(std::int64_t i = 0; i < keysCount; ++i)
     {
         const auto& key = m_positionKeys[i];
@@ -92,6 +98,12 @@ std::int64_t SGCore::SkeletalBoneAnimation::findPositionKeyByTime(const float& t
 std::int64_t SGCore::SkeletalBoneAnimation::findRotationKeyByTime(const float& time) const noexcept
 {
     const std::int64_t keysCount = std::ssize(m_rotationKeys);
+
+    if(keysCount == 1)
+    {
+        return 0;
+    }
+
     for(std::int64_t i = 0; i < keysCount; ++i)
     {
         const auto& key = m_rotationKeys[i];
@@ -107,6 +119,12 @@ std::int64_t SGCore::SkeletalBoneAnimation::findRotationKeyByTime(const float& t
 std::int64_t SGCore::SkeletalBoneAnimation::findScaleKeyByTime(const float& time) const noexcept
 {
     const std::int64_t keysCount = std::ssize(m_scaleKeys);
+
+    if(keysCount == 1)
+    {
+        return 0;
+    }
+
     for(std::int64_t i = 0; i < keysCount; ++i)
     {
         const auto& key = m_scaleKeys[i];

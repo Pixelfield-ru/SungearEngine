@@ -493,7 +493,7 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
         // if bone is root in hierarchy
         if(currentBoneHierarchyNode.m_parent == -1)
         {
-            const auto skeletonPath = getPath() / std::string(currentBoneHierarchyNode.m_aiBones[0]->mName.C_Str());
+            const auto skeletonPath = getPath() / "skeletons" / std::string(currentBoneHierarchyNode.m_aiBones[0]->mName.C_Str());
 
             if(!parentAssetManager->isAssetExists<Skeleton>(Utils::toUTF8(skeletonPath.resolved().u16string())))
             {
@@ -505,6 +505,11 @@ std::vector<SGCore::AssetRef<SGCore::Skeleton>> SGCore::ModelAsset::processSkele
                       Utils::toUTF8(skeletonPath.resolved().u16string()));
 
                 initAndAddBoneToSkeleton(skeleton->m_rootBone, currentBoneHierarchyNode, bones, skeleton);
+
+                for(size_t j = 0; j < skeleton->m_allBones.size(); ++j)
+                {
+                    // trimAndSetupWeightsOfMeshes(skeleton->m_allBones[j]);
+                }
 
                 outputSkeletons.push_back(skeleton);
             }
@@ -556,7 +561,13 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
                     .m_weight = aiWeight.mWeight
             };
 
-            meshBoneData.m_affectedMesh->m_vertices[weight.m_vertexIdx].addWeightData(weight.m_weight, skeletonBone->m_id);
+            // meshBoneData.m_affectedMesh->m_tmpVertexWeights.push_back(weight);
+
+            if(weight.m_weight != 0.0f)
+            {
+                meshBoneData.m_affectedMesh->m_vertices[weight.m_vertexIdx].addWeightData(weight.m_weight,
+                                                                                          skeletonBone->m_id);
+            }
 
             meshBoneData.m_weights.push_back(weight);
         }
@@ -578,6 +589,25 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
         initAndAddBoneToSkeleton(childBone, childHierarchyBone, hierarchyBones, toSkeleton);
 
         skeletonBone->m_children.push_back(childBone);
+    }
+}
+
+void SGCore::ModelAsset::trimAndSetupWeightsOfMeshes(const SGCore::AssetRef<SGCore::Bone>& currentSkeletonBone) noexcept
+{
+    for(size_t i = 0; i < currentSkeletonBone->m_affectedMeshesBoneData.size(); ++i)
+    {
+        const auto& affectedMeshBoneData = currentSkeletonBone->m_affectedMeshesBoneData[i];
+
+        // affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights = trimBoneWeights(affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights, 8);
+
+        for(size_t j = 0; j < affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights.size(); ++j)
+        {
+            const auto& weight = affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights[j];
+
+            affectedMeshBoneData.m_affectedMesh->m_vertices[weight.m_vertexIdx].addWeightData(weight.m_weight, currentSkeletonBone->m_id);
+        }
+
+        //affectedMeshBoneData.m_affectedMesh->m_tmpVertexWeights.clear();
     }
 }
 

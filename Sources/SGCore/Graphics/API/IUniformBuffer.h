@@ -7,7 +7,7 @@
 
 namespace SGCore
 {
-    class IUniformBuffer : public std::enable_shared_from_this<IUniformBuffer>
+    class IUniformBuffer
     {
     protected:
         // buffer of scalar values
@@ -96,40 +96,36 @@ namespace SGCore
          */
         template<typename Scalar>
         requires(std::is_scalar_v<Scalar> && sizeof(Scalar) == 4)
-        std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
+        void subData(const std::string& uniformName, const Scalar* scalars, const int& scalarsNum)
         {
             const auto& foundUniformIter = m_uniforms.find(uniformName);
             if(foundUniformIter == m_uniforms.end())
             {
                 std::cout << "can not find uniform with name " << uniformName << std::endl;
+                return;
             }
-            else
+            const auto& uniform = foundUniformIter->second;
+
+            // uniform-local pointer to put scalars
+            char* uniformScalarPtr = m_buffer + uniform.m_offsetInUniformBuffer;
+
+            // std::cout << "offset : " << uniform.m_offsetInUniformBuffer << ", scalars count : " << scalarsNum << std::endl;
+
+            constexpr const size_t scalarSize = sizeof(Scalar);
+
+            // std::cout << "scalar size: " << scalarSize << std::endl;
+
+            std::memcpy(uniformScalarPtr, scalars, scalarSize * scalarsNum);
+            /*for(int i = 0; i < scalarsNum; ++i)
             {
-                const auto& uniform = foundUniformIter->second;
+                // copying scalar to current position (uniformScalarPtr)
+                std::memcpy(uniformScalarPtr, &scalars[i], scalarSize);
+                // offset
+                uniformScalarPtr += scalarSize;
+            }*/
 
-                // uniform-local pointer to put scalars
-                char* uniformScalarPtr = m_buffer + uniform.m_offsetInUniformBuffer;
-                
-                // std::cout << "offset : " << uniform.m_offsetInUniformBuffer << ", scalars count : " << scalarsNum << std::endl;
-                
-                constexpr const size_t scalarSize = sizeof(Scalar);
-                
-                // std::cout << "scalar size: " << scalarSize << std::endl;
-
-                std::memcpy(uniformScalarPtr, scalars, scalarSize * scalarsNum);
-                /*for(int i = 0; i < scalarsNum; ++i)
-                {
-                    // copying scalar to current position (uniformScalarPtr)
-                    std::memcpy(uniformScalarPtr, &scalars[i], scalarSize);
-                    // offset
-                    uniformScalarPtr += scalarSize;
-                }*/
-
-                // updating data on graphics api side
-                subDataOnGAPISide(uniform.m_offsetInUniformBuffer, uniform.m_dataSizeInUniformBuffer);
-            }
-
-            return shared_from_this();
+            // updating data on graphics api side
+            subDataOnGAPISide(uniform.m_offsetInUniformBuffer, uniform.m_dataSizeInUniformBuffer);
         }
 
         /**
@@ -142,9 +138,9 @@ namespace SGCore
          */
         template<typename Scalar>
         requires(std::is_scalar_v<Scalar> && sizeof(Scalar) == 4)
-        std::shared_ptr<IUniformBuffer> subData(const std::string& uniformName, const std::initializer_list<Scalar>& scalars)
+        void subData(const std::string& uniformName, const std::initializer_list<Scalar>& scalars)
         {
-            return subData(uniformName, std::data(scalars), scalars.size());
+            subData(uniformName, std::data(scalars), scalars.size());
         }
         
         char* getUniform(const std::string& uniformName) const noexcept
@@ -165,14 +161,14 @@ namespace SGCore
             return nullptr;
         }
 
-        virtual std::shared_ptr<IUniformBuffer> bind() = 0;
+        virtual void bind() = 0;
 
         /**
          * Must be called after puData
          * Will reallocate buffer to resize. Be careful
          * @return This
          */
-        virtual std::shared_ptr<IUniformBuffer> prepare() = 0;
+        virtual void prepare() = 0;
 
         std::uint16_t getLayoutLocation() const noexcept;
         /**

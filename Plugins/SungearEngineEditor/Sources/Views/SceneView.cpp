@@ -19,6 +19,8 @@
 #include <SGCore/Scene/EntityBaseInfo.h>
 #include <SGCore/Render/Camera3D.h>
 #include <SGCore/Scene/SceneUtils.h>
+#include <SGCore/Memory/Assets/AnimationsFile.h>
+#include <SGCore/Animation/MotionPlanner.h>
 
 #include "SungearEngineEditor.h"
 #include "Views/MainView.h"
@@ -273,7 +275,7 @@ void SGE::SceneView::acceptFilesFromDirectoryExplorer() noexcept
         {
             const auto fileExt = file->getPath().extension();
 
-            if(fileExt == ".obj" || fileExt == ".gltf")
+            if(fileExt == ".obj" || fileExt == ".gltf" || fileExt == ".fbx")
             {
                 loadModelByPath(file->getPath());
             }
@@ -312,4 +314,68 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
             pickableComponent->m_pickableForCameras.emplace_back(EditorScene::getCurrentScene()->m_data.m_editorCamera);
         }
     });
+
+    // TEST OF ANIMATIONS !!!! ==========================================
+
+    // animated_girl0
+    // animated_cat1
+    // ak47_reload
+
+    if(modelAsset->getPath() != "${projectPath}\\Resources\\models\\animated_cat1\\scene.gltf") return;
+
+    auto rootJointEntity = SGCore::Scene::getCurrentScene()
+            ->getECSRegistry()
+            ->get<SGCore::EntityBaseInfo>(entities[0])
+            .findEntity(*SGCore::Scene::getCurrentScene()->getECSRegistry(), "_rootJoint");
+
+    std::cout << "found entity root join: " << std::to_underlying(rootJointEntity) << std::endl;
+
+    if(rootJointEntity != entt::null)
+    {
+        // TEST: getting skeleton of cat
+        auto skeleton = SGCore::AssetManager::getInstance()->getAsset<SGCore::Skeleton>(
+                SGCore::Utils::toUTF8(
+                        SGCore::InterpolatedPath(
+                                "${projectPath}\\Resources\\models\\animated_cat1\\scene.gltf\\skeletons\\_rootJoint"
+                        )
+                        .resolved()
+                        .u16string()
+                )
+        );
+
+        if(!skeleton)
+        {
+            std::cout << "can not get skeleton of cat!!" << std::endl;
+            return;
+        }
+
+        // TEST: getting animations of cat
+        auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile>(
+                SGCore::Utils::toUTF8(
+                        SGCore::InterpolatedPath(
+                                "${projectPath}\\Resources\\models\\animated_cat1\\scene.gltf\\animations"
+                        )
+                        .resolved()
+                        .u16string()
+                )
+        );
+
+        if(!animations)
+        {
+            std::cout << "can not get animations of cat!!" << std::endl;
+            return;
+        }
+
+        auto mainAnimation = animations->m_skeletalAnimations[0];
+
+        auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(entities[0]);
+        motionPlanner.m_skeleton = skeleton;
+
+        auto mainNode = SGCore::MakeRef<SGCore::MotionPlannerNode>();
+        mainNode->m_isRepeated = true;
+        mainNode->m_animationSpeed = 2.0f;
+        mainNode->m_skeletalAnimation = mainAnimation;
+
+        motionPlanner.m_rootNodes.push_back(mainNode);
+    }
 }

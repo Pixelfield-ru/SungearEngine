@@ -15,7 +15,7 @@ namespace SGCore
     // 92
     struct Vertex
     {
-        static constexpr std::int32_t max_bones_count = 4;
+        static constexpr std::int32_t max_bones_count = 8;
 
         glm::vec3 m_position;
         glm::vec3 m_uv;
@@ -28,9 +28,11 @@ namespace SGCore
 
         void addWeightData(const float& weight, const std::int32_t& boneID) noexcept
         {
+            if(boneID == -1) return;
+
             for(std::int32_t i = 0; i < max_bones_count; ++i)
             {
-                if(m_bonesIDs[i] == -1 && boneID != -1)
+                if(m_bonesIDs[i] == -1)
                 {
                     m_bonesIDs[i] = boneID;
                     m_bonesWeights[i] = weight;

@@ -23,8 +23,14 @@ layout (location = 1) in vec3 UVAttribute;
 layout (location = 2) in vec3 normalsAttribute;
 layout (location = 3) in vec3 tangentsAttribute;
 layout (location = 4) in vec3 bitangentsAttribute;
-layout (location = 5) in vec4 vertexColor0Attribute;
-layout (location = 6) in vec4 vertexColor1Attribute;
+layout (location = 5) in ivec4 bonesIDsAttribute0;
+layout (location = 6) in ivec4 bonesIDsAttribute1;
+layout (location = 7) in vec4 bonesWeightsAttribute0;
+layout (location = 8) in vec4 bonesWeightsAttribute1;
+layout (location = 9) in vec4 vertexColor0Attribute;
+layout (location = 10) in vec4 vertexColor1Attribute;
+
+#include "sg_shaders/impl/glsl4/animation/bones_calculation.glsl"
 
 out VSOut
 {
@@ -38,16 +44,27 @@ out VSOut
 
     vec4 vertexColor0;
     vec4 vertexColor1;
+
+    vec4 bonesWeights0;
+    vec4 bonesWeights1;
 } vsOut;
 
 void main()
 {
-    vsOut.UV = UVAttribute.xy;
-    vsOut.normal = normalize(normalsAttribute);
-    vsOut.worldNormal = normalize(mat3(transpose(inverse(objectTransform.modelMatrix))) * normalsAttribute);
+    vec4 totalPosition = vec4(0.0);
+    vec3 totalNormal = vec3(0.0);
 
-    vsOut.vertexPos = positionsAttribute;
-    vsOut.fragPos = vec3(objectTransform.modelMatrix * vec4(positionsAttribute, 1.0));
+    calculateVertexPosAndNormal(positionsAttribute, normalsAttribute, totalPosition, totalNormal);
+
+    vsOut.UV = UVAttribute.xy;
+    vsOut.normal = normalize(totalNormal);
+    vsOut.worldNormal = normalize(mat3(transpose(inverse(objectTransform.modelMatrix))) * totalNormal);
+
+    vsOut.vertexPos = totalPosition.xyz;
+    vsOut.fragPos = vec3(objectTransform.modelMatrix * totalPosition);
+
+    vsOut.bonesWeights0 = bonesWeightsAttribute0;
+    vsOut.bonesWeights1 = bonesWeightsAttribute1;
 
     vec3 T = normalize(vec3(objectTransform.modelMatrix * vec4(tangentsAttribute, 0.0)));
     vec3 B = normalize(vec3(objectTransform.modelMatrix * vec4(bitangentsAttribute, 0.0)));
@@ -113,6 +130,9 @@ in VSOut
     mat3 TBN;
     vec4 vertexColor0;
     vec4 vertexColor1;
+
+    vec4 bonesWeights0;
+    vec4 bonesWeights1;
 } vsIn;
 
 // N - normal
@@ -461,6 +481,8 @@ void main()
         finalCol.rgb = finalCol * vsIn.vertexColor0.rgb;
     }
 
+    // layerColor.rgb = vsIn.bonesWeights.rgb;
+
     // todo: make
     // if(u_isStochasticTransparencyEnabled) // todo: impl
     {
@@ -478,6 +500,18 @@ void main()
     {
         pickingColor = vec3(u_pickingColor);
     }
+
+    vec4 bonesColor = vec4(0.0);
+    /*for(int i = 0; i < 4; ++i)
+    {
+        if(vsIn.bonesIDs[i] != -1)
+        {
+            bonesColor[i] += vsIn.bonesWeights[i];
+        }
+    }*/
+    // layerColor.rgb = vsIn.bonesWeights.rgb;
+    //  layerColor = bonesColor;
+    // layerColor.rgb = vec3(vsIn.bonesIDs);
 
     // pickingColor.r = depthFromTexture;
 

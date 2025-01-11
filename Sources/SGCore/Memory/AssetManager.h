@@ -22,6 +22,7 @@
 
 namespace SGCore
 {
+    // WE ARE USING RESOLVED (.resolved()) PATHS OF ASSETS WHEN LOADING OR GETTING ASSET BY PATH. NOT RAW (.raw()) PATH!!!
     class SGCORE_EXPORT AssetManager : public std::enable_shared_from_this<AssetManager>
     {
     public:

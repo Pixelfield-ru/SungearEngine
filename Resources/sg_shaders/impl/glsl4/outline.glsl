@@ -9,8 +9,14 @@
 #include "sg_shaders/impl/glsl4/primitives.glsl"
 
 layout (location = 0) in vec3 positionsAttribute;
+layout (location = 5) in ivec4 bonesIDsAttribute0;
+layout (location = 6) in ivec4 bonesIDsAttribute1;
+layout (location = 7) in vec4 bonesWeightsAttribute0;
+layout (location = 8) in vec4 bonesWeightsAttribute1;
 /*layout (location = 1) in vec3 UVAttribute;
 layout (location = 2) in vec3 normalsAttribute;*/
+
+#include "sg_shaders/impl/glsl4/animation/bones_calculation.glsl"
 
 uniform int u_pass;
 
@@ -29,7 +35,12 @@ void main()
     // firstly drawing model
     if(u_pass == 1)
     {
-        gl_Position = camera.projectionSpaceMatrix * objectTransform.modelMatrix * vec4(positionsAttribute, 1.0);
+        vec4 totalPosition = vec4(0.0);
+        vec3 totalNormal = vec3(0.0);
+
+        calculateVertexPosAndNormal(positionsAttribute, vec3(0.0), totalPosition, totalNormal);
+
+        gl_Position = camera.projectionSpaceMatrix * objectTransform.modelMatrix * totalPosition;
     }
     else if(u_pass >= 2) // then drawing postprocess quads
     {

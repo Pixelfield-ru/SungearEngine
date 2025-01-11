@@ -26,6 +26,7 @@
 #include "SGCore/Render/SpacePartitioning/ObjectsCullingOctree.h"
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
 #include "SGCore/Render/Alpha/TransparentEntityTag.h"
+#include "SGCore/Graphics/API/ITexture2D.h"
 
 size_t renderedInOctrees = 0;
 
@@ -269,6 +270,20 @@ void SGCore::PBRRPGeometryPass::renderMesh(const Ref<ECS::registry_t>& registry,
             {
                 uniformBuffsIt = m_uniformBuffersToUse.erase(uniformBuffsIt);
             }
+        }
+
+        // using texture buffer with bones animated transformations
+        if(auto bonesLockedBuffer = mesh.m_base.m_bonesBuffer.lock())
+        {
+            bonesLockedBuffer->bind(offset0);
+            shaderToUse->useTextureBlock("u_bonesMatricesUniformBuffer", offset0);
+            ++offset0;
+
+            shaderToUse->useInteger("u_isAnimatedMesh", 1);
+        }
+        else
+        {
+            shaderToUse->useInteger("u_isAnimatedMesh", 0);
         }
 
         bool lastUseFacesCulling = mesh.m_base.getMaterial()->m_meshRenderState.m_useFacesCulling;

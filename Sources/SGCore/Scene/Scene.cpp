@@ -21,6 +21,7 @@
 #include "SGCore/Render/DebugDraw.h"
 #include "SGCore/Render/SpacePartitioning/OctreesSolver.h"
 #include "SGCore/Audio/AudioProcessor.h"
+#include "SGCore/Animation/MotionPlannersResolver.h"
 #include "SGCore/Serde/Serde.h"
 #include "SGCore/Serde/StandardSerdeSpecs.h"
 
@@ -90,6 +91,11 @@ void SGCore::Scene::createDefaultSystems()
     
     auto audioProcessor = MakeRef<AudioProcessor>();
     addSystem(audioProcessor);
+
+    // motion planners resolver =================================
+
+    auto motionPlannersResolver = MakeRef<MotionPlannersResolver>();
+    addSystem(motionPlannersResolver);
 }
 
 // ----------------

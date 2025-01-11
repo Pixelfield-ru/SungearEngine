@@ -21,9 +21,6 @@ namespace SGCore
 
         // bool m_stopPreviousNodeIfThisStarted = true;
 
-        // calls only if m_previousNode->m_isActive == true
-        std::function<bool()> activationFunction = []() { return false; };
-
         Ref<MotionPlannerNode> m_previousNode;
         Ref<MotionPlannerNode> m_nextNode;
 

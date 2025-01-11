@@ -21,6 +21,9 @@ namespace SGCore
         MeshBase(const MeshBase&) = default;
         MeshBase(MeshBase&&) noexcept = default;
 
+        // if entity is using animations (MotionPlanner)
+        Weak<ITexture2D> m_bonesBuffer;
+
         // определяем для каждого ресивера какой слой будет использоваться для данной сущности
         std::unordered_map<LayeredFrameReceiver*, Weak<PostProcessLayer>> m_layeredFrameReceiversMarkup;
 

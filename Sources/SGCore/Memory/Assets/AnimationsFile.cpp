@@ -109,6 +109,8 @@ void SGCore::AnimationsFile::readFromExistingAssimpScene(const aiScene& scene) n
 
                 skeletalAnimation->m_bonesAnimations[skeletalBoneAnimation.m_boneName] = skeletalBoneAnimation;
             }
+
+            m_skeletalAnimations.push_back(skeletalAnimation);
         }
     }
 }

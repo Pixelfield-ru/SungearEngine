@@ -266,3 +266,25 @@ void SGCore::EntityBaseInfo::getAllChildren(SGCore::ECS::registry_t& inRegistry,
         }
     }
 }
+
+SGCore::ECS::entity_t SGCore::EntityBaseInfo::findEntity(SGCore::ECS::registry_t& inRegistry,
+                                                         const std::string& name) const noexcept
+{
+    if(getName() == name) return m_thisEntity;
+
+    for(const auto& child : m_children)
+    {
+        EntityBaseInfo::reg_t& childBaseInfo = inRegistry.get<EntityBaseInfo>(child);
+
+        if(childBaseInfo.getName() == name)
+        {
+            return childBaseInfo.m_thisEntity;
+        }
+        else
+        {
+            return childBaseInfo.findEntity(inRegistry, name);
+        }
+    }
+
+    return entt::null;
+}

@@ -11,8 +11,6 @@ SGCore::MotionPlannerConnection SGCore::MotionPlannerConnection::copyStructure(c
     newConnection.m_blendTime = m_blendTime;
     newConnection.m_blendSpeed = m_blendSpeed;
 
-    newConnection.activationFunction = activationFunction;
-
     newConnection.m_previousNode = MakeRef<MotionPlannerNode>(baseNode);
     newConnection.m_nextNode = MakeRef<MotionPlannerNode>(m_nextNode->copyStructure());
 

@@ -11,6 +11,7 @@
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/Camera3D.h"
 #include "SGCore/Memory/Assets/Materials/IMaterial.h"
+#include "SGCore/Graphics/API/ITexture2D.h"
 #include "SGCore/Utils/Paths.h"
 
 void SGCore::OutlinePass::create(const SGCore::Ref<SGCore::IRenderPipeline>& parentRenderPipeline) noexcept
@@ -95,6 +96,18 @@ void SGCore::OutlinePass::render(const SGCore::Ref<SGCore::Scene>& scene,
             m_shader->useVectorf("u_outlineColor", meshBaseInfo.m_outlineColor);
             m_shader->useMatrix("objectTransform.modelMatrix", meshTransform->m_finalTransform.m_modelMatrix);
             m_shader->useVectorf("objectTransform.position", meshTransform->m_finalTransform.m_position);
+
+            if(auto bonesLockedBuffer = mesh.m_base.m_bonesBuffer.lock())
+            {
+                bonesLockedBuffer->bind(0);
+                m_shader->useTextureBlock("u_bonesMatricesUniformBuffer", 0);
+
+                m_shader->useInteger("u_isAnimatedMesh", 1);
+            }
+            else
+            {
+                m_shader->useInteger("u_isAnimatedMesh", 0);
+            }
 
             CoreMain::getRenderer()->renderMeshData(
                     mesh.m_base.getMeshData().get(),

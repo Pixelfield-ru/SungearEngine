@@ -10,6 +10,7 @@ SGCore::MotionPlannerNode SGCore::MotionPlannerNode::copyStructure() const noexc
     newNode.m_skeletalAnimation = m_skeletalAnimation;
     newNode.m_animationSpeed = m_animationSpeed;
     newNode.m_isRepeated = m_isRepeated;
+    newNode.activationFunction = activationFunction;
 
     for(const auto& connection : m_connections)
     {

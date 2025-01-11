@@ -9,7 +9,7 @@ SGCore::GL46UniformBuffer::~GL46UniformBuffer()
     destroy();
 }
 
-std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL46UniformBuffer::bind() noexcept
+void SGCore::GL46UniformBuffer::bind() noexcept
 {
     /*
     // iterating on data and on uniforms to avoid mistakes of going abroad
@@ -123,8 +123,6 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL46UniformBuffer::bind() noexce
         }
     }
      */
-
-    return shared_from_this();
 }
 
 void SGCore::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
@@ -134,7 +132,7 @@ void SGCore::GL46UniformBuffer::subDataOnGAPISide(const std::int64_t& offset,
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, m_buffer + offset);
 }
 
-std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL46UniformBuffer::prepare() noexcept
+void SGCore::GL46UniformBuffer::prepare() noexcept
 {
     destroy();
 
@@ -142,8 +140,6 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL46UniformBuffer::prepare() noe
     glBindBuffer(GL_UNIFORM_BUFFER, m_handler);
     glBufferData(GL_UNIFORM_BUFFER, (GLsizeiptr) m_bufferSize, m_buffer, GL_STATIC_DRAW);
     glBindBufferBase(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler);
-
-    return shared_from_this();
 }
 
 void SGCore::GL46UniformBuffer::destroy() noexcept

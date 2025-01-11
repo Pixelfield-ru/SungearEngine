@@ -25,8 +25,7 @@ namespace SGCore
                 aiProcess_FlipUVs |
                 aiProcess_JoinIdenticalVertices |
                 aiProcess_FixInfacingNormals |
-                aiProcess_CalcTangentSpace |
-                aiProcess_LimitBoneWeights;
+                aiProcess_CalcTangentSpace;
     }
 }
 

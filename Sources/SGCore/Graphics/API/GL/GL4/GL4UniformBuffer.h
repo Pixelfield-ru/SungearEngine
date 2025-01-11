@@ -16,9 +16,9 @@ namespace SGCore
     public:
         ~GL4UniformBuffer() override;
 
-        std::shared_ptr<IUniformBuffer> bind() noexcept final;
+        void bind() noexcept final;
 
-        std::shared_ptr<IUniformBuffer> prepare() noexcept final;
+        void prepare() noexcept final;
 
         void setLayoutLocation(const std::uint16_t& location) noexcept final;
 

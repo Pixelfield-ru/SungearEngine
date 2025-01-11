@@ -14,14 +14,14 @@ void SGCore::VkUniformBuffer::subDataOnGAPISide(const int64_t& offset, const int
 
 }
 
-std::shared_ptr<SGCore::IUniformBuffer> SGCore::VkUniformBuffer::bind() noexcept
+void SGCore::VkUniformBuffer::bind() noexcept
 {
-    return shared_from_this();
+
 }
 
-std::shared_ptr<SGCore::IUniformBuffer> SGCore::VkUniformBuffer::prepare() noexcept
+void SGCore::VkUniformBuffer::prepare() noexcept
 {
-    return shared_from_this();
+
 }
 
 void SGCore::VkUniformBuffer::setLayoutLocation(const uint16_t& location) noexcept

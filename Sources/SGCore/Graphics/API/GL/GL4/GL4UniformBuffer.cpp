@@ -9,7 +9,7 @@ SGCore::GL4UniformBuffer::~GL4UniformBuffer()
     destroy();
 }
 
-std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::bind() noexcept
+void SGCore::GL4UniformBuffer::bind() noexcept
 {
     /*
     // iterating on data and on uniforms to avoid mistakes of going abroad
@@ -123,8 +123,6 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::bind() noexcep
         }
     }
      */
-
-    return shared_from_this();
 }
 
 void SGCore::GL4UniformBuffer::subDataOnGAPISide(const std::int64_t& offset, const int& size) noexcept
@@ -135,7 +133,7 @@ void SGCore::GL4UniformBuffer::subDataOnGAPISide(const std::int64_t& offset, con
     // glBufferData(GL_UNIFORM_BUFFER, (GLsizeiptr) m_bufferSize, m_buffer, GL_STATIC_DRAW);
 }
 
-std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::prepare() noexcept
+void SGCore::GL4UniformBuffer::prepare() noexcept
 {
     destroy();
 
@@ -144,8 +142,6 @@ std::shared_ptr<SGCore::IUniformBuffer> SGCore::GL4UniformBuffer::prepare() noex
     glBufferData(GL_UNIFORM_BUFFER, m_bufferSize, m_buffer, GL_STATIC_DRAW);
     // glBindBufferRange(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler, 0, m_bufferSize);
     glBindBufferBase(GL_UNIFORM_BUFFER, m_layoutLocation, m_handler);
-
-    return shared_from_this();
 }
 
 void SGCore::GL4UniformBuffer::destroy() noexcept
