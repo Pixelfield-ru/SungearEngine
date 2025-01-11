@@ -6,6 +6,7 @@
 
 #include <spdlog/spdlog.h>
 #include <SGCore/Logger/Logger.h>
+#include <assimp/version.h>
 
 #include "SGCore/Main/CoreSettings.h"
 #include "SGCore/Main/CoreMain.h"
@@ -36,16 +37,16 @@ void SGCore::ModelAsset::doLoad(const InterpolatedPath& path)
         return;
     }
 
+    // loading all animations from this file
+    auto animations = getParentAssetManager()->getOrAddAssetByPath<AnimationsFile>(getPath() / "animations");
+
+    animations->readFromExistingAssimpScene(*aiImportedScene);
+
     m_modelName = aiImportedScene->mName.data;
 
     processNode(aiImportedScene->mRootNode, aiImportedScene, m_rootNode);
 
     processSkeletons(aiImportedScene);
-
-    // loading all animations from this file
-    auto animations = getParentAssetManager()->getOrAddAssetByPath<AnimationsFile>(getPath() / "animations");
-
-    animations->readFromExistingAssimpScene(*aiImportedScene);
 
     importer.FreeScene();
 
@@ -540,8 +541,20 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
     skeletonBone->m_id = toSkeleton->m_allBones.size();
     if(!tmpBone.m_aiBones.empty())
     {
+        glm::mat4 offsetMatrix = AssimpUtils::aiToGLM(tmpBone.m_aiBones[0]->mOffsetMatrix);
+        // offsetMatrix = glm::inverse(offsetMatrix);
+        /*if(tmpBone.m_parent != -1)
+        {
+            glm::mat4 parentOffsetMatrix = AssimpUtils::aiToGLM(hierarchyBones[tmpBone.m_parent].m_aiBones[0]->mOffsetMatrix);
+
+            offsetMatrix = offsetMatrix * glm::inverse(parentOffsetMatrix);
+        }*/
+        // offsetMatrix
+
         // offset matrix is identical for each mesh that is affected by this bone
-        skeletonBone->m_offsetMatrix = AssimpUtils::aiToGLM(tmpBone.m_aiBones[0]->mOffsetMatrix);
+        skeletonBone->m_offsetMatrix = offsetMatrix;
+
+
     }
 
     for(size_t i = 0; i < tmpBone.m_aiBones.size(); ++i)
@@ -567,9 +580,9 @@ void SGCore::ModelAsset::initAndAddBoneToSkeleton(AssetRef<Bone>& skeletonBone,
             {
                 meshBoneData.m_affectedMesh->m_vertices[weight.m_vertexIdx].addWeightData(weight.m_weight,
                                                                                           skeletonBone->m_id);
+                meshBoneData.m_weights.push_back(weight);
             }
 
-            meshBoneData.m_weights.push_back(weight);
         }
 
         skeletonBone->m_affectedMeshesBoneData.emplace_back(std::move(meshBoneData));

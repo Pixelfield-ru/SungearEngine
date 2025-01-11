@@ -23,7 +23,6 @@ namespace SGCore
                 aiProcess_GenSmoothNormals |
                 aiProcess_GenUVCoords |
                 aiProcess_FlipUVs |
-                aiProcess_JoinIdenticalVertices |
                 aiProcess_FixInfacingNormals |
                 aiProcess_CalcTangentSpace;
     }

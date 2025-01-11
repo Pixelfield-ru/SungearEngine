@@ -132,6 +132,8 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         std::vector<glm::quat> rotationsToInterpolate;
         std::vector<glm::vec3> scalesToInterpolate;
 
+        bool isBoneAnimated = false;
+
         // GUARANTEED THAT currentBoneAnims.size() == nodesToInterpolate.size()
         // calculating all transformations for all animations using currentBone and keys from currentBoneAnims
         for(size_t i = 0; i < currentBoneAnims.size(); ++i)
@@ -164,6 +166,8 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                         interpolatedPosition = nextKey.m_position;
                     }
                 }
+
+                isBoneAnimated = true;
             }
 
             positionsToInterpolate.push_back(interpolatedPosition);
@@ -249,9 +253,17 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
         // constructing animated matrix from interpolated transform components of all animations nodes
         auto animatedMatrix = glm::identity<glm::mat4>();
 
-        animatedMatrix = glm::translate(animatedMatrix, interpolatedPosition);
-        animatedMatrix *= glm::toMat4(interpolatedRotation);
-        animatedMatrix = glm::scale(animatedMatrix, interpolatedScale);
+        // if this bone is animated by some node
+        if(isBoneAnimated)
+        {
+            animatedMatrix = glm::translate(animatedMatrix, interpolatedPosition);
+            animatedMatrix *= glm::toMat4(interpolatedRotation);
+            animatedMatrix = glm::scale(animatedMatrix, interpolatedScale);
+        }
+        else // else if not animated then we are using model matrix of entity as animated matrix to put the bone into correct place
+        {
+            animatedMatrix = currentEntityTransform->m_ownTransform.m_modelMatrix;
+        }
 
         // if current entity has parent with bone
         if(parentEntityTransform)
@@ -266,7 +278,7 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 
         // finally updating bone matrix in uniform buffer
         auto finalBoneMatrix =
-                currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * currentBone->m_offsetMatrix;
+                 currentEntityTransform->m_finalTransform.m_boneAnimatedMatrix * currentBone->m_offsetMatrix;
 
         // updating current bone matrix data in m_bonesMatricesData
         // 16 is count of scalars in matrix

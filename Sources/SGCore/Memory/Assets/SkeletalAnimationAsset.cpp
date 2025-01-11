@@ -92,7 +92,7 @@ std::int64_t SGCore::SkeletalBoneAnimation::findPositionKeyByTime(const float& t
         }
     }
 
-    return -1;
+    return keysCount - 1;
 }
 
 std::int64_t SGCore::SkeletalBoneAnimation::findRotationKeyByTime(const float& time) const noexcept
@@ -113,7 +113,7 @@ std::int64_t SGCore::SkeletalBoneAnimation::findRotationKeyByTime(const float& t
         }
     }
 
-    return -1;
+    return keysCount - 1;
 }
 
 std::int64_t SGCore::SkeletalBoneAnimation::findScaleKeyByTime(const float& time) const noexcept
@@ -134,5 +134,5 @@ std::int64_t SGCore::SkeletalBoneAnimation::findScaleKeyByTime(const float& time
         }
     }
 
-    return -1;
+    return keysCount - 1;
 }

@@ -321,7 +321,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     // animated_cat1
     // ak47_reload
 
-    if(modelAsset->getPath() != "${projectPath}\\Resources\\models\\animated_cat1\\scene.gltf") return;
+    if(modelAsset->getPath() != "${projectPath}\\Resources\\models\\ak47_reload\\scene.gltf") return;
 
     auto rootJointEntity = SGCore::Scene::getCurrentScene()
             ->getECSRegistry()
@@ -336,7 +336,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         auto skeleton = SGCore::AssetManager::getInstance()->getAsset<SGCore::Skeleton>(
                 SGCore::Utils::toUTF8(
                         SGCore::InterpolatedPath(
-                                "${projectPath}\\Resources\\models\\animated_cat1\\scene.gltf\\skeletons\\_rootJoint"
+                                "${projectPath}\\Resources\\models\\ak47_reload\\scene.gltf\\skeletons\\_rootJoint"
                         )
                         .resolved()
                         .u16string()
@@ -353,7 +353,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile>(
                 SGCore::Utils::toUTF8(
                         SGCore::InterpolatedPath(
-                                "${projectPath}\\Resources\\models\\animated_cat1\\scene.gltf\\animations"
+                                "${projectPath}\\Resources\\models\\ak47_reload\\scene.gltf\\animations"
                         )
                         .resolved()
                         .u16string()
@@ -373,7 +373,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
 
         auto mainNode = SGCore::MakeRef<SGCore::MotionPlannerNode>();
         mainNode->m_isRepeated = true;
-        mainNode->m_animationSpeed = 2.0f;
+        mainNode->m_animationSpeed = 0.1f;
         mainNode->m_skeletalAnimation = mainAnimation;
 
         motionPlanner.m_rootNodes.push_back(mainNode);

@@ -71,7 +71,7 @@ void SGCore::AnimationsFile::readFromExistingAssimpScene(const aiScene& scene) n
             {
                 const auto* nodeAnim = curAnimation->mChannels[j];
 
-                SkeletalBoneAnimation skeletalBoneAnimation;
+                SkeletalBoneAnimation& skeletalBoneAnimation = skeletalAnimation->m_bonesAnimations[nodeAnim->mNodeName.C_Str()];
                 skeletalBoneAnimation.m_boneName = nodeAnim->mNodeName.C_Str();
 
                 for(size_t k = 0; k < nodeAnim->mNumPositionKeys; ++k)
@@ -106,8 +106,6 @@ void SGCore::AnimationsFile::readFromExistingAssimpScene(const aiScene& scene) n
 
                     skeletalBoneAnimation.m_scaleKeys.push_back(keyScale);
                 }
-
-                skeletalAnimation->m_bonesAnimations[skeletalBoneAnimation.m_boneName] = skeletalBoneAnimation;
             }
 
             m_skeletalAnimations.push_back(skeletalAnimation);
