@@ -28,8 +28,9 @@ namespace SGCore
                                        const Transform::reg_t& parentEntityTransform,
                                        std::int32_t& bonesCount) noexcept;
 
-        static void collectNodesToInterpolate(const Ref<MotionPlannerNode>& currentNode,
-                                              std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept;
+        static void collectAndUpdateNodesToInterpolate(const double& dt,
+                                                       const Ref<MotionPlannerNode>& currentNode,
+                                                       std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept;
     };
 }
 

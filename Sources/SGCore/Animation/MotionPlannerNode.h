@@ -14,6 +14,8 @@ namespace SGCore
 
     struct MotionPlannerNode
     {
+        friend struct MotionPlannersResolver;
+
         std::vector<Ref<MotionPlannerConnection>> m_connections;
 
         AssetRef<SkeletalAnimationAsset> m_skeletalAnimation;
@@ -21,7 +23,6 @@ namespace SGCore
         // calls if:
         // 1) if connected to other node as child, then calls if
         // parent node is playing (m_isPlaying == true) and active (m_isActive == true)
-
         // 2) if not connected to other node as child (it means that this node is root),
         // then calls if this node is playing (m_isPlaying == true) and active (m_isActive == true)
         std::function<bool()> activationFunction = []() { return true; };
@@ -40,6 +41,10 @@ namespace SGCore
         float m_currentAnimationTime = 0.0f;
 
         [[nodiscard]] MotionPlannerNode copyStructure() const noexcept;
+
+    private:
+        // uses to interpolate between two animations when connection is activated
+        float m_currentBlendFactor = 0.0f;
     };
 }
 

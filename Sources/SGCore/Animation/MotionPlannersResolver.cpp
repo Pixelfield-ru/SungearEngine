@@ -31,7 +31,7 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
                 rootNode->m_isPlaying = true;
                 nodesToInterpolate.push_back(rootNode);
 
-                collectNodesToInterpolate(rootNode, nodesToInterpolate);
+                collectAndUpdateNodesToInterpolate(dt, rootNode, nodesToInterpolate);
             }
         }
 
@@ -244,9 +244,11 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
 
             for(size_t i = 1; i < nodesToInterpolate.size(); ++i)
             {
-                interpolatedPosition = glm::lerp(interpolatedPosition, positionsToInterpolate[i], 0.5f);
-                interpolatedRotation = glm::slerp(interpolatedRotation, rotationsToInterpolate[i], 0.5f);
-                interpolatedScale = glm::lerp(interpolatedScale, scalesToInterpolate[i], 0.5f);
+                const auto& node = nodesToInterpolate[i];
+
+                interpolatedPosition = glm::lerp(interpolatedPosition, positionsToInterpolate[i], node->m_currentBlendFactor);
+                interpolatedRotation = glm::slerp(interpolatedRotation, rotationsToInterpolate[i], node->m_currentBlendFactor);
+                interpolatedScale = glm::lerp(interpolatedScale, scalesToInterpolate[i], node->m_currentBlendFactor);
             }
         }
 
@@ -332,24 +334,62 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
     //if(node->m_currentAnimationTime >= node->m_skeletalAnimation->)
 }
 
-void SGCore::MotionPlannersResolver::collectNodesToInterpolate(const Ref<MotionPlannerNode>& currentNode,
-                                                               std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept
+void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const double& dt,
+                                                                        const Ref<MotionPlannerNode>& currentNode,
+                                                                        std::vector<Ref<MotionPlannerNode>>& nodesToInterpolate) noexcept
 {
     for(const auto& connection : currentNode->m_connections)
     {
         if(!connection->m_nextNode) continue;
 
+        bool isConnectionActivated = connection->m_nextNode->activationFunction();
+
         // calling activation function to understand if this connection of currentNode is must be active
         if(connection->m_previousNode->m_isActive &&
            connection->m_previousNode->m_isPlaying &&
            connection->m_nextNode->m_isActive &&
-           connection->m_nextNode->activationFunction())
+           isConnectionActivated)
         {
             connection->m_nextNode->m_isPlaying = true;
 
+            if(connection->m_currentBlendTime < connection->m_blendTime)
+            {
+                connection->m_currentBlendTime += dt * connection->m_blendSpeed;
+                connection->m_currentBlendTime = std::min(connection->m_currentBlendTime, connection->m_blendTime);
+
+                float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
+
+                connection->m_nextNode->m_currentBlendFactor = blendFactor;
+                connection->m_previousNode->m_currentBlendFactor = 1.0 - blendFactor;
+            }
+
             nodesToInterpolate.push_back(connection->m_nextNode);
 
-            collectNodesToInterpolate(connection->m_nextNode, nodesToInterpolate);
+            collectAndUpdateNodesToInterpolate(dt, connection->m_nextNode, nodesToInterpolate);
+        }
+        else if(!isConnectionActivated)
+        {
+            // go backwards from nextNode to previousNode using interpolation
+            if(connection->m_currentBlendTime > 0)
+            {
+                // next node is still playing but not its children
+                connection->m_nextNode->m_isPlaying = true;
+
+                connection->m_currentBlendTime -= dt * connection->m_blendSpeed;
+                connection->m_currentBlendTime = std::max(connection->m_currentBlendTime, 0.0f);
+
+                float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
+
+                connection->m_nextNode->m_currentBlendFactor = blendFactor;
+                connection->m_previousNode->m_currentBlendFactor = 1.0f - blendFactor;
+
+                // we must add next node to nodesToInterpolate because the next node still
+                // needs to be taken into account when interpolating.
+                //
+                // but we don't need to call collectAndUpdateNodesToInterpolate for nextNode because
+                // we are performing reverse interpolation, i.e. it is assumed that nextNode is already inactive.
+                nodesToInterpolate.push_back(connection->m_nextNode);
+            }
         }
     }
 }

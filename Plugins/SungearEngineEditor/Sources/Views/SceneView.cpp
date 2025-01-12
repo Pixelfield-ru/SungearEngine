@@ -21,6 +21,7 @@
 #include <SGCore/Scene/SceneUtils.h>
 #include <SGCore/Memory/Assets/AnimationsFile.h>
 #include <SGCore/Animation/MotionPlanner.h>
+#include <SGCore/Animation/MotionPlannerConnection.h>
 
 #include "SungearEngineEditor.h"
 #include "Views/MainView.h"
@@ -320,13 +321,14 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
     // animated_girl0
     // animated_cat1
     // ak47_reload
+    // spy
 
-    if(modelAsset->getPath() != "${projectPath}\\Resources\\models\\ak47_reload\\scene.gltf") return;
+    if(modelAsset->getPath() != "${projectPath}\\Resources\\models\\spy\\scene.gltf") return;
 
     auto rootJointEntity = SGCore::Scene::getCurrentScene()
             ->getECSRegistry()
             ->get<SGCore::EntityBaseInfo>(entities[0])
-            .findEntity(*SGCore::Scene::getCurrentScene()->getECSRegistry(), "_rootJoint");
+            .findEntity(*SGCore::Scene::getCurrentScene()->getECSRegistry(), "GLTF_created_0_rootJoint");
 
     std::cout << "found entity root join: " << std::to_underlying(rootJointEntity) << std::endl;
 
@@ -336,7 +338,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         auto skeleton = SGCore::AssetManager::getInstance()->getAsset<SGCore::Skeleton>(
                 SGCore::Utils::toUTF8(
                         SGCore::InterpolatedPath(
-                                "${projectPath}\\Resources\\models\\ak47_reload\\scene.gltf\\skeletons\\_rootJoint"
+                                "${projectPath}\\Resources\\models\\spy\\scene.gltf\\skeletons\\GLTF_created_0_rootJoint"
                         )
                         .resolved()
                         .u16string()
@@ -353,7 +355,7 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         auto animations = SGCore::AssetManager::getInstance()->getAsset<SGCore::AnimationsFile>(
                 SGCore::Utils::toUTF8(
                         SGCore::InterpolatedPath(
-                                "${projectPath}\\Resources\\models\\ak47_reload\\scene.gltf\\animations"
+                                "${projectPath}\\Resources\\models\\spy\\scene.gltf\\animations"
                         )
                         .resolved()
                         .u16string()
@@ -366,15 +368,28 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
             return;
         }
 
-        auto mainAnimation = animations->m_skeletalAnimations[0];
-
         auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(entities[0]);
         motionPlanner.m_skeleton = skeleton;
 
         auto mainNode = SGCore::MakeRef<SGCore::MotionPlannerNode>();
         mainNode->m_isRepeated = true;
-        mainNode->m_animationSpeed = 0.1f;
-        mainNode->m_skeletalAnimation = mainAnimation;
+        mainNode->m_animationSpeed = 1.0f;
+        mainNode->m_skeletalAnimation = animations->m_skeletalAnimations[0];
+
+        auto walkNode = SGCore::MakeRef<SGCore::MotionPlannerNode>();
+        walkNode->m_isRepeated = true;
+        walkNode->m_animationSpeed = 1.4f;
+        walkNode->m_skeletalAnimation = animations->m_skeletalAnimations[3];
+        walkNode->activationFunction = []() {
+            return SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_0);
+        };
+
+        auto walkConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
+        walkConnection->m_previousNode = mainNode;
+        walkConnection->m_nextNode = walkNode;
+        walkConnection->m_blendTime = 0.3f;
+
+        mainNode->m_connections.push_back(walkConnection);
 
         motionPlanner.m_rootNodes.push_back(mainNode);
     }
