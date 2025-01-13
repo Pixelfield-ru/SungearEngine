@@ -10,11 +10,13 @@
 
 namespace SGCore
 {
-    struct Skeleton : public IAsset
+    struct Skeleton : public IAsset, public IAssetsRefsResolver<Skeleton>
     {
         sg_serde_as_friend()
 
         sg_implement_type_id(Skeleton, 31)
+
+        sg_assets_refs_resolver_as_friend
 
         AssetRef<Bone> m_rootBone;
         std::vector<AssetRef<Bone>> m_allBones;
@@ -26,10 +28,13 @@ namespace SGCore
         /// does nothing for now
         void doLoad(const InterpolatedPath& path) override;
 
+        /// does nothing!!!
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
 
         /// does nothing for now
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
+
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
     };
 }
 

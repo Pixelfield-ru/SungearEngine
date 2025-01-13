@@ -3,6 +3,7 @@
 //
 
 #include "Skeleton.h"
+#include "SGCore/Memory/AssetManager.h"
 
 void SGCore::Skeleton::doLoad(const SGCore::InterpolatedPath& path)
 {
@@ -18,6 +19,16 @@ void SGCore::Skeleton::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,
                                         SGCore::Ref<SGCore::Threading::Thread> lazyLoadInThread) noexcept
 {
 
+}
+
+void SGCore::Skeleton::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
+{
+    for(auto& bone : m_allBones)
+    {
+        AssetManager::resolveAssetReference(updatedAssetManager, bone);
+    }
+
+    AssetManager::resolveAssetReference(updatedAssetManager, m_rootBone);
 }
 
 SGCore::AssetRef<SGCore::Bone> SGCore::Skeleton::findBone(const std::string& boneName) const noexcept

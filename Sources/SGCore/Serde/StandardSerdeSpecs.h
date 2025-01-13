@@ -7,6 +7,8 @@
 
 #include "Serde.h"
 #include <glm/glm.hpp>
+
+#include "SGCore/Memory/Assets/AnimationsFile.h"
 #include "SGCore/Scene/EntityRef.h"
 #include "SGCore/Logger/Logger.h"
 #include "SGCore/Scene/Scene.h"
@@ -3203,6 +3205,36 @@ namespace SGCore::Serde
 
     // ====================================================================================
 
+    template<FormatType TFormatType>
+    struct SerdeSpec<AssetsPackage::DataMarkup, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::AssetsPackage::DataMarkup";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<AssetsPackage::DataMarkup, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_offset", valueView.m_data->m_offset);
+            valueView.getValueContainer().addMember("m_sizeInBytes", valueView.m_data->m_sizeInBytes);
+        }
+
+        static void deserialize(DeserializableValueView<AssetsPackage::DataMarkup, TFormatType>& valueView)
+        {
+            const auto m_offset = valueView.getValueContainer().template getMember<std::streamsize>("m_offset");
+            if(m_offset)
+            {
+                valueView.m_data->m_offset = *m_offset;
+            }
+
+            const auto m_sizeInBytes = valueView.getValueContainer().template getMember<std::streamsize>("m_sizeInBytes");
+            if(m_sizeInBytes)
+            {
+                valueView.m_data->m_sizeInBytes = *m_sizeInBytes;
+            }
+        }
+    };
+
+    // ====================================================================================
+
     template<std::floating_point FloatingT, FormatType TFormatType>
     struct SerdeSpec<FloatingT, TFormatType> : BaseTypes<>, DerivedTypes<>
     {
@@ -4448,7 +4480,11 @@ namespace SGCore::Serde
             ModelAsset,
             IMaterial,
             IMeshData,
-            IShader
+            IShader,
+            Skeleton,
+            AnimationsFile,
+            Bone,
+            SkeletalAnimationAsset
             >
     {
         static inline const std::string type_name = "SGCore::IAsset";
@@ -5076,6 +5112,256 @@ namespace SGCore::Serde
             if(rootNode)
             {
                 valueView.m_data->m_rootNode = std::move(*rootNode);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Skeleton, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Skeleton";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<Skeleton, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_rootBone", valueView.m_data->m_rootBone, assetsPackage);
+            valueView.getValueContainer().addMember("m_allBones", valueView.m_data->m_allBones, assetsPackage);
+        }
+
+        static void deserialize(DeserializableValueView<Skeleton, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto rootBone = valueView.getValueContainer().template getMember<AssetRef<Bone>>("m_rootBone", assetsPackage);
+            if(rootBone)
+            {
+                valueView.m_data->m_rootBone = std::move(*rootBone);
+            }
+
+            auto allBones = valueView.getValueContainer().template getMember<decltype(Skeleton::m_allBones)>("m_allBones", assetsPackage);
+            if(allBones)
+            {
+                valueView.m_data->m_allBones = std::move(*allBones);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<Bone, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::Bone";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<Bone, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_id", valueView.m_data->m_id);
+            valueView.getValueContainer().addMember("m_boneName", valueView.m_data->m_boneName);
+            valueView.getValueContainer().addMember("m_offsetMatrix", valueView.m_data->m_offsetMatrix);
+            valueView.getValueContainer().addMember("m_affectedMeshesBoneData", valueView.m_data->m_affectedMeshesBoneData, assetsPackage);
+            valueView.getValueContainer().addMember("m_children", valueView.m_data->m_children, assetsPackage);
+        }
+
+        static void deserialize(DeserializableValueView<Bone, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto id = valueView.getValueContainer().template getMember<decltype(Bone::m_id)>("m_id");
+            if(id)
+            {
+                valueView.m_data->m_id = std::move(*id);
+            }
+
+            auto boneName = valueView.getValueContainer().template getMember<std::string>("m_boneName");
+            if(boneName)
+            {
+                valueView.m_data->m_boneName = std::move(*boneName);
+            }
+
+            auto offsetMatrix = valueView.getValueContainer().template getMember<glm::mat4>("m_offsetMatrix");
+            if(offsetMatrix)
+            {
+                valueView.m_data->m_offsetMatrix = std::move(*offsetMatrix);
+            }
+
+            auto affectedMeshesBoneData = valueView.getValueContainer().template getMember<decltype(Bone::m_affectedMeshesBoneData)>("m_affectedMeshesBoneData", assetsPackage);
+            if(affectedMeshesBoneData)
+            {
+                valueView.m_data->m_affectedMeshesBoneData = std::move(*affectedMeshesBoneData);
+            }
+
+            auto children = valueView.getValueContainer().template getMember<decltype(Bone::m_children)>("m_children", assetsPackage);
+            if(children)
+            {
+                valueView.m_data->m_children = std::move(*children);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MeshBoneData, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MeshBoneData";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<MeshBoneData, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_affectedMesh", valueView.m_data->m_affectedMesh, assetsPackage);
+
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_weights);
+
+                valueView.getValueContainer().addMember("m_weightsDataMarkupInPackage", dataMarkup);
+            }
+        }
+
+        static void deserialize(DeserializableValueView<MeshBoneData, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto affectedMesh = valueView.getValueContainer().template getMember<AssetRef<IMeshData>>("m_affectedMesh", assetsPackage);
+            if(affectedMesh)
+            {
+                valueView.m_data->m_affectedMesh = std::move(*affectedMesh);
+            }
+
+            {
+                auto dataMarkupOpt = valueView.getValueContainer().template getMember<AssetsPackage::DataMarkup>(
+                        "m_weightsDataMarkupInPackage"
+                );
+
+                if(dataMarkupOpt)
+                {
+                    valueView.m_data->m_weightsDataMarkupInPackage = *dataMarkupOpt;
+                }
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<AnimationsFile, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::AnimationsFile";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<AnimationsFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_skeletalAnimations", valueView.m_data->m_skeletalAnimations, assetsPackage);
+        }
+
+        static void deserialize(DeserializableValueView<AnimationsFile, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto skeletalAnimations = valueView.getValueContainer().template getMember<decltype(AnimationsFile::m_skeletalAnimations)>("m_skeletalAnimations", assetsPackage);
+            if(skeletalAnimations)
+            {
+                valueView.m_data->m_skeletalAnimations = std::move(*skeletalAnimations);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<SkeletalAnimationAsset, TFormatType> : BaseTypes<IAsset>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::SkeletalAnimationAsset";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<SkeletalAnimationAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_animationName", valueView.m_data->m_animationName);
+            valueView.getValueContainer().addMember("m_duration", valueView.m_data->m_duration);
+            valueView.getValueContainer().addMember("m_ticksPerSecond", valueView.m_data->m_ticksPerSecond);
+            valueView.getValueContainer().addMember("m_bonesAnimations", valueView.m_data->m_bonesAnimations, assetsPackage);
+        }
+
+        static void deserialize(DeserializableValueView<SkeletalAnimationAsset, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto animationName = valueView.getValueContainer().template getMember<std::string>("m_animationName");
+            if(animationName)
+            {
+                valueView.m_data->m_animationName = std::move(*animationName);
+            }
+
+            auto duration = valueView.getValueContainer().template getMember<float>("m_duration");
+            if(duration)
+            {
+                valueView.m_data->m_duration = std::move(*duration);
+            }
+
+            auto ticksPerSecond = valueView.getValueContainer().template getMember<float>("m_ticksPerSecond");
+            if(ticksPerSecond)
+            {
+                valueView.m_data->m_ticksPerSecond = std::move(*ticksPerSecond);
+            }
+
+            auto bonesAnimations = valueView.getValueContainer().template getMember<decltype(SkeletalAnimationAsset::m_bonesAnimations)>("m_bonesAnimations", assetsPackage);
+            if(bonesAnimations)
+            {
+                valueView.m_data->m_bonesAnimations = std::move(*bonesAnimations);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<SkeletalBoneAnimation, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::SkeletalBoneAnimation";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<SkeletalBoneAnimation, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            valueView.getValueContainer().addMember("m_boneName", valueView.m_data->m_boneName);
+
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_positionKeys);
+
+                valueView.getValueContainer().addMember("m_positionKeysMarkupInPackage", dataMarkup);
+            }
+
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_rotationKeys);
+
+                valueView.getValueContainer().addMember("m_rotationKeysMarkupInPackage", dataMarkup);
+            }
+
+            {
+                AssetsPackage::DataMarkup dataMarkup = assetsPackage.addData(valueView.m_data->m_scaleKeys);
+
+                valueView.getValueContainer().addMember("m_scaleKeysMarkupInPackage", dataMarkup);
+            }
+        }
+
+        static void deserialize(DeserializableValueView<SkeletalBoneAnimation, TFormatType>& valueView, AssetsPackage& assetsPackage)
+        {
+            auto boneName = valueView.getValueContainer().template getMember<std::string>("m_boneName");
+            if(boneName)
+            {
+                valueView.m_data->m_boneName = std::move(*boneName);
+            }
+
+            {
+                auto dataMarkupOpt = valueView.getValueContainer().template getMember<AssetsPackage::DataMarkup>(
+                        "m_positionKeysMarkupInPackage"
+                );
+
+                if(dataMarkupOpt)
+                {
+                    valueView.m_data->m_positionKeysMarkupInPackage = *dataMarkupOpt;
+                }
+            }
+
+            {
+                auto dataMarkupOpt = valueView.getValueContainer().template getMember<AssetsPackage::DataMarkup>(
+                        "m_rotationKeysMarkupInPackage"
+                );
+
+                if(dataMarkupOpt)
+                {
+                    valueView.m_data->m_rotationKeysMarkupInPackage = *dataMarkupOpt;
+                }
+            }
+
+            {
+                auto dataMarkupOpt = valueView.getValueContainer().template getMember<AssetsPackage::DataMarkup>(
+                        "m_scaleKeysMarkupInPackage"
+                );
+
+                if(dataMarkupOpt)
+                {
+                    valueView.m_data->m_scaleKeysMarkupInPackage = *dataMarkupOpt;
+                }
             }
         }
     };

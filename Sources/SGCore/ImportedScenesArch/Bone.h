@@ -7,6 +7,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Memory/AssetRef.h"
+#include "SGCore/Memory/IAssetsRefsResolver.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -27,26 +28,31 @@ namespace SGCore
     // data of copy of bone for each mesh
     struct MeshBoneData
     {
+        sg_serde_as_friend()
+
+        friend struct Bone;
+
         AssetRef<IMeshData> m_affectedMesh;
         std::vector<BoneVertexWeight> m_weights;
+
+    private:
+        AssetsPackage::DataMarkup m_weightsDataMarkupInPackage;
     };
 
     // i think it must be asset because we can store this bone
     // in custom user code and this bone must to be resolved automatically. assets can do it!
-    struct Bone : public IAsset
+    struct Bone : public IAsset, public IAssetsRefsResolver<Bone>
     {
         sg_serde_as_friend()
 
         sg_implement_type_id(Bone, 32)
 
+        sg_assets_refs_resolver_as_friend
+
         // MEANS IDX IN m_allBones VECTOR IN PARENT SKELETON
         std::int32_t m_id = -1;
         std::string m_boneName;
         glm::mat4 m_offsetMatrix = glm::identity<glm::mat4>();
-
-        /*std::vector<KeyPosition> m_positionKeys;
-        std::vector<KeyRotation> m_rotationKeys;
-        std::vector<KeyScale> m_scaleKeys;*/
 
         // the meshes affected by this bone
         std::vector<MeshBoneData> m_affectedMeshesBoneData;
@@ -62,6 +68,8 @@ namespace SGCore
 
         /// does nothing!!
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
+
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
     };
 }
 

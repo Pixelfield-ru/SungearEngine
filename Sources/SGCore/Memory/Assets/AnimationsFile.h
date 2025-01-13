@@ -35,7 +35,6 @@ namespace SGCore
         /// todo: impl
         void doReloadFromDisk(AssetsLoadPolicy loadPolicy, Ref<Threading::Thread> lazyLoadInThread) noexcept override;
 
-        // todo: impl
         void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
 
         void readFromExistingAssimpScene(const aiScene& scene) noexcept;

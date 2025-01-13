@@ -30,6 +30,8 @@ namespace SGCore
 
     struct SkeletalBoneAnimation
     {
+        sg_serde_as_friend()
+
         friend struct AnimationsFile;
         friend struct SkeletalAnimationAsset;
 
@@ -49,6 +51,10 @@ namespace SGCore
         [[nodiscard]] const std::string& getBoneName() const noexcept;
 
     private:
+        AssetsPackage::DataMarkup m_positionKeysMarkupInPackage;
+        AssetsPackage::DataMarkup m_rotationKeysMarkupInPackage;
+        AssetsPackage::DataMarkup m_scaleKeysMarkupInPackage;
+
         std::string m_boneName;
     };
 
@@ -57,6 +63,8 @@ namespace SGCore
         sg_serde_as_friend()
 
         sg_implement_type_id(SkeletalAnimationAsset, 29)
+
+        sg_assets_refs_resolver_as_friend
 
         friend struct AnimationsFile;
 
@@ -77,7 +85,6 @@ namespace SGCore
         /// DOES NOTHING!
         void doLoad(const InterpolatedPath& path) override;
 
-        // todo: impl
         void doLoadFromBinaryFile(AssetManager* parentAssetManager) noexcept final;
 
         /// DOES NOTHING!

@@ -42,7 +42,10 @@ void SGCore::AnimationsFile::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolic
 
 void SGCore::AnimationsFile::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
 {
-    LOG_NOT_IMPLEMENTED(SGCORE_TAG);
+    for(auto& animation : m_skeletalAnimations)
+    {
+        AssetManager::resolveAssetReference(updatedAssetManager, animation);
+    }
 }
 
 void SGCore::AnimationsFile::readFromExistingAssimpScene(const aiScene& scene) noexcept

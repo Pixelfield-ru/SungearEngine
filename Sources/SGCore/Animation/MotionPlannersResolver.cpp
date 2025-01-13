@@ -35,6 +35,35 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
             }
         }
 
+        // then updating all collected nodes
+        for(const auto& node : nodesToInterpolate)
+        {
+            if(node->m_isPlaying)
+            {
+                node->m_currentAnimationTime +=
+                        dt *
+                        node->m_skeletalAnimation->m_ticksPerSecond *
+                        node->m_animationSpeed;
+            }
+
+            // if animation has ended
+            if(node->m_currentAnimationTime >= node->m_skeletalAnimation->m_duration)
+            {
+                if(node->m_isRepeated)
+                {
+                    // node->m_currentAnimationTime -= node->m_skeletalAnimation->m_duration;
+                    node->m_currentAnimationTime = 0.0f;
+                    // node->m_currentAnimationTime = std::fmod(node->m_currentAnimationTime, node->m_skeletalAnimation->m_duration);
+                }
+                else
+                {
+                    node->m_currentAnimationTime = node->m_skeletalAnimation->m_duration - 1;
+                    node->m_isPaused = true;
+                }
+            }
+
+            node->m_isPlaying = !node->m_isPaused;
+        }
 
         std::int32_t updatedBonesCount = 0;
 
@@ -52,34 +81,6 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
                                transform,
                                nullptr,
                                updatedBonesCount);
-        }
-
-        // then updating all collected nodes
-        for(const auto& node : nodesToInterpolate)
-        {
-            if(node->m_isPlaying)
-            {
-                node->m_currentAnimationTime +=
-                        dt *
-                        node->m_skeletalAnimation->m_ticksPerSecond *
-                        node->m_animationSpeed;
-            }
-
-            // if animation has ended
-            if(node->m_currentAnimationTime >= node->m_skeletalAnimation->m_duration)
-            {
-                if(node->m_isRepeated)
-                {
-                    node->m_currentAnimationTime = 0.0f;
-                }
-                else
-                {
-                    node->m_currentAnimationTime = node->m_skeletalAnimation->m_duration - 1;
-                    node->m_isPaused = true;
-                }
-            }
-
-            node->m_isPlaying = !node->m_isPaused;
         }
 
         // updating count of bones in data vector
@@ -151,20 +152,22 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                 const std::int64_t nextKeyIndex = currentBoneAnim->findPositionKeyByTime(curAnimTime);
                 if(nextKeyIndex != -1)
                 {
-                    KeyPosition& nextKey = currentBoneAnim->m_positionKeys[nextKeyIndex];
+                    const KeyPosition& nextKey = currentBoneAnim->m_positionKeys[nextKeyIndex];
                     KeyPosition prevKey;
+
+                    float normalizedTime = 0.0f;
                     if(nextKeyIndex - 1 >= 0)
                     {
                         prevKey = currentBoneAnim->m_positionKeys[nextKeyIndex - 1];
-
-                        float normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
-
-                        interpolatedPosition = glm::lerp(prevKey.m_position, nextKey.m_position, normalizedTime);
+                        normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
                     }
                     else
                     {
-                        interpolatedPosition = nextKey.m_position;
+                        prevKey = currentBoneAnim->m_positionKeys[currentBoneAnim->m_positionKeys.size() - 1];
+                        normalizedTime = curAnimTime / nextKey.m_timeStamp;
                     }
+
+                    interpolatedPosition = glm::lerp(prevKey.m_position, nextKey.m_position, normalizedTime);
                 }
 
                 isBoneAnimated = true;
@@ -182,18 +185,20 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                 {
                     const KeyRotation& nextKey = currentBoneAnim->m_rotationKeys[nextKeyIndex];
                     KeyRotation prevKey;
+
+                    float normalizedTime = 0.0f;
                     if(nextKeyIndex - 1 >= 0)
                     {
                         prevKey = currentBoneAnim->m_rotationKeys[nextKeyIndex - 1];
-
-                        float normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
-
-                        interpolatedRotation = glm::normalize(glm::slerp(prevKey.m_rotation, nextKey.m_rotation, normalizedTime));
+                        normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
                     }
                     else
                     {
-                        interpolatedRotation = nextKey.m_rotation;
+                        prevKey = currentBoneAnim->m_rotationKeys[currentBoneAnim->m_rotationKeys.size() - 1];
+                        normalizedTime = curAnimTime / nextKey.m_timeStamp;
                     }
+
+                    interpolatedRotation = glm::normalize(glm::slerp(prevKey.m_rotation, nextKey.m_rotation, normalizedTime));
                 }
             }
 
@@ -209,18 +214,20 @@ void SGCore::MotionPlannersResolver::processMotionNodes(const double& dt,
                 {
                     const KeyScale& nextKey = currentBoneAnim->m_scaleKeys[nextKeyIndex];
                     KeyScale prevKey;
+
+                    float normalizedTime = 0.0f;
                     if(nextKeyIndex - 1 >= 0)
                     {
                         prevKey = currentBoneAnim->m_scaleKeys[nextKeyIndex - 1];
-
-                        float normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
-
-                        interpolatedScale = glm::lerp(prevKey.m_scale, nextKey.m_scale, normalizedTime);
+                        normalizedTime = (curAnimTime - prevKey.m_timeStamp) / (nextKey.m_timeStamp - prevKey.m_timeStamp);
                     }
                     else
                     {
-                        interpolatedScale = nextKey.m_scale;
+                        prevKey = currentBoneAnim->m_scaleKeys[currentBoneAnim->m_scaleKeys.size() - 1];
+                        normalizedTime = curAnimTime / nextKey.m_timeStamp;
                     }
+
+                    interpolatedScale = glm::lerp(prevKey.m_scale, nextKey.m_scale, normalizedTime);
                 }
             }
 

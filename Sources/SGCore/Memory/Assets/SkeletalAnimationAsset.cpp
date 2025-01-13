@@ -10,7 +10,20 @@ void SGCore::SkeletalAnimationAsset::doLoad(const InterpolatedPath& path)
 
 void SGCore::SkeletalAnimationAsset::doLoadFromBinaryFile(SGCore::AssetManager* parentAssetManager) noexcept
 {
+    auto& package = parentAssetManager->getPackage();
 
+    for(auto& boneAnimPair : m_bonesAnimations)
+    {
+        auto& boneAnim = boneAnimPair.second;
+
+        const auto& posKeysMarkup = boneAnim.m_positionKeysMarkupInPackage;
+        const auto& rotKeysMarkup = boneAnim.m_rotationKeysMarkupInPackage;
+        const auto& scaleKeysMarkup = boneAnim.m_scaleKeysMarkupInPackage;
+
+        boneAnim.m_positionKeys = package.readData<std::vector<KeyPosition>>(posKeysMarkup.m_offset, posKeysMarkup.m_sizeInBytes);
+        boneAnim.m_rotationKeys = package.readData<std::vector<KeyRotation>>(rotKeysMarkup.m_offset, rotKeysMarkup.m_sizeInBytes);
+        boneAnim.m_scaleKeys = package.readData<std::vector<KeyScale>>(scaleKeysMarkup.m_offset, scaleKeysMarkup.m_sizeInBytes);
+    }
 }
 
 void SGCore::SkeletalAnimationAsset::doReloadFromDisk(SGCore::AssetsLoadPolicy loadPolicy,

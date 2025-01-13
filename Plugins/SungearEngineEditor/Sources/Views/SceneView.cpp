@@ -374,11 +374,13 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         auto mainNode = SGCore::MakeRef<SGCore::MotionPlannerNode>();
         mainNode->m_isRepeated = true;
         mainNode->m_animationSpeed = 1.0f;
-        mainNode->m_skeletalAnimation = animations->m_skeletalAnimations[0];
+        mainNode->m_skeletalAnimation = animations->m_skeletalAnimations[1];
 
         auto walkNode = SGCore::MakeRef<SGCore::MotionPlannerNode>();
         walkNode->m_isRepeated = true;
-        walkNode->m_animationSpeed = 1.4f;
+        // walkNode->m_animationSpeed = 1.4f;
+         walkNode->m_animationSpeed = 1.0f;
+        //walkNode->m_animationSpeed = 0.05f;
         walkNode->m_skeletalAnimation = animations->m_skeletalAnimations[3];
         walkNode->activationFunction = []() {
             return SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_0);
