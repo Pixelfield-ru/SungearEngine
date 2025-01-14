@@ -203,7 +203,7 @@ void SGCore::CoreMain::onFrameBufferResize(SGCore::Window& window, const int& wi
         auto cameras3DView = Scene::getCurrentScene()->getECSRegistry()->view<Camera3D, RenderingBase>();
 
         cameras3DView.each([width, height](Camera3D::reg_t& camera, RenderingBase::reg_t renderingBase) {
-            renderingBase->m_aspect = (float) width / (float) height;
+            renderingBase->m_aspect = std::max((float) width, 10.0f) / std::max((float) height, 10.0f);
         });
     }
 }

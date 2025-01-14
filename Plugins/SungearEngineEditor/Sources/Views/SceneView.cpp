@@ -119,7 +119,7 @@ void SGE::SceneView::renderBody()
                     cameraPickedEntities.clear();
                     m_entitiesManipulator.m_manipulatingEntities.clear();
                 }
-                else if(camera3D)
+                else if(camera3D && pickedEntity != entt::null)
                 {
                     auto& entityBaseInfo =
                             currentEditorScene->m_scene->getECSRegistry()->get<SGCore::EntityBaseInfo::reg_t>(pickedEntity);
@@ -371,20 +371,20 @@ void SGE::SceneView::loadModelByPath(const std::filesystem::path& modelPath) con
         auto& motionPlanner = SGCore::Scene::getCurrentScene()->getECSRegistry()->emplace<SGCore::MotionPlanner>(entities[0]);
         motionPlanner.m_skeleton = skeleton;
 
-        auto mainNode = SGCore::MakeRef<SGCore::MotionPlannerNode>();
+        auto mainNode = SGCore::MotionPlannerNode::createNode();
         mainNode->m_isRepeated = true;
         mainNode->m_animationSpeed = 1.0f;
         mainNode->m_skeletalAnimation = animations->m_skeletalAnimations[1];
 
-        auto walkNode = SGCore::MakeRef<SGCore::MotionPlannerNode>();
+        auto walkNode = SGCore::MotionPlannerNode::createNode();
         walkNode->m_isRepeated = true;
         // walkNode->m_animationSpeed = 1.4f;
          walkNode->m_animationSpeed = 1.0f;
         //walkNode->m_animationSpeed = 0.05f;
         walkNode->m_skeletalAnimation = animations->m_skeletalAnimations[3];
-        walkNode->activationFunction = []() {
-            return SGCore::InputManager::getMainInputListener()->keyboardKeyDown(SGCore::KeyboardKey::KEY_0);
-        };
+        auto walkActivationAction = SGCore::MakeRef<SGCore::KeyboardKeyDownAction>();
+        walkActivationAction->m_key = SGCore::KeyboardKey::KEY_0;
+        walkNode->m_activationAction = walkActivationAction;
 
         auto walkConnection = SGCore::MakeRef<SGCore::MotionPlannerConnection>();
         walkConnection->m_previousNode = mainNode;

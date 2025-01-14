@@ -8,6 +8,12 @@
 #include "Serde.h"
 #include <glm/glm.hpp>
 
+#include "SGCore/Actions/AlwaysFalseAction.h"
+#include "SGCore/Actions/KeyboardKeyAction.h"
+#include "SGCore/Actions/KeyboardKeyDownAction.h"
+#include "SGCore/Actions/KeyboardKeyPressedAction.h"
+#include "SGCore/Actions/KeyboardKeyReleasedAction.h"
+
 #include "SGCore/Memory/Assets/AnimationsFile.h"
 #include "SGCore/Scene/EntityRef.h"
 #include "SGCore/Logger/Logger.h"
@@ -59,6 +65,10 @@
 #include "SGCore/Render/Alpha/OpaqueEntityTag.h"
 
 #include "SGCore/Serde/Components/NonSavable.h"
+
+#include "SGCore/Animation/MotionPlanner.h"
+#include "SGCore/Animation/MotionPlannerConnection.h"
+#include "SGCore/Animation/MotionPlannersResolver.h"
 
 // =========================================================================================
 // STANDARD SerdeSpec IMPLEMENTATIONS
@@ -836,7 +846,19 @@ struct SGCore::Serde::SerdeSpec<SGCore::ISystem, TFormatType> :
 
                                 >,
         SGCore::Serde::DerivedTypes<
-                SGCore::Controllables3DUpdater, SGCore::PhysicsWorld3D, SGCore::RenderingBasesUpdater, SGCore::AtmosphereUpdater, SGCore::DirectionalLightsUpdater, SGCore::TransformationsUpdater, SGCore::BoxGizmosRenderer, SGCore::LineGizmosRenderer, SGCore::SphereGizmosUpdater, SGCore::DebugDraw, SGCore::OctreesSolver, SGCore::AudioProcessor
+                SGCore::Controllables3DUpdater,
+                SGCore::PhysicsWorld3D,
+                SGCore::RenderingBasesUpdater,
+                SGCore::AtmosphereUpdater,
+                SGCore::DirectionalLightsUpdater,
+                SGCore::TransformationsUpdater,
+                SGCore::BoxGizmosRenderer,
+                SGCore::LineGizmosRenderer,
+                SGCore::SphereGizmosUpdater,
+                SGCore::DebugDraw,
+                SGCore::OctreesSolver,
+                SGCore::AudioProcessor,
+                SGCore::MotionPlannersResolver
                                    >
 {
     static inline const std::string type_name = "SGCore::ISystem";
@@ -3167,7 +3189,16 @@ namespace SGCore::Serde
 
         static std::shared_ptr<T> allocateObject()
         {
-            return std::make_shared<T>();
+            // if we have public access to constructor of T
+            if constexpr(requires { T::T(); })
+            {
+                return std::make_shared<T>();
+            }
+            else
+            {
+                // else trying to allocate using raw pointer
+                return std::shared_ptr<T>(new T);
+            }
         }
     };
 
@@ -3730,7 +3761,8 @@ namespace SGCore::Serde
             // trying to save standard components ===============================================
             // ==================================================================================
 
-            #pragma region Generated
+            #pragma region Components
+
             {
                 auto* component = serializableScene.getECSRegistry()->template tryGet<SGCore::EntityBaseInfo>(serializableEntity);
 
@@ -3871,7 +3903,18 @@ namespace SGCore::Serde
                                                            serializableEntity, *serializableScene.getECSRegistry());
                 }
             }
-            #pragma endregion Generated
+
+            {
+                auto* component = serializableScene.getECSRegistry()->template tryGet<SGCore::MotionPlanner>(serializableEntity);
+
+                if(component)
+                {
+                    valueView.getValueContainer().pushBack(*component,
+                                                           serializableEntity, *serializableScene.getECSRegistry());
+                }
+            }
+
+            #pragma endregion Components
 
             // ==================================================================================
             // ==================================================================================
@@ -3923,6 +3966,8 @@ namespace SGCore::Serde
                 // trying to load standard components ===============================================
                 // ==================================================================================
 
+                #pragma region Components
+
                 if(currentElementTypeName == SerdeSpec<SGCore::EntityBaseInfo, TFormatType>::type_name)
                 {
                     auto component = valueView.getValueContainer().template getMember<SGCore::EntityBaseInfo::reg_t>(componentsIt);
@@ -3934,8 +3979,6 @@ namespace SGCore::Serde
                         continue;
                     }
                 }
-
-                #pragma region Generated
 
                 if(currentElementTypeName == SerdeSpec<SGCore::AudioSource, TFormatType>::type_name)
                 {
@@ -4131,7 +4174,19 @@ namespace SGCore::Serde
                     }
                 }
 
-                #pragma endregion Generated
+                if(currentElementTypeName == SerdeSpec<SGCore::MotionPlanner, TFormatType>::type_name)
+                {
+                    const auto component = valueView.getValueContainer().template getMember<SGCore::MotionPlanner::reg_t>(componentsIt);
+
+                    if(component)
+                    {
+                        toRegistry.emplace<SGCore::MotionPlanner>(entity, *component);
+
+                        continue;
+                    }
+                }
+
+                #pragma endregion Components
 
                 // ==================================================================================
                 // ==================================================================================
@@ -4228,6 +4283,7 @@ namespace SGCore::Serde
                 auto systemPtr = system.get();
 
                 // if system is instance of standard systems then serializing system using standard SerdeSpecs
+                // TODO: THIS IS SO SHITTY. REMOVE WHEN CUSTOM DERIVED TYPES IN EXTERNAL PROJECTS WILL BE AVAILABLE IN SGCore::Serde
                 if(SG_INSTANCEOF(systemPtr, Controllables3DUpdater) ||
                    SG_INSTANCEOF(systemPtr, PhysicsWorld3D) ||
                    SG_INSTANCEOF(systemPtr, RenderingBasesUpdater) ||
@@ -4239,7 +4295,8 @@ namespace SGCore::Serde
                    SG_INSTANCEOF(systemPtr, SphereGizmosUpdater) ||
                    SG_INSTANCEOF(systemPtr, DebugDraw) ||
                    SG_INSTANCEOF(systemPtr, OctreesSolver) ||
-                   SG_INSTANCEOF(systemPtr, AudioProcessor))
+                   SG_INSTANCEOF(systemPtr, AudioProcessor) ||
+                   SG_INSTANCEOF(systemPtr, MotionPlannersResolver))
                 {
                     valueView.getValueContainer().pushBack(system);
                     continue;
@@ -5363,6 +5420,317 @@ namespace SGCore::Serde
                     valueView.m_data->m_scaleKeysMarkupInPackage = *dataMarkupOpt;
                 }
             }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MotionPlanner, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MotionPlanner";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<MotionPlanner, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_rootNodes", valueView.m_data->m_rootNodes);
+            valueView.getValueContainer().addMember("m_skeleton", valueView.m_data->m_skeleton);
+            valueView.getValueContainer().addMember("m_maxBonesPerMesh", valueView.m_data->m_maxBonesPerMesh);
+        }
+
+        static void deserialize(DeserializableValueView<MotionPlanner, TFormatType>& valueView)
+        {
+            auto rootNodes = valueView.getValueContainer().template getMember<decltype(MotionPlanner::m_rootNodes)>("m_rootNodes");
+            if(rootNodes)
+            {
+                valueView.m_data->m_rootNodes = std::move(*rootNodes);
+            }
+
+            auto skeleton = valueView.getValueContainer().template getMember<decltype(MotionPlanner::m_skeleton)>("m_skeleton");
+            if(skeleton)
+            {
+                valueView.m_data->m_skeleton = std::move(*skeleton);
+            }
+
+            auto maxBonesPerMesh = valueView.getValueContainer().template getMember<std::int32_t>("m_maxBonesPerMesh");
+            if(maxBonesPerMesh)
+            {
+                valueView.m_data->m_maxBonesPerMesh = std::move(*maxBonesPerMesh);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MotionPlannerNode, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MotionPlannerNode";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<MotionPlannerNode, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_connections", valueView.m_data->m_connections);
+            valueView.getValueContainer().addMember("m_skeletalAnimation", valueView.m_data->m_skeletalAnimation);
+            valueView.getValueContainer().addMember("m_activationAction", valueView.m_data->m_activationAction);
+            valueView.getValueContainer().addMember("m_isActive", valueView.m_data->m_isActive);
+            // valueView.getValueContainer().addMember("m_isPaused", valueView.m_data->m_isPaused);
+            // valueView.getValueContainer().addMember("m_isPlaying", valueView.m_data->m_isPlaying);
+            valueView.getValueContainer().addMember("m_isRepeated", valueView.m_data->m_isRepeated);
+            valueView.getValueContainer().addMember("m_animationSpeed", valueView.m_data->m_animationSpeed);
+        }
+
+        static void deserialize(DeserializableValueView<MotionPlannerNode, TFormatType>& valueView)
+        {
+            auto connections = valueView.getValueContainer().template getMember<decltype(MotionPlannerNode::m_connections)>("m_connections");
+            if(connections)
+            {
+                valueView.m_data->m_connections = std::move(*connections);
+            }
+
+            // setup connections
+            for(const auto& connection : valueView.m_data->m_connections)
+            {
+                // USE ONLY weak_from_this(). DO NOT USE shared_from_this()
+                connection->m_previousNode = valueView.m_data->weak_from_this();
+            }
+
+            auto skeletalAnimation = valueView.getValueContainer().template getMember<decltype(MotionPlannerNode::m_skeletalAnimation)>("m_skeletalAnimation");
+            if(skeletalAnimation)
+            {
+                valueView.m_data->m_skeletalAnimation = std::move(*skeletalAnimation);
+            }
+
+            auto activationAction = valueView.getValueContainer().template getMember<decltype(MotionPlannerNode::m_activationAction)>("m_activationAction");
+            if(activationAction)
+            {
+                valueView.m_data->m_activationAction = std::move(*activationAction);
+            }
+
+            auto isActive = valueView.getValueContainer().template getMember<bool>("m_isActive");
+            if(isActive)
+            {
+                valueView.m_data->m_isActive = std::move(*isActive);
+            }
+
+            auto isRepeated = valueView.getValueContainer().template getMember<bool>("m_isRepeated");
+            if(isRepeated)
+            {
+                valueView.m_data->m_isRepeated = std::move(*isRepeated);
+            }
+
+            auto animationSpeed = valueView.getValueContainer().template getMember<float>("m_animationSpeed");
+            if(animationSpeed)
+            {
+                valueView.m_data->m_animationSpeed = std::move(*animationSpeed);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MotionPlannerConnection, TFormatType> : BaseTypes<>, DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MotionPlannerConnection";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<MotionPlannerConnection, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_blendTime", valueView.m_data->m_blendTime);
+            valueView.getValueContainer().addMember("m_blendSpeed", valueView.m_data->m_blendSpeed);
+            // serializing only next node because m_previousNode owns this connection
+            valueView.getValueContainer().addMember("m_nextNode", valueView.m_data->m_nextNode);
+        }
+
+        static void deserialize(DeserializableValueView<MotionPlannerConnection, TFormatType>& valueView)
+        {
+            auto blendTime = valueView.getValueContainer().template getMember<float>("m_blendTime");
+            if(blendTime)
+            {
+                valueView.m_data->m_blendTime = std::move(*blendTime);
+            }
+
+            auto blendSpeed = valueView.getValueContainer().template getMember<float>("m_blendSpeed");
+            if(blendSpeed)
+            {
+                valueView.m_data->m_blendSpeed = std::move(*blendSpeed);
+            }
+
+            auto nextNode = valueView.getValueContainer().template getMember<decltype(MotionPlannerConnection::m_nextNode)>("m_nextNode");
+            if(nextNode)
+            {
+                valueView.m_data->m_nextNode = std::move(*nextNode);
+            }
+        }
+    };
+
+    template<typename ActionReturnT, FormatType TFormatType>
+    struct SerdeSpec<IAction<ActionReturnT>, TFormatType> :
+            BaseTypes<>,
+            DerivedTypes<
+                    AlwaysTrueAction,
+                    AlwaysFalseAction,
+                    KeyboardKeyAction,
+                    KeyboardKeyDownAction,
+                    KeyboardKeyPressedAction,
+                    KeyboardKeyReleasedAction
+                        >
+    {
+        static inline const std::string type_name = "SGCore::IAction";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<IAction<ActionReturnT>, TFormatType>& valueView)
+        {
+
+        }
+
+        static void deserialize(DeserializableValueView<IAction<ActionReturnT>, TFormatType>& valueView)
+        {
+
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<AlwaysTrueAction, TFormatType> :
+            BaseTypes<IAction<bool>>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::AlwaysTrueAction";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<AlwaysTrueAction, TFormatType>& valueView)
+        {
+
+        }
+
+        static void deserialize(DeserializableValueView<AlwaysTrueAction, TFormatType>& valueView)
+        {
+
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<AlwaysFalseAction, TFormatType> :
+            BaseTypes<IAction<bool>>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::AlwaysFalseAction";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<AlwaysFalseAction, TFormatType>& valueView)
+        {
+
+        }
+
+        static void deserialize(DeserializableValueView<AlwaysFalseAction, TFormatType>& valueView)
+        {
+
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<KeyboardKeyAction, TFormatType> :
+            BaseTypes<IAction<KeyboardKeyActionType>>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::KeyboardKeyAction";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<KeyboardKeyAction, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_key", valueView.m_data->m_key);
+        }
+
+        static void deserialize(DeserializableValueView<KeyboardKeyAction, TFormatType>& valueView)
+        {
+            auto key = valueView.getValueContainer().template getMember<KeyboardKey>("m_key");
+            if(key)
+            {
+                valueView.m_data->m_key = std::move(*key);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<KeyboardKeyDownAction, TFormatType> :
+            BaseTypes<IAction<bool>>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::KeyboardKeyDownAction";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<KeyboardKeyDownAction, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_key", valueView.m_data->m_key);
+        }
+
+        static void deserialize(DeserializableValueView<KeyboardKeyDownAction, TFormatType>& valueView)
+        {
+            auto key = valueView.getValueContainer().template getMember<KeyboardKey>("m_key");
+            if(key)
+            {
+                valueView.m_data->m_key = std::move(*key);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<KeyboardKeyPressedAction, TFormatType> :
+            BaseTypes<IAction<bool>>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::KeyboardKeyPressedAction";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<KeyboardKeyPressedAction, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_key", valueView.m_data->m_key);
+        }
+
+        static void deserialize(DeserializableValueView<KeyboardKeyPressedAction, TFormatType>& valueView)
+        {
+            auto key = valueView.getValueContainer().template getMember<KeyboardKey>("m_key");
+            if(key)
+            {
+                valueView.m_data->m_key = std::move(*key);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<KeyboardKeyReleasedAction, TFormatType> :
+            BaseTypes<IAction<bool>>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::KeyboardKeyReleasedAction";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<KeyboardKeyReleasedAction, TFormatType>& valueView)
+        {
+            valueView.getValueContainer().addMember("m_key", valueView.m_data->m_key);
+        }
+
+        static void deserialize(DeserializableValueView<KeyboardKeyReleasedAction, TFormatType>& valueView)
+        {
+            auto key = valueView.getValueContainer().template getMember<KeyboardKey>("m_key");
+            if(key)
+            {
+                valueView.m_data->m_key = std::move(*key);
+            }
+        }
+    };
+
+    template<FormatType TFormatType>
+    struct SerdeSpec<MotionPlannersResolver, TFormatType> :
+            BaseTypes<ISystem>,
+            DerivedTypes<>
+    {
+        static inline const std::string type_name = "SGCore::MotionPlannersResolver";
+        static inline constexpr bool is_pointer_type = false;
+
+        static void serialize(SerializableValueView<MotionPlannersResolver, TFormatType>& valueView)
+        {
+
+        }
+
+        static void deserialize(DeserializableValueView<MotionPlannersResolver, TFormatType>& valueView)
+        {
+
         }
     };
 

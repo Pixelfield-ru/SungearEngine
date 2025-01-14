@@ -21,10 +21,10 @@ namespace SGCore
 
         // bool m_stopPreviousNodeIfThisStarted = true;
 
-        Ref<MotionPlannerNode> m_previousNode;
+        Weak<MotionPlannerNode> m_previousNode;
         Ref<MotionPlannerNode> m_nextNode;
 
-        [[nodiscard]] MotionPlannerConnection copyStructure(const MotionPlannerNode& baseNode) const noexcept;
+        [[nodiscard]] MotionPlannerConnection copyStructure(const Ref<MotionPlannerNode>& baseNode) const noexcept;
     };
 }
 

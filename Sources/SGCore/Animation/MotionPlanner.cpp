@@ -26,9 +26,14 @@ SGCore::MotionPlanner SGCore::MotionPlanner::copyStructure() const noexcept
 
     for(const auto& rootNode : m_rootNodes)
     {
-        newMotionPlanner.m_rootNodes.push_back(MakeRef<MotionPlannerNode>(rootNode->copyStructure()));
+        newMotionPlanner.m_rootNodes.push_back(rootNode->copyStructure());
     }
 
     return newMotionPlanner;
+}
+
+void SGCore::MotionPlanner::onMemberAssetsReferencesResolveImpl(SGCore::AssetManager* updatedAssetManager) noexcept
+{
+    AssetManager::resolveAssetReference(updatedAssetManager, m_skeleton);
 }
 

@@ -26,10 +26,13 @@ void SGCore::MotionPlannersResolver::fixedUpdate(const double& dt, const double&
         // collecting all nodes to interpolate bones animations
         for(const auto& rootNode : motionPlanner.m_rootNodes)
         {
-            if(rootNode->m_isActive && rootNode->activationFunction())
+            if(rootNode->m_isActive && rootNode->m_activationAction->execute())
             {
-                rootNode->m_isPlaying = true;
-                nodesToInterpolate.push_back(rootNode);
+                if(rootNode->m_skeletalAnimation)
+                {
+                    rootNode->m_isPlaying = true;
+                    nodesToInterpolate.push_back(rootNode);
+                }
 
                 collectAndUpdateNodesToInterpolate(dt, rootNode, nodesToInterpolate);
             }
@@ -347,13 +350,16 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
 {
     for(const auto& connection : currentNode->m_connections)
     {
-        if(!connection->m_nextNode) continue;
+        if(!connection->m_nextNode || !connection->m_nextNode->m_skeletalAnimation) continue;
 
-        bool isConnectionActivated = connection->m_nextNode->activationFunction();
+        bool isConnectionActivated = connection->m_nextNode->m_activationAction->execute();
+
+        auto previousNode = connection->m_previousNode.lock();
 
         // calling activation function to understand if this connection of currentNode is must be active
-        if(connection->m_previousNode->m_isActive &&
-           connection->m_previousNode->m_isPlaying &&
+        if(previousNode &&
+           previousNode->m_isActive &&
+           previousNode->m_isPlaying &&
            connection->m_nextNode->m_isActive &&
            isConnectionActivated)
         {
@@ -367,7 +373,7 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
                 float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
 
                 connection->m_nextNode->m_currentBlendFactor = blendFactor;
-                connection->m_previousNode->m_currentBlendFactor = 1.0 - blendFactor;
+                previousNode->m_currentBlendFactor = 1.0 - blendFactor;
             }
 
             nodesToInterpolate.push_back(connection->m_nextNode);
@@ -388,7 +394,7 @@ void SGCore::MotionPlannersResolver::collectAndUpdateNodesToInterpolate(const do
                 float blendFactor = connection->m_currentBlendTime / connection->m_blendTime;
 
                 connection->m_nextNode->m_currentBlendFactor = blendFactor;
-                connection->m_previousNode->m_currentBlendFactor = 1.0f - blendFactor;
+                previousNode->m_currentBlendFactor = 1.0f - blendFactor;
 
                 // we must add next node to nodesToInterpolate because the next node still
                 // needs to be taken into account when interpolating.

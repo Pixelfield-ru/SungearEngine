@@ -7,6 +7,6 @@
 
 #define SG_CRTP_OVERRIDE
 #define SG_CRTP_VIRTUAL
-#define SG_CRTP_CHECK_VIRTUAL_FUNCTION_IMPL(funcName) static_assert(requires(DerivedT obj) { obj.funcName; }, "Please, implement '"#funcName"' function (CRTP ERROR).");
+// #define SG_CRTP_CHECK_VIRTUAL_FUNCTION_IMPL(funcName) static_assert(requires(DerivedT obj) { obj.funcName(); }, "Please, implement '"#funcName"' function (CRTP ERROR).");
 
 #endif //SUNGEARENGINE_DEFINES_H

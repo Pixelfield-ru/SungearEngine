@@ -7,13 +7,21 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "SGCore/Memory/Assets/SkeletalAnimationAsset.h"
+#include "SGCore/Actions/IAction.h"
+#include "SGCore/Actions/AlwaysTrueAction.h"
 
 namespace SGCore
 {
     struct MotionPlannerConnection;
 
-    struct MotionPlannerNode
+    /**
+     * YOU CAN SERIALIZE ONLY Ref<MotionPlannerNode> (Ref is alias for std::shared_ptr).
+     */
+    struct MotionPlannerNode : IAssetsRefsResolver<MotionPlannerNode>, public std::enable_shared_from_this<MotionPlannerNode>
     {
+        sg_serde_as_friend()
+        sg_assets_refs_resolver_as_friend
+
         friend struct MotionPlannersResolver;
 
         std::vector<Ref<MotionPlannerConnection>> m_connections;
@@ -25,7 +33,7 @@ namespace SGCore
         // parent node is playing (m_isPlaying == true) and active (m_isActive == true)
         // 2) if not connected to other node as child (it means that this node is root),
         // then calls if this node is playing (m_isPlaying == true) and active (m_isActive == true)
-        std::function<bool()> activationFunction = []() { return true; };
+        Ref<IAction<bool>> m_activationAction = MakeRef<AlwaysTrueAction>();
 
         /// m_isActive indicates whether the node is active. If the node is not active, then it and all its children are not animated.
         bool m_isActive = true;
@@ -33,18 +41,29 @@ namespace SGCore
         bool m_isPaused = false;
         /// m_isPlaying indicates whether a node animation is currently being played.
         bool m_isPlaying = true;
-        ///m_isRepeated notifies whether the node animation will be repeated after the animation is completed.
+        /// m_isRepeated notifies whether the node animation will be repeated after the animation is completed.
         bool m_isRepeated = false;
 
         float m_animationSpeed = 1.0f;
 
         float m_currentAnimationTime = 0.0f;
 
-        [[nodiscard]] MotionPlannerNode copyStructure() const noexcept;
+        [[nodiscard]] Ref<MotionPlannerNode> copyStructure() const noexcept;
+
+        [[nodiscard]] SGCORE_EXPORT static Ref<MotionPlannerNode> createNode() noexcept;
 
     private:
         // uses to interpolate between two animations when connection is activated
         float m_currentBlendFactor = 0.0f;
+
+        MotionPlannerNode() noexcept = default;
+        MotionPlannerNode(const MotionPlannerNode&) noexcept = default;
+        MotionPlannerNode(MotionPlannerNode&&) noexcept = default;
+
+        MotionPlannerNode& operator=(const MotionPlannerNode&) noexcept = default;
+        MotionPlannerNode& operator=(MotionPlannerNode&&) noexcept = default;
+
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
     };
 }
 

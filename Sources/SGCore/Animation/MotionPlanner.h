@@ -13,8 +13,10 @@
 
 namespace SGCore
 {
-    struct MotionPlanner : ECS::Component<MotionPlanner, const MotionPlanner>
+    struct MotionPlanner : ECS::Component<MotionPlanner, const MotionPlanner>, IAssetsRefsResolver<MotionPlanner>
     {
+        sg_assets_refs_resolver_as_friend
+
         MotionPlanner() noexcept;
         MotionPlanner(const MotionPlanner&) noexcept = default;
         MotionPlanner(MotionPlanner&&) noexcept = default;
@@ -44,6 +46,9 @@ namespace SGCore
 
         [[nodiscard]] MotionPlanner& operator=(const MotionPlanner&) noexcept = default;
         [[nodiscard]] MotionPlanner& operator=(MotionPlanner&&) noexcept = default;
+
+    private:
+        void onMemberAssetsReferencesResolveImpl(AssetManager* updatedAssetManager) noexcept SG_CRTP_OVERRIDE;
     };
 }
 

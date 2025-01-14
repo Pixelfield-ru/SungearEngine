@@ -76,7 +76,6 @@ namespace SGCore
     private:
         void onMemberAssetsReferencesResolve(AssetManager* updatedAssetManager) noexcept
         {
-            SG_CRTP_CHECK_VIRTUAL_FUNCTION_IMPL(onMemberAssetsReferencesResolveImpl)
             static_cast<DerivedT*>(this)->onMemberAssetsReferencesResolveImpl(updatedAssetManager);
         }
 
