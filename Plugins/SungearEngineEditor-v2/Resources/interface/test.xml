@@ -1,0 +1,7 @@
+<xml>
+    <include type="template" path="templates/window/window.xml"/>
+
+    <window title="привет мир">
+
+    </window>
+</xml>

@@ -53,5 +53,5 @@ list(FILTER SGE_SOURCES EXCLUDE REGEX ".templates")
 add_library(${PROJECT_NAME} SHARED ${SGE_SOURCES} Externals/ImGuizmo/ImGuizmo.h Externals/ImGuizmo/ImGuizmo.cpp)
 # add_executable(${PROJECT_NAME} ${SGE_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE Sources ${SungearEngine_INCLUDE_DIRS} Externals)
+target_include_directories(${PROJECT_NAME} PUBLIC Sources ${SungearEngine_INCLUDE_DIRS} Externals)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS} unofficial::nativefiledialog::nfd)

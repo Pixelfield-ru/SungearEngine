@@ -1,0 +1,16 @@
+.window-default {
+    flex-direction: column;
+    background-color: #FFFFFF;
+}
+
+.window-header {
+    flex-direction: row;
+}
+
+.window-body {
+    flex-direction: row;
+}
+
+.window-footer {
+    flex-direction: row;
+}

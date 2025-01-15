@@ -137,6 +137,9 @@ SGCore::PluginProject SGCore::PluginsManager::createPluginProject(const std::fil
 
         // ====================================== Resources directory
         std::filesystem::create_directory(pluginDir + "/Resources");
+
+        // ====================================== Externals directory
+        std::filesystem::create_directory(pluginDir + "/Externals");
     }
     catch(const std::filesystem::filesystem_error& err)
     {

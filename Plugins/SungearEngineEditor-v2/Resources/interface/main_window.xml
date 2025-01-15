@@ -1,0 +1,23 @@
+<xml>
+    <include type="template" path="templates/window/window.xml"/>
+
+    <window isDockingTarget="true">
+        <window title="Explorer">
+            <window title="Tree Explorer" hiddenHeader="no-by-default"> <!-- hiddenTitle can accept "no-by-default", "always", "never", "yes-by-default" -->
+
+            </window>
+
+            <window title="Tree Explorer">
+
+            </window>
+        </window>
+
+        <window title="Scene Tree View">
+
+        </window>
+
+        <window title="Inspector">
+
+        </window>
+    </window>
+</xml>

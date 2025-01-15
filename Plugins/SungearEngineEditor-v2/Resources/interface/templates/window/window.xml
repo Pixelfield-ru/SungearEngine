@@ -1,0 +1,35 @@
+<xml>
+    <include type="stylesheet" path="window.css"/>
+
+    <template name="window">
+        <!-- declaring attributes that can be accepted for this template -->
+        <attribute name="hiddenHeader">
+            <!-- declaring values that can be accepted for this attribute -->
+            <acceptedValue value="no-by-default"/>
+            <acceptedValue value="yes-by-default"/>
+            <acceptedValue value="never"/>
+            <acceptedValue value="always"/>
+        </attribute>
+
+        <!-- declaring elements that will be pasted instead of this attribute -->
+        <elements>
+            <empty-window style="window-default">
+                <div style="window-header"> <!-- header -->
+
+                </div>
+
+                <separator axis="x"/>
+
+                <div style="window-body"> <!-- body -->
+
+                </div>
+
+                <separator axis="x"/>
+
+                <div style="window-footer"> <!-- footer -->
+
+                </div>
+            </empty-window>
+        </elements>
+    </template>
+</xml>

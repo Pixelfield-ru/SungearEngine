@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
-project(${pluginName}$)
+project(SungearEngineEditor-v2)
 
-set(CMAKE_CXX_STANDARD ${cxxStandard}$)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 if(${CMAKE_COMPILER_IS_GNUCXX})
     list(APPEND CMAKE_CXX_FLAGS "-g -rdynamic -fno-pie -no-pie -fno-gnu-unique -fexceptions -fnon-call-exceptions")
@@ -50,7 +50,7 @@ file(GLOB_RECURSE SG_CURRENT_PLUGIN_GENERATED_FILES .SG_GENERATED/*.h .SG_GENERA
 include($ENV{SUNGEAR_SOURCES_ROOT}/cmake/SungearEngineInclude.cmake)
 include($ENV{SUNGEAR_SOURCES_ROOT}/Plugins/SungearEngineEditor/cmake/include_as_plugin.cmake)
 
-add_library(${PROJECT_NAME} SHARED Sources/PluginMain.h Sources/PluginMain.cpp Sources/${pluginName}$.h Sources/${pluginName}$.cpp ${SG_CURRENT_PLUGIN_GENERATED_FILES})
+add_library(${PROJECT_NAME} SHARED Sources/PluginMain.h Sources/PluginMain.cpp Sources/SungearEngineEditor-v2.h Sources/SungearEngineEditor-v2.cpp ${SG_CURRENT_PLUGIN_GENERATED_FILES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE Sources ${SungearEngine_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SungearEngine_LIBS})
