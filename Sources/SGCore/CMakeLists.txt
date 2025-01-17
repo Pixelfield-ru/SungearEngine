@@ -25,6 +25,7 @@
  find_package(OpenAL CONFIG REQUIRED)
  find_package(unofficial-lunasvg CONFIG REQUIRED)
  find_package(RapidJSON CONFIG REQUIRED)
+ find_package(antlr4-runtime CONFIG REQUIRED)
 
  include(FetchContent)
 
@@ -56,6 +57,7 @@
          #$<BUILD_INTERFACE:${PUGIXML_INCLUDE_DIR}>
          $<BUILD_INTERFACE:${FREETYPE_INCLUDE_DIRS}>
          $<BUILD_INTERFACE:${Stb_INCLUDE_DIR}>
+         ${ANTLR4_INCLUDE_DIR}
          )
 
  message("CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
@@ -80,6 +82,7 @@
          glaze::glaze
          unofficial::lunasvg::lunasvg
          rapidjson
+         antlr4_shared
 
          ${SG_BULLET_LIBS}
          ${FREETYPE_LIBRARIES}

@@ -116,6 +116,10 @@ endif()
     list(APPEND SungearEngine_LIBS "rapidjson")
 #endif()
 
+find_package(antlr4-runtime CONFIG REQUIRED)
+list(APPEND SungearEngine_LIBS "antlr4_shared")
+list(APPEND SungearEngine_INCLUDE_DIRS "${ANTLR4_INCLUDE_DIR}")
+
 if(${CMAKE_COMPILER_IS_GNUCXX})
     find_library(Backtrace_LIBRARY backtrace)
 

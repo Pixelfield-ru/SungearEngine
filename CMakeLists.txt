@@ -21,6 +21,9 @@ add_definitions(-DBOOST_STACKTRACE_USE_BACKTRACE)
 add_definitions(-DUSE_LIBPNG)
 add_definitions(-DHC_NO_COMPRESSION)
 add_definitions(-DNOMINMAX)
+add_definitions(-DWIN32_LEAN_AND_MEAN)
+# BECAUSE I CANT USE antlr4-runtime BECAUSE OF FUCKING MACRO 'ERROR' AND ENUM TYPE IN antlr4 ParseTreeType::ERROR in ParseTreeType.h file
+add_definitions(-DNOGDI)
 #add_definitions(-DSPDLOG_WCHAR_TO_UTF8_SUPPORT)
 
 set(CMAKE_CXX_STANDARD 23)

@@ -59,6 +59,9 @@
   }, {
     "name" : "libbacktrace",
     "version>=" : "2023-11-30",
-    "platform": "linux"
+    "platform" : "linux"
+  }, {
+    "name" : "antlr4",
+    "version>=" : "4.13.1"
   } ]
 }
