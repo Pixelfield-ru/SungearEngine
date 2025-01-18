@@ -333,12 +333,7 @@ SGCore::Weak<SGCore::XMLDocument> SGCore::Scene::getUIXMLDocument() const noexce
 
 void SGCore::Scene::reloadUI() noexcept
 {
-    m_ecsRegistry->clear<UIElement>();
-    
-    if(auto lockedUIDocument = m_UIXMLDocument.lock())
-    {
-        //Fваkd
-    }
+
 }
 
 /*

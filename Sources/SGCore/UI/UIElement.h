@@ -8,13 +8,23 @@
 #include <SGCore/pch.h>
 
 #include "SGCore/Main/CoreMain.h"
-#include "SGCore/ECS/Component.h"
+#include "SGCore/Transformations/Transform.h"
+#include "CSS/CSSSelector.h"
+#include "SGCore/Memory/AssetRef.h"
 
-namespace SGCore
+namespace SGCore::UI
 {
-    struct UIElement : ECS::Component<UIElement, const UIElement>
+    struct UIElement
     {
-        std::vector<ECS::entity_t> m_children;
+        std::vector<Ref<UIElement>> m_children;
+        Weak<UIElement> m_parent;
+
+        virtual void render() noexcept = 0;
+
+    private:
+        Transform m_transform;
+
+        AssetRef<CSSSelector> m_selector;
     };
 }
 

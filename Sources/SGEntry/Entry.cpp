@@ -38,12 +38,8 @@ extern "C" {
 #include "SGCore/Render/Mesh.h"
 #include "SGCore/Render/RenderingBase.h"
 
-#include <antlr4-runtime.h>
-#include "SGCore/UI/ANTLR4CSS3Generated/css3Lexer.h"
-#include "SGCore/UI/ANTLR4CSS3Generated/css3Parser.h"
-#include "SGCore/UI/ANTLR4CSS3Generated/css3ParserBaseListener.h"
-#include "SGCore/UI/ANTLR4CSS3Generated/css3ParserListener.h"
-#include "SGCore/UI/ANTLR4CSS3Generated/css3ParserBaseVisitor.h"
+#include "SGCore/UI/CSS/CSSFile.h"
+
 
 /*class MyCSSListener : public css3ParserBaseListener {
 public:
@@ -70,7 +66,7 @@ public:
     void enterKnownDeclaration(css3Parser::KnownDeclarationContext* ctx) override {
         if (currentSelector.empty()) return;
 
-        std::string property = ctx->property_()->getText();
+        std::string property = ctx->property_()->getText();// ctx->property_()->getText();
         std::string value = ctx->expr()->getText();
 
         styles[currentSelector][property] = value;
@@ -95,105 +91,9 @@ public:
     }
 };
 
-void parseCSS(const std::string& cssContent) {
-    // Создаём входной поток
-    antlr4::ANTLRInputStream input(cssContent);
-
-    // Создаём лексер
-    css3Lexer lexer(&input);
-    antlr4::CommonTokenStream tokens(&lexer);
-
-    // Создаём парсер
-    css3Parser parser(&tokens);
-
-    // Парсим CSS (начальное правило грамматики)
-    css3Parser::StylesheetContext* tree = parser.stylesheet();
-
-    // css3Parser::SelectorContext* context = parser.selector();
-
-    CSSListener listener;
-    antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
-
-    const auto& styles = listener.getStyles();
-    for (const auto& [selector, properties] : styles) {
-        std::cout << "Selector: " << selector << std::endl;
-        for (const auto& [property, value] : properties) {
-            std::cout << "  " << property << ": " << value << ";" << std::endl;
-        }
-    }
-
-    // Хранилище для стилей
-    /*Styles styles;
-
-    for (auto child : tree->children) {
-        // Проверяем, является ли узел NestedStatementContext
-        auto nestedStatement = dynamic_cast<css3Parser::NestedStatementContext*>(child);
-        if (!nestedStatement) continue;
-
-        // Ищем ruleset
-        auto ruleset = dynamic_cast<css3Parser::RulesetContext*>(nestedStatement->children[0]);
-        if (!ruleset) continue;
-
-        // Извлечение селектора
-        std::string selector;
-        auto selectorGroup = dynamic_cast<css3Parser::SelectorGroupContext*>(ruleset->children[0]);
-        if (selectorGroup) {
-            selector = selectorGroup->getText();
-        }
-
-        // Извлечение деклараций
-        std::unordered_map<std::string, std::string> declarations;
-        for (auto child0 : ruleset->children) {
-            // Проверяем тип узла
-            auto declarationList = dynamic_cast<css3Parser::DeclarationListContext*>(child0);
-            if (!declarationList) continue;
-
-            for (auto declChild : declarationList->children) {
-                auto declaration = dynamic_cast<css3Parser::DeclarationContext*>(declChild);
-
-                if (!declaration) continue;
-
-                // Извлекаем свойство и значение
-                std::string property;
-                std::string value;
-
-                if (!declaration->children.empty()) {
-                    property = declaration->children[0]->getText();
-                    if (declaration->children.size() > 3) {
-                        value = declaration->children[3]->getText();
-                    }
-                }
-
-                if (!property.empty() && !value.empty()) {
-                    declarations[property] = value;
-                }
-            }
-        }
-
-        if (!selector.empty()) {
-            styles[selector] = declarations;
-        }
-    }
-
-    // Вывод стилей
-    for (const auto& [selector, properties] : styles) {
-        std::cout << "Selector: " << selector << std::endl;
-        for (const auto& [property, value] : properties) {
-            std::cout << "  " << property << ": " << value << ";" << std::endl;
-        }
-    }*/
-    /*MyCSSListener myCssListener;
-    antlr4::tree::ParseTreeWalker::DEFAULT.walk(&myCssListener, tree);*/
-
-    // Выводим дерево разбора
-    // std::cout << "Дерево:\n" << tree->toStringTree(&parser) << std::endl;
-}
-
 void coreInit()
 {
-    std::string cssCode = SGCore::FileUtils::readFile("window.css");
-
-    parseCSS(cssCode);
+    auto cssFile = SGCore::AssetManager::getInstance()->loadAsset<SGCore::UI::CSSFile>("window.css");
 
     ImGui::SetCurrentContext(SGCore::ImGuiWrap::ImGuiLayer::getCurrentContext());
 
