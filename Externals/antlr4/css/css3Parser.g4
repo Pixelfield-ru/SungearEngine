@@ -354,15 +354,22 @@ calc
 
 // left operand or right operand of expr
 calcOperand
-    : (Plus | Minus)* calcValue
+    : calcValue
+    ;
+
+calcSign
+    : Plus
+    | Minus
+    | Divide
+    | Multiply
     ;
 
 calcExpr
-    : calcOperand (Space ws (Plus | Minus | Divide | Multiply) Space ws calcOperand)* ws
+    : calcOperand (Space ws calcSign Space ws calcOperand)* ws
     ;
 
 calcNestedValue
-    : '(' ws calcExpr ')' ws
+    : (Minus | Plus)? '(' ws calcExpr ')' ws
     ;
 
 calcValue

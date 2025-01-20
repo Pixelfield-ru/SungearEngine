@@ -161,6 +161,8 @@ public:
 
     virtual std::any visitCalcOperand(css3Parser::CalcOperandContext *context) = 0;
 
+    virtual std::any visitCalcSign(css3Parser::CalcSignContext *context) = 0;
+
     virtual std::any visitCalcExpr(css3Parser::CalcExprContext *context) = 0;
 
     virtual std::any visitCalcNestedValue(css3Parser::CalcNestedValueContext *context) = 0;

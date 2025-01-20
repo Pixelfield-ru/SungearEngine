@@ -229,6 +229,9 @@ public:
   virtual void enterCalcOperand(css3Parser::CalcOperandContext * /*ctx*/) override { }
   virtual void exitCalcOperand(css3Parser::CalcOperandContext * /*ctx*/) override { }
 
+  virtual void enterCalcSign(css3Parser::CalcSignContext * /*ctx*/) override { }
+  virtual void exitCalcSign(css3Parser::CalcSignContext * /*ctx*/) override { }
+
   virtual void enterCalcExpr(css3Parser::CalcExprContext * /*ctx*/) override { }
   virtual void exitCalcExpr(css3Parser::CalcExprContext * /*ctx*/) override { }
 

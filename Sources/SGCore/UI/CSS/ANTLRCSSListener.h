@@ -15,6 +15,8 @@
 
 namespace SGCore::UI
 {
+    struct CSSMathNode;
+
     struct ANTLRCSSListener : public css3ParserBaseListener
     {
         CSSFile* m_toCSSFile { };
@@ -27,7 +29,13 @@ namespace SGCore::UI
         void enterCalc(css3Parser::CalcContext* ctx) override;
 
     private:
-        void processCalculation(antlr4::tree::ParseTree* currentANTLRNode) noexcept;
+        /**
+         * Iterates through all nodes of any function that can calculate and creates tree of math nodes.
+         * @param currentANTLRNode - Current node in CSS tree.
+         * @param currentParentMathNode - Current node in math tree.
+         */
+        void processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
+                                const Ref<CSSMathNode>& currentParentMathNode) noexcept;
 
         CSSSelector* m_currentSelector { };
     };

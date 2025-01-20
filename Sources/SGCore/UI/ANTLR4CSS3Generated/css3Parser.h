@@ -44,13 +44,13 @@ public:
     RuleSupportsCondition = 51, RuleSupportsConditionInParens = 52, RuleSupportsNegation = 53, 
     RuleSupportsConjunction = 54, RuleSupportsDisjunction = 55, RuleSupportsDeclarationCondition = 56, 
     RuleGeneralEnclosed = 57, RuleUrl = 58, RuleVar_ = 59, RuleCalc = 60, 
-    RuleCalcOperand = 61, RuleCalcExpr = 62, RuleCalcNestedValue = 63, RuleCalcValue = 64, 
-    RuleFontFaceRule = 65, RuleFontFaceDeclaration = 66, RuleKeyframesRule = 67, 
-    RuleKeyframeBlock = 68, RuleKeyframeSelector = 69, RuleViewport = 70, 
-    RuleCounterStyle = 71, RuleFontFeatureValuesRule = 72, RuleFontFamilyNameList = 73, 
-    RuleFontFamilyName = 74, RuleFeatureValueBlock = 75, RuleFeatureType = 76, 
-    RuleFeatureValueDefinition = 77, RuleIdent = 78, RuleWs = 79, RuleColor = 80, 
-    RuleColor_alpha = 81, RuleColor_component = 82
+    RuleCalcOperand = 61, RuleCalcSign = 62, RuleCalcExpr = 63, RuleCalcNestedValue = 64, 
+    RuleCalcValue = 65, RuleFontFaceRule = 66, RuleFontFaceDeclaration = 67, 
+    RuleKeyframesRule = 68, RuleKeyframeBlock = 69, RuleKeyframeSelector = 70, 
+    RuleViewport = 71, RuleCounterStyle = 72, RuleFontFeatureValuesRule = 73, 
+    RuleFontFamilyNameList = 74, RuleFontFamilyName = 75, RuleFeatureValueBlock = 76, 
+    RuleFeatureType = 77, RuleFeatureValueDefinition = 78, RuleIdent = 79, 
+    RuleWs = 80, RuleColor = 81, RuleColor_alpha = 82, RuleColor_component = 83
   };
 
   explicit css3Parser(antlr4::TokenStream *input);
@@ -132,6 +132,7 @@ public:
   class Var_Context;
   class CalcContext;
   class CalcOperandContext;
+  class CalcSignContext;
   class CalcExprContext;
   class CalcNestedValueContext;
   class CalcValueContext;
@@ -1613,10 +1614,6 @@ public:
     CalcOperandContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     CalcValueContext *calcValue();
-    std::vector<antlr4::tree::TerminalNode *> Plus();
-    antlr4::tree::TerminalNode* Plus(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> Minus();
-    antlr4::tree::TerminalNode* Minus(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1626,6 +1623,24 @@ public:
   };
 
   CalcOperandContext* calcOperand();
+
+  class  CalcSignContext : public antlr4::ParserRuleContext {
+  public:
+    CalcSignContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *Plus();
+    antlr4::tree::TerminalNode *Minus();
+    antlr4::tree::TerminalNode *Divide();
+    antlr4::tree::TerminalNode *Multiply();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  CalcSignContext* calcSign();
 
   class  CalcExprContext : public antlr4::ParserRuleContext {
   public:
@@ -1637,14 +1652,8 @@ public:
     WsContext* ws(size_t i);
     std::vector<antlr4::tree::TerminalNode *> Space();
     antlr4::tree::TerminalNode* Space(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> Plus();
-    antlr4::tree::TerminalNode* Plus(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> Minus();
-    antlr4::tree::TerminalNode* Minus(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> Divide();
-    antlr4::tree::TerminalNode* Divide(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> Multiply();
-    antlr4::tree::TerminalNode* Multiply(size_t i);
+    std::vector<CalcSignContext *> calcSign();
+    CalcSignContext* calcSign(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1664,6 +1673,8 @@ public:
     WsContext* ws(size_t i);
     CalcExprContext *calcExpr();
     antlr4::tree::TerminalNode *CloseParen();
+    antlr4::tree::TerminalNode *Minus();
+    antlr4::tree::TerminalNode *Plus();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

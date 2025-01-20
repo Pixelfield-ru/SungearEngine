@@ -2,14 +2,26 @@
 // Created by stuka on 18.01.2025.
 //
 #include "ANTLRCSSListener.h"
-
 #include "PropertyEnumTypes/CSSFlexDirectionType.h"
 #include "CSSPropertyType.h"
+
 #include "SGCore/Memory/AssetManager.h"
+#include "SGCore/UI/CSS/Math/CSSMathNode.h"
+#include "SGCore/UI/CSS/Math/CSSMathNumericNode.h"
 
 void SGCore::UI::ANTLRCSSListener::enterSelector(css3Parser::SelectorContext* ctx)
 {
-    const std::string currentSelectorName = ctx->children[0]->children[0]->children[1]->getText();
+    std::string currentSelectorName = "";
+    if(!ctx->children.empty())
+    {
+        if(!ctx->children[0]->children.empty())
+        {
+            if(ctx->children[0]->children[0]->children.size() > 1)
+            {
+                currentSelectorName = ctx->children[0]->children[0]->children[1]->getText();
+            }
+        }
+    }
 
     auto foundSelector = m_toCSSFile->findSelector(currentSelectorName);
 
@@ -63,7 +75,7 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
         case CSSPropertyType::PT_FLEX_SHRINK:break;
         case CSSPropertyType::PT_WIDTH:
         {
-
+            auto mathNode = MakeRef<CSSMathNode>();
 
             break;
         }
@@ -83,181 +95,88 @@ void SGCore::UI::ANTLRCSSListener::enterDimension(css3Parser::DimensionContext* 
 
 void SGCore::UI::ANTLRCSSListener::enterCalc(css3Parser::CalcContext* ctx)
 {
-    processCalculation(ctx);
+    auto mathNode = MakeRef<CSSMathNode>();
+    processCalculation(ctx, mathNode);
+    mathNode->resolvePriorities();
+
+    std::cout << "calculation result: " << mathNode->calculate() << std::endl;
 }
 
-void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* currentANTLRNode) noexcept
+void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* currentANTLRNode,
+                                                      const Ref<CSSMathNode>& currentParentMathNode) noexcept
 {
-    // по моему это базар
-    /*
-     struct CSSMathNode
-     {
-        std::vector<Ref<CSSMathNode>> m_operands
-        CSSMathSign m_sign = CSSMathSign::NO_SIGN;
-
-        virtual float calculate()
-        {
-            float result = 0.0f;
-
-            CSSMathSign lastSign = CSSMathSign::ADD;
-
-            for(const auto& operand : m_operands)
-            {
-                const float calculatedValue = operand->calculate();
-
-                result {lastSign}= calculatedValue;
-
-                lastSign = operand->m_sign;
-            }
-
-            return result;
-        }
-     }
-
-     struct CSSMathNumericNode : CSSMathNode
-     {
-        float m_value
-
-        float calculate() final
-        {
-            return m_value;
-        }
-     }
-
-     calc(30 / (27 + 3) * 10);
-
-     CSSMathNode(
-        CSSMathNumericNode(
-            float<30>, /
-        ),
-        CSSMathNode(
-            CSSMathNumericNode(
-                float<27>, +
-            ),
-            CSSMathNumericNode(
-                float<3>
-            )
-        ),
-        CSSMathNumericNode(
-            float<10> *
-        )
-     )
-
-     calc((30 - (21 - 9)) / (27 + 3) * 10);
-
-     result: 10
-
-     CSSMathNode(
-        CSSMathNode(
-            CSSMathNumericNode(
-                float<30> -
-            ),
-            CSSMathNode(
-                CSSMathNumericNode(
-                    float<21> -
-                ),
-                CSSMathNumericNode(
-                    float<9>
-                ),
-            )
-        ), /
-        CSSMathNode(
-            CSSMathNumericNode(
-                float<27> +
-            ),
-            CSSMathNumericNode(
-                float<3>
-            ),
-        ), *
-        CSSMathNumericNode(
-            float<10>
-        ),
-     )
-
-     result: 6
-     */
-
     for(auto* child : currentANTLRNode->children)
     {
-        {
-            auto* asNestedExpr = dynamic_cast<css3Parser::CalcNestedValueContext*>(child);
+        auto* asExpr = dynamic_cast<css3Parser::CalcExprContext*>(child);
 
-            if(asNestedExpr)
+        if(asExpr)
+        {
+            const std::int64_t operandsCount = std::ssize(asExpr->calcOperand());
+
+            for(std::int64_t i = 0; i < operandsCount; ++i)
             {
-                std::cout << "nested expr: " << asNestedExpr->getText() << std::endl;
+                const std::int64_t signI = i - 1;
+
+                if(signI >= 0 && signI < asExpr->calcSign().size())
+                {
+                    auto* currentSign = asExpr->calcSign(signI);
+
+                    if(currentSign)
+                    {
+                        auto currentOperandSign = CSSMathSign::MS_NO_SIGN;
+
+                        if(currentSign->Plus())
+                        {
+                            currentOperandSign = CSSMathSign::MS_PLUS;
+                        }
+                        else if(currentSign->Minus())
+                        {
+                            currentOperandSign = CSSMathSign::MS_MINUS;
+                        }
+                        else if(currentSign->Multiply())
+                        {
+                            currentOperandSign = CSSMathSign::MS_MULTIPLY;
+                        }
+                        else if(currentSign->Divide())
+                        {
+                            currentOperandSign = CSSMathSign::MS_DIVIDE;
+                        }
+
+                        currentParentMathNode->m_operands[signI]->m_sign = currentOperandSign;
+                    }
+                }
+
+                if(asExpr->calcOperand(i)->calcValue()->calcNestedValue())
+                {
+                    auto newParentMathNode = MakeRef<CSSMathNode>();
+
+                    if(asExpr->calcOperand(i)->calcValue()->calcNestedValue()->Minus())
+                    {
+                        newParentMathNode->m_unarySign = CSSMathSign::MS_MINUS;
+                    }
+
+                    currentParentMathNode->m_operands.push_back(newParentMathNode);
+
+                    processCalculation(asExpr->calcOperand(i), newParentMathNode);
+
+                    continue;
+                }
+                else if(asExpr->calcOperand(i)->calcValue()->number())
+                {
+                    auto newNumberNode = MakeRef<CSSMathNumericNode>();
+
+                    newNumberNode->m_value = std::stof(asExpr->calcOperand(i)->calcValue()->number()->getText());
+
+                    currentParentMathNode->m_operands.push_back(newNumberNode);
+
+                    continue;
+                }
             }
         }
-
+        else
         {
-            auto* asExpr = dynamic_cast<css3Parser::CalcExprContext*>(child);
-
-            if(asExpr)
-            {
-                std::cout << "expr: " << asExpr->getText() << std::endl;
-            }
-
-            /*if(asExpr)
-            {
-                auto* lOperand = asExpr->calcOperand(0);
-                auto* rOperand = asExpr->calcOperand(1);
-
-                {
-                    auto* lOperandAsNumber = dynamic_cast<css3Parser::NumberContext*>(lOperand);
-
-                    if(lOperandAsNumber)
-                    {
-                        std::cout << "l_oper" << lOperandAsNumber->getText() << std::endl;
-                    }
-                    else
-                    {
-                        auto* lOperandAsDimension = dynamic_cast<css3Parser::DimensionContext*>(lOperand);
-
-                        if(lOperandAsDimension)
-                        {
-                            std::cout << "l_oper" << lOperandAsDimension->getText();
-                        }
-                    }
-                }
-
-                if(asExpr->Plus(0))
-                {
-                    std::cout << " + ";
-                }
-                else if(asExpr->Minus(0))
-                {
-                    std::cout << " - ";
-                }
-                else if(asExpr->Multiply(0))
-                {
-                    std::cout << " * ";
-                }
-                else if(asExpr->Divide(0))
-                {
-                    std::cout << " / ";
-                }
-
-                if(rOperand)
-                {
-                    auto* rOperandAsNumber = dynamic_cast<css3Parser::NumberContext*>(rOperand);
-
-                    if(rOperandAsNumber)
-                    {
-                        std::cout << "r_oper" << rOperandAsNumber->getText() << std::endl;
-                    }
-                    else
-                    {
-                        auto* rOperandAsDimension = dynamic_cast<css3Parser::DimensionContext*>(rOperand);
-
-                        if(rOperandAsDimension)
-                        {
-                            std::cout << "r_oper" << rOperandAsDimension->getText() << std::endl;
-                        }
-                    }
-                }
-            }*/
+            processCalculation(child, currentParentMathNode);
         }
-
-        processCalculation(child);
     }
 }
 

@@ -227,6 +227,9 @@ public:
   virtual void enterCalcOperand(css3Parser::CalcOperandContext *ctx) = 0;
   virtual void exitCalcOperand(css3Parser::CalcOperandContext *ctx) = 0;
 
+  virtual void enterCalcSign(css3Parser::CalcSignContext *ctx) = 0;
+  virtual void exitCalcSign(css3Parser::CalcSignContext *ctx) = 0;
+
   virtual void enterCalcExpr(css3Parser::CalcExprContext *ctx) = 0;
   virtual void exitCalcExpr(css3Parser::CalcExprContext *ctx) = 0;
 

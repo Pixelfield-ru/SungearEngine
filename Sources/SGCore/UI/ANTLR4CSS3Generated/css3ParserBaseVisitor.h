@@ -299,6 +299,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitCalcSign(css3Parser::CalcSignContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitCalcExpr(css3Parser::CalcExprContext *ctx) override {
     return visitChildren(ctx);
   }
