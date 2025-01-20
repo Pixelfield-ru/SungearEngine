@@ -38,6 +38,40 @@
 
  FetchContent_MakeAvailable(glaze)
 
+ # antlr4 for css ==================================================
+
+ set(ANTLR4_CSS_GRAMMAR
+         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Externals/antlr4/css/css3Lexer.g4>
+         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Externals/antlr4/css/css3Parser.g4>)
+
+ set(ANTLR4_CSS_GENERATED_OUTPUT_DIR $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sources/SGCore/UI/ANTLR4CSS3Generated>)
+
+ set(ANTLR4_JAR $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Externals/antlr4/antlr-4.13.1-complete.jar>)
+
+ add_custom_command(
+         OUTPUT
+         ${ANTLR4_CSS_GENERATED_OUTPUT_DIR}/css3Parser.cpp
+         COMMAND java -jar ${ANTLR4_JAR} -Dlanguage=Cpp -o ${ANTLR4_CSS_GENERATED_OUTPUT_DIR} -visitor ${ANTLR4_CSS_GRAMMAR}
+         DEPENDS ${ANTLR4_CSS_GRAMMAR}
+         COMMENT "Generating ANTLR4 parser and lexer"
+         VERBATIM
+ )
+
+ #[[add_custom_target(ANTLR4CSS
+         COMMAND java -jar ${ANTLR4_JAR} -Dlanguage=Cpp -o ${ANTLR4_CSS_GENERATED_OUTPUT_DIR} -visitor ${ANTLR4_CSS_GRAMMAR}
+         SOURCES ${ANTLR4_CSS_GRAMMAR}
+         DEPENDS ${ANTLR4_CSS_GRAMMAR}
+         COMMENT "Generating ANTLR4 code from ${ANTLR4_CSS_GRAMMAR}"
+         VERBATIM
+ )]]
+
+ add_custom_target(ANTLR4CSS
+         DEPENDS
+         ${ANTLR4_CSS_GENERATED_OUTPUT_DIR}/css3Parser.cpp
+ )
+
+ # =================================================================
+
  add_library(${PROJECT_NAME} SHARED ${SGCORE_SOURCES})
 
  target_precompile_headers(${PROJECT_NAME} PUBLIC pch.h)

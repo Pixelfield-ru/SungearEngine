@@ -1,5 +1,5 @@
 
-// Generated from css3Parser.g4 by ANTLR 4.13.1
+// Generated from D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/antlr4/css/css3Parser.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -159,9 +159,11 @@ public:
 
     virtual std::any visitCalc(css3Parser::CalcContext *context) = 0;
 
-    virtual std::any visitCalcSum(css3Parser::CalcSumContext *context) = 0;
+    virtual std::any visitCalcOperand(css3Parser::CalcOperandContext *context) = 0;
 
-    virtual std::any visitCalcProduct(css3Parser::CalcProductContext *context) = 0;
+    virtual std::any visitCalcExpr(css3Parser::CalcExprContext *context) = 0;
+
+    virtual std::any visitCalcNestedValue(css3Parser::CalcNestedValueContext *context) = 0;
 
     virtual std::any visitCalcValue(css3Parser::CalcValueContext *context) = 0;
 

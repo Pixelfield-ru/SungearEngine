@@ -23,7 +23,12 @@ namespace SGCore::UI
 
         void enterKnownDeclaration(css3Parser::KnownDeclarationContext* ctx) override;
 
+        void enterDimension(css3Parser::DimensionContext* ctx) override;
+        void enterCalc(css3Parser::CalcContext* ctx) override;
+
     private:
+        void processCalculation(antlr4::tree::ParseTree* currentANTLRNode) noexcept;
+
         CSSSelector* m_currentSelector { };
     };
 }

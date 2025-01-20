@@ -1,5 +1,5 @@
 
-// Generated from css3Parser.g4 by ANTLR 4.13.1
+// Generated from D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/antlr4/css/css3Parser.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -44,12 +44,13 @@ public:
     RuleSupportsCondition = 51, RuleSupportsConditionInParens = 52, RuleSupportsNegation = 53, 
     RuleSupportsConjunction = 54, RuleSupportsDisjunction = 55, RuleSupportsDeclarationCondition = 56, 
     RuleGeneralEnclosed = 57, RuleUrl = 58, RuleVar_ = 59, RuleCalc = 60, 
-    RuleCalcSum = 61, RuleCalcProduct = 62, RuleCalcValue = 63, RuleFontFaceRule = 64, 
-    RuleFontFaceDeclaration = 65, RuleKeyframesRule = 66, RuleKeyframeBlock = 67, 
-    RuleKeyframeSelector = 68, RuleViewport = 69, RuleCounterStyle = 70, 
-    RuleFontFeatureValuesRule = 71, RuleFontFamilyNameList = 72, RuleFontFamilyName = 73, 
-    RuleFeatureValueBlock = 74, RuleFeatureType = 75, RuleFeatureValueDefinition = 76, 
-    RuleIdent = 77, RuleWs = 78, RuleColor = 79, RuleColor_alpha = 80, RuleColor_component = 81
+    RuleCalcOperand = 61, RuleCalcExpr = 62, RuleCalcNestedValue = 63, RuleCalcValue = 64, 
+    RuleFontFaceRule = 65, RuleFontFaceDeclaration = 66, RuleKeyframesRule = 67, 
+    RuleKeyframeBlock = 68, RuleKeyframeSelector = 69, RuleViewport = 70, 
+    RuleCounterStyle = 71, RuleFontFeatureValuesRule = 72, RuleFontFamilyNameList = 73, 
+    RuleFontFamilyName = 74, RuleFeatureValueBlock = 75, RuleFeatureType = 76, 
+    RuleFeatureValueDefinition = 77, RuleIdent = 78, RuleWs = 79, RuleColor = 80, 
+    RuleColor_alpha = 81, RuleColor_component = 82
   };
 
   explicit css3Parser(antlr4::TokenStream *input);
@@ -130,8 +131,9 @@ public:
   class UrlContext;
   class Var_Context;
   class CalcContext;
-  class CalcSumContext;
-  class CalcProductContext;
+  class CalcOperandContext;
+  class CalcExprContext;
+  class CalcNestedValueContext;
   class CalcValueContext;
   class FontFaceRuleContext;
   class FontFaceDeclarationContext;
@@ -1594,7 +1596,7 @@ public:
     antlr4::tree::TerminalNode *Calc();
     std::vector<WsContext *> ws();
     WsContext* ws(size_t i);
-    CalcSumContext *calcSum();
+    CalcExprContext *calcExpr();
     antlr4::tree::TerminalNode *CloseParen();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1606,16 +1608,11 @@ public:
 
   CalcContext* calc();
 
-  class  CalcSumContext : public antlr4::ParserRuleContext {
+  class  CalcOperandContext : public antlr4::ParserRuleContext {
   public:
-    CalcSumContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    CalcOperandContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<CalcProductContext *> calcProduct();
-    CalcProductContext* calcProduct(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> Space();
-    antlr4::tree::TerminalNode* Space(size_t i);
-    std::vector<WsContext *> ws();
-    WsContext* ws(size_t i);
+    CalcValueContext *calcValue();
     std::vector<antlr4::tree::TerminalNode *> Plus();
     antlr4::tree::TerminalNode* Plus(size_t i);
     std::vector<antlr4::tree::TerminalNode *> Minus();
@@ -1628,22 +1625,26 @@ public:
    
   };
 
-  CalcSumContext* calcSum();
+  CalcOperandContext* calcOperand();
 
-  class  CalcProductContext : public antlr4::ParserRuleContext {
+  class  CalcExprContext : public antlr4::ParserRuleContext {
   public:
-    CalcProductContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    CalcExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<CalcValueContext *> calcValue();
-    CalcValueContext* calcValue(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> Multiply();
-    antlr4::tree::TerminalNode* Multiply(size_t i);
+    std::vector<CalcOperandContext *> calcOperand();
+    CalcOperandContext* calcOperand(size_t i);
     std::vector<WsContext *> ws();
     WsContext* ws(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Space();
+    antlr4::tree::TerminalNode* Space(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Plus();
+    antlr4::tree::TerminalNode* Plus(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Minus();
+    antlr4::tree::TerminalNode* Minus(size_t i);
     std::vector<antlr4::tree::TerminalNode *> Divide();
     antlr4::tree::TerminalNode* Divide(size_t i);
-    std::vector<NumberContext *> number();
-    NumberContext* number(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Multiply();
+    antlr4::tree::TerminalNode* Multiply(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1652,21 +1653,37 @@ public:
    
   };
 
-  CalcProductContext* calcProduct();
+  CalcExprContext* calcExpr();
+
+  class  CalcNestedValueContext : public antlr4::ParserRuleContext {
+  public:
+    CalcNestedValueContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *OpenParen();
+    std::vector<WsContext *> ws();
+    WsContext* ws(size_t i);
+    CalcExprContext *calcExpr();
+    antlr4::tree::TerminalNode *CloseParen();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  CalcNestedValueContext* calcNestedValue();
 
   class  CalcValueContext : public antlr4::ParserRuleContext {
   public:
     CalcValueContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     NumberContext *number();
-    std::vector<WsContext *> ws();
-    WsContext* ws(size_t i);
+    WsContext *ws();
     DimensionContext *dimension();
     UnknownDimensionContext *unknownDimension();
     PercentageContext *percentage();
-    antlr4::tree::TerminalNode *OpenParen();
-    CalcSumContext *calcSum();
-    antlr4::tree::TerminalNode *CloseParen();
+    CalcNestedValueContext *calcNestedValue();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

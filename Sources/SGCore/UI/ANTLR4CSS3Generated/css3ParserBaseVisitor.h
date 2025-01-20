@@ -1,5 +1,5 @@
 
-// Generated from css3Parser.g4 by ANTLR 4.13.1
+// Generated from D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/antlr4/css/css3Parser.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -295,11 +295,15 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitCalcSum(css3Parser::CalcSumContext *ctx) override {
+  virtual std::any visitCalcOperand(css3Parser::CalcOperandContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitCalcProduct(css3Parser::CalcProductContext *ctx) override {
+  virtual std::any visitCalcExpr(css3Parser::CalcExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitCalcNestedValue(css3Parser::CalcNestedValueContext *ctx) override {
     return visitChildren(ctx);
   }
 

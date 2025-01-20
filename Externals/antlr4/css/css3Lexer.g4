@@ -232,8 +232,6 @@ Rgb: 'rgb(';
 
 Rgba: 'rgba(';
 
-ColorFunction: Rgb | Rgba;
-
 // https://www.w3.org/TR/css-device-adapt-1/
 Viewport: At V I E W P O R T;
 

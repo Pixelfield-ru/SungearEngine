@@ -349,15 +349,20 @@ var_
 // Calc
 // https://www.w3.org/TR/css3-values/#calc-syntax
 calc
-    : Calc ws calcSum ')' ws
+    : Calc ws calcExpr ')' ws
     ;
 
-calcSum
-    : calcProduct (Space ws ( Plus | Minus) ws Space ws calcProduct)*
+// left operand or right operand of expr
+calcOperand
+    : (Plus | Minus)* calcValue
     ;
 
-calcProduct
-    : calcValue ('*' ws calcValue | '/' ws number ws)*
+calcExpr
+    : calcOperand (Space ws (Plus | Minus | Divide | Multiply) Space ws calcOperand)* ws
+    ;
+
+calcNestedValue
+    : '(' ws calcExpr ')' ws
     ;
 
 calcValue
@@ -365,7 +370,7 @@ calcValue
     | dimension ws
     | unknownDimension ws
     | percentage ws
-    | '(' ws calcSum ')' ws
+    | calcNestedValue ws
     ;
 
 // Font face
@@ -454,15 +459,16 @@ ws
 //     ;
 
 color
-     : ColorFunction '(' ws color_component (Comma ws color_component)* (Divide ws color_alpha)? ws ')'
+     : (Rgb | Rgba) ws color_component Comma ws color_component Comma ws color_component (Comma ws color_alpha)? ')' ws
+     | (Rgb | Rgba) ws color_component ws color_component ws color_component (Divide ws color_alpha)? ')' ws
      ;
 
 color_alpha
-    : term                 // альфа может быть выражением
+    : calcValue | calc
     ;
 
 color_component
-    : term
+    : calcValue | calc
     ;
 
 

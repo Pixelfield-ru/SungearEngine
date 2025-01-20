@@ -1,5 +1,5 @@
 
-// Generated from css3Parser.g4 by ANTLR 4.13.1
+// Generated from D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/antlr4/css/css3Parser.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -224,11 +224,14 @@ public:
   virtual void enterCalc(css3Parser::CalcContext *ctx) = 0;
   virtual void exitCalc(css3Parser::CalcContext *ctx) = 0;
 
-  virtual void enterCalcSum(css3Parser::CalcSumContext *ctx) = 0;
-  virtual void exitCalcSum(css3Parser::CalcSumContext *ctx) = 0;
+  virtual void enterCalcOperand(css3Parser::CalcOperandContext *ctx) = 0;
+  virtual void exitCalcOperand(css3Parser::CalcOperandContext *ctx) = 0;
 
-  virtual void enterCalcProduct(css3Parser::CalcProductContext *ctx) = 0;
-  virtual void exitCalcProduct(css3Parser::CalcProductContext *ctx) = 0;
+  virtual void enterCalcExpr(css3Parser::CalcExprContext *ctx) = 0;
+  virtual void exitCalcExpr(css3Parser::CalcExprContext *ctx) = 0;
+
+  virtual void enterCalcNestedValue(css3Parser::CalcNestedValueContext *ctx) = 0;
+  virtual void exitCalcNestedValue(css3Parser::CalcNestedValueContext *ctx) = 0;
 
   virtual void enterCalcValue(css3Parser::CalcValueContext *ctx) = 0;
   virtual void exitCalcValue(css3Parser::CalcValueContext *ctx) = 0;

@@ -1,5 +1,5 @@
 
-// Generated from css3Parser.g4 by ANTLR 4.13.1
+// Generated from D:/Pixelfield/NativeSungearEngine/NativeSungearEngine/Externals/antlr4/css/css3Parser.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -226,11 +226,14 @@ public:
   virtual void enterCalc(css3Parser::CalcContext * /*ctx*/) override { }
   virtual void exitCalc(css3Parser::CalcContext * /*ctx*/) override { }
 
-  virtual void enterCalcSum(css3Parser::CalcSumContext * /*ctx*/) override { }
-  virtual void exitCalcSum(css3Parser::CalcSumContext * /*ctx*/) override { }
+  virtual void enterCalcOperand(css3Parser::CalcOperandContext * /*ctx*/) override { }
+  virtual void exitCalcOperand(css3Parser::CalcOperandContext * /*ctx*/) override { }
 
-  virtual void enterCalcProduct(css3Parser::CalcProductContext * /*ctx*/) override { }
-  virtual void exitCalcProduct(css3Parser::CalcProductContext * /*ctx*/) override { }
+  virtual void enterCalcExpr(css3Parser::CalcExprContext * /*ctx*/) override { }
+  virtual void exitCalcExpr(css3Parser::CalcExprContext * /*ctx*/) override { }
+
+  virtual void enterCalcNestedValue(css3Parser::CalcNestedValueContext * /*ctx*/) override { }
+  virtual void exitCalcNestedValue(css3Parser::CalcNestedValueContext * /*ctx*/) override { }
 
   virtual void enterCalcValue(css3Parser::CalcValueContext * /*ctx*/) override { }
   virtual void exitCalcValue(css3Parser::CalcValueContext * /*ctx*/) override { }
