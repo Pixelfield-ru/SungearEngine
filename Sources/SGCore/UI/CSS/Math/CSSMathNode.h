@@ -7,6 +7,7 @@
 
 #include "SGCore/Main/CoreGlobals.h"
 #include "CSSMathSign.h"
+#include "SGCore/UI/CSS/CSSDimensionQualifier.h"
 
 namespace SGCore::UI
 {
@@ -16,6 +17,7 @@ namespace SGCore::UI
         CSSMathSign m_sign = CSSMathSign::MS_NO_SIGN;
         /// Can be only PLUS or MINUS.
         CSSMathSign m_unarySign = CSSMathSign::MS_PLUS;
+        CSSDimensionQualifier m_dimensionQualifier = CSSDimensionQualifier::DQ_PX;
 
         [[nodiscard]] virtual float calculate() const noexcept;
 

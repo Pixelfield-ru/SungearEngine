@@ -378,6 +378,7 @@ calcValue
     | unknownDimension ws
     | percentage ws
     | calcNestedValue ws
+    | calc ws
     ;
 
 // Font face

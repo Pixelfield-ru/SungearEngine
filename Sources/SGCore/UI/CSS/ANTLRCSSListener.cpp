@@ -46,8 +46,10 @@ void SGCore::UI::ANTLRCSSListener::enterKnownDeclaration(css3Parser::KnownDeclar
 {
     if(!m_currentSelector)
     {
-        LOG_E(SGCORE_TAG, "ANTLRCSSListener ERROR: can not enter the known declaration without entering "
-                          "the selector (declaration of property was found but selector was not found).");
+        LOG_E(SGCORE_TAG,
+              "ANTLRCSSListener ERROR: can not enter the known declaration without entering "
+              "the selector (declaration of property was found but selector was not found). In CSS file: '{}'",
+              Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
 
         return;
     }
@@ -157,7 +159,7 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
 
                     currentParentMathNode->m_operands.push_back(newParentMathNode);
 
-                    processCalculation(asExpr->calcOperand(i), newParentMathNode);
+                    processCalculation(asExpr->calcOperand(i)->calcValue()->calcNestedValue(), newParentMathNode);
 
                     continue;
                 }
@@ -168,6 +170,186 @@ void SGCore::UI::ANTLRCSSListener::processCalculation(antlr4::tree::ParseTree* c
                     newNumberNode->m_value = std::stof(asExpr->calcOperand(i)->calcValue()->number()->getText());
 
                     currentParentMathNode->m_operands.push_back(newNumberNode);
+
+                    continue;
+                }
+                else if(asExpr->calcOperand(i)->calcValue()->dimension())
+                {
+                    auto newNumberNode = MakeRef<CSSMathNumericNode>();
+
+                    const std::string dimension = asExpr->calcOperand(i)->calcValue()->dimension()->Dimension()->getText();
+
+                    #pragma region Units
+                    // ================================================================ absolute length
+                    if(dimension.ends_with("px"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PX;
+                    }
+                    else if(dimension.ends_with("cm"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_CM;
+                    }
+                    else if(dimension.ends_with("mm"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_MM;
+                    }
+                    else if(dimension.ends_with("in"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_IN;
+                    }
+                    else if(dimension.ends_with("pt"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PT;
+                    }
+                    else if(dimension.ends_with("pc"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PC;
+                    }
+                    else if(dimension.ends_with("q"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_Q;
+                    }
+                    // ================================================================ angle
+                    else if(dimension.ends_with("deg"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_DEG;
+                    }
+                    else if(dimension.ends_with("rad"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_RAD;
+                    }
+                    else if(dimension.ends_with("grad"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_GRAD;
+                    }
+                    else if(dimension.ends_with("turn"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_TURN;
+                    }
+                    // ================================================================ time
+                    else if(dimension.ends_with("ms"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_MS;
+                    }
+                    else if(dimension.ends_with("s"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_S;
+                    }
+                    // ================================================================ frequency
+                    else if(dimension.ends_with("hz"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_HZ;
+                    }
+                    else if(dimension.ends_with("khz"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_KHZ;
+                    }
+                    // ================================================================ relative units
+                    else if(dimension.ends_with("em"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_EM;
+                    }
+                    else if(dimension.ends_with("ex"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_EX;
+                    }
+                    else if(dimension.ends_with("ch"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_CH;
+                    }
+                    else if(dimension.ends_with("rem"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_REM;
+                    }
+                    else if(dimension.ends_with("vw"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_VW;
+                    }
+                    else if(dimension.ends_with("vh"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_VH;
+                    }
+                    else if(dimension.ends_with("vmin"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_VMIN;
+                    }
+                    else if(dimension.ends_with("vmax"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_VMAX;
+                    }
+                    // ================================================================ resolution units
+                    else if(dimension.ends_with("dpi"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_DPI;
+                    }
+                    else if(dimension.ends_with("dpcm"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_DPCM;
+                    }
+                    else if(dimension.ends_with("dppx"))
+                    {
+                        newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_DPPX;
+                    }
+                    #pragma endregion Units
+
+                    // stof ignores chars after number so we dont care that we have 123px for example
+                    newNumberNode->m_value = std::stof(dimension);
+
+                    if(asExpr->calcOperand(i)->calcValue()->dimension()->Minus())
+                    {
+                        newNumberNode->m_value *= -1.0f;
+                    }
+
+                    currentParentMathNode->m_operands.push_back(newNumberNode);
+
+                    continue;
+                }
+                else if(asExpr->calcOperand(i)->calcValue()->unknownDimension())
+                {
+                    auto newNumberNode = MakeRef<CSSMathNumericNode>();
+
+                    newNumberNode->m_value = std::stof(asExpr->calcOperand(i)->calcValue()->unknownDimension()->UnknownDimension()->getText());
+                    newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PX;
+
+                    LOG_W(SGCORE_TAG,
+                          "ANTLRCSSListener calculation processing warning: calculation "
+                          "expression has unknown dimension: '{}'. Note: The default qualifier ('px') "
+                          "is assigned to the operand. In CSS file: '{}'",
+                          asExpr->calcOperand(i)->calcValue()->unknownDimension()->getText(),
+                          Utils::toUTF8(m_toCSSFile->getPath().resolved().u16string()));
+
+                    if(asExpr->calcOperand(i)->calcValue()->unknownDimension()->Minus())
+                    {
+                        newNumberNode->m_value *= -1.0f;
+                    }
+
+                    currentParentMathNode->m_operands.push_back(newNumberNode);
+
+                    continue;
+                }
+                else if(asExpr->calcOperand(i)->calcValue()->percentage())
+                {
+                    auto newNumberNode = MakeRef<CSSMathNumericNode>();
+
+                    newNumberNode->m_value = std::stof(asExpr->calcOperand(i)->calcValue()->percentage()->Percentage()->getText());
+                    newNumberNode->m_dimensionQualifier = CSSDimensionQualifier::DQ_PERCENT;
+
+                    if(asExpr->calcOperand(i)->calcValue()->percentage()->Minus())
+                    {
+                        newNumberNode->m_value *= -1.0f;
+                    }
+
+                    currentParentMathNode->m_operands.push_back(newNumberNode);
+
+                    continue;
+                }
+                else if(asExpr->calcOperand(i)->calcValue()->calc())
+                {
+                    auto newParentMathNode = MakeRef<CSSMathNode>();
+
+                    currentParentMathNode->m_operands.push_back(newParentMathNode);
+
+                    processCalculation(asExpr->calcOperand(i)->calcValue()->calc(), newParentMathNode);
 
                     continue;
                 }
